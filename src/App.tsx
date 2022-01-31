@@ -8,7 +8,7 @@ const App: () => JSX.Element = () => {
   return (
     <div class={styles.App}>
       <header class={styles.header}>
-        <img src={logo} class={styles.logo} alt="logo" />
+        <img src={logo} class={styles.logo} alt="logo"/>
         <p>
           Edit a<code>src/App.tsx</code> and save to reload.
         </p>

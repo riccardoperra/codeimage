@@ -3,12 +3,12 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ["xo"],
-  parser: "@typescript-eslint/parser",
+  extends: ['xo', 'plugin:solid/recommended'],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
-  plugins: ["@typescript-eslint"],
+  plugins: ['@typescript-eslint', 'solid'],
   rules: {},
 };
