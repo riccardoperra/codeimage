@@ -1,9 +1,10 @@
-
 import logo from './logo.svg';
 import styles from './App.module.css';
 import {JSX} from "solid-js";
 
 const App: () => JSX.Element = () => {
+
+
   return (
     <div class={styles.App}>
       <header class={styles.header}>
