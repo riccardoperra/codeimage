@@ -6,34 +6,34 @@ import {basicSetup} from '@codemirror/basic-setup';
 import {javascript} from '@codemirror/lang-javascript';
 
 export const CodeMirror = () => {
-	let codeMirrorRef!: HTMLDivElement;
+  let codeMirrorRef!: HTMLDivElement;
 
-	createEffect(() => {
-		const theme = EditorView.theme({
-			'&': {
-				fontFamily: 'Source Code Pro, monospace',
-			},
-			'.cm-content': {
-				fontFamily: 'Source Code Pro, monospace',
-				textAlign: 'left',
-			},
-			'.cm-gutters': {
-				display: 'none',
-			},
-		});
-		const editor = new EditorView({
-			parent: codeMirrorRef,
-			state: EditorState.create({
-				extensions: [
-					basicSetup,
-					javascript({typescript: true, jsx: true}),
-					theme,
-				],
-			}),
-		});
+  createEffect(() => {
+    const theme = EditorView.theme({
+      '&': {
+        fontFamily: 'Source Code Pro, monospace',
+      },
+      '.cm-content': {
+        fontFamily: 'Source Code Pro, monospace',
+        textAlign: 'left',
+      },
+      '.cm-gutters': {
+        display: 'none',
+      },
+    });
+    const editor = new EditorView({
+      parent: codeMirrorRef,
+      state: EditorState.create({
+        extensions: [
+          basicSetup,
+          javascript({typescript: true, jsx: true}),
+          theme,
+        ],
+      }),
+    });
 
-		return () => editor.destroy();
-	});
+    return () => editor.destroy();
+  });
 
-	return <div class={styles.Editor} ref={codeMirrorRef} />;
+  return <div class={styles.Editor} ref={codeMirrorRef} />;
 };
