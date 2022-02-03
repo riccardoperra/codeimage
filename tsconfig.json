@@ -8,6 +8,19 @@
     "esModuleInterop": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "types": ["vite/client"]
+    "declaration": true,
+    "sourceMap": true,
+    "importHelpers": true,
+    "importsNotUsedAsValues": "remove",
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "types": [
+      "vite/client"
+    ],
+    "paths": {
+      "@codegram/ui": [
+        "./packages/codegram/src/index.ts"
+      ]
+    }
   }
 }

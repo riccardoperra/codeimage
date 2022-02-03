@@ -91,6 +91,7 @@ importers:
 
   packages/ui:
     specifiers:
+      rimraf: ^3.0.2
       sass: ^1.49.7
       solid-styled-components: ^0.27.4
       typescript: ^4.5.5
@@ -101,6 +102,7 @@ importers:
       sass: 1.49.7
       solid-styled-components: 0.27.4
     devDependencies:
+      rimraf: 3.0.2
       typescript: 4.5.5
       vite: 2.7.13_sass@1.49.7
       vite-plugin-dts: 0.9.9_vite@2.7.13
