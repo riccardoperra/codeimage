@@ -1,10 +1,10 @@
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 
 export default defineConfig({
   clearScreen: true,
-  plugins: [solidPlugin()],
+  plugins: [solidPlugin(), vanillaExtractPlugin()],
   server: {
     strictPort: true,
     port: 4200,
@@ -18,5 +18,6 @@ export default defineConfig({
     sourcemap: true,
     minify: true,
     polyfillDynamicImport: false,
+    cssCodeSplit: true,
   },
 });
