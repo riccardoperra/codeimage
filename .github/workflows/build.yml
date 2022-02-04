@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  pull_request:
+    paths:
+      - 'packages/**'
+      - 'apps/**'
+      - 'package.json'
+      - 'tsconfig*'
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [ 16.13.2 ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.23.2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm lint --filter @codegram/*
+
+      - name: Type checking
+        run: pnpm typecheck --filter @codegram/*
+
+      - name: Build
+        run: |
+          pnpm build --filter ./packages/*
+          pnpm build --filter ./apps/*
+
+
+concurrency:
+  group: build-${{ github.head_ref }}
+  cancel-in-progress: true
