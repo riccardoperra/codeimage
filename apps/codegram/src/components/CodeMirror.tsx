@@ -1,4 +1,3 @@
-import styles from '../App.module.css';
 import {createEffect} from 'solid-js';
 import {EditorView} from '@codemirror/view';
 import {EditorState} from '@codemirror/state';
@@ -12,6 +11,9 @@ export const CodeMirror = () => {
     const theme = EditorView.theme({
       '&': {
         fontFamily: 'Source Code Pro, monospace',
+      },
+      '.cm-activeLine': {
+        backgroundColor: 'transparent',
       },
       '.cm-content': {
         fontFamily: 'Source Code Pro, monospace',
@@ -35,5 +37,5 @@ export const CodeMirror = () => {
     return () => editor.destroy();
   });
 
-  return <div class={styles.Editor} ref={codeMirrorRef} />;
+  return <div ref={codeMirrorRef} />;
 };

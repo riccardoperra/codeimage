@@ -4,7 +4,7 @@ import styles from './Frame.module.scss';
 import {bindAll, UnbindFn} from 'bind-event-listener';
 import {noop} from '../../core/constants/noop';
 
-export const Frame: Component<{}> = props => {
+export const Frame: Component = props => {
   let el!: HTMLDivElement;
   let ownerDocumentEventCleaner: UnbindFn | null = null;
 

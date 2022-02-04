@@ -2,7 +2,7 @@ import {Component} from 'solid-js';
 import * as styles from './terminal.css';
 import {sprinkles} from '../../theme/sprinkles.css';
 
-export const Terminal: Component<{}> = props => {
+export const Terminal: Component = props => {
   return (
     <div class={styles.wrapper}>
       <div class={styles.header}>
