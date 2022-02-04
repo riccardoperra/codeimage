@@ -19,7 +19,7 @@
     ],
     "paths": {
       "@codegram/ui": [
-        "./packages/codegram/src/index.ts"
+        "./packages/ui/src/index.ts"
       ]
     }
   }
