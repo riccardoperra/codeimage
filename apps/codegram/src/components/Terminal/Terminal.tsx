@@ -1,6 +1,8 @@
 import {Component} from 'solid-js';
 import * as styles from './terminal.css';
 import {sprinkles} from '../../theme/sprinkles.css';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {backgroundColorVar} from '../../theme/variables.css';
 
 export const Terminal: Component = props => {
   return (
@@ -9,15 +11,21 @@ export const Terminal: Component = props => {
         <div class={styles.headerIconRow}>
           <div
             class={styles.headerIconRowCircle}
-            style={{'--terminal-circle-color': '#ff5f57'}}
+            style={assignInlineVars({
+              [backgroundColorVar]: styles.terminalVars.controls.red,
+            })}
           />
           <div
             class={styles.headerIconRowCircle}
-            style={{'--terminal-circle-color': '#febc2e'}}
+            style={assignInlineVars({
+              [backgroundColorVar]: styles.terminalVars.controls.yellow,
+            })}
           />
           <div
             class={styles.headerIconRowCircle}
-            style={{'--terminal-circle-color': '#28c840'}}
+            style={assignInlineVars({
+              [backgroundColorVar]: styles.terminalVars.controls.green,
+            })}
           />
         </div>
       </div>
