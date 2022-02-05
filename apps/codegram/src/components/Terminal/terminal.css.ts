@@ -1,13 +1,26 @@
-import {style} from '@vanilla-extract/css';
+import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
 import {themeVars} from '../../theme/global.css';
+import {backgroundColorVar} from '../../theme/variables.css';
 
-export const wrapper = style({
-  position: 'relative',
+export const [terminalTheme, terminalVars] = createTheme({
+  controls: {
+    red: '#ff5f57',
+    yellow: '#febc2e',
+    green: '#28c840',
+  },
   backgroundColor: themeVars.backgroundColor.gray['800'],
-  overflow: 'hidden',
-  minWidth: '300px',
-  borderRadius: themeVars.borderRadius.lg,
 });
+
+export const wrapper = style([
+  terminalTheme,
+  {
+    position: 'relative',
+    backgroundColor: terminalVars.backgroundColor,
+    overflow: 'hidden',
+    minWidth: '300px',
+    borderRadius: themeVars.borderRadius.lg,
+  },
+]);
 
 export const content = style({
   position: 'relative',
@@ -44,7 +57,10 @@ export const headerIconRowCircle = style({
       width: '15px',
       height: '15px',
       borderRadius: themeVars.borderRadius.full,
-      backgroundColor: 'var(--terminal-circle-color)',
+      backgroundColor: fallbackVar(
+        backgroundColorVar,
+        themeVars.backgroundColor.gray['500'],
+      ),
     },
   },
 });
