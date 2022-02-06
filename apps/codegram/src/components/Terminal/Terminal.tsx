@@ -30,11 +30,7 @@ export const Terminal: Component = props => {
         </div>
       </div>
       <div class={styles.content}>
-        <div
-          class={sprinkles({
-            position: 'relative',
-          })}
-        >
+        <div class={sprinkles({position: 'relative'})}>
           <div>{props.children}</div>
         </div>
       </div>

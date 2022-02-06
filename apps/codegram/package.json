@@ -36,12 +36,13 @@
     "@codemirror/state": "^0.19.6",
     "@codemirror/text": "^0.19.6",
     "@codemirror/view": "^0.19.40",
-    "bind-event-listener": "^2.0.0",
-    "solid-js": "^1.3.3",
     "@codegram/ui": "workspace:*",
     "@vanilla-extract/css": "^1.6.8",
-    "@vanilla-extract/vite-plugin": "^3.1.2",
+    "@vanilla-extract/dynamic": "^2.0.2",
     "@vanilla-extract/sprinkles": "^1.3.3",
-    "@vanilla-extract/dynamic": "^2.0.2"
+    "@vanilla-extract/vite-plugin": "^3.1.2",
+    "bind-event-listener": "^2.0.0",
+    "solid-js": "^1.3.3",
+    "@local/solid-codemirror": "^1.0.0"
   }
 }
