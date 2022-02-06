@@ -17,7 +17,6 @@ export const wrapper = style([
     position: 'relative',
     backgroundColor: terminalVars.backgroundColor,
     overflow: 'hidden',
-    minWidth: '300px',
     borderRadius: themeVars.borderRadius.lg,
   },
 ]);
@@ -30,6 +29,7 @@ export const content = style({
   paddingBottom: themeVars.spacing['4'],
   paddingTop: themeVars.spacing['5'],
   paddingInlineStart: themeVars.spacing['4'],
+  paddingInlineEnd: themeVars.spacing['4'],
 });
 
 export const header = style({

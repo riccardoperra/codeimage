@@ -1,8 +1,8 @@
 .frame {
   --frame-width: 0px;
   width: var(--frame-width);
-  height: 150px;
-  background-color: gray;
+  height: auto;
+  background-color: #e2e8f0;
   padding: 128px;
   position: relative;
   min-width: 520px;
@@ -10,6 +10,7 @@
   max-width: 920px;
   user-select: none;
   z-index: 1;
+  box-sizing: border-box;
 }
 
 .dragControlPoints {
