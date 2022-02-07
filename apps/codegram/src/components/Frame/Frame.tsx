@@ -1,10 +1,11 @@
 import {batch, Component, createMemo, onCleanup, onMount} from 'solid-js';
 import {createStore} from 'solid-js/store';
-import styles from './Frame.module.scss';
 import {bindAll, UnbindFn} from 'bind-event-listener';
 import {noop} from '../../core/constants/noop';
+import * as styles from './Frame.css';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 
-export const Frame: Component = props => {
+export const Frame: Component<{background: string}> = props => {
   let el!: HTMLDivElement;
   let ownerDocumentEventCleaner: UnbindFn | null = null;
 
@@ -76,22 +77,17 @@ export const Frame: Component = props => {
   });
 
   return (
-    <div class={styles.frame} style={{'--frame-width': pxWidth()}} ref={el}>
-      <div class={styles.dragControlPoints}>
-        <div
-          classList={{
-            [styles.dragControlHandler]: true,
-            [styles.dragControlLeft]: true,
-          }}
-          onMouseDown={onMouseDown}
-        />
-        <div
-          classList={{
-            [styles.dragControlHandler]: true,
-            [styles.dragControlRight]: true,
-          }}
-          onMouseDown={onMouseDown}
-        />
+    <div
+      class={styles.container}
+      style={assignInlineVars({
+        [styles.frameVars.width]: pxWidth(),
+        [styles.frameVars.backgroundColor]: props.background,
+      })}
+      ref={el}
+    >
+      <div class={styles.dragControls}>
+        <div class={styles.dragControlLeft} onMouseDown={onMouseDown} />
+        <div class={styles.dragControlRight} onMouseDown={onMouseDown} />
       </div>
       {props.children}
     </div>
