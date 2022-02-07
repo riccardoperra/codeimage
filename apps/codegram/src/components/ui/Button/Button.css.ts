@@ -1,7 +1,7 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {themeVars} from '../../theme/global.css';
-import {backgroundColorVar, colorVar} from '../../theme/variables.css';
-import {recipe} from '@vanilla-extract/recipes';
+import {themeVars} from '../../../theme/global.css';
+import {backgroundColorVar, colorVar} from '../../../theme/variables.css';
+import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 
 export const [] = createTheme({});
 
@@ -41,7 +41,7 @@ export const buttonVariant = recipe({
   base: [button],
   variants: {
     // Button type
-    type: {
+    variant: {
       solid: {
         backgroundColor: backgroundColorVar,
         border: 'none',
@@ -89,4 +89,10 @@ export const buttonVariant = recipe({
       },
     },
   },
+  defaultVariants: {
+    variant: 'outline',
+    theme: 'primary',
+  },
 });
+
+export type ButtonVariants = RecipeVariants<typeof buttonVariant>;
