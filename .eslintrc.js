@@ -20,6 +20,12 @@ module.exports = {
       'error',
       {argsIgnorePattern: '^_', ignoreRestSiblings: true},
     ],
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
   },
 
   ignorePatterns: ['node_modules/*', 'dist/*'],
