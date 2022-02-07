@@ -3,7 +3,7 @@ import {Component} from 'solid-js';
 import {Button as ShButton} from 'solid-headless';
 import {ButtonProps as ShButtonProps} from 'solid-headless/dist/types/components/Button';
 
-type ButtonProps = ShButtonProps & styles.ButtonVariants & {};
+type ButtonProps = ShButtonProps & styles.ButtonVariants;
 
 export const Button: Component<ButtonProps> = props => {
   return (

@@ -1,4 +1,4 @@
-import {Observable, Subject, takeUntil, tap} from 'rxjs';
+import {Observable, Subject, takeUntil} from 'rxjs';
 import {onCleanup} from 'solid-js';
 import {createStore, reconcile} from 'solid-js/store';
 

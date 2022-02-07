@@ -3,7 +3,7 @@ import {ToggleProps as ShToggleProps} from 'solid-headless/dist/types/components
 import {Toggle as ShToggle} from 'solid-headless';
 import {Component} from 'solid-js';
 
-type ToggleProps = ShToggleProps & styles.ToggleVariants & {};
+type ToggleProps = ShToggleProps & styles.ToggleVariants;
 
 export const Toggle: Component<ToggleProps> = props => {
   return (

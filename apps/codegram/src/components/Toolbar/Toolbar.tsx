@@ -1,6 +1,5 @@
 import * as styles from './toolbar.css';
 import {Button} from '../ui/Button/Button';
-import {Toggle} from '../ui/Toggle/Toggle';
 import {sprinkles} from '../../theme/sprinkles.css';
 import {PaddingBox} from './PaddingBox';
 import {frameState, updatePadding} from '../../+state/frame.state';
