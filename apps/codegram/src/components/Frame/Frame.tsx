@@ -5,7 +5,10 @@ import {noop} from '../../core/constants/noop';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 
-export const Frame: Component<{background: string}> = props => {
+export const Frame: Component<{
+  background: string | null;
+  padding: number;
+}> = props => {
   let el!: HTMLDivElement;
   let ownerDocumentEventCleaner: UnbindFn | null = null;
 
@@ -81,7 +84,8 @@ export const Frame: Component<{background: string}> = props => {
       class={styles.container}
       style={assignInlineVars({
         [styles.frameVars.width]: pxWidth(),
-        [styles.frameVars.backgroundColor]: props.background,
+        [styles.frameVars.backgroundColor]: props.background ?? 'transparent',
+        [styles.frameVars.padding]: `${props.padding}px`,
       })}
       ref={el}
     >

@@ -3,6 +3,7 @@ import {backgroundColorVar} from '../../theme/variables.css';
 
 export const [frame, frameVars] = createTheme({
   backgroundColor: backgroundColorVar,
+  padding: '128px',
   width: '520px',
   minWidth: '520px',
   minHeight: '150px',
@@ -19,10 +20,11 @@ export const container = style([
     minWidth: frameVars.minWidth,
     minHeight: frameVars.minHeight,
     position: 'relative',
-    padding: 128,
+    padding: frameVars.padding,
     zIndex: 1,
     boxSizing: 'border-box',
     userSelect: 'none',
+    transition: 'background-color .2s, padding .2s',
   },
 ]);
 

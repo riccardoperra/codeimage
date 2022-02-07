@@ -22,7 +22,7 @@ const App = () => {
           margin: '30px 0',
         }}
       >
-        <Frame background={state.background!}>
+        <Frame padding={state.padding} background={state.background}>
           <Terminal>
             <CustomEditor />
           </Terminal>
