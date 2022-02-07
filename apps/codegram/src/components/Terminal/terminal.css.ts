@@ -8,7 +8,7 @@ export const [terminalTheme, terminalVars] = createTheme({
     yellow: '#febc2e',
     green: '#28c840',
   },
-  backgroundColor: themeVars.backgroundColor.gray['800'],
+  backgroundColor: themeVars.backgroundColor.gray['100'],
 });
 
 export const wrapper = style([
@@ -18,13 +18,13 @@ export const wrapper = style([
     backgroundColor: terminalVars.backgroundColor,
     overflow: 'hidden',
     borderRadius: themeVars.borderRadius.lg,
+    boxShadow: themeVars.boxShadow.lg,
   },
 ]);
 
 export const content = style({
   position: 'relative',
   overflow: 'auto',
-  color: themeVars.textColor.black,
   fontSize: themeVars.fontSize.base,
   paddingBottom: themeVars.spacing['4'],
   paddingTop: themeVars.spacing['5'],
@@ -37,7 +37,7 @@ export const header = style({
   alignItems: 'center',
   position: 'relative',
   height: '50px',
-  backgroundColor: 'rgba(255,255,255,0.06)',
+  backgroundColor: themeVars.backgroundColor.white,
 });
 
 export const headerIconRow = style({
