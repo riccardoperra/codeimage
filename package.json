@@ -9,6 +9,7 @@
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c .eslintrc.js --fix",
     "ui:build:watch": "pnpm build:watch --filter=\"@codegram/ui\"",
     "app:dev": "pnpm dev --filter=@codegram/app",
+    "lint": "pnpm lint --filter='@codegram/*'",
     "build:prod": "pnpm build --filter='@codegram/*'"
   },
   "private": true,
