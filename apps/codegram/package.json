@@ -45,6 +45,11 @@
     "bind-event-listener": "^2.0.0",
     "solid-js": "^1.3.3",
     "solid-codemirror": "^1.0.2",
-    "solid-headless": "^0.10.12"
+    "solid-headless": "^0.10.12",
+    "zustand": "^3.6.9",
+    "solid-zustand": "^1.2.0",
+    "rxjs": "^7.5.2",
+    "@ngneat/elf": "^1.0.2",
+    "@ngneat/effects": "^1.0.0"
   }
 }
