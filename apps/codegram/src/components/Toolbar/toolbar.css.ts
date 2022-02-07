@@ -17,7 +17,8 @@ export const wrapper = style([
     fontWeight: 'bold',
     zIndex: 30,
     top: 25,
-    boxShadow: themeVars.boxShadow['2xl'],
+    border: `${themeVars.borderWidth['default']} solid ${themeVars.borderColor.default}`,
+    boxShadow: themeVars.boxShadow['default'],
     borderRadius: themeVars.borderRadius.lg,
   },
 ]);
