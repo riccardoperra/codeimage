@@ -3,8 +3,12 @@ import {Terminal} from './components/Terminal/Terminal';
 import {Frame} from './components/Frame/Frame';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
+import {rx} from './+state/rx';
+import {frameState} from './+state/frame.state';
 
 const App = () => {
+  const state = rx(frameState);
+
   return (
     <div class={styles.App}>
       <Toolbar />
@@ -18,7 +22,7 @@ const App = () => {
           margin: '30px 0',
         }}
       >
-        <Frame>
+        <Frame background={state.background!}>
           <Terminal>
             <CustomEditor />
           </Terminal>
