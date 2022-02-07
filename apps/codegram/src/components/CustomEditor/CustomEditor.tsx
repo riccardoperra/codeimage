@@ -3,18 +3,10 @@ import {EditorView} from '@codemirror/view';
 import {javascript} from '@codemirror/lang-javascript';
 import {CodeMirror} from 'solid-codemirror';
 
-import {HighlightStyle, tags} from '@codemirror/highlight';
-
-const myHighlightStyle = HighlightStyle.define([
-  {tag: tags.keyword, color: '#fc6'},
-  {tag: tags.comment, color: '#f5d', fontStyle: 'italic'},
-]);
-
 export const CustomEditor = () => {
   const [value, setValue] = createSignal(
     'class name {\n' + '  constructor(params) {\n' + '    \n' + '  }\n' + '}',
   );
-  let ref: HTMLDivElement;
   const supportsLineWrap = EditorView.lineWrapping;
   const baseTheme = EditorView.theme(
     {
