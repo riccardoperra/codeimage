@@ -113,8 +113,8 @@ export const themeVars = createGlobalTheme(':root', {
     decimal: 'decimal',
   },
   margin: {
-    auto: 'auto',
     ...spacing,
+    auto: 'auto',
   },
   maxHeight: {
     full: '100%',
@@ -154,8 +154,8 @@ export const themeVars = createGlobalTheme(':root', {
   },
   textColor: colors,
   width: {
-    auto: 'auto',
     ...spacing,
+    auto: 'auto',
     '1/2': '50%',
     '1/3': '33.333333%',
     '2/3': '66.666667%',
