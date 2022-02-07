@@ -1,4 +1,4 @@
-import {createGlobalTheme} from '@vanilla-extract/css';
+import {createGlobalTheme, globalStyle} from '@vanilla-extract/css';
 import {colors, spacing} from '@codegram/ui';
 
 export const themeVars = createGlobalTheme(':root', {
@@ -193,5 +193,14 @@ export const themeVars = createGlobalTheme(':root', {
     '30': '30',
     '40': '40',
     '50': '50',
+  },
+});
+
+globalStyle('html, body', {
+  fontFamily: 'Inter, sans-serif',
+  '@supports': {
+    '(font-variation-settings: normal)': {
+      fontFamily: 'Inter var, sans-serif',
+    },
   },
 });
