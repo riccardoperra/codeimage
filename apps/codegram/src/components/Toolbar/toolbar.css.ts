@@ -2,7 +2,7 @@ import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '../../theme/global.css';
 
 export const [toolbarTheme, toolbarVars] = createTheme({
-  backgroundColor: themeVars.backgroundColor.white,
+  backgroundColor: themeVars.backgroundColor.gray['200'],
 });
 
 export const wrapper = style([
@@ -10,15 +10,15 @@ export const wrapper = style([
   {
     position: 'fixed',
     backgroundColor: toolbarVars.backgroundColor,
-    padding: '24px',
+    padding: '12px 18px',
+    display: 'flex',
+    alignItems: 'center',
     width: '700px',
     color: themeVars.textColor.blue['900'],
     fontSize: '18px',
     fontWeight: 'bold',
     zIndex: 30,
     top: 25,
-    border: `${themeVars.borderWidth['default']} solid ${themeVars.borderColor.default}`,
-    boxShadow: themeVars.boxShadow['default'],
     borderRadius: themeVars.borderRadius.lg,
   },
 ]);

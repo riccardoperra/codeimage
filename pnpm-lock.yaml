@@ -50,6 +50,7 @@ importers:
       '@codemirror/lang-python': ^0.19.4
       '@codemirror/state': ^0.19.6
       '@codemirror/text': ^0.19.6
+      '@codemirror/theme-one-dark': ^0.19.1
       '@codemirror/view': ^0.19.40
       '@ngneat/effects': ^1.0.0
       '@ngneat/elf': ^1.0.2
@@ -86,6 +87,7 @@ importers:
       '@codemirror/lang-python': 0.19.4
       '@codemirror/state': 0.19.6
       '@codemirror/text': 0.19.6
+      '@codemirror/theme-one-dark': 0.19.1
       '@codemirror/view': 0.19.42
       '@ngneat/effects': 1.0.0
       '@ngneat/elf': 1.0.2_typescript@4.5.5
@@ -864,6 +866,14 @@ packages:
 
   /@codemirror/text/0.19.6:
     resolution: {integrity: sha512-T9jnREMIygx+TPC1bOuepz18maGq/92q2a+n4qTqObKwvNMg+8cMTslb8yxeEDEq7S3kpgGWxgO1UWbQRij0dA==}
+    dev: false
+
+  /@codemirror/theme-one-dark/0.19.1:
+    resolution: {integrity: sha512-8gc4c2k2o/EhyHoWkghCxp5vyDT96JaFGtRy35PHwIom0LZdx7aU4AbDUnITvwiFB+0+i54VO+WQjBqgTyJvqg==}
+    dependencies:
+      '@codemirror/highlight': 0.19.7
+      '@codemirror/state': 0.19.6
+      '@codemirror/view': 0.19.42
     dev: false
 
   /@codemirror/tooltip/0.19.13:

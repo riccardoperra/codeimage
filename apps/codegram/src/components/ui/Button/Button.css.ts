@@ -12,7 +12,6 @@ export const button = style([
     overflow: 'hidden',
     height: '40px',
     padding: '0 16px',
-    margin: 0,
     borderRadius: '12px',
     cursor: 'pointer',
     fontSize: themeVars.fontSize.base,

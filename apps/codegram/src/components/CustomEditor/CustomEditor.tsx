@@ -3,7 +3,7 @@ import {createSignal} from 'solid-js';
 import {EditorView} from '@codemirror/view';
 
 export const CustomEditor = () => {
-  const [value, setValue] = createSignal(new Array(1000).fill('a').join(''));
+  const [value, setValue] = createSignal('');
   const supportsLineWrap = EditorView.lineWrapping;
   const baseTheme = EditorView.theme(
     {
@@ -31,6 +31,7 @@ export const CustomEditor = () => {
       extensions={[baseTheme, supportsLineWrap]}
       editable={true}
       basicSetup={true}
+      placeholder={'// Text here'}
       onChange={setValue}
     />
   );
