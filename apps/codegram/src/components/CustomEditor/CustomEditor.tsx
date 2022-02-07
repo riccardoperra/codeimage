@@ -1,9 +1,9 @@
-import {CodeMirror} from '@local/solid-codemirror';
+import {CodeMirror} from 'solid-codemirror';
 import {createSignal} from 'solid-js';
 import {EditorView} from '@codemirror/view';
 
 export const CustomEditor = () => {
-  const [value, setValue] = createSignal('Hello world');
+  const [value, setValue] = createSignal(new Array(1000).fill('a').join(''));
   const supportsLineWrap = EditorView.lineWrapping;
   const baseTheme = EditorView.theme(
     {
