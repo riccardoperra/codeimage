@@ -10,11 +10,11 @@ export const button = style([
     position: 'relative',
     display: 'inline-flex',
     overflow: 'hidden',
-    height: '40px',
-    padding: '0 16px',
-    borderRadius: '12px',
+    height: '36px',
+    padding: `0 ${themeVars.spacing['3']}`,
+    borderRadius: themeVars.borderRadius.full,
     cursor: 'pointer',
-    fontSize: themeVars.fontSize.base,
+    fontSize: themeVars.fontSize.sm,
     fontWeight: themeVars.fontWeight.medium,
     lineHeight: 1,
     fontFamily: 'inherit',
@@ -62,13 +62,13 @@ export const buttonVariant = recipe({
     theme: {
       primary: {
         vars: {
-          [backgroundColorVar]: themeVars.backgroundColor.indigo['500'],
+          [backgroundColorVar]: themeVars.backgroundColor.blue['500'],
           [colorVar]: themeVars.textColor.white,
         },
         selectors: {
           '&:hover:not(:disabled)': {
             vars: {
-              [backgroundColorVar]: themeVars.backgroundColor.indigo['700'],
+              [backgroundColorVar]: themeVars.backgroundColor.blue['700'],
             },
           },
         },

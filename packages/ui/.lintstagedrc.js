@@ -11,6 +11,7 @@ module.exports = {
   '.lintstagedrc.js': filenames => {
     const filesAsString = filenames.join(' ');
     return [
+      `pnpm lint`,
       `pnpm pre-commit-prettier ${filesAsString}`,
       `pnpm pre-commit-eslint ${filesAsString}`,
     ];
