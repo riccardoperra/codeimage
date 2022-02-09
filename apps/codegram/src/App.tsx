@@ -1,34 +1,29 @@
-import styles from './App.module.css';
 import {Terminal} from './components/Terminal/Terminal';
 import {Frame} from './components/Frame/Frame';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
-import {Toolbar} from './components/Toolbar/Toolbar';
 import {rx} from './+state/rx';
 import {frameState} from './+state/frame.state';
+import {Canvas} from './components/Scaffold/Canvas/Canvas';
+import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
+import {Scaffold} from './components/Scaffold/Scaffold';
+import {Header} from './components/Scaffold/Header/Header';
 
 const App = () => {
   const state = rx(frameState);
 
   return (
-    <div class={styles.App}>
-      <Toolbar />
+    <Scaffold>
+      <Header />
 
-      <div
-        style={{
-          flex: '1',
-          display: 'flex',
-          'align-items': 'center',
-          'justify-content': 'center',
-          margin: '30px 0',
-        }}
-      >
+      <Canvas>
         <Frame padding={state.padding} background={state.background}>
           <Terminal>
             <CustomEditor />
           </Terminal>
         </Frame>
-      </div>
-    </div>
+      </Canvas>
+      <Sidebar></Sidebar>
+    </Scaffold>
   );
 };
 

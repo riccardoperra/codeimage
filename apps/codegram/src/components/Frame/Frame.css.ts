@@ -1,11 +1,12 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {backgroundColorVar} from '../../theme/variables.css';
+import {themeVars} from '../../theme/global.css';
 
 export const [frame, frameVars] = createTheme({
   backgroundColor: backgroundColorVar,
   padding: '128px',
   width: '520px',
-  minWidth: '520px',
+  minWidth: '1200px',
   minHeight: '150px',
   maxWidth: '920px',
   controlHandleSize: '24px',
@@ -20,6 +21,7 @@ export const container = style([
     minWidth: frameVars.minWidth,
     minHeight: frameVars.minHeight,
     position: 'relative',
+    borderRadius: themeVars.borderRadius.lg,
     padding: frameVars.padding,
     zIndex: 1,
     boxSizing: 'border-box',
