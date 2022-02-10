@@ -6,7 +6,7 @@ export const [frame, frameVars] = createTheme({
   backgroundColor: backgroundColorVar,
   padding: '128px',
   width: '520px',
-  minWidth: '1200px',
+  minWidth: '700px',
   minHeight: '150px',
   maxWidth: '920px',
   controlHandleSize: '24px',

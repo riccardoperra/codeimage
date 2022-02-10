@@ -10,12 +10,9 @@ export const [sidebarTheme, sidebarVars] = createTheme({
 export const sidebar = style([
   sidebarTheme,
   {
-    position: 'fixed',
-    top: sidebarVars.topOffset,
-    right: 0,
     height: '100%',
-    borderLeft: `1px solid ${themeVars.borderColor.default}`,
-    width: sidebarVars.width,
+    borderRight: `1px solid ${themeVars.borderColor.default}`,
+    flex: `0 0 ${sidebarVars.width}`,
     backgroundColor: themeVars.backgroundColor.white,
     zIndex: 0,
   },

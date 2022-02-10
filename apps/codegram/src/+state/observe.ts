@@ -1,18 +1,26 @@
 import {Observable, Subject, takeUntil} from 'rxjs';
-import {onCleanup} from 'solid-js';
+import {createSignal, onCleanup} from 'solid-js';
 import {createStore, reconcile} from 'solid-js/store';
 
-export function rx<T>(
+export function observe<T>(
+  input: Observable<T>,
+  defaultValue?: T,
+  destroy$ = onCleanup$(),
+) {
+  const [state, setState] = createSignal<T>(defaultValue as T);
+  input.pipe(takeUntil(destroy$)).subscribe(value => setState(() => value));
+  return state;
+}
+
+export function observeState<T extends Record<string, unknown>>(
   input: Observable<T>,
   defaultValue?: T,
   destroy$ = onCleanup$(),
 ) {
   const [state, setState] = createStore<T>(defaultValue as T);
-
   input
     .pipe(takeUntil(destroy$))
     .subscribe(value => setState(reconcile(value)));
-
   return state;
 }
 

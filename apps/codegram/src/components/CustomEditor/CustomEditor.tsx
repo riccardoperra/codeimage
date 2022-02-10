@@ -1,28 +1,12 @@
-import {createSignal} from 'solid-js';
 import {EditorView} from '@codemirror/view';
 import {javascript} from '@codemirror/lang-javascript';
 import {CodeMirror} from 'solid-codemirror';
+import {code$, setCode} from '../../+state/code.state';
+import {observe} from '../../+state/observe';
 
 export const CustomEditor = () => {
-  const [value, setValue] = createSignal(
-    `
-    export function Test() {
-  return (
-    <>
-      <CodeMirror
-        class={'cm-s-eclipse'}
-        value={value()}
-        onChange={setValue}
-        extensions={[baseTheme, supportsLineWrap, javascript()]}
-        editable={true}
-        basicSetup={true}
-      />
-    </>
-  );
-};
+  const code = observe(code$);
 
-    `,
-  );
   const supportsLineWrap = EditorView.lineWrapping;
   const baseTheme = EditorView.theme({
     '&': {
@@ -31,7 +15,7 @@ export const CustomEditor = () => {
     },
     '.cm-activeLine': {
       backgroundColor: 'transparent',
-      color: 'white',
+      color: 'black',
     },
     '.cm-content': {
       fontFamily: 'Source Code Pro, monospace',
@@ -46,8 +30,8 @@ export const CustomEditor = () => {
     <>
       <CodeMirror
         class={'cm-s-eclipse'}
-        value={value()}
-        onChange={setValue}
+        value={code()}
+        onChange={value => setCode(value)}
         extensions={[baseTheme, supportsLineWrap, javascript()]}
         editable={true}
         basicSetup={true}
