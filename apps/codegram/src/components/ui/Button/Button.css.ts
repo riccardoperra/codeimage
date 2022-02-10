@@ -12,7 +12,7 @@ export const button = style([
     overflow: 'hidden',
     height: '36px',
     padding: `0 ${themeVars.spacing['3']}`,
-    borderRadius: themeVars.borderRadius.full,
+    borderRadius: themeVars.borderRadius.lg,
     cursor: 'pointer',
     fontSize: themeVars.fontSize.sm,
     fontWeight: themeVars.fontWeight.medium,
