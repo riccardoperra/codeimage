@@ -1,8 +1,8 @@
 import {EditorView} from '@codemirror/view';
 import {javascript} from '@codemirror/lang-javascript';
 import {CodeMirror} from 'solid-codemirror';
-import {code$, setCode} from '../../+state/code.state';
-import {observe} from '../../+state/observe';
+import {code$, setCode} from '../../state/code.state';
+import {observe} from '../../state/observe';
 
 export const CustomEditor = () => {
   const code = observe(code$);

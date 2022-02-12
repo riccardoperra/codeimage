@@ -1,14 +1,13 @@
 import * as styles from './toolbar.css';
 import {Button} from '../ui/Button/Button';
 import {sprinkles} from '../../theme/sprinkles.css';
-import {PaddingBox} from './PaddingBox';
-import {frameState, updatePadding} from '../../+state/frame.state';
-import {observe} from '../../+state/observe';
-import {Disc} from 'solid-headless';
+import {Component} from 'solid-js';
+import {exportImage} from '../../state/frame.state';
 
-export const Toolbar = () => {
+export const Toolbar: Component<{
+  canvasRef: HTMLElement | undefined;
+}> = props => {
   const sizes = [16, 32, 64, 128];
-  const state = observe(frameState);
 
   return (
     <div class={styles.wrapper}>
@@ -110,34 +109,11 @@ export const Toolbar = () => {
         >
           <Button
             class={sprinkles({
-              marginRight: '2',
-            })}
-            variant={'outline'}
-            theme={'primary'}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              style={{height: '20px', width: '20px'}}
-              fill="white"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width={2}
-                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-              />
-            </svg>
-            <span class={sprinkles({marginLeft: '2'})}>Share</span>
-          </Button>
-
-          <Button
-            class={sprinkles({
               marginLeft: 'auto',
             })}
             variant={'solid'}
             theme={'primary'}
+            onClick={() => exportImage(props.canvasRef as HTMLElement)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
