@@ -25,7 +25,7 @@ export const Text: Component<TextProps> = props => {
     <Dynamic
       component={props.as ?? 'span'}
       class={`${textStyles()} ${props.class || ''}`}
-      {...omitProps(props, ['as', 'children'])}
+      {...omitProps(props, ['as', 'children', 'class'])}
     >
       {props.children}
     </Dynamic>
