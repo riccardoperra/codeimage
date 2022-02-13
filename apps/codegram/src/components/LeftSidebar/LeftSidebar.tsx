@@ -13,6 +13,7 @@ import {
   updateVisibility,
 } from '../../state/frame.state';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
+import {ShadowField} from '../ShadowField/ShadowField';
 
 export const FrameSidebar = () => {
   const state = from(frameState);
@@ -210,14 +211,19 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelRow}>
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
-          Extension
-        </Text>
-      </div>
-
-      <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
           Shadows
         </Text>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            flex: '1 0 0',
+            'grid-column': '2 / -1',
+          }}
+        >
+          <ShadowField />
+        </div>
       </div>
 
       <div class={styles.panelRow}>

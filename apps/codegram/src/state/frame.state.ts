@@ -19,6 +19,7 @@ interface FrameState {
 
   // Terminal
   accentVisible: boolean;
+  shadow: string;
 
   exportLoading: boolean;
 }
@@ -33,8 +34,9 @@ const {state, config} = createState(
 
     visible: true,
     opacity: 100,
+    shadow: '',
 
-    accentVisible: false,
+    accentVisible: true,
   }),
 );
 
@@ -70,6 +72,10 @@ export function updatePadding(padding: number) {
 
 export function updateAutoWidth(autoWidth: boolean) {
   store.update(state => ({...state, autoWidth}));
+}
+
+export function updateBoxShadow(shadow: string) {
+  store.update(state => ({...state, shadow}));
 }
 
 export function updateAccentVisibility(accent: boolean) {

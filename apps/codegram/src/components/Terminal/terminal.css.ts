@@ -11,6 +11,7 @@ export const [terminalTheme, terminalVars] = createTheme({
   headerHeight: '50px',
   headerBackgroundColor: themeVars.backgroundColor.white,
   backgroundColor: themeVars.backgroundColor.white,
+  boxShadow: themeVars.boxShadow.lg,
 });
 
 export const wrapper = style([
@@ -20,7 +21,8 @@ export const wrapper = style([
     backgroundColor: terminalVars.backgroundColor,
     overflow: 'hidden',
     borderRadius: '12px',
-    boxShadow: themeVars.boxShadow.lg,
+    boxShadow: terminalVars.boxShadow,
+    transition: 'box-shadow .2s',
   },
 ]);
 
