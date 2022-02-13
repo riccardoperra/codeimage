@@ -5,6 +5,7 @@ import {RangeField} from '../ui/RangeField/RangeField';
 import {createMemo, from, Show} from 'solid-js';
 import {
   frameState,
+  updateAccentVisibility,
   updateAutoWidth,
   updateOpacity,
   updatePadding,
@@ -21,6 +22,7 @@ export const FrameSidebar = () => {
   const autoWidth = createMemo(() => state().autoWidth);
   const padding = createMemo(() => state().padding);
   const visible = createMemo(() => state().visible);
+  const tabAccent = createMemo(() => state().accentVisible);
 
   return (
     <div class={styles.sidebar}>
@@ -185,6 +187,25 @@ export const FrameSidebar = () => {
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
           Tab accent
         </Text>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            flex: '1 0 0',
+            'grid-column': '2 / -1',
+          }}
+        >
+          <SegmentedField
+            size={'xs'}
+            value={tabAccent()}
+            onChange={updateAccentVisibility}
+            items={[
+              {label: 'Yes', value: true},
+              {label: 'No', value: false},
+            ]}
+          />
+        </div>
       </div>
 
       <div class={styles.panelRow}>

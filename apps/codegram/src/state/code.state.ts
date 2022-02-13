@@ -10,7 +10,7 @@ const {state, config} = createState(
   }),
 );
 
-const store = new Store({name: 'frame', state, config});
+const store = new Store({name: 'terminal', state, config});
 
 export const useTerminalState = () => {
   return {store, state, config};

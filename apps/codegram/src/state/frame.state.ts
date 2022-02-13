@@ -16,6 +16,10 @@ interface FrameState {
   // Background
   visible: boolean;
   opacity: number;
+
+  // Terminal
+  accentVisible: boolean;
+
   exportLoading: boolean;
 }
 
@@ -29,6 +33,8 @@ const {state, config} = createState(
 
     visible: true,
     opacity: 100,
+
+    accentVisible: false,
   }),
 );
 
@@ -64,6 +70,10 @@ export function updatePadding(padding: number) {
 
 export function updateAutoWidth(autoWidth: boolean) {
   store.update(state => ({...state, autoWidth}));
+}
+
+export function updateAccentVisibility(accent: boolean) {
+  store.update(state => ({...state, accentVisible: accent}));
 }
 
 export function exportImage(node: HTMLElement) {

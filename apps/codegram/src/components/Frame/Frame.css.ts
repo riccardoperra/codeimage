@@ -26,7 +26,6 @@ export const container = style([
     borderRadius: frameVars.radius,
     padding: frameVars.padding,
     zIndex: 1,
-    overflow: 'hidden',
     boxSizing: 'border-box',
     userSelect: 'none',
     transition: 'background-color .2s, padding .2s, border-radius .2s',
@@ -42,6 +41,8 @@ export const overlay = style({
   visibility: frameVars.visibility,
   height: '100%',
   width: '100%',
+  borderRadius: 'inherit',
+  transition: 'backgroundColor .2s',
 });
 
 export const dragControls = style({
@@ -79,7 +80,7 @@ export const dragControlHandler = style({
     height: '6px',
     borderRadius: '3px',
     transform: 'translate(-50%, -50%)',
-    backgroundColor: 'white',
+    backgroundColor: themeVars.backgroundColor.gray['800'],
     transition: 'transform .1s ease',
   },
 });

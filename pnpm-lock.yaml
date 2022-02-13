@@ -54,6 +54,7 @@ importers:
       '@codemirror/view': ^0.19.40
       '@ngneat/effects': ^1.0.0
       '@ngneat/elf': ^1.0.2
+      '@ngneat/elf-devtools': 1.2.0
       '@types/downloadjs': 1.4.3
       '@vanilla-extract/css': ^1.6.8
       '@vanilla-extract/dynamic': ^2.0.2
@@ -97,6 +98,7 @@ importers:
       '@codemirror/view': 0.19.42
       '@ngneat/effects': 1.0.0
       '@ngneat/elf': 1.0.2_typescript@4.5.5
+      '@ngneat/elf-devtools': 1.2.0
       '@vanilla-extract/css': 1.6.8
       '@vanilla-extract/dynamic': 2.0.2
       '@vanilla-extract/recipes': 0.2.3_@vanilla-extract+css@1.6.8
@@ -1210,6 +1212,10 @@ packages:
       rxjs: 7.5.2
       ts-action: 11.0.0
       ts-action-operators: 9.1.2_rxjs@7.5.2+ts-action@11.0.0
+    dev: false
+
+  /@ngneat/elf-devtools/1.2.0:
+    resolution: {integrity: sha512-0mnW7O9qP6qs45abzTCkk5jI9tBsxtQlMizMJCD+HvHHfQk1l5Z7w9PyBhX7hrD5pw0xYc3XE5fuEzQSzP6Jjg==}
     dev: false
 
   /@ngneat/elf/1.0.2_typescript@4.5.5:
