@@ -7,6 +7,7 @@ import {
   frameState,
   updateAccentVisibility,
   updateAutoWidth,
+  updateBackground,
   updateOpacity,
   updatePadding,
   updateRadius,
@@ -14,10 +15,12 @@ import {
 } from '../../state/frame.state';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {ShadowField} from '../ShadowField/ShadowField';
+import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
 
 export const FrameSidebar = () => {
   const state = from(frameState);
 
+  const background = createMemo(() => state().background);
   const radius = createMemo(() => state().radius);
   const opacity = createMemo(() => state().opacity);
   const autoWidth = createMemo(() => state().autoWidth);
@@ -106,12 +109,6 @@ export const FrameSidebar = () => {
         </div>
       </div>
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
-          Color
-        </Text>
-      </div>
-
       <div class={styles.panelHeader}>
         <Text size="sm" weight="semibold">
           Background
@@ -173,6 +170,18 @@ export const FrameSidebar = () => {
           <Text as="div" size={'sm'} class={styles.titleWrapper}>
             Color
           </Text>
+
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              height: '100%',
+              flex: '1 0 0',
+              'grid-column': '2 / -1',
+            }}
+          >
+            <ColorPicker onChange={updateBackground} value={background()} />
+          </div>
         </div>
       </Show>
 
