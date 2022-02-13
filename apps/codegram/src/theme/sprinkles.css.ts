@@ -29,6 +29,7 @@ const responsiveProperties = defineProperties({
     fontSize: themeVars.fontSize,
     lineHeight: themeVars.lineHeight,
     textAlign: ['center'],
+    boxShadow: themeVars.boxShadow,
   },
   shorthands: {
     padding: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'],
