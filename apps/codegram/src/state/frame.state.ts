@@ -1,6 +1,6 @@
 import {createState, Store, withProps} from '@ngneat/elf';
 import {themeVars} from '../theme/global.css';
-import {toJpeg, toPng} from 'html-to-image';
+import {toPng} from 'html-to-image';
 import download from 'downloadjs';
 import {finalize, from} from 'rxjs';
 
