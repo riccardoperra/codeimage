@@ -7,8 +7,6 @@ import {exportImage} from '../../state/frame.state';
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
-  const sizes = [16, 32, 64, 128];
-
   return (
     <div class={styles.wrapper}>
       <div class="flex flex-col gap-1 items-center text-xs">

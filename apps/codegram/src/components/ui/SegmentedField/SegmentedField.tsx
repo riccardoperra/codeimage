@@ -1,5 +1,5 @@
 import * as styles from './SegmentedField.css';
-import {Component, createMemo, For} from 'solid-js';
+import {createMemo, For, JSX} from 'solid-js';
 import clsx from 'clsx';
 import {useText, UseTextProps} from '../Text/useText';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -16,7 +16,7 @@ interface SegmentedFieldProps<T> {
   size?: UseTextProps['size'];
 }
 
-export const SegmentedField: Component<SegmentedFieldProps<any>> = props => {
+export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
   const segmentWidth = createMemo(() => `calc(100% / ${props.items.length})`);
 
   const activeIndex = createMemo(() =>
@@ -56,4 +56,4 @@ export const SegmentedField: Component<SegmentedFieldProps<any>> = props => {
       </div>
     </div>
   );
-};
+}

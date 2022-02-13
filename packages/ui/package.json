@@ -2,11 +2,11 @@
   "name": "@codegram/ui",
   "version": "0.0.1",
   "module": "./dist/ui.es.js",
-  "types": "./dist/src/lib/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/ui.es.js",
-      "types": "./dist/src/lib/index.d.ts"
+      "types": "./dist/src/index.d.ts"
     }
   },
   "scripts": {
