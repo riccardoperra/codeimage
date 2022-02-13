@@ -52,6 +52,8 @@ importers:
       '@codemirror/text': ^0.19.6
       '@codemirror/theme-one-dark': ^0.19.1
       '@codemirror/view': ^0.19.40
+      '@floating-ui/core': ^0.4.0
+      '@floating-ui/dom': ^0.2.0
       '@ngneat/effects': ^1.0.0
       '@ngneat/elf': ^1.0.2
       '@ngneat/elf-devtools': 1.2.0
@@ -96,6 +98,8 @@ importers:
       '@codemirror/text': 0.19.6
       '@codemirror/theme-one-dark': 0.19.1
       '@codemirror/view': 0.19.42
+      '@floating-ui/core': 0.4.0
+      '@floating-ui/dom': 0.2.0
       '@ngneat/effects': 1.0.0
       '@ngneat/elf': 1.0.2_typescript@4.5.5
       '@ngneat/elf-devtools': 1.2.0
@@ -1103,6 +1107,16 @@ packages:
       - supports-color
     dev: true
 
+  /@floating-ui/core/0.4.0:
+    resolution: {integrity: sha512-99Pnb5T2S7PSE8rKHD5fZWWnXE3a2xG9E8eQm8SIMYWJyJoHDJIt0b9SK3UjetWFcepxVG+ZMDxcfbamyx+HSg==}
+    dev: false
+
+  /@floating-ui/dom/0.2.0:
+    resolution: {integrity: sha512-hNhTbImiJ8SH9rHsP0qcE9IVxn/maMhwWA5d17p7EkEzVdciayB664Qy2Vxa8RxY/8avE8iVKkfE8sIeg34J0g==}
+    dependencies:
+      '@floating-ui/core': 0.4.0
+    dev: false
+
   /@humanwhocodes/config-array/0.9.3:
     resolution: {integrity: sha512-3xSMlXHh03hCcCmFc0rbKp3Ivt2PFEJnQUJDDMTJQ2wkECZWdq4GePs2ctc5H8zV+cHPaq8k2vU8mrQjA6iHdQ==}
     engines: {node: '>=10.10.0'}
@@ -1500,7 +1514,7 @@ packages:
       outdent: 0.8.0
       postcss: 8.4.6
       postcss-load-config: 3.1.1
-      vite: 2.7.13_sass@1.49.7
+      vite: 2.7.13
     transitivePeerDependencies:
       - ts-node
 
