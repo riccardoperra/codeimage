@@ -14,7 +14,6 @@ interface SegmentedFieldProps<T> {
   onChange: (value: T) => void;
   items: readonly SegmentedFieldItem<T>[];
   size?: UseTextProps['size'];
-  class: string;
 }
 
 export const SegmentedField: Component<SegmentedFieldProps<any>> = props => {
@@ -33,7 +32,7 @@ export const SegmentedField: Component<SegmentedFieldProps<any>> = props => {
   );
 
   return (
-    <div class={clsx(styles.wrapper, props.class)}>
+    <div class={clsx(styles.wrapper)}>
       <div class={styles.box}>
         <div
           style={assignInlineVars({
