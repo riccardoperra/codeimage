@@ -35,7 +35,7 @@ export const RangeField: Component<RangeFieldProps> = props => {
       onInput={onChange}
       onChange={onChange}
       type={'range'}
-      {...omitProps(props, ['class', 'onInput', 'type', 'value', 'onChange'])}
+      {...omitProps(props, ['class', 'type', 'value', 'onChange'])}
       style={assignInlineVars({
         [styles.rangeVars.rangeProgress]: progress(),
       })}

@@ -8,6 +8,7 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 export const Frame: Component<{
   background: string | null;
   padding: number;
+  radius: number;
 }> = props => {
   let el!: HTMLDivElement;
   let ownerDocumentEventCleaner: UnbindFn | null = null;
@@ -86,6 +87,7 @@ export const Frame: Component<{
         [styles.frameVars.width]: pxWidth(),
         [styles.frameVars.backgroundColor]: props.background ?? 'transparent',
         [styles.frameVars.padding]: `${props.padding}px`,
+        [styles.frameVars.radius]: `${props.radius}px`,
       })}
       ref={el}
     >

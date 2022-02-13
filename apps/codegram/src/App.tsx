@@ -23,7 +23,11 @@ const App = () => {
         <Toolbar canvasRef={frameRef()} />
 
         <div ref={setFrameRef}>
-          <Frame padding={state().padding} background={state().background}>
+          <Frame
+            padding={state().padding}
+            radius={state().radius}
+            background={state().background}
+          >
             <Terminal>
               <CustomEditor />
             </Terminal>
