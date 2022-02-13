@@ -2,12 +2,14 @@ import * as styles from './LeftSidebar.css';
 import {Text} from '../ui/Text/Text';
 import {TextField} from '../ui/TextField/TextField';
 import {RangeField} from '../ui/RangeField/RangeField';
-import {createMemo, from} from 'solid-js';
+import {createMemo, from, Show} from 'solid-js';
 import {
   frameState,
   updateAutoWidth,
+  updateOpacity,
   updatePadding,
   updateRadius,
+  updateVisibility,
 } from '../../state/frame.state';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 
@@ -15,8 +17,10 @@ export const FrameSidebar = () => {
   const state = from(frameState);
 
   const radius = createMemo(() => state().radius);
+  const opacity = createMemo(() => state().opacity);
   const autoWidth = createMemo(() => state().autoWidth);
   const padding = createMemo(() => state().padding);
+  const visible = createMemo(() => state().visible);
 
   return (
     <div class={styles.sidebar}>
@@ -113,21 +117,61 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelRow}>
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
-          Opacity
-        </Text>
-      </div>
-
-      <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
           Visible
         </Text>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            flex: '1 0 0',
+            'grid-column': '2 / -1',
+          }}
+        >
+          <SegmentedField
+            size={'xs'}
+            value={visible()}
+            onChange={updateVisibility}
+            items={[
+              {label: 'Yes', value: true},
+              {label: 'No', value: false},
+            ]}
+          />
+        </div>
       </div>
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
-          Color
-        </Text>
-      </div>
+      <Show when={visible()}>
+        <div class={styles.panelRow}>
+          <Text as="div" size={'sm'} class={styles.titleWrapper}>
+            Opacity
+          </Text>
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              height: '100%',
+              flex: '1 0 0',
+              'grid-column': '2 / -1',
+            }}
+          >
+            <RangeField
+              value={opacity()}
+              min={0}
+              disabled={!visible()}
+              max={100}
+              onChange={updateOpacity}
+            />
+          </div>
+        </div>
+      </Show>
+
+      <Show when={visible()}>
+        <div class={styles.panelRow}>
+          <Text as="div" size={'sm'} class={styles.titleWrapper}>
+            Color
+          </Text>
+        </div>
+      </Show>
 
       {/*{ Terminal }*/}
 

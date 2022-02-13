@@ -6,6 +6,8 @@ export const [frame, frameVars] = createTheme({
   backgroundColor: backgroundColorVar,
   radius: themeVars.borderRadius.lg,
   padding: '128px',
+  opacity: '100%',
+  visibility: 'visible',
   width: '520px',
   minWidth: '700px',
   minHeight: '150px',
@@ -17,7 +19,6 @@ export const [frame, frameVars] = createTheme({
 export const container = style([
   frame,
   {
-    backgroundColor: frameVars.backgroundColor,
     width: frameVars.width,
     minWidth: frameVars.minWidth,
     minHeight: frameVars.minHeight,
@@ -25,11 +26,23 @@ export const container = style([
     borderRadius: frameVars.radius,
     padding: frameVars.padding,
     zIndex: 1,
+    overflow: 'hidden',
     boxSizing: 'border-box',
     userSelect: 'none',
     transition: 'background-color .2s, padding .2s, border-radius .2s',
   },
 ]);
+
+export const overlay = style({
+  position: 'absolute',
+  left: 0,
+  top: 0,
+  backgroundColor: frameVars.backgroundColor,
+  opacity: frameVars.opacity,
+  visibility: frameVars.visibility,
+  height: '100%',
+  width: '100%',
+});
 
 export const dragControls = style({
   position: 'absolute',
