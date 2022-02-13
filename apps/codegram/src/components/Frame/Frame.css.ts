@@ -4,6 +4,7 @@ import {themeVars} from '../../theme/global.css';
 
 export const [frame, frameVars] = createTheme({
   backgroundColor: backgroundColorVar,
+  radius: themeVars.borderRadius.lg,
   padding: '128px',
   width: '520px',
   minWidth: '700px',
@@ -21,7 +22,7 @@ export const container = style([
     minWidth: frameVars.minWidth,
     minHeight: frameVars.minHeight,
     position: 'relative',
-    borderRadius: themeVars.borderRadius.lg,
+    borderRadius: frameVars.radius,
     padding: frameVars.padding,
     zIndex: 1,
     boxSizing: 'border-box',
