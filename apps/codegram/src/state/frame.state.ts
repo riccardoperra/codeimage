@@ -1,6 +1,6 @@
 import {createState, Store, withProps} from '@ngneat/elf';
 import {themeVars} from '../theme/global.css';
-import {toJpeg} from 'html-to-image';
+import {toJpeg, toPng} from 'html-to-image';
 import download from 'downloadjs';
 import {finalize, from} from 'rxjs';
 
@@ -10,7 +10,7 @@ interface FrameState {
   background: BackgroundState;
   padding: number;
   radius: number;
-
+  autoWidth: boolean;
   exportLoading: boolean;
 }
 
@@ -18,7 +18,8 @@ const {state, config} = createState(
   withProps<FrameState>({
     background: themeVars.backgroundColor.gray['300'],
     padding: 128,
-    radius: 16,
+    radius: 24,
+    autoWidth: true,
     exportLoading: false,
   }),
 );
@@ -42,9 +43,13 @@ export function updatePadding(padding: number) {
   store.update(state => ({...state, padding}));
 }
 
+export function updateAutoWidth(autoWidth: boolean) {
+  store.update(state => ({...state, autoWidth}));
+}
+
 export function exportImage(node: HTMLElement) {
   store.update(state => ({...state, exportLoading: true}));
-  from(toJpeg(node))
+  from(toPng(node))
     .pipe(finalize(() => console.log('test')))
     .subscribe(result => {
       download(result, 'file.png');

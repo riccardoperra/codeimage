@@ -2,13 +2,21 @@ import * as styles from './LeftSidebar.css';
 import {Text} from '../ui/Text/Text';
 import {TextField} from '../ui/TextField/TextField';
 import {RangeField} from '../ui/RangeField/RangeField';
-import {createMemo, createSignal, from} from 'solid-js';
-import {frameState, updateRadius} from '../../state/frame.state';
+import {createMemo, from} from 'solid-js';
+import {
+  frameState,
+  updateAutoWidth,
+  updatePadding,
+  updateRadius,
+} from '../../state/frame.state';
+import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 
 export const FrameSidebar = () => {
   const state = from(frameState);
 
   const radius = createMemo(() => state().radius);
+  const autoWidth = createMemo(() => state().autoWidth);
+  const padding = createMemo(() => state().padding);
 
   return (
     <div class={styles.sidebar}>
@@ -32,7 +40,7 @@ export const FrameSidebar = () => {
         />
         <RangeField
           value={radius()}
-          step={4}
+          step={8}
           min={0}
           max={64}
           onChange={updateRadius}
@@ -43,12 +51,52 @@ export const FrameSidebar = () => {
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
           Padding
         </Text>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            flex: 1,
+            'grid-column': '2 / -1',
+          }}
+        >
+          <SegmentedField
+            size={'xs'}
+            value={padding()}
+            onChange={updatePadding}
+            items={[
+              {label: '16', value: 16},
+              {label: '32', value: 32},
+              {label: '64', value: 64},
+              {label: '128', value: 128},
+            ]}
+          />
+        </div>
       </div>
 
       <div class={styles.panelRow}>
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
-          Width
+          Autowidth
         </Text>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            flex: 1,
+            'grid-column': '2 / -1',
+          }}
+        >
+          <SegmentedField
+            size={'xs'}
+            value={autoWidth()}
+            onChange={updateAutoWidth}
+            items={[
+              {label: 'Yes', value: true},
+              {label: 'No', value: false},
+            ]}
+          />
+        </div>
       </div>
 
       <div class={styles.panelRow}>

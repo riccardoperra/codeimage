@@ -46,7 +46,7 @@ export const segmentActive = style([
     '::after': {
       position: 'absolute',
       inset: '2px',
-      backgroundColor: themeVars.backgroundColor.gray['400'],
+      backgroundColor: themeVars.backgroundColor.gray['300'],
       content: '',
       top: 1,
       boxShadow: themeVars.boxShadow.default,

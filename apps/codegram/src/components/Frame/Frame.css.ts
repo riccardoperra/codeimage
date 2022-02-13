@@ -27,7 +27,7 @@ export const container = style([
     zIndex: 1,
     boxSizing: 'border-box',
     userSelect: 'none',
-    transition: 'background-color .2s, padding .2s',
+    transition: 'background-color .2s, padding .2s, border-radius .2s',
   },
 ]);
 
