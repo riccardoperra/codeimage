@@ -4,7 +4,7 @@ import {toPng} from 'html-to-image';
 import download from 'downloadjs';
 import {finalize, from} from 'rxjs';
 
-type BackgroundState = null | string;
+type BackgroundState = undefined | null | string;
 
 interface FrameState {
   background: BackgroundState;
