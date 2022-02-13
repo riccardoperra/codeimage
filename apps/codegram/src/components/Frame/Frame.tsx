@@ -1,9 +1,10 @@
-import {batch, Component, createMemo, onCleanup, onMount} from 'solid-js';
+import {batch, Component, createMemo, from, onCleanup, onMount} from 'solid-js';
 import {createStore} from 'solid-js/store';
 import {bindAll, UnbindFn} from 'bind-event-listener';
 import {noop} from '../../core/constants/noop';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {frameState} from '../../state/frame.state';
 
 export const Frame: Component<{
   background: string | null;
@@ -80,17 +81,29 @@ export const Frame: Component<{
     ownerDocumentEventCleaner?.();
   });
 
+  const _frameState = from(frameState);
+
   return (
     <div
       class={styles.container}
       style={assignInlineVars({
         [styles.frameVars.width]: pxWidth(),
-        [styles.frameVars.backgroundColor]: props.background ?? 'transparent',
         [styles.frameVars.padding]: `${props.padding}px`,
         [styles.frameVars.radius]: `${props.radius}px`,
       })}
       ref={el}
     >
+      <div
+        class={styles.overlay}
+        style={assignInlineVars({
+          [styles.frameVars.backgroundColor]: props.background ?? 'transparent',
+          [styles.frameVars.opacity]: `${_frameState().opacity}%`,
+          [styles.frameVars.visibility]: `${
+            _frameState().visible ? 'visible' : 'hidden'
+          }`,
+        })}
+      />
+
       <div class={styles.dragControls}>
         <div class={styles.dragControlLeft} onMouseDown={onMouseDown} />
         <div class={styles.dragControlRight} onMouseDown={onMouseDown} />

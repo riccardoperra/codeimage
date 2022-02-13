@@ -8,9 +8,14 @@ type BackgroundState = null | string;
 
 interface FrameState {
   background: BackgroundState;
+  // Frame
   padding: number;
   radius: number;
   autoWidth: boolean;
+
+  // Background
+  visible: boolean;
+  opacity: number;
   exportLoading: boolean;
 }
 
@@ -21,6 +26,9 @@ const {state, config} = createState(
     radius: 24,
     autoWidth: true,
     exportLoading: false,
+
+    visible: true,
+    opacity: 100,
   }),
 );
 
@@ -37,6 +45,17 @@ export function updateRadius(radius: number | string): void {
     typeof radius === 'string' ? parseInt(radius, 10) : radius;
 
   store.update(state => ({...state, radius: computedRadius}));
+}
+
+export function updateOpacity(radius: number | string): void {
+  const computedOpacity =
+    typeof radius === 'string' ? parseInt(radius, 10) : radius;
+
+  store.update(state => ({...state, opacity: computedOpacity}));
+}
+
+export function updateVisibility(visible: boolean): void {
+  store.update(state => ({...state, visible}));
 }
 
 export function updatePadding(padding: number) {
