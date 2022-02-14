@@ -1,49 +1,24 @@
 import {For} from 'solid-js';
 import {Terminal} from '../Terminal/Terminal';
 import {Text} from '../ui/Text/Text';
-import {sprinkles} from '../../theme/sprinkles.css';
+
+import * as styles from './ThemeSwitcher.css';
+import {ThemeBox} from './ThemeBox';
+import {THEMES} from './fake-theme';
+import {updateBackground} from '../../state/frame.state';
 
 export const ThemeSwitcher = () => {
-  const fakeThemes = Array(20).fill(undefined);
+  const fakeThemes = THEMES;
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        'flex-direction': 'column',
-        'row-gap': '40px',
-        'flex-wrap': 'nowrap',
-        padding: '16px',
-        'overflow-y': 'scroll',
-        height: '100%',
-      }}
-    >
+    <div class={styles.grid}>
       <For each={fakeThemes}>
-        {() => (
-          <div style={{display: 'flex', 'flex-direction': 'column'}}>
-            <div
-              style={{
-                'background-color': 'black',
-                width: '100%',
-                height: '180px',
-                display: 'flex',
-                'align-items': 'center',
-                'justify-content': 'center',
-                padding: '16px',
-                'border-radius': '1.5rem',
-              }}
-            >
-              <Terminal>
-                <Text size={'sm'}>{`console.log('Hello!');`}</Text>
-              </Terminal>
-            </div>
-            <Text
-              class={sprinkles({marginTop: '2', textAlign: 'center'})}
-              size={'sm'}
-            >
-              One dark theme
-            </Text>
-          </div>
+        {theme => (
+          <ThemeBox bg={theme.bg} onClick={() => updateBackground(theme.bg)}>
+            <Terminal>
+              <Text size={'sm'}>{`console.log('Hello!');`}</Text>
+            </Terminal>
+          </ThemeBox>
         )}
       </For>
     </div>
