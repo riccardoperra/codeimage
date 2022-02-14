@@ -12,6 +12,7 @@ export const sidebar = style([
   {
     height: '100%',
     borderRight: `1px solid ${themeVars.borderColor.default}`,
+    borderLeft: `1px solid ${themeVars.borderColor.default}`,
     flex: `0 0 ${sidebarVars.width}`,
     backgroundColor: themeVars.backgroundColor.white,
     zIndex: 0,

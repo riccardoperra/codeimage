@@ -36,13 +36,12 @@ export const overlay = style({
   position: 'absolute',
   left: 0,
   top: 0,
-  backgroundColor: frameVars.backgroundColor,
+  background: frameVars.backgroundColor,
   opacity: frameVars.opacity,
   visibility: frameVars.visibility,
   height: '100%',
   width: '100%',
   borderRadius: 'inherit',
-  transition: 'backgroundColor .2s',
 });
 
 export const dragControls = style({
