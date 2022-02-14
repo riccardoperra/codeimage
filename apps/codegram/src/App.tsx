@@ -8,6 +8,7 @@ import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {FrameSidebar} from './components/LeftSidebar/LeftSidebar';
 import {createSignal, from} from 'solid-js';
+import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 
 const App = () => {
   const state = from(frameState);
@@ -45,6 +46,10 @@ const App = () => {
           </Frame>
         </div>
       </Canvas>
+
+      <Sidebar>
+        <ThemeSwitcher />
+      </Sidebar>
     </Scaffold>
   );
 };
