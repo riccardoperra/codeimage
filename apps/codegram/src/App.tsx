@@ -40,7 +40,7 @@ const App = () => {
             radius={state().radius}
             background={state().background}
           >
-            <Terminal>
+            <Terminal {...state()}>
               <CustomEditor />
             </Terminal>
           </Frame>

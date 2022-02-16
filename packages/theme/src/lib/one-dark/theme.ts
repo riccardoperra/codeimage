@@ -7,6 +7,10 @@ export const oneDarkTheme = buildCustomTheme({
   properties: {
     darkMode: true,
     label: 'One dark',
-    previewBackground: '#282C34',
+    previewBackground: '#814CE2',
+    terminal: {
+      main: '#2c313a',
+      text: '#e5c07b',
+    },
   },
 });

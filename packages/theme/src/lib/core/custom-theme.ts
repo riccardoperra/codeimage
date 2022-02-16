@@ -1,5 +1,16 @@
 import {Extension} from '@codemirror/state';
 
+export interface TerminalThemeProperties {
+  /**
+   * @description Main background color of terminal
+   */
+  main: string;
+  /**
+   * description Base text color of terminal frame
+   */
+  text: string;
+}
+
 export interface CustomThemeProperties {
   /**
    * @description Label of theme box preview
@@ -13,6 +24,10 @@ export interface CustomThemeProperties {
    * @description Enable/disable dark mode theme
    */
   darkMode: boolean;
+  /**
+   * @description Terminal theme properties
+   */
+  terminal: TerminalThemeProperties;
 }
 
 export interface CustomTheme {

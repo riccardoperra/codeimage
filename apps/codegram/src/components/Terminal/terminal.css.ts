@@ -11,6 +11,7 @@ export const [terminalTheme, terminalVars] = createTheme({
   headerHeight: '50px',
   headerBackgroundColor: themeVars.backgroundColor.white,
   backgroundColor: themeVars.backgroundColor.white,
+  textColor: themeVars.backgroundColor.gray['800'],
   boxShadow: themeVars.boxShadow.lg,
 });
 
@@ -19,6 +20,7 @@ export const wrapper = style([
   {
     position: 'relative',
     backgroundColor: terminalVars.backgroundColor,
+    color: terminalVars.textColor,
     overflow: 'hidden',
     borderRadius: '12px',
     boxShadow: terminalVars.boxShadow,
@@ -44,8 +46,11 @@ export const header = style({
   transition: 'background-color .2s ease-in-out',
 
   selectors: {
-    '&[data-accent-visible=true]': {
+    '[data-theme-mode=light] &[data-accent-visible=true]': {
       backgroundColor: `rgba(0, 0, 0, .06)`,
+    },
+    '[data-theme-mode=dark] &[data-accent-visible=true]': {
+      backgroundColor: `rgba(255, 255, 255, .06)`,
     },
   },
 });

@@ -9,7 +9,7 @@ export const grid = style({
   gap: '40px',
   gridTemplateColumns: '1fr',
   padding: themeVars.spacing['4'],
-  overflowY: 'scroll',
+  overflowY: 'auto',
   height: '100%',
   gridAutoRows: 'min-content',
 
