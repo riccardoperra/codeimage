@@ -36,6 +36,7 @@ importers:
 
   apps/codegram:
     specifiers:
+      '@codegram/theme': workspace:*
       '@codegram/ui': workspace:*
       '@codemirror/basic-setup': ^0.19.1
       '@codemirror/commands': ^0.19.8
@@ -82,6 +83,7 @@ importers:
       vite-tsconfig-paths: ^3.3.17
       zustand: ^3.6.9
     dependencies:
+      '@codegram/theme': link:../../packages/theme
       '@codegram/ui': link:../../packages/ui
       '@codemirror/basic-setup': 0.19.1
       '@codemirror/commands': 0.19.8
@@ -128,6 +130,29 @@ importers:
       vite: 2.7.13_sass@1.49.7
       vite-plugin-solid: 2.2.5_sass@1.49.7
       vite-tsconfig-paths: 3.3.17_vite@2.7.13
+
+  packages/theme:
+    specifiers:
+      '@codemirror/highlight': ^0.19.7
+      '@codemirror/state': ^0.19.9
+      '@codemirror/theme-one-dark': ^0.19.1
+      '@codemirror/view': ^0.19.43
+      rimraf: ^3.0.2
+      typescript: ^4.5.5
+      vite: ^2.7.13
+      vite-plugin-dts: ^0.9.9
+      vite-plugin-solid: ^2.2.5
+    dependencies:
+      '@codemirror/highlight': 0.19.7
+      '@codemirror/state': 0.19.9
+      '@codemirror/theme-one-dark': 0.19.1
+      '@codemirror/view': 0.19.43
+    devDependencies:
+      rimraf: 3.0.2
+      typescript: 4.5.5
+      vite: 2.7.13
+      vite-plugin-dts: 0.9.9_vite@2.7.13
+      vite-plugin-solid: 2.2.5
 
   packages/ui:
     specifiers:
@@ -854,7 +879,7 @@ packages:
   /@codemirror/rangeset/0.19.6:
     resolution: {integrity: sha512-wYtgGnW2Jtrh2nj7vpcBoEZib+jfyilrLN6w7YMTzzSRN8xXhYRorOUg4VQIa1JwFcMQrjSCkIdqXsDqOX1cYg==}
     dependencies:
-      '@codemirror/state': 0.19.6
+      '@codemirror/state': 0.19.9
     dev: false
 
   /@codemirror/rectangular-selection/0.19.1:
@@ -882,6 +907,12 @@ packages:
       '@codemirror/text': 0.19.6
     dev: false
 
+  /@codemirror/state/0.19.9:
+    resolution: {integrity: sha512-psOzDolKTZkx4CgUqhBQ8T8gBc0xN5z4gzed109aF6x7D7umpDRoimacI/O6d9UGuyl4eYuDCZmDFr2Rq7aGOw==}
+    dependencies:
+      '@codemirror/text': 0.19.6
+    dev: false
+
   /@codemirror/text/0.19.6:
     resolution: {integrity: sha512-T9jnREMIygx+TPC1bOuepz18maGq/92q2a+n4qTqObKwvNMg+8cMTslb8yxeEDEq7S3kpgGWxgO1UWbQRij0dA==}
     dev: false
@@ -890,8 +921,8 @@ packages:
     resolution: {integrity: sha512-8gc4c2k2o/EhyHoWkghCxp5vyDT96JaFGtRy35PHwIom0LZdx7aU4AbDUnITvwiFB+0+i54VO+WQjBqgTyJvqg==}
     dependencies:
       '@codemirror/highlight': 0.19.7
-      '@codemirror/state': 0.19.6
-      '@codemirror/view': 0.19.42
+      '@codemirror/state': 0.19.9
+      '@codemirror/view': 0.19.43
     dev: false
 
   /@codemirror/tooltip/0.19.13:
@@ -906,6 +937,16 @@ packages:
     dependencies:
       '@codemirror/rangeset': 0.19.6
       '@codemirror/state': 0.19.6
+      '@codemirror/text': 0.19.6
+      style-mod: 4.0.0
+      w3c-keyname: 2.2.4
+    dev: false
+
+  /@codemirror/view/0.19.43:
+    resolution: {integrity: sha512-caT53/FD4gDLgb1fcYWJ935oMfRmy4DwKcDuMFg56T5M5hzf20H6nl4+NxPB5eiV7AZ1ux3zy40LQVB4U6lFxg==}
+    dependencies:
+      '@codemirror/rangeset': 0.19.6
+      '@codemirror/state': 0.19.9
       '@codemirror/text': 0.19.6
       style-mod: 4.0.0
       w3c-keyname: 2.2.4
@@ -2809,10 +2850,10 @@ packages:
     resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
     dev: true
 
-  /goober/2.1.7_csstype@2.6.19:
-    resolution: {integrity: sha512-aCR8u3A/tTgSrZAHfJObhYC0xgdKoYm4GvE/UFmxmzgvj3TSF+3oFYWtmJ459WBewjOIoEsoOG81sDs1rn+W5w==}
+  /goober/2.1.8_csstype@2.6.19:
+    resolution: {integrity: sha512-S0C85gCzcfFCMSdjD/CxyQMt1rbf2qEg6hmDzxk2FfD7+7Ogk55m8ZFUMtqNaZM4VVX/qaU9AzSORG+Gf4ZpAQ==}
     peerDependencies:
-      csstype: ^2.6.2
+      csstype: ^3.0.10
     dependencies:
       csstype: 2.6.19
     dev: false
@@ -4073,7 +4114,7 @@ packages:
       solid-js: ^1.3.2
     dependencies:
       csstype: 2.6.19
-      goober: 2.1.7_csstype@2.6.19
+      goober: 2.1.8_csstype@2.6.19
       solid-js: 1.3.5
     dev: false
 

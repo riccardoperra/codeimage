@@ -4,17 +4,20 @@ import {Text} from '../ui/Text/Text';
 
 import * as styles from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';
-import {THEMES} from './fake-theme';
 import {updateBackground} from '../../state/frame.state';
+import {THEMES} from '../../core/theme';
 
 export const ThemeSwitcher = () => {
-  const fakeThemes = THEMES;
+  const themes = THEMES;
 
   return (
     <div class={styles.grid}>
-      <For each={fakeThemes}>
+      <For each={themes}>
         {theme => (
-          <ThemeBox bg={theme.bg} onClick={() => updateBackground(theme.bg)}>
+          <ThemeBox
+            theme={theme}
+            onClick={() => updateBackground(theme.properties.previewBackground)}
+          >
             <Terminal>
               <Text size={'sm'}>{`console.log('Hello!');`}</Text>
             </Terminal>

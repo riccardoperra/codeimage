@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@codegram/ui": "workspace:*",
+    "@codegram/theme": "workspace:*",
     "@codemirror/basic-setup": "^0.19.1",
     "@codemirror/commands": "^0.19.8",
     "@codemirror/gutter": "^0.19.9",
