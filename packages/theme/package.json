@@ -25,13 +25,9 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
-    "@codemirror/theme-one-dark": "^0.19.1",
-    "@codemirror/state": "^0.19.9",
-    "@codemirror/highlight": "^0.19.7",
-    "@codemirror/view": "^0.19.43"
+    "@codemirror/theme-one-dark": "^0.19.1"
   },
   "peerDependencies": {
-    "@codemirror/state": "^0.19.9",
     "@codemirror/highlight": "^0.19.7",
     "@codemirror/view": "^0.19.43"
   },
@@ -40,6 +36,9 @@
     "vite": "^2.7.13",
     "vite-plugin-dts": "^0.9.9",
     "vite-plugin-solid": "^2.2.5",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "@codemirror/highlight": "^0.19.7",
+    "@codemirror/state": "^0.19.9",
+    "@codemirror/view": "^0.19.43"
   }
 }
