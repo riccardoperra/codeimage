@@ -1,10 +1,24 @@
-import {createState, Store, withProps} from '@ngneat/elf';
+import {createState, select, Store, withProps} from '@ngneat/elf';
 import {themeVars} from '../theme/global.css';
 import {toPng} from 'html-to-image';
 import download from 'downloadjs';
 import {finalize, from} from 'rxjs';
+import {CustomTheme} from '@codegram/theme';
+import {Extension} from '@codemirror/state';
 
 type BackgroundState = undefined | null | string;
+
+interface EditorState {
+  extensions: Extension;
+}
+
+export interface TerminalState {
+  accentVisible: boolean;
+  shadow: string;
+  terminalBackground: string;
+  terminalTextColor: string;
+  darkMode: boolean;
+}
 
 interface FrameState {
   background: BackgroundState;
@@ -12,14 +26,9 @@ interface FrameState {
   padding: number;
   radius: number;
   autoWidth: boolean;
-
   // Background
   visible: boolean;
   opacity: number;
-
-  // Terminal
-  accentVisible: boolean;
-  shadow: string;
 
   exportLoading: boolean;
 }
@@ -31,12 +40,18 @@ const {state, config} = createState(
     radius: 24,
     autoWidth: true,
     exportLoading: false,
-
     visible: true,
     opacity: 100,
+  }),
+  withProps<EditorState>({
+    extensions: [],
+  }),
+  withProps<TerminalState>({
     shadow: '',
-
     accentVisible: true,
+    terminalBackground: '#ffffff',
+    terminalTextColor: '#000000',
+    darkMode: false,
   }),
 );
 
@@ -44,8 +59,23 @@ const store = new Store({name: 'frame', state, config});
 
 export const frameState = store.asObservable();
 
+export const extensions$ = frameState.pipe(
+  select(({extensions}) => extensions),
+);
+
 export function updateBackground(backgroundState: BackgroundState) {
   store.update(state => ({...state, background: backgroundState}));
+}
+
+export function updateTheme(theme: CustomTheme): void {
+  store.update(state => ({
+    ...state,
+    background: theme.properties.previewBackground,
+    extensions: theme.editorTheme,
+    terminalBackground: theme.properties.terminal.main,
+    terminalTextColor: theme.properties.terminal.text,
+    darkMode: theme.properties.darkMode,
+  }));
 }
 
 export function updateRadius(radius: number | string): void {

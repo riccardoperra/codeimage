@@ -1,23 +1,23 @@
-import {Component, from} from 'solid-js';
+import {Component} from 'solid-js';
 import * as styles from './terminal.css';
 import {sprinkles} from '../../theme/sprinkles.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {backgroundColorVar} from '../../theme/variables.css';
-import {frameState} from '../../state/frame.state';
+import {TerminalState} from '../../state/frame.state';
 import {themeVars} from '../../theme/global.css';
 
-export const Terminal: Component = props => {
-  const state = from(frameState);
-
+export const Terminal: Component<TerminalState> = props => {
   return (
     <div
       class={styles.wrapper}
+      data-theme-mode={props.darkMode ? 'dark' : 'light'}
       style={assignInlineVars({
-        [styles.terminalVars.boxShadow]:
-          state().shadow ?? themeVars.boxShadow.lg,
+        [styles.terminalVars.backgroundColor]: props.terminalBackground,
+        [styles.terminalVars.textColor]: props.terminalTextColor,
+        [styles.terminalVars.boxShadow]: props.shadow ?? themeVars.boxShadow.lg,
       })}
     >
-      <div class={styles.header} data-accent-visible={state().accentVisible}>
+      <div class={styles.header} data-accent-visible={props.accentVisible}>
         <div class={styles.headerIconRow}>
           <div
             class={styles.headerIconRowCircle}
