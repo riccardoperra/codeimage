@@ -22,27 +22,6 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelRow}>
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
-          Radius
-        </Text>
-        {/*<TextField*/}
-        {/*  value={frame.radius}*/}
-        {/*  onChange={frame.setRadius}*/}
-        {/*  type="number"*/}
-        {/*  size="xs"*/}
-        {/*  min={0}*/}
-        {/*  max={64}*/}
-        {/*/>*/}
-        <RangeField
-          value={frame.radius}
-          step={8}
-          min={0}
-          max={64}
-          onChange={frame.setRadius}
-        />
-      </div>
-
-      <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
           Padding
         </Text>
         <div

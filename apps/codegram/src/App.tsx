@@ -38,8 +38,8 @@ const App = () => {
 
         <div ref={setFrameRef}>
           <Frame
+            radius={0}
             padding={frame.padding}
-            radius={frame.radius}
             background={frame.background}
             opacity={frame.opacity}
             visible={frame.visible}
