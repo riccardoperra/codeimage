@@ -218,7 +218,7 @@ export const FrameSidebar = () => {
             'grid-column': '2 / -1',
           }}
         >
-          <ShadowField value={frame.shadow} onChange={frame.setShadow} />
+          <ShadowField value={terminal.shadow} onChange={terminal.setShadow} />
         </div>
       </div>
 

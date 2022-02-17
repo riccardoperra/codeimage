@@ -1,5 +1,6 @@
 import {combine, devtools} from 'zustand/middleware';
 import create from 'solid-zustand';
+import {themeVars} from '../theme/global.css';
 
 export interface TerminalState {
   accentVisible: boolean;
@@ -10,7 +11,7 @@ export interface TerminalState {
 }
 
 const initialState: TerminalState = {
-  shadow: '',
+  shadow: themeVars.boxShadow.lg,
   accentVisible: true,
   background: '#ffffff',
   textColor: '#000000',

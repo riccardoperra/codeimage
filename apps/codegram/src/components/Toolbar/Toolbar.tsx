@@ -5,7 +5,7 @@ import {Component} from 'solid-js';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
-}> = props => {
+}> = () => {
   return (
     <div class={styles.wrapper}>
       <div class="flex flex-col gap-1 items-center text-xs">

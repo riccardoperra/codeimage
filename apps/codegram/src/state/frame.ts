@@ -1,7 +1,6 @@
 import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
 import {combine, devtools} from 'zustand/middleware';
-import {BehaviorSubject} from 'rxjs';
 
 interface FrameState {
   background: string | null | undefined;
@@ -10,12 +9,10 @@ interface FrameState {
   visible: boolean;
   opacity: number;
   autoWidth: boolean;
-  shadow: string;
 }
 
 const initialState: FrameState = {
   background: themeVars.backgroundColor.gray['300'],
-  shadow: themeVars.boxShadow.lg,
   padding: 128,
   radius: 24,
   visible: true,
@@ -30,7 +27,6 @@ const store = combine(initialState, set => ({
   setVisibility: (visible: boolean) => set(() => ({visible})),
   setAutoWidth: (autoWidth: boolean) => set(() => ({autoWidth})),
   setBackground: (background: string | null) => set(() => ({background})),
-  setShadow: (shadow: string) => set(() => ({shadow})),
 }));
 
 export const useFrameState = create(devtools(store, {name: 'frame'}));
