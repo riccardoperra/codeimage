@@ -1,3 +1,3 @@
-import {CustomTheme, oneDarkTheme} from '@codegram/theme';
+import {CustomTheme, lightTheme, oneDarkTheme} from '@codegram/theme';
 
-export const THEMES: readonly CustomTheme[] = [oneDarkTheme];
+export const THEMES: readonly CustomTheme[] = [lightTheme, oneDarkTheme];
