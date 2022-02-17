@@ -10,7 +10,12 @@ import {themeVars} from '../../theme/global.css';
 import * as fieldStyles from '../ui/TextField/TextField.css';
 import clsx from 'clsx';
 
-export const ShadowField: Component<unknown> = () => {
+interface ShadowFieldProps {
+  value: string;
+  onChange: (shadow: string) => void;
+}
+
+export const ShadowField: Component<ShadowFieldProps> = props => {
   const floating = useFloating({
     placement: 'right-start',
   });
@@ -66,7 +71,7 @@ export const ShadowField: Component<unknown> = () => {
                     paddingY: '8',
                   })}
                 >
-                  <ShadowForm />
+                  <ShadowForm onChange={props.onChange} />
                 </div>
               </DropdownMenu>
             </DropdownPortal>

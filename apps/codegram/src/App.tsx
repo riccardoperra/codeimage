@@ -1,17 +1,19 @@
 import {Terminal} from './components/Terminal/Terminal';
 import {Frame} from './components/Frame/Frame';
-import {frameState} from './state/frame.state';
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {FrameSidebar} from './components/LeftSidebar/LeftSidebar';
-import {createSignal, from} from 'solid-js';
+import {createSignal} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
+import {useFrameState} from './state/frame';
+import {useTerminalState} from './state/terminal';
 
 const App = () => {
-  const state = from(frameState);
+  const frame = useFrameState();
+  const terminal = useTerminalState();
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
 
   return (
@@ -36,11 +38,19 @@ const App = () => {
 
         <div ref={setFrameRef}>
           <Frame
-            padding={state().padding}
-            radius={state().radius}
-            background={state().background}
+            padding={frame.padding}
+            radius={frame.radius}
+            background={frame.background}
+            opacity={frame.opacity}
+            visible={frame.visible}
           >
-            <Terminal {...state()}>
+            <Terminal
+              shadow={terminal.shadow}
+              background={terminal.background}
+              accentVisible={terminal.accentVisible}
+              darkMode={terminal.darkMode}
+              textColor={terminal.textColor}
+            >
               <CustomEditor />
             </Terminal>
           </Frame>

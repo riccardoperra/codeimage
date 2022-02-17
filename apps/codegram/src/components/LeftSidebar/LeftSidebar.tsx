@@ -1,32 +1,16 @@
 import * as styles from './LeftSidebar.css';
 import {Text} from '../ui/Text/Text';
-import {TextField} from '../ui/TextField/TextField';
 import {RangeField} from '../ui/RangeField/RangeField';
-import {createMemo, from, Show} from 'solid-js';
-import {
-  frameState,
-  updateAccentVisibility,
-  updateAutoWidth,
-  updateBackground,
-  updateOpacity,
-  updatePadding,
-  updateRadius,
-  updateVisibility,
-} from '../../state/frame.state';
+import {Show} from 'solid-js';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {ShadowField} from '../ShadowField/ShadowField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
+import {useFrameState} from '../../state/frame';
+import {useTerminalState} from '../../state/terminal';
 
 export const FrameSidebar = () => {
-  const state = from(frameState);
-
-  const background = createMemo(() => state().background);
-  const radius = createMemo(() => state().radius);
-  const opacity = createMemo(() => state().opacity);
-  const autoWidth = createMemo(() => state().autoWidth);
-  const padding = createMemo(() => state().padding);
-  const visible = createMemo(() => state().visible);
-  const tabAccent = createMemo(() => state().accentVisible);
+  const frame = useFrameState();
+  const terminal = useTerminalState();
 
   return (
     <div class={styles.sidebar}>
@@ -40,20 +24,20 @@ export const FrameSidebar = () => {
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
           Radius
         </Text>
-        <TextField
-          value={radius()}
-          onChange={updateRadius}
-          type="number"
-          size="xs"
-          min={0}
-          max={64}
-        />
+        {/*<TextField*/}
+        {/*  value={frame.radius}*/}
+        {/*  onChange={frame.setRadius}*/}
+        {/*  type="number"*/}
+        {/*  size="xs"*/}
+        {/*  min={0}*/}
+        {/*  max={64}*/}
+        {/*/>*/}
         <RangeField
-          value={radius()}
+          value={frame.radius}
           step={8}
           min={0}
           max={64}
-          onChange={updateRadius}
+          onChange={frame.setRadius}
         />
       </div>
 
@@ -72,8 +56,8 @@ export const FrameSidebar = () => {
         >
           <SegmentedField
             size={'xs'}
-            value={padding()}
-            onChange={updatePadding}
+            value={frame.padding}
+            onChange={frame.setPadding}
             items={[
               {label: '16', value: 16},
               {label: '32', value: 32},
@@ -99,8 +83,8 @@ export const FrameSidebar = () => {
         >
           <SegmentedField
             size={'xs'}
-            value={autoWidth()}
-            onChange={updateAutoWidth}
+            value={frame.autoWidth}
+            onChange={frame.setAutoWidth}
             items={[
               {label: 'Yes', value: true},
               {label: 'No', value: false},
@@ -130,8 +114,8 @@ export const FrameSidebar = () => {
         >
           <SegmentedField
             size={'xs'}
-            value={visible()}
-            onChange={updateVisibility}
+            value={frame.visible}
+            onChange={frame.setVisibility}
             items={[
               {label: 'Yes', value: true},
               {label: 'No', value: false},
@@ -140,7 +124,7 @@ export const FrameSidebar = () => {
         </div>
       </div>
 
-      <Show when={visible()}>
+      <Show when={frame.visible}>
         <div class={styles.panelRow}>
           <Text as="div" size={'sm'} class={styles.titleWrapper}>
             Opacity
@@ -155,17 +139,17 @@ export const FrameSidebar = () => {
             }}
           >
             <RangeField
-              value={opacity()}
+              value={frame.opacity}
               min={0}
-              disabled={!visible()}
+              disabled={!frame.visible}
               max={100}
-              onChange={updateOpacity}
+              onChange={frame.setOpacity}
             />
           </div>
         </div>
       </Show>
 
-      <Show when={visible()}>
+      <Show when={frame.visible}>
         <div class={styles.panelRow}>
           <Text as="div" size={'sm'} class={styles.titleWrapper}>
             Color
@@ -180,7 +164,10 @@ export const FrameSidebar = () => {
               'grid-column': '2 / -1',
             }}
           >
-            <ColorPicker onChange={updateBackground} value={background()} />
+            <ColorPicker
+              onChange={frame.setBackground}
+              value={frame.background ?? undefined}
+            />
           </div>
         </div>
       </Show>
@@ -208,8 +195,8 @@ export const FrameSidebar = () => {
         >
           <SegmentedField
             size={'xs'}
-            value={tabAccent()}
-            onChange={updateAccentVisibility}
+            value={terminal.accentVisible}
+            onChange={terminal.setAccentVisible}
             items={[
               {label: 'Yes', value: true},
               {label: 'No', value: false},
@@ -231,7 +218,7 @@ export const FrameSidebar = () => {
             'grid-column': '2 / -1',
           }}
         >
-          <ShadowField />
+          <ShadowField value={frame.shadow} onChange={frame.setShadow} />
         </div>
       </div>
 

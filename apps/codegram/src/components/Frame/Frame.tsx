@@ -1,18 +1,21 @@
-import {batch, Component, createMemo, from, onCleanup, onMount} from 'solid-js';
+import {batch, Component, createMemo, onCleanup, onMount} from 'solid-js';
 import {createStore} from 'solid-js/store';
 import {bindAll, UnbindFn} from 'bind-event-listener';
 import {noop} from '../../core/constants/noop';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {frameState} from '../../state/frame.state';
 
 export const Frame: Component<{
-  background: string | null;
+  background: string | null | undefined;
   padding: number;
   radius: number;
+  opacity: number;
+  visible: boolean;
 }> = props => {
   let el!: HTMLDivElement;
   let ownerDocumentEventCleaner: UnbindFn | null = null;
+
+  // TODO: move state outside
 
   const [state, setState] = createStore<{
     width: number | null;
@@ -81,8 +84,6 @@ export const Frame: Component<{
     ownerDocumentEventCleaner?.();
   });
 
-  const _frameState = from(frameState);
-
   return (
     <div
       class={styles.container}
@@ -97,9 +98,9 @@ export const Frame: Component<{
         class={styles.overlay}
         style={assignInlineVars({
           [styles.frameVars.backgroundColor]: props.background ?? 'transparent',
-          [styles.frameVars.opacity]: `${_frameState().opacity}%`,
+          [styles.frameVars.opacity]: `${props.opacity}%`,
           [styles.frameVars.visibility]: `${
-            _frameState().visible ? 'visible' : 'hidden'
+            props.visible ? 'visible' : 'hidden'
           }`,
         })}
       />

@@ -1,15 +1,16 @@
-import {For, from} from 'solid-js';
+import {For} from 'solid-js';
 import {Terminal} from '../Terminal/Terminal';
 import {Text} from '../ui/Text/Text';
 
 import * as styles from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';
-import {frameState, updateTheme} from '../../state/frame.state';
 import {THEMES} from '../../core/theme';
+import {useTerminalState} from '../../state/terminal';
+import {updateTheme} from '../../state/state';
 
 export const ThemeSwitcher = () => {
   const themes = THEMES;
-  const state = from(frameState);
+  const terminal = useTerminalState();
 
   return (
     <div class={styles.grid}>
@@ -17,11 +18,11 @@ export const ThemeSwitcher = () => {
         {theme => (
           <ThemeBox theme={theme} onClick={() => updateTheme(theme)}>
             <Terminal
-              terminalTextColor={theme.properties.terminal.text}
-              terminalBackground={theme.properties.terminal.main}
+              textColor={theme.properties.terminal.text}
+              background={theme.properties.terminal.main}
               darkMode={theme.properties.darkMode}
-              accentVisible={state().accentVisible}
-              shadow={state().shadow}
+              accentVisible={terminal.accentVisible}
+              shadow={terminal.shadow}
             >
               <Text size={'sm'}>{`console.log('Hello!');`}</Text>
             </Terminal>

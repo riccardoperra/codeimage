@@ -2,7 +2,6 @@ import * as styles from './toolbar.css';
 import {Button} from '../ui/Button/Button';
 import {sprinkles} from '../../theme/sprinkles.css';
 import {Component} from 'solid-js';
-import {exportImage} from '../../state/frame.state';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
@@ -111,7 +110,6 @@ export const Toolbar: Component<{
             })}
             variant={'solid'}
             theme={'primary'}
-            onClick={() => exportImage(props.canvasRef as HTMLElement)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

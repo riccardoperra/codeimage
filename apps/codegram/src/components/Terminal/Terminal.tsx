@@ -3,8 +3,8 @@ import * as styles from './terminal.css';
 import {sprinkles} from '../../theme/sprinkles.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {backgroundColorVar} from '../../theme/variables.css';
-import {TerminalState} from '../../state/frame.state';
 import {themeVars} from '../../theme/global.css';
+import {TerminalState} from '../../state/terminal';
 
 export const Terminal: Component<TerminalState> = props => {
   return (
@@ -12,8 +12,8 @@ export const Terminal: Component<TerminalState> = props => {
       class={styles.wrapper}
       data-theme-mode={props.darkMode ? 'dark' : 'light'}
       style={assignInlineVars({
-        [styles.terminalVars.backgroundColor]: props.terminalBackground,
-        [styles.terminalVars.textColor]: props.terminalTextColor,
+        [styles.terminalVars.backgroundColor]: props.background,
+        [styles.terminalVars.textColor]: props.textColor,
         [styles.terminalVars.boxShadow]: props.shadow ?? themeVars.boxShadow.lg,
       })}
     >

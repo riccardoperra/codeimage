@@ -44,7 +44,7 @@ export function useFloating({
   middleware,
   placement,
   strategy,
-}: Omit<Partial<ComputePositionConfig>, 'platform'> = {}): UseFloatingReturn {
+}: UseFloatingOptions = {}): UseFloatingReturn {
   const [reference, setReference] = createSignal<
     Element | VirtualElement | null
   >(null);

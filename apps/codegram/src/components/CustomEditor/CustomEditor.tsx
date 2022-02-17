@@ -1,13 +1,10 @@
 import {EditorView} from '@codemirror/view';
 import {javascript} from '@codemirror/lang-javascript';
 import {CodeMirror} from 'solid-codemirror';
-import {code$, setCode} from '../../state/code.state';
-import {from} from 'solid-js';
-import {extensions$} from '../../state/frame.state';
+import {useEditorState} from '../../state/editor';
 
 export const CustomEditor = () => {
-  const code = from(code$);
-  const extensions = from(extensions$);
+  const editor = useEditorState();
 
   const supportsLineWrap = EditorView.lineWrapping;
 
@@ -30,13 +27,13 @@ export const CustomEditor = () => {
     <>
       <CodeMirror
         class={'cm-s-eclipse'}
-        value={code()}
-        onChange={value => setCode(value)}
+        value={editor.code}
+        onChange={editor.setCode}
         extensions={[
           baseTheme,
           supportsLineWrap,
           javascript({jsx: true, typescript: true}),
-          extensions(),
+          editor.extensions,
         ]}
         editable={true}
         basicSetup={true}
