@@ -1,6 +1,7 @@
 import {Extension} from '@codemirror/state';
 import create from 'solid-zustand';
 import {combine, devtools} from 'zustand/middleware';
+import {THEMES} from '../core/theme';
 
 interface EditorState {
   extensions: Extension;
@@ -9,7 +10,7 @@ interface EditorState {
 
 const initialState: EditorState = {
   code: '',
-  extensions: [],
+  extensions: THEMES[0].editorTheme,
 };
 
 const store = combine(initialState, set => ({

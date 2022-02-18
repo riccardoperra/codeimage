@@ -1,6 +1,7 @@
 import {combine, devtools} from 'zustand/middleware';
 import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
+import {THEMES} from '../core/theme';
 
 export interface TerminalState {
   tabName: string | null;
@@ -15,9 +16,9 @@ const initialState: TerminalState = {
   tabName: null,
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
-  background: '#ffffff',
-  textColor: '#000000',
-  darkMode: false,
+  background: THEMES[0].properties.terminal.main,
+  textColor: THEMES[0].properties.terminal.text,
+  darkMode: THEMES[0].properties.darkMode,
 };
 
 const store = combine(initialState, set => ({

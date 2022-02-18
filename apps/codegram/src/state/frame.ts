@@ -1,6 +1,6 @@
 import create from 'solid-zustand';
-import {themeVars} from '../theme/global.css';
 import {combine, devtools} from 'zustand/middleware';
+import {THEMES} from '../core/theme';
 
 interface FrameState {
   background: string | null | undefined;
@@ -12,7 +12,7 @@ interface FrameState {
 }
 
 const initialState: FrameState = {
-  background: themeVars.backgroundColor.gray['300'],
+  background: THEMES[0].properties.previewBackground,
   padding: 128,
   radius: 24,
   visible: true,
