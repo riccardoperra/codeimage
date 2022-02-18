@@ -49,37 +49,6 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelRow}>
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
-          Autowidth
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            flex: '1 0 0',
-            'grid-column': '2 / -1',
-          }}
-        >
-          <SegmentedField
-            size={'xs'}
-            value={frame.autoWidth}
-            onChange={frame.setAutoWidth}
-            items={[
-              {label: 'Yes', value: true},
-              {label: 'No', value: false},
-            ]}
-          />
-        </div>
-      </div>
-
-      <div class={styles.panelHeader}>
-        <Text size="sm" weight="semibold">
-          Background
-        </Text>
-      </div>
-
-      <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
           Visible
         </Text>
         <div

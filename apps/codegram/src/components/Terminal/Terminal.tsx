@@ -8,7 +8,7 @@ import {TerminalState} from '../../state/terminal';
 import {InlineTextField} from '../ui/TextField/InlineTextField';
 
 interface TerminalProps extends TerminalState {
-  onTabChange: (tab: string) => void;
+  onTabChange?: (tab: string) => void;
 }
 
 export const Terminal: Component<TerminalProps> = props => {
@@ -46,12 +46,11 @@ export const Terminal: Component<TerminalProps> = props => {
 
         <div class={styles.tab}>
           <InlineTextField
-            type="text"
             size={'sm'}
             placeholder={'Untitled'}
             value={props.tabName ?? ''}
             disabled={false}
-            onChange={value => props.onTabChange(value)}
+            onChange={value => props.onTabChange?.(value)}
           />
           {/*<input*/}
           {/*  style={{*/}
