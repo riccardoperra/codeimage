@@ -1,6 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '../../../theme/global.css';
-import {fontSize} from '../Text/Text.css';
 
 export const [textFieldTheme, textFieldVars] = createTheme({
   borderColor: themeVars.borderColor.default,
@@ -8,33 +7,38 @@ export const [textFieldTheme, textFieldVars] = createTheme({
   color: themeVars.textColor.gray['900'],
 });
 
-export const wrapper = style([
+export const baseField = style([
   textFieldTheme,
   {
-    position: 'relative',
-    display: 'flex',
-    width: 'auto',
-    alignItems: 'center',
+    appearance: 'none',
     border: `1px solid ${textFieldVars.borderColor}`,
     backgroundColor: textFieldVars.background,
     borderRadius: themeVars.borderRadius.md,
+    ':focus': {
+      borderColor: themeVars.backgroundColor.blue['500'],
+    },
   },
 ]);
 
 export const textField = style([
-  fontSize.xs,
+  baseField,
   {
-    selectors: {
-      [`${textFieldTheme} &`]: {
-        width: '1px',
-        flexGrow: '1',
-        border: 'none',
-        background: 'none',
-      },
-    },
     paddingRight: 0,
-    borderRadius: themeVars.borderRadius.md,
     paddingTop: 0,
     paddingBottom: 0,
+    paddingLeft: themeVars.spacing['2'],
+  },
+]);
+
+export const unstyledTextField = style([
+  {
+    border: 0,
+    borderRadius: 0,
+    padding: 0,
+    margin: 0,
+    background: 'transparent',
+    ':focus': {
+      outline: 'none',
+    },
   },
 ]);

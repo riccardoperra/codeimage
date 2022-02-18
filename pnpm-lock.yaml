@@ -54,8 +54,6 @@ importers:
       '@codemirror/view': ^0.19.43
       '@floating-ui/core': ^0.4.0
       '@floating-ui/dom': ^0.2.0
-      '@ngneat/elf': ^1.0.2
-      '@ngneat/elf-devtools': 1.2.0
       '@types/downloadjs': 1.4.3
       '@vanilla-extract/css': ^1.6.8
       '@vanilla-extract/dynamic': ^2.0.2
@@ -99,8 +97,6 @@ importers:
       '@codemirror/view': 0.19.43
       '@floating-ui/core': 0.4.0
       '@floating-ui/dom': 0.2.0
-      '@ngneat/elf': 1.1.0_typescript@4.5.5
-      '@ngneat/elf-devtools': 1.2.0
       '@vanilla-extract/css': 1.6.8
       '@vanilla-extract/dynamic': 2.0.2
       '@vanilla-extract/recipes': 0.2.3_@vanilla-extract+css@1.6.8
@@ -1231,18 +1227,6 @@ packages:
       globby: 11.1.0
       read-yaml-file: 1.1.0
     dev: true
-
-  /@ngneat/elf-devtools/1.2.0:
-    resolution: {integrity: sha512-0mnW7O9qP6qs45abzTCkk5jI9tBsxtQlMizMJCD+HvHHfQk1l5Z7w9PyBhX7hrD5pw0xYc3XE5fuEzQSzP6Jjg==}
-    dev: false
-
-  /@ngneat/elf/1.1.0_typescript@4.5.5:
-    resolution: {integrity: sha512-JWBphzKwwhkJULOsAB5UqtYkUVe5v9X01+mlVxwgSE+6eFHgnK2W2ieUtKTqF0naRzgM63K/3iRqEZQaAGg46g==}
-    peerDependencies:
-      typescript: '>= 4.1.2'
-    dependencies:
-      typescript: 4.5.5
-    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}

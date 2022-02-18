@@ -45,11 +45,13 @@ const App = () => {
             visible={frame.visible}
           >
             <Terminal
+              tabName={terminal.tabName}
               shadow={terminal.shadow}
               background={terminal.background}
               accentVisible={terminal.accentVisible}
               darkMode={terminal.darkMode}
               textColor={terminal.textColor}
+              onTabChange={terminal.setTabName}
             >
               <CustomEditor />
             </Terminal>

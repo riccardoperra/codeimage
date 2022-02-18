@@ -39,8 +39,6 @@
     "@codemirror/state": "^0.19.9",
     "@codemirror/text": "^0.19.6",
     "@codemirror/view": "^0.19.43",
-    "@ngneat/elf": "^1.0.2",
-    "@ngneat/elf-devtools": "1.2.0",
     "@vanilla-extract/css": "^1.6.8",
     "@vanilla-extract/dynamic": "^2.0.2",
     "@vanilla-extract/recipes": "^0.2.3",

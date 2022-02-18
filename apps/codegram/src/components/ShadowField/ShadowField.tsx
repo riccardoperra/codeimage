@@ -33,7 +33,7 @@ export const ShadowField: Component<ShadowFieldProps> = props => {
           <>
             <PopoverButton
               class={clsx(
-                fieldStyles.wrapper,
+                fieldStyles.baseField,
                 sprinkles({
                   fontSize: 'sm',
                   paddingX: '2',

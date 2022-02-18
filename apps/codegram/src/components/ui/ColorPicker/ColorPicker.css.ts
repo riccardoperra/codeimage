@@ -4,7 +4,7 @@ import {themeVars} from '../../../theme/global.css';
 import * as fieldStyles from '../TextField/TextField.css';
 
 export const colorPicker = style([
-  fieldStyles.wrapper,
+  fieldStyles.baseField,
   {
     flex: 1,
   },

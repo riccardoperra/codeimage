@@ -5,8 +5,13 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {backgroundColorVar} from '../../theme/variables.css';
 import {themeVars} from '../../theme/global.css';
 import {TerminalState} from '../../state/terminal';
+import {InlineTextField} from '../ui/TextField/InlineTextField';
 
-export const Terminal: Component<TerminalState> = props => {
+interface TerminalProps extends TerminalState {
+  onTabChange: (tab: string) => void;
+}
+
+export const Terminal: Component<TerminalProps> = props => {
   return (
     <div
       class={styles.wrapper}
@@ -39,7 +44,24 @@ export const Terminal: Component<TerminalState> = props => {
           />
         </div>
 
-        <div class={styles.tab}>Untitled.tsx</div>
+        <div class={styles.tab}>
+          <InlineTextField
+            type="text"
+            size={'sm'}
+            placeholder={'Untitled'}
+            value={props.tabName ?? ''}
+            disabled={false}
+            onChange={value => props.onTabChange(value)}
+          />
+          {/*<input*/}
+          {/*  style={{*/}
+          {/*    appearance: 'none',*/}
+          {/*    border: 'none',*/}
+          {/*    padding: '0',*/}
+          {/*    margin: '0',*/}
+          {/*    background: 'transparent',*/}
+          {/*  }}*/}
+        </div>
       </div>
       <div class={styles.content}>
         <div class={sprinkles({position: 'relative'})}>

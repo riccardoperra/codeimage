@@ -8,7 +8,7 @@ import {
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import {omitProps} from 'solid-use';
 
-type TextFieldProps = {
+export type TextFieldProps = {
   type: 'text' | 'number';
   value?: string | number;
   onChange?: (value: string) => void;
@@ -27,15 +27,13 @@ export const TextField: Component<TextFieldProps> = props => {
   const textStyles = createMemo(() => useText({size: props.size}));
 
   return (
-    <div class={styles.wrapper}>
-      <input
-        value={props.value}
-        type={props.type}
-        class={clsx(textStyles(), styles.textField)}
-        onInput={onChange}
-        onChange={onChange}
-        {...omitProps(props, ['class', 'type', 'value', 'onChange'])}
-      />
-    </div>
+    <input
+      value={props.value}
+      type={props.type}
+      class={clsx(textStyles(), styles.textField, props.class)}
+      onInput={onChange}
+      onChange={onChange}
+      {...omitProps(props, ['class', 'type', 'value', 'onChange'])}
+    />
   );
 };

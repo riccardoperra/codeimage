@@ -3,6 +3,7 @@ import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
 
 export interface TerminalState {
+  tabName: string | null;
   accentVisible: boolean;
   shadow: string;
   background: string;
@@ -11,6 +12,7 @@ export interface TerminalState {
 }
 
 const initialState: TerminalState = {
+  tabName: null,
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
   background: '#ffffff',
@@ -24,6 +26,7 @@ const store = combine(initialState, set => ({
   setBackground: (background: string) => set(() => ({background})),
   setTextColor: (textColor: string) => set(() => ({textColor})),
   setDarkMode: (darkMode: boolean) => set(() => ({darkMode})),
+  setTabName: (tabName: string) => set(() => ({tabName})),
 }));
 
 export const useTerminalState = create(devtools(store, {name: 'terminal'}));

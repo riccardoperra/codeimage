@@ -1,6 +1,6 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '../../../theme/global.css';
-import {wrapper as textFieldWrapper} from '../TextField/TextField.css';
+import * as textFieldStyles from '../TextField/TextField.css';
 
 export const [segmentedFieldTheme, segmentedFieldVars] = createTheme({
   activeSegmentedWidth: '0px',
@@ -9,7 +9,7 @@ export const [segmentedFieldTheme, segmentedFieldVars] = createTheme({
 
 export const wrapper = style([
   segmentedFieldTheme,
-  textFieldWrapper, // Add basic text field theme to not override
+  textFieldStyles.baseField, // Add basic text field theme to not override
   {
     alignItems: 'stretch',
     width: '100%',

@@ -18,6 +18,7 @@ export const ThemeSwitcher = () => {
         {theme => (
           <ThemeBox theme={theme} onClick={() => updateTheme(theme)}>
             <Terminal
+              tabName={'Untitled'}
               textColor={theme.properties.terminal.text}
               background={theme.properties.terminal.main}
               darkMode={theme.properties.darkMode}
