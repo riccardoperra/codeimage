@@ -9,4 +9,8 @@ export const darkThemeCss = createTheme(colors, {
   baseText: themeVars.textColor.gray['800'],
   secondary: themeVars.backgroundColor.gray['200'],
   divider: '#252525',
+  inputBackgroundColor: '#2B2B2B',
+  inputBorderColor: '#252525',
+  inputTextColor: '#EEEEEE',
+  inputAccentColor: '#555555',
 });
