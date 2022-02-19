@@ -8,6 +8,7 @@ export const lightThemeCss = createTheme(colors, {
   panelTextColor: themeVars.backgroundColor.black,
   background: themeVars.backgroundColor.gray['100'],
   baseText: themeVars.textColor.gray['800'],
+  descriptionTextColor: themeVars.backgroundColor.gray['600'],
   secondary: themeVars.backgroundColor.gray['200'],
   divider: themeVars.backgroundColor.gray['300'],
   inputBackgroundColor: themeVars.backgroundColor.white,

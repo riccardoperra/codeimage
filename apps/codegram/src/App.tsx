@@ -10,7 +10,8 @@ import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
 import {useTerminalState} from './state/terminal';
 import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
-import {darkThemeCss} from './theme/dark-theme.css';
+import {Footer} from './components/Footer/Footer';
+import {lightThemeCss} from './theme/light-theme.css';
 
 const App = () => {
   const frame = useFrameState();
@@ -18,7 +19,7 @@ const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
 
   return (
-    <Scaffold theme={darkThemeCss}>
+    <Scaffold theme={lightThemeCss}>
       <Sidebar>
         <FrameSidebar />
       </Sidebar>
@@ -36,6 +37,7 @@ const App = () => {
 
       <Canvas>
         <Toolbar canvasRef={frameRef()} />
+
         <div ref={setFrameRef}>
           <Frame
             radius={0}
@@ -60,6 +62,8 @@ const App = () => {
             </DynamicTerminal>
           </Frame>
         </div>
+
+        <Footer />
       </Canvas>
 
       <Sidebar>

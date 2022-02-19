@@ -1,6 +1,6 @@
 {
   "name": "@codegram/ui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "module": "./dist/ui.es.js",
   "types": "./dist/src/index.d.ts",
   "exports": {
