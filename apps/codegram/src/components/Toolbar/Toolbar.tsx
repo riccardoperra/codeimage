@@ -37,13 +37,7 @@ export const Toolbar: Component<{
             </svg>
           </Button>
 
-          <Button
-            class={sprinkles({
-              marginLeft: 'auto',
-            })}
-            variant={'solid'}
-            theme={'primary'}
-          >
+          <Button variant={'solid'} theme={'primary'}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               style={{height: '20px', width: '20px'}}
@@ -58,7 +52,9 @@ export const Toolbar: Component<{
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
               />
             </svg>
-            <span class={sprinkles({marginLeft: '2'})}>Export</span>
+            <Box as={'span'} marginLeft={'2'}>
+              Export
+            </Box>
           </Button>
         </Box>
       </Box>
