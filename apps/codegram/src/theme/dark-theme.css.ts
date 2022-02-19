@@ -14,4 +14,12 @@ export const darkThemeCss = createTheme(colors, {
   inputBorderColor: '#252525',
   inputTextColor: '#EEEEEE',
   inputAccentColor: '#555555',
+  buttonBackgroundColor: '#333333',
+  buttonBackgroundActive: '#232323',
+  buttonBackgroundHover: '#282828',
+  buttonTextColor: themeVars.backgroundColor.white,
+  buttonBackgroundPrimaryColor: themeVars.backgroundColor.blue['500'],
+  buttonBackgroundPrimaryActive: themeVars.backgroundColor.blue['700'],
+  buttonBackgroundPrimaryHover: themeVars.backgroundColor.blue['600'],
+  buttonTextPrimaryColor: themeVars.backgroundColor.white,
 });
