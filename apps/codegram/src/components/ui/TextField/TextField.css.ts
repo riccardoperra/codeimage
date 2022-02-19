@@ -3,8 +3,8 @@ import {themeVars} from '../../../theme/global.css';
 
 export const [textFieldTheme, textFieldVars] = createTheme({
   borderColor: themeVars.dynamicColors.divider,
-  background: themeVars.backgroundColor.white,
-  color: themeVars.textColor.gray['900'],
+  background: themeVars.dynamicColors.inputBackgroundColor,
+  color: themeVars.dynamicColors.inputTextColor,
 });
 
 export const baseField = style([

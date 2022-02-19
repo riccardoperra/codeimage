@@ -5,6 +5,8 @@ import * as textFieldStyles from '../TextField/TextField.css';
 export const [segmentedFieldTheme, segmentedFieldVars] = createTheme({
   activeSegmentedWidth: '0px',
   activeSegmentedOffset: '0%',
+  activeSegmentedBackgroundColor: themeVars.dynamicColors.inputAccentColor,
+  activeSegmentedTextColor: themeVars.dynamicColors.inputTextColor,
 });
 
 export const wrapper = style([
@@ -21,7 +23,7 @@ export const wrapper = style([
     cursor: 'default',
     textAlign: 'center',
     userSelect: 'none',
-    backgroundColor: themeVars.backgroundColor.white,
+    backgroundColor: textFieldStyles.textFieldVars.background,
   },
 ]);
 
@@ -46,7 +48,7 @@ export const segmentActive = style([
     '::after': {
       position: 'absolute',
       inset: '2px',
-      backgroundColor: themeVars.backgroundColor.gray['300'],
+      backgroundColor: segmentedFieldVars.activeSegmentedBackgroundColor,
       content: '',
       top: 1,
       boxShadow: themeVars.boxShadow.default,
@@ -65,12 +67,15 @@ export const segment = style([
     justifyContent: 'center',
     flexGrow: 1,
     padding: `0 ${themeVars.spacing['1']}`,
+    color: segmentedFieldVars.activeSegmentedTextColor,
+    opacity: 0.65,
     selectors: {
       '&:not(:disabled)': {
         cursor: 'pointer',
       },
       '&[data-active=true]': {
         fontWeight: themeVars.fontWeight.bold,
+        opacity: 1,
       },
     },
   },

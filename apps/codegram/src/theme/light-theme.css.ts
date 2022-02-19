@@ -4,9 +4,13 @@ import {themeVars} from './global.css';
 
 export const lightThemeCss = createTheme(colors, {
   primary: themeVars.backgroundColor.blue['500'],
-  background: themeVars.backgroundColor.white,
-  panelBackground: themeVars.backgroundColor.gray['100'],
+  panelBackground: themeVars.backgroundColor.white,
+  background: themeVars.backgroundColor.gray['100'],
   baseText: themeVars.textColor.gray['800'],
   secondary: themeVars.backgroundColor.gray['200'],
   divider: themeVars.backgroundColor.gray['300'],
+  inputBackgroundColor: themeVars.backgroundColor.white,
+  inputBorderColor: themeVars.backgroundColor.gray['300'],
+  inputTextColor: themeVars.backgroundColor.gray['800'],
+  inputAccentColor: themeVars.backgroundColor.gray['200'],
 });
