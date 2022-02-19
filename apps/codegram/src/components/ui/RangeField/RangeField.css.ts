@@ -11,6 +11,7 @@ export const range = style([
     width: '100%',
     appearance: 'none',
     position: 'relative',
+    backgroundColor: themeVars.backgroundColor.transparent,
 
     '::-webkit-slider-thumb': {
       appearance: 'none',
