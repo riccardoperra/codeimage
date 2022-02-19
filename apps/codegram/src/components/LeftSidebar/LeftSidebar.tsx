@@ -7,6 +7,8 @@ import {ShadowField} from '../ShadowField/ShadowField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
 import {useFrameState} from '../../state/frame';
 import {useTerminalState} from '../../state/terminal';
+import {sprinkles} from '../../theme/sprinkles.css';
+import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 
 export const FrameSidebar = () => {
   const frame = useFrameState();
@@ -130,8 +132,9 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelRow}>
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
-          Tab accent
+          Header
         </Text>
+
         <div
           style={{
             display: 'flex',
@@ -143,15 +146,63 @@ export const FrameSidebar = () => {
         >
           <SegmentedField
             size={'xs'}
-            value={terminal.accentVisible}
-            onChange={terminal.setAccentVisible}
+            value={terminal.showHeader}
+            onChange={terminal.setShowHeader}
             items={[
               {label: 'Yes', value: true},
               {label: 'No', value: false},
             ]}
           />
         </div>
+
+        <Show when={terminal.showHeader}>
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              height: '100%',
+              flex: '1 0 0',
+              'grid-column': '1 / -1',
+              'padding-left': '15px',
+            }}
+            class={sprinkles({
+              marginTop: '2',
+            })}
+          >
+            <TerminalControlField
+              selectedTerminal={terminal.type}
+              onTerminalChange={terminal.setType}
+            />
+          </div>
+        </Show>
       </div>
+
+      <Show when={terminal.showHeader}>
+        <div class={styles.panelRow}>
+          <Text as="div" size={'sm'} class={styles.titleWrapper}>
+            Tab accent
+          </Text>
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              height: '100%',
+              flex: '1 0 0',
+              'grid-column': '2 / -1',
+            }}
+          >
+            <SegmentedField
+              size={'xs'}
+              value={terminal.accentVisible}
+              onChange={terminal.setAccentVisible}
+              items={[
+                {label: 'Yes', value: true},
+                {label: 'No', value: false},
+              ]}
+            />
+          </div>
+        </div>
+      </Show>
 
       <div class={styles.panelRow}>
         <Text as="div" size={'sm'} class={styles.titleWrapper}>
