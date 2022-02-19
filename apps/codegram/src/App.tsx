@@ -11,15 +11,20 @@ import {useFrameState} from './state/frame';
 import {useTerminalState} from './state/terminal';
 import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
 import {Footer} from './components/Footer/Footer';
+import {useUIState} from './state/ui';
 import {lightThemeCss} from './theme/light-theme.css';
+import {darkThemeCss} from './theme/dark-theme.css';
 
 const App = () => {
+  const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const frame = useFrameState();
   const terminal = useTerminalState();
-  const [frameRef, setFrameRef] = createSignal<HTMLElement>();
+  const theme = useUIState();
 
   return (
-    <Scaffold theme={lightThemeCss}>
+    <Scaffold
+      theme={theme.themeMode === 'light' ? lightThemeCss : darkThemeCss}
+    >
       <Sidebar>
         <FrameSidebar />
       </Sidebar>
