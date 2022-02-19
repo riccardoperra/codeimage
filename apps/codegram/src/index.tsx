@@ -1,6 +1,6 @@
 import {render} from 'solid-js/web';
 
-import './index.scss';
+import './index.css';
 import App from './App';
 import {StaticConfigurationProvider} from './core/configuration/ConfigurationProvider';
 import {staticConfiguration} from './core/configuration/static-configuration';

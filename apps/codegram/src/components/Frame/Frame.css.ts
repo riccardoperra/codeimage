@@ -67,7 +67,7 @@ export const dragControlHandler = style({
       height: frameVars.controlHandleSize,
     },
     '&:hover::after': {
-      transform: 'transform: translate(-50%, -50%) scale(2)',
+      transform: 'translate(-50%, -50%) scale(2)',
     },
   },
   '::after': {

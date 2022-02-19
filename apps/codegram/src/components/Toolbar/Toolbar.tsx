@@ -1,6 +1,5 @@
 import * as styles from './Toolbar.css';
 import {Button} from '../ui/Button/Button';
-import {sprinkles} from '../../theme/sprinkles.css';
 import {Component} from 'solid-js';
 import {useUIState} from '../../state/ui';
 import {ThemeToggleButton} from './ThemeToggleButton';
