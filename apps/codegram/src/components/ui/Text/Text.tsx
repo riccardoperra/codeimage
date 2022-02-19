@@ -12,7 +12,7 @@ import {PropsWithChildren} from 'solid-js/types/render/component';
 type TextProps<T extends ValidConstructor = 'span'> = {
   as?: T | ValidConstructor;
 } & WithRef<T> &
-  Omit<DynamicProps<T>, 'as' | 'ref' | 'class'> & {
+  Omit<DynamicProps<T>, 'as' | 'ref'> & {
     size?: UseTextProps['size'];
     weight?: UseTextProps['weight'];
   };
@@ -27,8 +27,8 @@ export function Text<T extends ValidConstructor>(
   return (
     <Dynamic
       component={props.as ?? 'span'}
+      {...omitProps(props, ['as', 'children'])}
       class={`${textStyles()} ${props.class || ''}`}
-      {...omitProps(props, ['as', 'children', 'class'])}
     >
       {props.children}
     </Dynamic>

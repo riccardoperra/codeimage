@@ -16,5 +16,6 @@ export const sidebar = style([
     flex: `0 0 ${sidebarVars.width}`,
     backgroundColor: themeVars.dynamicColors.panelBackground,
     zIndex: 0,
+    transition: 'background-color .2s, border .2s',
   },
 ]);

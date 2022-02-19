@@ -1,37 +1,42 @@
-import * as styles from './toolbar.css';
+import * as styles from './Toolbar.css';
 import {Button} from '../ui/Button/Button';
 import {sprinkles} from '../../theme/sprinkles.css';
 import {Component} from 'solid-js';
+import {useUIState} from '../../state/ui';
+import {ThemeToggleButton} from './ThemeToggleButton';
+import {Box} from '../ui/Box/Box';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = () => {
+  const uiState = useUIState();
+
   return (
     <div class={styles.wrapper}>
-      <div class="ml-auto mr-2">
-        <Button theme="secondary" variant="solid">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-            />
-          </svg>
-        </Button>
-      </div>
-      <div>
-        <div
-          class={sprinkles({
-            marginLeft: 'auto',
-          })}
-        >
+      <Box marginLeft={'auto'}>
+        <Box class={styles.actionBox}>
+          <ThemeToggleButton
+            theme={uiState.themeMode}
+            onThemeToggle={uiState.toggleThemeMode}
+          />
+
+          <Button theme="secondary" variant="solid">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+          </Button>
+
           <Button
             class={sprinkles({
               marginLeft: 'auto',
@@ -55,18 +60,8 @@ export const Toolbar: Component<{
             </svg>
             <span class={sprinkles({marginLeft: '2'})}>Export</span>
           </Button>
-        </div>
-      </div>
-
-      {/*<Button*/}
-      {/*  class={sprinkles({*/}
-      {/*    marginLeft: 'auto',*/}
-      {/*  })}*/}
-      {/*  variant={'solid'}*/}
-      {/*  theme={'primary'}*/}
-      {/*>*/}
-      {/*  Export*/}
-      {/*</Button>*/}
+        </Box>
+      </Box>
     </div>
   );
 };

@@ -21,3 +21,9 @@ export const wrapper = style([
     height: '60px',
   },
 ]);
+
+export const actionBox = style({
+  display: 'flex',
+  flexWrap: 'nowrap',
+  columnGap: themeVars.spacing['3'],
+});

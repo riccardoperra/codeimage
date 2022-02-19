@@ -24,6 +24,7 @@ export const button = style([
     transition: 'opacity .2s, background-color .2s, box-shadow .2s',
     backgroundColor: backgroundColorVar,
     color: colorVar,
+    userSelect: 'none',
 
     ':disabled': {
       cursor: 'default',
