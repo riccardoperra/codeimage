@@ -11,10 +11,10 @@ export const sidebar = style([
   sidebarTheme,
   {
     height: '100%',
-    borderRight: `1px solid ${themeVars.borderColor.default}`,
-    borderLeft: `1px solid ${themeVars.borderColor.default}`,
+    borderRight: `1px solid ${themeVars.dynamicColors.divider}`,
+    borderLeft: `1px solid ${themeVars.dynamicColors.divider}`,
     flex: `0 0 ${sidebarVars.width}`,
-    backgroundColor: themeVars.backgroundColor.white,
+    backgroundColor: themeVars.dynamicColors.panelBackground,
     zIndex: 0,
   },
 ]);

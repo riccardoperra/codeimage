@@ -8,5 +8,5 @@ export const canvas = style({
   justifyContent: 'center',
   flex: '1 auto',
   position: 'relative',
-  backgroundColor: themeVars.backgroundColor.gray['100'],
+  backgroundColor: themeVars.dynamicColors.background,
 });

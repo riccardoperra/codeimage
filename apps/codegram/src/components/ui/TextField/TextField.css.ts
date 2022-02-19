@@ -2,7 +2,7 @@ import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '../../../theme/global.css';
 
 export const [textFieldTheme, textFieldVars] = createTheme({
-  borderColor: themeVars.borderColor.default,
+  borderColor: themeVars.dynamicColors.divider,
   background: themeVars.backgroundColor.white,
   color: themeVars.textColor.gray['900'],
 });

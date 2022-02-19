@@ -12,7 +12,7 @@ export const header = style([
     height: headerVars.height,
     width: '100%',
     backgroundColor: themeVars.backgroundColor.white,
-    borderBottom: `1px solid ${themeVars.borderColor.default}`,
+    borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
     zIndex: '10',
   },
 ]);

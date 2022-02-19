@@ -16,7 +16,7 @@ export const range = style([
       appearance: 'none',
       boxShadow: themeVars.boxShadow.lg,
       backgroundColor: themeVars.backgroundColor.white,
-      border: `1px solid ${themeVars.borderColor.default}`,
+      border: `1px solid ${themeVars.dynamicColors.divider}`,
       borderRadius: themeVars.borderRadius.full,
       height: '12px',
       width: '12px',
@@ -28,7 +28,7 @@ export const range = style([
       cursor: 'pointer',
       borderRadius: 0,
       border: `1px solid ${themeVars.backgroundColor.gray}`,
-      background: `linear-gradient(90deg, ${themeVars.backgroundColor.blue['500']} ${rangeVars.rangeProgress}, ${themeVars.borderColor.default}  ${rangeVars.rangeProgress})`,
+      background: `linear-gradient(90deg, ${themeVars.backgroundColor.blue['500']} ${rangeVars.rangeProgress}, ${themeVars.dynamicColors.divider}  ${rangeVars.rangeProgress})`,
       height: '2px',
     },
 
