@@ -5,6 +5,7 @@ export const colors = createThemeContract({
   secondary: null,
   background: null,
   panelBackground: null,
+  panelTextColor: null,
   baseText: null,
   divider: null,
   inputBackgroundColor: null,
