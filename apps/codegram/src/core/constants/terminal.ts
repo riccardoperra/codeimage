@@ -1,11 +1,12 @@
 import {Component} from 'solid-js';
-import {Terminal, TerminalProps} from '../../components/Terminal/Terminal';
 import {WindowsTerminal} from '../../components/Terminal/windows/WindowsTerminal';
+import {MacOsTerminal} from '../../components/Terminal/macOS/MacOsTerminal';
+import {BaseTerminalProps} from '../../components/Terminal/TerminalHost';
 
 export const AVAILABLE_TERMINAL: TerminalDefinition[] = [
   {
     name: 'MacOS',
-    component: Terminal,
+    component: MacOsTerminal,
   },
   {
     name: 'Windows',
@@ -15,5 +16,5 @@ export const AVAILABLE_TERMINAL: TerminalDefinition[] = [
 
 export interface TerminalDefinition {
   name: string;
-  component: Component<TerminalProps>;
+  component: Component<BaseTerminalProps>;
 }

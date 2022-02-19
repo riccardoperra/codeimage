@@ -25,7 +25,7 @@ export interface CustomThemeProperties {
    */
   darkMode: boolean;
   /**
-   * @description Terminal theme properties
+   * @description MacOsTerminal theme properties
    */
   terminal: TerminalThemeProperties;
 }

@@ -154,8 +154,10 @@ export const FrameSidebar = () => {
             ]}
           />
         </div>
+      </div>
 
-        <Show when={terminal.showHeader}>
+      <Show when={terminal.showHeader}>
+        <div class={styles.panelRow}>
           <div
             style={{
               display: 'flex',
@@ -167,6 +169,7 @@ export const FrameSidebar = () => {
             }}
             class={sprinkles({
               marginTop: '2',
+              marginBottom: '4',
             })}
           >
             <TerminalControlField
@@ -174,8 +177,8 @@ export const FrameSidebar = () => {
               onTerminalChange={terminal.setType}
             />
           </div>
-        </Show>
-      </div>
+        </div>
+      </Show>
 
       <Show when={terminal.showHeader}>
         <div class={styles.panelRow}>
