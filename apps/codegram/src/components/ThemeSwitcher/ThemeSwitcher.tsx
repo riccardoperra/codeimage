@@ -1,15 +1,14 @@
 import {For} from 'solid-js';
 import {Text} from '../ui/Text/Text';
-
 import * as styles from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';
-import {THEMES} from '../../core/theme';
 import {useTerminalState} from '../../state/terminal';
 import {updateTheme} from '../../state/state';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
+import {useStaticConfiguration} from '../../core/configuration/ConfigurationProvider';
 
 export const ThemeSwitcher = () => {
-  const themes = THEMES;
+  const {themes} = useStaticConfiguration();
   const terminal = useTerminalState();
 
   return (

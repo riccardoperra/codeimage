@@ -1,19 +1,35 @@
 import {Component, Show} from 'solid-js';
 import * as baseStyles from '../terminal.css';
 import {sprinkles} from '../../../theme/sprinkles.css';
-import {WindowsTerminalHeader} from './WindowsTerminalHeader';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './WindowsTerminal.css';
+import {Box} from '../../ui/Box/Box';
+import {InlineTextField} from '../../ui/TextField/InlineTextField';
+import {WindowsTerminalControls} from './WindowsTerminalControls';
 
 export const WindowsTerminal: Component<BaseTerminalProps> = props => {
   return (
     <TerminalHost {...props} theme={styles.theme}>
       <Show when={props.showHeader}>
-        <WindowsTerminalHeader
-          showTab={props.showTab}
-          accentVisible={props.accentVisible}
-          darkMode={props.darkMode}
-        />
+        <div
+          class={baseStyles.header}
+          data-theme-mode={props.darkMode ? 'dark' : 'light'}
+          data-accent-visible={props.accentVisible}
+        >
+          <Show when={props.showTab}>
+            <Box class={baseStyles.tab} marginLeft={'6'}>
+              <InlineTextField
+                size={'sm'}
+                placeholder={'Untitled'}
+                value={props.tabName ?? ''}
+                disabled={false}
+                onChange={value => props.onTabChange?.(value)}
+              />
+            </Box>
+          </Show>
+
+          <WindowsTerminalControls />
+        </div>
       </Show>
 
       <Show when={props.children}>

@@ -6,12 +6,15 @@ import {TerminalState} from '../../state/terminal';
 import clsx from 'clsx';
 
 export interface BaseTerminalProps extends Omit<TerminalState, 'type'> {
-  theme: string;
   showTab: boolean;
   onTabChange?: (tab: string) => void;
 }
 
-export const TerminalHost: Component<BaseTerminalProps> = props => {
+export interface TerminalHostProps extends BaseTerminalProps {
+  theme: string;
+}
+
+export const TerminalHost: Component<TerminalHostProps> = props => {
   return (
     <div
       class={clsx(styles.wrapper, props.theme)}

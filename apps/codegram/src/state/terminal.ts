@@ -1,8 +1,7 @@
 import {combine, devtools} from 'zustand/middleware';
 import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
-import {THEMES} from '../core/theme';
-import {AVAILABLE_TERMINAL} from '../core/constants/terminal';
+import {staticConfiguration} from '../core/configuration/static-configuration';
 
 export interface TerminalState {
   showHeader: boolean;
@@ -17,13 +16,15 @@ export interface TerminalState {
 
 const initialState: TerminalState = {
   showHeader: true,
-  type: AVAILABLE_TERMINAL[0].name,
+  type: staticConfiguration.terminalThemes.entries[
+    staticConfiguration.terminalThemes.keys[0]
+  ].name,
   tabName: null,
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
-  background: THEMES[0].properties.terminal.main,
-  textColor: THEMES[0].properties.terminal.text,
-  darkMode: THEMES[0].properties.darkMode,
+  background: staticConfiguration.themes[0].properties.terminal.main,
+  textColor: staticConfiguration.themes[0].properties.terminal.text,
+  darkMode: staticConfiguration.themes[0].properties.darkMode,
 };
 
 const store = combine(initialState, set => ({
