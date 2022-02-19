@@ -1,8 +1,8 @@
 import {InlineTextField} from '../../ui/TextField/InlineTextField';
-
-import * as styles from './WindowsTerminal.css';
+import * as baseStyles from '../terminal.css';
 import {JSXElement, Show} from 'solid-js';
 import {WindowsTerminalControls} from './WindowsTerminalControls';
+import {Box} from '../../ui/Box/Box';
 
 interface WindowsTerminalHeaderProps {
   showTab: boolean;
@@ -15,18 +15,18 @@ export function WindowsTerminalHeader(
 ): JSXElement {
   return (
     <div
-      class={styles.header}
+      class={baseStyles.header}
       data-theme-mode={props.darkMode ? 'dark' : 'light'}
       data-accent-visible={props.accentVisible}
     >
       <Show when={props.showTab}>
-        <div class={styles.tab}>
+        <Box class={baseStyles.tab} marginLeft={'6'}>
           <InlineTextField
             size={'sm'}
             placeholder={'Untitled'}
             disabled={true}
           />
-        </div>
+        </Box>
       </Show>
 
       <WindowsTerminalControls />

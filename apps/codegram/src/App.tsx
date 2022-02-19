@@ -9,7 +9,7 @@ import {createSignal} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
 import {useTerminalState} from './state/terminal';
-import {DynamicTerminal} from './components/Terminal/DynamicTerminal';
+import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
 
 const App = () => {
   const frame = useFrameState();

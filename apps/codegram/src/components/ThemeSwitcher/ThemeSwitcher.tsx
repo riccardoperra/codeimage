@@ -6,7 +6,7 @@ import {ThemeBox} from './ThemeBox';
 import {THEMES} from '../../core/theme';
 import {useTerminalState} from '../../state/terminal';
 import {updateTheme} from '../../state/state';
-import {DynamicTerminal} from '../Terminal/DynamicTerminal';
+import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
 
 export const ThemeSwitcher = () => {
   const themes = THEMES;

@@ -1,24 +1,13 @@
 import {Component, Show} from 'solid-js';
-import * as styles from './WindowsTerminal.css';
+import * as baseStyles from '../terminal.css';
 import {sprinkles} from '../../../theme/sprinkles.css';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {themeVars} from '../../../theme/global.css';
 import {WindowsTerminalHeader} from './WindowsTerminalHeader';
-import {TerminalProps} from '../Terminal';
+import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
+import * as styles from './WindowsTerminal.css';
 
-interface WindowsTerminalProps extends TerminalProps {}
-
-export const WindowsTerminal: Component<WindowsTerminalProps> = props => {
+export const WindowsTerminal: Component<BaseTerminalProps> = props => {
   return (
-    <div
-      class={styles.wrapper}
-      data-theme-mode={props.darkMode ? 'dark' : 'light'}
-      style={assignInlineVars({
-        [styles.terminalVars.backgroundColor]: props.background,
-        [styles.terminalVars.textColor]: props.textColor,
-        [styles.terminalVars.boxShadow]: props.shadow ?? themeVars.boxShadow.lg,
-      })}
-    >
+    <TerminalHost {...props} theme={styles.theme}>
       <Show when={props.showHeader}>
         <WindowsTerminalHeader
           showTab={props.showTab}
@@ -28,12 +17,12 @@ export const WindowsTerminal: Component<WindowsTerminalProps> = props => {
       </Show>
 
       <Show when={props.children}>
-        <div class={styles.content}>
+        <div class={baseStyles.content}>
           <div class={sprinkles({position: 'relative'})}>
             <div>{props.children}</div>
           </div>
         </div>
       </Show>
-    </div>
+    </TerminalHost>
   );
 };

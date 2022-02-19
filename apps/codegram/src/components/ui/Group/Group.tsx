@@ -3,7 +3,7 @@ import {Box} from '../Box/Box';
 import * as styles from './Group.css';
 import {GroupVariants} from './Group.css';
 
-type GroupProps = GroupVariants & {};
+type GroupProps = GroupVariants;
 
 export const Group: Component<GroupProps> = props => {
   return (

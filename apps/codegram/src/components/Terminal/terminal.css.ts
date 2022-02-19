@@ -3,11 +3,6 @@ import {themeVars} from '../../theme/global.css';
 import {backgroundColorVar} from '../../theme/variables.css';
 
 export const [terminalTheme, terminalVars] = createTheme({
-  controls: {
-    red: '#ff5f57',
-    yellow: '#febc2e',
-    green: '#28c840',
-  },
   headerHeight: '50px',
   headerBackgroundColor: themeVars.backgroundColor.white,
   backgroundColor: themeVars.backgroundColor.white,

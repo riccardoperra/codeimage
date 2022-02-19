@@ -1,10 +1,10 @@
 import {Component, JSXElement} from 'solid-js';
-import {AVAILABLE_TERMINAL} from '../../core/constants/terminal';
+import {AVAILABLE_TERMINAL} from '../../../core/constants/terminal';
 import {Dynamic} from 'solid-js/web';
-import {TerminalProps} from './Terminal';
 import {omitProps} from 'solid-use';
+import {BaseTerminalProps} from '../TerminalHost';
 
-interface DynamicTerminalProps extends TerminalProps {
+interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;
 }
 
