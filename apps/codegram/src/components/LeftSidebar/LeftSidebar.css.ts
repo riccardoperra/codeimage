@@ -3,6 +3,7 @@ import {themeVars} from '../../theme/global.css';
 
 export const [sidebarTheme, sidebarVars] = createTheme({
   gap: themeVars.spacing['4'],
+  panelTitleTextColor: themeVars.dynamicColors.panelTextColor,
 });
 
 export const sidebar = style([
@@ -22,6 +23,7 @@ export const panelHeader = style([
     overflow: 'hidden',
     flexShrink: 0,
     width: '100%',
+    color: sidebarVars.panelTitleTextColor,
   },
 ]);
 
@@ -35,6 +37,7 @@ export const panelRow = style([
     columnGap: themeVars.spacing['2'],
     gridTemplateColumns: 'minmax(0,1.25fr) repeat(2,minmax(0,1fr))',
     gridTemplateRows: 'auto',
+    color: sidebarVars.panelTitleTextColor,
   },
 ]);
 

@@ -23,7 +23,7 @@ export const FrameSidebar = () => {
       </div>
 
       <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
+        <Text as="div" size={'xs'} class={styles.titleWrapper}>
           Padding
         </Text>
         <div
@@ -50,7 +50,7 @@ export const FrameSidebar = () => {
       </div>
 
       <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
+        <Text as="div" size={'xs'} class={styles.titleWrapper}>
           Visible
         </Text>
         <div
@@ -76,7 +76,7 @@ export const FrameSidebar = () => {
 
       <Show when={frame.visible}>
         <div class={styles.panelRow}>
-          <Text as="div" size={'sm'} class={styles.titleWrapper}>
+          <Text as="div" size={'xs'} class={styles.titleWrapper}>
             Opacity
           </Text>
           <div
@@ -101,7 +101,7 @@ export const FrameSidebar = () => {
 
       <Show when={frame.visible}>
         <div class={styles.panelRow}>
-          <Text as="div" size={'sm'} class={styles.titleWrapper}>
+          <Text as="div" size={'xs'} class={styles.titleWrapper}>
             Color
           </Text>
 
@@ -131,7 +131,7 @@ export const FrameSidebar = () => {
       </div>
 
       <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
+        <Text as="div" size={'xs'} class={styles.titleWrapper}>
           Header
         </Text>
 
@@ -182,7 +182,7 @@ export const FrameSidebar = () => {
 
       <Show when={terminal.showHeader}>
         <div class={styles.panelRow}>
-          <Text as="div" size={'sm'} class={styles.titleWrapper}>
+          <Text as="div" size={'xs'} class={styles.titleWrapper}>
             Tab accent
           </Text>
           <div
@@ -208,7 +208,7 @@ export const FrameSidebar = () => {
       </Show>
 
       <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
+        <Text as="div" size={'xs'} class={styles.titleWrapper}>
           Shadows
         </Text>
         <div
@@ -225,7 +225,7 @@ export const FrameSidebar = () => {
       </div>
 
       <div class={styles.panelRow}>
-        <Text as="div" size={'sm'} class={styles.titleWrapper}>
+        <Text as="div" size={'xs'} class={styles.titleWrapper}>
           Font
         </Text>
       </div>
