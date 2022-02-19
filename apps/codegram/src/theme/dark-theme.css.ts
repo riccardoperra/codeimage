@@ -8,6 +8,7 @@ export const darkThemeCss = createTheme(colors, {
   panelTextColor: themeVars.backgroundColor.white,
   background: '#181818',
   baseText: themeVars.textColor.gray['800'],
+  descriptionTextColor: '#999999',
   secondary: themeVars.backgroundColor.gray['200'],
   divider: '#252525',
   inputBackgroundColor: '#2B2B2B',
