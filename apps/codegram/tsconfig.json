@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "jsx": "preserve",
+    "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
     "types": ["vite/client"]
   },

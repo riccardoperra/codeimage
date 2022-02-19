@@ -14,6 +14,7 @@ type TerminalDefinitionMap<T extends string> = {
 
 // TODO: create helper fn
 export interface AppStaticConfiguration {
+  version: string;
   themes: CustomTheme[];
   terminalThemes: TerminalDefinitionMap<string>;
 }

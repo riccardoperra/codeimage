@@ -36,7 +36,6 @@ const App = () => {
 
       <Canvas>
         <Toolbar canvasRef={frameRef()} />
-
         <div ref={setFrameRef}>
           <Frame
             radius={0}
