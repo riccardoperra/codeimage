@@ -1,5 +1,4 @@
 import {For} from 'solid-js';
-import {Terminal} from '../Terminal/Terminal';
 import {Text} from '../ui/Text/Text';
 
 import * as styles from './ThemeSwitcher.css';
@@ -7,6 +6,7 @@ import {ThemeBox} from './ThemeBox';
 import {THEMES} from '../../core/theme';
 import {useTerminalState} from '../../state/terminal';
 import {updateTheme} from '../../state/state';
+import {DynamicTerminal} from '../Terminal/DynamicTerminal';
 
 export const ThemeSwitcher = () => {
   const themes = THEMES;
@@ -17,16 +17,19 @@ export const ThemeSwitcher = () => {
       <For each={themes}>
         {theme => (
           <ThemeBox theme={theme} onClick={() => updateTheme(theme)}>
-            <Terminal
+            <DynamicTerminal
               tabName={'Untitled'}
               textColor={theme.properties.terminal.text}
               background={theme.properties.terminal.main}
               darkMode={theme.properties.darkMode}
               accentVisible={terminal.accentVisible}
               shadow={terminal.shadow}
+              showTab={true}
+              showHeader={true}
+              type={terminal.type}
             >
               <Text size={'sm'}>{`console.log('Hello!');`}</Text>
-            </Terminal>
+            </DynamicTerminal>
           </ThemeBox>
         )}
       </For>

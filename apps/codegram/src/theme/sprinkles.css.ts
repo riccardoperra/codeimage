@@ -15,6 +15,7 @@ const responsiveProperties = defineProperties({
       block: 'block',
       inline: 'inline',
       inlineBlock: 'inline-block',
+      inlineFlex: 'inline-flex',
       flex: 'flex',
     },
     position: ['relative', 'absolute', 'fixed'],
@@ -86,3 +87,5 @@ const colorProperties = defineProperties({
 });
 
 export const sprinkles = createSprinkles(responsiveProperties, colorProperties);
+
+export type Sprinkles = Parameters<typeof sprinkles>[0];

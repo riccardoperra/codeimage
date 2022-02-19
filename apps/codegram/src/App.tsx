@@ -1,4 +1,3 @@
-import {Terminal} from './components/Terminal/Terminal';
 import {Frame} from './components/Frame/Frame';
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Scaffold} from './components/Scaffold/Scaffold';
@@ -10,6 +9,7 @@ import {createSignal} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
 import {useTerminalState} from './state/terminal';
+import {DynamicTerminal} from './components/Terminal/DynamicTerminal';
 
 const App = () => {
   const frame = useFrameState();
@@ -44,7 +44,8 @@ const App = () => {
             opacity={frame.opacity}
             visible={frame.visible}
           >
-            <Terminal
+            <DynamicTerminal
+              type={terminal.type}
               tabName={terminal.tabName}
               shadow={terminal.shadow}
               background={terminal.background}
@@ -52,9 +53,11 @@ const App = () => {
               darkMode={terminal.darkMode}
               textColor={terminal.textColor}
               onTabChange={terminal.setTabName}
+              showTab={true}
+              showHeader={terminal.showHeader}
             >
               <CustomEditor />
-            </Terminal>
+            </DynamicTerminal>
           </Frame>
         </div>
       </Canvas>
