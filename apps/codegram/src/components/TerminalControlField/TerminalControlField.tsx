@@ -1,10 +1,10 @@
 import {For, JSXElement} from 'solid-js';
-import {AVAILABLE_TERMINAL} from '../../core/constants/terminal';
 import {Dynamic} from 'solid-js/web';
 import {useTerminalState} from '../../state/terminal';
 import {Group} from '../ui/Group/Group';
 import {RadioBlock} from '../ui/RadioBlock/RadioBlock';
 import {Box} from '../ui/Box/Box';
+import {useStaticConfiguration} from '../../core/configuration/ConfigurationProvider';
 
 interface TerminalControlFieldProps {
   selectedTerminal: string;
@@ -14,12 +14,12 @@ interface TerminalControlFieldProps {
 export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
-  const terminals = AVAILABLE_TERMINAL;
+  const {terminalThemes} = useStaticConfiguration();
   const terminalState = useTerminalState();
 
   return (
     <Group orientation={'vertical'}>
-      <For each={terminals}>
+      <For each={Object.values(terminalThemes.entries)}>
         {terminal => (
           <RadioBlock
             selected={terminal.name === props.selectedTerminal}
