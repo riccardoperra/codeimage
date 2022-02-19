@@ -9,4 +9,5 @@ export const canvas = style({
   flex: '1 auto',
   position: 'relative',
   backgroundColor: themeVars.dynamicColors.background,
+  transition: 'background-color .2s',
 });
