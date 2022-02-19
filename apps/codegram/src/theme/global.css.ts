@@ -1,7 +1,8 @@
 import {createGlobalTheme, globalStyle} from '@vanilla-extract/css';
 import {colors, spacing} from '@codegram/ui';
+import {colors as dynamicColors} from './theme.css';
 
-export const themeVars = createGlobalTheme(':root', {
+export const root = createGlobalTheme(':root', {
   screens: {
     sm: '640px',
     md: '768px',
@@ -206,3 +207,8 @@ globalStyle('html, body', {
     },
   },
 });
+
+export const themeVars = {
+  ...root,
+  dynamicColors,
+};

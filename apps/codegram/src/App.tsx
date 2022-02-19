@@ -10,6 +10,7 @@ import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
 import {useTerminalState} from './state/terminal';
 import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
+import {darkThemeCss} from './theme/dark-theme.css';
 
 const App = () => {
   const frame = useFrameState();
@@ -17,7 +18,7 @@ const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
 
   return (
-    <Scaffold>
+    <Scaffold theme={darkThemeCss}>
       <Sidebar>
         <FrameSidebar />
       </Sidebar>

@@ -1,6 +1,11 @@
 import {Component} from 'solid-js';
 import * as styles from './Scaffold.css';
+import clsx from 'clsx';
 
-export const Scaffold: Component = props => {
-  return <div class={styles.scaffold}>{props.children}</div>;
+interface ScaffoldProps {
+  theme: string;
+}
+
+export const Scaffold: Component<ScaffoldProps> = props => {
+  return <div class={clsx(styles.scaffold, props.theme)}>{props.children}</div>;
 };
