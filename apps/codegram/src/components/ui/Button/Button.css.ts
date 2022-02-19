@@ -62,26 +62,29 @@ export const buttonVariant = recipe({
     theme: {
       primary: {
         vars: {
-          [backgroundColorVar]: themeVars.backgroundColor.blue['500'],
-          [colorVar]: themeVars.textColor.white,
+          [backgroundColorVar]:
+            themeVars.dynamicColors.buttonBackgroundPrimaryColor,
+          [colorVar]: themeVars.dynamicColors.buttonTextPrimaryColor,
         },
         selectors: {
           '&:hover:not(:disabled)': {
             vars: {
-              [backgroundColorVar]: themeVars.backgroundColor.blue['700'],
+              [backgroundColorVar]:
+                themeVars.dynamicColors.buttonBackgroundPrimaryHover,
             },
           },
         },
       },
       secondary: {
         vars: {
-          [backgroundColorVar]: themeVars.backgroundColor.gray['300'],
-          [colorVar]: themeVars.textColor.gray['700'],
+          [backgroundColorVar]: themeVars.dynamicColors.buttonBackgroundColor,
+          [colorVar]: themeVars.dynamicColors.buttonTextColor,
         },
         selectors: {
           '&:hover:not(:disabled)': {
             vars: {
-              [backgroundColorVar]: themeVars.backgroundColor.gray['400'],
+              [backgroundColorVar]:
+                themeVars.dynamicColors.buttonBackgroundHover,
             },
           },
         },

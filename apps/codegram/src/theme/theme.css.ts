@@ -12,4 +12,12 @@ export const colors = createThemeContract({
   inputBorderColor: null,
   inputTextColor: null,
   inputAccentColor: null,
+  buttonBackgroundPrimaryColor: null,
+  buttonBackgroundPrimaryActive: null,
+  buttonBackgroundPrimaryHover: null,
+  buttonTextPrimaryColor: null,
+  buttonBackgroundColor: null,
+  buttonBackgroundActive: null,
+  buttonBackgroundHover: null,
+  buttonTextColor: null,
 });
