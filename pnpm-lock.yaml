@@ -34,11 +34,11 @@ importers:
       prettier: 2.5.1
       typescript: 4.5.5
 
-  apps/codegram:
+  apps/codeimage:
     specifiers:
-      '@codegram/locale': workspace:*
-      '@codegram/theme': workspace:*
-      '@codegram/ui': workspace:*
+      '@codeimage/locale': workspace:*
+      '@codeimage/theme': workspace:*
+      '@codeimage/ui': workspace:*
       '@codemirror/basic-setup': ^0.19.1
       '@codemirror/commands': ^0.19.8
       '@codemirror/gutter': ^0.19.9
@@ -80,9 +80,9 @@ importers:
       vite-tsconfig-paths: ^3.3.17
       zustand: ^3.6.9
     dependencies:
-      '@codegram/locale': link:../../packages/locale
-      '@codegram/theme': link:../../packages/theme
-      '@codegram/ui': link:../../packages/ui
+      '@codeimage/locale': link:../../packages/locale
+      '@codeimage/theme': link:../../packages/theme
+      '@codeimage/ui': link:../../packages/ui
       '@codemirror/basic-setup': 0.19.1
       '@codemirror/commands': 0.19.8
       '@codemirror/gutter': 0.19.9

@@ -1,5 +1,5 @@
 {
-  "name": "@codegram/locale",
+  "name": "@codeimage/locale",
   "version": "0.1.0",
   "module": "./dist/locale.es.js",
   "source": "./src/public-api.ts",

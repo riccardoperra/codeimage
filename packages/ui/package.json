@@ -1,5 +1,5 @@
 {
-  "name": "@codegram/ui",
+  "name": "@codeimage/ui",
   "version": "0.1.0",
   "module": "./dist/ui.es.js",
   "types": "./dist/src/index.d.ts",

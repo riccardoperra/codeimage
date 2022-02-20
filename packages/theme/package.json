@@ -1,5 +1,5 @@
 {
-  "name": "@codegram/theme",
+  "name": "@codeimage/theme",
   "version": "0.1.0",
   "module": "./dist/theme.es.js",
   "source": "./src/public-api.ts",

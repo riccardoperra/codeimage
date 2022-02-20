@@ -1,5 +1,5 @@
 {
-  "name": "@codegram/app",
+  "name": "@codeimage/app",
   "private": true,
   "version": "0.2.0",
   "scripts": {
@@ -23,9 +23,9 @@
     "vite-tsconfig-paths": "^3.3.17"
   },
   "dependencies": {
-    "@codegram/theme": "workspace:*",
-    "@codegram/ui": "workspace:*",
-    "@codegram/locale": "workspace:*",
+    "@codeimage/theme": "workspace:*",
+    "@codeimage/ui": "workspace:*",
+    "@codeimage/locale": "workspace:*",
     "@codemirror/basic-setup": "^0.19.1",
     "@codemirror/commands": "^0.19.8",
     "@codemirror/gutter": "^0.19.9",
