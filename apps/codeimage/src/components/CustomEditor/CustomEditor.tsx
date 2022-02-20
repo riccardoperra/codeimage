@@ -23,6 +23,8 @@ export const CustomEditor = () => {
     },
   });
 
+  // TODO: MUST CONFIGURE BASIC SETUP
+
   return (
     <>
       <CodeMirror
@@ -36,7 +38,7 @@ export const CustomEditor = () => {
           editor.extensions,
         ]}
         editable={true}
-        basicSetup={true}
+        basicSetup={false}
       />
     </>
   );
