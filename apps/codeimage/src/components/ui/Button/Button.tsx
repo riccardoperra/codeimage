@@ -7,7 +7,7 @@ import {JSXElement} from 'solid-js';
 type ButtonProps<T extends ValidConstructor = 'button'> = ShButtonProps<T> &
   styles.ButtonVariants;
 
-export function Button<T extends ValidConstructor>(
+export function Button<T extends ValidConstructor = 'button'>(
   props: ButtonProps<T>,
 ): JSXElement {
   return (
