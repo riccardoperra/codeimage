@@ -1,21 +1,28 @@
-import {useContext} from 'solid-js';
-import {LocaleContext} from './context';
-import {Path} from './path';
+import type {LocaleKeys} from './path';
+import {useI18n as _useI18n} from '@amoutonbrady/solid-i18n';
+import {batch} from 'solid-js';
 
-export function useI18n<T>() {
-  const i18n = useContext(LocaleContext);
+type I18nReturnType = ReturnType<typeof _useI18n>;
+type EnchantedI18n<T> = readonly [
+  t: (
+    message: LocaleKeys<T>,
+    values?: Parameters<I18nReturnType[0]>[1],
+  ) => string,
+  i18n: I18nReturnType[1] & {
+    merge: (dict: Record<string, unknown>) => void;
+  },
+];
 
-  if (!i18n) {
-    throw new Error('LocaleContext has not been provided.');
-  }
+export const useI18n = <T>(): EnchantedI18n<T> => {
+  const [t, i18n] = _useI18n();
 
-  const translate = (
-    path: Path<T>,
-    params?: Record<string, unknown>,
-    lang?: string,
-  ) => i18n.t(path, params, lang);
-
-  return {
-    t: translate,
-  };
-}
+  return [
+    t,
+    Object.assign(i18n, {
+      merge: (dict: Record<string, unknown>) =>
+        batch(() =>
+          Object.entries(dict).forEach(([k, dict]) => i18n.add(k, dict)),
+        ),
+    }),
+  ];
+};

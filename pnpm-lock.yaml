@@ -129,15 +129,15 @@ importers:
 
   packages/locale:
     specifiers:
+      '@amoutonbrady/solid-i18n': ^0.4.0
       rimraf: ^3.0.2
-      rosetta: ^1.1.0
       solid-js: ^1.3.7
       typescript: ^4.5.5
       vite: ^2.7.13
       vite-plugin-dts: ^0.9.9
       vite-plugin-solid: ^2.2.5
     dependencies:
-      rosetta: 1.1.0
+      '@amoutonbrady/solid-i18n': 0.4.0
       solid-js: 1.3.7
     devDependencies:
       rimraf: 3.0.2
@@ -195,6 +195,12 @@ importers:
       vite-plugin-solid: 2.2.5
 
 packages:
+
+  /@amoutonbrady/solid-i18n/0.4.0:
+    resolution: {integrity: sha512-r8tnmolZ+Fjy0SgideVmj0H4vh7Nfko/Fr1crRptrXsgoU1PftyG7m6MOAoCyG+ax2xy+Q5rvtBlJ6leIUD7WQ==}
+    dependencies:
+      solid-js: 1.3.7
+    dev: false
 
   /@ampproject/remapping/2.1.2:
     resolution: {integrity: sha512-hoyByceqwKirw7w3Z7gnIIZC3Wx3J484Y3L/cMpXFbr7d9ZQj2mODrirNzcJa+SM3UlpWXYvKV4RlRpFXlWgXg==}

@@ -1,6 +1,7 @@
 import {defineConfig} from 'vite';
 import path from 'path';
 import dts from 'vite-plugin-dts';
+import solidPlugin from 'vite-plugin-solid';
 
 module.exports = defineConfig({
   build: {
@@ -16,5 +17,5 @@ module.exports = defineConfig({
       output: {},
     },
   },
-  plugins: [dts()],
+  plugins: [solidPlugin(), dts()],
 });
