@@ -5,7 +5,7 @@ import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {FrameSidebar} from './components/LeftSidebar/LeftSidebar';
-import {createSignal} from 'solid-js';
+import {createEffect, createMemo, createSignal, on, onMount} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
 import {useTerminalState} from './state/terminal';
@@ -14,17 +14,23 @@ import {Footer} from './components/Footer/Footer';
 import {useUIState} from './state/ui';
 import {lightThemeCss} from './theme/light-theme.css';
 import {darkThemeCss} from './theme/dark-theme.css';
+import {useI18n} from '@codegram/locale';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const frame = useFrameState();
   const terminal = useTerminalState();
-  const theme = useUIState();
+  const ui = useUIState();
+  const [, {locale}] = useI18n();
+  const currentLocale = createMemo(() => ui.locale);
+
+  onMount(() => {
+    locale(currentLocale());
+    createEffect(on(currentLocale, locale));
+  });
 
   return (
-    <Scaffold
-      theme={theme.themeMode === 'light' ? lightThemeCss : darkThemeCss}
-    >
+    <Scaffold theme={ui.themeMode === 'light' ? lightThemeCss : darkThemeCss}>
       <Sidebar>
         <FrameSidebar />
       </Sidebar>
