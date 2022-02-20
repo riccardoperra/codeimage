@@ -1,5 +1,12 @@
 # @codeimage/theme
 
+## 0.2.0
+
+### Minor Changes
+
+- 171d02f: Update package to @codeimage
+- 56a7c2b: feat: add language selector
+
 ## 0.1.0
 
 ### Minor Changes

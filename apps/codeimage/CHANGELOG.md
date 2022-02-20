@@ -1,5 +1,20 @@
 # @codeimage/app
 
+## 0.3.0
+
+### Minor Changes
+
+- 171d02f: Update package to @codeimage
+- 56a7c2b: feat: add language selector
+
+### Patch Changes
+
+- Updated dependencies [171d02f]
+- Updated dependencies [56a7c2b]
+  - @codeimage/locale@0.2.0
+  - @codeimage/theme@0.2.0
+  - @codeimage/ui@0.2.0
+
 ## 0.2.0
 
 ### Minor Changes
