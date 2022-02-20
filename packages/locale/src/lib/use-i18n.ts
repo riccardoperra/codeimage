@@ -4,11 +4,12 @@ import {batch} from 'solid-js';
 
 type I18nReturnType = ReturnType<typeof _useI18n>;
 type EnchantedI18n<T> = readonly [
-  t: (
+  tStrict: (
     message: LocaleKeys<T>,
     values?: Parameters<I18nReturnType[0]>[1],
   ) => string,
   i18n: I18nReturnType[1] & {
+    tUnsafe: I18nReturnType[0];
     merge: (dict: Record<string, unknown>) => void;
   },
 ];
@@ -19,6 +20,7 @@ export const useI18n = <T>(): EnchantedI18n<T> => {
   return [
     t,
     Object.assign(i18n, {
+      tUnsafe: t,
       merge: (dict: Record<string, unknown>) =>
         batch(() =>
           Object.entries(dict).forEach(([k, dict]) =>

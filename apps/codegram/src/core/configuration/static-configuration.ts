@@ -20,4 +20,5 @@ export const staticConfiguration: AppStaticConfiguration = {
   },
   themes: [oneDarkTheme, lightTheme],
   version,
+  locales: ['it', 'en'],
 };

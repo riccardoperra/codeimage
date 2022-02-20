@@ -16,5 +16,6 @@ type TerminalDefinitionMap<T extends string> = {
 export interface AppStaticConfiguration {
   version: string;
   themes: CustomTheme[];
+  locales: string[];
   terminalThemes: TerminalDefinitionMap<string>;
 }

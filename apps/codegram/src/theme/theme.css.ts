@@ -21,4 +21,5 @@ export const colors = createThemeContract({
   buttonBackgroundActive: null,
   buttonBackgroundHover: null,
   buttonTextColor: null,
+  menuBackground: null,
 });

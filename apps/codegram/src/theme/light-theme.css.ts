@@ -23,4 +23,5 @@ export const lightThemeCss = createTheme(colors, {
   buttonBackgroundPrimaryActive: themeVars.backgroundColor.blue['700'],
   buttonBackgroundPrimaryHover: themeVars.backgroundColor.blue['600'],
   buttonTextPrimaryColor: themeVars.backgroundColor.white,
+  menuBackground: themeVars.backgroundColor.white,
 });

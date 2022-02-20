@@ -1,7 +1,7 @@
 import * as styles from './LeftSidebar.css';
 import {Text} from '../ui/Text/Text';
 import {RangeField} from '../ui/RangeField/RangeField';
-import {Show} from 'solid-js';
+import {onMount, Show} from 'solid-js';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {ShadowField} from '../ShadowField/ShadowField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
@@ -9,22 +9,26 @@ import {useFrameState} from '../../state/frame';
 import {useTerminalState} from '../../state/terminal';
 import {sprinkles} from '../../theme/sprinkles.css';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
+import {useI18n} from '@codegram/locale';
+import {locale} from './FrameSidebar.locale';
 
 export const FrameSidebar = () => {
   const frame = useFrameState();
   const terminal = useTerminalState();
+  const [t, {merge}] = useI18n<typeof locale>();
+  onMount(() => merge(locale));
 
   return (
     <div class={styles.sidebar}>
       <div class={styles.panelHeader}>
         <Text size="sm" weight="semibold">
-          Frame
+          {t('frame.frame')}
         </Text>
       </div>
 
       <div class={styles.panelRow}>
         <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          Padding
+          {t('frame.padding')}
         </Text>
         <div
           style={{
@@ -51,7 +55,7 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelRow}>
         <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          Visible
+          {t('frame.visible')}
         </Text>
         <div
           style={{
@@ -77,7 +81,7 @@ export const FrameSidebar = () => {
       <Show when={frame.visible}>
         <div class={styles.panelRow}>
           <Text as="div" size={'xs'} class={styles.titleWrapper}>
-            Opacity
+            {t('frame.opacity')}
           </Text>
           <div
             style={{
@@ -102,7 +106,7 @@ export const FrameSidebar = () => {
       <Show when={frame.visible}>
         <div class={styles.panelRow}>
           <Text as="div" size={'xs'} class={styles.titleWrapper}>
-            Color
+            {t('frame.color')}
           </Text>
 
           <div
@@ -126,13 +130,13 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelHeader}>
         <Text size="sm" weight="semibold">
-          Terminal
+          {t('frame.terminal')}
         </Text>
       </div>
 
       <div class={styles.panelRow}>
         <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          Header
+          {t('frame.header')}
         </Text>
 
         <div
