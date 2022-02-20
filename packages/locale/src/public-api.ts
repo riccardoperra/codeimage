@@ -1,2 +1,3 @@
-export * from './lib/i18n';
-export * from './lib/context';
+export {I18nProvider} from '@amoutonbrady/solid-i18n';
+export * from './lib/path';
+export * from './lib/use-i18n';
