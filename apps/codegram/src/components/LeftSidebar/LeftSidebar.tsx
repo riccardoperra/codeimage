@@ -187,7 +187,7 @@ export const FrameSidebar = () => {
       <Show when={terminal.showHeader}>
         <div class={styles.panelRow}>
           <Text as="div" size={'xs'} class={styles.titleWrapper}>
-            Tab accent
+            {t('frame.tabAccent')}
           </Text>
           <div
             style={{
@@ -213,7 +213,7 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelRow}>
         <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          Shadows
+          {t('frame.shadows')}
         </Text>
         <div
           style={{
@@ -230,7 +230,7 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelRow}>
         <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          Font
+          {t('frame.font')}
         </Text>
       </div>
     </div>

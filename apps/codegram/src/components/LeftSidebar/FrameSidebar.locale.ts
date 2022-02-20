@@ -8,6 +8,9 @@ export const locale = {
       color: 'Color',
       terminal: 'Window',
       header: 'Header',
+      tabAccent: 'Tab accent',
+      shadows: 'Shadows',
+      font: 'Font',
     },
   },
   it: {
@@ -19,6 +22,9 @@ export const locale = {
       color: 'Colore',
       terminal: 'Finestra',
       header: 'Intestazione',
+      tabAccent: 'Accento tab',
+      shadows: 'Ombre',
+      font: 'Carattere',
     },
   },
 };
