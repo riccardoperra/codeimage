@@ -1,5 +1,17 @@
 # @codegram/app
 
+## 0.2.0
+
+### Minor Changes
+
+- 642944c: Add localization support
+
+### Patch Changes
+
+- Updated dependencies [642944c]
+- Updated dependencies [1d6b98e]
+  - @codegram/locale@0.1.0
+
 ## 0.1.0
 
 ### Minor Changes
