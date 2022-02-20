@@ -1,4 +1,4 @@
-# @codegram/app
+# @codeimage/app
 
 ## 0.2.0
 
@@ -10,7 +10,7 @@
 
 - Updated dependencies [642944c]
 - Updated dependencies [1d6b98e]
-  - @codegram/locale@0.1.0
+  - @codeimage/locale@0.1.0
 
 ## 0.1.0
 
@@ -21,8 +21,8 @@
 ### Patch Changes
 
 - Updated dependencies [5d94d1c]
-  - @codegram/theme@0.1.0
-  - @codegram/ui@0.1.0
+  - @codeimage/theme@0.1.0
+  - @codeimage/ui@0.1.0
 
 ## 0.0.2
 
@@ -30,5 +30,5 @@
 
 - Add ui dynamic theme support
 - Updated dependencies
-  - @codegram/theme@0.0.2
-  - @codegram/ui@0.0.2
+  - @codeimage/theme@0.0.2
+  - @codeimage/ui@0.0.2

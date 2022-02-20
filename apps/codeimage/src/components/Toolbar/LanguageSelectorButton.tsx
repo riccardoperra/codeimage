@@ -4,7 +4,7 @@ import {Box} from '../ui/Box/Box';
 import {For, Show} from 'solid-js';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import {offset} from '@floating-ui/dom';
-import {useI18n} from '@codegram/locale';
+import {useI18n} from '@codeimage/locale';
 import {DropdownItem} from '../ui/Dropdown/DropdownItem';
 import {DropdownMenu} from '../ui/Dropdown/DropdownMenu';
 import {AppLocaleEntries} from '../../i18n';

@@ -21,4 +21,4 @@ jobs:
         run: pnpm install
 
       - name: Lint
-        run: pnpm lint --filter @codegram/*
+        run: pnpm lint --filter @codeimage/*

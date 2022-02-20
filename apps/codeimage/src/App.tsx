@@ -14,7 +14,7 @@ import {Footer} from './components/Footer/Footer';
 import {useUIState} from './state/ui';
 import {lightThemeCss} from './theme/light-theme.css';
 import {darkThemeCss} from './theme/dark-theme.css';
-import {useI18n} from '@codegram/locale';
+import {useI18n} from '@codeimage/locale';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();

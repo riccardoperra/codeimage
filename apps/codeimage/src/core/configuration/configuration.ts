@@ -1,4 +1,4 @@
-import {CustomTheme} from '@codegram/theme';
+import {CustomTheme} from '@codeimage/theme';
 import {Component} from 'solid-js';
 import {BaseTerminalProps} from '../../components/Terminal/TerminalHost';
 

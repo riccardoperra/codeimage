@@ -1,4 +1,4 @@
-import {CustomTheme} from '@codegram/theme';
+import {CustomTheme} from '@codeimage/theme';
 import {useFrameState} from './frame';
 import {useTerminalState} from './terminal';
 import {useEditorState} from './editor';

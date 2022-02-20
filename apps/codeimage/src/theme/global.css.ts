@@ -1,5 +1,5 @@
 import {createGlobalTheme, globalStyle} from '@vanilla-extract/css';
-import {colors, spacing} from '@codegram/ui';
+import {colors, spacing} from '@codeimage/ui';
 import {colors as dynamicColors} from './theme.css';
 
 export const root = createGlobalTheme(':root', {

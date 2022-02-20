@@ -18,7 +18,7 @@
       "vite/client"
     ],
     "paths": {
-      "@codegram/ui": [
+      "@codeimage/ui": [
         "./packages/ui/src/index.ts"
       ]
     }

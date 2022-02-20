@@ -1,4 +1,4 @@
-# @codegram/theme
+# @codeimage/theme
 
 ## 0.1.0
 

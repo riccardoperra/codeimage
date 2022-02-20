@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import {StaticConfigurationProvider} from './core/configuration/ConfigurationProvider';
 import {staticConfiguration} from './core/configuration/static-configuration';
-import {I18nProvider} from '@codegram/locale';
+import {I18nProvider} from '@codeimage/locale';
 import {locale} from './i18n';
 
 render(

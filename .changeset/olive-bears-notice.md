@@ -1,6 +1,6 @@
 ---
-'@codegram/app': minor
-'@codegram/locale': minor
+'@codeimage/app': minor
+'@codeimage/locale': minor
 ---
 
 feat: add language selector

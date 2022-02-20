@@ -10,7 +10,7 @@ module.exports = defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
-      name: '@codegram/ui',
+      name: '@codeimage/ui',
       fileName: 'ui',
       formats: ['es'],
     },

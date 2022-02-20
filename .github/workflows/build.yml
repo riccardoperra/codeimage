@@ -29,14 +29,14 @@ jobs:
         run: pnpm install
 
       - name: Lint
-        run: pnpm lint --filter @codegram/*
+        run: pnpm lint --filter @codeimage/*
 
       - name: Build
         run: |
           pnpm build:prod
 
       - name: Type checking
-        run: pnpm typecheck --filter @codegram/*
+        run: pnpm typecheck --filter @codeimage/*
 
 concurrency:
   group: build-${{ github.head_ref }}

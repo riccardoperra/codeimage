@@ -3,7 +3,7 @@ import {Component} from 'solid-js';
 import {Text} from '../ui/Text/Text';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {backgroundColorVar} from '../../theme/variables.css';
-import {CustomTheme} from '@codegram/theme';
+import {CustomTheme} from '@codeimage/theme';
 
 interface ThemeBoxProps {
   theme: CustomTheme;

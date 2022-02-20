@@ -7,7 +7,7 @@ module.exports = defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/public-api.ts'),
-      name: '@codegram/locale',
+      name: '@codeimage/locale',
       fileName: 'locale',
       formats: ['es'],
     },

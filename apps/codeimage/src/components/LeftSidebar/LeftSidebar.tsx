@@ -9,7 +9,7 @@ import {useFrameState} from '../../state/frame';
 import {useTerminalState} from '../../state/terminal';
 import {sprinkles} from '../../theme/sprinkles.css';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
-import {useI18n} from '@codegram/locale';
+import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
 
 export const FrameSidebar = () => {

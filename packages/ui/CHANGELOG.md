@@ -1,4 +1,4 @@
-# @codegram/ui
+# @codeimage/ui
 
 ## 0.1.0
 
