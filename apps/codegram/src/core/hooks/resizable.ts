@@ -6,7 +6,6 @@ import {
   createSignal,
   on,
   onCleanup,
-  untrack,
 } from 'solid-js';
 import {bindAll, UnbindFn} from 'bind-event-listener';
 import {createStore} from 'solid-js/store';
@@ -139,7 +138,7 @@ export function createHorizontalResize(
   createEffect(
     on(resizing, resizing => {
       if (resizing) {
-        const ownerDocument = untrack(ref)?.ownerDocument;
+        const ownerDocument = ref()?.ownerDocument;
         if (!ownerDocument) {
           return;
         }
