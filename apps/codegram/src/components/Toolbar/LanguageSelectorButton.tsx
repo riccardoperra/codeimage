@@ -3,7 +3,7 @@ import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
 import {For, Show} from 'solid-js';
 import {useFloating} from '../../core/floating-ui/floating-ui';
-import {autoPlacement, offset} from '@floating-ui/dom';
+import {offset} from '@floating-ui/dom';
 import {useI18n} from '@codegram/locale';
 import {DropdownItem} from '../ui/Dropdown/DropdownItem';
 import {DropdownMenu} from '../ui/Dropdown/DropdownMenu';
@@ -18,7 +18,8 @@ interface LanguageSelectorButtonProps {
 export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
   const [, {tUnsafe}] = useI18n<AppLocaleEntries>();
   const floating = useFloating({
-    middleware: [autoPlacement({alignment: 'start'}), offset(10)],
+    placement: 'bottom-start',
+    middleware: [offset(10)],
   });
 
   return (
