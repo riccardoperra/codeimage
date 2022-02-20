@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.4.0
+
+### Minor Changes
+
+- 3e39434: feat: add export action
+
 ## 0.3.1
 
 ### Patch Changes
