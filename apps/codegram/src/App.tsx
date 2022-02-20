@@ -5,7 +5,7 @@ import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {FrameSidebar} from './components/LeftSidebar/LeftSidebar';
-import {createEffect, createMemo, createSignal, on, onMount} from 'solid-js';
+import {createEffect, createMemo, createSignal, on} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
 import {useTerminalState} from './state/terminal';
@@ -24,10 +24,7 @@ const App = () => {
   const [, {locale}] = useI18n();
   const currentLocale = createMemo(() => ui.locale);
 
-  onMount(() => {
-    locale(currentLocale());
-    createEffect(on(currentLocale, locale));
-  });
+  createEffect(on(currentLocale, locale));
 
   return (
     <Scaffold theme={ui.themeMode === 'light' ? lightThemeCss : darkThemeCss}>

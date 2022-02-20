@@ -23,4 +23,5 @@ export const darkThemeCss = createTheme(colors, {
   buttonBackgroundPrimaryActive: themeVars.backgroundColor.blue['700'],
   buttonBackgroundPrimaryHover: themeVars.backgroundColor.blue['600'],
   buttonTextPrimaryColor: themeVars.backgroundColor.white,
+  menuBackground: '#2b2b2b',
 });

@@ -10,25 +10,23 @@ type DropdownMenuPanel = PopoverPanelProps<'div'> & {
 
 export const DropdownMenu: Component<DropdownMenuPanel> = props => {
   return (
-    <div>
-      <PopoverPanel
-        as={'div'}
-        unmount={false}
-        class={styles.dropdownPanel}
-        {...props}
-      >
-        <div class={sprinkles({display: 'flex', padding: '3'})}>
-          <Show when={props.title}>
-            <Text as={'div'} weight="semibold" size={'sm'}>
-              {props.title}
-            </Text>
-          </Show>
-        </div>
+    <PopoverPanel
+      as={'div'}
+      unmount={false}
+      class={styles.dropdownPanel}
+      {...props}
+    >
+      <div class={sprinkles({display: 'flex', padding: '3'})}>
+        <Show when={props.title}>
+          <Text as={'div'} weight="semibold" size={'sm'}>
+            {props.title}
+          </Text>
+        </Show>
+      </div>
 
-        <Menu>
-          <MenuItem as={'div'}>{props.children}</MenuItem>
-        </Menu>
-      </PopoverPanel>
-    </div>
+      <Menu>
+        <MenuItem as={'div'}>{props.children}</MenuItem>
+      </Menu>
+    </PopoverPanel>
   );
 };
