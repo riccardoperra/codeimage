@@ -1,7 +1,32 @@
 {
-  "name": "codegram",
+  "name": "codeimage",
   "version": "0.0.1",
-  "description": "",
+  "description": "Create elegant code screenshots of your source code",
+  "info": "Codeimage is the newest tool to help developers to create beautiful screenshots of their code, providing several features to speed up the process to post in social media, and for customize simple lines of code. Built on the top of solid-js and CodeMirror6 for solid-hack, has 30+ editor themes, custom themes, mobile devices and it's open source!",
+  "homepage": "codeimage.dev",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/riccardoperra/codeimage"
+  },
+  "bugs": "https://github.com/riccardoperra/codeimage/issues",
+  "license": "MIT",
+  "keywords": [
+    "solidhack",
+    "solidjs",
+    "best_app",
+    "code",
+    "editor",
+    "screenshot",
+    "elegant"
+  ],
+  "contributors": [
+    {
+      "name": "Riccardo Perra",
+      "email": "riccardo.perra@icloud.com",
+      "url": "https://riccardoperra.com"
+    }
+  ],
   "scripts": {
     "prepare": "husky install",
     "pre-commit": "lint-staged --relative",
@@ -13,8 +38,6 @@
     "lint": "pnpm lint --filter='@codegram/*'",
     "build:prod": "pnpm build --filter='@codegram/*'"
   },
-  "private": true,
-  "license": "MIT",
   "devDependencies": {
     "@changesets/cli": "2.20.0",
     "@commitlint/cli": "^16.1.0",
