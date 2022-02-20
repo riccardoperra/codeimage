@@ -2,6 +2,9 @@ import {Component, createMemo} from 'solid-js';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createHorizontalResize} from '../../core/hooks/resizable';
+import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
+
+export const exportExclude = _exportExclude;
 
 export const Frame: Component<{
   background: string | null | undefined;
@@ -34,7 +37,7 @@ export const Frame: Component<{
         })}
       />
 
-      <div class={styles.dragControls}>
+      <div class={styles.dragControls} use:exportExclude={true}>
         <div class={styles.dragControlLeft} onMouseDown={onResizeStart} />
         <div class={styles.dragControlRight} onMouseDown={onResizeStart} />
       </div>
