@@ -1,0 +1,41 @@
+{
+  "name": "@codegram/locale",
+  "version": "0.0.0",
+  "module": "./dist/locale.es.js",
+  "source": "./src/public-api.ts",
+  "types": "./dist/src/public-api.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/locale.es.js",
+      "types": "./dist/src/public-api.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "pnpm clean && vite build",
+    "build:watch": "vite build --watch",
+    "preview": "vite preview",
+    "pre-commit": "lint-staged --relative",
+    "pre-commit-prettier": "prettier --write",
+    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
+    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "clean": "rimraf dist",
+    "build-esm": "tsc -p tsconfig.esm.json",
+    "build-dts": "tsc -p tsconfig.dts.json",
+    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
+    "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
+  },
+  "dependencies": {
+    "solid-js": "^1.3.7",
+    "rosetta": "^1.1.0"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.3.7"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.5",
+    "vite": "^2.7.13",
+    "vite-plugin-dts": "^0.9.9",
+    "vite-plugin-solid": "^2.2.5",
+    "rimraf": "^3.0.2"
+  }
+}
