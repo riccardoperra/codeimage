@@ -1,5 +1,13 @@
 # @codeimage/app
 
+## 0.3.1
+
+### Patch Changes
+
+- 01b9832: feat: add dracula theme
+- Updated dependencies [01b9832]
+  - @codeimage/theme@0.2.1
+
 ## 0.3.0
 
 ### Minor Changes

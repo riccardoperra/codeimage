@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 0.2.1
+
+### Patch Changes
+
+- 01b9832: feat: add dracula theme
+
 ## 0.2.0
 
 ### Minor Changes
