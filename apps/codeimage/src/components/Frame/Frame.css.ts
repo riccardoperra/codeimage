@@ -93,3 +93,36 @@ export const dragControlRight = style([
   dragControlHandler,
   {right: frameVars.controlOffset},
 ]);
+
+export const resizeLine = style({
+  position: 'absolute',
+  bottom: -25,
+  width: '100%',
+  height: '15px',
+  borderLeft: '1px solid hsla(0,0%,100%,.25)',
+  borderRight: '1px solid hsla(0,0%,100%,.25)',
+  display: 'flex',
+});
+
+export const resizeBadge = style([
+  {
+    borderRadius: themeVars.borderRadius.lg,
+    padding: '0 1em',
+    display: 'inline-block',
+    fontSize: '12px',
+    backgroundColor: '#161515',
+    color: 'white',
+    alignItems: 'center',
+    margin: 'auto',
+    zIndex: 10,
+  },
+]);
+
+export const resizeLineDivider = style({
+  position: 'absolute',
+  borderColor: `hsla(0, 0%, 100%, .25)`,
+  left: 0,
+  top: '50%',
+  width: '100%',
+  transform: 'transformY(50%)',
+});

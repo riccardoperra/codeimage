@@ -1,13 +1,14 @@
 import {Popover, PopoverButton} from 'solid-headless';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
-import {For, Show} from 'solid-js';
+import {For} from 'solid-js';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import {offset} from '@floating-ui/dom';
 import {useI18n} from '@codeimage/locale';
 import {DropdownItem} from '../ui/Dropdown/DropdownItem';
 import {DropdownMenu} from '../ui/Dropdown/DropdownMenu';
 import {AppLocaleEntries} from '../../i18n';
+import {FadeInOutTransition} from '../ui/Transition/Transition';
 
 interface LanguageSelectorButtonProps {
   locales: string[];
@@ -48,7 +49,7 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
             </svg>
           </PopoverButton>
 
-          <Show when={isOpen()}>
+          <FadeInOutTransition show={isOpen()}>
             <DropdownMenu
               ref={floating.setFloating}
               unmount={false}
@@ -72,7 +73,7 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
                 )}
               </For>
             </DropdownMenu>
-          </Show>
+          </FadeInOutTransition>
         </>
       )}
     </Popover>
