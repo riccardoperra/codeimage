@@ -99,8 +99,8 @@ export const resizeLine = style({
   bottom: -25,
   width: '100%',
   height: '15px',
-  borderLeft: '1px solid hsla(0,0%,100%,.25)',
-  borderRight: '1px solid hsla(0,0%,100%,.25)',
+  borderLeft: `1px solid ${themeVars.dynamicColors.resizeLineBackgroundColor}`,
+  borderRight: `1px solid ${themeVars.dynamicColors.resizeLineBackgroundColor}`,
   display: 'flex',
 });
 
@@ -110,7 +110,7 @@ export const resizeBadge = style([
     padding: '0 1em',
     display: 'inline-block',
     fontSize: '12px',
-    backgroundColor: '#161515',
+    backgroundColor: themeVars.dynamicColors.resizeLineBadgeBackgroundColor,
     color: 'white',
     alignItems: 'center',
     margin: 'auto',
@@ -120,7 +120,7 @@ export const resizeBadge = style([
 
 export const resizeLineDivider = style({
   position: 'absolute',
-  borderColor: `hsla(0, 0%, 100%, .25)`,
+  borderColor: themeVars.dynamicColors.resizeLineBackgroundColor,
   left: 0,
   top: '50%',
   width: '100%',

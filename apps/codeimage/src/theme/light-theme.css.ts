@@ -24,4 +24,6 @@ export const lightThemeCss = createTheme(colors, {
   buttonBackgroundPrimaryHover: themeVars.backgroundColor.blue['600'],
   buttonTextPrimaryColor: themeVars.backgroundColor.white,
   menuBackground: themeVars.backgroundColor.white,
+  resizeLineBackgroundColor: themeVars.backgroundColor.gray['600'],
+  resizeLineBadgeBackgroundColor: themeVars.backgroundColor.gray['700'],
 });

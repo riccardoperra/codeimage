@@ -22,4 +22,6 @@ export const colors = createThemeContract({
   buttonBackgroundHover: null,
   buttonTextColor: null,
   menuBackground: null,
+  resizeLineBackgroundColor: null,
+  resizeLineBadgeBackgroundColor: null,
 });
