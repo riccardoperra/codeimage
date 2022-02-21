@@ -9,6 +9,7 @@ import {
 } from 'solid-js';
 import {bindAll, UnbindFn} from 'bind-event-listener';
 import {createStore} from 'solid-js/store';
+import {nonNullable} from '../constants/non-nullable';
 
 interface CreateDraggableReturn {
   width: Accessor<number>;
@@ -71,6 +72,16 @@ export function createHorizontalResize(
     }
   };
 
+  function clamp(value: number, min?: number, max?: number) {
+    if (nonNullable(min) && value < min) {
+      return min;
+    }
+    if (!!max && value > max) {
+      return max;
+    }
+    return value;
+  }
+
   const resizeMove = (x: number): void => {
     const {left, width} = ref()?.getBoundingClientRect() || {left: 0, width: 0};
     const middle = (left + width) / 2;
@@ -78,19 +89,12 @@ export function createHorizontalResize(
     const max = maxWidth();
     const isLTR = state.startX >= middle;
 
-    const computedWidth = isLTR
-      ? state.startWidth + x - state.startX
-      : state.startWidth - x + state.startX;
+    const computedWidth =
+      (isLTR
+        ? state.startWidth + x - state.startX
+        : state.startWidth - x + state.startX) * window.devicePixelRatio;
 
-    const updatable = isLTR
-      ? !max || computedWidth <= max
-      : !min || computedWidth >= min;
-
-    if (!updatable) {
-      return;
-    }
-
-    setState({width: computedWidth});
+    setState({width: clamp(computedWidth, min, max)});
   };
 
   const resizeStart = (x: number): void =>
