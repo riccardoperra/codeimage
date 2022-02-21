@@ -1,4 +1,4 @@
-import {Component, createMemo, createResource, createSignal} from 'solid-js';
+import {Component, createMemo} from 'solid-js';
 import {Box} from '../ui/Box/Box';
 import {Button} from '../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
@@ -6,6 +6,7 @@ import {AppLocaleEntries} from '../../i18n';
 import {toPng} from 'html-to-image';
 import {EXPORT_EXCLUDE} from '../../core/directives/exportExclude';
 import download from 'downloadjs';
+import {useAsyncAction} from '../../core/hooks/async-action';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -23,15 +24,14 @@ const exportImage = async (canvasRef: HTMLElement | undefined) => {
 };
 
 export const ExportButton: Component<ExportButtonProps> = props => {
-  const [signal, setSignal] = createSignal<HTMLElement | undefined>(undefined, {
-    equals: false,
-  });
   const [t] = useI18n<AppLocaleEntries>();
-  const [data] = createResource(signal, async ref => {
-    // @bad Find another await to prevent flickering
-    await new Promise(r => setTimeout(r, 150));
-    return exportImage(ref);
-  });
+  const [data, {notify}] = useAsyncAction(
+    async (ref: HTMLElement | undefined) => {
+      // @bad Find another await to prevent flickering
+      await new Promise(r => setTimeout(r, 150));
+      return exportImage(ref);
+    },
+  );
 
   const label = createMemo(() =>
     data.loading ? t('toolbar.exportLoading') : t('toolbar.export'),
@@ -42,7 +42,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
       variant={'solid'}
       theme={'primary'}
       disabled={data.loading}
-      onClick={() => setSignal(props.canvasRef)}
+      onClick={() => notify(props.canvasRef)}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
