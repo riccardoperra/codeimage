@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 0.2.2
+
+### Patch Changes
+
+- d29b226: feat: add info line on resize
+
 ## 0.2.1
 
 ### Patch Changes

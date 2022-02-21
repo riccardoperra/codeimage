@@ -1,5 +1,16 @@
 # @codeimage/app
 
+## 0.5.0
+
+### Minor Changes
+
+- d29b226: feat: add info line on resize
+
+### Patch Changes
+
+- Updated dependencies [d29b226]
+  - @codeimage/theme@0.2.2
+
 ## 0.4.0
 
 ### Minor Changes
