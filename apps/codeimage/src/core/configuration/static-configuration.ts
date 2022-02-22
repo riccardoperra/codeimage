@@ -8,6 +8,7 @@ import {
   oneDarkTheme,
 } from '@codeimage/theme';
 import {version} from '../../../package.json';
+import {supportedLanguages} from './languages';
 
 export const staticConfiguration: AppStaticConfiguration = {
   terminalThemes: {
@@ -25,5 +26,6 @@ export const staticConfiguration: AppStaticConfiguration = {
   },
   themes: [oneDarkTheme, lightTheme, materialOceanTheme, draculaTheme],
   version,
+  languages: supportedLanguages,
   locales: ['it', 'en'],
 };
