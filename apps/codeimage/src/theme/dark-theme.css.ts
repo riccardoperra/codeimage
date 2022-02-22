@@ -26,4 +26,7 @@ export const darkThemeCss = createTheme(colors, {
   menuBackground: '#2b2b2b',
   resizeLineBackgroundColor: 'hsla(0,0%,100%,.25)',
   resizeLineBadgeBackgroundColor: '#161515',
+  listBoxPanelBackground: '#2B2B2B',
+  listBoxActiveBackgroundColor: themeVars.backgroundColor.blue['500'],
+  listBoxHoverBackgroundColor: `#232323`,
 });
