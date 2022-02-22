@@ -24,4 +24,7 @@ export const colors = createThemeContract({
   menuBackground: null,
   resizeLineBackgroundColor: null,
   resizeLineBadgeBackgroundColor: null,
+  listBoxPanelBackground: null,
+  listBoxActiveBackgroundColor: null,
+  listBoxHoverBackgroundColor: null,
 });
