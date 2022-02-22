@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.5.1
+
+### Patch Changes
+
+- 9b497d2: fix resizable frame rtl drag
+
 ## 0.5.0
 
 ### Minor Changes
