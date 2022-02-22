@@ -9,13 +9,41 @@ export const Footer = () => {
   return (
     <div class={styles.wrapper}>
       <Box display={'flex'} justifyContent={'flexEnd'} padding={'2'}>
-        <Text
-          as={'a'}
-          href={'https://github.com/riccardoperra/codeimage'}
-          size="xs"
-        >
-          Version {version}
-        </Text>
+        <Box marginRight={'5'}>
+          <Text as={'a'} href={'https://github.com/riccardoperra'} size="xs">
+            Github
+          </Text>
+        </Box>
+
+        <Box marginRight={'5'}>
+          <Text
+            as={'a'}
+            href={'https://github.com/riccardoperra/issues'}
+            size="xs"
+          >
+            Report issue
+          </Text>
+        </Box>
+
+        <Box marginRight={'5'}>
+          <Text
+            as={'a'}
+            href={'https://github.com/riccardoperra/discussions'}
+            size="xs"
+          >
+            Send feedback
+          </Text>
+        </Box>
+
+        <Box>
+          <Text
+            as={'a'}
+            href={'https://github.com/riccardoperra/codeimage'}
+            size="xs"
+          >
+            Version {version}
+          </Text>
+        </Box>
       </Box>
     </div>
   );
