@@ -83,11 +83,16 @@ export function createHorizontalResize(
   }
 
   const resizeMove = (x: number): void => {
-    const {left, width} = ref()?.getBoundingClientRect() || {left: 0, width: 0};
-    const middle = (left + width) / 2;
+    const elementRef = ref();
+    if (!elementRef) {
+      return;
+    }
+
+    const {width, left} = elementRef.getBoundingClientRect();
+    const middle = left + width / 2;
     const min = minWidth();
     const max = maxWidth();
-    const isLTR = state.startX >= middle;
+    const isLTR = state.startX > middle;
 
     const computedWidth =
       (isLTR
