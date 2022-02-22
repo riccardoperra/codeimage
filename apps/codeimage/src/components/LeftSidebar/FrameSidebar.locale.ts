@@ -11,6 +11,8 @@ export const locale = {
       tabAccent: 'Tab accent',
       shadows: 'Shadows',
       font: 'Font',
+      editor: 'Editor',
+      language: 'Language',
     },
   },
   it: {
@@ -25,6 +27,8 @@ export const locale = {
       tabAccent: 'Accento tab',
       shadows: 'Ombre',
       font: 'Carattere',
+      editor: 'Editor',
+      language: 'Language',
     },
   },
 };

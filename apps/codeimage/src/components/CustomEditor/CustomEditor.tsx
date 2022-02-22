@@ -1,10 +1,20 @@
 import {EditorView} from '@codemirror/view';
-import {javascript} from '@codemirror/lang-javascript';
 import {CodeMirror} from 'solid-codemirror';
 import {useEditorState} from '../../state/editor';
+import {useStaticConfiguration} from '../../core/configuration/ConfigurationProvider';
+import {createMemo, createResource} from 'solid-js';
 
 export const CustomEditor = () => {
+  const configuration = useStaticConfiguration();
   const editor = useEditorState();
+
+  const selectedLanguage = createMemo(() =>
+    configuration.languages.find(language => language.id === editor.languageId),
+  );
+
+  const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
+    plugin(),
+  );
 
   const supportsLineWrap = EditorView.lineWrapping;
 
@@ -34,8 +44,8 @@ export const CustomEditor = () => {
         extensions={[
           baseTheme,
           supportsLineWrap,
-          javascript({jsx: true, typescript: true}),
           editor.extensions,
+          currentLanguage() || [],
         ]}
         editable={true}
         basicSetup={false}

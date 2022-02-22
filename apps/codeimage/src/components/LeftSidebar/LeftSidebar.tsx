@@ -11,10 +11,15 @@ import {sprinkles} from '../../theme/sprinkles.css';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
+import {Select} from '../ui/Select/Select';
+import {useEditorState} from '../../state/editor';
+import {useStaticConfiguration} from '../../core/configuration/ConfigurationProvider';
 
 export const FrameSidebar = () => {
   const frame = useFrameState();
   const terminal = useTerminalState();
+  const editor = useEditorState();
+  const configuration = useStaticConfiguration();
   const [t, {merge}] = useI18n<typeof locale>();
   onMount(() => merge(locale));
 
@@ -230,8 +235,41 @@ export const FrameSidebar = () => {
 
       <div class={styles.panelRow}>
         <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.font')}
+          {t('frame.editor')}
         </Text>
+      </div>
+
+      <div class={styles.panelHeader}>
+        <Text size="sm" weight="semibold">
+          {t('frame.editor')}
+        </Text>
+      </div>
+
+      <div class={styles.panelRow}>
+        <Text as="div" size={'xs'} class={styles.titleWrapper}>
+          {t('frame.language')}
+        </Text>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            flex: '1 0 0',
+            'grid-column': '2 / -1',
+          }}
+        >
+          <Select
+            multiple={false}
+            items={configuration.languages.map(({label, id}) => ({
+              label: label,
+              value: id,
+            }))}
+            value={editor.languageId}
+            onSelectChange={value =>
+              editor.setLanguageId(value ?? configuration.languages[0].id)
+            }
+          />
+        </div>
       </div>
     </div>
   );
