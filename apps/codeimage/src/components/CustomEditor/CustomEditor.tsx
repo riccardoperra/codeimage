@@ -48,7 +48,7 @@ export const CustomEditor = () => {
           currentLanguage() || [],
         ]}
         editable={true}
-        basicSetup={false}
+        basicSetup={true}
       />
     </>
   );
