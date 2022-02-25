@@ -24,7 +24,7 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
   });
 
   return (
-    <Popover as={Box}>
+    <Popover>
       {({isOpen, setState}) => (
         <>
           <PopoverButton

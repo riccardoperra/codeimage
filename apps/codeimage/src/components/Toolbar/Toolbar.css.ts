@@ -19,11 +19,17 @@ export const wrapper = style([
     top: 0,
     right: 0,
     height: '60px',
+    width: '100%',
+    backgroundColor: themeVars.dynamicColors.panelBackground,
+    borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
   },
 ]);
 
 export const actionBox = style({
   display: 'flex',
   flexWrap: 'nowrap',
+  flexDirection: 'row',
+  flex: '1',
+  alignItems: 'center',
   columnGap: themeVars.spacing['3'],
 });
