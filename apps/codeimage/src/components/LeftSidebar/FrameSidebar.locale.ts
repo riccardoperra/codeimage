@@ -28,7 +28,7 @@ export const locale = {
       shadows: 'Ombre',
       font: 'Carattere',
       editor: 'Editor',
-      language: 'Language',
+      language: 'Linguaggio',
     },
   },
 };

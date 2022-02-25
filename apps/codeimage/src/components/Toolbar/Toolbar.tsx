@@ -15,19 +15,19 @@ export const Toolbar: Component<{
 
   return (
     <div class={styles.wrapper}>
-      <Box marginLeft={'auto'}>
-        <Box class={styles.actionBox}>
-          <LanguageSelectorButton
-            locales={staticConfiguration.locales}
-            currentLocale={uiState.locale}
-            onLocaleChange={locale => uiState.setLocale(locale)}
-          />
+      <Box class={styles.actionBox}>
+        <LanguageSelectorButton
+          locales={staticConfiguration.locales}
+          currentLocale={uiState.locale}
+          onLocaleChange={locale => uiState.setLocale(locale)}
+        />
 
-          <ThemeToggleButton
-            theme={uiState.themeMode}
-            onThemeToggle={uiState.toggleThemeMode}
-          />
+        <ThemeToggleButton
+          theme={uiState.themeMode}
+          onThemeToggle={uiState.toggleThemeMode}
+        />
 
+        <Box marginLeft={'auto'}>
           <ExportButton canvasRef={props.canvasRef} />
         </Box>
       </Box>
