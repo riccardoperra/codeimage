@@ -4,14 +4,14 @@ import {themeVars} from '../theme/global.css';
 import {staticConfiguration} from '../core/configuration';
 
 export interface TerminalState {
-  showHeader: boolean;
-  type: string;
-  tabName: string | null;
-  accentVisible: boolean;
-  shadow: string;
-  background: string;
-  textColor: string;
-  darkMode: boolean;
+  readonly showHeader: boolean;
+  readonly type: string;
+  readonly tabName: string | null;
+  readonly accentVisible: boolean;
+  readonly shadow: string;
+  readonly background: string;
+  readonly textColor: string;
+  readonly darkMode: boolean;
 }
 
 const initialState: TerminalState = {
