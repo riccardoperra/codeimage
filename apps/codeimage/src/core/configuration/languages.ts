@@ -36,9 +36,35 @@ export const supportedLanguages: readonly LanguageDefinition[] = [
       ),
   },
   {
+    id: 'php',
+    label: 'PHP',
+    plugin: () => import('@codemirror/lang-php').then(({php}) => php()),
+  },
+  {
     id: 'python',
     label: 'Python',
     plugin: () =>
       import('@codemirror/lang-python').then(({python}) => python()),
+  },
+  {
+    id: 'markdown',
+    label: 'Markdown',
+    plugin: () =>
+      import('@codemirror/lang-markdown').then(({markdown}) => markdown()),
+  },
+  {
+    id: 'rust',
+    label: 'Rust',
+    plugin: () => import('@codemirror/lang-rust').then(({rust}) => rust()),
+  },
+  {
+    id: 'cpp',
+    label: 'C++',
+    plugin: () => import('@codemirror/lang-cpp').then(({cpp}) => cpp()),
+  },
+  {
+    id: 'sql',
+    label: 'SQL',
+    plugin: () => import('@codemirror/lang-sql').then(({sql}) => sql()),
   },
 ];
