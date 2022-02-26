@@ -233,12 +233,6 @@ export const FrameSidebar = () => {
         </div>
       </div>
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.editor')}
-        </Text>
-      </div>
-
       <div class={styles.panelHeader}>
         <Text size="sm" weight="semibold">
           {t('frame.editor')}
@@ -293,6 +287,74 @@ export const FrameSidebar = () => {
               {label: 'Show', value: true},
               {label: 'Hide', value: false},
             ]}
+          />
+        </div>
+      </div>
+
+      <div class={styles.panelRow}>
+        <Text as="div" size={'xs'} class={styles.titleWrapper}>
+          {t('frame.font')}
+        </Text>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            flex: '1 0 0',
+            'grid-column': '2 / -1',
+          }}
+        >
+          <Select
+            multiple={false}
+            items={configuration.fonts.map(font => ({
+              label: font.name,
+              value: font,
+            }))}
+            value={configuration.fonts.find(font => font.id === editor.fontId)}
+            itemContent={({label, value, selected}) => (
+              <Text
+                size={'xs'}
+                display={'block'}
+                weight={selected ? 'medium' : 'normal'}
+                style={{'font-family': `${value.name}, monospace`}}
+              >
+                {label}
+              </Text>
+            )}
+            onSelectChange={value =>
+              editor.setFontId(value?.id ?? configuration.fonts[0].id)
+            }
+          />
+        </div>
+      </div>
+
+      <div class={styles.panelRow}>
+        <Text as="div" size={'xs'} class={styles.titleWrapper}>
+          {t('frame.fontWeight')}
+        </Text>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            flex: '1 0 0',
+            'grid-column': '2 / -1',
+          }}
+        >
+          <Select
+            multiple={false}
+            items={
+              editor.getFont()?.types.map(type => ({
+                label: type.name,
+                value: type.weight,
+              })) || []
+            }
+            value={editor.fontWeight}
+            onSelectChange={value =>
+              editor.setFontWeight(
+                value ?? editor.getFont()?.types[0].weight ?? 400,
+              )
+            }
           />
         </div>
       </div>

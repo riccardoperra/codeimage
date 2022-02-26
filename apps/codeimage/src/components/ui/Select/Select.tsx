@@ -6,7 +6,7 @@ import {
   ListboxOptions,
   ListboxProps,
 } from 'solid-headless';
-import {For, JSX, JSXElement, Show} from 'solid-js';
+import {Component, For, JSX, JSXElement, Show} from 'solid-js';
 import * as styles from './Select.css';
 import {Box} from '../Box/Box';
 import Fragment from 'solid-headless/src/utils/Fragment';
@@ -40,6 +40,7 @@ interface SelectOptions<T> {
 
 type SelectProps<T> = ListboxProps<T, typeof Fragment> & {
   items: SelectOptions<T>[];
+  itemContent?: Component<SelectOptions<T> & {selected: boolean}>;
 };
 
 export function Select<T>(props: SelectProps<T>): JSXElement {
@@ -92,13 +93,21 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
                             active: isActive(),
                           })}
                         >
-                          <Text
-                            size={'xs'}
-                            display={'block'}
-                            weight={isSelected() ? 'medium' : 'normal'}
-                          >
-                            {item.label}
-                          </Text>
+                          {props.itemContent ? (
+                            <props.itemContent
+                              label={item.label}
+                              value={item.value}
+                              selected={isSelected()}
+                            />
+                          ) : (
+                            <Text
+                              size={'xs'}
+                              display={'block'}
+                              weight={isSelected() ? 'medium' : 'normal'}
+                            >
+                              {item.label}
+                            </Text>
+                          )}
                         </div>
                       )}
                     </ListboxOption>

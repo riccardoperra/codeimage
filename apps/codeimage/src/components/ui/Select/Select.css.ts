@@ -34,6 +34,7 @@ export const listBoxPanel = style([
     backgroundColor: themeVars.dynamicColors.listBoxPanelBackground,
     borderRadius: themeVars.borderRadius.lg,
     boxShadow: themeVars.boxShadow.lg,
+    zIndex: 100,
 
     '::-webkit-scrollbar': {
       width: '20px',
