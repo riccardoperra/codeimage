@@ -5,6 +5,7 @@ import {useStaticConfiguration} from '../../core/configuration';
 import {createMemo, createResource} from 'solid-js';
 import {EDITOR_BASE_SETUP} from '@codeimage/config';
 import {lineNumbers} from '@codemirror/gutter';
+import {createCustomFontExtension} from './custom-font-extension';
 
 export const CustomEditor = () => {
   const configuration = useStaticConfiguration();
@@ -29,18 +30,25 @@ export const CustomEditor = () => {
 
   const baseTheme = EditorView.theme({
     '&': {
-      fontFamily: 'Source Code Pro, monospace',
       textAlign: 'left',
       background: 'transparent',
     },
     '.cm-content': {
-      fontFamily: 'Source Code Pro, monospace',
       textAlign: 'left',
     },
     '.cm-gutters': {
       backgroundColor: 'transparent',
     },
   });
+
+  const customFontExtension = createMemo(() =>
+    createCustomFontExtension({
+      fontName:
+        configuration.fonts.find(({id}) => editor.fontId === id)?.name ||
+        configuration.fonts[0].name,
+      fontWeight: editor.fontWeight,
+    }),
+  );
 
   return (
     <>
@@ -51,6 +59,7 @@ export const CustomEditor = () => {
           EDITOR_BASE_SETUP,
           baseTheme,
           supportsLineWrap,
+          customFontExtension(),
           currentLanguage() || [],
           currentTheme(),
           editor.showLineNumbers ? lineNumbers() : [],

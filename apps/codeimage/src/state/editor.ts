@@ -6,6 +6,8 @@ interface EditorState {
   languageId: string;
   themeId: string;
   code: string;
+  fontId: string;
+  fontWeight: number;
   showLineNumbers: boolean;
 }
 
@@ -15,13 +17,19 @@ const initialState: EditorState = {
   languageId: staticConfiguration.languages[0].id,
   themeId: staticConfiguration.themes[0].id,
   showLineNumbers: false,
+  fontId: staticConfiguration.fonts[0].id,
+  fontWeight: staticConfiguration.fonts[0].types[0].weight,
 };
 
-const store = combine(initialState, set => ({
+const store = combine(initialState, (set, get) => ({
   setLanguageId: (languageId: string) => set(() => ({languageId})),
   setCode: (code: string) => set(() => ({code})),
   setTheme: (themeId: string) => set(() => ({themeId})),
   setShowLineNumbers: (show: boolean) => set(() => ({showLineNumbers: show})),
+  setFontId: (fontId: string) => set(() => ({fontId: fontId})),
+  setFontWeight: (fontWeight: number) => set(() => ({fontWeight})),
+  getFont: () =>
+    staticConfiguration.fonts.find(font => font.id === get().fontId),
 }));
 
 export const useEditorState = create(devtools(store, {name: 'editor'}));
