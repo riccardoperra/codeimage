@@ -13,6 +13,7 @@ export const locale = {
       font: 'Font',
       editor: 'Editor',
       language: 'Language',
+      lineNumbers: 'Line number',
     },
   },
   it: {
@@ -29,6 +30,7 @@ export const locale = {
       font: 'Carattere',
       editor: 'Editor',
       language: 'Linguaggio',
+      lineNumbers: 'Numeri di riga',
     },
   },
 };

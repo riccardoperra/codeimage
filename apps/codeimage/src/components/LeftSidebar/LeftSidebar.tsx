@@ -271,6 +271,31 @@ export const FrameSidebar = () => {
           />
         </div>
       </div>
+
+      <div class={styles.panelRow}>
+        <Text as="div" size={'xs'} class={styles.titleWrapper}>
+          {t('frame.lineNumbers')}
+        </Text>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            flex: '1 0 0',
+            'grid-column': '2 / -1',
+          }}
+        >
+          <SegmentedField
+            size={'xs'}
+            value={editor.showLineNumbers}
+            onChange={editor.setShowLineNumbers}
+            items={[
+              {label: 'Show', value: true},
+              {label: 'Hide', value: false},
+            ]}
+          />
+        </div>
+      </div>
     </div>
   );
 };

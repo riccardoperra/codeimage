@@ -25,7 +25,15 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
-    "solid-js": "^1.3.7"
+    "solid-js": "^1.3.7",
+    "@codemirror/history": "^0.19.2",
+    "@codemirror/language": "^0.19.7",
+    "@codemirror/commands": "^0.19.8",
+    "@codemirror/matchbrackets": "^0.19.4",
+    "@codemirror/autocomplete": "^0.19.13",
+    "@codemirror/comment": "^0.19.1",
+    "@codemirror/rectangular-selection": "^0.19.1",
+    "@codemirror/closebrackets": "^0.19.1"
   },
   "peerDependencies": {
     "solid-js": "^1.3.7",
