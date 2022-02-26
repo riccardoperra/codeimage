@@ -15,9 +15,21 @@ module.exports = defineConfig({
     rollupOptions: {
       external: [
         'solid-js',
+        '@codeimage/theme',
         '@codemirror/state',
         '@codemirror/view',
-        '@codeimage/theme',
+        '@codemirror/highlight',
+        '@codemirror/lang-css',
+        '@codemirror/lang-html',
+        '@codemirror/lang-java',
+        '@codemirror/lang-javascript',
+        '@codemirror/lang-json',
+        '@codemirror/lang-php',
+        '@codemirror/lang-python',
+        '@codemirror/lang-cpp',
+        '@codemirror/lang-rust',
+        '@codemirror/lang-markdown',
+        '@codemirror/lang-sql',
       ],
       output: {
         chunkFileNames: '[hash].js',

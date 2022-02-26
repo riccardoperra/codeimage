@@ -43,7 +43,7 @@
 
 ### Patch Changes
 
-- 01b9832: feat: add dracula theme
+- 01b9832: feat: add synthwave84 theme
 - Updated dependencies [01b9832]
   - @codeimage/theme@0.2.1
 

@@ -1,7 +1,7 @@
 import {buildCustomTheme} from '../core';
 
 export const lightTheme = buildCustomTheme({
-  id: 'oneDark',
+  id: 'oneLight',
   editorTheme: [],
   properties: {
     darkMode: false,

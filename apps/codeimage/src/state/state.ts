@@ -17,7 +17,7 @@ export function updateTheme(theme: CustomTheme) {
     });
 
     useEditorState.setState({
-      extensions: theme.editorTheme,
+      themeId: theme.id,
     });
   });
 }

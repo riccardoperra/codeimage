@@ -3,6 +3,7 @@ import {
   lightTheme,
   materialOceanTheme,
   oneDarkTheme,
+  synthwave84Theme,
 } from '@codeimage/theme';
 
 export const SUPPORTED_THEMES = [
@@ -10,4 +11,5 @@ export const SUPPORTED_THEMES = [
   lightTheme,
   materialOceanTheme,
   draculaTheme,
-];
+  synthwave84Theme,
+] as const;

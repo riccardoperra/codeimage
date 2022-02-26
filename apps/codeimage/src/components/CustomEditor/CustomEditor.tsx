@@ -16,6 +16,13 @@ export const CustomEditor = () => {
     plugin(),
   );
 
+  const currentTheme = createMemo(() => {
+    return (
+      configuration.themes.find(theme => theme.id === editor.themeId)
+        ?.editorTheme || []
+    );
+  });
+
   const supportsLineWrap = EditorView.lineWrapping;
 
   const baseTheme = EditorView.theme({
@@ -33,19 +40,16 @@ export const CustomEditor = () => {
     },
   });
 
-  // TODO: MUST CONFIGURE BASIC SETUP
-
   return (
     <>
       <CodeMirror
-        class={'cm-s-eclipse'}
         value={editor.code}
         onChange={editor.setCode}
         extensions={[
           baseTheme,
           supportsLineWrap,
-          editor.extensions,
           currentLanguage() || [],
+          currentTheme(),
         ]}
         editable={true}
         basicSetup={true}

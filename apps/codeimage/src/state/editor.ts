@@ -1,11 +1,10 @@
-import {Extension} from '@codemirror/state';
 import create from 'solid-zustand';
 import {combine, devtools} from 'zustand/middleware';
 import {staticConfiguration} from '../core/configuration';
 
 interface EditorState {
   languageId: string;
-  extensions: Extension;
+  themeId: string;
   code: string;
 }
 
@@ -13,13 +12,13 @@ interface EditorState {
 const initialState: EditorState = {
   code: '',
   languageId: staticConfiguration.languages[0].id,
-  extensions: staticConfiguration.themes[0].editorTheme,
+  themeId: staticConfiguration.themes[0].id,
 };
 
 const store = combine(initialState, set => ({
   setLanguageId: (languageId: string) => set(() => ({languageId})),
   setCode: (code: string) => set(() => ({code})),
-  setExtensions: (extensions: Extension) => set(() => ({extensions})),
+  setTheme: (themeId: string) => set(() => ({themeId})),
 }));
 
 export const useEditorState = create(devtools(store, {name: 'editor'}));
