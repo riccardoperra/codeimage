@@ -19,7 +19,9 @@ module.exports = defineConfig({
         '@codemirror/view',
         '@codeimage/theme',
       ],
-      output: {},
+      output: {
+        chunkFileNames: '[hash].js',
+      },
     },
   },
   plugins: [solidPlugin(), dts()],

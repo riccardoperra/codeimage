@@ -2,14 +2,14 @@ import {render} from 'solid-js/web';
 
 import './index.css';
 import App from './App';
-import {StaticConfigurationProvider} from './core/configuration/ConfigurationProvider';
-import {staticConfiguration} from './core/configuration/static-configuration';
+import {staticConfiguration} from './core/configuration';
 import {I18nProvider} from '@codeimage/locale';
 import {locale} from './i18n';
+import {StaticConfigurationProvider} from '@codeimage/config';
 
 render(
   () => (
-    <StaticConfigurationProvider value={staticConfiguration}>
+    <StaticConfigurationProvider config={staticConfiguration}>
       <I18nProvider dict={locale}>
         <App />
       </I18nProvider>

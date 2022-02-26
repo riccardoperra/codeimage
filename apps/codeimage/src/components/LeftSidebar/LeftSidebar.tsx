@@ -13,7 +13,7 @@ import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
 import {Select} from '../ui/Select/Select';
 import {useEditorState} from '../../state/editor';
-import {useStaticConfiguration} from '../../core/configuration/ConfigurationProvider';
+import {useStaticConfiguration} from '../../core/configuration';
 
 export const FrameSidebar = () => {
   const frame = useFrameState();
