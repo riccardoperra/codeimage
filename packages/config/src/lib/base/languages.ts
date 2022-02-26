@@ -1,6 +1,6 @@
-import {LanguageDefinition} from './configuration';
+import {LanguageDefinition} from '../types/language-def';
 
-export const supportedLanguages: readonly LanguageDefinition[] = [
+export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'javascript',
     label: 'Javascript',
