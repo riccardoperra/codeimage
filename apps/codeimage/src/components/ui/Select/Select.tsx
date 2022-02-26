@@ -11,25 +11,8 @@ import * as styles from './Select.css';
 import {Box} from '../Box/Box';
 import Fragment from 'solid-headless/src/utils/Fragment';
 import {Text} from '../Text/Text';
-
-function CheckIcon(props: JSX.IntrinsicElements['svg']): JSX.Element {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      {...props}
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width={2}
-        d="M5 13l4 4L19 7"
-      />
-    </svg>
-  );
-}
+import {useFloating} from '../../../core/floating-ui/floating-ui';
+import {flip, offset} from '@floating-ui/dom';
 
 function SelectorIcon(props: JSX.IntrinsicElements['svg']): JSX.Element {
   return (
@@ -60,6 +43,11 @@ type SelectProps<T> = ListboxProps<T, typeof Fragment> & {
 };
 
 export function Select<T>(props: SelectProps<T>): JSXElement {
+  const floating = useFloating({
+    strategy: 'absolute',
+    middleware: [offset(4), flip()],
+  });
+
   const label = () => {
     // TODO: multiple select needed?
     return (
@@ -73,7 +61,7 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
       value={props.value}
       onSelectChange={value => props?.onSelectChange?.(value as T[] & T)}
     >
-      <Box class={styles.wrapper}>
+      <Box class={styles.wrapper} ref={floating.setReference}>
         <ListboxButton class={styles.listBox}>
           <span class={styles.selected}>{label()}</span>
           <span class={styles.selectorIconWrapper}>
@@ -83,7 +71,15 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
         <HeadlessDisclosureChild>
           {({isOpen}) => (
             <Show when={isOpen()}>
-              <ListboxOptions class={styles.listBoxPanel}>
+              <ListboxOptions
+                ref={floating.setFloating}
+                style={{
+                  left: `${floating.x}px`,
+                  top: `${floating.y}px`,
+                  position: floating.strategy,
+                }}
+                class={styles.listBoxPanel}
+              >
                 <For each={props.items}>
                   {item => (
                     <ListboxOption

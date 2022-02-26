@@ -36,6 +36,7 @@
     "libs:build": "pnpm build:watch --filter ./packages",
     "app:dev": "pnpm dev --filter=@codeimage/app",
     "lint": "pnpm lint --filter='@codeimage/*'",
+    "typecheck": "pnpm typecheck --filter='@codeimage/*'",
     "build:prod": "pnpm build --filter='@codeimage/*'"
   },
   "devDependencies": {

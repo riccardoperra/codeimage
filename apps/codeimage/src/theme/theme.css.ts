@@ -27,4 +27,6 @@ export const colors = createThemeContract({
   listBoxPanelBackground: null,
   listBoxActiveBackgroundColor: null,
   listBoxHoverBackgroundColor: null,
+  listBoxTextColor: null,
+  listBoxActiveTextColor: null,
 });

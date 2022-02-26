@@ -29,4 +29,6 @@ export const darkThemeCss = createTheme(colors, {
   listBoxPanelBackground: '#2B2B2B',
   listBoxActiveBackgroundColor: themeVars.backgroundColor.blue['500'],
   listBoxHoverBackgroundColor: `#232323`,
+  listBoxTextColor: themeVars.backgroundColor.white,
+  listBoxActiveTextColor: themeVars.backgroundColor.white,
 });

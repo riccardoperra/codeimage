@@ -28,12 +28,26 @@ export const listBoxPanel = style([
   {
     position: 'absolute',
     width: '100%',
-    marginTop: themeVars.spacing['8'],
+    maxHeight: '250px',
     paddingTop: themeVars.spacing['1'],
     overflow: 'auto',
     backgroundColor: themeVars.dynamicColors.listBoxPanelBackground,
     borderRadius: themeVars.borderRadius.lg,
     boxShadow: themeVars.boxShadow.lg,
+
+    '::-webkit-scrollbar': {
+      width: '20px',
+    },
+    '::-webkit-scrollbar-track': {
+      backgroundColor: 'transparent',
+    },
+    '::-webkit-scrollbar-thumb': {
+      backgroundColor: themeVars.backgroundColor.gray['400'],
+      borderRadius: themeVars.borderRadius.full,
+      border: '6px solid transparent',
+      backgroundClip: 'content-box',
+      transition: 'background-color .2s',
+    },
 
     ':focus': {
       outline: 'none',
@@ -55,6 +69,7 @@ export const listBoxOption = recipe({
     position: 'relative',
     padding: `${themeVars.spacing['2']}`,
     borderRadius: themeVars.borderRadius.lg,
+    color: themeVars.dynamicColors.listBoxTextColor,
     ':hover': {
       backgroundColor: themeVars.dynamicColors.listBoxHoverBackgroundColor,
     },
@@ -63,6 +78,7 @@ export const listBoxOption = recipe({
     active: {
       true: {
         backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
+        color: themeVars.dynamicColors.listBoxActiveTextColor,
         ':hover': {
           backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
         },

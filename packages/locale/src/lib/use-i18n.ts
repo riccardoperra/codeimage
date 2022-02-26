@@ -24,7 +24,7 @@ export const useI18n = <T>(): EnchantedI18n<T> => {
       merge: (dict: Record<string, unknown>) =>
         batch(() =>
           Object.entries(dict).forEach(([k, dict]) =>
-            i18n.add(k, dict as Record<string, any>),
+            i18n.add(k, dict as Record<string, unknown>),
           ),
         ),
     }),
