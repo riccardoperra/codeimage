@@ -11,7 +11,7 @@ export const createCustomFontExtension = (
 ): Extension => {
   return EditorView.theme({
     '.cm-content *': {
-      fontFamily: `${options.fontName}, monospace;`,
+      fontFamily: `${options.fontName}, monospace`,
       fontWeight: options.fontWeight,
       fontVariantLigatures: 'normal',
     },
