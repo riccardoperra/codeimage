@@ -1,7 +1,7 @@
 import {combine, devtools} from 'zustand/middleware';
 import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
-import {staticConfiguration} from '../core/configuration/static-configuration';
+import {staticConfiguration} from '../core/configuration';
 
 export interface TerminalState {
   showHeader: boolean;

@@ -4,7 +4,7 @@ import {useTerminalState} from '../../state/terminal';
 import {Group} from '../ui/Group/Group';
 import {RadioBlock} from '../ui/RadioBlock/RadioBlock';
 import {Box} from '../ui/Box/Box';
-import {useStaticConfiguration} from '../../core/configuration/ConfigurationProvider';
+import {useStaticConfiguration} from '../../core/configuration';
 
 interface TerminalControlFieldProps {
   selectedTerminal: string;

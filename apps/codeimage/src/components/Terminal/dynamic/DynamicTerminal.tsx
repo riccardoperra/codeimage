@@ -2,7 +2,7 @@ import {Component, createMemo, JSXElement} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 import {BaseTerminalProps} from '../TerminalHost';
-import {useStaticConfiguration} from '../../../core/configuration/ConfigurationProvider';
+import {useStaticConfiguration} from '../../../core/configuration';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;

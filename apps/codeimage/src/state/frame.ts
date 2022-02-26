@@ -1,6 +1,6 @@
 import create from 'solid-zustand';
 import {combine, devtools} from 'zustand/middleware';
-import {staticConfiguration} from '../core/configuration/static-configuration';
+import {staticConfiguration} from '../core/configuration';
 
 interface FrameState {
   background: string | null | undefined;

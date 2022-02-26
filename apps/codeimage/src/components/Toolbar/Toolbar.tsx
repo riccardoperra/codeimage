@@ -4,7 +4,7 @@ import {useUIState} from '../../state/ui';
 import {ThemeToggleButton} from './ThemeToggleButton';
 import {Box} from '../ui/Box/Box';
 import {LanguageSelectorButton} from './LanguageSelectorButton';
-import {useStaticConfiguration} from '../../core/configuration/ConfigurationProvider';
+import {useStaticConfiguration} from '../../core/configuration';
 import {ExportButton} from './ExportButton';
 
 export const Toolbar: Component<{

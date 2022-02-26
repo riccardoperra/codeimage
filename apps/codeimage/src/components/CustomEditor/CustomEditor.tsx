@@ -1,7 +1,7 @@
 import {EditorView} from '@codemirror/view';
 import {CodeMirror} from 'solid-codemirror';
 import {useEditorState} from '../../state/editor';
-import {useStaticConfiguration} from '../../core/configuration/ConfigurationProvider';
+import {useStaticConfiguration} from '../../core/configuration';
 import {createMemo, createResource} from 'solid-js';
 
 export const CustomEditor = () => {

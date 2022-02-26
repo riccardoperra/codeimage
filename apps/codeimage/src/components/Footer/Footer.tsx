@@ -1,7 +1,7 @@
 import * as styles from './Footer.css';
 import {Box} from '../ui/Box/Box';
-import {useStaticConfiguration} from '../../core/configuration/ConfigurationProvider';
 import {Text} from '../ui/Text/Text';
+import {useStaticConfiguration} from '../../core/configuration';
 
 export const Footer = () => {
   const {version} = useStaticConfiguration();
