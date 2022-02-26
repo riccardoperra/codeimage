@@ -10,7 +10,7 @@ import {AppLocaleEntries} from '../../i18n';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 
 interface LanguageSelectorButtonProps {
-  locales: string[];
+  locales: readonly string[];
   currentLocale: string;
   onLocaleChange: (locale: string) => void;
 }

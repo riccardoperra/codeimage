@@ -1,10 +1,27 @@
-import {AppStaticConfiguration} from '../types/configuration';
-import {useContext} from 'solid-js';
+import {Component, useContext} from 'solid-js';
 import {StaticConfigurationContext} from './ConfigurationProvider';
+import {CustomTheme} from '@codeimage/theme';
+import {TerminalDefinitionMap} from '../types/terminal-def';
+import {AppStaticConfiguration} from '../types/configuration';
+import {LanguageDefinition} from '../types/language-def';
 
-export function createConfiguration<T extends AppStaticConfiguration>(
-  configuration: T,
-): [T, () => T] {
+export function createConfiguration<
+  V extends string,
+  Themes extends readonly CustomTheme[],
+  Locales extends readonly string[],
+  Languages extends readonly LanguageDefinition[],
+  TerminalThemes extends TerminalDefinitionMap<
+    readonly string[],
+    Component<any>
+  >,
+  Configuration extends AppStaticConfiguration<
+    V,
+    Themes,
+    Locales,
+    Languages,
+    TerminalThemes
+  > = AppStaticConfiguration<V, Themes, Locales, Languages, TerminalThemes>,
+>(configuration: Configuration): [Configuration, () => Configuration] {
   if (!configuration.version) {
     throw new Error('No version specified');
   }
@@ -16,8 +33,8 @@ export function createConfiguration<T extends AppStaticConfiguration>(
       throw new Error('Static configuration missing');
     }
 
-    return context as T;
+    return context as unknown as Configuration;
   };
 
-  return [configuration, useConfiguration];
+  return [configuration as Configuration, useConfiguration];
 }

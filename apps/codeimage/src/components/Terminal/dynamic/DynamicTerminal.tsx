@@ -2,7 +2,10 @@ import {Component, createMemo, JSXElement} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 import {BaseTerminalProps} from '../TerminalHost';
-import {useStaticConfiguration} from '../../../core/configuration';
+import {
+  staticConfiguration,
+  useStaticConfiguration,
+} from '../../../core/configuration';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;
@@ -13,7 +16,10 @@ export const DynamicTerminal: Component<DynamicTerminalProps> = (
 ): JSXElement => {
   const {terminalThemes} = useStaticConfiguration();
   const terminal = createMemo(
-    () => terminalThemes.entries[props.type].component,
+    () =>
+      terminalThemes.entries[
+        props.type as typeof staticConfiguration['terminalThemes']['keys'][number]
+      ].component,
   );
 
   return (

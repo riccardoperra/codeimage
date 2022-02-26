@@ -15,7 +15,7 @@ export const [staticConfiguration, useStaticConfiguration] =
     themes: SUPPORTED_THEMES,
     languages: SUPPORTED_LANGUAGES,
     terminalThemes: {
-      keys: ['macOs', 'windows'],
+      keys: ['macOs', 'windows'] as const,
       entries: {
         windows: {
           name: 'windows',
