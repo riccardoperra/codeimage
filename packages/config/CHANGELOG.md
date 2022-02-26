@@ -1,5 +1,17 @@
 # @codeimage/theme
 
+## 1.0.0
+
+### Minor Changes
+
+- fda1ee7: feat: add @codeimage/config
+
+### Patch Changes
+
+- Updated dependencies [f653b6f]
+- Updated dependencies [fda1ee7]
+  - @codeimage/theme@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,21 @@
 # @codeimage/app
 
+## 0.6.0
+
+### Minor Changes
+
+- f653b6f: feat: add multiple language editor support
+- fda1ee7: feat: add @codeimage/config
+
+### Patch Changes
+
+- Updated dependencies [f653b6f]
+- Updated dependencies [fda1ee7]
+  - @codeimage/locale@0.3.0
+  - @codeimage/theme@0.3.0
+  - @codeimage/ui@0.3.0
+  - @codeimage/config@1.0.0
+
 ## 0.5.1
 
 ### Patch Changes
