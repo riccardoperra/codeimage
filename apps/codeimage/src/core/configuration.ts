@@ -53,6 +53,15 @@ export const [staticConfiguration, useStaticConfiguration] =
           {name: 'Bold', weight: 700},
         ],
       },
+      {
+        id: 'overpass-mono',
+        name: 'Overpass Mono',
+        types: [
+          {name: 'Regular', weight: 400},
+          {name: 'Medium', weight: 500},
+          {name: 'Bold', weight: 700},
+        ],
+      },
     ] as readonly CustomFonts[],
     terminalThemes: {
       keys: ['macOs', 'windows'] as const,
