@@ -7,15 +7,16 @@ import {ShadowField} from '../ShadowField/ShadowField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
 import {useFrameState} from '../../state/frame';
 import {useTerminalState} from '../../state/terminal';
-import {sprinkles} from '../../theme/sprinkles.css';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
 import {Select} from '../ui/Select/Select';
 import {useEditorState} from '../../state/editor';
 import {useStaticConfiguration} from '../../core/configuration';
+import {PanelHeader} from './PanelHeader';
+import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 
-export const FrameSidebar = () => {
+export const EditorSidebar = () => {
   const frame = useFrameState();
   const terminal = useTerminalState();
   const editor = useEditorState();
@@ -25,25 +26,10 @@ export const FrameSidebar = () => {
 
   return (
     <div class={styles.sidebar}>
-      <div class={styles.panelHeader}>
-        <Text size="sm" weight="semibold">
-          {t('frame.frame')}
-        </Text>
-      </div>
+      <PanelHeader label={t('frame.frame')} />
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.padding')}
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            flex: '1 0 0',
-            'grid-column': '2 / -1',
-          }}
-        >
+      <PanelRow label={t('frame.padding')}>
+        <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
             value={frame.padding}
@@ -55,22 +41,11 @@ export const FrameSidebar = () => {
               {label: '128', value: 128},
             ]}
           />
-        </div>
-      </div>
+        </TwoColumnPanelRow>
+      </PanelRow>
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.visible')}
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            flex: '1 0 0',
-            'grid-column': '2 / -1',
-          }}
-        >
+      <PanelRow label={t('frame.visible')}>
+        <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
             value={frame.visible}
@@ -80,23 +55,12 @@ export const FrameSidebar = () => {
               {label: 'No', value: false},
             ]}
           />
-        </div>
-      </div>
+        </TwoColumnPanelRow>
+      </PanelRow>
 
       <Show when={frame.visible}>
-        <div class={styles.panelRow}>
-          <Text as="div" size={'xs'} class={styles.titleWrapper}>
-            {t('frame.opacity')}
-          </Text>
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              height: '100%',
-              flex: '1 0 0',
-              'grid-column': '2 / -1',
-            }}
-          >
+        <PanelRow label={t('frame.opacity')}>
+          <TwoColumnPanelRow>
             <RangeField
               value={frame.opacity}
               min={0}
@@ -104,55 +68,25 @@ export const FrameSidebar = () => {
               max={100}
               onChange={frame.setOpacity}
             />
-          </div>
-        </div>
+          </TwoColumnPanelRow>
+        </PanelRow>
       </Show>
 
       <Show when={frame.visible}>
-        <div class={styles.panelRow}>
-          <Text as="div" size={'xs'} class={styles.titleWrapper}>
-            {t('frame.color')}
-          </Text>
-
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              height: '100%',
-              flex: '1 0 0',
-              'grid-column': '2 / -1',
-            }}
-          >
+        <PanelRow label={t('frame.color')}>
+          <TwoColumnPanelRow>
             <ColorPicker
               onChange={frame.setBackground}
               value={frame.background ?? undefined}
             />
-          </div>
-        </div>
+          </TwoColumnPanelRow>
+        </PanelRow>
       </Show>
 
-      {/*{ Terminal }*/}
+      <PanelHeader label={t('frame.terminal')} />
 
-      <div class={styles.panelHeader}>
-        <Text size="sm" weight="semibold">
-          {t('frame.terminal')}
-        </Text>
-      </div>
-
-      <div class={styles.panelRow}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.header')}
-        </Text>
-
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            flex: '1 0 0',
-            'grid-column': '2 / -1',
-          }}
-        >
+      <PanelRow label={t('frame.header')}>
+        <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
             value={terminal.showHeader}
@@ -162,47 +96,23 @@ export const FrameSidebar = () => {
               {label: 'No', value: false},
             ]}
           />
-        </div>
-      </div>
+        </TwoColumnPanelRow>
+      </PanelRow>
 
       <Show when={terminal.showHeader}>
-        <div class={styles.panelRow}>
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              height: '100%',
-              flex: '1 0 0',
-              'grid-column': '1 / -1',
-              'padding-left': '15px',
-            }}
-            class={sprinkles({
-              marginTop: '2',
-              marginBottom: '4',
-            })}
-          >
+        <PanelRow>
+          <FullWidthPanelRow>
             <TerminalControlField
               selectedTerminal={terminal.type}
               onTerminalChange={terminal.setType}
             />
-          </div>
-        </div>
+          </FullWidthPanelRow>
+        </PanelRow>
       </Show>
 
       <Show when={terminal.showHeader}>
-        <div class={styles.panelRow}>
-          <Text as="div" size={'xs'} class={styles.titleWrapper}>
-            {t('frame.tabAccent')}
-          </Text>
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              height: '100%',
-              flex: '1 0 0',
-              'grid-column': '2 / -1',
-            }}
-          >
+        <PanelRow label={t('frame.tabAccent')}>
+          <TwoColumnPanelRow>
             <SegmentedField
               size={'xs'}
               value={terminal.accentVisible}
@@ -212,46 +122,20 @@ export const FrameSidebar = () => {
                 {label: 'No', value: false},
               ]}
             />
-          </div>
-        </div>
+          </TwoColumnPanelRow>
+        </PanelRow>
       </Show>
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.shadows')}
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            flex: '1 0 0',
-            'grid-column': '2 / -1',
-          }}
-        >
+      <PanelRow label={t('frame.shadows')}>
+        <TwoColumnPanelRow>
           <ShadowField value={terminal.shadow} onChange={terminal.setShadow} />
-        </div>
-      </div>
+        </TwoColumnPanelRow>
+      </PanelRow>
 
-      <div class={styles.panelHeader}>
-        <Text size="sm" weight="semibold">
-          {t('frame.editor')}
-        </Text>
-      </div>
+      <PanelHeader label={t('frame.editor')} />
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.language')}
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            flex: '1 0 0',
-            'grid-column': '2 / -1',
-          }}
-        >
+      <PanelRow label={t('frame.language')}>
+        <TwoColumnPanelRow>
           <Select
             multiple={false}
             items={configuration.languages.map(({label, id}) => ({
@@ -263,22 +147,11 @@ export const FrameSidebar = () => {
               editor.setLanguageId(value ?? configuration.languages[0].id)
             }
           />
-        </div>
-      </div>
+        </TwoColumnPanelRow>
+      </PanelRow>
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.lineNumbers')}
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            flex: '1 0 0',
-            'grid-column': '2 / -1',
-          }}
-        >
+      <PanelRow label={t('frame.lineNumbers')}>
+        <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
             value={editor.showLineNumbers}
@@ -288,22 +161,11 @@ export const FrameSidebar = () => {
               {label: 'Hide', value: false},
             ]}
           />
-        </div>
-      </div>
+        </TwoColumnPanelRow>
+      </PanelRow>
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.font')}
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            flex: '1 0 0',
-            'grid-column': '2 / -1',
-          }}
-        >
+      <PanelRow label={t('frame.font')}>
+        <TwoColumnPanelRow>
           <Select
             multiple={false}
             items={configuration.fonts.map(font => ({
@@ -325,22 +187,11 @@ export const FrameSidebar = () => {
               editor.setFontId(value?.id ?? configuration.fonts[0].id)
             }
           />
-        </div>
-      </div>
+        </TwoColumnPanelRow>
+      </PanelRow>
 
-      <div class={styles.panelRow}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
-          {t('frame.fontWeight')}
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            flex: '1 0 0',
-            'grid-column': '2 / -1',
-          }}
-        >
+      <PanelRow label={t('frame.fontWeight')}>
+        <TwoColumnPanelRow>
           <Select
             multiple={false}
             items={
@@ -356,8 +207,8 @@ export const FrameSidebar = () => {
               )
             }
           />
-        </div>
-      </div>
+        </TwoColumnPanelRow>
+      </PanelRow>
     </div>
   );
 };

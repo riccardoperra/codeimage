@@ -1,5 +1,6 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '../../theme/global.css';
+import {recipe} from '@vanilla-extract/recipes';
 
 export const [sidebarTheme, sidebarVars] = createTheme({
   gap: themeVars.spacing['4'],
@@ -40,6 +41,28 @@ export const panelRow = style([
     color: sidebarVars.panelTitleTextColor,
   },
 ]);
+
+export const panelRowContent = recipe({
+  base: {
+    display: 'flex',
+    width: '100%',
+    height: '100%',
+    flex: '1 0 0',
+  },
+  variants: {
+    twoColumn: {
+      true: {
+        gridColumn: '2 / -1',
+      },
+    },
+    threeColumn: {
+      true: {
+        gridColumn: '1 / -1',
+        paddingLeft: themeVars.spacing['3'],
+      },
+    },
+  },
+});
 
 export const titleWrapper = style([
   {

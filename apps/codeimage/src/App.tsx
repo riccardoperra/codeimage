@@ -4,7 +4,7 @@ import {Scaffold} from './components/Scaffold/Scaffold';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {FrameSidebar} from './components/LeftSidebar/LeftSidebar';
+import {EditorSidebar} from './components/LeftSidebar/LeftSidebar';
 import {createEffect, createMemo, createSignal, on} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
@@ -29,7 +29,7 @@ const App = () => {
   return (
     <Scaffold theme={ui.themeMode === 'light' ? lightThemeCss : darkThemeCss}>
       <Sidebar>
-        <FrameSidebar />
+        <EditorSidebar />
       </Sidebar>
 
       <div
