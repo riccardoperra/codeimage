@@ -58,6 +58,15 @@ export const buttonVariant = recipe({
           color: colorVar,
         },
       },
+      link: {
+        border: 'none',
+        backgroundColor: 'transparent',
+        color: colorVar,
+
+        ':hover': {
+          color: backgroundColorVar,
+        },
+      },
     },
     // Button theme
     theme: {

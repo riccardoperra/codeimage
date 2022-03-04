@@ -5,7 +5,7 @@ import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {EditorSidebar} from './components/LeftSidebar/LeftSidebar';
-import {createEffect, createMemo, createSignal, on} from 'solid-js';
+import {createEffect, createMemo, createSignal, on, Show} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
 import {useTerminalState} from './state/terminal';
@@ -15,12 +15,15 @@ import {useUIState} from './state/ui';
 import {lightThemeCss} from './theme/light-theme.css';
 import {darkThemeCss} from './theme/dark-theme.css';
 import {useI18n} from '@codeimage/locale';
+import {useModality} from './core/hooks/isMobile';
+import {BottomBar} from './mobile/BottomBar';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const frame = useFrameState();
   const terminal = useTerminalState();
   const ui = useUIState();
+  const modality = useModality();
   const [, {locale}] = useI18n();
   const currentLocale = createMemo(() => ui.locale);
 
@@ -28,9 +31,11 @@ const App = () => {
 
   return (
     <Scaffold theme={ui.themeMode === 'light' ? lightThemeCss : darkThemeCss}>
-      <Sidebar>
-        <EditorSidebar />
-      </Sidebar>
+      <Show when={modality === 'full'}>
+        <Sidebar>
+          <EditorSidebar />
+        </Sidebar>
+      </Show>
 
       <div
         id={'portal-host'}
@@ -74,9 +79,13 @@ const App = () => {
         <Footer />
       </Canvas>
 
-      <Sidebar>
-        <ThemeSwitcher />
-      </Sidebar>
+      {modality === 'mobile' ? (
+        <BottomBar />
+      ) : (
+        <Sidebar>
+          <ThemeSwitcher />
+        </Sidebar>
+      )}
     </Scaffold>
   );
 };
