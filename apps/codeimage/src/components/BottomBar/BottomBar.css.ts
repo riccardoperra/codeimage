@@ -1,7 +1,6 @@
 import {style} from '@vanilla-extract/css';
-import {themeVars} from '../theme/global.css';
-import {scaffoldVars} from '../components/Scaffold/Scaffold.css';
-import {fontSize} from '../components/ui/Text/Text.css';
+import {themeVars} from '../../theme/global.css';
+import {scaffoldVars} from '../Scaffold/Scaffold.css';
 
 export const wrapper = style({
   height: scaffoldVars.toolbarHeight,
@@ -23,3 +22,9 @@ export const button = style([
     flexDirection: 'column',
   },
 ]);
+
+export const portalContent = style({
+  position: 'fixed',
+  bottom: scaffoldVars.toolbarHeight,
+  backgroundColor: themeVars.dynamicColors.background,
+});

@@ -16,7 +16,7 @@ import {lightThemeCss} from './theme/light-theme.css';
 import {darkThemeCss} from './theme/dark-theme.css';
 import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
-import {BottomBar} from './mobile/BottomBar';
+import {BottomBar} from './components/BottomBar/BottomBar';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -83,7 +83,7 @@ const App = () => {
         <BottomBar />
       ) : (
         <Sidebar>
-          <ThemeSwitcher />
+          <ThemeSwitcher orientation={'vertical'} />
         </Sidebar>
       )}
     </Scaffold>

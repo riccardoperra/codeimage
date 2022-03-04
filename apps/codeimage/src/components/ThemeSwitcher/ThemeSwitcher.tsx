@@ -1,18 +1,27 @@
-import {For} from 'solid-js';
+import {Component, For} from 'solid-js';
 import {Text} from '../ui/Text/Text';
 import * as styles from './ThemeSwitcher.css';
+import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';
 import {useTerminalState} from '../../state/terminal';
 import {updateTheme} from '../../state/state';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
 import {useStaticConfiguration} from '../../core/configuration';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 
-export const ThemeSwitcher = () => {
+export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
   const {themes} = useStaticConfiguration();
   const terminal = useTerminalState();
 
   return (
-    <div class={styles.grid}>
+    <div
+      class={styles.grid({
+        orientation: props.orientation,
+      })}
+      style={assignInlineVars({
+        [gridSize]: themes.length.toString(),
+      })}
+    >
       <For each={themes}>
         {theme => (
           <ThemeBox theme={theme} onClick={() => updateTheme(theme)}>

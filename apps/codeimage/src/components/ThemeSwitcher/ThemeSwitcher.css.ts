@@ -1,35 +1,52 @@
-import {createTheme, style} from '@vanilla-extract/css';
+import {createTheme, createVar, style} from '@vanilla-extract/css';
 import {themeVars} from '../../theme/global.css';
 import {backgroundColorVar} from '../../theme/variables.css';
+import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 
 export const [themeSwitcherTheme, themeSwitcherVars] = createTheme({});
 
-export const grid = style({
-  display: 'grid',
-  gap: '40px',
-  gridTemplateColumns: '1fr',
-  padding: themeVars.spacing['4'],
-  overflowY: 'auto',
-  height: '100%',
-  gridAutoRows: 'min-content',
+export const gridSize = createVar();
 
-  '::-webkit-scrollbar': {
-    width: '20px',
-  },
-  '::-webkit-scrollbar-track': {
-    backgroundColor: 'transparent',
-  },
-  '::-webkit-scrollbar-thumb': {
-    backgroundColor: themeVars.backgroundColor.gray['400'],
-    borderRadius: themeVars.borderRadius.full,
-    border: '6px solid transparent',
-    backgroundClip: 'content-box',
-    transition: 'background-color .2s',
-  },
+export const grid = recipe({
+  base: {
+    display: 'grid',
+    gap: '40px',
+    padding: themeVars.spacing['4'],
+    overflowY: 'auto',
+    height: '100%',
+    gridAutoRows: 'min-content',
 
-  selectors: {
-    '&::-webkit-scrollbar-thumb:hover': {
-      backgroundColor: themeVars.backgroundColor.gray['500'],
+    '::-webkit-scrollbar': {
+      width: '20px',
+    },
+    '::-webkit-scrollbar-track': {
+      backgroundColor: 'transparent',
+    },
+    '::-webkit-scrollbar-thumb': {
+      backgroundColor: themeVars.backgroundColor.gray['400'],
+      borderRadius: themeVars.borderRadius.full,
+      border: '6px solid transparent',
+      backgroundClip: 'content-box',
+      transition: 'background-color .2s',
+    },
+
+    selectors: {
+      '&::-webkit-scrollbar-thumb:hover': {
+        backgroundColor: themeVars.backgroundColor.gray['500'],
+      },
+    },
+  },
+  variants: {
+    orientation: {
+      horizontal: {
+        gridTemplateColumns: `repeat(${gridSize}, 80%)`,
+        scrollSnapType: 'x mandatory',
+        overflowX: 'scroll',
+        overflowY: 'hidden',
+      },
+      vertical: {
+        gridTemplateColumns: '1fr',
+      },
     },
   },
 });
@@ -62,3 +79,5 @@ export const themeBoxFooter = style({
     },
   },
 });
+
+export type ThemeSwitcherVariant = RecipeVariants<typeof grid>;
