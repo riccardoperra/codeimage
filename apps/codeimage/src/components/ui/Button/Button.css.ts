@@ -100,6 +100,18 @@ export const buttonVariant = recipe({
         },
       },
     },
+
+    size: {
+      sm: {
+        height: '36px',
+        fontSize: themeVars.fontSize.sm,
+      },
+      xs: {
+        height: '24px',
+        fontSize: themeVars.fontSize.xs,
+        padding: `0 ${themeVars.spacing['2']}`,
+      },
+    },
   },
   defaultVariants: {
     variant: 'outline',

@@ -16,6 +16,7 @@ export function Button<T extends ValidConstructor = 'button'>(
       class={`${styles.buttonVariant({
         theme: props.theme,
         variant: props.variant,
+        size: props.size || 'sm',
       })} ${props.class || ''}`}
     >
       {props.children}
