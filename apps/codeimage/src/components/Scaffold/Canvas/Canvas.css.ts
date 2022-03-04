@@ -6,7 +6,7 @@ export const canvas = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  flex: '1 auto',
+  flex: '1',
   position: 'relative',
   backgroundColor: themeVars.dynamicColors.background,
   transition: 'background-color .2s',

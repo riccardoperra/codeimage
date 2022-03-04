@@ -12,5 +12,14 @@ export const scaffold = style([
     width: '100vw',
     position: 'relative',
     display: 'flex',
+
+    '@media': {
+      'screen and (max-width: 768px)': {
+        // ios only
+        height: '100svh',
+        overflow: 'hidden',
+        flexDirection: 'column',
+      },
+    },
   },
 ]);
