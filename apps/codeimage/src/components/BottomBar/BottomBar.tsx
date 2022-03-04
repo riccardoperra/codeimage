@@ -2,12 +2,20 @@ import * as styles from './BottomBar.css';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
 import {Portal} from 'solid-js/web';
-import {createSignal, Show} from 'solid-js';
+import {Component, createSignal, Show} from 'solid-js';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
+import {
+  FadeInOutTransition,
+  SlideInTopTransition,
+} from '../ui/Transition/Transition';
 
 type Mode = 'themes' | 'style';
 
-export const BottomBar = () => {
+interface BottomBarProps {
+  portalHostRef: Node | undefined;
+}
+
+export const BottomBar: Component<BottomBarProps> = props => {
   const [mode, setMode] = createSignal<Mode | null>(null);
 
   return (
@@ -56,7 +64,17 @@ export const BottomBar = () => {
         <Box as={'span'}>Style</Box>
       </Button>
 
-      <Button class={styles.button} variant={'link'}>
+      <Button
+        class={styles.button}
+        variant={'link'}
+        onClick={() =>
+          navigator.share({
+            title: 'Codeimage Shared code',
+            text: 'Codeimage code',
+            url: 'https://beta.codeimage.dev',
+          })
+        }
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-5 w-5"
@@ -74,37 +92,44 @@ export const BottomBar = () => {
         Share
       </Button>
 
-      <Show when={!!mode()}>
-        <Portal mount={document.getElementById('portal-host') as Node}>
-          <Box class={styles.portalContent}>
-            <Box display={'flex'} padding={'3'} paddingBottom={'0'}>
-              <Box marginLeft={'auto'}>
-                <Button
-                  size={'xs'}
-                  variant={'solid'}
-                  theme={'secondary'}
-                  onClick={() => setMode(null)}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-3 w-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
+      <Show when={props.portalHostRef}>
+        <Portal mount={props.portalHostRef}>
+          <FadeInOutTransition show={!!mode()}>
+            <Box class={styles.portalContent}>
+              <Box display={'flex'} padding={'3'} paddingBottom={'0'}>
+                <Box marginLeft={'auto'}>
+                  <Button
+                    size={'xs'}
+                    variant={'solid'}
+                    theme={'secondary'}
+                    onClick={() => setMode(null)}
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </Button>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </Button>
+                </Box>
               </Box>
-            </Box>
 
-            <ThemeSwitcher orientation={'horizontal'} />
-          </Box>
+              <Show when={mode() === 'themes'}>
+                <ThemeSwitcher orientation={'horizontal'} />
+              </Show>
+              <Show when={mode() === 'style'}>
+                <span>Content for style</span>
+              </Show>
+            </Box>
+          </FadeInOutTransition>
         </Portal>
       </Show>
     </div>

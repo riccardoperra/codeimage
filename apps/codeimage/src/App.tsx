@@ -20,6 +20,7 @@ import {BottomBar} from './components/BottomBar/BottomBar';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
+  const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const frame = useFrameState();
   const terminal = useTerminalState();
   const ui = useUIState();
@@ -38,6 +39,7 @@ const App = () => {
       </Show>
 
       <div
+        ref={setPortalHostRef}
         id={'portal-host'}
         style={{
           position: 'relative',
@@ -80,7 +82,7 @@ const App = () => {
       </Canvas>
 
       {modality === 'mobile' ? (
-        <BottomBar />
+        <BottomBar portalHostRef={portalHostRef()} />
       ) : (
         <Sidebar>
           <ThemeSwitcher orientation={'vertical'} />

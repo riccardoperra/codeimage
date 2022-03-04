@@ -26,5 +26,7 @@ export const button = style([
 export const portalContent = style({
   position: 'fixed',
   bottom: scaffoldVars.toolbarHeight,
-  backgroundColor: themeVars.dynamicColors.background,
+  backgroundColor: themeVars.dynamicColors.panelBackground,
+  color: themeVars.dynamicColors.panelTextColor,
+  borderTop: `1px solid ${themeVars.dynamicColors.divider}`,
 });
