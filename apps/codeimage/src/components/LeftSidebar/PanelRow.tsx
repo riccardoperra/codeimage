@@ -1,6 +1,6 @@
 import {Component, Show} from 'solid-js';
-import * as styles from './LeftSidebar.css';
-import {panelRowContent} from './LeftSidebar.css';
+import * as styles from './EditorSidebar.css';
+import {panelRowContent} from './EditorSidebar.css';
 import {Text} from '../ui/Text/Text';
 import {Box} from '../ui/Box/Box';
 

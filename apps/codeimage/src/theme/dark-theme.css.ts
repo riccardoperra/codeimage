@@ -31,4 +31,6 @@ export const darkThemeCss = createTheme(colors, {
   listBoxHoverBackgroundColor: `#232323`,
   listBoxTextColor: themeVars.backgroundColor.white,
   listBoxActiveTextColor: themeVars.backgroundColor.white,
+  scrollBarBackgroundColor: '#555555',
+  scrollBarHoverBackgroundColor: '#333333',
 });

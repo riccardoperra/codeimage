@@ -10,6 +10,7 @@ import {getScaleByRatio} from '../../core/helpers/getScale';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createRef} from '../../core/helpers/create-ref';
+import {Box} from '../ui/Box/Box';
 
 type FrameHandlerProps = WithRef<'div'>;
 
@@ -35,7 +36,7 @@ export function FrameHandler(
   );
 
   return (
-    <div class={styles.wrapper}>
+    <Box class={styles.wrapper}>
       <div
         class={styles.handler}
         style={assignInlineVars({
@@ -47,6 +48,6 @@ export function FrameHandler(
       >
         {props.children}
       </div>
-    </div>
+    </Box>
   );
 }

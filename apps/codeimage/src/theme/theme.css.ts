@@ -29,4 +29,6 @@ export const colors = createThemeContract({
   listBoxHoverBackgroundColor: null,
   listBoxTextColor: null,
   listBoxActiveTextColor: null,
+  scrollBarBackgroundColor: null,
+  scrollBarHoverBackgroundColor: null,
 });

@@ -15,26 +15,6 @@ export const grid = recipe({
     overflowY: 'auto',
     height: '100%',
     gridAutoRows: 'min-content',
-
-    '::-webkit-scrollbar': {
-      width: '20px',
-    },
-    '::-webkit-scrollbar-track': {
-      backgroundColor: 'transparent',
-    },
-    '::-webkit-scrollbar-thumb': {
-      backgroundColor: themeVars.backgroundColor.gray['400'],
-      borderRadius: themeVars.borderRadius.full,
-      border: '6px solid transparent',
-      backgroundClip: 'content-box',
-      transition: 'background-color .2s',
-    },
-
-    selectors: {
-      '&::-webkit-scrollbar-thumb:hover': {
-        backgroundColor: themeVars.backgroundColor.gray['500'],
-      },
-    },
   },
   variants: {
     orientation: {

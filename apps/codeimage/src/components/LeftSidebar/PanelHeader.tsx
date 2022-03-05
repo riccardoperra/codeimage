@@ -1,4 +1,4 @@
-import * as styles from './LeftSidebar.css';
+import * as styles from './EditorSidebar.css';
 import {Text} from '../ui/Text/Text';
 import {Component} from 'solid-js';
 

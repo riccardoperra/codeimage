@@ -4,7 +4,6 @@ import {Scaffold} from './components/Scaffold/Scaffold';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {EditorSidebar} from './components/LeftSidebar/LeftSidebar';
 import {createEffect, createMemo, createSignal, on, Show} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
@@ -18,6 +17,7 @@ import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
 import {BottomBar} from './components/BottomBar/BottomBar';
 import {FrameHandler} from './components/Frame/FrameHandler';
+import {EditorSidebar} from './components/LeftSidebar/EditorSidebar';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -33,6 +33,11 @@ const App = () => {
 
   return (
     <Scaffold theme={ui.themeMode === 'light' ? lightThemeCss : darkThemeCss}>
+      <div
+        id="drag-overlay"
+        style="position: absolute; z-index: 1000000; inset: 0px; display: none;"
+      />
+
       <Show when={modality === 'full'}>
         <Sidebar>
           <EditorSidebar />

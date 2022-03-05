@@ -8,4 +8,6 @@ export const canvas = style({
   backgroundColor: themeVars.dynamicColors.background,
   transition: 'background-color .2s',
   overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
 });
