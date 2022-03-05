@@ -204,7 +204,8 @@ globalStyle('html, body', {
   fontFamily: 'Inter, sans-serif',
   '@supports': {
     '(font-variation-settings: normal)': {
-      fontFamily: 'Inter var, sans-serif',
+      // fontFamily: 'Inter var, sans-serif',
+      fontFamily: 'Inter, sans-serif',
     },
   },
 });
