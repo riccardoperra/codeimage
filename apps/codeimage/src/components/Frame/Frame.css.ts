@@ -2,6 +2,10 @@ import {createTheme, style} from '@vanilla-extract/css';
 import {backgroundColorVar} from '../../theme/variables.css';
 import {themeVars} from '../../theme/global.css';
 
+export const [frameHandler, frameHandlerVars] = createTheme({
+  scale: '1',
+});
+
 export const [frame, frameVars] = createTheme({
   backgroundColor: backgroundColorVar,
   radius: themeVars.borderRadius.lg,
@@ -15,6 +19,23 @@ export const [frame, frameVars] = createTheme({
   controlHandleSize: '24px',
   controlOffset: '0px',
 });
+
+export const wrapper = style({
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  overflowY: 'auto',
+  overflowX: 'hidden',
+});
+
+export const handler = style([
+  {
+    transform: `scale(${frameHandlerVars.scale})`,
+    display: 'block',
+  },
+]);
 
 export const container = style([
   frame,

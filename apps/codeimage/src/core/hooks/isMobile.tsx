@@ -1,6 +1,7 @@
 type AppMode = 'full' | 'mobile';
+import {useMediaQuery} from 'solid-use';
 
 export function useModality(): AppMode {
-  const mobile = window.innerWidth <= 649;
-  return mobile ? 'mobile' : 'full';
+  const phone = useMediaQuery(`screen and (max-width: 768px)`);
+  return phone() ? 'mobile' : 'full';
 }

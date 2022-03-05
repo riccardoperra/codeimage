@@ -6,6 +6,7 @@ export const locale = {
     },
     toolbar: {
       export: 'Esporta',
+      share: 'Condividi',
       exportLoading: 'Esportando...',
     },
   },
@@ -16,6 +17,7 @@ export const locale = {
     },
     toolbar: {
       export: 'Export',
+      share: 'Share',
       exportLoading: 'Exporting...',
     },
   },

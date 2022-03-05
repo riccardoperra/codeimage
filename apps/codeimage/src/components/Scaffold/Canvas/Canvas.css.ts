@@ -3,11 +3,9 @@ import {themeVars} from '../../../theme/global.css';
 
 export const canvas = style({
   height: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
   flex: '1',
   position: 'relative',
   backgroundColor: themeVars.dynamicColors.background,
   transition: 'background-color .2s',
+  overflow: 'hidden',
 });
