@@ -11,8 +11,6 @@ import {useTerminalState} from './state/terminal';
 import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
 import {Footer} from './components/Footer/Footer';
 import {useUIState} from './state/ui';
-import {lightThemeCss} from './theme/light-theme.css';
-import {darkThemeCss} from './theme/dark-theme.css';
 import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
 import {BottomBar} from './components/BottomBar/BottomBar';
@@ -32,7 +30,7 @@ const App = () => {
   createEffect(on(currentLocale, locale));
 
   return (
-    <Scaffold theme={ui.themeMode === 'light' ? lightThemeCss : darkThemeCss}>
+    <Scaffold>
       <Show when={modality === 'full'}>
         <Sidebar>
           <EditorSidebar />

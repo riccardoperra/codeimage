@@ -23,7 +23,12 @@ export const ShareButton: Component<ShareButtonProps> = props => {
   }
 
   return (
-    <Button variant={'solid'} theme={'secondary'} onClick={() => share()}>
+    <Button
+      variant={'solid'}
+      theme={'secondary'}
+      disabled={!navigator.share}
+      onClick={() => share()}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         style={{height: '20px', width: '20px'}}
