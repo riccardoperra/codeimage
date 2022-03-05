@@ -2,6 +2,7 @@ import {combine, devtools, persist} from 'zustand/middleware';
 import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
 import {staticConfiguration} from '../core/configuration';
+import {query} from './middleware';
 
 export interface TerminalState {
   readonly showHeader: boolean;
@@ -39,5 +40,12 @@ const store = combine(initialState, set => ({
 }));
 
 export const useTerminalState = create(
-  devtools(persist(store, {name: '@store/terminal'}), {name: 'terminal'}),
+  devtools(
+    persist(query(store, {debounce: 500, prefix: 'terminal'}), {
+      name: '@store/terminal',
+    }),
+    {
+      name: 'terminal',
+    },
+  ),
 );
