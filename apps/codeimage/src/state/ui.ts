@@ -1,4 +1,4 @@
-import {combine, devtools} from 'zustand/middleware';
+import {combine, devtools, subscribeWithSelector} from 'zustand/middleware';
 import create from 'solid-zustand';
 
 export interface GlobalUiState {
@@ -21,4 +21,6 @@ const store = combine(initialState, set => ({
     })),
 }));
 
-export const useUIState = create(devtools(store, {name: 'ui'}));
+export const useUIState = create(
+  subscribeWithSelector(devtools(store, {name: 'ui'})),
+);

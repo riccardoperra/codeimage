@@ -1,6 +1,7 @@
 import {createGlobalTheme, globalStyle} from '@vanilla-extract/css';
 import {colors, spacing} from '@codeimage/ui';
 import {colors as dynamicColors} from './theme.css';
+import {backgroundColorVar} from './variables.css';
 
 export const root = createGlobalTheme(':root', {
   screens: {
@@ -206,6 +207,10 @@ globalStyle('html, body', {
       fontFamily: 'Inter var, sans-serif',
     },
   },
+});
+
+globalStyle('body', {
+  backgroundColor: backgroundColorVar,
 });
 
 export const themeVars = {
