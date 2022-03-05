@@ -1,7 +1,7 @@
 import * as styles from './EditorSidebar.css';
 import {Text} from '../ui/Text/Text';
 import {RangeField} from '../ui/RangeField/RangeField';
-import {onMount, Show} from 'solid-js';
+import {Show} from 'solid-js';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {ShadowField} from '../ShadowField/ShadowField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
@@ -22,7 +22,7 @@ export const EditorSidebar = () => {
   const editor = useEditorState();
   const configuration = useStaticConfiguration();
   const [t, {merge}] = useI18n<typeof locale>();
-  onMount(() => merge(locale));
+  merge(locale);
 
   return (
     <div class={styles.sidebar}>
