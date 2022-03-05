@@ -1,4 +1,4 @@
-import {combine, devtools} from 'zustand/middleware';
+import {combine, devtools, persist} from 'zustand/middleware';
 import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
 import {staticConfiguration} from '../core/configuration';
@@ -38,4 +38,6 @@ const store = combine(initialState, set => ({
   setType: (type: string) => set(() => ({type})),
 }));
 
-export const useTerminalState = create(devtools(store, {name: 'terminal'}));
+export const useTerminalState = create(
+  devtools(persist(store, {name: '@store/terminal'}), {name: 'terminal'}),
+);

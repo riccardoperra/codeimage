@@ -1,5 +1,5 @@
 import create from 'solid-zustand';
-import {combine, devtools} from 'zustand/middleware';
+import {combine, devtools, persist} from 'zustand/middleware';
 import {staticConfiguration} from '../core/configuration';
 
 interface EditorState {
@@ -32,4 +32,6 @@ const store = combine(initialState, (set, get) => ({
     staticConfiguration.fonts.find(font => font.id === get().fontId),
 }));
 
-export const useEditorState = create(devtools(store, {name: 'editor'}));
+export const useEditorState = create(
+  devtools(persist(store, {name: '@store/editor'}), {name: 'editor'}),
+);

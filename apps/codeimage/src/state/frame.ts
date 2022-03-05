@@ -1,8 +1,8 @@
 import create from 'solid-zustand';
-import {combine, devtools} from 'zustand/middleware';
+import {combine, devtools, persist} from 'zustand/middleware';
 import {staticConfiguration} from '../core/configuration';
 
-interface FrameState {
+export interface FrameStateSlice {
   background: string | null | undefined;
   padding: number;
   radius: number;
@@ -11,7 +11,7 @@ interface FrameState {
   autoWidth: boolean;
 }
 
-const initialState: FrameState = {
+const initialState: FrameStateSlice = {
   background: staticConfiguration.themes[0].properties.previewBackground,
   padding: 128,
   radius: 24,
@@ -29,4 +29,6 @@ const store = combine(initialState, set => ({
   setBackground: (background: string | null) => set(() => ({background})),
 }));
 
-export const useFrameState = create(devtools(store, {name: 'frame'}));
+export const useFrameState = create(
+  devtools(persist(store, {name: '@store/frame'}), {name: 'frame'}),
+);
