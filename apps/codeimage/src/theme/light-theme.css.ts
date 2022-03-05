@@ -33,4 +33,6 @@ export const lightThemeCss = createTheme(colors, {
   listBoxActiveTextColor: themeVars.backgroundColor.white,
   scrollBarBackgroundColor: themeVars.backgroundColor.gray['400'],
   scrollBarHoverBackgroundColor: themeVars.backgroundColor.gray['500'],
+  bottomBarBackgroundColor: themeVars.backgroundColor.white,
+  bottomBarTextColor: themeVars.textColor.gray['700'],
 });

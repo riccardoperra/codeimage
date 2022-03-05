@@ -7,8 +7,8 @@ export const wrapper = style({
   width: '100vw',
   overflow: 'hidden',
   borderTop: `1px solid ${themeVars.dynamicColors.divider}`,
-  backgroundColor: `#2B2B2B`,
-  color: themeVars.dynamicColors.panelTextColor,
+  backgroundColor: themeVars.dynamicColors.bottomBarBackgroundColor,
+  color: themeVars.dynamicColors.bottomBarTextColor,
   display: 'grid',
   alignItems: 'center',
   padding: `0 ${themeVars.spacing['4']}`,
@@ -21,6 +21,7 @@ export const button = style([
   {
     display: 'flex',
     flexDirection: 'column',
+    color: themeVars.dynamicColors.bottomBarTextColor,
   },
 ]);
 
