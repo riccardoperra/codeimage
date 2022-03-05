@@ -11,6 +11,7 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    https: true,
   },
   build: {
     target: 'es2019',

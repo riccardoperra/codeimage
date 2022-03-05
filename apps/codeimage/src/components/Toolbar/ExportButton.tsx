@@ -3,10 +3,11 @@ import {Box} from '../ui/Box/Box';
 import {Button} from '../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
-import {toPng} from 'html-to-image';
+import {toBlob, toPng} from 'html-to-image';
 import {EXPORT_EXCLUDE} from '../../core/directives/exportExclude';
 import download from 'downloadjs';
 import {useAsyncAction} from '../../core/hooks/async-action';
+import {useModality} from '../../core/hooks/isMobile';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -16,11 +17,37 @@ const exportImage = async (canvasRef: HTMLElement | undefined) => {
   if (!canvasRef) {
     return;
   }
-  const result = await toPng(canvasRef, {
-    filter: node => !node.hasOwnProperty(EXPORT_EXCLUDE),
-  });
-  download(result);
-  return result;
+
+  const mobile = useModality() === 'mobile';
+
+  if (mobile) {
+    const blob = await toBlob(canvasRef, {
+      filter: node => !node.hasOwnProperty(EXPORT_EXCLUDE),
+      style: {
+        transform: 'scale(1)',
+      },
+    });
+    if (blob) {
+      const file = new File([blob], 'file.png', {type: 'image/png'});
+
+      const data = {
+        title: 'Codeimage exported image',
+        text: 'Saved with codeimage.',
+        files: [file],
+      };
+
+      if (navigator.canShare(data)) {
+        navigator.share(data).then(alert).catch(alert);
+      }
+      return blob;
+    }
+  } else {
+    const result = await toPng(canvasRef, {
+      filter: node => !node.hasOwnProperty(EXPORT_EXCLUDE),
+    });
+    download(result);
+    return result;
+  }
 };
 
 export const ExportButton: Component<ExportButtonProps> = props => {
