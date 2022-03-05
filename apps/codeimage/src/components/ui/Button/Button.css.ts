@@ -28,7 +28,7 @@ export const button = style([
 
     ':disabled': {
       cursor: 'default',
-      opacity: 0.5,
+      opacity: 0.3,
     },
 
     ':focus': {
@@ -63,7 +63,7 @@ export const buttonVariant = recipe({
         backgroundColor: 'transparent',
         color: colorVar,
 
-        ':hover': {
+        'not(:disabled):hover': {
           color: backgroundColorVar,
         },
       },
