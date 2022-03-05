@@ -16,7 +16,7 @@ export const ShareButton: Component<ShareButtonProps> = props => {
     const data = {
       // TODO: add tab title
       title: 'Codeimage.dev shared code',
-      text: 'Code',
+      url: window.location.search,
       // TODO: should add the exported file? Useful for social media
       files: [],
     };

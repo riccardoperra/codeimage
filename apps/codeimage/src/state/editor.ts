@@ -1,6 +1,7 @@
 import create from 'solid-zustand';
 import {combine, devtools, persist} from 'zustand/middleware';
 import {staticConfiguration} from '../core/configuration';
+import {query} from './middleware';
 
 interface EditorState {
   languageId: string;
@@ -33,5 +34,12 @@ const store = combine(initialState, (set, get) => ({
 }));
 
 export const useEditorState = create(
-  devtools(persist(store, {name: '@store/editor'}), {name: 'editor'}),
+  devtools(
+    persist(query(store, {debounce: 500, prefix: 'editor'}), {
+      name: '@store/editor',
+    }),
+    {
+      name: 'editor',
+    },
+  ),
 );

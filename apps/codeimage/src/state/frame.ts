@@ -1,6 +1,7 @@
 import create from 'solid-zustand';
 import {combine, devtools, persist} from 'zustand/middleware';
 import {staticConfiguration} from '../core/configuration';
+import {query} from './middleware';
 
 export interface FrameStateSlice {
   background: string | null | undefined;
@@ -30,5 +31,12 @@ const store = combine(initialState, set => ({
 }));
 
 export const useFrameState = create(
-  devtools(persist(store, {name: '@store/frame'}), {name: 'frame'}),
+  devtools(
+    persist(query(store, {debounce: 500, prefix: 'frame'}), {
+      name: '@store/frame',
+    }),
+    {
+      name: 'frame',
+    },
+  ),
 );
