@@ -7,6 +7,7 @@ import {
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import {omitProps, pickProps} from 'solid-use';
 import clsx from 'clsx';
+import {scrollbar} from '../../../theme/base.css';
 
 type BoxParameters = Parameters<typeof sprinkles>[0];
 
@@ -22,6 +23,7 @@ export function Box<T extends ValidConstructor = 'div'>(props: BoxProps<T>) {
       ref={props.ref}
       {...omitProps(props, ['as', 'ref'])}
       class={clsx(
+        scrollbar,
         props.class,
         sprinkles(pickProps(props, [...sprinkles.properties.keys()])),
       )}

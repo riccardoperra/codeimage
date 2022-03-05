@@ -1,11 +1,16 @@
+html, body {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
-  overflow: hidden;
   /* TODO: is this necessary? */
   touch-action: none;
+  position: relative;
+  overscroll-behavior-y: none;
 }
 
 code {

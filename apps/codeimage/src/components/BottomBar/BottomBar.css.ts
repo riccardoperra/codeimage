@@ -24,10 +24,24 @@ export const button = style([
   },
 ]);
 
-export const portalContent = style({
+export const portalWrapper = style({
   position: 'fixed',
   bottom: `calc(${scaffoldVars.toolbarHeight} + env(safe-area-inset-bottom, 0))`,
   backgroundColor: themeVars.dynamicColors.panelBackground,
   color: themeVars.dynamicColors.panelTextColor,
+  width: '100%',
   borderTop: `1px solid ${themeVars.dynamicColors.divider}`,
+});
+
+export const portalHeader = style({
+  flex: 1,
+  display: 'flex',
+  padding: themeVars.spacing['3'],
+  paddingBottom: 0,
+});
+
+export const portalContent = style({
+  overflowY: 'auto',
+  flex: 0,
+  maxHeight: '50vh',
 });

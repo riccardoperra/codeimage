@@ -4,10 +4,8 @@ import {Box} from '../ui/Box/Box';
 import {Portal} from 'solid-js/web';
 import {Component, createSignal, Show} from 'solid-js';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
-import {
-  FadeInOutTransition,
-  SlideInTopTransition,
-} from '../ui/Transition/Transition';
+import {FadeInOutTransition} from '../ui/Transition/Transition';
+import {EditorSidebar} from '../LeftSidebar/EditorSidebar';
 
 type Mode = 'themes' | 'style';
 
@@ -95,8 +93,8 @@ export const BottomBar: Component<BottomBarProps> = props => {
       <Show when={props.portalHostRef}>
         <Portal mount={props.portalHostRef}>
           <FadeInOutTransition show={!!mode()}>
-            <Box class={styles.portalContent}>
-              <Box display={'flex'} padding={'3'} paddingBottom={'0'}>
+            <Box class={styles.portalWrapper}>
+              <Box class={styles.portalHeader}>
                 <Box marginLeft={'auto'}>
                   <Button
                     size={'xs'}
@@ -121,13 +119,14 @@ export const BottomBar: Component<BottomBarProps> = props => {
                   </Button>
                 </Box>
               </Box>
-
-              <Show when={mode() === 'themes'}>
-                <ThemeSwitcher orientation={'horizontal'} />
-              </Show>
-              <Show when={mode() === 'style'}>
-                <span>Content for style</span>
-              </Show>
+              <Box class={styles.portalContent}>
+                <Show when={mode() === 'themes'}>
+                  <ThemeSwitcher orientation={'horizontal'} />
+                </Show>
+                <Show when={mode() === 'style'}>
+                  <EditorSidebar />
+                </Show>
+              </Box>
             </Box>
           </FadeInOutTransition>
         </Portal>

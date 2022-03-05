@@ -8,13 +8,14 @@ import {updateTheme} from '../../state/state';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
 import {useStaticConfiguration} from '../../core/configuration';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {Box} from '../ui/Box/Box';
 
 export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
   const {themes} = useStaticConfiguration();
   const terminal = useTerminalState();
 
   return (
-    <div
+    <Box
       class={styles.grid({
         orientation: props.orientation,
       })}
@@ -41,6 +42,6 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
           </ThemeBox>
         )}
       </For>
-    </div>
+    </Box>
   );
 };
