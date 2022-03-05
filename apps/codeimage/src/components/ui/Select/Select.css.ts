@@ -3,6 +3,7 @@ import * as textFieldStyles from '../TextField/TextField.css';
 import * as textStyles from '../Text/Text.css';
 import {themeVars} from '../../../theme/global.css';
 import {recipe} from '@vanilla-extract/recipes';
+import {scrollbar} from '../../../theme/base.css';
 
 export const wrapper = style({
   width: '100%',
@@ -25,6 +26,7 @@ export const listBox = style([
 
 export const listBoxPanel = style([
   textStyles.fontSize.xs,
+  scrollbar,
   {
     position: 'absolute',
     width: '100%',
@@ -35,20 +37,6 @@ export const listBoxPanel = style([
     borderRadius: themeVars.borderRadius.lg,
     boxShadow: themeVars.boxShadow.lg,
     zIndex: 100,
-
-    '::-webkit-scrollbar': {
-      width: '20px',
-    },
-    '::-webkit-scrollbar-track': {
-      backgroundColor: 'transparent',
-    },
-    '::-webkit-scrollbar-thumb': {
-      backgroundColor: themeVars.backgroundColor.gray['400'],
-      borderRadius: themeVars.borderRadius.full,
-      border: '6px solid transparent',
-      backgroundClip: 'content-box',
-      transition: 'background-color .2s',
-    },
 
     ':focus': {
       outline: 'none',
