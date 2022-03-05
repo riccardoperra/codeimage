@@ -33,11 +33,6 @@ const App = () => {
 
   return (
     <Scaffold theme={ui.themeMode === 'light' ? lightThemeCss : darkThemeCss}>
-      <div
-        id="drag-overlay"
-        style="position: absolute; z-index: 1000000; inset: 0px; display: none;"
-      />
-
       <Show when={modality === 'full'}>
         <Sidebar>
           <EditorSidebar />
