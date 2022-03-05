@@ -17,6 +17,7 @@ import {darkThemeCss} from './theme/dark-theme.css';
 import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
 import {BottomBar} from './components/BottomBar/BottomBar';
+import {FrameHandler} from './components/Frame/FrameHandler';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -53,7 +54,7 @@ const App = () => {
       <Canvas>
         <Toolbar canvasRef={frameRef()} />
 
-        <div ref={setFrameRef}>
+        <FrameHandler ref={setFrameRef}>
           <Frame
             radius={0}
             padding={frame.padding}
@@ -76,7 +77,7 @@ const App = () => {
               <CustomEditor />
             </DynamicTerminal>
           </Frame>
-        </div>
+        </FrameHandler>
 
         <Footer />
       </Canvas>

@@ -8,7 +8,6 @@ export const [toolbarTheme, toolbarVars] = createTheme({
 export const wrapper = style([
   toolbarTheme,
   {
-    position: 'absolute',
     padding: '0px 18px',
     display: 'flex',
     alignItems: 'center',
@@ -16,14 +15,14 @@ export const wrapper = style([
     fontSize: '18px',
     fontWeight: 'bold',
     zIndex: 30,
-    top: 0,
-    right: 0,
     height: '60px',
     width: '100%',
     backgroundColor: themeVars.dynamicColors.panelBackground,
     borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
   },
 ]);
+
+export const title = style({});
 
 export const actionBox = style({
   display: 'flex',

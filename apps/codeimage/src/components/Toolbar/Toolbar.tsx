@@ -6,6 +6,7 @@ import {Box} from '../ui/Box/Box';
 import {LanguageSelectorButton} from './LanguageSelectorButton';
 import {useStaticConfiguration} from '../../core/configuration';
 import {ExportButton} from './ExportButton';
+import {ShareButton} from './ShareButton';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
@@ -28,6 +29,9 @@ export const Toolbar: Component<{
         />
 
         <Box marginLeft={'auto'}>
+          <Box display={'inlineBlock'} marginRight={'2'}>
+            <ShareButton />
+          </Box>
           <ExportButton canvasRef={props.canvasRef} />
         </Box>
       </Box>

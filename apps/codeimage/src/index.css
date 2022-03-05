@@ -4,6 +4,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
   overflow: hidden;
+  /* TODO: is this necessary? */
+  touch-action: none;
 }
 
 code {
