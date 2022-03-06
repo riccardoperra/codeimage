@@ -34,6 +34,7 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
               accentVisible={terminal.accentVisible}
               shadow={terminal.shadow}
               showTab={true}
+              readonlyTab={true}
               showHeader={true}
               type={terminal.type}
             >
