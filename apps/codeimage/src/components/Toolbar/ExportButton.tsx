@@ -20,7 +20,7 @@ const exportImage = async (canvasRef: HTMLElement | undefined) => {
 
   const mobile = useModality() === 'mobile';
 
-  if (mobile) {
+  if (mobile && !!navigator.share) {
     const blob = await toBlob(canvasRef, {
       filter: node => !node.hasOwnProperty(EXPORT_EXCLUDE),
       style: {

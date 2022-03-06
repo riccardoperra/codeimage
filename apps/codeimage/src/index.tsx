@@ -7,7 +7,6 @@ import {I18nProvider} from '@codeimage/locale';
 import {locale} from './i18n';
 import {StaticConfigurationProvider} from '@codeimage/config';
 
-alert(window.matchMedia('(display-mode: standalone)').matches);
 render(
   () => (
     <StaticConfigurationProvider config={staticConfiguration}>

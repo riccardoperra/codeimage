@@ -14,25 +14,25 @@ const pwaManifest: Partial<ManifestOptions> = {
   description: 'Create elegant code screenshots of your source code.',
   icons: [
     {
-      src: 'src/assets/pwa/manifest-icon-192.maskable.png',
+      src: 'assets/pwa/manifest-icon-192.maskable.png',
       sizes: '192x192',
       type: 'image/png',
       purpose: 'any',
     },
     {
-      src: 'src/assets/pwa/manifest-icon-192.maskable.png',
+      src: 'assets/pwa/manifest-icon-192.maskable.png',
       sizes: '192x192',
       type: 'image/png',
       purpose: 'maskable',
     },
     {
-      src: 'src/assets/pwa/manifest-icon-512.maskable.png',
+      src: 'assets/pwa/manifest-icon-512.maskable.png',
       sizes: '512x512',
       type: 'image/png',
       purpose: 'any',
     },
     {
-      src: 'src/assets/pwa/manifest-icon-512.maskable.png',
+      src: 'assets/pwa/manifest-icon-512.maskable.png',
       sizes: '512x512',
       type: 'image/png',
       purpose: 'maskable',
@@ -46,10 +46,11 @@ export default defineConfig({
     solidPlugin(),
     vanillaExtractPlugin(),
     VitePWA({
+      includeManifestIcons: true,
+      disable: false,
       manifest: pwaManifest,
       devOptions: {
         enabled: true,
-        disableRuntimeConfig: true,
         /* other options */
       },
     }),
@@ -68,6 +69,5 @@ export default defineConfig({
     minify: true,
     polyfillDynamicImport: false,
     cssCodeSplit: true,
-    manifest: true,
   },
 });
