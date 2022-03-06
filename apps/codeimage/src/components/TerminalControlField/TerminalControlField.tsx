@@ -36,6 +36,7 @@ export function TerminalControlField(
                 background={terminalState.background}
                 darkMode={terminalState.darkMode}
                 accentVisible={true}
+                readonlyTab={true}
                 showHeader={true}
               />
             </Box>

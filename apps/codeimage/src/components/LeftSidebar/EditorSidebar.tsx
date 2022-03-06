@@ -3,7 +3,6 @@ import {Text} from '../ui/Text/Text';
 import {RangeField} from '../ui/RangeField/RangeField';
 import {Show} from 'solid-js';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
-import {ShadowField} from '../ShadowField/ShadowField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
 import {useFrameState} from '../../state/frame';
 import {useTerminalState} from '../../state/terminal';
