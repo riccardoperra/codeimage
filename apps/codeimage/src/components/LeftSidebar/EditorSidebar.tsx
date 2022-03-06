@@ -126,11 +126,12 @@ export const EditorSidebar = () => {
         </PanelRow>
       </Show>
 
-      <PanelRow label={t('frame.shadows')}>
-        <TwoColumnPanelRow>
-          <ShadowField value={terminal.shadow} onChange={terminal.setShadow} />
-        </TwoColumnPanelRow>
-      </PanelRow>
+      {/*// TODO: to refactor: handle light/dark mode, handle mobile view, add customizable shadows */}
+      {/*<PanelRow label={t('frame.shadows')}>*/}
+      {/*  <TwoColumnPanelRow>*/}
+      {/*    <ShadowField value={terminal.shadow} onChange={terminal.setShadow} />*/}
+      {/*  </TwoColumnPanelRow>*/}
+      {/*</PanelRow>*/}
 
       <PanelHeader label={t('frame.editor')} />
 

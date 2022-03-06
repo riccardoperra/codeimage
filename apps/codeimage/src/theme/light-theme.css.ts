@@ -35,4 +35,5 @@ export const lightThemeCss = createTheme(colors, {
   scrollBarHoverBackgroundColor: themeVars.backgroundColor.gray['500'],
   bottomBarBackgroundColor: themeVars.backgroundColor.white,
   bottomBarTextColor: themeVars.textColor.gray['700'],
+  emptySquareBackgroundColor: themeVars.backgroundColor.gray['300'],
 });
