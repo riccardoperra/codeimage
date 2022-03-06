@@ -36,4 +36,6 @@ export const darkThemeCss = createTheme(colors, {
   bottomBarBackgroundColor: '#2B2B2B',
   bottomBarTextColor: '#EEEEEE',
   emptySquareBackgroundColor: '#252525',
+  snackbarBackgroundColor: '#EEEEEE',
+  snackbarTextColor: themeVars.textColor.gray['800'],
 });

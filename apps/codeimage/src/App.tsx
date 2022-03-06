@@ -16,6 +16,8 @@ import {useModality} from './core/hooks/isMobile';
 import {BottomBar} from './components/BottomBar/BottomBar';
 import {FrameHandler} from './components/Frame/FrameHandler';
 import {EditorSidebar} from './components/LeftSidebar/EditorSidebar';
+import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
+import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -31,6 +33,8 @@ const App = () => {
 
   return (
     <Scaffold>
+      <NotificationHandler />
+      <ReloadPrompt />
       <Show when={modality === 'full'}>
         <Sidebar>
           <EditorSidebar />
