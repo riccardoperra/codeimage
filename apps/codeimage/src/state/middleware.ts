@@ -3,22 +3,17 @@ import {NamedSet} from 'zustand/middleware';
 import {parse, stringify} from 'query-string';
 
 interface QueryOptions {
-  debounce: number;
+  debounce?: number;
   prefix: string;
 }
 
 export const query = <
   T extends State,
-  CustomSetState extends SetState<T>,
-  CustomGetState extends GetState<T>,
-  CustomStoreApi extends StoreApi<T>,
+  CustomSetState extends SetState<T> = SetState<T>,
+  CustomGetState extends GetState<T> = GetState<T>,
+  CustomStoreApi extends StoreApi<T> = StoreApi<T>,
 >(
-  fn: StateCreator<
-    T,
-    CustomSetState & NamedSet<T>,
-    CustomGetState,
-    CustomStoreApi
-  >,
+  fn: StateCreator<T>,
   options: QueryOptions,
 ): StateCreator<
   T,
@@ -38,6 +33,7 @@ export const query = <
 
     const entries = Object.entries(parsedQuery);
 
+    // Set initial state
     if (entries.length > 0) {
       queueMicrotask(() => {
         const allowedEntries = entries
@@ -54,8 +50,7 @@ export const query = <
               )
               .filter(([k]) => Object.keys(get()).includes(k)),
           );
-          console.log(state);
-          set(state as any, false, {type: '@@INIT/query'});
+          set(() => state as T, false, {type: '@@INIT/queryMiddleware'});
         }
       });
     }
@@ -73,11 +68,14 @@ export const query = <
           ),
         );
         const parsedQuery = parse(query);
-        console.log(parsedQuery, query);
         Object.entries(parsedQuery).forEach(([k, v]) =>
           params.set(`${options.prefix}_${k}`, v as string),
         );
-        window.history.replaceState(null, '', `?${params}`);
+        window.history.replaceState(
+          Object.fromEntries(params.entries()),
+          '',
+          `?${params}`,
+        );
       }, options.debounce);
     }
 
@@ -85,13 +83,17 @@ export const query = <
 
     api.setState = (state, replace) => {
       savedSetState(state, replace);
-      void replaceQuery(state as any);
+      void replaceQuery(state as Partial<T>);
     };
 
     return fn(
       (pState, replace) => {
         set(pState, replace);
-        replaceQuery((pState as any)() as Partial<T>);
+        replaceQuery(
+          typeof pState === 'function'
+            ? (pState as () => Partial<T>)()
+            : (pState as Partial<T>),
+        );
       },
       get,
       api,
