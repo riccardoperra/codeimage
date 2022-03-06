@@ -1,6 +1,7 @@
 import {createTheme, style} from '@vanilla-extract/css';
 
 export const [scaffoldTheme, scaffoldVars] = createTheme({
+  virtualHeightFallback: '1vh',
   toolbarHeight: '60px',
   panelWidth: '280px',
 });
@@ -15,7 +16,7 @@ export const scaffold = style([
 
     '@media': {
       'screen and (max-width: 768px)': {
-        height: 'calc(100vh - calc(100vh - 100%))',
+        height: `calc(${scaffoldVars.virtualHeightFallback} * 100)`,
         '@supports': {
           // ios 15+
           '(height: 100svh)': {
@@ -24,9 +25,6 @@ export const scaffold = style([
         },
         overflow: 'hidden',
         flexDirection: 'column',
-      },
-      '(display-mode: standalone)': {
-        height: '100vh',
       },
     },
   },

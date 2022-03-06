@@ -13,7 +13,7 @@ export const wrapper = style({
   alignItems: 'center',
   padding: `0 ${themeVars.spacing['4']}`,
   paddingBottom: `env(safe-area-inset-bottom, 20px)`,
-  gridTemplateColumns: `1fr 1fr`,
+  gridTemplateColumns: `1fr 1fr 1fr`,
   gap: themeVars.spacing['4'],
 });
 
