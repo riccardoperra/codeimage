@@ -4,6 +4,7 @@ import {notificationStore, SnackbarData} from './SnackbarHost';
 import * as styles from './Snackbar.css';
 import {Dynamic} from 'solid-js/web';
 import {Text} from '../Text/Text';
+import {Box} from '../Box/Box';
 
 function CloseIcon(props: JSX.IntrinsicElements['svg']): JSX.Element {
   return (
@@ -49,7 +50,9 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
         </Text>
 
         <Show when={!!props.actions}>
-          <Dynamic component={props.actions} />
+          <Box marginLeft={'4'}>
+            <Dynamic component={props.actions} />
+          </Box>
         </Show>
         <Show when={props.closeable}>
           <button

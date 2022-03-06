@@ -1,6 +1,5 @@
 import {Component, createEffect} from 'solid-js';
 import {useRegisterSW} from 'virtual:pwa-register/solid';
-import styles from './ReloadPrompt.module.css';
 import {notificationStore} from '../ui/Toast/SnackbarHost';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
@@ -41,7 +40,7 @@ const ReloadPrompt: Component = () => {
   };
 
   createEffect(() => {
-    if (true || offlineReady() || needRefresh()) {
+    if (offlineReady() || needRefresh()) {
       toastId = notificationStore.create({
         message: `New content available, click on reload button to update`,
         closeable: false,
