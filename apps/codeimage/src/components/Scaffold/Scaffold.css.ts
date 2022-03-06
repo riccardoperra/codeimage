@@ -14,14 +14,19 @@ export const scaffold = style([
     display: 'flex',
 
     '@media': {
-      '(display-mode: standalone)': {
-        height: '100vh',
-      },
       'screen and (max-width: 768px)': {
-        // ios only
-        height: '100svh',
+        height: 'calc(100vh - calc(100vh - 100%))',
+        '@supports': {
+          // ios 15+
+          '(height: 100svh)': {
+            height: '100svh',
+          },
+        },
         overflow: 'hidden',
         flexDirection: 'column',
+      },
+      '(display-mode: standalone)': {
+        height: '100vh',
       },
     },
   },
