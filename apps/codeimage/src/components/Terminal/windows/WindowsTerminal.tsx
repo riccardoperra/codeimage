@@ -20,6 +20,7 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
             <Box class={baseStyles.tab} marginLeft={'6'}>
               <InlineTextField
                 size={'sm'}
+                readOnly={props.readonlyTab}
                 placeholder={'Untitled'}
                 value={props.tabName ?? ''}
                 disabled={false}

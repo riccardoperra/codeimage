@@ -40,6 +40,7 @@ export const MacOsTerminal: Component<BaseTerminalProps> = props => {
             <div class={baseStyles.tab}>
               <InlineTextField
                 size={'sm'}
+                readOnly={props.readonlyTab}
                 placeholder={'Untitled'}
                 value={props.tabName ?? ''}
                 disabled={false}

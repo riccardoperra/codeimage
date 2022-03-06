@@ -62,14 +62,15 @@ const App = () => {
           >
             <DynamicTerminal
               type={terminal.type}
+              readonlyTab={false}
               tabName={terminal.tabName}
+              showTab={true}
               shadow={terminal.shadow}
               background={terminal.background}
               accentVisible={terminal.accentVisible}
               darkMode={terminal.darkMode}
               textColor={terminal.textColor}
               onTabChange={terminal.setTabName}
-              showTab={true}
               showHeader={terminal.showHeader}
             >
               <CustomEditor />
