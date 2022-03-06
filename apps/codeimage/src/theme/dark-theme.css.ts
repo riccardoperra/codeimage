@@ -35,4 +35,5 @@ export const darkThemeCss = createTheme(colors, {
   scrollBarHoverBackgroundColor: '#333333',
   bottomBarBackgroundColor: '#2B2B2B',
   bottomBarTextColor: '#EEEEEE',
+  emptySquareBackgroundColor: '#252525',
 });

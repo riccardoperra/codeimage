@@ -33,4 +33,5 @@ export const colors = createThemeContract({
   scrollBarHoverBackgroundColor: null,
   bottomBarBackgroundColor: null,
   bottomBarTextColor: null,
+  emptySquareBackgroundColor: null,
 });

@@ -11,6 +11,9 @@ import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createRef} from '../../core/helpers/create-ref';
 import {Box} from '../ui/Box/Box';
+import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
+
+const exportExclude = _exportExclude;
 
 type FrameHandlerProps = WithRef<'div'>;
 
@@ -46,6 +49,7 @@ export function FrameHandler(
           setInternalRef(() => e);
         })}
       >
+        <div use:exportExclude={true} class={styles.squaredBackgroundOverlay} />
         {props.children}
       </div>
     </Box>
