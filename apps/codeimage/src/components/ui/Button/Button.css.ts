@@ -63,8 +63,10 @@ export const buttonVariant = recipe({
         backgroundColor: 'transparent',
         color: colorVar,
 
-        'not(:disabled):hover': {
-          color: backgroundColorVar,
+        selectors: {
+          '&:not(:disabled):hover': {
+            color: backgroundColorVar,
+          },
         },
       },
     },

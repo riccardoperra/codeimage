@@ -3,6 +3,7 @@ import {themeVars} from '../../theme/global.css';
 
 export const [toolbarTheme, toolbarVars] = createTheme({
   backgroundColor: themeVars.backgroundColor.white,
+  toolbarHeight: '60px',
 });
 
 export const wrapper = style([
@@ -15,10 +16,17 @@ export const wrapper = style([
     fontSize: '18px',
     fontWeight: 'bold',
     zIndex: 30,
-    height: '60px',
+    height: toolbarVars.toolbarHeight,
     width: '100%',
     backgroundColor: themeVars.dynamicColors.panelBackground,
     borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+
+    '@media': {
+      'screen and (max-width: 768px)': {
+        height: `calc(${toolbarVars.toolbarHeight} + env(safe-area-inset-top, 0))`,
+        paddingTop: `env(safe-area-inset-top, 0)`,
+      },
+    },
   },
 ]);
 
