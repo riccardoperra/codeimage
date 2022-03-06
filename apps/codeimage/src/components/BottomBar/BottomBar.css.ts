@@ -3,7 +3,7 @@ import {themeVars} from '../../theme/global.css';
 import {scaffoldVars} from '../Scaffold/Scaffold.css';
 
 export const wrapper = style({
-  height: `calc(${scaffoldVars.toolbarHeight} + env(safe-area-inset-bottom, 0))`,
+  height: `calc(${scaffoldVars.toolbarHeight} + env(safe-area-inset-bottom, 20px))`,
   width: '100vw',
   overflow: 'hidden',
   borderTop: `1px solid ${themeVars.dynamicColors.divider}`,
@@ -12,8 +12,8 @@ export const wrapper = style({
   display: 'grid',
   alignItems: 'center',
   padding: `0 ${themeVars.spacing['4']}`,
-  paddingBottom: `env(safe-area-inset-bottom)`,
-  gridTemplateColumns: `1fr 1fr 1fr`,
+  paddingBottom: `env(safe-area-inset-bottom, 20px)`,
+  gridTemplateColumns: `1fr 1fr`,
   gap: themeVars.spacing['4'],
 });
 
@@ -27,7 +27,7 @@ export const button = style([
 
 export const portalWrapper = style({
   position: 'fixed',
-  bottom: `calc(${scaffoldVars.toolbarHeight} + env(safe-area-inset-bottom, 0))`,
+  bottom: `calc(${scaffoldVars.toolbarHeight} + env(safe-area-inset-bottom, 20px))`,
   backgroundColor: themeVars.dynamicColors.panelBackground,
   color: themeVars.dynamicColors.panelTextColor,
   width: '100%',

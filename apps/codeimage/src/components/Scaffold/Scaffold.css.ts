@@ -14,6 +14,9 @@ export const scaffold = style([
     display: 'flex',
 
     '@media': {
+      '(display-mode: standalone)': {
+        height: '100vh',
+      },
       'screen and (max-width: 768px)': {
         // ios only
         height: '100svh',
