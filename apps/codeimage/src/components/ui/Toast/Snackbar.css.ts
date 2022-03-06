@@ -7,8 +7,8 @@ export const toast = style({
   alignItems: 'center',
   backgroundColor: themeVars.dynamicColors.snackbarBackgroundColor,
   color: themeVars.dynamicColors.snackbarTextColor,
-  borderRadius: themeVars.borderRadius.lg,
-  padding: themeVars.spacing['4'],
+  borderRadius: themeVars.borderRadius.xl,
+  padding: themeVars.spacing['3'],
 });
 
 export const hostWrapper = style({
