@@ -4,7 +4,15 @@
     "jsx": "preserve",
     "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
-    "types": ["vite/client"]
+    "types": [
+      "vite/client",
+      "vite-plugin-pwa/client"
+    ],
+//    "lib": [
+//      "WebWorker"
+//    ]
   },
-  "include": ["./src"]
+  "include": [
+    "./src"
+  ]
 }
