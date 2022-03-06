@@ -40,19 +40,29 @@ const ReloadPrompt: Component = () => {
   };
 
   createEffect(() => {
-    if (offlineReady() || needRefresh()) {
+    const offline = offlineReady();
+    const refresh = needRefresh();
+    if (offline || refresh) {
       toastId = notificationStore.create({
-        message: `New content available, click on reload button to update`,
+        message: offline
+          ? `App ready to work offline`
+          : `New content available, click on reload button to update`,
         closeable: false,
         actions: () => (
           <Box flexGrow={1}>
             <Button
               theme={'primary'}
               variant={'solid'}
-              // class={styles.ToastButton}
-              onClick={() => updateServiceWorker(true)}
+              onClick={() => {
+                if (offline) {
+                  close();
+                }
+                if (refresh) {
+                  updateServiceWorker(true).then();
+                }
+              }}
             >
-              Reload
+              {offline ? 'Close' : 'Reload'}
             </Button>
           </Box>
         ),
