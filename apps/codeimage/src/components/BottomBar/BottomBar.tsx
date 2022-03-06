@@ -5,9 +5,12 @@ import {Portal} from 'solid-js/web';
 import {Component, createSignal, Show} from 'solid-js';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
-import {EditorSidebar} from '../LeftSidebar/EditorSidebar';
+import {EditorForm} from '../LeftSidebar/EditorForm';
+import {FrameStyleForm} from '../LeftSidebar/FrameStyleForm';
+import {WindowStyleForm} from '../LeftSidebar/WindowStyleForm';
+import {EditorStyleForm} from '../LeftSidebar/EditorStyleForm';
 
-type Mode = 'themes' | 'style';
+type Mode = 'themes' | 'style' | 'editor';
 
 interface BottomBarProps {
   portalHostRef: Node | undefined;
@@ -62,6 +65,29 @@ export const BottomBar: Component<BottomBarProps> = props => {
         <Box as={'span'}>Style</Box>
       </Button>
 
+      <Button
+        class={styles.button}
+        disabled={!navigator.share}
+        variant={'link'}
+        onClick={() => setMode('editor')}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+          />
+        </svg>
+        Editor
+      </Button>
+
       <Show when={props.portalHostRef}>
         <Portal mount={props.portalHostRef}>
           <FadeInOutTransition show={!!mode()}>
@@ -96,7 +122,16 @@ export const BottomBar: Component<BottomBarProps> = props => {
                   <ThemeSwitcher orientation={'horizontal'} />
                 </Show>
                 <Show when={mode() === 'style'}>
-                  <EditorSidebar />
+                  <EditorForm>
+                    <FrameStyleForm />
+
+                    <WindowStyleForm />
+                  </EditorForm>
+                </Show>
+                <Show when={mode() === 'editor'}>
+                  <EditorForm>
+                    <EditorStyleForm />
+                  </EditorForm>
                 </Show>
               </Box>
             </Box>
