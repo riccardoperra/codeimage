@@ -1,11 +1,11 @@
 import {EditorView} from '@codemirror/view';
-import {CodeMirror} from 'solid-codemirror';
 import {useEditorState} from '../../state/editor';
 import {useStaticConfiguration} from '../../core/configuration';
 import {createMemo, createResource} from 'solid-js';
-import {EDITOR_BASE_SETUP} from '@codeimage/config';
 import {lineNumbers} from '@codemirror/gutter';
 import {createCustomFontExtension} from './custom-font-extension';
+import {CodeMirror} from 'solid-codemirror';
+import {EDITOR_BASE_SETUP} from '@codeimage/config';
 
 export const CustomEditor = () => {
   const configuration = useStaticConfiguration();

@@ -32,13 +32,13 @@
     "@codemirror/view": "^0.19.45"
   },
   "devDependencies": {
-    "typescript": "^4.5.5",
-    "vite": "^2.7.13",
-    "vite-plugin-dts": "^0.9.9",
-    "vite-plugin-solid": "^2.2.5",
-    "rimraf": "^3.0.2",
     "@codemirror/highlight": "^0.19.7",
     "@codemirror/state": "^0.19.9",
-    "@codemirror/view": "^0.19.45"
+    "@codemirror/view": "^0.19.46",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.6.2",
+    "vite": "^2.8.6",
+    "vite-plugin-dts": "^0.9.9",
+    "vite-plugin-solid": "^2.2.6"
   }
 }

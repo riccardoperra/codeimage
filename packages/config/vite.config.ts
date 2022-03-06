@@ -18,6 +18,7 @@ module.exports = defineConfig({
         '@codeimage/theme',
         '@codemirror/state',
         '@codemirror/view',
+        '@codemirror/language',
         '@codemirror/highlight',
         '@codemirror/lang-css',
         '@codemirror/lang-html',
