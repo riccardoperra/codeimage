@@ -16,6 +16,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
     display: 'standalone',
     background_color: '#1a1a1a',
     description: 'Create elegant code screenshots of your source code.',
+    theme_color: '#1a1a1a',
     icons: [
       {
         src: '/pwa/manifest-icon-192.maskable.png',
