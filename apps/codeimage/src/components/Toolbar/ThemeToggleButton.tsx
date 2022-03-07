@@ -2,6 +2,7 @@ import {Component, createMemo} from 'solid-js';
 import {GlobalUiState} from '../../state/ui';
 import {Button} from '../ui/Button/Button';
 import {themeVars} from '../../theme/global.css';
+import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 
 interface ThemeTogglerProps {
   theme: GlobalUiState['themeMode'];
@@ -23,9 +24,8 @@ export const ThemeToggleButton: Component<ThemeTogglerProps> = props => {
       variant="solid"
       onClick={() => props.onThemeToggle()}
     >
-      <svg
+      <SvgIcon
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5"
         viewBox="0 0 20 20"
         fill={strokeColor()}
       >
@@ -38,7 +38,7 @@ export const ThemeToggleButton: Component<ThemeTogglerProps> = props => {
             clip-rule="evenodd"
           />
         )}
-      </svg>
+      </SvgIcon>
     </Button>
   );
 };
