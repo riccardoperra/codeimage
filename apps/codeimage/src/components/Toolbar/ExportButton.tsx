@@ -8,6 +8,7 @@ import {EXPORT_EXCLUDE} from '../../core/directives/exportExclude';
 import download from 'downloadjs';
 import {useAsyncAction} from '../../core/hooks/async-action';
 import {useModality} from '../../core/hooks/isMobile';
+import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -71,20 +72,14 @@ export const ExportButton: Component<ExportButtonProps> = props => {
       disabled={data.loading}
       onClick={() => notify(props.canvasRef)}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        style={{height: '20px', width: '20px'}}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
+      <SvgIcon fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width={2}
           d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
         />
-      </svg>
+      </SvgIcon>
 
       <Box as={'span'} marginLeft={'2'}>
         {label()}

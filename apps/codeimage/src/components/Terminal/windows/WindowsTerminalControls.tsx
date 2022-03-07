@@ -1,13 +1,9 @@
 import * as styles from './WindowsTerminal.css';
+import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
 
 export const WindowsTerminalControls = () => (
   <div class={styles.headerIconRow}>
-    <svg
-      class={styles.headerIconRowItem}
-      viewBox="0 0 12 12"
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <SvgIcon class={styles.headerIconRowItem} viewBox="0 0 12 12">
       <line
         x1={0}
         x2={12}
@@ -16,14 +12,9 @@ export const WindowsTerminalControls = () => (
         stroke="currentColor"
         stroke-width="2"
       />
-    </svg>
+    </SvgIcon>
 
-    <svg
-      class={styles.headerIconRowItem}
-      viewBox="0 0 12 12"
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <SvgIcon class={styles.headerIconRowItem} viewBox="0 0 12 12">
       <rect
         fill={'transparent'}
         width={'100%'}
@@ -31,7 +22,7 @@ export const WindowsTerminalControls = () => (
         stroke="currentColor"
         stroke-width="4"
       />
-    </svg>
+    </SvgIcon>
 
     <svg
       class={styles.headerIconRowItem}

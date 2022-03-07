@@ -3,6 +3,7 @@ import {Button} from '../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Box} from '../ui/Box/Box';
+import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 
 interface ShareButtonProps {
   showLabel?: boolean;
@@ -33,14 +34,9 @@ export const ShareButton: Component<ShareButtonProps> = props => {
       disabled={!navigator.share}
       onClick={() => share()}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        style={{height: '20px', width: '20px'}}
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
+      <SvgIcon viewBox="0 0 20 20" fill="currentColor">
         <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-      </svg>
+      </SvgIcon>
       <Show when={computedProps.showLabel}>
         <Box marginLeft={'2'}>{t('toolbar.share')}</Box>
       </Show>
