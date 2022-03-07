@@ -1,7 +1,7 @@
 import * as styles from './Footer.css';
 import {Box} from '../ui/Box/Box';
-import {Text} from '../ui/Text/Text';
 import {useStaticConfiguration} from '../../core/configuration';
+import {Link} from '../ui/Link/Link';
 
 export const Footer = () => {
   const {version} = useStaticConfiguration();
@@ -10,39 +10,39 @@ export const Footer = () => {
     <div class={styles.wrapper}>
       <Box display={'flex'} justifyContent={'flexEnd'} padding={'2'}>
         <Box marginRight={'5'}>
-          <Text as={'a'} href={'https://github.com/riccardoperra'} size="xs">
+          <Link href={'https://github.com/riccardoperra'} size="xs">
             Github
-          </Text>
+          </Link>
         </Box>
 
         <Box marginRight={'5'}>
-          <Text
+          <Link
             as={'a'}
             href={'https://github.com/riccardoperra/issues'}
             size="xs"
           >
             Report issue
-          </Text>
+          </Link>
         </Box>
 
         <Box marginRight={'5'}>
-          <Text
+          <Link
             as={'a'}
             href={'https://github.com/riccardoperra/discussions'}
             size="xs"
           >
             Send feedback
-          </Text>
+          </Link>
         </Box>
 
         <Box>
-          <Text
+          <Link
             as={'a'}
             href={'https://github.com/riccardoperra/codeimage'}
             size="xs"
           >
             Version {version}
-          </Text>
+          </Link>
         </Box>
       </Box>
     </div>

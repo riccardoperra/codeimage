@@ -9,7 +9,7 @@ import {omitProps} from 'solid-use';
 import {useText, UseTextProps} from './useText';
 import {PropsWithChildren} from 'solid-js/types/render/component';
 
-type TextProps<T extends ValidConstructor = 'span'> = {
+export type TextProps<T extends ValidConstructor = 'span'> = {
   as?: T | ValidConstructor;
 } & WithRef<T> &
   Omit<DynamicProps<T>, 'as' | 'ref'> & {

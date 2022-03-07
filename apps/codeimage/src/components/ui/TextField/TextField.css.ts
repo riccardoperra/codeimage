@@ -14,6 +14,7 @@ export const baseField = style([
     border: `1px solid ${textFieldVars.borderColor}`,
     backgroundColor: textFieldVars.background,
     borderRadius: themeVars.borderRadius.md,
+    color: textFieldVars.color,
     ':focus': {
       borderColor: themeVars.backgroundColor.blue['500'],
     },

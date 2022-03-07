@@ -19,7 +19,6 @@ export const NotificationHandler = () => {
     notificationStore.clear();
   }
 
-  createEffect(() => console.log(notifications()));
   return (
     <Toaster class={styles.hostWrapper}>
       <Transition

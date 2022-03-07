@@ -38,7 +38,7 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
               showHeader={true}
               type={terminal.type}
             >
-              <Text size={'sm'}>{`console.log('Hello!');`}</Text>
+              <Text size={'sm'}>{`// Code here`}</Text>
             </DynamicTerminal>
           </ThemeBox>
         )}
