@@ -1,0 +1,16 @@
+@use "inter-ui/default" as inter-ui-def with (
+  $inter-font-display: swap,
+  $inter-font-path: 'inter-ui/Inter (web)'
+);
+@use "inter-ui/variable" as inter-ui-var with (
+  $inter-font-display: swap,
+  $inter-font-path: 'inter-ui/Inter (web)'
+);
+
+@include inter-ui-def.weight-300();
+@include inter-ui-def.weight-400();
+@include inter-ui-def.weight-500();
+@include inter-ui-def.weight-600();
+@include inter-ui-def.weight-700();
+@include inter-ui-def.weight-800();
+@include inter-ui-var.default();

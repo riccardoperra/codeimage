@@ -1,0 +1,21 @@
+@import "reset";
+@import "inter";
+
+html, body {
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  /* TODO: is this necessary? */
+  touch-action: none;
+  position: relative;
+  overscroll-behavior-y: none;
+}

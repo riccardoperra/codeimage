@@ -1,12 +1,12 @@
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
-import {ManifestOptions, VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
+import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import replace from '@rollup/plugin-replace';
 
 const pwaOptions: Partial<VitePWAOptions> = {
-  mode: 'development',
   base: '/',
+  mode: 'development',
   manifest: {
     name: 'Codeimage',
     orientation: 'portrait',
@@ -51,11 +51,8 @@ const reload = process.env.RELOAD_SW === 'true';
 
 if (process.env.SW === 'true') {
   pwaOptions.srcDir = 'src';
-  pwaOptions.filename = claims ? 'claims-sw.ts' : 'prompt-sw.ts';
+  pwaOptions.filename = 'sw.ts';
   pwaOptions.strategies = 'injectManifest';
-  (pwaOptions.manifest as Partial<ManifestOptions>).name =
-    'PWA Inject Manifest';
-  (pwaOptions.manifest as Partial<ManifestOptions>).short_name = 'PWA Inject';
 }
 
 if (claims) pwaOptions.registerType = 'autoUpdate';

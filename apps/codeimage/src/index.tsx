@@ -1,11 +1,11 @@
 import {render} from 'solid-js/web';
 
-import './index.css';
 import App from './App';
 import {staticConfiguration} from './core/configuration';
 import {I18nProvider} from '@codeimage/locale';
 import {locale} from './i18n';
 import {StaticConfigurationProvider} from '@codeimage/config';
+import './assets/styles/app.scss';
 
 render(
   () => (
