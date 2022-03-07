@@ -18,25 +18,25 @@ const pwaOptions: Partial<VitePWAOptions> = {
     description: 'Create elegant code screenshots of your source code.',
     icons: [
       {
-        src: 'assets/pwa/manifest-icon-192.maskable.png',
+        src: '/pwa/manifest-icon-192.maskable.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: 'assets/pwa/manifest-icon-192.maskable.png',
+        src: '/pwa/manifest-icon-192.maskable.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
       },
       {
-        src: 'assets/pwa/manifest-icon-512.maskable.png',
+        src: '/pwa/manifest-icon-512.maskable.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: 'assets/pwa/manifest-icon-512.maskable.png',
+        src: '/pwa/manifest-icon-512.maskable.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'maskable',
@@ -48,8 +48,6 @@ const pwaOptions: Partial<VitePWAOptions> = {
 const replaceOptions = {__DATE__: new Date().toISOString()};
 const claims = process.env.CLAIMS === 'true';
 const reload = process.env.RELOAD_SW === 'true';
-
-console.log(claims, 'check');
 
 if (process.env.SW === 'true') {
   pwaOptions.srcDir = 'src';
