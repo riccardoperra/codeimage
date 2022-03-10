@@ -15,7 +15,9 @@ import {exportExclude as _exportExclude} from '../../core/directives/exportExclu
 
 const exportExclude = _exportExclude;
 
-type FrameHandlerProps = WithRef<'div'>;
+type FrameHandlerProps = WithRef<'div'> & {
+  onScaleChange: (scale: number) => void;
+};
 
 export function FrameHandler(
   props: PropsWithChildren<FrameHandlerProps>,
@@ -33,6 +35,7 @@ export function FrameHandler(
           frame,
           1 + ratio,
         );
+        props.onScaleChange(scale);
         setCanvasScale(scale);
       });
     }),

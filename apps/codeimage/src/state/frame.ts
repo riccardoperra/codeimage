@@ -10,6 +10,7 @@ export interface FrameStateSlice {
   visible: boolean;
   opacity: number;
   autoWidth: boolean;
+  scale: number;
 }
 
 const initialState: FrameStateSlice = {
@@ -19,6 +20,7 @@ const initialState: FrameStateSlice = {
   visible: true,
   opacity: 100,
   autoWidth: false,
+  scale: 1,
 };
 
 const store = combine(initialState, set => ({
@@ -28,6 +30,7 @@ const store = combine(initialState, set => ({
   setVisibility: (visible: boolean) => set(() => ({visible})),
   setAutoWidth: (autoWidth: boolean) => set(() => ({autoWidth})),
   setBackground: (background: string | null) => set(() => ({background})),
+  setScale: (scale: number) => set(() => ({scale})),
 }));
 
 export const useFrameState = create(

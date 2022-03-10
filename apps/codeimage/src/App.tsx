@@ -56,7 +56,7 @@ const App = () => {
       <Canvas>
         <Toolbar canvasRef={frameRef()} />
 
-        <FrameHandler ref={setFrameRef}>
+        <FrameHandler ref={setFrameRef} onScaleChange={frame.setScale}>
           <Frame
             radius={0}
             padding={frame.padding}

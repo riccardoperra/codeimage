@@ -25,6 +25,10 @@ const exportImage = async (canvasRef: HTMLElement | undefined) => {
     const blob = await toBlob(canvasRef, {
       filter: node => !node.hasOwnProperty(EXPORT_EXCLUDE),
       style: {
+        // TODO: https://github.com/riccardoperra/codeimage/issues/42
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        zoom: '1',
         transform: 'scale(1)',
       },
     });
