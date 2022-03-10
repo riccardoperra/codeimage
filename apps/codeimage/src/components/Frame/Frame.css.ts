@@ -33,8 +33,10 @@ export const wrapper = style({
 
 export const handler = style([
   {
-    transform: `scale(${frameHandlerVars.scale})`,
+    // TODO: this is a workaround to fix gutters and cursor in mobile view
+    zoom: `${frameHandlerVars.scale}`,
     display: 'block',
+    position: 'relative',
   },
 ]);
 
