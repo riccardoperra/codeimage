@@ -5,3 +5,4 @@ export * from './lib/material-ocean';
 export * from './lib/material-volcano';
 export * from './lib/dracula';
 export * from './lib/synthwave84';
+export * from './lib/arc-dark';

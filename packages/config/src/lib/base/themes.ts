@@ -5,6 +5,7 @@ import {
   materialVolcanoTheme,
   oneDarkTheme,
   synthwave84Theme,
+  arcDarkTheme,
 } from '@codeimage/theme';
 
 export const SUPPORTED_THEMES = [
@@ -14,4 +15,5 @@ export const SUPPORTED_THEMES = [
   draculaTheme,
   synthwave84Theme,
   materialVolcanoTheme,
+  arcDarkTheme,
 ] as const;
