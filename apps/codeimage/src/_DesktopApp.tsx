@@ -6,7 +6,7 @@ import {Toolbar} from './components/Toolbar/Toolbar';
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Frame} from './components/Frame/Frame';
 import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
-import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
+import ThemeSwitcher from './components/ThemeSwitcher/ThemeSwitcher';
 import {Footer} from './components/Footer/Footer';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
 
@@ -18,7 +18,7 @@ const LazyEditorSidebar = lazy(
 
 export default function DesktopApp(): JSXElement {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
-  const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
+  const [, setPortalHostRef] = createSignal<HTMLElement>();
   const frame = useFrameState();
   const terminal = useTerminalState();
 
