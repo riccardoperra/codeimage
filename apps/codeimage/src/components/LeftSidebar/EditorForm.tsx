@@ -1,6 +1,7 @@
 import * as styles from './EditorSidebar.css';
-import {Component} from 'solid-js';
+import {JSXElement} from 'solid-js';
+import {PropsWithChildren} from 'solid-js/types/render/component';
 
-export const EditorForm: Component = props => (
-  <div class={styles.sidebar}>{props.children}</div>
-);
+export default function EditorForm(props: PropsWithChildren): JSXElement {
+  return <div class={styles.sidebar}>{props.children}</div>;
+}

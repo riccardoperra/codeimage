@@ -2,13 +2,8 @@ import * as styles from './BottomBar.css';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
 import {Portal} from 'solid-js/web';
-import {createSignal, JSXElement, Show} from 'solid-js';
-import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
+import {createSignal, JSXElement, lazy, Show} from 'solid-js';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
-import {EditorForm} from '../LeftSidebar/EditorForm';
-import {FrameStyleForm} from '../LeftSidebar/FrameStyleForm';
-import {WindowStyleForm} from '../LeftSidebar/WindowStyleForm';
-import {EditorStyleForm} from '../LeftSidebar/EditorStyleForm';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 import {PropsWithChildren} from 'solid-js/types/render/component';
 
@@ -17,6 +12,20 @@ type Mode = 'themes' | 'style' | 'editor';
 interface BottomBarProps extends PropsWithChildren {
   portalHostRef: Node | undefined;
 }
+
+const LazyThemeSwitcher = lazy(() => import('../ThemeSwitcher/ThemeSwitcher'));
+
+const LazyEditorForm = lazy(() => import('../LeftSidebar/EditorForm'));
+
+const LazyFrameStyleForm = lazy(() => import('../LeftSidebar/FrameStyleForm'));
+
+const LazyWindowStyleForm = lazy(
+  () => import('../LeftSidebar/WindowStyleForm'),
+);
+
+const LazyEditorStyleForm = lazy(
+  () => import('../LeftSidebar/EditorStyleForm'),
+);
 
 export default function BottomBar(props: BottomBarProps): JSXElement {
   const [mode, setMode] = createSignal<Mode | null>(null);
@@ -118,19 +127,19 @@ export default function BottomBar(props: BottomBarProps): JSXElement {
               </Box>
               <Box class={styles.portalContent}>
                 <Show when={mode() === 'themes'}>
-                  <ThemeSwitcher orientation={'horizontal'} />
+                  <LazyThemeSwitcher orientation={'horizontal'} />
                 </Show>
                 <Show when={mode() === 'style'}>
-                  <EditorForm>
-                    <FrameStyleForm />
+                  <LazyEditorForm>
+                    <LazyFrameStyleForm />
 
-                    <WindowStyleForm />
-                  </EditorForm>
+                    <LazyWindowStyleForm />
+                  </LazyEditorForm>
                 </Show>
                 <Show when={mode() === 'editor'}>
-                  <EditorForm>
-                    <EditorStyleForm />
-                  </EditorForm>
+                  <LazyEditorForm>
+                    <LazyEditorStyleForm />
+                  </LazyEditorForm>
                 </Show>
               </Box>
             </Box>

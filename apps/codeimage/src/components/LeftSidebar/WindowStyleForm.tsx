@@ -1,13 +1,13 @@
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
-import {Show} from 'solid-js';
+import {JSXElement, Show} from 'solid-js';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
 import {useTerminalState} from '../../state/terminal';
 
-export const WindowStyleForm = () => {
+export default function WindowStyleForm(): JSXElement {
   const terminal = useTerminalState();
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
@@ -65,4 +65,4 @@ export const WindowStyleForm = () => {
       {/*</PanelRow>*/}
     </>
   );
-};
+}

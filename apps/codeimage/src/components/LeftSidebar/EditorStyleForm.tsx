@@ -7,8 +7,9 @@ import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
 import {useEditorState} from '../../state/editor';
 import {useStaticConfiguration} from '../../core/configuration';
+import {JSXElement} from 'solid-js';
 
-export const EditorStyleForm = () => {
+export default function EditorStyleForm(): JSXElement {
   const editor = useEditorState();
   const configuration = useStaticConfiguration();
   const [t, {merge}] = useI18n<typeof locale>();
@@ -95,4 +96,4 @@ export const EditorStyleForm = () => {
       </PanelRow>
     </>
   );
-};
+}

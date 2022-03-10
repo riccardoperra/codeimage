@@ -1,4 +1,4 @@
-import {Component, For} from 'solid-js';
+import {For, JSXElement} from 'solid-js';
 import {Text} from '../ui/Text/Text';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
@@ -10,7 +10,10 @@ import {useStaticConfiguration} from '../../core/configuration';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Box} from '../ui/Box/Box';
 
-export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type ThemeSwitcherProps = {} & ThemeSwitcherVariant;
+
+export default function ThemeSwitcher(props: ThemeSwitcherProps): JSXElement {
   const {themes} = useStaticConfiguration();
   const terminal = useTerminalState();
 
@@ -45,4 +48,4 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
       </For>
     </Box>
   );
-};
+}

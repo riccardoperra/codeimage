@@ -1,14 +1,14 @@
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
-import {Show} from 'solid-js';
+import {JSXElement, Show} from 'solid-js';
 import {RangeField} from '../ui/RangeField/RangeField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
 import {useFrameState} from '../../state/frame';
 import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
 
-export const FrameStyleForm = () => {
+export default function FrameStyleForm(): JSXElement {
   const frame = useFrameState();
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
@@ -73,4 +73,4 @@ export const FrameStyleForm = () => {
       </Show>
     </>
   );
-};
+}
