@@ -9,12 +9,10 @@ import {indentOnInput} from '@codemirror/language';
 import {defaultKeymap} from '@codemirror/commands';
 import {bracketMatching} from '@codemirror/matchbrackets';
 import {closeBrackets, closeBracketsKeymap} from '@codemirror/closebrackets';
-import {searchKeymap} from '@codemirror/search';
 import {autocompletion, completionKeymap} from '@codemirror/autocomplete';
 import {commentKeymap} from '@codemirror/comment';
 import {rectangularSelection} from '@codemirror/rectangular-selection';
 import {defaultHighlightStyle} from '@codemirror/highlight';
-import {lintKeymap} from '@codemirror/lint';
 
 export const EDITOR_BASE_SETUP: Extension = [
   highlightSpecialChars(),
@@ -30,9 +28,7 @@ export const EDITOR_BASE_SETUP: Extension = [
   keymap.of([
     ...closeBracketsKeymap,
     ...defaultKeymap,
-    ...searchKeymap,
     ...commentKeymap,
     ...completionKeymap,
-    ...lintKeymap,
   ]),
 ];
