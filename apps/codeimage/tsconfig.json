@@ -8,7 +8,13 @@
       "vite/client",
       "vite-plugin-pwa/client"
     ],
-    "lib": ["ESNext", "DOM", "WebWorker"]
+    "lib": [
+      "ESNext",
+      "dom",
+      "dom.iterable",
+      "es2019",
+      "WebWorker"
+    ]
   },
   "include": [
     "./src"

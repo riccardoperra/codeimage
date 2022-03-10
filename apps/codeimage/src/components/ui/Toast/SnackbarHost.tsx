@@ -1,5 +1,5 @@
 import {Toaster, ToasterStore, Transition, useToaster} from 'solid-headless';
-import {Component, createEffect, For} from 'solid-js';
+import {Component, For} from 'solid-js';
 import {SnackBar} from './Snackbar';
 import * as styles from './Snackbar.css';
 import {host} from './Snackbar.css';

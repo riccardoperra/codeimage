@@ -12,6 +12,7 @@ export function createConfiguration<
   Languages extends readonly LanguageDefinition[],
   TerminalThemes extends TerminalDefinitionMap<
     readonly string[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Component<any>
   >,
   Configuration extends AppStaticConfiguration<
