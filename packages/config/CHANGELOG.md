@@ -1,5 +1,22 @@
 # @codeimage/theme
 
+## 2.0.0
+
+### Minor Changes
+
+- d53c7c8: feat: add mobile ui
+- d44324d: feat: add pwa support
+- 97ab722: feat: add font change support
+
+### Patch Changes
+
+- da5674c: feat: add arc dark theme
+- Updated dependencies [d53c7c8]
+- Updated dependencies [d44324d]
+- Updated dependencies [da5674c]
+- Updated dependencies [97ab722]
+  - @codeimage/theme@0.4.0
+
 ## 1.0.0
 
 ### Minor Changes
