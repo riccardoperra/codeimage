@@ -9,6 +9,13 @@ export const locale = {
       share: 'Condividi',
       exportLoading: 'Esportando...',
     },
+    pwa: {
+      offline: 'App pronta per lavorare offline',
+      update:
+        'Nuovo contenuto disponibile, ricarica il contenuto per aggiornare',
+      close: 'Chiudi',
+      reload: 'Ricarica',
+    },
   },
   en: {
     locales: {
@@ -19,6 +26,12 @@ export const locale = {
       export: 'Export',
       share: 'Share',
       exportLoading: 'Exporting...',
+    },
+    pwa: {
+      offline: 'App ready to work offline',
+      update: 'New content available, click on reload button to update',
+      close: 'Close',
+      reload: 'Reload',
     },
   },
 };

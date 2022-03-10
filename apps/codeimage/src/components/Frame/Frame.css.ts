@@ -17,6 +17,7 @@ export const [frame, frameVars] = createTheme({
   minHeight: '150px',
   maxWidth: '920px',
   controlHandleSize: '24px',
+  controlHandleColor: themeVars.dynamicColors.frameDragControlBackgroundColor,
   controlOffset: '0px',
 });
 
@@ -99,11 +100,12 @@ export const dragControlHandler = style({
     position: 'absolute',
     left: '50%',
     top: '50%',
-    width: '6px',
-    height: '6px',
-    borderRadius: '3px',
+    width: '8px',
+    height: '8px',
+    borderRadius: themeVars.borderRadius.lg,
+    boxShadow: themeVars.boxShadow.lg,
     transform: 'translate(-50%, -50%)',
-    backgroundColor: themeVars.backgroundColor.gray['800'],
+    backgroundColor: frameVars.controlHandleColor,
     transition: 'transform .1s ease',
   },
 });

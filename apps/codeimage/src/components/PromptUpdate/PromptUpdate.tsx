@@ -3,13 +3,22 @@ import {useRegisterSW} from 'virtual:pwa-register/solid';
 import {notificationStore} from '../ui/Toast/SnackbarHost';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
+import {useI18n} from '@codeimage/locale';
+import {AppLocaleEntries} from '../../i18n';
+
+const PromptMessage: Component<{offline: boolean}> = props => {
+  const [t] = useI18n<AppLocaleEntries>();
+  return <>{props.offline ? t('pwa.offline') : t('pwa.update')}</>;
+};
 
 const ReloadPrompt: Component = () => {
   let toastId: string;
+
   // replaced dynamically
   const reloadSW = '__RELOAD_SW__';
   const {
     needRefresh: [needRefresh, setNeedRefresh],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     offlineReady: [offlineReady, setOfflineReady],
     updateServiceWorker,
   } = useRegisterSW({
@@ -40,32 +49,33 @@ const ReloadPrompt: Component = () => {
   };
 
   createEffect(() => {
-    const offline = offlineReady();
+    const offline = false;
     const refresh = needRefresh();
     if (offline || refresh) {
       toastId = notificationStore.create({
-        message: offline
-          ? `App ready to work offline`
-          : `New content available, click on reload button to update`,
+        message: () => <PromptMessage offline={offline} />,
         closeable: false,
-        actions: () => (
-          <Box flexGrow={1}>
-            <Button
-              theme={'primary'}
-              variant={'solid'}
-              onClick={() => {
-                if (offline) {
-                  close();
-                }
-                if (refresh) {
-                  updateServiceWorker(true).then();
-                }
-              }}
-            >
-              {offline ? 'Close' : 'Reload'}
-            </Button>
-          </Box>
-        ),
+        actions: () => {
+          const [t] = useI18n<AppLocaleEntries>();
+          return (
+            <Box flexGrow={1}>
+              <Button
+                theme={'primary'}
+                variant={'solid'}
+                onClick={() => {
+                  if (offline) {
+                    close();
+                  }
+                  if (refresh) {
+                    updateServiceWorker(true).then();
+                  }
+                }}
+              >
+                {offline ? t('pwa.close') : t('pwa.reload')}
+              </Button>
+            </Box>
+          );
+        },
       });
     } else {
       notificationStore.remove(toastId);
