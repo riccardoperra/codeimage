@@ -5,7 +5,7 @@ import * as styles from './Snackbar.css';
 import {host} from './Snackbar.css';
 
 export interface SnackbarData {
-  message: string;
+  message: string | Component;
   closeable?: boolean;
   actions?: Component;
 }
