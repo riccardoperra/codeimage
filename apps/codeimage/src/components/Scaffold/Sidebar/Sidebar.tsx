@@ -1,6 +1,7 @@
-import {Component} from 'solid-js';
 import * as styles from './Sidebar.css';
+import {PropsWithChildren} from 'solid-js/types/render/component';
+import {JSXElement} from 'solid-js';
 
-export const Sidebar: Component = props => {
+export default function Sidebar(props: PropsWithChildren): JSXElement {
   return <div class={styles.sidebar}>{props.children}</div>;
-};
+}

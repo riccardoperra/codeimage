@@ -2,7 +2,7 @@ import * as styles from './BottomBar.css';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
 import {Portal} from 'solid-js/web';
-import {Component, createSignal, Show} from 'solid-js';
+import {createSignal, JSXElement, Show} from 'solid-js';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {EditorForm} from '../LeftSidebar/EditorForm';
@@ -10,14 +10,15 @@ import {FrameStyleForm} from '../LeftSidebar/FrameStyleForm';
 import {WindowStyleForm} from '../LeftSidebar/WindowStyleForm';
 import {EditorStyleForm} from '../LeftSidebar/EditorStyleForm';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
+import {PropsWithChildren} from 'solid-js/types/render/component';
 
 type Mode = 'themes' | 'style' | 'editor';
 
-interface BottomBarProps {
+interface BottomBarProps extends PropsWithChildren {
   portalHostRef: Node | undefined;
 }
 
-export const BottomBar: Component<BottomBarProps> = props => {
+export default function BottomBar(props: BottomBarProps): JSXElement {
   const [mode, setMode] = createSignal<Mode | null>(null);
 
   return (
@@ -138,4 +139,4 @@ export const BottomBar: Component<BottomBarProps> = props => {
       </Show>
     </div>
   );
-};
+}
