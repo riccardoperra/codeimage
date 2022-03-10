@@ -67,8 +67,8 @@ if (reload) {
 export default defineConfig({
   clearScreen: true,
   plugins: [
-    solidPlugin(),
     vanillaExtractPlugin(),
+    solidPlugin(),
     VitePWA(pwaOptions),
     replace(replaceOptions),
   ],
