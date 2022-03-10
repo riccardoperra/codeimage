@@ -38,4 +38,5 @@ export const lightThemeCss = createTheme(colors, {
   emptySquareBackgroundColor: themeVars.backgroundColor.gray['300'],
   snackbarBackgroundColor: '#1a1a1a',
   snackbarTextColor: themeVars.backgroundColor.white,
+  frameDragControlBackgroundColor: themeVars.backgroundColor.gray['800'],
 });

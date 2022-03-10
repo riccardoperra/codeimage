@@ -46,7 +46,11 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
     >
       <Toast class={styles.toast}>
         <Text size={'sm'} weight={'semibold'}>
-          {props.message}
+          {typeof props.message === 'string' ? (
+            props.message
+          ) : (
+            <Dynamic component={props.message} />
+          )}
         </Text>
 
         <Show when={!!props.actions}>

@@ -36,4 +36,5 @@ export const colors = createThemeContract({
   emptySquareBackgroundColor: null,
   snackbarBackgroundColor: null,
   snackbarTextColor: null,
+  frameDragControlBackgroundColor: null,
 });

@@ -38,4 +38,5 @@ export const darkThemeCss = createTheme(colors, {
   emptySquareBackgroundColor: '#252525',
   snackbarBackgroundColor: '#EEEEEE',
   snackbarTextColor: themeVars.textColor.gray['800'],
+  frameDragControlBackgroundColor: `#EEEEEE`,
 });
