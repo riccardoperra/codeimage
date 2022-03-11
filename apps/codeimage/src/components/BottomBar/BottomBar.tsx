@@ -1,11 +1,12 @@
 import * as styles from './BottomBar.css';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
-import {Portal} from 'solid-js/web';
-import {createSignal, JSXElement, lazy, Show} from 'solid-js';
+import {Portal, SuspenseList} from 'solid-js/web';
+import {createSignal, JSXElement, lazy, Show, Suspense} from 'solid-js';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 import {PropsWithChildren} from 'solid-js/types/render/component';
+import {LoadingOverlay} from '../LoadingOverlay/LoadingOverlay';
 
 type Mode = 'themes' | 'style' | 'editor';
 
@@ -126,21 +127,29 @@ export default function BottomBar(props: BottomBarProps): JSXElement {
                 </Box>
               </Box>
               <Box class={styles.portalContent}>
-                <Show when={mode() === 'themes'}>
-                  <LazyThemeSwitcher orientation={'horizontal'} />
-                </Show>
-                <Show when={mode() === 'style'}>
-                  <LazyEditorForm>
-                    <LazyFrameStyleForm />
+                <Suspense
+                  fallback={
+                    <div style={{height: '250px', position: 'relative'}}>
+                      <LoadingOverlay overlay={true} width={44} height={44} />
+                    </div>
+                  }
+                >
+                  <Show when={mode() === 'themes'}>
+                    <LazyThemeSwitcher orientation={'horizontal'} />
+                  </Show>
+                  <Show when={mode() === 'style'}>
+                    <LazyEditorForm>
+                      <LazyFrameStyleForm />
 
-                    <LazyWindowStyleForm />
-                  </LazyEditorForm>
-                </Show>
-                <Show when={mode() === 'editor'}>
-                  <LazyEditorForm>
-                    <LazyEditorStyleForm />
-                  </LazyEditorForm>
-                </Show>
+                      <LazyWindowStyleForm />
+                    </LazyEditorForm>
+                  </Show>
+                  <Show when={mode() === 'editor'}>
+                    <LazyEditorForm>
+                      <LazyEditorStyleForm />
+                    </LazyEditorForm>
+                  </Show>
+                </Suspense>
               </Box>
             </Box>
           </FadeInOutTransition>

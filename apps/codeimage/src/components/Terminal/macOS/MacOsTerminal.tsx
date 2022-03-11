@@ -1,15 +1,17 @@
-import {Component, Show} from 'solid-js';
+import {JSXElement, lazy, Show} from 'solid-js';
 import * as styles from './MacOsTerminal.css';
 import * as baseStyles from '../terminal.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
+import {BaseTerminalProps} from '../TerminalHost';
 import {backgroundColorVar} from '../../../theme/variables.css';
 import {InlineTextField} from '../../ui/TextField/InlineTextField';
 import {Box} from '../../ui/Box/Box';
 
-export const MacOsTerminal: Component<BaseTerminalProps> = props => {
+export const LazyTerminalHost = lazy(() => import('../TerminalHost'));
+
+export default function MacOsTerminal(props: BaseTerminalProps): JSXElement {
   return (
-    <TerminalHost {...props} theme={styles.theme}>
+    <LazyTerminalHost {...props} theme={styles.theme}>
       <Show when={props.showHeader}>
         <div
           class={baseStyles.header}
@@ -58,6 +60,6 @@ export const MacOsTerminal: Component<BaseTerminalProps> = props => {
           </Box>
         </div>
       </Show>
-    </TerminalHost>
+    </LazyTerminalHost>
   );
-};
+}

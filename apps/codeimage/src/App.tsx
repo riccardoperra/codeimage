@@ -1,14 +1,6 @@
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {
-  createEffect,
-  createMemo,
-  lazy,
-  Match,
-  on,
-  Suspense,
-  Switch,
-} from 'solid-js';
+import {createEffect, createMemo, lazy, Match, on, Switch} from 'solid-js';
 import {useUIState} from './state/ui';
 import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
@@ -30,16 +22,14 @@ const App = () => {
     <Scaffold>
       <NotificationHandler />
       <ReloadPrompt />
-      <Suspense fallback={'Loading...'}>
-        <Switch>
-          <Match when={modality === 'mobile'}>
-            <LazyMobileApp />
-          </Match>
-          <Match when={modality === 'full'}>
-            <LazyDesktopApp />
-          </Match>
-        </Switch>
-      </Suspense>
+      <Switch>
+        <Match when={modality === 'mobile'}>
+          <LazyMobileApp />
+        </Match>
+        <Match when={modality === 'full'}>
+          <LazyDesktopApp />
+        </Match>
+      </Switch>
     </Scaffold>
   );
 };

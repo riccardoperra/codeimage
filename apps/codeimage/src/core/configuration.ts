@@ -4,9 +4,8 @@ import {
   SUPPORTED_LOCALES,
   SUPPORTED_THEMES,
 } from '@codeimage/config';
-import {WindowsTerminal} from '../components/Terminal/windows/WindowsTerminal';
-import {MacOsTerminal} from '../components/Terminal/macOS/MacOsTerminal';
 import {version} from '../../package.json';
+import {lazy} from 'solid-js';
 
 interface CustomFontType {
   name: string;
@@ -18,6 +17,14 @@ interface CustomFonts {
   name: string;
   types: CustomFontType[];
 }
+
+const LazyMacOsTerminal = lazy(
+  () => import('../components/Terminal/macOS/MacOsTerminal'),
+);
+
+const LazyWindowsTerminal = lazy(
+  () => import('../components/Terminal/windows/WindowsTerminal'),
+);
 
 export const [staticConfiguration, useStaticConfiguration] =
   createConfiguration({
@@ -68,11 +75,11 @@ export const [staticConfiguration, useStaticConfiguration] =
       entries: {
         windows: {
           name: 'windows',
-          component: WindowsTerminal,
+          component: LazyWindowsTerminal,
         },
         macOs: {
           name: 'macOs',
-          component: MacOsTerminal,
+          component: LazyMacOsTerminal,
         },
       },
     },

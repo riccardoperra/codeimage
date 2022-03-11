@@ -1,15 +1,17 @@
-import {Component, Show} from 'solid-js';
+import {JSXElement, lazy, Show} from 'solid-js';
 import * as baseStyles from '../terminal.css';
 import {sprinkles} from '../../../theme/sprinkles.css';
-import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
+import {BaseTerminalProps} from '../TerminalHost';
 import * as styles from './WindowsTerminal.css';
 import {Box} from '../../ui/Box/Box';
 import {InlineTextField} from '../../ui/TextField/InlineTextField';
-import {WindowsTerminalControls} from './WindowsTerminalControls';
+import WindowsTerminalControls from './WindowsTerminalControls';
 
-export const WindowsTerminal: Component<BaseTerminalProps> = props => {
+export const LazyTerminalHost = lazy(() => import('../TerminalHost'));
+
+export default function WindowsTerminal(props: BaseTerminalProps): JSXElement {
   return (
-    <TerminalHost {...props} theme={styles.theme}>
+    <LazyTerminalHost {...props} theme={styles.theme}>
       <Show when={props.showHeader}>
         <div
           class={baseStyles.header}
@@ -40,6 +42,6 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
           </div>
         </div>
       </Show>
-    </TerminalHost>
+    </LazyTerminalHost>
   );
-};
+}

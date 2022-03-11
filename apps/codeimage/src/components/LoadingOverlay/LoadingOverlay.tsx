@@ -1,0 +1,84 @@
+import {JSXElement} from 'solid-js';
+import {overlay} from './LoadingOverlay.css';
+
+interface LoaderProps {
+  width: number;
+  height: number;
+}
+
+interface LoadingOverlayProps extends LoaderProps {
+  overlay: boolean;
+}
+
+export function Loader(props: LoaderProps): JSXElement {
+  return (
+    <svg
+      width={props.width}
+      height={props.height}
+      viewBox="0 0 44 44"
+      xmlns="http://www.w3.org/2000/svg"
+      stroke="#fff"
+    >
+      <g fill="none" fill-rule="evenodd" stroke-width="2">
+        <circle cx="22" cy="22" r="1">
+          <animate
+            attributeName="r"
+            begin="0s"
+            dur="1.8s"
+            values="1; 20"
+            calcMode="spline"
+            keyTimes="0; 1"
+            keySplines="0.165, 0.84, 0.44, 1"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="stroke-opacity"
+            begin="0s"
+            dur="1.8s"
+            values="1; 0"
+            calcMode="spline"
+            keyTimes="0; 1"
+            keySplines="0.3, 0.61, 0.355, 1"
+            repeatCount="indefinite"
+          />
+        </circle>
+        <circle cx="22" cy="22" r="1">
+          <animate
+            attributeName="r"
+            begin="-0.9s"
+            dur="1.8s"
+            values="1; 20"
+            calcMode="spline"
+            keyTimes="0; 1"
+            keySplines="0.165, 0.84, 0.44, 1"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="stroke-opacity"
+            begin="-0.9s"
+            dur="1.8s"
+            values="1; 0"
+            calcMode="spline"
+            keyTimes="0; 1"
+            keySplines="0.3, 0.61, 0.355, 1"
+            repeatCount="indefinite"
+          />
+        </circle>
+      </g>
+    </svg>
+  );
+}
+
+export function LoadingOverlay(props: LoadingOverlayProps): JSXElement {
+  return (
+    <>
+      {props.overlay ? (
+        <div class={overlay}>
+          <Loader width={props.width} height={props.height} />
+        </div>
+      ) : (
+        <Loader width={props.width} height={props.height} />
+      )}
+    </>
+  );
+}

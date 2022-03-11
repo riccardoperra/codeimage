@@ -1,11 +1,14 @@
 import * as styles from './terminal.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {themeVars} from '../../theme/global.css';
-import {Component} from 'solid-js';
 import {TerminalState} from '../../state/terminal';
 import clsx from 'clsx';
+import {PropsWithChildren} from 'solid-js/types/render/component';
+import {JSXElement} from 'solid-js';
 
-export interface BaseTerminalProps extends Omit<TerminalState, 'type'> {
+export interface BaseTerminalProps
+  extends PropsWithChildren,
+    Omit<TerminalState, 'type'> {
   showTab: boolean;
   readonlyTab: boolean;
   onTabChange?: (tab: string) => void;
@@ -15,7 +18,7 @@ export interface TerminalHostProps extends BaseTerminalProps {
   theme: string;
 }
 
-export const TerminalHost: Component<TerminalHostProps> = props => {
+export default function TerminalHost(props: TerminalHostProps): JSXElement {
   return (
     <div
       class={clsx(styles.wrapper, props.theme)}
@@ -29,4 +32,4 @@ export const TerminalHost: Component<TerminalHostProps> = props => {
       {props.children}
     </div>
   );
-};
+}
