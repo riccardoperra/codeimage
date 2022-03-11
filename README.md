@@ -1,37 +1,27 @@
-# Codegram
+# Codeimage
+
+> Create elegant code screenshots of your source code.
 
 
-## Usage
+Codeimage is the newest tool to help developers to create beautiful screenshots of their code, 
+providing several features to speed up the process to post in social media, and for customize simple lines of code.
+It's built on the top of solid-js and CodeMirror6 for solid-hack.
 
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
+## Getting started
+To run the project locally, you must have in your local machine pnpm >= 6.23.2 and node >= 14.x;
 
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
+1. Install dependencies
 
 ```bash
-$ npm install # or pnpm install or yarn install
+$ pnpm install
 ```
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+2. Build core libraries
+```bash
+$ pnpm libs:build
+```
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm dev` or `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+3. Run @codeimage/app
+```bash
+$ pnpm app:dev
+```
