@@ -4,13 +4,14 @@ import {Text} from '../ui/Text/Text';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {backgroundColorVar} from '../../theme/variables.css';
 import {CustomTheme} from '@codeimage/theme';
+import {PropsWithChildren} from 'solid-js/types/render/component';
 
 interface ThemeBoxProps {
   theme: CustomTheme;
   onClick: (evt: MouseEvent) => void;
 }
 
-export const ThemeBox: Component<ThemeBoxProps> = props => {
+export default function ThemeBox(props: PropsWithChildren<ThemeBoxProps>) {
   return (
     <div
       class={styles.themeBox}
@@ -27,4 +28,4 @@ export const ThemeBox: Component<ThemeBoxProps> = props => {
       </div>
     </div>
   );
-};
+}

@@ -1,9 +1,16 @@
-import {createSignal, JSXElement, lazy} from 'solid-js';
-import ThemeSwitcher from './components/ThemeSwitcher/ThemeSwitcher';
+import {createSignal, JSXElement, lazy, Suspense} from 'solid-js';
 import Sidebar from './components/Scaffold/Sidebar/Sidebar';
-import EditorSidebar from './components/LeftSidebar/EditorSidebar';
+import {Canvas} from './components/Scaffold/Canvas/Canvas';
+
+const LazyEditorSidebar = lazy(
+  () => import('./components/LeftSidebar/EditorSidebar'),
+);
 
 const LazyEditor = lazy(() => import('./components/Editor/Editor'));
+
+const LazyThemeSwitcher = lazy(
+  () => import('./components/ThemeSwitcher/ThemeSwitcher'),
+);
 
 export default function DesktopApp(): JSXElement {
   const [, setPortalHostRef] = createSignal<HTMLElement>();
@@ -11,7 +18,27 @@ export default function DesktopApp(): JSXElement {
   return (
     <>
       <Sidebar>
-        <EditorSidebar />
+        <Suspense
+          fallback={
+            <div class="loading-wrapper">
+              <div class="title-block">
+                <div class="loading content"></div>
+                <div class="loading content last-row"></div>
+              </div>
+              <div class="title-block">
+                <div class="loading title"></div>
+                <div class="loading content"></div>
+                <div class="loading content last-row"></div>
+              </div>
+              <div class="list-block">
+                <div class="loading content line-item"></div>
+                <div class="loading content line-item-last"></div>
+              </div>
+            </div>
+          }
+        >
+          <LazyEditorSidebar />
+        </Suspense>
       </Sidebar>
 
       <div
@@ -26,10 +53,52 @@ export default function DesktopApp(): JSXElement {
         }}
       />
 
-      <LazyEditor />
+      <Canvas>
+        <Suspense
+          fallback={
+            <div class="loading-wrapper">
+              <div class="title-block">
+                <div class="loading content"></div>
+                <div class="loading content last-row"></div>
+              </div>
+              <div class="title-block">
+                <div class="loading title"></div>
+                <div class="loading content"></div>
+                <div class="loading content last-row"></div>
+              </div>
+              <div class="list-block">
+                <div class="loading content line-item"></div>
+                <div class="loading content line-item-last"></div>
+              </div>
+            </div>
+          }
+        >
+          <LazyEditor />
+        </Suspense>
+      </Canvas>
 
       <Sidebar>
-        <ThemeSwitcher orientation={'vertical'} />
+        <Suspense
+          fallback={
+            <div class="loading-wrapper">
+              <div class="title-block">
+                <div class="loading content"></div>
+                <div class="loading content last-row"></div>
+              </div>
+              <div class="title-block">
+                <div class="loading title"></div>
+                <div class="loading content"></div>
+                <div class="loading content last-row"></div>
+              </div>
+              <div class="list-block">
+                <div class="loading content line-item"></div>
+                <div class="loading content line-item-last"></div>
+              </div>
+            </div>
+          }
+        >
+          <LazyThemeSwitcher orientation={'vertical'} />
+        </Suspense>
       </Sidebar>
     </>
   );

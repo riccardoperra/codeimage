@@ -15,7 +15,7 @@ export default function Editor(): JSXElement {
   const terminal = useTerminalState();
 
   return (
-    <Canvas>
+    <>
       <Toolbar canvasRef={frameRef()} />
       <FrameHandler ref={setFrameRef} onScaleChange={frame.setScale}>
         <Frame
@@ -43,6 +43,6 @@ export default function Editor(): JSXElement {
         </Frame>
       </FrameHandler>
       <Footer />
-    </Canvas>
+    </>
   );
 }

@@ -19,3 +19,115 @@ body {
   position: relative;
   overscroll-behavior-y: none;
 }
+
+
+.loading-wrapper {
+  width: 100%;
+}
+.title-block {
+  padding-bottom: 24px;
+  padding-top: 8px;
+}
+.list-block {
+  padding-top: 12px;
+}
+.loading {
+  -webkit-animation-duration: 1s;
+  -webkit-animation-fill-mode: forwards;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-name: placeHolderShimmer;
+  -webkit-animation-timing-function: linear;
+  background: #f6f7f8;
+  background-image: -webkit-gradient(linear, left center, right center, from(#f6f7f8), color-stop(.2, #edeef1), color-stop(.4, #f6f7f8), to(#f6f7f8));
+  background-image: -webkit-linear-gradient(left, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+  background-repeat: no-repeat;
+  border-radius: 2px;
+}
+.title {
+  height: 10px;
+  width: 25%;
+  margin-bottom: 28px;
+}
+.content {
+  height: 10px;
+  margin-bottom: 12px;
+}
+.content.line-item {
+  margin-bottom: 28px;
+}
+.last-row {
+  width: 90%;
+  margin-bottom: 0px;
+}
+
+
+@-webkit-keyframes placeHolderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+/*Regular styles*/
+html {
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  background-color: #ebeef0 !important;
+}
+.ui-layout {
+  max-width: 1036px;
+  margin: 20px auto;
+}
+.ui-layout__sections {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin-top: -20px;
+  margin-left: -20px;
+  padding-top: 0;
+}
+.ui-layout__section {
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  -webkit-flex: 1 1 100%;
+  -ms-flex: 1 1 100%;
+  flex: 1 1 100%;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  margin-top: -20px;
+  margin-left: -20px;
+  padding-top: 20px;
+  padding-left: 20px;
+}
+.ui-layout__section--primary {
+  -webkit-flex: 2 1 480px;
+  -ms-flex: 2 1 480px;
+  flex: 2 1 480px;
+}
+.ui-layout__item {
+  min-width: 0;
+  max-width: 100%;
+  flex: 2 1 480px;
+  padding-top: 20px;
+  padding-left: 20px;
+}
+.ui-card {
+  background-color: #ffffff;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  height: auto;
+}
