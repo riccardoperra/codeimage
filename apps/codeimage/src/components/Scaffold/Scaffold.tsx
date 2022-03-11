@@ -7,7 +7,7 @@ import {darkThemeCss} from '../../theme/dark-theme.css';
 import {backgroundColorVar} from '../../theme/variables.css';
 import {assignInlineVars, setElementVars} from '@vanilla-extract/dynamic';
 
-export const Scaffold: Component = props => {
+const Scaffold: Component = props => {
   const ui = useUIState();
 
   const theme = createMemo(() =>
@@ -46,3 +46,5 @@ export const Scaffold: Component = props => {
     </div>
   );
 };
+
+export default Scaffold;
