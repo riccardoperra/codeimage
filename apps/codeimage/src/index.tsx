@@ -7,15 +7,13 @@ import {locale} from './i18n';
 import {StaticConfigurationProvider} from '@codeimage/config';
 import './assets/styles/app.scss';
 
-setTimeout(() => {
-  render(
-    () => (
-      <StaticConfigurationProvider config={staticConfiguration}>
-        <I18nProvider dict={locale}>
-          <App />
-        </I18nProvider>
-      </StaticConfigurationProvider>
-    ),
-    document.getElementById('root') as HTMLElement,
-  );
-});
+render(
+  () => (
+    <StaticConfigurationProvider config={staticConfiguration}>
+      <I18nProvider dict={locale}>
+        <App />
+      </I18nProvider>
+    </StaticConfigurationProvider>
+  ),
+  document.getElementById('root') as HTMLElement,
+);

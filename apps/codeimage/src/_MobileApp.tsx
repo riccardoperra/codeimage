@@ -1,7 +1,6 @@
 import {createSignal, JSXElement, lazy, Suspense} from 'solid-js';
 import {LoadingOverlay} from './components/LoadingOverlay/LoadingOverlay';
-
-const LazyBottomBar = lazy(() => import('./components/BottomBar/BottomBar'));
+import BottomBar from './components/BottomBar/BottomBar';
 
 const LazyEditor = lazy(() => import('./components/Editor/Editor'));
 
@@ -26,7 +25,7 @@ export default function MobileApp(): JSXElement {
 
       <LazyEditor />
 
-      <LazyBottomBar portalHostRef={portalHostRef()} />
+      <BottomBar portalHostRef={portalHostRef()} />
     </Suspense>
   );
 }

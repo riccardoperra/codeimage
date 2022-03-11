@@ -1,32 +1,22 @@
 import * as styles from './BottomBar.css';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
-import {Portal, SuspenseList} from 'solid-js/web';
-import {createSignal, JSXElement, lazy, Show, Suspense} from 'solid-js';
+import {Portal} from 'solid-js/web';
+import {createSignal, JSXElement, Show} from 'solid-js';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 import {PropsWithChildren} from 'solid-js/types/render/component';
-import {LoadingOverlay} from '../LoadingOverlay/LoadingOverlay';
+import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
+import EditorForm from '../LeftSidebar/EditorForm';
+import FrameStyleForm from '../LeftSidebar/FrameStyleForm';
+import WindowStyleForm from '../LeftSidebar/WindowStyleForm';
+import EditorStyleForm from '../LeftSidebar/EditorStyleForm';
 
 type Mode = 'themes' | 'style' | 'editor';
 
 interface BottomBarProps extends PropsWithChildren {
   portalHostRef: Node | undefined;
 }
-
-const LazyThemeSwitcher = lazy(() => import('../ThemeSwitcher/ThemeSwitcher'));
-
-const LazyEditorForm = lazy(() => import('../LeftSidebar/EditorForm'));
-
-const LazyFrameStyleForm = lazy(() => import('../LeftSidebar/FrameStyleForm'));
-
-const LazyWindowStyleForm = lazy(
-  () => import('../LeftSidebar/WindowStyleForm'),
-);
-
-const LazyEditorStyleForm = lazy(
-  () => import('../LeftSidebar/EditorStyleForm'),
-);
 
 export default function BottomBar(props: BottomBarProps): JSXElement {
   const [mode, setMode] = createSignal<Mode | null>(null);
@@ -109,9 +99,9 @@ export default function BottomBar(props: BottomBarProps): JSXElement {
                     theme={'secondary'}
                     onClick={() => setMode(null)}
                   >
-                    <svg
+                    <SvgIcon
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-3 w-3"
+                      size={'sm'}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -122,34 +112,26 @@ export default function BottomBar(props: BottomBarProps): JSXElement {
                         stroke-linejoin="round"
                         d="M6 18L18 6M6 6l12 12"
                       />
-                    </svg>
+                    </SvgIcon>
                   </Button>
                 </Box>
               </Box>
               <Box class={styles.portalContent}>
-                <Suspense
-                  fallback={
-                    <div style={{height: '250px', position: 'relative'}}>
-                      <LoadingOverlay overlay={true} width={44} height={44} />
-                    </div>
-                  }
-                >
-                  <Show when={mode() === 'themes'}>
-                    <LazyThemeSwitcher orientation={'horizontal'} />
-                  </Show>
-                  <Show when={mode() === 'style'}>
-                    <LazyEditorForm>
-                      <LazyFrameStyleForm />
+                <Show when={mode() === 'themes'}>
+                  <ThemeSwitcher orientation={'horizontal'} />
+                </Show>
+                <Show when={mode() === 'style'}>
+                  <EditorForm>
+                    <FrameStyleForm />
 
-                      <LazyWindowStyleForm />
-                    </LazyEditorForm>
-                  </Show>
-                  <Show when={mode() === 'editor'}>
-                    <LazyEditorForm>
-                      <LazyEditorStyleForm />
-                    </LazyEditorForm>
-                  </Show>
-                </Suspense>
+                    <WindowStyleForm />
+                  </EditorForm>
+                </Show>
+                <Show when={mode() === 'editor'}>
+                  <EditorForm>
+                    <EditorStyleForm />
+                  </EditorForm>
+                </Show>
               </Box>
             </Box>
           </FadeInOutTransition>
