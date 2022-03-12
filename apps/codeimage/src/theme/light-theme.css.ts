@@ -15,6 +15,7 @@ export const lightThemeCss = createTheme(colors, {
   inputBorderColor: 'transparent',
   inputTextColor: '#333333',
   inputLabelTextColor: themeVars.backgroundColor.gray['700'],
+  inputLabelTextHintColor: themeVars.backgroundColor.gray['500'],
   inputAccentColor: themeVars.backgroundColor.white,
   buttonBackgroundColor: themeVars.backgroundColor.gray['300'],
   buttonBackgroundActive: themeVars.backgroundColor.gray['500'],

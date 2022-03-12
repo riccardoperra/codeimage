@@ -18,3 +18,16 @@ export const FieldLabel: Component<FieldLabelProps> = props => {
     </Text>
   );
 };
+
+export const FieldLabelHint: Component<FieldLabelProps> = props => {
+  return (
+    <Text
+      {...omitProps(props, ['class', 'children'])}
+      as={'label'}
+      weight={'semibold'}
+      class={clsx(styles.labelHint, props.class)}
+    >
+      {props.children}
+    </Text>
+  );
+};
