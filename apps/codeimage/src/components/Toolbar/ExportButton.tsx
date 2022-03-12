@@ -55,7 +55,10 @@ export const ExportButton: Component<ExportButtonProps> = props => {
     if (data.error) {
       notificationStore.create({
         closeable: true,
-        message: 'Si é verificato un errore durante il salvataggio',
+        message: () => {
+          const [t] = useI18n<AppLocaleEntries>();
+          return <>{t('export.genericSaveError')}</>;
+        },
       });
     }
   });
@@ -68,7 +71,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         disabled={data.loading}
         onClick={() => openModal()}
       >
-        <SvgIcon fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <SvgIcon fill="none" viewBox="0 0 24 24" stroke="white">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
