@@ -1,4 +1,4 @@
-import {Component, createMemo} from 'solid-js';
+import {Component, createMemo, createSignal} from 'solid-js';
 import {Box} from '../ui/Box/Box';
 import {Button} from '../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
@@ -9,6 +9,16 @@ import download from 'downloadjs';
 import {useAsyncAction} from '../../core/hooks/async-action';
 import {useModality} from '../../core/hooks/isMobile';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
+import {Transition} from 'solid-headless';
+import {Dialog, DialogProps} from '../ui/Dialog/Dialog';
+import {
+  SegmentedField,
+  SegmentedFieldItem,
+} from '../ui/SegmentedField/SegmentedField';
+import {FlexField} from '../ui/Field/FlexField';
+import {TextField} from '../ui/TextField/TextField';
+import {FieldLabel} from '../ui/Label/FieldLabel';
+import {DialogPanelContent, DialogPanelFooter} from '../ui/Dialog/DialogPanel';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -37,7 +47,6 @@ const exportImage = async (canvasRef: HTMLElement | undefined) => {
 
       const data = {
         title: 'Codeimage exported image',
-        text: 'Saved with codeimage.',
         files: [file],
       };
 
@@ -56,6 +65,17 @@ const exportImage = async (canvasRef: HTMLElement | undefined) => {
 };
 
 export const ExportButton: Component<ExportButtonProps> = props => {
+  const [isOpen, setIsOpen] = createSignal(false);
+
+  function closeModal() {
+    setIsOpen(false);
+    notify(props.canvasRef);
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
   const [t] = useI18n<AppLocaleEntries>();
   const [data, {notify}] = useAsyncAction(
     async (ref: HTMLElement | undefined) => {
@@ -70,24 +90,133 @@ export const ExportButton: Component<ExportButtonProps> = props => {
   );
 
   return (
-    <Button
-      variant={'solid'}
-      theme={'primary'}
-      disabled={data.loading}
-      onClick={() => notify(props.canvasRef)}
-    >
-      <SvgIcon fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width={2}
-          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-        />
-      </SvgIcon>
+    <>
+      <Button
+        variant={'solid'}
+        theme={'primary'}
+        disabled={data.loading}
+        onClick={() => {
+          openModal();
+          // notify(props.canvasRef)
+        }}
+      >
+        <SvgIcon fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width={2}
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+          />
+        </SvgIcon>
 
-      <Box as={'span'} marginLeft={'2'}>
-        {label()}
-      </Box>
-    </Button>
+        <Box as={'span'} marginLeft={'2'}>
+          {label()}
+        </Box>
+      </Button>
+
+      <Transition appear show={isOpen()}>
+        <ExportDialog
+          size={'md'}
+          onConfirm={console.log}
+          onClose={closeModal}
+        />
+      </Transition>
+    </>
   );
 };
+
+export interface ExportDialogProps extends DialogProps {
+  onConfirm: (
+    payload:
+      | {type: 'export'; fileName: string}
+      | {type: 'mode'; message: string},
+  ) => void;
+}
+
+export function ExportDialog(props: DialogProps & ExportDialogProps) {
+  type Mode = 'export' | 'share';
+  type Extension = 'svg' | 'png' | 'jpeg';
+
+  const [mode, setMode] = createSignal<Mode>('share');
+  const [extension, setExtension] = createSignal<Extension>('png');
+  const [fileName, setFileName] = createSignal<string>('');
+
+  const modeItems: SegmentedFieldItem<Mode>[] = [
+    {label: 'Save as file', value: 'export'},
+    {label: 'Share your code', value: 'share'},
+  ];
+
+  const extensionItems: SegmentedFieldItem<Extension>[] = [
+    {label: 'PNG', value: 'png'},
+    {label: 'SVG', value: 'svg'},
+    {label: 'JPEG', value: 'jpeg'},
+  ];
+
+  return (
+    <Dialog {...props} isOpen size={'md'} title={'Export image'}>
+      <DialogPanelContent>
+        <FlexField size={'lg'}>
+          <SegmentedField value={mode()} onChange={setMode} items={modeItems} />
+        </FlexField>
+
+        <Box marginTop={'6'}>
+          <FlexField size={'md'}>
+            <FieldLabel size={'sm'} for={'fileName'}>
+              Nome file
+            </FieldLabel>
+            <TextField
+              placeholder={'Enter a file name...'}
+              id={'fileName'}
+              value={fileName()}
+              onChange={setFileName}
+              size={'sm'}
+              type={'text'}
+            />
+          </FlexField>
+        </Box>
+
+        <Box marginTop={'6'}>
+          <FlexField size={'md'}>
+            <FieldLabel size={'sm'}>Extension type</FieldLabel>
+            <SegmentedField
+              value={extension()}
+              onChange={setExtension}
+              items={extensionItems}
+            />
+          </FlexField>
+        </Box>
+      </DialogPanelContent>
+      <DialogPanelFooter>
+        <Box display={'flex'} justifyContent={'flexEnd'}>
+          <Box marginRight={'2'}>
+            <Button
+              size={'md'}
+              type="button"
+              variant={'solid'}
+              theme={'secondary'}
+              onClick={props.onClose}
+            >
+              Close
+            </Button>
+          </Box>
+
+          <Button
+            size={'md'}
+            type="button"
+            variant={'solid'}
+            onClick={() => {
+              props.onClose?.();
+              props.onConfirm({
+                fileName: fileName(),
+                message: '',
+                mode: mode(),
+              });
+            }}
+          >
+            Save
+          </Button>
+        </Box>
+      </DialogPanelFooter>
+    </Dialog>
+  );
+}
