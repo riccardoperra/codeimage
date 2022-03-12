@@ -136,14 +136,15 @@ export interface ExportDialogProps extends DialogProps {
 export function ExportDialog(props: DialogProps & ExportDialogProps) {
   type Mode = 'export' | 'share';
   type Extension = 'svg' | 'png' | 'jpeg';
+  const [t] = useI18n<AppLocaleEntries>();
 
   const [mode, setMode] = createSignal<Mode>('share');
   const [extension, setExtension] = createSignal<Extension>('png');
   const [fileName, setFileName] = createSignal<string>('');
 
   const modeItems: SegmentedFieldItem<Mode>[] = [
-    {label: 'Save as file', value: 'export'},
-    {label: 'Share your code', value: 'share'},
+    {label: t('export.exportMode'), value: 'export'},
+    {label: t('export.shareMode'), value: 'share'},
   ];
 
   const extensionItems: SegmentedFieldItem<Extension>[] = [
@@ -153,7 +154,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
   ];
 
   return (
-    <Dialog {...props} isOpen size={'md'} title={'Export image'}>
+    <Dialog {...props} isOpen size={'md'} title={t('export.title')}>
       <DialogPanelContent>
         <FlexField size={'lg'}>
           <SegmentedField value={mode()} onChange={setMode} items={modeItems} />
@@ -162,10 +163,10 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
         <Box marginTop={'6'}>
           <FlexField size={'md'}>
             <FieldLabel size={'sm'} for={'fileName'}>
-              Nome file
+              {t('export.fileName')}
             </FieldLabel>
             <TextField
-              placeholder={'Enter a file name...'}
+              placeholder={t('export.fileNamePlaceholder')}
               id={'fileName'}
               value={fileName()}
               onChange={setFileName}
@@ -177,7 +178,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
 
         <Box marginTop={'6'}>
           <FlexField size={'md'}>
-            <FieldLabel size={'sm'}>Extension type</FieldLabel>
+            <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
             <SegmentedField
               value={extension()}
               onChange={setExtension}
@@ -196,7 +197,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               theme={'secondary'}
               onClick={props.onClose}
             >
-              Close
+              {t('common.close')}
             </Button>
           </Box>
 
@@ -213,7 +214,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               });
             }}
           >
-            Save
+            {t('common.confirm')}
           </Button>
         </Box>
       </DialogPanelFooter>
