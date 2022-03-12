@@ -15,6 +15,7 @@ export const darkThemeCss = createTheme(colors, {
   inputBorderColor: '#252525',
   inputTextColor: '#EEEEEE',
   inputLabelTextColor: '#FFFFFF',
+  inputLabelTextHintColor: '#999999',
   inputAccentColor: '#555555',
   buttonBackgroundColor: '#333333',
   buttonBackgroundActive: '#232323',

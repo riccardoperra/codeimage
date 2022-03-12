@@ -13,6 +13,7 @@ export const colors = createThemeContract({
   inputBorderColor: null,
   inputTextColor: null,
   inputLabelTextColor: null,
+  inputLabelTextHintColor: null,
   inputAccentColor: null,
   buttonBackgroundPrimaryColor: null,
   buttonBackgroundPrimaryActive: null,
