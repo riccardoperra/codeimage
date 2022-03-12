@@ -1,5 +1,6 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '../../../theme/global.css';
+import {inputHeight} from '../Field/FlexField.css';
 
 export const [rangeTheme, rangeVars] = createTheme({
   rangeProgress: '0%',
@@ -12,6 +13,7 @@ export const range = style([
     appearance: 'none',
     position: 'relative',
     backgroundColor: themeVars.backgroundColor.transparent,
+    height: inputHeight,
 
     '::-webkit-slider-thumb': {
       appearance: 'none',
