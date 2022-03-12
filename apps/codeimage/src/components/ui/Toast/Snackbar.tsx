@@ -5,25 +5,7 @@ import * as styles from './Snackbar.css';
 import {Dynamic} from 'solid-js/web';
 import {Text} from '../Text/Text';
 import {Box} from '../Box/Box';
-
-function CloseIcon(props: JSX.IntrinsicElements['svg']): JSX.Element {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      {...props}
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width={2}
-        d="M6 18L18 6M6 6l12 12"
-      />
-    </svg>
-  );
-}
+import {Button} from '../Button/Button';
 
 export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
   const [isOpen, setIsOpen] = createSignal(true);
@@ -59,13 +41,30 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
           </Box>
         </Show>
         <Show when={props.closeable}>
-          <button
-            type="button"
-            class="flex-none w-6 h-6 p-1 text-white bg-blue-900 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
-            onClick={dismiss}
-          >
-            <CloseIcon />
-          </button>
+          <Box marginLeft={'4'}>
+            <Button
+              type={'button'}
+              size={'xs'}
+              variant={'solid'}
+              theme={'secondary'}
+              onClick={dismiss}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-3 w-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </Button>
+          </Box>
         </Show>
       </Toast>
     </Transition>
