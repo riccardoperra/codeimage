@@ -19,7 +19,7 @@ import {
 } from '../ui/SegmentedField/SegmentedField';
 import {FlexField} from '../ui/Field/FlexField';
 import {TextField} from '../ui/TextField/TextField';
-import {FieldLabel} from '../ui/Label/FieldLabel';
+import {FieldLabel, FieldLabelHint} from '../ui/Label/FieldLabel';
 import {DialogPanelContent, DialogPanelFooter} from '../ui/Dialog/DialogPanel';
 import {
   ExportExtension,
@@ -28,6 +28,9 @@ import {
 } from '../../hooks/use-export-image';
 import {notificationStore} from '../ui/Toast/SnackbarHost';
 import {useStaticConfiguration} from '../../core/configuration';
+import {RangeField} from '../ui/RangeField/RangeField';
+import {Link} from '../ui/Link/Link';
+import {FadeInOutTransition} from '../ui/Transition/Transition';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -96,6 +99,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
                 fileName:
                   payload.type === 'export' ? payload.fileName : undefined,
                 mode: payload.type,
+                pixelRatio: payload.pixelRatio,
               },
               ref: props.canvasRef,
             });
@@ -111,8 +115,18 @@ export const ExportButton: Component<ExportButtonProps> = props => {
 export interface ExportDialogProps extends DialogProps {
   onConfirm: (
     payload:
-      | {type: ExportMode.export; fileName: string; extension: ExportExtension}
-      | {type: ExportMode.share; message: string; extension: ExportExtension},
+      | {
+          type: ExportMode.export;
+          fileName: string;
+          extension: ExportExtension;
+          pixelRatio: number;
+        }
+      | {
+          type: ExportMode.share;
+          message: string;
+          extension: ExportExtension;
+          pixelRatio: number;
+        },
   ) => void;
 }
 
@@ -124,6 +138,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
     ExportExtension.png,
   );
 
+  const [pxRatio, setPxRatio] = createSignal<number>(window.devicePixelRatio);
   const [fileName, setFileName] = createSignal<string>('');
 
   const modeItems: SegmentedFieldItem<ExportMode>[] = [
@@ -144,6 +159,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
   });
 
   return (
+    // {TODO: add FieldGroup or Stack component}
     <Dialog {...props} isOpen size={'md'} title={t('export.title')}>
       <DialogPanelContent>
         <Show when={support.shareApi}>
@@ -154,6 +170,40 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                 onChange={setMode}
                 items={modeItems}
               />
+              <FadeInOutTransition show={mode() === 'share'}>
+                <Box marginTop={'1'}>
+                  <FieldLabelHint size={'sm'} weight={'normal'}>
+                    <SvgIcon
+                      xmlns="http://www.w3.org/2000/svg"
+                      size={'xs'}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </SvgIcon>
+                    <Box marginLeft={'1'}>{t('export.shareHint')}</Box>
+                    <Box display={'inlineBlock'} marginLeft={'1'}>
+                      <Link
+                        size={'sm'}
+                        underline
+                        weight={'medium'}
+                        target={'_blank'}
+                        href={
+                          'https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share'
+                        }
+                      >
+                        Web Share API
+                      </Link>
+                    </Box>
+                  </FieldLabelHint>
+                </Box>
+              </FadeInOutTransition>
             </FlexField>
           </Box>
         </Show>
@@ -176,12 +226,30 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
           </Box>
         </Show>
 
+        <Box marginBottom={'6'}>
+          <FlexField size={'md'}>
+            <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
+            <SegmentedField
+              value={extension()}
+              onChange={setExtension}
+              items={extensionItems}
+            />
+          </FlexField>
+        </Box>
+
         <FlexField size={'md'}>
-          <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
-          <SegmentedField
-            value={extension()}
-            onChange={setExtension}
-            items={extensionItems}
+          <FieldLabel size={'sm'}>
+            {t('export.pixelRatio')}
+            <Box as={'span'} marginLeft={'2'}>
+              <FieldLabelHint>({pxRatio}x)</FieldLabelHint>
+            </Box>
+          </FieldLabel>
+          <RangeField
+            value={pxRatio()}
+            onChange={setPxRatio}
+            max={3}
+            min={1}
+            step={1}
           />
         </FlexField>
       </DialogPanelContent>
@@ -209,6 +277,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                 type: mode(),
                 extension: extension(),
                 fileName: fileName(),
+                pixelRatio: pxRatio(),
                 message: '',
               });
             }}
