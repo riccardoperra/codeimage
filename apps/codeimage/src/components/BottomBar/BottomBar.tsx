@@ -66,7 +66,6 @@ export const BottomBar: Component<BottomBarProps> = props => {
 
       <Button
         class={styles.button}
-        disabled={!navigator.share}
         variant={'link'}
         onClick={() => setMode('editor')}
       >

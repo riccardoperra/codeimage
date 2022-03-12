@@ -18,7 +18,7 @@ export const host = style([
 ]);
 
 export const wrapper = style({
-  minHeight: themeVars.minHeight.screen,
+  minHeight: themeVars.minHeight.full,
   padding: `0 ${themeVars.spacing['4']}`,
   display: 'flex',
   alignItems: 'center',

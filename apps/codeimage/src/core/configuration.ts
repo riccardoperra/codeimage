@@ -22,6 +22,9 @@ interface CustomFonts {
 export const [staticConfiguration, useStaticConfiguration] =
   createConfiguration({
     version,
+    support: {
+      shareApi: !!navigator.share,
+    },
     locales: SUPPORTED_LOCALES,
     themes: SUPPORTED_THEMES,
     languages: SUPPORTED_LANGUAGES,
