@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import {useText, UseTextProps} from '../Text/useText';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 
-interface SegmentedFieldItem<T> {
+export interface SegmentedFieldItem<T> {
   label: string;
   value: T;
 }

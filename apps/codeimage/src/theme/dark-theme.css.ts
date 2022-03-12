@@ -14,6 +14,7 @@ export const darkThemeCss = createTheme(colors, {
   inputBackgroundColor: '#2B2B2B',
   inputBorderColor: '#252525',
   inputTextColor: '#EEEEEE',
+  inputLabelTextColor: '#FFFFFF',
   inputAccentColor: '#555555',
   buttonBackgroundColor: '#333333',
   buttonBackgroundActive: '#232323',
@@ -39,4 +40,11 @@ export const darkThemeCss = createTheme(colors, {
   snackbarBackgroundColor: '#EEEEEE',
   snackbarTextColor: themeVars.textColor.gray['800'],
   frameDragControlBackgroundColor: `#EEEEEE`,
+  dialogOverlayBackgroundColor: 'rgba(0,0,0,.7)',
+  dialogPanelBackgroundColor: '#1d1d1d',
+  dialogPanelShadow:
+    '0px 10px 30px 0px rgba(0,0,0,.15),inset 0 0 0 1px #222222',
+  dialogTitleTextColor: '#EEEEEE',
+  dialogTitleBorderColor: '#2B2B2B',
+  dialogPanelTextColor: '#EEEEEE',
 });

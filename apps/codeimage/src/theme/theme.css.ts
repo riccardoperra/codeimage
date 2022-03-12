@@ -12,6 +12,7 @@ export const colors = createThemeContract({
   inputBackgroundColor: null,
   inputBorderColor: null,
   inputTextColor: null,
+  inputLabelTextColor: null,
   inputAccentColor: null,
   buttonBackgroundPrimaryColor: null,
   buttonBackgroundPrimaryActive: null,
@@ -37,4 +38,10 @@ export const colors = createThemeContract({
   snackbarBackgroundColor: null,
   snackbarTextColor: null,
   frameDragControlBackgroundColor: null,
+  dialogOverlayBackgroundColor: null,
+  dialogTitleTextColor: null,
+  dialogTitleBorderColor: null,
+  dialogPanelShadow: null,
+  dialogPanelTextColor: null,
+  dialogPanelBackgroundColor: null,
 });
