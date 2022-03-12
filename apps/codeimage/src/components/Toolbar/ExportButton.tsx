@@ -3,6 +3,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  onMount,
   Show,
 } from 'solid-js';
 import {Box} from '../ui/Box/Box';
@@ -26,6 +27,7 @@ import {
   useExportImage,
 } from '../../hooks/use-export-image';
 import {notificationStore} from '../ui/Toast/SnackbarHost';
+import {useStaticConfiguration} from '../../core/configuration';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -113,7 +115,7 @@ export interface ExportDialogProps extends DialogProps {
 
 export function ExportDialog(props: DialogProps & ExportDialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
-
+  const {support} = useStaticConfiguration();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
@@ -132,15 +134,29 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
     {label: 'JPEG', value: ExportExtension.jpeg},
   ];
 
+  onMount(() => {
+    if (!support.shareApi) {
+      setMode(ExportMode.export);
+    }
+  });
+
   return (
     <Dialog {...props} isOpen size={'md'} title={t('export.title')}>
       <DialogPanelContent>
-        <FlexField size={'lg'}>
-          <SegmentedField value={mode()} onChange={setMode} items={modeItems} />
-        </FlexField>
+        <Show when={support.shareApi}>
+          <Box marginBottom={'6'}>
+            <FlexField size={'lg'}>
+              <SegmentedField
+                value={mode()}
+                onChange={setMode}
+                items={modeItems}
+              />
+            </FlexField>
+          </Box>
+        </Show>
 
         <Show when={mode() === 'export'}>
-          <Box marginTop={'6'}>
+          <Box marginBottom={'6'}>
             <FlexField size={'md'}>
               <FieldLabel size={'sm'} for={'fileName'}>
                 {t('export.fileName')}
@@ -157,16 +173,14 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
           </Box>
         </Show>
 
-        <Box marginTop={'6'}>
-          <FlexField size={'md'}>
-            <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
-            <SegmentedField
-              value={extension()}
-              onChange={setExtension}
-              items={extensionItems}
-            />
-          </FlexField>
-        </Box>
+        <FlexField size={'md'}>
+          <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
+          <SegmentedField
+            value={extension()}
+            onChange={setExtension}
+            items={extensionItems}
+          />
+        </FlexField>
       </DialogPanelContent>
       <DialogPanelFooter>
         <Box display={'flex'} justifyContent={'flexEnd'}>
@@ -184,7 +198,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
 
           <Button
             size={'md'}
-            type="button"
+            type="submit"
             variant={'solid'}
             onClick={() => {
               props.onClose?.();

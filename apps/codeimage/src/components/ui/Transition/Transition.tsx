@@ -1,18 +1,25 @@
-import {Transition, TransitionChild} from 'solid-headless';
-import {Component} from 'solid-js';
+import {
+  Transition,
+  TransitionChild,
+  TransitionChildProps,
+  TransitionProps,
+} from 'solid-headless';
+import {JSXElement} from 'solid-js';
 import * as styles from './Transition.css';
+import {ValidConstructor} from 'solid-headless/dist/types/utils/dynamic-prop';
 
-type FadeInOutTransitionProps =
-  | {childTransition: true}
-  | {childTransition?: boolean; show: boolean};
+type FadeInOutTransitionProps<T extends ValidConstructor> =
+  | ({childTransition: true} & TransitionChildProps<T>)
+  | ({childTransition?: boolean; show: boolean} & TransitionProps<T>);
 
-export const FadeInOutTransition: Component<
-  FadeInOutTransitionProps
-> = props => {
+export function FadeInOutTransition<T extends ValidConstructor>(
+  props: FadeInOutTransitionProps<T>,
+): JSXElement {
   return (
     <>
       {props.childTransition ? (
         <TransitionChild
+          {...props}
           enter={styles.fadeInOut.enter}
           enterTo={styles.fadeInOut.enterTo}
           enterFrom={styles.fadeInOut.enterFrom}
@@ -24,6 +31,7 @@ export const FadeInOutTransition: Component<
         </TransitionChild>
       ) : (
         <Transition
+          {...props}
           show={props.show}
           enter={styles.fadeInOut.enter}
           enterTo={styles.fadeInOut.enterTo}
@@ -37,4 +45,39 @@ export const FadeInOutTransition: Component<
       )}
     </>
   );
-};
+}
+
+export function FadeInOutWithScaleTransition<T extends ValidConstructor>(
+  props: FadeInOutTransitionProps<T>,
+): JSXElement {
+  return (
+    <>
+      {props.childTransition ? (
+        <TransitionChild
+          {...props}
+          enter={styles.fadeInOutWithScale.enter}
+          enterTo={styles.fadeInOutWithScale.enterTo}
+          enterFrom={styles.fadeInOutWithScale.enterFrom}
+          leave={styles.fadeInOutWithScale.leave}
+          leaveTo={styles.fadeInOutWithScale.leaveTo}
+          leaveFrom={styles.fadeInOutWithScale.leaveFrom}
+        >
+          {props.children}
+        </TransitionChild>
+      ) : (
+        <Transition
+          {...props}
+          show={props.show}
+          enter={styles.fadeInOutWithScale.enter}
+          enterTo={styles.fadeInOutWithScale.enterTo}
+          enterFrom={styles.fadeInOutWithScale.enterFrom}
+          leave={styles.fadeInOutWithScale.leave}
+          leaveTo={styles.fadeInOutWithScale.leaveTo}
+          leaveFrom={styles.fadeInOutWithScale.leaveFrom}
+        >
+          {props.children}
+        </Transition>
+      )}
+    </>
+  );
+}
