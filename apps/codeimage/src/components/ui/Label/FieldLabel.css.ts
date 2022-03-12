@@ -6,8 +6,11 @@ export const label = style({
   marginBottom: themeVars.margin['3'],
 });
 
-export const labelHint = style({
-  color: themeVars.dynamicColors.inputLabelTextHintColor,
+export const labelHintWrapper = style({
   display: 'inline-flex',
   alignItems: 'center',
+});
+
+export const labelHint = style({
+  color: themeVars.dynamicColors.inputLabelTextHintColor,
 });
