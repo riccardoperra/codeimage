@@ -14,6 +14,7 @@ export function Button<T extends ValidConstructor = 'button'>(
     <ShButton
       {...props}
       class={`${styles.buttonVariant({
+        pill: props.pill,
         theme: props.theme,
         variant: props.variant,
         size: props.size || 'sm',

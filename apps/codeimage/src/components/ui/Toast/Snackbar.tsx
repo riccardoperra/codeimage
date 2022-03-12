@@ -6,6 +6,7 @@ import {Dynamic} from 'solid-js/web';
 import {Text} from '../Text/Text';
 import {Box} from '../Box/Box';
 import {Button} from '../Button/Button';
+import {SvgIcon} from '../SvgIcon/SvgIcon';
 
 export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
   const [isOpen, setIsOpen] = createSignal(true);
@@ -45,13 +46,14 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
             <Button
               type={'button'}
               size={'xs'}
+              pill
               variant={'solid'}
               theme={'secondary'}
               onClick={dismiss}
             >
-              <svg
+              <SvgIcon
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-3 w-3"
+                size={'xs'}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -62,7 +64,7 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
                   stroke-linejoin="round"
                   d="M6 18L18 6M6 6l12 12"
                 />
-              </svg>
+              </SvgIcon>
             </Button>
           </Box>
         </Show>

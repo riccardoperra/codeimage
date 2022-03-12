@@ -27,6 +27,7 @@ export const locale = {
       fileName: 'Nome file',
       fileNamePlaceholder: 'Inserisci nome file...',
       extensionType: 'Estensione file',
+      genericSaveError: 'Si è verificato un errore durante il salvataggio',
     },
   },
   en: {
@@ -56,6 +57,7 @@ export const locale = {
       fileName: 'File name',
       fileNamePlaceholder: 'Enter file name...',
       extensionType: 'File extension',
+      genericSaveError: 'An error occurred while saving',
     },
   },
 };

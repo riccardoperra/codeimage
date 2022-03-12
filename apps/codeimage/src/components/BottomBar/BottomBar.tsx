@@ -97,9 +97,9 @@ export const BottomBar: Component<BottomBarProps> = props => {
                     theme={'secondary'}
                     onClick={() => setMode(null)}
                   >
-                    <svg
+                    <SvgIcon
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-3 w-3"
+                      size={'md'}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -110,7 +110,7 @@ export const BottomBar: Component<BottomBarProps> = props => {
                         stroke-linejoin="round"
                         d="M6 18L18 6M6 6l12 12"
                       />
-                    </svg>
+                    </SvgIcon>
                   </Button>
                 </Box>
               </Box>
