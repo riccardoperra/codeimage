@@ -138,7 +138,10 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
     ExportExtension.png,
   );
 
-  const [pxRatio, setPxRatio] = createSignal<number>(window.devicePixelRatio);
+  const [devicePixelRatio, setDevicePixelRatio] = createSignal<number>(
+    window.devicePixelRatio,
+  );
+
   const [fileName, setFileName] = createSignal<string>('');
 
   const modeItems: SegmentedFieldItem<ExportMode>[] = [
@@ -244,13 +247,13 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
         <FlexField size={'md'}>
           <FieldLabel size={'sm'}>
             {t('export.pixelRatio')}
-            <Box as={'span'} marginLeft={'2'}>
-              <FieldLabelHint>({pxRatio}x)</FieldLabelHint>
+            <Box as={'span'} marginLeft={'3'}>
+              <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
             </Box>
           </FieldLabel>
           <RangeField
-            value={pxRatio()}
-            onChange={setPxRatio}
+            value={devicePixelRatio()}
+            onChange={setDevicePixelRatio}
             max={3}
             min={1}
             step={1}
@@ -276,12 +279,13 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
             type="submit"
             variant={'solid'}
             onClick={() => {
+              // TODO: @bad
               props.onClose?.();
               props.onConfirm({
                 type: mode(),
                 extension: extension(),
                 fileName: fileName(),
-                pixelRatio: pxRatio(),
+                pixelRatio: devicePixelRatio(),
                 message: '',
               });
             }}
