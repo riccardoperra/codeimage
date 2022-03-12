@@ -19,6 +19,7 @@ interface ExportOptions {
   extension: ExportExtension;
   mode: ExportMode;
   fileName?: string;
+  pixelRatio: number;
 }
 
 interface ExportImagePayload {
@@ -52,7 +53,7 @@ function resolveMimeType(extension: ExportExtension): string {
 
 async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
   const {
-    options: {extension, fileName, mode},
+    options: {extension, fileName, mode, pixelRatio},
     ref,
   } = data;
 
@@ -73,6 +74,7 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
       zoom: '1',
       transform: 'scale(1)',
     },
+    pixelRatio: pixelRatio,
   };
 
   switch (mode) {
