@@ -23,7 +23,7 @@ body:
     id: reproduction-url
     attributes:
       label: Please provide a screenshot or a video to a minimal reproduction of the bug
-      value: "Enter an url"
+      placeholder: "Enter an url or attach a file after submitting your issue"
 
   - type: textarea
     id: description
