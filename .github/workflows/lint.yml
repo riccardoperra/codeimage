@@ -1,6 +1,20 @@
 name: Lint
+
 on:
+  pull_request:
+    branches:
+      - main
+      - develop
   push:
+    branches:
+      - main
+      - '!release/**'
+
+env:
+  IS_FORK: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+  IS_DEPENDABOT: ${{ github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]' }}
+  IS_MAIN_BRANCH: ${{ github.ref == 'refs/heads/main' }}
+
 jobs:
   build:
     runs-on: ubuntu-20.04
