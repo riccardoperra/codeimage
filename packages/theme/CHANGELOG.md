@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 0.4.1
+
+### Patch Changes
+
+- 96e2b77: feat: add arc dark theme
+
 ## 0.4.0
 
 ### Minor Changes

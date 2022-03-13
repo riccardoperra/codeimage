@@ -1,5 +1,18 @@
 # @codeimage/app
 
+## 0.8.0
+
+### Minor Changes
+
+- d8bf2ff: add custom export modal button
+
+### Patch Changes
+
+- 96e2b77: feat: add arc dark theme
+- Updated dependencies [96e2b77]
+  - @codeimage/config@2.0.1
+  - @codeimage/theme@0.4.1
+
 ## 0.7.0
 
 ### Minor Changes
