@@ -37,7 +37,6 @@ import {Transition} from 'solid-headless';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
 
 interface ExportButtonProps {
-  hostRef: HTMLElement;
   canvasRef: HTMLElement | undefined;
 }
 

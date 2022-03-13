@@ -210,12 +210,6 @@ globalStyle('html, body', {
   },
 });
 
-globalStyle('*', {
-  userSelect: 'none',
-  msUserSelect: 'none',
-  fontSmooth: 'antialiased',
-});
-
 globalStyle('body', {
   backgroundColor: backgroundColorVar,
 });
