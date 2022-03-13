@@ -24,11 +24,8 @@ export const RangeField: Component<RangeFieldProps> = props => {
   }
 
   const progress = () => {
-    const value = Number(props.value);
-    const min = props.min ? Number(props.min) : 0;
     const max = props.max ? Number(props.max) : 100;
-    const percent = (value - min) / (max - min);
-    return `${percent * 100}%`;
+    return `${(Number(props.value) / max) * 100}%`;
   };
 
   return (
