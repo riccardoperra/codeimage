@@ -19,14 +19,12 @@ import {EditorSidebar} from './components/LeftSidebar/EditorSidebar';
 import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
 import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {PortalHost} from './components/ui/PortalHost/PortalHost';
-import {useEditorState} from './state/editor';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const frame = useFrameState();
   const terminal = useTerminalState();
-  const editor = useEditorState();
   const ui = useUIState();
   const modality = useModality();
   const [, {locale}] = useI18n();
@@ -67,7 +65,6 @@ const App = () => {
               accentVisible={terminal.accentVisible}
               darkMode={terminal.darkMode}
               textColor={terminal.textColor}
-              tabFontFamily={editor.getFont()}
               onTabChange={terminal.setTabName}
               showHeader={terminal.showHeader}
             >

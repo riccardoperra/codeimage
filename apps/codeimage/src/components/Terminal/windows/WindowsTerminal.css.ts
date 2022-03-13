@@ -11,6 +11,8 @@ export const headerIconRow = style({
     [`${header} &`]: {
       display: 'flex',
       marginLeft: 'auto',
+      marginTop: 'auto',
+      marginBottom: 'auto',
       paddingInlineStart: themeVars.spacing['4'],
       paddingInlineEnd: themeVars.spacing['4'],
       columnGap: themeVars.spacing['5'],
