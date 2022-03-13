@@ -1,5 +1,13 @@
 # @codeimage/theme
 
+## 2.0.1
+
+### Patch Changes
+
+- 96e2b77: feat: add arc dark theme
+- Updated dependencies [96e2b77]
+  - @codeimage/theme@0.4.1
+
 ## 2.0.0
 
 ### Minor Changes

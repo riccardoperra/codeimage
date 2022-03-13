@@ -1,6 +1,6 @@
 {
   "name": "@codeimage/theme",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "module": "./dist/theme.es.js",
   "source": "./src/public-api.ts",
   "types": "./dist/src/public-api.d.ts",
