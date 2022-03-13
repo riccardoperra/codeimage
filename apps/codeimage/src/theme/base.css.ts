@@ -23,20 +23,3 @@ export const scrollbar = style({
     },
   },
 });
-
-export const dynamicFullScreenHeight = style({
-  height: '100vh',
-  '@media': {
-    'screen and (max-width: 768px)': {
-      height: `calc(1vh * 100)`,
-      '@supports': {
-        // ios 15+
-        '(height: 100svh)': {
-          height: '100svh',
-        },
-      },
-
-      overflow: 'hidden',
-    },
-  },
-});

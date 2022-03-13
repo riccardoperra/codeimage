@@ -18,7 +18,6 @@ import {Box} from '../Box/Box';
 
 export type DialogProps = Omit<ShDialogProps, 'children'> & {
   title?: string;
-  fullScreen?: DialogPanelProps['fullScreen'];
   size: DialogPanelProps['size'];
 };
 
@@ -26,7 +25,6 @@ export function Dialog(props: PropsWithChildren<DialogProps>): JSXElement {
   return (
     <ShDialog
       class={clsx(styles.host, props.class)}
-      data-full-screen={props.fullScreen}
       {...omitProps(props, ['class'])}
     >
       <div class={styles.wrapper}>
@@ -46,7 +44,7 @@ export function Dialog(props: PropsWithChildren<DialogProps>): JSXElement {
           display={'flex'}
           justifyContent={'center'}
         >
-          <DialogPanel fullScreen={props.fullScreen} size={props.size}>
+          <DialogPanel size={props.size}>
             <Show when={props.title}>
               <DialogTitle as={'h3'}>{props.title}</DialogTitle>
             </Show>

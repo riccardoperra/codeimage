@@ -2,7 +2,6 @@ import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '../../../theme/global.css';
 import {fontSize, fontWeight} from '../Text/Text.css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
-import {dynamicFullScreenHeight} from '../../../theme/base.css';
 
 export const [dialogTheme, dialogThemeVars] = createTheme({
   contentPadding: themeVars.spacing['6'],
@@ -24,12 +23,6 @@ export const wrapper = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  selectors: {
-    '[data-full-screen=true] &': {
-      padding: 0,
-      margin: 0,
-    },
-  },
 });
 
 export const overlay = style({
@@ -48,11 +41,6 @@ export const title = style([
     padding: `0 ${dialogThemeVars.contentPadding}`,
     display: 'flex',
     alignItems: 'center',
-    selectors: {
-      '[data-full-screen=true] &': {
-        backgroundColor: themeVars.dynamicColors.panelBackground,
-      },
-    },
   },
 ]);
 
@@ -62,32 +50,24 @@ export const panelContent = style({
 
 export const panelFooter = style({
   padding: `${dialogThemeVars.contentPadding}`,
-  selectors: {
-    '[data-full-screen=true] &': {
-      marginTop: 'auto',
-      marginBottom: 'env(safe-area-inset-bottom, 20px)',
-    },
-  },
 });
 
 // <DialogPanel class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-gray-50 dark:bg-gray-900 shadow-xl rounded-2xl dark:border dark:border-gray-50">
 export const panel = recipe({
   base: {
-    display: 'inline-flex',
-    flexDirection: 'column',
+    display: 'inline-block',
     width: themeVars.width.full,
     padding: 0,
     margin: `${themeVars.margin['8']} 0`,
     overflow: 'hidden',
     textAlign: 'left',
     color: themeVars.dynamicColors.dialogPanelTextColor,
-    alignItems: 'stretch',
+    alignItems: 'center',
     boxShadow: themeVars.dynamicColors.dialogPanelShadow,
     borderRadius: themeVars.borderRadius.lg,
     backgroundColor: themeVars.dynamicColors.dialogPanelBackgroundColor,
     transform: 'translate(0, 0)',
   },
-
   variants: {
     size: {
       sm: {
@@ -118,9 +98,6 @@ export const panel = recipe({
           },
         },
       },
-    },
-    fullScreen: {
-      true: [dynamicFullScreenHeight, {margin: 0, borderRadius: 0}],
     },
   },
 });
