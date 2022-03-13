@@ -12,14 +12,6 @@ export const svgIcon = recipe({
         height: '20px',
         width: '20px',
       },
-      sm: {
-        width: '16px',
-        height: '16px',
-      },
-      xs: {
-        width: '14px',
-        height: '14px',
-      },
     },
   },
 });

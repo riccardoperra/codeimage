@@ -40,11 +40,6 @@ export const button = style([
 export const buttonVariant = recipe({
   base: [button],
   variants: {
-    pill: {
-      true: {
-        borderRadius: themeVars.borderRadius.full,
-      },
-    },
     // Button type
     variant: {
       solid: {
