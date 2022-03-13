@@ -41,6 +41,7 @@ interface SelectOptions<T> {
 type SelectProps<T> = ListboxProps<T, typeof Fragment> & {
   items: SelectOptions<T>[];
   itemContent?: Component<SelectOptions<T> & {selected: boolean}>;
+  native?: boolean;
 };
 
 export function Select<T>(props: SelectProps<T>): JSXElement {
@@ -63,7 +64,36 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
       onSelectChange={value => props?.onSelectChange?.(value as T[] & T)}
     >
       <Box class={styles.wrapper} ref={floating.setReference}>
-        <ListboxButton class={styles.listBox}>
+        <Show when={props.native}>
+          <select
+            class={styles.native}
+            onChange={event => {
+              if ('value' in event.target) {
+                const value = event.target['value'] as unknown as T;
+                props?.onSelectChange?.(value as T[] & T);
+              }
+            }}
+          >
+            <For each={props.items}>
+              {item => (
+                <option
+                  value={item.value as unknown as string}
+                  class={styles.listBoxOption({active: false})}
+                >
+                  {item.label}
+                </option>
+              )}
+            </For>
+          </select>
+        </Show>
+        <ListboxButton
+          class={styles.listBox}
+          onClick={(e: MouseEvent) => {
+            if (props.native) {
+              e.preventDefault();
+            }
+          }}
+        >
           <span class={styles.selected}>{label()}</span>
           <span class={styles.selectorIconWrapper}>
             <SelectorIcon class={styles.selectorIcon} aria-hidden="true" />
