@@ -210,10 +210,6 @@ globalStyle('html, body', {
   },
 });
 
-globalStyle('*', {
-  userSelect: 'none',
-});
-
 globalStyle('body', {
   backgroundColor: backgroundColorVar,
 });
