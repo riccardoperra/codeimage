@@ -13,8 +13,6 @@ on:
   push:
     branches:
       - main
-      - develop
-      - '!release/**'
 
 env:
   IS_MAIN_BRANCH: ${{ github.ref == 'refs/heads/main' }}
@@ -49,15 +47,12 @@ jobs:
       - name: Type checking
         run: pnpm typecheck --filter @codeimage/*
 
-      - name: Create Release Pull Request
-        uses: changesets/action@v1
-        with:
-          commit: "ci(changesets): version packages"
+      - name: Update changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update changelog
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           pnpm changelog:write
           pnpm changelog:commit
 
