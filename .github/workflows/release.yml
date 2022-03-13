@@ -1,4 +1,4 @@
-name: Build
+name: Release
 
 on:
   pull_request:
@@ -41,27 +41,18 @@ jobs:
       - name: Lint
         run: pnpm lint --filter @codeimage/*
 
-      - name: Type checking
-        run: pnpm typecheck --filter @codeimage/*
-
       - name: Build
         run: |
           git checkout main
           pnpm build:prod
 
+      - name: Type checking
+        run: pnpm typecheck --filter @codeimage/*
+
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
           commit: "ci(changesets): version packages"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Release to @dev tag
-        if: steps.changesets.outputs.published != 'true'
-        run: |
-          git checkout main
-          pnpm changeset version --snapshot dev
-          pnpm changeset publish --tag dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -72,5 +63,5 @@ jobs:
           pnpm changelog:commit
 
 concurrency:
-  group: build-${{ github.head_ref }}
+  group: release-${{ github.head_ref }}
   cancel-in-progress: true
