@@ -102,7 +102,6 @@ export const ExportButton: Component<ExportButtonProps> = props => {
                   payload.type === 'export' ? payload.fileName : undefined,
                 mode: payload.type,
                 pixelRatio: payload.pixelRatio,
-                quality: payload.quality,
               },
               ref: props.canvasRef,
             });
@@ -123,14 +122,12 @@ export interface ExportDialogProps extends DialogProps {
           fileName: string;
           extension: ExportExtension;
           pixelRatio: number;
-          quality: number;
         }
       | {
           type: ExportMode.share;
           message: string;
           extension: ExportExtension;
           pixelRatio: number;
-          quality: number;
         },
   ) => void;
 }
@@ -142,8 +139,6 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
   );
-
-  const [quality, setQuality] = createSignal<number>(100);
 
   const [devicePixelRatio, setDevicePixelRatio] = createSignal<number>(
     window.devicePixelRatio,
@@ -243,24 +238,6 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
             </Show>
           </FlexField>
 
-          <Show when={extension() === 'jpeg'}>
-            <FlexField size={'md'}>
-              <FieldLabel size={'sm'}>
-                {t('export.quality')}
-                <Box as={'span'} marginLeft={'3'}>
-                  <FieldLabelHint>{quality()}%</FieldLabelHint>
-                </Box>
-              </FieldLabel>
-              <RangeField
-                value={quality()}
-                onChange={setQuality}
-                max={100}
-                min={70}
-                step={2}
-              />
-            </FlexField>
-          </Show>
-
           <FlexField size={'md'}>
             <FieldLabel size={'sm'}>
               {t('export.pixelRatio')}
@@ -305,7 +282,6 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                 fileName: fileName(),
                 pixelRatio: devicePixelRatio(),
                 message: '',
-                quality: quality() / 100,
               });
             }}
           >

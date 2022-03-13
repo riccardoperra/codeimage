@@ -3,7 +3,6 @@ import {toBlob, toJpeg, toPng, toSvg} from 'html-to-image';
 import {EXPORT_EXCLUDE} from '../core/directives/exportExclude';
 import download from 'downloadjs';
 import {Resource} from 'solid-js';
-import {Options as HtmlToImageExportOptions} from 'html-to-image/es/options';
 
 export const enum ExportMode {
   export = 'export',
@@ -21,7 +20,6 @@ interface ExportOptions {
   mode: ExportMode;
   fileName?: string;
   pixelRatio: number;
-  quality: number;
 }
 
 interface ExportImagePayload {
@@ -55,7 +53,7 @@ function resolveMimeType(extension: ExportExtension): string {
 
 async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
   const {
-    options: {extension, fileName, mode, pixelRatio, quality},
+    options: {extension, fileName, mode, pixelRatio},
     ref,
   } = data;
 
@@ -67,7 +65,7 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
   const mimeType = resolveMimeType(extension);
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
 
-  const toImageOptions: HtmlToImageExportOptions = {
+  const toImageOptions = {
     filter: (node: Node) => !node.hasOwnProperty(EXPORT_EXCLUDE),
     style: {
       // TODO: https://github.com/riccardoperra/codeimage/issues/42
@@ -77,7 +75,6 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
       transform: 'scale(1)',
     },
     pixelRatio: pixelRatio,
-    quality: quality,
   };
 
   switch (mode) {
