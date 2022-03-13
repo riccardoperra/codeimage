@@ -1,14 +1,10 @@
 import {Text, TextProps} from '../Text/Text';
-import {Component, mergeProps, Show} from 'solid-js';
+import {Component, mergeProps} from 'solid-js';
 import * as styles from './FieldLabel.css';
 import {omitProps} from 'solid-use';
 import clsx from 'clsx';
-import {Box} from '../Box/Box';
-import {Dynamic} from 'solid-js/web';
 
-type FieldLabelProps = TextProps<'label'> & {
-  icon?: Component;
-};
+type FieldLabelProps = TextProps<'label'>;
 
 export const FieldLabel: Component<FieldLabelProps> = props => {
   return (
@@ -32,20 +28,12 @@ export const FieldLabelHint: Component<FieldLabelProps> = props => {
   );
 
   return (
-    <Box class={styles.labelHintWrapper}>
-      <Show when={computedProps.icon}>
-        <Box as={'span'} marginRight={'1'} display={'inlineFlex'}>
-          <Dynamic component={computedProps.icon} />
-        </Box>
-      </Show>
-
-      <Text
-        {...omitProps(computedProps, ['class', 'children'])}
-        as={'label'}
-        class={clsx(styles.labelHint, props.class)}
-      >
-        {props.children}
-      </Text>
-    </Box>
+    <Text
+      {...omitProps(computedProps, ['class', 'children'])}
+      as={'label'}
+      class={clsx(styles.labelHint, props.class)}
+    >
+      {props.children}
+    </Text>
   );
 };

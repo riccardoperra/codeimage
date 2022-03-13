@@ -23,7 +23,7 @@ export const locale = {
     export: {
       title: 'Esporta immagine',
       shareMode: 'Condividi il tuo codice',
-      shareHint: 'Questa modalità usa la nuova',
+      shareHint: 'La modalitá condividi utilizza la nuova',
       exportMode: 'Esporta come immagine',
       fileName: 'Nome file',
       fileNamePlaceholder: 'Inserisci nome file...',
@@ -55,7 +55,7 @@ export const locale = {
     export: {
       title: 'Export image',
       shareMode: 'Share your code',
-      shareHint: 'This modality uses the new',
+      shareHint: 'The share modality uses the newest',
       exportMode: 'Export as image',
       fileName: 'File name',
       fileNamePlaceholder: 'Enter file name...',
