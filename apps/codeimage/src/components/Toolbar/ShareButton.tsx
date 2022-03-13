@@ -4,7 +4,6 @@ import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Box} from '../ui/Box/Box';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
-import {useStaticConfiguration} from '../../core/configuration';
 
 interface ShareButtonProps {
   showLabel?: boolean;
@@ -12,14 +11,12 @@ interface ShareButtonProps {
 
 export const ShareButton: Component<ShareButtonProps> = props => {
   const computedProps = mergeProps({showLabel: false, props});
-  const {support} = useStaticConfiguration();
-
   const [t] = useI18n<AppLocaleEntries>();
 
   async function share() {
     const data = {
       // TODO: add tab title
-      title: 'Code shared with codeimage.dev',
+      title: 'Codeimage.dev shared code',
       url: window.location.search,
       // TODO: should add the exported file? Useful for social media
       files: [],
@@ -34,7 +31,7 @@ export const ShareButton: Component<ShareButtonProps> = props => {
     <Button
       variant={'solid'}
       theme={'secondary'}
-      disabled={!support.shareApi}
+      disabled={!navigator.share}
       onClick={() => share()}
     >
       <SvgIcon viewBox="0 0 20 20" fill="currentColor">

@@ -2,15 +2,13 @@ import {
   Dialog as ShDialog,
   DialogOverlay,
   DialogProps as ShDialogProps,
+  TransitionChild,
 } from 'solid-headless';
 import {JSXElement, Show} from 'solid-js';
 import {omitProps} from 'solid-use';
 import clsx from 'clsx';
 import * as styles from './Dialog.css';
-import {
-  FadeInOutTransition,
-  FadeInOutWithScaleTransition,
-} from '../Transition/Transition';
+import {FadeInOutTransition} from '../Transition/Transition';
 import {PropsWithChildren} from 'solid-js/types/render/component';
 import {DialogTitle} from './DialogTitle';
 import {DialogPanel, DialogPanelProps} from './DialogPanel';
@@ -37,8 +35,13 @@ export function Dialog(props: PropsWithChildren<DialogProps>): JSXElement {
           &#8203;
         </span>
 
-        <FadeInOutWithScaleTransition
-          childTransition={true}
+        <TransitionChild
+          enter="ease-out duration-300"
+          enterFrom="opacity-0 scale-95"
+          enterTo="opacity-100 scale-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100 scale-100"
+          leaveTo="opacity-0 scale-95"
           as={Box}
           width={'100%'}
           display={'flex'}
@@ -50,7 +53,7 @@ export function Dialog(props: PropsWithChildren<DialogProps>): JSXElement {
             </Show>
             {props.children}
           </DialogPanel>
-        </FadeInOutWithScaleTransition>
+        </TransitionChild>
       </div>
     </ShDialog>
   );
