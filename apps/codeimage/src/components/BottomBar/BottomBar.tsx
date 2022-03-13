@@ -66,7 +66,6 @@ export const BottomBar: Component<BottomBarProps> = props => {
 
       <Button
         class={styles.button}
-        disabled={!navigator.share}
         variant={'link'}
         onClick={() => setMode('editor')}
       >
@@ -96,11 +95,12 @@ export const BottomBar: Component<BottomBarProps> = props => {
                     size={'xs'}
                     variant={'solid'}
                     theme={'secondary'}
+                    pill
                     onClick={() => setMode(null)}
                   >
-                    <svg
+                    <SvgIcon
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-3 w-3"
+                      size={'sm'}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -111,7 +111,7 @@ export const BottomBar: Component<BottomBarProps> = props => {
                         stroke-linejoin="round"
                         d="M6 18L18 6M6 6l12 12"
                       />
-                    </svg>
+                    </SvgIcon>
                   </Button>
                 </Box>
               </Box>

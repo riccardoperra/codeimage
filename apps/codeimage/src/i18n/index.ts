@@ -1,5 +1,9 @@
 export const locale = {
   it: {
+    common: {
+      close: 'Chiudi',
+      confirm: 'Conferma',
+    },
     locales: {
       it: 'Italiano',
       en: 'Inglese',
@@ -16,8 +20,26 @@ export const locale = {
       close: 'Chiudi',
       reload: 'Ricarica',
     },
+    export: {
+      title: 'Esporta immagine',
+      shareMode: 'Condividi il tuo codice',
+      shareHint: 'Questa modalità usa la nuova',
+      noOpacitySupportedWithThisExtension:
+        'La transparenza personalizzata non è compatibile con questa estensione',
+      exportMode: 'Esporta come immagine',
+      fileName: 'Nome file',
+      fileNamePlaceholder: 'Inserisci nome file...',
+      extensionType: 'Estensione file',
+      pixelRatio: 'Scala',
+      genericSaveError: 'Si è verificato un errore durante il salvataggio',
+      quality: 'Qualità',
+    },
   },
   en: {
+    common: {
+      close: 'Close',
+      confirm: 'Confirm',
+    },
     locales: {
       it: 'Italian',
       en: 'English',
@@ -32,6 +54,20 @@ export const locale = {
       update: 'New content available, click on reload button to update',
       close: 'Close',
       reload: 'Reload',
+    },
+    export: {
+      title: 'Export image',
+      shareMode: 'Share your code',
+      shareHint: 'This modality uses the new',
+      exportMode: 'Export as image',
+      fileName: 'File name',
+      fileNamePlaceholder: 'Enter file name...',
+      extensionType: 'File extension',
+      pixelRatio: 'Scale',
+      genericSaveError: 'An error occurred while saving',
+      noOpacitySupportedWithThisExtension:
+        'The custom transparency is not compatible with this extension',
+      quality: 'Quality',
     },
   },
 };

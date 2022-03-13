@@ -1,10 +1,12 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '../../../theme/global.css';
+import {inputHeight} from '../Field/FlexField.css';
 
 export const [textFieldTheme, textFieldVars] = createTheme({
-  borderColor: themeVars.dynamicColors.divider,
+  borderColor: themeVars.dynamicColors.inputBorderColor,
   background: themeVars.dynamicColors.inputBackgroundColor,
   color: themeVars.dynamicColors.inputTextColor,
+  inputHeight: inputHeight,
 });
 
 export const baseField = style([
@@ -14,8 +16,14 @@ export const baseField = style([
     border: `1px solid ${textFieldVars.borderColor}`,
     backgroundColor: textFieldVars.background,
     borderRadius: themeVars.borderRadius.md,
+    width: '100%',
+    height: textFieldVars.inputHeight,
     color: 'currentcolor',
     ':focus': {
+      borderColor: themeVars.backgroundColor.blue['500'],
+    },
+    ':focus-visible': {
+      outline: 'none',
       borderColor: themeVars.backgroundColor.blue['500'],
     },
   },
@@ -24,10 +32,10 @@ export const baseField = style([
 export const textField = style([
   baseField,
   {
-    paddingRight: 0,
+    paddingRight: themeVars.spacing['3'],
     paddingTop: 0,
-    paddingBottom: 0,
-    paddingLeft: themeVars.spacing['2'],
+    paddingBottom: themeVars.spacing.px,
+    paddingLeft: themeVars.spacing['3'],
   },
 ]);
 

@@ -40,6 +40,17 @@ export const button = style([
 export const buttonVariant = recipe({
   base: [button],
   variants: {
+    block: {
+      true: {
+        width: '100%',
+        flex: 1,
+      },
+    },
+    pill: {
+      true: {
+        borderRadius: themeVars.borderRadius.full,
+      },
+    },
     // Button type
     variant: {
       solid: {
@@ -104,6 +115,11 @@ export const buttonVariant = recipe({
     },
 
     size: {
+      md: {
+        height: '42px',
+        minWidth: '72px',
+        fontSize: themeVars.fontSize.base,
+      },
       sm: {
         height: '36px',
         fontSize: themeVars.fontSize.sm,

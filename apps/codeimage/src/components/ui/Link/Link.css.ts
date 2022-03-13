@@ -1,17 +1,26 @@
-import {style} from '@vanilla-extract/css';
+import {recipe} from '@vanilla-extract/recipes';
 
-export const link = style({
-  textDecoration: 'none',
+export const link = recipe({
+  base: {
+    textDecoration: 'none',
 
-  ':link': {
-    color: 'unset',
+    ':link': {
+      color: 'unset',
+    },
+
+    ':visited': {
+      color: 'unset',
+    },
+
+    ':active': {
+      color: 'unset',
+    },
   },
-
-  ':visited': {
-    color: 'unset',
-  },
-
-  ':active': {
-    color: 'unset',
+  variants: {
+    underline: {
+      true: {
+        textDecoration: 'underline',
+      },
+    },
   },
 });
