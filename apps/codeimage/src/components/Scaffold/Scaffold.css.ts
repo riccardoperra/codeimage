@@ -4,6 +4,7 @@ import {dynamicFullScreenHeight} from '../../theme/base.css';
 export const [scaffoldTheme, scaffoldVars] = createTheme({
   toolbarHeight: '60px',
   panelWidth: '280px',
+  virtualHeightFallback: '1vh',
 });
 
 export const scaffold = style([
