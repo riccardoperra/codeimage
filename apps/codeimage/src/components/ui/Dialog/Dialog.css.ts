@@ -13,7 +13,7 @@ export const host = style([
   {
     position: 'fixed',
     inset: 0,
-    zIndex: themeVars.zIndex['30'],
+    zIndex: themeVars.zIndex['50'],
     overflowY: 'auto',
   },
 ]);

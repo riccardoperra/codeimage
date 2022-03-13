@@ -18,6 +18,7 @@ import {FrameHandler} from './components/Frame/FrameHandler';
 import {EditorSidebar} from './components/LeftSidebar/EditorSidebar';
 import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
 import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
+import {PortalHost} from './components/ui/PortalHost/PortalHost';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -41,17 +42,7 @@ const App = () => {
         </Sidebar>
       </Show>
 
-      <div
-        ref={setPortalHostRef}
-        id={'portal-host'}
-        style={{
-          position: 'relative',
-          width: '0px',
-          height: '0px',
-          // eslint-disable-next-line solid/style-prop
-          'z-index': 10,
-        }}
-      />
+      <PortalHost ref={setPortalHostRef} />
 
       <Canvas>
         <Toolbar canvasRef={frameRef()} />
