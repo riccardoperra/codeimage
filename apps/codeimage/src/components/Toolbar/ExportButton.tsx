@@ -30,9 +30,7 @@ import {notificationStore} from '../ui/Toast/SnackbarHost';
 import {useStaticConfiguration} from '../../core/configuration';
 import {RangeField} from '../ui/RangeField/RangeField';
 import {Link} from '../ui/Link/Link';
-import {HintIcon} from '../Icons/Hint';
-import {ExclamationIcon} from '../Icons/Exclamation';
-import {HStack, VStack} from '../ui/Box/Stack';
+import {FadeInOutTransition} from '../ui/Transition/Transition';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -167,20 +165,35 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
     // {TODO: add FieldGroup or Stack component}
     <Dialog {...props} isOpen size={'md'} title={t('export.title')}>
       <DialogPanelContent>
-        <VStack spacing={'6'}>
-          <Show when={support.shareApi}>
+        <Show when={support.shareApi}>
+          <Box marginBottom={'6'}>
             <FlexField size={'lg'}>
               <SegmentedField
                 value={mode()}
                 onChange={setMode}
                 items={modeItems}
               />
-              <Show when={mode() === 'share'}>
+              <FadeInOutTransition show={mode() === 'share'}>
                 <Box marginTop={'1'}>
                   <FieldLabelHint
                     size={'sm'}
                     weight={'normal'}
-                    icon={() => <HintIcon size={'sm'} />}
+                    icon={() => (
+                      <SvgIcon
+                        xmlns="http://www.w3.org/2000/svg"
+                        size={'xs'}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </SvgIcon>
+                    )}
                   >
                     {t('export.shareHint')}
                     &nbsp;
@@ -197,11 +210,13 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                     </Link>
                   </FieldLabelHint>
                 </Box>
-              </Show>
+              </FadeInOutTransition>
             </FlexField>
-          </Show>
+          </Box>
+        </Show>
 
-          <Show when={mode() === 'export'}>
+        <Show when={mode() === 'export'}>
+          <Box marginBottom={'6'}>
             <FlexField size={'md'}>
               <FieldLabel size={'sm'} for={'fileName'}>
                 {t('export.fileName')}
@@ -215,8 +230,10 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                 type={'text'}
               />
             </FlexField>
-          </Show>
+          </Box>
+        </Show>
 
+        <Box marginBottom={'6'}>
           <FlexField size={'md'}>
             <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
             <SegmentedField
@@ -224,52 +241,40 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               onChange={setExtension}
               items={extensionItems}
             />
-            <Show when={extension() === 'jpeg'}>
-              <Box marginTop={'1'}>
-                <FieldLabelHint
-                  size={'sm'}
-                  weight={'normal'}
-                  icon={() => <ExclamationIcon size={'sm'} />}
-                >
-                  {t('export.noOpacitySupportedWithThisExtension')}
-                  &nbsp;
-                </FieldLabelHint>
-              </Box>
-            </Show>
           </FlexField>
+        </Box>
 
-          <FlexField size={'md'}>
-            <FieldLabel size={'sm'}>
-              {t('export.pixelRatio')}
-              <Box as={'span'} marginLeft={'3'}>
-                <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
-              </Box>
-            </FieldLabel>
-            <RangeField
-              value={devicePixelRatio()}
-              onChange={setDevicePixelRatio}
-              max={3}
-              min={1}
-              step={1}
-            />
-          </FlexField>
-        </VStack>
+        <FlexField size={'md'}>
+          <FieldLabel size={'sm'}>
+            {t('export.pixelRatio')}
+            <Box as={'span'} marginLeft={'3'}>
+              <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
+            </Box>
+          </FieldLabel>
+          <RangeField
+            value={devicePixelRatio()}
+            onChange={setDevicePixelRatio}
+            max={3}
+            min={1}
+            step={1}
+          />
+        </FlexField>
       </DialogPanelContent>
       <DialogPanelFooter>
-        <HStack spacing={'2'} justifyContent={'flexEnd'}>
-          <Button
-            block
-            size={'md'}
-            type="button"
-            variant={'solid'}
-            theme={'secondary'}
-            onClick={() => props.onClose?.()}
-          >
-            {t('common.close')}
-          </Button>
+        <Box display={'flex'} justifyContent={'flexEnd'}>
+          <Box marginRight={'2'}>
+            <Button
+              size={'md'}
+              type="button"
+              variant={'solid'}
+              theme={'secondary'}
+              onClick={props.onClose}
+            >
+              {t('common.close')}
+            </Button>
+          </Box>
 
           <Button
-            block
             size={'md'}
             type="submit"
             variant={'solid'}
@@ -287,7 +292,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
           >
             {t('common.confirm')}
           </Button>
-        </HStack>
+        </Box>
       </DialogPanelFooter>
     </Dialog>
   );
