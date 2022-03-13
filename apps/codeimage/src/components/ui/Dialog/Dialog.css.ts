@@ -58,6 +58,12 @@ export const title = style([
 
 export const panelContent = style({
   padding: `${dialogThemeVars.contentPadding}`,
+  selectors: {
+    '[data-full-screen=true] &': {
+      overflow: 'auto',
+      flex: 1,
+    },
+  },
 });
 
 export const panelFooter = style({
