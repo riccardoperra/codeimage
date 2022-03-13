@@ -5,7 +5,7 @@ import {Text, TextProps} from '../Text/Text';
 import {omitProps} from 'solid-use';
 
 interface LinkProps extends TextProps<'a'> {
-  underline?: boolean;
+  underline: boolean;
 }
 
 export function Link(props: LinkProps): JSX.Element {
