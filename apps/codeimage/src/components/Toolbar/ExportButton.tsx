@@ -1,14 +1,13 @@
-import {
-  Component,
-  createEffect,
-  createMemo,
-  createSignal,
-  Show,
-} from 'solid-js';
+import {Component, createMemo, createSignal} from 'solid-js';
 import {Box} from '../ui/Box/Box';
 import {Button} from '../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
+import {toBlob, toPng} from 'html-to-image';
+import {EXPORT_EXCLUDE} from '../../core/directives/exportExclude';
+import download from 'downloadjs';
+import {useAsyncAction} from '../../core/hooks/async-action';
+import {useModality} from '../../core/hooks/isMobile';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 import {Transition} from 'solid-headless';
 import {Dialog, DialogProps} from '../ui/Dialog/Dialog';
@@ -20,43 +19,75 @@ import {FlexField} from '../ui/Field/FlexField';
 import {TextField} from '../ui/TextField/TextField';
 import {FieldLabel} from '../ui/Label/FieldLabel';
 import {DialogPanelContent, DialogPanelFooter} from '../ui/Dialog/DialogPanel';
-import {
-  ExportExtension,
-  ExportMode,
-  useExportImage,
-} from '../../hooks/use-export-image';
-import {notificationStore} from '../ui/Toast/SnackbarHost';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
 }
 
+const exportImage = async (canvasRef: HTMLElement | undefined) => {
+  if (!canvasRef) {
+    return;
+  }
+
+  const mobile = useModality() === 'mobile';
+
+  if (mobile && !!navigator.share) {
+    const blob = await toBlob(canvasRef, {
+      filter: node => !node.hasOwnProperty(EXPORT_EXCLUDE),
+      style: {
+        // TODO: https://github.com/riccardoperra/codeimage/issues/42
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        zoom: '1',
+        transform: 'scale(1)',
+      },
+    });
+    if (blob) {
+      const file = new File([blob], 'file.png', {type: 'image/png'});
+
+      const data = {
+        title: 'Codeimage exported image',
+        files: [file],
+      };
+
+      if (navigator.canShare(data)) {
+        navigator.share(data).then(alert).catch(alert);
+      }
+      return blob;
+    }
+  } else {
+    const result = await toPng(canvasRef, {
+      filter: node => !node.hasOwnProperty(EXPORT_EXCLUDE),
+    });
+    download(result);
+    return result;
+  }
+};
+
 export const ExportButton: Component<ExportButtonProps> = props => {
   const [isOpen, setIsOpen] = createSignal(false);
-  const [t] = useI18n<AppLocaleEntries>();
-
-  const [data, notify] = useExportImage();
-
-  const label = createMemo(() =>
-    data.loading ? t('toolbar.exportLoading') : t('toolbar.export'),
-  );
 
   function closeModal() {
     setIsOpen(false);
+    notify(props.canvasRef);
   }
 
   function openModal() {
     setIsOpen(true);
   }
 
-  createEffect(() => {
-    if (data.error) {
-      notificationStore.create({
-        closeable: true,
-        message: 'Si é verificato un errore durante il salvataggio',
-      });
-    }
-  });
+  const [t] = useI18n<AppLocaleEntries>();
+  const [data, {notify}] = useAsyncAction(
+    async (ref: HTMLElement | undefined) => {
+      // @bad Find another await to prevent flickering
+      await new Promise(r => setTimeout(r, 150));
+      return exportImage(ref);
+    },
+  );
+
+  const label = createMemo(() =>
+    data.loading ? t('toolbar.exportLoading') : t('toolbar.export'),
+  );
 
   return (
     <>
@@ -64,7 +95,10 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         variant={'solid'}
         theme={'primary'}
         disabled={data.loading}
-        onClick={() => openModal()}
+        onClick={() => {
+          openModal();
+          // notify(props.canvasRef)
+        }}
       >
         <SvgIcon fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -83,20 +117,8 @@ export const ExportButton: Component<ExportButtonProps> = props => {
       <Transition appear show={isOpen()}>
         <ExportDialog
           size={'md'}
+          onConfirm={console.log}
           onClose={closeModal}
-          onConfirm={payload => {
-            notify({
-              options: {
-                extension: payload.extension,
-                fileName:
-                  payload.type === 'export' ? payload.fileName : undefined,
-                mode: payload.type,
-              },
-              ref: props.canvasRef,
-            });
-
-            closeModal();
-          }}
         />
       </Transition>
     </>
@@ -106,30 +128,29 @@ export const ExportButton: Component<ExportButtonProps> = props => {
 export interface ExportDialogProps extends DialogProps {
   onConfirm: (
     payload:
-      | {type: ExportMode.export; fileName: string; extension: ExportExtension}
-      | {type: ExportMode.share; message: string; extension: ExportExtension},
+      | {type: 'export'; fileName: string}
+      | {type: 'mode'; message: string},
   ) => void;
 }
 
 export function ExportDialog(props: DialogProps & ExportDialogProps) {
+  type Mode = 'export' | 'share';
+  type Extension = 'svg' | 'png' | 'jpeg';
   const [t] = useI18n<AppLocaleEntries>();
 
-  const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
-  const [extension, setExtension] = createSignal<ExportExtension>(
-    ExportExtension.png,
-  );
-
+  const [mode, setMode] = createSignal<Mode>('share');
+  const [extension, setExtension] = createSignal<Extension>('png');
   const [fileName, setFileName] = createSignal<string>('');
 
-  const modeItems: SegmentedFieldItem<ExportMode>[] = [
-    {label: t('export.shareMode'), value: ExportMode.share},
-    {label: t('export.exportMode'), value: ExportMode.export},
+  const modeItems: SegmentedFieldItem<Mode>[] = [
+    {label: t('export.exportMode'), value: 'export'},
+    {label: t('export.shareMode'), value: 'share'},
   ];
 
-  const extensionItems: SegmentedFieldItem<ExportExtension>[] = [
-    {label: 'PNG', value: ExportExtension.png},
-    {label: 'SVG', value: ExportExtension.svg},
-    {label: 'JPEG', value: ExportExtension.jpeg},
+  const extensionItems: SegmentedFieldItem<Extension>[] = [
+    {label: 'PNG', value: 'png'},
+    {label: 'SVG', value: 'svg'},
+    {label: 'JPEG', value: 'jpeg'},
   ];
 
   return (
@@ -139,23 +160,21 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
           <SegmentedField value={mode()} onChange={setMode} items={modeItems} />
         </FlexField>
 
-        <Show when={mode() === 'export'}>
-          <Box marginTop={'6'}>
-            <FlexField size={'md'}>
-              <FieldLabel size={'sm'} for={'fileName'}>
-                {t('export.fileName')}
-              </FieldLabel>
-              <TextField
-                placeholder={t('export.fileNamePlaceholder')}
-                id={'fileName'}
-                value={fileName()}
-                onChange={setFileName}
-                size={'sm'}
-                type={'text'}
-              />
-            </FlexField>
-          </Box>
-        </Show>
+        <Box marginTop={'6'}>
+          <FlexField size={'md'}>
+            <FieldLabel size={'sm'} for={'fileName'}>
+              {t('export.fileName')}
+            </FieldLabel>
+            <TextField
+              placeholder={t('export.fileNamePlaceholder')}
+              id={'fileName'}
+              value={fileName()}
+              onChange={setFileName}
+              size={'sm'}
+              type={'text'}
+            />
+          </FlexField>
+        </Box>
 
         <Box marginTop={'6'}>
           <FlexField size={'md'}>
@@ -189,10 +208,9 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
             onClick={() => {
               props.onClose?.();
               props.onConfirm({
-                type: mode(),
-                extension: extension(),
                 fileName: fileName(),
                 message: '',
+                mode: mode(),
               });
             }}
           >
