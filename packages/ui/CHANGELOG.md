@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.4.3
+
+### Patch Changes
+
+- ff4d634: fix: fix broken image export using safari
+
 ## 0.4.2
 
 ### Patch Changes

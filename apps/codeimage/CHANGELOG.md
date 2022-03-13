@@ -1,5 +1,18 @@
 # @codeimage/app
 
+## 0.8.3
+
+### Patch Changes
+
+- ff4d634: fix: fix broken image export using safari
+- 5b2727f: feat: add native select input on mobile modality
+  fix: fix select overflow on bottom bar
+- Updated dependencies [ff4d634]
+  - @codeimage/config@2.0.4
+  - @codeimage/locale@0.4.3
+  - @codeimage/theme@0.4.4
+  - @codeimage/ui@0.4.3
+
 ## 0.8.2
 
 ### Patch Changes

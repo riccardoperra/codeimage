@@ -1,5 +1,13 @@
 # @codeimage/theme
 
+## 2.0.4
+
+### Patch Changes
+
+- ff4d634: fix: fix broken image export using safari
+- Updated dependencies [ff4d634]
+  - @codeimage/theme@0.4.4
+
 ## 2.0.3
 
 ### Patch Changes
