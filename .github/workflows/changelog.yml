@@ -35,7 +35,7 @@ jobs:
       - name: Commit changelog
         run: |
           git add .
-          git diff --staged --quiet || git commit -m "docs(changelog): $GITHUB_SHA"
+          git diff --staged --quiet || git commit -m "docs(changelog): $GITHUB_SHA" --no-verify
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
