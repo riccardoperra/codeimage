@@ -99,8 +99,8 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
       };
 
       if (navigator.canShare(data)) {
-        await navigator.share(data).catch(e => {
-          if (e.constructor.name === 'AbortError') {
+        await navigator.share(data).catch((e: Error) => {
+          if (e.name === 'AbortError') {
             return null;
           }
           throw e;
