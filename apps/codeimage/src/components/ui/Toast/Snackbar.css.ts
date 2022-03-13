@@ -17,7 +17,7 @@ export const hostWrapper = style({
   bottom: 0,
   transform: 'translateX(-50%)',
   padding: themeVars.spacing['4'],
-  zIndex: themeVars.zIndex['40'],
+  zIndex: themeVars.zIndex['50'],
 
   '@media': {
     'screen and (max-width: 768px)': {

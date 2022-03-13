@@ -11,6 +11,7 @@ import {Button} from '../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
+import {Transition} from 'solid-headless';
 import {Dialog, DialogProps} from '../ui/Dialog/Dialog';
 import {
   SegmentedField,
@@ -33,11 +34,8 @@ import {HintIcon} from '../Icons/Hint';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {HStack, VStack} from '../ui/Box/Stack';
 import {useModality} from '../../core/hooks/isMobile';
-import {Transition} from 'solid-headless';
-import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
 
 interface ExportButtonProps {
-  hostRef: HTMLElement;
   canvasRef: HTMLElement | undefined;
 }
 
@@ -94,10 +92,9 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         </Box>
       </Button>
 
-      <PortalHostInjector>
+      <Transition appear show={isOpen()}>
         <ExportDialog
           size={'md'}
-          isOpen={isOpen()}
           fullScreen={modality === 'mobile'}
           onClose={closeModal}
           onConfirm={payload => {
@@ -116,7 +113,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
             closeModal();
           }}
         />
-      </PortalHostInjector>
+      </Transition>
     </>
   );
 };
@@ -176,151 +173,149 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
 
   return (
     // {TODO: add FieldGroup or Stack component}
-    <Transition appear show={props.isOpen ?? false}>
-      <Dialog {...props} isOpen size={'md'} title={t('export.title')}>
-        <DialogPanelContent>
-          <VStack spacing={'6'}>
-            <Show when={support.shareApi}>
-              <FlexField size={'lg'}>
-                <SegmentedField
-                  value={mode()}
-                  onChange={setMode}
-                  items={modeItems}
-                />
-                <Show when={mode() === 'share'}>
-                  <Box marginTop={'1'}>
-                    <FieldLabelHint
-                      size={'sm'}
-                      weight={'normal'}
-                      icon={() => <HintIcon size={'sm'} />}
-                    >
-                      {t('export.shareHint')}
-                      &nbsp;
-                      <Link
-                        size={'sm'}
-                        underline
-                        weight={'medium'}
-                        target={'_blank'}
-                        href={
-                          'https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share'
-                        }
-                      >
-                        Web Share API
-                      </Link>
-                    </FieldLabelHint>
-                  </Box>
-                </Show>
-              </FlexField>
-            </Show>
-
-            <Show when={mode() === 'export'}>
-              <FlexField size={'md'}>
-                <FieldLabel size={'sm'} for={'fileName'}>
-                  {t('export.fileName')}
-                </FieldLabel>
-                <TextField
-                  placeholder={t('export.fileNamePlaceholder')}
-                  id={'fileName'}
-                  value={fileName()}
-                  onChange={setFileName}
-                  size={'sm'}
-                  type={'text'}
-                />
-              </FlexField>
-            </Show>
-
-            <FlexField size={'md'}>
-              <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
+    <Dialog {...props} isOpen size={'md'} title={t('export.title')}>
+      <DialogPanelContent>
+        <VStack spacing={'6'}>
+          <Show when={support.shareApi}>
+            <FlexField size={'lg'}>
               <SegmentedField
-                value={extension()}
-                onChange={setExtension}
-                items={extensionItems}
+                value={mode()}
+                onChange={setMode}
+                items={modeItems}
               />
-              <Show when={extension() === 'jpeg'}>
+              <Show when={mode() === 'share'}>
                 <Box marginTop={'1'}>
                   <FieldLabelHint
                     size={'sm'}
                     weight={'normal'}
-                    icon={() => <ExclamationIcon size={'sm'} />}
+                    icon={() => <HintIcon size={'sm'} />}
                   >
-                    {t('export.noOpacitySupportedWithThisExtension')}
+                    {t('export.shareHint')}
                     &nbsp;
+                    <Link
+                      size={'sm'}
+                      underline
+                      weight={'medium'}
+                      target={'_blank'}
+                      href={
+                        'https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share'
+                      }
+                    >
+                      Web Share API
+                    </Link>
                   </FieldLabelHint>
                 </Box>
               </Show>
             </FlexField>
+          </Show>
 
+          <Show when={mode() === 'export'}>
+            <FlexField size={'md'}>
+              <FieldLabel size={'sm'} for={'fileName'}>
+                {t('export.fileName')}
+              </FieldLabel>
+              <TextField
+                placeholder={t('export.fileNamePlaceholder')}
+                id={'fileName'}
+                value={fileName()}
+                onChange={setFileName}
+                size={'sm'}
+                type={'text'}
+              />
+            </FlexField>
+          </Show>
+
+          <FlexField size={'md'}>
+            <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
+            <SegmentedField
+              value={extension()}
+              onChange={setExtension}
+              items={extensionItems}
+            />
             <Show when={extension() === 'jpeg'}>
-              <FlexField size={'md'}>
-                <FieldLabel size={'sm'}>
-                  {t('export.quality')}
-                  <Box as={'span'} marginLeft={'3'}>
-                    <FieldLabelHint>{quality()}%</FieldLabelHint>
-                  </Box>
-                </FieldLabel>
-                <RangeField
-                  value={quality()}
-                  onChange={setQuality}
-                  max={100}
-                  min={70}
-                  step={2}
-                />
-              </FlexField>
+              <Box marginTop={'1'}>
+                <FieldLabelHint
+                  size={'sm'}
+                  weight={'normal'}
+                  icon={() => <ExclamationIcon size={'sm'} />}
+                >
+                  {t('export.noOpacitySupportedWithThisExtension')}
+                  &nbsp;
+                </FieldLabelHint>
+              </Box>
             </Show>
+          </FlexField>
 
+          <Show when={extension() === 'jpeg'}>
             <FlexField size={'md'}>
               <FieldLabel size={'sm'}>
-                {t('export.pixelRatio')}
+                {t('export.quality')}
                 <Box as={'span'} marginLeft={'3'}>
-                  <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
+                  <FieldLabelHint>{quality()}%</FieldLabelHint>
                 </Box>
               </FieldLabel>
               <RangeField
-                value={devicePixelRatio()}
-                onChange={setDevicePixelRatio}
-                max={3}
-                min={1}
-                step={1}
+                value={quality()}
+                onChange={setQuality}
+                max={100}
+                min={70}
+                step={2}
               />
             </FlexField>
-          </VStack>
-        </DialogPanelContent>
-        <DialogPanelFooter>
-          <HStack spacing={'2'} justifyContent={'flexEnd'}>
-            <Button
-              block
-              size={'md'}
-              type="button"
-              variant={'solid'}
-              theme={'secondary'}
-              onClick={() => props.onClose?.()}
-            >
-              {t('common.close')}
-            </Button>
+          </Show>
 
-            <Button
-              block
-              size={'md'}
-              type="submit"
-              variant={'solid'}
-              onClick={() => {
-                // TODO: @bad
-                props.onClose?.();
-                props.onConfirm({
-                  type: mode(),
-                  extension: extension(),
-                  fileName: fileName(),
-                  pixelRatio: devicePixelRatio(),
-                  message: '',
-                  quality: quality() / 100,
-                });
-              }}
-            >
-              {t('common.confirm')}
-            </Button>
-          </HStack>
-        </DialogPanelFooter>
-      </Dialog>
-    </Transition>
+          <FlexField size={'md'}>
+            <FieldLabel size={'sm'}>
+              {t('export.pixelRatio')}
+              <Box as={'span'} marginLeft={'3'}>
+                <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
+              </Box>
+            </FieldLabel>
+            <RangeField
+              value={devicePixelRatio()}
+              onChange={setDevicePixelRatio}
+              max={3}
+              min={1}
+              step={1}
+            />
+          </FlexField>
+        </VStack>
+      </DialogPanelContent>
+      <DialogPanelFooter>
+        <HStack spacing={'2'} justifyContent={'flexEnd'}>
+          <Button
+            block
+            size={'md'}
+            type="button"
+            variant={'solid'}
+            theme={'secondary'}
+            onClick={() => props.onClose?.()}
+          >
+            {t('common.close')}
+          </Button>
+
+          <Button
+            block
+            size={'md'}
+            type="submit"
+            variant={'solid'}
+            onClick={() => {
+              // TODO: @bad
+              props.onClose?.();
+              props.onConfirm({
+                type: mode(),
+                extension: extension(),
+                fileName: fileName(),
+                pixelRatio: devicePixelRatio(),
+                message: '',
+                quality: quality() / 100,
+              });
+            }}
+          >
+            {t('common.confirm')}
+          </Button>
+        </HStack>
+      </DialogPanelFooter>
+    </Dialog>
   );
 }
