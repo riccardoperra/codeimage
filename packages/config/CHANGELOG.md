@@ -1,5 +1,13 @@
 # @codeimage/theme
 
+## 2.0.3
+
+### Patch Changes
+
+- 4d087e3: Workflow update
+- Updated dependencies [4d087e3]
+  - @codeimage/theme@0.4.3
+
 ## 2.0.2
 
 ### Patch Changes
