@@ -1,37 +1,36 @@
-# Codegram
+![CodeImage logo](./codeimage-dark.png#gh-dark-mode-only)
+![CodeImage logo](./codeimage-light.png#gh-light-mode-only)
+
+> Create elegant code screenshots of your source code.
+
+![Latest release Version](https://img.shields.io/badge/dynamic/json?color=success&label=Version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Friccardoperra%2Fcodeimage%2Fmain%2Fapps%2Fcodeimage%2Fpackage.json)
+![Build workflow badge](https://img.shields.io/github/workflow/status/riccardoperra/codeimage/Build)
+![Issues](https://img.shields.io/github/issues/riccardoperra/codeimage)
+![Lint workflow badge](https://img.shields.io/github/workflow/status/riccardoperra/codeimage/Lint?label=lint)
+![Built with SolidJS](https://img.shields.io/badge/Built%20with-SolidJS-blue)
+![Built with Vanilla Extract](https://img.shields.io/badge/Built%20with-Vanilla%20Extract-ff69b4)
+![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)
+![License](https://img.shields.io/github/license/riccardoperra/codeimage)
 
 
-## Usage
+Codeimage is the newest tool to help developers to create beautiful screenshots of their code,
+providing several features to speed up the process to post in social media. Built on the top of solid-js and CodeMirror6 for solid-hack.
 
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
+## Getting started
+To run the project locally, you must have in your local machine pnpm >= 6.23.2 and node >= 14.x;
 
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
+1. Install dependencies
 
 ```bash
-$ npm install # or pnpm install or yarn install
+$ pnpm install
 ```
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+2. Build core libraries
+```bash
+$ pnpm libs:build
+```
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm dev` or `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+3. Run @codeimage/app
+```bash
+$ pnpm app:dev
+```

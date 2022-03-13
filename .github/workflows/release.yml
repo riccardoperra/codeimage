@@ -7,10 +7,9 @@ on:
       - 'apps/**'
       - 'package.json'
       - 'tsconfig*'
+      - ".changeset/**"
     branches:
       - main
-      - develop
-      - '!release/**'
   push:
     branches:
       - main
@@ -42,12 +41,35 @@ jobs:
       - name: Lint
         run: pnpm lint --filter @codeimage/*
 
-      - name: Build
-        run: |
-          pnpm build:prod
-
       - name: Type checking
         run: pnpm typecheck --filter @codeimage/*
+
+      - name: Build
+        run: |
+          git checkout main
+          pnpm build:prod
+
+      - name: Create Release Pull Request
+        uses: changesets/action@v1
+        with:
+          commit: "ci(changesets): version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release to @dev tag
+        if: steps.changesets.outputs.published != 'true'
+        run: |
+          git checkout main
+          pnpm changeset version --snapshot dev
+          pnpm changeset publish --tag dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update changelog
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          pnpm changelog:write
+          pnpm changelog:commit
 
 concurrency:
   group: build-${{ github.head_ref }}
