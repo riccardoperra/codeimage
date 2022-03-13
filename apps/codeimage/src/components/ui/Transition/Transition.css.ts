@@ -24,8 +24,8 @@ export const fadeInOut = {
 
 export const fadeInOutWithScale = {
   enter: style({
-    transitionTimingFunction: 'ease-out',
-    transitionDuration: '200ms',
+    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    transitionDuration: '225ms',
   }),
   enterTo: style({
     opacity: 1,
@@ -36,8 +36,8 @@ export const fadeInOutWithScale = {
     transform: `scale(.95)`,
   }),
   leave: style({
-    transitionDuration: '200ms',
-    transitionTimingFunction: 'ease-in',
+    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    transitionDuration: '225ms',
   }),
   leaveFrom: style({
     opacity: 1,

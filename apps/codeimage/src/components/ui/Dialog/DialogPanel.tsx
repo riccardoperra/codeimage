@@ -16,7 +16,13 @@ export function DialogPanel(props: DialogPanelProps): JSXElement {
   return (
     <ShDialogPanel
       {...omitProps(props, ['children', 'class'])}
-      class={clsx(styles.panel({size: props.size}), props.class)}
+      class={clsx(
+        styles.panel({
+          size: props.size,
+          fullScreen: props.fullScreen,
+        }),
+        props.class,
+      )}
     >
       {props.children}
     </ShDialogPanel>

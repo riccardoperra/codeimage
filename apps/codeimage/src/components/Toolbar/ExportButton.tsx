@@ -33,6 +33,7 @@ import {Link} from '../ui/Link/Link';
 import {HintIcon} from '../Icons/Hint';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {HStack, VStack} from '../ui/Box/Stack';
+import {useModality} from '../../core/hooks/isMobile';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -41,6 +42,7 @@ interface ExportButtonProps {
 export const ExportButton: Component<ExportButtonProps> = props => {
   const [isOpen, setIsOpen] = createSignal(false);
   const [t] = useI18n<AppLocaleEntries>();
+  const modality = useModality();
 
   const [data, notify] = useExportImage();
 
@@ -93,6 +95,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
       <Transition appear show={isOpen()}>
         <ExportDialog
           size={'md'}
+          fullScreen={modality === 'mobile'}
           onClose={closeModal}
           onConfirm={payload => {
             notify({
