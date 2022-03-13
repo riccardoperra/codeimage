@@ -24,6 +24,8 @@ export const locale = {
       title: 'Esporta immagine',
       shareMode: 'Condividi il tuo codice',
       shareHint: 'Questa modalità usa la nuova',
+      noOpacitySupportedWithThisExtension:
+        'La transparenza personalizzata non è compatibile con questa estensione',
       exportMode: 'Esporta come immagine',
       fileName: 'Nome file',
       fileNamePlaceholder: 'Inserisci nome file...',
@@ -62,6 +64,8 @@ export const locale = {
       extensionType: 'File extension',
       pixelRatio: 'Scale',
       genericSaveError: 'An error occurred while saving',
+      noOpacitySupportedWithThisExtension:
+        'The custom transparency is not compatible with this extension',
     },
   },
 };

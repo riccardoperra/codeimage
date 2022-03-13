@@ -9,6 +9,7 @@ export const label = style({
 export const labelHintWrapper = style({
   display: 'inline-flex',
   alignItems: 'center',
+  color: themeVars.dynamicColors.inputLabelTextHintColor,
 });
 
 export const labelHint = style({
