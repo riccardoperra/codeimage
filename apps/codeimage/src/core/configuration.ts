@@ -30,8 +30,8 @@ export const [staticConfiguration, useStaticConfiguration] =
     languages: SUPPORTED_LANGUAGES,
     fonts: [
       {
-        id: 'fira-code',
-        name: 'Fira Code',
+        id: 'jetbrains-mono',
+        name: 'Jetbrains Mono',
         types: [
           {name: 'Regular', weight: 400},
           {name: 'Medium', weight: 500},
@@ -39,8 +39,8 @@ export const [staticConfiguration, useStaticConfiguration] =
         ],
       },
       {
-        id: 'jetbrains-mono',
-        name: 'Jetbrains Mono',
+        id: 'fira-code',
+        name: 'Fira Code',
         types: [
           {name: 'Regular', weight: 400},
           {name: 'Medium', weight: 500},

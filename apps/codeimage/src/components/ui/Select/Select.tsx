@@ -69,15 +69,16 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
             class={styles.native}
             onChange={event => {
               if ('value' in event.target) {
-                const value = event.target['value'] as unknown as T;
-                props?.onSelectChange?.(value as T[] & T);
+                const index = event.target['value'] as unknown as number;
+                const item = props.items[index];
+                props?.onSelectChange?.(item.value as T[] & T);
               }
             }}
           >
             <For each={props.items}>
-              {item => (
+              {(item, index) => (
                 <option
-                  value={item.value as unknown as string}
+                  value={index()}
                   class={styles.listBoxOption({active: false})}
                 >
                   {item.label}
