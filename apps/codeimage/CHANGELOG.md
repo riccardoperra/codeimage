@@ -1,5 +1,16 @@
 # @codeimage/app
 
+## 0.8.2
+
+### Patch Changes
+
+- 4d087e3: Workflow update
+- Updated dependencies [4d087e3]
+  - @codeimage/config@2.0.3
+  - @codeimage/locale@0.4.2
+  - @codeimage/theme@0.4.3
+  - @codeimage/ui@0.4.2
+
 ## 0.8.1
 
 ### Patch Changes

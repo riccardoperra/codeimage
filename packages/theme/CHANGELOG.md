@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 0.4.3
+
+### Patch Changes
+
+- 4d087e3: Workflow update
+
 ## 0.4.2
 
 ### Patch Changes
