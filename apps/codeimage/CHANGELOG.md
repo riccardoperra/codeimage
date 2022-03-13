@@ -1,5 +1,16 @@
 # @codeimage/app
 
+## 0.8.1
+
+### Patch Changes
+
+- c8ffdf7: New changeset workflow
+- Updated dependencies [c8ffdf7]
+  - @codeimage/config@2.0.2
+  - @codeimage/locale@0.4.1
+  - @codeimage/theme@0.4.2
+  - @codeimage/ui@0.4.1
+
 ## 0.8.0
 
 ### Minor Changes

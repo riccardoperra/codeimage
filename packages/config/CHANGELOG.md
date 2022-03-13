@@ -1,5 +1,13 @@
 # @codeimage/theme
 
+## 2.0.2
+
+### Patch Changes
+
+- c8ffdf7: New changeset workflow
+- Updated dependencies [c8ffdf7]
+  - @codeimage/theme@0.4.2
+
 ## 2.0.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.4.1
+
+### Patch Changes
+
+- c8ffdf7: New changeset workflow
+
 ## 0.4.0
 
 ### Minor Changes
