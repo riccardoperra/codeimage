@@ -98,3 +98,30 @@ export const selectorIcon = style({
   width: themeVars.width['4'],
   height: themeVars.width['4'],
 });
+
+export const native = style([
+  textFieldStyles.baseField,
+  textStyles.fontSize.xs,
+  {
+    opacity: 0,
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    top: 0,
+    display: 'inline-flex',
+    appearance: 'none',
+    border: 0,
+    paddingLeft: themeVars.spacing['2'],
+    outline: 'none',
+
+    ':focus': {
+      border: 0,
+      outline: 'none',
+    },
+
+    ':focus-visible': {
+      border: 0,
+      outline: 'none',
+    },
+  },
+]);

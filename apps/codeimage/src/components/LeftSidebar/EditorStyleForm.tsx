@@ -7,10 +7,12 @@ import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
 import {useEditorState} from '../../state/editor';
 import {useStaticConfiguration} from '../../core/configuration';
+import {useModality} from '../../core/hooks/isMobile';
 
 export const EditorStyleForm = () => {
   const editor = useEditorState();
   const configuration = useStaticConfiguration();
+  const modality = useModality();
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
 
@@ -22,6 +24,7 @@ export const EditorStyleForm = () => {
         <TwoColumnPanelRow>
           <Select
             multiple={false}
+            native={modality === 'mobile'}
             items={configuration.languages.map(({label, id}) => ({
               label: label,
               value: id,
@@ -51,6 +54,7 @@ export const EditorStyleForm = () => {
       <PanelRow label={t('frame.font')}>
         <TwoColumnPanelRow>
           <Select
+            native={modality === 'mobile'}
             multiple={false}
             items={configuration.fonts.map(font => ({
               label: font.name,
@@ -77,6 +81,7 @@ export const EditorStyleForm = () => {
       <PanelRow label={t('frame.fontWeight')}>
         <TwoColumnPanelRow>
           <Select
+            native={modality === 'mobile'}
             multiple={false}
             items={
               editor.getFont()?.types.map(type => ({
