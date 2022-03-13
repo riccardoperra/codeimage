@@ -121,7 +121,6 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
 
       return result;
     }
-    // @ts-expect-error: The modality must have a value
     default: {
       throw new Error('Invalid modality');
     }
