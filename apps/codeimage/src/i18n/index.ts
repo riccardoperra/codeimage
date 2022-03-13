@@ -32,6 +32,7 @@ export const locale = {
       extensionType: 'Estensione file',
       pixelRatio: 'Scala',
       genericSaveError: 'Si è verificato un errore durante il salvataggio',
+      quality: 'Qualità',
     },
   },
   en: {
@@ -66,6 +67,7 @@ export const locale = {
       genericSaveError: 'An error occurred while saving',
       noOpacitySupportedWithThisExtension:
         'The custom transparency is not compatible with this extension',
+      quality: 'Quality',
     },
   },
 };
