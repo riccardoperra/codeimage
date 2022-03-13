@@ -6,7 +6,6 @@ export const [segmentedFieldTheme, segmentedFieldVars] = createTheme({
   activeSegmentedWidth: '0px',
   activeSegmentedOffset: '0%',
   activeSegmentedBackgroundColor: themeVars.dynamicColors.inputAccentColor,
-  segmentedTextColor: themeVars.dynamicColors.inputTextColor,
   activeSegmentedTextColor: themeVars.dynamicColors.inputTextColor,
 });
 
@@ -39,31 +38,6 @@ export const box = style([
   },
 ]);
 
-export const segment = style([
-  {
-    width: '1px',
-    height: '100%',
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexGrow: 1,
-    padding: `0 ${themeVars.spacing['1']}`,
-    color: segmentedFieldVars.segmentedTextColor,
-    opacity: 0.65,
-    selectors: {
-      '&:not(:disabled)': {
-        cursor: 'pointer',
-      },
-      '&[data-active=true]': {
-        fontWeight: themeVars.fontWeight.semibold,
-        opacity: 1,
-        color: segmentedFieldVars.activeSegmentedTextColor,
-      },
-    },
-  },
-]);
-
 export const segmentActive = style([
   {
     position: 'absolute',
@@ -79,6 +53,30 @@ export const segmentActive = style([
       top: 1,
       boxShadow: themeVars.boxShadow.default,
       borderRadius: themeVars.borderRadius.default,
+    },
+  },
+]);
+
+export const segment = style([
+  {
+    width: '1px',
+    height: '100%',
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 1,
+    padding: `0 ${themeVars.spacing['1']}`,
+    color: segmentedFieldVars.activeSegmentedTextColor,
+    opacity: 0.65,
+    selectors: {
+      '&:not(:disabled)': {
+        cursor: 'pointer',
+      },
+      '&[data-active=true]': {
+        fontWeight: themeVars.fontWeight.bold,
+        opacity: 1,
+      },
     },
   },
 ]);

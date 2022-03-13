@@ -104,11 +104,6 @@ export const buttonVariant = recipe({
     },
 
     size: {
-      md: {
-        height: '42px',
-        minWidth: '72px',
-        fontSize: themeVars.fontSize.base,
-      },
       sm: {
         height: '36px',
         fontSize: themeVars.fontSize.sm,

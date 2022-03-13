@@ -1,8 +1,4 @@
-import {
-  createMapValueFn,
-  createSprinkles,
-  defineProperties,
-} from '@vanilla-extract/sprinkles';
+import {createSprinkles, defineProperties} from '@vanilla-extract/sprinkles';
 import {themeVars} from './global.css';
 
 const responsiveProperties = defineProperties({
@@ -76,8 +72,6 @@ const responsiveProperties = defineProperties({
     typeSize: ['fontSize', 'lineHeight'],
   },
 });
-
-export const mapResponsiveValue = createMapValueFn(responsiveProperties);
 
 const colorProperties = defineProperties({
   conditions: {
