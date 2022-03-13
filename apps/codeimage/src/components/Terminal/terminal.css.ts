@@ -1,6 +1,7 @@
 import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
 import {themeVars} from '../../theme/global.css';
 import {backgroundColorVar} from '../../theme/variables.css';
+import {recipe} from '@vanilla-extract/recipes';
 
 export const [terminalTheme, terminalVars] = createTheme({
   headerHeight: '50px',
@@ -8,6 +9,7 @@ export const [terminalTheme, terminalVars] = createTheme({
   backgroundColor: themeVars.backgroundColor.white,
   textColor: themeVars.backgroundColor.gray['800'],
   boxShadow: themeVars.boxShadow.lg,
+  tabDelta: '10px',
 });
 
 export const wrapper = style([
@@ -75,48 +77,50 @@ export const headerIconRowCircle = style({
   },
 });
 
-export const tab = style([
-  {
-    backgroundColor: terminalVars.backgroundColor,
-    height: `calc(${terminalVars.headerHeight} - 10px)`,
-    alignSelf: 'flex-end',
-    display: 'flex',
-    alignItems: 'center',
+export const tab = recipe({
+  base: {
+    background: 'transparent',
+    display: 'block',
     padding: `0 ${themeVars.spacing['3']}`,
     fontSize: themeVars.fontSize.sm,
     borderRadius: `${themeVars.borderRadius.md} ${themeVars.borderRadius.md} 0 0`,
     position: 'relative',
+  },
+  variants: {
+    accent: {
+      true: {
+        /**
+         * ATTENTION: this is a workaround related to https://github.com/riccardoperra/codeimage/issues/41
+         *            Flex properties in safari are broken on export with HtmlToImage
+         */
+        height: `calc(${terminalVars.headerHeight} - ${terminalVars.tabDelta})`,
+        marginTop: 'auto',
+        paddingTop: terminalVars.tabDelta,
+        backgroundColor: terminalVars.backgroundColor,
 
-    // TODO: clean up code
-
-    selectors: {
-      [`${header}[data-accent-visible=true] &:before`]: {
-        content: '',
-        display: 'block',
-        position: 'absolute',
-        bottom: 0,
-        left: '-8px',
-        backgroundColor: 'transparent',
-        width: '8px',
-        height: '8px',
-        boxShadow: `1px 0px 0px 0px ${terminalVars.backgroundColor}, 3px 4px 0px 0px ${terminalVars.backgroundColor}`,
-        overflow: 'hidden',
-        borderBottomRightRadius: '8px',
-      },
-      [`${header}[data-accent-visible=true] &:after`]: {
-        content: '',
-        display: 'block',
-        position: 'absolute',
-        bottom: 0,
-        right: '-8px',
-        backgroundColor: 'transparent',
-        width: '8px',
-        height: '8px',
-        boxShadow: `1px 0px 0px 0px ${terminalVars.backgroundColor}, 3px 4px 0px 0px ${terminalVars.backgroundColor}`,
-        overflow: 'hidden',
-        borderBottomRightRadius: '12px',
-        transform: 'scaleX(-1)',
+        selectors: {
+          '&:before, &:after': {
+            content: '',
+            display: 'block',
+            position: 'absolute',
+            bottom: 0,
+            backgroundColor: 'transparent',
+            width: '8px',
+            height: '8px',
+            boxShadow: `1px 0px 0px 0px ${terminalVars.backgroundColor}, 3px 4px 0px 0px ${terminalVars.backgroundColor}`,
+            overflow: 'hidden',
+          },
+        },
+        ':before': {
+          left: '-8px',
+          borderBottomRightRadius: '8px',
+        },
+        ':after': {
+          right: '-8px',
+          borderBottomRightRadius: '12px',
+          transform: 'scaleX(-1)',
+        },
       },
     },
   },
-]);
+});

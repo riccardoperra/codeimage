@@ -17,7 +17,10 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
           data-accent-visible={props.accentVisible}
         >
           <Show when={props.showTab}>
-            <Box class={baseStyles.tab} marginLeft={'6'}>
+            <Box
+              class={baseStyles.tab({accent: props.accentVisible})}
+              marginLeft={'6'}
+            >
               <InlineTextField
                 size={'sm'}
                 readOnly={props.readonlyTab}

@@ -1,7 +1,7 @@
 import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
 import {themeVars} from '../../../theme/global.css';
 import {backgroundColorVar} from '../../../theme/variables.css';
-import {header} from '../terminal.css';
+import {terminalVars} from '../terminal.css';
 
 export const [theme, vars] = createTheme({
   controls: {
@@ -12,14 +12,12 @@ export const [theme, vars] = createTheme({
 });
 
 export const headerIconRow = style({
-  selectors: {
-    [`${header} &`]: {
-      display: 'flex',
-      paddingInlineStart: themeVars.spacing['4'],
-      paddingInlineEnd: themeVars.spacing['4'],
-      columnGap: themeVars.spacing['2'],
-    },
-  },
+  height: terminalVars.headerHeight,
+  alignItems: 'center',
+  display: 'flex',
+  paddingLeft: themeVars.spacing['4'],
+  paddingRight: themeVars.spacing['4'],
+  columnGap: themeVars.spacing['2'],
 });
 
 export const headerIconRowCircle = style({
@@ -27,6 +25,7 @@ export const headerIconRowCircle = style({
     [`${headerIconRow} &`]: {
       width: '15px',
       height: '15px',
+      margin: 'auto 0',
       borderRadius: themeVars.borderRadius.full,
       backgroundColor: fallbackVar(
         backgroundColorVar,
