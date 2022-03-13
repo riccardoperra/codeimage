@@ -38,7 +38,7 @@
     "build:prod": "pnpm build --filter='@codeimage/*'",
     "changelog:gen": "ts-node scripts/changelog-generate.ts",
     "changelog:write": "ts-node scripts/changelog-write.ts",
-    "changeset:commit": "git add CHANGELOG.md && git commit -am 'docs: add changelog' && git push"
+    "changelog:commit": "git add CHANGELOG.md && git commit -am 'docs: add changelog' --no-verify && git push"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.3",
