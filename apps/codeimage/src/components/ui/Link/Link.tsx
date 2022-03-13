@@ -2,24 +2,10 @@ import {JSX} from 'solid-js';
 import * as styles from './Link.css';
 import clsx from 'clsx';
 import {Text, TextProps} from '../Text/Text';
-import {omitProps} from 'solid-use';
 
-interface LinkProps extends TextProps<'a'> {
-  underline: boolean;
-}
-
-export function Link(props: LinkProps): JSX.Element {
+export function Link(props: TextProps<'a'>): JSX.Element {
   return (
-    <Text
-      as={'a'}
-      {...omitProps(props, ['underline'])}
-      class={clsx(
-        props.class,
-        styles.link({
-          underline: props.underline,
-        }),
-      )}
-    >
+    <Text as={'a'} {...props} class={clsx(props.class, styles.link)}>
       {props.children}
     </Text>
   );

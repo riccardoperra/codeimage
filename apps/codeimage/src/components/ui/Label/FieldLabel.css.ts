@@ -8,6 +8,4 @@ export const label = style({
 
 export const labelHint = style({
   color: themeVars.dynamicColors.inputLabelTextHintColor,
-  display: 'inline-flex',
-  alignItems: 'center',
 });

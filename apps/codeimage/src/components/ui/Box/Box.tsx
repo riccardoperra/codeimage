@@ -11,11 +11,10 @@ import {scrollbar} from '../../../theme/base.css';
 
 type BoxParameters = Parameters<typeof sprinkles>[0];
 
-export type BoxProps<T extends ValidConstructor = 'div'> =
-  Partial<BoxParameters> & {
-    as?: T;
-  } & WithRef<T> &
-    Omit<DynamicProps<T>, 'as' | 'disabled' | 'ref'>;
+type BoxProps<T extends ValidConstructor = 'div'> = Partial<BoxParameters> & {
+  as?: T;
+} & WithRef<T> &
+  Omit<DynamicProps<T>, 'as' | 'disabled' | 'ref'>;
 
 export function Box<T extends ValidConstructor = 'div'>(props: BoxProps<T>) {
   return (
