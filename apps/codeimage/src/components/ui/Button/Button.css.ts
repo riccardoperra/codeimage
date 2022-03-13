@@ -40,6 +40,12 @@ export const button = style([
 export const buttonVariant = recipe({
   base: [button],
   variants: {
+    block: {
+      true: {
+        width: '100%',
+        flex: 1,
+      },
+    },
     pill: {
       true: {
         borderRadius: themeVars.borderRadius.full,
