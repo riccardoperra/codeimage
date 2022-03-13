@@ -95,12 +95,11 @@ export const BottomBar: Component<BottomBarProps> = props => {
                     size={'xs'}
                     variant={'solid'}
                     theme={'secondary'}
-                    pill
                     onClick={() => setMode(null)}
                   >
                     <SvgIcon
                       xmlns="http://www.w3.org/2000/svg"
-                      size={'sm'}
+                      size={'md'}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
