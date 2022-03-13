@@ -7,7 +7,18 @@ on:
       - 'apps/**'
       - 'package.json'
       - 'tsconfig*'
+    branches:
+      - main
+      - develop
+      - '!release/**'
   push:
+    branches:
+      - main
+      - develop
+      - '!release/**'
+
+env:
+  IS_MAIN_BRANCH: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
   build:
