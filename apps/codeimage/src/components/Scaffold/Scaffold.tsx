@@ -6,6 +6,7 @@ import {lightThemeCss} from '../../theme/light-theme.css';
 import {darkThemeCss} from '../../theme/dark-theme.css';
 import {backgroundColorVar} from '../../theme/variables.css';
 import {assignInlineVars, setElementVars} from '@vanilla-extract/dynamic';
+import {dynamicFullHeight} from '../../theme/base.css';
 
 export const Scaffold: Component = props => {
   const ui = useUIState();
@@ -37,9 +38,7 @@ export const Scaffold: Component = props => {
     <div
       class={clsx(styles.scaffold, theme())}
       style={assignInlineVars({
-        [styles.scaffoldVars.virtualHeightFallback]: `${
-          window.innerHeight * 0.01
-        }px`,
+        [dynamicFullHeight]: `${window.innerHeight * 0.01}px`,
       })}
     >
       {props.children}
