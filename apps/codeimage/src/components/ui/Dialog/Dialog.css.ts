@@ -2,7 +2,7 @@ import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '../../../theme/global.css';
 import {fontSize, fontWeight} from '../Text/Text.css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
-import {dynamicFullScreenHeight} from '../../../theme/base.css';
+import {adaptiveFullScreenHeight} from '../../../theme/base.css';
 
 export const [dialogTheme, dialogThemeVars] = createTheme({
   contentPadding: themeVars.spacing['6'],
@@ -126,7 +126,7 @@ export const panel = recipe({
       },
     },
     fullScreen: {
-      true: [dynamicFullScreenHeight, {margin: 0, borderRadius: 0}],
+      true: [adaptiveFullScreenHeight, {margin: 0, borderRadius: 0}],
     },
   },
 });

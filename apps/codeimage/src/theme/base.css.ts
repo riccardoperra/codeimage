@@ -1,5 +1,5 @@
 import {themeVars} from './global.css';
-import {style} from '@vanilla-extract/css';
+import {createVar, style} from '@vanilla-extract/css';
 
 export const scrollbar = style({
   '::-webkit-scrollbar': {
@@ -24,11 +24,17 @@ export const scrollbar = style({
   },
 });
 
-export const dynamicFullScreenHeight = style({
+export const dynamicFullHeight = createVar();
+
+export const adaptiveFullScreenHeight = style({
   height: '100vh',
+  vars: {
+    [dynamicFullHeight]: '1vh',
+  },
   '@media': {
     'screen and (max-width: 768px)': {
-      height: `calc(1vh * 100)`,
+      height: `calc(${dynamicFullHeight} * 100)`,
+
       '@supports': {
         // ios 15+
         '(height: 100svh)': {

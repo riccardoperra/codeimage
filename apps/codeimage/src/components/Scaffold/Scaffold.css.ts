@@ -1,5 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {dynamicFullScreenHeight} from '../../theme/base.css';
+import {adaptiveFullScreenHeight} from '../../theme/base.css';
 
 export const [scaffoldTheme, scaffoldVars] = createTheme({
   toolbarHeight: '60px',
@@ -9,7 +9,7 @@ export const [scaffoldTheme, scaffoldVars] = createTheme({
 
 export const scaffold = style([
   scaffoldTheme,
-  dynamicFullScreenHeight,
+  adaptiveFullScreenHeight,
   {
     width: '100vw',
     position: 'relative',
