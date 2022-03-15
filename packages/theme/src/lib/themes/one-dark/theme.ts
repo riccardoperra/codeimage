@@ -1,7 +1,7 @@
-import {buildCustomTheme} from '../core';
+import {createTheme} from '../../core';
 import {oneDark} from '@codemirror/theme-one-dark';
 
-export const oneDarkTheme = buildCustomTheme({
+export const oneDarkTheme = createTheme({
   id: 'oneDark',
   editorTheme: oneDark,
   properties: {

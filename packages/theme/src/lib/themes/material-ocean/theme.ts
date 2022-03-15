@@ -1,7 +1,7 @@
-import {buildCustomTheme} from '../core';
+import {createTheme} from '../../core';
 import {materialOceanic, palette} from './vs';
 
-export const materialOceanTheme = buildCustomTheme({
+export const materialOceanTheme = createTheme({
   id: 'materialOcean',
   editorTheme: materialOceanic,
   properties: {

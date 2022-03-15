@@ -1,7 +1,7 @@
-import {buildCustomTheme} from '../core';
+import {createTheme} from '../../core';
 import {palette, synthwave84} from './synthwave84';
 
-export const synthwave84Theme = buildCustomTheme({
+export const synthwave84Theme = createTheme({
   id: 'synthwave84',
   editorTheme: synthwave84,
   properties: {

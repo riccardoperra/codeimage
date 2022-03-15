@@ -1,7 +1,7 @@
-import {buildCustomTheme} from '../core';
+import {createTheme} from '../../core';
 import {arcDark, palette} from './arcDark';
 
-export const arcDarkTheme = buildCustomTheme({
+export const arcDarkTheme = createTheme({
   id: 'arkDark',
   editorTheme: arcDark,
   properties: {
