@@ -9,5 +9,6 @@ export * from './lib/themes/arc-dark';
 export * from './lib/themes/vscode-dark';
 export * from './lib/themes/holi';
 export * from './lib/themes/duotone-sea';
+export * from './lib/themes/duotone-dark';
 export * from './lib/themes/coldark';
 export * from './lib/themes/night-owl';

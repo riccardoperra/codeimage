@@ -6,6 +6,7 @@ import {lineNumbers} from '@codemirror/gutter';
 import {createCustomFontExtension} from './custom-font-extension';
 import {CodeMirror} from 'solid-codemirror';
 import {EDITOR_BASE_SETUP} from '@codeimage/config';
+import clsx from 'clsx';
 
 export const CustomEditor = () => {
   const configuration = useStaticConfiguration();
@@ -56,7 +57,12 @@ export const CustomEditor = () => {
       when={themeConfiguration()}
       fallback={'Error loading editor configuration'}
     >
-      <div class={themeConfiguration()!.externalStylesheet?.parentClass}>
+      <code
+        class={clsx(
+          themeConfiguration()!.externalStylesheet?.parentClass,
+          `language-${selectedLanguage()?.id ?? 'default'}`,
+        )}
+      >
         <CodeMirror
           className={themeConfiguration()!.externalStylesheet?.className}
           value={editor.code}
@@ -73,7 +79,7 @@ export const CustomEditor = () => {
           basicSetup={false}
           editable={true}
         />
-      </div>
+      </code>
     </Show>
   );
 };

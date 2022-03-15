@@ -1,17 +1,18 @@
 import {
+  arcDarkTheme,
+  coldarkColdTheme,
+  coldarkDarkTheme,
   draculaTheme,
+  duotoneDarkTheme,
+  duotoneSeaTheme,
+  holiTheme,
   lightTheme,
   materialOceanTheme,
   materialVolcanoTheme,
+  nightOwlTheme,
   oneDarkTheme,
   synthwave84Theme,
-  arcDarkTheme,
   vsCodeDarkTheme,
-  holiTheme,
-  duotoneSeaTheme,
-  coldarkColdTheme,
-  coldarkDarkTheme,
-  nightOwlTheme,
 } from '@codeimage/theme';
 
 export const SUPPORTED_THEMES = [
@@ -25,6 +26,7 @@ export const SUPPORTED_THEMES = [
   vsCodeDarkTheme,
   holiTheme,
   duotoneSeaTheme,
+  duotoneDarkTheme,
   coldarkColdTheme,
   coldarkDarkTheme,
   nightOwlTheme,
