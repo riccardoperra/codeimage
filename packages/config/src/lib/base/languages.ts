@@ -5,8 +5,8 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     id: 'javascript',
     label: 'Javascript',
     plugin: () =>
-      import('@codemirror/lang-javascript').then(
-        ({javascriptLanguage}) => javascriptLanguage,
+      import('@codemirror/lang-javascript').then(({javascript}) =>
+        javascript({jsx: true}),
       ),
   },
   {
