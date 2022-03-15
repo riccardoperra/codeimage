@@ -58,7 +58,7 @@ export const CustomEditor = () => {
     >
       <div class={themeConfiguration()!.externalStylesheet?.parentClass}>
         <CodeMirror
-          class={themeConfiguration()!.externalStylesheet?.className}
+          className={themeConfiguration()!.externalStylesheet?.className}
           value={editor.code}
           onChange={editor.setCode}
           extensions={[
