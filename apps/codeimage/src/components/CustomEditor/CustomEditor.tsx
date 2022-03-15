@@ -1,7 +1,7 @@
 import {EditorView} from '@codemirror/view';
 import {useEditorState} from '../../state/editor';
 import {useStaticConfiguration} from '../../core/configuration';
-import {createMemo, createResource} from 'solid-js';
+import {createMemo, createResource, Show} from 'solid-js';
 import {lineNumbers} from '@codemirror/gutter';
 import {createCustomFontExtension} from './custom-font-extension';
 import {CodeMirror} from 'solid-codemirror';
@@ -19,12 +19,13 @@ export const CustomEditor = () => {
     plugin(),
   );
 
-  const currentTheme = createMemo(() => {
-    return (
-      configuration.themes.find(theme => theme.id === editor.themeId)
-        ?.editorTheme || []
-    );
-  });
+  const themeConfiguration = createMemo(() =>
+    configuration.themes.find(theme => theme.id === editor.themeId),
+  );
+
+  const currentTheme = createMemo(
+    () => themeConfiguration()?.editorTheme || [],
+  );
 
   const supportsLineWrap = EditorView.lineWrapping;
 
@@ -51,22 +52,28 @@ export const CustomEditor = () => {
   );
 
   return (
-    <>
-      <CodeMirror
-        value={editor.code}
-        onChange={editor.setCode}
-        extensions={[
-          EDITOR_BASE_SETUP,
-          baseTheme,
-          supportsLineWrap,
-          customFontExtension(),
-          currentLanguage() || [],
-          currentTheme(),
-          editor.showLineNumbers ? lineNumbers() : [],
-        ]}
-        basicSetup={false}
-        editable={true}
-      />
-    </>
+    <Show
+      when={themeConfiguration()}
+      fallback={'Error loading editor configuration'}
+    >
+      <div class={themeConfiguration()!.externalStylesheet?.parentClass}>
+        <CodeMirror
+          className={themeConfiguration()!.externalStylesheet?.className}
+          value={editor.code}
+          onChange={editor.setCode}
+          extensions={[
+            EDITOR_BASE_SETUP,
+            baseTheme,
+            supportsLineWrap,
+            customFontExtension(),
+            currentLanguage() || [],
+            currentTheme(),
+            editor.showLineNumbers ? lineNumbers() : [],
+          ]}
+          basicSetup={false}
+          editable={true}
+        />
+      </div>
+    </Show>
   );
 };

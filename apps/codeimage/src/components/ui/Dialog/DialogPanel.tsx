@@ -9,6 +9,8 @@ import * as styles from './Dialog.css';
 import {DialogPanelVariants} from './Dialog.css';
 import {PropsWithChildren} from 'solid-js/types/render/component';
 import {Box} from '../Box/Box';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {dynamicFullHeight} from '../../../theme/base.css';
 
 export type DialogPanelProps = ShDialogPanelProps & DialogPanelVariants;
 
@@ -23,6 +25,9 @@ export function DialogPanel(props: DialogPanelProps): JSXElement {
         }),
         props.class,
       )}
+      style={assignInlineVars({
+        [dynamicFullHeight]: `${window.innerHeight * 0.01}px`,
+      })}
     >
       {props.children}
     </ShDialogPanel>
