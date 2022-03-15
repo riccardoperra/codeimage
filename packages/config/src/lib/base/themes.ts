@@ -9,6 +9,8 @@ import {
   vsCodeDarkTheme,
   holiTheme,
   duotoneSeaTheme,
+  coldarkColdTheme,
+  coldarkDarkTheme,
 } from '@codeimage/theme';
 
 export const SUPPORTED_THEMES = [
@@ -22,4 +24,6 @@ export const SUPPORTED_THEMES = [
   vsCodeDarkTheme,
   holiTheme,
   duotoneSeaTheme,
+  coldarkColdTheme,
+  coldarkDarkTheme,
 ] as const;
