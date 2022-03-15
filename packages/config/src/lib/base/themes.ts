@@ -11,6 +11,7 @@ import {
   duotoneSeaTheme,
   coldarkColdTheme,
   coldarkDarkTheme,
+  nightOwlTheme,
 } from '@codeimage/theme';
 
 export const SUPPORTED_THEMES = [
@@ -26,4 +27,5 @@ export const SUPPORTED_THEMES = [
   duotoneSeaTheme,
   coldarkColdTheme,
   coldarkDarkTheme,
+  nightOwlTheme,
 ] as const;
