@@ -1,6 +1,6 @@
-import {buildCustomTheme} from '../core';
+import {createTheme} from '../../core';
 
-export const lightTheme = buildCustomTheme({
+export const lightTheme = createTheme({
   id: 'oneLight',
   editorTheme: [],
   properties: {

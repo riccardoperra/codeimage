@@ -25,7 +25,8 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
-    "@codemirror/theme-one-dark": "^0.19.1"
+    "@codemirror/theme-one-dark": "^0.19.1",
+    "@emotion/css": "^11.7.1"
   },
   "peerDependencies": {
     "@codemirror/highlight": "^0.19.7",

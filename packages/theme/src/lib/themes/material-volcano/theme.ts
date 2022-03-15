@@ -1,7 +1,7 @@
-import {buildCustomTheme} from '../core';
+import {createTheme} from '../../core';
 import {materialVolcano, palette} from './materialVolcano';
 
-export const materialVolcanoTheme = buildCustomTheme({
+export const materialVolcanoTheme = createTheme({
   id: 'materialVolcano',
   editorTheme: materialVolcano,
   properties: {

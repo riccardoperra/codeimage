@@ -1,4 +1,5 @@
 import type {Extension} from '@codemirror/state';
+import {ExternalStylesheetTheme} from './build-external-stylesheet';
 
 export interface TerminalThemeProperties {
   /**
@@ -31,7 +32,20 @@ export interface CustomThemeProperties {
 }
 
 export interface CustomTheme {
+  /**
+   * Custom theme identifier
+   */
   id: string;
+  /**
+   * Custom theme editor base theme extension
+   */
   editorTheme: Extension;
+  /**
+   * Custom theme properties
+   */
   properties: CustomThemeProperties;
+  /**
+   *
+   */
+  externalStylesheet?: ExternalStylesheetTheme;
 }

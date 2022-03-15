@@ -1,7 +1,7 @@
-import {buildCustomTheme} from '../core';
+import {createTheme} from '../../core';
 import {dracula, palette} from './dracula';
 
-export const draculaTheme = buildCustomTheme({
+export const draculaTheme = createTheme({
   id: 'dracula',
   editorTheme: dracula,
   properties: {
