@@ -25,6 +25,7 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
+    "@codeimage/theme": "workspace:*",
     "@codemirror/autocomplete": "^0.19.13",
     "@codemirror/closebrackets": "^0.19.1",
     "@codemirror/commands": "^0.19.8",
@@ -47,7 +48,6 @@
     "solid-js": "^1.3.7"
   },
   "devDependencies": {
-    "@codeimage/theme": "workspace:*",
     "@codemirror/highlight": "^0.19.7",
     "@codemirror/lang-cpp": "^0.19.1",
     "@codemirror/lang-css": "^0.19.3",
