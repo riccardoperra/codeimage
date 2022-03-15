@@ -8,3 +8,4 @@ export * from './lib/themes/synthwave84';
 export * from './lib/themes/arc-dark';
 export * from './lib/themes/vscode-dark';
 export * from './lib/themes/holi';
+export * from './lib/themes/duotone-sea';
