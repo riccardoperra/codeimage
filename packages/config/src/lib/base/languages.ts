@@ -195,7 +195,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'html',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/stylus.svg',
+        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/html.svg',
         matcher: /^.*\.(html)$/,
       },
     ],
