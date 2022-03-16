@@ -6,6 +6,7 @@ import * as styles from './WindowsTerminal.css';
 import {Box} from '../../ui/Box/Box';
 import {InlineTextField} from '../../ui/TextField/InlineTextField';
 import {WindowsTerminalControls} from './WindowsTerminalControls';
+import {TabIcon} from '../TabIcon';
 
 export const WindowsTerminal: Component<BaseTerminalProps> = props => {
   return (
@@ -21,6 +22,10 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
               class={baseStyles.tab({accent: props.accentVisible})}
               marginLeft={'6'}
             >
+              <Show when={props.tabIcon}>
+                <TabIcon src={props.tabIcon} />
+              </Show>
+
               <InlineTextField
                 size={'sm'}
                 readOnly={props.readonlyTab}
