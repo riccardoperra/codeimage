@@ -40,7 +40,20 @@ export const CustomEditor = () => {
     },
     '.cm-gutters': {
       backgroundColor: 'transparent',
-      borderRight: 'none',
+      border: 'none',
+    },
+    '.cm-lineNumbers': {
+      position: 'sticky',
+      flexDirection: 'column',
+      flexShrink: 0,
+    },
+    '.cm-line': {
+      padding: '0 2px 0 8px',
+    },
+    '.cm-cursor': {
+      borderLeftWidth: '2px',
+      height: '21px',
+      transform: 'translateY(-10%)',
     },
   });
 
