@@ -40,6 +40,7 @@ export const CustomEditor = () => {
     },
     '.cm-gutters': {
       backgroundColor: 'transparent',
+      borderRight: 'none',
     },
   });
 
