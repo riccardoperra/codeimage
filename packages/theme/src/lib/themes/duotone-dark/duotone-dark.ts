@@ -1,6 +1,23 @@
 import {buildExternalStylesheet} from '../../core';
 
+const selection = '#5b5b7b';
+
 export const duotoneDark = buildExternalStylesheet('duotone-dark')(`
+  .cm-selectionBackground,
+  .cm-focused .cm-selectionBackground,
+  &::selection,
+  *::selection {
+    background-color: ${selection};
+  }
+
+  .cm-selectionMatch {
+    background-color: ${selection};
+  }
+
+  .cm-lineNumbers .cm-gutterElement {
+    color: #FFFFFF;
+  }
+
   .token.comment,
   .token.prolog,
   .token.doctype,

@@ -1,6 +1,19 @@
 import {buildExternalStylesheet} from '../../core';
 
+const selection = '#1d3b54';
+
 export const holi = buildExternalStylesheet('holi')(`
+  .cm-selectionBackground,
+  .cm-focused .cm-selectionBackground,
+  &::selection,
+  *::selection {
+    background-color: ${selection};
+  }
+
+  .cm-selectionMatch {
+    background-color: ${selection};
+  }
+
   .token.comment,
   .token.prolog,
   .token.doctype,
