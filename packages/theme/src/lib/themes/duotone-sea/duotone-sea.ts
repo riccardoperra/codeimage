@@ -1,6 +1,19 @@
 import {buildExternalStylesheet} from '../../core';
 
+const selection = '#586f89';
+
 export const duotoneSea = buildExternalStylesheet('duotone-sea')(`
+  .cm-selectionBackground,
+  .cm-focused .cm-selectionBackground,
+  &::selection,
+  *::selection {
+    background-color: ${selection};
+  }
+
+  .cm-selectionMatch {
+    background-color: ${selection};
+  }
+
   .token.comment,
   .token.prolog,
   .token.doctype,

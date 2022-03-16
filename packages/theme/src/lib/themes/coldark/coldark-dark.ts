@@ -1,6 +1,19 @@
 import {buildExternalStylesheet} from '../../core';
 
+const selection = '#3c526d';
+
 export const coldarkDark = buildExternalStylesheet('coldark-cold')(`
+  .cm-selectionBackground,
+  .cm-focused .cm-selectionBackground,
+  &::selection,
+  *::selection {
+    background-color: ${selection};
+  }
+
+  .cm-selectionMatch {
+    background-color: ${selection};
+  }
+
   .token.comment,
   .token.prolog,
   .token.doctype,

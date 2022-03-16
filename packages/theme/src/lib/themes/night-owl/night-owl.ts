@@ -1,6 +1,19 @@
 import {buildExternalStylesheet} from '../../core';
 
+const selection = '#1d3b53';
+
 export const nightOwl = buildExternalStylesheet('nightOwl')(`
+  .cm-selectionBackground,
+  .cm-focused .cm-selectionBackground,
+  &::selection,
+  *::selection {
+    background-color: ${selection};
+  }
+
+  .cm-selectionMatch {
+    background-color: ${selection};
+  }
+
   .token.comment,
   .token.prolog,
   .token.cdata {
