@@ -30,7 +30,7 @@ const App = () => {
   const modality = useModality();
   const [, {locale}] = useI18n();
   const currentLocale = createMemo(() => ui.locale);
-  const [tabIcon] = useTabIcon();
+  const [tabIcon] = useTabIcon({withDefault: true});
 
   createEffect(on(currentLocale, locale));
 

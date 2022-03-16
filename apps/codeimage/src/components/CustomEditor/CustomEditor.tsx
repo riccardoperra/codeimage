@@ -66,33 +66,37 @@ export const CustomEditor = () => {
     }),
   );
 
+  const externalStylesheet = createMemo(
+    () => themeConfiguration()?.externalStylesheet,
+    null,
+    {equals: (prev, next) => prev?.scope === next?.scope},
+  );
+
   return (
-    <Show
-      when={themeConfiguration()}
-      fallback={'Error loading editor configuration'}
-    >
+    <Show when={themeConfiguration()}>
       <code
         class={clsx(
-          themeConfiguration()!.externalStylesheet?.parentClass,
+          externalStylesheet()?.parentClass,
           `language-${selectedLanguage()?.id ?? 'default'}`,
         )}
       >
-        <CodeMirror
-          className={themeConfiguration()!.externalStylesheet?.className}
-          value={editor.code}
-          onChange={editor.setCode}
-          extensions={[
-            EDITOR_BASE_SETUP,
-            baseTheme,
-            supportsLineWrap,
-            customFontExtension(),
-            currentLanguage() || [],
-            currentTheme(),
-            editor.showLineNumbers ? lineNumbers() : [],
-          ]}
-          basicSetup={false}
-          editable={true}
-        />
+        <div class={externalStylesheet()?.className}>
+          <CodeMirror
+            value={editor.code}
+            onChange={editor.setCode}
+            extensions={[
+              EDITOR_BASE_SETUP,
+              baseTheme,
+              supportsLineWrap,
+              customFontExtension(),
+              currentLanguage() || [],
+              currentTheme(),
+              editor.showLineNumbers ? lineNumbers() : [],
+            ]}
+            basicSetup={false}
+            editable={true}
+          />
+        </div>
       </code>
     </Show>
   );
