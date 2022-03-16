@@ -1,5 +1,21 @@
 # @codeimage/theme
 
+## 3.0.0
+
+### Minor Changes
+
+- a54c1e6: feat: add custom theme api improvements
+
+### Patch Changes
+
+- 36f7cde: feat: add duotone-dark theme
+- Updated dependencies [1e9495e]
+- Updated dependencies [a54c1e6]
+- Updated dependencies [0e38805]
+- Updated dependencies [36f7cde]
+- Updated dependencies [1266e9c]
+  - @codeimage/theme@0.5.0
+
 ## 2.0.4
 
 ### Patch Changes

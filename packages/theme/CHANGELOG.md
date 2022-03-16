@@ -1,5 +1,18 @@
 # @codeimage/theme
 
+## 0.5.0
+
+### Minor Changes
+
+- a54c1e6: feat: add custom theme api improvements
+
+### Patch Changes
+
+- 1e9495e: feat: add night owl theme
+- 0e38805: feat: add holi theme
+- 36f7cde: feat: add duotone-dark theme
+- 1266e9c: feat: add coldark theme
+
 ## 0.4.4
 
 ### Patch Changes
