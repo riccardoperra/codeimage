@@ -15,6 +15,7 @@ export const DynamicTerminal: Component<DynamicTerminalProps> = (
   props,
 ): JSXElement => {
   const {terminalThemes} = useStaticConfiguration();
+
   const terminal = createMemo(
     () =>
       terminalThemes.entries[

@@ -80,8 +80,8 @@ export const headerIconRowCircle = style({
 export const tab = recipe({
   base: {
     background: 'transparent',
-    display: 'block',
     padding: `0 ${themeVars.spacing['3']}`,
+    paddingLeft: 0,
     fontSize: themeVars.fontSize.sm,
     borderRadius: `${themeVars.borderRadius.md} ${themeVars.borderRadius.md} 0 0`,
     position: 'relative',
@@ -96,6 +96,7 @@ export const tab = recipe({
         height: `calc(${terminalVars.headerHeight} - ${terminalVars.tabDelta})`,
         marginTop: 'auto',
         paddingTop: terminalVars.tabDelta,
+        paddingLeft: themeVars.spacing['3'],
         backgroundColor: terminalVars.backgroundColor,
 
         selectors: {
@@ -123,4 +124,10 @@ export const tab = recipe({
       },
     },
   },
+});
+
+export const tabIcon = style({
+  display: 'inline-block',
+  marginRight: themeVars.spacing['2'],
+  verticalAlign: 'middle',
 });

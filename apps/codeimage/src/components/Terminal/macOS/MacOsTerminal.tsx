@@ -6,6 +6,7 @@ import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import {backgroundColorVar} from '../../../theme/variables.css';
 import {InlineTextField} from '../../ui/TextField/InlineTextField';
 import {Box} from '../../ui/Box/Box';
+import {TabIcon} from '../TabIcon';
 
 export const MacOsTerminal: Component<BaseTerminalProps> = props => {
   return (
@@ -38,6 +39,9 @@ export const MacOsTerminal: Component<BaseTerminalProps> = props => {
 
           <Show when={props.showTab}>
             <div class={baseStyles.tab({accent: props.accentVisible})}>
+              <Show when={props.tabIcon}>
+                <TabIcon src={props.tabIcon} />
+              </Show>
               <InlineTextField
                 size={'sm'}
                 readOnly={props.readonlyTab}

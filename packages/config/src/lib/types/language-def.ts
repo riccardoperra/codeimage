@@ -1,7 +1,14 @@
 import {Extension} from '@codemirror/state';
 
+interface LanguageIconDefinition {
+  name: string;
+  src: string;
+  matcher: RegExp;
+}
+
 export interface LanguageDefinition {
-  id: string;
-  label: string;
-  plugin: () => Promise<Extension>;
+  readonly id: string;
+  readonly label: string;
+  readonly plugin: () => Promise<Extension>;
+  readonly icons: LanguageIconDefinition[];
 }

@@ -8,6 +8,7 @@ import clsx from 'clsx';
 export interface BaseTerminalProps extends Omit<TerminalState, 'type'> {
   showTab: boolean;
   readonlyTab: boolean;
+  tabIcon?: string;
   onTabChange?: (tab: string) => void;
 }
 

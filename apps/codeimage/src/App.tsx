@@ -19,6 +19,7 @@ import {EditorSidebar} from './components/LeftSidebar/EditorSidebar';
 import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
 import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {PortalHost} from './components/ui/PortalHost/PortalHost';
+import {useTabIcon} from './hooks/use-tab-icon';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -29,6 +30,7 @@ const App = () => {
   const modality = useModality();
   const [, {locale}] = useI18n();
   const currentLocale = createMemo(() => ui.locale);
+  const [tabIcon] = useTabIcon();
 
   createEffect(on(currentLocale, locale));
 
@@ -67,6 +69,7 @@ const App = () => {
               textColor={terminal.textColor}
               onTabChange={terminal.setTabName}
               showHeader={terminal.showHeader}
+              tabIcon={tabIcon()?.src}
             >
               <CustomEditor />
             </DynamicTerminal>
