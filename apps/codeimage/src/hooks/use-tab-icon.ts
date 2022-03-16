@@ -3,9 +3,14 @@ import {useEditorState} from '../state/editor';
 import {useTerminalState} from '../state/terminal';
 import {createEffect, createMemo, createSignal, on} from 'solid-js';
 
-export const useTabIcon = (withFallback: boolean = true) => {
+interface UseTabIconOptions {
+  withDefault: boolean;
+}
+
+export const useTabIcon = (options: UseTabIconOptions) => {
   const [icon, setIcon] = createSignal<any>();
   const configuration = useStaticConfiguration();
+  // ATTENTION: Cannot use selector due to store structure!!!
   const editorState = useEditorState();
   const terminalState = useTerminalState();
 
@@ -29,7 +34,7 @@ export const useTabIcon = (withFallback: boolean = true) => {
 
     return (
       matchedIcons[matchedIcons.length - 1] ??
-      (withFallback ? languageIcons()[0] : null)
+      (options.withDefault ? languageIcons()[0] : null)
     );
   });
 

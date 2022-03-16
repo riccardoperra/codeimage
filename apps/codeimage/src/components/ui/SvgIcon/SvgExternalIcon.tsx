@@ -5,22 +5,15 @@ import {
   JSXElement,
   Suspense,
 } from 'solid-js';
-import {spread} from 'solid-js/web';
 import {SvgIcon} from './SvgIcon';
 import {Loader} from '../../LoadingOverlay/LoadingOverlay';
 
 interface SvgExternalIconProps {
   src?: string | null;
+  delay?: number;
 }
 
-function createElement<T>(tag: string, props: T): HTMLElement {
-  const el = document.createElement(tag);
-  spread(el, () => props, true, false);
-  Object.assign(el, {children: Array.from(el.children)});
-  return el;
-}
-
-export function convertReactSVGDOMProperty(str) {
+export function convertSolidSVGDOMProperty(str: string) {
   return str.replace(/[-|:]([a-z])/g, function (g) {
     return g[1].toUpperCase();
   });
@@ -38,7 +31,7 @@ export function serializeAttrs(map: NamedNodeMap) {
   for (let prop, i = 0; i < map.length; i++) {
     const attr = map[i];
     if (!startsWith(attr.name, DataPropPrefix)) {
-      prop = convertReactSVGDOMProperty(attr.name);
+      prop = convertSolidSVGDOMProperty(attr.name);
     } else {
       prop = attr.name;
     }
@@ -66,11 +59,13 @@ export function SvgExternalIcon(props: SvgExternalIconProps): JSXElement {
 
   const [data] = createResource(src, async url => {
     const svgResponse = await fetch(url).then(res => res.text());
-    const props = extractSVGProps(svgResponse) || {};
-    await new Promise(r => setTimeout(r, 250));
+    const svgProps = extractSVGProps(svgResponse) || {};
+    if (props.delay) {
+      await new Promise(r => setTimeout(r, props.delay));
+    }
     const innerHTML = getSVGFromSource(svgResponse).innerHTML;
     return {
-      ...props,
+      ...svgProps,
       innerHTML,
     };
   });
