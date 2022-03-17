@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.10.3
+
+### Patch Changes
+
+- 70c6f4a: fix: fix footer links
+
 ## 0.10.2
 
 ### Patch Changes
