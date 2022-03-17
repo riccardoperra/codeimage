@@ -8,6 +8,7 @@ import {
   holiTheme,
   lightTheme,
   materialOceanTheme,
+  materialPalenightTheme,
   materialVolcanoTheme,
   nightOwlTheme,
   oneDarkTheme,
@@ -18,10 +19,12 @@ import {
 export const SUPPORTED_THEMES = [
   oneDarkTheme,
   lightTheme,
+  nightOwlTheme,
   materialOceanTheme,
   draculaTheme,
   synthwave84Theme,
   materialVolcanoTheme,
+  materialPalenightTheme,
   arcDarkTheme,
   vsCodeDarkTheme,
   holiTheme,
@@ -29,5 +32,4 @@ export const SUPPORTED_THEMES = [
   duotoneDarkTheme,
   coldarkColdTheme,
   coldarkDarkTheme,
-  nightOwlTheme,
 ] as const;
