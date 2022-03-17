@@ -8,7 +8,8 @@ interface UseTabIconOptions {
 }
 
 export const useTabIcon = (options: UseTabIconOptions) => {
-  const [icon, setIcon] = createSignal<any>();
+  // TODO: add typings
+  const [icon, setIcon] = createSignal<unknown>();
   const configuration = useStaticConfiguration();
   // ATTENTION: Cannot use selector due to store structure!!!
   const editorState = useEditorState();
@@ -29,6 +30,7 @@ export const useTabIcon = (options: UseTabIconOptions) => {
       return null;
     }
     const matchedIcons = languageIcons().filter(icon => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return icon.matcher.test(terminalState.tabName!);
     });
 

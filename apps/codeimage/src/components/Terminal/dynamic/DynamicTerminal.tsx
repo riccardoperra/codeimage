@@ -1,4 +1,4 @@
-import {Component, createMemo, JSXElement, Show} from 'solid-js';
+import {Component, createMemo, JSXElement} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 import {BaseTerminalProps} from '../TerminalHost';
