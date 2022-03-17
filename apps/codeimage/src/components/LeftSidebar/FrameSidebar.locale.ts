@@ -9,6 +9,7 @@ export const locale = {
       terminal: 'Window',
       header: 'Header',
       tabAccent: 'Tab accent',
+      watermark: 'Watermark',
       shadows: 'Shadows',
       editor: 'Editor',
       language: 'Language',
@@ -33,6 +34,7 @@ export const locale = {
       lineNumbers: 'Numeri di riga',
       font: 'Carattere',
       fontWeight: 'Peso carattere',
+      watermark: 'Watermark',
     },
   },
 };

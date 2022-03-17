@@ -57,6 +57,20 @@ export const WindowStyleForm = () => {
         </PanelRow>
       </Show>
 
+      <PanelRow label={t('frame.watermark')}>
+        <TwoColumnPanelRow>
+          <SegmentedField
+            size={'xs'}
+            value={terminal.showWatermark}
+            onChange={terminal.setShowWatermark}
+            items={[
+              {label: 'Show', value: true},
+              {label: 'Hide', value: false},
+            ]}
+          />
+        </TwoColumnPanelRow>
+      </PanelRow>
+
       {/*// TODO: to refactor: handle light/dark mode, handle mobile view, add customizable shadows */}
       {/*<PanelRow label={t('frame.shadows')}>*/}
       {/*  <TwoColumnPanelRow>*/}
