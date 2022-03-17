@@ -1,5 +1,17 @@
 # @codeimage/app
 
+## 0.10.0
+
+### Minor Changes
+
+- 69e52be: feat: add terminal dynamic tab icon and language configuration
+
+### Patch Changes
+
+- c8dff60: feat: add brand logo on terminal image
+- Updated dependencies [69e52be]
+  - @codeimage/config@3.1.0
+
 ## 0.9.0
 
 ### Minor Changes

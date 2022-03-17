@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 3.1.0
+
+### Minor Changes
+
+- 69e52be: feat: add terminal dynamic tab icon and language configuration
+
 ## 3.0.0
 
 ### Minor Changes
