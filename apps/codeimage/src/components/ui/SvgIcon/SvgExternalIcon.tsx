@@ -27,7 +27,7 @@ const DataPropPrefix = 'data-';
 
 // Serialize `Attr` objects in `NamedNodeMap`
 export function serializeAttrs(map: NamedNodeMap) {
-  const ret: Record<string, any> = {};
+  const ret: Record<string, unknown> = {};
   for (let prop, i = 0; i < map.length; i++) {
     const attr = map[i];
     if (!startsWith(attr.name, DataPropPrefix)) {
