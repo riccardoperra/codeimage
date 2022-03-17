@@ -2,7 +2,7 @@ import {buildExternalStylesheet} from '../../core';
 
 const selection = '#3c526d';
 
-export const coldarkDark = buildExternalStylesheet('coldark-cold')(`
+export const coldarkDark = buildExternalStylesheet('coldark-dark')(`
   .cm-selectionBackground,
   .cm-focused .cm-selectionBackground,
   &::selection,
