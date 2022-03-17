@@ -12,11 +12,14 @@
 ![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)
 ![License](https://img.shields.io/github/license/riccardoperra/codeimage)
 
-
-Codeimage is the newest tool to help developers to create beautiful screenshots of their code,
-providing several features to speed up the process to post in social media. Built on the top of solid-js and CodeMirror6 for solid-hack.
+CodeImage is the newest tool to help developers to create beautiful screenshots of their code, providing several
+features to speed up the process to post in social media.
 
 ## Getting started
+
+CodeImage relies on [SolidJS](https://github.com/solidjs/solid) framework, [CodeMirror6](https://codemirror.net/6/) for
+browser-editor and [Vanilla Extract](https://github.com/seek-oss/vanilla-extract) for styling.
+
 To run the project locally, you must have in your local machine pnpm >= 6.23.2 and node >= 14.x;
 
 1. Install dependencies
@@ -26,11 +29,29 @@ $ pnpm install
 ```
 
 2. Build core libraries
+
 ```bash
 $ pnpm libs:build
 ```
 
 3. Run @codeimage/app
+
 ```bash
 $ pnpm app:dev
 ```
+
+## Features
+
+// WIP
+
+## Usage
+
+// WIP
+
+## Contributions
+
+See the [CONTRIBUTING.md](/CONTRIBUTING.md) guide for more details.
+
+## License
+
+MIT © [Riccardo Perra](https://github.com/riccardoperra)
