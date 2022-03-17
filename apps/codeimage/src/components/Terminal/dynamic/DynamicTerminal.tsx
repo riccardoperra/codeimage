@@ -9,6 +9,7 @@ import {
 import {Box} from '../../ui/Box/Box';
 import * as styles from '../terminal.css';
 import {CodeImageLogo} from '../../Icons/CodeImageLogo';
+import {FadeInOutTransition} from '../../ui/Transition/Transition';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;
@@ -30,11 +31,11 @@ export const DynamicTerminal: Component<DynamicTerminalProps> = (
     <Dynamic component={terminal()} {...omitProps(props, ['type'])}>
       {props.children}
 
-      <Show when={props.showWatermark}>
+      <FadeInOutTransition show={props.showWatermark}>
         <Box class={styles.watermark}>
           <CodeImageLogo width={125} />
         </Box>
-      </Show>
+      </FadeInOutTransition>
     </Dynamic>
   );
 };
