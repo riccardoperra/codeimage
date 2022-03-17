@@ -1,5 +1,13 @@
 # @codeimage/theme
 
+## 3.1.1
+
+### Patch Changes
+
+- 9d538e7: feat: add material palenight theme
+- Updated dependencies [9d538e7]
+  - @codeimage/theme@0.5.1
+
 ## 3.1.0
 
 ### Minor Changes

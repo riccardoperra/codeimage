@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 0.5.1
+
+### Patch Changes
+
+- 9d538e7: feat: add material palenight theme
+
 ## 0.5.0
 
 ### Minor Changes
