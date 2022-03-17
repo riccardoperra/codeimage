@@ -104,10 +104,3 @@
 //     line-height: 21px;
 //   }
 //
-  .cm-cursor {
-    border-left-width: 2px;
-    border-left-style: solid;
-    border-left-color: currentColor;
-    height: 21px !important;
-    transform: translateY(-10%);
-  }`);
