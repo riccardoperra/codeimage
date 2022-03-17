@@ -38,6 +38,7 @@ export function TerminalControlField(
                 accentVisible={true}
                 readonlyTab={true}
                 showHeader={true}
+                showWatermark={false}
               />
             </Box>
           </RadioBlock>
