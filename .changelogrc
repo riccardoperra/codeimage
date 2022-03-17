@@ -1,10 +1,5 @@
 ## 17-03-2022
 
-`@codeimage/app@0.10.0`
+`@codeimage/app@0.10.1`
 
-- feat: add terminal dynamic tab icon and language configuration
-- feat: add brand logo on terminal image
-
-**Config** `v3.1.0`
-
-- feat: add terminal dynamic tab icon and language configuration
+- chore: update logos
