@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.10.1
+
+### Patch Changes
+
+- cb07d0f: chore: update logos
+
 ## 0.10.0
 
 ### Minor Changes
