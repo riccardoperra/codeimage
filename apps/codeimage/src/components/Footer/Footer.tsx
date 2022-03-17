@@ -10,7 +10,7 @@ export const Footer = () => {
     <div class={styles.wrapper}>
       <Box display={'flex'} justifyContent={'flexEnd'} padding={'2'}>
         <Box marginRight={'5'}>
-          <Link href={'https://github.com/riccardoperra'} size="xs">
+          <Link href={'https://github.com/riccardoperra/codeimage'} size="xs">
             Github
           </Link>
         </Box>
@@ -18,7 +18,7 @@ export const Footer = () => {
         <Box marginRight={'5'}>
           <Link
             as={'a'}
-            href={'https://github.com/riccardoperra/issues'}
+            href={'https://github.com/riccardoperra/codeimage/issues'}
             size="xs"
           >
             Report issue
@@ -28,10 +28,10 @@ export const Footer = () => {
         <Box marginRight={'5'}>
           <Link
             as={'a'}
-            href={'https://github.com/riccardoperra/discussions'}
+            href={'https://github.com/riccardoperra/codeimage/discussions'}
             size="xs"
           >
-            Send feedback
+            Feedback
           </Link>
         </Box>
 
