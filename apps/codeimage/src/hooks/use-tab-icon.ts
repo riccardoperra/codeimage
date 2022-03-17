@@ -9,7 +9,7 @@ interface UseTabIconOptions {
 
 export const useTabIcon = (options: UseTabIconOptions) => {
   // TODO: add typings
-  const [icon, setIcon] = createSignal<unknown>();
+  const [icon, setIcon] = createSignal<{src: string} | null>();
   const configuration = useStaticConfiguration();
   // ATTENTION: Cannot use selector due to store structure!!!
   const editorState = useEditorState();
