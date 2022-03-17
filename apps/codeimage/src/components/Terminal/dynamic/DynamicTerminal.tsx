@@ -12,7 +12,6 @@ import {CodeImageLogo} from '../../Icons/CodeImageLogo';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;
-  showWatermark?: boolean;
 }
 
 export const DynamicTerminal: Component<DynamicTerminalProps> = (

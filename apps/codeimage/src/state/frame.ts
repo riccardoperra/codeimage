@@ -11,7 +11,6 @@ export interface FrameStateSlice {
   opacity: number;
   autoWidth: boolean;
   scale: number;
-  showWatermark: boolean;
 }
 
 const initialState: FrameStateSlice = {
@@ -22,7 +21,6 @@ const initialState: FrameStateSlice = {
   opacity: 100,
   autoWidth: false,
   scale: 1,
-  showWatermark: true,
 };
 
 const store = combine(initialState, set => ({

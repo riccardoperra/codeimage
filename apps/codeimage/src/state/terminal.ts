@@ -13,6 +13,7 @@ export interface TerminalState {
   readonly background: string;
   readonly textColor: string;
   readonly darkMode: boolean;
+  readonly showWatermark: boolean;
 }
 
 const initialState: TerminalState = {
@@ -26,6 +27,7 @@ const initialState: TerminalState = {
   background: staticConfiguration.themes[0].properties.terminal.main,
   textColor: staticConfiguration.themes[0].properties.terminal.text,
   darkMode: staticConfiguration.themes[0].properties.darkMode,
+  showWatermark: true,
 };
 
 const store = combine(initialState, set => ({
@@ -37,6 +39,7 @@ const store = combine(initialState, set => ({
   setTabName: (tabName: string) => set(() => ({tabName})),
   setShowHeader: (showHeader: boolean) => set(() => ({showHeader})),
   setType: (type: string) => set(() => ({type})),
+  setShowWatermark: (showWatermark: boolean) => set(() => ({showWatermark})),
 }));
 
 export const useTerminalState = create(
