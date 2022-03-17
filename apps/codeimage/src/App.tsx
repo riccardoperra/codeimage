@@ -70,6 +70,7 @@ const App = () => {
               onTabChange={terminal.setTabName}
               showHeader={terminal.showHeader}
               tabIcon={tabIcon()?.src}
+              showWatermark={frame.showWatermark}
             >
               <CustomEditor />
             </DynamicTerminal>

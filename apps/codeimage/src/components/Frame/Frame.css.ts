@@ -168,3 +168,9 @@ export const squaredBackgroundOverlay = style({
   width: '100%',
   height: '100%',
 });
+
+export const watermark = style({
+  position: 'absolute',
+  right: '32px',
+  bottom: '24px',
+});
