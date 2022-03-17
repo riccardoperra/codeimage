@@ -132,3 +132,11 @@ export const tabIcon = style({
   marginRight: themeVars.spacing['2'],
   verticalAlign: 'middle',
 });
+
+export const watermark = style({
+  position: 'absolute',
+  right: '6px',
+  bottom: '-6px',
+  opacity: 0.35,
+  backgroundColor: 'inherit',
+});

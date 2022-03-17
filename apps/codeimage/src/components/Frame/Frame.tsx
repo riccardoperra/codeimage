@@ -1,4 +1,4 @@
-import {Component, createMemo} from 'solid-js';
+import {Component, createMemo, Show} from 'solid-js';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createHorizontalResize} from '../../core/hooks/resizable';
