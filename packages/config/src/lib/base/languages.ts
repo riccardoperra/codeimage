@@ -115,6 +115,11 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.*?(selector.ts)$/,
       },
       {
+        name: 'ng-component',
+        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/angular-component.svg',
+        matcher: /^.*\.(component.ts)$/,
+      },
+      {
         name: 'ng-pipe',
         src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/angular-pipe.svg',
         matcher: /^.*\.(pipe.ts)$/,
