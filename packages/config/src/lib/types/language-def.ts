@@ -1,6 +1,6 @@
 import {Extension} from '@codemirror/state';
 
-interface LanguageIconDefinition {
+export interface LanguageIconDefinition {
   name: string;
   src: string;
   matcher: RegExp;

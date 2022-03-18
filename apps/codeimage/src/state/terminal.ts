@@ -1,4 +1,9 @@
-import {combine, devtools, persist} from 'zustand/middleware';
+import {
+  combine,
+  devtools,
+  persist,
+  subscribeWithSelector,
+} from 'zustand/middleware';
 import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
 import {staticConfiguration} from '../core/configuration';
@@ -44,9 +49,11 @@ const store = combine(initialState, set => ({
 
 export const useTerminalState = create(
   devtools(
-    persist(query(store, {debounce: 500, prefix: 'terminal'}), {
-      name: '@store/terminal',
-    }),
+    subscribeWithSelector(
+      persist(query(store, {debounce: 500, prefix: 'terminal'}), {
+        name: '@store/terminal',
+      }),
+    ),
     {
       name: 'terminal',
     },
