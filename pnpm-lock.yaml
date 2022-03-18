@@ -113,6 +113,7 @@ importers:
       solid-js: ^1.3.10
       solid-use: 0.3.3
       solid-zustand: ^1.2.2
+      tinykeys: 1.4.0
       typescript: ^4.6.2
       vite: ^2.8.6
       vite-plugin-pwa: 0.11.13
@@ -180,6 +181,7 @@ importers:
       solid-js: 1.3.10
       solid-use: 0.3.3_solid-js@1.3.10
       solid-zustand: 1.2.2
+      tinykeys: 1.4.0
       workbox-precaching: 6.5.1
       workbox-routing: 6.5.1
       workbox-strategies: 6.5.1
@@ -2616,7 +2618,7 @@ packages:
       outdent: 0.8.0
       postcss: 8.4.8
       postcss-load-config: 3.1.3_ts-node@10.7.0
-      vite: 2.8.6
+      vite: 2.8.6_sass@1.49.9
     transitivePeerDependencies:
       - ts-node
 
@@ -4806,6 +4808,7 @@ packages:
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: true
 
   /lodash.sortby/4.7.0:
     resolution: {integrity: sha1-7dFMgk4sycHgsKG0K7UhBRakJDg=}
@@ -4861,13 +4864,6 @@ packages:
     resolution: {integrity: sha512-hdN1wVrZbb29eBGiGjJbeP8JbKjq1urkHJ/LIP/NY48MZ1QVXUsQBV1G1zvYFHn1XE06cwjBsOI2K3Ulnj1YXQ==}
     engines: {node: '>=8'}
     dev: true
-
-  /material-icon-theme/4.14.1:
-    resolution: {integrity: sha512-psZrc0bKlA0foRCyFUqLB3bb+npwL/7jySVuV2GqUL9QYdWy0BTbiA+cO5TYL5rP/KOhoKH3/xXpXB4BfFGthA==}
-    engines: {vscode: ^1.51.0}
-    dependencies:
-      lodash.merge: 4.6.2
-    dev: false
 
   /media-typer/0.3.0:
     resolution: {integrity: sha1-hxDXrwqmJvj/+hzgAWhUUmMlV0g=}
@@ -6150,6 +6146,10 @@ packages:
   /through/2.3.8:
     resolution: {integrity: sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=}
     dev: true
+
+  /tinykeys/1.4.0:
+    resolution: {integrity: sha512-ysnVd2E4nWbNXIbHaUidcKGLTmNimqP0hdpsD0Ph5hPJ84ntCF6PHj+Jg3im9nZt9/hNsBg/E6m1psHc2KaPnQ==}
+    dev: false
 
   /tmp/0.0.33:
     resolution: {integrity: sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==}

@@ -1,4 +1,4 @@
-import {createMemo, For, JSXElement} from 'solid-js';
+import {createMemo, For, JSXElement, onMount} from 'solid-js';
 import {Button} from '../ui/Button/Button';
 import {HintIcon} from '../Icons/Hint';
 import {Box} from '../ui/Box/Box';
@@ -12,6 +12,10 @@ import * as styles from './KeyboardShortcuts.css';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {offset} from '@floating-ui/dom';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
+import tinykeys from 'tinykeys';
+import {noop} from '../../core/constants/noop';
+import {useFrameState} from '../../state/frame';
+import {useUIState} from '../../state/ui';
 
 export interface KeyboardShortcut {
   label: string;
@@ -20,6 +24,9 @@ export interface KeyboardShortcut {
 
 export function KeyboardShortcuts(): JSXElement {
   const [t] = useI18n<AppLocaleEntries>();
+
+  const frame = useFrameState();
+  const ui = useUIState();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [
     {label: t('shortcut.focusCodeEditor'), key: ['F']},
@@ -38,6 +45,15 @@ export function KeyboardShortcuts(): JSXElement {
     placement: 'bottom-start',
     strategy: 'fixed',
     middleware: [offset(10)],
+  });
+
+  onMount(() => {
+    tinykeys(window, {
+      F: noop,
+      Esc: noop,
+      B: () => frame.toggleVisibility(),
+      D: () => ui.toggleThemeMode(),
+    });
   });
 
   return (

@@ -31,6 +31,7 @@ const store = combine(initialState, set => ({
   setAutoWidth: (autoWidth: boolean) => set(() => ({autoWidth})),
   setBackground: (background: string | null) => set(() => ({background})),
   setScale: (scale: number) => set(() => ({scale})),
+  toggleVisibility: () => set(({visible}) => ({visible: !visible})),
 }));
 
 export const useFrameState = create(
