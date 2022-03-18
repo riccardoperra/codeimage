@@ -48,4 +48,5 @@ export const darkThemeCss = createTheme(colors, {
   dialogTitleTextColor: '#EEEEEE',
   dialogTitleBorderColor: '#2B2B2B',
   dialogPanelTextColor: '#EEEEEE',
+  shortcutKeyBackgroundColor: '#555555',
 });

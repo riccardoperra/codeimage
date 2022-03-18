@@ -19,7 +19,12 @@ export const overlay = style({
   backgroundColor: themeVars.dynamicColors.dialogOverlayBackgroundColor,
 });
 
-export const keyLabel = style([fontSize.sm]);
+export const keyLabel = style([
+  fontSize.sm,
+  {
+    color: themeVars.dynamicColors.buttonTextColor,
+  },
+]);
 
 export const keyList = style({
   display: 'flex',
@@ -34,7 +39,8 @@ export const key = style([
     height: '24px',
     padding: '4px 8px',
     borderRadius: themeVars.borderRadius.md,
-    backgroundColor: '#555555',
+    backgroundColor: themeVars.dynamicColors.shortcutKeyBackgroundColor,
+    color: themeVars.dynamicColors.buttonTextColor,
     fontFamily: 'inherit',
   },
 ]);

@@ -47,4 +47,5 @@ export const lightThemeCss = createTheme(colors, {
   dialogPanelShadow: themeVars.boxShadow.lg,
   dialogPanelBackgroundColor: themeVars.backgroundColor.white,
   dialogPanelTextColor: themeVars.backgroundColor.gray['800'],
+  shortcutKeyBackgroundColor: '#f3f3f3',
 });

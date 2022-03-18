@@ -45,4 +45,5 @@ export const colors = createThemeContract({
   dialogPanelShadow: null,
   dialogPanelTextColor: null,
   dialogPanelBackgroundColor: null,
+  shortcutKeyBackgroundColor: null,
 });
