@@ -2,14 +2,14 @@ import {useStaticConfiguration} from '../core/configuration';
 import {useEditorState} from '../state/editor';
 import {useTerminalState} from '../state/terminal';
 import {createEffect, createMemo, createSignal, on} from 'solid-js';
+import {LanguageIconDefinition} from '@codeimage/config';
 
 interface UseTabIconOptions {
   withDefault: boolean;
 }
 
 export const useTabIcon = (options: UseTabIconOptions) => {
-  // TODO: add typings
-  const [icon, setIcon] = createSignal<{src: string} | null>();
+  const [icon, setIcon] = createSignal<LanguageIconDefinition | null>();
   const configuration = useStaticConfiguration();
   // ATTENTION: Cannot use selector due to store structure!!!
   const editorState = useEditorState();

@@ -1,8 +1,14 @@
-import {combine, devtools, persist} from 'zustand/middleware';
+import {
+  combine,
+  devtools,
+  persist,
+  subscribeWithSelector,
+} from 'zustand/middleware';
 import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
 import {staticConfiguration} from '../core/configuration';
 import {query} from './middleware';
+import {useEditorState} from './editor';
 
 export interface TerminalState {
   readonly showHeader: boolean;
@@ -36,17 +42,37 @@ const store = combine(initialState, set => ({
   setBackground: (background: string) => set(() => ({background})),
   setTextColor: (textColor: string) => set(() => ({textColor})),
   setDarkMode: (darkMode: boolean) => set(() => ({darkMode})),
-  setTabName: (tabName: string) => set(() => ({tabName})),
   setShowHeader: (showHeader: boolean) => set(() => ({showHeader})),
   setType: (type: string) => set(() => ({type})),
   setShowWatermark: (showWatermark: boolean) => set(() => ({showWatermark})),
+
+  setTabName: (tabName: string) => {
+    set(() => ({tabName}));
+    if (!tabName) {
+      return;
+    }
+    const matches = staticConfiguration.languages.filter(language => {
+      return language.icons.some(({matcher}) => matcher.test(tabName));
+    });
+    if (
+      !matches.length ||
+      matches
+        .map(match => match.id)
+        .includes(useEditorState.getState().languageId)
+    ) {
+      return;
+    }
+    useEditorState.setState({languageId: matches[0].id});
+  },
 }));
 
 export const useTerminalState = create(
   devtools(
-    persist(query(store, {debounce: 500, prefix: 'terminal'}), {
-      name: '@store/terminal',
-    }),
+    subscribeWithSelector(
+      persist(query(store, {debounce: 500, prefix: 'terminal'}), {
+        name: '@store/terminal',
+      }),
+    ),
     {
       name: 'terminal',
     },
