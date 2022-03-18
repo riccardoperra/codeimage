@@ -23,7 +23,7 @@ const initialState: FrameStateSlice = {
   scale: 1,
 };
 
-const store = combine(initialState, set => ({
+const store = combine(initialState, (set, get) => ({
   setPadding: (padding: number) => set(() => ({padding})),
   setRadius: (radius: number) => set(() => ({radius})),
   setOpacity: (opacity: number) => set(() => ({opacity})),
@@ -31,7 +31,7 @@ const store = combine(initialState, set => ({
   setAutoWidth: (autoWidth: boolean) => set(() => ({autoWidth})),
   setBackground: (background: string | null) => set(() => ({background})),
   setScale: (scale: number) => set(() => ({scale})),
-  toggleVisibility: () => set(({visible}) => ({visible: !visible})),
+  toggleVisibility: () => set(() => ({visible: !get().visible})),
 }));
 
 export const useFrameState = create(

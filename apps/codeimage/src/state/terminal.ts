@@ -36,7 +36,7 @@ const initialState: TerminalState = {
   showWatermark: true,
 };
 
-const store = combine(initialState, set => ({
+const store = combine(initialState, (set, get) => ({
   setShadow: (shadow: string) => set(() => ({shadow})),
   setAccentVisible: (accentVisible: boolean) => set(() => ({accentVisible})),
   setBackground: (background: string) => set(() => ({background})),
@@ -45,6 +45,9 @@ const store = combine(initialState, set => ({
   setShowHeader: (showHeader: boolean) => set(() => ({showHeader})),
   setType: (type: string) => set(() => ({type})),
   setShowWatermark: (showWatermark: boolean) => set(() => ({showWatermark})),
+  // ATTENTION: why state parameter of set is undefined?
+  toggleShowHeader: () => set(() => ({showHeader: !get().showHeader})),
+  toggleWatermark: () => set(() => ({showWatermark: !get().showWatermark})),
 
   setTabName: (tabName: string) => {
     set(() => ({tabName}));

@@ -1,4 +1,4 @@
-import {createMemo, For, JSXElement, onMount} from 'solid-js';
+import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
 import {Button} from '../ui/Button/Button';
 import {HintIcon} from '../Icons/Hint';
 import {Box} from '../ui/Box/Box';
@@ -16,6 +16,9 @@ import tinykeys from 'tinykeys';
 import {noop} from '../../core/constants/noop';
 import {useFrameState} from '../../state/frame';
 import {useUIState} from '../../state/ui';
+import {useTerminalState} from '../../state/terminal';
+import {useStaticConfiguration} from '../../core/configuration';
+import {updateTheme} from '../../state/state';
 
 export interface KeyboardShortcut {
   label: string;
@@ -24,15 +27,19 @@ export interface KeyboardShortcut {
 
 export function KeyboardShortcuts(): JSXElement {
   const [t] = useI18n<AppLocaleEntries>();
+  const [show, setShow] = createSignal(false);
 
   const frame = useFrameState();
   const ui = useUIState();
+  const terminal = useTerminalState();
+  const configuration = useStaticConfiguration();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [
     {label: t('shortcut.focusCodeEditor'), key: ['F']},
     {label: t('shortcut.unFocusCodeEditor'), key: ['Esc']},
     {label: t('shortcut.toggleBackground'), key: ['B']},
     {label: t('shortcut.toggleDarkMode'), key: ['D']},
+    {label: t('shortcut.toggleHeader'), key: ['H']},
     {label: t('shortcut.selectLanguage'), key: ['L']},
     {label: t('shortcut.changePadding'), key: ['P']},
     {label: t('shortcut.pickRandomTheme'), key: ['R']},
@@ -40,6 +47,10 @@ export function KeyboardShortcuts(): JSXElement {
     {label: t('shortcut.copyLink'), key: ['Ctrl', 'Shift', 'C']},
     {label: t('shortcut.openShortcuts'), key: ['?']},
   ]);
+
+  const label = createMemo(() =>
+    show() ? t('shortcut.esc') : t('shortcut.buttonAction'),
+  );
 
   const floating = useFloating({
     placement: 'bottom-start',
@@ -53,60 +64,68 @@ export function KeyboardShortcuts(): JSXElement {
       Esc: noop,
       B: () => frame.toggleVisibility(),
       D: () => ui.toggleThemeMode(),
+      H: () => terminal.toggleShowHeader(),
+      W: () => terminal.toggleWatermark(),
+      R: () => {
+        const index = Math.floor(Math.random() * configuration.themes.length);
+        const theme = configuration.themes[index];
+        updateTheme(theme);
+      },
+      // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
+      'Shift+?': () => setShow(show => !show),
     });
   });
 
   return (
     <Popover>
-      {({isOpen, setState}) => (
-        <>
-          <Box paddingLeft={'4'} paddingTop={'3'}>
-            <PopoverButton
-              ref={floating.setReference}
-              as={Button}
-              theme={'secondary'}
-              type={'button'}
-              variant={'solid'}
-            >
-              <HStack spacing={'2'}>
-                <HintIcon />
-                {t('shortcut.buttonAction')}
-              </HStack>
-            </PopoverButton>
-          </Box>
+      <>
+        <Box paddingLeft={'4'} paddingTop={'3'}>
+          <PopoverButton
+            ref={floating.setReference}
+            as={Button}
+            theme={'secondary'}
+            type={'button'}
+            variant={'solid'}
+            onClick={() => setShow(true)}
+          >
+            <HStack spacing={'2'}>
+              <HintIcon />
+              {label()}
+            </HStack>
+          </PopoverButton>
+        </Box>
 
-          <FadeInOutTransition show={isOpen()}>
-            <PortalHostInjector>
-              <FadeInOutTransition childTransition={true}>
-                <div class={styles.overlay} onClick={() => setState(false)} />
-              </FadeInOutTransition>
-            </PortalHostInjector>
-            <PopoverPanel
-              ref={floating.setFloating}
-              style={{
-                position: floating.strategy,
-                left: `${floating.x}px`,
-                top: `${floating.y}px`,
-              }}
-            >
-              <dl class={styles.list}>
-                <For each={shortcuts()}>
-                  {shortcut => (
-                    <>
-                      <dt class={styles.keyLabel}>{shortcut.label}</dt>
-                      <dd class={styles.keyList}>
-                        <For each={shortcut.key}>
-                          {key => <kbd class={styles.key}>{key}</kbd>}
-                        </For>
-                      </dd>
-                    </>
-                  )}
-                </For>
-              </dl>
-            </PopoverPanel>
-          </FadeInOutTransition>
-        </>
-      )}
+        <FadeInOutTransition show={show()}>
+          <PortalHostInjector>
+            <FadeInOutTransition childTransition={true}>
+              <div class={styles.overlay} onClick={() => setShow(false)} />
+            </FadeInOutTransition>
+          </PortalHostInjector>
+          <PopoverPanel
+            ref={floating.setFloating}
+            style={{
+              position: floating.strategy,
+              left: `${floating.x}px`,
+              top: `${floating.y}px`,
+            }}
+          >
+            <dl class={styles.list}>
+              <For each={shortcuts()}>
+                {shortcut => (
+                  <>
+                    <dt class={styles.keyLabel}>{shortcut.label}</dt>
+                    <dd class={styles.keyList}>
+                      <For each={shortcut.key}>
+                        {key => <kbd class={styles.key}>{key}</kbd>}
+                      </For>
+                    </dd>
+                  </>
+                )}
+              </For>
+            </dl>
+          </PopoverPanel>
+        </FadeInOutTransition>
+      </>
     </Popover>
   );
 }
