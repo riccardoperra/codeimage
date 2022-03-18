@@ -1,5 +1,17 @@
 # @codeimage/app
 
+## 0.11.0
+
+### Minor Changes
+
+- 3e3613e: feat: add auto language switch on extension change
+
+### Patch Changes
+
+- Updated dependencies [3e3613e]
+- Updated dependencies [abd80ec]
+  - @codeimage/config@3.2.0
+
 ## 0.10.3
 
 ### Patch Changes
