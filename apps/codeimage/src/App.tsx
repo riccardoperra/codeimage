@@ -4,14 +4,7 @@ import {Scaffold} from './components/Scaffold/Scaffold';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  on,
-  onMount,
-  Show,
-} from 'solid-js';
+import {createEffect, createMemo, createSignal, on, Show} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {useFrameState} from './state/frame';
 import {useTerminalState} from './state/terminal';
@@ -27,16 +20,12 @@ import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
 import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {PortalHost} from './components/ui/PortalHost/PortalHost';
 import {useTabIcon} from './hooks/use-tab-icon';
-import {useStaticConfiguration} from './core/configuration';
-import {useEditorState} from './state/editor';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
-  const configuration = useStaticConfiguration();
   const frame = useFrameState();
   const terminal = useTerminalState();
-  const editor = useEditorState();
   const ui = useUIState();
   const modality = useModality();
   const [, {locale}] = useI18n();
