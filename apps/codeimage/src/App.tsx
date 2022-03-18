@@ -45,27 +45,6 @@ const App = () => {
 
   createEffect(on(currentLocale, locale));
 
-  onMount(() => {
-    useTerminalState.subscribe(
-      terminal => terminal.tabName,
-      tabName => {
-        if (!tabName) {
-          return;
-        }
-        const matches = configuration.languages.filter(language => {
-          return language.icons.some(({matcher}) => matcher.test(tabName));
-        });
-        if (
-          !matches.length ||
-          matches.map(match => match.id).includes(editor.languageId)
-        ) {
-          return;
-        }
-        editor.setLanguageId(matches[0].id);
-      },
-    );
-  });
-
   return (
     <Scaffold>
       <NotificationHandler />
