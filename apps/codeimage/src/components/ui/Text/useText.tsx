@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import * as styles from './Text.css';
+import {baseText} from './Text.css';
 
 export interface UseTextProps {
   size?: keyof typeof styles.fontSize;
@@ -7,5 +8,5 @@ export interface UseTextProps {
 }
 
 export const useText = ({size = 'base', weight = 'normal'}: UseTextProps) => {
-  return clsx(styles.fontWeight[weight], styles.fontSize[size]);
+  return clsx(baseText, styles.fontWeight[weight], styles.fontSize[size]);
 };

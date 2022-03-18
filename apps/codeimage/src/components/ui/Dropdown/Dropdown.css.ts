@@ -19,6 +19,7 @@ export const dropdownMenuPanel = style({
   flexDirection: 'row',
   overflow: 'hidden',
   borderRadius: themeVars.borderRadius.md,
+  zIndex: themeVars.zIndex['40'],
 });
 
 export const dropdownMenu = style({

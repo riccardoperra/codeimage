@@ -34,6 +34,19 @@ export const locale = {
       genericSaveError: 'Si è verificato un errore durante il salvataggio',
       quality: 'Qualità',
     },
+    shortcut: {
+      buttonAction: 'Scorciatoie tastiera',
+      focusCodeEditor: 'Focus editor di codice',
+      unFocusCodeEditor: 'Unfocus editor di codice',
+      toggleBackground: 'Attiva/disattiva background',
+      toggleDarkMode: 'Attiva/disattiva modalitá dark',
+      selectLanguage: 'Seleziona lingua',
+      changePadding: 'Modifica padding',
+      pickRandomTheme: 'Seleziona tema random',
+      export: 'Esporta',
+      copyLink: 'Copia link',
+      openShortcuts: 'Apri scorciatoie',
+    },
   },
   en: {
     common: {
@@ -68,6 +81,19 @@ export const locale = {
       noOpacitySupportedWithThisExtension:
         'The custom transparency is not compatible with this extension',
       quality: 'Quality',
+    },
+    shortcut: {
+      buttonAction: 'Keyboard shortcuts',
+      focusCodeEditor: 'Focus code editor',
+      unFocusCodeEditor: 'Unfocus code editor',
+      toggleBackground: 'Toggle background',
+      toggleDarkMode: 'Toggle dark mode',
+      selectLanguage: 'Select language',
+      changePadding: 'Change padding',
+      pickRandomTheme: 'Pick random theme',
+      export: 'Export',
+      copyLink: 'Copy link',
+      openShortcuts: 'Open shortcuts',
     },
   },
 };

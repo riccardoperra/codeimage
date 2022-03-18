@@ -15,6 +15,7 @@ export const hStack = style([
   {
     flexDirection: 'row',
     columnGap: stackThemeVars.spacing,
+    alignItems: 'center',
   },
 ]);
 
