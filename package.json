@@ -2,7 +2,7 @@
   "name": "codeimage",
   "version": "0.0.1",
   "description": "Create elegant code screenshots of your source code",
-  "info": "Codeimage is the newest tool to help developers to create beautiful screenshots of their code, providing several features to speed up the process to post in social media, and for customize simple lines of code. Built on the top of solid-js and CodeMirror6 for solid-hack, has 30+ editor themes, custom themes, mobile devices and it's open source!",
+  "info": "Codeimage is the newest tool to help developers to create beautiful screenshots of their code, providing several features to speed up the process to post in social media. Built on the top of solid-js, has a lot of customizable options, 15+ editor custom themes, supports for mobile devices and it's free!",
   "homepage": "codeimage.dev",
   "private": true,
   "repository": {
