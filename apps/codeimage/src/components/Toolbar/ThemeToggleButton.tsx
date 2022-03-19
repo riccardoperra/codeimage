@@ -2,6 +2,7 @@ import {Component, createMemo} from 'solid-js';
 import {Button} from '../ui/Button/Button';
 import {themeVars} from '../../theme/global.css';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
+import {GlobalUiState} from '@codeimage/store/ui';
 
 interface ThemeTogglerProps {
   theme: GlobalUiState['themeMode'];
