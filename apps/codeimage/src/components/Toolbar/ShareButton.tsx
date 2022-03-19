@@ -1,11 +1,11 @@
-import {Component, mergeProps, onMount, Show} from 'solid-js';
+import {Component, mergeProps, Show} from 'solid-js';
 import {Button} from '../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Box} from '../ui/Box/Box';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 import {useStaticConfiguration} from '../../core/configuration';
-import tinykeys from 'tinykeys';
+import {useHotkey} from '../../hooks/use-hotkey';
 
 interface ShareButtonProps {
   showLabel?: boolean;
@@ -31,13 +31,11 @@ export const ShareButton: Component<ShareButtonProps> = props => {
     return await navigator.share(data);
   }
 
-  onMount(() => {
-    tinykeys(document.body, {
-      'Control+Shift+C': async event => {
-        event.preventDefault();
-        await share();
-      },
-    });
+  useHotkey(document.body, {
+    'Control+Shift+C': async event => {
+      event.preventDefault();
+      await share();
+    },
   });
 
   return (

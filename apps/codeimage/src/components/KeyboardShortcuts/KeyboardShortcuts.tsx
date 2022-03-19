@@ -1,4 +1,4 @@
-import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
+import {createMemo, createSignal, For, JSXElement} from 'solid-js';
 import {Button} from '../ui/Button/Button';
 import {HintIcon} from '../Icons/Hint';
 import {Box} from '../ui/Box/Box';
@@ -12,13 +12,13 @@ import * as styles from './KeyboardShortcuts.css';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {offset} from '@floating-ui/dom';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
-import tinykeys from 'tinykeys';
 import {useFrameState} from '../../state/frame';
 import {useUIState} from '../../state/ui';
 import {useTerminalState} from '../../state/terminal';
 import {useStaticConfiguration} from '../../core/configuration';
 import {updateTheme} from '../../state/state';
 import {useEditorState} from '../../state/editor';
+import {useHotkey} from '../../hooks/use-hotkey';
 
 export interface KeyboardShortcut {
   label: string;
@@ -59,49 +59,47 @@ export function KeyboardShortcuts(): JSXElement {
     middleware: [offset(10)],
   });
 
-  onMount(() => {
-    tinykeys(window, {
-      F: event => {
-        if (editor.focused) return;
-        event.preventDefault();
-        editor.setFocus(true);
-      },
-      Escape: () => {
-        if (editor.focused) {
-          if (!document.activeElement) return;
-          (document.activeElement as HTMLElement).blur();
-        } else {
-          setShow(false);
-        }
-      },
-      B: () => {
-        if (editor.focused) return;
-        frame.toggleVisibility();
-      },
-      D: () => {
-        if (editor.focused) return;
-        ui.toggleThemeMode();
-      },
-      H: () => {
-        if (editor.focused) return;
-        terminal.toggleShowHeader();
-      },
-      W: () => {
-        if (editor.focused) return;
-        terminal.toggleWatermark();
-      },
-      R: () => {
-        if (editor.focused) return;
-        const index = Math.floor(Math.random() * configuration.themes.length);
-        const theme = configuration.themes[index];
-        updateTheme(theme);
-      },
-      // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
-      'Shift+?': () => {
-        if (editor.focused) return;
-        setShow(show => !show);
-      },
-    });
+  useHotkey(document.body, {
+    F: event => {
+      if (editor.focused) return;
+      event.preventDefault();
+      editor.setFocus(true);
+    },
+    Escape: () => {
+      if (editor.focused) {
+        if (!document.activeElement) return;
+        (document.activeElement as HTMLElement).blur();
+      } else {
+        setShow(false);
+      }
+    },
+    B: () => {
+      if (editor.focused) return;
+      frame.toggleVisibility();
+    },
+    D: () => {
+      if (editor.focused) return;
+      ui.toggleThemeMode();
+    },
+    H: () => {
+      if (editor.focused) return;
+      terminal.toggleShowHeader();
+    },
+    W: () => {
+      if (editor.focused) return;
+      terminal.toggleWatermark();
+    },
+    R: () => {
+      if (editor.focused) return;
+      const index = Math.floor(Math.random() * configuration.themes.length);
+      const theme = configuration.themes[index];
+      updateTheme(theme);
+    },
+    // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
+    'Shift+?': () => {
+      if (editor.focused) return;
+      setShow(show => !show);
+    },
   });
 
   return (
