@@ -72,6 +72,10 @@ export function KeyboardShortcuts(): JSXElement {
         setShow(false);
       }
     },
+    P: () => {
+      if (editor.focused) return;
+      frame.setNextPadding();
+    },
     B: () => {
       if (editor.focused) return;
       frame.toggleVisibility();
@@ -104,21 +108,19 @@ export function KeyboardShortcuts(): JSXElement {
   return (
     <Popover>
       <>
-        <Box paddingLeft={'4'} paddingTop={'3'}>
-          <PopoverButton
-            ref={floating.setReference}
-            as={Button}
-            theme={'secondary'}
-            type={'button'}
-            variant={'solid'}
-            onClick={() => setShow(true)}
-          >
-            <HStack spacing={'2'}>
-              <HintIcon />
-              {label()}
-            </HStack>
-          </PopoverButton>
-        </Box>
+        <PopoverButton
+          ref={floating.setReference}
+          as={Button}
+          theme={'secondary'}
+          type={'button'}
+          variant={'solid'}
+          onClick={() => setShow(true)}
+        >
+          <HStack spacing={'2'}>
+            <HintIcon />
+            {label()}
+          </HStack>
+        </PopoverButton>
 
         <FadeInOutTransition show={show()}>
           <PortalHostInjector>

@@ -32,6 +32,17 @@ const store = combine(initialState, (set, get) => ({
   setBackground: (background: string | null) => set(() => ({background})),
   setScale: (scale: number) => set(() => ({scale})),
   toggleVisibility: () => set(() => ({visible: !get().visible})),
+
+  setNextPadding: () =>
+    set(() => {
+      const availablePadding = staticConfiguration.editorPadding;
+      const currentIndex = staticConfiguration.editorPadding.indexOf(
+        get().padding,
+      );
+
+      const next = (currentIndex + 1) % availablePadding.length;
+      return {padding: availablePadding[next]};
+    }),
 }));
 
 export const useFrameState = create(
