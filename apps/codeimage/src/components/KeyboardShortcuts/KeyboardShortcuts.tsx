@@ -41,7 +41,6 @@ export function KeyboardShortcuts(): JSXElement {
     {label: t('shortcut.toggleBackground'), key: ['B']},
     {label: t('shortcut.toggleDarkMode'), key: ['D']},
     {label: t('shortcut.toggleHeader'), key: ['H']},
-    {label: t('shortcut.selectLanguage'), key: ['L']},
     {label: t('shortcut.changePadding'), key: ['P']},
     {label: t('shortcut.pickRandomTheme'), key: ['R']},
     {label: t('shortcut.export'), key: ['Ctrl', 'S']},

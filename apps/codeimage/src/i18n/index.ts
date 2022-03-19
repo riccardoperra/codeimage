@@ -94,7 +94,6 @@ export const locale = {
       toggleDarkMode: 'Toggle dark mode',
       toggleHeader: 'Toggle header',
       toggleWatermark: 'Toggle watermark',
-      selectLanguage: 'Select language',
       changePadding: 'Change padding',
       pickRandomTheme: 'Pick random theme',
       export: 'Export',
