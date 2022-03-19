@@ -21,6 +21,7 @@ import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {PortalHost} from './components/ui/PortalHost/PortalHost';
 import {useTabIcon} from './hooks/use-tab-icon';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
+import {Box} from './components/ui/Box/Box';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -50,7 +51,11 @@ const App = () => {
       <Canvas>
         <Toolbar canvasRef={frameRef()} />
 
-        <KeyboardShortcuts />
+        <Show when={modality === 'full'}>
+          <Box paddingLeft={'4'} paddingTop={'3'}>
+            <KeyboardShortcuts />
+          </Box>
+        </Show>
 
         <FrameHandler ref={setFrameRef} onScaleChange={frame.setScale}>
           <Frame

@@ -28,6 +28,7 @@ export const [staticConfiguration, useStaticConfiguration] =
     locales: SUPPORTED_LOCALES,
     themes: SUPPORTED_THEMES,
     languages: SUPPORTED_LANGUAGES,
+    editorPadding: [16, 32, 64, 128],
     fonts: [
       {
         id: 'jetbrains-mono',
