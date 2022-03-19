@@ -22,7 +22,7 @@ import {useTabIcon} from './hooks/use-tab-icon';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {Box} from './components/ui/Box/Box';
 import {locale$} from '@codeimage/store/ui';
-import {fromStore} from './state/from-store';
+import {fromObservableObject} from './core/hooks/from-observable-object';
 import {initEffects, registerEffects} from '@ngneat/effects';
 import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
 
@@ -32,8 +32,8 @@ registerEffects([onTabNameChange$, onThemeChange$]);
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
-  const frame = fromStore(frame$);
-  const terminal = fromStore(terminal$);
+  const frame = fromObservableObject(frame$);
+  const terminal = fromObservableObject(terminal$);
   const modality = useModality();
   const [, {locale}] = useI18n();
   const [tabIcon] = useTabIcon({withDefault: true});

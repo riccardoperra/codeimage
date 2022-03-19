@@ -8,12 +8,12 @@ import {CodeMirror} from 'solid-codemirror';
 import {EDITOR_BASE_SETUP} from '@codeimage/config';
 import clsx from 'clsx';
 import {observeFocusExtension} from './observe-focus-extension';
-import {fromStore} from '../../state/from-store';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {focusedEditor$} from '../../state/editor';
 
 export const CustomEditor = () => {
   const configuration = useStaticConfiguration();
-  const editor = fromStore(editor$);
+  const editor = fromObservableObject(editor$);
 
   const selectedLanguage = createMemo(() =>
     configuration.languages.find(language => language.id === editor.languageId),

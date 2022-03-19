@@ -15,7 +15,7 @@ import {FadeInOutWithScaleTransition} from '../ui/Transition/Transition';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {useModality} from '../../core/hooks/isMobile';
-import {fromStore} from '../../state/from-store';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 function useFilteredThemes() {
   const {themes} = useStaticConfiguration();
@@ -33,7 +33,7 @@ function useFilteredThemes() {
 }
 
 export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
-  const terminal = fromStore(terminal$);
+  const terminal = fromObservableObject(terminal$);
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
   const [themes, filteredThemes, search, setSearch] = useFilteredThemes();

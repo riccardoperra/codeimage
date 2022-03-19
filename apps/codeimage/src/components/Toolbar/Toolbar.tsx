@@ -7,13 +7,13 @@ import {useStaticConfiguration} from '../../core/configuration';
 import {ExportButton} from './ExportButton';
 import {ShareButton} from './ShareButton';
 import {setLocale, toggleThemeMode, ui$} from '@codeimage/store/ui';
-import {fromStore} from '@codeimage/store/from-store';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
   const staticConfiguration = useStaticConfiguration();
-  const uiState = fromStore(ui$);
+  const uiState = fromObservableObject(ui$);
 
   return (
     <div class={styles.wrapper}>

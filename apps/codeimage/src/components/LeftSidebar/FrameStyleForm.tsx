@@ -6,7 +6,6 @@ import {RangeField} from '../ui/RangeField/RangeField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
 import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
-import {fromStore} from '@codeimage/store/from-store';
 import {
   frame$,
   setBackground,
@@ -14,9 +13,10 @@ import {
   setPadding,
   setVisibility,
 } from '@codeimage/store/frame';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 export const FrameStyleForm = () => {
-  const frame = fromStore(frame$);
+  const frame = fromObservableObject(frame$);
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
 

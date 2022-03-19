@@ -5,7 +5,7 @@ import {Group} from '../ui/Group/Group';
 import {RadioBlock} from '../ui/RadioBlock/RadioBlock';
 import {Box} from '../ui/Box/Box';
 import {useStaticConfiguration} from '../../core/configuration';
-import {fromStore} from '../../state/from-store';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 interface TerminalControlFieldProps {
   selectedTerminal: string;
@@ -16,7 +16,7 @@ export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
   const {terminalThemes} = useStaticConfiguration();
-  const terminalState = fromStore(terminal$);
+  const terminalState = fromObservableObject(terminal$);
 
   return (
     <Group orientation={'vertical'}>

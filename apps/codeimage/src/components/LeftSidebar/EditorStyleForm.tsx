@@ -15,12 +15,12 @@ import {
 } from '@codeimage/store/editor';
 import {useStaticConfiguration} from '../../core/configuration';
 import {useModality} from '../../core/hooks/isMobile';
-import {fromStore} from '../../state/from-store';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {from} from 'solid-js';
 import {map} from 'rxjs';
 
 export const EditorStyleForm = () => {
-  const editor = fromStore(editor$);
+  const editor = fromObservableObject(editor$);
   const configuration = useStaticConfiguration();
   const modality = useModality();
   const [t, {merge}] = useI18n<typeof locale>();

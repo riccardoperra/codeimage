@@ -12,10 +12,10 @@ import {
   setType,
   terminal$,
 } from '@codeimage/store/terminal';
-import {fromStore} from '../../state/from-store';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 export const WindowStyleForm = () => {
-  const terminal = fromStore(terminal$);
+  const terminal = fromObservableObject(terminal$);
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
 
