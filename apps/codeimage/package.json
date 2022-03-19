@@ -1,7 +1,7 @@
 {
   "name": "@codeimage/app",
   "private": true,
-  "version": "0.11.0",
+  "version": "0.12.0",
   "scripts": {
     "start": "vite",
     "dev": "vite --host",

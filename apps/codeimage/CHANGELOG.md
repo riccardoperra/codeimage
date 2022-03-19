@@ -1,5 +1,12 @@
 # @codeimage/app
 
+## 0.12.0
+
+### Minor Changes
+
+- 64f6ea9: feat: add theme search input
+- 2ca72c8: feat: add editor hotkey
+
 ## 0.11.0
 
 ### Minor Changes

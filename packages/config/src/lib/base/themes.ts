@@ -17,16 +17,16 @@ import {
 } from '@codeimage/theme';
 
 export const SUPPORTED_THEMES = [
-  oneDarkTheme,
-  lightTheme,
+  vsCodeDarkTheme,
   nightOwlTheme,
-  materialOceanTheme,
   draculaTheme,
+  materialOceanTheme,
   synthwave84Theme,
   materialVolcanoTheme,
+  oneDarkTheme,
+  lightTheme,
   materialPalenightTheme,
   arcDarkTheme,
-  vsCodeDarkTheme,
   holiTheme,
   duotoneSeaTheme,
   duotoneDarkTheme,
