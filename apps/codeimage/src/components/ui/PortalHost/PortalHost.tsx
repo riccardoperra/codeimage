@@ -13,7 +13,6 @@ import {Portal} from 'solid-js/web';
 export function PortalHost(
   props: Omit<JSX.IntrinsicElements['div'], 'class' | 'style'>,
 ): JSXElement {
-  console.log('portal host');
   const mergedProps = mergeProps({id: 'portal-host'}, props);
 
   return <div class={styles.host} {...mergedProps} />;

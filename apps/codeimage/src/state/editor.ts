@@ -1,5 +1,10 @@
 import create from 'solid-zustand';
-import {combine, devtools, persist} from 'zustand/middleware';
+import {
+  combine,
+  devtools,
+  persist,
+  subscribeWithSelector,
+} from 'zustand/middleware';
 import {staticConfiguration} from '../core/configuration';
 import {query} from './middleware';
 
@@ -10,6 +15,7 @@ interface EditorState {
   fontId: string;
   fontWeight: number;
   showLineNumbers: boolean;
+  focused: boolean;
 }
 
 // TODO: should be loaded onMount, initial state cannot use this configuration
@@ -20,6 +26,7 @@ const initialState: EditorState = {
   showLineNumbers: false,
   fontId: staticConfiguration.fonts[0].id,
   fontWeight: staticConfiguration.fonts[0].types[0].weight,
+  focused: false,
 };
 
 const store = combine(initialState, (set, get) => ({
@@ -31,13 +38,16 @@ const store = combine(initialState, (set, get) => ({
   setFontWeight: (fontWeight: number) => set(() => ({fontWeight})),
   getFont: () =>
     staticConfiguration.fonts.find(font => font.id === get().fontId),
+  setFocus: (focused: boolean) => set(() => ({focused})),
 }));
 
 export const useEditorState = create(
   devtools(
-    persist(query(store, {debounce: 500, prefix: 'editor'}), {
-      name: '@store/editor',
-    }),
+    subscribeWithSelector(
+      persist(query(store, {debounce: 500, prefix: 'editor'}), {
+        name: '@store/editor',
+      }),
+    ),
     {
       name: 'editor',
     },

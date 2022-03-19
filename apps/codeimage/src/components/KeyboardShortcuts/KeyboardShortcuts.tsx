@@ -13,12 +13,12 @@ import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {offset} from '@floating-ui/dom';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
 import tinykeys from 'tinykeys';
-import {noop} from '../../core/constants/noop';
 import {useFrameState} from '../../state/frame';
 import {useUIState} from '../../state/ui';
 import {useTerminalState} from '../../state/terminal';
 import {useStaticConfiguration} from '../../core/configuration';
 import {updateTheme} from '../../state/state';
+import {useEditorState} from '../../state/editor';
 
 export interface KeyboardShortcut {
   label: string;
@@ -30,6 +30,7 @@ export function KeyboardShortcuts(): JSXElement {
   const [show, setShow] = createSignal(false);
 
   const frame = useFrameState();
+  const editor = useEditorState();
   const ui = useUIState();
   const terminal = useTerminalState();
   const configuration = useStaticConfiguration();
@@ -60,19 +61,45 @@ export function KeyboardShortcuts(): JSXElement {
 
   onMount(() => {
     tinykeys(window, {
-      F: noop,
-      Esc: noop,
-      B: () => frame.toggleVisibility(),
-      D: () => ui.toggleThemeMode(),
-      H: () => terminal.toggleShowHeader(),
-      W: () => terminal.toggleWatermark(),
+      F: () => {
+        if (editor.focused) return;
+        editor.setFocus(true);
+      },
+      Escape: () => {
+        if (editor.focused) {
+          if (!document.activeElement) return;
+          (document.activeElement as HTMLElement).blur();
+        } else {
+          setShow(false);
+        }
+      },
+      B: () => {
+        if (editor.focused) return;
+        frame.toggleVisibility();
+      },
+      D: () => {
+        if (editor.focused) return;
+        ui.toggleThemeMode();
+      },
+      H: () => {
+        if (editor.focused) return;
+        terminal.toggleShowHeader();
+      },
+      W: () => {
+        if (editor.focused) return;
+        terminal.toggleWatermark();
+      },
       R: () => {
+        if (editor.focused) return;
         const index = Math.floor(Math.random() * configuration.themes.length);
         const theme = configuration.themes[index];
         updateTheme(theme);
       },
       // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
-      'Shift+?': () => setShow(show => !show),
+      'Shift+?': () => {
+        if (editor.focused) return;
+        setShow(show => !show);
+      },
     });
   });
 
