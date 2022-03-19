@@ -35,6 +35,7 @@ import {HStack, VStack} from '../ui/Box/Stack';
 import {useModality} from '../../core/hooks/isMobile';
 import {Transition} from 'solid-headless';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
+import {useHotkey} from '../../hooks/use-hotkey';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -69,6 +70,13 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         },
       });
     }
+  });
+
+  useHotkey(document.body, {
+    'Control+s': event => {
+      event.preventDefault();
+      openModal();
+    },
   });
 
   return (

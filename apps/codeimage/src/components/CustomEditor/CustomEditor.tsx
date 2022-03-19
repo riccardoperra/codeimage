@@ -7,6 +7,7 @@ import {createCustomFontExtension} from './custom-font-extension';
 import {CodeMirror} from 'solid-codemirror';
 import {EDITOR_BASE_SETUP} from '@codeimage/config';
 import clsx from 'clsx';
+import {observeFocusExtension} from './observe-focus-extension';
 
 export const CustomEditor = () => {
   const configuration = useStaticConfiguration();
@@ -46,6 +47,11 @@ export const CustomEditor = () => {
       position: 'sticky',
       flexDirection: 'column',
       flexShrink: 0,
+    },
+    '.cm-lineNumbers .cm-gutterElement': {
+      textAlign: 'right',
+      padding: '0 16px 0 8px',
+      lineHeight: '21px',
     },
     '.cm-line': {
       padding: '0 2px 0 8px',
@@ -88,6 +94,20 @@ export const CustomEditor = () => {
               EDITOR_BASE_SETUP,
               baseTheme,
               supportsLineWrap,
+              observeFocusExtension(
+                focused => editor.setFocus(focused),
+                vu => {
+                  // ATTENTION: a lot of multiple calls to fix!!
+                  useEditorState.subscribe(
+                    state => state.focused,
+                    focused => {
+                      if (focused && !vu.view.hasFocus) {
+                        vu.view.focus();
+                      }
+                    },
+                  );
+                },
+              ),
               customFontExtension(),
               currentLanguage() || [],
               currentTheme(),

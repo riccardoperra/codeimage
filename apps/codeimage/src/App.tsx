@@ -20,6 +20,7 @@ import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
 import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {PortalHost} from './components/ui/PortalHost/PortalHost';
 import {useTabIcon} from './hooks/use-tab-icon';
+import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -48,6 +49,8 @@ const App = () => {
 
       <Canvas>
         <Toolbar canvasRef={frameRef()} />
+
+        <KeyboardShortcuts />
 
         <FrameHandler ref={setFrameRef} onScaleChange={frame.setScale}>
           <Frame

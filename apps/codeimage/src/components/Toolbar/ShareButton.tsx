@@ -5,6 +5,7 @@ import {AppLocaleEntries} from '../../i18n';
 import {Box} from '../ui/Box/Box';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 import {useStaticConfiguration} from '../../core/configuration';
+import {useHotkey} from '../../hooks/use-hotkey';
 
 interface ShareButtonProps {
   showLabel?: boolean;
@@ -29,6 +30,13 @@ export const ShareButton: Component<ShareButtonProps> = props => {
     }
     return await navigator.share(data);
   }
+
+  useHotkey(document.body, {
+    'Control+Shift+C': async event => {
+      event.preventDefault();
+      await share();
+    },
+  });
 
   return (
     <Button

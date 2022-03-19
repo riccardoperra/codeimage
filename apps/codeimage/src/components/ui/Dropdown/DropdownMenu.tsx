@@ -1,4 +1,8 @@
-import {Menu, PopoverPanel, PopoverPanelProps} from 'solid-headless';
+import {
+  Menu,
+  PopoverPanel as ShPopoverPanel,
+  PopoverPanelProps,
+} from 'solid-headless';
 import {Component} from 'solid-js';
 import * as styles from './Dropdown.css';
 
@@ -6,7 +10,7 @@ type DropdownMenuPanel = PopoverPanelProps<'div'>;
 
 export const DropdownMenu: Component<DropdownMenuPanel> = props => {
   return (
-    <PopoverPanel
+    <ShPopoverPanel
       as={'div'}
       unmount={false}
       class={styles.dropdownMenuPanel}
@@ -15,6 +19,19 @@ export const DropdownMenu: Component<DropdownMenuPanel> = props => {
       <Menu as={'ul'} class={styles.dropdownMenu}>
         {props.children}
       </Menu>
-    </PopoverPanel>
+    </ShPopoverPanel>
+  );
+};
+
+export const PopoverPanel: Component<DropdownMenuPanel> = props => {
+  return (
+    <ShPopoverPanel
+      as={'div'}
+      unmount={false}
+      class={styles.dropdownMenuPanel}
+      {...props}
+    >
+      {props.children}
+    </ShPopoverPanel>
   );
 };
