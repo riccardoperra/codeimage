@@ -8,17 +8,18 @@ import {StaticConfigurationProvider} from '@codeimage/config';
 import './assets/styles/app.scss';
 import {devTools} from '@ngneat/elf-devtools';
 
-devTools();
+if (import.meta.env.DEV) {
+  devTools();
+}
 
-setTimeout(() => {
-  render(
-    () => (
-      <StaticConfigurationProvider config={staticConfiguration}>
-        <I18nProvider dict={locale}>
-          <App />
-        </I18nProvider>
-      </StaticConfigurationProvider>
-    ),
-    document.getElementById('root') as HTMLElement,
+render(Bootstrap, document.getElementById('root') as HTMLElement);
+
+export function Bootstrap() {
+  return (
+    <StaticConfigurationProvider config={staticConfiguration}>
+      <I18nProvider dict={locale}>
+        <App />
+      </I18nProvider>
+    </StaticConfigurationProvider>
   );
-});
+}
