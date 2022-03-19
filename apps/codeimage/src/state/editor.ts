@@ -30,6 +30,8 @@ const store = createStore(
   withProps<EditorState>(initialState),
 );
 
+export const updateEditorStore = store.update.bind(store);
+
 persistState(store, {storage: localStorageStrategy, key: '@store/editor'});
 
 export function setLanguageId(languageId: string) {

@@ -4,6 +4,8 @@ import {createStore, select, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
 import shallow from './shallow';
+import {dispatch} from '@ngneat/effects';
+import {updateTabName} from './effect';
 
 export interface TerminalState {
   readonly showHeader: boolean;
@@ -82,23 +84,10 @@ export function toggleWatermark() {
 
 export function setTabName(tabName: string) {
   store.update(setProp('tabName', tabName));
-
   if (!tabName) {
     return;
   }
-  // const matches = staticConfiguration.languages.filter(language => {
-  //   return language.icons.some(({matcher}) => matcher.test(tabName));
-  // });
-  //
-  // if (
-  //   !matches.length ||
-  //   matches
-  //     .map(match => match.id)
-  //     .includes(useEditorState.getState().languageId)
-  // ) {
-  //   return;
-  // }
-  // useEditorState.setState({languageId: matches[0].id});
+  dispatch(updateTabName({tabName}));
 }
 
 export const terminal$ = store.pipe(distinctUntilChanged(shallow));

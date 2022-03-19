@@ -6,14 +6,19 @@ import {I18nProvider} from '@codeimage/locale';
 import {locale} from './i18n';
 import {StaticConfigurationProvider} from '@codeimage/config';
 import './assets/styles/app.scss';
+import {devTools} from '@ngneat/elf-devtools';
 
-render(
-  () => (
-    <StaticConfigurationProvider config={staticConfiguration}>
-      <I18nProvider dict={locale}>
-        <App />
-      </I18nProvider>
-    </StaticConfigurationProvider>
-  ),
-  document.getElementById('root') as HTMLElement,
-);
+devTools();
+
+setTimeout(() => {
+  render(
+    () => (
+      <StaticConfigurationProvider config={staticConfiguration}>
+        <I18nProvider dict={locale}>
+          <App />
+        </I18nProvider>
+      </StaticConfigurationProvider>
+    ),
+    document.getElementById('root') as HTMLElement,
+  );
+});

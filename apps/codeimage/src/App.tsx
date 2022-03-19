@@ -21,11 +21,13 @@ import {PortalHost} from './components/ui/PortalHost/PortalHost';
 import {useTabIcon} from './hooks/use-tab-icon';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {Box} from './components/ui/Box/Box';
-import {devTools} from '@ngneat/elf-devtools';
 import {locale$} from '@codeimage/store/ui';
 import {fromStore} from './state/from-store';
+import {initEffects, registerEffects} from '@ngneat/effects';
+import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
 
-devTools();
+initEffects();
+registerEffects([onTabNameChange$, onThemeChange$]);
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();

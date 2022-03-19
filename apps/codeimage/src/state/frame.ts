@@ -29,6 +29,8 @@ const store = createStore(
   withProps<FrameStateSlice>(initialState),
 );
 
+export const updateFrameStore = store.update.bind(store);
+
 persistState(store, {key: '@store/frame', storage: localStorageStrategy});
 
 export function setPadding(padding: number): void {

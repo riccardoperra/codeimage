@@ -101,7 +101,6 @@ export const CustomEditor = () => {
                 vu => {
                   // ATTENTION: a lot of multiple calls to fix!!
                   focusedEditor$.subscribe(focused => {
-                    console.log(focused);
                     if (focused && !vu.view.hasFocus) {
                       vu.view.focus();
                     }
