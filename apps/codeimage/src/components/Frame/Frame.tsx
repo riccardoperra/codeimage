@@ -16,7 +16,7 @@ export const Frame: Component<{
   visible: boolean;
 }> = props => {
   const {width, onResizeStart, setRef, resizing} = createHorizontalResize();
-  const pxWidth = createMemo(() => `${width()}px`);
+  const pxWidth = createMemo(() => `${width() || '730'}px`);
   const roundedWidth = createMemo(() => `${Math.floor(width())}px`);
 
   return (

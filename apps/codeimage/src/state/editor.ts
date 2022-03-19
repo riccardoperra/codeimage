@@ -1,9 +1,10 @@
-import {staticConfiguration} from '../core/configuration';
+import {EnvironmentProvider} from '../core/configuration';
 import {createStore, select, setProp, withProps} from '@ngneat/elf';
 import {distinctUntilChanged, map} from 'rxjs';
 import shallow from '../core/helpers/shallow';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {persistQuery} from '../core/helpers/persistQuery';
+import {inject} from 'solid-use';
 
 interface EditorState {
   languageId: string;
@@ -15,14 +16,16 @@ interface EditorState {
   focused: boolean;
 }
 
+const {languages, themes, fonts, defaultState} = inject(EnvironmentProvider);
+
 // TODO: should be loaded onMount, initial state cannot use this configuration
 const initialState: EditorState = {
-  code: '',
-  languageId: staticConfiguration.languages[0].id,
-  themeId: staticConfiguration.themes[0].id,
+  code: defaultState.editor.code,
+  languageId: languages[0].id,
+  themeId: themes[0].id,
   showLineNumbers: false,
-  fontId: staticConfiguration.fonts[0].id,
-  fontWeight: staticConfiguration.fonts[0].types[0].weight,
+  fontId: fonts[0].id,
+  fontWeight: fonts[0].types[0].weight,
   focused: false,
 };
 
@@ -83,7 +86,7 @@ export const editorLanguageId$ = editor$.pipe(
 );
 
 export const font$ = fontId$.pipe(
-  map(id => staticConfiguration.fonts.find(font => font.id === id)),
+  map(id => fonts.find(font => font.id === id)),
 );
 
 export const focusedEditor$ = editor$.pipe(select(store => store.focused));

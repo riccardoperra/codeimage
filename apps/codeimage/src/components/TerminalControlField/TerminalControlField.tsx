@@ -4,8 +4,9 @@ import {terminal$} from '@codeimage/store/terminal';
 import {Group} from '../ui/Group/Group';
 import {RadioBlock} from '../ui/RadioBlock/RadioBlock';
 import {Box} from '../ui/Box/Box';
-import {useStaticConfiguration} from '../../core/configuration';
+import {EnvironmentProvider} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
+import {inject} from 'solid-use';
 
 interface TerminalControlFieldProps {
   selectedTerminal: string;
@@ -15,7 +16,8 @@ interface TerminalControlFieldProps {
 export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
-  const {terminalThemes} = useStaticConfiguration();
+  // TODO: add lazy loading?
+  const {terminalThemes} = inject(EnvironmentProvider);
   const terminalState = fromObservableObject(terminal$);
 
   return (

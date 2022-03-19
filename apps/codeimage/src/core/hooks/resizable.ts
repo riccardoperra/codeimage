@@ -134,10 +134,6 @@ export function createHorizontalResize(
             ) ||
             0,
         );
-
-        setState({
-          width: ref.clientWidth,
-        });
       });
     }),
   );

@@ -1,9 +1,10 @@
-import {useStaticConfiguration} from '../core/configuration';
+import {EnvironmentProvider} from '../core/configuration';
 import {editorLanguageId$} from '../state/editor';
 import {tabName$} from '../state/terminal';
 import {createEffect, createMemo, createSignal, from, on} from 'solid-js';
 import {LanguageIconDefinition} from '@codeimage/config';
 import {select} from '@ngneat/elf';
+import {inject} from 'solid-use';
 
 interface UseTabIconOptions {
   withDefault: boolean;
@@ -11,12 +12,12 @@ interface UseTabIconOptions {
 
 export const useTabIcon = (options: UseTabIconOptions) => {
   const [icon, setIcon] = createSignal<LanguageIconDefinition | null>();
-  const configuration = useStaticConfiguration();
+  const {languages} = inject(EnvironmentProvider);
 
   const currentLanguage = from(
     editorLanguageId$.pipe(
       select(languageId => {
-        return configuration.languages.find(({id}) => id === languageId);
+        return languages.find(({id}) => id === languageId);
       }),
     ),
   );

@@ -13,15 +13,16 @@ import {
   setLanguageId,
   setShowLineNumbers,
 } from '@codeimage/store/editor';
-import {useStaticConfiguration} from '../../core/configuration';
+import {EnvironmentProvider} from '../../core/configuration';
 import {useModality} from '../../core/hooks/isMobile';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {from} from 'solid-js';
 import {map} from 'rxjs';
+import {inject} from 'solid-use';
 
 export const EditorStyleForm = () => {
   const editor = fromObservableObject(editor$);
-  const configuration = useStaticConfiguration();
+  const {languages, fonts} = inject(EnvironmentProvider);
   const modality = useModality();
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
@@ -49,14 +50,12 @@ export const EditorStyleForm = () => {
           <Select
             multiple={false}
             native={modality === 'mobile'}
-            items={configuration.languages.map(({label, id}) => ({
+            items={languages.map(({label, id}) => ({
               label: label,
               value: id,
             }))}
             value={editor.languageId}
-            onSelectChange={value =>
-              setLanguageId(value ?? configuration.languages[0].id)
-            }
+            onSelectChange={value => setLanguageId(value ?? languages[0].id)}
           />
         </TwoColumnPanelRow>
       </PanelRow>
@@ -80,11 +79,11 @@ export const EditorStyleForm = () => {
           <Select
             native={modality === 'mobile'}
             multiple={false}
-            items={configuration.fonts.map(font => ({
+            items={fonts.map(font => ({
               label: font.name,
               value: font,
             }))}
-            value={configuration.fonts.find(font => font.id === editor.fontId)}
+            value={fonts.find(font => font.id === editor.fontId)}
             itemContent={({label, value, selected}) => (
               <Text
                 size={'xs'}
@@ -95,9 +94,7 @@ export const EditorStyleForm = () => {
                 {label}
               </Text>
             )}
-            onSelectChange={value =>
-              setFontId(value?.id ?? configuration.fonts[0].id)
-            }
+            onSelectChange={value => setFontId(value?.id ?? fonts[0].id)}
           />
         </TwoColumnPanelRow>
       </PanelRow>

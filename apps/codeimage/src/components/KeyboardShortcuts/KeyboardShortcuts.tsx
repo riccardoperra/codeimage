@@ -14,12 +14,13 @@ import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
 import * as frame from '@codeimage/store/frame';
 import * as editor from '@codeimage/store/editor';
 import * as terminal from '@codeimage/store/terminal';
-import {useStaticConfiguration} from '../../core/configuration';
+import {EnvironmentProvider} from '../../core/configuration';
 import {focusedEditor$} from '../../state/editor';
 import {useHotkey} from '../../hooks/use-hotkey';
 import * as ui from '@codeimage/store/ui';
 import {dispatch} from '@ngneat/effects';
 import {updateTheme} from '../../state/effect';
+import {inject} from 'solid-use';
 
 export interface KeyboardShortcut {
   label: string;
@@ -27,10 +28,9 @@ export interface KeyboardShortcut {
 }
 
 export function KeyboardShortcuts(): JSXElement {
+  const {themes} = inject(EnvironmentProvider);
   const [t] = useI18n<AppLocaleEntries>();
   const [show, setShow] = createSignal(false);
-
-  const configuration = useStaticConfiguration();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [
     {label: t('shortcut.focusCodeEditor'), key: ['F']},
@@ -96,8 +96,8 @@ export function KeyboardShortcuts(): JSXElement {
     },
     R: () => {
       if (filterHotKey()) return;
-      const index = Math.floor(Math.random() * configuration.themes.length);
-      const theme = configuration.themes[index];
+      const index = Math.floor(Math.random() * themes.length);
+      const theme = themes[index];
       dispatch(updateTheme({theme}));
     },
     // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155

@@ -1,6 +1,6 @@
 import {EditorView} from '@codemirror/view';
 import {editor$, setCode, setFocus} from '@codeimage/store/editor';
-import {useStaticConfiguration} from '../../core/configuration';
+import {EnvironmentProvider} from '../../core/configuration';
 import {createMemo, createResource, Show} from 'solid-js';
 import {lineNumbers} from '@codemirror/gutter';
 import {createCustomFontExtension} from './custom-font-extension';
@@ -10,13 +10,14 @@ import clsx from 'clsx';
 import {observeFocusExtension} from './observe-focus-extension';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {focusedEditor$} from '../../state/editor';
+import {inject} from 'solid-use';
 
 export const CustomEditor = () => {
-  const configuration = useStaticConfiguration();
+  const {languages, themes, fonts} = inject(EnvironmentProvider);
   const editor = fromObservableObject(editor$);
 
   const selectedLanguage = createMemo(() =>
-    configuration.languages.find(language => language.id === editor.languageId),
+    languages.find(language => language.id === editor.languageId),
   );
 
   const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
@@ -24,7 +25,7 @@ export const CustomEditor = () => {
   );
 
   const themeConfiguration = createMemo(() =>
-    configuration.themes.find(theme => theme.id === editor.themeId),
+    themes.find(theme => theme.id === editor.themeId),
   );
 
   const currentTheme = createMemo(
@@ -68,8 +69,7 @@ export const CustomEditor = () => {
   const customFontExtension = createMemo(() =>
     createCustomFontExtension({
       fontName:
-        configuration.fonts.find(({id}) => editor.fontId === id)?.name ||
-        configuration.fonts[0].name,
+        fonts.find(({id}) => editor.fontId === id)?.name || fonts[0].name,
       fontWeight: editor.fontWeight,
     }),
   );
