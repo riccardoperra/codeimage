@@ -30,9 +30,6 @@ export function useAsyncAction<T, R>(
   );
 
   const notify = (value: T) => {
-    if (notifier instanceof Observable) {
-      notifier.next(value);
-    }
     return setNotifier(() => value);
   };
 

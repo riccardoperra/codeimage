@@ -1,10 +1,7 @@
-import {
-  combine,
-  devtools,
-  persist,
-  subscribeWithSelector,
-} from 'zustand/middleware';
-import create from 'solid-zustand';
+import {createStore, select, setProp, withProps} from '@ngneat/elf';
+import {distinctUntilChanged, shareReplay} from 'rxjs';
+import shallow from './shallow';
+import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 
 export interface GlobalUiState {
   themeMode: 'light' | 'dark';
@@ -16,18 +13,23 @@ const initialState: GlobalUiState = {
   locale: 'en',
 };
 
-const store = combine(initialState, set => ({
-  setLocale: (locale: string) => set(() => ({locale})),
-  setThemeMode: (themeMode: GlobalUiState['themeMode']) =>
-    set(() => ({themeMode})),
-  toggleThemeMode: () =>
-    set(({themeMode}) => ({
-      themeMode: themeMode === 'light' ? 'dark' : 'light',
-    })),
-}));
+const store = createStore({name: 'ui'}, withProps<GlobalUiState>(initialState));
 
-export const useUIState = create(
-  subscribeWithSelector(
-    persist(devtools(store, {name: 'ui'}), {name: '@store/ui'}),
-  ),
+persistState(store, {key: '@store/ui', storage: localStorageStrategy});
+
+export const ui$ = store.pipe(distinctUntilChanged(shallow));
+export const locale$ = ui$.pipe(select(state => state.locale));
+export const themeMode$ = ui$.pipe(
+  select(state => state.themeMode),
+  shareReplay({refCount: true, bufferSize: 1}),
 );
+
+export function setLocale(locale: string): void {
+  return store.update(setProp('locale', locale));
+}
+
+export function toggleThemeMode(): void {
+  return store.update(
+    setProp('themeMode', mode => (mode === 'light' ? 'dark' : 'light')),
+  );
+}

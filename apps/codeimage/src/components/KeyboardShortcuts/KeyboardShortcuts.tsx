@@ -1,4 +1,4 @@
-import {createMemo, createSignal, For, JSXElement} from 'solid-js';
+import {createMemo, createSignal, For, from, JSXElement} from 'solid-js';
 import {Button} from '../ui/Button/Button';
 import {HintIcon} from '../Icons/Hint';
 import {HStack} from '../ui/Box/Stack';
@@ -11,13 +11,14 @@ import * as styles from './KeyboardShortcuts.css';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {offset} from '@floating-ui/dom';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
-import {useFrameState} from '../../state/frame';
-import {useUIState} from '../../state/ui';
-import {useTerminalState} from '../../state/terminal';
+import * as frame from '@codeimage/store/frame';
+import * as editor from '@codeimage/store/editor';
+import * as terminal from '@codeimage/store/terminal';
 import {useStaticConfiguration} from '../../core/configuration';
 import {updateTheme} from '../../state/state';
-import {useEditorState} from '../../state/editor';
+import {focusedEditor$} from '../../state/editor';
 import {useHotkey} from '../../hooks/use-hotkey';
+import * as ui from '@codeimage/store/ui';
 
 export interface KeyboardShortcut {
   label: string;
@@ -28,10 +29,6 @@ export function KeyboardShortcuts(): JSXElement {
   const [t] = useI18n<AppLocaleEntries>();
   const [show, setShow] = createSignal(false);
 
-  const frame = useFrameState();
-  const editor = useEditorState();
-  const ui = useUIState();
-  const terminal = useTerminalState();
   const configuration = useStaticConfiguration();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [
@@ -57,17 +54,19 @@ export function KeyboardShortcuts(): JSXElement {
     middleware: [offset(10)],
   });
 
+  const focusedEditor = from(focusedEditor$);
+
   const filterHotKey = () =>
-    editor.focused || document.activeElement?.nodeName === 'INPUT';
+    focusedEditor() || document.activeElement?.nodeName === 'INPUT';
 
   useHotkey(document.body, {
     F: event => {
-      if (editor.focused) return;
+      if (filterHotKey()) return;
       event.preventDefault();
       editor.setFocus(true);
     },
     Escape: () => {
-      if (editor.focused) {
+      if (focusedEditor()) {
         if (!document.activeElement) return;
         (document.activeElement as HTMLElement).blur();
       } else {

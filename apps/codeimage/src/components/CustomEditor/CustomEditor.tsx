@@ -1,5 +1,5 @@
 import {EditorView} from '@codemirror/view';
-import {useEditorState} from '../../state/editor';
+import {editor$, setCode, setFocus} from '@codeimage/store/editor';
 import {useStaticConfiguration} from '../../core/configuration';
 import {createMemo, createResource, Show} from 'solid-js';
 import {lineNumbers} from '@codemirror/gutter';
@@ -8,10 +8,12 @@ import {CodeMirror} from 'solid-codemirror';
 import {EDITOR_BASE_SETUP} from '@codeimage/config';
 import clsx from 'clsx';
 import {observeFocusExtension} from './observe-focus-extension';
+import {fromStore} from '../../state/from-store';
+import {focusedEditor$} from '../../state/editor';
 
 export const CustomEditor = () => {
   const configuration = useStaticConfiguration();
-  const editor = useEditorState();
+  const editor = fromStore(editor$);
 
   const selectedLanguage = createMemo(() =>
     configuration.languages.find(language => language.id === editor.languageId),
@@ -89,23 +91,21 @@ export const CustomEditor = () => {
         <div class={externalStylesheet()?.className}>
           <CodeMirror
             value={editor.code}
-            onChange={editor.setCode}
+            onChange={setCode}
             extensions={[
               EDITOR_BASE_SETUP,
               baseTheme,
               supportsLineWrap,
               observeFocusExtension(
-                focused => editor.setFocus(focused),
+                focused => setFocus(focused),
                 vu => {
                   // ATTENTION: a lot of multiple calls to fix!!
-                  useEditorState.subscribe(
-                    state => state.focused,
-                    focused => {
-                      if (focused && !vu.view.hasFocus) {
-                        vu.view.focus();
-                      }
-                    },
-                  );
+                  focusedEditor$.subscribe(focused => {
+                    console.log(focused);
+                    if (focused && !vu.view.hasFocus) {
+                      vu.view.focus();
+                    }
+                  });
                 },
               ),
               customFontExtension(),

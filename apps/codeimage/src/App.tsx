@@ -4,13 +4,12 @@ import {Scaffold} from './components/Scaffold/Scaffold';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {createEffect, createMemo, createSignal, on, Show} from 'solid-js';
+import {createEffect, createSignal, from, on, Show} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
-import {useFrameState} from './state/frame';
-import {useTerminalState} from './state/terminal';
+import {frame$, setScale} from '@codeimage/store/frame';
+import {setTabName, terminal$} from '@codeimage/store/terminal';
 import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
 import {Footer} from './components/Footer/Footer';
-import {useUIState} from './state/ui';
 import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
 import {BottomBar} from './components/BottomBar/BottomBar';
@@ -22,18 +21,22 @@ import {PortalHost} from './components/ui/PortalHost/PortalHost';
 import {useTabIcon} from './hooks/use-tab-icon';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {Box} from './components/ui/Box/Box';
+import {devTools} from '@ngneat/elf-devtools';
+import {locale$} from '@codeimage/store/ui';
+import {fromStore} from './state/from-store';
+
+devTools();
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
-  const frame = useFrameState();
-  const terminal = useTerminalState();
-  const ui = useUIState();
+  const frame = fromStore(frame$);
+  const terminal = fromStore(terminal$);
   const modality = useModality();
   const [, {locale}] = useI18n();
-  const currentLocale = createMemo(() => ui.locale);
   const [tabIcon] = useTabIcon({withDefault: true});
 
+  const currentLocale = from(locale$);
   createEffect(on(currentLocale, locale));
 
   return (
@@ -57,7 +60,7 @@ const App = () => {
           </Box>
         </Show>
 
-        <FrameHandler ref={setFrameRef} onScaleChange={frame.setScale}>
+        <FrameHandler ref={setFrameRef} onScaleChange={setScale}>
           <Frame
             radius={0}
             padding={frame.padding}
@@ -75,7 +78,7 @@ const App = () => {
               accentVisible={terminal.accentVisible}
               darkMode={terminal.darkMode}
               textColor={terminal.textColor}
-              onTabChange={terminal.setTabName}
+              onTabChange={setTabName}
               showHeader={terminal.showHeader}
               tabIcon={tabIcon()?.src}
               showWatermark={terminal.showWatermark}

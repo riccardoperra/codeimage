@@ -5,16 +5,40 @@ import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {Text} from '../ui/Text/Text';
 import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
-import {useEditorState} from '../../state/editor';
+import {
+  editor$,
+  font$,
+  setFontId,
+  setFontWeight,
+  setLanguageId,
+  setShowLineNumbers,
+} from '@codeimage/store/editor';
 import {useStaticConfiguration} from '../../core/configuration';
 import {useModality} from '../../core/hooks/isMobile';
+import {fromStore} from '../../state/from-store';
+import {from} from 'solid-js';
+import {map} from 'rxjs';
 
 export const EditorStyleForm = () => {
-  const editor = useEditorState();
+  const editor = fromStore(editor$);
   const configuration = useStaticConfiguration();
   const modality = useModality();
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
+
+  const font = from(font$);
+
+  const fontWeightOptions = from(
+    font$.pipe(
+      map(font => font?.types || []),
+      map(types =>
+        types.map(type => ({
+          label: type.name,
+          value: type.weight,
+        })),
+      ),
+    ),
+  );
 
   return (
     <>
@@ -31,7 +55,7 @@ export const EditorStyleForm = () => {
             }))}
             value={editor.languageId}
             onSelectChange={value =>
-              editor.setLanguageId(value ?? configuration.languages[0].id)
+              setLanguageId(value ?? configuration.languages[0].id)
             }
           />
         </TwoColumnPanelRow>
@@ -42,7 +66,7 @@ export const EditorStyleForm = () => {
           <SegmentedField
             size={'xs'}
             value={editor.showLineNumbers}
-            onChange={editor.setShowLineNumbers}
+            onChange={setShowLineNumbers}
             items={[
               {label: 'Show', value: true},
               {label: 'Hide', value: false},
@@ -72,7 +96,7 @@ export const EditorStyleForm = () => {
               </Text>
             )}
             onSelectChange={value =>
-              editor.setFontId(value?.id ?? configuration.fonts[0].id)
+              setFontId(value?.id ?? configuration.fonts[0].id)
             }
           />
         </TwoColumnPanelRow>
@@ -83,17 +107,10 @@ export const EditorStyleForm = () => {
           <Select
             native={modality === 'mobile'}
             multiple={false}
-            items={
-              editor.getFont()?.types.map(type => ({
-                label: type.name,
-                value: type.weight,
-              })) || []
-            }
+            items={fontWeightOptions()}
             value={editor.fontWeight}
             onSelectChange={value =>
-              editor.setFontWeight(
-                value ?? editor.getFont()?.types[0].weight ?? 400,
-              )
+              setFontWeight(value ?? font()?.types[0].weight ?? 400)
             }
           />
         </TwoColumnPanelRow>

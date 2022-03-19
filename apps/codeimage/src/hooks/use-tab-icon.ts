@@ -1,8 +1,9 @@
 import {useStaticConfiguration} from '../core/configuration';
-import {useEditorState} from '../state/editor';
-import {useTerminalState} from '../state/terminal';
-import {createEffect, createMemo, createSignal, on} from 'solid-js';
+import {editorLanguageId$} from '../state/editor';
+import {tabName$} from '../state/terminal';
+import {createEffect, createMemo, createSignal, from, on} from 'solid-js';
 import {LanguageIconDefinition} from '@codeimage/config';
+import {select} from '@ngneat/elf';
 
 interface UseTabIconOptions {
   withDefault: boolean;
@@ -11,27 +12,34 @@ interface UseTabIconOptions {
 export const useTabIcon = (options: UseTabIconOptions) => {
   const [icon, setIcon] = createSignal<LanguageIconDefinition | null>();
   const configuration = useStaticConfiguration();
-  // ATTENTION: Cannot use selector due to store structure!!!
-  const editorState = useEditorState();
-  const terminalState = useTerminalState();
+
+  const currentLanguage = from(
+    editorLanguageId$.pipe(
+      select(languageId => {
+        return configuration.languages.find(({id}) => id === languageId);
+      }),
+    ),
+  );
+
+  const tabName = from(tabName$);
 
   const languageIcons = createMemo(() => {
-    const lngConfig = configuration.languages.find(
-      ({id}) => id === editorState.languageId,
-    );
-    if (!lngConfig) {
+    const language = currentLanguage();
+    if (!language) {
       return [];
     }
-    return lngConfig.icons;
+    return language.icons;
   });
 
   const currentIcon = createMemo(() => {
-    if (!terminalState.tabName) {
+    const tab = tabName();
+
+    if (!tab) {
       return null;
     }
     const matchedIcons = languageIcons().filter(icon => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return icon.matcher.test(terminalState.tabName!);
+      return icon.matcher.test(tab);
     });
 
     return (

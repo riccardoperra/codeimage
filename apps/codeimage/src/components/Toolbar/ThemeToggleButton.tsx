@@ -1,5 +1,4 @@
 import {Component, createMemo} from 'solid-js';
-import {GlobalUiState} from '../../state/ui';
 import {Button} from '../ui/Button/Button';
 import {themeVars} from '../../theme/global.css';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';

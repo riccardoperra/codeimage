@@ -1,10 +1,11 @@
 import {For, JSXElement} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {useTerminalState} from '../../state/terminal';
+import {terminal$} from '@codeimage/store/terminal';
 import {Group} from '../ui/Group/Group';
 import {RadioBlock} from '../ui/RadioBlock/RadioBlock';
 import {Box} from '../ui/Box/Box';
 import {useStaticConfiguration} from '../../core/configuration';
+import {fromStore} from '../../state/from-store';
 
 interface TerminalControlFieldProps {
   selectedTerminal: string;
@@ -15,7 +16,7 @@ export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
   const {terminalThemes} = useStaticConfiguration();
-  const terminalState = useTerminalState();
+  const terminalState = fromStore(terminal$);
 
   return (
     <Group orientation={'vertical'}>

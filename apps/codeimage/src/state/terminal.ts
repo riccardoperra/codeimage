@@ -1,14 +1,9 @@
-import {
-  combine,
-  devtools,
-  persist,
-  subscribeWithSelector,
-} from 'zustand/middleware';
-import create from 'solid-zustand';
 import {themeVars} from '../theme/global.css';
 import {staticConfiguration} from '../core/configuration';
-import {query} from './middleware';
-import {useEditorState} from './editor';
+import {createStore, select, setProp, withProps} from '@ngneat/elf';
+import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
+import {distinctUntilChanged} from 'rxjs';
+import shallow from './shallow';
 
 export interface TerminalState {
   readonly showHeader: boolean;
@@ -36,48 +31,76 @@ const initialState: TerminalState = {
   showWatermark: true,
 };
 
-const store = combine(initialState, (set, get) => ({
-  setShadow: (shadow: string) => set(() => ({shadow})),
-  setAccentVisible: (accentVisible: boolean) => set(() => ({accentVisible})),
-  setBackground: (background: string) => set(() => ({background})),
-  setTextColor: (textColor: string) => set(() => ({textColor})),
-  setDarkMode: (darkMode: boolean) => set(() => ({darkMode})),
-  setShowHeader: (showHeader: boolean) => set(() => ({showHeader})),
-  setType: (type: string) => set(() => ({type})),
-  setShowWatermark: (showWatermark: boolean) => set(() => ({showWatermark})),
-  // ATTENTION: why state parameter of set is undefined?
-  toggleShowHeader: () => set(() => ({showHeader: !get().showHeader})),
-  toggleWatermark: () => set(() => ({showWatermark: !get().showWatermark})),
-
-  setTabName: (tabName: string) => {
-    set(() => ({tabName}));
-    if (!tabName) {
-      return;
-    }
-    const matches = staticConfiguration.languages.filter(language => {
-      return language.icons.some(({matcher}) => matcher.test(tabName));
-    });
-    if (
-      !matches.length ||
-      matches
-        .map(match => match.id)
-        .includes(useEditorState.getState().languageId)
-    ) {
-      return;
-    }
-    useEditorState.setState({languageId: matches[0].id});
-  },
-}));
-
-export const useTerminalState = create(
-  devtools(
-    subscribeWithSelector(
-      persist(query(store, {debounce: 500, prefix: 'terminal'}), {
-        name: '@store/terminal',
-      }),
-    ),
-    {
-      name: 'terminal',
-    },
-  ),
+const store = createStore(
+  {name: 'terminal'},
+  withProps<TerminalState>(initialState),
 );
+
+export const updateTerminalStore = store.update.bind(store);
+
+persistState(store, {storage: localStorageStrategy, key: '@store/terminal'});
+
+export function setShadow(shadow: string) {
+  store.update(setProp('shadow', shadow));
+}
+
+export function setAccentVisible(accentVisible: boolean) {
+  store.update(setProp('accentVisible', accentVisible));
+}
+
+export function setBackground(background: string) {
+  store.update(setProp('background', background));
+}
+
+export function setTextColor(textColor: string) {
+  store.update(setProp('textColor', textColor));
+}
+
+export function setDarkMode(darkMode: boolean) {
+  store.update(setProp('darkMode', darkMode));
+}
+
+export function setShowHeader(showHeader: boolean) {
+  store.update(setProp('showHeader', showHeader));
+}
+
+export function setType(type: string) {
+  store.update(setProp('type', type));
+}
+
+export function setShowWatermark(showWatermark: boolean) {
+  store.update(setProp('showWatermark', showWatermark));
+}
+
+export function toggleShowHeader() {
+  store.update(setProp('showHeader', showHeader => !showHeader));
+}
+
+export function toggleWatermark() {
+  store.update(setProp('showWatermark', showWatermark => !showWatermark));
+}
+
+export function setTabName(tabName: string) {
+  store.update(setProp('tabName', tabName));
+
+  if (!tabName) {
+    return;
+  }
+  // const matches = staticConfiguration.languages.filter(language => {
+  //   return language.icons.some(({matcher}) => matcher.test(tabName));
+  // });
+  //
+  // if (
+  //   !matches.length ||
+  //   matches
+  //     .map(match => match.id)
+  //     .includes(useEditorState.getState().languageId)
+  // ) {
+  //   return;
+  // }
+  // useEditorState.setState({languageId: matches[0].id});
+}
+
+export const terminal$ = store.pipe(distinctUntilChanged(shallow));
+
+export const tabName$ = store.pipe(select(state => state.tabName));

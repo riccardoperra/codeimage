@@ -3,7 +3,7 @@ import {Text} from '../ui/Text/Text';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';
-import {useTerminalState} from '../../state/terminal';
+import {terminal$} from '@codeimage/store/terminal';
 import {updateTheme} from '../../state/state';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
 import {useStaticConfiguration} from '../../core/configuration';
@@ -15,6 +15,7 @@ import {FadeInOutWithScaleTransition} from '../ui/Transition/Transition';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {useModality} from '../../core/hooks/isMobile';
+import {fromStore} from '../../state/from-store';
 
 function useFilteredThemes() {
   const {themes} = useStaticConfiguration();
@@ -32,7 +33,7 @@ function useFilteredThemes() {
 }
 
 export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
-  const terminal = useTerminalState();
+  const terminal = fromStore(terminal$);
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
   const [themes, filteredThemes, search, setSearch] = useFilteredThemes();

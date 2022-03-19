@@ -1,7 +1,8 @@
-import create from 'solid-zustand';
-import {combine, devtools, persist} from 'zustand/middleware';
 import {staticConfiguration} from '../core/configuration';
-import {query} from './middleware';
+import {createStore, setProp, withProps} from '@ngneat/elf';
+import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
+import {distinctUntilChanged} from 'rxjs';
+import shallow from './shallow';
 
 export interface FrameStateSlice {
   background: string | null | undefined;
@@ -23,35 +24,55 @@ const initialState: FrameStateSlice = {
   scale: 1,
 };
 
-const store = combine(initialState, (set, get) => ({
-  setPadding: (padding: number) => set(() => ({padding})),
-  setRadius: (radius: number) => set(() => ({radius})),
-  setOpacity: (opacity: number) => set(() => ({opacity})),
-  setVisibility: (visible: boolean) => set(() => ({visible})),
-  setAutoWidth: (autoWidth: boolean) => set(() => ({autoWidth})),
-  setBackground: (background: string | null) => set(() => ({background})),
-  setScale: (scale: number) => set(() => ({scale})),
-  toggleVisibility: () => set(() => ({visible: !get().visible})),
-
-  setNextPadding: () =>
-    set(() => {
-      const availablePadding = staticConfiguration.editorPadding;
-      const currentIndex = staticConfiguration.editorPadding.indexOf(
-        get().padding,
-      );
-
-      const next = (currentIndex + 1) % availablePadding.length;
-      return {padding: availablePadding[next]};
-    }),
-}));
-
-export const useFrameState = create(
-  devtools(
-    persist(query(store, {debounce: 500, prefix: 'frame'}), {
-      name: '@store/frame',
-    }),
-    {
-      name: 'frame',
-    },
-  ),
+const store = createStore(
+  {name: 'frame'},
+  withProps<FrameStateSlice>(initialState),
 );
+
+persistState(store, {key: '@store/frame', storage: localStorageStrategy});
+
+export function setPadding(padding: number): void {
+  store.update(setProp('padding', padding));
+}
+
+export function setRadius(radius: number): void {
+  store.update(setProp('radius', radius));
+}
+
+export function setOpacity(opacity: number): void {
+  store.update(setProp('opacity', opacity));
+}
+
+export function setVisibility(visibility: boolean): void {
+  store.update(setProp('visible', visibility));
+}
+
+export function setAutoWidth(autoWidth: boolean): void {
+  store.update(setProp('autoWidth', autoWidth));
+}
+
+export function setBackground(background: string): void {
+  store.update(setProp('background', background));
+}
+
+export function setScale(scale: number): void {
+  store.update(setProp('scale', scale));
+}
+
+export function toggleVisibility(): void {
+  store.update(setProp('visible', visible => !visible));
+}
+
+export function setNextPadding(): void {
+  const availablePadding = staticConfiguration.editorPadding;
+
+  store.update(
+    setProp('padding', padding => {
+      const currentIndex = staticConfiguration.editorPadding.indexOf(padding);
+      const next = (currentIndex + 1) % availablePadding.length;
+      return availablePadding[next];
+    }),
+  );
+}
+
+export const frame$ = store.pipe(distinctUntilChanged(shallow));

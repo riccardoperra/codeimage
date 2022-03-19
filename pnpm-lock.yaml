@@ -86,6 +86,10 @@ importers:
       '@codemirror/view': ^0.19.46
       '@floating-ui/core': ^0.4.0
       '@floating-ui/dom': ^0.2.0
+      '@ngneat/effects': 1.0.0
+      '@ngneat/elf': 1.5.2
+      '@ngneat/elf-devtools': 1.2.1
+      '@ngneat/elf-persist-state': 1.1.1
       '@types/downloadjs': 1.4.3
       '@types/prismjs': 1.26.0
       '@vanilla-extract/css': ^1.6.8
@@ -106,7 +110,7 @@ importers:
       prismjs: 1.27.0
       query-string: 7.1.1
       rimraf: ^3.0.2
-      rxjs: ^8.0.0-alpha.2
+      rxjs: ^8.0.0-alpha.3
       sass: ^1.49.9
       solid-codemirror: ^1.0.2
       solid-headless: ^0.10.12
@@ -160,6 +164,10 @@ importers:
       '@codemirror/view': 0.19.46
       '@floating-ui/core': 0.4.0
       '@floating-ui/dom': 0.2.0
+      '@ngneat/effects': 1.0.0
+      '@ngneat/elf': 1.5.2_typescript@4.6.2
+      '@ngneat/elf-devtools': 1.2.1
+      '@ngneat/elf-persist-state': 1.1.1
       '@types/prismjs': 1.26.0
       '@vanilla-extract/css': 1.6.8
       '@vanilla-extract/dynamic': 2.0.2
@@ -175,7 +183,7 @@ importers:
       modern-normalize: 1.1.0
       prismjs: 1.27.0
       query-string: 7.1.1
-      rxjs: 8.0.0-alpha.2
+      rxjs: 8.0.0-alpha.3
       solid-codemirror: 1.0.2
       solid-headless: 0.10.12_solid-js@1.3.10
       solid-js: 1.3.10
@@ -2258,6 +2266,30 @@ packages:
       globby: 11.1.0
       read-yaml-file: 1.1.0
     dev: true
+
+  /@ngneat/effects/1.0.0:
+    resolution: {integrity: sha512-wVLbgVvqKX5L4qWtATAkf1XAoqq50S8a9LsZGiBpw/GpytK4ou3xo7fH+uSAXFlCjn6hLxAozIzqE6/JIXXa4Q==}
+    dependencies:
+      rxjs: 7.5.5
+      ts-action: 11.0.0
+      ts-action-operators: 9.1.2_rxjs@7.5.5+ts-action@11.0.0
+    dev: false
+
+  /@ngneat/elf-devtools/1.2.1:
+    resolution: {integrity: sha512-emoTCmOxzFI3H04HGpagfaMY9OzmoCvTLoKGvTtN0Fx+JHLhj/HXzSzirAxrkWUwmNTAhCcOmbPPNjAeL1QAuA==}
+    dev: false
+
+  /@ngneat/elf-persist-state/1.1.1:
+    resolution: {integrity: sha512-19riZeAul29RDpoizeFYJtRddVUiTVGZLKivhZPVzeezLuH6dJTpkd1kLy3jGhlS6UOQX4NKJUl72HqYGiF0zA==}
+    dev: false
+
+  /@ngneat/elf/1.5.2_typescript@4.6.2:
+    resolution: {integrity: sha512-Za6g3jy6R+rXF09G6Ithyxfqh9h7Zn3C7mWaFI4k4jkAfW4UqgpKBoT/qkF+MIvcOKuHCg8wTj/cs3SPI2T4gg==}
+    peerDependencies:
+      typescript: '>= 4.1.2'
+    dependencies:
+      typescript: 4.6.2
+    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -5615,10 +5647,9 @@ packages:
     resolution: {integrity: sha512-sy+H0pQofO95VDmFLzyaw9xNJU4KTRSwQIGM6+iG3SypAtCiLDzpeG8sJrNCWn2Up9km+KhkvTdbkrdy+yzZdw==}
     dependencies:
       tslib: 2.3.1
-    dev: true
 
-  /rxjs/8.0.0-alpha.2:
-    resolution: {integrity: sha512-VG3GfPGW03THqcih6gJ/d+30yrnzIi7jx+06NUWcZft4879NMJjzIaczIkdOh91VeexvS22nvdqKPyLON6CFng==}
+  /rxjs/8.0.0-alpha.3:
+    resolution: {integrity: sha512-zEogsNPN2z3NMwi7+ByszR+Jq250w0MDPdkiw55G0qVs1wfc0KdEQ5LQzuMFvcqPeLO53mkwGZk3E3D8X/E3bg==}
     dependencies:
       tslib: 2.3.1
     dev: false
@@ -6188,6 +6219,20 @@ packages:
     resolution: {integrity: sha512-c1PTsA3tYrIsLGkJkzHF+w9F2EyxfXGo4UyJc4pFL++FMjnq0HJS69T3M7d//gKrFKwy429bouPescbjecU+Zw==}
     engines: {node: '>=8'}
     dev: true
+
+  /ts-action-operators/9.1.2_rxjs@7.5.5+ts-action@11.0.0:
+    resolution: {integrity: sha512-DZ+sJvBdOluThwCBcCdDnz0NiVeQxEwveL+cmkJGLO1ps+x/D0xwSefmOIa1S7p2nXFHH52ZPr/8VEvxZHaNgg==}
+    peerDependencies:
+      rxjs: '>=6.0.0'
+      ts-action: ^11.0.0 || ^10.0.0 || ^9.0.0
+    dependencies:
+      rxjs: 7.5.5
+      ts-action: 11.0.0
+    dev: false
+
+  /ts-action/11.0.0:
+    resolution: {integrity: sha512-TDxvzZ5UtKsBuw0McRs/L+iASj80m60nV8EXCP680ZdIl+oRHPGnBk85sZJWXLzqQwb6yQ+CcMzPTfBr0dEaAA==}
+    dev: false
 
   /ts-morph/13.0.3:
     resolution: {integrity: sha512-pSOfUMx8Ld/WUreoSzvMFQG5i9uEiWIsBYjpU9+TTASOeUa89j5HykomeqVULm1oqWtBdleI3KEFRLrlA3zGIw==}

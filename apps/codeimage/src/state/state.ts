@@ -1,23 +1,22 @@
 import {CustomTheme} from '@codeimage/theme';
-import {useFrameState} from './frame';
-import {useTerminalState} from './terminal';
-import {useEditorState} from './editor';
+import {setBackground} from './frame';
+import {updateTerminalStore} from './terminal';
+import {setTheme} from './editor';
 import {batch} from 'solid-js';
+import {setProps} from '@ngneat/elf';
 
 export function updateTheme(theme: CustomTheme) {
   batch(() => {
-    useFrameState.setState({
-      background: theme.properties.previewBackground,
-    });
+    setBackground(theme.properties.previewBackground);
 
-    useTerminalState.setState({
-      background: theme.properties.terminal.main,
-      textColor: theme.properties.terminal.text,
-      darkMode: theme.properties.darkMode,
-    });
+    updateTerminalStore(
+      setProps({
+        background: theme.properties.terminal.main,
+        textColor: theme.properties.terminal.text,
+        darkMode: theme.properties.darkMode,
+      }),
+    );
 
-    useEditorState.setState({
-      themeId: theme.id,
-    });
+    setTheme(theme.id);
   });
 }

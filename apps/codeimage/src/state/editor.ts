@@ -1,12 +1,8 @@
-import create from 'solid-zustand';
-import {
-  combine,
-  devtools,
-  persist,
-  subscribeWithSelector,
-} from 'zustand/middleware';
 import {staticConfiguration} from '../core/configuration';
-import {query} from './middleware';
+import {createStore, select, setProp, withProps} from '@ngneat/elf';
+import {distinctUntilChanged, map} from 'rxjs';
+import shallow from './shallow';
+import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 
 interface EditorState {
   languageId: string;
@@ -29,27 +25,51 @@ const initialState: EditorState = {
   focused: false,
 };
 
-const store = combine(initialState, (set, get) => ({
-  setLanguageId: (languageId: string) => set(() => ({languageId})),
-  setCode: (code: string) => set(() => ({code})),
-  setTheme: (themeId: string) => set(() => ({themeId})),
-  setShowLineNumbers: (show: boolean) => set(() => ({showLineNumbers: show})),
-  setFontId: (fontId: string) => set(() => ({fontId: fontId})),
-  setFontWeight: (fontWeight: number) => set(() => ({fontWeight})),
-  getFont: () =>
-    staticConfiguration.fonts.find(font => font.id === get().fontId),
-  setFocus: (focused: boolean) => set(() => ({focused})),
-}));
-
-export const useEditorState = create(
-  devtools(
-    subscribeWithSelector(
-      persist(query(store, {debounce: 500, prefix: 'editor'}), {
-        name: '@store/editor',
-      }),
-    ),
-    {
-      name: 'editor',
-    },
-  ),
+const store = createStore(
+  {name: 'editor'},
+  withProps<EditorState>(initialState),
 );
+
+persistState(store, {storage: localStorageStrategy, key: '@store/editor'});
+
+export function setLanguageId(languageId: string) {
+  store.update(setProp('languageId', languageId));
+}
+
+export function setCode(code: string) {
+  store.update(setProp('code', code));
+}
+
+export function setTheme(themeId: string) {
+  store.update(setProp('themeId', themeId));
+}
+
+export function setShowLineNumbers(show: boolean) {
+  store.update(setProp('showLineNumbers', show));
+}
+
+export function setFontId(fontId: string) {
+  store.update(setProp('fontId', fontId));
+}
+
+export function setFontWeight(fontWeight: number) {
+  store.update(setProp('fontWeight', fontWeight));
+}
+
+export function setFocus(focused: boolean) {
+  store.update(setProp('focused', focused));
+}
+
+export const editor$ = store.pipe(distinctUntilChanged(shallow));
+
+const fontId$ = editor$.pipe(select(store => store.fontId));
+
+export const editorLanguageId$ = editor$.pipe(
+  select(store => store.languageId),
+);
+
+export const font$ = fontId$.pipe(
+  map(id => staticConfiguration.fonts.find(font => font.id === id)),
+);
+
+export const focusedEditor$ = editor$.pipe(select(store => store.focused));
