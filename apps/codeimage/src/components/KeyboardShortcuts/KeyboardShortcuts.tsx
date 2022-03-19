@@ -61,8 +61,9 @@ export function KeyboardShortcuts(): JSXElement {
 
   onMount(() => {
     tinykeys(window, {
-      F: () => {
+      F: event => {
         if (editor.focused) return;
+        event.preventDefault();
         editor.setFocus(true);
       },
       Escape: () => {
