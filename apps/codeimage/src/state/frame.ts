@@ -2,7 +2,8 @@ import {staticConfiguration} from '../core/configuration';
 import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
-import shallow from './shallow';
+import shallow from '../core/helpers/shallow';
+import {persistQuery} from '../core/helpers/persistQuery';
 
 export interface FrameStateSlice {
   background: string | null | undefined;
@@ -32,6 +33,10 @@ const store = createStore(
 export const updateFrameStore = store.update.bind(store);
 
 persistState(store, {key: '@store/frame', storage: localStorageStrategy});
+persistQuery(store, {
+  key: 'frame',
+  keysToSync: ['background', 'padding', 'radius', 'visible', 'opacity'],
+});
 
 export function setPadding(padding: number): void {
   store.update(setProp('padding', padding));

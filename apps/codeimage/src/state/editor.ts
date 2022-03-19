@@ -1,8 +1,9 @@
 import {staticConfiguration} from '../core/configuration';
 import {createStore, select, setProp, withProps} from '@ngneat/elf';
 import {distinctUntilChanged, map} from 'rxjs';
-import shallow from './shallow';
+import shallow from '../core/helpers/shallow';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
+import {persistQuery} from '../core/helpers/persistQuery';
 
 interface EditorState {
   languageId: string;
@@ -33,6 +34,17 @@ const store = createStore(
 export const updateEditorStore = store.update.bind(store);
 
 persistState(store, {storage: localStorageStrategy, key: '@store/editor'});
+persistQuery(store, {
+  key: 'editor',
+  keysToSync: [
+    'code',
+    'languageId',
+    'themeId',
+    'showLineNumbers',
+    'fontId',
+    'fontWeight',
+  ],
+});
 
 export function setLanguageId(languageId: string) {
   store.update(setProp('languageId', languageId));

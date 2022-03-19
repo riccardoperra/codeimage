@@ -1,6 +1,6 @@
 import {createStore, select, setProp, withProps} from '@ngneat/elf';
 import {distinctUntilChanged, shareReplay} from 'rxjs';
-import shallow from './shallow';
+import shallow from '../core/helpers/shallow';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 
 export interface GlobalUiState {

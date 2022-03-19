@@ -3,9 +3,10 @@ import {staticConfiguration} from '../core/configuration';
 import {createStore, select, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
-import shallow from './shallow';
+import shallow from '../core/helpers/shallow';
 import {dispatch} from '@ngneat/effects';
 import {updateTabName} from './effect';
+import {persistQuery} from '../core/helpers/persistQuery';
 
 export interface TerminalState {
   readonly showHeader: boolean;
@@ -15,6 +16,7 @@ export interface TerminalState {
   readonly shadow: string;
   readonly background: string;
   readonly textColor: string;
+  // TODO: this state should be removed. This is a slice of selected theme!!
   readonly darkMode: boolean;
   readonly showWatermark: boolean;
 }
@@ -41,6 +43,20 @@ const store = createStore(
 export const updateTerminalStore = store.update.bind(store);
 
 persistState(store, {storage: localStorageStrategy, key: '@store/terminal'});
+persistQuery(store, {
+  key: 'terminal',
+  keysToSync: [
+    'showHeader',
+    'type',
+    'tabName',
+    'accentVisible',
+    'shadow',
+    'background',
+    'textColor',
+    'darkMode',
+    'showWatermark',
+  ],
+});
 
 export function setShadow(shadow: string) {
   store.update(setProp('shadow', shadow));

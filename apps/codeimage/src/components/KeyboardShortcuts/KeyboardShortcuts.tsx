@@ -15,10 +15,11 @@ import * as frame from '@codeimage/store/frame';
 import * as editor from '@codeimage/store/editor';
 import * as terminal from '@codeimage/store/terminal';
 import {useStaticConfiguration} from '../../core/configuration';
-import {updateTheme} from '../../state/state';
 import {focusedEditor$} from '../../state/editor';
 import {useHotkey} from '../../hooks/use-hotkey';
 import * as ui from '@codeimage/store/ui';
+import {dispatch} from '@ngneat/effects';
+import {updateTheme} from '../../state/effect';
 
 export interface KeyboardShortcut {
   label: string;
@@ -97,7 +98,7 @@ export function KeyboardShortcuts(): JSXElement {
       if (filterHotKey()) return;
       const index = Math.floor(Math.random() * configuration.themes.length);
       const theme = configuration.themes[index];
-      updateTheme(theme);
+      dispatch(updateTheme({theme}));
     },
     // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
     'Shift+?': () => {

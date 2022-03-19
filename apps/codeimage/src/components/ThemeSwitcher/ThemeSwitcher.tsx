@@ -4,7 +4,6 @@ import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';
 import {terminal$} from '@codeimage/store/terminal';
-import {updateTheme} from '../../state/state';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
 import {useStaticConfiguration} from '../../core/configuration';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -16,6 +15,8 @@ import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {useModality} from '../../core/hooks/isMobile';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
+import {dispatch} from '@ngneat/effects';
+import {updateTheme} from '../../state/effect';
 
 function useFilteredThemes() {
   const {themes} = useStaticConfiguration();
@@ -66,7 +67,10 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
           <FadeInOutWithScaleTransition
             show={filteredThemeIds().includes(theme.id)}
           >
-            <ThemeBox theme={theme} onClick={() => updateTheme(theme)}>
+            <ThemeBox
+              theme={theme}
+              onClick={() => dispatch(updateTheme({theme}))}
+            >
               <DynamicTerminal
                 tabName={'Untitled'}
                 textColor={theme.properties.terminal.text}
