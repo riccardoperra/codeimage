@@ -50,6 +50,9 @@ export const locale = {
       copyLink: 'Copia link',
       openShortcuts: 'Apri scorciatoie',
     },
+    themeSwitcher: {
+      search: 'Cerca tema...',
+    },
   },
   en: {
     common: {
@@ -99,6 +102,9 @@ export const locale = {
       export: 'Export',
       copyLink: 'Copy link',
       openShortcuts: 'Open shortcuts',
+    },
+    themeSwitcher: {
+      search: 'Search theme...',
     },
   },
 };

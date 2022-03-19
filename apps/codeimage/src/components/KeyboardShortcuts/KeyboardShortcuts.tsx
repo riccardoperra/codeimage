@@ -1,7 +1,6 @@
 import {createMemo, createSignal, For, JSXElement} from 'solid-js';
 import {Button} from '../ui/Button/Button';
 import {HintIcon} from '../Icons/Hint';
-import {Box} from '../ui/Box/Box';
 import {HStack} from '../ui/Box/Stack';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
@@ -58,6 +57,9 @@ export function KeyboardShortcuts(): JSXElement {
     middleware: [offset(10)],
   });
 
+  const filterHotKey = () =>
+    editor.focused || document.activeElement?.nodeName === 'INPUT';
+
   useHotkey(document.body, {
     F: event => {
       if (editor.focused) return;
@@ -73,34 +75,34 @@ export function KeyboardShortcuts(): JSXElement {
       }
     },
     P: () => {
-      if (editor.focused) return;
+      if (filterHotKey()) return;
       frame.setNextPadding();
     },
     B: () => {
-      if (editor.focused) return;
+      if (filterHotKey()) return;
       frame.toggleVisibility();
     },
     D: () => {
-      if (editor.focused) return;
+      if (filterHotKey()) return;
       ui.toggleThemeMode();
     },
     H: () => {
-      if (editor.focused) return;
+      if (filterHotKey()) return;
       terminal.toggleShowHeader();
     },
     W: () => {
-      if (editor.focused) return;
+      if (filterHotKey()) return;
       terminal.toggleWatermark();
     },
     R: () => {
-      if (editor.focused) return;
+      if (filterHotKey()) return;
       const index = Math.floor(Math.random() * configuration.themes.length);
       const theme = configuration.themes[index];
       updateTheme(theme);
     },
     // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
     'Shift+?': () => {
-      if (editor.focused) return;
+      if (filterHotKey()) return;
       setShow(show => !show);
     },
   });

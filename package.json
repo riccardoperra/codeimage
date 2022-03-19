@@ -40,6 +40,7 @@
     "libs:build": "pnpm build:watch --filter ./packages",
     "app:dev": "pnpm dev --filter=@codeimage/app",
     "lint": "pnpm lint --filter='@codeimage/*'",
+    "typecheck": "pnpm typecheck --filter='@codeimage/*'",
     "build:prod": "pnpm build --filter='@codeimage/*'",
     "changelog:gen": "ts-node scripts/changelog-generate.ts",
     "changelog:write": "ts-node scripts/changelog-write.ts",
