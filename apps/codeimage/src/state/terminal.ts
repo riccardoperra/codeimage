@@ -1,5 +1,8 @@
 import {themeVars} from '../theme/global.css';
-import {staticConfiguration} from '../core/configuration';
+import {
+  appEnvironment,
+  SUPPORTED_THEMES_DICTIONARY,
+} from '../core/configuration';
 import {createStore, select, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
@@ -23,15 +26,20 @@ export interface TerminalState {
 
 const initialState: TerminalState = {
   showHeader: true,
-  type: staticConfiguration.terminalThemes.entries[
-    staticConfiguration.terminalThemes.keys[0]
+  type: appEnvironment.terminalThemes.entries[
+    appEnvironment.terminalThemes.keys[0]
   ].name,
   tabName: null,
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
-  background: staticConfiguration.themes[0].properties.terminal.main,
-  textColor: staticConfiguration.themes[0].properties.terminal.text,
-  darkMode: staticConfiguration.themes[0].properties.darkMode,
+  background:
+    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.terminal
+      .main,
+  textColor:
+    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.terminal
+      .text,
+  darkMode:
+    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.darkMode,
   showWatermark: true,
 };
 

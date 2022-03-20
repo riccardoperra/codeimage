@@ -5,7 +5,7 @@ import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';
 import {terminal$} from '@codeimage/store/terminal';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
-import {EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Box} from '../ui/Box/Box';
 import {FlexField} from '../ui/Field/FlexField';
@@ -17,10 +17,9 @@ import {useModality} from '../../core/hooks/isMobile';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {dispatch} from '@ngneat/effects';
 import {updateTheme} from '../../state/effect';
-import {inject} from 'solid-use';
 
 function useFilteredThemes() {
-  const {themes} = inject(EnvironmentProvider);
+  const {themes} = appEnvironment;
   const [search, setSearch] = createSignal('');
 
   const filteredThemes = createMemo(() => {

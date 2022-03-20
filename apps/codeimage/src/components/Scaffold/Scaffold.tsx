@@ -1,4 +1,4 @@
-import {Component, createEffect, createMemo, from, on} from 'solid-js';
+import {Component, createEffect, createMemo, on} from 'solid-js';
 import * as styles from './Scaffold.css';
 import clsx from 'clsx';
 import {lightThemeCss} from '../../theme/light-theme.css';
@@ -6,10 +6,10 @@ import {darkThemeCss} from '../../theme/dark-theme.css';
 import {backgroundColorVar} from '../../theme/variables.css';
 import {assignInlineVars, setElementVars} from '@vanilla-extract/dynamic';
 import {dynamicFullHeight} from '../../theme/base.css';
-import {themeMode$} from '@codeimage/store/ui';
+import {uiStore} from '../../state/ui';
 
 export const Scaffold: Component = props => {
-  const mode = from(themeMode$);
+  const mode = () => uiStore.themeMode;
 
   const theme = createMemo(() =>
     mode() === 'light' ? lightThemeCss : darkThemeCss,

@@ -4,9 +4,8 @@ import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Box} from '../ui/Box/Box';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
-import {EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {inject} from 'solid-use';
 
 interface ShareButtonProps {
   showLabel?: boolean;
@@ -15,7 +14,7 @@ interface ShareButtonProps {
 export const ShareButton: Component<ShareButtonProps> = props => {
   const computedProps = mergeProps({showLabel: false, props});
   // TODO: hook
-  const {support} = inject(EnvironmentProvider);
+  const {support} = appEnvironment;
 
   const [t] = useI18n<AppLocaleEntries>();
 

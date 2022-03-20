@@ -2,10 +2,10 @@ import {createAction, createEffect, ofType, props} from '@ngneat/effects';
 import {CustomTheme} from '@codeimage/theme';
 import {debounceTime, map, tap, withLatestFrom} from 'rxjs';
 import {editorLanguageId$, setLanguageId, updateEditorStore} from './editor';
-import {staticConfiguration} from '../core/configuration';
 import {filterNil, setProps} from '@ngneat/elf';
 import {updateFrameStore} from './frame';
 import {updateTerminalStore} from './terminal';
+import {appEnvironment} from '../core/configuration';
 
 export const updateTabName = createAction(
   '[CodeImage] Update Tab Name',
@@ -27,7 +27,7 @@ export const onTabNameChange$ = createEffect(actions =>
       languageId,
     })),
     map(({tabName, languageId}) => {
-      const matches = staticConfiguration.languages.filter(language => {
+      const matches = appEnvironment.languages.filter(language => {
         return language.icons.some(({matcher}) => matcher.test(tabName));
       });
 

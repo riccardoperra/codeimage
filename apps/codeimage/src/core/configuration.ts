@@ -7,57 +7,11 @@ import {
 import {WindowsTerminal} from '../components/Terminal/windows/WindowsTerminal';
 import {MacOsTerminal} from '../components/Terminal/macOS/MacOsTerminal';
 import {version} from '../../package.json';
-import {createProvider} from 'solid-use';
-
-interface CustomFontType {
-  name: string;
-  weight: number;
-}
-
-interface CustomFonts {
-  id: string;
-  name: string;
-  types: CustomFontType[];
-}
-
-export const AVAILABLE_FONTS: readonly CustomFonts[] = [
-  {
-    id: 'jetbrains-mono',
-    name: 'Jetbrains Mono',
-    types: [
-      {name: 'Regular', weight: 400},
-      {name: 'Medium', weight: 500},
-      {name: 'Bold', weight: 700},
-    ],
-  },
-  {
-    id: 'fira-code',
-    name: 'Fira Code',
-    types: [
-      {name: 'Regular', weight: 400},
-      {name: 'Medium', weight: 500},
-      {name: 'Bold', weight: 700},
-    ],
-  },
-  {
-    id: 'source-code-pro',
-    name: 'Source Code pro',
-    types: [
-      {name: 'Regular', weight: 400},
-      {name: 'Medium', weight: 500},
-      {name: 'Bold', weight: 700},
-    ],
-  },
-  {
-    id: 'overpass-mono',
-    name: 'Overpass Mono',
-    types: [
-      {name: 'Regular', weight: 400},
-      {name: 'Medium', weight: 500},
-      {name: 'Bold', weight: 700},
-    ],
-  },
-];
+import {
+  SUPPORTED_FONTS,
+  SUPPORTED_FONTS_DICTIONARY,
+} from './configuration/font';
+import {mapToDictionary} from './helpers/mapToDictionary';
 
 export const AVAILABLE_TERMINAL_THEMES = {
   keys: ['macOs', 'windows'] as const,
@@ -73,7 +27,12 @@ export const AVAILABLE_TERMINAL_THEMES = {
   },
 };
 
-export const [staticConfiguration] = createConfiguration({
+export const SUPPORTED_THEMES_DICTIONARY = mapToDictionary(
+  SUPPORTED_THEMES,
+  'id',
+);
+
+export const [appEnvironment] = createConfiguration({
   version,
   support: {
     shareApi: !!navigator.share,
@@ -82,12 +41,8 @@ export const [staticConfiguration] = createConfiguration({
   themes: SUPPORTED_THEMES,
   languages: SUPPORTED_LANGUAGES,
   editorPadding: [16, 32, 64, 128],
-  fonts: AVAILABLE_FONTS,
+  fonts: SUPPORTED_FONTS,
   terminalThemes: AVAILABLE_TERMINAL_THEMES,
-});
-
-const EnvironmentProvider = createProvider({
-  ...staticConfiguration,
   defaultState: {
     editor: {
       code:
@@ -102,12 +57,10 @@ const EnvironmentProvider = createProvider({
         '  return <div>The count is {count()}</div>\n' +
         '}' +
         '\n',
-      languageId: staticConfiguration.languages[0].id,
-      themeId: staticConfiguration.themes[0].id,
-      fontId: staticConfiguration.fonts[0].id,
-      fontWeight: staticConfiguration.fonts[0].types[0].weight,
+      // TODO: should be auto
+      languageId: 'typescript',
+      theme: SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'],
+      font: SUPPORTED_FONTS_DICTIONARY['jetbrains-mono'],
     },
   },
 });
-
-export {EnvironmentProvider};

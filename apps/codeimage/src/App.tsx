@@ -4,7 +4,7 @@ import {Scaffold} from './components/Scaffold/Scaffold';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {createEffect, createSignal, from, on, Show} from 'solid-js';
+import {createEffect, createSignal, on, Show} from 'solid-js';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {frame$, setScale} from '@codeimage/store/frame';
 import {setTabName, terminal$} from '@codeimage/store/terminal';
@@ -21,10 +21,10 @@ import {PortalHost} from './components/ui/PortalHost/PortalHost';
 import {useTabIcon} from './hooks/use-tab-icon';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {Box} from './components/ui/Box/Box';
-import {locale$} from '@codeimage/store/ui';
 import {fromObservableObject} from './core/hooks/from-observable-object';
 import {initEffects, registerEffects} from '@ngneat/effects';
 import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
+import {uiStore} from './state/ui';
 
 initEffects();
 registerEffects([onTabNameChange$, onThemeChange$]);
@@ -38,8 +38,7 @@ const App = () => {
   const [, {locale}] = useI18n();
   const [tabIcon] = useTabIcon({withDefault: true});
 
-  const currentLocale = from(locale$);
-  createEffect(on(currentLocale, locale));
+  createEffect(on(() => uiStore.locale, locale));
 
   return (
     <Scaffold>

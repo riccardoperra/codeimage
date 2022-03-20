@@ -13,16 +13,15 @@ import {
   setLanguageId,
   setShowLineNumbers,
 } from '@codeimage/store/editor';
-import {EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {useModality} from '../../core/hooks/isMobile';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {from} from 'solid-js';
 import {map} from 'rxjs';
-import {inject} from 'solid-use';
 
 export const EditorStyleForm = () => {
+  const {languages, fonts} = appEnvironment;
   const editor = fromObservableObject(editor$);
-  const {languages, fonts} = inject(EnvironmentProvider);
   const modality = useModality();
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);

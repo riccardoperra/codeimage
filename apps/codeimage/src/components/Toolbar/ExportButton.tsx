@@ -26,7 +26,7 @@ import {
   useExportImage,
 } from '../../hooks/use-export-image';
 import {notificationStore} from '../ui/Toast/SnackbarHost';
-import {EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {RangeField} from '../ui/RangeField/RangeField';
 import {Link} from '../ui/Link/Link';
 import {HintIcon} from '../Icons/Hint';
@@ -36,7 +36,6 @@ import {useModality} from '../../core/hooks/isMobile';
 import {Transition} from 'solid-headless';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {inject} from 'solid-use';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -152,7 +151,7 @@ export interface ExportDialogProps extends DialogProps {
 export function ExportDialog(props: DialogProps & ExportDialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
   // TODO: hook
-  const {support} = inject(EnvironmentProvider);
+  const {support} = appEnvironment;
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,

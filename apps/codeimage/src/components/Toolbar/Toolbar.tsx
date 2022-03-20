@@ -3,30 +3,29 @@ import {Component} from 'solid-js';
 import {ThemeToggleButton} from './ThemeToggleButton';
 import {Box} from '../ui/Box/Box';
 import {LanguageSelectorButton} from './LanguageSelectorButton';
-import {EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment, EnvironmentProvider} from '../../core/configuration';
 import {ExportButton} from './ExportButton';
 import {ShareButton} from './ShareButton';
-import {setLocale, toggleThemeMode, ui$} from '@codeimage/store/ui';
+import {setLocale, toggleThemeMode, uiStore} from '@codeimage/store/ui';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {inject} from 'solid-use';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
-  const environment = inject(EnvironmentProvider);
-  const uiState = fromObservableObject(ui$);
+  const {locales} = appEnvironment;
 
   return (
     <div class={styles.wrapper}>
       <Box class={styles.actionBox}>
         <LanguageSelectorButton
-          locales={environment.locales}
-          currentLocale={uiState.locale}
+          locales={locales}
+          currentLocale={uiStore.locale}
           onLocaleChange={setLocale}
         />
 
         <ThemeToggleButton
-          theme={uiState.themeMode}
+          theme={uiStore.themeMode}
           onThemeToggle={toggleThemeMode}
         />
 

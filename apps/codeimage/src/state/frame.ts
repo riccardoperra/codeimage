@@ -1,4 +1,7 @@
-import {staticConfiguration} from '../core/configuration';
+import {
+  appEnvironment,
+  SUPPORTED_THEMES_DICTIONARY,
+} from '../core/configuration';
 import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
@@ -16,7 +19,9 @@ export interface FrameStateSlice {
 }
 
 const initialState: FrameStateSlice = {
-  background: staticConfiguration.themes[0].properties.previewBackground,
+  background:
+    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties
+      .previewBackground,
   padding: 128,
   radius: 24,
   visible: true,
@@ -71,11 +76,11 @@ export function toggleVisibility(): void {
 }
 
 export function setNextPadding(): void {
-  const availablePadding = staticConfiguration.editorPadding;
+  const availablePadding = appEnvironment.editorPadding;
 
   store.update(
     setProp('padding', padding => {
-      const currentIndex = staticConfiguration.editorPadding.indexOf(padding);
+      const currentIndex = appEnvironment.editorPadding.indexOf(padding);
       const next = (currentIndex + 1) % availablePadding.length;
       return availablePadding[next];
     }),

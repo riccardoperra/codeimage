@@ -1,7 +1,5 @@
-import {createStore, select, setProp, withProps} from '@ngneat/elf';
-import {distinctUntilChanged, shareReplay} from 'rxjs';
-import shallow from '../core/helpers/shallow';
-import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
+import {createPluggableStore} from '../core/store/create-pluggable-store';
+import {withLocalStorage} from '../core/store/persist-plugin';
 
 export interface GlobalUiState {
   themeMode: 'light' | 'dark';
@@ -13,23 +11,16 @@ const initialState: GlobalUiState = {
   locale: 'en',
 };
 
-const store = createStore({name: 'ui'}, withProps<GlobalUiState>(initialState));
-
-persistState(store, {key: '@store/ui', storage: localStorageStrategy});
-
-export const ui$ = store.pipe(distinctUntilChanged(shallow));
-export const locale$ = ui$.pipe(select(state => state.locale));
-export const themeMode$ = ui$.pipe(
-  select(state => state.themeMode),
-  shareReplay({refCount: true, bufferSize: 1}),
+export const [uiStore, setUiStore] = createPluggableStore(
+  initialState,
+  withLocalStorage({name: '@store/ui'}),
 );
 
 export function setLocale(locale: string): void {
-  return store.update(setProp('locale', locale));
+  setUiStore('locale', () => locale);
 }
 
+//
 export function toggleThemeMode(): void {
-  return store.update(
-    setProp('themeMode', mode => (mode === 'light' ? 'dark' : 'light')),
-  );
+  setUiStore('themeMode', mode => (mode === 'light' ? 'dark' : 'light'));
 }

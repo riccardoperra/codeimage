@@ -1,6 +1,6 @@
 import {EditorView} from '@codemirror/view';
 import {editor$, setCode, setFocus} from '@codeimage/store/editor';
-import {EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {createMemo, createResource, Show} from 'solid-js';
 import {lineNumbers} from '@codemirror/gutter';
 import {createCustomFontExtension} from './custom-font-extension';
@@ -10,10 +10,9 @@ import clsx from 'clsx';
 import {observeFocusExtension} from './observe-focus-extension';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {focusedEditor$} from '../../state/editor';
-import {inject} from 'solid-use';
 
 export const CustomEditor = () => {
-  const {languages, themes, fonts} = inject(EnvironmentProvider);
+  const {languages, themes, fonts} = appEnvironment;
   const editor = fromObservableObject(editor$);
 
   const selectedLanguage = createMemo(() =>

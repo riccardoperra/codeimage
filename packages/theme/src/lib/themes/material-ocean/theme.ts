@@ -13,4 +13,4 @@ export const materialOceanTheme = createTheme({
       text: palette.base.white,
     },
   },
-});
+} as const);

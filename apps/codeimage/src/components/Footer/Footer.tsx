@@ -1,11 +1,10 @@
 import * as styles from './Footer.css';
 import {Box} from '../ui/Box/Box';
-import {EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {Link} from '../ui/Link/Link';
-import {inject} from 'solid-use';
 
 export const Footer = () => {
-  const {version} = inject(EnvironmentProvider);
+  const {version} = appEnvironment;
 
   return (
     <div class={styles.wrapper}>

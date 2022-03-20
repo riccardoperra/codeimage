@@ -14,4 +14,4 @@ export const nightOwlTheme = createPrismJsTheme({
       text: '#D0D8E5',
     },
   },
-});
+} as const);

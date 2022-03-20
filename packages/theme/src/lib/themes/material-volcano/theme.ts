@@ -13,4 +13,4 @@ export const materialVolcanoTheme = createTheme({
       text: palette.white,
     },
   },
-});
+} as const);

@@ -14,4 +14,4 @@ export const holiTheme = createPrismJsTheme({
       text: '#FFF',
     },
   },
-});
+} as const);

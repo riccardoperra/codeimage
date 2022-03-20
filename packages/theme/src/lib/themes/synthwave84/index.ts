@@ -13,4 +13,4 @@ export const synthwave84Theme = createTheme({
       text: palette.coral,
     },
   },
-});
+} as const);

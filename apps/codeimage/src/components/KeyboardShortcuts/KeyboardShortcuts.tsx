@@ -14,13 +14,12 @@ import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
 import * as frame from '@codeimage/store/frame';
 import * as editor from '@codeimage/store/editor';
 import * as terminal from '@codeimage/store/terminal';
-import {EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {focusedEditor$} from '../../state/editor';
 import {useHotkey} from '../../hooks/use-hotkey';
 import * as ui from '@codeimage/store/ui';
 import {dispatch} from '@ngneat/effects';
 import {updateTheme} from '../../state/effect';
-import {inject} from 'solid-use';
 
 export interface KeyboardShortcut {
   label: string;
@@ -28,7 +27,7 @@ export interface KeyboardShortcut {
 }
 
 export function KeyboardShortcuts(): JSXElement {
-  const {themes} = inject(EnvironmentProvider);
+  const {themes} = appEnvironment;
   const [t] = useI18n<AppLocaleEntries>();
   const [show, setShow] = createSignal(false);
 

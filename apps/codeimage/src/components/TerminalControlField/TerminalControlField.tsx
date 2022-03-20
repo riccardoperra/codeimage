@@ -4,7 +4,7 @@ import {terminal$} from '@codeimage/store/terminal';
 import {Group} from '../ui/Group/Group';
 import {RadioBlock} from '../ui/RadioBlock/RadioBlock';
 import {Box} from '../ui/Box/Box';
-import {EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment, EnvironmentProvider} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {inject} from 'solid-use';
 
@@ -17,7 +17,7 @@ export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
   // TODO: add lazy loading?
-  const {terminalThemes} = inject(EnvironmentProvider);
+  const {terminalThemes} = appEnvironment;
   const terminalState = fromObservableObject(terminal$);
 
   return (

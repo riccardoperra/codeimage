@@ -14,4 +14,4 @@ export const duotoneDarkTheme = createPrismJsTheme({
       text: '#FFFFFF',
     },
   },
-});
+} as const);
