@@ -6,6 +6,7 @@ import {Box} from '../ui/Box/Box';
 
 interface PanelRowProps {
   label?: string;
+  for: string;
 }
 
 export const FullWidthPanelRow: Component = props => (
@@ -20,7 +21,12 @@ export const PanelRow: Component<PanelRowProps> = props => {
   return (
     <div class={styles.panelRow}>
       <Show when={props.label}>
-        <Text as="div" size={'xs'} class={styles.titleWrapper}>
+        <Text
+          as="label"
+          for={props.for}
+          size={'xs'}
+          class={styles.titleWrapper}
+        >
           {props.label}
         </Text>
       </Show>

@@ -14,6 +14,7 @@ interface SegmentedFieldProps<T> {
   onChange: (value: T) => void;
   items: readonly SegmentedFieldItem<T>[];
   size?: UseTextProps['size'];
+  id?: string;
 }
 
 export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
@@ -32,7 +33,7 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
   );
 
   return (
-    <div class={clsx(styles.wrapper)}>
+    <div class={clsx(styles.wrapper)} id={props.id}>
       <div class={styles.box}>
         <div
           style={assignInlineVars({
@@ -44,13 +45,13 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
         />
         <For each={props.items}>
           {(item, index) => (
-            <a
+            <div
               class={segmentStyle()}
               data-active={index() === activeIndex()}
               onClick={() => props.onChange(item.value)}
             >
               {item.label}
-            </a>
+            </div>
           )}
         </For>
       </div>

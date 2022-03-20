@@ -24,9 +24,10 @@ export const FrameStyleForm = () => {
     <>
       <PanelHeader label={t('frame.frame')} />
 
-      <PanelRow label={t('frame.padding')}>
+      <PanelRow for={'paddingField'} label={t('frame.padding')}>
         <TwoColumnPanelRow>
           <SegmentedField
+            id={'paddingField'}
             size={'xs'}
             value={frame.padding}
             onChange={setPadding}
@@ -40,9 +41,10 @@ export const FrameStyleForm = () => {
         </TwoColumnPanelRow>
       </PanelRow>
 
-      <PanelRow label={t('frame.visible')}>
+      <PanelRow for={'visibleField'} label={t('frame.visible')}>
         <TwoColumnPanelRow>
           <SegmentedField
+            id={'visibleField'}
             size={'xs'}
             value={frame.visible}
             onChange={setVisibility}
@@ -55,9 +57,10 @@ export const FrameStyleForm = () => {
       </PanelRow>
 
       <Show when={frame.visible}>
-        <PanelRow label={t('frame.opacity')}>
+        <PanelRow for={'opacityField'} label={t('frame.opacity')}>
           <TwoColumnPanelRow>
             <RangeField
+              id={'opacityField'}
               value={frame.opacity}
               min={0}
               disabled={!frame.visible}
@@ -69,9 +72,10 @@ export const FrameStyleForm = () => {
       </Show>
 
       <Show when={frame.visible}>
-        <PanelRow label={t('frame.color')}>
+        <PanelRow for={'colorField'} label={t('frame.color')}>
           <TwoColumnPanelRow>
             <ColorPicker
+              id={'colorField'}
               onChange={setBackground}
               value={frame.background ?? undefined}
             />
