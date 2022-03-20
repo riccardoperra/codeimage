@@ -1,4 +1,4 @@
-import {Component, createMemo} from 'solid-js';
+import {Component} from 'solid-js';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createHorizontalResize} from '../../core/hooks/resizable';
@@ -16,8 +16,8 @@ export const Frame: Component<{
   visible: boolean;
 }> = props => {
   const {width, onResizeStart, setRef, resizing} = createHorizontalResize();
-  const pxWidth = createMemo(() => `${width() || '730'}px`);
-  const roundedWidth = createMemo(() => `${Math.floor(width())}px`);
+  const pxWidth = () => `${width() || '730'}px`;
+  const roundedWidth = () => `${Math.floor(width())}px`;
 
   return (
     <Box position={'relative'}>

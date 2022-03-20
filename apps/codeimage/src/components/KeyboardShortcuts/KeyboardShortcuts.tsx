@@ -44,9 +44,7 @@ export function KeyboardShortcuts(): JSXElement {
     {label: t('shortcut.openShortcuts'), key: ['?']},
   ]);
 
-  const label = createMemo(() =>
-    show() ? t('shortcut.esc') : t('shortcut.buttonAction'),
-  );
+  const label = () => (show() ? t('shortcut.esc') : t('shortcut.buttonAction'));
 
   const floating = useFloating({
     placement: 'bottom-start',

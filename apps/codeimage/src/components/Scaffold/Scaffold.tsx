@@ -10,10 +10,7 @@ import {uiStore} from '../../state/ui';
 
 export const Scaffold: Component = props => {
   const mode = () => uiStore.themeMode;
-
-  const theme = createMemo(() =>
-    mode() === 'light' ? lightThemeCss : darkThemeCss,
-  );
+  const theme = () => (mode() === 'light' ? lightThemeCss : darkThemeCss);
 
   createEffect(
     on(mode, theme => {

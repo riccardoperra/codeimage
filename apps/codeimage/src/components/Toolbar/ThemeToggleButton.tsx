@@ -1,4 +1,4 @@
-import {Component, createMemo} from 'solid-js';
+import {Component} from 'solid-js';
 import {Button} from '../ui/Button/Button';
 import {themeVars} from '../../theme/global.css';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
@@ -10,13 +10,12 @@ interface ThemeTogglerProps {
 }
 
 export const ThemeToggleButton: Component<ThemeTogglerProps> = props => {
-  const isLight = createMemo(() => props.theme === 'light');
+  const isLight = () => props.theme === 'light';
 
-  const strokeColor = createMemo(() =>
+  const strokeColor = () =>
     isLight()
       ? themeVars.backgroundColor.blue['700']
-      : themeVars.backgroundColor.yellow['400'],
-  );
+      : themeVars.backgroundColor.yellow['400'];
 
   return (
     <Button

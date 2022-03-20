@@ -110,7 +110,7 @@ export function createHorizontalResize(
 
   const resizeEnd = (): boolean => setResizing(false);
 
-  const width = createMemo(() => state.width);
+  const width = () => state.width;
 
   createEffect(
     on(ref, ref => {

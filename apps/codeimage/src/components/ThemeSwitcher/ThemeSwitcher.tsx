@@ -39,9 +39,7 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
   const [t] = useI18n<AppLocaleEntries>();
   const [themes, filteredThemes, search, setSearch] = useFilteredThemes();
 
-  const filteredThemeIds = createMemo(() =>
-    filteredThemes().map(theme => theme.id),
-  );
+  const filteredThemeIds = () => filteredThemes().map(theme => theme.id);
 
   return (
     <Box

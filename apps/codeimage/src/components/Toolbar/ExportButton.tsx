@@ -1,11 +1,4 @@
-import {
-  Component,
-  createEffect,
-  createMemo,
-  createSignal,
-  onMount,
-  Show,
-} from 'solid-js';
+import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
 import {Box} from '../ui/Box/Box';
 import {Button} from '../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
@@ -48,9 +41,8 @@ export const ExportButton: Component<ExportButtonProps> = props => {
 
   const [data, notify] = useExportImage();
 
-  const label = createMemo(() =>
-    data.loading ? t('toolbar.exportLoading') : t('toolbar.export'),
-  );
+  const label = () =>
+    data.loading ? t('toolbar.exportLoading') : t('toolbar.export');
 
   function closeModal() {
     setIsOpen(false);

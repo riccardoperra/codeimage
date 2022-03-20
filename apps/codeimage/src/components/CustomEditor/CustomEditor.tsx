@@ -27,9 +27,7 @@ export const CustomEditor = () => {
     themes.find(theme => theme.id === editor.themeId),
   );
 
-  const currentTheme = createMemo(
-    () => themeConfiguration()?.editorTheme || [],
-  );
+  const currentTheme = () => themeConfiguration()?.editorTheme || [];
 
   const supportsLineWrap = EditorView.lineWrapping;
 
@@ -65,13 +63,12 @@ export const CustomEditor = () => {
     },
   });
 
-  const customFontExtension = createMemo(() =>
+  const customFontExtension = () =>
     createCustomFontExtension({
       fontName:
         fonts.find(({id}) => editor.fontId === id)?.name || fonts[0].name,
       fontWeight: editor.fontWeight,
-    }),
-  );
+    });
 
   const externalStylesheet = createMemo(
     () => themeConfiguration()?.externalStylesheet,
