@@ -37,6 +37,12 @@ export const themeBox = style({
   background: backgroundColorVar,
   overflow: 'hidden',
   cursor: 'pointer',
+
+  selectors: {
+    '&[data-selected="true"]': {
+      boxShadow: themeVars.boxShadow.outline,
+    },
+  },
 });
 
 export const themeBoxContent = style({

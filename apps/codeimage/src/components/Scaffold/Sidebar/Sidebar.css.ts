@@ -15,6 +15,7 @@ export const sidebar = style([
     borderLeft: `1px solid ${themeVars.dynamicColors.divider}`,
     flex: `0 0 ${sidebarVars.width}`,
     backgroundColor: themeVars.dynamicColors.panelBackground,
+    color: themeVars.dynamicColors.panelTextColor,
     zIndex: 0,
     transition: 'background-color .2s, border .2s',
   },
