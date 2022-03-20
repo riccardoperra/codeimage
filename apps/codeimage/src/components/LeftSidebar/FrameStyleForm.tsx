@@ -4,12 +4,19 @@ import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {Show} from 'solid-js';
 import {RangeField} from '../ui/RangeField/RangeField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
-import {useFrameState} from '../../state/frame';
 import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
+import {
+  frame$,
+  setBackground,
+  setOpacity,
+  setPadding,
+  setVisibility,
+} from '@codeimage/store/frame';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 export const FrameStyleForm = () => {
-  const frame = useFrameState();
+  const frame = fromObservableObject(frame$);
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
 
@@ -22,7 +29,7 @@ export const FrameStyleForm = () => {
           <SegmentedField
             size={'xs'}
             value={frame.padding}
-            onChange={frame.setPadding}
+            onChange={setPadding}
             items={[
               {label: '16', value: 16},
               {label: '32', value: 32},
@@ -38,7 +45,7 @@ export const FrameStyleForm = () => {
           <SegmentedField
             size={'xs'}
             value={frame.visible}
-            onChange={frame.setVisibility}
+            onChange={setVisibility}
             items={[
               {label: 'Yes', value: true},
               {label: 'No', value: false},
@@ -55,7 +62,7 @@ export const FrameStyleForm = () => {
               min={0}
               disabled={!frame.visible}
               max={100}
-              onChange={frame.setOpacity}
+              onChange={setOpacity}
             />
           </TwoColumnPanelRow>
         </PanelRow>
@@ -65,7 +72,7 @@ export const FrameStyleForm = () => {
         <PanelRow label={t('frame.color')}>
           <TwoColumnPanelRow>
             <ColorPicker
-              onChange={frame.setBackground}
+              onChange={setBackground}
               value={frame.background ?? undefined}
             />
           </TwoColumnPanelRow>

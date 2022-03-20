@@ -1,11 +1,4 @@
-import {
-  Component,
-  createEffect,
-  createMemo,
-  createSignal,
-  onMount,
-  Show,
-} from 'solid-js';
+import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
 import {Box} from '../ui/Box/Box';
 import {Button} from '../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
@@ -26,7 +19,7 @@ import {
   useExportImage,
 } from '../../hooks/use-export-image';
 import {notificationStore} from '../ui/Toast/SnackbarHost';
-import {useStaticConfiguration} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {RangeField} from '../ui/RangeField/RangeField';
 import {Link} from '../ui/Link/Link';
 import {HintIcon} from '../Icons/Hint';
@@ -48,9 +41,8 @@ export const ExportButton: Component<ExportButtonProps> = props => {
 
   const [data, notify] = useExportImage();
 
-  const label = createMemo(() =>
-    data.loading ? t('toolbar.exportLoading') : t('toolbar.export'),
-  );
+  const label = () =>
+    data.loading ? t('toolbar.exportLoading') : t('toolbar.export');
 
   function closeModal() {
     setIsOpen(false);
@@ -150,7 +142,8 @@ export interface ExportDialogProps extends DialogProps {
 
 export function ExportDialog(props: DialogProps & ExportDialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  const {support} = useStaticConfiguration();
+  // TODO: hook
+  const {support} = appEnvironment;
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,

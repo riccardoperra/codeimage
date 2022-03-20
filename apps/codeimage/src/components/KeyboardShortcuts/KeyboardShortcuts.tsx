@@ -1,4 +1,4 @@
-import {createMemo, createSignal, For, JSXElement} from 'solid-js';
+import {createMemo, createSignal, For, from, JSXElement} from 'solid-js';
 import {Button} from '../ui/Button/Button';
 import {HintIcon} from '../Icons/Hint';
 import {HStack} from '../ui/Box/Stack';
@@ -11,13 +11,15 @@ import * as styles from './KeyboardShortcuts.css';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {offset} from '@floating-ui/dom';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
-import {useFrameState} from '../../state/frame';
-import {useUIState} from '../../state/ui';
-import {useTerminalState} from '../../state/terminal';
-import {useStaticConfiguration} from '../../core/configuration';
-import {updateTheme} from '../../state/state';
-import {useEditorState} from '../../state/editor';
+import * as frame from '@codeimage/store/frame';
+import * as editor from '@codeimage/store/editor';
+import * as terminal from '@codeimage/store/terminal';
+import {appEnvironment} from '../../core/configuration';
+import {focusedEditor$} from '../../state/editor';
 import {useHotkey} from '../../hooks/use-hotkey';
+import * as ui from '@codeimage/store/ui';
+import {dispatch} from '@ngneat/effects';
+import {updateTheme} from '../../state/effect';
 
 export interface KeyboardShortcut {
   label: string;
@@ -25,14 +27,9 @@ export interface KeyboardShortcut {
 }
 
 export function KeyboardShortcuts(): JSXElement {
+  const {themes} = appEnvironment;
   const [t] = useI18n<AppLocaleEntries>();
   const [show, setShow] = createSignal(false);
-
-  const frame = useFrameState();
-  const editor = useEditorState();
-  const ui = useUIState();
-  const terminal = useTerminalState();
-  const configuration = useStaticConfiguration();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [
     {label: t('shortcut.focusCodeEditor'), key: ['F']},
@@ -47,9 +44,7 @@ export function KeyboardShortcuts(): JSXElement {
     {label: t('shortcut.openShortcuts'), key: ['?']},
   ]);
 
-  const label = createMemo(() =>
-    show() ? t('shortcut.esc') : t('shortcut.buttonAction'),
-  );
+  const label = () => (show() ? t('shortcut.esc') : t('shortcut.buttonAction'));
 
   const floating = useFloating({
     placement: 'bottom-start',
@@ -57,17 +52,19 @@ export function KeyboardShortcuts(): JSXElement {
     middleware: [offset(10)],
   });
 
+  const focusedEditor = from(focusedEditor$);
+
   const filterHotKey = () =>
-    editor.focused || document.activeElement?.nodeName === 'INPUT';
+    focusedEditor() || document.activeElement?.nodeName === 'INPUT';
 
   useHotkey(document.body, {
     F: event => {
-      if (editor.focused) return;
+      if (filterHotKey()) return;
       event.preventDefault();
       editor.setFocus(true);
     },
     Escape: () => {
-      if (editor.focused) {
+      if (focusedEditor()) {
         if (!document.activeElement) return;
         (document.activeElement as HTMLElement).blur();
       } else {
@@ -96,9 +93,9 @@ export function KeyboardShortcuts(): JSXElement {
     },
     R: () => {
       if (filterHotKey()) return;
-      const index = Math.floor(Math.random() * configuration.themes.length);
-      const theme = configuration.themes[index];
-      updateTheme(theme);
+      const index = Math.floor(Math.random() * themes.length);
+      const theme = themes[index];
+      dispatch(updateTheme({theme}));
     },
     // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
     'Shift+?': () => {

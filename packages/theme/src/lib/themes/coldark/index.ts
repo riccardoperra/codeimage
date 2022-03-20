@@ -15,7 +15,7 @@ export const coldarkColdTheme = createPrismJsTheme({
       text: '#111b27',
     },
   },
-});
+} as const);
 
 export const coldarkDarkTheme = createPrismJsTheme({
   id: 'coldarkDark',
@@ -30,4 +30,4 @@ export const coldarkDarkTheme = createPrismJsTheme({
       text: '#FFF',
     },
   },
-});
+} as const);

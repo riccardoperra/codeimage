@@ -14,4 +14,4 @@ export const duotoneSeaTheme = createPrismJsTheme({
       text: '#D6E9FF',
     },
   },
-});
+} as const);

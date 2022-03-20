@@ -1,10 +1,11 @@
 import {For, JSXElement} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {useTerminalState} from '../../state/terminal';
+import {terminal$} from '@codeimage/store/terminal';
 import {Group} from '../ui/Group/Group';
 import {RadioBlock} from '../ui/RadioBlock/RadioBlock';
 import {Box} from '../ui/Box/Box';
-import {useStaticConfiguration} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 interface TerminalControlFieldProps {
   selectedTerminal: string;
@@ -14,8 +15,9 @@ interface TerminalControlFieldProps {
 export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
-  const {terminalThemes} = useStaticConfiguration();
-  const terminalState = useTerminalState();
+  // TODO: add lazy loading?
+  const {terminalThemes} = appEnvironment;
+  const terminalState = fromObservableObject(terminal$);
 
   return (
     <Group orientation={'vertical'}>

@@ -1,31 +1,30 @@
 import * as styles from './Toolbar.css';
 import {Component} from 'solid-js';
-import {useUIState} from '../../state/ui';
 import {ThemeToggleButton} from './ThemeToggleButton';
 import {Box} from '../ui/Box/Box';
 import {LanguageSelectorButton} from './LanguageSelectorButton';
-import {useStaticConfiguration} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {ExportButton} from './ExportButton';
 import {ShareButton} from './ShareButton';
+import {setLocale, toggleThemeMode, uiStore} from '@codeimage/store/ui';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
-  const staticConfiguration = useStaticConfiguration();
-  const uiState = useUIState();
+  const {locales} = appEnvironment;
 
   return (
     <div class={styles.wrapper}>
       <Box class={styles.actionBox}>
         <LanguageSelectorButton
-          locales={staticConfiguration.locales}
-          currentLocale={uiState.locale}
-          onLocaleChange={locale => uiState.setLocale(locale)}
+          locales={locales}
+          currentLocale={uiStore.locale}
+          onLocaleChange={setLocale}
         />
 
         <ThemeToggleButton
-          theme={uiState.themeMode}
-          onThemeToggle={uiState.toggleThemeMode}
+          theme={uiStore.themeMode}
+          onThemeToggle={toggleThemeMode}
         />
 
         <Box marginLeft={'auto'}>

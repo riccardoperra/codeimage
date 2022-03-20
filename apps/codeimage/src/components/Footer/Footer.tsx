@@ -1,10 +1,10 @@
 import * as styles from './Footer.css';
 import {Box} from '../ui/Box/Box';
-import {useStaticConfiguration} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {Link} from '../ui/Link/Link';
 
 export const Footer = () => {
-  const {version} = useStaticConfiguration();
+  const {version} = appEnvironment;
 
   return (
     <div class={styles.wrapper}>

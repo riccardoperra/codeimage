@@ -1,31 +1,36 @@
 import {CustomTheme} from './custom-theme';
 
-type CustomThemeFactoryResult<Type, FactoryResult> = CustomTheme &
+type CustomThemeFactoryResult<Type, FactoryResult> = Omit<
+  CustomTheme,
+  keyof FactoryResult | 'type'
+> &
   FactoryResult & {
     type: Type;
   };
 
 export function createThemeFactory<
+  FactoryArgs extends unknown[],
+  FactoryType extends string,
   ThemeFactoryResult extends CustomTheme,
-  FactoryType extends string = string,
 >(
   type: FactoryType,
-  themeFactory: (theme: CustomTheme) => ThemeFactoryResult,
+  themeFactory: (...args: [...FactoryArgs]) => ThemeFactoryResult,
 ): (
-  theme: ThemeFactoryResult,
-) => Readonly<CustomThemeFactoryResult<FactoryType, ThemeFactoryResult>> {
-  return theme => {
-    const factoryResult = themeFactory(theme) as CustomThemeFactoryResult<
+  ...args: [...FactoryArgs]
+) => CustomThemeFactoryResult<FactoryType, ThemeFactoryResult> {
+  return (
+    ...args: [...FactoryArgs]
+  ): CustomThemeFactoryResult<FactoryType, ThemeFactoryResult> => {
+    const factoryResult = themeFactory(...args) as CustomThemeFactoryResult<
       FactoryType,
       ThemeFactoryResult
     >;
     factoryResult.type = type;
-
-    return factoryResult as CustomThemeFactoryResult<
-      FactoryType,
-      ThemeFactoryResult
-    >;
+    return factoryResult;
   };
 }
 
-export const createTheme = createThemeFactory('@codeimage/base-theme', _ => _);
+export const createTheme = createThemeFactory(
+  '@codeimage/base-theme',
+  <T extends CustomTheme>(_: T): T => _,
+);

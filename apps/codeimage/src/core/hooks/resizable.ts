@@ -2,7 +2,6 @@ import {
   Accessor,
   batch,
   createEffect,
-  createMemo,
   createSignal,
   on,
   onCleanup,
@@ -110,7 +109,7 @@ export function createHorizontalResize(
 
   const resizeEnd = (): boolean => setResizing(false);
 
-  const width = createMemo(() => state.width);
+  const width = () => state.width;
 
   createEffect(
     on(ref, ref => {
@@ -134,10 +133,6 @@ export function createHorizontalResize(
             ) ||
             0,
         );
-
-        setState({
-          width: ref.clientWidth,
-        });
       });
     }),
   );

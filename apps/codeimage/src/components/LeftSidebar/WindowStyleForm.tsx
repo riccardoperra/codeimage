@@ -5,10 +5,17 @@ import {Show} from 'solid-js';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
-import {useTerminalState} from '../../state/terminal';
+import {
+  setAccentVisible,
+  setShowHeader,
+  setShowWatermark,
+  setType,
+  terminal$,
+} from '@codeimage/store/terminal';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 export const WindowStyleForm = () => {
-  const terminal = useTerminalState();
+  const terminal = fromObservableObject(terminal$);
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
 
@@ -21,7 +28,7 @@ export const WindowStyleForm = () => {
           <SegmentedField
             size={'xs'}
             value={terminal.showHeader}
-            onChange={terminal.setShowHeader}
+            onChange={setShowHeader}
             items={[
               {label: 'Yes', value: true},
               {label: 'No', value: false},
@@ -35,7 +42,7 @@ export const WindowStyleForm = () => {
           <FullWidthPanelRow>
             <TerminalControlField
               selectedTerminal={terminal.type}
-              onTerminalChange={terminal.setType}
+              onTerminalChange={setType}
             />
           </FullWidthPanelRow>
         </PanelRow>
@@ -47,7 +54,7 @@ export const WindowStyleForm = () => {
             <SegmentedField
               size={'xs'}
               value={terminal.accentVisible}
-              onChange={terminal.setAccentVisible}
+              onChange={setAccentVisible}
               items={[
                 {label: 'Yes', value: true},
                 {label: 'No', value: false},
@@ -62,7 +69,7 @@ export const WindowStyleForm = () => {
           <SegmentedField
             size={'xs'}
             value={terminal.showWatermark}
-            onChange={terminal.setShowWatermark}
+            onChange={setShowWatermark}
             items={[
               {label: 'Show', value: true},
               {label: 'Hide', value: false},

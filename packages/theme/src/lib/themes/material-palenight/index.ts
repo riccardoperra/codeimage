@@ -14,4 +14,4 @@ export const materialPalenightTheme = createPrismJsTheme({
       text: '#D6E9FF',
     },
   },
-});
+} as const);

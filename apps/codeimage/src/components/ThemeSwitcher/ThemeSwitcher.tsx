@@ -3,10 +3,9 @@ import {Text} from '../ui/Text/Text';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';
-import {useTerminalState} from '../../state/terminal';
-import {updateTheme} from '../../state/state';
+import {terminal$} from '@codeimage/store/terminal';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
-import {useStaticConfiguration} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Box} from '../ui/Box/Box';
 import {FlexField} from '../ui/Field/FlexField';
@@ -15,9 +14,12 @@ import {FadeInOutWithScaleTransition} from '../ui/Transition/Transition';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {useModality} from '../../core/hooks/isMobile';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
+import {dispatch} from '@ngneat/effects';
+import {updateTheme} from '../../state/effect';
 
 function useFilteredThemes() {
-  const {themes} = useStaticConfiguration();
+  const {themes} = appEnvironment;
   const [search, setSearch] = createSignal('');
 
   const filteredThemes = createMemo(() => {
@@ -32,14 +34,12 @@ function useFilteredThemes() {
 }
 
 export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
-  const terminal = useTerminalState();
+  const terminal = fromObservableObject(terminal$);
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
   const [themes, filteredThemes, search, setSearch] = useFilteredThemes();
 
-  const filteredThemeIds = createMemo(() =>
-    filteredThemes().map(theme => theme.id),
-  );
+  const filteredThemeIds = () => filteredThemes().map(theme => theme.id);
 
   return (
     <Box
@@ -65,7 +65,10 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
           <FadeInOutWithScaleTransition
             show={filteredThemeIds().includes(theme.id)}
           >
-            <ThemeBox theme={theme} onClick={() => updateTheme(theme)}>
+            <ThemeBox
+              theme={theme}
+              onClick={() => dispatch(updateTheme({theme}))}
+            >
               <DynamicTerminal
                 tabName={'Untitled'}
                 textColor={theme.properties.terminal.text}

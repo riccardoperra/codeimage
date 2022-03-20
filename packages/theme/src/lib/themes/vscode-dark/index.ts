@@ -15,4 +15,4 @@ export const vsCodeDarkTheme = createPrismJsTheme({
       text: '#FFF',
     },
   },
-});
+} as const);

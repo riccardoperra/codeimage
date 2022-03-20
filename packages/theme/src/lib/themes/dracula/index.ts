@@ -13,4 +13,4 @@ export const draculaTheme = createTheme({
       text: palette.purple,
     },
   },
-});
+} as const);

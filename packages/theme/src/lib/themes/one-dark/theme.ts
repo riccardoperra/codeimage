@@ -13,4 +13,4 @@ export const oneDarkTheme = createTheme({
       text: '#e5c07b',
     },
   },
-});
+} as const);

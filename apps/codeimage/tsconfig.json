@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "jsx": "preserve",
+    "importHelpers": true,
     "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
     "types": [
@@ -14,7 +15,12 @@
       "dom.iterable",
       "es2019",
       "WebWorker"
-    ]
+    ],
+    "paths": {
+      "@codeimage/store/*": [
+        "./src/state/*"
+      ]
+    }
   },
   "include": [
     "./src"

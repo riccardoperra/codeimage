@@ -1,6 +1,6 @@
 import {EditorView} from '@codemirror/view';
-import {useEditorState} from '../../state/editor';
-import {useStaticConfiguration} from '../../core/configuration';
+import {editor$, setCode, setFocus} from '@codeimage/store/editor';
+import {appEnvironment} from '../../core/configuration';
 import {createMemo, createResource, Show} from 'solid-js';
 import {lineNumbers} from '@codemirror/gutter';
 import {createCustomFontExtension} from './custom-font-extension';
@@ -8,13 +8,15 @@ import {CodeMirror} from 'solid-codemirror';
 import {EDITOR_BASE_SETUP} from '@codeimage/config';
 import clsx from 'clsx';
 import {observeFocusExtension} from './observe-focus-extension';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
+import {focusedEditor$} from '../../state/editor';
 
 export const CustomEditor = () => {
-  const configuration = useStaticConfiguration();
-  const editor = useEditorState();
+  const {languages, themes, fonts} = appEnvironment;
+  const editor = fromObservableObject(editor$);
 
   const selectedLanguage = createMemo(() =>
-    configuration.languages.find(language => language.id === editor.languageId),
+    languages.find(language => language.id === editor.languageId),
   );
 
   const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
@@ -22,12 +24,10 @@ export const CustomEditor = () => {
   );
 
   const themeConfiguration = createMemo(() =>
-    configuration.themes.find(theme => theme.id === editor.themeId),
+    themes.find(theme => theme.id === editor.themeId),
   );
 
-  const currentTheme = createMemo(
-    () => themeConfiguration()?.editorTheme || [],
-  );
+  const currentTheme = () => themeConfiguration()?.editorTheme || [];
 
   const supportsLineWrap = EditorView.lineWrapping;
 
@@ -63,14 +63,12 @@ export const CustomEditor = () => {
     },
   });
 
-  const customFontExtension = createMemo(() =>
+  const customFontExtension = () =>
     createCustomFontExtension({
       fontName:
-        configuration.fonts.find(({id}) => editor.fontId === id)?.name ||
-        configuration.fonts[0].name,
+        fonts.find(({id}) => editor.fontId === id)?.name || fonts[0].name,
       fontWeight: editor.fontWeight,
-    }),
-  );
+    });
 
   const externalStylesheet = createMemo(
     () => themeConfiguration()?.externalStylesheet,
@@ -89,23 +87,20 @@ export const CustomEditor = () => {
         <div class={externalStylesheet()?.className}>
           <CodeMirror
             value={editor.code}
-            onChange={editor.setCode}
+            onChange={setCode}
             extensions={[
               EDITOR_BASE_SETUP,
               baseTheme,
               supportsLineWrap,
               observeFocusExtension(
-                focused => editor.setFocus(focused),
+                focused => setFocus(focused),
                 vu => {
                   // ATTENTION: a lot of multiple calls to fix!!
-                  useEditorState.subscribe(
-                    state => state.focused,
-                    focused => {
-                      if (focused && !vu.view.hasFocus) {
-                        vu.view.focus();
-                      }
-                    },
-                  );
+                  focusedEditor$.subscribe(focused => {
+                    if (focused && !vu.view.hasFocus) {
+                      vu.view.focus();
+                    }
+                  });
                 },
               ),
               customFontExtension(),

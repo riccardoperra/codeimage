@@ -1,11 +1,15 @@
-import {createThemeFactory} from '../core';
+import {createThemeFactory, CustomTheme} from '../core';
 import {prismjsClassNames} from './prismjsClassNames';
+
+type PrismJsTheme<T extends CustomTheme> = Omit<T, 'id'> & {
+  id: `prismjs-${T['id']}`;
+};
 
 export const createPrismJsTheme = createThemeFactory(
   '@codeimage/prismjs-theme',
-  theme => {
-    theme.id = `prismjs-${theme.id}`;
+  <T extends CustomTheme, Id extends string>(theme: T): PrismJsTheme<T> => {
+    theme.id = `prismjs-${theme.id}` as `prismjs-${Id}`;
     theme.editorTheme = [prismjsClassNames, theme.editorTheme || []];
-    return theme;
+    return theme as PrismJsTheme<T>;
   },
 );

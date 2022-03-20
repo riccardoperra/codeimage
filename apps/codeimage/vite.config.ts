@@ -3,10 +3,10 @@ import solidPlugin from 'vite-plugin-solid';
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import replace from '@rollup/plugin-replace';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   base: '/',
-  mode: 'development',
   manifest: {
     name: 'Codeimage',
     orientation: 'portrait',
@@ -66,10 +66,12 @@ if (reload) {
 
 export default defineConfig({
   clearScreen: true,
+  mode: 'production',
   plugins: [
     vanillaExtractPlugin(),
     solidPlugin(),
     VitePWA(pwaOptions),
+    tsconfigPaths(),
     replace(replaceOptions),
   ],
   server: {
@@ -82,7 +84,7 @@ export default defineConfig({
   build: {
     target: 'es2019',
     brotliSize: true,
-    sourcemap: true,
+    sourcemap: false,
     minify: true,
     polyfillDynamicImport: false,
     cssCodeSplit: true,

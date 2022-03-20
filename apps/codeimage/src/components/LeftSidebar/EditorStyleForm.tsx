@@ -5,16 +5,40 @@ import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {Text} from '../ui/Text/Text';
 import {useI18n} from '@codeimage/locale';
 import {locale} from './FrameSidebar.locale';
-import {useEditorState} from '../../state/editor';
-import {useStaticConfiguration} from '../../core/configuration';
+import {
+  editor$,
+  font$,
+  setFontId,
+  setFontWeight,
+  setLanguageId,
+  setShowLineNumbers,
+} from '@codeimage/store/editor';
+import {appEnvironment} from '../../core/configuration';
 import {useModality} from '../../core/hooks/isMobile';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
+import {from} from 'solid-js';
+import {map} from 'rxjs';
 
 export const EditorStyleForm = () => {
-  const editor = useEditorState();
-  const configuration = useStaticConfiguration();
+  const {languages, fonts} = appEnvironment;
+  const editor = fromObservableObject(editor$);
   const modality = useModality();
   const [t, {merge}] = useI18n<typeof locale>();
   merge(locale);
+
+  const font = from(font$);
+
+  const fontWeightOptions = from(
+    font$.pipe(
+      map(font => font?.types || []),
+      map(types =>
+        types.map(type => ({
+          label: type.name,
+          value: type.weight,
+        })),
+      ),
+    ),
+  );
 
   return (
     <>
@@ -25,14 +49,12 @@ export const EditorStyleForm = () => {
           <Select
             multiple={false}
             native={modality === 'mobile'}
-            items={configuration.languages.map(({label, id}) => ({
+            items={languages.map(({label, id}) => ({
               label: label,
               value: id,
             }))}
             value={editor.languageId}
-            onSelectChange={value =>
-              editor.setLanguageId(value ?? configuration.languages[0].id)
-            }
+            onSelectChange={value => setLanguageId(value ?? languages[0].id)}
           />
         </TwoColumnPanelRow>
       </PanelRow>
@@ -42,7 +64,7 @@ export const EditorStyleForm = () => {
           <SegmentedField
             size={'xs'}
             value={editor.showLineNumbers}
-            onChange={editor.setShowLineNumbers}
+            onChange={setShowLineNumbers}
             items={[
               {label: 'Show', value: true},
               {label: 'Hide', value: false},
@@ -56,11 +78,11 @@ export const EditorStyleForm = () => {
           <Select
             native={modality === 'mobile'}
             multiple={false}
-            items={configuration.fonts.map(font => ({
+            items={fonts.map(font => ({
               label: font.name,
               value: font,
             }))}
-            value={configuration.fonts.find(font => font.id === editor.fontId)}
+            value={fonts.find(font => font.id === editor.fontId)}
             itemContent={({label, value, selected}) => (
               <Text
                 size={'xs'}
@@ -71,9 +93,7 @@ export const EditorStyleForm = () => {
                 {label}
               </Text>
             )}
-            onSelectChange={value =>
-              editor.setFontId(value?.id ?? configuration.fonts[0].id)
-            }
+            onSelectChange={value => setFontId(value?.id ?? fonts[0].id)}
           />
         </TwoColumnPanelRow>
       </PanelRow>
@@ -83,17 +103,10 @@ export const EditorStyleForm = () => {
           <Select
             native={modality === 'mobile'}
             multiple={false}
-            items={
-              editor.getFont()?.types.map(type => ({
-                label: type.name,
-                value: type.weight,
-              })) || []
-            }
+            items={fontWeightOptions()}
             value={editor.fontWeight}
             onSelectChange={value =>
-              editor.setFontWeight(
-                value ?? editor.getFont()?.types[0].weight ?? 400,
-              )
+              setFontWeight(value ?? font()?.types[0].weight ?? 400)
             }
           />
         </TwoColumnPanelRow>

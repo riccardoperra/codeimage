@@ -1,10 +1,5 @@
-import {
-  combine,
-  devtools,
-  persist,
-  subscribeWithSelector,
-} from 'zustand/middleware';
-import create from 'solid-zustand';
+import {createPluggableStore} from '../core/store/create-pluggable-store';
+import {withLocalStorage} from '../core/store/persist-plugin';
 
 export interface GlobalUiState {
   themeMode: 'light' | 'dark';
@@ -16,18 +11,16 @@ const initialState: GlobalUiState = {
   locale: 'en',
 };
 
-const store = combine(initialState, set => ({
-  setLocale: (locale: string) => set(() => ({locale})),
-  setThemeMode: (themeMode: GlobalUiState['themeMode']) =>
-    set(() => ({themeMode})),
-  toggleThemeMode: () =>
-    set(({themeMode}) => ({
-      themeMode: themeMode === 'light' ? 'dark' : 'light',
-    })),
-}));
-
-export const useUIState = create(
-  subscribeWithSelector(
-    persist(devtools(store, {name: 'ui'}), {name: '@store/ui'}),
-  ),
+export const [uiStore, setUiStore] = createPluggableStore(
+  initialState,
+  withLocalStorage({name: '@store/ui'}),
 );
+
+export function setLocale(locale: string): void {
+  setUiStore('locale', () => locale);
+}
+
+//
+export function toggleThemeMode(): void {
+  setUiStore('themeMode', mode => (mode === 'light' ? 'dark' : 'light'));
+}
