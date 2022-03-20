@@ -4,11 +4,12 @@ import {themeVars} from '../../theme/global.css';
 import {Component} from 'solid-js';
 import {TerminalState} from '../../state/terminal';
 import clsx from 'clsx';
+import {LanguageIconDefinition} from '@codeimage/config';
 
 export interface BaseTerminalProps extends Omit<TerminalState, 'type'> {
   showTab: boolean;
   readonlyTab: boolean;
-  tabIcon?: string;
+  tabIcon?: LanguageIconDefinition['content'];
   onTabChange?: (tab: string) => void;
 }
 

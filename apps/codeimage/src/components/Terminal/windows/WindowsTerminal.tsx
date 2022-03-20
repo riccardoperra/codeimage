@@ -23,7 +23,7 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
               marginLeft={'6'}
             >
               <Show when={props.tabIcon}>
-                <TabIcon src={props.tabIcon} />
+                {icon => <TabIcon content={icon} />}
               </Show>
 
               <InlineTextField

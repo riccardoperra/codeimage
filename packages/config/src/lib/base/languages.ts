@@ -11,52 +11,54 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'js',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/javascript.svg',
+        content: () => import('material-icon-theme/icons/javascript.svg?raw'),
         matcher: /^.*\.(js)$/,
       },
       {
         name: 'jsx',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/react.svg',
+        content: () => import('material-icon-theme/icons/react.svg?raw'),
         matcher: /^.*\.(jsx)$/,
       },
       {
         name: 'test-jsx',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/test-jsx.svg',
+        content: () => import('material-icon-theme/icons/test-jsx.svg?raw'),
         matcher: /^.*\.(spec.jsx)$/,
       },
       {
         name: 'test-js',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/test-ts.svg',
+        content: () => import('material-icon-theme/icons/test-ts.svg?raw'),
         matcher: /^.*\.(spec.js)$/,
       },
       {
         name: 'vue',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/vue.svg',
+        content: () => import('material-icon-theme/icons/vue.svg?raw'),
         matcher: /^.*\.(vue)$/,
       },
       {
         name: 'redux-store',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/redux-store.svg',
+        content: () => import('material-icon-theme/icons/redux-store.svg?raw'),
         matcher: /^.*\.*?(store.js)$/,
       },
       {
         name: 'redux-reducer',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/redux-reducer.svg',
+        content: () =>
+          import('material-icon-theme/icons/redux-reducer.svg?raw'),
         matcher: /^.*\.*?(reducer.js)$/,
       },
       {
         name: 'redux-action',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/redux-action.svg',
+        content: () => import('material-icon-theme/icons/redux-action.svg?raw'),
         matcher: /^.*\.*?(action.js)$/,
       },
       {
         name: 'redux-selector',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/redux-selector.svg',
+        content: () =>
+          import('material-icon-theme/icons/redux-selector.svg?raw'),
         matcher: /^.*\.*?(selector.js)$/,
       },
       {
         name: 'svelte',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/svelte.svg',
+        content: () => import('material-icon-theme/icons/svelte.svg?raw'),
         matcher: /^.*\.(svelte)$/,
       },
     ],
@@ -71,82 +73,89 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'ts',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/typescript.svg',
+        content: () => import('material-icon-theme/icons/typescript.svg?raw'),
         matcher: /^.*\.(ts)$/,
       },
       {
         name: 'tsx',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/react_ts.svg',
+        content: () => import('material-icon-theme/icons/react_ts.svg?raw'),
         matcher: /^.*\.(tsx)$/,
       },
       {
         name: 'test-tsx',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/test-jsx.svg',
+        content: () => import('material-icon-theme/icons/test-jsx.svg?raw'),
         matcher: /^.*\.(spec.jsx|spec.tsx)$/,
       },
       {
         name: 'test-ts',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/test-ts.svg',
+        content: () => import('material-icon-theme/icons/test-ts.svg?raw'),
         matcher: /^.*\.(spec.js|spec.ts)$/,
       },
       {
         name: 'vue',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/vue.svg',
+        content: () => import('material-icon-theme/icons/vue.svg?raw'),
         matcher: /^.*\.(vue)$/,
       },
       {
         name: 'redux-store',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/redux-store.svg',
+        content: () => import('material-icon-theme/icons/redux-store.svg?raw'),
         matcher: /^.*\.*?(store.ts)$/,
       },
       {
         name: 'redux-reducer',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/redux-reducer.svg',
+        content: () =>
+          import('material-icon-theme/icons/redux-reducer.svg?raw'),
         matcher: /^.*\.*?(reducer.ts)$/,
       },
       {
         name: 'redux-action',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/redux-action.svg',
+        content: () => import('material-icon-theme/icons/redux-action.svg?raw'),
         matcher: /^.*\.*?(action.ts)$/,
       },
       {
         name: 'redux-selector',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/redux-selector.svg',
+        content: () =>
+          import('material-icon-theme/icons/redux-selector.svg?raw'),
         matcher: /^.*\.*?(selector.ts)$/,
       },
       {
         name: 'ng-component',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/angular-component.svg',
+        content: () =>
+          import('material-icon-theme/icons/angular-component.svg?raw'),
         matcher: /^.*\.(component.ts)$/,
       },
       {
         name: 'ng-pipe',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/angular-pipe.svg',
+        content: () => import('material-icon-theme/icons/angular-pipe.svg?raw'),
         matcher: /^.*\.(pipe.ts)$/,
       },
       {
         name: 'ng-guard',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/angular-guard.svg',
+        content: () =>
+          import('material-icon-theme/icons/angular-guard.svg?raw'),
         matcher: /^.*\.(guard.ts)$/,
       },
       {
         name: 'ng-directive',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/angular-directive.svg',
+        content: () =>
+          import('material-icon-theme/icons/angular-directive.svg?raw'),
         matcher: /^.*\.(directive.ts)$/,
       },
       {
         name: 'ng-resolver',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/angular-resolver.svg',
+        content: () =>
+          import('material-icon-theme/icons/angular-resolver.svg?raw'),
         matcher: /^.*\.(resolver.ts)$/,
       },
       {
         name: 'ng-service',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/angular-service.svg',
+        content: () =>
+          import('material-icon-theme/icons/angular-service.svg?raw'),
         matcher: /^.*\.(service.ts)$/,
       },
       {
         name: 'svelte',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/svelte.svg',
+        content: () => import('material-icon-theme/icons/svelte.svg?raw'),
         matcher: /^.*\.(svelte)$/,
       },
     ],
@@ -158,7 +167,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'java-class',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/javaclass.svg',
+        content: () => import('material-icon-theme/icons/javaclass.svg?raw'),
         matcher: /^.*\.(java)$/,
       },
     ],
@@ -170,22 +179,22 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'css',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/css.svg',
+        content: () => import('material-icon-theme/icons/css.svg?raw'),
         matcher: /^.*\.(css)$/,
       },
       {
         name: 'sass',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/sass.svg',
+        content: () => import('material-icon-theme/icons/sass.svg?raw'),
         matcher: /^.*\.(scss|sass)$/,
       },
       {
         name: 'less',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/less.svg',
+        content: () => import('material-icon-theme/icons/less.svg?raw'),
         matcher: /^.*\.(less)$/,
       },
       {
         name: 'stylus',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/stylus.svg',
+        content: () => import('material-icon-theme/icons/stylus.svg?raw'),
         matcher: /^.*\.(stylus)$/,
       },
     ],
@@ -200,7 +209,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'html',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/html.svg',
+        content: () => import('material-icon-theme/icons/html.svg?raw'),
         matcher: /^.*\.(html)$/,
       },
     ],
@@ -212,7 +221,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'php',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/php.svg',
+        content: () => import('material-icon-theme/icons/php.svg?raw'),
         matcher: /^.*\.(php)$/,
       },
     ],
@@ -225,7 +234,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'python',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/python.svg',
+        content: () => import('material-icon-theme/icons/python.svg?raw'),
         matcher: /^.*\.(python)$/,
       },
     ],
@@ -238,7 +247,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'markdown',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/markdown.svg',
+        content: () => import('material-icon-theme/icons/markdown.svg?raw'),
         matcher: /^.*\.(markdown)$/,
       },
     ],
@@ -250,7 +259,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'rust',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/rust.svg',
+        content: () => import('material-icon-theme/icons/rust.svg?raw'),
         matcher: /^.*\.(rust)$/,
       },
     ],
@@ -262,7 +271,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'cpp',
-        src: 'https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/cpp.svg',
+        content: () => import('material-icon-theme/icons/cpp.svg?raw'),
         matcher: /^.*\.(cpp)$/,
       },
     ],

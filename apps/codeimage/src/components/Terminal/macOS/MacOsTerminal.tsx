@@ -40,7 +40,7 @@ export const MacOsTerminal: Component<BaseTerminalProps> = props => {
           <Show when={props.showTab}>
             <div class={baseStyles.tab({accent: props.accentVisible})}>
               <Show when={props.tabIcon}>
-                <TabIcon src={props.tabIcon} />
+                {icon => <TabIcon content={icon} />}
               </Show>
               <InlineTextField
                 size={'sm'}

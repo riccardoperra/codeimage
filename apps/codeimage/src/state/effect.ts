@@ -20,7 +20,7 @@ export const updateTheme = createAction(
 export const onTabNameChange$ = createEffect(actions =>
   actions.pipe(
     ofType(updateTabName),
-    debounceTime(250),
+    debounceTime(100),
     withLatestFrom(editorLanguageId$),
     map(([{tabName}, languageId]) => ({
       tabName,
