@@ -44,13 +44,13 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
         />
         <For each={props.items}>
           {(item, index) => (
-            <a
+            <div
               class={segmentStyle()}
               data-active={index() === activeIndex()}
               onClick={() => props.onChange(item.value)}
             >
               {item.label}
-            </a>
+            </div>
           )}
         </For>
       </div>
