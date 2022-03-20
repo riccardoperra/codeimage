@@ -81,10 +81,11 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'es2019',
+    target: 'esnext',
     brotliSize: true,
     sourcemap: false,
     minify: true,
+    polyfillModulePreload: false,
     polyfillDynamicImport: false,
     cssCodeSplit: true,
   },
