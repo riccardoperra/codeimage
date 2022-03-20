@@ -81,7 +81,7 @@ const App = () => {
               textColor={terminal.textColor}
               onTabChange={setTabName}
               showHeader={terminal.showHeader}
-              tabIcon={tabIcon()?.src}
+              tabIcon={tabIcon()?.content}
               showWatermark={terminal.showWatermark}
             >
               <CustomEditor />

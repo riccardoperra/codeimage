@@ -66,7 +66,6 @@ if (reload) {
 
 export default defineConfig({
   clearScreen: true,
-  mode: 'production',
   plugins: [
     vanillaExtractPlugin(),
     solidPlugin(),

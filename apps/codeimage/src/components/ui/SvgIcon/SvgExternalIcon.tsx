@@ -7,9 +7,10 @@ import {
 } from 'solid-js';
 import {SvgIcon} from './SvgIcon';
 import {Loader} from '../../LoadingOverlay/LoadingOverlay';
+import {LanguageIconDefinition} from '@codeimage/config';
 
 interface SvgExternalIconProps {
-  src?: string | null;
+  content?: LanguageIconDefinition['content'] | null;
   delay?: number;
 }
 
@@ -55,10 +56,15 @@ export function extractSVGProps(src: string) {
 }
 
 export function SvgExternalIcon(props: SvgExternalIconProps): JSXElement {
-  const [src, setSrc] = createSignal<string | null>();
+  const [src, setSrc] = createSignal<
+    LanguageIconDefinition['content'] | null
+  >();
 
-  const [data] = createResource(src, async url => {
-    const svgResponse = await fetch(url).then(res => res.text());
+  const [data] = createResource(src, async content => {
+    const svgResponse =
+      typeof content === 'string'
+        ? await fetch(content).then(res => res.text())
+        : await content().then(e => e.default);
     const svgProps = extractSVGProps(svgResponse) || {};
     if (props.delay) {
       await new Promise(r => setTimeout(r, props.delay));
@@ -70,7 +76,7 @@ export function SvgExternalIcon(props: SvgExternalIconProps): JSXElement {
     };
   });
 
-  createEffect(() => setSrc(props.src));
+  createEffect(() => setSrc(() => props.content));
 
   return (
     <Suspense fallback={<Loader size={'md'} />}>

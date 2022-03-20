@@ -2,7 +2,7 @@ import {Extension} from '@codemirror/state';
 
 export interface LanguageIconDefinition {
   name: string;
-  src: string;
+  content: string | (() => Promise<typeof import('*.svg')>);
   matcher: RegExp;
 }
 
