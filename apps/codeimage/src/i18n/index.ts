@@ -11,6 +11,8 @@ export const locale = {
     toolbar: {
       export: 'Esporta',
       share: 'Condividi',
+      toggleTheme: 'Modifica tema',
+      changeLanguage: 'Modifica lingua',
       exportLoading: 'Esportando...',
     },
     pwa: {
@@ -66,6 +68,8 @@ export const locale = {
     toolbar: {
       export: 'Export',
       share: 'Share',
+      toggleTheme: 'Toggle theme',
+      changeLanguage: 'Modifica lingua',
       exportLoading: 'Exporting...',
     },
     pwa: {

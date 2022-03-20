@@ -41,6 +41,7 @@ export const ShareButton: Component<ShareButtonProps> = props => {
 
   return (
     <Button
+      aria-label={t('toolbar.share')}
       variant={'solid'}
       theme={'secondary'}
       disabled={!support.shareApi}

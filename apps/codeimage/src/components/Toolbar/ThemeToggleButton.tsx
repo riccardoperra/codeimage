@@ -3,6 +3,8 @@ import {Button} from '../ui/Button/Button';
 import {themeVars} from '../../theme/global.css';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 import {GlobalUiState} from '@codeimage/store/ui';
+import {useI18n} from '@codeimage/locale';
+import {AppLocaleEntries} from '../../i18n';
 
 interface ThemeTogglerProps {
   theme: GlobalUiState['themeMode'];
@@ -10,6 +12,7 @@ interface ThemeTogglerProps {
 }
 
 export const ThemeToggleButton: Component<ThemeTogglerProps> = props => {
+  const [t] = useI18n<AppLocaleEntries>();
   const isLight = () => props.theme === 'light';
 
   const strokeColor = () =>
@@ -19,6 +22,7 @@ export const ThemeToggleButton: Component<ThemeTogglerProps> = props => {
 
   return (
     <Button
+      aria-label={t('toolbar.toggleTheme')}
       theme="secondary"
       variant="solid"
       onClick={() => props.onThemeToggle()}

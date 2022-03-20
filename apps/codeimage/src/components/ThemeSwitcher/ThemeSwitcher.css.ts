@@ -60,7 +60,7 @@ export const themeBoxFooter = style({
       padding: themeVars.spacing['3'],
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: `rgba(0, 0, 0, .25)`,
+      backgroundColor: `rgba(0, 0, 0, .40)`,
       color: themeVars.backgroundColor.white,
     },
   },

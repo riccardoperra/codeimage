@@ -17,7 +17,7 @@ interface LanguageSelectorButtonProps {
 }
 
 export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
-  const [, {tUnsafe}] = useI18n<AppLocaleEntries>();
+  const [t, {tUnsafe}] = useI18n<AppLocaleEntries>();
   const floating = useFloating({
     placement: 'bottom-start',
     middleware: [offset(10)],
@@ -30,6 +30,7 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
           <PopoverButton
             ref={floating.setReference}
             as={Button}
+            aria-label={t('toolbar.changeLanguage')}
             variant={'solid'}
             theme={'secondary'}
           >
