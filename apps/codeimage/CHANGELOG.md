@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.12.1
+
+### Patch Changes
+
+- fd7b506: feat: improve style for selected sidebar theme
+
 ## 0.12.0
 
 ### Minor Changes
