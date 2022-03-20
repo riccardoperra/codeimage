@@ -116,7 +116,6 @@ importers:
       solid-headless: ^0.10.12
       solid-js: ^1.3.10
       solid-use: 0.3.3
-      solid-zustand: ^1.2.2
       tinykeys: 1.4.0
       typescript: ^4.6.2
       vite: ^2.8.6
@@ -128,7 +127,6 @@ importers:
       workbox-routing: 6.5.1
       workbox-strategies: 6.5.1
       workbox-window: 6.5.1
-      zustand: ^3.7.1
     dependencies:
       '@codeimage/config': link:../../packages/config
       '@codeimage/locale': link:../../packages/locale
@@ -188,12 +186,10 @@ importers:
       solid-headless: 0.10.12_solid-js@1.3.10
       solid-js: 1.3.10
       solid-use: 0.3.3_solid-js@1.3.10
-      solid-zustand: 1.2.2
       tinykeys: 1.4.0
       workbox-precaching: 6.5.1
       workbox-routing: 6.5.1
       workbox-strategies: 6.5.1
-      zustand: 3.7.1
     devDependencies:
       '@types/downloadjs': 1.4.3
       cross-env: 7.0.3
@@ -5862,15 +5858,6 @@ packages:
       solid-js: 1.3.10
     dev: false
 
-  /solid-zustand/1.2.2:
-    resolution: {integrity: sha512-bcxy390p1yDs1IOqwvQtsR32aoRWlfMIdj2Gq0738OSheuLoD2pllnEO1CNOJ1tnAvQzn87ORCkrdtA/oQSmrg==}
-    dependencies:
-      solid-js: 1.3.10
-      zustand: 3.7.1
-    transitivePeerDependencies:
-      - react
-    dev: false
-
   /source-map-js/1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
     engines: {node: '>=0.10.0'}
@@ -6879,13 +6866,3 @@ packages:
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-
-  /zustand/3.7.1:
-    resolution: {integrity: sha512-wHBCZlKj+bg03/hP+Tzv24YhnqqP8MCeN9ECPDXoF01062SIbnfl3j9O0znkDw1lNTY0a8WN3F///a0UhhaEqg==}
-    engines: {node: '>=12.7.0'}
-    peerDependencies:
-      react: '>=16.8'
-    peerDependenciesMeta:
-      react:
-        optional: true
-    dev: false
