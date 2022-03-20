@@ -8,6 +8,10 @@ export const svgIcon = recipe({
 
   variants: {
     size: {
+      lg: {
+        height: '26px',
+        width: '26px',
+      },
       md: {
         height: '20px',
         width: '20px',

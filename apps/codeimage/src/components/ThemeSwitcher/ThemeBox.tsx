@@ -7,6 +7,7 @@ import {CustomTheme} from '@codeimage/theme';
 
 interface ThemeBoxProps {
   theme: CustomTheme;
+  selected?: boolean;
   onClick: (evt: MouseEvent) => void;
 }
 
@@ -14,6 +15,7 @@ export const ThemeBox: Component<ThemeBoxProps> = props => {
   return (
     <div
       class={styles.themeBox}
+      data-selected={props.selected}
       style={assignInlineVars({
         [backgroundColorVar]: props.theme.properties.previewBackground,
       })}
