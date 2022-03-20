@@ -3,12 +3,10 @@ import {Component} from 'solid-js';
 import {ThemeToggleButton} from './ThemeToggleButton';
 import {Box} from '../ui/Box/Box';
 import {LanguageSelectorButton} from './LanguageSelectorButton';
-import {appEnvironment, EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {ExportButton} from './ExportButton';
 import {ShareButton} from './ShareButton';
 import {setLocale, toggleThemeMode, uiStore} from '@codeimage/store/ui';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {inject} from 'solid-use';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;

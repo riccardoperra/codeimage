@@ -1,4 +1,4 @@
-import {Component, createEffect, createMemo, on} from 'solid-js';
+import {Component, createEffect, on} from 'solid-js';
 import * as styles from './Scaffold.css';
 import clsx from 'clsx';
 import {lightThemeCss} from '../../theme/light-theme.css';

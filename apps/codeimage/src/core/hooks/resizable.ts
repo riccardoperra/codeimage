@@ -2,7 +2,6 @@ import {
   Accessor,
   batch,
   createEffect,
-  createMemo,
   createSignal,
   on,
   onCleanup,

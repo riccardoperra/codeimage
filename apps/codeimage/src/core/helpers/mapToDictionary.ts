@@ -8,12 +8,14 @@ type GetStringObjectKeys<T> = keyof Pick<
 >;
 
 type LookUp<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   U extends Record<string, any>,
   K extends keyof U,
   T extends string,
 > = U extends U ? (U[K] extends T ? U : never) : never;
 
 export function mapToDictionary<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TArray extends readonly Record<string, any>[],
   TObject extends GetArrayObject<TArray> = GetArrayObject<TArray>,
   TKeys extends keyof TObject = GetStringObjectKeys<TObject>,

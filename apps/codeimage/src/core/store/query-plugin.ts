@@ -34,7 +34,7 @@ export function withQueryPersist<S>(
       const allowedEntries = Object.entries(parsedQuery)
         .filter(([k]) => k.includes(`${key}_`))
         .map(([k]) => k.replace(`${key}_`, ''))
-        .filter(k => merged.keysToSync.includes(k));
+        .filter(k => merged.keysToSync.includes(k as keyof S));
 
       if (allowedEntries.length === 0) {
         return null;
@@ -44,7 +44,7 @@ export function withQueryPersist<S>(
         Object.entries(parsedQuery)
           .filter(([k]) => k.includes(`${key}_`))
           .map(([k, v]) => [k.replace(`${key}_`, ''), v] as [string, string])
-          .filter(([k]) => merged.keysToSync.includes(k)),
+          .filter(([k]) => merged.keysToSync.includes(k as keyof S)),
       ) as Partial<Store<TState>>;
     }
 
@@ -53,7 +53,7 @@ export function withQueryPersist<S>(
 
       const objectToStringify = Object.fromEntries(
         Object.entries(value)
-          .filter(([k]) => merged.keysToSync.includes(k))
+          .filter(([k]) => merged.keysToSync.includes(k as keyof S))
           .filter(
             ([, value]) =>
               value !== undefined &&

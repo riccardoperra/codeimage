@@ -4,9 +4,8 @@ import {terminal$} from '@codeimage/store/terminal';
 import {Group} from '../ui/Group/Group';
 import {RadioBlock} from '../ui/RadioBlock/RadioBlock';
 import {Box} from '../ui/Box/Box';
-import {appEnvironment, EnvironmentProvider} from '../../core/configuration';
+import {appEnvironment} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {inject} from 'solid-use';
 
 interface TerminalControlFieldProps {
   selectedTerminal: string;
