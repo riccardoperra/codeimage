@@ -18,13 +18,7 @@ cleanupOutdatedCaches();
 // to allow work offline
 // registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 
-registerRoute(
-  ({url}) =>
-    url.origin === 'https://fonts.googleapis.com' ||
-    url.origin === 'https://fonts.gstatic.com' ||
-    url.origin === '/assets/',
-  new StaleWhileRevalidate(),
-);
+registerRoute(({url}) => url.origin === '/assets/', new StaleWhileRevalidate());
 
 registerRoute(
   new RegExp('/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2)'),
