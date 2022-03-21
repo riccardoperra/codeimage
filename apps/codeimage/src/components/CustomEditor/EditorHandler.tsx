@@ -11,9 +11,11 @@ export interface EditorHandlerProps {
   frameRef: Setter<HTMLElement>;
 }
 
-const CustomEditor = lazy(async () => {
-  await new Promise(resolve => setTimeout(resolve, 0));
-  return import('./CustomEditor').then(e => ({default: e.CustomEditor}));
+const CustomEditor = lazy(() => {
+  return import('./CustomEditor').then(async e => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+    return {default: e.CustomEditor};
+  });
 });
 
 export default function EditorHandler(props: EditorHandlerProps) {
