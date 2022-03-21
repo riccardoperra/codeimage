@@ -3,7 +3,6 @@ import {Scaffold} from './components/Scaffold/Scaffold';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {createEffect, createSignal, lazy, on, Show, Suspense} from 'solid-js';
-import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {Footer} from './components/Footer/Footer';
 import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
@@ -35,6 +34,12 @@ const EditorSidebar = lazy(() => {
   }));
 });
 
+const ThemeSwitcher = lazy(() => {
+  return import('./components/ThemeSwitcher/ThemeSwitcher').then(e => ({
+    default: e.ThemeSwitcher,
+  }));
+});
+
 const App = () => {
   document.querySelector('#launcher')?.remove();
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -50,7 +55,9 @@ const App = () => {
       <ReloadPrompt />
       <Show when={modality === 'full'}>
         <Sidebar>
-          <EditorSidebar />
+          <Suspense>
+            <EditorSidebar />
+          </Suspense>
         </Sidebar>
       </Show>
 
@@ -78,7 +85,9 @@ const App = () => {
         </Suspense>
       ) : (
         <Sidebar>
-          <ThemeSwitcher orientation={'vertical'} />
+          <Suspense>
+            <ThemeSwitcher orientation={'vertical'} />
+          </Suspense>
         </Sidebar>
       )}
     </Scaffold>
