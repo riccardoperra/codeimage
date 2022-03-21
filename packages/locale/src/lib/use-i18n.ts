@@ -1,5 +1,5 @@
 import type {LocaleKeys} from './path';
-import {useI18n as _useI18n} from '@amoutonbrady/solid-i18n';
+import {useI18n as _useI18n} from '@solid-primitives/i18n';
 import {batch} from 'solid-js';
 
 type I18nReturnType = ReturnType<typeof _useI18n>;
