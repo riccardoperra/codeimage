@@ -12,13 +12,12 @@
 ![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)
 ![License](https://img.shields.io/github/license/riccardoperra/codeimage)
 
+## Introduction
+
 CodeImage is the newest tool to help developers to create beautiful screenshots of their code, providing several
 features to speed up the process to post in social media.
 
 ## Getting started
-
-CodeImage relies on [SolidJS](https://github.com/solidjs/solid) framework, [CodeMirror6](https://codemirror.net/6/) for
-browser-editor and [Vanilla Extract](https://github.com/seek-oss/vanilla-extract) for styling.
 
 To run the project locally, you must have in your local machine pnpm >= 6.23.2 and node >= 14.x;
 
@@ -47,6 +46,16 @@ $ pnpm app:dev
 ## Usage
 
 // WIP
+
+## Tech stack
+
+CodeImage front-end app currently relies on these technologies:
+
+- [SolidJS](https://github.com/solidjs/solid): UI framework
+- [CodeMirror6](https://codemirror.net/6/): Code Editor
+- [vanilla-extract](https://github.com/seek-oss/vanilla-extract): Design system
+- [solid-headless](https://github.com/LXSMNSYC/solid-headless): SolidJS headless component library
+- [@ngneat/elf](https://github.com/ngneat/elf) + [RxJS](https://github.com/ReactiveX/rxjs): Reactive state management
 
 ## Contributions
 
