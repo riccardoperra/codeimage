@@ -76,10 +76,10 @@ export function LoadingOverlay(props: LoadingOverlayProps): JSXElement {
     <>
       {props.overlay ? (
         <div class={overlay}>
-          <Loader width={props.width} height={props.height} />
+          <Loader width={props.width} height={props.height} {...props} />
         </div>
       ) : (
-        <Loader width={props.width} height={props.height} />
+        <Loader width={props.width} height={props.height} {...props} />
       )}
     </>
   );
