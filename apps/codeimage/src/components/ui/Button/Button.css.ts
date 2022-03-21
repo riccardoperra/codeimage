@@ -90,7 +90,7 @@ export const buttonVariant = recipe({
           [colorVar]: themeVars.dynamicColors.buttonTextPrimaryColor,
         },
         selectors: {
-          '&:hover:not(:disabled)': {
+          '&:not(:disabled):hover': {
             vars: {
               [backgroundColorVar]:
                 themeVars.dynamicColors.buttonBackgroundPrimaryHover,

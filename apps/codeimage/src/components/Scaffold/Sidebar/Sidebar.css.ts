@@ -20,3 +20,10 @@ export const sidebar = style([
     transition: 'background-color .2s, border .2s',
   },
 ]);
+
+export const sidebarLogo = style({
+  height: scaffoldVars.toolbarHeight,
+  display: 'flex',
+  alignItems: 'center',
+  borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+});
