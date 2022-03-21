@@ -4,7 +4,6 @@ import {Select} from '../ui/Select/Select';
 import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {Text} from '../ui/Text/Text';
 import {useI18n} from '@codeimage/locale';
-import {locale} from './FrameSidebar.locale';
 import {
   editor$,
   font$,
@@ -18,13 +17,13 @@ import {useModality} from '../../core/hooks/isMobile';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {from} from 'solid-js';
 import {map} from 'rxjs';
+import sidebarLocale from '../../i18n/sidebar';
 
 export const EditorStyleForm = () => {
   const {languages, fonts} = appEnvironment;
   const editor = fromObservableObject(editor$);
   const modality = useModality();
-  const [t, {merge}] = useI18n<typeof locale>();
-  merge(locale);
+  const [t] = useI18n<typeof sidebarLocale>();
 
   const font = from(font$);
 
