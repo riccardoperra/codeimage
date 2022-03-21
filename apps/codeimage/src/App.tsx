@@ -21,10 +21,7 @@ initEffects();
 registerEffects([onTabNameChange$, onThemeChange$]);
 
 const EditorHandler = lazy(() => {
-  return import('./components/CustomEditor/EditorHandler').then(async e => {
-    await new Promise<void>(resolve => setTimeout(() => resolve(), 50));
-    return e;
-  });
+  return import('./components/CustomEditor/EditorHandler');
 });
 
 const BottomBar = lazy(() => {

@@ -12,10 +12,7 @@ export interface EditorHandlerProps {
 }
 
 const CustomEditor = lazy(() => {
-  return import('./CustomEditor').then(async e => {
-    await new Promise(resolve => setTimeout(resolve, 0));
-    return {default: e.CustomEditor};
-  });
+  return import('./CustomEditor').then(m => ({default: m.CustomEditor}));
 });
 
 export default function EditorHandler(props: EditorHandlerProps) {
