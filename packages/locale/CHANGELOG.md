@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 0.4.4
+
+### Patch Changes
+
+- 280de75: refactor(locale): replaced i18n core with solid-primitives
+
 ## 0.4.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.4.4
+
+### Patch Changes
+
+- 2c5d528: fix: fix accessibility issues
+
 ## 0.4.3
 
 ### Patch Changes

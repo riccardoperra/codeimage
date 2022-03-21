@@ -1,5 +1,22 @@
 # @codeimage/app
 
+## 0.13.0
+
+### Minor Changes
+
+- a376af1: feat: add dynamic imports for tab svg icon
+
+### Patch Changes
+
+- 2c5d528: fix: fix accessibility issues
+- 280de75: refactor(locale): replaced i18n core with solid-primitives
+- Updated dependencies [2c5d528]
+- Updated dependencies [a376af1]
+- Updated dependencies [280de75]
+  - @codeimage/config@3.3.0
+  - @codeimage/ui@0.4.4
+  - @codeimage/locale@0.4.4
+
 ## 0.12.1
 
 ### Patch Changes

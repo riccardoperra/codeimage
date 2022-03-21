@@ -1,5 +1,15 @@
 # @codeimage/theme
 
+## 3.3.0
+
+### Minor Changes
+
+- a376af1: feat: add dynamic imports for tab svg icon
+
+### Patch Changes
+
+- 2c5d528: fix: fix accessibility issues
+
 ## 3.2.0
 
 ### Minor Changes
