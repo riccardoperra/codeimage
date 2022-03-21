@@ -55,36 +55,7 @@ const App = () => {
           </Box>
         </Show>
 
-        <Suspense
-          fallback={() => (
-            <Box
-              display={'flex'}
-              height={'100%'}
-              alignItems={'center'}
-              justifyContent={'center'}
-            >
-              <Box
-                class="loading-wrapper"
-                display={'flex'}
-                alignItems={'center'}
-                justifyContent={'center'}
-                style={{
-                  width: '730px',
-                  height: '600px',
-                  'background-color': '#111111',
-                }}
-              >
-                <Box
-                  style={{
-                    'background-color': '#18181825',
-                    width: '65%',
-                    height: '45%',
-                  }}
-                />
-              </Box>
-            </Box>
-          )}
-        >
+        <Suspense>
           <EditorHandler frameRef={setFrameRef} />
         </Suspense>
 
