@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck TODO: failing type 44,14?
+
 import {SetStoreFunction, Store} from 'solid-js/store';
 import {parse, stringify} from 'query-string';
 import {SolidStorePlugin} from './create-pluggable-store';

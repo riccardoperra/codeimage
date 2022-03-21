@@ -42,6 +42,7 @@ type SelectProps<T> = ListboxProps<T, typeof Fragment> & {
   items: SelectOptions<T>[];
   itemContent?: Component<SelectOptions<T> & {selected: boolean}>;
   native?: boolean;
+  id?: string;
 };
 
 export function Select<T>(props: SelectProps<T>): JSXElement {
@@ -63,10 +64,11 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
       value={props.value}
       onSelectChange={value => props?.onSelectChange?.(value as T[] & T)}
     >
-      <Box class={styles.wrapper} ref={floating.setReference}>
+      <Box class={styles.wrapper} ref={floating.setReference} id={props.id}>
         <Show when={props.native}>
           <select
             class={styles.native}
+            id={props.id}
             onChange={event => {
               if ('value' in event.target) {
                 const index = event.target['value'] as unknown as number;

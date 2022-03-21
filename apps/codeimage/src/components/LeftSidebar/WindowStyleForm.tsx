@@ -23,10 +23,11 @@ export const WindowStyleForm = () => {
     <>
       <PanelHeader label={t('frame.terminal')} />
 
-      <PanelRow label={t('frame.header')}>
+      <PanelRow for={'frameHeaderField'} label={t('frame.header')}>
         <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
+            id={'frameHeaderInput'}
             value={terminal.showHeader}
             onChange={setShowHeader}
             items={[
@@ -38,7 +39,7 @@ export const WindowStyleForm = () => {
       </PanelRow>
 
       <Show when={terminal.showHeader}>
-        <PanelRow>
+        <PanelRow for={'frameTerminalTypeField'}>
           <FullWidthPanelRow>
             <TerminalControlField
               selectedTerminal={terminal.type}
@@ -49,7 +50,7 @@ export const WindowStyleForm = () => {
       </Show>
 
       <Show when={terminal.showHeader}>
-        <PanelRow label={t('frame.tabAccent')}>
+        <PanelRow for={'frameTabAccentField'} label={t('frame.tabAccent')}>
           <TwoColumnPanelRow>
             <SegmentedField
               size={'xs'}
@@ -64,7 +65,7 @@ export const WindowStyleForm = () => {
         </PanelRow>
       </Show>
 
-      <PanelRow label={t('frame.watermark')}>
+      <PanelRow for={'frameShowWatermarkField'} label={t('frame.watermark')}>
         <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}

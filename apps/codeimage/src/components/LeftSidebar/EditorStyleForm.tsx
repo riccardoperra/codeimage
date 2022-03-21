@@ -44,9 +44,10 @@ export const EditorStyleForm = () => {
     <>
       <PanelHeader label={t('frame.editor')} />
 
-      <PanelRow label={t('frame.language')}>
+      <PanelRow for={'frameLanguageField'} label={t('frame.language')}>
         <TwoColumnPanelRow>
           <Select
+            id={'frameLanguageField'}
             multiple={false}
             native={modality === 'mobile'}
             items={languages.map(({label, id}) => ({
@@ -59,10 +60,11 @@ export const EditorStyleForm = () => {
         </TwoColumnPanelRow>
       </PanelRow>
 
-      <PanelRow label={t('frame.lineNumbers')}>
+      <PanelRow for={'frameLineNumbersField'} label={t('frame.lineNumbers')}>
         <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
+            id={'frameLineNumbersField'}
             value={editor.showLineNumbers}
             onChange={setShowLineNumbers}
             items={[
@@ -73,9 +75,10 @@ export const EditorStyleForm = () => {
         </TwoColumnPanelRow>
       </PanelRow>
 
-      <PanelRow label={t('frame.font')}>
+      <PanelRow for={'frameFontField'} label={t('frame.font')}>
         <TwoColumnPanelRow>
           <Select
+            id={'frameFontField'}
             native={modality === 'mobile'}
             multiple={false}
             items={fonts.map(font => ({
@@ -98,9 +101,10 @@ export const EditorStyleForm = () => {
         </TwoColumnPanelRow>
       </PanelRow>
 
-      <PanelRow label={t('frame.fontWeight')}>
+      <PanelRow for={'frameFontWeightField'} label={t('frame.fontWeight')}>
         <TwoColumnPanelRow>
           <Select
+            id={'frameFontWeightField'}
             native={modality === 'mobile'}
             multiple={false}
             items={fontWeightOptions()}

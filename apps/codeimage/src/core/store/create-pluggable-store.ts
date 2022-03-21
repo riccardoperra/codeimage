@@ -13,6 +13,7 @@ export type SolidStorePlugin<T, Result extends object = object> = <
 
 type PluginArgs<T extends readonly SolidStorePlugin<unknown>[]> = T extends [
   infer Start,
+  // eslint-disable-next-line prettier/prettier
   ...infer Rest
 ]
   ? Start extends SolidStorePlugin<unknown, infer E>
