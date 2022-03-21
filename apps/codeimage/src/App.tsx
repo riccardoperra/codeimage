@@ -7,7 +7,6 @@ import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {Footer} from './components/Footer/Footer';
 import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
-import {BottomBar} from './components/BottomBar/BottomBar';
 import {EditorSidebar} from './components/LeftSidebar/EditorSidebar';
 import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
 import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
@@ -22,7 +21,16 @@ initEffects();
 registerEffects([onTabNameChange$, onThemeChange$]);
 
 const EditorHandler = lazy(() => {
-  return import('./components/CustomEditor/EditorHandler');
+  return import('./components/CustomEditor/EditorHandler').then(async e => {
+    await new Promise<void>(resolve => setTimeout(() => resolve(), 50));
+    return e;
+  });
+});
+
+const BottomBar = lazy(() => {
+  return import('./components/BottomBar/BottomBar').then(e => {
+    return {default: e.BottomBar};
+  });
 });
 
 const App = () => {
@@ -63,7 +71,9 @@ const App = () => {
       </Canvas>
 
       {modality === 'mobile' ? (
-        <BottomBar portalHostRef={portalHostRef()} />
+        <Suspense>
+          <BottomBar portalHostRef={portalHostRef()} />
+        </Suspense>
       ) : (
         <Sidebar>
           <ThemeSwitcher orientation={'vertical'} />
