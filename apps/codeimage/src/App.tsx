@@ -24,10 +24,10 @@ const EditorHandler = lazy(() => {
     WebFont.load({
       google: {
         families: [
-          'Overpass Mono:400;500;700&display=swap',
-          'Fira Code:400;500;700&display=swap',
-          'JetBrains Mono:400;500;700&display=swap',
-          'Source Code Pro:400;500;700&display=swap',
+          'Overpass Mono:400;500;700',
+          'Fira Code:400;500;700',
+          'JetBrains Mono:400;500;700',
+          'Source Code Pro:400;500;700',
         ],
       },
       active: () => r(),
