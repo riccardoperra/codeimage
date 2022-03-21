@@ -7,7 +7,6 @@ import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {Footer} from './components/Footer/Footer';
 import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
-import {EditorSidebar} from './components/LeftSidebar/EditorSidebar';
 import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
 import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {PortalHost} from './components/ui/PortalHost/PortalHost';
@@ -28,6 +27,12 @@ const BottomBar = lazy(() => {
   return import('./components/BottomBar/BottomBar').then(e => {
     return {default: e.BottomBar};
   });
+});
+
+const EditorSidebar = lazy(() => {
+  return import('./components/LeftSidebar/EditorSidebar').then(e => ({
+    default: e.EditorSidebar,
+  }));
 });
 
 const App = () => {
