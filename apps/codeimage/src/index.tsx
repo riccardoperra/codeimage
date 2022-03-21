@@ -1,5 +1,5 @@
 import {render} from 'solid-js/web';
-import {I18nProvider} from '@codeimage/locale';
+import {createI18nContext, I18nContext} from '@codeimage/locale';
 import {locale} from './i18n';
 import './assets/styles/app.scss';
 import {devTools} from '@ngneat/elf-devtools';
@@ -10,13 +10,15 @@ if (import.meta.env.DEV) {
   devTools();
 }
 
+const i18n = createI18nContext(locale);
+
 export function Bootstrap() {
   return (
-    <I18nProvider dict={locale}>
+    <I18nContext.Provider value={i18n}>
       <Suspense>
         <App />
       </Suspense>
-    </I18nProvider>
+    </I18nContext.Provider>
   );
 }
 
