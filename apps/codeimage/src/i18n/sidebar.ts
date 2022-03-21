@@ -1,4 +1,4 @@
-export const locale = {
+export default {
   en: {
     frame: {
       frame: 'Frame',
@@ -37,4 +37,23 @@ export const locale = {
       watermark: 'Watermark',
     },
   },
-};
+  de: {
+    frame: {
+      frame: 'Rahmen',
+      padding: 'Polsterung',
+      visible: 'Sichtbar',
+      opacity: 'Deckkraft',
+      color: 'Farbe',
+      terminal: 'Fenster',
+      header: 'Kopfzeile',
+      tabAccent: 'Tab-Akzent',
+      shadows: 'Wasserzeichen',
+      editor: 'Schatten',
+      language: 'Bearbeiter',
+      lineNumbers: 'Sprache',
+      font: 'Zeilennummer',
+      fontWeight: 'Schriftart',
+      watermark: 'Schriftstärke',
+    },
+  },
+} as const;

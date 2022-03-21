@@ -4,7 +4,6 @@ import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {Show} from 'solid-js';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {useI18n} from '@codeimage/locale';
-import {locale} from './FrameSidebar.locale';
 import {
   setAccentVisible,
   setShowHeader,
@@ -13,11 +12,11 @@ import {
   terminal$,
 } from '@codeimage/store/terminal';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
+import sidebarLocale from '../../i18n/sidebar';
 
 export const WindowStyleForm = () => {
   const terminal = fromObservableObject(terminal$);
-  const [t, {merge}] = useI18n<typeof locale>();
-  merge(locale);
+  const [t] = useI18n<typeof sidebarLocale>();
 
   return (
     <>

@@ -4,8 +4,6 @@ import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
 import {Show} from 'solid-js';
 import {RangeField} from '../ui/RangeField/RangeField';
 import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
-import {useI18n} from '@codeimage/locale';
-import {locale} from './FrameSidebar.locale';
 import {
   frame$,
   setBackground,
@@ -14,11 +12,12 @@ import {
   setVisibility,
 } from '@codeimage/store/frame';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
+import {useI18n} from '@codeimage/locale';
+import sidebarLocale from '../../i18n/sidebar';
 
 export const FrameStyleForm = () => {
+  const [t] = useI18n<typeof sidebarLocale>();
   const frame = fromObservableObject(frame$);
-  const [t, {merge}] = useI18n<typeof locale>();
-  merge(locale);
 
   return (
     <>

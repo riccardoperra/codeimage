@@ -1,3 +1,5 @@
+import sidebarLocale from './sidebar';
+
 export const locale = {
   it: {
     common: {
@@ -7,6 +9,7 @@ export const locale = {
     locales: {
       it: 'Italiano',
       en: 'Inglese',
+      de: 'Tedesco',
     },
     toolbar: {
       export: 'Esporta',
@@ -55,8 +58,10 @@ export const locale = {
     themeSwitcher: {
       search: 'Cerca tema...',
     },
+    ...sidebarLocale.it,
   },
   en: {
+    ...sidebarLocale.en,
     common: {
       close: 'Close',
       confirm: 'Confirm',
@@ -64,6 +69,7 @@ export const locale = {
     locales: {
       it: 'Italian',
       en: 'English',
+      de: 'German',
     },
     toolbar: {
       export: 'Export',
@@ -110,6 +116,63 @@ export const locale = {
     themeSwitcher: {
       search: 'Search theme...',
     },
+  },
+  de: {
+    common: {
+      close: 'Schließen',
+      confirm: 'Bestätigen Sie',
+    },
+    locales: {
+      it: 'Italienisch',
+      en: 'Englisch',
+      de: 'Deutsch',
+    },
+    toolbar: {
+      export: 'Export',
+      share: 'Teilen',
+      toggleTheme: 'Thema umschalten',
+      changeLanguage: 'Thema umschalten',
+      exportLoading: 'Exportieren...',
+    },
+    pwa: {
+      offline: 'App ready to work offline',
+      update: 'New content available, click on reload button to update',
+      close: 'Close',
+      reload: 'Reload',
+    },
+    export: {
+      title: 'Bild exportieren',
+      shareMode: 'Teilen Sie Ihren Code',
+      shareHint: 'Diese Modalität verwendet das Neue',
+      exportMode: 'Als Bild exportieren',
+      fileName: 'Dateiname',
+      fileNamePlaceholder: 'Dateinamen eingeben...',
+      extensionType: 'Dateierweiterung',
+      pixelRatio: 'Skala',
+      genericSaveError: 'Beim Speichern ist ein Fehler aufgetreten',
+      noOpacitySupportedWithThisExtension:
+        'Die benutzerdefinierte Transparenz ist mit dieser Erweiterung nicht kompatibel',
+      quality: 'Quality',
+    },
+    shortcut: {
+      esc: 'Esc',
+      buttonAction: 'Tastatürkürzel',
+      focusCodeEditor: 'Focus code editor',
+      unFocusCodeEditor: 'Fokus-Code-Editor',
+      toggleBackground: 'Hintergrund umschalten',
+      toggleDarkMode: 'Dunkelmodus umschalten',
+      toggleHeader: 'Kopfzeile umschalten',
+      toggleWatermark: 'Wasserzeichen umschalten',
+      changePadding: 'Polsterung wechseln',
+      pickRandomTheme: 'Wählen Sie ein zufälliges Thema',
+      export: 'Export',
+      copyLink: 'Link kopieren',
+      openShortcuts: 'Verknüpfungen öffnen',
+    },
+    themeSwitcher: {
+      search: 'Thema suchen...',
+    },
+    ...sidebarLocale.de,
   },
 };
 
