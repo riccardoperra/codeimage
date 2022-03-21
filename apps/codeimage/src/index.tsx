@@ -4,16 +4,24 @@ import {locale} from './i18n';
 import './assets/styles/app.scss';
 import {devTools} from '@ngneat/elf-devtools';
 import {lazy, Suspense} from 'solid-js';
+import * as WebFont from 'webfontloader';
 
 if (import.meta.env.DEV) {
   devTools();
 }
 
 const App = lazy(async () => {
-  return import('./App').then(async e => {
-    await new Promise(resolve => setTimeout(resolve, 0, null));
-    return e;
-  });
+  return Promise.all([
+    new Promise<void>(r => {
+      WebFont.load({
+        google: {
+          families: ['Inter:400,500,600,700'],
+        },
+        active: () => r(),
+      });
+    }),
+    import('./App'),
+  ]).then(([, App]) => App);
 });
 
 const i18n = createI18nContext(locale);

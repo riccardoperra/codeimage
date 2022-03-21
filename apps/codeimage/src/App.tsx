@@ -14,12 +14,29 @@ import {Box} from './components/ui/Box/Box';
 import {initEffects, registerEffects} from '@ngneat/effects';
 import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
 import {uiStore} from './state/ui';
+import * as WebFont from 'webfontloader';
 
 initEffects();
 registerEffects([onTabNameChange$, onThemeChange$]);
 
 const EditorHandler = lazy(() => {
-  return import('./components/CustomEditor/EditorHandler');
+  const fonts = new Promise<void>(r => {
+    WebFont.load({
+      google: {
+        families: [
+          'Overpass Mono:400;500;700',
+          'Fira Code:400;500;700',
+          'JetBrains Mono:400;500;700',
+          'Source Code Pro:400;500;700',
+        ],
+      },
+      active: () => r(),
+    });
+  });
+  return Promise.all([
+    fonts,
+    import('./components/CustomEditor/EditorHandler'),
+  ]).then(([, EditorHandler]) => EditorHandler);
 });
 
 const BottomBar = lazy(() => {
