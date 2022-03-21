@@ -3,7 +3,6 @@ import {createI18nContext, I18nContext} from '@codeimage/locale';
 import {locale} from './i18n';
 import './assets/styles/app.scss';
 import {devTools} from '@ngneat/elf-devtools';
-import _App from './App';
 import {lazy, Suspense} from 'solid-js';
 
 if (import.meta.env.DEV) {
@@ -11,8 +10,10 @@ if (import.meta.env.DEV) {
 }
 
 const App = lazy(async () => {
-  await new Promise(resolve => setTimeout(resolve, 0, null));
-  return import('./App');
+  return import('./App').then(async e => {
+    await new Promise(resolve => setTimeout(resolve, 0, null));
+    return e;
+  });
 });
 
 const i18n = createI18nContext(locale);
