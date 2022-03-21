@@ -15,7 +15,7 @@ const App = lazy(async () => {
     new Promise<void>(r => {
       WebFont.load({
         google: {
-          families: ['Inter:400,500,600,700'],
+          families: ['Inter:400,500,600,700&display=swap'],
         },
         active: () => r(),
       });
