@@ -17,13 +17,12 @@ import {Box} from './components/ui/Box/Box';
 import {initEffects, registerEffects} from '@ngneat/effects';
 import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
 import {uiStore} from './state/ui';
-import {LoadingOverlay} from './components/LoadingOverlay/LoadingOverlay';
 
 initEffects();
 registerEffects([onTabNameChange$, onThemeChange$]);
 
 const EditorHandler = lazy(async () => {
-  await new Promise(resolve => setTimeout(resolve, 150));
+  await new Promise(resolve => setTimeout(resolve, 200));
   return import('./components/CustomEditor/EditorHandler');
 });
 
@@ -56,7 +55,36 @@ const App = () => {
           </Box>
         </Show>
 
-        <Suspense fallback={<LoadingOverlay size={'3x'} overlay={true} />}>
+        <Suspense
+          fallback={() => (
+            <Box
+              display={'flex'}
+              height={'100%'}
+              alignItems={'center'}
+              justifyContent={'center'}
+            >
+              <Box
+                class="loading-wrapper"
+                display={'flex'}
+                alignItems={'center'}
+                justifyContent={'center'}
+                style={{
+                  width: '730px',
+                  height: '600px',
+                  'background-color': '#111111',
+                }}
+              >
+                <Box
+                  style={{
+                    'background-color': '#18181825',
+                    width: '65%',
+                    height: '45%',
+                  }}
+                />
+              </Box>
+            </Box>
+          )}
+        >
           <EditorHandler frameRef={setFrameRef} />
         </Suspense>
 
