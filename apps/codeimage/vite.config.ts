@@ -81,7 +81,6 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'esnext',
     brotliSize: true,
     sourcemap: false,
     minify: true,

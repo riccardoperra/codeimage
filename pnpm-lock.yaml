@@ -282,14 +282,14 @@ importers:
     specifiers:
       '@amoutonbrady/solid-i18n': ^0.4.0
       rimraf: ^3.0.2
-      solid-js: ^1.3.10
+      solid-js: ^1.3.13
       typescript: ^4.6.2
       vite: ^2.8.6
       vite-plugin-dts: ^0.9.9
       vite-plugin-solid: ^2.2.6
     dependencies:
       '@amoutonbrady/solid-i18n': 0.4.0
-      solid-js: 1.3.10
+      solid-js: 1.3.13
     devDependencies:
       rimraf: 3.0.2
       typescript: 4.6.2
@@ -328,7 +328,7 @@ importers:
       '@vanilla-extract/css': ^1.6.8
       '@vanilla-extract/vite-plugin': ^3.1.2
       rimraf: ^3.0.2
-      solid-js: ^1.3.10
+      solid-js: ^1.3.13
       typescript: ^4.6.2
       vite: ^2.8.6
       vite-plugin-dts: ^0.9.9
@@ -338,7 +338,7 @@ importers:
       '@vanilla-extract/css': 1.6.8
       '@vanilla-extract/vite-plugin': 3.1.2_ts-node@10.7.0+vite@2.8.6
       rimraf: 3.0.2
-      solid-js: 1.3.10
+      solid-js: 1.3.13
       typescript: 4.6.2
       vite: 2.8.6
       vite-plugin-dts: 0.9.9_vite@2.8.6
@@ -349,7 +349,7 @@ packages:
   /@amoutonbrady/solid-i18n/0.4.0:
     resolution: {integrity: sha512-r8tnmolZ+Fjy0SgideVmj0H4vh7Nfko/Fr1crRptrXsgoU1PftyG7m6MOAoCyG+ax2xy+Q5rvtBlJ6leIUD7WQ==}
     dependencies:
-      solid-js: 1.3.10
+      solid-js: 1.3.13
     dev: false
 
   /@ampproject/remapping/2.1.2:
@@ -6109,12 +6109,12 @@ packages:
 
   /solid-js/1.3.10:
     resolution: {integrity: sha512-yPo86et2J4ZPtvS0SYTAYFNYH4AZF04gYCgw8WPx8+JIdBKUCgwHhHNz/6PYUO5Ng1U3kTSrTW8hRO2T9Mdrzg==}
+    dev: false
 
   /solid-js/1.3.13:
     resolution: {integrity: sha512-1EBEIW9u2yqT5QNjFdvz/tMAoKsDdaRA2Jbgykd2Dt13Ia0D4mV+BFvPkOaseSyu7DsMKS23+ZZofV8BVKmpuQ==}
-    dev: false
 
-  /solid-refresh/0.4.0_solid-js@1.3.10:
+  /solid-refresh/0.4.0_solid-js@1.3.13:
     resolution: {integrity: sha512-5XCUz845n/sHPzKK2i2G2EeV61tAmzv6SqzqhXcPaYhrgzVy7nKTQaBpKK8InKrriq9Z2JFF/mguIU00t/73xw==}
     peerDependencies:
       solid-js: ^1.3.0
@@ -6122,7 +6122,7 @@ packages:
       '@babel/generator': 7.17.3
       '@babel/helper-module-imports': 7.16.7
       '@babel/types': 7.17.0
-      solid-js: 1.3.10
+      solid-js: 1.3.13
     dev: true
 
   /solid-use/0.3.3_solid-js@1.3.13:
@@ -6760,8 +6760,8 @@ packages:
       '@babel/preset-typescript': 7.16.7_@babel+core@7.17.5
       babel-preset-solid: 1.3.6_@babel+core@7.17.5
       merge-anything: 5.0.2
-      solid-js: 1.3.10
-      solid-refresh: 0.4.0_solid-js@1.3.10
+      solid-js: 1.3.13
+      solid-refresh: 0.4.0_solid-js@1.3.13
       vite: 2.8.6
     transitivePeerDependencies:
       - less
@@ -6777,8 +6777,8 @@ packages:
       '@babel/preset-typescript': 7.16.7_@babel+core@7.17.5
       babel-preset-solid: 1.3.6_@babel+core@7.17.5
       merge-anything: 5.0.2
-      solid-js: 1.3.10
-      solid-refresh: 0.4.0_solid-js@1.3.10
+      solid-js: 1.3.13
+      solid-refresh: 0.4.0_solid-js@1.3.13
       vite: 2.8.6_sass@1.49.9
     transitivePeerDependencies:
       - less

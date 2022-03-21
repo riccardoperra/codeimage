@@ -4,7 +4,6 @@ import dts from 'vite-plugin-dts';
 
 module.exports = defineConfig({
   build: {
-    target: 'esnext',
     lib: {
       entry: path.resolve(__dirname, 'src/public-api.ts'),
       name: '@codeimage/theme',

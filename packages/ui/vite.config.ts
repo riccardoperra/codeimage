@@ -8,7 +8,6 @@ import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 
 module.exports = defineConfig({
   build: {
-    target: 'esnext',
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
       name: '@codeimage/ui',
