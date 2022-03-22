@@ -1,9 +1,7 @@
 import * as styles from './BottomBar.css';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
-import {Portal} from 'solid-js/web';
-import {Component, createSignal, Show} from 'solid-js';
-import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
+import {Component, createSignal, lazy, Show} from 'solid-js';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {EditorForm} from '../LeftSidebar/EditorForm';
 import {FrameStyleForm} from '../LeftSidebar/FrameStyleForm';
@@ -17,6 +15,12 @@ type Mode = 'themes' | 'style' | 'editor';
 interface BottomBarProps {
   // portalHostRef: Node | undefined;
 }
+
+const ThemeSwitcher = lazy(() => {
+  return import('../ThemeSwitcher/ThemeSwitcher').then(e => ({
+    default: e.ThemeSwitcher,
+  }));
+});
 
 export const BottomBar: Component<BottomBarProps> = props => {
   const [mode, setMode] = createSignal<Mode | null>(null);
