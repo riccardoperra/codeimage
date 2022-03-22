@@ -5,9 +5,9 @@ import './assets/styles/app.scss';
 import {lazy, Suspense} from 'solid-js';
 import {Scaffold} from './components/Scaffold/Scaffold';
 
-if (import.meta.env.DEV) {
-  import('@ngneat/elf-devtools').then(({devTools}) => devTools());
-}
+// if (import.meta.env.DEV) {
+//   import('@ngneat/elf-devtools').then(({devTools}) => devTools());
+// }
 
 const App = lazy(async () => import('./App'));
 
