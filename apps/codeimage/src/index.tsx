@@ -9,9 +9,7 @@ if (import.meta.env.DEV) {
   devTools();
 }
 
-const App = lazy(async () => {
-  return Promise.all([import('./App')]).then(([App]) => App);
-});
+const App = lazy(async () => import('./App'));
 
 const i18n = createI18nContext(locale);
 

@@ -7,7 +7,6 @@ import {Footer} from './components/Footer/Footer';
 import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
 import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
-import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {PortalHost} from './components/ui/PortalHost/PortalHost';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {Box} from './components/ui/Box/Box';
@@ -40,6 +39,10 @@ const ThemeSwitcher = lazy(() => {
   }));
 });
 
+const ReloadPrompt = lazy(() => {
+  return import('./components/PromptUpdate/PromptUpdate');
+});
+
 const App = () => {
   document.querySelector('#launcher')?.remove();
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -52,7 +55,11 @@ const App = () => {
   return (
     <Scaffold>
       <NotificationHandler />
-      <ReloadPrompt />
+
+      <Suspense>
+        <ReloadPrompt />
+      </Suspense>
+
       <Show when={modality === 'full'}>
         <Sidebar>
           <Suspense>
