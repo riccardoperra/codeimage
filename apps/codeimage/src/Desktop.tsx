@@ -31,25 +31,27 @@ export default function DesktopView(): JSXElement {
         <Suspense>
           <EditorSidebar />
         </Suspense>
-
-        <Canvas>
-          <Toolbar canvasRef={frameRef()} />
-
-          <Box paddingLeft={'4'} paddingTop={'3'}>
-            <KeyboardShortcuts />
-          </Box>
-
-          <Suspense>
-            <EditorHandler frameRef={setFrameRef} />
-          </Suspense>
-
-          <Suspense>
-            <ThemeSwitcher orientation={'vertical'} />
-          </Suspense>
-
-          <Footer />
-        </Canvas>
       </Sidebar>
+
+      <Canvas>
+        <Toolbar canvasRef={frameRef()} />
+
+        <Box paddingLeft={'4'} paddingTop={'3'}>
+          <KeyboardShortcuts />
+        </Box>
+
+        <Suspense>
+          <EditorHandler frameRef={setFrameRef} />
+        </Suspense>
+      </Canvas>
+
+      <Sidebar>
+        <Suspense>
+          <ThemeSwitcher orientation={'vertical'} />
+        </Suspense>
+      </Sidebar>
+
+      <Footer />
     </>
   );
 }

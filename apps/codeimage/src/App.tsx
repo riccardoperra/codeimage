@@ -10,12 +10,6 @@ import {uiStore} from './state/ui';
 initEffects();
 registerEffects([onTabNameChange$, onThemeChange$]);
 
-const ThemeSwitcher = lazy(() => {
-  return import('./components/ThemeSwitcher/ThemeSwitcher').then(e => ({
-    default: e.ThemeSwitcher,
-  }));
-});
-
 const ReloadPrompt = lazy(() => {
   return import('./components/PromptUpdate/PromptUpdate');
 });
