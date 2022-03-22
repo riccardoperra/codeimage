@@ -10,11 +10,12 @@ import {FrameStyleForm} from '../LeftSidebar/FrameStyleForm';
 import {WindowStyleForm} from '../LeftSidebar/WindowStyleForm';
 import {EditorStyleForm} from '../LeftSidebar/EditorStyleForm';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
+import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
 
 type Mode = 'themes' | 'style' | 'editor';
 
 interface BottomBarProps {
-  portalHostRef: Node | undefined;
+  // portalHostRef: Node | undefined;
 }
 
 export const BottomBar: Component<BottomBarProps> = props => {
@@ -85,57 +86,55 @@ export const BottomBar: Component<BottomBarProps> = props => {
         Editor
       </Button>
 
-      <Show when={props.portalHostRef}>
-        <Portal mount={props.portalHostRef}>
-          <FadeInOutTransition show={!!mode()}>
-            <Box class={styles.portalWrapper}>
-              <Box class={styles.portalHeader}>
-                <Box marginLeft={'auto'}>
-                  <Button
-                    size={'xs'}
-                    variant={'solid'}
-                    theme={'secondary'}
-                    pill
-                    onClick={() => setMode(null)}
+      <PortalHostInjector>
+        <FadeInOutTransition show={!!mode()}>
+          <Box class={styles.portalWrapper}>
+            <Box class={styles.portalHeader}>
+              <Box marginLeft={'auto'}>
+                <Button
+                  size={'xs'}
+                  variant={'solid'}
+                  theme={'secondary'}
+                  pill
+                  onClick={() => setMode(null)}
+                >
+                  <SvgIcon
+                    xmlns="http://www.w3.org/2000/svg"
+                    size={'sm'}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
                   >
-                    <SvgIcon
-                      xmlns="http://www.w3.org/2000/svg"
-                      size={'sm'}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </SvgIcon>
-                  </Button>
-                </Box>
-              </Box>
-              <Box class={styles.portalContent}>
-                <Show when={mode() === 'themes'}>
-                  <ThemeSwitcher orientation={'horizontal'} />
-                </Show>
-                <Show when={mode() === 'style'}>
-                  <EditorForm>
-                    <FrameStyleForm />
-
-                    <WindowStyleForm />
-                  </EditorForm>
-                </Show>
-                <Show when={mode() === 'editor'}>
-                  <EditorForm>
-                    <EditorStyleForm />
-                  </EditorForm>
-                </Show>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </SvgIcon>
+                </Button>
               </Box>
             </Box>
-          </FadeInOutTransition>
-        </Portal>
-      </Show>
+            <Box class={styles.portalContent}>
+              <Show when={mode() === 'themes'}>
+                <ThemeSwitcher orientation={'horizontal'} />
+              </Show>
+              <Show when={mode() === 'style'}>
+                <EditorForm>
+                  <FrameStyleForm />
+
+                  <WindowStyleForm />
+                </EditorForm>
+              </Show>
+              <Show when={mode() === 'editor'}>
+                <EditorForm>
+                  <EditorStyleForm />
+                </EditorForm>
+              </Show>
+            </Box>
+          </Box>
+        </FadeInOutTransition>
+      </PortalHostInjector>
     </div>
   );
 };
