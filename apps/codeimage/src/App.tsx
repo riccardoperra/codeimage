@@ -1,10 +1,9 @@
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
-import {Scaffold} from './components/Scaffold/Scaffold';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {createEffect, createSignal, lazy, on, Show, Suspense} from 'solid-js';
 import {Footer} from './components/Footer/Footer';
-import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
+import {createI18nContext, useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
 import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
 import {PortalHost} from './components/ui/PortalHost/PortalHost';
@@ -44,8 +43,6 @@ const ReloadPrompt = lazy(() => {
   return import('./components/PromptUpdate/PromptUpdate');
 });
 
-const i18n = createI18nContext(locale);
-
 const App = () => {
   document.querySelector('#launcher')?.remove();
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -56,53 +53,51 @@ const App = () => {
   createEffect(on(() => uiStore.locale, locale));
 
   return (
-    <I18nContext.Provider value={i18n}>
-      <Scaffold>
-        <NotificationHandler />
+    <>
+      <NotificationHandler />
 
-        <Suspense>
-          <ReloadPrompt />
-        </Suspense>
+      <Suspense>
+        <ReloadPrompt />
+      </Suspense>
+
+      <Show when={modality === 'full'}>
+        <Sidebar>
+          <Suspense>
+            <EditorSidebar />
+          </Suspense>
+        </Sidebar>
+      </Show>
+
+      <PortalHost ref={setPortalHostRef} />
+
+      <Canvas>
+        <Toolbar canvasRef={frameRef()} />
 
         <Show when={modality === 'full'}>
-          <Sidebar>
-            <Suspense>
-              <EditorSidebar />
-            </Suspense>
-          </Sidebar>
+          <Box paddingLeft={'4'} paddingTop={'3'}>
+            <KeyboardShortcuts />
+          </Box>
         </Show>
 
-        <PortalHost ref={setPortalHostRef} />
+        <Suspense>
+          <EditorHandler frameRef={setFrameRef} />
+        </Suspense>
 
-        <Canvas>
-          <Toolbar canvasRef={frameRef()} />
+        <Footer />
+      </Canvas>
 
-          <Show when={modality === 'full'}>
-            <Box paddingLeft={'4'} paddingTop={'3'}>
-              <KeyboardShortcuts />
-            </Box>
-          </Show>
-
+      {modality === 'mobile' ? (
+        <Suspense>
+          <BottomBar portalHostRef={portalHostRef()} />
+        </Suspense>
+      ) : (
+        <Sidebar>
           <Suspense>
-            <EditorHandler frameRef={setFrameRef} />
+            <ThemeSwitcher orientation={'vertical'} />
           </Suspense>
-
-          <Footer />
-        </Canvas>
-
-        {modality === 'mobile' ? (
-          <Suspense>
-            <BottomBar portalHostRef={portalHostRef()} />
-          </Suspense>
-        ) : (
-          <Sidebar>
-            <Suspense>
-              <ThemeSwitcher orientation={'vertical'} />
-            </Suspense>
-          </Sidebar>
-        )}
-      </Scaffold>
-    </I18nContext.Provider>
+        </Sidebar>
+      )}
+    </>
   );
 };
 
