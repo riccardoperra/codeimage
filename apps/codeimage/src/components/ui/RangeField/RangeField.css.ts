@@ -15,6 +15,17 @@ export const range = style([
     backgroundColor: themeVars.backgroundColor.transparent,
     height: inputHeight,
 
+    '::-moz-range-thumb': {
+      appearance: 'none',
+      boxShadow: themeVars.boxShadow.lg,
+      backgroundColor: themeVars.backgroundColor.white,
+      border: `1px solid ${themeVars.dynamicColors.divider}`,
+      borderRadius: themeVars.borderRadius.full,
+      height: '12px',
+      width: '12px',
+      marginTop: 'calc(12px / -2)',
+    },
+
     '::-webkit-slider-thumb': {
       appearance: 'none',
       boxShadow: themeVars.boxShadow.lg,
@@ -24,6 +35,15 @@ export const range = style([
       height: '12px',
       width: '12px',
       marginTop: 'calc(12px / -2)',
+    },
+
+    '::-moz-range-track': {
+      width: '100%',
+      cursor: 'pointer',
+      borderRadius: 0,
+      border: `1px solid ${themeVars.backgroundColor.gray}`,
+      background: `linear-gradient(90deg, ${themeVars.backgroundColor.blue['500']} ${rangeVars.rangeProgress}, ${themeVars.dynamicColors.divider}  ${rangeVars.rangeProgress})`,
+      height: '2px',
     },
 
     '::-webkit-slider-runnable-track': {
@@ -40,7 +60,14 @@ export const range = style([
         opacity: 0.3,
         cursor: 'not-allowed',
       },
+      [`&:disabled::-moz-range-track`]: {
+        opacity: 0.3,
+        cursor: 'not-allowed',
+      },
       [`&:disabled::-webkit-slider-thumb`]: {
+        cursor: 'not-allowed',
+      },
+      [`&:disabled::-moz-range-thumb`]: {
         cursor: 'not-allowed',
       },
     },

@@ -152,7 +152,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
   const [quality, setQuality] = createSignal<number>(100);
 
   const [devicePixelRatio, setDevicePixelRatio] = createSignal<number>(
-    window.devicePixelRatio,
+    Math.round(window.devicePixelRatio),
   );
 
   const [fileName, setFileName] = createSignal<string>('');
@@ -175,7 +175,6 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
   });
 
   return (
-    // {TODO: add FieldGroup or Stack component}
     <Transition appear show={props.isOpen ?? false}>
       <Dialog {...props} isOpen size={'md'} title={t('export.title')}>
         <DialogPanelContent>
