@@ -1,6 +1,7 @@
 import {buildExternalStylesheet} from '../../core';
 
 const selection = '#7580B850';
+const foreground = '#FFCB6B';
 
 export const materialPalenight = buildExternalStylesheet('material-palenight')(`
   .cm-selectionBackground,
@@ -14,8 +15,8 @@ export const materialPalenight = buildExternalStylesheet('material-palenight')(`
     background-color: ${selection};
   }
 
-  .token.script.language-javascript {
-    color: #a6accd;
+  .cm-cursor {
+    border-left-color: ${foreground};
   }
 
   .token.comment,

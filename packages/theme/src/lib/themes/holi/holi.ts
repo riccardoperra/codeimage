@@ -1,6 +1,7 @@
 import {buildExternalStylesheet} from '../../core';
 
 const selection = '#1d3b54';
+const foreground = '#d6b007';
 
 export const holi = buildExternalStylesheet('holi')(`
   .cm-selectionBackground,
@@ -12,6 +13,10 @@ export const holi = buildExternalStylesheet('holi')(`
 
   .cm-selectionMatch {
     background-color: ${selection};
+  }
+
+  .cm-cursor {
+    border-left-color: ${foreground};
   }
 
   .token.comment,

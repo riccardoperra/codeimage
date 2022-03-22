@@ -1,6 +1,7 @@
 import {buildExternalStylesheet} from '../../core';
 
 const selection = '#5b5b7b';
+const foreground = '#f8f8f2';
 
 export const duotoneDark = buildExternalStylesheet('duotone-dark')(`
   .cm-selectionBackground,
@@ -12,6 +13,10 @@ export const duotoneDark = buildExternalStylesheet('duotone-dark')(`
 
   .cm-selectionMatch {
     background-color: ${selection};
+  }
+
+  .cm-cursor {
+    border-left-color: ${foreground};
   }
 
   .cm-lineNumbers .cm-gutterElement {

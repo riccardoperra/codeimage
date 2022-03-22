@@ -1,6 +1,7 @@
 import {buildExternalStylesheet} from '../../core';
 
 const selection = '#3c526d';
+const foreground = '#66cccc';
 
 export const coldarkDark = buildExternalStylesheet('coldark-dark')(`
   .cm-selectionBackground,
@@ -12,6 +13,10 @@ export const coldarkDark = buildExternalStylesheet('coldark-dark')(`
 
   .cm-selectionMatch {
     background-color: ${selection};
+  }
+
+  .cm-cursor {
+    border-left-color: ${foreground};
   }
 
   .token.comment,
