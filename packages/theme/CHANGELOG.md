@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 0.5.2
+
+### Patch Changes
+
+- b84600e: fix: fix cursor theme
+
 ## 0.5.1
 
 ### Patch Changes

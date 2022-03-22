@@ -1,5 +1,13 @@
 # @codeimage/theme
 
+## 3.3.1
+
+### Patch Changes
+
+- 03789fb: feat: add german language
+- Updated dependencies [b84600e]
+  - @codeimage/theme@0.5.2
+
 ## 3.3.0
 
 ### Minor Changes
