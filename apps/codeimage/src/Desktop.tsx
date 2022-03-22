@@ -43,6 +43,8 @@ export default function DesktopView(): JSXElement {
         <Suspense>
           <EditorHandler frameRef={setFrameRef} />
         </Suspense>
+
+        <Footer />
       </Canvas>
 
       <Sidebar>
@@ -50,8 +52,6 @@ export default function DesktopView(): JSXElement {
           <ThemeSwitcher orientation={'vertical'} />
         </Suspense>
       </Sidebar>
-
-      <Footer />
     </>
   );
 }

@@ -22,7 +22,7 @@ const ThemeSwitcher = lazy(() => {
   }));
 });
 
-export const BottomBar: Component<BottomBarProps> = props => {
+export const BottomBar: Component<BottomBarProps> = () => {
   const [mode, setMode] = createSignal<Mode | null>(null);
 
   return (

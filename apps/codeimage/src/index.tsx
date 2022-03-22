@@ -16,11 +16,11 @@ const i18n = createI18nContext(locale);
 export function Bootstrap() {
   return (
     <I18nContext.Provider value={i18n}>
-      <Suspense>
-        <Scaffold>
+      <Scaffold>
+        <Suspense>
           <App />
-        </Scaffold>
-      </Suspense>
+        </Suspense>
+      </Scaffold>
     </I18nContext.Provider>
   );
 }
