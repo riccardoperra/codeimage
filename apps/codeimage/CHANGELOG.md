@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.13.2
+
+### Patch Changes
+
+- c653319: fix: fix broken slider on firefox
+
 ## 0.13.1
 
 ### Patch Changes
