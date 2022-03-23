@@ -7,9 +7,12 @@ import {initEffects} from '@ngneat/effects';
 import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
 import {uiStore} from './state/ui';
 import {useEffects} from './core/store/use-effect';
-import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 
 initEffects();
+
+const ReloadPrompt = lazy(() => {
+  return import('./components/PromptUpdate/PromptUpdate');
+});
 
 const Content = lazy(() => {
   const modality = useModality();
