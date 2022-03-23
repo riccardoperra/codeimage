@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.13.3
+
+### Patch Changes
+
+- 8af78af: fix: fix editor frame size and resizing
+
 ## 0.13.2
 
 ### Patch Changes
