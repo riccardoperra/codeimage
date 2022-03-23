@@ -9,18 +9,13 @@ import {WindowStyleForm} from '../LeftSidebar/WindowStyleForm';
 import {EditorStyleForm} from '../LeftSidebar/EditorStyleForm';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
+import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
 
 type Mode = 'themes' | 'style' | 'editor';
 
 interface BottomBarProps {
   // portalHostRef: Node | undefined;
 }
-
-const ThemeSwitcher = lazy(() => {
-  return import('../ThemeSwitcher/ThemeSwitcher').then(e => ({
-    default: e.ThemeSwitcher,
-  }));
-});
 
 export const BottomBar: Component<BottomBarProps> = () => {
   const [mode, setMode] = createSignal<Mode | null>(null);
