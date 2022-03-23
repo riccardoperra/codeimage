@@ -86,10 +86,10 @@ importers:
       '@codemirror/view': ^0.19.47
       '@floating-ui/core': ^0.4.0
       '@floating-ui/dom': ^0.2.0
-      '@ngneat/effects': 1.0.0
-      '@ngneat/elf': 1.5.2
-      '@ngneat/elf-devtools': 1.2.1
-      '@ngneat/elf-persist-state': 1.1.1
+      '@ngneat/effects': ^1.0.0
+      '@ngneat/elf': ^1.5.4
+      '@ngneat/elf-devtools': ^1.2.1
+      '@ngneat/elf-persist-state': ^1.1.1
       '@types/downloadjs': 1.4.3
       '@types/prismjs': 1.26.0
       '@types/webfontloader': 1.6.34
@@ -165,7 +165,7 @@ importers:
       '@floating-ui/core': 0.4.0
       '@floating-ui/dom': 0.2.0
       '@ngneat/effects': 1.0.0
-      '@ngneat/elf': 1.5.2_typescript@4.6.2
+      '@ngneat/elf': 1.5.4_typescript@4.6.2
       '@ngneat/elf-devtools': 1.2.1
       '@ngneat/elf-persist-state': 1.1.1
       '@types/prismjs': 1.26.0
@@ -2451,8 +2451,8 @@ packages:
     resolution: {integrity: sha512-19riZeAul29RDpoizeFYJtRddVUiTVGZLKivhZPVzeezLuH6dJTpkd1kLy3jGhlS6UOQX4NKJUl72HqYGiF0zA==}
     dev: false
 
-  /@ngneat/elf/1.5.2_typescript@4.6.2:
-    resolution: {integrity: sha512-Za6g3jy6R+rXF09G6Ithyxfqh9h7Zn3C7mWaFI4k4jkAfW4UqgpKBoT/qkF+MIvcOKuHCg8wTj/cs3SPI2T4gg==}
+  /@ngneat/elf/1.5.4_typescript@4.6.2:
+    resolution: {integrity: sha512-9BH6Qx8xRjUC5zgee/CqMcYfi+XVXAWffZs5gbilwPDlGHl9hl/5Htvtv/eRd5Mm2SQM/pI0iZY1Y1ucumBLqA==}
     peerDependencies:
       typescript: '>= 4.1.2'
     dependencies:

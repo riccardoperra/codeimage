@@ -4,10 +4,15 @@ import {locale} from './i18n';
 import './assets/styles/app.scss';
 import {lazy, Suspense} from 'solid-js';
 import {Scaffold} from './components/Scaffold/Scaffold';
+import {enableElfProdMode} from '@ngneat/elf';
 
-// if (import.meta.env.DEV) {
-//   import('@ngneat/elf-devtools').then(({devTools}) => devTools());
-// }
+if (import.meta.env.DEV) {
+  import('@ngneat/elf-devtools').then(({devTools}) => devTools());
+}
+
+if (import.meta.env.PROD) {
+  enableElfProdMode();
+}
 
 const App = lazy(async () => import('./App'));
 
