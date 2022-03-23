@@ -30,6 +30,7 @@ import {useEffects} from './core/store/use-effect';
 initEffects();
 
 const App = () => {
+  document.querySelector('#launcher')?.remove();
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const frame = fromObservableObject(frame$);
