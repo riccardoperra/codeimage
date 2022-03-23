@@ -76,6 +76,20 @@ export const CustomEditor = () => {
     {equals: (prev, next) => prev?.scope === next?.scope},
   );
 
+  setTimeout(() => {
+    const content = document.querySelector('.cm-content');
+    if (!content) {
+      return;
+    }
+
+    /**
+     * **🚀 Seo tip: fix invalid aria roles for CodeMirror**
+     */
+    content.setAttribute('id', 'codeEditor');
+    content.setAttribute('aria-label', 'codeimage-editor');
+    content.removeAttribute('aria-expanded');
+  });
+
   return (
     <Show when={themeConfiguration()}>
       <code
