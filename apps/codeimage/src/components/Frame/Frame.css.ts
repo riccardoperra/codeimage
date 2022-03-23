@@ -28,6 +28,8 @@ export const wrapper = style({
   overflowY: 'auto',
   overflowX: 'hidden',
   flex: '1',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 export const handler = style([
