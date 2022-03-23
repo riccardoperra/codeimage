@@ -1,21 +1,41 @@
 import * as styles from './BottomBar.css';
 import {Button} from '../ui/Button/Button';
 import {Box} from '../ui/Box/Box';
-import {Component, createSignal, lazy, Show} from 'solid-js';
+import {Component, createSignal, lazy, Match, Suspense, Switch} from 'solid-js';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
 import {EditorForm} from '../LeftSidebar/EditorForm';
-import {FrameStyleForm} from '../LeftSidebar/FrameStyleForm';
-import {WindowStyleForm} from '../LeftSidebar/WindowStyleForm';
-import {EditorStyleForm} from '../LeftSidebar/EditorStyleForm';
 import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
 import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
-import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
 
 type Mode = 'themes' | 'style' | 'editor';
 
 interface BottomBarProps {
   // portalHostRef: Node | undefined;
 }
+
+const WindowStyleForm = lazy(() =>
+  import('../LeftSidebar/WindowStyleForm').then(m => ({
+    default: m.WindowStyleForm,
+  })),
+);
+
+const FrameStyleForm = lazy(() =>
+  import('../LeftSidebar/FrameStyleForm').then(m => ({
+    default: m.FrameStyleForm,
+  })),
+);
+
+const EditorStyleForm = lazy(() =>
+  import('../LeftSidebar/EditorStyleForm').then(m => ({
+    default: m.EditorStyleForm,
+  })),
+);
+
+const ThemeSwitcher = lazy(() =>
+  import('../ThemeSwitcher/ThemeSwitcher').then(m => ({
+    default: m.ThemeSwitcher,
+  })),
+);
 
 export const BottomBar: Component<BottomBarProps> = () => {
   const [mode, setMode] = createSignal<Mode | null>(null);
@@ -115,21 +135,28 @@ export const BottomBar: Component<BottomBarProps> = () => {
               </Box>
             </Box>
             <Box class={styles.portalContent}>
-              <Show when={mode() === 'themes'}>
-                <ThemeSwitcher orientation={'horizontal'} />
-              </Show>
-              <Show when={mode() === 'style'}>
-                <EditorForm>
-                  <FrameStyleForm />
-
-                  <WindowStyleForm />
-                </EditorForm>
-              </Show>
-              <Show when={mode() === 'editor'}>
-                <EditorForm>
-                  <EditorStyleForm />
-                </EditorForm>
-              </Show>
+              <Switch>
+                <Match when={mode() === 'themes'}>
+                  <Suspense>
+                    <ThemeSwitcher orientation={'horizontal'} />
+                  </Suspense>
+                </Match>
+                <Match when={mode() === 'style'}>
+                  <Suspense>
+                    <EditorForm>
+                      <FrameStyleForm />
+                      <WindowStyleForm />
+                    </EditorForm>
+                  </Suspense>
+                </Match>
+                <Match when={mode() === 'editor'}>
+                  <Suspense>
+                    <EditorForm>
+                      <EditorStyleForm />
+                    </EditorForm>
+                  </Suspense>
+                </Match>
+              </Switch>
             </Box>
           </Box>
         </FadeInOutTransition>
