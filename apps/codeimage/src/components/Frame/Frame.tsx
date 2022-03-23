@@ -1,10 +1,11 @@
-import {Component} from 'solid-js';
+import {Component, Show} from 'solid-js';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createHorizontalResize} from '../../core/hooks/resizable';
 import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
 import {Box} from '../ui/Box/Box';
 import {FadeInOutTransition} from '../ui/Transition/Transition';
+import {useModality} from '../../core/hooks/isMobile';
 
 export const exportExclude = _exportExclude;
 
@@ -15,9 +16,18 @@ export const Frame: Component<{
   opacity: number;
   visible: boolean;
 }> = props => {
-  const {width, onResizeStart, setRef, resizing} = createHorizontalResize();
-  const pxWidth = () => `${width() || '730'}px`;
+  const {width, onResizeStart, setRef, resizing} = createHorizontalResize({
+    minWidth: 600,
+    maxWidth: 1400,
+  });
+
+  const computedWidth = () => {
+    const size = width();
+    return size ? `${size}px` : 'auto';
+  };
+
   const roundedWidth = () => `${Math.floor(width())}px`;
+  const modality = useModality();
 
   return (
     <Box position={'relative'}>
@@ -25,7 +35,7 @@ export const Frame: Component<{
         ref={setRef}
         class={styles.container}
         style={assignInlineVars({
-          [styles.frameVars.width]: pxWidth(),
+          [styles.frameVars.width]: computedWidth(),
           [styles.frameVars.padding]: `${props.padding}px`,
           [styles.frameVars.radius]: `${props.radius}px`,
         })}
@@ -42,10 +52,13 @@ export const Frame: Component<{
           })}
         />
 
-        <div class={styles.dragControls} use:exportExclude={true}>
-          <div class={styles.dragControlLeft} onMouseDown={onResizeStart} />
-          <div class={styles.dragControlRight} onMouseDown={onResizeStart} />
-        </div>
+        <Show when={modality === 'full'}>
+          <div class={styles.dragControls} use:exportExclude={true}>
+            <div class={styles.dragControlLeft} onMouseDown={onResizeStart} />
+            <div class={styles.dragControlRight} onMouseDown={onResizeStart} />
+          </div>
+        </Show>
+
         {props.children}
       </div>
 
