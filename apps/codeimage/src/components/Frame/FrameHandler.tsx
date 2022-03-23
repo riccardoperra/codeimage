@@ -23,13 +23,14 @@ type FrameHandlerProps = WithRef<'div'> & {
 export function FrameHandler(
   props: PropsWithChildren<FrameHandlerProps>,
 ): JSXElement {
-  const [internalRef, setInternalRef] = createSignal<HTMLDivElement>();
+  const [, setInternalRef] = createSignal<HTMLDivElement>();
+  const [handlerRef, setHandlerRef] = createSignal<HTMLDivElement>();
   const [canvasScale, setCanvasScale] = createSignal(1);
   const modality = useModality();
   const ratio = 0.1;
 
   createEffect(
-    on([internalRef], ([frame]) => {
+    on([handlerRef], ([frame]) => {
       if (modality === 'mobile') {
         setTimeout(() => {
           const scale = getScaleByRatio(
@@ -57,6 +58,7 @@ export function FrameHandler(
                 [styles.frameHandlerVars.scale]: canvasScale().toString(),
               })
         }
+        ref={setHandlerRef}
       >
         <div
           class={styles.content}
