@@ -15,7 +15,7 @@ export const [frame, frameVars] = createTheme({
   width: '730px',
   minWidth: '640px',
   minHeight: '150px',
-  maxWidth: '920px',
+  maxWidth: '1400px',
   controlHandleSize: '24px',
   controlHandleColor: themeVars.dynamicColors.frameDragControlBackgroundColor,
   controlOffset: '0px',
@@ -53,6 +53,7 @@ export const container = style([
   frame,
   {
     width: frameVars.width,
+    maxWidth: frameVars.maxWidth,
     minWidth: frameVars.minWidth,
     minHeight: frameVars.minHeight,
     position: 'relative',
