@@ -22,12 +22,12 @@ import {useTabIcon} from './hooks/use-tab-icon';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {Box} from './components/ui/Box/Box';
 import {fromObservableObject} from './core/hooks/from-observable-object';
-import {initEffects, registerEffects} from '@ngneat/effects';
+import {initEffects} from '@ngneat/effects';
 import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
 import {uiStore} from './state/ui';
+import {useEffects} from './core/store/use-effect';
 
 initEffects();
-registerEffects([onTabNameChange$, onThemeChange$]);
 
 const App = () => {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
@@ -37,7 +37,7 @@ const App = () => {
   const modality = useModality();
   const [, {locale}] = useI18n();
   const [tabIcon] = useTabIcon({withDefault: true});
-
+  useEffects([onTabNameChange$, onThemeChange$]);
   createEffect(on(() => uiStore.locale, locale));
 
   return (
