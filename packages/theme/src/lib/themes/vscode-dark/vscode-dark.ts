@@ -18,11 +18,11 @@ const tag = 'hsl(168, 60%, 55%)';
 const selector = 'hsl(41, 60%, 67%)';
 
 export const vsCodeDark = buildExternalStylesheet('vsCodeDarkTheme')(`
-  &.code-css pre,
-  &.code-js pre,
-  &.code-jsx pre,
-  &.code-ts pre,
-  &.code-tsx pre {
+  &.language-css pre,
+  &.language-js pre,
+  &.language-jsx pre,
+  &.language-ts pre,
+  &.language-tsx pre {
     color: ${identifier};
   }
 
@@ -136,18 +136,18 @@ export const vsCodeDark = buildExternalStylesheet('vsCodeDarkTheme')(`
     color: ${lineNumber};
   }
 
-  &.code-html .token.doctype .token.name {
+  &.language-html .token.doctype .token.name {
     color: ${foreground};
   }
 
-  &.code-html .token.tag {
+  &.language-html .token.tag {
     color: ${keyword};
   }
 
-  &.code-css .token.selector,
-  &.code-css .token.square-bracket + .token.property-name,
-  &.code-css .token.square-bracket + .token.property-name,
-  &.code-css .token.class-name {
+  &.language-css .token.selector,
+  &.language-css .token.square-bracket + .token.property-name,
+  &.language-css .token.square-bracket + .token.property-name,
+  &.language-css .token.class-name {
     color: ${selector};
   }
 `);

@@ -1,6 +1,7 @@
 import {buildExternalStylesheet} from '../../core';
 
 const selection = '#586f89';
+const foreground = '#0aa370';
 
 export const duotoneSea = buildExternalStylesheet('duotone-sea')(`
   .cm-selectionBackground,
@@ -12,6 +13,10 @@ export const duotoneSea = buildExternalStylesheet('duotone-sea')(`
 
   .cm-selectionMatch {
     background-color: ${selection};
+  }
+
+  .cm-cursor {
+    border-left-color: ${foreground};
   }
 
   .token.comment,

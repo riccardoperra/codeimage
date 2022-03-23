@@ -1,5 +1,21 @@
 # @codeimage/app
 
+## 0.13.2
+
+### Patch Changes
+
+- c653319: fix: fix broken slider on firefox
+
+## 0.13.1
+
+### Patch Changes
+
+- 03789fb: feat: add german language
+- Updated dependencies [03789fb]
+- Updated dependencies [b84600e]
+  - @codeimage/config@3.3.1
+  - @codeimage/theme@0.5.2
+
 ## 0.13.0
 
 ### Minor Changes

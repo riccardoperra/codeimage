@@ -235,7 +235,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       {
         name: 'python',
         content: () => import('material-icon-theme/icons/python.svg?raw'),
-        matcher: /^.*\.(python)$/,
+        matcher: /^.*\.(py)$/,
       },
     ],
   },
@@ -248,7 +248,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       {
         name: 'markdown',
         content: () => import('material-icon-theme/icons/markdown.svg?raw'),
-        matcher: /^.*\.(markdown)$/,
+        matcher: /^.*\.(md)$/,
       },
     ],
   },

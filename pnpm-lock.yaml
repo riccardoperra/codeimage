@@ -340,7 +340,7 @@ importers:
     devDependencies:
       '@types/node': 17.0.21
       '@vanilla-extract/css': 1.6.8
-      '@vanilla-extract/vite-plugin': 3.1.2_ts-node@10.7.0+vite@2.8.6
+      '@vanilla-extract/vite-plugin': 3.1.3_ts-node@10.7.0+vite@2.8.6
       rimraf: 3.0.2
       solid-js: 1.3.13
       typescript: 4.6.2
@@ -2794,19 +2794,6 @@ packages:
       '@vanilla-extract/private': 1.0.3
     dev: false
 
-  /@vanilla-extract/integration/2.0.1:
-    resolution: {integrity: sha512-OT0WLxmfDengj63NJAnb3noJmy2Yg9W8FbvGjvGe7c8GMKKMuwRJdW1fV5MeL3tPvZwIeh3YQPsUwCD1mIWS+g==}
-    dependencies:
-      '@vanilla-extract/css': 1.6.8
-      chalk: 4.1.2
-      esbuild: 0.11.23
-      eval: 0.1.6
-      find-up: 5.0.0
-      javascript-stringify: 2.1.0
-      lodash: 4.17.21
-      outdent: 0.8.0
-    dev: true
-
   /@vanilla-extract/integration/3.0.0:
     resolution: {integrity: sha512-9VraQc7Qmdzvdrylq2ZwCbli4UxC1q2CtIfVr1fGOn8a6Xj+dXprrNboEqOLg29nOzPW1xldyIojRxMjWw1VEw==}
     dependencies:
@@ -2817,7 +2804,6 @@ packages:
       javascript-stringify: 2.1.0
       lodash: 4.17.21
       outdent: 0.8.0
-    dev: false
 
   /@vanilla-extract/private/1.0.3:
     resolution: {integrity: sha512-17kVyLq3ePTKOkveHxXuIJZtGYs+cSoev7BlP+Lf4916qfDhk/HBjvlYDe8egrea7LNPHKwSZJK/bzZC+Q6AwQ==}
@@ -2838,20 +2824,6 @@ packages:
       '@vanilla-extract/css': 1.6.8
     dev: false
 
-  /@vanilla-extract/vite-plugin/3.1.2_ts-node@10.7.0+vite@2.8.6:
-    resolution: {integrity: sha512-WFcPFGo6KjgksgT7n39F4SPCg9JR99a24xe+m22d7NrvJ7OIKNeMIUOgDuVBsCUMtgKUnqjZ/WIa4kbh4jZQcw==}
-    peerDependencies:
-      vite: ^2.2.3
-    dependencies:
-      '@vanilla-extract/integration': 2.0.1
-      outdent: 0.8.0
-      postcss: 8.4.8
-      postcss-load-config: 3.1.3_ts-node@10.7.0
-      vite: 2.8.6
-    transitivePeerDependencies:
-      - ts-node
-    dev: true
-
   /@vanilla-extract/vite-plugin/3.1.3_ts-node@10.7.0+vite@2.8.6:
     resolution: {integrity: sha512-Hkh/jspJG79NDhrAcDE93J07VOYmFKhH7rSi9QjjK1R8bRedvd+yBOhAb32n2m1GSxvYYOQsqWLDoJUW+qYlMA==}
     peerDependencies:
@@ -2861,10 +2833,9 @@ packages:
       outdent: 0.8.0
       postcss: 8.4.12
       postcss-load-config: 3.1.3_ts-node@10.7.0
-      vite: 2.8.6_sass@1.49.9
+      vite: 2.8.6
     transitivePeerDependencies:
       - ts-node
-    dev: false
 
   /accepts/1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
@@ -5564,19 +5535,9 @@ packages:
       nanoid: 3.3.1
       picocolors: 1.0.0
       source-map-js: 1.0.2
-    dev: false
 
   /postcss/8.4.7:
     resolution: {integrity: sha512-L9Ye3r6hkkCeOETQX6iOaWZgjp3LL6Lpqm6EtgbKrgqGGteRMNb9vzBfRL96YOSu8o7x3MfIH9Mo5cPJFGrW6A==}
-    engines: {node: ^10 || ^12 || >=14}
-    dependencies:
-      nanoid: 3.3.1
-      picocolors: 1.0.0
-      source-map-js: 1.0.2
-    dev: true
-
-  /postcss/8.4.8:
-    resolution: {integrity: sha512-2tXEqGxrjvAO6U+CJzDL2Fk2kPHTv1jQsYkSoMeOis2SsYaXRO2COxTdQp99cYvif9JTXaAk9lYGc3VhJt7JPQ==}
     engines: {node: ^10 || ^12 || >=14}
     dependencies:
       nanoid: 3.3.1

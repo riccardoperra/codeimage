@@ -3,12 +3,12 @@ import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
 import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
 import {PortalHost} from './components/ui/PortalHost/PortalHost';
-import {initEffects, registerEffects} from '@ngneat/effects';
+import {initEffects} from '@ngneat/effects';
 import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
 import {uiStore} from './state/ui';
+import {useEffects} from './core/store/use-effect';
 
 initEffects();
-registerEffects([onTabNameChange$, onThemeChange$]);
 
 const ReloadPrompt = lazy(() => {
   return import('./components/PromptUpdate/PromptUpdate');
@@ -26,6 +26,7 @@ const Content = lazy(() => {
 
 const App = () => {
   const [, {locale}] = useI18n();
+  useEffects([onTabNameChange$, onThemeChange$]);
   createEffect(on(() => uiStore.locale, locale));
 
   return (

@@ -7,6 +7,7 @@ import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
 import shallow from '../core/helpers/shallow';
 import {persistQuery} from '../core/helpers/persistQuery';
+import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
 export interface FrameStateSlice {
   background: string | null | undefined;
@@ -35,6 +36,16 @@ const store = createStore(
   withProps<FrameStateSlice>(initialState),
 );
 
+export const {
+  setBackground,
+  setOpacity,
+  setPadding,
+  setRadius,
+  setScale,
+  setAutoWidth,
+  setVisible: setVisibility,
+} = elfAutoSettersFactory(store);
+
 export const updateFrameStore = store.update.bind(store);
 
 persistState(store, {key: '@store/frame', storage: localStorageStrategy});
@@ -42,34 +53,6 @@ persistQuery(store, {
   key: 'frame',
   keysToSync: ['background', 'padding', 'radius', 'visible', 'opacity'],
 });
-
-export function setPadding(padding: number): void {
-  store.update(setProp('padding', padding));
-}
-
-export function setRadius(radius: number): void {
-  store.update(setProp('radius', radius));
-}
-
-export function setOpacity(opacity: number): void {
-  store.update(setProp('opacity', opacity));
-}
-
-export function setVisibility(visibility: boolean): void {
-  store.update(setProp('visible', visibility));
-}
-
-export function setAutoWidth(autoWidth: boolean): void {
-  store.update(setProp('autoWidth', autoWidth));
-}
-
-export function setBackground(background: string): void {
-  store.update(setProp('background', background));
-}
-
-export function setScale(scale: number): void {
-  store.update(setProp('scale', scale));
-}
 
 export function toggleVisibility(): void {
   store.update(setProp('visible', visible => !visible));

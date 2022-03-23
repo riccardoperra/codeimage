@@ -1,6 +1,9 @@
 import {buildExternalStylesheet} from '../../core';
 
 const selection = '#1d3b53';
+const foreground = '#80a4c2';
+const punctuation = '#C792EA';
+const tag = '#B2CCD6';
 
 export const nightOwl = buildExternalStylesheet('nightOwl')(`
   .cm-selectionBackground,
@@ -14,24 +17,25 @@ export const nightOwl = buildExternalStylesheet('nightOwl')(`
     background-color: ${selection};
   }
 
-  .token.comment,
-  .token.prolog,
-  .token.cdata {
+  .cm-cursor {
+    border-left-color: ${foreground};
+  }
+
+  .token.comment {
     color: rgb(99, 119, 119);
     font-style: italic;
   }
 
   .token.punctuation {
-    color: rgb(199, 146, 234);
+    color: ${punctuation};
   }
 
-  .namespace {
-    color: rgb(178, 204, 214);
-  }
-
-  .token.deleted {
-    color: rgba(239, 83, 80, 0.56);
-    font-style: italic;
+  .token.tag,
+  .token.builtin,
+  .token.namespace,
+  .token.class-name,
+  .token.class-name .token.constant {
+    color: ${tag};
   }
 
   .token.symbol,
@@ -55,8 +59,7 @@ export const nightOwl = buildExternalStylesheet('nightOwl')(`
 
   .token.constant,
   .token.function,
-  .token.builtin,
-  .token.char {
+  .token {
     color: rgb(130, 170, 255);
   }
 
@@ -91,12 +94,4 @@ export const nightOwl = buildExternalStylesheet('nightOwl')(`
   .token.variable {
     color: rgb(214, 222, 235);
   }
-
-  .token.important,
-  .token.bold {
-    font-weight: bold;
-  }
-
-  .token.italic {
-    font-style: italic;
-  }`);
+`);
