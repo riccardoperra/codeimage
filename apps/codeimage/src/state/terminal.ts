@@ -10,6 +10,7 @@ import shallow from '../core/helpers/shallow';
 import {dispatch} from '@ngneat/effects';
 import {updateTabName} from './effect';
 import {persistQuery} from '../core/helpers/persistQuery';
+import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
 export interface TerminalState {
   readonly showHeader: boolean;
@@ -66,37 +67,16 @@ persistQuery(store, {
   ],
 });
 
-export function setShadow(shadow: string) {
-  store.update(setProp('shadow', shadow));
-}
-
-export function setAccentVisible(accentVisible: boolean) {
-  store.update(setProp('accentVisible', accentVisible));
-}
-
-export function setBackground(background: string) {
-  store.update(setProp('background', background));
-}
-
-export function setTextColor(textColor: string) {
-  store.update(setProp('textColor', textColor));
-}
-
-export function setDarkMode(darkMode: boolean) {
-  store.update(setProp('darkMode', darkMode));
-}
-
-export function setShowHeader(showHeader: boolean) {
-  store.update(setProp('showHeader', showHeader));
-}
-
-export function setType(type: string) {
-  store.update(setProp('type', type));
-}
-
-export function setShowWatermark(showWatermark: boolean) {
-  store.update(setProp('showWatermark', showWatermark));
-}
+export const {
+  setShadow,
+  setAccentVisible,
+  setDarkMode,
+  setShowHeader,
+  setShowWatermark,
+  setTextColor,
+  setType,
+  setBackground,
+} = elfAutoSettersFactory(store);
 
 export function toggleShowHeader() {
   store.update(setProp('showHeader', showHeader => !showHeader));

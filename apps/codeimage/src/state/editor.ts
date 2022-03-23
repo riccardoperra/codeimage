@@ -1,10 +1,11 @@
 import {appEnvironment} from '../core/configuration';
-import {createStore, select, setProp, withProps} from '@ngneat/elf';
+import {createStore, select, withProps} from '@ngneat/elf';
 import {distinctUntilChanged, map} from 'rxjs';
 import shallow from '../core/helpers/shallow';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {persistQuery} from '../core/helpers/persistQuery';
 import {SUPPORTED_FONTS} from '../core/configuration/font';
+import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
 interface EditorState {
   languageId: string;
@@ -47,33 +48,15 @@ persistQuery(store, {
   ],
 });
 
-export function setLanguageId(languageId: string) {
-  store.update(setProp('languageId', languageId));
-}
-
-export function setCode(code: string) {
-  store.update(setProp('code', code));
-}
-
-export function setTheme(themeId: string) {
-  store.update(setProp('themeId', themeId));
-}
-
-export function setShowLineNumbers(show: boolean) {
-  store.update(setProp('showLineNumbers', show));
-}
-
-export function setFontId(fontId: string) {
-  store.update(setProp('fontId', fontId));
-}
-
-export function setFontWeight(fontWeight: number) {
-  store.update(setProp('fontWeight', fontWeight));
-}
-
-export function setFocus(focused: boolean) {
-  store.update(setProp('focused', focused));
-}
+export const {
+  setFocused: setFocus,
+  setFontId,
+  setFontWeight,
+  setLanguageId,
+  setShowLineNumbers,
+  setThemeId: setTheme,
+  setCode,
+} = elfAutoSettersFactory(store);
 
 export const editor$ = store.pipe(distinctUntilChanged(shallow));
 

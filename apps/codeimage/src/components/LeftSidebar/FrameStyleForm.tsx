@@ -8,12 +8,12 @@ import {
   frame$,
   setBackground,
   setOpacity,
-  setPadding,
   setVisibility,
 } from '@codeimage/store/frame';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {useI18n} from '@codeimage/locale';
 import sidebarLocale from '../../i18n/sidebar';
+import {setPadding} from '../../state/frame';
 
 export const FrameStyleForm = () => {
   const [t] = useI18n<typeof sidebarLocale>();

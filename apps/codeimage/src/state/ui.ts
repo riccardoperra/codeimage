@@ -20,7 +20,6 @@ export function setLocale(locale: string): void {
   setUiStore('locale', () => locale);
 }
 
-//
 export function toggleThemeMode(): void {
   setUiStore('themeMode', mode => (mode === 'light' ? 'dark' : 'light'));
 }
