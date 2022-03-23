@@ -5,6 +5,7 @@ import {
   createSignal,
   on,
   onCleanup,
+  untrack,
 } from 'solid-js';
 import {bindAll, UnbindFn} from 'bind-event-listener';
 import {createStore} from 'solid-js/store';
@@ -104,7 +105,11 @@ export function createHorizontalResize(
   const resizeStart = (x: number): void =>
     batch(() => {
       setResizing(true);
-      setState({startWidth: state.width, startX: x});
+
+      const initialWidth =
+        (state.width || untrack(ref)?.getBoundingClientRect().width) ?? 0;
+
+      setState({startWidth: initialWidth, startX: x});
     });
 
   const resizeEnd = (): boolean => setResizing(false);

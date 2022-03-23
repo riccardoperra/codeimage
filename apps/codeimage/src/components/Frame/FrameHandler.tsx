@@ -12,6 +12,7 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createRef} from '../../core/helpers/create-ref';
 import {Box} from '../ui/Box/Box';
 import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
+import {useModality} from '../../core/hooks/isMobile';
 
 const exportExclude = _exportExclude;
 
@@ -24,20 +25,23 @@ export function FrameHandler(
 ): JSXElement {
   const [internalRef, setInternalRef] = createSignal<HTMLDivElement>();
   const [canvasScale, setCanvasScale] = createSignal(1);
+  const modality = useModality();
   const ratio = 0.1;
 
   createEffect(
     on([internalRef], ([frame]) => {
-      setTimeout(() => {
-        const scale = getScaleByRatio(
-          // TODO: should be a ref (?)
-          frame?.parentElement,
-          frame,
-          1 + ratio,
-        );
-        props.onScaleChange(scale);
-        setCanvasScale(scale);
-      });
+      if (modality === 'mobile') {
+        setTimeout(() => {
+          const scale = getScaleByRatio(
+            // TODO: should be a ref (?)
+            frame?.parentElement,
+            frame,
+            1 + ratio,
+          );
+          props.onScaleChange(scale);
+          setCanvasScale(scale);
+        });
+      }
     }),
   );
 
@@ -45,9 +49,14 @@ export function FrameHandler(
     <Box class={styles.wrapper}>
       <div
         class={styles.handler}
-        style={assignInlineVars({
-          [styles.frameHandlerVars.scale]: canvasScale().toString(),
-        })}
+        style={
+          // ATTENTION: this is needed to fix autocomplete bug on desktop due to translate. https://github.com/riccardoperra/codeimage/issues/42
+          modality === 'full'
+            ? {}
+            : assignInlineVars({
+                [styles.frameHandlerVars.scale]: canvasScale().toString(),
+              })
+        }
         ref={createRef<'div'>(props, e => {
           setInternalRef(() => e);
         })}
