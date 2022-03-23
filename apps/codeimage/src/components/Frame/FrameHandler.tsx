@@ -57,12 +57,19 @@ export function FrameHandler(
                 [styles.frameHandlerVars.scale]: canvasScale().toString(),
               })
         }
-        ref={createRef<'div'>(props, e => {
-          setInternalRef(() => e);
-        })}
       >
-        <div use:exportExclude={true} class={styles.squaredBackgroundOverlay} />
-        {props.children}
+        <div
+          class={styles.content}
+          ref={createRef<'div'>(props, e => {
+            setInternalRef(() => e);
+          })}
+        >
+          <div
+            use:exportExclude={true}
+            class={styles.squaredBackgroundOverlay}
+          />
+          {props.children}
+        </div>
       </div>
     </Box>
   );

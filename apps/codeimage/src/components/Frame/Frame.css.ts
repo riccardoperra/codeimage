@@ -25,8 +25,6 @@ export const wrapper = style({
   width: '100%',
   height: '100%',
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
   overflowY: 'auto',
   overflowX: 'hidden',
   flex: '1',
@@ -39,8 +37,17 @@ export const handler = style([
     transform: `scale(${frameHandlerVars.scale})`,
     display: 'block',
     position: 'relative',
+    margin: 'auto',
   },
 ]);
+
+export const content = style({
+  width: '100%',
+  height: '100%',
+  marginTop: '20px',
+  marginBottom: '40px',
+  position: 'relative',
+});
 
 export const container = style([
   frame,
