@@ -33,7 +33,7 @@
   },
   "peerDependencies": {
     "@codemirror/highlight": "^0.19.7",
-    "@codemirror/view": "^0.19.45",
+    "@codemirror/view": "^0.19.47",
     "@codemirror/state": "^0.19.9"
   },
   "devDependencies": {
