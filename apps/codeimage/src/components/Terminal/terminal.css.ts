@@ -140,3 +140,27 @@ export const watermark = style({
   opacity: 0.35,
   backgroundColor: 'inherit',
 });
+
+export const tabHint = style({
+  position: 'absolute',
+  right: '-80%',
+  backgroundColor: themeVars.dynamicColors.dialogPanelBackgroundColor,
+  boxShadow: themeVars.dynamicColors.dialogPanelShadow,
+  borderRadius: themeVars.borderRadius.lg,
+  zIndex: themeVars.zIndex['50'],
+});
+
+export const tabHintDropdown = style({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+export const tabHintDropdownItem = style({
+  height: '36px',
+  fontWeight: themeVars.fontWeight.semibold,
+  display: 'flex',
+  alignItems: 'center',
+  padding: `0 ${themeVars.spacing['2']}`,
+  borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+  whiteSpace: 'nowrap',
+});

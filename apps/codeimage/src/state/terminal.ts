@@ -30,7 +30,7 @@ const initialState: TerminalState = {
   type: appEnvironment.terminalThemes.entries[
     appEnvironment.terminalThemes.keys[0]
   ].name,
-  tabName: null,
+  tabName: 'index.js',
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
   background:
