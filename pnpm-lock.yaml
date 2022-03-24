@@ -208,11 +208,11 @@ importers:
   packages/config:
     specifiers:
       '@codeimage/theme': workspace:*
-      '@codemirror/autocomplete': ^0.19.13
+      '@codemirror/autocomplete': ^0.19.15
       '@codemirror/closebrackets': ^0.19.1
       '@codemirror/commands': ^0.19.8
       '@codemirror/comment': ^0.19.1
-      '@codemirror/fold': 0.19.3
+      '@codemirror/fold': ^0.19.3
       '@codemirror/gutter': ^0.19.9
       '@codemirror/highlight': ^0.19.7
       '@codemirror/history': ^0.19.2
@@ -243,7 +243,7 @@ importers:
       vite-plugin-solid: ^2.2.6
     dependencies:
       '@codeimage/theme': link:../theme
-      '@codemirror/autocomplete': 0.19.13
+      '@codemirror/autocomplete': 0.19.15
       '@codemirror/closebrackets': 0.19.1
       '@codemirror/commands': 0.19.8
       '@codemirror/comment': 0.19.1
@@ -1866,19 +1866,19 @@ packages:
       prettier: 1.19.1
     dev: true
 
-  /@codemirror/autocomplete/0.19.13:
-    resolution: {integrity: sha512-fI6lgTH2PlyTQqF2eWKDRBRUC+9MqvS2TfvE7aJ4Pu1oHM1w8JI16J9Qvwrd0iabJeF/QodU51Clok98c7fpCQ==}
+  /@codemirror/autocomplete/0.19.14:
+    resolution: {integrity: sha512-4PqJG7GGTePc+FQF387RFebDV4ERvKj23gQBmzNtu64ZSHlYEGulwP5EIIfulBiaWEmei9TYVaMFmTdNfofpRQ==}
     dependencies:
       '@codemirror/language': 0.19.8
       '@codemirror/state': 0.19.9
       '@codemirror/text': 0.19.6
       '@codemirror/tooltip': 0.19.16
       '@codemirror/view': 0.19.47
-      '@lezer/common': 0.15.11
+      '@lezer/common': 0.15.12
     dev: false
 
-  /@codemirror/autocomplete/0.19.14:
-    resolution: {integrity: sha512-4PqJG7GGTePc+FQF387RFebDV4ERvKj23gQBmzNtu64ZSHlYEGulwP5EIIfulBiaWEmei9TYVaMFmTdNfofpRQ==}
+  /@codemirror/autocomplete/0.19.15:
+    resolution: {integrity: sha512-GQWzvvuXxNUyaEk+5gawbAD8s51/v2Chb++nx0e2eGWrphWk42isBtzOMdc3DxrxrZtPZ55q2ldNp+6G8KJLIQ==}
     dependencies:
       '@codemirror/language': 0.19.8
       '@codemirror/state': 0.19.9
@@ -1984,7 +1984,7 @@ packages:
   /@codemirror/lang-css/0.19.3:
     resolution: {integrity: sha512-tyCUJR42/UlfOPLb94/p7dN+IPsYSIzHbAHP2KQHANj0I+Orqp+IyIOS++M8TuCX4zkWh9dvi8s92yy/Tn8Ifg==}
     dependencies:
-      '@codemirror/autocomplete': 0.19.14
+      '@codemirror/autocomplete': 0.19.15
       '@codemirror/highlight': 0.19.7
       '@codemirror/language': 0.19.8
       '@codemirror/state': 0.19.9
@@ -1994,7 +1994,7 @@ packages:
   /@codemirror/lang-html/0.19.4:
     resolution: {integrity: sha512-GpiEikNuCBeFnS+/TJSeanwqaOfNm8Kkp9WpVNEPZCLyW1mAMCuFJu/3xlWYeWc778Hc3vJqGn3bn+cLNubgCA==}
     dependencies:
-      '@codemirror/autocomplete': 0.19.14
+      '@codemirror/autocomplete': 0.19.15
       '@codemirror/highlight': 0.19.7
       '@codemirror/lang-css': 0.19.3
       '@codemirror/lang-javascript': 0.19.7
@@ -2015,7 +2015,7 @@ packages:
   /@codemirror/lang-javascript/0.19.7:
     resolution: {integrity: sha512-DL9f3JLqOEHH9cIwEqqjnP5bkjdVXeECksLtV+/MbPm+l4H+AG+PkwZaJQ2oR1GfPZKh8MVSIE94aGWNkJP8WQ==}
     dependencies:
-      '@codemirror/autocomplete': 0.19.14
+      '@codemirror/autocomplete': 0.19.15
       '@codemirror/highlight': 0.19.7
       '@codemirror/language': 0.19.8
       '@codemirror/lint': 0.19.6
@@ -2074,7 +2074,7 @@ packages:
   /@codemirror/lang-sql/0.19.4:
     resolution: {integrity: sha512-4FqLC8aNe1iCDyAWbJmSqa8K7rgz2xTwW36V35z4oiyLoyOLsCayKIwoQqp5DNIq2ckGCsyzotgxXKpgtg/pgg==}
     dependencies:
-      '@codemirror/autocomplete': 0.19.14
+      '@codemirror/autocomplete': 0.19.15
       '@codemirror/highlight': 0.19.7
       '@codemirror/language': 0.19.8
       '@codemirror/state': 0.19.9
@@ -2336,10 +2336,6 @@ packages:
       '@jridgewell/resolve-uri': 3.0.5
       '@jridgewell/sourcemap-codec': 1.4.11
     dev: true
-
-  /@lezer/common/0.15.11:
-    resolution: {integrity: sha512-vv0nSdIaVCRcJ8rPuDdsrNVfBOYe/4Szr/LhF929XyDmBndLDuWiCCHooGlGlJfzELyO608AyDhVsuX/ZG36NA==}
-    dev: false
 
   /@lezer/common/0.15.12:
     resolution: {integrity: sha512-edfwCxNLnzq5pBA/yaIhwJ3U3Kz8VAUOTRg0hhxaizaI1N+qxV7EXDv/kLCkLeq2RzSFvxexlaj5Mzfn2kY0Ig==}
