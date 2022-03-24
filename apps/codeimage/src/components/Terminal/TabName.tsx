@@ -5,6 +5,8 @@ import * as styles from './terminal.css';
 import {appEnvironment} from '../../core/configuration';
 import {TabIcon} from './TabIcon';
 import {highlight as _highlight} from '../../core/directives/highlight';
+import {Listbox, ListboxOption, ListboxOptions} from 'solid-headless';
+import {tabHintDropdownOption} from './terminal.css';
 
 interface TabNameProps {
   readonly: boolean;
@@ -15,11 +17,10 @@ interface TabNameProps {
 const highlight = _highlight;
 
 export function TabName(props: TabNameProps): JSXElement {
-  const safeValue = createMemo(() => props.value || '');
+  const hasDot = /^[a-zA-Z0-9]{2,}\./;
 
-  const lastIsDot = createMemo(() => {
-    return true;
-    return safeValue().includes('.');
+  const showHint = createMemo(() => {
+    return hasDot.test(props.value ?? '');
   });
 
   function onChange(value: string): void {
@@ -30,8 +31,27 @@ export function TabName(props: TabNameProps): JSXElement {
 
   const icons = appEnvironment.languages.flatMap(language => language.icons);
 
+  const extension = createMemo(() => {
+    if (!props.value) return '';
+    const extension = /\.[0-9a-z]+$/i.exec(props.value);
+    return (extension ? extension[0] : '').replace('.', '');
+  });
+
+  const matchedIcons = createMemo(() => {
+    if (!props.value) {
+      return icons;
+    }
+
+    const currentExtension = extension();
+
+    return icons.filter(icon => icon.extension.includes(currentExtension));
+  });
+
   return (
-    <>
+    <Listbox
+      multiple={false}
+      onSelectChange={value => props.onValueChange?.(`${props.value}${value}`)}
+    >
       <InlineTextField
         size={'sm'}
         readOnly={props.readonly}
@@ -40,20 +60,31 @@ export function TabName(props: TabNameProps): JSXElement {
         disabled={false}
         onChange={onChange}
       />
-      <Show when={lastIsDot()}>
+      <Show when={showHint()}>
         <Box class={styles.tabHint}>
-          <Box class={styles.tabHintDropdown}>
-            <For each={icons}>
+          <ListboxOptions class={styles.tabHintDropdownOption}>
+            <For each={matchedIcons()}>
               {icon => (
-                <Box class={styles.tabHintDropdownItem}>
-                  <TabIcon delay={0} content={icon.content} />
-                  <div use:highlight={props.value}>.{icon.name}</div>
-                </Box>
+                <ListboxOption
+                  value={icon.extension.replace('.', '')}
+                  class={styles.tabHintDropdownOption}
+                >
+                  {({isActive, isSelected}) => (
+                    <Box
+                      class={styles.tabHintDropdownItemContent({
+                        active: isActive() || isSelected(),
+                      })}
+                    >
+                      <TabIcon delay={0} content={icon.content} />
+                      <div use:highlight={extension()}>{icon.extension}</div>
+                    </Box>
+                  )}
+                </ListboxOption>
               )}
             </For>
-          </Box>
+          </ListboxOptions>
         </Box>
       </Show>
-    </>
+    </Listbox>
   );
 }

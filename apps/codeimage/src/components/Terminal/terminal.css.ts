@@ -143,24 +143,44 @@ export const watermark = style({
 
 export const tabHint = style({
   position: 'absolute',
-  right: '-80%',
+  right: '-50px',
   backgroundColor: themeVars.dynamicColors.dialogPanelBackgroundColor,
   boxShadow: themeVars.dynamicColors.dialogPanelShadow,
   borderRadius: themeVars.borderRadius.lg,
   zIndex: themeVars.zIndex['50'],
+  maxHeight: '250px',
+  overflowY: 'auto',
 });
 
-export const tabHintDropdown = style({
-  display: 'flex',
-  flexDirection: 'column',
+export const tabHintDropdownOption = style({
+  outline: 'none',
+  ':focus': {
+    outline: 'none',
+  },
+  ':focus-visible': {
+    outline: 'none',
+  },
 });
 
-export const tabHintDropdownItem = style({
-  height: '36px',
-  fontWeight: themeVars.fontWeight.semibold,
-  display: 'flex',
-  alignItems: 'center',
-  padding: `0 ${themeVars.spacing['2']}`,
-  borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
-  whiteSpace: 'nowrap',
+export const tabHintDropdownItemContent = recipe({
+  base: {
+    height: '32px',
+    fontWeight: themeVars.fontWeight.normal,
+    display: 'flex',
+    alignItems: 'center',
+    padding: `0 ${themeVars.spacing['3']}`,
+    borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+    whiteSpace: 'nowrap',
+    vars: {
+      ['--highlight-color']: 'rgb(112, 182, 246, 0.12)',
+    },
+  },
+  variants: {
+    active: {
+      true: {
+        backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
+        color: themeVars.dynamicColors.listBoxActiveTextColor,
+      },
+    },
+  },
 });
