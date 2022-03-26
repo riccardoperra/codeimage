@@ -114,12 +114,10 @@ export function TabName(props: TabNameProps): JSXElement {
                 onClick={() => onChange(getFormattedValue(value))}
                 class={styles.tabHintDropdownOption}
               >
-                {() => (
-                  <Box class={styles.tabHintDropdownItemContent}>
-                    <TabIcon delay={0} content={icon.content} />
-                    <div use:highlight={extension()}>{icon.extension}</div>
-                  </Box>
-                )}
+                <Box class={styles.tabHintDropdownItemContent}>
+                  <TabIcon delay={0} content={icon.content} />
+                  <div use:highlight={extension()}>{icon.extension}</div>
+                </Box>
               </cmg-combobox-option>
             );
           }}

@@ -4,7 +4,6 @@ import {sprinkles} from '../../../theme/sprinkles.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './WindowsTerminal.css';
 import {Box} from '../../ui/Box/Box';
-import {InlineTextField} from '../../ui/TextField/InlineTextField';
 import {WindowsTerminalControls} from './WindowsTerminalControls';
 import {TabIcon} from '../TabIcon';
 import {Text} from '../../ui/Text/Text';

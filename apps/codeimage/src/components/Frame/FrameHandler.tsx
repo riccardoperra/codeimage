@@ -23,7 +23,8 @@ type FrameHandlerProps = WithRef<'div'> & {
 export function FrameHandler(
   props: PropsWithChildren<FrameHandlerProps>,
 ): JSXElement {
-  const [, setInternalRef] = createSignal<HTMLDivElement>();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [ref, setInternalRef] = createSignal<HTMLDivElement>();
   const [handlerRef, setHandlerRef] = createSignal<HTMLDivElement>();
   const [canvasScale, setCanvasScale] = createSignal(1);
   const modality = useModality();

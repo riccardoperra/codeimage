@@ -26,8 +26,8 @@ class InlineCombobox extends LionCombobox {
     };
   }
 
-  get hiddenValueNode(): HTMLSpanElement {
-    return this.shadowRoot!.querySelector('div.inline__item')!;
+  get hiddenValueNode(): HTMLSpanElement | null {
+    return this.shadowRoot?.querySelector('div.inline__item') ?? null;
   }
 
   get hiddenTextValue(): string {
@@ -57,16 +57,21 @@ class InlineCombobox extends LionCombobox {
   ];
 
   connectedCallback() {
+    console.log(this.hiddenValueNode);
     super.connectedCallback();
 
     setTimeout(() => {
-      this.observer.observe(this.hiddenValueNode);
+      if (this.hiddenValueNode) {
+        this.observer.observe(this.hiddenValueNode);
+      }
     });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.observer.unobserve(this.hiddenValueNode);
+    if (this.hiddenValueNode) {
+      this.observer.unobserve(this.hiddenValueNode);
+    }
   }
 
   protected update(changedProperties: PropertyValues) {
@@ -157,10 +162,13 @@ declare module 'solid-js' {
   namespace JSX {
     interface IntrinsicElements {
       'cmg-inline-combobox': Partial<
-        InlineCombobox & JSX.DOMAttributes<InlineCombobox> & {children: any}
+        InlineCombobox &
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          JSX.DOMAttributes<InlineCombobox> & {children?: any}
       >;
       'cmg-combobox-option': Partial<
-        ComboboxOption & JSX.DOMAttributes<ComboboxOption> & {children: any}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ComboboxOption & JSX.DOMAttributes<ComboboxOption> & {children?: any}
       >;
     }
   }
