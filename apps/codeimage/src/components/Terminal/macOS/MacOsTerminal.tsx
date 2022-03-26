@@ -7,6 +7,7 @@ import {backgroundColorVar} from '../../../theme/variables.css';
 import {Box} from '../../ui/Box/Box';
 import {TabIcon} from '../TabIcon';
 import {TabName} from '../TabName';
+import {Text} from '../../ui/Text/Text';
 
 export const MacOsTerminal: Component<BaseTerminalProps> = props => {
   return (
@@ -42,11 +43,18 @@ export const MacOsTerminal: Component<BaseTerminalProps> = props => {
               <Show when={props.tabIcon}>
                 {icon => <TabIcon content={icon} />}
               </Show>
-              <TabName
-                readonly={props.readonlyTab}
-                value={props.tabName ?? ''}
-                onValueChange={value => props.onTabChange?.(value)}
-              />
+              <Show
+                fallback={
+                  <Text size={'sm'}>{props.tabName ?? 'Untitled'}</Text>
+                }
+                when={!props.readonlyTab}
+              >
+                <TabName
+                  readonly={false}
+                  value={props.tabName ?? ''}
+                  onValueChange={value => props.onTabChange?.(value)}
+                />
+              </Show>
             </div>
           </Show>
         </div>

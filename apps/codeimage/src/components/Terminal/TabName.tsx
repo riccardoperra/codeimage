@@ -1,30 +1,11 @@
-import {createMemo, For, JSXElement} from 'solid-js';
+import {createMemo, For, JSXElement, onCleanup, onMount} from 'solid-js';
 import {Box} from '../ui/Box/Box';
 import * as styles from './terminal.css';
 import {appEnvironment} from '../../core/configuration';
 import {TabIcon} from './TabIcon';
 import {highlight as _highlight} from '../../core/directives/highlight';
-
-import '@lion/combobox/define';
-import '@lion/listbox/define';
-import {LionCombobox} from '@lion/combobox';
-import {LionOption} from '@lion/listbox';
-import {css} from '@lion/core';
-
-declare module 'solid-js' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'codeimage-combobox': Partial<
-        CodeImageCombobox &
-          JSX.DOMAttributes<CodeImageCombobox> & {children: any}
-      >;
-      'codeimage-option': Partial<
-        CodeImageOption & JSX.DOMAttributes<CodeImageOption> & {children: any}
-      >;
-    }
-  }
-}
+import '../ui/Combobox/InlineCombobox';
+import {InlineCombobox} from '../ui/Combobox/InlineCombobox';
 
 interface TabNameProps {
   readonly: boolean;
@@ -32,34 +13,10 @@ interface TabNameProps {
   onValueChange?: (value: string) => void;
 }
 
-class CodeImageCombobox extends LionCombobox {
-  static styles = [
-    ...super.styles,
-    css`
-      :host {
-        font-family: 'Inter', system-ui, -apple-system;
-        display: inline-block;
-      }
-
-      .input-group__container {
-        border: none;
-      }
-    `,
-  ];
-}
-
-class CodeImageOption extends LionOption {
-  protected createRenderRoot(): Element | ShadowRoot {
-    return this;
-  }
-}
-
-customElements.define('codeimage-combobox', CodeImageCombobox);
-customElements.define('codeimage-option', CodeImageOption);
-
 const highlight = _highlight;
 
 export function TabName(props: TabNameProps): JSXElement {
+  let ref: InlineCombobox;
   const hasDot = /^[a-zA-Z0-9]{2,}\./;
 
   const showHint = createMemo(() => {
@@ -90,37 +47,50 @@ export function TabName(props: TabNameProps): JSXElement {
     return icons.filter(icon => icon.extension.includes(currentExtension));
   });
 
+  const getFormattedValue = (value: string) => {
+    const sanitizedValue = props.value || '';
+    return sanitizedValue.replace(/\.([0-9a-z]?)+$/i, `.${value}`);
+  };
+
+  onMount(() => {
+    const onSelectedItem = (evt: CustomEvent<{value: string}>) =>
+      setTimeout(() => onChange(evt.detail.value));
+
+    ref.addEventListener('selectedItem', onSelectedItem);
+    onCleanup(() => ref.removeEventListener('selectedItem', onSelectedItem));
+  });
+
   return (
-    <codeimage-combobox
-      onSelect={(e: any) => console.log(e)}
-      onInput={event => onChange((event.target as any).value)}
+    <cmg-inline-combobox
+      ref={ref}
+      onInput={event => onChange((event.target as HTMLInputElement).value)}
       name="tabName"
       modelValue={props.value}
+      prop:valueMapper={getFormattedValue}
       prop:autocomplete={'none'}
-      prop:matchCondition={(option: LionOption, text: string) => {
-        const extension = /\.[0-9a-z]+$/i.exec(text);
-        const ext = (extension ? extension[0] : '').replace('.', '');
-        const choice = option.choiceValue as string;
-        return choice.includes(ext);
-      }}
     >
       <Box class={styles.tabHint} display={showHint() ? 'block' : 'none'}>
         <For each={matchedIcons()}>
-          {icon => (
-            <codeimage-option
-              prop:choiceValue={icon.extension.replace('.', '')}
-              class={styles.tabHintDropdownOption}
-            >
-              {() => (
-                <Box class={styles.tabHintDropdownItemContent}>
-                  <TabIcon delay={0} content={icon.content} />
-                  <div use:highlight={extension()}>{icon.extension}</div>
-                </Box>
-              )}
-            </codeimage-option>
-          )}
+          {icon => {
+            const value = icon.extension.replace('.', '');
+
+            return (
+              <cmg-combobox-option
+                prop:choiceValue={value}
+                onClick={() => onChange(getFormattedValue(value))}
+                class={styles.tabHintDropdownOption}
+              >
+                {() => (
+                  <Box class={styles.tabHintDropdownItemContent}>
+                    <TabIcon delay={0} content={icon.content} />
+                    <div use:highlight={extension()}>{icon.extension}</div>
+                  </Box>
+                )}
+              </cmg-combobox-option>
+            );
+          }}
         </For>
       </Box>
-    </codeimage-combobox>
+    </cmg-inline-combobox>
   );
 }
