@@ -65,7 +65,8 @@ export function TabName(props: TabNameProps): JSXElement {
       ref={ref}
       onInput={event => onChange((event.target as HTMLInputElement).value)}
       name="tabName"
-      modelValue={props.value}
+      prop:modelValue={props.value}
+      prop:placeholder={'Untitled'}
       prop:valueMapper={getFormattedValue}
       prop:autocomplete={'none'}
     >

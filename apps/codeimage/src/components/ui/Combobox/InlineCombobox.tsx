@@ -1,15 +1,48 @@
 import {LionCombobox} from '@lion/combobox';
-import {css} from '@lion/core';
+import {css, html, PropertyValues} from '@lion/core';
 import {LionOption} from '@lion/listbox';
 import '@lion/combobox/define';
 import '@lion/listbox/define';
+import {SlotsMap} from '@lion/core/types/SlotMixinTypes';
 
 interface InlineComboboxEventMap extends HTMLElementEventMap {
   selectedItem: CustomEvent<{value: string}>;
 }
 
 export class InlineCombobox extends LionCombobox {
+  _placeholder: string | null | undefined;
+
   valueMapper?: (value: string) => string;
+
+  static get properties() {
+    return {
+      ...super.properties,
+      textValue: String,
+      placeholder: String,
+    };
+  }
+
+  get textValue() {
+    return this._inputNode.value || this.placeholder;
+  }
+
+  get hiddenValueNode(): HTMLSpanElement {
+    return this.shadowRoot!.querySelector('span.inline__item')!;
+  }
+
+  get placeholder(): string {
+    return this._placeholder ?? '';
+  }
+
+  set placeholder(placeholder: string | null | undefined) {
+    this._placeholder = placeholder;
+
+    if (placeholder) {
+      this._inputNode.setAttribute('placeholder', placeholder);
+    } else {
+      this._inputNode.removeAttribute('placeholder');
+    }
+  }
 
   static styles = [
     ...super.styles,
@@ -22,8 +55,52 @@ export class InlineCombobox extends LionCombobox {
       .input-group__container {
         border: none;
       }
+
+      .inline__item {
+        visibility: hidden;
+        display: inline-block;
+        height: 0;
+        position: absolute;
+      }
     `,
   ];
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    setTimeout(() =>
+      this.style.setProperty(
+        'width',
+        `${this.hiddenValueNode.clientWidth + 10}px`,
+      ),
+    );
+
+    this._inputNode.addEventListener('input', () => {
+      setTimeout(() => {
+        this.style.setProperty(
+          'width',
+          `${this.hiddenValueNode.clientWidth + 10}px`,
+        );
+      });
+    });
+  }
+
+  protected update(changedProperties: PropertyValues) {
+    super.update(changedProperties);
+  }
+
+  get slots(): SlotsMap {
+    return {
+      ...super.slots,
+    };
+  }
+
+  protected render(): unknown {
+    return html`
+      ${super.render()}
+      <span class="inline__item">${this.textValue}</span>
+    `;
+  }
 
   addEventListener<K extends keyof InlineComboboxEventMap>(
     type: K,
