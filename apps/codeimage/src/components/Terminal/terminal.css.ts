@@ -143,7 +143,6 @@ export const watermark = style({
 
 export const tabHint = style({
   position: 'absolute',
-  right: '-50px',
   backgroundColor: themeVars.dynamicColors.dialogPanelBackgroundColor,
   boxShadow: themeVars.dynamicColors.dialogPanelShadow,
   borderRadius: themeVars.borderRadius.lg,
@@ -162,25 +161,21 @@ export const tabHintDropdownOption = style({
   },
 });
 
-export const tabHintDropdownItemContent = recipe({
-  base: {
-    height: '32px',
-    fontWeight: themeVars.fontWeight.normal,
-    display: 'flex',
-    alignItems: 'center',
-    padding: `0 ${themeVars.spacing['3']}`,
-    borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
-    whiteSpace: 'nowrap',
-    vars: {
-      ['--highlight-color']: 'rgb(112, 182, 246, 0.12)',
-    },
+export const tabHintDropdownItemContent = style({
+  height: '32px',
+  fontWeight: themeVars.fontWeight.normal,
+  display: 'flex',
+  alignItems: 'center',
+  padding: `0 ${themeVars.spacing['3']}`,
+  borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+  whiteSpace: 'nowrap',
+  vars: {
+    ['--highlight-color']: 'rgb(112, 182, 246, 0.12)',
   },
-  variants: {
-    active: {
-      true: {
-        backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
-        color: themeVars.dynamicColors.listBoxActiveTextColor,
-      },
+  selectors: {
+    ['[aria-selected=true] &']: {
+      backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
+      color: themeVars.dynamicColors.listBoxActiveTextColor,
     },
   },
 });

@@ -62,7 +62,6 @@ export function highlight(el: HTMLElement, text: () => string): void {
 
   function getHighlightIndexOf(source: string | null): number {
     const highlight = text();
-    console.log('text now', source, highlight);
     return !source || !highlight
       ? -1
       : source.toLowerCase().indexOf(highlight.toLowerCase());
