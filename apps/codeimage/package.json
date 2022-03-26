@@ -72,6 +72,7 @@
     "@ngneat/elf": "^1.5.4",
     "@ngneat/elf-devtools": "^1.2.1",
     "@ngneat/elf-persist-state": "^1.1.1",
+    "@solid-primitives/resize-observer": "1.0.5",
     "@types/prismjs": "1.26.0",
     "@vanilla-extract/css": "^1.6.8",
     "@vanilla-extract/dynamic": "^2.0.2",

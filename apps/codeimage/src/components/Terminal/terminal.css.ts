@@ -149,6 +149,8 @@ export const tabHint = style({
   zIndex: themeVars.zIndex['50'],
   maxHeight: '250px',
   overflowY: 'auto',
+  left: 0,
+  transition: 'all 100ms ease-in-out',
 });
 
 export const tabHintDropdownOption = style({

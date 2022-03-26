@@ -3,45 +3,30 @@ import {css, html, PropertyValues} from '@lion/core';
 import {LionOption} from '@lion/listbox';
 import '@lion/combobox/define';
 import '@lion/listbox/define';
-import {SlotsMap} from '@lion/core/types/SlotMixinTypes';
 
 interface InlineComboboxEventMap extends HTMLElementEventMap {
   selectedItem: CustomEvent<{value: string}>;
 }
 
-export class InlineCombobox extends LionCombobox {
-  _placeholder: string | null | undefined;
-
+class InlineCombobox extends LionCombobox {
   valueMapper?: (value: string) => string;
+  placeholder: string | null | undefined;
+  value: string | null | undefined;
 
   static get properties() {
     return {
       ...super.properties,
-      textValue: String,
-      placeholder: String,
+      placeholder: {type: String},
+      value: {type: String},
     };
-  }
-
-  get textValue() {
-    return this._inputNode.value || this.placeholder;
   }
 
   get hiddenValueNode(): HTMLSpanElement {
     return this.shadowRoot!.querySelector('span.inline__item')!;
   }
 
-  get placeholder(): string {
-    return this._placeholder ?? '';
-  }
-
-  set placeholder(placeholder: string | null | undefined) {
-    this._placeholder = placeholder;
-
-    if (placeholder) {
-      this._inputNode.setAttribute('placeholder', placeholder);
-    } else {
-      this._inputNode.removeAttribute('placeholder');
-    }
+  get hiddenTextValue(): string {
+    return this.value || this.placeholder || '';
   }
 
   static styles = [
@@ -50,6 +35,7 @@ export class InlineCombobox extends LionCombobox {
       :host {
         font-family: 'Inter', system-ui, -apple-system;
         display: inline-block;
+        position: relative;
       }
 
       .input-group__container {
@@ -67,38 +53,38 @@ export class InlineCombobox extends LionCombobox {
 
   connectedCallback() {
     super.connectedCallback();
-
-    setTimeout(() =>
-      this.style.setProperty(
-        'width',
-        `${this.hiddenValueNode.clientWidth + 10}px`,
-      ),
-    );
-
-    this._inputNode.addEventListener('input', () => {
-      setTimeout(() => {
-        this.style.setProperty(
-          'width',
-          `${this.hiddenValueNode.clientWidth + 10}px`,
-        );
-      });
-    });
   }
 
   protected update(changedProperties: PropertyValues) {
     super.update(changedProperties);
+    if (changedProperties.has('placeholder')) {
+      if (this.placeholder) {
+        this._inputNode.setAttribute('placeholder', this.placeholder);
+      } else {
+        this._inputNode.removeAttribute('placeholder');
+      }
+    }
+    if (changedProperties.has('value')) {
+      if (this._inputNode.value !== this.value) {
+        this._setTextboxValue(this.value || '');
+        setTimeout(() => this.recalculateWidth);
+      } else {
+        this.recalculateWidth();
+      }
+    }
   }
 
-  get slots(): SlotsMap {
-    return {
-      ...super.slots,
-    };
+  private recalculateWidth(): void {
+    this.style.setProperty(
+      'width',
+      `${this.hiddenValueNode.clientWidth + 10}px`,
+    );
   }
 
   protected render(): unknown {
     return html`
       ${super.render()}
-      <span class="inline__item">${this.textValue}</span>
+      <span class="inline__item">${this.hiddenTextValue}</span>
     `;
   }
 
@@ -174,5 +160,6 @@ declare module 'solid-js' {
 declare global {
   interface HTMLElementTagNameMap {
     'cmg-inline-combobox': InlineCombobox;
+    'cmg-combobox-option': InlineCombobox;
   }
 }

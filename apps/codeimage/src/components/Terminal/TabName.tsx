@@ -1,4 +1,11 @@
-import {createMemo, For, JSXElement, onCleanup, onMount} from 'solid-js';
+import {
+  createMemo,
+  createSignal,
+  For,
+  JSXElement,
+  onCleanup,
+  onMount,
+} from 'solid-js';
 import {Box} from '../ui/Box/Box';
 import * as styles from './terminal.css';
 import {appEnvironment} from '../../core/configuration';
@@ -6,6 +13,7 @@ import {TabIcon} from './TabIcon';
 import {highlight as _highlight} from '../../core/directives/highlight';
 import '../ui/Combobox/InlineCombobox';
 import {InlineCombobox} from '../ui/Combobox/InlineCombobox';
+import createResizeObserver from '@solid-primitives/resize-observer';
 
 interface TabNameProps {
   readonly: boolean;
@@ -18,6 +26,12 @@ const highlight = _highlight;
 export function TabName(props: TabNameProps): JSXElement {
   let ref: InlineCombobox;
   const hasDot = /^[a-zA-Z0-9]{2,}\./;
+
+  const [width, setWidth] = createSignal(0);
+
+  const resizeObserver = createResizeObserver({
+    onResize: resize => setWidth(resize.width),
+  });
 
   const showHint = createMemo(() => {
     return hasDot.test(props.value ?? '');
@@ -57,7 +71,12 @@ export function TabName(props: TabNameProps): JSXElement {
       setTimeout(() => onChange(evt.detail.value));
 
     ref.addEventListener('selectedItem', onSelectedItem);
-    onCleanup(() => ref.removeEventListener('selectedItem', onSelectedItem));
+
+    resizeObserver(ref);
+
+    onCleanup(() => {
+      ref.removeEventListener('selectedItem', onSelectedItem);
+    });
   });
 
   return (
@@ -65,12 +84,18 @@ export function TabName(props: TabNameProps): JSXElement {
       ref={ref}
       onInput={event => onChange((event.target as HTMLInputElement).value)}
       name="tabName"
-      prop:modelValue={props.value}
+      value={props.value}
       prop:placeholder={'Untitled'}
       prop:valueMapper={getFormattedValue}
       prop:autocomplete={'none'}
     >
-      <Box class={styles.tabHint} display={showHint() ? 'block' : 'none'}>
+      <Box
+        class={styles.tabHint}
+        display={showHint() ? 'block' : 'none'}
+        style={{
+          left: `${width() - 20}px`,
+        }}
+      >
         <For each={matchedIcons()}>
           {icon => {
             const value = icon.extension.replace('.', '');
