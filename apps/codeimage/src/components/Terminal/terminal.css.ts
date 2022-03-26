@@ -173,8 +173,13 @@ export const tabHintDropdownItemContent = style({
   borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
   color: themeVars.dynamicColors.listBoxTextColor,
   whiteSpace: 'nowrap',
+  cursor: 'pointer',
   vars: {
-    ['--highlight-color']: 'rgb(112, 182, 246, 0.12)',
+    ['--highlight-color']: 'rgb(112, 182, 246, 0.25)',
+  },
+  ':hover': {
+    backgroundColor: themeVars.dynamicColors.listBoxHoverBackgroundColor,
+    color: themeVars.dynamicColors.listBoxActiveTextColor,
   },
   selectors: {
     ['[aria-selected=true] &']: {
