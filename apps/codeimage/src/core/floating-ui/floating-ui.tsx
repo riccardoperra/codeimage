@@ -3,22 +3,9 @@ import type {
   ComputePositionReturn,
   VirtualElement,
 } from '@floating-ui/core';
-import {autoUpdate, computePosition} from '@floating-ui/dom';
+import {autoUpdate, computePosition, ReferenceElement} from '@floating-ui/dom';
 import {createStore} from 'solid-js/store';
 import {Accessor, createEffect, createSignal, mergeProps, on} from 'solid-js';
-
-export {
-  autoPlacement,
-  flip,
-  hide,
-  offset,
-  shift,
-  limitShift,
-  size,
-  inline,
-  detectOverflow,
-  autoUpdate,
-} from '@floating-ui/dom';
 
 type Data = Omit<ComputePositionReturn, 'x' | 'y'> & {
   x: number | null;
@@ -27,11 +14,11 @@ type Data = Omit<ComputePositionReturn, 'x' | 'y'> & {
 
 type UseFloatingReturn = Data & {
   update: () => void;
-  setReference: (node: Element | VirtualElement | null) => void;
-  setFloating: (node: HTMLElement | null) => void;
+  setReference: (node: ReferenceElement | null) => void;
+  setFloating: (node: ReferenceElement | null) => void;
   refs: {
-    reference: Accessor<Element | VirtualElement | null>;
-    floating: Accessor<HTMLElement | null>;
+    reference: Accessor<ReferenceElement | null>;
+    floating: Accessor<ReferenceElement | null>;
   };
 };
 
@@ -63,12 +50,19 @@ export function useFloating({
   });
 
   const update = () => {
-    if (!reference() || !floating()) {
+    const referenceEl = reference() as HTMLElement | null;
+    const floatingEl = floating() as HTMLElement | null;
+
+    if (!referenceEl || !floatingEl) {
       return;
     }
 
     function updater() {
-      computePosition(reference() as HTMLElement, floating() as HTMLElement, {
+      if (!referenceEl || !floatingEl) {
+        return;
+      }
+
+      computePosition(referenceEl, floatingEl, {
         middleware: middleware,
         placement,
         strategy,
@@ -76,7 +70,7 @@ export function useFloating({
     }
 
     if (runAutoUpdate) {
-      autoUpdate(reference(), floating(), updater, {
+      autoUpdate(referenceEl, floatingEl, updater, {
         animationFrame: true,
         ancestorResize: true,
         ancestorScroll: true,
