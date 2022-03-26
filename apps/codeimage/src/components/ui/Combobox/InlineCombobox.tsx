@@ -57,7 +57,6 @@ class InlineCombobox extends LionCombobox {
   ];
 
   connectedCallback() {
-    console.log(this.hiddenValueNode);
     super.connectedCallback();
 
     setTimeout(() => {

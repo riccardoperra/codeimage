@@ -267,7 +267,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'python',
-        extension: '.python',
+        extension: '.py',
         content: () => import('material-icon-theme/icons/python.svg?raw'),
         matcher: /^.*\.(py)$/,
       },
@@ -281,7 +281,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'markdown',
-        extension: '.markdown',
+        extension: '.md',
         content: () => import('material-icon-theme/icons/markdown.svg?raw'),
         matcher: /^.*\.(md)$/,
       },
@@ -294,9 +294,9 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     icons: [
       {
         name: 'rust',
-        extension: '.rust',
+        extension: '.rs',
         content: () => import('material-icon-theme/icons/rust.svg?raw'),
-        matcher: /^.*\.(rust)$/,
+        matcher: /^.*\.(rs)$/,
       },
     ],
   },
