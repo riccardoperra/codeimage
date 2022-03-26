@@ -67,7 +67,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
       {
         name: 'svelte',
-        extension: '.svelte.js',
+        extension: '.svelte',
         content: () => import('material-icon-theme/icons/svelte.svg?raw'),
         matcher: /^.*\.(svelte)$/,
       },
