@@ -3,6 +3,9 @@ import {css, html, PropertyValues} from '@lion/core';
 import {LionOption} from '@lion/listbox';
 import '@lion/combobox/define';
 import '@lion/listbox/define';
+import {finalize, map, Subject, takeUntil} from 'rxjs';
+import {resizeObserverFactory$} from '../../../core/operators/create-resize-observer';
+import {mutationObserverFactory$} from '../../../core/operators/create-mutation-observer';
 
 interface InlineComboboxEventMap extends HTMLElementEventMap {
   selectedItem: CustomEvent<{value: string}>;
@@ -13,10 +16,7 @@ export class InlineCombobox extends LionCombobox {
   placeholder: string | null | undefined;
   value: string | null | undefined;
 
-  readonly observer = new ResizeObserver(observe => {
-    const {width} = observe[0].contentRect;
-    this.recalculateWidth(width);
-  });
+  readonly destroy$ = new Subject<void>();
 
   static get properties() {
     return {
@@ -66,7 +66,23 @@ export class InlineCombobox extends LionCombobox {
 
     setTimeout(() => {
       if (this.hiddenValueNode) {
-        this.observer.observe(this.hiddenValueNode);
+        resizeObserverFactory$(this.hiddenValueNode, {box: 'content-box'})
+          .pipe(
+            takeUntil(this.destroy$),
+            map(entries => entries[0].contentRect.width),
+          )
+          .subscribe(width => this.recalculateWidth(width));
+
+        mutationObserverFactory$(this._listboxNode.firstChild as HTMLElement, {
+          childList: true,
+        })
+          .pipe(
+            map(() => this.formElements),
+            map(() => (this.activeIndex === -1 ? 0 : this.activeIndex)),
+            takeUntil(this.destroy$),
+            finalize(() => console.log('end')),
+          )
+          .subscribe(activeIndex => (this.activeIndex = activeIndex));
       }
     });
   }
@@ -99,9 +115,8 @@ export class InlineCombobox extends LionCombobox {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    if (this.hiddenValueNode) {
-      this.observer.unobserve(this.hiddenValueNode);
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   _getTextboxValueFromOption(option: ComboboxOption) {
@@ -143,7 +158,6 @@ export class InlineCombobox extends LionCombobox {
     if (changedProperties.has('value')) {
       this._setTextboxValue(this.value ?? '');
     }
-
     super.update(changedProperties);
   }
 
@@ -162,7 +176,11 @@ export class InlineCombobox extends LionCombobox {
 
   protected _listboxOnKeyDown(ev: KeyboardEvent) {
     const {key} = ev;
-    if (this.opened && key === 'Enter' && this.activeIndex !== -1) {
+    if (
+      this.opened &&
+      (key === 'Enter' || key === 'Tab') &&
+      this.activeIndex !== -1
+    ) {
       const value = this._getTextboxValueFromOption(
         this.formElements[this.activeIndex],
       );

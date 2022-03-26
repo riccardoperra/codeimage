@@ -1,11 +1,4 @@
-import {
-  createMemo,
-  createSignal,
-  For,
-  JSXElement,
-  onCleanup,
-  onMount,
-} from 'solid-js';
+import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
 import {Box} from '../ui/Box/Box';
 import * as styles from './terminal.css';
 import {appEnvironment} from '../../core/configuration';
@@ -28,9 +21,7 @@ export function TabName(props: TabNameProps): JSXElement {
   let ref: InlineCombobox;
   const hasDot = /^[a-zA-Z0-9$_-]{2,}\./;
   const [width, setWidth] = createSignal(0);
-  const showHint = createMemo(() => {
-    return hasDot.test(props.value ?? '');
-  });
+  const showHint = createMemo(() => hasDot.test(props.value ?? ''));
 
   function onChange(value: string): void {
     if (props.onValueChange) {
@@ -42,7 +33,7 @@ export function TabName(props: TabNameProps): JSXElement {
 
   const extension = createMemo(() => {
     if (!props.value) return '';
-    const extension = /\.[0-9a-z]+$/i.exec(props.value);
+    const extension = /\.[0-9a-z.]+$/i.exec(props.value);
     return (extension ? extension[0] : '').replace('.', '');
   });
 
@@ -53,11 +44,16 @@ export function TabName(props: TabNameProps): JSXElement {
         index === self.findIndex(i => i.extension === icon.extension),
     );
 
-    if (!props.value || props.value.endsWith('.')) {
+    if (!props.value) {
       return uniqueIcons;
     }
 
     const currentExtension = extension();
+
+    if (!currentExtension && props.value.endsWith('.')) {
+      return uniqueIcons;
+    }
+
     if (!currentExtension) return [];
 
     return uniqueIcons.filter(icon =>
@@ -67,7 +63,7 @@ export function TabName(props: TabNameProps): JSXElement {
 
   const getFormattedValue = (value: string) => {
     const sanitizedValue = props.value || '';
-    return sanitizedValue.replace(/\.([0-9a-z]?)+$/i, `.${value}`);
+    return sanitizedValue.replace(/\.([0-9a-z.]?)+$/i, `.${value}`);
   };
 
   const floating = useFloating({
@@ -86,7 +82,6 @@ export function TabName(props: TabNameProps): JSXElement {
 
   return (
     <cmg-inline-combobox
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       ref={el => {
         ref = el;
         floating.setReference(el);
@@ -115,7 +110,6 @@ export function TabName(props: TabNameProps): JSXElement {
         <For each={matchedIcons()}>
           {icon => {
             const value = icon.extension.replace('.', '');
-
             return (
               <cmg-combobox-option
                 onClick={() => onChange(getFormattedValue(value))}

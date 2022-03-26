@@ -182,6 +182,10 @@ export const tabHintDropdownItemContent = style({
     color: themeVars.dynamicColors.listBoxActiveTextColor,
   },
   selectors: {
+    ['[active] &']: {
+      backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
+      color: themeVars.dynamicColors.listBoxActiveTextColor,
+    },
     ['[aria-selected=true] &']: {
       backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
       color: themeVars.dynamicColors.listBoxActiveTextColor,
