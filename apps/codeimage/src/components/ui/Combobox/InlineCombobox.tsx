@@ -71,6 +71,51 @@ export class InlineCombobox extends LionCombobox {
     });
   }
 
+  addEventListener<K extends keyof InlineComboboxEventMap>(
+    type: K,
+    listener: (this: HTMLElement, ev: InlineComboboxEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void {
+    return super.addEventListener(type, listener, options);
+  }
+
+  removeEventListener<K extends keyof InlineComboboxEventMap>(
+    type: K,
+    listener: (this: HTMLElement, ev: InlineComboboxEventMap[K]) => void,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void {
+    return super.removeEventListener(type, listener, options);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.hiddenValueNode) {
+      this.observer.unobserve(this.hiddenValueNode);
+    }
+  }
+
+  _getTextboxValueFromOption(option: ComboboxOption) {
+    if (this.valueMapper) {
+      return this.valueMapper(option.choiceValue);
+    }
+    return option.choiceValue;
+  }
+
+  protected _setTextboxValue(value: string) {
+    super._setTextboxValue(value);
+    this.dispatchEvent(new CustomEvent('inputTextChange', {detail: {value}}));
+  }
+
   /**
    * ATTENTION: override overlay to append content into scaffold and inherit styles
    * @param config
@@ -85,13 +130,6 @@ export class InlineCombobox extends LionCombobox {
       portalHost.appendChild(controller.content);
     }
     return controller;
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this.hiddenValueNode) {
-      this.observer.unobserve(this.hiddenValueNode);
-    }
   }
 
   protected update(changedProperties: PropertyValues) {
@@ -122,46 +160,15 @@ export class InlineCombobox extends LionCombobox {
     `;
   }
 
-  addEventListener<K extends keyof InlineComboboxEventMap>(
-    type: K,
-    listener: (this: HTMLElement, ev: InlineComboboxEventMap[K]) => void,
-    options?: boolean | AddEventListenerOptions,
-  ): void;
-  addEventListener(
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions,
-  ): void {
-    return super.addEventListener(type, listener, options);
-  }
-
-  removeEventListener<K extends keyof InlineComboboxEventMap>(
-    type: K,
-    listener: (this: HTMLElement, ev: InlineComboboxEventMap[K]) => void,
-    options?: boolean | EventListenerOptions,
-  ): void;
-  removeEventListener(
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    options?: boolean | EventListenerOptions,
-  ): void {
-    return super.removeEventListener(type, listener, options);
-  }
-
-  _getTextboxValueFromOption(option: ComboboxOption) {
-    if (this.valueMapper) {
-      return this.valueMapper(option.choiceValue);
-    }
-    return option.choiceValue;
-  }
-
   protected _listboxOnKeyDown(ev: KeyboardEvent) {
     const {key} = ev;
     if (this.opened && key === 'Enter' && this.activeIndex !== -1) {
       const value = this._getTextboxValueFromOption(
         this.formElements[this.activeIndex],
       );
-      this.dispatchEvent(new CustomEvent('selectedItem', {detail: {value}}));
+      this.dispatchEvent(
+        new CustomEvent('selectedItemChange', {detail: {value}}),
+      );
     }
 
     super._listboxOnKeyDown(ev);
@@ -189,6 +196,10 @@ declare module 'solid-js' {
             class: string;
             'prop:valueMapper': InlineCombobox['valueMapper'];
             'prop:autocomplete': InlineCombobox['autocomplete'];
+            'on:selectedItemChange': (
+              event: CustomEvent<{value: string}>,
+            ) => void;
+            'on:inputTextChange': (event: CustomEvent<{value: string}>) => void;
           }
       >;
       'cmg-combobox-option': Partial<

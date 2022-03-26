@@ -26,7 +26,7 @@ const highlight = _highlight;
 
 export function TabName(props: TabNameProps): JSXElement {
   let ref: InlineCombobox;
-  const hasDot = /^[a-zA-Z0-9]{2,}\./;
+  const hasDot = /^[a-zA-Z0-9$_-]{2,}\./;
   const [width, setWidth] = createSignal(0);
   const showHint = createMemo(() => {
     return hasDot.test(props.value ?? '');
@@ -47,20 +47,21 @@ export function TabName(props: TabNameProps): JSXElement {
   });
 
   const matchedIcons = createMemo(() => {
-    if (!props.value) {
-      return icons;
+    // TODO: remove this when icons will not be duplicated in configuration.
+    const uniqueIcons = icons.filter(
+      (icon, index, self) =>
+        index === self.findIndex(i => i.extension === icon.extension),
+    );
+
+    if (!props.value || props.value.endsWith('.')) {
+      return uniqueIcons;
     }
 
     const currentExtension = extension();
+    if (!currentExtension) return [];
 
-    return (
-      icons
-        .filter(icon => icon.extension.includes(currentExtension))
-        // TODO: remove this when icons will not be duplicated in configuration.
-        .filter(
-          (icon, index, self) =>
-            index === self.findIndex(i => i.extension === icon.extension),
-        )
+    return uniqueIcons.filter(icon =>
+      icon.extension.includes(currentExtension),
     );
   });
 
@@ -81,15 +82,6 @@ export function TabName(props: TabNameProps): JSXElement {
     });
 
     observe(ref);
-
-    const onSelectedItem = (evt: CustomEvent<{value: string}>) =>
-      setTimeout(() => onChange(evt.detail.value));
-
-    ref.addEventListener('selectedItem', onSelectedItem);
-
-    onCleanup(() => {
-      ref.removeEventListener('selectedItem', onSelectedItem);
-    });
   });
 
   return (
@@ -99,10 +91,14 @@ export function TabName(props: TabNameProps): JSXElement {
         ref = el;
         floating.setReference(el);
       }}
-      onInput={event => onChange((event.target as HTMLInputElement).value)}
       name="tabName"
       value={props.value}
       placeholder={'Untitled'}
+      onInput={event => onChange((event.target as HTMLInputElement).value)}
+      on:selectedItemChange={event =>
+        setTimeout(() => onChange(event.detail.value))
+      }
+      on:inputTextChange={event => onChange(event.detail.value)}
       prop:valueMapper={getFormattedValue}
       prop:autocomplete={'none'}
     >
