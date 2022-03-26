@@ -3,7 +3,7 @@ import {css, html, PropertyValues} from '@lion/core';
 import {LionOption} from '@lion/listbox';
 import '@lion/combobox/define';
 import '@lion/listbox/define';
-import {finalize, map, Subject, takeUntil} from 'rxjs';
+import {map, Subject, takeUntil} from 'rxjs';
 import {resizeObserverFactory$} from '../../../core/operators/create-resize-observer';
 import {mutationObserverFactory$} from '../../../core/operators/create-mutation-observer';
 
@@ -41,6 +41,7 @@ export class InlineCombobox extends LionCombobox {
         font-family: 'Inter', system-ui, -apple-system;
         display: inline-block;
         position: relative;
+        appearance: none;
       }
 
       .input-group__container {
@@ -52,6 +53,19 @@ export class InlineCombobox extends LionCombobox {
         display: inline-block;
         height: 0;
         position: absolute;
+      }
+
+      ::slotted(.form-control) {
+        background-color: transparent;
+        color: inherit;
+        appearance: none;
+        outline: none;
+      }
+
+      ::slotted(.form-control) {
+        padding: 0;
+        margin: 0;
+        outline: none !important;
       }
     `,
   ];
@@ -65,6 +79,9 @@ export class InlineCombobox extends LionCombobox {
     };
 
     setTimeout(() => {
+      this._inputNode.style.setProperty('appearance', 'none');
+      this._inputNode.style.setProperty('-webkit-appearance', 'none');
+
       if (this.hiddenValueNode) {
         resizeObserverFactory$(this.hiddenValueNode, {box: 'content-box'})
           .pipe(
@@ -80,7 +97,6 @@ export class InlineCombobox extends LionCombobox {
             map(() => this.formElements),
             map(() => (this.activeIndex === -1 ? 0 : this.activeIndex)),
             takeUntil(this.destroy$),
-            finalize(() => console.log('end')),
           )
           .subscribe(activeIndex => (this.activeIndex = activeIndex));
       }
