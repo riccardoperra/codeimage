@@ -7,6 +7,8 @@ import {Box} from '../../ui/Box/Box';
 import {InlineTextField} from '../../ui/TextField/InlineTextField';
 import {WindowsTerminalControls} from './WindowsTerminalControls';
 import {TabIcon} from '../TabIcon';
+import {Text} from '../../ui/Text/Text';
+import {TabName} from '../TabName';
 
 export const WindowsTerminal: Component<BaseTerminalProps> = props => {
   return (
@@ -26,14 +28,18 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
                 {icon => <TabIcon content={icon} />}
               </Show>
 
-              <InlineTextField
-                size={'sm'}
-                readOnly={props.readonlyTab}
-                placeholder={'Untitled'}
-                value={props.tabName ?? ''}
-                disabled={false}
-                onChange={value => props.onTabChange?.(value)}
-              />
+              <Show
+                fallback={
+                  <Text size={'sm'}>{props.tabName ?? 'Untitled'}</Text>
+                }
+                when={!props.readonlyTab}
+              >
+                <TabName
+                  readonly={false}
+                  value={props.tabName ?? ''}
+                  onValueChange={value => props.onTabChange?.(value)}
+                />
+              </Show>
             </Box>
           </Show>
 
