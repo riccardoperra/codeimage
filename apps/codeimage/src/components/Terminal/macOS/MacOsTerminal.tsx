@@ -4,9 +4,10 @@ import * as baseStyles from '../terminal.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import {backgroundColorVar} from '../../../theme/variables.css';
-import {InlineTextField} from '../../ui/TextField/InlineTextField';
 import {Box} from '../../ui/Box/Box';
 import {TabIcon} from '../TabIcon';
+import {TabName} from '../TabName';
+import {Text} from '../../ui/Text/Text';
 
 export const MacOsTerminal: Component<BaseTerminalProps> = props => {
   return (
@@ -42,14 +43,18 @@ export const MacOsTerminal: Component<BaseTerminalProps> = props => {
               <Show when={props.tabIcon}>
                 {icon => <TabIcon content={icon} />}
               </Show>
-              <InlineTextField
-                size={'sm'}
-                readOnly={props.readonlyTab}
-                placeholder={'Untitled'}
-                value={props.tabName ?? ''}
-                disabled={false}
-                onChange={value => props.onTabChange?.(value)}
-              />
+              <Show
+                fallback={
+                  <Text size={'sm'}>{props.tabName ?? 'Untitled'}</Text>
+                }
+                when={!props.readonlyTab}
+              >
+                <TabName
+                  readonly={false}
+                  value={props.tabName ?? ''}
+                  onValueChange={value => props.onTabChange?.(value)}
+                />
+              </Show>
             </div>
           </Show>
         </div>

@@ -3,22 +3,9 @@ import type {
   ComputePositionReturn,
   VirtualElement,
 } from '@floating-ui/core';
-import {computePosition} from '@floating-ui/dom';
+import {autoUpdate, computePosition, ReferenceElement} from '@floating-ui/dom';
 import {createStore} from 'solid-js/store';
 import {Accessor, createEffect, createSignal, mergeProps, on} from 'solid-js';
-
-export {
-  autoPlacement,
-  flip,
-  hide,
-  offset,
-  shift,
-  limitShift,
-  size,
-  inline,
-  getScrollParents,
-  detectOverflow,
-} from '@floating-ui/dom';
 
 type Data = Omit<ComputePositionReturn, 'x' | 'y'> & {
   x: number | null;
@@ -27,23 +14,26 @@ type Data = Omit<ComputePositionReturn, 'x' | 'y'> & {
 
 type UseFloatingReturn = Data & {
   update: () => void;
-  setReference: (node: Element | VirtualElement | null) => void;
-  setFloating: (node: HTMLElement | null) => void;
+  setReference: (node: ReferenceElement | null) => void;
+  setFloating: (node: ReferenceElement | null) => void;
   refs: {
-    reference: Accessor<Element | VirtualElement | null>;
-    floating: Accessor<HTMLElement | null>;
+    reference: Accessor<ReferenceElement | null>;
+    floating: Accessor<ReferenceElement | null>;
   };
 };
 
 export type UseFloatingOptions = Omit<
   Partial<ComputePositionConfig>,
   'platform'
->;
+> & {
+  runAutoUpdate?: boolean;
+};
 
 export function useFloating({
   middleware,
   placement,
   strategy,
+  runAutoUpdate,
 }: UseFloatingOptions = {}): UseFloatingReturn {
   const [reference, setReference] = createSignal<
     Element | VirtualElement | null
@@ -60,17 +50,35 @@ export function useFloating({
   });
 
   const update = () => {
-    if (!reference() || !floating()) {
+    const referenceEl = reference() as HTMLElement | null;
+    const floatingEl = floating() as HTMLElement | null;
+
+    if (!referenceEl || !floatingEl) {
       return;
     }
 
-    computePosition(reference() as Element, floating() as HTMLElement, {
-      middleware: middleware,
-      placement,
-      strategy,
-    }).then(data => {
-      setData(data);
-    });
+    function updater() {
+      if (!referenceEl || !floatingEl) {
+        return;
+      }
+
+      computePosition(referenceEl, floatingEl, {
+        middleware: middleware,
+        placement,
+        strategy,
+      }).then(data => setData(data));
+    }
+
+    if (runAutoUpdate) {
+      autoUpdate(referenceEl, floatingEl, updater, {
+        animationFrame: true,
+        ancestorResize: true,
+        ancestorScroll: true,
+        elementResize: true,
+      });
+    } else {
+      updater();
+    }
   };
 
   createEffect(on([reference, floating], () => update()));
