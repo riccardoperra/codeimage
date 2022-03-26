@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 3.4.0
+
+### Minor Changes
+
+- 54e5311: feat: add tab name icon dropdown hint
+
 ## 3.3.1
 
 ### Patch Changes

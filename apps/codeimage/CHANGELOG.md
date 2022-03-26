@@ -1,5 +1,16 @@
 # @codeimage/app
 
+## 0.14.0
+
+### Minor Changes
+
+- 54e5311: feat: add tab name icon dropdown hint
+
+### Patch Changes
+
+- Updated dependencies [54e5311]
+  - @codeimage/config@3.4.0
+
 ## 0.13.3
 
 ### Patch Changes
