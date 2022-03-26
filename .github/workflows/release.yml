@@ -22,7 +22,7 @@ jobs:
           node-version: 12.x
 
       - name: Install Dependencies
-        run: yarn
+        run: pnpm i
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
@@ -32,4 +32,4 @@ jobs:
 
       - name: Publish
         if: steps.changesets.outputs.hasChangesets == 'false'
-        run: echo "publish"
+        run: echo "publish" # add prod release
