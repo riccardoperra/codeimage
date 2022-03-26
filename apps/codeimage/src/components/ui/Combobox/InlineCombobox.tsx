@@ -8,7 +8,7 @@ interface InlineComboboxEventMap extends HTMLElementEventMap {
   selectedItem: CustomEvent<{value: string}>;
 }
 
-class InlineCombobox extends LionCombobox {
+export class InlineCombobox extends LionCombobox {
   valueMapper?: (value: string) => string;
   placeholder: string | null | undefined;
   value: string | null | undefined;
@@ -162,12 +162,20 @@ declare module 'solid-js' {
     interface IntrinsicElements {
       'cmg-inline-combobox': Partial<
         InlineCombobox &
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          JSX.DOMAttributes<InlineCombobox> & {children?: any}
+          JSX.DOMAttributes<InlineCombobox> & {
+            children: any;
+            class: string;
+            'prop:valueMapper': InlineCombobox['valueMapper'];
+            'prop:autocomplete': InlineCombobox['autocomplete'];
+          }
       >;
       'cmg-combobox-option': Partial<
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ComboboxOption & JSX.DOMAttributes<ComboboxOption> & {children?: any}
+        ComboboxOption &
+          JSX.DOMAttributes<ComboboxOption> & {
+            children: any;
+            class: string;
+            'prop:choiceValue': ComboboxOption['choiceValue'];
+          }
       >;
     }
   }
@@ -176,6 +184,6 @@ declare module 'solid-js' {
 declare global {
   interface HTMLElementTagNameMap {
     'cmg-inline-combobox': InlineCombobox;
-    'cmg-combobox-option': InlineCombobox;
+    'cmg-combobox-option': ComboboxOption;
   }
 }
