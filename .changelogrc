@@ -1,5 +1,9 @@
-## 17-03-2022
+## 26-03-2022
 
-`@codeimage/app@0.10.1`
+`@codeimage/app@0.14.0`
 
-- chore: update logos
+- feat: add tab name icon dropdown hint
+
+**Config** `v3.4.0`
+
+- feat: add tab name icon dropdown hint
