@@ -14,6 +14,8 @@ import {highlight as _highlight} from '../../core/directives/highlight';
 import '../ui/Combobox/InlineCombobox';
 import {InlineCombobox} from '../ui/Combobox/InlineCombobox';
 import createResizeObserver from '@solid-primitives/resize-observer';
+import {useFloating} from '../../core/floating-ui/floating-ui';
+import {offset} from '@floating-ui/dom';
 
 interface TabNameProps {
   readonly: boolean;
@@ -26,13 +28,7 @@ const highlight = _highlight;
 export function TabName(props: TabNameProps): JSXElement {
   let ref: InlineCombobox;
   const hasDot = /^[a-zA-Z0-9]{2,}\./;
-
   const [width, setWidth] = createSignal(0);
-
-  const resizeObserver = createResizeObserver({
-    onResize: resize => setWidth(resize.width),
-  });
-
   const showHint = createMemo(() => {
     return hasDot.test(props.value ?? '');
   });
@@ -74,13 +70,25 @@ export function TabName(props: TabNameProps): JSXElement {
     return sanitizedValue.replace(/\.([0-9a-z]?)+$/i, `.${value}`);
   };
 
+  const floating = useFloating({
+    strategy: 'absolute',
+    placement: 'bottom-start',
+    middleware: [offset(10)],
+  });
+
   onMount(() => {
+    floating.setReference(ref);
+
+    const observe = createResizeObserver({
+      onResize: resize => setWidth(resize.width),
+    });
+
+    observe(ref);
+
     const onSelectedItem = (evt: CustomEvent<{value: string}>) =>
       setTimeout(() => onChange(evt.detail.value));
 
     ref.addEventListener('selectedItem', onSelectedItem);
-
-    resizeObserver(ref);
 
     onCleanup(() => {
       ref.removeEventListener('selectedItem', onSelectedItem);
@@ -89,19 +97,22 @@ export function TabName(props: TabNameProps): JSXElement {
 
   return (
     <cmg-inline-combobox
-      ref={ref}
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      ref={ref!}
       onInput={event => onChange((event.target as HTMLInputElement).value)}
       name="tabName"
       value={props.value}
-      prop:placeholder={'Untitled'}
+      placeholder={'Untitled'}
       prop:valueMapper={getFormattedValue}
       prop:autocomplete={'none'}
     >
       <Box
+        ref={floating.setFloating}
         class={styles.tabHint}
         display={showHint() ? 'block' : 'none'}
         style={{
-          left: `${width() - 20}px`,
+          position: floating.strategy,
+          left: `${(floating.x ?? 0) + width() - 10}px`,
         }}
       >
         <For each={matchedIcons()}>
@@ -110,9 +121,9 @@ export function TabName(props: TabNameProps): JSXElement {
 
             return (
               <cmg-combobox-option
-                prop:choiceValue={value}
                 onClick={() => onChange(getFormattedValue(value))}
                 class={styles.tabHintDropdownOption}
+                prop:choiceValue={value}
               >
                 <Box class={styles.tabHintDropdownItemContent}>
                   <TabIcon delay={0} content={icon.content} />

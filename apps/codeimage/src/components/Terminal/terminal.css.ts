@@ -166,10 +166,12 @@ export const tabHintDropdownOption = style({
 export const tabHintDropdownItemContent = style({
   height: '32px',
   fontWeight: themeVars.fontWeight.normal,
+  fontSize: themeVars.fontSize.sm,
   display: 'flex',
   alignItems: 'center',
   padding: `0 ${themeVars.spacing['3']}`,
   borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+  color: themeVars.dynamicColors.listBoxTextColor,
   whiteSpace: 'nowrap',
   vars: {
     ['--highlight-color']: 'rgb(112, 182, 246, 0.12)',

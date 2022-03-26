@@ -58,12 +58,33 @@ export class InlineCombobox extends LionCombobox {
 
   connectedCallback() {
     super.connectedCallback();
+    this.config = {
+      placementMode: 'global',
+      isTooltip: false,
+      isBlocking: false,
+    };
 
     setTimeout(() => {
       if (this.hiddenValueNode) {
         this.observer.observe(this.hiddenValueNode);
       }
     });
+  }
+
+  /**
+   * ATTENTION: override overlay to append content into scaffold and inherit styles
+   * @param config
+   * @protected
+   */
+  protected _defineOverlay(
+    config: Parameters<LionCombobox['_defineOverlay']>[0],
+  ): ReturnType<LionCombobox['_defineOverlay']> {
+    const controller = super._defineOverlay(config);
+    const portalHost = document.querySelector('#app-scaffold');
+    if (portalHost) {
+      portalHost.appendChild(controller.content);
+    }
+    return controller;
   }
 
   disconnectedCallback() {
@@ -163,6 +184,7 @@ declare module 'solid-js' {
       'cmg-inline-combobox': Partial<
         InlineCombobox &
           JSX.DOMAttributes<InlineCombobox> & {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             children: any;
             class: string;
             'prop:valueMapper': InlineCombobox['valueMapper'];
@@ -172,6 +194,7 @@ declare module 'solid-js' {
       'cmg-combobox-option': Partial<
         ComboboxOption &
           JSX.DOMAttributes<ComboboxOption> & {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             children: any;
             class: string;
             'prop:choiceValue': ComboboxOption['choiceValue'];

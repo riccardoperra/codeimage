@@ -29,6 +29,7 @@ export const Scaffold: Component = props => {
 
   return (
     <div
+      id={'app-scaffold'}
       class={clsx(styles.scaffold, theme())}
       style={assignInlineVars({
         [dynamicFullHeight]: `${window.innerHeight * 0.01}px`,
