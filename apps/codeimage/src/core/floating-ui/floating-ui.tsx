@@ -3,7 +3,7 @@ import type {
   ComputePositionReturn,
   VirtualElement,
 } from '@floating-ui/core';
-import {computePosition} from '@floating-ui/dom';
+import {autoUpdate, computePosition} from '@floating-ui/dom';
 import {createStore} from 'solid-js/store';
 import {Accessor, createEffect, createSignal, mergeProps, on} from 'solid-js';
 
@@ -16,8 +16,8 @@ export {
   limitShift,
   size,
   inline,
-  getScrollParents,
   detectOverflow,
+  autoUpdate,
 } from '@floating-ui/dom';
 
 type Data = Omit<ComputePositionReturn, 'x' | 'y'> & {
@@ -38,12 +38,15 @@ type UseFloatingReturn = Data & {
 export type UseFloatingOptions = Omit<
   Partial<ComputePositionConfig>,
   'platform'
->;
+> & {
+  runAutoUpdate?: boolean;
+};
 
 export function useFloating({
   middleware,
   placement,
   strategy,
+  runAutoUpdate,
 }: UseFloatingOptions = {}): UseFloatingReturn {
   const [reference, setReference] = createSignal<
     Element | VirtualElement | null
@@ -64,13 +67,24 @@ export function useFloating({
       return;
     }
 
-    computePosition(reference() as Element, floating() as HTMLElement, {
-      middleware: middleware,
-      placement,
-      strategy,
-    }).then(data => {
-      setData(data);
-    });
+    function updater() {
+      computePosition(reference() as HTMLElement, floating() as HTMLElement, {
+        middleware: middleware,
+        placement,
+        strategy,
+      }).then(data => setData(data));
+    }
+
+    if (runAutoUpdate) {
+      autoUpdate(reference(), floating(), updater, {
+        animationFrame: true,
+        ancestorResize: true,
+        ancestorScroll: true,
+        elementResize: true,
+      });
+    } else {
+      updater();
+    }
   };
 
   createEffect(on([reference, floating], () => update()));

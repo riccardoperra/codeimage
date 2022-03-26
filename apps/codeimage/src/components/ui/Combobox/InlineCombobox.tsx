@@ -80,7 +80,7 @@ export class InlineCombobox extends LionCombobox {
     config: Parameters<LionCombobox['_defineOverlay']>[0],
   ): ReturnType<LionCombobox['_defineOverlay']> {
     const controller = super._defineOverlay(config);
-    const portalHost = document.querySelector('#app-scaffold');
+    const portalHost = document.querySelector('#portal-host');
     if (portalHost) {
       portalHost.appendChild(controller.content);
     }

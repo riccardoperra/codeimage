@@ -15,7 +15,6 @@ import '../ui/Combobox/InlineCombobox';
 import {InlineCombobox} from '../ui/Combobox/InlineCombobox';
 import createResizeObserver from '@solid-primitives/resize-observer';
 import {useFloating} from '../../core/floating-ui/floating-ui';
-import {offset} from '@floating-ui/dom';
 
 interface TabNameProps {
   readonly: boolean;
@@ -73,12 +72,10 @@ export function TabName(props: TabNameProps): JSXElement {
   const floating = useFloating({
     strategy: 'absolute',
     placement: 'bottom-start',
-    middleware: [offset(10)],
+    runAutoUpdate: true,
   });
 
   onMount(() => {
-    floating.setReference(ref);
-
     const observe = createResizeObserver({
       onResize: resize => setWidth(resize.width),
     });
@@ -98,7 +95,10 @@ export function TabName(props: TabNameProps): JSXElement {
   return (
     <cmg-inline-combobox
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      ref={ref!}
+      ref={el => {
+        ref = el;
+        floating.setReference(el);
+      }}
       onInput={event => onChange((event.target as HTMLInputElement).value)}
       name="tabName"
       value={props.value}
@@ -112,7 +112,8 @@ export function TabName(props: TabNameProps): JSXElement {
         display={showHint() ? 'block' : 'none'}
         style={{
           position: floating.strategy,
-          left: `${(floating.x ?? 0) + width() - 10}px`,
+          top: `${floating.y ?? 0}px`,
+          left: `${(floating.x ?? 0) + width() - 20}px`,
         }}
       >
         <For each={matchedIcons()}>

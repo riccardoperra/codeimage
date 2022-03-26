@@ -84,8 +84,8 @@ importers:
       '@codemirror/state': ^0.19.9
       '@codemirror/text': ^0.19.6
       '@codemirror/view': ^0.19.47
-      '@floating-ui/core': ^0.4.0
-      '@floating-ui/dom': ^0.2.0
+      '@floating-ui/core': ^0.6.1
+      '@floating-ui/dom': ^0.4.2
       '@lion/combobox': 0.9.0
       '@lion/core': 0.21.1
       '@lion/listbox': 0.12.0
@@ -164,8 +164,8 @@ importers:
       '@codemirror/state': 0.19.9
       '@codemirror/text': 0.19.6
       '@codemirror/view': 0.19.47
-      '@floating-ui/core': 0.4.0
-      '@floating-ui/dom': 0.2.0
+      '@floating-ui/core': 0.6.1
+      '@floating-ui/dom': 0.4.2
       '@lion/combobox': 0.9.0
       '@lion/core': 0.21.1
       '@lion/listbox': 0.12.0
@@ -2301,14 +2301,14 @@ packages:
       - supports-color
     dev: true
 
-  /@floating-ui/core/0.4.0:
-    resolution: {integrity: sha512-99Pnb5T2S7PSE8rKHD5fZWWnXE3a2xG9E8eQm8SIMYWJyJoHDJIt0b9SK3UjetWFcepxVG+ZMDxcfbamyx+HSg==}
+  /@floating-ui/core/0.6.1:
+    resolution: {integrity: sha512-Y30eVMcZva8o84c0HcXAtDO4BEzPJMvF6+B7x7urL2xbAqVsGJhojOyHLaoQHQYjb6OkqRq5kO+zeySycQwKqg==}
     dev: false
 
-  /@floating-ui/dom/0.2.0:
-    resolution: {integrity: sha512-hNhTbImiJ8SH9rHsP0qcE9IVxn/maMhwWA5d17p7EkEzVdciayB664Qy2Vxa8RxY/8avE8iVKkfE8sIeg34J0g==}
+  /@floating-ui/dom/0.4.2:
+    resolution: {integrity: sha512-2/4vOhMAujkMmGqGX1Gut84phe5MNfk1kGeM+RSTJCpeR0SWR2/RR+/f1r1msOvTQa28wn7HEhxGe71CjYY/vw==}
     dependencies:
-      '@floating-ui/core': 0.4.0
+      '@floating-ui/core': 0.6.1
     dev: false
 
   /@humanwhocodes/config-array/0.9.5:
