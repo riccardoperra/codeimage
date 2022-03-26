@@ -13,6 +13,11 @@ class InlineCombobox extends LionCombobox {
   placeholder: string | null | undefined;
   value: string | null | undefined;
 
+  readonly observer = new ResizeObserver(observe => {
+    const {width} = observe[0].contentRect;
+    this.recalculateWidth(width);
+  });
+
   static get properties() {
     return {
       ...super.properties,
@@ -22,7 +27,7 @@ class InlineCombobox extends LionCombobox {
   }
 
   get hiddenValueNode(): HTMLSpanElement {
-    return this.shadowRoot!.querySelector('span.inline__item')!;
+    return this.shadowRoot!.querySelector('div.inline__item')!;
   }
 
   get hiddenTextValue(): string {
@@ -53,10 +58,18 @@ class InlineCombobox extends LionCombobox {
 
   connectedCallback() {
     super.connectedCallback();
+
+    setTimeout(() => {
+      this.observer.observe(this.hiddenValueNode);
+    });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.observer.unobserve(this.hiddenValueNode);
   }
 
   protected update(changedProperties: PropertyValues) {
-    super.update(changedProperties);
     if (changedProperties.has('placeholder')) {
       if (this.placeholder) {
         this._inputNode.setAttribute('placeholder', this.placeholder);
@@ -65,26 +78,22 @@ class InlineCombobox extends LionCombobox {
       }
     }
     if (changedProperties.has('value')) {
-      if (this._inputNode.value !== this.value) {
-        this._setTextboxValue(this.value || '');
-        setTimeout(() => this.recalculateWidth);
-      } else {
-        this.recalculateWidth();
-      }
+      this._setTextboxValue(this.value ?? '');
     }
+
+    super.update(changedProperties);
   }
 
-  private recalculateWidth(): void {
-    this.style.setProperty(
-      'width',
-      `${this.hiddenValueNode.clientWidth + 10}px`,
-    );
+  private recalculateWidth(width: number): void {
+    if (this.hiddenValueNode) {
+      this.style.setProperty('width', `${width + 10}px`);
+    }
   }
 
   protected render(): unknown {
     return html`
       ${super.render()}
-      <span class="inline__item">${this.hiddenTextValue}</span>
+      <div class="inline__item">${this.hiddenTextValue}</div>
     `;
   }
 

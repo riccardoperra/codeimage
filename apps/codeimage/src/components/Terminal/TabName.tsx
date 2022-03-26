@@ -58,7 +58,15 @@ export function TabName(props: TabNameProps): JSXElement {
 
     const currentExtension = extension();
 
-    return icons.filter(icon => icon.extension.includes(currentExtension));
+    return (
+      icons
+        .filter(icon => icon.extension.includes(currentExtension))
+        // TODO: remove this when icons will not be duplicated in configuration.
+        .filter(
+          (icon, index, self) =>
+            index === self.findIndex(i => i.extension === icon.extension),
+        )
+    );
   });
 
   const getFormattedValue = (value: string) => {
