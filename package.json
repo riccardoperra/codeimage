@@ -37,7 +37,7 @@
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c .eslintrc.js --fix",
-    "libs:build": "pnpm build:watch --filter ./packages",
+    "libs:build": "pnpm build:watch --parallel --filter ./packages",
     "app:dev": "pnpm dev --filter=@codeimage/app",
     "lint": "pnpm lint --filter='@codeimage/*'",
     "typecheck": "pnpm typecheck --filter='@codeimage/*'",
