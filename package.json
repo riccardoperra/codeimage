@@ -45,7 +45,8 @@
     "build:prod": "pnpm build --filter='@codeimage/*'",
     "changelog:gen": "ts-node scripts/changelog-generate.ts",
     "changelog:write": "ts-node scripts/changelog-write.ts",
-    "changelog:commit": "git add CHANGELOG.md && git commit -am 'docs: add changelog' --no-verify && git push"
+    "changelog:commit": "git add CHANGELOG.md && git commit -am 'docs: add changelog' --no-verify && git push",
+    "version:sync": "ts-node scripts/sync-package.ts"
   },
   "devDependencies": {
     "@changesets/assemble-release-plan": "^5.1.1",
