@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.14.1
+
+### Patch Changes
+
+- [#145](https://github.com/riccardoperra/codeimage/pull/145) [`25323de`](https://github.com/riccardoperra/codeimage/commit/25323de50732cb8f07ee0ed5a5c08cac5caa8826) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix export dialog translations on lang change
+
 ## 0.14.0
 
 ### Minor Changes
