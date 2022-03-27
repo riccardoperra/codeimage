@@ -36,10 +36,20 @@ $ pnpm libs:build
 3. Run @codeimage/app
 
 ```bash
-$ pnpm app:dev
+$ pnpm app:dev // Dev mode
+$ pnpm build:prod && pnpm serve --filter=@codeimage/app
 ```
 
 ## Features
+
+✅ Customizable terminal window, editor and frame style \
+✅ 15+ custom editor themes \
+✅ Supports 10+ languages \
+✅ Dynamic icons based by tab name extension \
+✅ Uses browser [Web share api](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share) to share your snippets \
+✅ Mobile supports \
+✅ Light/Dark mode support \
+✅ Open-source
 
 // WIP
 
@@ -57,7 +67,22 @@ CodeImage front-end app currently relies on these technologies:
 - [solid-headless](https://github.com/LXSMNSYC/solid-headless): SolidJS headless component library
 - [@ngneat/elf](https://github.com/ngneat/elf) + [RxJS](https://github.com/ReactiveX/rxjs): Reactive state management
 
+#### Other libraries:
+
+- [material-icon-theme](https://github.com/PKief/vscode-material-icon-theme): Used for custom terminal tabs icons
+- [solid-primitives](https://github.com/solidjs-community/solid-primitives): SolidJS primitives library
+- [@emotion/css](https://github.com/emotion-js/emotion/tree/main/packages/css): CSS Utility - Used for custom codemirror themes
+- [floating-ui](https://github.com/floating-ui/floating-ui/): Utilities for positioning floating elements
+- [Lion](https://github.com/ing-bank/lion): White label web components (used for custom combobox)
+- [solid-use](https://github.com/LXSMNSYC/solid-use): Collection of solid-js utilities
+
 ## Contributions
+
+> :warning: **Read this before opening any PR!**
+
+When contributing, it's better to first discuss the change you wish to make via issue or discussion, or any other method with the owners of this repository before making a change.
+
+Until the end of [solid hackathon](https://hack.solidjs.com/) voting ends phase, pull request must target the [next](https://github.com/riccardoperra/codeimage/tree/next) branch
 
 See the [CONTRIBUTING.md](/CONTRIBUTING.md) guide for more details.
 
