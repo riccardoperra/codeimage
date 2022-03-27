@@ -11,12 +11,16 @@ export const lightThemeCss = createTheme(colors, {
   descriptionTextColor: themeVars.backgroundColor.gray['700'],
   secondary: themeVars.backgroundColor.gray['200'],
   divider: themeVars.backgroundColor.gray['300'],
-  inputBackgroundColor: '#f3f3f3',
-  inputBorderColor: 'transparent',
-  inputTextColor: '#333333',
-  inputLabelTextColor: themeVars.backgroundColor.gray['800'],
-  inputLabelTextHintColor: themeVars.backgroundColor.gray['700'],
-  inputAccentColor: themeVars.backgroundColor.white,
+
+  input: {
+    backgroundColor: '#f3f3f3',
+    borderColor: 'transparent',
+    textColor: '#333333ó',
+    labelTextColor: themeVars.backgroundColor.gray['800'],
+    labelTextHintColor: themeVars.backgroundColor.gray['700'],
+    accentColor: themeVars.backgroundColor.white,
+  },
+
   buttonBackgroundColor: themeVars.backgroundColor.gray['300'],
   buttonBackgroundActive: themeVars.backgroundColor.gray['500'],
   buttonBackgroundHover: themeVars.backgroundColor.gray['400'],

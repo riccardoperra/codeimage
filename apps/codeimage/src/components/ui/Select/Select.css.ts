@@ -94,7 +94,7 @@ export const selectorIconWrapper = style({
 });
 
 export const selectorIcon = style({
-  color: themeVars.dynamicColors.inputTextColor,
+  color: themeVars.dynamicColors.input.textColor,
   width: themeVars.width['4'],
   height: themeVars.width['4'],
 });

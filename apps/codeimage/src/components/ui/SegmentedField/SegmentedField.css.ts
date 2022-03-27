@@ -5,9 +5,9 @@ import * as textFieldStyles from '../TextField/TextField.css';
 export const [segmentedFieldTheme, segmentedFieldVars] = createTheme({
   activeSegmentedWidth: '0px',
   activeSegmentedOffset: '0%',
-  activeSegmentedBackgroundColor: themeVars.dynamicColors.inputAccentColor,
-  segmentedTextColor: themeVars.dynamicColors.inputTextColor,
-  activeSegmentedTextColor: themeVars.dynamicColors.inputTextColor,
+  activeSegmentedBackgroundColor: themeVars.dynamicColors.input.accentColor,
+  segmentedTextColor: themeVars.dynamicColors.input.textColor,
+  activeSegmentedTextColor: themeVars.dynamicColors.input.textColor,
 });
 
 export const wrapper = style([

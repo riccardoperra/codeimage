@@ -11,12 +11,16 @@ export const darkThemeCss = createTheme(colors, {
   descriptionTextColor: '#999999',
   secondary: themeVars.backgroundColor.gray['200'],
   divider: '#252525',
-  inputBackgroundColor: '#2B2B2B',
-  inputBorderColor: '#252525',
-  inputTextColor: '#EEEEEE',
-  inputLabelTextColor: '#FFFFFF',
-  inputLabelTextHintColor: '#999999',
-  inputAccentColor: '#555555',
+
+  input: {
+    backgroundColor: '#2B2B2B',
+    borderColor: '#252525',
+    textColor: '#EEEEEE',
+    labelTextColor: '#FFFFFF',
+    labelTextHintColor: '#999999',
+    accentColor: '#555555',
+  },
+
   buttonBackgroundColor: '#333333',
   buttonBackgroundActive: '#232323',
   buttonBackgroundHover: '#282828',

@@ -9,12 +9,16 @@ export const colors = createThemeContract({
   baseText: null,
   descriptionTextColor: null,
   divider: null,
-  inputBackgroundColor: null,
-  inputBorderColor: null,
-  inputTextColor: null,
-  inputLabelTextColor: null,
-  inputLabelTextHintColor: null,
-  inputAccentColor: null,
+
+  input: {
+    backgroundColor: null,
+    borderColor: null,
+    textColor: null,
+    accentColor: null,
+    labelTextColor: null,
+    labelTextHintColor: null,
+  },
+
   buttonBackgroundPrimaryColor: null,
   buttonBackgroundPrimaryActive: null,
   buttonBackgroundPrimaryHover: null,
@@ -46,4 +50,4 @@ export const colors = createThemeContract({
   dialogPanelTextColor: null,
   dialogPanelBackgroundColor: null,
   shortcutKeyBackgroundColor: null,
-});
+} as const);

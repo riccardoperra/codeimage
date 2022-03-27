@@ -3,9 +3,9 @@ import {themeVars} from '../../../theme/global.css';
 import {inputHeight} from '../Field/FlexField.css';
 
 export const [textFieldTheme, textFieldVars] = createTheme({
-  borderColor: themeVars.dynamicColors.inputBorderColor,
-  background: themeVars.dynamicColors.inputBackgroundColor,
-  color: themeVars.dynamicColors.inputTextColor,
+  borderColor: themeVars.dynamicColors.input.borderColor,
+  background: themeVars.dynamicColors.input.backgroundColor,
+  color: themeVars.dynamicColors.input.textColor,
   inputHeight: inputHeight,
 });
 
