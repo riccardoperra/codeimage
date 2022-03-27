@@ -50,7 +50,7 @@ export const title = style([
     alignItems: 'center',
     selectors: {
       '[data-full-screen=true] &': {
-        backgroundColor: themeVars.dynamicColors.panelBackground,
+        backgroundColor: themeVars.dynamicColors.panel.background,
       },
     },
   },

@@ -18,7 +18,7 @@ export const wrapper = style([
     zIndex: 30,
     height: toolbarVars.toolbarHeight,
     width: '100%',
-    backgroundColor: themeVars.dynamicColors.panelBackground,
+    backgroundColor: themeVars.dynamicColors.panel.background,
     borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
 
     '@media': {

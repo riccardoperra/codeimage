@@ -28,8 +28,8 @@ export const button = style([
 export const portalWrapper = style({
   position: 'fixed',
   bottom: `calc(${scaffoldVars.toolbarHeight} + env(safe-area-inset-bottom, 20px))`,
-  backgroundColor: themeVars.dynamicColors.panelBackground,
-  color: themeVars.dynamicColors.panelTextColor,
+  backgroundColor: themeVars.dynamicColors.panel.background,
+  color: themeVars.dynamicColors.panel.textColor,
   width: '100%',
   borderTop: `1px solid ${themeVars.dynamicColors.divider}`,
 });

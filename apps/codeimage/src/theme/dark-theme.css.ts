@@ -2,18 +2,34 @@ import {createTheme} from '@vanilla-extract/css';
 import {colors} from './theme.css';
 import {themeVars} from './global.css';
 
+const palette = {
+  systemDarkGray1: '#333333',
+  systemDarkGray2: '#2B2B2B',
+  systemDarkGray3: '#282828',
+  systemDarkGray4: '#252525',
+  systemDarkGray5: '#232323',
+  systemDarkGray6: '#1d1d1d',
+  systemDarkGray7: '#181818',
+  systemDarkGray8: '#161515',
+  systemDarkGray9: '#111111',
+  white: '#FFFFFF',
+} as const;
+
 export const darkThemeCss = createTheme(colors, {
   primary: themeVars.backgroundColor.blue['400'],
-  panelBackground: '#111111',
-  panelTextColor: themeVars.backgroundColor.white,
   background: '#181818',
   baseText: themeVars.textColor.gray['800'],
   descriptionTextColor: '#999999',
   secondary: themeVars.backgroundColor.gray['200'],
   divider: '#252525',
 
+  panel: {
+    background: palette.systemDarkGray9,
+    textColor: palette.white,
+  },
+
   input: {
-    backgroundColor: '#2B2B2B',
+    backgroundColor: '#2b2b2b',
     borderColor: '#252525',
     textColor: '#EEEEEE',
     labelTextColor: '#FFFFFF',

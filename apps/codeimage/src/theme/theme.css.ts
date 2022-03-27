@@ -4,11 +4,14 @@ export const colors = createThemeContract({
   primary: null,
   secondary: null,
   background: null,
-  panelBackground: null,
-  panelTextColor: null,
   baseText: null,
   descriptionTextColor: null,
   divider: null,
+
+  panel: {
+    background: null,
+    textColor: null,
+  },
 
   input: {
     backgroundColor: null,

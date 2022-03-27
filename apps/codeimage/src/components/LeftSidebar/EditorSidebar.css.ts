@@ -4,7 +4,7 @@ import {recipe} from '@vanilla-extract/recipes';
 
 export const [sidebarTheme, sidebarVars] = createTheme({
   gap: themeVars.spacing['4'],
-  panelTitleTextColor: themeVars.dynamicColors.panelTextColor,
+  panelTitleTextColor: themeVars.dynamicColors.panel.textColor,
 });
 
 export const sidebar = style([
