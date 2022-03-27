@@ -35,7 +35,7 @@ const grayDark = {
   gray2: '#1d1d1d',
   gray3: '#232323',
   gray4: '#282828',
-  gray5: '#252525',
+  gray5: '#2B2B2B',
   gray6: '#333333',
   gray7: '#3e3e3e',
   gray8: '#505050',
@@ -90,6 +90,15 @@ export const darkThemeCss = createTheme(colors, {
     activeTextColor: grayDark.gray12,
   },
 
+  dialog: {
+    overlayBackgroundColor: 'rgba(0,0,0,.7)',
+    panelBackgroundColor: grayDark.gray2, // 2,
+    panelShadow: `0 10px 30px 0 rgba(0,0,0,.15), inset 0 0 0 1px ${grayDark.gray3}`,
+    panelTextColor: grayDark.gray12,
+    titleTextColor: grayDark.gray12,
+    titleBorderColor: grayDark.gray5,
+  },
+
   menuBackground: '#2b2b2b',
   resizeLineBackgroundColor: 'hsla(0,0%,100%,.25)',
   resizeLineBadgeBackgroundColor: '#161515',
@@ -101,12 +110,5 @@ export const darkThemeCss = createTheme(colors, {
   snackbarBackgroundColor: '#EEEEEE',
   snackbarTextColor: themeVars.textColor.gray['800'],
   frameDragControlBackgroundColor: `#EEEEEE`,
-  dialogOverlayBackgroundColor: 'rgba(0,0,0,.7)',
-  dialogPanelBackgroundColor: '#1d1d1d',
-  dialogPanelShadow:
-    '0px 10px 30px 0px rgba(0,0,0,.15),inset 0 0 0 1px #222222',
-  dialogTitleTextColor: '#EEEEEE',
-  dialogTitleBorderColor: '#2B2B2B',
-  dialogPanelTextColor: '#EEEEEE',
   shortcutKeyBackgroundColor: '#555555',
 });

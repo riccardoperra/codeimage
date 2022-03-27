@@ -45,6 +45,15 @@ export const colors = createThemeContract({
     activeTextColor: null,
   },
 
+  dialog: {
+    overlayBackgroundColor: null,
+    titleTextColor: null,
+    titleBorderColor: null,
+    panelShadow: null,
+    panelTextColor: null,
+    panelBackgroundColor: null,
+  },
+
   menuBackground: null,
   resizeLineBackgroundColor: null,
   resizeLineBadgeBackgroundColor: null,
@@ -56,11 +65,5 @@ export const colors = createThemeContract({
   snackbarBackgroundColor: null,
   snackbarTextColor: null,
   frameDragControlBackgroundColor: null,
-  dialogOverlayBackgroundColor: null,
-  dialogTitleTextColor: null,
-  dialogTitleBorderColor: null,
-  dialogPanelShadow: null,
-  dialogPanelTextColor: null,
-  dialogPanelBackgroundColor: null,
   shortcutKeyBackgroundColor: null,
 } as const);

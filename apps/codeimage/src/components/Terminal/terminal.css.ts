@@ -143,8 +143,8 @@ export const watermark = style({
 
 export const tabHint = style({
   position: 'absolute',
-  backgroundColor: themeVars.dynamicColors.dialogPanelBackgroundColor,
-  boxShadow: themeVars.dynamicColors.dialogPanelShadow,
+  backgroundColor: themeVars.dynamicColors.dialog.panelBackgroundColor,
+  boxShadow: themeVars.dynamicColors.dialog.panelShadow,
   borderRadius: themeVars.borderRadius.lg,
   zIndex: themeVars.zIndex['50'],
   maxHeight: '250px',

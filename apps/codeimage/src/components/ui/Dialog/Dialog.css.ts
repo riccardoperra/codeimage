@@ -35,16 +35,16 @@ export const wrapper = style({
 export const overlay = style({
   position: 'fixed',
   inset: 0,
-  backgroundColor: themeVars.dynamicColors.dialogOverlayBackgroundColor,
+  backgroundColor: themeVars.dynamicColors.dialog.overlayBackgroundColor,
 });
 
 export const title = style([
   fontSize.lg,
   fontWeight.medium,
   {
-    color: themeVars.dynamicColors.dialogTitleTextColor,
+    color: themeVars.dynamicColors.dialog.titleTextColor,
     height: '52px',
-    borderBottom: `1px solid ${themeVars.dynamicColors.dialogTitleBorderColor}`,
+    borderBottom: `1px solid ${themeVars.dynamicColors.dialog.titleBorderColor}`,
     padding: `0 ${dialogThemeVars.contentPadding}`,
     display: 'flex',
     alignItems: 'center',
@@ -86,11 +86,11 @@ export const panel = recipe({
     margin: `${themeVars.margin['8']} 0`,
     overflow: 'hidden',
     textAlign: 'left',
-    color: themeVars.dynamicColors.dialogPanelTextColor,
+    color: themeVars.dynamicColors.dialog.panelTextColor,
     alignItems: 'stretch',
-    boxShadow: themeVars.dynamicColors.dialogPanelShadow,
+    boxShadow: themeVars.dynamicColors.dialog.panelShadow,
     borderRadius: themeVars.borderRadius.lg,
-    backgroundColor: themeVars.dynamicColors.dialogPanelBackgroundColor,
+    backgroundColor: themeVars.dynamicColors.dialog.panelBackgroundColor,
     transform: 'translate(0, 0)',
   },
 

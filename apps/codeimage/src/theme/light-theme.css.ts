@@ -47,6 +47,15 @@ export const lightThemeCss = createTheme(colors, {
     activeTextColor: themeVars.backgroundColor.white,
   },
 
+  dialog: {
+    overlayBackgroundColor: 'rgba(0,0,0,.4)',
+    titleTextColor: themeVars.backgroundColor.gray['800'],
+    titleBorderColor: themeVars.borderColor.default,
+    panelShadow: themeVars.boxShadow.lg,
+    panelBackgroundColor: themeVars.backgroundColor.white,
+    panelTextColor: themeVars.backgroundColor.gray['800'],
+  },
+
   menuBackground: themeVars.backgroundColor.white,
   resizeLineBackgroundColor: themeVars.backgroundColor.gray['600'],
   resizeLineBadgeBackgroundColor: themeVars.backgroundColor.gray['700'],
@@ -58,11 +67,5 @@ export const lightThemeCss = createTheme(colors, {
   snackbarBackgroundColor: '#1a1a1a',
   snackbarTextColor: themeVars.backgroundColor.white,
   frameDragControlBackgroundColor: themeVars.backgroundColor.gray['800'],
-  dialogOverlayBackgroundColor: 'rgba(0,0,0,.4)',
-  dialogTitleTextColor: themeVars.backgroundColor.gray['800'],
-  dialogTitleBorderColor: themeVars.borderColor.default,
-  dialogPanelShadow: themeVars.boxShadow.lg,
-  dialogPanelBackgroundColor: themeVars.backgroundColor.white,
-  dialogPanelTextColor: themeVars.backgroundColor.gray['800'],
   shortcutKeyBackgroundColor: '#f3f3f3',
 });

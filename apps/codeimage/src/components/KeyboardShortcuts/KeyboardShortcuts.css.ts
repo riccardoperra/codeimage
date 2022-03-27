@@ -16,7 +16,7 @@ export const list = style({
 export const overlay = style({
   position: 'fixed',
   inset: 0,
-  backgroundColor: themeVars.dynamicColors.dialogOverlayBackgroundColor,
+  backgroundColor: themeVars.dynamicColors.dialog.overlayBackgroundColor,
 });
 
 export const keyLabel = style([
