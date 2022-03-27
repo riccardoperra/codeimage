@@ -22,7 +22,7 @@ export const overlay = style({
 export const keyLabel = style([
   fontSize.sm,
   {
-    color: themeVars.dynamicColors.buttonTextColor,
+    color: themeVars.dynamicColors.button.base.textColor,
   },
 ]);
 
@@ -40,7 +40,7 @@ export const key = style([
     padding: '4px 8px',
     borderRadius: themeVars.borderRadius.md,
     backgroundColor: themeVars.dynamicColors.shortcutKeyBackgroundColor,
-    color: themeVars.dynamicColors.buttonTextColor,
+    color: themeVars.dynamicColors.button.base.textColor,
     fontFamily: 'inherit',
   },
 ]);

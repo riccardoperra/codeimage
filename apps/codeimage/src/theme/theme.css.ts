@@ -37,14 +37,17 @@ export const colors = createThemeContract({
     },
   },
 
+  listBox: {
+    panelBackground: null,
+    activeBackgroundColor: null,
+    hoverBackgroundColor: null,
+    textColor: null,
+    activeTextColor: null,
+  },
+
   menuBackground: null,
   resizeLineBackgroundColor: null,
   resizeLineBadgeBackgroundColor: null,
-  listBoxPanelBackground: null,
-  listBoxActiveBackgroundColor: null,
-  listBoxHoverBackgroundColor: null,
-  listBoxTextColor: null,
-  listBoxActiveTextColor: null,
   scrollBarBackgroundColor: null,
   scrollBarHoverBackgroundColor: null,
   bottomBarBackgroundColor: null,

@@ -32,10 +32,10 @@ const palette = {
 
 const grayDark = {
   gray1: '#111111',
-  gray2: '#181818',
+  gray2: '#1d1d1d',
   gray3: '#232323',
   gray4: '#282828',
-  gray5: '#2B2B2B',
+  gray5: '#252525',
   gray6: '#333333',
   gray7: '#3e3e3e',
   gray8: '#505050',
@@ -82,14 +82,17 @@ export const darkThemeCss = createTheme(colors, {
     },
   },
 
+  listBox: {
+    panelBackground: grayDark.gray3, // 5
+    activeBackgroundColor: themeVars.backgroundColor.blue['700'], // 500
+    hoverBackgroundColor: grayDark.gray6,
+    textColor: grayDark.gray12,
+    activeTextColor: grayDark.gray12,
+  },
+
   menuBackground: '#2b2b2b',
   resizeLineBackgroundColor: 'hsla(0,0%,100%,.25)',
   resizeLineBadgeBackgroundColor: '#161515',
-  listBoxPanelBackground: '#2B2B2B',
-  listBoxActiveBackgroundColor: themeVars.backgroundColor.blue['500'],
-  listBoxHoverBackgroundColor: `#232323`,
-  listBoxTextColor: themeVars.backgroundColor.white,
-  listBoxActiveTextColor: themeVars.backgroundColor.white,
   scrollBarBackgroundColor: '#555555',
   scrollBarHoverBackgroundColor: '#333333',
   bottomBarBackgroundColor: '#2B2B2B',

@@ -40,7 +40,7 @@ export const dropdownMenuButton = style([
     padding: `${themeVars.spacing['2']}`,
     borderRadius: themeVars.borderRadius.md,
     background: 'transparent',
-    color: themeVars.dynamicColors.listBoxTextColor,
+    color: themeVars.dynamicColors.listBox.textColor,
 
     ':focus': {
       boxShadow: 'none',
@@ -48,16 +48,16 @@ export const dropdownMenuButton = style([
     },
 
     ':hover': {
-      backgroundColor: themeVars.dynamicColors.listBoxHoverBackgroundColor,
+      backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
     },
 
     selectors: {
       '&[aria-selected=true]': {
-        backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
-        color: themeVars.dynamicColors.listBoxActiveTextColor,
+        backgroundColor: themeVars.dynamicColors.listBox.activeBackgroundColor,
+        color: themeVars.dynamicColors.listBox.activeTextColor,
       },
       '&[aria-selected=true]:hover': {
-        backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
+        backgroundColor: themeVars.dynamicColors.listBox.activeBackgroundColor,
       },
     },
   },

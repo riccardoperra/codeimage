@@ -33,7 +33,7 @@ export const listBoxPanel = style([
     maxHeight: '250px',
     paddingTop: themeVars.spacing['1'],
     overflow: 'auto',
-    backgroundColor: themeVars.dynamicColors.listBoxPanelBackground,
+    backgroundColor: themeVars.dynamicColors.listBox.panelBackground,
     borderRadius: themeVars.borderRadius.lg,
     boxShadow: themeVars.boxShadow.lg,
     zIndex: 100,
@@ -58,18 +58,19 @@ export const listBoxOption = recipe({
     position: 'relative',
     padding: `${themeVars.spacing['2']}`,
     borderRadius: themeVars.borderRadius.lg,
-    color: themeVars.dynamicColors.listBoxTextColor,
+    color: themeVars.dynamicColors.listBox.textColor,
     ':hover': {
-      backgroundColor: themeVars.dynamicColors.listBoxHoverBackgroundColor,
+      backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
     },
   },
   variants: {
     active: {
       true: {
-        backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
-        color: themeVars.dynamicColors.listBoxActiveTextColor,
+        backgroundColor: themeVars.dynamicColors.listBox.activeBackgroundColor,
+        color: themeVars.dynamicColors.listBox.activeTextColor,
         ':hover': {
-          backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
+          backgroundColor:
+            themeVars.dynamicColors.listBox.activeBackgroundColor,
         },
       },
     },

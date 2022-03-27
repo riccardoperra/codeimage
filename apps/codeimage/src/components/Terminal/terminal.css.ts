@@ -171,24 +171,24 @@ export const tabHintDropdownItemContent = style({
   alignItems: 'center',
   padding: `0 ${themeVars.spacing['3']}`,
   borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
-  color: themeVars.dynamicColors.listBoxTextColor,
+  color: themeVars.dynamicColors.listBox.textColor,
   whiteSpace: 'nowrap',
   cursor: 'pointer',
   vars: {
     ['--highlight-color']: 'rgb(112, 182, 246, 0.25)',
   },
   ':hover': {
-    backgroundColor: themeVars.dynamicColors.listBoxHoverBackgroundColor,
-    color: themeVars.dynamicColors.listBoxActiveTextColor,
+    backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
+    color: themeVars.dynamicColors.listBox.activeTextColor,
   },
   selectors: {
     ['[active] &']: {
-      backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
-      color: themeVars.dynamicColors.listBoxActiveTextColor,
+      backgroundColor: themeVars.dynamicColors.listBox.activeBackgroundColor,
+      color: themeVars.dynamicColors.listBox.activeTextColor,
     },
     ['[aria-selected=true] &']: {
-      backgroundColor: themeVars.dynamicColors.listBoxActiveBackgroundColor,
-      color: themeVars.dynamicColors.listBoxActiveTextColor,
+      backgroundColor: themeVars.dynamicColors.listBox.activeBackgroundColor,
+      color: themeVars.dynamicColors.listBox.activeTextColor,
     },
   },
 });

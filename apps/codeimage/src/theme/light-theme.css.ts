@@ -39,14 +39,17 @@ export const lightThemeCss = createTheme(colors, {
     },
   },
 
+  listBox: {
+    panelBackground: themeVars.backgroundColor.white,
+    activeBackgroundColor: themeVars.backgroundColor.blue['500'],
+    hoverBackgroundColor: themeVars.backgroundColor.gray['100'],
+    textColor: themeVars.backgroundColor.gray['800'],
+    activeTextColor: themeVars.backgroundColor.white,
+  },
+
   menuBackground: themeVars.backgroundColor.white,
   resizeLineBackgroundColor: themeVars.backgroundColor.gray['600'],
   resizeLineBadgeBackgroundColor: themeVars.backgroundColor.gray['700'],
-  listBoxPanelBackground: themeVars.backgroundColor.white,
-  listBoxActiveBackgroundColor: themeVars.backgroundColor.blue['500'],
-  listBoxHoverBackgroundColor: themeVars.backgroundColor.gray['100'],
-  listBoxTextColor: themeVars.backgroundColor.gray['800'],
-  listBoxActiveTextColor: themeVars.backgroundColor.white,
   scrollBarBackgroundColor: themeVars.backgroundColor.gray['400'],
   scrollBarHoverBackgroundColor: themeVars.backgroundColor.gray['500'],
   bottomBarBackgroundColor: themeVars.backgroundColor.white,
