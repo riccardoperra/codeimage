@@ -59,6 +59,12 @@ CodeImage front-end app currently relies on these technologies:
 
 ## Contributions
 
+> :warning: **Read this before contributing**
+
+When contributing, it's better to first discuss the change you wish to make via issue or discussion, or any other method with the owners of this repository before making a change.
+
+Until the end of [solid hackathon](https://hack.solidjs.com/) voting ends phase, pull request must target the [next](https://github.com/riccardoperra/codeimage/tree/next) branch
+
 See the [CONTRIBUTING.md](/CONTRIBUTING.md) guide for more details.
 
 ## License
