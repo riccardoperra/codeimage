@@ -12,11 +12,11 @@ import {
   terminal$,
 } from '@codeimage/store/terminal';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import sidebarLocale from '../../i18n/sidebar';
+import {AppLocaleEntries} from '../../i18n';
 
 export const WindowStyleForm = () => {
   const terminal = fromObservableObject(terminal$);
-  const [t] = useI18n<typeof sidebarLocale>();
+  const [t] = useI18n<AppLocaleEntries>();
 
   return (
     <>
@@ -30,8 +30,8 @@ export const WindowStyleForm = () => {
             value={terminal.showHeader}
             onChange={setShowHeader}
             items={[
-              {label: 'Yes', value: true},
-              {label: 'No', value: false},
+              {label: t('common.yes'), value: true},
+              {label: t('common.no'), value: false},
             ]}
           />
         </TwoColumnPanelRow>
@@ -56,8 +56,8 @@ export const WindowStyleForm = () => {
               value={terminal.accentVisible}
               onChange={setAccentVisible}
               items={[
-                {label: 'Yes', value: true},
-                {label: 'No', value: false},
+                {label: t('common.yes'), value: true},
+                {label: t('common.no'), value: false},
               ]}
             />
           </TwoColumnPanelRow>
@@ -71,8 +71,8 @@ export const WindowStyleForm = () => {
             value={terminal.showWatermark}
             onChange={setShowWatermark}
             items={[
-              {label: 'Show', value: true},
-              {label: 'Hide', value: false},
+              {label: t('common.show'), value: true},
+              {label: t('common.hide'), value: false},
             ]}
           />
         </TwoColumnPanelRow>

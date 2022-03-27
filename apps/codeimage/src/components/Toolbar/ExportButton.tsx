@@ -157,10 +157,11 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
 
   const [fileName, setFileName] = createSignal<string>('');
 
-  const modeItems: SegmentedFieldItem<ExportMode>[] = [
-    {label: t('export.shareMode'), value: ExportMode.share},
-    {label: t('export.exportMode'), value: ExportMode.export},
-  ];
+  const modeItems = () =>
+    [
+      {label: t('export.shareMode'), value: ExportMode.share},
+      {label: t('export.exportMode'), value: ExportMode.export},
+    ] as SegmentedFieldItem<ExportMode>[];
 
   const extensionItems: SegmentedFieldItem<ExportExtension>[] = [
     {label: 'PNG', value: ExportExtension.png},
@@ -184,7 +185,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                 <SegmentedField
                   value={mode()}
                   onChange={setMode}
-                  items={modeItems}
+                  items={modeItems()}
                 />
                 <Show when={mode() === 'share'}>
                   <Box marginTop={'1'}>

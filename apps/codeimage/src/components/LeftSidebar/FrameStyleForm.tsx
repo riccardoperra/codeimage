@@ -12,11 +12,13 @@ import {
 } from '@codeimage/store/frame';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {useI18n} from '@codeimage/locale';
-import sidebarLocale from '../../i18n/sidebar';
 import {setPadding} from '../../state/frame';
+import {appEnvironment} from '../../core/configuration';
+import {AppLocaleEntries} from '../../i18n';
 
 export const FrameStyleForm = () => {
-  const [t] = useI18n<typeof sidebarLocale>();
+  const [t] = useI18n<AppLocaleEntries>();
+  const {editorPadding} = appEnvironment;
   const frame = fromObservableObject(frame$);
 
   return (
@@ -30,12 +32,10 @@ export const FrameStyleForm = () => {
             size={'xs'}
             value={frame.padding}
             onChange={setPadding}
-            items={[
-              {label: '16', value: 16},
-              {label: '32', value: 32},
-              {label: '64', value: 64},
-              {label: '128', value: 128},
-            ]}
+            items={editorPadding.map(padding => ({
+              label: padding.toString(),
+              value: padding,
+            }))}
           />
         </TwoColumnPanelRow>
       </PanelRow>
@@ -48,8 +48,8 @@ export const FrameStyleForm = () => {
             value={frame.visible}
             onChange={setVisibility}
             items={[
-              {label: 'Yes', value: true},
-              {label: 'No', value: false},
+              {label: t('common.yes'), value: true},
+              {label: t('common.no'), value: false},
             ]}
           />
         </TwoColumnPanelRow>

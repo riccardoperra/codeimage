@@ -10,6 +10,8 @@ module.exports = {
         'theme',
         'config',
         'locale',
+        // Only using changeset
+        'changeset',
         // Must be used for ci only or deploy commit
         'release',
       ],
