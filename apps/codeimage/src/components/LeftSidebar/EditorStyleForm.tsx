@@ -17,13 +17,13 @@ import {useModality} from '../../core/hooks/isMobile';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {from} from 'solid-js';
 import {map} from 'rxjs';
-import sidebarLocale from '../../i18n/sidebar';
+import {AppLocaleEntries} from '../../i18n';
 
 export const EditorStyleForm = () => {
   const {languages, fonts} = appEnvironment;
   const editor = fromObservableObject(editor$);
   const modality = useModality();
-  const [t] = useI18n<typeof sidebarLocale>();
+  const [t] = useI18n<AppLocaleEntries>();
 
   const font = from(font$);
 
@@ -67,8 +67,8 @@ export const EditorStyleForm = () => {
             value={editor.showLineNumbers}
             onChange={setShowLineNumbers}
             items={[
-              {label: 'Show', value: true},
-              {label: 'Hide', value: false},
+              {label: t('common.show'), value: true},
+              {label: t('common.hide'), value: false},
             ]}
           />
         </TwoColumnPanelRow>

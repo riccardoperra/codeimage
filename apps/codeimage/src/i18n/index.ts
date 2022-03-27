@@ -5,6 +5,10 @@ export const locale = {
     common: {
       close: 'Chiudi',
       confirm: 'Conferma',
+      yes: 'Si',
+      no: 'No',
+      show: 'Mostra',
+      hide: 'Nascondi',
     },
     locales: {
       it: 'Italiano',
@@ -65,6 +69,10 @@ export const locale = {
     common: {
       close: 'Close',
       confirm: 'Confirm',
+      yes: 'Yes',
+      no: 'No',
+      show: 'Show',
+      hide: 'Hide',
     },
     locales: {
       it: 'Italian',
@@ -121,6 +129,10 @@ export const locale = {
     common: {
       close: 'Schließen',
       confirm: 'Bestätigen Sie',
+      yes: 'Ja',
+      no: 'Nein',
+      show: 'Anzeigen',
+      hide: 'Verstecken',
     },
     locales: {
       it: 'Italienisch',
