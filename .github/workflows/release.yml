@@ -29,7 +29,7 @@ jobs:
         uses: changesets/action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish
-        if: steps.changesets.outputs.hasChangesets == 'false'
-        run: echo "publish" # add prod release
+        with:
+          version: pnpm changeset:pr
+          title: "chore(release): version packages"
+          commit: 'chore(release): version packages'
