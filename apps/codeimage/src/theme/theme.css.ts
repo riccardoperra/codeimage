@@ -22,14 +22,21 @@ export const colors = createThemeContract({
     labelTextHintColor: null,
   },
 
-  buttonBackgroundPrimaryColor: null,
-  buttonBackgroundPrimaryActive: null,
-  buttonBackgroundPrimaryHover: null,
-  buttonTextPrimaryColor: null,
-  buttonBackgroundColor: null,
-  buttonBackgroundActive: null,
-  buttonBackgroundHover: null,
-  buttonTextColor: null,
+  button: {
+    base: {
+      backgroundColor: null,
+      activeColor: null,
+      hoverColor: null,
+      textColor: null,
+    },
+    primary: {
+      backgroundColor: null,
+      activeColor: null,
+      hoverColor: null,
+      textColor: null,
+    },
+  },
+
   menuBackground: null,
   resizeLineBackgroundColor: null,
   resizeLineBadgeBackgroundColor: null,

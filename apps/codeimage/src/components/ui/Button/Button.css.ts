@@ -86,28 +86,29 @@ export const buttonVariant = recipe({
       primary: {
         vars: {
           [backgroundColorVar]:
-            themeVars.dynamicColors.buttonBackgroundPrimaryColor,
-          [colorVar]: themeVars.dynamicColors.buttonTextPrimaryColor,
+            themeVars.dynamicColors.button.primary.backgroundColor,
+          [colorVar]: themeVars.dynamicColors.button.primary.textColor,
         },
         selectors: {
           '&:not(:disabled):hover': {
             vars: {
               [backgroundColorVar]:
-                themeVars.dynamicColors.buttonBackgroundPrimaryHover,
+                themeVars.dynamicColors.button.primary.hoverColor,
             },
           },
         },
       },
       secondary: {
         vars: {
-          [backgroundColorVar]: themeVars.dynamicColors.buttonBackgroundColor,
-          [colorVar]: themeVars.dynamicColors.buttonTextColor,
+          [backgroundColorVar]:
+            themeVars.dynamicColors.button.base.backgroundColor,
+          [colorVar]: themeVars.dynamicColors.button.base.textColor,
         },
         selectors: {
           '&:hover:not(:disabled)': {
             vars: {
               [backgroundColorVar]:
-                themeVars.dynamicColors.buttonBackgroundHover,
+                themeVars.dynamicColors.button.base.hoverColor,
             },
           },
         },

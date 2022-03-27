@@ -24,14 +24,21 @@ export const lightThemeCss = createTheme(colors, {
     accentColor: themeVars.backgroundColor.white,
   },
 
-  buttonBackgroundColor: themeVars.backgroundColor.gray['300'],
-  buttonBackgroundActive: themeVars.backgroundColor.gray['500'],
-  buttonBackgroundHover: themeVars.backgroundColor.gray['400'],
-  buttonTextColor: themeVars.backgroundColor.gray['800'],
-  buttonBackgroundPrimaryColor: themeVars.backgroundColor.blue['500'],
-  buttonBackgroundPrimaryActive: themeVars.backgroundColor.blue['700'],
-  buttonBackgroundPrimaryHover: themeVars.backgroundColor.blue['600'],
-  buttonTextPrimaryColor: themeVars.backgroundColor.white,
+  button: {
+    base: {
+      backgroundColor: themeVars.backgroundColor.gray['300'],
+      activeColor: themeVars.backgroundColor.gray['500'],
+      hoverColor: themeVars.backgroundColor.gray['400'],
+      textColor: themeVars.backgroundColor.gray['800'],
+    },
+    primary: {
+      backgroundColor: themeVars.backgroundColor.blue['500'],
+      activeColor: themeVars.backgroundColor.blue['700'],
+      hoverColor: themeVars.backgroundColor.blue['600'],
+      textColor: themeVars.backgroundColor.white,
+    },
+  },
+
   menuBackground: themeVars.backgroundColor.white,
   resizeLineBackgroundColor: themeVars.backgroundColor.gray['600'],
   resizeLineBadgeBackgroundColor: themeVars.backgroundColor.gray['700'],
