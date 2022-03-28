@@ -5,7 +5,7 @@ import {button} from '../Button/Button.css';
 export const dropdownPanel = style({
   overflow: 'hidden',
   borderRadius: themeVars.borderRadius.lg,
-  backgroundColor: themeVars.dynamicColors.menuBackground,
+  backgroundColor: themeVars.dynamicColors.listBox.panelBackground,
   display: 'flex',
   flexDirection: 'column',
   width: '260px',
@@ -14,7 +14,7 @@ export const dropdownPanel = style({
 
 export const dropdownMenuPanel = style({
   boxShadow: themeVars.boxShadow.md,
-  backgroundColor: themeVars.dynamicColors.menuBackground,
+  backgroundColor: themeVars.dynamicColors.listBox.panelBackground,
   display: 'flex',
   flexDirection: 'row',
   overflow: 'hidden',

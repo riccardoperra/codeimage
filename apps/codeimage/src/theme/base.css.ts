@@ -10,7 +10,7 @@ export const scrollbar = style({
     backgroundColor: 'transparent',
   },
   '::-webkit-scrollbar-thumb': {
-    backgroundColor: themeVars.dynamicColors.scrollBarBackgroundColor,
+    backgroundColor: themeVars.dynamicColors.scrollBar.backgroundColor,
     borderRadius: themeVars.borderRadius.full,
     border: '6px solid transparent',
     backgroundClip: 'content-box',
@@ -19,7 +19,7 @@ export const scrollbar = style({
 
   selectors: {
     '&::-webkit-scrollbar-thumb:hover': {
-      backgroundColor: themeVars.dynamicColors.scrollBarHoverBackgroundColor,
+      backgroundColor: themeVars.dynamicColors.scrollBar.hoverBackgroundColor,
     },
   },
 });

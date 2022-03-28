@@ -5,8 +5,8 @@ export const toast = style({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  backgroundColor: themeVars.dynamicColors.snackbarBackgroundColor,
-  color: themeVars.dynamicColors.snackbarTextColor,
+  backgroundColor: themeVars.dynamicColors.snackbar.backgroundColor,
+  color: themeVars.dynamicColors.snackbar.textColor,
   borderRadius: themeVars.borderRadius.xl,
   padding: themeVars.spacing['3'],
 });

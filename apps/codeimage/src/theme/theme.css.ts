@@ -54,16 +54,24 @@ export const colors = createThemeContract({
     panelBackgroundColor: null,
   },
 
-  menuBackground: null,
+  scrollBar: {
+    backgroundColor: null,
+    hoverBackgroundColor: null,
+  },
+
+  snackbar: {
+    backgroundColor: null,
+    textColor: null,
+  },
+
+  bottomBar: {
+    backgroundColor: null,
+    textColor: null,
+  },
+
   resizeLineBackgroundColor: null,
   resizeLineBadgeBackgroundColor: null,
-  scrollBarBackgroundColor: null,
-  scrollBarHoverBackgroundColor: null,
-  bottomBarBackgroundColor: null,
-  bottomBarTextColor: null,
   emptySquareBackgroundColor: null,
-  snackbarBackgroundColor: null,
-  snackbarTextColor: null,
   frameDragControlBackgroundColor: null,
   shortcutKeyBackgroundColor: null,
 } as const);

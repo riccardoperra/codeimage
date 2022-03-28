@@ -18,7 +18,7 @@ export const lightThemeCss = createTheme(colors, {
   input: {
     backgroundColor: '#f3f3f3',
     borderColor: 'transparent',
-    textColor: '#333333ó',
+    textColor: '#333333',
     labelTextColor: themeVars.backgroundColor.gray['800'],
     labelTextHintColor: themeVars.backgroundColor.gray['700'],
     accentColor: themeVars.backgroundColor.white,
@@ -56,16 +56,23 @@ export const lightThemeCss = createTheme(colors, {
     panelTextColor: themeVars.backgroundColor.gray['800'],
   },
 
-  menuBackground: themeVars.backgroundColor.white,
+  scrollBar: {
+    backgroundColor: themeVars.backgroundColor.gray['400'],
+    hoverBackgroundColor: themeVars.backgroundColor.gray['500'],
+  },
+
+  snackbar: {
+    backgroundColor: '#1a1a1a',
+    textColor: themeVars.backgroundColor.white,
+  },
+
+  bottomBar: {
+    backgroundColor: themeVars.backgroundColor.white,
+    textColor: themeVars.textColor.gray['700'],
+  },
   resizeLineBackgroundColor: themeVars.backgroundColor.gray['600'],
   resizeLineBadgeBackgroundColor: themeVars.backgroundColor.gray['700'],
-  scrollBarBackgroundColor: themeVars.backgroundColor.gray['400'],
-  scrollBarHoverBackgroundColor: themeVars.backgroundColor.gray['500'],
-  bottomBarBackgroundColor: themeVars.backgroundColor.white,
-  bottomBarTextColor: themeVars.textColor.gray['700'],
   emptySquareBackgroundColor: themeVars.backgroundColor.gray['300'],
-  snackbarBackgroundColor: '#1a1a1a',
-  snackbarTextColor: themeVars.backgroundColor.white,
   frameDragControlBackgroundColor: themeVars.backgroundColor.gray['800'],
   shortcutKeyBackgroundColor: '#f3f3f3',
 });
