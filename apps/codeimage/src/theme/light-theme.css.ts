@@ -4,48 +4,75 @@ import {themeVars} from './global.css';
 
 export const lightThemeCss = createTheme(colors, {
   primary: themeVars.backgroundColor.blue['500'],
-  panelBackground: themeVars.backgroundColor.white,
-  panelTextColor: themeVars.backgroundColor.black,
   background: themeVars.backgroundColor.gray['100'],
   baseText: themeVars.textColor.gray['700'],
   descriptionTextColor: themeVars.backgroundColor.gray['700'],
   secondary: themeVars.backgroundColor.gray['200'],
   divider: themeVars.backgroundColor.gray['300'],
-  inputBackgroundColor: '#f3f3f3',
-  inputBorderColor: 'transparent',
-  inputTextColor: '#333333',
-  inputLabelTextColor: themeVars.backgroundColor.gray['800'],
-  inputLabelTextHintColor: themeVars.backgroundColor.gray['700'],
-  inputAccentColor: themeVars.backgroundColor.white,
-  buttonBackgroundColor: themeVars.backgroundColor.gray['300'],
-  buttonBackgroundActive: themeVars.backgroundColor.gray['500'],
-  buttonBackgroundHover: themeVars.backgroundColor.gray['400'],
-  buttonTextColor: themeVars.backgroundColor.gray['800'],
-  buttonBackgroundPrimaryColor: themeVars.backgroundColor.blue['500'],
-  buttonBackgroundPrimaryActive: themeVars.backgroundColor.blue['700'],
-  buttonBackgroundPrimaryHover: themeVars.backgroundColor.blue['600'],
-  buttonTextPrimaryColor: themeVars.backgroundColor.white,
-  menuBackground: themeVars.backgroundColor.white,
+
+  panel: {
+    background: themeVars.backgroundColor.white,
+    textColor: themeVars.backgroundColor.black,
+  },
+
+  input: {
+    backgroundColor: '#f3f3f3',
+    borderColor: 'transparent',
+    textColor: '#333333',
+    labelTextColor: themeVars.backgroundColor.gray['800'],
+    labelTextHintColor: themeVars.backgroundColor.gray['700'],
+    accentColor: themeVars.backgroundColor.white,
+  },
+
+  button: {
+    base: {
+      backgroundColor: themeVars.backgroundColor.gray['300'],
+      activeColor: themeVars.backgroundColor.gray['500'],
+      hoverColor: themeVars.backgroundColor.gray['400'],
+      textColor: themeVars.backgroundColor.gray['800'],
+    },
+    primary: {
+      backgroundColor: themeVars.backgroundColor.blue['500'],
+      activeColor: themeVars.backgroundColor.blue['700'],
+      hoverColor: themeVars.backgroundColor.blue['600'],
+      textColor: themeVars.backgroundColor.white,
+    },
+  },
+
+  listBox: {
+    panelBackground: themeVars.backgroundColor.white,
+    activeBackgroundColor: themeVars.backgroundColor.blue['500'],
+    hoverBackgroundColor: themeVars.backgroundColor.gray['100'],
+    textColor: themeVars.backgroundColor.gray['800'],
+    activeTextColor: themeVars.backgroundColor.white,
+  },
+
+  dialog: {
+    overlayBackgroundColor: 'rgba(0,0,0,.4)',
+    titleTextColor: themeVars.backgroundColor.gray['800'],
+    titleBorderColor: themeVars.borderColor.default,
+    panelShadow: themeVars.boxShadow.lg,
+    panelBackgroundColor: themeVars.backgroundColor.white,
+    panelTextColor: themeVars.backgroundColor.gray['800'],
+  },
+
+  scrollBar: {
+    backgroundColor: themeVars.backgroundColor.gray['400'],
+    hoverBackgroundColor: themeVars.backgroundColor.gray['500'],
+  },
+
+  snackbar: {
+    backgroundColor: '#1a1a1a',
+    textColor: themeVars.backgroundColor.white,
+  },
+
+  bottomBar: {
+    backgroundColor: themeVars.backgroundColor.white,
+    textColor: themeVars.textColor.gray['700'],
+  },
   resizeLineBackgroundColor: themeVars.backgroundColor.gray['600'],
   resizeLineBadgeBackgroundColor: themeVars.backgroundColor.gray['700'],
-  listBoxPanelBackground: themeVars.backgroundColor.white,
-  listBoxActiveBackgroundColor: themeVars.backgroundColor.blue['500'],
-  listBoxHoverBackgroundColor: themeVars.backgroundColor.gray['100'],
-  listBoxTextColor: themeVars.backgroundColor.gray['800'],
-  listBoxActiveTextColor: themeVars.backgroundColor.white,
-  scrollBarBackgroundColor: themeVars.backgroundColor.gray['400'],
-  scrollBarHoverBackgroundColor: themeVars.backgroundColor.gray['500'],
-  bottomBarBackgroundColor: themeVars.backgroundColor.white,
-  bottomBarTextColor: themeVars.textColor.gray['700'],
   emptySquareBackgroundColor: themeVars.backgroundColor.gray['300'],
-  snackbarBackgroundColor: '#1a1a1a',
-  snackbarTextColor: themeVars.backgroundColor.white,
   frameDragControlBackgroundColor: themeVars.backgroundColor.gray['800'],
-  dialogOverlayBackgroundColor: 'rgba(0,0,0,.4)',
-  dialogTitleTextColor: themeVars.backgroundColor.gray['800'],
-  dialogTitleBorderColor: themeVars.borderColor.default,
-  dialogPanelShadow: themeVars.boxShadow.lg,
-  dialogPanelBackgroundColor: themeVars.backgroundColor.white,
-  dialogPanelTextColor: themeVars.backgroundColor.gray['800'],
   shortcutKeyBackgroundColor: '#f3f3f3',
 });

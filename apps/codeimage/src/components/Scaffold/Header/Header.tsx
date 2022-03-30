@@ -1,17 +1,14 @@
 import * as styles from './Header.css';
-import {Button} from '../../ui/Button/Button';
+import {Button} from '../../../ui/Button/Button';
 import {sprinkles} from '../../../theme/sprinkles.css';
-import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
+import {SvgIcon} from '../../../ui/SvgIcon/SvgIcon';
+import {Box} from '../../../ui/Box/Box';
 
 export const Header = () => {
   return (
     <nav class={styles.header}>
       <div class={styles.content}>
-        <div
-          class={sprinkles({
-            marginLeft: 'auto',
-          })}
-        >
+        <Box marginLeft={'auto'}>
           <Button
             class={sprinkles({
               marginRight: '2',
@@ -47,7 +44,7 @@ export const Header = () => {
             </SvgIcon>
             <span class={sprinkles({marginLeft: '2'})}>Export</span>
           </Button>
-        </div>
+        </Box>
       </div>
     </nav>
   );

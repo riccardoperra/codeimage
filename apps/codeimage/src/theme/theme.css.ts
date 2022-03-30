@@ -4,46 +4,74 @@ export const colors = createThemeContract({
   primary: null,
   secondary: null,
   background: null,
-  panelBackground: null,
-  panelTextColor: null,
   baseText: null,
   descriptionTextColor: null,
   divider: null,
-  inputBackgroundColor: null,
-  inputBorderColor: null,
-  inputTextColor: null,
-  inputLabelTextColor: null,
-  inputLabelTextHintColor: null,
-  inputAccentColor: null,
-  buttonBackgroundPrimaryColor: null,
-  buttonBackgroundPrimaryActive: null,
-  buttonBackgroundPrimaryHover: null,
-  buttonTextPrimaryColor: null,
-  buttonBackgroundColor: null,
-  buttonBackgroundActive: null,
-  buttonBackgroundHover: null,
-  buttonTextColor: null,
-  menuBackground: null,
+
+  panel: {
+    background: null,
+    textColor: null,
+  },
+
+  input: {
+    backgroundColor: null,
+    borderColor: null,
+    textColor: null,
+    accentColor: null,
+    labelTextColor: null,
+    labelTextHintColor: null,
+  },
+
+  button: {
+    base: {
+      backgroundColor: null,
+      activeColor: null,
+      hoverColor: null,
+      textColor: null,
+    },
+    primary: {
+      backgroundColor: null,
+      activeColor: null,
+      hoverColor: null,
+      textColor: null,
+    },
+  },
+
+  listBox: {
+    panelBackground: null,
+    activeBackgroundColor: null,
+    hoverBackgroundColor: null,
+    textColor: null,
+    activeTextColor: null,
+  },
+
+  dialog: {
+    overlayBackgroundColor: null,
+    titleTextColor: null,
+    titleBorderColor: null,
+    panelShadow: null,
+    panelTextColor: null,
+    panelBackgroundColor: null,
+  },
+
+  scrollBar: {
+    backgroundColor: null,
+    hoverBackgroundColor: null,
+  },
+
+  snackbar: {
+    backgroundColor: null,
+    textColor: null,
+  },
+
+  bottomBar: {
+    backgroundColor: null,
+    textColor: null,
+  },
+
   resizeLineBackgroundColor: null,
   resizeLineBadgeBackgroundColor: null,
-  listBoxPanelBackground: null,
-  listBoxActiveBackgroundColor: null,
-  listBoxHoverBackgroundColor: null,
-  listBoxTextColor: null,
-  listBoxActiveTextColor: null,
-  scrollBarBackgroundColor: null,
-  scrollBarHoverBackgroundColor: null,
-  bottomBarBackgroundColor: null,
-  bottomBarTextColor: null,
   emptySquareBackgroundColor: null,
-  snackbarBackgroundColor: null,
-  snackbarTextColor: null,
   frameDragControlBackgroundColor: null,
-  dialogOverlayBackgroundColor: null,
-  dialogTitleTextColor: null,
-  dialogTitleBorderColor: null,
-  dialogPanelShadow: null,
-  dialogPanelTextColor: null,
-  dialogPanelBackgroundColor: null,
   shortcutKeyBackgroundColor: null,
-});
+} as const);

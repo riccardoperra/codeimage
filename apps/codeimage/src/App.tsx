@@ -14,18 +14,18 @@ import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
 import {BottomBar} from './components/BottomBar/BottomBar';
 import {FrameHandler} from './components/Frame/FrameHandler';
-import {EditorSidebar} from './components/LeftSidebar/EditorSidebar';
-import {NotificationHandler} from './components/ui/Toast/SnackbarHost';
+import {NotificationHandler} from './ui/Toast/SnackbarHost';
 import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
-import {PortalHost} from './components/ui/PortalHost/PortalHost';
+import {PortalHost} from './ui/PortalHost/PortalHost';
 import {useTabIcon} from './hooks/use-tab-icon';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
-import {Box} from './components/ui/Box/Box';
+import {Box} from './ui/Box/Box';
 import {fromObservableObject} from './core/hooks/from-observable-object';
 import {initEffects} from '@ngneat/effects';
 import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
 import {uiStore} from './state/ui';
 import {useEffects} from './core/store/use-effect';
+import {EditorSidebar} from './components/PropertyEditor/EditorSidebar';
 
 initEffects();
 
@@ -45,8 +45,9 @@ const App = () => {
     <Scaffold>
       <NotificationHandler />
       <ReloadPrompt />
+
       <Show when={modality === 'full'}>
-        <Sidebar>
+        <Sidebar position={'left'}>
           <EditorSidebar />
         </Sidebar>
       </Show>
@@ -93,13 +94,14 @@ const App = () => {
         <Footer />
       </Canvas>
 
-      {modality === 'mobile' ? (
-        <BottomBar portalHostRef={portalHostRef()} />
-      ) : (
-        <Sidebar>
+      <Show
+        when={modality === 'full'}
+        fallback={<BottomBar portalHostRef={portalHostRef()} />}
+      >
+        <Sidebar position={'right'}>
           <ThemeSwitcher orientation={'vertical'} />
         </Sidebar>
-      )}
+      </Show>
     </Scaffold>
   );
 };

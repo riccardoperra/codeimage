@@ -7,8 +7,8 @@ export const wrapper = style({
   width: '100vw',
   overflow: 'hidden',
   borderTop: `1px solid ${themeVars.dynamicColors.divider}`,
-  backgroundColor: themeVars.dynamicColors.bottomBarBackgroundColor,
-  color: themeVars.dynamicColors.bottomBarTextColor,
+  backgroundColor: themeVars.dynamicColors.bottomBar.backgroundColor,
+  color: themeVars.dynamicColors.bottomBar.textColor,
   display: 'grid',
   alignItems: 'center',
   padding: `0 ${themeVars.spacing['4']}`,
@@ -21,15 +21,15 @@ export const button = style([
   {
     display: 'flex',
     flexDirection: 'column',
-    color: themeVars.dynamicColors.bottomBarTextColor,
+    color: themeVars.dynamicColors.bottomBar.textColor,
   },
 ]);
 
 export const portalWrapper = style({
   position: 'fixed',
   bottom: `calc(${scaffoldVars.toolbarHeight} + env(safe-area-inset-bottom, 20px))`,
-  backgroundColor: themeVars.dynamicColors.panelBackground,
-  color: themeVars.dynamicColors.panelTextColor,
+  backgroundColor: themeVars.dynamicColors.panel.background,
+  color: themeVars.dynamicColors.panel.textColor,
   width: '100%',
   borderTop: `1px solid ${themeVars.dynamicColors.divider}`,
 });

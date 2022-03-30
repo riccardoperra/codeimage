@@ -1,14 +1,14 @@
 import {Popover, PopoverButton} from 'solid-headless';
-import {Button} from '../ui/Button/Button';
+import {Button} from '../../ui/Button/Button';
 import {For} from 'solid-js';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import {offset} from '@floating-ui/dom';
 import {useI18n} from '@codeimage/locale';
-import {DropdownItem} from '../ui/Dropdown/DropdownItem';
-import {DropdownMenu} from '../ui/Dropdown/DropdownMenu';
+import {DropdownItem} from '../../ui/Dropdown/DropdownItem';
+import {DropdownMenu} from '../../ui/Dropdown/DropdownMenu';
 import {AppLocaleEntries} from '../../i18n';
-import {FadeInOutTransition} from '../ui/Transition/Transition';
-import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
+import {FadeInOutTransition} from '../../ui/Transition/Transition';
+import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
 
 interface LanguageSelectorButtonProps {
   locales: readonly string[];

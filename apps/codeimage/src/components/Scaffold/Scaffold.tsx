@@ -2,7 +2,7 @@ import {Component, createEffect, on} from 'solid-js';
 import * as styles from './Scaffold.css';
 import clsx from 'clsx';
 import {lightThemeCss} from '../../theme/light-theme.css';
-import {darkThemeCss} from '../../theme/dark-theme.css';
+import {darkGrayScale, darkThemeCss} from '../../theme/dark-theme.css';
 import {backgroundColorVar} from '../../theme/variables.css';
 import {assignInlineVars, setElementVars} from '@vanilla-extract/dynamic';
 import {dynamicFullHeight} from '../../theme/base.css';
@@ -17,8 +17,7 @@ export const Scaffold: Component = props => {
       const scheme = document.querySelector('meta[name="theme-color"]');
       const body = document.body;
       if (scheme) {
-        // TODO: add palette
-        const color = theme === 'dark' ? '#111111' : '#FFFFFF';
+        const color = theme === 'dark' ? darkGrayScale.gray1 : '#FFFFFF';
         scheme.setAttribute('content', color);
         setElementVars(body, {
           [backgroundColorVar]: color,

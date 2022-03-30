@@ -10,7 +10,7 @@ import {getScaleByRatio} from '../../core/helpers/getScale';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createRef} from '../../core/helpers/create-ref';
-import {Box} from '../ui/Box/Box';
+import {Box} from '../../ui/Box/Box';
 import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
 import {useModality} from '../../core/hooks/isMobile';
 
@@ -34,12 +34,7 @@ export function FrameHandler(
     on([handlerRef], ([frame]) => {
       if (modality === 'mobile') {
         setTimeout(() => {
-          const scale = getScaleByRatio(
-            // TODO: should be a ref (?)
-            frame?.parentElement,
-            frame,
-            1 + ratio,
-          );
+          const scale = getScaleByRatio(frame?.parentElement, frame, 1 + ratio);
           props.onScaleChange(scale);
           setCanvasScale(scale);
         });

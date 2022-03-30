@@ -4,10 +4,10 @@ import * as baseStyles from '../terminal.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import {backgroundColorVar} from '../../../theme/variables.css';
-import {Box} from '../../ui/Box/Box';
+import {Box} from '../../../ui/Box/Box';
 import {TabIcon} from '../TabIcon';
 import {TabName} from '../TabName';
-import {Text} from '../../ui/Text/Text';
+import {Text} from '../../../ui/Text/Text';
 
 export const MacOsTerminal: Component<BaseTerminalProps> = props => {
   return (

@@ -1,5 +1,5 @@
 import * as styles from './WindowsTerminal.css';
-import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
+import {SvgIcon} from '../../../ui/SvgIcon/SvgIcon';
 
 export const WindowsTerminalControls = () => (
   <div class={styles.headerIconRow}>

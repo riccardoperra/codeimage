@@ -1,33 +1,36 @@
 import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
-import {Box} from '../ui/Box/Box';
-import {Button} from '../ui/Button/Button';
+import {Box} from '../../ui/Box/Box';
+import {Button} from '../../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
-import {SvgIcon} from '../ui/SvgIcon/SvgIcon';
-import {Dialog, DialogProps} from '../ui/Dialog/Dialog';
+import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
+import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';
 import {
   SegmentedField,
   SegmentedFieldItem,
-} from '../ui/SegmentedField/SegmentedField';
-import {FlexField} from '../ui/Field/FlexField';
-import {TextField} from '../ui/TextField/TextField';
-import {FieldLabel, FieldLabelHint} from '../ui/Label/FieldLabel';
-import {DialogPanelContent, DialogPanelFooter} from '../ui/Dialog/DialogPanel';
+} from '../../ui/SegmentedField/SegmentedField';
+import {FlexField} from '../../ui/Field/FlexField';
+import {TextField} from '../../ui/TextField/TextField';
+import {FieldLabel, FieldLabelHint} from '../../ui/Label/FieldLabel';
+import {
+  DialogPanelContent,
+  DialogPanelFooter,
+} from '../../ui/Dialog/DialogPanel';
 import {
   ExportExtension,
   ExportMode,
   useExportImage,
 } from '../../hooks/use-export-image';
-import {notificationStore} from '../ui/Toast/SnackbarHost';
+import {notificationStore} from '../../ui/Toast/SnackbarHost';
 import {appEnvironment} from '../../core/configuration';
-import {RangeField} from '../ui/RangeField/RangeField';
-import {Link} from '../ui/Link/Link';
+import {RangeField} from '../../ui/RangeField/RangeField';
+import {Link} from '../../ui/Link/Link';
 import {HintIcon} from '../Icons/Hint';
 import {ExclamationIcon} from '../Icons/Exclamation';
-import {HStack, VStack} from '../ui/Box/Stack';
+import {HStack, VStack} from '../../ui/Box/Stack';
 import {useModality} from '../../core/hooks/isMobile';
 import {Transition} from 'solid-headless';
-import {PortalHostInjector} from '../ui/PortalHost/PortalHost';
+import {PortalHostInjector} from '../../ui/PortalHost/PortalHost';
 import {useHotkey} from '../../hooks/use-hotkey';
 
 interface ExportButtonProps {
@@ -142,7 +145,6 @@ export interface ExportDialogProps extends DialogProps {
 
 export function ExportDialog(props: DialogProps & ExportDialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  // TODO: hook
   const {support} = appEnvironment;
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
   const [extension, setExtension] = createSignal<ExportExtension>(
@@ -304,7 +306,6 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               type="submit"
               variant={'solid'}
               onClick={() => {
-                // TODO: @bad
                 props.onClose?.();
                 props.onConfirm({
                   type: mode(),

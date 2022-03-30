@@ -1,6 +1,6 @@
 import {style} from '@vanilla-extract/css';
 import {themeVars} from '../../theme/global.css';
-import {fontSize} from '../ui/Text/Text.css';
+import {fontSize} from '../../ui/Text/Text.css';
 
 export const list = style({
   display: 'grid',
@@ -16,13 +16,13 @@ export const list = style({
 export const overlay = style({
   position: 'fixed',
   inset: 0,
-  backgroundColor: themeVars.dynamicColors.dialogOverlayBackgroundColor,
+  backgroundColor: themeVars.dynamicColors.dialog.overlayBackgroundColor,
 });
 
 export const keyLabel = style([
   fontSize.sm,
   {
-    color: themeVars.dynamicColors.buttonTextColor,
+    color: themeVars.dynamicColors.button.base.textColor,
   },
 ]);
 
@@ -40,7 +40,7 @@ export const key = style([
     padding: '4px 8px',
     borderRadius: themeVars.borderRadius.md,
     backgroundColor: themeVars.dynamicColors.shortcutKeyBackgroundColor,
-    color: themeVars.dynamicColors.buttonTextColor,
+    color: themeVars.dynamicColors.button.base.textColor,
     fontFamily: 'inherit',
   },
 ]);

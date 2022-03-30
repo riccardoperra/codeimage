@@ -6,7 +6,7 @@ import {
   For,
   Show,
 } from 'solid-js';
-import {Text} from '../ui/Text/Text';
+import {Text} from '../../ui/Text/Text';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';
@@ -15,10 +15,10 @@ import {editor$} from '@codeimage/store/editor';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
 import {appEnvironment} from '../../core/configuration';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {Box} from '../ui/Box/Box';
-import {FlexField} from '../ui/Field/FlexField';
-import {TextField} from '../ui/TextField/TextField';
-import {FadeInOutWithScaleTransition} from '../ui/Transition/Transition';
+import {Box} from '../../ui/Box/Box';
+import {FlexField} from '../../ui/Field/FlexField';
+import {TextField} from '../../ui/TextField/TextField';
+import {FadeInOutWithScaleTransition} from '../../ui/Transition/Transition';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {useModality} from '../../core/hooks/isMobile';

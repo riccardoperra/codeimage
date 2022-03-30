@@ -2,51 +2,94 @@ import {createTheme} from '@vanilla-extract/css';
 import {colors} from './theme.css';
 import {themeVars} from './global.css';
 
+export const darkGrayScale = {
+  gray1: '#111111',
+  gray2: '#1d1d1d',
+  gray3: '#232323',
+  gray4: '#282828',
+  gray5: '#2B2B2B',
+  gray6: '#333333',
+  gray7: '#3e3e3e',
+  gray8: '#505050',
+  gray9: '#707070',
+  gray10: '#7e7e7e',
+  gray11: '#a0a0a0',
+  gray12: '#ededed',
+  white: '#ffffff',
+} as const;
+
 export const darkThemeCss = createTheme(colors, {
   primary: themeVars.backgroundColor.blue['400'],
-  panelBackground: '#111111',
-  panelTextColor: themeVars.backgroundColor.white,
-  background: '#181818',
+  background: darkGrayScale.gray2,
   baseText: themeVars.textColor.gray['800'],
   descriptionTextColor: '#999999',
   secondary: themeVars.backgroundColor.gray['200'],
   divider: '#252525',
-  inputBackgroundColor: '#2B2B2B',
-  inputBorderColor: '#252525',
-  inputTextColor: '#EEEEEE',
-  inputLabelTextColor: '#FFFFFF',
-  inputLabelTextHintColor: '#999999',
-  inputAccentColor: '#555555',
-  buttonBackgroundColor: '#333333',
-  buttonBackgroundActive: '#232323',
-  buttonBackgroundHover: '#282828',
-  buttonTextColor: themeVars.backgroundColor.white,
-  buttonBackgroundPrimaryColor: themeVars.backgroundColor.blue['500'],
-  buttonBackgroundPrimaryHover: themeVars.backgroundColor.blue['600'],
-  buttonBackgroundPrimaryActive: themeVars.backgroundColor.blue['700'],
-  buttonTextPrimaryColor: themeVars.backgroundColor.white,
-  menuBackground: '#2b2b2b',
+
+  panel: {
+    background: darkGrayScale.gray1,
+    textColor: darkGrayScale.white,
+  },
+
+  input: {
+    backgroundColor: darkGrayScale.gray3,
+    borderColor: 'transparent',
+    textColor: darkGrayScale.gray12,
+    labelTextColor: darkGrayScale.gray12,
+    labelTextHintColor: darkGrayScale.gray11,
+    accentColor: darkGrayScale.gray8,
+  },
+
+  button: {
+    base: {
+      backgroundColor: darkGrayScale.gray6,
+      activeColor: darkGrayScale.gray8,
+      hoverColor: darkGrayScale.gray7,
+      textColor: darkGrayScale.gray12,
+    },
+    primary: {
+      backgroundColor: themeVars.backgroundColor.blue['500'],
+      activeColor: themeVars.backgroundColor.blue['700'],
+      hoverColor: themeVars.backgroundColor.blue['600'],
+      textColor: themeVars.backgroundColor.white,
+    },
+  },
+
+  listBox: {
+    panelBackground: darkGrayScale.gray4, // 5
+    activeBackgroundColor: themeVars.backgroundColor.blue['700'], // 500
+    hoverBackgroundColor: darkGrayScale.gray6,
+    textColor: darkGrayScale.gray12,
+    activeTextColor: darkGrayScale.gray12,
+  },
+
+  dialog: {
+    overlayBackgroundColor: 'rgba(0,0,0,.7)',
+    panelBackgroundColor: darkGrayScale.gray2, // 2,
+    panelShadow: `0 10px 30px 0 rgba(0,0,0,.15), inset 0 0 0 1px ${darkGrayScale.gray3}`,
+    panelTextColor: darkGrayScale.gray12,
+    titleTextColor: darkGrayScale.gray12,
+    titleBorderColor: darkGrayScale.gray5,
+  },
+
+  scrollBar: {
+    backgroundColor: darkGrayScale.gray8,
+    hoverBackgroundColor: darkGrayScale.gray6,
+  },
+
+  snackbar: {
+    backgroundColor: darkGrayScale.gray11,
+    textColor: darkGrayScale.gray6,
+  },
+
+  bottomBar: {
+    backgroundColor: darkGrayScale.gray5,
+    textColor: darkGrayScale.gray11,
+  },
+
   resizeLineBackgroundColor: 'hsla(0,0%,100%,.25)',
   resizeLineBadgeBackgroundColor: '#161515',
-  listBoxPanelBackground: '#2B2B2B',
-  listBoxActiveBackgroundColor: themeVars.backgroundColor.blue['500'],
-  listBoxHoverBackgroundColor: `#232323`,
-  listBoxTextColor: themeVars.backgroundColor.white,
-  listBoxActiveTextColor: themeVars.backgroundColor.white,
-  scrollBarBackgroundColor: '#555555',
-  scrollBarHoverBackgroundColor: '#333333',
-  bottomBarBackgroundColor: '#2B2B2B',
-  bottomBarTextColor: '#EEEEEE',
   emptySquareBackgroundColor: '#252525',
-  snackbarBackgroundColor: '#EEEEEE',
-  snackbarTextColor: themeVars.textColor.gray['800'],
   frameDragControlBackgroundColor: `#EEEEEE`,
-  dialogOverlayBackgroundColor: 'rgba(0,0,0,.7)',
-  dialogPanelBackgroundColor: '#1d1d1d',
-  dialogPanelShadow:
-    '0px 10px 30px 0px rgba(0,0,0,.15),inset 0 0 0 1px #222222',
-  dialogTitleTextColor: '#EEEEEE',
-  dialogTitleBorderColor: '#2B2B2B',
-  dialogPanelTextColor: '#EEEEEE',
   shortcutKeyBackgroundColor: '#555555',
 });
