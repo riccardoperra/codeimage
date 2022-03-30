@@ -12,6 +12,8 @@
 ![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)
 ![License](https://img.shields.io/github/license/riccardoperra/codeimage)
 
+![CodeImage showcase](https://i.imgur.com/9mrRo7n.gif)
+
 ## Introduction
 
 CodeImage is the newest tool to help developers to create beautiful screenshots of their code, providing several
@@ -35,8 +37,13 @@ $ pnpm libs:build
 
 3. Run @codeimage/app
 
+- Development mode: 
 ```bash
-$ pnpm app:dev // Dev mode
+$ pnpm app:dev
+```
+
+- Production mode (no reload, serve static files): 
+```bash
 $ pnpm build:prod && pnpm serve --filter=@codeimage/app
 ```
 
