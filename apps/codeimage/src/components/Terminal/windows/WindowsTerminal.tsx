@@ -1,6 +1,5 @@
 import {Component, Show} from 'solid-js';
 import * as baseStyles from '../terminal.css';
-import {sprinkles} from '../../../theme/sprinkles.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './WindowsTerminal.css';
 import {Box} from '../../../ui/Box/Box';
