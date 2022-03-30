@@ -52,7 +52,6 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
   });
 
   const label = () => {
-    // TODO: multiple select needed?
     return (
       props.items.find(item => item.value === props.value)?.label ??
       'No items selected'

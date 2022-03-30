@@ -2,7 +2,7 @@ import {createTheme} from '@vanilla-extract/css';
 import {colors} from './theme.css';
 import {themeVars} from './global.css';
 
-const grayScale = {
+export const darkGrayScale = {
   gray1: '#111111',
   gray2: '#1d1d1d',
   gray3: '#232323',
@@ -20,32 +20,32 @@ const grayScale = {
 
 export const darkThemeCss = createTheme(colors, {
   primary: themeVars.backgroundColor.blue['400'],
-  background: grayScale.gray2,
+  background: darkGrayScale.gray2,
   baseText: themeVars.textColor.gray['800'],
   descriptionTextColor: '#999999',
   secondary: themeVars.backgroundColor.gray['200'],
   divider: '#252525',
 
   panel: {
-    background: grayScale.gray1,
-    textColor: grayScale.white,
+    background: darkGrayScale.gray1,
+    textColor: darkGrayScale.white,
   },
 
   input: {
-    backgroundColor: grayScale.gray3,
+    backgroundColor: darkGrayScale.gray3,
     borderColor: 'transparent',
-    textColor: grayScale.gray12,
-    labelTextColor: grayScale.gray12,
-    labelTextHintColor: grayScale.gray11,
-    accentColor: grayScale.gray8,
+    textColor: darkGrayScale.gray12,
+    labelTextColor: darkGrayScale.gray12,
+    labelTextHintColor: darkGrayScale.gray11,
+    accentColor: darkGrayScale.gray8,
   },
 
   button: {
     base: {
-      backgroundColor: grayScale.gray6,
-      activeColor: grayScale.gray8,
-      hoverColor: grayScale.gray7,
-      textColor: grayScale.gray12,
+      backgroundColor: darkGrayScale.gray6,
+      activeColor: darkGrayScale.gray8,
+      hoverColor: darkGrayScale.gray7,
+      textColor: darkGrayScale.gray12,
     },
     primary: {
       backgroundColor: themeVars.backgroundColor.blue['500'],
@@ -56,35 +56,35 @@ export const darkThemeCss = createTheme(colors, {
   },
 
   listBox: {
-    panelBackground: grayScale.gray4, // 5
+    panelBackground: darkGrayScale.gray4, // 5
     activeBackgroundColor: themeVars.backgroundColor.blue['700'], // 500
-    hoverBackgroundColor: grayScale.gray6,
-    textColor: grayScale.gray12,
-    activeTextColor: grayScale.gray12,
+    hoverBackgroundColor: darkGrayScale.gray6,
+    textColor: darkGrayScale.gray12,
+    activeTextColor: darkGrayScale.gray12,
   },
 
   dialog: {
     overlayBackgroundColor: 'rgba(0,0,0,.7)',
-    panelBackgroundColor: grayScale.gray2, // 2,
-    panelShadow: `0 10px 30px 0 rgba(0,0,0,.15), inset 0 0 0 1px ${grayScale.gray3}`,
-    panelTextColor: grayScale.gray12,
-    titleTextColor: grayScale.gray12,
-    titleBorderColor: grayScale.gray5,
+    panelBackgroundColor: darkGrayScale.gray2, // 2,
+    panelShadow: `0 10px 30px 0 rgba(0,0,0,.15), inset 0 0 0 1px ${darkGrayScale.gray3}`,
+    panelTextColor: darkGrayScale.gray12,
+    titleTextColor: darkGrayScale.gray12,
+    titleBorderColor: darkGrayScale.gray5,
   },
 
   scrollBar: {
-    backgroundColor: grayScale.gray8,
-    hoverBackgroundColor: grayScale.gray6,
+    backgroundColor: darkGrayScale.gray8,
+    hoverBackgroundColor: darkGrayScale.gray6,
   },
 
   snackbar: {
-    backgroundColor: grayScale.gray11,
-    textColor: grayScale.gray6,
+    backgroundColor: darkGrayScale.gray11,
+    textColor: darkGrayScale.gray6,
   },
 
   bottomBar: {
-    backgroundColor: grayScale.gray5,
-    textColor: grayScale.gray11,
+    backgroundColor: darkGrayScale.gray5,
+    textColor: darkGrayScale.gray11,
   },
 
   resizeLineBackgroundColor: 'hsla(0,0%,100%,.25)',

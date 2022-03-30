@@ -142,7 +142,6 @@ export interface ExportDialogProps extends DialogProps {
 
 export function ExportDialog(props: DialogProps & ExportDialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  // TODO: hook
   const {support} = appEnvironment;
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
   const [extension, setExtension] = createSignal<ExportExtension>(
@@ -304,7 +303,6 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               type="submit"
               variant={'solid'}
               onClick={() => {
-                // TODO: @bad
                 props.onClose?.();
                 props.onConfirm({
                   type: mode(),

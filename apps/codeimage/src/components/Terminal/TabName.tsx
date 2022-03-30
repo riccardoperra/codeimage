@@ -38,7 +38,6 @@ export function TabName(props: TabNameProps): JSXElement {
   });
 
   const matchedIcons = createMemo(() => {
-    // TODO: remove this when icons will not be duplicated in configuration.
     const uniqueIcons = icons.filter(
       (icon, index, self) =>
         index === self.findIndex(i => i.extension === icon.extension),

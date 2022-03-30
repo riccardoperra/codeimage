@@ -17,7 +17,6 @@ interface EditorState {
   focused: boolean;
 }
 
-// TODO: should be loaded onMount, initial state cannot use this configuration
 const initialState: EditorState = {
   code: appEnvironment.defaultState.editor.code,
   languageId: appEnvironment.defaultState.editor.languageId,

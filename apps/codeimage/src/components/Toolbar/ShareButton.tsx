@@ -13,7 +13,6 @@ interface ShareButtonProps {
 
 export const ShareButton: Component<ShareButtonProps> = props => {
   const computedProps = mergeProps({showLabel: false, props});
-  // TODO: hook
   const {support} = appEnvironment;
 
   const [t] = useI18n<AppLocaleEntries>();

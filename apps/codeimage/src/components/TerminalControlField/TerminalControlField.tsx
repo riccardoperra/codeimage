@@ -15,7 +15,6 @@ interface TerminalControlFieldProps {
 export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
-  // TODO: add lazy loading?
   const {terminalThemes} = appEnvironment;
   const terminalState = fromObservableObject(terminal$);
 

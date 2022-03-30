@@ -34,12 +34,7 @@ export function FrameHandler(
     on([handlerRef], ([frame]) => {
       if (modality === 'mobile') {
         setTimeout(() => {
-          const scale = getScaleByRatio(
-            // TODO: should be a ref (?)
-            frame?.parentElement,
-            frame,
-            1 + ratio,
-          );
+          const scale = getScaleByRatio(frame?.parentElement, frame, 1 + ratio);
           props.onScaleChange(scale);
           setCanvasScale(scale);
         });
