@@ -1,5 +1,5 @@
-![CodeImage logo](./codeimage-logo-white.png#gh-dark-mode-only)
-![CodeImage logo](./codeimage-logo-black.png#gh-light-mode-only)
+![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/codeimage-logo-white.png#gh-dark-mode-only)
+![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/codeimage-logo-white.png#gh-light-mode-only)
 
 > Create elegant code screenshots of your source code.
 
