@@ -48,9 +48,9 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
 
       <Show when={props.children}>
         <div class={baseStyles.content}>
-          <div class={sprinkles({position: 'relative'})}>
+          <Box position={'relative'}>
             <div>{props.children}</div>
-          </div>
+          </Box>
         </div>
       </Show>
     </TerminalHost>
