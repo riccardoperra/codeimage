@@ -5,11 +5,11 @@ import {Portal} from 'solid-js/web';
 import {Component, createSignal, Show} from 'solid-js';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
 import {FadeInOutTransition} from '../../ui/Transition/Transition';
-import {EditorForm} from '../LeftSidebar/EditorForm';
-import {FrameStyleForm} from '../LeftSidebar/FrameStyleForm';
-import {WindowStyleForm} from '../LeftSidebar/WindowStyleForm';
-import {EditorStyleForm} from '../LeftSidebar/EditorStyleForm';
 import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
+import {EditorForm} from '../PropertyEditor/EditorForm';
+import {FrameStyleForm} from '../PropertyEditor/FrameStyleForm';
+import {WindowStyleForm} from '../PropertyEditor/WindowStyleForm';
+import {EditorStyleForm} from '../PropertyEditor/EditorStyleForm';
 
 type Mode = 'themes' | 'style' | 'editor';
 

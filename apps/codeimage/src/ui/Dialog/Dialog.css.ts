@@ -76,7 +76,6 @@ export const panelFooter = style({
   },
 });
 
-// <DialogPanel class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-gray-50 dark:bg-gray-900 shadow-xl rounded-2xl dark:border dark:border-gray-50">
 export const panel = recipe({
   base: {
     display: 'inline-flex',
