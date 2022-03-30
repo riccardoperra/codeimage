@@ -10,4 +10,12 @@
       <image:loc>https://codeimage.dev/assets/codeimage-logo-white.svg</image:loc>
     </image:image>
   </url>
+
+  <url>
+    <loc>https://beta.codeimage.dev/</loc>
+    <lastmod>2022-03-30</lastmod>
+    <image:image>
+      <image:loc>https://beta.codeimage.dev/assets/codeimage-logo-white.svg</image:loc>
+    </image:image>
+  </url>
 </urlset>
