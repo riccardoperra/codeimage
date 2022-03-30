@@ -12,6 +12,8 @@
 ![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)
 ![License](https://img.shields.io/github/license/riccardoperra/codeimage)
 
+![CodeImage preview](https://i.imgur.com/LD2U20M.gif)
+
 ## Introduction
 
 CodeImage is the newest tool to help developers to create beautiful screenshots of their code, providing several
