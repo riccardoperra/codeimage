@@ -1,7 +1,7 @@
 import * as styles from './Toolbar.css';
 import {Component} from 'solid-js';
 import {ThemeToggleButton} from './ThemeToggleButton';
-import {Box} from '../ui/Box/Box';
+import {Box} from '../../ui/Box/Box';
 import {LanguageSelectorButton} from './LanguageSelectorButton';
 import {appEnvironment} from '../../core/configuration';
 import {ExportButton} from './ExportButton';

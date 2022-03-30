@@ -1,9 +1,9 @@
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
+import {SegmentedField} from '../../ui/SegmentedField/SegmentedField';
 import {Show} from 'solid-js';
-import {RangeField} from '../ui/RangeField/RangeField';
-import {ColorPicker} from '../ui/ColorPicker/ColorPicker';
+import {RangeField} from '../../ui/RangeField/RangeField';
+import {ColorPicker} from '../../ui/ColorPicker/ColorPicker';
 import {
   frame$,
   setBackground,

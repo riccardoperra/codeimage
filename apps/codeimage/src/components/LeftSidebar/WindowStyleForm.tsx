@@ -1,6 +1,6 @@
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
+import {SegmentedField} from '../../ui/SegmentedField/SegmentedField';
 import {Show} from 'solid-js';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {useI18n} from '@codeimage/locale';

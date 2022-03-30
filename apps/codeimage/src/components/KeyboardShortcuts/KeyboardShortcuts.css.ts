@@ -1,6 +1,6 @@
 import {style} from '@vanilla-extract/css';
 import {themeVars} from '../../theme/global.css';
-import {fontSize} from '../ui/Text/Text.css';
+import {fontSize} from '../../ui/Text/Text.css';
 
 export const list = style({
   display: 'grid',

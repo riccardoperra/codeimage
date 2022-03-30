@@ -10,7 +10,7 @@ import {getScaleByRatio} from '../../core/helpers/getScale';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createRef} from '../../core/helpers/create-ref';
-import {Box} from '../ui/Box/Box';
+import {Box} from '../../ui/Box/Box';
 import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
 import {useModality} from '../../core/hooks/isMobile';
 

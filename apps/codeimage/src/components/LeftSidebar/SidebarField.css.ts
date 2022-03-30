@@ -1,6 +1,6 @@
 import {style} from '@vanilla-extract/css';
 import {themeVars} from '../../theme/global.css';
-import * as textFieldStyles from '../ui/TextField/TextField.css';
+import * as textFieldStyles from '../../ui/TextField/TextField.css';
 
 export const wrapper = style([
   textFieldStyles.textFieldTheme,

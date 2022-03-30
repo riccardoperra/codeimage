@@ -1,6 +1,6 @@
 import {JSXElement, mergeProps} from 'solid-js';
-import {SvgExternalIcon} from '../ui/SvgIcon/SvgExternalIcon';
-import {Box} from '../ui/Box/Box';
+import {SvgExternalIcon} from '../../ui/SvgIcon/SvgExternalIcon';
+import {Box} from '../../ui/Box/Box';
 import * as styles from './terminal.css';
 import {LanguageIconDefinition} from '@codeimage/config';
 

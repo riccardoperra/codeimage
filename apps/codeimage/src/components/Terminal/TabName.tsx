@@ -1,11 +1,11 @@
 import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
-import {Box} from '../ui/Box/Box';
+import {Box} from '../../ui/Box/Box';
 import * as styles from './terminal.css';
 import {appEnvironment} from '../../core/configuration';
 import {TabIcon} from './TabIcon';
 import {highlight as _highlight} from '../../core/directives/highlight';
-import '../ui/Combobox/InlineCombobox';
-import {InlineCombobox} from '../ui/Combobox/InlineCombobox';
+import '../../ui/Combobox/InlineCombobox';
+import {InlineCombobox} from '../../ui/Combobox/InlineCombobox';
 import createResizeObserver from '@solid-primitives/resize-observer';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 

@@ -1,7 +1,7 @@
 import * as styles from './Footer.css';
-import {Box} from '../ui/Box/Box';
+import {Box} from '../../ui/Box/Box';
 import {appEnvironment} from '../../core/configuration';
-import {Link} from '../ui/Link/Link';
+import {Link} from '../../ui/Link/Link';
 
 export const Footer = () => {
   const {version} = appEnvironment;

@@ -1,8 +1,8 @@
 import * as styles from './Header.css';
-import {Button} from '../../ui/Button/Button';
+import {Button} from '../../../ui/Button/Button';
 import {sprinkles} from '../../../theme/sprinkles.css';
-import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
-import {Box} from '../../ui/Box/Box';
+import {SvgIcon} from '../../../ui/SvgIcon/SvgIcon';
+import {Box} from '../../../ui/Box/Box';
 
 export const Header = () => {
   return (

@@ -2,12 +2,12 @@ import {Component} from 'solid-js';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import {Popover, PopoverButton} from 'solid-headless';
 import {sprinkles} from '../../theme/sprinkles.css';
-import {DropdownMenu} from '../ui/Dropdown/DropdownPanel';
-import {DropdownPortal} from '../ui/Dropdown/DropdownPortal';
+import {DropdownMenu} from '../../ui/Dropdown/DropdownPanel';
+import {DropdownPortal} from '../../ui/Dropdown/DropdownPortal';
 import {ShadowForm} from './ShadowForm';
 import {themeVars} from '../../theme/global.css';
 
-import * as fieldStyles from '../ui/TextField/TextField.css';
+import * as fieldStyles from '../../ui/TextField/TextField.css';
 import clsx from 'clsx';
 
 interface ShadowFieldProps {

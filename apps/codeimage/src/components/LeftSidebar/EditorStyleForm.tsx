@@ -1,8 +1,8 @@
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {Select} from '../ui/Select/Select';
-import {SegmentedField} from '../ui/SegmentedField/SegmentedField';
-import {Text} from '../ui/Text/Text';
+import {Select} from '../../ui/Select/Select';
+import {SegmentedField} from '../../ui/SegmentedField/SegmentedField';
+import {Text} from '../../ui/Text/Text';
 import {useI18n} from '@codeimage/locale';
 import {
   editor$,

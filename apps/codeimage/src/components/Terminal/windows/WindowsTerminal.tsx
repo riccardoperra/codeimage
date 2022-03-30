@@ -3,10 +3,10 @@ import * as baseStyles from '../terminal.css';
 import {sprinkles} from '../../../theme/sprinkles.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './WindowsTerminal.css';
-import {Box} from '../../ui/Box/Box';
+import {Box} from '../../../ui/Box/Box';
 import {WindowsTerminalControls} from './WindowsTerminalControls';
 import {TabIcon} from '../TabIcon';
-import {Text} from '../../ui/Text/Text';
+import {Text} from '../../../ui/Text/Text';
 import {TabName} from '../TabName';
 
 export const WindowsTerminal: Component<BaseTerminalProps> = props => {
