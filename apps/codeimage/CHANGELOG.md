@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.14.2
+
+### Patch Changes
+
+- [#147](https://github.com/riccardoperra/codeimage/pull/147) [`28e6826`](https://github.com/riccardoperra/codeimage/commit/28e6826653020bcc84d12b90be07a75a4f5b0dc3) Thanks [@riccardoperra](https://github.com/riccardoperra)! - refactor: update style tokens
+
 ## 0.14.1
 
 ### Patch Changes
