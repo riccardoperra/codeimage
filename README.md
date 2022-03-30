@@ -37,8 +37,13 @@ $ pnpm libs:build
 
 3. Run @codeimage/app
 
+- Development mode: 
 ```bash
-$ pnpm app:dev // Dev mode
+$ pnpm app:dev
+```
+
+- Production mode (no reload, serve static files): 
+```bash
 $ pnpm build:prod && pnpm serve --filter=@codeimage/app
 ```
 
