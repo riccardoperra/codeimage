@@ -11,6 +11,7 @@ export const sidebar = style([
   sidebarTheme,
   {
     padding: `0px ${sidebarVars.gap} ${sidebarVars.gap}`,
+    overflowY: 'auto',
   },
 ]);
 
