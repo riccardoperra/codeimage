@@ -28,9 +28,8 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
     () => `calc(${segmentWidth()} * ${activeIndex()})`,
   );
 
-  const segmentStyle = createMemo(() =>
-    clsx(useText({size: props.size ?? 'sm'}), styles.segment),
-  );
+  const segmentStyle = () =>
+    clsx(useText({size: props.size ?? 'sm'}), styles.segment);
 
   return (
     <div class={clsx(styles.wrapper)} id={props.id}>
