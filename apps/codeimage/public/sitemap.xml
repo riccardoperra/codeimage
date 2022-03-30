@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!--Url Extract: 1-->
+  <url>
+    <loc>https://codeimage.dev/</loc>
+    <lastmod>2022-03-28</lastmod>
+    <image:image>
+      <image:loc>https://codeimage.dev/assets/codeimage-logo-white.svg</image:loc>
+    </image:image>
+  </url>
+</urlset>
