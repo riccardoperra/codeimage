@@ -1,5 +1,5 @@
+![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/codeimage-logo-black.png#gh-light-mode-only)
 ![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/codeimage-logo-white.png#gh-dark-mode-only)
-![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/codeimage-logo-white.png#gh-light-mode-only)
 
 > Create elegant code screenshots of your source code.
 
@@ -37,12 +37,12 @@ $ pnpm libs:build
 
 3. Run @codeimage/app
 
-- Development mode: 
+- Development mode:
 ```bash
 $ pnpm app:dev
 ```
 
-- Production mode (no reload, serve static files): 
+- Production mode (no reload, serve static files):
 ```bash
 $ pnpm build:prod && pnpm serve --filter=@codeimage/app
 ```
