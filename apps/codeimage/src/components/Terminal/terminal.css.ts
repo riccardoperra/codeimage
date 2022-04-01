@@ -130,7 +130,7 @@ export const tab = recipe({
 export const tabIcon = style({
   display: 'inline-block',
   marginRight: themeVars.spacing['2'],
-  verticalAlign: 'center',
+  verticalAlign: 'middle',
 });
 
 export const watermark = style({

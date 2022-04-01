@@ -1,23 +1,41 @@
 import {EditorView} from '@codemirror/view';
-import {editor$, setCode, setFocus} from '@codeimage/store/editor';
+import {editor$, setFocus} from '@codeimage/store/editor';
 import {appEnvironment} from '../../core/configuration';
-import {createMemo, createResource, Show} from 'solid-js';
+import {
+  batch,
+  createEffect,
+  createMemo,
+  createResource,
+  onCleanup,
+  Show,
+} from 'solid-js';
 import {lineNumbers} from '@codemirror/gutter';
 import {createCustomFontExtension} from './custom-font-extension';
-import {CodeMirror} from 'solid-codemirror';
-import {EDITOR_BASE_SETUP} from '@codeimage/config';
 import clsx from 'clsx';
 import {observeFocusExtension} from './observe-focus-extension';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {focusedEditor$} from '../../state/editor';
+import {focusedEditor$, setCode} from '../../state/editor';
+import {EDITOR_BASE_SETUP} from '@codeimage/config';
+import {ReplaySubject, takeUntil} from 'rxjs';
+import {createCodeMirror} from 'solid-codemirror';
 
 export const CustomEditor = () => {
+  let editorEl!: HTMLDivElement;
+
+  const destroy$ = new ReplaySubject<void>(1);
   const {languages, themes, fonts} = appEnvironment;
   const editor = fromObservableObject(editor$);
 
   const selectedLanguage = createMemo(() =>
     languages.find(language => language.id === editor.languageId),
   );
+
+  const {view, setOptions, setContainer} = createCodeMirror({
+    container: editorEl,
+    onChange: setCode,
+    extensions: [],
+    editable: true,
+  });
 
   const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
     plugin(),
@@ -90,6 +108,51 @@ export const CustomEditor = () => {
     content.removeAttribute('aria-expanded');
   });
 
+  createEffect(() => {
+    batch(() => {
+      setContainer(editorEl);
+    });
+  });
+
+  createEffect(() => {
+    setOptions({
+      value: editor.code,
+    });
+  });
+
+  createEffect(() => {
+    batch(() =>
+      setOptions({
+        extensions: [
+          EDITOR_BASE_SETUP,
+          baseTheme,
+          supportsLineWrap,
+          observeFocusExtension(
+            focused => setFocus(focused),
+            vu => {
+              // ATTENTION: a lot of multiple calls to fix!!
+              focusedEditor$.pipe(takeUntil(destroy$)).subscribe(focused => {
+                if (focused && !vu.view.hasFocus) {
+                  vu.view.focus();
+                }
+              });
+            },
+          ),
+          customFontExtension(),
+          currentLanguage() || [],
+          currentTheme(),
+          editor.showLineNumbers ? lineNumbers() : [],
+        ],
+      }),
+    );
+  });
+
+  onCleanup(() => {
+    view()?.destroy();
+    destroy$.next();
+    destroy$.complete();
+  });
+
   return (
     <Show when={themeConfiguration()}>
       <code
@@ -99,32 +162,7 @@ export const CustomEditor = () => {
         )}
       >
         <div class={externalStylesheet()?.className}>
-          <CodeMirror
-            value={editor.code}
-            onChange={setCode}
-            extensions={[
-              EDITOR_BASE_SETUP,
-              baseTheme,
-              supportsLineWrap,
-              observeFocusExtension(
-                focused => setFocus(focused),
-                vu => {
-                  // ATTENTION: a lot of multiple calls to fix!!
-                  focusedEditor$.subscribe(focused => {
-                    if (focused && !vu.view.hasFocus) {
-                      vu.view.focus();
-                    }
-                  });
-                },
-              ),
-              customFontExtension(),
-              currentLanguage() || [],
-              currentTheme(),
-              editor.showLineNumbers ? lineNumbers() : [],
-            ]}
-            basicSetup={false}
-            editable={true}
-          />
+          <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
         </div>
       </code>
     </Show>
