@@ -117,7 +117,9 @@ export function TabName(props: TabNameProps): JSXElement {
               >
                 <Box class={styles.tabHintDropdownItemContent}>
                   <TabIcon delay={0} content={icon.content} />
-                  <div use:highlight={extension()}>{icon.extension}</div>
+                  <div use:highlight={extension()} class={styles.tabText}>
+                    {icon.extension}
+                  </div>
                 </Box>
               </cmg-combobox-option>
             );

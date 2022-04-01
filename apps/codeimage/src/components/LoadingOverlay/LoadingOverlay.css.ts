@@ -1,4 +1,5 @@
 import {style} from '@vanilla-extract/css';
+import {themeVars} from '../../theme/global.css';
 
 export const overlay = style({
   position: 'absolute',
@@ -8,4 +9,15 @@ export const overlay = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+});
+
+export const loader = style({
+  selectors: {
+    ['[data-theme-mode=dark] &']: {
+      stroke: themeVars.backgroundColor.white,
+    },
+    ['[data-theme-mode=light] &']: {
+      stroke: themeVars.backgroundColor.black,
+    },
+  },
 });
