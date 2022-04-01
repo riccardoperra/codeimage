@@ -51,12 +51,12 @@ $ pnpm build:prod && pnpm serve --filter=@codeimage/app
 
 ✅ Customizable terminal window, editor and frame style \
 ✅ 15+ custom editor themes \
-✅ Supports 10+ languages \
+✅ Supports 10+ programming languages \
 ✅ Dynamic icons based by tab name extension \
 ✅ Uses browser [Web share api](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share) to share your snippets \
 ✅ Mobile supports \
-✅ Light/Dark mode support \
-✅ Open-source
+✅ Multi-language support \
+✅ Light and dark mode support \
 
 // WIP
 
@@ -76,12 +76,12 @@ CodeImage front-end app currently relies on these technologies:
 
 #### Other libraries:
 
-- [material-icon-theme](https://github.com/PKief/vscode-material-icon-theme): Used for custom terminal tabs icons
 - [solid-primitives](https://github.com/solidjs-community/solid-primitives): SolidJS primitives library
+- [solid-use](https://github.com/LXSMNSYC/solid-use): Collection of solid-js utilities
+- [material-icon-theme](https://github.com/PKief/vscode-material-icon-theme): Used for custom terminal tabs icons
 - [@emotion/css](https://github.com/emotion-js/emotion/tree/main/packages/css): CSS Utility - Used for custom codemirror themes
 - [floating-ui](https://github.com/floating-ui/floating-ui/): Utilities for positioning floating elements
-- [Lion](https://github.com/ing-bank/lion): White label web components (used for custom combobox)
-- [solid-use](https://github.com/LXSMNSYC/solid-use): Collection of solid-js utilities
+- [Lion](https://github.com/ing-bank/lion): White label web components in Lit (used for custom combobox)
 
 ## Contributions
 
