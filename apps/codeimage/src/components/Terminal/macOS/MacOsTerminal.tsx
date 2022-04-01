@@ -15,6 +15,7 @@ export const MacOsTerminal: Component<BaseTerminalProps> = props => {
       <Show when={props.showHeader}>
         <div
           class={baseStyles.header}
+          data-theme-mode={props.darkMode ? 'dark' : 'light'}
           data-accent-visible={props.accentVisible}
         >
           <div class={styles.headerIconRow}>

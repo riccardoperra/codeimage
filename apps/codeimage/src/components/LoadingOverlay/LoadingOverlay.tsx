@@ -1,4 +1,5 @@
 import {JSXElement} from 'solid-js';
+import * as styles from './LoadingOverlay.css';
 import {overlay} from './LoadingOverlay.css';
 import {SvgIcon, SvgIconProps} from '../../ui/SvgIcon/SvgIcon';
 
@@ -20,6 +21,7 @@ export function Loader(props: LoaderProps): JSXElement {
       viewBox="0 0 44 44"
       xmlns="http://www.w3.org/2000/svg"
       stroke="#fff"
+      class={styles.loader}
     >
       <g fill="none" fill-rule="evenodd" stroke-width="2">
         <circle cx="22" cy="22" r="1">
