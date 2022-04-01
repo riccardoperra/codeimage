@@ -1,5 +1,14 @@
 # @codeimage/app
 
+## 0.14.3
+
+### Patch Changes
+
+- [#153](https://github.com/riccardoperra/codeimage/pull/153) [`13921c9`](https://github.com/riccardoperra/codeimage/commit/13921c9e166706db8c8f5c6b4fa866f8ef7bafed) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: add history plugin to CodeMirror options
+
+- Updated dependencies [[`13921c9`](https://github.com/riccardoperra/codeimage/commit/13921c9e166706db8c8f5c6b4fa866f8ef7bafed)]:
+  - @codeimage/config@3.4.1
+
 ## 0.14.2
 
 ### Patch Changes
