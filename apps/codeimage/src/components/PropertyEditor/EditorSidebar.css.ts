@@ -12,6 +12,7 @@ export const sidebar = style([
   {
     padding: `0px ${sidebarVars.gap} ${sidebarVars.gap}`,
     overflowY: 'auto',
+    height: '100%',
   },
 ]);
 
