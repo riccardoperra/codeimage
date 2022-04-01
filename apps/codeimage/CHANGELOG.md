@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.14.5
+
+### Patch Changes
+
+- [#157](https://github.com/riccardoperra/codeimage/pull/157) [`5958656`](https://github.com/riccardoperra/codeimage/commit/5958656c656ba211af0d4586a308f2a46bee1f9e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix loader color by terminal theme
+
 ## 0.14.4
 
 ### Patch Changes
