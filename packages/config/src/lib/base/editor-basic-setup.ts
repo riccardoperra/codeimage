@@ -13,6 +13,7 @@ import {autocompletion, completionKeymap} from '@codemirror/autocomplete';
 import {commentKeymap} from '@codemirror/comment';
 import {rectangularSelection} from '@codemirror/rectangular-selection';
 import {defaultHighlightStyle} from '@codemirror/highlight';
+import {history, historyKeymap} from '@codemirror/history';
 
 export const EDITOR_BASE_SETUP: Extension = [
   highlightSpecialChars(),
@@ -25,10 +26,12 @@ export const EDITOR_BASE_SETUP: Extension = [
   closeBrackets(),
   autocompletion(),
   rectangularSelection(),
+  history(),
   keymap.of([
     ...closeBracketsKeymap,
     ...defaultKeymap,
     ...commentKeymap,
     ...completionKeymap,
+    ...historyKeymap,
   ]),
 ];

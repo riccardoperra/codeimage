@@ -38,7 +38,6 @@
     "@codemirror/matchbrackets": "^0.19.4",
     "@codemirror/rectangular-selection": "^0.19.1",
     "@codemirror/search": "0.19.9",
-    "material-icon-theme": "4.14.1",
     "@codemirror/highlight": "^0.19.7",
     "@codemirror/lang-cpp": "^0.19.1",
     "@codemirror/lang-css": "^0.19.3",
@@ -52,6 +51,7 @@
     "@codemirror/lang-rust": "^0.19.2",
     "@codemirror/lang-sql": "^0.19.4",
     "@codemirror/state": "^0.19.9",
+    "material-icon-theme": "4.14.1",
     "@codemirror/view": "^0.19.47",
     "solid-js": "^1.3.10"
   },
