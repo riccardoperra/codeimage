@@ -127,11 +127,19 @@ export const tab = recipe({
   },
 });
 
-export const tabIcon = style({
-  display: 'inline-block',
-  marginRight: themeVars.spacing['2'],
-  verticalAlign: 'middle',
-});
+export const tabIcon = style([
+  {
+    display: 'inline-block',
+    marginRight: themeVars.spacing['2'],
+    verticalAlign: 'middle',
+  },
+]);
+
+export const tabText = style([
+  {
+    display: 'inline-block',
+  },
+]);
 
 export const watermark = style({
   position: 'absolute',
@@ -179,7 +187,7 @@ export const tabHintDropdownItemContent = style({
   },
   ':hover': {
     backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
-    color: themeVars.dynamicColors.listBox.activeTextColor,
+    color: themeVars.dynamicColors.listBox.textColor,
   },
   selectors: {
     ['[active] &']: {
