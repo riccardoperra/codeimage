@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.14.4
+
+### Patch Changes
+
+- [#155](https://github.com/riccardoperra/codeimage/pull/155) [`efb7118`](https://github.com/riccardoperra/codeimage/commit/efb7118221839a8d270d08c25fa408bfa1c75179) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: update codeimage preview assets
+
 ## 0.14.3
 
 ### Patch Changes
