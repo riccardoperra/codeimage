@@ -1,5 +1,5 @@
 import {createSignal, JSX, Show} from 'solid-js';
-import {Toast, Transition} from 'solid-headless';
+import {Toast} from 'solid-headless';
 import {notificationStore, SnackbarData} from './SnackbarHost';
 import * as styles from './Snackbar.css';
 import {Dynamic} from 'solid-js/web';
@@ -7,6 +7,7 @@ import {Text} from '../Text/Text';
 import {Box} from '../Box/Box';
 import {Button} from '../Button/Button';
 import {SvgIcon} from '../SvgIcon/SvgIcon';
+import {FadeInOutWithScaleTransition} from '../Transition/Transition';
 
 export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
   const [isOpen, setIsOpen] = createSignal(true);
@@ -16,15 +17,8 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
   }
 
   return (
-    <Transition
+    <FadeInOutWithScaleTransition
       show={isOpen()}
-      class="relative transition bg-opacity-25"
-      enter="ease-out duration-300"
-      enterFrom="opacity-0 scale-50"
-      enterTo="opacity-100 scale-100"
-      leave="ease-in duration-200"
-      leaveFrom="opacity-100 scale-100"
-      leaveTo="opacity-0 scale-50"
       afterLeave={() => notificationStore.remove(props.id)}
     >
       <Toast class={styles.toast}>
@@ -69,6 +63,6 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
           </Box>
         </Show>
       </Toast>
-    </Transition>
+    </FadeInOutWithScaleTransition>
   );
 }

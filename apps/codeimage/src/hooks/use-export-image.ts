@@ -4,6 +4,7 @@ import {EXPORT_EXCLUDE} from '../core/directives/exportExclude';
 import download from 'downloadjs';
 import {Resource} from 'solid-js';
 import {Options as HtmlToImageExportOptions} from 'html-to-image/es/options';
+import {IS_IOS} from '../core/constants/browser';
 
 export const enum ExportMode {
   export = 'export',
@@ -102,12 +103,32 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
       };
 
       if (navigator.canShare(data)) {
-        await navigator.share(data).catch((e: Error) => {
-          if (e.name === 'AbortError') {
-            return null;
-          }
-          throw e;
-        });
+        const share = () =>
+          navigator.share(data).catch((error: Error) => {
+            if (error.name === 'AbortError') {
+              return null;
+            }
+            throw error;
+          });
+
+        /**
+         * ATTENTION: this is a partial workaround to fix this issue of "Save image" for iOS 15:
+         * {@link https://bugs.webkit.org/show_bug.cgi?id=231995}
+         *
+         * The Promise.race() allows to update the pending state of the promise
+         * after 3s since the share() will never be resolved if the
+         * user press on "Save image" button.
+         *
+         * This fix is partial since if the promise of navigator.share() is not resolved,
+         * even if the pending is present, an error by the platform/userAgent of iOS will be thrown
+         *
+         * */
+        if (IS_IOS) {
+          await Promise.race([share(), new Promise(r => setTimeout(r, 3000))]);
+          return blob;
+        } else {
+          await share();
+        }
       }
 
       return blob;

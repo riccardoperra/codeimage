@@ -3,7 +3,6 @@ import {Box} from '../../ui/Box/Box';
 import {Button} from '../../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
-import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
 import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';
 import {
   SegmentedField,
@@ -32,6 +31,7 @@ import {useModality} from '../../core/hooks/isMobile';
 import {Transition} from 'solid-headless';
 import {PortalHostInjector} from '../../ui/PortalHost/PortalHost';
 import {useHotkey} from '../../hooks/use-hotkey';
+import {DownloadIcon} from '../Icons/Download';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -82,14 +82,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         disabled={data.loading}
         onClick={() => openModal()}
       >
-        <SvgIcon fill="none" viewBox="0 0 24 24" stroke="white">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width={2}
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-          />
-        </SvgIcon>
+        <DownloadIcon />
 
         <Box as={'span'} marginLeft={'2'}>
           {label()}

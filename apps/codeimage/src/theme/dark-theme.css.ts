@@ -78,7 +78,7 @@ export const darkThemeCss = createTheme(colors, {
   },
 
   snackbar: {
-    backgroundColor: darkGrayScale.gray11,
+    backgroundColor: darkGrayScale.gray12,
     textColor: darkGrayScale.gray6,
   },
 
