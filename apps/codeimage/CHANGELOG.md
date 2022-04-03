@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.14.6
+
+### Patch Changes
+
+- [#160](https://github.com/riccardoperra/codeimage/pull/160) [`a5e0e30`](https://github.com/riccardoperra/codeimage/commit/a5e0e3001c2ede73813e08da3fc10aa105ded617) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix export button stuck loading state on iOS
+
 ## 0.14.5
 
 ### Patch Changes
