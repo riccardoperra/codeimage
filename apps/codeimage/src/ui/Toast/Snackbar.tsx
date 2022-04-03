@@ -1,5 +1,5 @@
 import {createSignal, JSX, Show} from 'solid-js';
-import {Toast, Transition} from 'solid-headless';
+import {Toast} from 'solid-headless';
 import {notificationStore, SnackbarData} from './SnackbarHost';
 import * as styles from './Snackbar.css';
 import {Dynamic} from 'solid-js/web';

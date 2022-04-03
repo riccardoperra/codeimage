@@ -3,7 +3,6 @@ import {Box} from '../../ui/Box/Box';
 import {Button} from '../../ui/Button/Button';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
-import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
 import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';
 import {
   SegmentedField,
