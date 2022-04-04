@@ -58,8 +58,6 @@ $ pnpm build:prod && pnpm serve --filter=@codeimage/app
 ✅ Multi-language support \
 ✅ Light and dark mode support \
 
-// WIP
-
 ## Usage
 
 // WIP
@@ -70,8 +68,8 @@ CodeImage front-end app currently relies on these technologies:
 
 - [SolidJS](https://github.com/solidjs/solid): UI framework
 - [CodeMirror6](https://codemirror.net/6/): Code Editor
-- [vanilla-extract](https://github.com/seek-oss/vanilla-extract): Design system
-- [solid-headless](https://github.com/LXSMNSYC/solid-headless): SolidJS headless component library
+- [vanilla-extract](https://github.com/seek-oss/vanilla-extract): Design system and app styling
+- [solid-headless](https://github.com/LXSMNSYC/solid-headless): Headless WAI-ARIA widgets for SolidJS
 - [@ngneat/elf](https://github.com/ngneat/elf) + [RxJS](https://github.com/ReactiveX/rxjs): Reactive state management
 
 #### Other libraries:
@@ -79,7 +77,7 @@ CodeImage front-end app currently relies on these technologies:
 - [solid-primitives](https://github.com/solidjs-community/solid-primitives): SolidJS primitives library
 - [solid-use](https://github.com/LXSMNSYC/solid-use): Collection of solid-js utilities
 - [material-icon-theme](https://github.com/PKief/vscode-material-icon-theme): Used for custom terminal tabs icons
-- [@emotion/css](https://github.com/emotion-js/emotion/tree/main/packages/css): CSS Utility - Used for custom codemirror themes
+- [@emotion/css](https://github.com/emotion-js/emotion/tree/main/packages/css): CSS Utility used for custom codemirror themes
 - [floating-ui](https://github.com/floating-ui/floating-ui/): Utilities for positioning floating elements
 - [Lion](https://github.com/ing-bank/lion): White label web components in Lit (used for custom combobox)
 
