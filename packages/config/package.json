@@ -3,11 +3,11 @@
   "version": "3.4.1",
   "module": "./dist/config.es.js",
   "source": "./src/public-api.ts",
-  "types": "./dist/src/public-api.d.ts",
+  "types": "./dist/public-api.d.ts",
   "exports": {
     ".": {
       "import": "./dist/config.es.js",
-      "types": "./dist/src/public-api.d.ts"
+      "types": "./dist/public-api.d.ts"
     }
   },
   "scripts": {
@@ -66,8 +66,8 @@
   "devDependencies": {
     "rimraf": "^3.0.2",
     "typescript": "^4.6.2",
-    "vite": "^2.8.6",
-    "vite-plugin-dts": "^0.9.9",
+    "vite": "^2.9.1",
+    "vite-plugin-dts": "^1.0.5",
     "vite-plugin-solid": "^2.2.6"
   }
 }
