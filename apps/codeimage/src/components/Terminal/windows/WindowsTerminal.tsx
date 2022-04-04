@@ -7,6 +7,9 @@ import {WindowsTerminalControls} from './WindowsTerminalControls';
 import {TabIcon} from '../TabIcon';
 import {Text} from '../../../ui/Text/Text';
 import {TabName} from '../TabName';
+import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
+
+export const exportExclude = _exportExclude;
 
 export const WindowsTerminal: Component<BaseTerminalProps> = props => {
   return (
@@ -18,9 +21,9 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
           data-accent-visible={props.accentVisible}
         >
           <Show when={props.showTab}>
-            <Box
+            <div
+              use:exportExclude={!props.tabName?.length}
               class={baseStyles.tab({accent: props.accentVisible})}
-              marginLeft={'6'}
             >
               <Show when={props.tabIcon}>
                 {icon => <TabIcon content={icon} />}
@@ -38,7 +41,7 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
                   onValueChange={value => props.onTabChange?.(value)}
                 />
               </Show>
-            </Box>
+            </div>
           </Show>
 
           <WindowsTerminalControls />

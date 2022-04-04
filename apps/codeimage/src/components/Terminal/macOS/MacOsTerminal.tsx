@@ -8,6 +8,9 @@ import {Box} from '../../../ui/Box/Box';
 import {TabIcon} from '../TabIcon';
 import {TabName} from '../TabName';
 import {Text} from '../../../ui/Text/Text';
+import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
+
+export const exportExclude = _exportExclude;
 
 export const MacOsTerminal: Component<BaseTerminalProps> = props => {
   return (
@@ -40,7 +43,10 @@ export const MacOsTerminal: Component<BaseTerminalProps> = props => {
           </div>
 
           <Show when={props.showTab}>
-            <div class={baseStyles.tab({accent: props.accentVisible})}>
+            <div
+              use:exportExclude={!props.tabName?.length}
+              class={baseStyles.tab({accent: props.accentVisible})}
+            >
               <Show when={props.tabIcon}>
                 {icon => <TabIcon content={icon} />}
               </Show>

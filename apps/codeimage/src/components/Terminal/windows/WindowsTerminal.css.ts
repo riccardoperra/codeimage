@@ -7,16 +7,17 @@ export const [theme, vars] = createTheme({
 });
 
 export const headerIconRow = style({
+  display: 'flex',
+  marginLeft: 'auto',
+  marginTop: 'auto',
+  marginBottom: 'auto',
+  justifyContent: 'flex-end',
+  flex: 1,
+  paddingInlineStart: themeVars.spacing['4'],
+  paddingInlineEnd: themeVars.spacing['4'],
+  columnGap: themeVars.spacing['5'],
+
   selectors: {
-    [`${header} &`]: {
-      display: 'flex',
-      marginLeft: 'auto',
-      marginTop: 'auto',
-      marginBottom: 'auto',
-      paddingInlineStart: themeVars.spacing['4'],
-      paddingInlineEnd: themeVars.spacing['4'],
-      columnGap: themeVars.spacing['5'],
-    },
     [`${header}[data-theme-mode=light] &`]: {
       vars: {
         [vars.iconFill]: themeVars.backgroundColor.black,
