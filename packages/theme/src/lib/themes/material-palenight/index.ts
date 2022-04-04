@@ -1,9 +1,16 @@
 import {createPrismJsTheme} from '../../prismjs/prismjs-theme-factory';
 import {materialPalenight} from './material-palenight';
+import {styledAutocomplete} from '../../plugins/autocomplete-style';
 
 export const materialPalenightTheme = createPrismJsTheme({
   id: 'materialPalenight',
-  editorTheme: [],
+  editorTheme: [
+    styledAutocomplete({
+      background: '#1f212e',
+      selectedBackground: '#181923',
+      selectedColor: '#FFCB6B',
+    }),
+  ],
   externalStylesheet: materialPalenight,
   properties: {
     darkMode: true,
