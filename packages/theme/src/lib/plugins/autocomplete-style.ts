@@ -13,7 +13,6 @@ export function styledAutocomplete(options: StyledAutoCompleteOptions) {
       border: options.border ? `1px solid ${options.border}` : 'none',
       backgroundColor: options.background,
       borderRadius: '6px',
-      paddingLeft: '4px',
     },
 
     '.cm-tooltip .cm-tooltip-arrow:before': {
@@ -24,7 +23,11 @@ export function styledAutocomplete(options: StyledAutoCompleteOptions) {
       borderTopColor: options.background,
       borderBottomColor: options.background,
     },
+
     '.cm-tooltip-autocomplete': {
+      '& > ul > li': {
+        padding: '6px !important',
+      },
       '& > ul > li[aria-selected]': {
         backgroundColor: options.selectedBackground,
         color: options.selectedColor ?? 'inherit',
