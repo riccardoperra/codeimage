@@ -86,7 +86,6 @@ export const tab = recipe({
     borderRadius: `${themeVars.borderRadius.md} ${themeVars.borderRadius.md} 0 0`,
     position: 'relative',
     lineHeight: 1,
-    marginLeft: themeVars.margin['6'],
   },
   variants: {
     accent: {

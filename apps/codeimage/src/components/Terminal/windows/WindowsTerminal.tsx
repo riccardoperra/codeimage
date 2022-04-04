@@ -8,6 +8,8 @@ import {TabIcon} from '../TabIcon';
 import {Text} from '../../../ui/Text/Text';
 import {TabName} from '../TabName';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
+import clsx from 'clsx';
+import {sprinkles} from '../../../theme/sprinkles.css';
 
 export const exportExclude = _exportExclude;
 
@@ -23,7 +25,10 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
           <Show when={props.showTab}>
             <div
               use:exportExclude={!props.tabName?.length}
-              class={baseStyles.tab({accent: props.accentVisible})}
+              class={clsx(
+                baseStyles.tab({accent: props.accentVisible}),
+                sprinkles({marginLeft: '6'}),
+              )}
             >
               <Show when={props.tabIcon}>
                 {icon => <TabIcon content={icon} />}
