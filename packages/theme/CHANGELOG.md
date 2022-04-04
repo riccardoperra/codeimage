@@ -1,5 +1,13 @@
 # @codeimage/theme
 
+## 0.5.3
+
+### Patch Changes
+
+- [#168](https://github.com/riccardoperra/codeimage/pull/168) [`7012ef8`](https://github.com/riccardoperra/codeimage/commit/7012ef8db63c6ae956c79bb09d652f474f6f4ee7) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: add editor auto-complete theme style
+
+* [#165](https://github.com/riccardoperra/codeimage/pull/165) [`fa30bbe`](https://github.com/riccardoperra/codeimage/commit/fa30bbeaf83ab528973cbb23db97113b61a3f87e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - build: update vite dependency
+
 ## 0.5.2
 
 ### Patch Changes
