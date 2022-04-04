@@ -1,5 +1,21 @@
 # @codeimage/app
 
+## 0.14.7
+
+### Patch Changes
+
+- [#166](https://github.com/riccardoperra/codeimage/pull/166) [`0b61982`](https://github.com/riccardoperra/codeimage/commit/0b6198282e0be5bb32df10cefcc731e83b98c58c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix mac os terminal style margin
+
+* [#165](https://github.com/riccardoperra/codeimage/pull/165) [`fa30bbe`](https://github.com/riccardoperra/codeimage/commit/fa30bbeaf83ab528973cbb23db97113b61a3f87e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - build: update vite dependency
+
+- [#163](https://github.com/riccardoperra/codeimage/pull/163) [`bf3cbf4`](https://github.com/riccardoperra/codeimage/commit/bf3cbf4f8698cf810ff4c7b15b1bf0f7f2b8ebee) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: hidden tab accent and placeholder on export when empty
+
+- Updated dependencies [[`7012ef8`](https://github.com/riccardoperra/codeimage/commit/7012ef8db63c6ae956c79bb09d652f474f6f4ee7), [`fa30bbe`](https://github.com/riccardoperra/codeimage/commit/fa30bbeaf83ab528973cbb23db97113b61a3f87e)]:
+  - @codeimage/theme@0.5.3
+  - @codeimage/config@3.4.2
+  - @codeimage/locale@0.4.5
+  - @codeimage/ui@0.4.5
+
 ## 0.14.6
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @codeimage/theme
 
+## 3.4.2
+
+### Patch Changes
+
+- [#165](https://github.com/riccardoperra/codeimage/pull/165) [`fa30bbe`](https://github.com/riccardoperra/codeimage/commit/fa30bbeaf83ab528973cbb23db97113b61a3f87e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - build: update vite dependency
+
+- Updated dependencies [[`7012ef8`](https://github.com/riccardoperra/codeimage/commit/7012ef8db63c6ae956c79bb09d652f474f6f4ee7), [`fa30bbe`](https://github.com/riccardoperra/codeimage/commit/fa30bbeaf83ab528973cbb23db97113b61a3f87e)]:
+  - @codeimage/theme@0.5.3
+
 ## 3.4.1
 
 ### Patch Changes

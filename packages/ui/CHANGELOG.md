@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.4.5
+
+### Patch Changes
+
+- [#165](https://github.com/riccardoperra/codeimage/pull/165) [`fa30bbe`](https://github.com/riccardoperra/codeimage/commit/fa30bbeaf83ab528973cbb23db97113b61a3f87e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - build: update vite dependency
+
 ## 0.4.4
 
 ### Patch Changes
