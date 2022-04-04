@@ -1,18 +1,32 @@
+import {createEffect, on} from 'solid-js';
+
 export const EXPORT_EXCLUDE: unique symbol = Symbol('__export_exclude');
 
-export function exportExclude(el: HTMLElement): void {
+export function exportExclude(
+  el: HTMLElement & {[EXPORT_EXCLUDE]?: boolean},
+  exclude: () => boolean,
+): void {
   Object.defineProperty(el, EXPORT_EXCLUDE, {
     value: true,
-    configurable: false,
+    configurable: true,
     enumerable: true,
+    writable: true,
   });
+
+  createEffect(
+    on(exclude, exclude => {
+      if (el.hasOwnProperty(EXPORT_EXCLUDE) && el[EXPORT_EXCLUDE] !== exclude) {
+        el[EXPORT_EXCLUDE] = exclude;
+      }
+    }),
+  );
 }
 
 declare module 'solid-js' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface Directives {
-      exportExclude?: true;
+      exportExclude?: boolean;
     }
   }
 }

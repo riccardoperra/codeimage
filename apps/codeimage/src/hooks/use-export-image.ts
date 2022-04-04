@@ -69,7 +69,12 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
 
   const toImageOptions: HtmlToImageExportOptions = {
-    filter: (node: Node) => !node.hasOwnProperty(EXPORT_EXCLUDE),
+    filter: (node: Node) => {
+      return (
+        !node.hasOwnProperty(EXPORT_EXCLUDE) ||
+        !(node as Node & {[EXPORT_EXCLUDE]: boolean})[EXPORT_EXCLUDE]
+      );
+    },
     style: {
       // TODO: https://github.com/riccardoperra/codeimage/issues/42
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
