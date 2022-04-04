@@ -1,9 +1,17 @@
 import {createPrismJsTheme} from '../../prismjs/prismjs-theme-factory';
 import {nightOwl} from './night-owl';
+import {styledAutocomplete} from '../../plugins/autocomplete-style';
 
 export const nightOwlTheme = createPrismJsTheme({
   id: 'nightOwlTheme',
-  editorTheme: [],
+  editorTheme: [
+    styledAutocomplete({
+      background: '#011423',
+      border: '#5f7e97',
+      selectedBackground: '#011220',
+      selectedColor: 'rgb(247, 140, 108)',
+    }),
+  ],
   externalStylesheet: nightOwl,
   properties: {
     darkMode: true,
