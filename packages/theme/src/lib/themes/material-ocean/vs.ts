@@ -214,6 +214,7 @@ export const materialOceanTheme = EditorView.theme(
       border: 'none',
       backgroundColor: palette.background,
     },
+
     '.cm-tooltip .cm-tooltip-arrow:before': {
       borderTopColor: 'transparent',
       borderBottomColor: 'transparent',
@@ -227,6 +228,7 @@ export const materialOceanTheme = EditorView.theme(
         backgroundColor: `${palette.lineHighlight}50`,
       },
     },
+
     '.cm-function': {
       color: palette.base.purple,
     },
