@@ -15,10 +15,10 @@
 
 ## Introduction
 
-CodeImage is the newest tool to help developers to create beautiful screenshots of their code, providing several
+[CodeImage](https://codeimage.dev) is the newest tool to help developers to create beautiful screenshots of their code, providing several
 features to speed up the process to post in social media.
 
-## Getting started
+## Run locally
 
 To run the project locally, you must have in your local machine pnpm >= 6.23.2 and node >= 14.x;
 
@@ -56,10 +56,6 @@ $ pnpm build:prod && pnpm serve --filter=@codeimage/app
 ✅ Mobile supports \
 ✅ Multi-language support \
 ✅ Light and dark mode support \
-
-## Usage
-
-// WIP
 
 ## Tech stack
 
