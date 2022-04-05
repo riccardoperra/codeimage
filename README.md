@@ -55,7 +55,7 @@ $ pnpm build:prod && pnpm serve --filter=@codeimage/app
 ✅ Uses browser [Web share api](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share) to share your snippets \
 ✅ Mobile supports \
 ✅ Multi-language support \
-✅ Light and dark mode support \
+✅ Light and dark mode support
 
 ## Tech stack
 
