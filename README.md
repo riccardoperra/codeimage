@@ -1,25 +1,24 @@
-![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/codeimage-logo-black.png#gh-light-mode-only)
-![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/codeimage-logo-white.png#gh-dark-mode-only)
+![CodeImage logo](banner.png)
 
 > Create elegant code screenshots of your source code.
 
-![Latest release Version](https://img.shields.io/badge/dynamic/json?color=success&label=Version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Friccardoperra%2Fcodeimage%2Fmain%2Fapps%2Fcodeimage%2Fpackage.json)
+![Latest release Version](https://img.shields.io/badge/dynamic/json?color=success&label=Version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Friccardoperra%2Fcodeimage%2Fmain%2Fpackage.json)
 ![Build workflow badge](https://img.shields.io/github/workflow/status/riccardoperra/codeimage/Build)
-![Issues](https://img.shields.io/github/issues/riccardoperra/codeimage)
+[![Issues](https://img.shields.io/github/issues/riccardoperra/codeimage)](https://github.com/riccardoperra/codeimage/issues)
 ![Lint workflow badge](https://img.shields.io/github/workflow/status/riccardoperra/codeimage/Lint?label=lint)
-![Built with SolidJS](https://img.shields.io/badge/Built%20with-SolidJS-blue)
-![Built with Vanilla Extract](https://img.shields.io/badge/Built%20with-Vanilla%20Extract-ff69b4)
-![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)
+[![Built with SolidJS](https://img.shields.io/badge/Built%20with-SolidJS-blue)](https://github.com/solidjs/solid)
+[![Built with Vanilla Extract](https://img.shields.io/badge/Built%20with-Vanilla%20Extract-ff69b4)](https://github.com/seek-oss/vanilla-extract)
+[![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)](https://lgtm.com/projects/g/riccardoperra/codeimage/alerts/?mode=list)
 ![License](https://img.shields.io/github/license/riccardoperra/codeimage)
 
 ![CodeImage showcase](https://i.imgur.com/9mrRo7n.gif)
 
 ## Introduction
 
-CodeImage is the newest tool to help developers to create beautiful screenshots of their code, providing several
+[CodeImage](https://codeimage.dev) is the newest tool to help developers to create beautiful screenshots of their code, providing several
 features to speed up the process to post in social media.
 
-## Getting started
+## Run locally
 
 To run the project locally, you must have in your local machine pnpm >= 6.23.2 and node >= 14.x;
 
@@ -56,11 +55,7 @@ $ pnpm build:prod && pnpm serve --filter=@codeimage/app
 ✅ Uses browser [Web share api](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share) to share your snippets \
 ✅ Mobile supports \
 ✅ Multi-language support \
-✅ Light and dark mode support \
-
-## Usage
-
-// WIP
+✅ Light and dark mode support
 
 ## Tech stack
 
