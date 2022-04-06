@@ -1,9 +1,8 @@
 import {defineConfig} from 'vite';
-import {resolve, parse} from 'path';
+import {resolve} from 'path';
 import dts from 'vite-plugin-dts';
 import solidPlugin from 'vite-plugin-solid';
 import {dependencies, peerDependencies} from './package.json';
-// const isExternal = (id: string) => !id.startsWith('.') && !path.isAbsolute(id);
 
 module.exports = defineConfig({
   build: {
@@ -18,6 +17,7 @@ module.exports = defineConfig({
       external: [
         ...Object.keys(dependencies),
         ...Object.keys(peerDependencies),
+        'solid-js/web',
       ],
       output: {
         entryFileNames: '[name].js',

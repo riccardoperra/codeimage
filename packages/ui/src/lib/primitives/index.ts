@@ -1,4 +1,5 @@
 export {Button, buttonStyles} from './Button';
+
 export {
   Text,
   textStyles,
@@ -6,3 +7,5 @@ export {
   type UseTextProps,
   type TextProps,
 } from './Text';
+
+export {Link, linkStyles} from './Link';

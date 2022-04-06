@@ -1,6 +1,6 @@
 import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
 import {Box} from '../../ui/Box/Box';
-import {Button} from '@codeimage/ui';
+import {Button, Link} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';
@@ -23,7 +23,6 @@ import {
 import {notificationStore} from '../../ui/Toast/SnackbarHost';
 import {appEnvironment} from '../../core/configuration';
 import {RangeField} from '../../ui/RangeField/RangeField';
-import {Link} from '../../ui/Link/Link';
 import {HintIcon} from '../Icons/Hint';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {HStack, VStack} from '../../ui/Box/Stack';
