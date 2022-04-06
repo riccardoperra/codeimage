@@ -1,5 +1,5 @@
 import {Component} from 'solid-js';
-import {Button} from '../../ui/Button/Button';
+import {Button} from '@codeimage/ui';
 import {themeVars} from '@codeimage/ui';
 import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
 import {GlobalUiState} from '@codeimage/store/ui';

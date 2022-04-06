@@ -1,5 +1,5 @@
 import * as styles from './BottomBar.css';
-import {Button} from '../../ui/Button/Button';
+import {Button} from '@codeimage/ui';
 import {Box} from '../../ui/Box/Box';
 import {Portal} from 'solid-js/web';
 import {Component, createSignal, Show} from 'solid-js';

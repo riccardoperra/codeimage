@@ -1,5 +1,5 @@
 import {Component, mergeProps, Show} from 'solid-js';
-import {Button} from '../../ui/Button/Button';
+import {Button} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Box} from '../../ui/Box/Box';

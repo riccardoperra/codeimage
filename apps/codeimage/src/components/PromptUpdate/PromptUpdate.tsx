@@ -1,7 +1,7 @@
 import {Component, createEffect} from 'solid-js';
 import {useRegisterSW} from 'virtual:pwa-register/solid';
 import {notificationStore} from '../../ui/Toast/SnackbarHost';
-import {Button} from '../../ui/Button/Button';
+import {Button} from '@codeimage/ui';
 import {Box} from '../../ui/Box/Box';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';

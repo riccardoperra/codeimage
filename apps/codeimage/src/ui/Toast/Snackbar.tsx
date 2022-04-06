@@ -5,7 +5,7 @@ import * as styles from './Snackbar.css';
 import {Dynamic} from 'solid-js/web';
 import {Text} from '../Text/Text';
 import {Box} from '../Box/Box';
-import {Button} from '../Button/Button';
+import {Button} from '@codeimage/ui';
 import {SvgIcon} from '../SvgIcon/SvgIcon';
 import {FadeInOutWithScaleTransition} from '../Transition/Transition';
 

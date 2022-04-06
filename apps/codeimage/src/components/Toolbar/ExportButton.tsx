@@ -1,6 +1,6 @@
 import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
 import {Box} from '../../ui/Box/Box';
-import {Button} from '../../ui/Button/Button';
+import {Button} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';

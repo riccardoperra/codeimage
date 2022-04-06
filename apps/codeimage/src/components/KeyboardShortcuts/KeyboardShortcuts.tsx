@@ -1,5 +1,5 @@
 import {createMemo, createSignal, For, from, JSXElement} from 'solid-js';
-import {Button} from '../../ui/Button/Button';
+import {Button} from '@codeimage/ui';
 import {HintIcon} from '../Icons/Hint';
 import {HStack} from '../../ui/Box/Stack';
 import {useI18n} from '@codeimage/locale';

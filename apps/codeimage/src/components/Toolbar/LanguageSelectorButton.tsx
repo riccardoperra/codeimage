@@ -1,5 +1,5 @@
 import {Popover, PopoverButton} from 'solid-headless';
-import {Button} from '../../ui/Button/Button';
+import {Button} from '@codeimage/ui';
 import {For} from 'solid-js';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import {offset} from '@floating-ui/dom';
