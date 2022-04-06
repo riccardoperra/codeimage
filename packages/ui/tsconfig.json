@@ -3,7 +3,8 @@
     "compilerOptions": {
       "jsx": "preserve",
       "resolveJsonModule": true,
-      "jsxImportSource": "solid-js"
+      "jsxImportSource": "solid-js",
+      "preserveSymlinks": true
     },
     "include": [
       "./src"
