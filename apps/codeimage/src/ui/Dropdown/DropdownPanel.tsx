@@ -1,7 +1,7 @@
 import {Menu, MenuItem, PopoverPanel, PopoverPanelProps} from 'solid-headless';
 import {Component, Show} from 'solid-js';
 import * as styles from './Dropdown.css';
-import {Text} from '../Text/Text';
+import {Text} from '@codeimage/ui';
 import {Box} from '../Box/Box';
 
 type DropdownMenuPanel = PopoverPanelProps<'div'> & {

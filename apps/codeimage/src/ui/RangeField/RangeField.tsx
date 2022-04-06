@@ -1,5 +1,5 @@
 import * as styles from './RangeField.css';
-import {UseTextProps} from '../Text/useText';
+import {UseTextProps} from '@codeimage/ui';
 import {Component} from 'solid-js';
 import {
   DynamicProps,

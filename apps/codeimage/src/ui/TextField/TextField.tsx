@@ -1,6 +1,6 @@
 import {Component, createMemo} from 'solid-js';
 import * as styles from './TextField.css';
-import {useText, UseTextProps} from '../Text/useText';
+import {useText, UseTextProps} from '@codeimage/ui';
 import clsx from 'clsx';
 import {
   DynamicProps,

@@ -1,7 +1,7 @@
 import * as styles from './SegmentedField.css';
 import {createMemo, For, JSX} from 'solid-js';
 import clsx from 'clsx';
-import {useText, UseTextProps} from '../Text/useText';
+import {useText, UseTextProps} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 
 export interface SegmentedFieldItem<T> {

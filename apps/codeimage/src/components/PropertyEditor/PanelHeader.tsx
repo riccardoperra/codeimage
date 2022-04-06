@@ -1,5 +1,5 @@
 import * as styles from './EditorSidebar.css';
-import {Text} from '../../ui/Text/Text';
+import {Text} from '@codeimage/ui';
 import {Component} from 'solid-js';
 
 interface PanelHeaderProps {

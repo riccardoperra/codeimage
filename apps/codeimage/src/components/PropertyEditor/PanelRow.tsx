@@ -1,7 +1,7 @@
 import {Component, Show} from 'solid-js';
 import * as styles from './EditorSidebar.css';
 import {panelRowContent} from './EditorSidebar.css';
-import {Text} from '../../ui/Text/Text';
+import {Text} from '@codeimage/ui';
 import {Box} from '../../ui/Box/Box';
 
 interface PanelRowProps {

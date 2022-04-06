@@ -1,6 +1,6 @@
-import {themeVars} from '@codeimage/ui';
 import {style, styleVariants} from '@vanilla-extract/css';
-import {mapToProperty} from '../utils/mapToProperty';
+import {mapToProperty} from '../../utils/mapToProperty';
+import {themeVars} from '../../theme';
 
 export const fontWeight = styleVariants(
   themeVars.fontWeight,

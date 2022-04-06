@@ -3,9 +3,8 @@ import {Toast} from 'solid-headless';
 import {notificationStore, SnackbarData} from './SnackbarHost';
 import * as styles from './Snackbar.css';
 import {Dynamic} from 'solid-js/web';
-import {Text} from '../Text/Text';
+import {Button, Text} from '@codeimage/ui';
 import {Box} from '../Box/Box';
-import {Button} from '@codeimage/ui';
 import {SvgIcon} from '../SvgIcon/SvgIcon';
 import {FadeInOutWithScaleTransition} from '../Transition/Transition';
 

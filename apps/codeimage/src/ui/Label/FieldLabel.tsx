@@ -1,4 +1,4 @@
-import {Text, TextProps} from '../Text/Text';
+import {Text, TextProps} from '@codeimage/ui';
 import {Component, mergeProps, Show} from 'solid-js';
 import * as styles from './FieldLabel.css';
 import {omitProps} from 'solid-use';

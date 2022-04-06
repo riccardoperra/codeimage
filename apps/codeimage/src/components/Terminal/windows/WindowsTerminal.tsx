@@ -5,7 +5,7 @@ import * as styles from './WindowsTerminal.css';
 import {Box} from '../../../ui/Box/Box';
 import {WindowsTerminalControls} from './WindowsTerminalControls';
 import {TabIcon} from '../TabIcon';
-import {Text} from '../../../ui/Text/Text';
+import {Text} from '@codeimage/ui';
 import {TabName} from '../TabName';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import clsx from 'clsx';

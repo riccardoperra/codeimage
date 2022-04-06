@@ -1,6 +1,6 @@
 import * as styles from './ThemeSwitcher.css';
 import {Component} from 'solid-js';
-import {Text} from '../../ui/Text/Text';
+import {Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {backgroundColorVar} from '../../theme/variables.css';
 import {CustomTheme} from '@codeimage/theme';

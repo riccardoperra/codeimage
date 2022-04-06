@@ -7,7 +7,7 @@ import {backgroundColorVar} from '../../../theme/variables.css';
 import {Box} from '../../../ui/Box/Box';
 import {TabIcon} from '../TabIcon';
 import {TabName} from '../TabName';
-import {Text} from '../../../ui/Text/Text';
+import {Text} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 
 export const exportExclude = _exportExclude;

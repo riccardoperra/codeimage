@@ -10,7 +10,7 @@ import {Component, For, JSX, JSXElement, Show} from 'solid-js';
 import * as styles from './Select.css';
 import {Box} from '../Box/Box';
 import Fragment from 'solid-headless/src/utils/Fragment';
-import {Text} from '../Text/Text';
+import {Text} from '@codeimage/ui';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import {flip, offset} from '@floating-ui/dom';
 

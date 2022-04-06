@@ -1,6 +1,5 @@
 import {style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
-import {fontSize} from '../../ui/Text/Text.css';
+import {textStyles, themeVars} from '@codeimage/ui';
 
 export const list = style({
   display: 'grid',
@@ -20,7 +19,7 @@ export const overlay = style({
 });
 
 export const keyLabel = style([
-  fontSize.sm,
+  textStyles.fontSize.sm,
   {
     color: themeVars.dynamicColors.button.base.textColor,
   },
@@ -33,7 +32,7 @@ export const keyList = style({
 });
 
 export const key = style([
-  fontSize.sm,
+  textStyles.fontSize.sm,
   {
     minWidth: '24px',
     height: '24px',

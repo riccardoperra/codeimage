@@ -6,7 +6,7 @@ import {
   For,
   Show,
 } from 'solid-js';
-import {Text} from '../../ui/Text/Text';
+import {Text} from '@codeimage/ui';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
 import {ThemeBox} from './ThemeBox';

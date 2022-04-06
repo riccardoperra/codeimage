@@ -1,7 +1,7 @@
 import {JSX} from 'solid-js';
 import * as styles from './Link.css';
 import clsx from 'clsx';
-import {Text, TextProps} from '../Text/Text';
+import {Text, TextProps} from '@codeimage/ui';
 import {omitProps} from 'solid-use';
 
 interface LinkProps extends TextProps<'a'> {

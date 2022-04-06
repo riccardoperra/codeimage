@@ -1,6 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
-import {fontSize, fontWeight} from '../Text/Text.css';
+import {themeVars, textStyles} from '@codeimage/ui';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {adaptiveFullScreenHeight} from '../../theme/base.css';
 
@@ -39,8 +38,8 @@ export const overlay = style({
 });
 
 export const title = style([
-  fontSize.lg,
-  fontWeight.medium,
+  textStyles.fontSize.lg,
+  textStyles.fontWeight.medium,
   {
     color: themeVars.dynamicColors.dialog.titleTextColor,
     height: '52px',
