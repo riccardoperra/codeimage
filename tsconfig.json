@@ -20,12 +20,7 @@
     "lib": [
       "dom",
       "ESNext"
-    ],
-    "paths": {
-      "@codeimage/ui": [
-        "./packages/ui/src/index.ts"
-      ]
-    }
+    ]
   },
   "include": [
     "@types",

@@ -2,7 +2,6 @@ import {defineConfig} from 'vite';
 import path from 'path';
 import dts from 'vite-plugin-dts';
 import solidPlugin from 'vite-plugin-solid';
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 
 // const isExternal = (id: string) => !id.startsWith('.') && !path.isAbsolute(id);
 
@@ -16,13 +15,23 @@ module.exports = defineConfig({
     },
     cssCodeSplit: true,
     rollupOptions: {
-      external: ['solid-js'],
+      external: [
+        'solid-js',
+        '@vanilla-extract/css',
+        '@vanilla-extract/sprinkles',
+        '@vanilla-extract/recipes',
+        'solid-headless',
+        'solid-use',
+      ],
       output: {
+        entryFileNames: '[name].js',
+        esModule: true,
+        preserveModules: true,
         globals: {
           'solid-js': 'solid-js',
         },
       },
     },
   },
-  plugins: [dts(), solidPlugin(), vanillaExtractPlugin()],
+  plugins: [solidPlugin(), dts()],
 });
