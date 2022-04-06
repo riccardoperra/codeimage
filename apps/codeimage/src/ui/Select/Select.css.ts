@@ -1,5 +1,5 @@
 import {style} from '@vanilla-extract/css';
-import * as textFieldStyles from '../TextField/TextField.css';
+import {textFieldStyles} from '@codeimage/ui';
 import {textStyles} from '@codeimage/ui';
 import {themeVars} from '@codeimage/ui';
 import {recipe} from '@vanilla-extract/recipes';

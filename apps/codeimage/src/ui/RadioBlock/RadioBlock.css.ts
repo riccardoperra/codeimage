@@ -1,12 +1,11 @@
 import {style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
-import * as textFieldTheme from '../TextField/TextField.css';
-import {themeVars} from '@codeimage/ui';
+import {textFieldStyles, themeVars} from '@codeimage/ui';
 import * as groupStyles from '../Group/Group.css';
 
 export const radioBlock = recipe({
   base: style([
-    textFieldTheme.baseField,
+    textFieldStyles.baseField,
     {
       transition: 'border .2s, color .2s',
       selectors: {

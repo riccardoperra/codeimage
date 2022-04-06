@@ -1,12 +1,13 @@
-import {Component, createMemo} from 'solid-js';
-import * as styles from './TextField.css';
-import {useText, UseTextProps} from '@codeimage/ui';
+import {createMemo, PropsWithChildren} from 'solid-js';
+import {textField} from './TextField.css';
 import clsx from 'clsx';
 import {
   DynamicProps,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import {omitProps} from 'solid-use';
+import {useText, UseTextProps} from '../Text';
+import {Dynamic} from 'solid-js/web';
 
 export type TextFieldProps = {
   type: 'text' | 'number';
@@ -16,7 +17,7 @@ export type TextFieldProps = {
 } & WithRef<'input'> &
   Omit<DynamicProps<'input'>, 'as' | 'ref' | 'onInput' | 'onChange' | 'type'>;
 
-export const TextField: Component<TextFieldProps> = props => {
+export function TextField(props: PropsWithChildren<TextFieldProps>) {
   function onChange(e: Event): void {
     if (props.onChange) {
       const target = e.target as HTMLInputElement;
@@ -24,16 +25,19 @@ export const TextField: Component<TextFieldProps> = props => {
     }
   }
 
-  const textStyles = createMemo(() => useText({size: props.size}));
+  const classes = createMemo(() =>
+    clsx(useText({size: props.size}), textField, props.class),
+  );
 
   return (
-    <input
+    <Dynamic
+      as={'input'}
       value={props.value}
       type={props.type}
-      class={clsx(textStyles(), styles.textField, props.class)}
+      class={classes()}
       onInput={onChange}
       onChange={onChange}
       {...omitProps(props, ['class', 'type', 'value', 'onChange'])}
     />
   );
-};
+}

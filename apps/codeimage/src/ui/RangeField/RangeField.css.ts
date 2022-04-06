@@ -1,6 +1,6 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
-import {inputHeight} from '../Field/FlexField.css';
+import {flexFieldStyles} from '@codeimage/ui';
 
 export const [rangeTheme, rangeVars] = createTheme({
   rangeProgress: '0%',
@@ -13,7 +13,7 @@ export const range = style([
     appearance: 'none',
     position: 'relative',
     backgroundColor: themeVars.backgroundColor.transparent,
-    height: inputHeight,
+    height: flexFieldStyles.inputHeight,
 
     '::-moz-range-thumb': {
       appearance: 'none',

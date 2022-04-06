@@ -1,6 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
-import * as textFieldStyles from '../TextField/TextField.css';
+import {textFieldStyles, themeVars} from '@codeimage/ui';
 
 export const [segmentedFieldTheme, segmentedFieldVars] = createTheme({
   activeSegmentedWidth: '0px',

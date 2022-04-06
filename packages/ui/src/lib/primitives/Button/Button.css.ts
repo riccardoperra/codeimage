@@ -1,7 +1,7 @@
 import {style} from '@vanilla-extract/css';
 import {backgroundColorVar, colorVar} from '../../theme/variables.css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
-import {themeVars} from '../../theme/global.css';
+import {themeVars} from '../../theme';
 
 export const button = style([
   {

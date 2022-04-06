@@ -1,5 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
+import {themeVars} from '../../theme';
 import {inputHeight} from '../Field/FlexField.css';
 
 export const [textFieldTheme, textFieldVars] = createTheme({
@@ -36,18 +36,5 @@ export const textField = style([
     paddingTop: 0,
     paddingBottom: themeVars.spacing.px,
     paddingLeft: themeVars.spacing['3'],
-  },
-]);
-
-export const unstyledTextField = style([
-  {
-    border: 0,
-    borderRadius: 0,
-    padding: 0,
-    margin: 0,
-    background: 'transparent',
-    ':focus': {
-      outline: 'none',
-    },
   },
 ]);

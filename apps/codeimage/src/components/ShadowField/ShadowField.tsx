@@ -5,9 +5,7 @@ import {sprinkles} from '../../theme/sprinkles.css';
 import {DropdownMenu} from '../../ui/Dropdown/DropdownPanel';
 import {DropdownPortal} from '../../ui/Dropdown/DropdownPortal';
 import {ShadowForm} from './ShadowForm';
-import {themeVars} from '@codeimage/ui';
-
-import * as fieldStyles from '../../ui/TextField/TextField.css';
+import {themeVars, textFieldStyles} from '@codeimage/ui';
 import clsx from 'clsx';
 
 interface ShadowFieldProps {
@@ -33,7 +31,7 @@ export const ShadowField: Component<ShadowFieldProps> = props => {
           <>
             <PopoverButton
               class={clsx(
-                fieldStyles.baseField,
+                textFieldStyles.baseField,
                 sprinkles({
                   fontSize: 'sm',
                   paddingX: '2',

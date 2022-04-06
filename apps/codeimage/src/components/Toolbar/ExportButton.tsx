@@ -1,6 +1,6 @@
 import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
 import {Box} from '../../ui/Box/Box';
-import {Button, Link} from '@codeimage/ui';
+import {Button, FlexField, Link, TextField} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';
@@ -8,8 +8,6 @@ import {
   SegmentedField,
   SegmentedFieldItem,
 } from '../../ui/SegmentedField/SegmentedField';
-import {FlexField} from '../../ui/Field/FlexField';
-import {TextField} from '../../ui/TextField/TextField';
 import {FieldLabel, FieldLabelHint} from '../../ui/Label/FieldLabel';
 import {
   DialogPanelContent,
