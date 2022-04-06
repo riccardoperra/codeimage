@@ -1,6 +1,6 @@
 import {Box, BoxProps} from './Box';
 import * as styles from './Stack.css';
-import {themeVars} from '../../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 
 interface StackProps extends BoxProps {

@@ -1,8 +1,7 @@
 import {createTheme} from '@vanilla-extract/css';
-import {colors} from './theme.css';
-import {themeVars} from './global.css';
+import {themeColors, themeVars} from '@codeimage/ui';
 
-export const lightThemeCss = createTheme(colors, {
+export const lightThemeCss = createTheme(themeColors, {
   primary: themeVars.backgroundColor.blue['500'],
   background: themeVars.backgroundColor.gray['100'],
   baseText: themeVars.textColor.gray['700'],

@@ -1,6 +1,6 @@
 import {createThemeContract} from '@vanilla-extract/css';
 
-export const colors = createThemeContract({
+export const themeColors = createThemeContract({
   primary: null,
   secondary: null,
   background: null,

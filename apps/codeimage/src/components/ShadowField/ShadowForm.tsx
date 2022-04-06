@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import {sprinkles} from '../../theme/sprinkles.css';
 import * as styles from './ShadowForm.css';
-import {themeVars} from '../../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 import {Component} from 'solid-js';
 
 interface ShadowFormProps {

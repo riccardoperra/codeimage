@@ -1,7 +1,7 @@
 import {style} from '@vanilla-extract/css';
 import * as textFieldStyles from '../TextField/TextField.css';
 import * as textStyles from '../Text/Text.css';
-import {themeVars} from '../../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 import {recipe} from '@vanilla-extract/recipes';
 import {scrollbar} from '../../theme/base.css';
 

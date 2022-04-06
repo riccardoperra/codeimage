@@ -1,4 +1,4 @@
-import {themeVars} from '../../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 import {style, styleVariants} from '@vanilla-extract/css';
 import {mapToProperty} from '../utils/mapToProperty';
 

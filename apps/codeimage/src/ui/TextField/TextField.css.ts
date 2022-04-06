@@ -1,5 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {themeVars} from '../../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 import {inputHeight} from '../Field/FlexField.css';
 
 export const [textFieldTheme, textFieldVars] = createTheme({

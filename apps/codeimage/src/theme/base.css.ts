@@ -1,4 +1,4 @@
-import {themeVars} from './global.css';
+import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 
 export const scrollbar = style({

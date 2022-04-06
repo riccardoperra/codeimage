@@ -1,9 +1,7 @@
-import {createTheme, style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
+import {style} from '@vanilla-extract/css';
 import {backgroundColorVar, colorVar} from '../../theme/variables.css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
-
-export const [] = createTheme({});
+import {themeVars} from '../../theme/global.css';
 
 export const button = style([
   {

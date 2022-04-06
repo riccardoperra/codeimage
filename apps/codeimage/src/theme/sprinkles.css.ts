@@ -3,7 +3,7 @@ import {
   createSprinkles,
   defineProperties,
 } from '@vanilla-extract/sprinkles';
-import {themeVars} from './global.css';
+import {themeVars} from '@codeimage/ui';
 
 const responsiveProperties = defineProperties({
   conditions: {

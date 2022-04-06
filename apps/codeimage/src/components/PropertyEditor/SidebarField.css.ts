@@ -1,5 +1,5 @@
 import {style} from '@vanilla-extract/css';
-import {themeVars} from '../../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 import * as textFieldStyles from '../../ui/TextField/TextField.css';
 
 export const wrapper = style([
