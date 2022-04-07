@@ -123,8 +123,8 @@ export const CustomEditor = () => {
   createEffect(() => {
     batch(() =>
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // TODO: to fix type deep instantion
       // @ts-ignore
+      // TODO: to fix type deep instantion
       setOptions({
         extensions: [
           EDITOR_BASE_SETUP,
