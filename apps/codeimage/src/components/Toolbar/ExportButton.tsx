@@ -87,7 +87,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
       >
         <DownloadIcon />
 
-        <Box as={'span'} marginLeft={'2'}>
+        <Box as={'span'} marginLeft={2}>
           {label()}
         </Box>
       </Button>
@@ -186,7 +186,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                   items={modeItems()}
                 />
                 <Show when={mode() === 'share'}>
-                  <Box marginTop={'1'}>
+                  <Box marginTop={1}>
                     <FieldLabelHint
                       size={'sm'}
                       weight={'normal'}
@@ -235,7 +235,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                 items={extensionItems}
               />
               <Show when={extension() === 'jpeg'}>
-                <Box marginTop={'1'}>
+                <Box marginTop={1}>
                   <FieldLabelHint
                     size={'sm'}
                     weight={'normal'}
@@ -252,7 +252,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               <FlexField size={'md'}>
                 <FieldLabel size={'sm'}>
                   {t('export.quality')}
-                  <Box as={'span'} marginLeft={'3'}>
+                  <Box as={'span'} marginLeft={3}>
                     <FieldLabelHint>{quality()}%</FieldLabelHint>
                   </Box>
                 </FieldLabel>
@@ -269,7 +269,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
             <FlexField size={'md'}>
               <FieldLabel size={'sm'}>
                 {t('export.pixelRatio')}
-                <Box as={'span'} marginLeft={'3'}>
+                <Box as={'span'} marginLeft={3}>
                   <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
                 </Box>
               </FieldLabel>

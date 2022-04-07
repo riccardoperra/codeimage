@@ -29,7 +29,7 @@ export const dropdownMenu = style({
 });
 
 export const dropdownMenuButton = style([
-  buttonStyles,
+  buttonStyles.button,
   {
     textAlign: 'left',
     border: 0,

@@ -58,7 +58,7 @@ const App = () => {
         <Toolbar canvasRef={frameRef()} />
 
         <Show when={modality === 'full'}>
-          <Box paddingLeft={'4'} paddingTop={'3'}>
+          <Box paddingLeft={4} paddingTop={3}>
             <KeyboardShortcuts />
           </Box>
         </Show>

@@ -5,5 +5,7 @@ export {
   themeVars,
   root,
   sprinkles,
+  mapResponsiveValue,
+  type Sprinkles,
 } from './lib/theme';
 export * from './lib/primitives';

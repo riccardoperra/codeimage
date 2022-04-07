@@ -25,7 +25,7 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
               use:exportExclude={!props.tabName?.length}
               class={clsx(
                 baseStyles.tab({accent: props.accentVisible}),
-                sprinkles({marginLeft: '6'}),
+                sprinkles({marginLeft: 6}),
               )}
             >
               <Show when={props.tabIcon}>

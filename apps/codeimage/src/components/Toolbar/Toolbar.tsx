@@ -28,7 +28,7 @@ export const Toolbar: Component<{
         />
 
         <Box marginLeft={'auto'}>
-          <Box display={'inlineBlock'} marginRight={'2'}>
+          <Box display={'inlineBlock'} marginRight={2}>
             <ShareButton />
           </Box>
           <ExportButton canvasRef={props.canvasRef} />

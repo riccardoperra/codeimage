@@ -27,7 +27,7 @@ export function TerminalControlField(
             value={terminal.name}
             onSelect={props.onTerminalChange}
           >
-            <Box padding={'2'} width={'100%'}>
+            <Box padding={2} width={'100%'}>
               <Dynamic
                 showTab={false}
                 shadow={'none'}

@@ -16,7 +16,7 @@ export const DropdownMenu: Component<DropdownMenuPanel> = props => {
       class={styles.dropdownPanel}
       {...props}
     >
-      <Box display={'flex'} padding={'3'}>
+      <Box display={'flex'} padding={3}>
         <Show when={props.title}>
           <Text as={'div'} weight="semibold" size={'sm'}>
             {props.title}

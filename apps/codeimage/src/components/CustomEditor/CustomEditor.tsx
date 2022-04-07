@@ -115,13 +115,16 @@ export const CustomEditor = () => {
   });
 
   createEffect(() => {
-    setOptions({
+    setOptions(() => ({
       value: editor.code,
-    });
+    }));
   });
 
   createEffect(() => {
     batch(() =>
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // TODO: to fix type deep instantion
+      // @ts-ignore
       setOptions({
         extensions: [
           EDITOR_BASE_SETUP,

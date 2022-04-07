@@ -34,7 +34,7 @@ export const FieldLabelHint: Component<FieldLabelProps> = props => {
   return (
     <Box class={styles.labelHintWrapper}>
       <Show when={computedProps.icon}>
-        <Box as={'span'} marginRight={'1'} display={'inlineFlex'}>
+        <Box as={'span'} marginRight={1} display={'inlineFlex'}>
           <Dynamic component={computedProps.icon} />
         </Box>
       </Show>

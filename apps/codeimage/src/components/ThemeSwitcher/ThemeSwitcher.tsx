@@ -99,7 +99,7 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
                 </DynamicTerminal>
               </ThemeBox>
 
-              <Box display={'flex'} justifyContent={'center'} marginTop={'4'}>
+              <Box display={'flex'} justifyContent={'center'} marginTop={4}>
                 <Show
                   when={isSelected(theme.id)}
                   fallback={<EmptyCircle size={'md'} opacity={0.35} />}

@@ -33,7 +33,7 @@ export const ShadowField: Component<ShadowFieldProps> = props => {
                 textFieldStyles.baseField,
                 sprinkles({
                   fontSize: 'sm',
-                  paddingX: '2',
+                  paddingX: 2,
                   width: '100%',
                 }),
               )}
@@ -64,8 +64,8 @@ export const ShadowField: Component<ShadowFieldProps> = props => {
                     'background-color': themeVars.backgroundColor.gray['100'],
                   }}
                   class={sprinkles({
-                    paddingX: '5',
-                    paddingY: '8',
+                    paddingX: 5,
+                    paddingY: 8,
                   })}
                 >
                   <ShadowForm onChange={props.onChange} />
