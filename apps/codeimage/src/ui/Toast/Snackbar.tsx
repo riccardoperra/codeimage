@@ -3,11 +3,10 @@ import {Toast} from 'solid-headless';
 import {notificationStore, SnackbarData} from './SnackbarHost';
 import * as styles from './Snackbar.css';
 import {Dynamic} from 'solid-js/web';
-import {Text} from '../Text/Text';
-import {Box} from '../Box/Box';
-import {Button} from '../Button/Button';
+import {Button, Text} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
 import {SvgIcon} from '../SvgIcon/SvgIcon';
-import {FadeInOutWithScaleTransition} from '../Transition/Transition';
+import {FadeInOutWithScaleTransition} from '@codeimage/ui';
 
 export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
   const [isOpen, setIsOpen] = createSignal(true);
@@ -31,12 +30,12 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
         </Text>
 
         <Show when={!!props.actions}>
-          <Box marginLeft={'4'}>
+          <Box marginLeft={4}>
             <Dynamic component={props.actions} />
           </Box>
         </Show>
         <Show when={props.closeable}>
-          <Box marginLeft={'4'}>
+          <Box marginLeft={4}>
             <Button
               type={'button'}
               size={'xs'}

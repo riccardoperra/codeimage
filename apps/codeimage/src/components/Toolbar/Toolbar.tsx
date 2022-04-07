@@ -1,7 +1,7 @@
 import * as styles from './Toolbar.css';
 import {Component} from 'solid-js';
 import {ThemeToggleButton} from './ThemeToggleButton';
-import {Box} from '../../ui/Box/Box';
+import {Box} from '@codeimage/ui';
 import {LanguageSelectorButton} from './LanguageSelectorButton';
 import {appEnvironment} from '../../core/configuration';
 import {ExportButton} from './ExportButton';
@@ -28,7 +28,7 @@ export const Toolbar: Component<{
         />
 
         <Box marginLeft={'auto'}>
-          <Box display={'inlineBlock'} marginRight={'2'}>
+          <Box display={'inlineBlock'} marginRight={2}>
             <ShareButton />
           </Box>
           <ExportButton canvasRef={props.canvasRef} />

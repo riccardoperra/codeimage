@@ -2,14 +2,12 @@ import {Component, Show} from 'solid-js';
 import * as baseStyles from '../terminal.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './WindowsTerminal.css';
-import {Box} from '../../../ui/Box/Box';
+import {Box, sprinkles, Text} from '@codeimage/ui';
 import {WindowsTerminalControls} from './WindowsTerminalControls';
 import {TabIcon} from '../TabIcon';
-import {Text} from '../../../ui/Text/Text';
 import {TabName} from '../TabName';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import clsx from 'clsx';
-import {sprinkles} from '../../../theme/sprinkles.css';
 
 export const exportExclude = _exportExclude;
 
@@ -27,7 +25,7 @@ export const WindowsTerminal: Component<BaseTerminalProps> = props => {
               use:exportExclude={!props.tabName?.length}
               class={clsx(
                 baseStyles.tab({accent: props.accentVisible}),
-                sprinkles({marginLeft: '6'}),
+                sprinkles({marginLeft: 6}),
               )}
             >
               <Show when={props.tabIcon}>

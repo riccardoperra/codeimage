@@ -19,7 +19,7 @@ import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {PortalHost} from './ui/PortalHost/PortalHost';
 import {useTabIcon} from './hooks/use-tab-icon';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
-import {Box} from './ui/Box/Box';
+import {Box} from '@codeimage/ui';
 import {fromObservableObject} from './core/hooks/from-observable-object';
 import {initEffects} from '@ngneat/effects';
 import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
@@ -58,7 +58,7 @@ const App = () => {
         <Toolbar canvasRef={frameRef()} />
 
         <Show when={modality === 'full'}>
-          <Box paddingLeft={'4'} paddingTop={'3'}>
+          <Box paddingLeft={4} paddingTop={3}>
             <KeyboardShortcuts />
           </Box>
         </Show>

@@ -1,5 +1,5 @@
 import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
-import {themeVars} from '../../../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 import {backgroundColorVar} from '../../../theme/variables.css';
 import {terminalVars} from '../terminal.css';
 

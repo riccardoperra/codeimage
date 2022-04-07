@@ -1,5 +1,5 @@
 import {style} from '@vanilla-extract/css';
-import {themeVars} from '../../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 
 export const wrapper = style({
   display: 'grid',

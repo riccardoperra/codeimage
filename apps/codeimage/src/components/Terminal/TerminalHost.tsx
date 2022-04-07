@@ -1,6 +1,6 @@
 import * as styles from './terminal.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {themeVars} from '../../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 import {Component} from 'solid-js';
 import {TerminalState} from '../../state/terminal';
 import clsx from 'clsx';

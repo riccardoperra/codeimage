@@ -1,28 +1,34 @@
 import {defineConfig} from 'vite';
-import path from 'path';
+import {resolve} from 'path';
 import dts from 'vite-plugin-dts';
 import solidPlugin from 'vite-plugin-solid';
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
-
-// const isExternal = (id: string) => !id.startsWith('.') && !path.isAbsolute(id);
+import {dependencies, peerDependencies} from './package.json';
 
 module.exports = defineConfig({
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
+      entry: resolve(__dirname, 'src/index.ts'),
       name: '@codeimage/ui',
       fileName: 'ui',
       formats: ['es'],
     },
     cssCodeSplit: true,
     rollupOptions: {
-      external: ['solid-js'],
+      external: [
+        ...Object.keys(dependencies),
+        ...Object.keys(peerDependencies),
+        'solid-js/web',
+        'solid-js/store',
+      ],
       output: {
+        entryFileNames: '[name].js',
+        esModule: true,
+        preserveModules: true,
         globals: {
           'solid-js': 'solid-js',
         },
       },
     },
   },
-  plugins: [dts(), solidPlugin(), vanillaExtractPlugin()],
+  plugins: [solidPlugin(), dts()],
 });

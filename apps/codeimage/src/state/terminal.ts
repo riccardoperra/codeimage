@@ -1,4 +1,4 @@
-import {themeVars} from '../theme/global.css';
+import {themeVars} from '@codeimage/ui';
 import {
   appEnvironment,
   SUPPORTED_THEMES_DICTIONARY,

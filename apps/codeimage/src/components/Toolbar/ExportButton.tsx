@@ -1,20 +1,24 @@
 import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
-import {Box} from '../../ui/Box/Box';
-import {Button} from '../../ui/Button/Button';
-import {useI18n} from '@codeimage/locale';
-import {AppLocaleEntries} from '../../i18n';
-import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';
 import {
-  SegmentedField,
-  SegmentedFieldItem,
-} from '../../ui/SegmentedField/SegmentedField';
-import {FlexField} from '../../ui/Field/FlexField';
-import {TextField} from '../../ui/TextField/TextField';
-import {FieldLabel, FieldLabelHint} from '../../ui/Label/FieldLabel';
-import {
+  Box,
+  Button,
+  Dialog,
   DialogPanelContent,
   DialogPanelFooter,
-} from '../../ui/Dialog/DialogPanel';
+  DialogProps,
+  FieldLabel,
+  FieldLabelHint,
+  FlexField,
+  HStack,
+  Link,
+  RangeField,
+  SegmentedField,
+  SegmentedFieldItem,
+  TextField,
+  VStack,
+} from '@codeimage/ui';
+import {useI18n} from '@codeimage/locale';
+import {AppLocaleEntries} from '../../i18n';
 import {
   ExportExtension,
   ExportMode,
@@ -22,11 +26,8 @@ import {
 } from '../../hooks/use-export-image';
 import {notificationStore} from '../../ui/Toast/SnackbarHost';
 import {appEnvironment} from '../../core/configuration';
-import {RangeField} from '../../ui/RangeField/RangeField';
-import {Link} from '../../ui/Link/Link';
 import {HintIcon} from '../Icons/Hint';
 import {ExclamationIcon} from '../Icons/Exclamation';
-import {HStack, VStack} from '../../ui/Box/Stack';
 import {useModality} from '../../core/hooks/isMobile';
 import {Transition} from 'solid-headless';
 import {PortalHostInjector} from '../../ui/PortalHost/PortalHost';
@@ -84,7 +85,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
       >
         <DownloadIcon />
 
-        <Box as={'span'} marginLeft={'2'}>
+        <Box as={'span'} marginLeft={2}>
           {label()}
         </Box>
       </Button>
@@ -183,7 +184,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                   items={modeItems()}
                 />
                 <Show when={mode() === 'share'}>
-                  <Box marginTop={'1'}>
+                  <Box marginTop={1}>
                     <FieldLabelHint
                       size={'sm'}
                       weight={'normal'}
@@ -232,7 +233,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
                 items={extensionItems}
               />
               <Show when={extension() === 'jpeg'}>
-                <Box marginTop={'1'}>
+                <Box marginTop={1}>
                   <FieldLabelHint
                     size={'sm'}
                     weight={'normal'}
@@ -249,7 +250,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               <FlexField size={'md'}>
                 <FieldLabel size={'sm'}>
                   {t('export.quality')}
-                  <Box as={'span'} marginLeft={'3'}>
+                  <Box as={'span'} marginLeft={3}>
                     <FieldLabelHint>{quality()}%</FieldLabelHint>
                   </Box>
                 </FieldLabel>
@@ -266,7 +267,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
             <FlexField size={'md'}>
               <FieldLabel size={'sm'}>
                 {t('export.pixelRatio')}
-                <Box as={'span'} marginLeft={'3'}>
+                <Box as={'span'} marginLeft={3}>
                   <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
                 </Box>
               </FieldLabel>

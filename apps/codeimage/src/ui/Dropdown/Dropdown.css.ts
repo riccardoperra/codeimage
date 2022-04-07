@@ -1,6 +1,5 @@
 import {style} from '@vanilla-extract/css';
-import {themeVars} from '../../theme/global.css';
-import {button} from '../Button/Button.css';
+import {buttonStyles, themeVars} from '@codeimage/ui';
 
 export const dropdownPanel = style({
   overflow: 'hidden',
@@ -30,7 +29,7 @@ export const dropdownMenu = style({
 });
 
 export const dropdownMenuButton = style([
-  button,
+  buttonStyles.button,
   {
     textAlign: 'left',
     border: 0,

@@ -1,6 +1,5 @@
 import {createGlobalTheme, globalStyle} from '@vanilla-extract/css';
 import {colors, spacing} from '@codeimage/ui';
-import {colors as dynamicColors} from './theme.css';
 import {backgroundColorVar} from './variables.css';
 
 export const root = createGlobalTheme(':root', {
@@ -213,8 +212,3 @@ globalStyle('html, body', {
 globalStyle('body', {
   backgroundColor: backgroundColorVar,
 });
-
-export const themeVars = {
-  ...root,
-  dynamicColors,
-};

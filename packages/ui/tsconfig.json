@@ -2,7 +2,9 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
       "jsx": "preserve",
+      "resolveJsonModule": true,
       "jsxImportSource": "solid-js",
+      "preserveSymlinks": true,
     },
     "include": [
       "./src"

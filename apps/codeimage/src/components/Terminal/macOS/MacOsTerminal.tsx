@@ -4,10 +4,9 @@ import * as baseStyles from '../terminal.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import {backgroundColorVar} from '../../../theme/variables.css';
-import {Box} from '../../../ui/Box/Box';
+import {Box, Text} from '@codeimage/ui';
 import {TabIcon} from '../TabIcon';
 import {TabName} from '../TabName';
-import {Text} from '../../../ui/Text/Text';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 
 export const exportExclude = _exportExclude;

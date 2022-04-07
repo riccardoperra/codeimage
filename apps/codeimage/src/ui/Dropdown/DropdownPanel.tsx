@@ -1,8 +1,8 @@
 import {Menu, MenuItem, PopoverPanel, PopoverPanelProps} from 'solid-headless';
 import {Component, Show} from 'solid-js';
 import * as styles from './Dropdown.css';
-import {Text} from '../Text/Text';
-import {Box} from '../Box/Box';
+import {Text} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
 
 type DropdownMenuPanel = PopoverPanelProps<'div'> & {
   title?: string;
@@ -16,7 +16,7 @@ export const DropdownMenu: Component<DropdownMenuPanel> = props => {
       class={styles.dropdownPanel}
       {...props}
     >
-      <Box display={'flex'} padding={'3'}>
+      <Box display={'flex'} padding={3}>
         <Show when={props.title}>
           <Text as={'div'} weight="semibold" size={'sm'}>
             {props.title}
