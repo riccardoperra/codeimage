@@ -6,7 +6,7 @@ import {appEnvironment} from '../../../core/configuration';
 import {Box} from '@codeimage/ui';
 import * as styles from '../terminal.css';
 import {CodeImageLogo} from '../../Icons/CodeImageLogo';
-import {FadeInOutTransition} from '../../../ui/Transition/Transition';
+import {FadeInOutTransition} from '../../../../../../packages/ui/src/lib/primitives/Transition/Transition';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;

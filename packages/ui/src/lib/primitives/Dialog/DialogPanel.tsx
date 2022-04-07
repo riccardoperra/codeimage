@@ -8,9 +8,9 @@ import clsx from 'clsx';
 import * as styles from './Dialog.css';
 import {DialogPanelVariants} from './Dialog.css';
 import {PropsWithChildren} from 'solid-js/types/render/component';
-import {Box} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {dynamicFullHeight} from '../../theme/base.css';
+import {dynamicFullHeight} from '../../theme/variables.css';
+import {Box} from '../Box';
 
 export type DialogPanelProps = ShDialogPanelProps & DialogPanelVariants;
 

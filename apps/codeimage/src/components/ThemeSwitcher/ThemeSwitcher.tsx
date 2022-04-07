@@ -16,7 +16,7 @@ import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
 import {appEnvironment} from '../../core/configuration';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Box} from '@codeimage/ui';
-import {FadeInOutWithScaleTransition} from '../../ui/Transition/Transition';
+import {FadeInOutWithScaleTransition} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {useModality} from '../../core/hooks/isMobile';

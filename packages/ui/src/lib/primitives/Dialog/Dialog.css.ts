@@ -1,6 +1,7 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {themeVars, textStyles} from '@codeimage/ui';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
+import {themeVars} from '../../theme';
+import * as textStyles from '../Text/Text.css';
 import {adaptiveFullScreenHeight} from '../../theme/base.css';
 
 export const [dialogTheme, dialogThemeVars] = createTheme({

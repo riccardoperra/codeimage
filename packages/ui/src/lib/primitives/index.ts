@@ -29,3 +29,16 @@ export {RadioBlock, type RadioBlockProps} from './RadioBlock';
 export {Select} from './Select';
 
 export {SegmentedField, type SegmentedFieldItem} from './SegmentedField';
+
+export {FadeInOutWithScaleTransition, FadeInOutTransition} from './Transition';
+
+export {
+  DialogPanelFooter,
+  DialogPanelContent,
+  Dialog,
+  DialogTitle,
+  DialogPanel,
+  type DialogProps,
+  type DialogPanelProps,
+  type DialogTitleProps,
+} from './Dialog';

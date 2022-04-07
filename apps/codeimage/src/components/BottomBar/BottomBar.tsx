@@ -1,9 +1,8 @@
 import * as styles from './BottomBar.css';
-import {Box, Button} from '@codeimage/ui';
+import {Box, Button, FadeInOutTransition} from '@codeimage/ui';
 import {Portal} from 'solid-js/web';
 import {Component, createSignal, Show} from 'solid-js';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
-import {FadeInOutTransition} from '../../ui/Transition/Transition';
 import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
 import {EditorForm} from '../PropertyEditor/EditorForm';
 import {FrameStyleForm} from '../PropertyEditor/FrameStyleForm';

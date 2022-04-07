@@ -7,14 +7,11 @@ import {JSXElement, Show} from 'solid-js';
 import {omitProps} from 'solid-use';
 import clsx from 'clsx';
 import * as styles from './Dialog.css';
-import {
-  FadeInOutTransition,
-  FadeInOutWithScaleTransition,
-} from '../Transition/Transition';
+import {FadeInOutTransition, FadeInOutWithScaleTransition} from '../Transition';
 import {PropsWithChildren} from 'solid-js/types/render/component';
 import {DialogTitle} from './DialogTitle';
 import {DialogPanel, DialogPanelProps} from './DialogPanel';
-import {Box} from '@codeimage/ui';
+import {Box} from '../Box';
 
 export type DialogProps = Omit<ShDialogProps, 'children'> & {
   title?: string;

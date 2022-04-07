@@ -7,7 +7,7 @@ import {Popover, PopoverButton} from 'solid-headless';
 import {PopoverPanel} from '../../ui/Dropdown/DropdownMenu';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import * as styles from './KeyboardShortcuts.css';
-import {FadeInOutTransition} from '../../ui/Transition/Transition';
+import {FadeInOutTransition} from '@codeimage/ui';
 import {offset} from '@floating-ui/dom';
 import {PortalHostInjector} from '../../ui/PortalHost/PortalHost';
 import * as frame from '@codeimage/store/frame';

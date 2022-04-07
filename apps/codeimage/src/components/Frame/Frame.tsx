@@ -4,7 +4,7 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createHorizontalResize} from '../../core/hooks/resizable';
 import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
 import {Box} from '@codeimage/ui';
-import {FadeInOutTransition} from '../../ui/Transition/Transition';
+import {FadeInOutTransition} from '@codeimage/ui';
 import {useModality} from '../../core/hooks/isMobile';
 
 export const exportExclude = _exportExclude;

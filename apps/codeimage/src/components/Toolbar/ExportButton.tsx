@@ -2,6 +2,10 @@ import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
 import {
   Box,
   Button,
+  Dialog,
+  DialogPanelContent,
+  DialogPanelFooter,
+  DialogProps,
   FieldLabel,
   FieldLabelHint,
   FlexField,
@@ -15,11 +19,6 @@ import {
 } from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
-import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';
-import {
-  DialogPanelContent,
-  DialogPanelFooter,
-} from '../../ui/Dialog/DialogPanel';
 import {
   ExportExtension,
   ExportMode,
