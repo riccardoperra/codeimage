@@ -2,6 +2,8 @@ import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
 import {
   Box,
   Button,
+  FieldLabel,
+  FieldLabelHint,
   FlexField,
   HStack,
   Link,
@@ -16,7 +18,6 @@ import {
   SegmentedField,
   SegmentedFieldItem,
 } from '../../ui/SegmentedField/SegmentedField';
-import {FieldLabel, FieldLabelHint} from '../../ui/Label/FieldLabel';
 import {
   DialogPanelContent,
   DialogPanelFooter,

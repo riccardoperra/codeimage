@@ -1,5 +1,5 @@
 import {style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
+import {themeVars} from '../../theme';
 
 export const label = style({
   color: themeVars.dynamicColors.input.labelTextColor,

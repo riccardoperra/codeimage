@@ -1,10 +1,10 @@
-import {Text, TextProps} from '@codeimage/ui';
 import {Component, mergeProps, Show} from 'solid-js';
 import * as styles from './FieldLabel.css';
 import {omitProps} from 'solid-use';
 import clsx from 'clsx';
-import {Box} from '@codeimage/ui';
 import {Dynamic} from 'solid-js/web';
+import {TextProps, Text} from '../Text';
+import {Box} from '../Box';
 
 type FieldLabelProps = TextProps<'label'> & {
   icon?: Component;
@@ -34,7 +34,7 @@ export const FieldLabelHint: Component<FieldLabelProps> = props => {
   return (
     <Box class={styles.labelHintWrapper}>
       <Show when={computedProps.icon}>
-        <Box as={'span'} marginRight={1} display={'inlineFlex'}>
+        <Box as={'span'} marginRight={'1'} display={'inlineFlex'}>
           <Dynamic component={computedProps.icon} />
         </Box>
       </Show>

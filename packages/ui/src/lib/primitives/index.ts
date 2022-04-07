@@ -19,3 +19,5 @@ export {RangeField, rangeFieldStyles} from './RangeField';
 export {ColorPicker} from './ColorPicker';
 
 export {Box, VStack, HStack} from './Box';
+
+export {FieldLabel, FieldLabelHint} from './Label';
