@@ -42,7 +42,7 @@
     "app:dev": "pnpm dev --filter=@codeimage/app",
     "lint": "pnpm lint --filter='@codeimage/*'",
     "typecheck": "pnpm typecheck --filter='@codeimage/*'",
-    "build:prod": "pnpm build --filter='@codeimage/*'",
+    "build:prod": "pnpm patch-solid-exports && pnpm build --filter='@codeimage/*'",
     "changeset:pr": "changeset version && ts-node scripts/sync-package.ts",
     "postinstall": "pnpm patch-solid-exports",
     "patch-solid-exports": "cross-env APPLY_PATCH=true ts-node scripts/patch-solid-exports.ts",
