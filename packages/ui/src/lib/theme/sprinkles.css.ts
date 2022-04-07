@@ -5,13 +5,7 @@ import {
 } from '@vanilla-extract/sprinkles';
 import {themeVars} from './global.css';
 
-const responsiveProperties = defineProperties({
-  conditions: {
-    mobile: {},
-    tablet: {'@media': 'screen and (min-width: 768px)'},
-    desktop: {'@media': 'screen and (min-width: 1024px)'},
-  },
-  defaultCondition: 'mobile',
+export const responsiveProperties = defineProperties({
   properties: {
     cursor: ['default', 'pointer'],
     display: {
