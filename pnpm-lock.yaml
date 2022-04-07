@@ -18,6 +18,7 @@ importers:
       '@types/prettier': ^2.4.4
       '@typescript-eslint/eslint-plugin': ^5.16.0
       '@typescript-eslint/parser': ^5.16.0
+      cross-env: ^7.0.3
       eslint: ^8.11.0
       eslint-config-prettier: ^8.5.0
       eslint-plugin-prettier: ^4.0.0
@@ -43,6 +44,7 @@ importers:
       '@types/prettier': 2.4.4
       '@typescript-eslint/eslint-plugin': 5.18.0_a07dca3bdfc4bfa60f4dda0c1f9e3287
       '@typescript-eslint/parser': 5.18.0_eslint@8.12.0+typescript@4.6.3
+      cross-env: 7.0.3
       eslint: 8.12.0
       eslint-config-prettier: 8.5.0_eslint@8.12.0
       eslint-plugin-prettier: 4.0.0_f2c91d0f54113167d2bd9214a5ab5a36
