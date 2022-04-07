@@ -31,7 +31,7 @@ export function TextField(props: PropsWithChildren<TextFieldProps>) {
 
   return (
     <Dynamic
-      as={'input'}
+      component={'input'}
       value={props.value}
       type={props.type}
       class={classes()}

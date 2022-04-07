@@ -5,8 +5,12 @@ import {Dynamic} from 'solid-js/web';
 export function FlexField(props: PropsWithChildren<FlexFieldVariants>) {
   // TODO: why pure div not working?
   return (
-    <Dynamic as={'div'} class={wrapper({size: props.size})}>
-      {props.children}
-    </Dynamic>
+    <>
+      <Dynamic
+        component={'div'}
+        class={wrapper({size: props.size})}
+        children={props.children}
+      />
+    </>
   );
 }
