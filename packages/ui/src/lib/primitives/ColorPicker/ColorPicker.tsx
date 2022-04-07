@@ -5,6 +5,7 @@ import {
 import {omitProps} from 'solid-use';
 import {Component} from 'solid-js';
 import * as styles from './ColorPicker.css';
+import {Dynamic} from 'solid-js/web';
 
 type ColorPickerProps = {
   value?: string;
@@ -21,7 +22,8 @@ export const ColorPicker: Component<ColorPickerProps> = props => {
   }
 
   return (
-    <input
+    <Dynamic
+      component={'input'}
       class={styles.colorPicker}
       value={props.value}
       onInput={onChange}

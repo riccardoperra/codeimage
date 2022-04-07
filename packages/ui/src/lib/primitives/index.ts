@@ -15,3 +15,5 @@ export {FlexField, flexFieldStyles} from './Field';
 export {TextField, textFieldStyles, type TextFieldProps} from './TextField';
 
 export {RangeField, rangeFieldStyles} from './RangeField';
+
+export {ColorPicker} from './ColorPicker';
