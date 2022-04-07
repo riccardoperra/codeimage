@@ -2,8 +2,8 @@ import {Component} from 'solid-js';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import {Popover, PopoverButton} from 'solid-headless';
 import {sprinkles, textFieldStyles, themeVars} from '@codeimage/ui';
-import {DropdownMenu} from '../../ui/Dropdown/DropdownPanel';
-import {DropdownPortal} from '../../ui/Dropdown/DropdownPortal';
+import {DropdownMenu} from '@codeimage/ui';
+import {DropdownPortal} from '@codeimage/ui';
 import {ShadowForm} from './ShadowForm';
 import clsx from 'clsx';
 

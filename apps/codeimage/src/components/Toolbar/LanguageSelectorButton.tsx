@@ -1,11 +1,14 @@
 import {Popover, PopoverButton} from 'solid-headless';
-import {Button, FadeInOutTransition} from '@codeimage/ui';
+import {
+  Button,
+  DropdownItem,
+  DropdownMenu,
+  FadeInOutTransition,
+} from '@codeimage/ui';
 import {For} from 'solid-js';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import {offset} from '@floating-ui/dom';
 import {useI18n} from '@codeimage/locale';
-import {DropdownItem} from '../../ui/Dropdown/DropdownItem';
-import {DropdownMenu} from '../../ui/Dropdown/DropdownMenu';
 import {AppLocaleEntries} from '../../i18n';
 import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
 

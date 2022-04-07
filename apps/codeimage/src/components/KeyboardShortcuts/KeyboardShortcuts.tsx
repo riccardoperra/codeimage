@@ -1,13 +1,11 @@
 import {createMemo, createSignal, For, from, JSXElement} from 'solid-js';
-import {Button, HStack} from '@codeimage/ui';
+import {Button, FadeInOutTransition, HStack, PopoverPanel} from '@codeimage/ui';
 import {HintIcon} from '../Icons/Hint';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Popover, PopoverButton} from 'solid-headless';
-import {PopoverPanel} from '../../ui/Dropdown/DropdownMenu';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import * as styles from './KeyboardShortcuts.css';
-import {FadeInOutTransition} from '@codeimage/ui';
 import {offset} from '@floating-ui/dom';
 import {PortalHostInjector} from '../../ui/PortalHost/PortalHost';
 import * as frame from '@codeimage/store/frame';

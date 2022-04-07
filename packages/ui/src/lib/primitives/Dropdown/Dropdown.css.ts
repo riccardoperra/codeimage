@@ -1,5 +1,6 @@
 import {style} from '@vanilla-extract/css';
-import {buttonStyles, themeVars} from '@codeimage/ui';
+import * as buttonStyles from '../Button/Button.css';
+import {themeVars} from '../../theme';
 
 export const dropdownPanel = style({
   overflow: 'hidden',
