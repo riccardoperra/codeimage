@@ -8,16 +8,14 @@ import {
   HStack,
   Link,
   RangeField,
+  SegmentedField,
+  SegmentedFieldItem,
   TextField,
   VStack,
 } from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';
-import {
-  SegmentedField,
-  SegmentedFieldItem,
-} from '../../ui/SegmentedField/SegmentedField';
 import {
   DialogPanelContent,
   DialogPanelFooter,

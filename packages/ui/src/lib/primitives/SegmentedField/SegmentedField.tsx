@@ -1,8 +1,9 @@
 import * as styles from './SegmentedField.css';
 import {createMemo, For, JSX} from 'solid-js';
 import clsx from 'clsx';
-import {useText, UseTextProps} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {useText, UseTextProps} from '../Text';
+import {Box} from '../Box';
 
 export interface SegmentedFieldItem<T> {
   label: string;
@@ -28,11 +29,10 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
     () => `calc(${segmentWidth()} * ${activeIndex()})`,
   );
 
-  const segmentStyle = () =>
-    clsx(useText({size: props.size ?? 'sm'}), styles.segment);
+  const segmentStyle = createMemo(() => useText({size: props.size ?? 'sm'}));
 
   return (
-    <div class={clsx(styles.wrapper)} id={props.id}>
+    <Box class={clsx(styles.wrapper)} id={props.id}>
       <div class={styles.box}>
         <div
           style={assignInlineVars({
@@ -44,16 +44,17 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
         />
         <For each={props.items}>
           {(item, index) => (
-            <div
-              class={segmentStyle()}
+            // TODO: div broke build
+            <Box
+              class={clsx(styles.segment, segmentStyle())}
               data-active={index() === activeIndex()}
               onClick={() => props.onChange(item.value)}
             >
               {item.label}
-            </div>
+            </Box>
           )}
         </For>
       </div>
-    </div>
+    </Box>
   );
 }

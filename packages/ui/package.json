@@ -31,7 +31,7 @@
     "@vanilla-extract/dynamic": "^2.0.2",
     "solid-headless": "^0.10.12",
     "solid-use": "^0.3.3",
-    "solid-js": "^1.3.13",
+    "solid-js": "^1.3.14",
     "csstype": "^3.0.11",
     "clsx": "^1.1.1",
     "@floating-ui/dom": "^0.4.4",
@@ -53,7 +53,7 @@
   "devDependencies": {
     "@types/node": "^17.0.21",
     "rimraf": "^3.0.2",
-    "solid-js": "^1.3.13",
+    "solid-js": "^1.3.14",
     "typescript": "^4.6.2",
     "vite": "^2.9.1",
     "vite-plugin-dts": "^1.0.5",
