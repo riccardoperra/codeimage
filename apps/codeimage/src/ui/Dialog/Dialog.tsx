@@ -14,7 +14,7 @@ import {
 import {PropsWithChildren} from 'solid-js/types/render/component';
 import {DialogTitle} from './DialogTitle';
 import {DialogPanel, DialogPanelProps} from './DialogPanel';
-import {Box} from '../Box/Box';
+import {Box} from '@codeimage/ui';
 
 export type DialogProps = Omit<ShDialogProps, 'children'> & {
   title?: string;

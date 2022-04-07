@@ -4,7 +4,7 @@ import {notificationStore, SnackbarData} from './SnackbarHost';
 import * as styles from './Snackbar.css';
 import {Dynamic} from 'solid-js/web';
 import {Button, Text} from '@codeimage/ui';
-import {Box} from '../Box/Box';
+import {Box} from '@codeimage/ui';
 import {SvgIcon} from '../SvgIcon/SvgIcon';
 import {FadeInOutWithScaleTransition} from '../Transition/Transition';
 

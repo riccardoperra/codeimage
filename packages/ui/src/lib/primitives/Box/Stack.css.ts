@@ -1,5 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {sprinkles} from '../../theme/sprinkles.css';
+import {sprinkles} from '../../theme';
 
 export const [stackTheme, stackThemeVars] = createTheme({
   spacing: '0px',

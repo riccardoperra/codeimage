@@ -1,8 +1,6 @@
 import * as styles from './Header.css';
-import {Button} from '@codeimage/ui';
-import {sprinkles} from '../../../theme/sprinkles.css';
+import {Box, Button, sprinkles} from '@codeimage/ui';
 import {SvgIcon} from '../../../ui/SvgIcon/SvgIcon';
-import {Box} from '../../../ui/Box/Box';
 
 export const Header = () => {
   return (

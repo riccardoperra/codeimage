@@ -1,6 +1,5 @@
 import * as styles from './BottomBar.css';
-import {Button} from '@codeimage/ui';
-import {Box} from '../../ui/Box/Box';
+import {Box, Button} from '@codeimage/ui';
 import {Portal} from 'solid-js/web';
 import {Component, createSignal, Show} from 'solid-js';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';

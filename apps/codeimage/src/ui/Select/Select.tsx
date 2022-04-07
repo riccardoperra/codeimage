@@ -8,7 +8,7 @@ import {
 } from 'solid-headless';
 import {Component, For, JSX, JSXElement, Show} from 'solid-js';
 import * as styles from './Select.css';
-import {Box} from '../Box/Box';
+import {Box} from '@codeimage/ui';
 import Fragment from 'solid-headless/src/utils/Fragment';
 import {Text} from '@codeimage/ui';
 import {useFloating} from '../../core/floating-ui/floating-ui';

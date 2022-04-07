@@ -1,9 +1,9 @@
 import {style} from '@vanilla-extract/css';
-import {textFieldStyles} from '../TextField';
+import {baseField} from '../TextField/TextField.css';
 import {themeVars} from '../../theme';
 
 export const colorPicker = style([
-  textFieldStyles.baseField,
+  baseField,
   {
     flex: 1,
   },

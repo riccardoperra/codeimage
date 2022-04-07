@@ -1,7 +1,7 @@
 import {Box, BoxProps} from './Box';
 import * as styles from './Stack.css';
-import {themeVars} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {themeVars} from '../../theme';
 
 interface StackProps extends BoxProps {
   spacing: keyof typeof themeVars.spacing;

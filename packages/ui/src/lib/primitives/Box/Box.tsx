@@ -1,5 +1,4 @@
 import {Dynamic} from 'solid-js/web';
-import {sprinkles} from '../../theme/sprinkles.css';
 import {
   DynamicProps,
   ValidConstructor,
@@ -7,7 +6,8 @@ import {
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import {omitProps, pickProps} from 'solid-use';
 import clsx from 'clsx';
-import {scrollbar} from '../../theme/base.css';
+import {sprinkles} from '../../theme';
+import {boxBase} from './Box.css';
 
 type BoxParameters = Parameters<typeof sprinkles>[0];
 
@@ -24,7 +24,7 @@ export function Box<T extends ValidConstructor = 'div'>(props: BoxProps<T>) {
       ref={props.ref}
       {...omitProps(props, ['as', 'ref'])}
       class={clsx(
-        scrollbar,
+        boxBase,
         props.class,
         sprinkles(pickProps(props, [...sprinkles.properties.keys()])),
       )}

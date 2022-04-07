@@ -2,7 +2,7 @@ import {Component, Show} from 'solid-js';
 import * as styles from './EditorSidebar.css';
 import {panelRowContent} from './EditorSidebar.css';
 import {Text} from '@codeimage/ui';
-import {Box} from '../../ui/Box/Box';
+import {Box} from '@codeimage/ui';
 
 interface PanelRowProps {
   label?: string;

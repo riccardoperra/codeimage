@@ -3,7 +3,7 @@ import {Component, mergeProps, Show} from 'solid-js';
 import * as styles from './FieldLabel.css';
 import {omitProps} from 'solid-use';
 import clsx from 'clsx';
-import {Box} from '../Box/Box';
+import {Box} from '@codeimage/ui';
 import {Dynamic} from 'solid-js/web';
 
 type FieldLabelProps = TextProps<'label'> & {

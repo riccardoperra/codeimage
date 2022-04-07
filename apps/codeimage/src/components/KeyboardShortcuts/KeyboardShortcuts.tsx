@@ -1,7 +1,6 @@
 import {createMemo, createSignal, For, from, JSXElement} from 'solid-js';
-import {Button} from '@codeimage/ui';
+import {Button, HStack} from '@codeimage/ui';
 import {HintIcon} from '../Icons/Hint';
-import {HStack} from '../../ui/Box/Stack';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Popover, PopoverButton} from 'solid-headless';

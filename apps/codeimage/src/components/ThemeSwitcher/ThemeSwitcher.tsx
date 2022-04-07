@@ -15,7 +15,7 @@ import {editor$} from '@codeimage/store/editor';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
 import {appEnvironment} from '../../core/configuration';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {Box} from '../../ui/Box/Box';
+import {Box} from '@codeimage/ui';
 import {FadeInOutWithScaleTransition} from '../../ui/Transition/Transition';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';

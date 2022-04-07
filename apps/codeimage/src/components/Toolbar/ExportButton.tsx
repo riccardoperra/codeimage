@@ -1,6 +1,14 @@
 import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
-import {Box} from '../../ui/Box/Box';
-import {Button, FlexField, Link, RangeField, TextField} from '@codeimage/ui';
+import {
+  Box,
+  Button,
+  FlexField,
+  HStack,
+  Link,
+  RangeField,
+  TextField,
+  VStack,
+} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Dialog, DialogProps} from '../../ui/Dialog/Dialog';
@@ -22,7 +30,6 @@ import {notificationStore} from '../../ui/Toast/SnackbarHost';
 import {appEnvironment} from '../../core/configuration';
 import {HintIcon} from '../Icons/Hint';
 import {ExclamationIcon} from '../Icons/Exclamation';
-import {HStack, VStack} from '../../ui/Box/Stack';
 import {useModality} from '../../core/hooks/isMobile';
 import {Transition} from 'solid-headless';
 import {PortalHostInjector} from '../../ui/PortalHost/PortalHost';

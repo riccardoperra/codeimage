@@ -1,5 +1,5 @@
 import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
-import {Box} from '../../ui/Box/Box';
+import {Box} from '@codeimage/ui';
 import * as styles from './terminal.css';
 import {appEnvironment} from '../../core/configuration';
 import {TabIcon} from './TabIcon';

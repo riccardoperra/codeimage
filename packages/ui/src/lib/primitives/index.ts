@@ -17,3 +17,5 @@ export {TextField, textFieldStyles, type TextFieldProps} from './TextField';
 export {RangeField, rangeFieldStyles} from './RangeField';
 
 export {ColorPicker} from './ColorPicker';
+
+export {Box, VStack, HStack} from './Box';

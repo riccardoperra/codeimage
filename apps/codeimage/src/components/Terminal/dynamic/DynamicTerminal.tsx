@@ -3,7 +3,7 @@ import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 import {BaseTerminalProps} from '../TerminalHost';
 import {appEnvironment} from '../../../core/configuration';
-import {Box} from '../../../ui/Box/Box';
+import {Box} from '@codeimage/ui';
 import * as styles from '../terminal.css';
 import {CodeImageLogo} from '../../Icons/CodeImageLogo';
 import {FadeInOutTransition} from '../../../ui/Transition/Transition';
