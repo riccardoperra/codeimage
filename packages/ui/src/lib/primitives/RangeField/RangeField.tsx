@@ -1,5 +1,4 @@
 import * as styles from './RangeField.css';
-import {UseTextProps} from '@codeimage/ui';
 import {Component} from 'solid-js';
 import {
   DynamicProps,
@@ -7,6 +6,8 @@ import {
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import {omitProps} from 'solid-use';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {UseTextProps} from '../Text';
+import {Dynamic} from 'solid-js/web';
 
 type RangeFieldProps = {
   value?: number;
@@ -32,7 +33,8 @@ export const RangeField: Component<RangeFieldProps> = props => {
   };
 
   return (
-    <input
+    <Dynamic
+      component={'input'}
       class={styles.range}
       value={props.value}
       onInput={onChange}

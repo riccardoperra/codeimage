@@ -13,3 +13,5 @@ export {Link, linkStyles} from './Link';
 export {FlexField, flexFieldStyles} from './Field';
 
 export {TextField, textFieldStyles, type TextFieldProps} from './TextField';
+
+export {RangeField, rangeFieldStyles} from './RangeField';

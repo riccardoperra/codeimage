@@ -1,6 +1,6 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
-import {flexFieldStyles} from '@codeimage/ui';
+import {themeVars} from '../../theme';
+import * as flexFieldStyles from '../Field/FlexField.css';
 
 export const [rangeTheme, rangeVars] = createTheme({
   rangeProgress: '0%',
