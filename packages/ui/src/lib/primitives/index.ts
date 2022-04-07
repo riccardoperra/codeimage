@@ -25,3 +25,5 @@ export {FieldLabel, FieldLabelHint} from './Label';
 export {Group} from './Group';
 
 export {RadioBlock, type RadioBlockProps} from './RadioBlock';
+
+export {Select} from './Select';

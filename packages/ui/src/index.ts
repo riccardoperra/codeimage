@@ -9,3 +9,4 @@ export {
   type Sprinkles,
 } from './lib/theme';
 export * from './lib/primitives';
+export * from './lib/hooks';

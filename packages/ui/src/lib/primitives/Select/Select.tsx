@@ -8,28 +8,31 @@ import {
 } from 'solid-headless';
 import {Component, For, JSX, JSXElement, Show} from 'solid-js';
 import * as styles from './Select.css';
-import {Box} from '@codeimage/ui';
 import Fragment from 'solid-headless/src/utils/Fragment';
-import {Text} from '@codeimage/ui';
-import {useFloating} from '../../core/floating-ui/floating-ui';
 import {flip, offset} from '@floating-ui/dom';
+import {Box} from '../Box';
+import {useFloating} from '../../hooks';
+import {Text} from '../Text';
+import {Dynamic} from 'solid-js/web';
 
 function SelectorIcon(props: JSX.IntrinsicElements['svg']): JSX.Element {
   return (
-    <svg
+    <Dynamic
+      component={'svg'}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
       {...props}
     >
-      <path
+      <Dynamic
+        component={'path'}
         stroke-linecap="round"
         stroke-linejoin="round"
         stroke-width="2"
         d="M8 9l4-4 4 4m0 6l-4 4-4-4"
       />
-    </svg>
+    </Dynamic>
   );
 }
 
@@ -65,7 +68,8 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
     >
       <Box class={styles.wrapper} ref={floating.setReference} id={props.id}>
         <Show when={props.native}>
-          <select
+          <Dynamic
+            component={'select'}
             class={styles.native}
             id={props.id}
             onChange={event => {
@@ -78,15 +82,16 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
           >
             <For each={props.items}>
               {(item, index) => (
-                <option
+                <Dynamic
+                  component={'option'}
                   value={index()}
                   class={styles.listBoxOption({active: false})}
                 >
                   {item.label}
-                </option>
+                </Dynamic>
               )}
             </For>
-          </select>
+          </Dynamic>
         </Show>
         <ListboxButton
           class={styles.listBox}
@@ -96,10 +101,12 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
             }
           }}
         >
-          <span class={styles.selected}>{label()}</span>
-          <span class={styles.selectorIconWrapper}>
+          <Box as="span" class={styles.selected}>
+            {label()}
+          </Box>
+          <Box as="span" class={styles.selectorIconWrapper}>
             <SelectorIcon class={styles.selectorIcon} aria-hidden="true" />
-          </span>
+          </Box>
         </ListboxButton>
         <HeadlessDisclosureChild>
           {({isOpen}) => (
@@ -120,7 +127,8 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
                       value={item.value}
                     >
                       {({isActive, isSelected}) => (
-                        <div
+                        <Box
+                          as={'div'}
                           class={styles.listBoxOption({
                             active: isActive(),
                           })}
@@ -140,7 +148,7 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
                               {item.label}
                             </Text>
                           )}
-                        </div>
+                        </Box>
                       )}
                     </ListboxOption>
                   )}

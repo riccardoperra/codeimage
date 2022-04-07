@@ -18,6 +18,7 @@ module.exports = defineConfig({
         ...Object.keys(dependencies),
         ...Object.keys(peerDependencies),
         'solid-js/web',
+        'solid-js/store',
       ],
       output: {
         entryFileNames: '[name].js',

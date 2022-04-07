@@ -1,9 +1,9 @@
 import {style} from '@vanilla-extract/css';
-import {textFieldStyles} from '@codeimage/ui';
-import {textStyles} from '@codeimage/ui';
-import {themeVars} from '@codeimage/ui';
+import * as textFieldStyles from '../TextField/TextField.css';
+import * as textStyles from '../Text/Text.css';
+import * as boxStyles from '../Box/Box.css';
 import {recipe} from '@vanilla-extract/recipes';
-import {scrollbar} from '../../theme/base.css';
+import {themeVars} from '../../theme';
 
 export const wrapper = style({
   width: '100%',
@@ -26,7 +26,7 @@ export const listBox = style([
 
 export const listBoxPanel = style([
   textStyles.fontSize.xs,
-  scrollbar,
+  boxStyles.boxBase,
   {
     position: 'absolute',
     width: '100%',
