@@ -17,22 +17,20 @@ import {Dynamic} from 'solid-js/web';
 
 function SelectorIcon(props: JSX.IntrinsicElements['svg']): JSX.Element {
   return (
-    <Dynamic
-      component={'svg'}
+    <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
       {...props}
     >
-      <Dynamic
-        component={'path'}
+      <path
         stroke-linecap="round"
         stroke-linejoin="round"
         stroke-width="2"
         d="M8 9l4-4 4 4m0 6l-4 4-4-4"
       />
-    </Dynamic>
+    </svg>
   );
 }
 
@@ -68,8 +66,7 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
     >
       <Box class={styles.wrapper} ref={floating.setReference} id={props.id}>
         <Show when={props.native}>
-          <Dynamic
-            component={'select'}
+          <select
             class={styles.native}
             id={props.id}
             onChange={event => {
@@ -82,16 +79,15 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
           >
             <For each={props.items}>
               {(item, index) => (
-                <Dynamic
-                  component={'option'}
+                <option
                   value={index()}
                   class={styles.listBoxOption({active: false})}
                 >
                   {item.label}
-                </Dynamic>
+                </option>
               )}
             </For>
-          </Dynamic>
+          </select>
         </Show>
         <ListboxButton
           class={styles.listBox}
@@ -101,12 +97,10 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
             }
           }}
         >
-          <Box as="span" class={styles.selected}>
-            {label()}
-          </Box>
-          <Box as="span" class={styles.selectorIconWrapper}>
+          <span class={styles.selected}>{label()}</span>
+          <span class={styles.selectorIconWrapper}>
             <SelectorIcon class={styles.selectorIcon} aria-hidden="true" />
-          </Box>
+          </span>
         </ListboxButton>
         <HeadlessDisclosureChild>
           {({isOpen}) => (

@@ -1,7 +1,7 @@
 import * as styles from './RadioBlock.css';
 import {RadioBlockVariants} from './RadioBlock.css';
 import {JSXElement} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {Box} from '../Box';
 
 export type RadioBlockProps<T> = RadioBlockVariants & {
   value: T;
@@ -11,14 +11,13 @@ export type RadioBlockProps<T> = RadioBlockVariants & {
 
 export function RadioBlock<T>(props: RadioBlockProps<T>) {
   return (
-    <Dynamic
-      component={'div'}
+    <Box
       class={styles.radioBlock({
         selected: props.selected,
       })}
       onClick={() => props.onSelect?.(props.value)}
     >
       {props.children}
-    </Dynamic>
+    </Box>
   );
 }
