@@ -1,5 +1,5 @@
 import {Component} from 'solid-js';
-import {Box} from '@codeimage/ui';
+import {Box} from '../Box';
 import * as styles from './Group.css';
 import {GroupVariants} from './Group.css';
 

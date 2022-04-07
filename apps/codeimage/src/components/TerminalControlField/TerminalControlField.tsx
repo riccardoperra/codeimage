@@ -1,9 +1,7 @@
 import {For, JSXElement} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {terminal$} from '@codeimage/store/terminal';
-import {Group} from '../../ui/Group/Group';
-import {RadioBlock} from '../../ui/RadioBlock/RadioBlock';
-import {Box} from '@codeimage/ui';
+import {Box, Group, RadioBlock} from '@codeimage/ui';
 import {appEnvironment} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 

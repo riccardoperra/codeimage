@@ -21,3 +21,7 @@ export {ColorPicker} from './ColorPicker';
 export {Box, VStack, HStack} from './Box';
 
 export {FieldLabel, FieldLabelHint} from './Label';
+
+export {Group} from './Group';
+
+export {RadioBlock, type RadioBlockProps} from './RadioBlock';
