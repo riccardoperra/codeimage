@@ -13,7 +13,6 @@ import {flip, offset} from '@floating-ui/dom';
 import {Box} from '../Box';
 import {useFloating} from '../../hooks';
 import {Text} from '../Text';
-import {Dynamic} from 'solid-js/web';
 
 function SelectorIcon(props: JSX.IntrinsicElements['svg']): JSX.Element {
   return (
