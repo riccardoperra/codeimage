@@ -1,9 +1,10 @@
-import {Toaster, ToasterStore, Transition, useToaster} from 'solid-headless';
-import {Component, For} from 'solid-js';
+import {Toaster, Transition} from 'solid-headless';
+import {Component, createMemo, For} from 'solid-js';
 import {SnackBar} from './Snackbar';
 import * as styles from './Snackbar.css';
 import {host} from './Snackbar.css';
-import {PortalHostContext} from '@codeimage/ui';
+import {PortalHostContext} from '../PortalHost';
+import {useSnackbar} from './snackbar.store';
 
 export interface SnackbarData {
   message: string | Component;
@@ -11,20 +12,19 @@ export interface SnackbarData {
   actions?: Component;
 }
 
-export const notificationStore = new ToasterStore<SnackbarData>();
-
-export const NotificationHandler = () => {
-  const notifications = useToaster(notificationStore);
+export const SnackbarHost = () => {
+  const [_snackbars, store] = useSnackbar();
+  const snackbars = createMemo(_snackbars);
 
   function clearNotifications() {
-    notificationStore.clear();
+    store.clear();
   }
 
   return (
     <PortalHostContext>
       <Toaster class={styles.hostWrapper}>
         <Transition
-          show={notifications().length > 0}
+          show={snackbars().length > 0}
           class="relative transition"
           enter="ease-out duration-300"
           enterFrom="opacity-0 scale-50 translate-y-full"
@@ -35,7 +35,7 @@ export const NotificationHandler = () => {
           afterLeave={clearNotifications}
         >
           <div class={host}>
-            <For each={notifications()}>
+            <For each={snackbars()}>
               {item => (
                 <SnackBar
                   id={item.id}

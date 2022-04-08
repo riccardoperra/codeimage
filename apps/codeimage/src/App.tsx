@@ -14,9 +14,8 @@ import {useI18n} from '@codeimage/locale';
 import {useModality} from './core/hooks/isMobile';
 import {BottomBar} from './components/BottomBar/BottomBar';
 import {FrameHandler} from './components/Frame/FrameHandler';
-import {NotificationHandler} from './ui/Toast/SnackbarHost';
 import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
-import {Box, PortalHost} from '@codeimage/ui';
+import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {useTabIcon} from './hooks/use-tab-icon';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {fromObservableObject} from './core/hooks/from-observable-object';
@@ -42,7 +41,7 @@ const App = () => {
 
   return (
     <Scaffold>
-      <NotificationHandler />
+      <SnackbarHost />
       <ReloadPrompt />
 
       <Show when={modality === 'full'}>

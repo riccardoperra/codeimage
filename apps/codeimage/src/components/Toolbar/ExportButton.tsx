@@ -16,6 +16,7 @@ import {
   SegmentedField,
   SegmentedFieldItem,
   TextField,
+  useSnackbarStore,
   VStack,
 } from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
@@ -25,7 +26,6 @@ import {
   ExportMode,
   useExportImage,
 } from '../../hooks/use-export-image';
-import {notificationStore} from '../../ui/Toast/SnackbarHost';
 import {appEnvironment} from '../../core/configuration';
 import {HintIcon} from '../Icons/Hint';
 import {ExclamationIcon} from '../Icons/Exclamation';
@@ -39,6 +39,7 @@ interface ExportButtonProps {
 }
 
 export const ExportButton: Component<ExportButtonProps> = props => {
+  const snackbarStore = useSnackbarStore();
   const [isOpen, setIsOpen] = createSignal(false);
   const [t] = useI18n<AppLocaleEntries>();
   const modality = useModality();
@@ -58,7 +59,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
 
   createEffect(() => {
     if (data.error) {
-      notificationStore.create({
+      snackbarStore.create({
         closeable: true,
         message: () => {
           const [t] = useI18n<AppLocaleEntries>();
