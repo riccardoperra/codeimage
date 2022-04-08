@@ -3,7 +3,7 @@ import {Component, For} from 'solid-js';
 import {SnackBar} from './Snackbar';
 import * as styles from './Snackbar.css';
 import {host} from './Snackbar.css';
-import {PortalHostInjector} from '../PortalHost/PortalHost';
+import {PortalHostContext} from '@codeimage/ui';
 
 export interface SnackbarData {
   message: string | Component;
@@ -21,7 +21,7 @@ export const NotificationHandler = () => {
   }
 
   return (
-    <PortalHostInjector>
+    <PortalHostContext>
       <Toaster class={styles.hostWrapper}>
         <Transition
           show={notifications().length > 0}
@@ -48,6 +48,6 @@ export const NotificationHandler = () => {
           </div>
         </Transition>
       </Toaster>
-    </PortalHostInjector>
+    </PortalHostContext>
   );
 };

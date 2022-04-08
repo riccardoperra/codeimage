@@ -11,6 +11,7 @@ import {
   FlexField,
   HStack,
   Link,
+  PortalHostContext,
   RangeField,
   SegmentedField,
   SegmentedFieldItem,
@@ -30,7 +31,6 @@ import {HintIcon} from '../Icons/Hint';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {useModality} from '../../core/hooks/isMobile';
 import {Transition} from 'solid-headless';
-import {PortalHostInjector} from '../../ui/PortalHost/PortalHost';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {DownloadIcon} from '../Icons/Download';
 
@@ -90,7 +90,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         </Box>
       </Button>
 
-      <PortalHostInjector>
+      <PortalHostContext>
         <ExportDialog
           size={'md'}
           isOpen={isOpen()}
@@ -112,7 +112,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
             closeModal();
           }}
         />
-      </PortalHostInjector>
+      </PortalHostContext>
     </>
   );
 };
