@@ -18,7 +18,7 @@ export function PortalHost(
   return <div class={styles.host} {...mergedProps} />;
 }
 
-export function PortalHostInjector(props: PropsWithChildren) {
+export function PortalHostContext(props: PropsWithChildren) {
   const [ref, setRef] = createSignal<HTMLElement | null>();
 
   onMount(() => {

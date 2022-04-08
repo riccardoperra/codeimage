@@ -52,3 +52,5 @@ export {
 } from './Dropdown';
 
 export {SvgIcon, type SvgIconProps} from './Icon';
+
+export {PortalHost, PortalHostContext} from './PortalHost';

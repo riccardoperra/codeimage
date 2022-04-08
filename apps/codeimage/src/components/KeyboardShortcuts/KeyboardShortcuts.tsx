@@ -1,5 +1,11 @@
 import {createMemo, createSignal, For, from, JSXElement} from 'solid-js';
-import {Button, FadeInOutTransition, HStack, PopoverPanel} from '@codeimage/ui';
+import {
+  Button,
+  FadeInOutTransition,
+  HStack,
+  PopoverPanel,
+  PortalHostContext,
+} from '@codeimage/ui';
 import {HintIcon} from '../Icons/Hint';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
@@ -7,7 +13,6 @@ import {Popover, PopoverButton} from 'solid-headless';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import * as styles from './KeyboardShortcuts.css';
 import {offset} from '@floating-ui/dom';
-import {PortalHostInjector} from '../../ui/PortalHost/PortalHost';
 import * as frame from '@codeimage/store/frame';
 import * as editor from '@codeimage/store/editor';
 import * as terminal from '@codeimage/store/terminal';
@@ -119,11 +124,11 @@ export function KeyboardShortcuts(): JSXElement {
         </PopoverButton>
 
         <FadeInOutTransition show={show()}>
-          <PortalHostInjector>
+          <PortalHostContext>
             <FadeInOutTransition childTransition={true}>
               <div class={styles.overlay} onClick={() => setShow(false)} />
             </FadeInOutTransition>
-          </PortalHostInjector>
+          </PortalHostContext>
           <PopoverPanel
             ref={floating.setFloating}
             style={{
