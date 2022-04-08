@@ -62,3 +62,5 @@ export {
   SnackbarHost,
   type SnackbarData,
 } from './Snackbar';
+
+export {Toggle} from './Toggle';

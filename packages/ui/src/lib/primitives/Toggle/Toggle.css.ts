@@ -1,6 +1,6 @@
 import {createVar, style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
-import {themeVars} from '@codeimage/ui';
+import {themeVars} from '../../theme';
 
 const toggleHeight = createVar();
 const toggleWidth = createVar();
