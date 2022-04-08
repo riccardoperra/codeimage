@@ -4,13 +4,13 @@ import {
   DropdownItem,
   DropdownMenu,
   FadeInOutTransition,
+  SvgIcon,
 } from '@codeimage/ui';
 import {For} from 'solid-js';
 import {useFloating} from '../../core/floating-ui/floating-ui';
 import {offset} from '@floating-ui/dom';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
-import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
 
 interface LanguageSelectorButtonProps {
   locales: readonly string[];

@@ -1,6 +1,6 @@
 import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 
-export const HintIcon = (props: SvgIconProps) => {
+export const ColorSwatchIcon = (props: SvgIconProps) => {
   return (
     <SvgIcon
       xmlns="http://www.w3.org/2000/svg"
@@ -13,7 +13,7 @@ export const HintIcon = (props: SvgIconProps) => {
       <path
         stroke-linecap="round"
         stroke-linejoin="round"
-        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
       />
     </SvgIcon>
   );

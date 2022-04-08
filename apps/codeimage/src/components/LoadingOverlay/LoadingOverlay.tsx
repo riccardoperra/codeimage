@@ -1,7 +1,7 @@
 import {JSXElement} from 'solid-js';
 import * as styles from './LoadingOverlay.css';
 import {overlay} from './LoadingOverlay.css';
-import {SvgIcon, SvgIconProps} from '../../ui/SvgIcon/SvgIcon';
+import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 
 interface LoaderProps extends SvgIconProps {
   width?: number;

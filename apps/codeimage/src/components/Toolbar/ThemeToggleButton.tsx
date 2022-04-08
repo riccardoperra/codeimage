@@ -1,7 +1,5 @@
 import {Component} from 'solid-js';
-import {Button} from '@codeimage/ui';
-import {themeVars} from '@codeimage/ui';
-import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
+import {Button, SvgIcon, themeVars} from '@codeimage/ui';
 import {GlobalUiState} from '@codeimage/store/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';

@@ -5,7 +5,7 @@ import {
   JSXElement,
   Suspense,
 } from 'solid-js';
-import {SvgIcon} from './SvgIcon';
+import {SvgIcon} from '@codeimage/ui';
 import {Loader} from '../../components/LoadingOverlay/LoadingOverlay';
 import {LanguageIconDefinition} from '@codeimage/config';
 
