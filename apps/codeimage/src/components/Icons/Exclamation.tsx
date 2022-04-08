@@ -1,4 +1,4 @@
-import {SvgIcon, SvgIconProps} from '../../ui/SvgIcon/SvgIcon';
+import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 
 export const ExclamationIcon = (props: SvgIconProps) => {
   return (

@@ -1,9 +1,7 @@
 import {Component, mergeProps, Show} from 'solid-js';
-import {Button} from '@codeimage/ui';
+import {Box, Button, SvgIcon} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
-import {Box} from '@codeimage/ui';
-import {SvgIcon} from '../../ui/SvgIcon/SvgIcon';
 import {appEnvironment} from '../../core/configuration';
 import {useHotkey} from '../../hooks/use-hotkey';
 

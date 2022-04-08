@@ -50,3 +50,5 @@ export {
   PopoverPanel,
   DropdownMenu,
 } from './Dropdown';
+
+export {SvgIcon, type SvgIconProps} from './Icon';

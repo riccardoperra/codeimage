@@ -1,4 +1,4 @@
-import {SvgIcon, SvgIconProps} from '../../ui/SvgIcon/SvgIcon';
+import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 
 export function EmptyCircle(props: SvgIconProps) {
   return (
