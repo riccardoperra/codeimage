@@ -1,17 +1,17 @@
 import {createSignal, JSX, Show} from 'solid-js';
 import {Toast} from 'solid-headless';
-import {notificationStore, SnackbarData} from './SnackbarHost';
+import {SnackbarData} from './SnackbarHost';
 import * as styles from './Snackbar.css';
 import {Dynamic} from 'solid-js/web';
-import {
-  Box,
-  Button,
-  FadeInOutWithScaleTransition,
-  SvgIcon,
-  Text,
-} from '@codeimage/ui';
+import {FadeInOutWithScaleTransition} from '../Transition';
+import {Box} from '../Box';
+import {Text} from '../Text';
+import {Button} from '../Button';
+import {SvgIcon} from '../Icon';
+import {useSnackbarStore} from './snackbar.store';
 
 export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
+  const store = useSnackbarStore();
   const [isOpen, setIsOpen] = createSignal(true);
 
   function dismiss() {
@@ -21,9 +21,9 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
   return (
     <FadeInOutWithScaleTransition
       show={isOpen()}
-      afterLeave={() => notificationStore.remove(props.id)}
+      afterLeave={() => store.remove(props.id)}
     >
-      <Toast class={styles.toast}>
+      <Toast class={styles.snackbar}>
         <Text size={'sm'} weight={'semibold'}>
           {typeof props.message === 'string' ? (
             props.message
@@ -33,12 +33,12 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
         </Text>
 
         <Show when={!!props.actions}>
-          <Box marginLeft={4}>
+          <Box marginLeft={'4'}>
             <Dynamic component={props.actions} />
           </Box>
         </Show>
         <Show when={props.closeable}>
-          <Box marginLeft={4}>
+          <Box marginLeft={'4'}>
             <Button
               type={'button'}
               size={'xs'}

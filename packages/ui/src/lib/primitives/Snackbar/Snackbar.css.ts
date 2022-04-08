@@ -1,7 +1,7 @@
 import {style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
+import {themeVars} from '../../theme';
 
-export const toast = style({
+export const snackbar = style({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',

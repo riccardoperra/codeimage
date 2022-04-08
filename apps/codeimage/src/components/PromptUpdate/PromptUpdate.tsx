@@ -1,7 +1,6 @@
 import {Component, createEffect} from 'solid-js';
 import {useRegisterSW} from 'virtual:pwa-register/solid';
-import {notificationStore} from '../../ui/Toast/SnackbarHost';
-import {Box, Button} from '@codeimage/ui';
+import {Box, Button, useSnackbarStore} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 
@@ -11,6 +10,7 @@ const PromptMessage: Component<{offline: boolean}> = props => {
 };
 
 const ReloadPrompt: Component = () => {
+  const snackbarStore = useSnackbarStore();
   let toastId: string;
 
   // replaced dynamically
@@ -51,7 +51,7 @@ const ReloadPrompt: Component = () => {
     const offline = false;
     const refresh = needRefresh();
     if (offline || refresh) {
-      toastId = notificationStore.create({
+      toastId = snackbarStore.create({
         message: () => <PromptMessage offline={offline} />,
         closeable: false,
         actions: () => {
@@ -77,7 +77,7 @@ const ReloadPrompt: Component = () => {
         },
       });
     } else {
-      notificationStore.remove(toastId);
+      snackbarStore.remove(toastId);
     }
   });
 
