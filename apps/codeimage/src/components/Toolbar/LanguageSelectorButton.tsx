@@ -1,15 +1,15 @@
-import {Popover, PopoverButton} from 'solid-headless';
+import {useI18n} from '@codeimage/locale';
 import {
   Button,
   DropdownItem,
   DropdownMenu,
   FadeInOutTransition,
   SvgIcon,
+  useFloating,
 } from '@codeimage/ui';
-import {For} from 'solid-js';
-import {useFloating} from '../../core/floating-ui/floating-ui';
 import {offset} from '@floating-ui/dom';
-import {useI18n} from '@codeimage/locale';
+import {Popover, PopoverButton} from 'solid-headless';
+import {For} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 
 interface LanguageSelectorButtonProps {

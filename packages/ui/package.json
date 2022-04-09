@@ -13,16 +13,14 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && vite build",
+    "build": "vite build",
     "build:watch": "vite build --watch",
-    "preview": "vite preview",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
     "clean": "rimraf dist",
-    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
-    "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
+    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json"
   },
   "peerDependencies": {
     "@vanilla-extract/css": "^1.6.8",

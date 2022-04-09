@@ -1,11 +1,15 @@
-import {Component} from 'solid-js';
-import {useFloating} from '../../core/floating-ui/floating-ui';
-import {Popover, PopoverButton} from 'solid-headless';
-import {sprinkles, textFieldStyles, themeVars} from '@codeimage/ui';
-import {DropdownMenu} from '@codeimage/ui';
-import {DropdownPortal} from '@codeimage/ui';
-import {ShadowForm} from './ShadowForm';
+import {
+  DropdownMenu,
+  DropdownPortal,
+  sprinkles,
+  textFieldStyles,
+  themeVars,
+  useFloating,
+} from '@codeimage/ui';
 import clsx from 'clsx';
+import {Popover, PopoverButton} from 'solid-headless';
+import {Component} from 'solid-js';
+import {ShadowForm} from './ShadowForm';
 
 interface ShadowFieldProps {
   value: string;
