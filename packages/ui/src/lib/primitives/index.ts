@@ -64,3 +64,5 @@ export {
 } from './Snackbar';
 
 export {Loading, type LoaderProps, LoadingOverlay} from './Loader';
+
+export {Toggle} from './Toggle';
