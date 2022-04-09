@@ -38,7 +38,7 @@ $ pnpm libs:build
 
 - Development mode:
 ```bash
-$ pnpm app:dev
+$ pnpm dev
 ```
 
 - Production mode (no reload, serve static files):
