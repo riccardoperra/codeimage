@@ -11,7 +11,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && vite build",
+    "build": "vite build",
     "build:watch": "vite build --watch",
     "preview": "vite preview",
     "pre-commit": "lint-staged --relative",
