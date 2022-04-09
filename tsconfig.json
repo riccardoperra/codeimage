@@ -11,6 +11,7 @@
     "declaration": true,
     "sourceMap": true,
     "importHelpers": true,
+    "resolveJsonModule": true,
     "importsNotUsedAsValues": "remove",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,

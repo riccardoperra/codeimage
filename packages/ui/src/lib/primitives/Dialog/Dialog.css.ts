@@ -1,8 +1,7 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
-import {themeVars} from '../../theme';
+import {adaptiveFullScreenHeight, themeVars} from '../../theme';
 import * as textStyles from '../Text/Text.css';
-import {adaptiveFullScreenHeight} from '../../theme/base.css';
 
 export const [dialogTheme, dialogThemeVars] = createTheme({
   contentPadding: themeVars.spacing['6'],

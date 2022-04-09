@@ -1,27 +1,21 @@
-import {JSXElement} from 'solid-js';
-import * as styles from './LoadingOverlay.css';
-import {overlay} from './LoadingOverlay.css';
-import {SvgIcon, SvgIconProps} from '@codeimage/ui';
+import {SvgIcon, SvgIconProps} from '../Icon/SvgIcon';
+import * as styles from './Loader.css';
 
-interface LoaderProps extends SvgIconProps {
+export interface LoaderProps extends SvgIconProps {
   width?: number;
   height?: number;
 }
 
-interface LoadingOverlayProps extends LoaderProps {
-  overlay: boolean;
-}
-
-export function Loader(props: LoaderProps): JSXElement {
+export function Loading(props: LoaderProps) {
   return (
     <SvgIcon
-      {...props}
       width={props.width}
       height={props.height}
       viewBox="0 0 44 44"
       xmlns="http://www.w3.org/2000/svg"
       stroke="#fff"
       class={styles.loader}
+      {...props}
     >
       <g fill="none" fill-rule="evenodd" stroke-width="2">
         <circle cx="22" cy="22" r="1">
@@ -70,19 +64,5 @@ export function Loader(props: LoaderProps): JSXElement {
         </circle>
       </g>
     </SvgIcon>
-  );
-}
-
-export function LoadingOverlay(props: LoadingOverlayProps): JSXElement {
-  return (
-    <>
-      {props.overlay ? (
-        <div class={overlay}>
-          <Loader width={props.width} height={props.height} />
-        </div>
-      ) : (
-        <Loader width={props.width} height={props.height} />
-      )}
-    </>
   );
 }

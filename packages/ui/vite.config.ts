@@ -4,7 +4,21 @@ import dts from 'vite-plugin-dts';
 import solidPlugin from 'vite-plugin-solid';
 import {dependencies, peerDependencies} from './package.json';
 
-module.exports = defineConfig({
+const externals = [
+  ...Object.keys(dependencies),
+  ...Object.keys(peerDependencies),
+  'solid-js/web',
+  'solid-js/store',
+];
+
+export default defineConfig({
+  plugins: [
+    solidPlugin(),
+    dts({
+      skipDiagnostics: false,
+      logDiagnostics: true,
+    }),
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -12,23 +26,14 @@ module.exports = defineConfig({
       fileName: 'ui',
       formats: ['es'],
     },
-    cssCodeSplit: true,
+    target: 'esnext',
     rollupOptions: {
-      external: [
-        ...Object.keys(dependencies),
-        ...Object.keys(peerDependencies),
-        'solid-js/web',
-        'solid-js/store',
-      ],
+      external: externals,
       output: {
         entryFileNames: '[name].js',
-        esModule: true,
         preserveModules: true,
-        globals: {
-          'solid-js': 'solid-js',
-        },
+        format: 'es',
       },
     },
   },
-  plugins: [solidPlugin(), dts()],
 });

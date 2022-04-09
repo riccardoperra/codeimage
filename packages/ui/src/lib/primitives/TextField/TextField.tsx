@@ -1,13 +1,13 @@
-import {createMemo, PropsWithChildren} from 'solid-js';
-import {textField} from './TextField.css';
 import clsx from 'clsx';
 import {
   DynamicProps,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
+import {createMemo, PropsWithChildren} from 'solid-js';
 import {omitProps} from 'solid-use';
+import {styled} from '../../utils';
 import {useText, UseTextProps} from '../Text';
-import {Dynamic} from 'solid-js/web';
+import {textField} from './TextField.css';
 
 export type TextFieldProps = {
   type: 'text' | 'number';
@@ -30,8 +30,7 @@ export function TextField(props: PropsWithChildren<TextFieldProps>) {
   );
 
   return (
-    <Dynamic
-      component={'input'}
+    <styled.input
       value={props.value}
       type={props.type}
       class={classes()}
