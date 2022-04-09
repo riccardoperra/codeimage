@@ -1,15 +1,16 @@
-import {Dynamic} from 'solid-js/web';
-import {
-  DynamicProps,
-  ValidConstructor,
-  WithRef,
-} from 'solid-headless/dist/types/utils/dynamic-prop';
-import {omitProps, pickProps} from 'solid-use';
 import clsx from 'clsx';
-import {sprinkles} from '../../theme';
+import {
+  type DynamicProps,
+  type ValidConstructor,
+  type WithRef,
+} from 'solid-headless/dist/types/utils/dynamic-prop';
+import {type JSXElement, type PropsWithChildren} from 'solid-js';
+import {omitProps, pickProps} from 'solid-use';
+import {sprinkles, Sprinkles} from '../../theme';
+import {styled} from '../../utils';
 import {boxBase} from './Box.css';
 
-type BoxParameters = Parameters<typeof sprinkles>[0];
+type BoxParameters = Sprinkles;
 
 export type BoxProps<T extends ValidConstructor = 'div'> =
   Partial<BoxParameters> & {
@@ -17,10 +18,12 @@ export type BoxProps<T extends ValidConstructor = 'div'> =
   } & WithRef<T> &
     Omit<DynamicProps<T>, 'as' | 'disabled' | 'ref'>;
 
-export function Box<T extends ValidConstructor = 'div'>(props: BoxProps<T>) {
+export function Box<T extends ValidConstructor = 'div'>(
+  props: PropsWithChildren<BoxProps<T>>,
+): JSXElement {
   return (
-    <Dynamic
-      component={props.as ?? 'div'}
+    <styled.div
+      as={props.as ?? 'div'}
       ref={props.ref}
       {...omitProps(props, ['as', 'ref'])}
       class={clsx(
@@ -30,6 +33,6 @@ export function Box<T extends ValidConstructor = 'div'>(props: BoxProps<T>) {
       )}
     >
       {props.children}
-    </Dynamic>
+    </styled.div>
   );
 }

@@ -1,5 +1,5 @@
+import {adaptiveFullScreenHeight} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
-import {adaptiveFullScreenHeight} from '../../theme/base.css';
 
 export const [scaffoldTheme, scaffoldVars] = createTheme({
   toolbarHeight: '60px',

@@ -1,10 +1,36 @@
-import {defineConfig} from 'vite';
 import {resolve} from 'path';
+import {defineConfig, Plugin} from 'vite';
 import dts from 'vite-plugin-dts';
 import solidPlugin from 'vite-plugin-solid';
 import {dependencies, peerDependencies} from './package.json';
 
-module.exports = defineConfig({
+const externals = [
+  ...Object.keys(dependencies),
+  ...Object.keys(peerDependencies),
+  'solid-js/web',
+  'solid-js/store',
+];
+
+export function removeSideEffects(): Plugin {
+  return {
+    transform() {
+      return {
+        moduleSideEffects: 'no-treeshake',
+      };
+    },
+  };
+}
+
+export default defineConfig({
+  plugins: [
+    solidPlugin(),
+    dts({
+      skipDiagnostics: false,
+      logDiagnostics: true,
+    }),
+    // TODO: check possible issues --> why solid-js and @vanilla-extract/dynamic are imported in some files?
+    removeSideEffects(),
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -12,23 +38,14 @@ module.exports = defineConfig({
       fileName: 'ui',
       formats: ['es'],
     },
-    cssCodeSplit: true,
+    target: 'esnext',
     rollupOptions: {
-      external: [
-        ...Object.keys(dependencies),
-        ...Object.keys(peerDependencies),
-        'solid-js/web',
-        'solid-js/store',
-      ],
+      external: externals,
       output: {
         entryFileNames: '[name].js',
-        esModule: true,
         preserveModules: true,
-        globals: {
-          'solid-js': 'solid-js',
-        },
+        format: 'es',
       },
     },
   },
-  plugins: [solidPlugin(), dts()],
 });

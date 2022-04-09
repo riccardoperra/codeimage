@@ -1,1 +1,1 @@
-export {useFloating, type UseFloatingOptions} from './useFloatingUi';
+export {useFloating, type UseFloatingOptions} from './useFloating';

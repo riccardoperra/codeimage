@@ -5,12 +5,11 @@ import {
   JSXElement,
   Suspense,
 } from 'solid-js';
-import {SvgIcon} from '@codeimage/ui';
-import {Loader} from '../../components/LoadingOverlay/LoadingOverlay';
-import {LanguageIconDefinition} from '@codeimage/config';
+import {SvgIcon} from './SvgIcon';
+import {Loading} from '../Loader';
 
 interface SvgExternalIconProps {
-  content?: LanguageIconDefinition['content'] | null;
+  content?: string | (() => Promise<typeof import('*.svg')>) | null;
   delay?: number;
 }
 
@@ -55,10 +54,8 @@ export function extractSVGProps(src: string) {
   return map.length > 0 ? serializeAttrs(map) : null;
 }
 
-export function SvgExternalIcon(props: SvgExternalIconProps): JSXElement {
-  const [src, setSrc] = createSignal<
-    LanguageIconDefinition['content'] | null
-  >();
+export function RemoteSvgIcon(props: SvgExternalIconProps): JSXElement {
+  const [src, setSrc] = createSignal<SvgExternalIconProps['content'] | null>();
 
   const [data] = createResource(src, async content => {
     const svgResponse =
@@ -79,7 +76,7 @@ export function SvgExternalIcon(props: SvgExternalIconProps): JSXElement {
   createEffect(() => setSrc(() => props.content));
 
   return (
-    <Suspense fallback={<Loader size={'md'} />}>
+    <Suspense fallback={<Loading size={'md'} />}>
       <SvgIcon {...(data() || {})} size={'md'} />
     </Suspense>
   );

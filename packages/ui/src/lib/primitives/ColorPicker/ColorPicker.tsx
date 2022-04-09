@@ -2,10 +2,10 @@ import {
   DynamicProps,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {omitProps} from 'solid-use';
 import {Component} from 'solid-js';
+import {omitProps} from 'solid-use';
+import {styled} from '../../utils';
 import * as styles from './ColorPicker.css';
-import {Dynamic} from 'solid-js/web';
 
 type ColorPickerProps = {
   value?: string;
@@ -22,7 +22,7 @@ export const ColorPicker: Component<ColorPickerProps> = props => {
   }
 
   return (
-    <Dynamic
+    <styled.input
       component={'input'}
       class={styles.colorPicker}
       value={props.value}

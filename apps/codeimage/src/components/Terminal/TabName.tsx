@@ -1,13 +1,12 @@
+import {Box, useFloating} from '@codeimage/ui';
+import createResizeObserver from '@solid-primitives/resize-observer';
 import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
-import {Box} from '@codeimage/ui';
-import * as styles from './terminal.css';
 import {appEnvironment} from '../../core/configuration';
-import {TabIcon} from './TabIcon';
 import {highlight as _highlight} from '../../core/directives/highlight';
 import '../../ui/Combobox/InlineCombobox';
 import {InlineCombobox} from '../../ui/Combobox/InlineCombobox';
-import createResizeObserver from '@solid-primitives/resize-observer';
-import {useFloating} from '../../core/floating-ui/floating-ui';
+import {TabIcon} from './TabIcon';
+import * as styles from './terminal.css';
 
 interface TabNameProps {
   readonly: boolean;

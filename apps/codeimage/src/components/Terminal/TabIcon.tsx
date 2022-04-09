@@ -1,6 +1,5 @@
 import {JSXElement, mergeProps} from 'solid-js';
-import {SvgExternalIcon} from '../../ui/SvgIcon/SvgExternalIcon';
-import {Box} from '@codeimage/ui';
+import {Box, RemoteSvgIcon} from '@codeimage/ui';
 import * as styles from './terminal.css';
 import {LanguageIconDefinition} from '@codeimage/config';
 
@@ -19,7 +18,7 @@ export function TabIcon(props: TabIconProps): JSXElement {
 
   return (
     <Box class={styles.tabIcon}>
-      <SvgExternalIcon
+      <RemoteSvgIcon
         content={computedProps.content}
         delay={computedProps.delay}
       />

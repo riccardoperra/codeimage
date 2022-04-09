@@ -5,12 +5,12 @@ import {
   HStack,
   PopoverPanel,
   PortalHostContext,
+  useFloating,
 } from '@codeimage/ui';
 import {HintIcon} from '../Icons/Hint';
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 import {Popover, PopoverButton} from 'solid-headless';
-import {useFloating} from '../../core/floating-ui/floating-ui';
 import * as styles from './KeyboardShortcuts.css';
 import {offset} from '@floating-ui/dom';
 import * as frame from '@codeimage/store/frame';

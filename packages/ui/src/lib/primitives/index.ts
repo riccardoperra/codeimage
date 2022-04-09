@@ -51,7 +51,7 @@ export {
   DropdownMenu,
 } from './Dropdown';
 
-export {SvgIcon, type SvgIconProps} from './Icon';
+export {SvgIcon, type SvgIconProps, RemoteSvgIcon} from './Icon';
 
 export {PortalHost, PortalHostContext} from './PortalHost';
 
@@ -62,5 +62,7 @@ export {
   SnackbarHost,
   type SnackbarData,
 } from './Snackbar';
+
+export {Loading, type LoaderProps, LoadingOverlay} from './Loader';
 
 export {Toggle} from './Toggle';

@@ -1,12 +1,11 @@
-import {Component, createEffect, on} from 'solid-js';
-import * as styles from './Scaffold.css';
-import clsx from 'clsx';
-import {lightThemeCss} from '../../theme/light-theme.css';
-import {darkGrayScale, darkThemeCss} from '../../theme/dark-theme.css';
-import {backgroundColorVar} from '../../theme/variables.css';
+import {backgroundColorVar, dynamicFullHeight} from '@codeimage/ui';
 import {assignInlineVars, setElementVars} from '@vanilla-extract/dynamic';
-import {dynamicFullHeight} from '../../theme/base.css';
+import clsx from 'clsx';
+import {Component, createEffect, on} from 'solid-js';
 import {uiStore} from '../../state/ui';
+import {darkGrayScale, darkThemeCss} from '../../theme/dark-theme.css';
+import {lightThemeCss} from '../../theme/light-theme.css';
+import * as styles from './Scaffold.css';
 
 export const Scaffold: Component = props => {
   const mode = () => uiStore.themeMode;
