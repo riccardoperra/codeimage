@@ -1,13 +1,12 @@
-import {Component, Show} from 'solid-js';
-import * as styles from './MacOsTerminal.css';
-import * as baseStyles from '../terminal.css';
+import {backgroundColorVar, Box, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
-import {backgroundColorVar} from '../../../theme/variables.css';
-import {Box, Text} from '@codeimage/ui';
+import {Component, Show} from 'solid-js';
+import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import {TabIcon} from '../TabIcon';
 import {TabName} from '../TabName';
-import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
+import * as baseStyles from '../terminal.css';
+import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
+import * as styles from './MacOsTerminal.css';
 
 export const exportExclude = _exportExclude;
 

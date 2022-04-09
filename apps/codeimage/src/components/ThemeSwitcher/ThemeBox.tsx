@@ -1,9 +1,8 @@
-import * as styles from './ThemeSwitcher.css';
-import {Component} from 'solid-js';
-import {Text} from '@codeimage/ui';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {backgroundColorVar} from '../../theme/variables.css';
 import {CustomTheme} from '@codeimage/theme';
+import {backgroundColorVar, Text} from '@codeimage/ui';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {Component} from 'solid-js';
+import * as styles from './ThemeSwitcher.css';
 
 interface ThemeBoxProps {
   theme: CustomTheme;

@@ -1,6 +1,5 @@
+import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
-import {backgroundColorVar} from '../../theme/variables.css';
-import {themeVars} from '@codeimage/ui';
 
 export const [frameHandler, frameHandlerVars] = createTheme({
   scale: '1',

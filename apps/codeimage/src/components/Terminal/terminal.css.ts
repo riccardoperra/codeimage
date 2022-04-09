@@ -1,6 +1,5 @@
+import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
-import {backgroundColorVar} from '../../theme/variables.css';
 import {recipe} from '@vanilla-extract/recipes';
 
 export const [terminalTheme, terminalVars] = createTheme({

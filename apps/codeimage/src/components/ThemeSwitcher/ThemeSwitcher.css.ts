@@ -1,6 +1,5 @@
+import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {createTheme, createVar, style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
-import {backgroundColorVar} from '../../theme/variables.css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 
 export const [themeSwitcherTheme, themeSwitcherVars] = createTheme({});
