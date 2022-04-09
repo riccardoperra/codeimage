@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 3.4.3
+
+### Patch Changes
+
+- [#171](https://github.com/riccardoperra/codeimage/pull/171) [`dedd4b6`](https://github.com/riccardoperra/codeimage/commit/dedd4b69ecb912c035218ab873cf9aa458652392) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update dependencies
+
 ## 3.4.2
 
 ### Patch Changes
