@@ -7,6 +7,7 @@ import {
   duotoneSeaTheme,
   holiTheme,
   lightTheme,
+  materialLightTheme,
   materialOceanTheme,
   materialPalenightTheme,
   materialVolcanoTheme,
@@ -32,4 +33,5 @@ export const SUPPORTED_THEMES = [
   duotoneDarkTheme,
   coldarkColdTheme,
   coldarkDarkTheme,
+  materialLightTheme,
 ] as const;

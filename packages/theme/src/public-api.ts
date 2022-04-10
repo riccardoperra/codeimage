@@ -13,3 +13,4 @@ export * from './lib/themes/duotone-dark';
 export * from './lib/themes/coldark';
 export * from './lib/themes/night-owl';
 export * from './lib/themes/material-palenight';
+export * from './lib/themes/material-light';
