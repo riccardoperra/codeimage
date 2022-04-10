@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.15.2
+
+### Patch Changes
+
+- [#204](https://github.com/riccardoperra/codeimage/pull/204) [`6258d73`](https://github.com/riccardoperra/codeimage/commit/6258d73e196f5ba6489ab1a59b53c97d8583d9b7) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix broken padding on image export
+
 ## 0.15.1
 
 ### Patch Changes
