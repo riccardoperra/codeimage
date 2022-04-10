@@ -2,8 +2,19 @@
 
 ![Latest release Version](https://img.shields.io/badge/dynamic/json?style=for-the-badge&color=success&label=Version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Friccardoperra%2Fcodeimage%2Fmain%2Fpackages%2Ftheme%2Fpackage.json)
 [![Built with SolidJS](https://img.shields.io/badge/Built%20with-SolidJS-blue?style=for-the-badge)](https://github.com/solidjs/solid)
+[![Built with CodeMirror6](https://img.shields.io/badge/Built%20with-CodeMirror6-blue?style=for-the-badge)](https://codemirror.net/6/)
 
-> Custom editor themes [@codeimage/app](https://github.com/riccardoperra/codeimage/tree/main/apps/codeimage)
+> Custom editor themes for [@codeimage/app](https://github.com/riccardoperra/codeimage/tree/main/apps/codeimage)
+
+CodeImage editor themes are made by the internal `createThemeFactory` api function.
+
+Each theme must implement the [CustomTheme](./src/lib/core/custom-theme.ts) interface that provides binding for
+CodeMirror editor theme and the style for the theme switcher preview.
+
+There are two ways of creating themes:
+
+- `createTheme`: themes based on the new @codemirror/highlight api.
+- `createPrismJSTheme`: themes that uses the PrismJS token binding class for highlighting.
 
 ## Available themes
 
