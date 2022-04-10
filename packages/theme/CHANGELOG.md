@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 0.6.0
+
+### Minor Changes
+
+- [#198](https://github.com/riccardoperra/codeimage/pull/198) [`c868a0f`](https://github.com/riccardoperra/codeimage/commit/c868a0fe5a0590454067675ff93dd6d958404066) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add material light theme
+
 ## 0.5.3
 
 ### Patch Changes

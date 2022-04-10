@@ -1,5 +1,15 @@
 # @codeimage/app
 
+## 0.15.1
+
+### Patch Changes
+
+- [#200](https://github.com/riccardoperra/codeimage/pull/200) [`58210b8`](https://github.com/riccardoperra/codeimage/commit/58210b88bdd2d70154147879262a11975d7e0cec) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: add click event to theme switcher radio item
+
+- Updated dependencies [[`c868a0f`](https://github.com/riccardoperra/codeimage/commit/c868a0fe5a0590454067675ff93dd6d958404066)]:
+  - @codeimage/config@4.0.0
+  - @codeimage/theme@0.6.0
+
 ## 0.15.0
 
 ### Minor Changes
