@@ -81,6 +81,10 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
       // @ts-ignore
       zoom: '1',
       transform: 'scale(1)',
+      // TODO: https://github.com/riccardoperra/codeimage/issues/203
+      // clean up style side effects
+      margin: '0',
+      padding: '0',
     },
     pixelRatio: pixelRatio,
     quality: quality,
