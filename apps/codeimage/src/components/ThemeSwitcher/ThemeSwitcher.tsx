@@ -1,3 +1,15 @@
+import {useI18n} from '@codeimage/locale';
+import {editor$} from '@codeimage/store/editor';
+import {terminal$} from '@codeimage/store/terminal';
+import {
+  Box,
+  FadeInOutWithScaleTransition,
+  FlexField,
+  Text,
+  TextField,
+} from '@codeimage/ui';
+import {dispatch} from '@ngneat/effects';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   Component,
   createMemo,
@@ -6,25 +18,17 @@ import {
   For,
   Show,
 } from 'solid-js';
-import {FlexField, Text, TextField} from '@codeimage/ui';
+import {appEnvironment} from '../../core/configuration';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
+import {useModality} from '../../core/hooks/isMobile';
+import {AppLocaleEntries} from '../../i18n';
+import {updateTheme} from '../../state/effect';
+import {CheckCircle} from '../Icons/CheckCircle';
+import {EmptyCircle} from '../Icons/EmptyCircle';
+import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
+import {ThemeBox} from './ThemeBox';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
-import {ThemeBox} from './ThemeBox';
-import {terminal$} from '@codeimage/store/terminal';
-import {editor$} from '@codeimage/store/editor';
-import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
-import {appEnvironment} from '../../core/configuration';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {Box} from '@codeimage/ui';
-import {FadeInOutWithScaleTransition} from '@codeimage/ui';
-import {useI18n} from '@codeimage/locale';
-import {AppLocaleEntries} from '../../i18n';
-import {useModality} from '../../core/hooks/isMobile';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {dispatch} from '@ngneat/effects';
-import {updateTheme} from '../../state/effect';
-import {EmptyCircle} from '../Icons/EmptyCircle';
-import {CheckCircle} from '../Icons/CheckCircle';
 
 function useFilteredThemes() {
   const {themes} = appEnvironment;
@@ -102,7 +106,14 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
               <Box display={'flex'} justifyContent={'center'} marginTop={4}>
                 <Show
                   when={isSelected(theme.id)}
-                  fallback={<EmptyCircle size={'md'} opacity={0.35} />}
+                  fallback={
+                    <EmptyCircle
+                      cursor={'pointer'}
+                      onClick={() => dispatch(updateTheme({theme}))}
+                      size={'md'}
+                      opacity={0.35}
+                    />
+                  }
                 >
                   <CheckCircle size={'md'} />
                 </Show>
