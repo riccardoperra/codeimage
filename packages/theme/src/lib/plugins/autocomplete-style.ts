@@ -1,6 +1,6 @@
 import {EditorView} from '@codemirror/view';
 
-interface StyledAutoCompleteOptions {
+export interface StyledAutoCompleteOptions {
   background: string;
   border?: string;
   selectedBackground: string;
