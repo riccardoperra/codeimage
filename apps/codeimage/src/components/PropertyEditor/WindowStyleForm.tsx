@@ -1,19 +1,19 @@
-import {PanelHeader} from './PanelHeader';
-import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {SegmentedField} from '@codeimage/ui';
-import {Show} from 'solid-js';
-import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {useI18n} from '@codeimage/locale';
 import {
   setAccentVisible,
+  setShowGlassReflection,
   setShowHeader,
-  setShowReflection,
   setShowWatermark,
   setType,
   terminal$,
 } from '@codeimage/store/terminal';
+import {SegmentedField} from '@codeimage/ui';
+import {Show} from 'solid-js';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
+import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
+import {PanelHeader} from './PanelHeader';
+import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 
 export const WindowStyleForm = () => {
   const terminal = fromObservableObject(terminal$);
@@ -69,8 +69,8 @@ export const WindowStyleForm = () => {
         <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
-            value={terminal.showReflection}
-            onChange={setShowReflection}
+            value={terminal.showGlassReflection}
+            onChange={setShowGlassReflection}
             items={[
               {label: t('common.show'), value: true},
               {label: t('common.hide'), value: false},

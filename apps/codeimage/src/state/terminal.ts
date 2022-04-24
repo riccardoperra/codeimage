@@ -23,7 +23,7 @@ export interface TerminalState {
   // TODO: this state should be removed. This is a slice of selected theme!!
   readonly darkMode: boolean;
   readonly showWatermark: boolean;
-  readonly showReflection: boolean;
+  readonly showGlassReflection: boolean;
 }
 
 const initialState: TerminalState = {
@@ -43,7 +43,7 @@ const initialState: TerminalState = {
   darkMode:
     SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.darkMode,
   showWatermark: true,
-  showReflection: true,
+  showGlassReflection: true,
 };
 
 const store = createStore(
@@ -79,7 +79,7 @@ export const {
   setTextColor,
   setType,
   setBackground,
-  setShowReflection,
+  setShowGlassReflection,
 } = elfAutoSettersFactory(store);
 
 export function toggleShowHeader() {

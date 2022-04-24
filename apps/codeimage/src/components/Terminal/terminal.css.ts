@@ -200,7 +200,7 @@ export const tabHintDropdownItemContent = style({
   },
 });
 
-export const reflection = {
+export const glassReflection = {
   wrapper: style({
     position: 'absolute',
     left: 0,
