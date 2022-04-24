@@ -65,21 +65,19 @@ export const WindowStyleForm = () => {
         </PanelRow>
       </Show>
 
-      <Show when={terminal.showWatermark}>
-        <PanelRow for={'frameTabAccentField'} label={t('frame.reflection')}>
-          <TwoColumnPanelRow>
-            <SegmentedField
-              size={'xs'}
-              value={terminal.showReflection}
-              onChange={setShowReflection}
-              items={[
-                {label: t('common.yes'), value: true},
-                {label: t('common.no'), value: false},
-              ]}
-            />
-          </TwoColumnPanelRow>
-        </PanelRow>
-      </Show>
+      <PanelRow for={'frameTabReflectionField'} label={t('frame.reflection')}>
+        <TwoColumnPanelRow>
+          <SegmentedField
+            size={'xs'}
+            value={terminal.showReflection}
+            onChange={setShowReflection}
+            items={[
+              {label: t('common.show'), value: true},
+              {label: t('common.hide'), value: false},
+            ]}
+          />
+        </TwoColumnPanelRow>
+      </PanelRow>
 
       <PanelRow for={'frameShowWatermarkField'} label={t('frame.watermark')}>
         <TwoColumnPanelRow>

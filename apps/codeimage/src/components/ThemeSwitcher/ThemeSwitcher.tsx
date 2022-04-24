@@ -98,6 +98,7 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
                   showHeader={true}
                   type={terminal.type}
                   showWatermark={false}
+                  showReflection={terminal.showReflection}
                 >
                   <Text size={'sm'}>{`// Code here`}</Text>
                 </DynamicTerminal>
