@@ -7,6 +7,7 @@ import {useI18n} from '@codeimage/locale';
 import {
   setAccentVisible,
   setShowHeader,
+  setShowReflection,
   setShowWatermark,
   setType,
   terminal$,
@@ -55,6 +56,22 @@ export const WindowStyleForm = () => {
               size={'xs'}
               value={terminal.accentVisible}
               onChange={setAccentVisible}
+              items={[
+                {label: t('common.yes'), value: true},
+                {label: t('common.no'), value: false},
+              ]}
+            />
+          </TwoColumnPanelRow>
+        </PanelRow>
+      </Show>
+
+      <Show when={terminal.showWatermark}>
+        <PanelRow for={'frameTabAccentField'} label={t('frame.reflection')}>
+          <TwoColumnPanelRow>
+            <SegmentedField
+              size={'xs'}
+              value={terminal.showReflection}
+              onChange={setShowReflection}
               items={[
                 {label: t('common.yes'), value: true},
                 {label: t('common.no'), value: false},
