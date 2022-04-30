@@ -10,6 +10,7 @@ export interface StyledHighlightOptions {
   annotation: string;
   tag: string;
   variableName: string;
+  variableNameSpecial?: string;
   keywords: string;
   strings: string;
   boolean?: string;
@@ -20,6 +21,7 @@ export interface StyledHighlightOptions {
   paren?: string;
   brackets?: string;
   moduleKeyword?: string;
+  propertyName?: string;
   attrName?: string;
   attrValue?: string;
   className?: string;
@@ -31,7 +33,6 @@ export interface StyledHighlightOptions {
 
 export function styledHighlight(h: StyledHighlightOptions) {
   return HighlightStyle.define([
-    {tag: t.variableName, color: h.variableName},
     // Base
     {
       tag: [t.emphasis],
@@ -45,6 +46,9 @@ export function styledHighlight(h: StyledHighlightOptions) {
       tag: [t.link],
       color: h.delimiters,
     },
+    {tag: t.local(t.variableName), color: h.variableName},
+    {tag: t.definition(t.propertyName), color: h.propertyName},
+    {tag: t.special(t.variableName), color: h.variableNameSpecial},
     // Keywords
     {
       tag: [t.moduleKeyword],

@@ -47,6 +47,8 @@ export const synthwave84 = defineEditorTheme({
     background: palette.background,
     delimiters: palette.white,
     meta: palette.red,
+    propertyName: palette.pink,
+    attrName: palette.pink,
     attrValue: palette.orange,
     self: palette.red,
     typeName: palette.red,
