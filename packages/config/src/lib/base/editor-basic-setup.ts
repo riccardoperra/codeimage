@@ -6,7 +6,7 @@ import {
 } from '@codemirror/view';
 import {EditorState, Extension} from '@codemirror/state';
 import {indentOnInput} from '@codemirror/language';
-import {defaultKeymap} from '@codemirror/commands';
+import {defaultKeymap, indentWithTab} from '@codemirror/commands';
 import {bracketMatching} from '@codemirror/matchbrackets';
 import {closeBrackets, closeBracketsKeymap} from '@codemirror/closebrackets';
 import {autocompletion, completionKeymap} from '@codemirror/autocomplete';
@@ -33,5 +33,6 @@ export const EDITOR_BASE_SETUP: Extension = [
     ...commentKeymap,
     ...completionKeymap,
     ...historyKeymap,
+    indentWithTab,
   ]),
 ];
