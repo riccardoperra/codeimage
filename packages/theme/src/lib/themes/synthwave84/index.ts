@@ -7,7 +7,7 @@ export const synthwave84Theme = createTheme({
   properties: {
     darkMode: true,
     label: "Synthwave '84",
-    previewBackground: palette.pink,
+    previewBackground: `#4946AAFF`,
     terminal: {
       main: palette.background,
       text: palette.coral,
