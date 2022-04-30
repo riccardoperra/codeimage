@@ -38,7 +38,7 @@ function useFilteredThemes() {
     const value = search();
     if (!value || !(value.length > 2)) return themes;
     return themes.filter(theme =>
-      theme.properties.label.toLowerCase().startsWith(value.toLowerCase()),
+      theme.properties.label.toLowerCase().includes(value.toLowerCase()),
     );
   });
 
