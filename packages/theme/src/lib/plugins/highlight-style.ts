@@ -9,6 +9,7 @@ export interface StyledHighlightOptions {
   regexp: string;
   annotation: string;
   tag: string;
+  variableName: string;
   keywords: string;
   strings: string;
   boolean?: string;
@@ -19,13 +20,18 @@ export interface StyledHighlightOptions {
   paren?: string;
   brackets?: string;
   moduleKeyword?: string;
+  attrName?: string;
   attrValue?: string;
   className?: string;
   operators?: string;
+  self?: string;
+  typeName?: string;
+  atom?: string;
 }
 
 export function styledHighlight(h: StyledHighlightOptions) {
   return HighlightStyle.define([
+    {tag: t.variableName, color: h.variableName},
     // Base
     {
       tag: [t.emphasis],
@@ -50,10 +56,10 @@ export function styledHighlight(h: StyledHighlightOptions) {
     },
     {
       tag: [t.typeName, t.typeOperator],
-      color: h.keywords,
+      color: h.typeName ?? h.keywords,
     },
     {
-      tag: [t.changed, t.annotation, t.modifier, t.self, t.namespace],
+      tag: [t.changed, t.annotation, t.modifier, t.namespace],
       color: h.keywords,
     },
     // Operators
@@ -79,11 +85,11 @@ export function styledHighlight(h: StyledHighlightOptions) {
       tag: [t.className, t.namespace],
       color: h.className ?? h.function ?? h.base,
     },
-    // Function
     {
-      tag: [t.variableName],
-      color: h.base,
+      tag: [t.self],
+      color: h.self ?? h.keywords,
     },
+    // Function
     {
       tag: [t.function(t.variableName), t.function(t.propertyName)],
       color: h.function,
@@ -101,14 +107,18 @@ export function styledHighlight(h: StyledHighlightOptions) {
     {tag: [t.comment], color: h.comments},
     {tag: [t.regexp], color: h.regexp},
     {tag: [t.tagName], color: h.tag},
-
+    // TODO: what's this tag for?
     {
       tag: [t.atom, t.special(t.variableName)],
-      color: 'red',
+      color: h.atom,
     },
     {
       tag: [t.attributeValue],
       color: h.strings ?? h.attrValue,
+    },
+    {
+      tag: [t.attributeName],
+      color: h.attrName ?? h.base,
     },
     // Markdown
     {tag: [t.heading], color: h.keywords, fontWeight: 'bold'},
