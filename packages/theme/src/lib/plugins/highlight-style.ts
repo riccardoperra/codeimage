@@ -1,5 +1,4 @@
 import {HighlightStyle, tags as t} from '@codemirror/highlight';
-import {} from '@codemirror/language';
 
 export interface StyledHighlightOptions {
   base: string;
