@@ -70,7 +70,7 @@ export const titleWrapper = style([
   {
     selectors: {
       [`${panelRow} &`]: {
-        height: '26px',
+        height: '30px',
         display: 'flex',
         position: 'relative',
         paddingLeft: '15px',
