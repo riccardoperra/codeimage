@@ -10,6 +10,7 @@ export const enum ExportMode {
   export = 'export',
   share = 'share',
   newTab = 'newTab',
+  getBlob = 'getBlob',
 }
 
 export const enum ExportExtension {
@@ -161,6 +162,10 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
         const url = URL.createObjectURL(blob);
         window.open(url);
       }
+      return blob as Blob;
+    }
+    case ExportMode.getBlob: {
+      const blob = await toBlob(ref, toImageOptions);
       return blob as Blob;
     }
     default: {
