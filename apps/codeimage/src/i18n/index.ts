@@ -10,6 +10,9 @@ export const locale = {
       show: 'Mostra',
       hide: 'Nascondi',
     },
+    canvas: {
+      copiedToClipboard: 'Snippet copiato negli appunti',
+    },
     locales: {
       it: 'Italiano',
       en: 'Inglese',
@@ -69,6 +72,9 @@ export const locale = {
   },
   en: {
     ...sidebarLocale.en,
+    canvas: {
+      copiedToClipboard: 'Snippet copied to clipboard',
+    },
     common: {
       close: 'Close',
       confirm: 'Confirm',
@@ -139,6 +145,9 @@ export const locale = {
       no: 'Nein',
       show: 'Anzeigen',
       hide: 'Verstecken',
+    },
+    canvas: {
+      copiedToClipboard: 'Snippet copied to clipboard',
     },
     locales: {
       it: 'Italienisch',

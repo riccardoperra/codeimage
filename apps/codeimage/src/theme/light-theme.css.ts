@@ -1,5 +1,6 @@
 import {createTheme} from '@vanilla-extract/css';
 import {themeColors, themeVars} from '@codeimage/ui';
+import {darkGrayScale} from './dark-theme.css';
 
 export const lightThemeCss = createTheme(themeColors, {
   primary: themeVars.backgroundColor.blue['500'],
@@ -66,8 +67,8 @@ export const lightThemeCss = createTheme(themeColors, {
   },
 
   snackbar: {
-    backgroundColor: '#1a1a1a',
-    textColor: themeVars.backgroundColor.white,
+    backgroundColor: darkGrayScale.white,
+    textColor: darkGrayScale.gray6,
   },
 
   bottomBar: {

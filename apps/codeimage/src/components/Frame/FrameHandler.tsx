@@ -1,5 +1,6 @@
+import {useI18n} from '@codeimage/locale';
 import {focusedEditor$} from '@codeimage/store/editor';
-import {Box, useSnackbarStore} from '@codeimage/ui';
+import {Box, HStack, useSnackbarStore} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {
@@ -20,6 +21,9 @@ import {
   useExportImage,
 } from '../../hooks/use-export-image';
 import {useHotkey} from '../../hooks/use-hotkey';
+import {AppLocaleEntries} from '../../i18n';
+import {InvertedThemeWrapper} from '../../ui/InvertedThemeWrapper/InvertedThemeWrapper';
+import {CheckCircle} from '../Icons/CheckCircle';
 import * as styles from './Frame.css';
 
 const exportExclude = _exportExclude;
@@ -60,7 +64,7 @@ export function FrameHandler(
     }),
   );
 
-  useHotkey(window, {
+  useHotkey(document.body, {
     'Control+C': () => {
       if (filterHotKey()) return;
       if (data.loading) return;
@@ -90,12 +94,28 @@ export function FrameHandler(
               {presentationStyle: 'attachment'},
             ),
           ])
-          .then(() =>
-            snackbarStore.create({
+          .then(() => {
+            const snackbar = snackbarStore.create({
               closeable: true,
-              message: 'Image copied to clipboard',
-            }),
-          );
+              wrapper: InvertedThemeWrapper,
+              message: () => {
+                const [t] = useI18n<AppLocaleEntries>();
+                return (
+                  <HStack alignItems={'center'} spacing={'2'}>
+                    <Box
+                      color={'primary'}
+                      display={'flex'}
+                      alignItems={'center'}
+                    >
+                      <CheckCircle />
+                    </Box>
+                    {t('canvas.copiedToClipboard')}
+                  </HStack>
+                );
+              },
+            });
+            setTimeout(() => snackbarStore.remove(snackbar), 2500);
+          });
       }
     }),
   );
