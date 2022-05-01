@@ -17,7 +17,8 @@ export const locale = {
     },
     toolbar: {
       export: 'Esporta',
-      open: 'Apri',
+      openNewTab: 'Apri',
+      loadingNewTab: 'Preparando link...',
       share: 'Condividi',
       toggleTheme: 'Modifica tema',
       changeLanguage: 'Modifica lingua',
@@ -82,7 +83,8 @@ export const locale = {
     },
     toolbar: {
       export: 'Export',
-      open: 'Open',
+      openNewTab: 'Open',
+      loadingNewTab: 'Preparing link...',
       share: 'Share',
       toggleTheme: 'Toggle theme',
       changeLanguage: 'Modifica lingua',
@@ -144,7 +146,8 @@ export const locale = {
     toolbar: {
       export: 'Export',
       share: 'Teilen',
-      open: 'Du öffnest',
+      openNewTab: 'Du öffnest',
+      loadingNewTab: 'Preparing link...',
       toggleTheme: 'Thema umschalten',
       changeLanguage: 'Thema umschalten',
       exportLoading: 'Exportieren...',

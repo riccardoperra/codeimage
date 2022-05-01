@@ -21,7 +21,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
   const [data, notify] = useExportImage();
 
   const label = () =>
-    data.loading ? t('toolbar.exportLoading') : t('toolbar.open');
+    data.loading ? t('toolbar.loadingNewTab') : t('toolbar.openNewTab');
 
   function openInTab() {
     notify({
