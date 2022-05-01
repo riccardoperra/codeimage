@@ -63,6 +63,7 @@ export const locale = {
       export: 'Esporta',
       exportNewTab: 'Esporta in una nuova tab',
       copyLink: 'Copia link',
+      copySnippet: 'Copy snippet',
       openShortcuts: 'Apri scorciatoie',
     },
     themeSwitcher: {
@@ -131,6 +132,7 @@ export const locale = {
       export: 'Export',
       exportNewTab: 'Export in a new tab',
       copyLink: 'Copy link',
+      copySnippet: 'Copy snippet',
       openShortcuts: 'Open shortcuts',
     },
     themeSwitcher: {
@@ -196,6 +198,7 @@ export const locale = {
       pickRandomTheme: 'Wählen Sie ein zufälliges Thema',
       export: 'Export',
       exportNewTab: 'Export in a new tab',
+      copySnippet: 'Copy snippet',
       copyLink: 'Link kopieren',
       openShortcuts: 'Verknüpfungen öffnen',
     },

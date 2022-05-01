@@ -44,6 +44,7 @@ export function KeyboardShortcuts(): JSXElement {
     {label: t('shortcut.export'), key: ['Ctrl', 'S']},
     {label: t('shortcut.exportNewTab'), key: ['Ctrl', 'O']},
     {label: t('shortcut.copyLink'), key: ['Ctrl', 'Shift', 'C']},
+    {label: t('shortcut.copySnippet'), key: ['Ctrl', 'C']},
     {label: t('shortcut.openShortcuts'), key: ['?']},
   ]);
 
