@@ -9,6 +9,7 @@ import {IS_IOS} from '../core/constants/browser';
 export const enum ExportMode {
   export = 'export',
   share = 'share',
+  newTab = 'newTab',
 }
 
 export const enum ExportExtension {
@@ -153,6 +154,14 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
       download(result, fileNameWithExtension);
 
       return result;
+    }
+    case ExportMode.newTab: {
+      const blob = await toBlob(ref, toImageOptions);
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+      }
+      return blob as Blob;
     }
     default: {
       throw new Error('Invalid modality');

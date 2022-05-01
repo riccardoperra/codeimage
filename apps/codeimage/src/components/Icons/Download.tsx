@@ -2,7 +2,7 @@ import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 
 export const DownloadIcon = (props: SvgIconProps) => {
   return (
-    <SvgIcon fill="none" viewBox="0 0 24 24" stroke="white" {...props}>
+    <SvgIcon fill="none" viewBox="0 0 24 24" stroke="currentColor" {...props}>
       <path
         stroke-linecap="round"
         stroke-linejoin="round"

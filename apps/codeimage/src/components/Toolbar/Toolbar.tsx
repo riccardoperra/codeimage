@@ -1,12 +1,13 @@
-import * as styles from './Toolbar.css';
+import {setLocale, toggleThemeMode, uiStore} from '@codeimage/store/ui';
+import {Box, HStack} from '@codeimage/ui';
 import {Component} from 'solid-js';
-import {ThemeToggleButton} from './ThemeToggleButton';
-import {Box} from '@codeimage/ui';
-import {LanguageSelectorButton} from './LanguageSelectorButton';
 import {appEnvironment} from '../../core/configuration';
 import {ExportButton} from './ExportButton';
+import {ExportInNewTabButton} from './ExportNewTabButton';
+import {LanguageSelectorButton} from './LanguageSelectorButton';
 import {ShareButton} from './ShareButton';
-import {setLocale, toggleThemeMode, uiStore} from '@codeimage/store/ui';
+import {ThemeToggleButton} from './ThemeToggleButton';
+import * as styles from './Toolbar.css';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
@@ -27,12 +28,13 @@ export const Toolbar: Component<{
           onThemeToggle={toggleThemeMode}
         />
 
-        <Box marginLeft={'auto'}>
-          <Box display={'inlineBlock'} marginRight={2}>
+        <HStack marginLeft={'auto'} spacing={'2'}>
+          <Box display={'inlineBlock'}>
             <ShareButton />
           </Box>
+          <ExportInNewTabButton canvasRef={props.canvasRef} />
           <ExportButton canvasRef={props.canvasRef} />
-        </Box>
+        </HStack>
       </Box>
     </div>
   );
