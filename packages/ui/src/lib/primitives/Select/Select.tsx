@@ -123,7 +123,7 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
                         <Box
                           as={'div'}
                           class={styles.listBoxOption({
-                            active: isActive() || isSelected(),
+                            active: isActive(),
                           })}
                         >
                           {props.itemContent ? (
@@ -136,9 +136,7 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
                             <Text
                               size={'xs'}
                               display={'block'}
-                              {...(isActive() || isSelected()
-                                ? {weight: 'bold'}
-                                : {})}
+                              {...(isSelected() ? {weight: 'medium'} : {})}
                             >
                               {item.label}
                             </Text>

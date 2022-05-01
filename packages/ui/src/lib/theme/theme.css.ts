@@ -11,6 +11,7 @@ export const themeColors = createThemeContract({
   panel: {
     background: null,
     textColor: null,
+    textColorAlt: null,
   },
 
   input: {

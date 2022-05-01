@@ -28,6 +28,7 @@ export const darkThemeCss = createTheme(themeColors, {
   panel: {
     background: darkGrayScale.gray1,
     textColor: darkGrayScale.white,
+    textColorAlt: '#CCCCCC',
   },
 
   input: {
