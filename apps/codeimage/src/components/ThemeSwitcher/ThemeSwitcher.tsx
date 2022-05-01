@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {editor$} from '@codeimage/store/editor';
+import {updateTheme} from '@codeimage/store/effects/onThemeChange';
 import {terminal$} from '@codeimage/store/terminal';
 import {
   Box,
@@ -22,7 +23,6 @@ import {appEnvironment} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {useModality} from '../../core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
-import {updateTheme} from '../../state/effect';
 import {CheckCircle} from '../Icons/CheckCircle';
 import {EmptyCircle} from '../Icons/EmptyCircle';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';

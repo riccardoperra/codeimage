@@ -1,5 +1,5 @@
-import {createTheme} from '@vanilla-extract/css';
 import {themeColors, themeVars} from '@codeimage/ui';
+import {createTheme} from '@vanilla-extract/css';
 
 export const darkGrayScale = {
   gray1: '#111111',
@@ -46,6 +46,11 @@ export const darkThemeCss = createTheme(themeColors, {
       hoverColor: darkGrayScale.gray7,
       textColor: darkGrayScale.gray12,
     },
+    primaryAlt: {
+      backgroundColor: `hsla(204, 100%, 50%, 0.15)`,
+      hoverColor: `hsla(204, 100%, 40%, 0.15)`,
+      textColor: themeVars.backgroundColor.blue['500'],
+    },
     primary: {
       backgroundColor: themeVars.backgroundColor.blue['500'],
       activeColor: themeVars.backgroundColor.blue['700'],
@@ -77,8 +82,8 @@ export const darkThemeCss = createTheme(themeColors, {
   },
 
   snackbar: {
-    backgroundColor: darkGrayScale.gray12,
-    textColor: darkGrayScale.gray6,
+    backgroundColor: '#1a1a1a',
+    textColor: themeVars.backgroundColor.white,
   },
 
   bottomBar: {

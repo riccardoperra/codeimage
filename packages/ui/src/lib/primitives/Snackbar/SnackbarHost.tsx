@@ -10,6 +10,7 @@ export interface SnackbarData {
   message: string | Component;
   closeable?: boolean;
   actions?: Component;
+  wrapper?: Component;
 }
 
 export const SnackbarHost = () => {
@@ -42,6 +43,7 @@ export const SnackbarHost = () => {
                   message={item.data.message}
                   closeable={item.data.closeable}
                   actions={item.data.actions}
+                  wrapper={item.data.wrapper}
                 />
               )}
             </For>

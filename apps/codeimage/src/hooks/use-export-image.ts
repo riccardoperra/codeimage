@@ -9,6 +9,8 @@ import {IS_IOS} from '../core/constants/browser';
 export const enum ExportMode {
   export = 'export',
   share = 'share',
+  newTab = 'newTab',
+  getBlob = 'getBlob',
 }
 
 export const enum ExportExtension {
@@ -17,7 +19,7 @@ export const enum ExportExtension {
   jpeg = 'jpeg',
 }
 
-interface ExportOptions {
+export interface ExportOptions {
   extension: ExportExtension;
   mode: ExportMode;
   fileName?: string;
@@ -54,7 +56,9 @@ function resolveMimeType(extension: ExportExtension): string {
   }
 }
 
-async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
+export async function exportImage(
+  data: ExportImagePayload,
+): Promise<Blob | string> {
   const {
     options: {extension, fileName, mode, pixelRatio, quality},
     ref,
@@ -153,6 +157,18 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
       download(result, fileNameWithExtension);
 
       return result;
+    }
+    case ExportMode.newTab: {
+      const blob = await toBlob(ref, toImageOptions);
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+      }
+      return blob as Blob;
+    }
+    case ExportMode.getBlob: {
+      const blob = await toBlob(ref, toImageOptions);
+      return blob as Blob;
     }
     default: {
       throw new Error('Invalid modality');
