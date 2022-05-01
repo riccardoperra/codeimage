@@ -12,17 +12,18 @@ interface ShareButtonProps {
 export const ShareButton: Component<ShareButtonProps> = props => {
   const computedProps = mergeProps({showLabel: false, props});
   const {support} = appEnvironment;
-
+  const canShare = support && navigator.canShare(getData());
   const [t] = useI18n<AppLocaleEntries>();
 
-  async function share() {
-    const data = {
-      // TODO: add tab title
-      title: 'Code shared with codeimage.dev',
+  function getData(): ShareData {
+    return {
+      title: 'Snippet shared with codeimage.dev',
       url: window.location.search,
-      // TODO: should add the exported file? Useful for social media
-      files: [],
     };
+  }
+
+  async function share() {
+    const data = getData();
     if (!navigator.canShare(data)) {
       return;
     }
@@ -37,19 +38,20 @@ export const ShareButton: Component<ShareButtonProps> = props => {
   });
 
   return (
-    <Button
-      aria-label={t('toolbar.share')}
-      variant={'solid'}
-      theme={'secondary'}
-      disabled={!support.shareApi}
-      onClick={() => share()}
-    >
-      <SvgIcon viewBox="0 0 20 20" fill="currentColor">
-        <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-      </SvgIcon>
-      <Show when={computedProps.showLabel}>
-        <Box marginLeft={2}>{t('toolbar.share')}</Box>
-      </Show>
-    </Button>
+    <Show when={canShare}>
+      <Button
+        aria-label={t('toolbar.share')}
+        variant={'solid'}
+        theme={'secondary'}
+        onClick={() => share()}
+      >
+        <SvgIcon viewBox="0 0 20 20" fill="currentColor">
+          <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+        </SvgIcon>
+        <Show when={computedProps.showLabel}>
+          <Box marginLeft={2}>{t('toolbar.share')}</Box>
+        </Show>
+      </Button>
+    </Show>
   );
 };
