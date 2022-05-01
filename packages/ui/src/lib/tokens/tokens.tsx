@@ -21,14 +21,12 @@ const ThemeTokensContext = createContext<BaseThemeTokens>();
 export function CodeImageThemeProvider(
   props: PropsWithChildren<{theme: Partial<BaseThemeTokens>}>,
 ) {
-  const [theme, setTheme] = createStore<BaseThemeTokens>({text: {}});
-
-  createEffect(() => {
-    setTheme(_ => ({..._, ...props.theme} as unknown as BaseThemeTokens));
-  });
+  const componentsTheme: BaseThemeTokens = {
+    text: props.theme.text ?? {},
+  };
 
   return (
-    <ThemeTokensContext.Provider value={theme}>
+    <ThemeTokensContext.Provider value={componentsTheme}>
       {props.children}
     </ThemeTokensContext.Provider>
   );
