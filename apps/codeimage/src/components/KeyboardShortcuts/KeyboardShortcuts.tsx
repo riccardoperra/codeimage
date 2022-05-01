@@ -1,3 +1,4 @@
+import {updateTheme} from '@codeimage/store/effects/onThemeChange';
 import {createMemo, createSignal, For, from, JSXElement} from 'solid-js';
 import {
   Button,
@@ -21,7 +22,6 @@ import {focusedEditor$} from '../../state/editor';
 import {useHotkey} from '../../hooks/use-hotkey';
 import * as ui from '@codeimage/store/ui';
 import {dispatch} from '@ngneat/effects';
-import {updateTheme} from '../../state/effect';
 
 export interface KeyboardShortcut {
   label: string;

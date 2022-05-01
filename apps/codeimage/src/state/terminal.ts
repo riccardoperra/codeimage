@@ -1,3 +1,4 @@
+import {updateTabName} from '@codeimage/store/effects/onTabNameChange';
 import {themeVars} from '@codeimage/ui';
 import {
   appEnvironment,
@@ -8,7 +9,6 @@ import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
 import shallow from '../core/helpers/shallow';
 import {dispatch} from '@ngneat/effects';
-import {updateTabName} from './effect';
 import {persistQuery} from '../core/helpers/persistQuery';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 

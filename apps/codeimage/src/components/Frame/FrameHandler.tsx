@@ -1,6 +1,7 @@
-import {useI18n} from '@codeimage/locale';
 import {focusedEditor$} from '@codeimage/store/editor';
-import {Box, HStack, useSnackbarStore} from '@codeimage/ui';
+import {onCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
+import {Box} from '@codeimage/ui';
+import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {
@@ -15,15 +16,7 @@ import {exportExclude as _exportExclude} from '../../core/directives/exportExclu
 import {createRef} from '../../core/helpers/create-ref';
 import {getScaleByRatio} from '../../core/helpers/getScale';
 import {useModality} from '../../core/hooks/isMobile';
-import {
-  ExportExtension,
-  ExportMode,
-  useExportImage,
-} from '../../hooks/use-export-image';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {AppLocaleEntries} from '../../i18n';
-import {InvertedThemeWrapper} from '../../ui/InvertedThemeWrapper/InvertedThemeWrapper';
-import {CheckCircle} from '../Icons/CheckCircle';
 import * as styles from './Frame.css';
 
 const exportExclude = _exportExclude;
@@ -41,7 +34,6 @@ export function FrameHandler(
   const [canvasScale, setCanvasScale] = createSignal(1);
 
   const modality = useModality();
-  const snackbarStore = useSnackbarStore();
 
   const focusedEditor = from(focusedEditor$);
 
@@ -49,8 +41,6 @@ export function FrameHandler(
     focusedEditor() || document.activeElement?.nodeName === 'INPUT';
 
   const ratio = 0.1;
-
-  const [data, notify] = useExportImage();
 
   createEffect(
     on([handlerRef], ([frame]) => {
@@ -67,58 +57,11 @@ export function FrameHandler(
   useHotkey(document.body, {
     'Control+C': () => {
       if (filterHotKey()) return;
-      if (data.loading) return;
       const el = ref();
       if (!el) return;
-      notify({
-        ref: el,
-        options: {
-          extension: ExportExtension.png,
-          pixelRatio: Math.floor(window.devicePixelRatio),
-          mode: ExportMode.getBlob,
-          quality: 100,
-        },
-      });
+      dispatch(onCopyToClipboard({ref: el}));
     },
   });
-
-  createEffect(
-    on(data, blob => {
-      if (blob instanceof Blob) {
-        navigator.clipboard
-          .write([
-            new ClipboardItem(
-              {
-                [blob.type]: blob,
-              },
-              {presentationStyle: 'attachment'},
-            ),
-          ])
-          .then(() => {
-            const snackbar = snackbarStore.create({
-              closeable: true,
-              wrapper: InvertedThemeWrapper,
-              message: () => {
-                const [t] = useI18n<AppLocaleEntries>();
-                return (
-                  <HStack alignItems={'center'} spacing={'2'}>
-                    <Box
-                      color={'primary'}
-                      display={'flex'}
-                      alignItems={'center'}
-                    >
-                      <CheckCircle />
-                    </Box>
-                    {t('canvas.copiedToClipboard')}
-                  </HStack>
-                );
-              },
-            });
-            setTimeout(() => snackbarStore.remove(snackbar), 2500);
-          });
-      }
-    }),
-  );
 
   return (
     <Box class={styles.wrapper}>

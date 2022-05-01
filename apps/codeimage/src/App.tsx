@@ -1,5 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
+import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
+import {onTabNameChange$} from '@codeimage/store/effects/onTabNameChange';
+import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {frame$, setScale} from '@codeimage/store/frame';
 import {setTabName, terminal$} from '@codeimage/store/terminal';
 import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
@@ -35,7 +37,7 @@ const App = () => {
   const modality = useModality();
   const [, {locale}] = useI18n();
   const [tabIcon] = useTabIcon({withDefault: true});
-  useEffects([onTabNameChange$, onThemeChange$]);
+  useEffects([onTabNameChange$, onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
 
   return (

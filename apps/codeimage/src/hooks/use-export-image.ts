@@ -19,7 +19,7 @@ export const enum ExportExtension {
   jpeg = 'jpeg',
 }
 
-interface ExportOptions {
+export interface ExportOptions {
   extension: ExportExtension;
   mode: ExportMode;
   fileName?: string;
@@ -56,7 +56,9 @@ function resolveMimeType(extension: ExportExtension): string {
   }
 }
 
-async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
+export async function exportImage(
+  data: ExportImagePayload,
+): Promise<Blob | string> {
   const {
     options: {extension, fileName, mode, pixelRatio, quality},
     ref,
