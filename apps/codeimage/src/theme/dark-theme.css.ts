@@ -46,6 +46,11 @@ export const darkThemeCss = createTheme(themeColors, {
       hoverColor: darkGrayScale.gray7,
       textColor: darkGrayScale.gray12,
     },
+    primaryAlt: {
+      backgroundColor: `hsla(204, 100%, 50%, 0.15)`,
+      hoverColor: `hsla(204, 100%, 40%, 0.15)`,
+      textColor: themeVars.backgroundColor.blue['500'],
+    },
     primary: {
       backgroundColor: themeVars.backgroundColor.blue['500'],
       activeColor: themeVars.backgroundColor.blue['700'],
