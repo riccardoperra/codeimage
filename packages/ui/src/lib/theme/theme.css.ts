@@ -29,6 +29,11 @@ export const themeColors = createThemeContract({
       hoverColor: null,
       textColor: null,
     },
+    primaryAlt: {
+      backgroundColor: null,
+      hoverColor: null,
+      textColor: null,
+    },
     primary: {
       backgroundColor: null,
       activeColor: null,
