@@ -42,6 +42,7 @@ export function KeyboardShortcuts(): JSXElement {
     {label: t('shortcut.changePadding'), key: ['P']},
     {label: t('shortcut.pickRandomTheme'), key: ['R']},
     {label: t('shortcut.export'), key: ['Ctrl', 'S']},
+    {label: t('shortcut.exportNewTab'), key: ['Ctrl', 'O']},
     {label: t('shortcut.copyLink'), key: ['Ctrl', 'Shift', 'C']},
     {label: t('shortcut.openShortcuts'), key: ['?']},
   ]);
