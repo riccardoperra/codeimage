@@ -43,7 +43,7 @@ const initialState: TerminalState = {
   darkMode:
     SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.darkMode,
   showWatermark: true,
-  showGlassReflection: true,
+  showGlassReflection: false,
 };
 
 const store = createStore(
