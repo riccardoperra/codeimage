@@ -23,6 +23,7 @@ export const PanelRow: Component<PanelRowProps> = props => {
       <Show when={props.label}>
         <Text
           as="label"
+          weight={'medium'}
           for={props.for}
           size={'xs'}
           class={styles.titleWrapper}
