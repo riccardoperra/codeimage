@@ -11,7 +11,6 @@ import {Footer} from './components/Footer/Footer';
 import {Frame} from './components/Frame/Frame';
 import {FrameHandler} from './components/Frame/FrameHandler';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
-import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {EditorSidebar} from './components/PropertyEditor/EditorSidebar';
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Scaffold} from './components/Scaffold/Scaffold';
@@ -42,7 +41,6 @@ const App = () => {
   return (
     <Scaffold>
       <SnackbarHost />
-      <ReloadPrompt />
 
       <Show when={modality === 'full'}>
         <Sidebar position={'left'}>
