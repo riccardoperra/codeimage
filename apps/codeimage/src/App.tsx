@@ -1,29 +1,29 @@
-import {Frame} from './components/Frame/Frame';
-import {Canvas} from './components/Scaffold/Canvas/Canvas';
-import {Scaffold} from './components/Scaffold/Scaffold';
-import {CustomEditor} from './components/CustomEditor/CustomEditor';
-import {Toolbar} from './components/Toolbar/Toolbar';
-import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {createEffect, createSignal, on, Show} from 'solid-js';
-import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
+import {useI18n} from '@codeimage/locale';
+import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
 import {frame$, setScale} from '@codeimage/store/frame';
 import {setTabName, terminal$} from '@codeimage/store/terminal';
-import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
-import {Footer} from './components/Footer/Footer';
-import {useI18n} from '@codeimage/locale';
-import {useModality} from './core/hooks/isMobile';
-import {BottomBar} from './components/BottomBar/BottomBar';
-import {FrameHandler} from './components/Frame/FrameHandler';
-import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
-import {useTabIcon} from './hooks/use-tab-icon';
-import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
-import {fromObservableObject} from './core/hooks/from-observable-object';
 import {initEffects} from '@ngneat/effects';
-import {onTabNameChange$, onThemeChange$} from '@codeimage/store/effect';
-import {uiStore} from './state/ui';
-import {useEffects} from './core/store/use-effect';
+import {createEffect, createSignal, on, Show} from 'solid-js';
+import {BottomBar} from './components/BottomBar/BottomBar';
+import {CustomEditor} from './components/CustomEditor/CustomEditor';
+import {Footer} from './components/Footer/Footer';
+import {Frame} from './components/Frame/Frame';
+import {FrameHandler} from './components/Frame/FrameHandler';
+import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
+import ReloadPrompt from './components/PromptUpdate/PromptUpdate';
 import {EditorSidebar} from './components/PropertyEditor/EditorSidebar';
+import {Canvas} from './components/Scaffold/Canvas/Canvas';
+import {Scaffold} from './components/Scaffold/Scaffold';
+import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
+import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
+import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
+import {Toolbar} from './components/Toolbar/Toolbar';
+import {fromObservableObject} from './core/hooks/from-observable-object';
+import {useModality} from './core/hooks/isMobile';
+import {useEffects} from './core/store/use-effect';
+import {useTabIcon} from './hooks/use-tab-icon';
+import {uiStore} from './state/ui';
 
 initEffects();
 
@@ -81,6 +81,7 @@ const App = () => {
               textColor={terminal.textColor}
               onTabChange={setTabName}
               showHeader={terminal.showHeader}
+              showGlassReflection={terminal.showGlassReflection}
               tabIcon={tabIcon()?.content}
               showWatermark={terminal.showWatermark}
             >

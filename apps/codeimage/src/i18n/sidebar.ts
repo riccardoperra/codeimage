@@ -16,6 +16,7 @@ export default {
       lineNumbers: 'Line number',
       font: 'Font',
       fontWeight: 'Font weight',
+      reflection: 'Reflection',
     },
   },
   it: {
@@ -34,6 +35,7 @@ export default {
       lineNumbers: 'Numeri di riga',
       font: 'Carattere',
       fontWeight: 'Peso carattere',
+      reflection: 'Riflesso',
       watermark: 'Watermark',
     },
   },
@@ -53,6 +55,7 @@ export default {
       lineNumbers: 'Sprache',
       font: 'Zeilennummer',
       fontWeight: 'Schriftart',
+      reflection: 'Reflex',
       watermark: 'Schriftstärke',
     },
   },

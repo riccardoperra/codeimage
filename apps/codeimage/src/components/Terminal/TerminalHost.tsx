@@ -1,12 +1,16 @@
-import * as styles from './terminal.css';
+import {LanguageIconDefinition} from '@codeimage/config';
+import {FadeInOutTransition, themeVars} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {themeVars} from '@codeimage/ui';
+import clsx from 'clsx';
+import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {Component} from 'solid-js';
 import {TerminalState} from '../../state/terminal';
-import clsx from 'clsx';
-import {LanguageIconDefinition} from '@codeimage/config';
+import * as styles from './terminal.css';
+import {TerminalGlassReflection} from './TerminalGlassReflection';
 
-export interface BaseTerminalProps extends Omit<TerminalState, 'type'> {
+export interface BaseTerminalProps
+  extends Omit<TerminalState, 'type'>,
+    WithRef<'div'> {
   showTab: boolean;
   readonlyTab: boolean;
   tabIcon?: LanguageIconDefinition['content'];
@@ -28,6 +32,10 @@ export const TerminalHost: Component<TerminalHostProps> = props => {
         [styles.terminalVars.boxShadow]: props.shadow ?? themeVars.boxShadow.lg,
       })}
     >
+      <FadeInOutTransition show={props.showGlassReflection}>
+        <TerminalGlassReflection />
+      </FadeInOutTransition>
+
       {props.children}
     </div>
   );
