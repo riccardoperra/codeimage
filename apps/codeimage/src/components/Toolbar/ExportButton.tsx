@@ -171,7 +171,8 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
 
     const selectedMode = mode();
 
-    if (selectedMode === ExportMode.newTab) return;
+    if (selectedMode !== ExportMode.export && selectedMode !== ExportMode.share)
+      return;
 
     props.onConfirm({
       type: selectedMode,
