@@ -81,6 +81,7 @@ export const selected = style({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   display: 'block',
+  fontWeight: themeVars.fontWeight.medium,
 });
 
 export const selectorIconWrapper = style({
