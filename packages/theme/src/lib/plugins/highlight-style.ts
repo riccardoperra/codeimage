@@ -113,7 +113,7 @@ export function styledHighlight(h: StyledHighlightOptions) {
     {tag: [t.tagName], color: h.tag},
     // TODO: what's this tag for?
     {
-      tag: [t.atom, t.special(t.variableName)],
+      tag: [t.atom],
       color: h.atom,
     },
     {
