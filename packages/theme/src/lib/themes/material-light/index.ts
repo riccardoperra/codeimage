@@ -1,18 +1,9 @@
+import {createTheme} from '../../core';
 import {materialLight} from './material-light';
-import {createPrismJsTheme} from '../../prismjs/prismjs-theme-factory';
-import {styledAutocomplete} from '../../plugins/autocomplete-style';
 
-export const materialLightTheme = createPrismJsTheme({
+export const materialLightTheme = createTheme({
   id: 'materialLightTheme',
-  editorTheme: [
-    styledAutocomplete({
-      background: '#fff',
-      selectedBackground: '#a971ff',
-      selectedColor: '#fff',
-      border: '#a971ff',
-    }),
-  ],
-  externalStylesheet: materialLight,
+  editorTheme: materialLight,
   properties: {
     darkMode: false,
     label: 'Material Light',
