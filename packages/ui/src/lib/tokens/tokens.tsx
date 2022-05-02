@@ -1,10 +1,4 @@
-import {
-  createContext,
-  createEffect,
-  PropsWithChildren,
-  useContext,
-} from 'solid-js';
-import {createStore} from 'solid-js/store';
+import {createContext, PropsWithChildren, useContext} from 'solid-js';
 import * as styles from '../primitives/Text/Text.css';
 
 export interface TextThemeTokens {
