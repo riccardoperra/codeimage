@@ -25,6 +25,7 @@ import {useModality} from './core/hooks/isMobile';
 import {useEffects} from './core/store/use-effect';
 import {useTabIcon} from './hooks/use-tab-icon';
 import {uiStore} from './state/ui';
+import './theme/global.css';
 
 initEffects();
 

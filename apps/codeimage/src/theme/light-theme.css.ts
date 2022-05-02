@@ -1,5 +1,5 @@
-import {createTheme} from '@vanilla-extract/css';
 import {themeColors, themeVars} from '@codeimage/ui';
+import {createTheme} from '@vanilla-extract/css';
 import {darkGrayScale} from './dark-theme.css';
 
 export const lightThemeCss = createTheme(themeColors, {
@@ -13,6 +13,7 @@ export const lightThemeCss = createTheme(themeColors, {
   panel: {
     background: themeVars.backgroundColor.white,
     textColor: themeVars.backgroundColor.black,
+    textColorAlt: '#666666',
   },
 
   input: {

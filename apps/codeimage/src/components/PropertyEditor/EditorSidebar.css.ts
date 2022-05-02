@@ -5,6 +5,7 @@ import {recipe} from '@vanilla-extract/recipes';
 export const [sidebarTheme, sidebarVars] = createTheme({
   gap: themeVars.spacing['4'],
   panelTitleTextColor: themeVars.dynamicColors.panel.textColor,
+  panelRowsTextColor: themeVars.dynamicColors.panel.textColorAlt,
 });
 
 export const sidebar = style([
@@ -70,7 +71,8 @@ export const titleWrapper = style([
   {
     selectors: {
       [`${panelRow} &`]: {
-        height: '26px',
+        color: sidebarVars.panelRowsTextColor,
+        height: '30px',
         display: 'flex',
         position: 'relative',
         paddingLeft: '15px',

@@ -136,7 +136,7 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
                             <Text
                               size={'xs'}
                               display={'block'}
-                              weight={isSelected() ? 'medium' : 'normal'}
+                              {...(isSelected() ? {weight: 'medium'} : {})}
                             >
                               {item.label}
                             </Text>

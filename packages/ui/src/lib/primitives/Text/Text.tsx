@@ -1,34 +1,53 @@
-import {Dynamic} from 'solid-js/web';
-import {createMemo, JSXElement} from 'solid-js';
+import clsx from 'clsx';
 import {
   DynamicProps,
   ValidConstructor,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {omitProps} from 'solid-use';
-import {useText, UseTextProps} from './useText';
+import {JSXElement, mergeProps} from 'solid-js';
 import {PropsWithChildren} from 'solid-js/types/render/component';
+import {Dynamic} from 'solid-js/web';
+import {omitProps} from 'solid-use';
+import {useTheme} from '../../tokens';
+import {useText, UseTextProps} from './useText';
+
+export type TextComponentProps = {
+  size?: UseTextProps['size'];
+  weight?: UseTextProps['weight'];
+};
 
 export type TextProps<T extends ValidConstructor = 'span'> = {
   as?: T | ValidConstructor;
 } & WithRef<T> &
-  Omit<DynamicProps<T>, 'as' | 'ref'> & {
-    size?: UseTextProps['size'];
-    weight?: UseTextProps['weight'];
-  };
+  Omit<DynamicProps<T>, 'as' | 'ref'> &
+  TextComponentProps;
 
 export function Text<T extends ValidConstructor>(
   props: PropsWithChildren<TextProps<T>>,
 ): JSXElement {
-  const textStyles = createMemo(() =>
-    useText({size: props.size, weight: props.weight}),
-  );
+  const baseTheme = useTheme().text;
+
+  const defaultProps = {
+    weight: baseTheme.weight,
+    size: baseTheme.size,
+  };
+
+  const propsWithDefault = mergeProps(defaultProps, props);
+
+  const classes = () =>
+    clsx(
+      props.class,
+      useText({
+        size: propsWithDefault.size,
+        weight: propsWithDefault.weight,
+      }),
+    );
 
   return (
     <Dynamic
       component={props.as ?? 'span'}
       {...omitProps(props, ['as', 'children'])}
-      class={`${textStyles()} ${props.class || ''}`}
+      class={classes()}
     >
       {props.children}
     </Dynamic>
