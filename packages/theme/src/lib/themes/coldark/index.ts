@@ -1,7 +1,7 @@
+import {createTheme} from '../../core';
 import {createPrismJsTheme} from '../../prismjs/prismjs-theme-factory';
 import {coldarkCold} from './coldark-cold';
-import {coldarkDark} from './coldark-dark';
-import {styledAutocomplete} from '../../plugins/autocomplete-style';
+import {coldarkDark, palette} from './coldark-dark';
 
 export const coldarkColdTheme = createPrismJsTheme({
   id: 'coldarkCold',
@@ -18,23 +18,16 @@ export const coldarkColdTheme = createPrismJsTheme({
   },
 } as const);
 
-export const coldarkDarkTheme = createPrismJsTheme({
+export const coldarkDarkTheme = createTheme({
   id: 'coldarkDark',
-  editorTheme: [
-    styledAutocomplete({
-      background: '#142231',
-      selectedBackground: '#122335',
-      selectedColor: '#e9ae7e',
-    }),
-  ],
-  externalStylesheet: coldarkDark,
+  editorTheme: coldarkDark,
   properties: {
     darkMode: true,
     label: 'Coldark Dark',
     previewBackground: '#213043',
     terminal: {
       main: '#111b27',
-      text: '#FFF',
+      text: palette.white,
     },
   },
 } as const);
