@@ -1,17 +1,9 @@
+import {createTheme} from '../../core';
 import {holi} from './holi';
-import {createPrismJsTheme} from '../../prismjs/prismjs-theme-factory';
-import {styledAutocomplete} from '../../plugins/autocomplete-style';
 
-export const holiTheme = createPrismJsTheme({
+export const holiTheme = createTheme({
   id: 'holiTheme',
-  editorTheme: [
-    styledAutocomplete({
-      background: '#122f6d',
-      selectedBackground: '#1a1a82',
-      selectedColor: '#d6b007',
-    }),
-  ],
-  externalStylesheet: holi,
+  editorTheme: holi,
   properties: {
     darkMode: true,
     label: 'Holi Dark',
