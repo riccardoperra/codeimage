@@ -1,109 +1,49 @@
-import {buildExternalStylesheet} from '../../core';
+import {defineEditorTheme} from '../../core';
 
-const selection = '#586f89';
-const foreground = '#0aa370';
+const palette = {
+  green: '#0aa370',
+  gray: '#4a5f78',
+  white: '#d6e9ff',
+  silver: '#88B4E7',
+  yellow: '#FFC91E',
+  green2: '#47ebb4',
+  green3: '#32AE85',
+};
 
-export const duotoneSea = buildExternalStylesheet('duotone-sea')(`
-  .cm-selectionBackground,
-  .cm-focused .cm-selectionBackground,
-  &::selection,
-  *::selection {
-    background-color: ${selection};
-  }
-
-  .cm-selectionMatch {
-    background-color: ${selection};
-  }
-
-  .cm-cursor {
-    border-left-color: ${foreground};
-  }
-
-  .token.comment,
-  .token.prolog,
-  .token.doctype,
-  .token.cdata {
-    color: #4a5f78;
-  }
-
-  .token.punctuation {
-    color: #4a5f78;
-  }
-
-  .token.namespace {
-    opacity: .7;
-  }
-
-  .token.tag,
-  .token.operator,
-  .token.number {
-    color: #0aa370;
-  }
-
-  .token.property,
-  .token.function {
-    color: #57718e;
-  }
-
-  .token.tag-id,
-  .token.selector,
-  .token.atrule-id {
-    color: #ebf4ff;
-  }
-
-  code.language-javascript,
-  .token.attr-name {
-    color: #7eb6f6;
-  }
-
-  code.language-css,
-  code.language-scss,
-  .token.boolean,
-  .token.string,
-  .token.entity,
-  .token.url,
-  .language-css .token.string,
-  .language-scss .token.string,
-  .style .token.string,
-  .token.attr-value,
-  .token.keyword,
-  .token.control,
-  .token.directive,
-  .token.unit,
-  .token.statement,
-  .token.regex,
-  .token.atrule {
-    color: #47ebb4;
-  }
-
-  .token.placeholder,
-  .token.variable {
-    color: #47ebb4;
-  }
-
-  .token.deleted {
-    text-decoration: line-through;
-  }
-
-  .token.inserted {
-    border-bottom: 1px dotted #ebf4ff;
-    text-decoration: none;
-  }
-
-  .token.italic {
-    font-style: italic;
-  }
-
-  .token.important,
-  .token.bold {
-    font-weight: bold;
-  }
-
-  .token.important {
-    color: #7eb6f6;
-  }
-
-  .token.entity {
-    cursor: help;
-  }
-`);
+export const duotoneSea = defineEditorTheme({
+  darkMode: true,
+  cursor: {
+    color: palette.green,
+  },
+  selection: {
+    backgroundColor: palette.gray,
+    color: palette.white,
+  },
+  autocomplete: {
+    background: palette.green,
+    selectedColor: palette.white,
+    selectedBackground: palette.green2,
+  },
+  highlight: {
+    punctuation: palette.white,
+    comments: palette.gray,
+    numbers: palette.green,
+    function: palette.white,
+    propertyName: palette.silver,
+    strings: palette.green2,
+    regexp: palette.green2,
+    typeName: palette.green,
+    className: palette.white,
+    boolean: palette.green,
+    self: palette.silver,
+    variableName: palette.green3,
+    tag: palette.white,
+    base: palette.silver,
+    keywords: palette.green3,
+    delimiters: palette.white,
+    annotation: palette.white,
+    paren: palette.yellow,
+    attrName: palette.green,
+    attrValue: palette.silver,
+  },
+});
