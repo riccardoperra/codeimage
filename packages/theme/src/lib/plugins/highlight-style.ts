@@ -118,7 +118,7 @@ export function styledHighlight(h: StyledHighlightOptions) {
     },
     {
       tag: [t.attributeValue],
-      color: h.strings ?? h.attrValue,
+      color: h.attrValue ?? h.strings,
     },
     {
       tag: [t.attributeName],
