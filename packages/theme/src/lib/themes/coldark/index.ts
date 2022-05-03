@@ -1,12 +1,10 @@
 import {createTheme} from '../../core';
-import {createPrismJsTheme} from '../../prismjs/prismjs-theme-factory';
 import {coldarkCold} from './coldark-cold';
 import {coldarkDark, palette} from './coldark-dark';
 
-export const coldarkColdTheme = createPrismJsTheme({
+export const coldarkColdTheme = createTheme({
   id: 'coldarkCold',
-  editorTheme: [],
-  externalStylesheet: coldarkCold,
+  editorTheme: coldarkCold,
   properties: {
     darkMode: false,
     label: 'Coldark Cold',

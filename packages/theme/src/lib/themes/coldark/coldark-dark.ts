@@ -20,7 +20,7 @@ export const coldarkDark = defineEditorTheme({
   autocomplete: {
     background: '#142231',
     selectedBackground: '#122335',
-    selectedColor: '#e9ae7e',
+    selectedColor: palette.orange,
   },
   highlight: {
     comments: palette.gray2,
@@ -39,7 +39,11 @@ export const coldarkDark = defineEditorTheme({
     keywords: palette.orange,
     operators: palette.orange,
     self: palette.blue,
+    base: palette.gray,
+    annotation: palette.gray,
+    delimiters: palette.yellow,
   },
+  darkMode: true,
   selection: {
     backgroundColor: selection,
     color: palette.white,
