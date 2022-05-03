@@ -21,8 +21,8 @@ import {
 } from '@codeimage/ui';
 import {Transition} from 'solid-headless';
 import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
 import {useModality} from '../../core/hooks/isMobile';
+import {useWebshare} from '../../core/hooks/use-webshare';
 import {
   ExportExtension,
   ExportMode,
@@ -140,7 +140,7 @@ export interface ExportDialogProps extends DialogProps {
 
 export function ExportDialog(props: DialogProps & ExportDialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  const {support} = appEnvironment;
+  const [supportWebShare, shareable, share] = useWebshare();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
@@ -185,7 +185,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
   };
 
   onMount(() => {
-    if (!support.shareApi) {
+    if (!supportWebShare()) {
       setMode(ExportMode.export);
     }
   });
@@ -195,7 +195,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
       <Dialog {...props} isOpen size={'md'} title={t('export.title')}>
         <DialogPanelContent>
           <VStack spacing={'6'}>
-            <Show when={support.shareApi}>
+            <Show when={supportWebShare()}>
               <FlexField size={'lg'}>
                 <SegmentedField
                   value={mode()}

@@ -5,6 +5,7 @@ import download from 'downloadjs';
 import {Resource} from 'solid-js';
 import {Options as HtmlToImageExportOptions} from 'html-to-image/es/options';
 import {IS_IOS} from '../core/constants/browser';
+import {useWebshare} from '../core/hooks/use-webshare';
 
 export const enum ExportMode {
   export = 'export',
@@ -64,6 +65,8 @@ export async function exportImage(
     ref,
   } = data;
 
+  const [supported, canShare, share] = useWebshare();
+
   if (!ref) {
     throw new Error('Reference is not defined.');
   }
@@ -96,7 +99,7 @@ export async function exportImage(
 
   switch (mode) {
     case 'share': {
-      if (!navigator.share) {
+      if (!supported()) {
         throw new Error('WebShare api is not supported.');
       }
 
@@ -115,9 +118,9 @@ export async function exportImage(
         files: [file],
       };
 
-      if (navigator.canShare(data)) {
-        const share = () =>
-          navigator.share(data).catch((error: Error) => {
+      if (canShare(data)) {
+        const safeShare = () =>
+          share(data)!.catch((error: Error) => {
             if (error.name === 'AbortError') {
               return null;
             }
@@ -137,10 +140,13 @@ export async function exportImage(
          *
          * */
         if (IS_IOS) {
-          await Promise.race([share(), new Promise(r => setTimeout(r, 3000))]);
+          await Promise.race([
+            safeShare(),
+            new Promise(r => setTimeout(r, 3000)),
+          ]);
           return blob;
         } else {
-          await share();
+          await safeShare();
         }
       }
 

@@ -34,9 +34,6 @@ export const SUPPORTED_THEMES_DICTIONARY = mapToDictionary(
 
 export const [appEnvironment] = createConfiguration({
   version,
-  support: {
-    shareApi: !!navigator.share,
-  },
   locales: SUPPORTED_LOCALES,
   themes: SUPPORTED_THEMES,
   languages: SUPPORTED_LANGUAGES,
