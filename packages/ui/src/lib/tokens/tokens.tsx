@@ -16,6 +16,7 @@ export function CodeImageThemeProvider(
   props: PropsWithChildren<{theme: Partial<BaseThemeTokens>}>,
 ) {
   const componentsTheme: BaseThemeTokens = {
+    // eslint-disable-next-line solid/reactivity
     text: props.theme.text ?? {},
   };
 

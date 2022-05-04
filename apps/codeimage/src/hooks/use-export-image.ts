@@ -120,7 +120,7 @@ export async function exportImage(
 
       if (canShare(data)) {
         const safeShare = () =>
-          share(data)!.catch((error: Error) => {
+          share(data)?.catch((error: Error) => {
             if (error.name === 'AbortError') {
               return null;
             }

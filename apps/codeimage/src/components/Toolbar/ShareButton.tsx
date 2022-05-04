@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Button, SvgIcon} from '@codeimage/ui';
-import {Component, createMemo, mergeProps, Show} from 'solid-js';
+import {Component, createMemo, mergeProps, onMount, Show} from 'solid-js';
 import {useWebshare} from '../../core/hooks/use-webshare';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {AppLocaleEntries} from '../../i18n';
@@ -30,11 +30,15 @@ export const ShareButton: Component<ShareButtonProps> = props => {
     return share(data);
   }
 
-  useHotkey(document.body, {
-    'Control+Shift+C': async event => {
-      event.preventDefault();
-      await onShare();
-    },
+  async function enterEvent(event: KeyboardEvent) {
+    event.preventDefault();
+    await onShare();
+  }
+
+  onMount(() => {
+    useHotkey(document.body, {
+      'Control+Shift+C': enterEvent,
+    });
   });
 
   return (
