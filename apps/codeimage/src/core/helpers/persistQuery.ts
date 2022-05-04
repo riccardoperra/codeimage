@@ -115,6 +115,7 @@ export function persistQuery<S extends Store>(store: S, options: Options<S>) {
   const saveToQuerySubscription = merged
     .source(store)
     .pipe(
+      skip(1),
       map(state =>
         Object.fromEntries(
           Object.entries(state).filter(([k]) => merged.keysToSync.includes(k)),
@@ -124,7 +125,6 @@ export function persistQuery<S extends Store>(store: S, options: Options<S>) {
       pairwise(),
       map(([, b]) => b),
       distinctUntilChanged((a, b) => shallow(a, b)),
-      skip(1),
       tap(state => setQuery(merged.key, state as Partial<StoreValue<S>>)),
     )
     .subscribe();

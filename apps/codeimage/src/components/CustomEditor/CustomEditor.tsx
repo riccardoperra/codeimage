@@ -1,4 +1,4 @@
-import {EditorView, lineNumbers} from '@codemirror/view';
+import {EditorView} from '@codemirror/view';
 import {editor$, setFocus} from '@codeimage/store/editor';
 import {appEnvironment} from '../../core/configuration';
 import {
@@ -9,6 +9,7 @@ import {
   onCleanup,
   Show,
 } from 'solid-js';
+import {lineNumbers} from '@codemirror/gutter';
 import {createCustomFontExtension} from './custom-font-extension';
 import clsx from 'clsx';
 import {observeFocusExtension} from './observe-focus-extension';

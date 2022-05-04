@@ -1,5 +1,4 @@
-import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
-import {tags as t} from '@lezer/highlight';
+import {HighlightStyle, tags as t} from '@codemirror/highlight';
 import {defineEditorTheme} from '../../core';
 
 export const palette = {
@@ -18,12 +17,10 @@ export const palette = {
 };
 
 export const dracula = [
-  syntaxHighlighting(
-    HighlightStyle.define([
-      {tag: t.self, fontStyle: 'italic'},
-      {tag: t.definition(t.variableName), color: palette.orange},
-    ]),
-  ),
+  HighlightStyle.define([
+    {tag: t.self, fontStyle: 'italic'},
+    {tag: t.definition(t.variableName), color: palette.orange},
+  ]),
   defineEditorTheme({
     highlight: {
       comments: palette.purple,

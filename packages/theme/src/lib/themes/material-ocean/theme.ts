@@ -1,5 +1,4 @@
-import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
-import {tags as t} from '@lezer/highlight';
+import {HighlightStyle, tags as t} from '@codemirror/highlight';
 import {defineEditorTheme} from '../../core';
 
 export const palette = {
@@ -28,20 +27,18 @@ export const palette = {
 };
 
 export const materialOcean = [
-  syntaxHighlighting(
-    HighlightStyle.define([
-      {tag: [t.escape], color: palette.foreground},
-      {
-        tag: [t.url, t.escape, t.regexp, t.operatorKeyword, t.operator],
-        color: palette.cyan,
-      },
-      {tag: [t.squareBracket], color: palette.yellow},
-      {tag: [t.angleBracket], color: palette.cyan},
-      {tag: [t.bracket], color: palette.purple},
-      {tag: [t.brace], color: palette.cyan},
-      {tag: [t.definition(t.variableName)], color: palette.paleblue},
-    ]),
-  ),
+  HighlightStyle.define([
+    {tag: [t.escape], color: palette.foreground},
+    {
+      tag: [t.url, t.escape, t.regexp, t.operatorKeyword, t.operator],
+      color: palette.cyan,
+    },
+    {tag: [t.squareBracket], color: palette.yellow},
+    {tag: [t.angleBracket], color: palette.cyan},
+    {tag: [t.bracket], color: palette.purple},
+    {tag: [t.brace], color: palette.cyan},
+    {tag: [t.definition(t.variableName)], color: palette.paleblue},
+  ]),
 
   defineEditorTheme({
     darkMode: true,
