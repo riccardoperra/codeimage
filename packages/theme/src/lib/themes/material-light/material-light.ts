@@ -1,4 +1,5 @@
-import {HighlightStyle, tags} from '@codemirror/highlight';
+import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
+import {tags as t} from '@lezer/highlight';
 import {defineEditorTheme} from '../../core';
 
 export const palette = {
@@ -55,14 +56,16 @@ export const materialLight = [
       propertyName: palette.pink,
     },
   }),
-  HighlightStyle.define([
-    {
-      tag: tags.variableName,
-      color: palette.violet,
-    },
-    {
-      tag: tags.name,
-      color: palette.pink,
-    },
-  ]),
+  syntaxHighlighting(
+    HighlightStyle.define([
+      {
+        tag: t.variableName,
+        color: palette.violet,
+      },
+      {
+        tag: t.name,
+        color: palette.pink,
+      },
+    ]),
+  ),
 ];

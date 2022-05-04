@@ -1,4 +1,5 @@
 import {EditorView} from '@codemirror/view';
+import {syntaxHighlighting} from '@codemirror/language';
 import {
   styledAutocomplete,
   StyledAutoCompleteOptions,
@@ -47,11 +48,11 @@ export const defineEditorTheme = (theme: ThemeOptions) => {
           color: lineNumbers?.color ?? (darkMode ? '#FFF' : '#000'),
         })
       : [],
-    styledHighlight(highlight),
     styledSelection({
       backgroundColor: selection?.backgroundColor ?? `${highlight.keywords}50`,
       color: selection?.color ?? 'inherit',
     }),
     styledAutocomplete(autocomplete),
+    styledHighlight(highlight),
   ];
 };
