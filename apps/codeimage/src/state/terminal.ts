@@ -35,13 +35,10 @@ const initialState: TerminalState = {
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
   background:
-    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.terminal
-      .main,
+    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.terminal.main,
   textColor:
-    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.terminal
-      .text,
-  darkMode:
-    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.darkMode,
+    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.terminal.text,
+  darkMode: SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.darkMode,
   showWatermark: true,
   showGlassReflection: false,
 };

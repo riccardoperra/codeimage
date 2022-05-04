@@ -21,8 +21,7 @@ export interface FrameStateSlice {
 
 const initialState: FrameStateSlice = {
   background:
-    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties
-      .previewBackground,
+    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.previewBackground,
   padding: 128,
   radius: 24,
   visible: true,

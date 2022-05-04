@@ -1,97 +1,68 @@
-import {buildExternalStylesheet} from '../../core';
+import {HighlightStyle, tags} from '@codemirror/highlight';
+import {defineEditorTheme} from '../../core';
 
-const selection = '#1d3b53';
-const foreground = '#80a4c2';
-const punctuation = '#C792EA';
-const tag = '#B2CCD6';
+const palette = {
+  white: '#D0D8E5',
+  yellow: '#ffcb8b',
+  yellow2: '#e2b93d',
+  purple: '#c792ea',
+  cyan: '#80CBC4',
+  indigo: '#82AAFF',
+  gray: '#5f7e97',
+  red: '#ff5874',
+  green: '#c5e478',
+  blue: '#5ca7e4',
+  greenLight: '#caece6',
+  orange: '#F78C6C',
+  grayDark: '#637777',
+  lineNumbers: '#4b6479',
+  selection: '#1d3b53',
+};
 
-export const nightOwl = buildExternalStylesheet('nightOwl')(`
-  .cm-selectionBackground,
-  .cm-focused .cm-selectionBackground,
-  &::selection,
-  *::selection {
-    background-color: ${selection};
-  }
-
-  .cm-selectionMatch {
-    background-color: ${selection};
-  }
-
-  .cm-cursor {
-    border-left-color: ${foreground};
-  }
-
-  .token.comment {
-    color: rgb(99, 119, 119);
-    font-style: italic;
-  }
-
-  .token.punctuation {
-    color: ${punctuation};
-  }
-
-  .token.tag,
-  .token.builtin,
-  .token.namespace,
-  .token.class-name,
-  .token.class-name .token.constant {
-    color: ${tag};
-  }
-
-  .token.symbol,
-  .token.property {
-    color: rgb(128, 203, 196);
-  }
-
-  .token.tag,
-  .token.operator,
-  .token.keyword {
-    color: rgb(127, 219, 202);
-  }
-
-  .token.boolean {
-    color: rgb(255, 88, 116);
-  }
-
-  .token.number {
-    color: rgb(247, 140, 108);
-  }
-
-  .token.constant,
-  .token.function,
-  .token {
-    color: rgb(130, 170, 255);
-  }
-
-  .token.selector,
-  .token.doctype {
-    color: rgb(199, 146, 234);
-    font-style: italic;
-  }
-
-  .token.attr-name,
-  .token.inserted {
-    color: rgb(173, 219, 103);
-    font-style: italic;
-  }
-
-  .token.string,
-  .token.url,
-  .token.entity,
-  .language-css .token.string,
-  .style .token.string {
-    color: rgb(173, 219, 103);
-  }
-
-  .token.class-name,
-  .token.atrule,
-  .token.attr-value {
-    color: rgb(255, 203, 139);
-  }
-
-  .token.regex,
-  .token.important,
-  .token.variable {
-    color: rgb(214, 222, 235);
-  }
-`);
+export const nightOwl = [
+  defineEditorTheme({
+    darkMode: true,
+    selection: {
+      backgroundColor: palette.selection,
+      color: palette.white,
+    },
+    cursor: {
+      color: palette.white,
+    },
+    lineNumbers: {
+      color: palette.lineNumbers,
+    },
+    autocomplete: {
+      background: '#011423',
+      border: '#5f7e97',
+      selectedBackground: '#011220',
+      selectedColor: palette.orange,
+    },
+    highlight: {
+      className: palette.yellow,
+      typeName: palette.green,
+      propertyName: palette.indigo,
+      keywords: palette.purple,
+      delimiters: palette.gray,
+      boolean: palette.red,
+      strings: palette.yellow,
+      regexp: palette.blue,
+      tag: palette.greenLight,
+      comments: palette.grayDark,
+      variableName: palette.indigo,
+      annotation: palette.purple,
+      base: palette.white,
+      numbers: palette.orange,
+      paren: palette.yellow2,
+      function: palette.indigo, // function name,
+    },
+  }),
+  HighlightStyle.define([
+    {tag: tags.null, color: palette.red},
+    {
+      tag: tags.function(tags.variableName),
+      fontStyle: 'italic',
+    },
+    {tag: tags.definition(tags.variableName), color: palette.indigo},
+  ]),
+];
