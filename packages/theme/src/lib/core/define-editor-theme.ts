@@ -1,5 +1,4 @@
 import {EditorView} from '@codemirror/view';
-import {syntaxHighlighting} from '@codemirror/language';
 import {
   styledAutocomplete,
   StyledAutoCompleteOptions,
