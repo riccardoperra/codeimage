@@ -7,7 +7,6 @@ export interface StyledHighlightOptions {
   comments: string;
   numbers: string;
   regexp: string;
-  annotation: string;
   tag: string;
   variableName: string;
   variableNameSpecial?: string;
@@ -22,6 +21,7 @@ export interface StyledHighlightOptions {
   brackets?: string;
   moduleKeyword?: string;
   propertyName?: string;
+  annotation?: string;
   attrName?: string;
   attrValue?: string;
   className?: string;
