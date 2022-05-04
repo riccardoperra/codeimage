@@ -1,24 +1,16 @@
-import {createPrismJsTheme} from '../../prismjs/prismjs-theme-factory';
-import {duotoneDark} from './duotone-dark';
-import {styledAutocomplete} from '../../plugins/autocomplete-style';
+import {createTheme} from '../../core';
+import {duotoneDark, palette} from './duotone-dark';
 
-export const duotoneDarkTheme = createPrismJsTheme({
+export const duotoneDarkTheme = createTheme({
   id: 'duotoneDark',
-  editorTheme: [
-    styledAutocomplete({
-      background: '#211f2a',
-      selectedBackground: '#1d1b28',
-      selectedColor: '#9a86fd',
-    }),
-  ],
-  externalStylesheet: duotoneDark,
+  editorTheme: duotoneDark,
   properties: {
     darkMode: true,
     label: 'Duotone Dark',
-    previewBackground: '#7840ba',
+    previewBackground: palette.salmon,
     terminal: {
       main: '#2D2B38',
-      text: '#FFFFFF',
+      text: palette.white,
     },
   },
 } as const);
