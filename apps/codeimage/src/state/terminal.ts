@@ -1,15 +1,14 @@
 import {updateTabName} from '@codeimage/store/effects/onTabNameChange';
 import {themeVars} from '@codeimage/ui';
+import {dispatch} from '@ngneat/effects';
+import {createStore, select, setProp, withProps} from '@ngneat/elf';
+import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
+import {distinctUntilChanged} from 'rxjs';
 import {
   appEnvironment,
   SUPPORTED_THEMES_DICTIONARY,
 } from '../core/configuration';
-import {createStore, select, setProp, withProps} from '@ngneat/elf';
-import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
-import {distinctUntilChanged} from 'rxjs';
 import shallow from '../core/helpers/shallow';
-import {dispatch} from '@ngneat/effects';
-import {persistQuery} from '../core/helpers/persistQuery';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
 export interface TerminalState {
@@ -31,7 +30,7 @@ const initialState: TerminalState = {
   type: appEnvironment.terminalThemes.entries[
     appEnvironment.terminalThemes.keys[0]
   ].name,
-  tabName: 'index.js',
+  tabName: 'index.ts',
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
   background:
@@ -51,21 +50,6 @@ const store = createStore(
 export const updateTerminalStore = store.update.bind(store);
 
 persistState(store, {storage: localStorageStrategy, key: '@store/terminal'});
-persistQuery(store, {
-  key: 'terminal',
-  keysToSync: [
-    'showHeader',
-    'type',
-    'tabName',
-    'accentVisible',
-    'shadow',
-    'background',
-    'textColor',
-    'darkMode',
-    'showWatermark',
-    'showReflection',
-  ],
-});
 
 export const {
   setShadow,

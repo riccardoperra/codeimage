@@ -1,12 +1,11 @@
+import {createStore, setProp, withProps} from '@ngneat/elf';
+import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
+import {distinctUntilChanged} from 'rxjs';
 import {
   appEnvironment,
   SUPPORTED_THEMES_DICTIONARY,
 } from '../core/configuration';
-import {createStore, setProp, withProps} from '@ngneat/elf';
-import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
-import {distinctUntilChanged} from 'rxjs';
 import shallow from '../core/helpers/shallow';
-import {persistQuery} from '../core/helpers/persistQuery';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
 export interface FrameStateSlice {
@@ -48,10 +47,6 @@ export const {
 export const updateFrameStore = store.update.bind(store);
 
 persistState(store, {key: '@store/frame', storage: localStorageStrategy});
-persistQuery(store, {
-  key: 'frame',
-  keysToSync: ['background', 'padding', 'radius', 'visible', 'opacity'],
-});
 
 export function toggleVisibility(): void {
   store.update(setProp('visible', visible => !visible));

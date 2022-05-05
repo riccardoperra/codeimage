@@ -14,8 +14,9 @@ module.exports = defineConfig({
     rollupOptions: {
       external: [
         '@codemirror/state',
-        '@codemirror/highlight',
+        '@codemirror/language',
         '@codemirror/view',
+        '@lezer/highlight',
       ],
       output: {},
     },

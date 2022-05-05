@@ -1,4 +1,5 @@
-import {HighlightStyle, tags} from '@codemirror/highlight';
+import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
+import {tags as t} from '@lezer/highlight';
 import {defineEditorTheme} from '../../core';
 
 const palette = {
@@ -57,12 +58,14 @@ export const nightOwl = [
       function: palette.indigo, // function name,
     },
   }),
-  HighlightStyle.define([
-    {tag: tags.null, color: palette.red},
-    {
-      tag: tags.function(tags.variableName),
-      fontStyle: 'italic',
-    },
-    {tag: tags.definition(tags.variableName), color: palette.indigo},
-  ]),
+  syntaxHighlighting(
+    HighlightStyle.define([
+      {tag: t.null, color: palette.red},
+      {
+        tag: t.function(t.variableName),
+        fontStyle: 'italic',
+      },
+      {tag: t.definition(t.variableName), color: palette.indigo},
+    ]),
+  ),
 ];

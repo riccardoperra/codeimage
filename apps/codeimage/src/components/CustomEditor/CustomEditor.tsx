@@ -1,6 +1,9 @@
-import {EditorView} from '@codemirror/view';
+import {EDITOR_BASE_SETUP} from '@codeimage/config';
 import {editor$, setFocus} from '@codeimage/store/editor';
-import {appEnvironment} from '../../core/configuration';
+import {EditorView, lineNumbers} from '@codemirror/view';
+import clsx from 'clsx';
+import {debounceTime, ReplaySubject, takeUntil} from 'rxjs';
+import {createCodeMirror} from 'solid-codemirror';
 import {
   batch,
   createEffect,
@@ -9,15 +12,11 @@ import {
   onCleanup,
   Show,
 } from 'solid-js';
-import {lineNumbers} from '@codemirror/gutter';
-import {createCustomFontExtension} from './custom-font-extension';
-import clsx from 'clsx';
-import {observeFocusExtension} from './observe-focus-extension';
+import {appEnvironment} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {focusedEditor$, setCode} from '../../state/editor';
-import {EDITOR_BASE_SETUP} from '@codeimage/config';
-import {ReplaySubject, takeUntil} from 'rxjs';
-import {createCodeMirror} from 'solid-codemirror';
+import {createCustomFontExtension} from './custom-font-extension';
+import {observeFocusExtension} from './observe-focus-extension';
 
 export const CustomEditor = () => {
   let editorEl!: HTMLDivElement;
@@ -134,11 +133,13 @@ export const CustomEditor = () => {
             focused => setFocus(focused),
             vu => {
               // ATTENTION: a lot of multiple calls to fix!!
-              focusedEditor$.pipe(takeUntil(destroy$)).subscribe(focused => {
-                if (focused && !vu.view.hasFocus) {
-                  vu.view.focus();
-                }
-              });
+              focusedEditor$
+                .pipe(takeUntil(destroy$), debounceTime(0))
+                .subscribe(focused => {
+                  if (focused && !vu.view.hasFocus) {
+                    vu.view.focus();
+                  }
+                });
             },
           ),
           customFontExtension(),

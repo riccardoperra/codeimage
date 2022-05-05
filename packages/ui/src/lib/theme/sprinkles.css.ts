@@ -1,5 +1,5 @@
 import {createSprinkles, defineProperties} from '@vanilla-extract/sprinkles';
-import {themeVars} from './global.css';
+import {themeVars} from './global2.css';
 
 export const responsiveProperties = defineProperties({
   conditions: {

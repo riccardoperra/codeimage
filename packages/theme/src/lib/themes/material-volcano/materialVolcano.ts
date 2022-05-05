@@ -1,4 +1,5 @@
-import {HighlightStyle, tags as t} from '@codemirror/highlight';
+import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
+import {tags as t} from '@lezer/highlight';
 import {defineEditorTheme} from '../../core';
 
 export const palette = {
@@ -18,13 +19,15 @@ export const palette = {
 };
 
 export const materialVolcano = [
-  HighlightStyle.define([
-    {tag: t.null, color: palette.orange},
-    {tag: t.typeOperator, color: palette.purple},
-    {tag: t.labelName, color: palette.red},
-    {tag: t.variableName, color: palette.indigo},
-    {tag: [t.function(t.variableName)], color: palette.yellow},
-  ]),
+  syntaxHighlighting(
+    HighlightStyle.define([
+      {tag: t.null, color: palette.orange},
+      {tag: t.typeOperator, color: palette.purple},
+      {tag: t.labelName, color: palette.red},
+      {tag: t.variableName, color: palette.indigo},
+      {tag: [t.function(t.variableName)], color: palette.yellow},
+    ]),
+  ),
 
   defineEditorTheme({
     darkMode: true,

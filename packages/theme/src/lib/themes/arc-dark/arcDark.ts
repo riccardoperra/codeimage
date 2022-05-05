@@ -1,4 +1,5 @@
-import {HighlightStyle, tags as t} from '@codemirror/highlight';
+import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
+import {tags as t} from '@lezer/highlight';
 import {EditorView} from '@codemirror/view';
 
 export const palette = {
@@ -17,27 +18,29 @@ export const palette = {
   violet: '#a8b4de',
 };
 
-const highlightStyle = HighlightStyle.define([
-  {tag: [t.keyword, t.constant], color: palette.indigo},
-  {tag: [t.string], color: palette.orange},
-  {tag: [t.escape], color: palette.greenLight},
-  {tag: [t.number, t.bool], color: palette.orange},
-  {tag: [t.operator], color: palette.cyan},
-  {tag: [t.brace, t.paren], color: palette.magenta},
-  {tag: [t.comment], color: palette.violet, fontStyle: 'italic'},
-  {tag: [t.special], color: palette.indigo},
-  {tag: [t.className], color: palette.cyanDark},
-  {tag: [t.attributeName], color: palette.red},
-  {tag: [t.attributeValue], color: palette.orange},
-  {
-    tag: [t.function],
-    color: palette.cyanDark,
-  },
-  {tag: [t.function(t.variableName)], color: palette.cyan},
-  {tag: [t.propertyName], color: palette.indigo},
-  {tag: [t.variableName], color: palette.cyan},
-  {tag: [t.moduleKeyword], color: palette.magenta},
-]);
+const highlightStyle = syntaxHighlighting(
+  HighlightStyle.define([
+    {tag: [t.keyword, t.constant], color: palette.indigo},
+    {tag: [t.string], color: palette.orange},
+    {tag: [t.escape], color: palette.greenLight},
+    {tag: [t.number, t.bool], color: palette.orange},
+    {tag: [t.operator], color: palette.cyan},
+    {tag: [t.brace, t.paren], color: palette.magenta},
+    {tag: [t.comment], color: palette.violet, fontStyle: 'italic'},
+    {tag: [t.special], color: palette.indigo},
+    {tag: [t.className], color: palette.cyanDark},
+    {tag: [t.attributeName], color: palette.red},
+    {tag: [t.attributeValue], color: palette.orange},
+    {
+      tag: [t.function],
+      color: palette.cyanDark,
+    },
+    {tag: [t.function(t.variableName)], color: palette.cyan},
+    {tag: [t.propertyName], color: palette.indigo},
+    {tag: [t.variableName], color: palette.cyan},
+    {tag: [t.moduleKeyword], color: palette.magenta},
+  ]),
+);
 
 const theme = EditorView.theme(
   {
