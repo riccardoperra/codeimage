@@ -13,6 +13,7 @@ import {
 import {bracketMatching, indentOnInput} from '@codemirror/language';
 import {EditorState, Extension} from '@codemirror/state';
 import {
+  crosshairCursor,
   drawSelection,
   dropCursor,
   highlightSpecialChars,
@@ -30,6 +31,7 @@ export const EDITOR_BASE_SETUP: Extension = [
   closeBrackets(),
   autocompletion(),
   rectangularSelection(),
+  crosshairCursor(),
   history(),
   keymap.of([
     ...closeBracketsKeymap,
