@@ -1,5 +1,24 @@
 # @codeimage/theme
 
+## 5.0.0
+
+### Minor Changes
+
+- [#228](https://github.com/riccardoperra/codeimage/pull/228) [`2b7248e`](https://github.com/riccardoperra/codeimage/commit/2b7248e9ba080dec9de44f954a56d7f560dfd899) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Update dependencies and codemirror
+
+* [#226](https://github.com/riccardoperra/codeimage/pull/226) [`e8aa8a3`](https://github.com/riccardoperra/codeimage/commit/e8aa8a3a2dd10e024991a42a9c858c665092d1e7) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update deps, update codemirror
+
+- [#214](https://github.com/riccardoperra/codeimage/pull/214) [`e3ca614`](https://github.com/riccardoperra/codeimage/commit/e3ca6148a66cee7919d8a34311cf5033480e692e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Refactor theme integration
+
+* [#221](https://github.com/riccardoperra/codeimage/pull/221) [`f9b8474`](https://github.com/riccardoperra/codeimage/commit/f9b84748a631e62d32a903898c7ca8caac668964) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add support for copy to clipboard
+
+### Patch Changes
+
+- [#223](https://github.com/riccardoperra/codeimage/pull/223) [`6350e1b`](https://github.com/riccardoperra/codeimage/commit/6350e1bbd36b76d114242ce30f8ceb92c92d0de1) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Style improvements for MacOSX
+
+- Updated dependencies [[`719ac23`](https://github.com/riccardoperra/codeimage/commit/719ac23d91f93e11fe522633206787b56f8ef073), [`2b7248e`](https://github.com/riccardoperra/codeimage/commit/2b7248e9ba080dec9de44f954a56d7f560dfd899), [`e8aa8a3`](https://github.com/riccardoperra/codeimage/commit/e8aa8a3a2dd10e024991a42a9c858c665092d1e7), [`e3ca614`](https://github.com/riccardoperra/codeimage/commit/e3ca6148a66cee7919d8a34311cf5033480e692e)]:
+  - @codeimage/theme@0.7.0
+
 ## 4.0.0
 
 ### Minor Changes

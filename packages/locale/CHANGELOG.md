@@ -1,5 +1,13 @@
 # @codeimage/theme
 
+## 0.5.0
+
+### Minor Changes
+
+- [#228](https://github.com/riccardoperra/codeimage/pull/228) [`2b7248e`](https://github.com/riccardoperra/codeimage/commit/2b7248e9ba080dec9de44f954a56d7f560dfd899) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Update dependencies and codemirror
+
+* [#226](https://github.com/riccardoperra/codeimage/pull/226) [`e8aa8a3`](https://github.com/riccardoperra/codeimage/commit/e8aa8a3a2dd10e024991a42a9c858c665092d1e7) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update deps, update codemirror
+
 ## 0.4.6
 
 ### Patch Changes
