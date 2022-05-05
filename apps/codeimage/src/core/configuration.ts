@@ -34,9 +34,6 @@ export const SUPPORTED_THEMES_DICTIONARY = mapToDictionary(
 
 export const [appEnvironment] = createConfiguration({
   version,
-  support: {
-    shareApi: !!navigator.share,
-  },
   locales: SUPPORTED_LOCALES,
   themes: SUPPORTED_THEMES,
   languages: SUPPORTED_LANGUAGES,
@@ -59,7 +56,7 @@ export const [appEnvironment] = createConfiguration({
         '\n',
       // TODO: should be auto
       languageId: 'typescript',
-      theme: SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'],
+      theme: SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme,
       font: SUPPORTED_FONTS_DICTIONARY['jetbrains-mono'],
     },
   },

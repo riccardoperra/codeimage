@@ -1,4 +1,5 @@
-import {buildExternalStylesheet} from '../../core';
+import {EditorView} from '@codemirror/view';
+import {defineEditorTheme} from '../../core';
 
 export const background = 'hsl(204, 3%, 12%)';
 const foreground = 'hsl(204, 3%, 98%)';
@@ -12,142 +13,56 @@ const keyword = 'hsl(207, 65%, 59%)';
 const comment = 'hsl(101, 33%, 47%)';
 const number = 'hsl(99, 28%, 73%)';
 const string = 'hsl(17, 60%, 64%)';
-const func = 'hsl(60, 42%, 76%)';
+const func = 'hsl(60,42%,76%)';
 const regex = 'hsl(0, 60%, 62%)';
 const tag = 'hsl(168, 60%, 55%)';
-const selector = 'hsl(41, 60%, 67%)';
+const purple = '#C586C0';
+const yellow = '#DBD700';
 
-export const vsCodeDark = buildExternalStylesheet('vsCodeDarkTheme')(`
-  &.language-css pre,
-  &.language-js pre,
-  &.language-jsx pre,
-  &.language-ts pre,
-  &.language-tsx pre {
-    color: ${identifier};
-  }
-
-  .cm-selectionBackground,
-  .cm-focused .cm-selectionBackground,
-  &::selection,
-  *::selection {
-    background-color: ${selection};
-  }
-
-  .cm-selectionMatch {
-    background-color: ${selectionMatch};
-  }
-
-  .cm-lineNumbers .cm-gutterElement {
-    color: ${lineNumber};
-  }
-
-  .cm-cursor {
-    border-left-color: ${foreground};
-  }
-
-  .cm-matchingBracket,
-  .cm-nonmatchingBracket {
-    background-color: ${selectionMatch};
-    outline: 1px solid ${matchingBracket};
-  }
-
-  .cm-focused .cm-activeLine {
-    background-color: ${activeLine};
-  }
-
-  .cm-focused .cm-activeLineGutter {
-    color: ${foreground};
-    background-color: ${activeLine};
-  }
-
-  .token.keyword,
-  .token.boolean,
-  .token.important,
-  .token.entity,
-  .token.atrule,
-  .token.atrule .token.rule,
-  .token.punctuation.interpolation-punctuation {
-    color: ${keyword};
-  }
-
-  .token.property-name,
-  .token.property,
-  .token.variable,
-  .token.name,
-  .token.constant,
-  .token.console,
-  .token.parameter,
-  .token.interpolation,
-  .token.attr-name,
-  .token.function-variable.function,
-  .token.tag .token.script.language-javascript {
-    color: ${identifier};
-  }
-
-  .token.comment {
-    color: ${comment};
-    font-style: italic;
-  }
-
-  .token.punctuation,
-  .token.plain-text,
-  .token.operator,
-  .token.entity,
-  .token.atrule .token.keyword,
-  .token.attr-value .token.punctuation.attr-equals,
-  .token.tag .script .token.punctuation {
-    color: ${foreground};
-  }
-
-  .token.boolean,
-  .token.number,
-  .token.symbol,
-  .token.inserted,
-  .token.unit {
-    color: ${number};
-  }
-
-  .token.string,
-  .token.char,
-  .token.deleted,
-  .token.attr-value,
-  .token.attr-value .token.punctuation {
-    color: ${string};
-  }
-
-  .token.function {
-    color: ${func};
-  }
-
-  .token.regex {
-    color: ${regex};
-  }
-
-  .token.tag,
-  .token.builtin,
-  .token.namespace,
-  .token.class-name,
-  .token.class-name .token.constant {
-    color: ${tag};
-  }
-
-  .token.angle-bracket,
-  .token.tag .token.punctuation {
-    color: ${lineNumber};
-  }
-
-  &.language-html .token.doctype .token.name {
-    color: ${foreground};
-  }
-
-  &.language-html .token.tag {
-    color: ${keyword};
-  }
-
-  &.language-css .token.selector,
-  &.language-css .token.square-bracket + .token.property-name,
-  &.language-css .token.square-bracket + .token.property-name,
-  &.language-css .token.class-name {
-    color: ${selector};
-  }
-`);
+export const vsCodeDark = [
+  defineEditorTheme({
+    selection: {
+      backgroundColor: selection,
+      activeLine: activeLine,
+    },
+    lineNumbers: {
+      color: lineNumber,
+    },
+    cursor: {
+      color: foreground,
+    },
+    highlight: {
+      base: identifier,
+      tag,
+      keywords: keyword,
+      comments: comment,
+      numbers: number,
+      strings: string,
+      function: func,
+      regexp: regex,
+      boolean: number,
+      propertyName: identifier,
+      variableName: identifier,
+      punctuation: foreground,
+      attrValue: string,
+      className: tag,
+      delimiters: foreground,
+      annotation: string,
+      moduleKeyword: purple,
+      brackets: yellow,
+      paren: yellow,
+      typeName: tag,
+    },
+    darkMode: true,
+    autocomplete: {
+      background: '#1E1E1E',
+      selectedBackground: '#191818',
+    },
+  }),
+  EditorView.theme({
+    '.cm-matchingBracket': {
+      backgroundColor: selectionMatch,
+      outline: `1px solid ${matchingBracket}`,
+    },
+  }),
+];

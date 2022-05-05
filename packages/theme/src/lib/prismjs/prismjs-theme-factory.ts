@@ -5,6 +5,9 @@ type PrismJsTheme<T extends CustomTheme> = Omit<T, 'id'> & {
   id: `prismjs-${T['id']}`;
 };
 
+/**
+ * @deprecated Use `defineEditorTheme` api
+ */
 export const createPrismJsTheme = createThemeFactory(
   '@codeimage/prismjs-theme',
   <T extends CustomTheme, Id extends string>(theme: T): PrismJsTheme<T> => {

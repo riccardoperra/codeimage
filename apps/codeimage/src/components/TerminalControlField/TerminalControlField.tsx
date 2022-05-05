@@ -38,6 +38,7 @@ export function TerminalControlField(
                 readonlyTab={true}
                 showHeader={true}
                 showWatermark={false}
+                showGlassReflection={terminalState.showGlassReflection}
               />
             </Box>
           </RadioBlock>

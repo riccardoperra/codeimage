@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {editor$} from '@codeimage/store/editor';
+import {updateTheme} from '@codeimage/store/effects/onThemeChange';
 import {terminal$} from '@codeimage/store/terminal';
 import {
   Box,
@@ -22,7 +23,6 @@ import {appEnvironment} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {useModality} from '../../core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
-import {updateTheme} from '../../state/effect';
 import {CheckCircle} from '../Icons/CheckCircle';
 import {EmptyCircle} from '../Icons/EmptyCircle';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
@@ -38,7 +38,7 @@ function useFilteredThemes() {
     const value = search();
     if (!value || !(value.length > 2)) return themes;
     return themes.filter(theme =>
-      theme.properties.label.toLowerCase().startsWith(value.toLowerCase()),
+      theme.properties.label.toLowerCase().includes(value.toLowerCase()),
     );
   });
 
@@ -91,13 +91,14 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
                   textColor={theme.properties.terminal.text}
                   background={theme.properties.terminal.main}
                   darkMode={theme.properties.darkMode}
-                  accentVisible={terminal.accentVisible}
+                  accentVisible={false}
                   shadow={terminal.shadow}
                   showTab={true}
                   readonlyTab={true}
                   showHeader={true}
                   type={terminal.type}
                   showWatermark={false}
+                  showGlassReflection={terminal.showGlassReflection}
                 >
                   <Text size={'sm'}>{`// Code here`}</Text>
                 </DynamicTerminal>

@@ -10,6 +10,9 @@ export const locale = {
       show: 'Mostra',
       hide: 'Nascondi',
     },
+    canvas: {
+      copiedToClipboard: 'Snippet copiato negli appunti',
+    },
     locales: {
       it: 'Italiano',
       en: 'Inglese',
@@ -17,6 +20,8 @@ export const locale = {
     },
     toolbar: {
       export: 'Esporta',
+      openNewTab: 'Apri',
+      loadingNewTab: 'Preparando link...',
       share: 'Condividi',
       toggleTheme: 'Modifica tema',
       changeLanguage: 'Modifica lingua',
@@ -56,7 +61,9 @@ export const locale = {
       changePadding: 'Modifica padding',
       pickRandomTheme: 'Seleziona tema random',
       export: 'Esporta',
+      exportNewTab: 'Esporta in una nuova tab',
       copyLink: 'Copia link',
+      copySnippet: 'Copy snippet',
       openShortcuts: 'Apri scorciatoie',
     },
     themeSwitcher: {
@@ -66,6 +73,9 @@ export const locale = {
   },
   en: {
     ...sidebarLocale.en,
+    canvas: {
+      copiedToClipboard: 'Snippet copied to clipboard',
+    },
     common: {
       close: 'Close',
       confirm: 'Confirm',
@@ -81,6 +91,8 @@ export const locale = {
     },
     toolbar: {
       export: 'Export',
+      openNewTab: 'Open',
+      loadingNewTab: 'Preparing link...',
       share: 'Share',
       toggleTheme: 'Toggle theme',
       changeLanguage: 'Modifica lingua',
@@ -118,7 +130,9 @@ export const locale = {
       changePadding: 'Change padding',
       pickRandomTheme: 'Pick random theme',
       export: 'Export',
+      exportNewTab: 'Export in a new tab',
       copyLink: 'Copy link',
+      copySnippet: 'Copy snippet',
       openShortcuts: 'Open shortcuts',
     },
     themeSwitcher: {
@@ -134,6 +148,9 @@ export const locale = {
       show: 'Anzeigen',
       hide: 'Verstecken',
     },
+    canvas: {
+      copiedToClipboard: 'Snippet copied to clipboard',
+    },
     locales: {
       it: 'Italienisch',
       en: 'Englisch',
@@ -142,6 +159,8 @@ export const locale = {
     toolbar: {
       export: 'Export',
       share: 'Teilen',
+      openNewTab: 'Du öffnest',
+      loadingNewTab: 'Preparing link...',
       toggleTheme: 'Thema umschalten',
       changeLanguage: 'Thema umschalten',
       exportLoading: 'Exportieren...',
@@ -178,6 +197,8 @@ export const locale = {
       changePadding: 'Polsterung wechseln',
       pickRandomTheme: 'Wählen Sie ein zufälliges Thema',
       export: 'Export',
+      exportNewTab: 'Export in a new tab',
+      copySnippet: 'Copy snippet',
       copyLink: 'Link kopieren',
       openShortcuts: 'Verknüpfungen öffnen',
     },

@@ -56,4 +56,12 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
       {name: 'Bold', weight: 700},
     ],
   },
+  {
+    id: 'space-mono',
+    name: 'Space Mono',
+    types: [
+      {name: 'Regular', weight: 400},
+      {name: 'Bold', weight: 700},
+    ],
+  },
 ] as const);

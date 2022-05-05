@@ -1,12 +1,9 @@
+import {clientsClaim} from 'workbox-core';
 import {cleanupOutdatedCaches, precacheAndRoute} from 'workbox-precaching';
 import {registerRoute} from 'workbox-routing';
 import {StaleWhileRevalidate} from 'workbox-strategies';
 
 declare let self: ServiceWorkerGlobalScope;
-
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
-});
 
 // self.__WB_MANIFEST is default injection point
 precacheAndRoute(self.__WB_MANIFEST);
@@ -24,3 +21,6 @@ registerRoute(
   new RegExp('/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2)'),
   new StaleWhileRevalidate(),
 );
+
+self.skipWaiting();
+clientsClaim();

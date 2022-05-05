@@ -5,10 +5,13 @@ import download from 'downloadjs';
 import {Resource} from 'solid-js';
 import {Options as HtmlToImageExportOptions} from 'html-to-image/es/options';
 import {IS_IOS} from '../core/constants/browser';
+import {useWebshare} from '../core/hooks/use-webshare';
 
 export const enum ExportMode {
   export = 'export',
   share = 'share',
+  newTab = 'newTab',
+  getBlob = 'getBlob',
 }
 
 export const enum ExportExtension {
@@ -17,7 +20,7 @@ export const enum ExportExtension {
   jpeg = 'jpeg',
 }
 
-interface ExportOptions {
+export interface ExportOptions {
   extension: ExportExtension;
   mode: ExportMode;
   fileName?: string;
@@ -54,11 +57,15 @@ function resolveMimeType(extension: ExportExtension): string {
   }
 }
 
-async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
+export async function exportImage(
+  data: ExportImagePayload,
+): Promise<Blob | string> {
   const {
     options: {extension, fileName, mode, pixelRatio, quality},
     ref,
   } = data;
+
+  const [supported, canShare, share] = useWebshare();
 
   if (!ref) {
     throw new Error('Reference is not defined.');
@@ -92,7 +99,7 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
 
   switch (mode) {
     case 'share': {
-      if (!navigator.share) {
+      if (!supported()) {
         throw new Error('WebShare api is not supported.');
       }
 
@@ -111,9 +118,9 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
         files: [file],
       };
 
-      if (navigator.canShare(data)) {
-        const share = () =>
-          navigator.share(data).catch((error: Error) => {
+      if (canShare(data)) {
+        const safeShare = () =>
+          share(data)?.catch((error: Error) => {
             if (error.name === 'AbortError') {
               return null;
             }
@@ -133,10 +140,13 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
          *
          * */
         if (IS_IOS) {
-          await Promise.race([share(), new Promise(r => setTimeout(r, 3000))]);
+          await Promise.race([
+            safeShare(),
+            new Promise(r => setTimeout(r, 3000)),
+          ]);
           return blob;
         } else {
-          await share();
+          await safeShare();
         }
       }
 
@@ -153,6 +163,18 @@ async function exportImage(data: ExportImagePayload): Promise<Blob | string> {
       download(result, fileNameWithExtension);
 
       return result;
+    }
+    case ExportMode.newTab: {
+      const blob = await toBlob(ref, toImageOptions);
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+      }
+      return blob as Blob;
+    }
+    case ExportMode.getBlob: {
+      const blob = await toBlob(ref, toImageOptions);
+      return blob as Blob;
     }
     default: {
       throw new Error('Invalid modality');

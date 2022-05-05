@@ -1,10 +1,9 @@
-import {appEnvironment} from '../core/configuration';
 import {createStore, select, withProps} from '@ngneat/elf';
-import {distinctUntilChanged, map} from 'rxjs';
-import shallow from '../core/helpers/shallow';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
-import {persistQuery} from '../core/helpers/persistQuery';
+import {distinctUntilChanged, map} from 'rxjs';
+import {appEnvironment} from '../core/configuration';
 import {SUPPORTED_FONTS} from '../core/configuration/font';
+import shallow from '../core/helpers/shallow';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
 interface EditorState {
@@ -35,17 +34,6 @@ const store = createStore(
 export const updateEditorStore = store.update.bind(store);
 
 persistState(store, {storage: localStorageStrategy, key: '@store/editor'});
-persistQuery(store, {
-  key: 'editor',
-  keysToSync: [
-    'code',
-    'languageId',
-    'themeId',
-    'showLineNumbers',
-    'fontId',
-    'fontWeight',
-  ],
-});
 
 export const {
   setFocused: setFocus,

@@ -1,151 +1,73 @@
-import {HighlightStyle, tags as t} from '@codemirror/highlight';
-import {EditorView} from '@codemirror/view';
+import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
+import {tags as t} from '@lezer/highlight';
+import {defineEditorTheme} from '../../core';
 
 export const palette = {
   background: '#282a36',
-  cyan: '#8be9fd',
-  pink: '#ff79c6',
+  gray: '#f8f8f0',
+  cyan: '#8BE9FD',
+  pink: '#FF79C6',
   white: '#f8f8f2',
-  green: '#50fa7b',
+  green: '#50FA7B',
   yellow: '#f1fa8c',
-  violet: '#6272a4',
-  purple: '#bd93f9',
+  violet: '#6272A4',
+  purple: '#BD93F9',
+  blue: '#66d9ef',
+  red: '#FF5555',
+  orange: '#FFB86C',
 };
 
-const highlightStyle = HighlightStyle.define([
-  {
-    tag: [
-      t.string,
-      t.meta,
-      t.name,
-      t.typeName,
-      t.special,
-      t.variableName,
-      t.escape,
-      t.quote,
-    ],
-    color: palette.yellow,
-  },
-
-  {tag: [t.propertyName], color: palette.white},
-]);
-
-const hg = HighlightStyle.define([
-  {tag: [t.keyword], color: palette.pink},
-  {tag: [t.literal], color: palette.yellow},
-  {tag: [t.className], color: palette.cyan},
-  {tag: [t.comment, t.deleted], color: palette.purple},
-  {tag: [t.tagName], color: palette.cyan},
-  {tag: [t.attributeName], color: palette.green},
-
-  {
-    tag: [t.link, t.color],
-    color: palette.cyan,
-  },
-
-  {
-    tag: [t.propertyName],
-    color: palette.white,
-  },
-
-  {
-    tag: [t.function],
-    color: palette.green,
-  },
-
-  {
-    tag: [t.heading, t.attributeValue, t.meta, t.annotation],
-    fontStyle: 'italic',
-    color: palette.green,
-  },
-
-  {
-    tag: [t.variableName],
-    color: palette.purple,
-  },
-
-  {
-    tag: [t.function(t.variableName), t.labelName],
-    color: palette.green,
-  },
-]);
-
-const theme = EditorView.theme(
-  {
-    '&': {
-      color: palette.white,
-      backgroundColor: palette.background,
+export const dracula = [
+  syntaxHighlighting(
+    HighlightStyle.define([
+      {tag: t.self, fontStyle: 'italic'},
+      {tag: t.definition(t.variableName), color: palette.orange},
+    ]),
+  ),
+  defineEditorTheme({
+    highlight: {
+      comments: palette.purple,
+      strings: palette.yellow,
+      numbers: palette.purple,
+      variableName: palette.green,
+      variableNameSpecial: palette.white,
+      operators: palette.pink,
+      keywords: palette.pink,
+      atom: palette.purple,
+      attrName: palette.cyan,
+      attrValue: palette.white,
+      propertyName: palette.blue,
+      tag: palette.green,
+      function: palette.green,
+      regexp: palette.yellow,
+      base: palette.white,
+      delimiters: palette.red,
+      brackets: palette.cyan,
+      self: palette.purple,
+      annotation: palette.pink,
+      punctuation: palette.cyan,
+      className: palette.cyan,
+      moduleKeyword: palette.pink,
+      typeName: palette.cyan,
+      boolean: palette.purple,
+      meta: palette.green,
     },
-
-    '.cm-content': {
-      caretColor: palette.purple,
+    cursor: {
+      color: palette.gray,
     },
-
-    '.cm-cursor, .cm-dropCursor': {
-      borderLeftColor: palette.purple,
+    autocomplete: {
+      background: palette.background,
+      border: palette.violet,
+      selectedColor: palette.white,
+      selectedBackground: `${palette.purple}50`,
     },
-    '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection':
-      {backgroundColor: `${palette.purple}25`},
-    '.cm-panels': {
-      backgroundColor: palette.background,
-      color: palette.white,
-    },
-    '.cm-panels.cm-panels-top': {borderBottom: '2px solid black'},
-    '.cm-panels.cm-panels-bottom': {borderTop: '2px solid black'},
-
-    '.cm-searchMatch': {
-      backgroundColor: '#72a1ff59',
-      outline: '1px solid #457dff',
-    },
-
-    '.cm-searchMatch.cm-searchMatch-selected': {
-      backgroundColor: '#6199ff2f',
-    },
-
-    '.cm-activeLine': {backgroundColor: palette.background},
-    '.cm-selectionMatch': {backgroundColor: palette.background},
-
-    '&.cm-focused .cm-matchingBracket, &.cm-focused .cm-nonmatchingBracket': {
-      backgroundColor: `${palette.background}50`,
-      outline: `1px solid ${palette.purple}50`,
-    },
-
-    '.cm-gutters': {
-      backgroundColor: `${palette.violet}60`,
+    lineNumbers: {
       color: palette.violet,
-      border: 'none',
     },
-
-    '.cm-activeLineGutter': {
-      backgroundColor: palette.violet,
+    selection: {
+      backgroundColor: `${palette.purple}25`,
+      color: palette.white,
     },
-
-    '.cm-foldPlaceholder': {
-      backgroundColor: 'transparent',
-      border: 'none',
-      color: '#ddd',
-    },
-
-    '.cm-tooltip': {
-      border: 'none',
-      backgroundColor: palette.background,
-    },
-    '.cm-tooltip .cm-tooltip-arrow:before': {
-      borderTopColor: 'transparent',
-      borderBottomColor: 'transparent',
-    },
-    '.cm-tooltip .cm-tooltip-arrow:after': {
-      borderTopColor: palette.background,
-      borderBottomColor: palette.background,
-    },
-    '.cm-tooltip-autocomplete': {
-      '& > ul > li[aria-selected]': {
-        backgroundColor: `${palette.violet}50`,
-      },
-    },
-  },
-  {
-    dark: true,
-  },
-);
-export const dracula = [hg, highlightStyle, theme];
+    darkMode: true,
+  }),
+];

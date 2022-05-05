@@ -11,6 +11,7 @@ export const themeColors = createThemeContract({
   panel: {
     background: null,
     textColor: null,
+    textColorAlt: null,
   },
 
   input: {
@@ -26,6 +27,11 @@ export const themeColors = createThemeContract({
     base: {
       backgroundColor: null,
       activeColor: null,
+      hoverColor: null,
+      textColor: null,
+    },
+    primaryAlt: {
+      backgroundColor: null,
       hoverColor: null,
       textColor: null,
     },

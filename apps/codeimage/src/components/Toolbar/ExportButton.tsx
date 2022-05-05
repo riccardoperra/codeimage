@@ -1,4 +1,4 @@
-import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
+import {useI18n} from '@codeimage/locale';
 import {
   Box,
   Button,
@@ -19,20 +19,20 @@ import {
   useSnackbarStore,
   VStack,
 } from '@codeimage/ui';
-import {useI18n} from '@codeimage/locale';
-import {AppLocaleEntries} from '../../i18n';
+import {Transition} from 'solid-headless';
+import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
+import {useModality} from '../../core/hooks/isMobile';
+import {useWebshare} from '../../core/hooks/use-webshare';
 import {
   ExportExtension,
   ExportMode,
   useExportImage,
 } from '../../hooks/use-export-image';
-import {appEnvironment} from '../../core/configuration';
-import {HintIcon} from '../Icons/Hint';
-import {ExclamationIcon} from '../Icons/Exclamation';
-import {useModality} from '../../core/hooks/isMobile';
-import {Transition} from 'solid-headless';
 import {useHotkey} from '../../hooks/use-hotkey';
+import {AppLocaleEntries} from '../../i18n';
 import {DownloadIcon} from '../Icons/Download';
+import {ExclamationIcon} from '../Icons/Exclamation';
+import {HintIcon} from '../Icons/Hint';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -140,7 +140,7 @@ export interface ExportDialogProps extends DialogProps {
 
 export function ExportDialog(props: DialogProps & ExportDialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
-  const {support} = appEnvironment;
+  const [supportWebShare] = useWebshare();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
@@ -166,8 +166,26 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
     {label: 'JPEG', value: ExportExtension.jpeg},
   ];
 
+  const onConfirm = () => {
+    props.onClose?.();
+
+    const selectedMode = mode();
+
+    if (selectedMode !== ExportMode.export && selectedMode !== ExportMode.share)
+      return;
+
+    props.onConfirm({
+      type: selectedMode,
+      extension: extension(),
+      fileName: fileName(),
+      pixelRatio: devicePixelRatio(),
+      message: '',
+      quality: quality() / 100,
+    });
+  };
+
   onMount(() => {
-    if (!support.shareApi) {
+    if (!supportWebShare()) {
       setMode(ExportMode.export);
     }
   });
@@ -177,7 +195,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
       <Dialog {...props} isOpen size={'md'} title={t('export.title')}>
         <DialogPanelContent>
           <VStack spacing={'6'}>
-            <Show when={support.shareApi}>
+            <Show when={supportWebShare()}>
               <FlexField size={'lg'}>
                 <SegmentedField
                   value={mode()}
@@ -300,17 +318,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               size={'md'}
               type="submit"
               variant={'solid'}
-              onClick={() => {
-                props.onClose?.();
-                props.onConfirm({
-                  type: mode(),
-                  extension: extension(),
-                  fileName: fileName(),
-                  pixelRatio: devicePixelRatio(),
-                  message: '',
-                  quality: quality() / 100,
-                });
-              }}
+              onClick={onConfirm}
             >
               {t('common.confirm')}
             </Button>

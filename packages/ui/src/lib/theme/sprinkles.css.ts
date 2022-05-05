@@ -1,9 +1,5 @@
-import {
-  createMapValueFn,
-  createSprinkles,
-  defineProperties,
-} from '@vanilla-extract/sprinkles';
-import {themeVars} from './global.css';
+import {createSprinkles, defineProperties} from '@vanilla-extract/sprinkles';
+import {themeVars} from './global2.css';
 
 export const responsiveProperties = defineProperties({
   conditions: {
@@ -77,8 +73,6 @@ export const responsiveProperties = defineProperties({
   },
 });
 
-export const mapResponsiveValue = createMapValueFn(responsiveProperties);
-
 const colorProperties = defineProperties({
   conditions: {
     lightMode: {},
@@ -86,7 +80,9 @@ const colorProperties = defineProperties({
   },
   defaultCondition: 'lightMode',
   properties: {
-    color: [],
+    color: {
+      primary: themeVars.dynamicColors.primary,
+    },
     backgroundColor: [],
     // etc.
   },

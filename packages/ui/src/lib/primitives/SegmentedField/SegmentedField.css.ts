@@ -51,6 +51,7 @@ export const segment = style([
     padding: `0 ${themeVars.spacing['1']}`,
     color: segmentedFieldVars.segmentedTextColor,
     opacity: 0.65,
+    fontWeight: themeVars.fontWeight.medium,
     selectors: {
       '&:not(:disabled)': {
         cursor: 'pointer',

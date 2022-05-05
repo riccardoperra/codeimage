@@ -96,6 +96,21 @@ export const buttonVariant = recipe({
           },
         },
       },
+      primaryAlt: {
+        vars: {
+          [backgroundColorVar]:
+            themeVars.dynamicColors.button.primaryAlt.backgroundColor,
+          [colorVar]: themeVars.dynamicColors.button.primaryAlt.textColor,
+        },
+        selectors: {
+          '&:not(:disabled):hover': {
+            vars: {
+              [backgroundColorVar]:
+                themeVars.dynamicColors.button.primaryAlt.hoverColor,
+            },
+          },
+        },
+      },
       secondary: {
         vars: {
           [backgroundColorVar]:

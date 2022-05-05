@@ -1,15 +1,14 @@
+import {updateTabName} from '@codeimage/store/effects/onTabNameChange';
 import {themeVars} from '@codeimage/ui';
+import {dispatch} from '@ngneat/effects';
+import {createStore, select, setProp, withProps} from '@ngneat/elf';
+import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
+import {distinctUntilChanged} from 'rxjs';
 import {
   appEnvironment,
   SUPPORTED_THEMES_DICTIONARY,
 } from '../core/configuration';
-import {createStore, select, setProp, withProps} from '@ngneat/elf';
-import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
-import {distinctUntilChanged} from 'rxjs';
 import shallow from '../core/helpers/shallow';
-import {dispatch} from '@ngneat/effects';
-import {updateTabName} from './effect';
-import {persistQuery} from '../core/helpers/persistQuery';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
 export interface TerminalState {
@@ -23,6 +22,7 @@ export interface TerminalState {
   // TODO: this state should be removed. This is a slice of selected theme!!
   readonly darkMode: boolean;
   readonly showWatermark: boolean;
+  readonly showGlassReflection: boolean;
 }
 
 const initialState: TerminalState = {
@@ -30,18 +30,16 @@ const initialState: TerminalState = {
   type: appEnvironment.terminalThemes.entries[
     appEnvironment.terminalThemes.keys[0]
   ].name,
-  tabName: 'index.js',
+  tabName: 'index.ts',
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
   background:
-    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.terminal
-      .main,
+    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.terminal.main,
   textColor:
-    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.terminal
-      .text,
-  darkMode:
-    SUPPORTED_THEMES_DICTIONARY['prismjs-vsCodeDarkTheme'].properties.darkMode,
+    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.terminal.text,
+  darkMode: SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.darkMode,
   showWatermark: true,
+  showGlassReflection: false,
 };
 
 const store = createStore(
@@ -52,20 +50,6 @@ const store = createStore(
 export const updateTerminalStore = store.update.bind(store);
 
 persistState(store, {storage: localStorageStrategy, key: '@store/terminal'});
-persistQuery(store, {
-  key: 'terminal',
-  keysToSync: [
-    'showHeader',
-    'type',
-    'tabName',
-    'accentVisible',
-    'shadow',
-    'background',
-    'textColor',
-    'darkMode',
-    'showWatermark',
-  ],
-});
 
 export const {
   setShadow,
@@ -76,6 +60,7 @@ export const {
   setTextColor,
   setType,
   setBackground,
+  setShowGlassReflection,
 } = elfAutoSettersFactory(store);
 
 export function toggleShowHeader() {

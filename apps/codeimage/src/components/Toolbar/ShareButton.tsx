@@ -1,9 +1,9 @@
-import {Component, mergeProps, Show} from 'solid-js';
-import {Box, Button, SvgIcon} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
-import {AppLocaleEntries} from '../../i18n';
-import {appEnvironment} from '../../core/configuration';
+import {Box, Button, SvgIcon} from '@codeimage/ui';
+import {Component, createMemo, mergeProps, onMount, Show} from 'solid-js';
+import {useWebshare} from '../../core/hooks/use-webshare';
 import {useHotkey} from '../../hooks/use-hotkey';
+import {AppLocaleEntries} from '../../i18n';
 
 interface ShareButtonProps {
   showLabel?: boolean;
@@ -11,45 +11,51 @@ interface ShareButtonProps {
 
 export const ShareButton: Component<ShareButtonProps> = props => {
   const computedProps = mergeProps({showLabel: false, props});
-  const {support} = appEnvironment;
-
+  const [support, shareable, share] = useWebshare();
+  const canShare = createMemo(() => support() && shareable(getData()));
   const [t] = useI18n<AppLocaleEntries>();
 
-  async function share() {
-    const data = {
-      // TODO: add tab title
-      title: 'Code shared with codeimage.dev',
+  function getData(): ShareData {
+    return {
+      title: 'Snippet shared with codeimage.dev',
       url: window.location.search,
-      // TODO: should add the exported file? Useful for social media
-      files: [],
     };
-    if (!navigator.canShare(data)) {
-      return;
-    }
-    return await navigator.share(data);
   }
 
-  useHotkey(document.body, {
-    'Control+Shift+C': async event => {
-      event.preventDefault();
-      await share();
-    },
+  async function onShare() {
+    const data = getData();
+    if (!canShare()) {
+      return;
+    }
+    return share(data);
+  }
+
+  async function enterEvent(event: KeyboardEvent) {
+    event.preventDefault();
+    await onShare();
+  }
+
+  onMount(() => {
+    useHotkey(document.body, {
+      'Control+Shift+C': enterEvent,
+    });
   });
 
   return (
-    <Button
-      aria-label={t('toolbar.share')}
-      variant={'solid'}
-      theme={'secondary'}
-      disabled={!support.shareApi}
-      onClick={() => share()}
-    >
-      <SvgIcon viewBox="0 0 20 20" fill="currentColor">
-        <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-      </SvgIcon>
-      <Show when={computedProps.showLabel}>
-        <Box marginLeft={2}>{t('toolbar.share')}</Box>
-      </Show>
-    </Button>
+    <Show when={canShare()}>
+      <Button
+        aria-label={t('toolbar.share')}
+        variant={'solid'}
+        theme={'secondary'}
+        onClick={onShare}
+      >
+        <SvgIcon viewBox="0 0 20 20" fill="currentColor">
+          <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+        </SvgIcon>
+        <Show when={computedProps.showLabel}>
+          <Box marginLeft={2}>{t('toolbar.share')}</Box>
+        </Show>
+      </Button>
+    </Show>
   );
 };

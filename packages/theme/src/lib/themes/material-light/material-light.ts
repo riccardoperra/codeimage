@@ -1,141 +1,71 @@
-import {buildExternalStylesheet} from '../../core';
+import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
+import {tags as t} from '@lezer/highlight';
+import {defineEditorTheme} from '../../core';
 
-const selection = '#cceae7';
-const selectionColor = '#263238';
-const foreground = '#7c4dff';
+export const palette = {
+  red: '#e53935',
+  orange: '#f76d47',
+  yellow: '#FFB62C',
+  purple: '#7c4dff',
+  silver: '#6182b8',
+  sea: '#39adb5',
+  blue: '#0066ff',
+  pink: '#c754d5',
+  violet: '#6218cc',
+  gray: '#aabfc9',
+  gray2: '#cceae7',
+  green: '#91B87D',
 
-export const materialLight = buildExternalStylesheet('materialLight')(`
-  .cm-selectionBackground,
-  .cm-focused .cm-selectionBackground,
-  &::selection,
-  *::selection {
-    background-color: ${selection};
-    color: ${selectionColor};
-  }
+  darkGray: '#263238',
+};
 
-  .cm-selectionMatch {
-    background-color: ${selection};
-    background-color: ${selection};
-    color: ${selectionColor};
-  }
-
-  .cm-cursor {
-    border-left-color: ${foreground};
-  }
-
-  .token.atrule {
-    color: #7c4dff;
-  }
-
-  .token.attr-name {
-    color: #39adb5;
-  }
-
-  .token.attr-value {
-    color: #f6a434;
-  }
-
-  .token.attribute {
-    color: #f6a434;
-  }
-
-  .token.boolean {
-    color: #7c4dff;
-  }
-
-  .token.char {
-    color: #39adb5;
-  }
-
-  .token.class {
-    color: #39adb5;
-  }
-
-  .token.class-name {
-    color: #39adb5;
-  }
-
-  .token.comment {
-    color: #aabfc9;
-  }
-
-  .token.constant {
-    color: #7c4dff;
-  }
-
-  .token.deleted {
-    color: #e53935;
-  }
-
-  .token.doctype {
-    color: #aabfc9;
-  }
-
-  .token.entity {
-    color: #e53935;
-  }
-
-  .token.function {
-    color: #7c4dff;
-  }
-
-  .token.id {
-    color: #7c4dff;
-    font-weight: bold;
-  }
-
-  .token.inserted {
-    color: #39adb5;
-  }
-
-  .token.keyword {
-    color: #7c4dff;
-  }
-
-  .token.number {
-    color: #f76d47;
-  }
-
-  .token.operator {
-    color: #39adb5;
-  }
-
-  .token.property {
-    color: #39adb5;
-  }
-
-  .token.punctuation {
-    color: #39adb5;
-  }
-
-  .token.regex {
-    color: #6182b8;
-  }
-
-  .token.selector {
-    color: #e53935;
-  }
-
-  .token.string {
-    color: #f6a434;
-  }
-
-  .token.symbol {
-    color: #7c4dff;
-  }
-
-  .token.tag {
-    color: #e53935;
-  }
-
-  .token.unit {
-    color: #f76d47;
-  }
-
-  .token.url {
-    color: #e53935;
-  }
-
-  .token.variable {
-    color: #e53935;
-  }`);
+export const materialLight = [
+  defineEditorTheme({
+    darkMode: false,
+    selection: {
+      backgroundColor: palette.gray2,
+      color: palette.darkGray,
+    },
+    cursor: {color: palette.purple},
+    lineNumbers: {color: palette.gray},
+    autocomplete: {
+      background: '#fff',
+      selectedBackground: '#a971ff',
+      selectedColor: '#fff',
+      border: '#a971ff',
+    },
+    highlight: {
+      typeName: palette.yellow,
+      base: palette.gray,
+      tag: palette.red,
+      strings: palette.green,
+      annotation: palette.purple,
+      delimiters: palette.sea,
+      regexp: palette.silver,
+      boolean: palette.orange,
+      className: palette.yellow,
+      variableName: palette.pink,
+      keywords: palette.purple,
+      function: palette.blue,
+      comments: palette.gray,
+      numbers: palette.red,
+      punctuation: palette.sea,
+      moduleKeyword: palette.sea,
+      paren: palette.purple,
+      brackets: palette.silver,
+      propertyName: palette.pink,
+    },
+  }),
+  syntaxHighlighting(
+    HighlightStyle.define([
+      {
+        tag: t.variableName,
+        color: palette.violet,
+      },
+      {
+        tag: t.name,
+        color: palette.pink,
+      },
+    ]),
+  ),
+];

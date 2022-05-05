@@ -15,5 +15,10 @@ export const createCustomFontExtension = (
       fontWeight: options.fontWeight,
       fontVariantLigatures: 'normal',
     },
+    '.cm-gutters': {
+      fontFamily: `${options.fontName}, monospace`,
+      fontWeight: 400,
+      fontVariantLigatures: 'normal',
+    },
   });
 };

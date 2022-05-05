@@ -1,17 +1,9 @@
-import {createPrismJsTheme} from '../../prismjs/prismjs-theme-factory';
+import {createTheme} from '../../core';
 import {duotoneSea} from './duotone-sea';
-import {styledAutocomplete} from '../../plugins/autocomplete-style';
 
-export const duotoneSeaTheme = createPrismJsTheme({
+export const duotoneSeaTheme = createTheme({
   id: 'duotoneSea',
-  editorTheme: [
-    styledAutocomplete({
-      background: '#06535d',
-      selectedBackground: '#043f45',
-      selectedColor: '#D6E9FF',
-    }),
-  ],
-  externalStylesheet: duotoneSea,
+  editorTheme: duotoneSea,
   properties: {
     darkMode: true,
     label: 'Duotone Sea',

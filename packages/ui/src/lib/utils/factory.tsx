@@ -11,11 +11,14 @@ import {omitProps} from 'solid-use';
 export type DOMElements = keyof JSX.IntrinsicElements;
 export type ElementType<Props = any> = DOMElements | Component<Props>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type LibraryManagedAttributes<Component, Props> = Props;
+
 export type CustomComponentFactory = <T extends ElementType>(
   component: T,
 ) => CustomComponent<T>;
 
-export type PropsOf<C extends ElementType> = JSX.LibraryManagedAttributes<
+export type PropsOf<C extends ElementType> = LibraryManagedAttributes<
   C,
   ComponentProps<C>
 >;
