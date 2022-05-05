@@ -1,5 +1,35 @@
 # @codeimage/app
 
+## 0.16.0
+
+### Minor Changes
+
+- [#228](https://github.com/riccardoperra/codeimage/pull/228) [`2b7248e`](https://github.com/riccardoperra/codeimage/commit/2b7248e9ba080dec9de44f954a56d7f560dfd899) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Update dependencies and codemirror
+
+* [#226](https://github.com/riccardoperra/codeimage/pull/226) [`e8aa8a3`](https://github.com/riccardoperra/codeimage/commit/e8aa8a3a2dd10e024991a42a9c858c665092d1e7) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update deps, update codemirror
+
+- [#214](https://github.com/riccardoperra/codeimage/pull/214) [`e3ca614`](https://github.com/riccardoperra/codeimage/commit/e3ca6148a66cee7919d8a34311cf5033480e692e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Refactor theme integration
+
+* [#221](https://github.com/riccardoperra/codeimage/pull/221) [`f9b8474`](https://github.com/riccardoperra/codeimage/commit/f9b84748a631e62d32a903898c7ca8caac668964) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add support for copy to clipboard
+
+- [#215](https://github.com/riccardoperra/codeimage/pull/215) [`f699075`](https://github.com/riccardoperra/codeimage/commit/f699075f7018a809c8aa52d5cbac434f0a77d77d) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add terminal reflection option
+
+### Patch Changes
+
+- [#214](https://github.com/riccardoperra/codeimage/pull/214) [`719ac23`](https://github.com/riccardoperra/codeimage/commit/719ac23d91f93e11fe522633206787b56f8ef073) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Theme improvements
+
+* [#210](https://github.com/riccardoperra/codeimage/pull/210) [`5a270ce`](https://github.com/riccardoperra/codeimage/commit/5a270ce57fad27854b6e006c31cc08b690087892) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add space mono font support
+
+- [#222](https://github.com/riccardoperra/codeimage/pull/222) [`058ebb6`](https://github.com/riccardoperra/codeimage/commit/058ebb666d27a2526cdc22b3ecf3743f44589d2c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix disabled ShareButton on MacOSX
+
+* [#223](https://github.com/riccardoperra/codeimage/pull/223) [`6350e1b`](https://github.com/riccardoperra/codeimage/commit/6350e1bbd36b76d114242ce30f8ceb92c92d0de1) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Style improvements for MacOSX
+
+* Updated dependencies [[`719ac23`](https://github.com/riccardoperra/codeimage/commit/719ac23d91f93e11fe522633206787b56f8ef073), [`2b7248e`](https://github.com/riccardoperra/codeimage/commit/2b7248e9ba080dec9de44f954a56d7f560dfd899), [`f9b8474`](https://github.com/riccardoperra/codeimage/commit/f9b84748a631e62d32a903898c7ca8caac668964), [`643c6b6`](https://github.com/riccardoperra/codeimage/commit/643c6b668b81dd86b610aa21a71a5fb8c435b471), [`e8aa8a3`](https://github.com/riccardoperra/codeimage/commit/e8aa8a3a2dd10e024991a42a9c858c665092d1e7), [`e3ca614`](https://github.com/riccardoperra/codeimage/commit/e3ca6148a66cee7919d8a34311cf5033480e692e), [`f9b8474`](https://github.com/riccardoperra/codeimage/commit/f9b84748a631e62d32a903898c7ca8caac668964), [`6350e1b`](https://github.com/riccardoperra/codeimage/commit/6350e1bbd36b76d114242ce30f8ceb92c92d0de1)]:
+  - @codeimage/theme@0.7.0
+  - @codeimage/config@5.0.0
+  - @codeimage/locale@0.5.0
+  - @codeimage/ui@0.6.0
+
 ## 0.15.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@codeimage/locale",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "module": "./dist/locale.es.js",
   "source": "./src/public-api.ts",
   "types": "./dist/public-api.d.ts",
