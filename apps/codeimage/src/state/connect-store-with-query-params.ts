@@ -109,9 +109,14 @@ export function connectStoreWithQueryParams() {
       updateFrameStore(state => ({...state, ...frameQuery}));
     }
 
-    combineLatest([terminalState$, frameState$, editorState$])
-      .pipe(debounceTime(1), distinctUntilChanged(shallow), skip(1))
+    combineLatest([
+      terminalState$.pipe(skip(1)),
+      frameState$.pipe(skip(1)),
+      editorState$.pipe(skip(1)),
+    ])
+      .pipe(debounceTime(1), distinctUntilChanged(shallow))
       .subscribe(([terminal, frame, editor]) => {
+        console.log(terminal, frame, editor);
         const params = new URLSearchParams(window.location.search);
         setQuery(params, 'terminal', terminal);
         setQuery(params, 'frame', frame);
