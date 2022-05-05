@@ -112,7 +112,6 @@ export function connectStoreWithQueryParams() {
     combineLatest([terminalState$, frameState$, editorState$])
       .pipe(debounceTime(1), distinctUntilChanged(shallow), skip(1))
       .subscribe(([terminal, frame, editor]) => {
-        console.log(terminal, frame, editor);
         const params = new URLSearchParams(window.location.search);
         setQuery(params, 'terminal', terminal);
         setQuery(params, 'frame', frame);
