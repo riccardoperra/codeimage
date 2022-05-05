@@ -217,7 +217,7 @@ export const glassReflection = {
     width: '100%',
     height: '100%',
     transform: `skewX(-18deg) translateX(-55%)`,
-    zIndex: themeVars.zIndex['30'],
+    zIndex: '100',
 
     selectors: {
       '[data-theme-mode=light] &': {
