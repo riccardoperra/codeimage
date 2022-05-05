@@ -97,6 +97,11 @@ export function styledHighlight(h: StyledHighlightOptions) {
       },
       // Function
       {
+        // Function name with @codemirror/language 0.20
+        tag: [t.color, t.constant(t.name), t.standard(t.name)],
+        color: h.function,
+      },
+      {
         tag: [t.function(t.variableName), t.function(t.propertyName)],
         color: h.function,
       },
@@ -113,7 +118,6 @@ export function styledHighlight(h: StyledHighlightOptions) {
       {tag: [t.comment], color: h.comments},
       {tag: [t.regexp], color: h.regexp},
       {tag: [t.tagName], color: h.tag},
-      // TODO: what's this tag for?
       {
         tag: [t.atom],
         color: h.atom,

@@ -1,8 +1,9 @@
+import {EditorView} from '@codemirror/view';
 import {createTheme} from '../../core';
 
 export const lightTheme = createTheme({
   id: 'oneLight',
-  editorTheme: [],
+  editorTheme: [EditorView.theme({}, {dark: false})],
   properties: {
     darkMode: false,
     label: 'Light',
