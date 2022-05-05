@@ -91,7 +91,7 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
                   textColor={theme.properties.terminal.text}
                   background={theme.properties.terminal.main}
                   darkMode={theme.properties.darkMode}
-                  accentVisible={terminal.accentVisible}
+                  accentVisible={false}
                   shadow={terminal.shadow}
                   showTab={true}
                   readonlyTab={true}
