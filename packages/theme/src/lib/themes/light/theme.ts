@@ -1,9 +1,9 @@
-import {EditorView} from '@codemirror/view';
+import {defaultHighlightStyle, syntaxHighlighting} from '@codemirror/language';
 import {createTheme} from '../../core';
 
 export const lightTheme = createTheme({
   id: 'oneLight',
-  editorTheme: [EditorView.theme({}, {dark: false})],
+  editorTheme: [syntaxHighlighting(defaultHighlightStyle, {fallback: true})],
   properties: {
     darkMode: false,
     label: 'Light',
