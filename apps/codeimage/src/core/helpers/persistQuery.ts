@@ -123,8 +123,8 @@ export function persistQuery<S extends Store>(store: S, options: Options<S>) {
       // ATTENTION: this is a workaround to skip emissions when state changes but query key is excluded
       pairwise(),
       map(([, b]) => b),
-      distinctUntilChanged((a, b) => shallow(a, b)),
       skip(1),
+      distinctUntilChanged((a, b) => shallow(a, b)),
       tap(state => setQuery(merged.key, state as Partial<StoreValue<S>>)),
     )
     .subscribe();
