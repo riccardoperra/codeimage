@@ -6,7 +6,7 @@ export const lightTheme = createTheme({
   editorTheme: [syntaxHighlighting(defaultHighlightStyle, {fallback: true})],
   properties: {
     darkMode: false,
-    label: 'Light',
+    label: 'One light',
     previewBackground: '#0d6985',
     terminal: {
       main: '#ffffff',
