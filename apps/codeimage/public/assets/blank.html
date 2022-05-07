@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='theme-color'>
+  <meta name='apple-mobile-web-app-status-bar-style' content='dark-content'>
+  <link rel='icon' href='/assets/favicon.svg' type='image/svg+xml'>
+  <link rel='preload' href='/assets/codeimage-logo-white.svg' as='image' type='image/svg+xml'>
+  <meta name='viewport'
+        content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'>
+
+  <!-- Primary Meta Tags -->
+  <title>CodeImage | Create elegant screenshots of your source code</title>
+  <meta name='title' content='CodeImage | Create elegant screenshots of your source code'>
+  <meta name='description'
+        content='CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code'>
+
+  <!-- Open Graph / Facebook -->
+  <meta property='og:type' content='website'>
+  <meta property='og:url' content='https://beta.codeimage.dev/'>
+  <meta property='og:title' content='CodeImage | Create elegant screenshots of your source code'>
+  <meta property='og:description'
+        content='CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code'>
+  <meta property='og:image' content='/assets/codeimage-card.png'>
+
+  <!-- Twitter -->
+  <meta property='twitter:card' content='summary_large_image'>
+  <meta property='twitter:url' content='https://beta.codeimage.dev/'>
+  <meta property='twitter:title' content='CodeImage | Create elegant screenshots of your source code'>
+  <meta property='twitter:description'
+        content='CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code'>
+  <meta property='twitter:image' content='/assets/codeimage-card.png'>
+  <link rel='apple-touch-icon' href='/pwa/apple-icon-180.png'>
+  <meta name='apple-mobile-web-app-capable' content='yes'>
+
+</head>
+
+<style>
+  html, body {
+    margin: 0
+  }
+
+  body {
+    background-color: #111111
+  }
+
+  .launcher {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    position: fixed;
+    width: 100%;
+    background-color: #111111;
+  }
+
+  .launcher img {
+    opacity: .25;
+  }
+</style>
+
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id='root'>
+  <div id='launcher' class='launcher'>
+    <img width='200px' src='/assets/codeimage-logo-white.svg' alt='logo' />
+  </div>
+</div>
+</body>
+</html>
