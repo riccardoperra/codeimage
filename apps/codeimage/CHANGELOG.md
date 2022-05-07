@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.16.1
+
+### Patch Changes
+
+- [#231](https://github.com/riccardoperra/codeimage/pull/231) [`e82f8a0`](https://github.com/riccardoperra/codeimage/commit/e82f8a0f878ee75c70df630da0fe3530b3710b1f) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix open button on safari
+
 ## 0.16.0
 
 ### Minor Changes
