@@ -1,10 +1,10 @@
-import {useAsyncAction} from '../core/hooks/async-action';
-import {toBlob, toJpeg, toPng, toSvg} from 'html-to-image';
-import {EXPORT_EXCLUDE} from '../core/directives/exportExclude';
 import download from 'downloadjs';
-import {Resource} from 'solid-js';
+import {toBlob, toJpeg, toPng, toSvg} from 'html-to-image';
 import {Options as HtmlToImageExportOptions} from 'html-to-image/es/options';
+import {Resource} from 'solid-js';
 import {IS_IOS} from '../core/constants/browser';
+import {EXPORT_EXCLUDE} from '../core/directives/exportExclude';
+import {useAsyncAction} from '../core/hooks/async-action';
 import {useWebshare} from '../core/hooks/use-webshare';
 
 export const enum ExportMode {
@@ -39,7 +39,7 @@ export function useExportImage(): [
 ] {
   const [data, {notify}] = useAsyncAction(async (ref: ExportImagePayload) => {
     // @bad Find another way to prevent flickering
-    await new Promise(r => setTimeout(r, 150));
+    await new Promise(r => setTimeout(r, 50));
     return exportImage(ref);
   });
 
@@ -165,10 +165,11 @@ export async function exportImage(
       return result;
     }
     case ExportMode.newTab: {
+      const url = location.origin;
+      const newTab = window.open(`${url}/assets/blank.html`);
       const blob = await toBlob(ref, toImageOptions);
-      if (blob) {
-        const url = URL.createObjectURL(blob);
-        window.open(url);
+      if (blob && newTab) {
+        newTab.location.href = URL.createObjectURL(blob);
       }
       return blob as Blob;
     }
