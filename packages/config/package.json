@@ -28,9 +28,6 @@
     "@codeimage/theme": "workspace:*",
     "@codemirror/autocomplete": "^0.20.0",
     "@codemirror/commands": "^0.20.0",
-    "@codemirror/language": "^0.20.0",
-    "@codemirror/lint": "^0.20.2",
-    "@codemirror/search": "^0.20.1",
     "@codemirror/lang-cpp": "^0.20.0",
     "@codemirror/lang-css": "^0.20.0",
     "@codemirror/lang-html": "^0.20.0",
@@ -42,22 +39,25 @@
     "@codemirror/lang-python": "^0.20.0",
     "@codemirror/lang-rust": "^0.20.0",
     "@codemirror/lang-sql": "^0.20.0",
+    "@codemirror/language": "^0.20.0",
+    "@codemirror/lint": "^0.20.2",
+    "@codemirror/search": "^0.20.1",
     "@codemirror/state": "^0.20.0",
-    "material-icon-theme": "^4.16.0",
     "@codemirror/view": "^0.20.4",
-    "solid-js": "^1.3.17"
+    "material-icon-theme": "^4.17.0",
+    "solid-js": "^1.4.0"
   },
   "peerDependencies": {
     "@codeimage/theme": "workspace:*",
+    "@codemirror/language": "^0.20.0",
     "@codemirror/state": "^0.20.0",
     "@codemirror/view": "^0.20.4",
-    "@codemirror/language": "^0.20.0",
     "solid-js": "^1.3.17"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
     "typescript": "^4.6.4",
-    "vite": "^2.9.8",
+    "vite": "^2.9.9",
     "vite-plugin-dts": "^1.1.1",
     "vite-plugin-solid": "^2.2.6"
   }
