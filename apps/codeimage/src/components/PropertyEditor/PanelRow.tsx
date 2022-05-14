@@ -1,4 +1,4 @@
-import {Component, Show} from 'solid-js';
+import {Component, ParentComponent, Show} from 'solid-js';
 import * as styles from './EditorSidebar.css';
 import {panelRowContent} from './EditorSidebar.css';
 import {Text} from '@codeimage/ui';
@@ -9,15 +9,15 @@ interface PanelRowProps {
   for: string;
 }
 
-export const FullWidthPanelRow: Component = props => (
+export const FullWidthPanelRow: ParentComponent = props => (
   <Box class={panelRowContent({threeColumn: true})}>{props.children}</Box>
 );
 
-export const TwoColumnPanelRow: Component = props => (
+export const TwoColumnPanelRow: ParentComponent = props => (
   <Box class={panelRowContent({twoColumn: true})}>{props.children}</Box>
 );
 
-export const PanelRow: Component<PanelRowProps> = props => {
+export const PanelRow: ParentComponent<PanelRowProps> = props => {
   return (
     <div class={styles.panelRow}>
       <Show when={props.label}>

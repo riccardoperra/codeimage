@@ -1,4 +1,4 @@
-import {Component, createMemo, JSXElement} from 'solid-js';
+import {Component, createMemo, JSXElement, ParentComponent} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 import {BaseTerminalProps} from '../TerminalHost';
@@ -11,7 +11,7 @@ interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;
 }
 
-export const DynamicTerminal: Component<DynamicTerminalProps> = (
+export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
   props,
 ): JSXElement => {
   const {terminalThemes} = appEnvironment;

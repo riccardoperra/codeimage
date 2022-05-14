@@ -3,7 +3,7 @@ import {FadeInOutTransition, themeVars} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
 import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
-import {Component} from 'solid-js';
+import {ParentComponent} from 'solid-js';
 import {TerminalState} from '../../state/terminal';
 import * as styles from './terminal.css';
 import {TerminalGlassReflection} from './TerminalGlassReflection';
@@ -21,7 +21,7 @@ export interface TerminalHostProps extends BaseTerminalProps {
   theme: string;
 }
 
-export const TerminalHost: Component<TerminalHostProps> = props => {
+export const TerminalHost: ParentComponent<TerminalHostProps> = props => {
   return (
     <div
       class={clsx(styles.wrapper, props.theme)}

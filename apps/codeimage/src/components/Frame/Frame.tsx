@@ -1,4 +1,4 @@
-import {Component, Show} from 'solid-js';
+import {Component, ParentComponent, Show} from 'solid-js';
 import * as styles from './Frame.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createHorizontalResize} from '../../core/hooks/resizable';
@@ -9,7 +9,7 @@ import {useModality} from '../../core/hooks/isMobile';
 
 export const exportExclude = _exportExclude;
 
-export const Frame: Component<{
+export const Frame: ParentComponent<{
   background: string | null | undefined;
   padding: number;
   radius: number;
