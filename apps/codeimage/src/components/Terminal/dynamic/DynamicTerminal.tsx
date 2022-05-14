@@ -1,11 +1,11 @@
-import {Component, createMemo, JSXElement, ParentComponent} from 'solid-js';
+import {Box, FadeInOutTransition} from '@codeimage/ui';
+import {createMemo, JSXElement, ParentComponent} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
-import {BaseTerminalProps} from '../TerminalHost';
 import {appEnvironment} from '../../../core/configuration';
-import {Box, FadeInOutTransition} from '@codeimage/ui';
-import * as styles from '../terminal.css';
 import {CodeImageLogo} from '../../Icons/CodeImageLogo';
+import * as styles from '../terminal.css';
+import {BaseTerminalProps} from '../TerminalHost';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;

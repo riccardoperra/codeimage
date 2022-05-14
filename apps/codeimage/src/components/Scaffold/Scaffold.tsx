@@ -1,7 +1,7 @@
 import {backgroundColorVar, dynamicFullHeight} from '@codeimage/ui';
 import {assignInlineVars, setElementVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
-import {Component, createEffect, on, ParentComponent} from 'solid-js';
+import {createEffect, on, ParentComponent} from 'solid-js';
 import {uiStore} from '../../state/ui';
 import {darkGrayScale, darkThemeCss} from '../../theme/dark-theme.css';
 import {lightThemeCss} from '../../theme/light-theme.css';
