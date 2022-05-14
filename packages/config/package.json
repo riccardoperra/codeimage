@@ -45,14 +45,14 @@
     "@codemirror/state": "^0.20.0",
     "@codemirror/view": "^0.20.4",
     "material-icon-theme": "^4.17.0",
-    "solid-js": "^1.4.0"
+    "solid-js": "^1.4.1"
   },
   "peerDependencies": {
     "@codeimage/theme": "workspace:*",
     "@codemirror/language": "^0.20.0",
     "@codemirror/state": "^0.20.0",
     "@codemirror/view": "^0.20.4",
-    "solid-js": "^1.3.17"
+    "solid-js": "^1.4.1"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
