@@ -17,6 +17,7 @@ type Override<T, U> = {
     | (undefined extends U[K] ? (K extends keyof T ? T[K] : undefined) : never);
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type MergeProps<T extends unknown[], Curr = {}> = T extends [
   infer Next,
   ...infer Rest,
