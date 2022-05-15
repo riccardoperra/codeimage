@@ -113,6 +113,7 @@ importers:
       rimraf: ^3.0.2
       rxjs: ^7.5.5
       sass: ^1.51.0
+      solid-app-router: 0.3.2
       solid-codemirror: ^1.0.3
       solid-headless: ^0.10.12
       solid-js: ^1.3.17
@@ -178,6 +179,7 @@ importers:
       prismjs: 1.28.0
       query-string: 7.1.1
       rxjs: 7.5.5
+      solid-app-router: 0.3.2_solid-js@1.3.17
       solid-codemirror: 1.0.3
       solid-headless: 0.10.12_solid-js@1.3.17
       solid-js: 1.3.17
@@ -6358,6 +6360,14 @@ packages:
       wcwidth: 1.0.1
       yargs: 15.4.1
     dev: true
+
+  /solid-app-router/0.3.2_solid-js@1.3.17:
+    resolution: {integrity: sha512-zh6Ui87xy23JUxrH0z1xAROJPpiuxa3JRx9jP2qqjr07q2EKQOjn9BrmTFvQd/azQWzLjSMU+hN2fy6kLh5Bdw==}
+    peerDependencies:
+      solid-js: ^1.3.5
+    dependencies:
+      solid-js: 1.3.17
+    dev: false
 
   /solid-codemirror/1.0.3:
     resolution: {integrity: sha512-dPW90ZgG6AqKij4Bu25s5lyYEJJpTN2w/YeBaIzn9ag8+Vwwso1jGeJVFRrhxTyTwpmfkG4OKBMVzb4HRNPglg==}

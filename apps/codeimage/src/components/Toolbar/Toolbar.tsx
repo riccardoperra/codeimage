@@ -4,6 +4,7 @@ import {Component} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
 import {ExportButton} from './ExportButton';
 import {ExportInNewTabButton} from './ExportNewTabButton';
+import {GenerateLinkButton} from './GenerateLinkButton';
 import {LanguageSelectorButton} from './LanguageSelectorButton';
 import {ShareButton} from './ShareButton';
 import {ThemeToggleButton} from './ThemeToggleButton';
@@ -29,6 +30,7 @@ export const Toolbar: Component<{
         />
 
         <HStack marginLeft={'auto'} spacing={'2'}>
+          <GenerateLinkButton />
           <Box display={'inlineBlock'}>
             <ShareButton />
           </Box>

@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {connectStoreWithQueryParams} from '@codeimage/store/connect-store-with-query-params';
+import {connectStoreWithQueryParams} from '@codeimage/store/plugins/connect-store-with-query-params';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onTabNameChange$} from '@codeimage/store/effects/onTabNameChange';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
