@@ -174,9 +174,17 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
     if (selectedMode !== ExportMode.export && selectedMode !== ExportMode.share)
       return;
 
+    const selectedExtension = extension();
+
+    const name = selectedMode === ExportMode.export ? 'Download' : 'Share';
+    umami.trackEvent(
+      `${name} ${selectedExtension.toUpperCase()}`,
+      selectedMode,
+    );
+
     props.onConfirm({
       type: selectedMode,
-      extension: extension(),
+      extension: selectedExtension,
       fileName: fileName(),
       pixelRatio: devicePixelRatio(),
       message: '',

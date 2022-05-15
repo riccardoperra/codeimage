@@ -2,7 +2,6 @@ import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
-import replace from '@rollup/plugin-replace';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 const pwaOptions: Partial<VitePWAOptions> = {
@@ -44,34 +43,37 @@ const pwaOptions: Partial<VitePWAOptions> = {
       },
     ],
   },
+  srcDir: 'src',
+  filename: 'sw.ts',
+  strategies: 'injectManifest',
+  registerType: 'autoUpdate',
 };
 
-const replaceOptions = {__DATE__: new Date().toISOString()};
-const claims = process.env.CLAIMS === 'true';
-const reload = process.env.RELOAD_SW === 'true';
-
-if (process.env.SW === 'true') {
-  pwaOptions.srcDir = 'src';
-  pwaOptions.filename = 'sw.ts';
-  pwaOptions.strategies = 'injectManifest';
-}
-
-if (claims) pwaOptions.registerType = 'autoUpdate';
-
-if (reload) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  replaceOptions.__RELOAD_SW__ = 'true';
-}
-
-export default defineConfig({
+export default defineConfig(({mode}) => ({
   clearScreen: true,
   plugins: [
     solidPlugin(),
     vanillaExtractPlugin(),
     VitePWA(pwaOptions),
     tsconfigPaths(),
-    replace(replaceOptions),
+    {
+      name: 'html-inject-umami',
+      transformIndexHtml(html) {
+        const websiteId = process.env.UMAMI_WEBSITE_ID;
+        const scriptSrc = process.env.UMAMI_SCRIPT_SRC;
+        const domains = process.env.UMAMI_DOMAINS;
+
+        if (mode !== 'production' || !websiteId || !scriptSrc || !domains)
+          return html;
+
+        // Auto-track is off since query param push a new page view and breaks the analytics
+        // TODO: Find a better solution to handle query params
+        return html.replace(
+          '<!-- %UMAMI% -->',
+          `<script async defer data-auto-track='false' data-domains='${domains.trim()}' data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`,
+        );
+      },
+    },
   ],
   server: {
     strictPort: true,
@@ -87,5 +89,6 @@ export default defineConfig({
     polyfillModulePreload: false,
     polyfillDynamicImport: false,
     cssCodeSplit: true,
+    reportCompressedSize: true,
   },
-});
+}));

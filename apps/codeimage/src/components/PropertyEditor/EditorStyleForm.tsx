@@ -52,7 +52,11 @@ export const EditorStyleForm = () => {
               value: id,
             }))}
             value={editor.languageId}
-            onSelectChange={value => setLanguageId(value ?? languages[0].id)}
+            onSelectChange={value => {
+              const language = value ?? languages[0].id;
+              setLanguageId(language);
+              umami.trackEvent(language, 'change-language');
+            }}
           />
         </TwoColumnPanelRow>
       </PanelRow>
