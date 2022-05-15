@@ -3,7 +3,6 @@ import solid from 'solid-start';
 import {defineConfig, loadEnv} from 'vite';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import vercel from 'solid-start-vercel';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   base: '/',
@@ -73,10 +72,10 @@ function htmlTransformPlugin(env: ReturnType<typeof loadEnv>) {
 export default defineConfig({
   clearScreen: true,
   plugins: [
-    VitePWA(pwaOptions),
     tsconfigPaths(),
-    solid({ssr: false, adapter: vercel()}),
+    solid({ssr: false}),
     vanillaExtractPlugin(),
+    VitePWA(pwaOptions),
   ],
   server: {
     strictPort: true,
@@ -93,8 +92,5 @@ export default defineConfig({
     polyfillDynamicImport: false,
     cssCodeSplit: true,
     ssr: false,
-  },
-  optimizeDeps: {
-    exclude: ['solid-headless'],
   },
 });
