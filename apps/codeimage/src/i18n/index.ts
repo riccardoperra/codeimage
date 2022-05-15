@@ -12,6 +12,7 @@ export const locale = {
     },
     canvas: {
       copiedToClipboard: 'Snippet copiato negli appunti',
+      linkGeneratedToClipboard: 'Link copiato negli appunti',
     },
     locales: {
       it: 'Italiano',
@@ -23,6 +24,7 @@ export const locale = {
       openNewTab: 'Apri',
       loadingNewTab: 'Preparando link...',
       share: 'Condividi',
+      generateLink: 'Genera link',
       toggleTheme: 'Modifica tema',
       changeLanguage: 'Modifica lingua',
       exportLoading: 'Esportando...',
@@ -75,6 +77,7 @@ export const locale = {
     ...sidebarLocale.en,
     canvas: {
       copiedToClipboard: 'Snippet copied to clipboard',
+      linkGeneratedToClipboard: 'Link copied to clipboard',
     },
     common: {
       close: 'Close',
@@ -94,8 +97,9 @@ export const locale = {
       openNewTab: 'Open',
       loadingNewTab: 'Preparing link...',
       share: 'Share',
+      generateLink: 'Generate link',
       toggleTheme: 'Toggle theme',
-      changeLanguage: 'Modifica lingua',
+      changeLanguage: 'Change language',
       exportLoading: 'Exporting...',
     },
     pwa: {
@@ -150,6 +154,7 @@ export const locale = {
     },
     canvas: {
       copiedToClipboard: 'Snippet copied to clipboard',
+      linkGeneratedToClipboard: 'Link copied to clipboard',
     },
     locales: {
       it: 'Italienisch',
@@ -163,6 +168,7 @@ export const locale = {
       loadingNewTab: 'Preparing link...',
       toggleTheme: 'Thema umschalten',
       changeLanguage: 'Thema umschalten',
+      generateLink: 'Generate link',
       exportLoading: 'Exportieren...',
     },
     pwa: {

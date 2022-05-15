@@ -2,6 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {editor$} from '@codeimage/store/editor';
 import {updateTheme} from '@codeimage/store/effects/onThemeChange';
 import {terminal$} from '@codeimage/store/terminal';
+import {CustomTheme} from '@codeimage/theme';
 import {
   Box,
   FadeInOutWithScaleTransition,
@@ -56,6 +57,11 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
 
   const isSelected = createSelector(() => editor.themeId);
 
+  const onSelectTheme = (theme: CustomTheme) => {
+    dispatch(updateTheme({theme}));
+    umami.trackEvent(theme.id, `theme-change`);
+  };
+
   return (
     <Box
       class={styles.grid({
@@ -84,7 +90,7 @@ export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
               <ThemeBox
                 theme={theme}
                 selected={isSelected(theme.id)}
-                onClick={() => dispatch(updateTheme({theme}))}
+                onClick={() => onSelectTheme(theme)}
               >
                 <DynamicTerminal
                   tabName={'Untitled'}
