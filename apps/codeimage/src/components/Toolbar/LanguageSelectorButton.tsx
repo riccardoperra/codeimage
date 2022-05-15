@@ -27,7 +27,7 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
 
   function onUpdateLanguage(locale: string): void {
     props.onLocaleChange(locale);
-    umami.trackEvent(locale, `Change app language`);
+    umami.trackEvent(locale, `change-app-language`);
   }
 
   return (

@@ -2,7 +2,7 @@ import {createI18nContext, I18nContext} from '@codeimage/locale';
 import {CodeImageThemeProvider} from '@codeimage/ui';
 import {enableElfProdMode} from '@ngneat/elf';
 import {devTools} from '@ngneat/elf-devtools';
-import {Router, Routes, useRoutes} from 'solid-app-router';
+import {Router, useRoutes} from 'solid-app-router';
 import {lazy, onMount, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
@@ -36,9 +36,7 @@ export function Bootstrap() {
     function trackView() {
       if (document.readyState === 'complete') {
         const currentUrl = `${location.pathname}${location.search}`;
-        console.log(currentUrl);
         const currentReferrer = document.referrer ?? currentUrl;
-        console.log(umami);
         umami.trackView(currentUrl, currentReferrer);
       }
     }

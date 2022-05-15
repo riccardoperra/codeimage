@@ -61,14 +61,16 @@ export default defineConfig(({mode}) => ({
       transformIndexHtml(html) {
         const websiteId = process.env.UMAMI_WEBSITE_ID;
         const scriptSrc = process.env.UMAMI_SCRIPT_SRC;
+        const domains = process.env.UMAMI_DOMAINS;
 
-        if (mode !== 'production' || !websiteId || !scriptSrc) return html;
+        if (mode !== 'production' || !websiteId || !scriptSrc || !domains)
+          return html;
 
         // Auto-track is off since query param push a new page view and breaks the analytics
         // TODO: Find a better solution to handle query params
         return html.replace(
           '<!-- %UMAMI% -->',
-          `<script async defer data-auto-track='false' data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`,
+          `<script async defer data-auto-track='false' data-domains='${domains.trim()}' data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`,
         );
       },
     },

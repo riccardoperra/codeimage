@@ -7,8 +7,7 @@
     "jsxImportSource": "solid-js",
     "types": [
       "vite/client",
-      "vite-plugin-pwa/client",
-      "env.d.ts"
+      "vite-plugin-pwa/client"
     ],
     "lib": [
       "ESNext",
@@ -24,6 +23,6 @@
     }
   },
   "include": [
-    "./src",
+    "./src"
   ]
 }
