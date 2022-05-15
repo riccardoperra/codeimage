@@ -10,6 +10,6 @@ export const enableUmami = () => {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const umamiMock = function () {};
   umamiMock.trackEvent = noop;
-  umamiMock.trackPageView = noop;
+  umamiMock.trackView = noop;
   window.umami = window.umami || umamiMock;
 };

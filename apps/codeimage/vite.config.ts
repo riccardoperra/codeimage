@@ -64,9 +64,11 @@ export default defineConfig(({mode}) => ({
 
         if (mode !== 'production' || !websiteId || !scriptSrc) return html;
 
+        // Auto-track is off since query param push a new page view and breaks the analytics
+        // TODO: Find a better solution to handle query params
         return html.replace(
           '<!-- %UMAMI% -->',
-          `<script async defer data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`,
+          `<script async defer data-auto-track='false' data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`,
         );
       },
     },
