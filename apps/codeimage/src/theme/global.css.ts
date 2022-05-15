@@ -8,4 +8,18 @@ globalStyle('body', {
       fontFamily: 'Inter,  system-ui, -apple-system, sans-serif',
     },
   },
+  margin: 0,
+  height: '100%',
+  touchAction: 'none',
+  position: 'relative',
+  overscrollBehaviorY: 'none',
+  fontSmooth: 'antialiased',
+});
+
+globalStyle('*', {
+  boxSizing: 'border-box',
+});
+
+globalStyle('html, body', {
+  overflow: 'hidden',
 });

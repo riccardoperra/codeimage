@@ -1,8 +1,7 @@
-import {defineConfig} from 'vite';
-import solidPlugin from 'vite-plugin-solid';
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
+import solid from 'solid-start';
+import {defineConfig, loadEnv} from 'vite';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
-import replace from '@rollup/plugin-replace';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 const pwaOptions: Partial<VitePWAOptions> = {
@@ -46,9 +45,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
   },
 };
 
-const replaceOptions = {__DATE__: new Date().toISOString()};
 const claims = process.env.CLAIMS === 'true';
-const reload = process.env.RELOAD_SW === 'true';
 
 if (process.env.SW === 'true') {
   pwaOptions.srcDir = 'src';
@@ -58,20 +55,27 @@ if (process.env.SW === 'true') {
 
 if (claims) pwaOptions.registerType = 'autoUpdate';
 
-if (reload) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  replaceOptions.__RELOAD_SW__ = 'true';
+/**
+ * Replace env variables in index.html
+ */
+function htmlTransformPlugin(env: ReturnType<typeof loadEnv>) {
+  return {
+    name: 'html-transform',
+    transformIndexHtml: {
+      enforce: 'pre' as const,
+      transform: (html: string): string =>
+        html.replace(/%(.*?)%/g, (match, p1) => env[p1] ?? match),
+    },
+  };
 }
 
 export default defineConfig({
   clearScreen: true,
   plugins: [
-    solidPlugin(),
-    vanillaExtractPlugin(),
     VitePWA(pwaOptions),
     tsconfigPaths(),
-    replace(replaceOptions),
+    solid({ssr: false}),
+    vanillaExtractPlugin(),
   ],
   server: {
     strictPort: true,
@@ -87,5 +91,9 @@ export default defineConfig({
     polyfillModulePreload: false,
     polyfillDynamicImport: false,
     cssCodeSplit: true,
+    ssr: false,
+  },
+  optimizeDeps: {
+    exclude: ['solid-headless'],
   },
 });

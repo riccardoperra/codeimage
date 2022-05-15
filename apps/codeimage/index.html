@@ -34,7 +34,7 @@
 
   <!-- Open Graph / Facebook -->
   <meta property='og:type' content='website'>
-  <meta property='og:url' content='https://beta.codeimage.dev/'>
+  <meta property='og:url' content='https://codeimage.dev/'>
   <meta property='og:title' content='CodeImage | Create elegant screenshots of your source code'>
   <meta property='og:description'
         content='CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code'>
@@ -42,49 +42,44 @@
 
   <!-- Twitter -->
   <meta property='twitter:card' content='summary_large_image'>
-  <meta property='twitter:url' content='https://beta.codeimage.dev/'>
+  <meta property='twitter:url' content='https://codeimage.dev/'>
   <meta property='twitter:title' content='CodeImage | Create elegant screenshots of your source code'>
   <meta property='twitter:description'
         content='CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code'>
   <meta property='twitter:image' content='/assets/codeimage-card.png'>
   <link rel='apple-touch-icon' href='/pwa/apple-icon-180.png'>
   <meta name='apple-mobile-web-app-capable' content='yes'>
+  <script type="module" src="./src/entry-client.tsx"></script>
+  <style>
+    html, body {
+      margin: 0
+    }
 
+    body {
+      background-color: #111111
+    }
+
+    .launcher {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      position: fixed;
+      width: 100%;
+      background-color: #111111;
+    }
+
+    .launcher img {
+      opacity: .25;
+    }
+  </style>
 </head>
 
-<style>
-  html, body {
-    margin: 0
-  }
-
-  body {
-    background-color: #111111
-  }
-
-  .launcher {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    position: fixed;
-    width: 100%;
-    background-color: #111111;
-  }
-
-  .launcher img {
-    opacity: .25;
-  }
-</style>
 
 <body>
-<noscript>You need to enable JavaScript to run this app.</noscript>
-<div id='root'>
   <div id='launcher' class='launcher'>
     <img width='200px' src='/assets/codeimage-logo-white.svg' alt='logo' />
   </div>
-  <div id='drag-overlay' style='position: absolute; z-index: 1000000; inset: 0; display: none;'></div>
-</div>
-<script src='/src/index.tsx' type='module'></script>
 </body>
 </html>
