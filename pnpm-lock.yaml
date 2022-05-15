@@ -120,6 +120,7 @@ importers:
       solid-meta: ^0.27.3
       solid-start: next
       solid-start-node: next
+      solid-start-vercel: next
       solid-use: ^0.3.3
       tinykeys: ^1.4.0
       typescript: ^4.6.4
@@ -202,6 +203,7 @@ importers:
       solid-meta: 0.27.3_solid-js@1.3.17
       solid-start: 0.1.0-alpha.80_d9e14a8b4d5653eb1878d34f60426166
       solid-start-node: 0.1.0-alpha.74_f8d8b5befdc8b8454641e87d6767af66
+      solid-start-vercel: 0.1.0-alpha.80_824f48dbf6c4bbbef491a6c4f83ff3d4
       typescript: 4.6.4
       undici: 4.16.0
       vite: 2.9.8_sass@1.51.0
@@ -210,29 +212,6 @@ importers:
       vite-tsconfig-paths: 3.4.1_vite@2.9.8
       workbox-core: 6.5.3
       workbox-window: 6.5.3
-
-  apps/start:
-    specifiers:
-      '@codeimage/app': workspace:*
-      solid-app-router: ^0.3.1
-      solid-js: ^1.4.0
-      solid-meta: ^0.27.3
-      solid-start: next
-      solid-start-node: next
-      typescript: ^4.4.3
-      undici: ^4.12.2
-      vite: ^2.8.6
-    dependencies:
-      '@codeimage/app': link:../codeimage
-    devDependencies:
-      solid-app-router: 0.3.2_solid-js@1.4.1
-      solid-js: 1.4.1
-      solid-meta: 0.27.3_solid-js@1.4.1
-      solid-start: 0.1.0-alpha.80_d3906f132f925f3e693677930d65d34b
-      solid-start-node: 0.1.0-alpha.74_f8d8b5befdc8b8454641e87d6767af66
-      typescript: 4.6.4
-      undici: 4.16.0
-      vite: 2.9.8
 
   packages/config:
     specifiers:
@@ -6593,14 +6572,6 @@ packages:
       solid-js: 1.3.17
     dev: true
 
-  /solid-app-router/0.3.2_solid-js@1.4.1:
-    resolution: {integrity: sha512-zh6Ui87xy23JUxrH0z1xAROJPpiuxa3JRx9jP2qqjr07q2EKQOjn9BrmTFvQd/azQWzLjSMU+hN2fy6kLh5Bdw==}
-    peerDependencies:
-      solid-js: ^1.3.5
-    dependencies:
-      solid-js: 1.4.1
-    dev: true
-
   /solid-codemirror/1.0.3:
     resolution: {integrity: sha512-dPW90ZgG6AqKij4Bu25s5lyYEJJpTN2w/YeBaIzn9ag8+Vwwso1jGeJVFRrhxTyTwpmfkG4OKBMVzb4HRNPglg==}
     engines: {node: '>=14'}
@@ -6624,24 +6595,12 @@ packages:
   /solid-js/1.3.17:
     resolution: {integrity: sha512-BFCosxa4hRm+LF7S+kBL5bNr4RtuZif6AaR5FdQkBpV1E6QNLAOFm4HWgEN8vL2aCWEKl384cT8Etw8ziW8aag==}
 
-  /solid-js/1.4.1:
-    resolution: {integrity: sha512-ts480PccmUW9WAludSXET2dbBevjv+l6XMmN/OyG/a/xA8ZQoX4hNBN3gGhW785ZZv90fowbUSuSQUwOISm3YA==}
-    dev: true
-
   /solid-meta/0.27.3_solid-js@1.3.17:
     resolution: {integrity: sha512-XaVv0EPkoPvufzUOIMn4yOzZFnJvQPVBlpZFLc9zTFTUnb+cq/zuoWr0Sa0fEntodfVPe5j6NfvXwGE6pHQo+w==}
     peerDependencies:
       solid-js: ^1.0.0
     dependencies:
       solid-js: 1.3.17
-    dev: true
-
-  /solid-meta/0.27.3_solid-js@1.4.1:
-    resolution: {integrity: sha512-XaVv0EPkoPvufzUOIMn4yOzZFnJvQPVBlpZFLc9zTFTUnb+cq/zuoWr0Sa0fEntodfVPe5j6NfvXwGE6pHQo+w==}
-    peerDependencies:
-      solid-js: ^1.0.0
-    dependencies:
-      solid-js: 1.4.1
     dev: true
 
   /solid-refresh/0.4.0_solid-js@1.3.17:
@@ -6674,48 +6633,21 @@ packages:
       vite: 2.9.8_sass@1.51.0
     dev: true
 
-  /solid-start/0.1.0-alpha.80_d3906f132f925f3e693677930d65d34b:
-    resolution: {integrity: sha512-M1WTPq05O3gyw0nsIVZb1thxX0BfPhyi6q5W5arSWXXi7JDvq8uCyNSzZvZKrfsdvNwjdE5ZOJKzqf0E+o+p0A==}
-    hasBin: true
+  /solid-start-vercel/0.1.0-alpha.80_824f48dbf6c4bbbef491a6c4f83ff3d4:
+    resolution: {integrity: sha512-sLWlyIybrnE7YOT5SE0LA/EmX5tneg4eNjxN2q84VapLmHFBTE2caI4kZqBuFyxlOvp1Th/fZtklO3/KUHCHFA==}
     peerDependencies:
-      solid-app-router: ^0.3.1
-      solid-js: ^1.3.13
-      solid-meta: ^0.27.2
-      vite: ^2.8.6
+      solid-start: next
     dependencies:
-      '@babel/core': 7.17.10
-      '@babel/plugin-syntax-jsx': 7.16.7_@babel+core@7.17.10
-      '@babel/preset-typescript': 7.16.7_@babel+core@7.17.10
-      chokidar: 3.5.3
-      compression: 1.7.4
-      connect: 3.7.0
-      cookie: 0.4.2
-      cookie-signature: 1.2.0
-      debug: 4.3.4
-      dequal: 2.0.2
-      es-module-lexer: 0.9.3
-      esbuild: 0.14.38
-      fast-glob: 3.2.11
-      parse-multipart-data: 1.3.0
-      picocolors: 1.0.0
+      '@rollup/plugin-commonjs': 21.1.0_rollup@2.71.1
+      '@rollup/plugin-json': 4.1.0_rollup@2.71.1
+      '@rollup/plugin-node-resolve': 13.3.0_rollup@2.71.1
       rollup: 2.71.1
-      rollup-route-manifest: 1.0.0_rollup@2.71.1
-      sade: 1.8.1
-      sirv: 1.0.19
-      solid-app-router: 0.3.2_solid-js@1.4.1
-      solid-js: 1.4.1
-      solid-meta: 0.27.3_solid-js@1.4.1
-      undici: 4.16.0
-      vite: 2.9.8
-      vite-plugin-inspect: 0.3.15_vite@2.9.8
-      vite-plugin-solid: 2.2.6
-    optionalDependencies:
-      solid-start-node: 0.1.0-alpha.74_f8d8b5befdc8b8454641e87d6767af66
+      solid-start: 0.1.0-alpha.80_d9e14a8b4d5653eb1878d34f60426166
+      vite: 2.9.8_sass@1.51.0
     transitivePeerDependencies:
       - less
       - sass
       - stylus
-      - supports-color
     dev: true
 
   /solid-start/0.1.0-alpha.80_d9e14a8b4d5653eb1878d34f60426166:

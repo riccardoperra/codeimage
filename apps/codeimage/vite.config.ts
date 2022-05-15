@@ -3,6 +3,7 @@ import solid from 'solid-start';
 import {defineConfig, loadEnv} from 'vite';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import vercel from 'solid-start-vercel';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   base: '/',
@@ -74,7 +75,7 @@ export default defineConfig({
   plugins: [
     VitePWA(pwaOptions),
     tsconfigPaths(),
-    solid({ssr: false}),
+    solid({ssr: false, adapter: vercel()}),
     vanillaExtractPlugin(),
   ],
   server: {

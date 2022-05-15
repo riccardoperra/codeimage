@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "solid-start dev --host",
-    "build": "BASE_URL=/ SW=true SOURCE_MAP=false RELOAD_SW=true && solid-start build",
+    "build": "solid-start build",
     "start": "solid-start start",
     "build-sw": "rimraf dist && cross-env BASE_URL=/ SW=true SOURCE_MAP=true RELOAD_SW=true vite build",
     "serve:https": "serve dist",
@@ -33,6 +33,7 @@
     "solid-meta": "^0.27.3",
     "solid-start": "next",
     "solid-start-node": "next",
+    "solid-start-vercel": "next",
     "undici": "^4.12.2",
     "vite": "^2.8.6"
   },
