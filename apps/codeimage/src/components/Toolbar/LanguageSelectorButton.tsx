@@ -25,6 +25,11 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
     middleware: [offset(10)],
   });
 
+  function onUpdateLanguage(locale: string): void {
+    props.onLocaleChange(locale);
+    umami.trackEvent(locale, `Change app language`);
+  }
+
   return (
     <Popover>
       {({isOpen, setState}) => (
@@ -66,7 +71,7 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
                   <DropdownItem
                     active={props.currentLocale === locale}
                     onClick={() => {
-                      props.onLocaleChange(locale);
+                      onUpdateLanguage(locale);
                       setState(false);
                     }}
                   >

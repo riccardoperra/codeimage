@@ -46,6 +46,7 @@ export const copyToClipboard$ = createEffect(actions =>
           ).pipe(
             catchError(() => EMPTY),
             tap(openSnackbar),
+            tap(() => umami.trackEvent('true', `copy-to-clipboard`)),
             delay(1000),
           );
         }),
