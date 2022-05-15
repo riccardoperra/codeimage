@@ -74,7 +74,7 @@ export function connectStoreWithQueryParams() {
         )
         .subscribe(state => {
           const params = {
-            q: window.btoa(JSON.stringify(state)),
+            p: window.btoa(JSON.stringify(state)),
           };
           setSearchParams(params, {
             scroll: false,

@@ -4,7 +4,7 @@
   "version": "0.16.1",
   "scripts": {
     "start": "vite",
-    "dev": "vite --host",
+    "dev": "cross-env UMAMI_WEBSITE_ID=a4e2071d-e32f-4c77-bc25-c0b56e0d8bad UMAMI_SCRIPT_SRC=https://analytics.riccardoperra.com/umami.js UMAMI_ALLOWED_DOMAINS=localhost vite --host",
     "build": "rimraf dist && vite build",
     "build-sw": "rimraf dist && cross-env BASE_URL=/ SW=true SOURCE_MAP=true RELOAD_SW=true vite build",
     "serve:https": "serve dist",
