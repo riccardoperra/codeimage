@@ -24,6 +24,8 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
     data.loading ? t('toolbar.loadingNewTab') : t('toolbar.openNewTab');
 
   function openInTab() {
+    umami.trackEvent(`true`, 'export-new-tab');
+
     notify({
       ref: props.canvasRef,
       options: {
