@@ -62,11 +62,11 @@ export default defineConfig(({mode}) => ({
         const websiteId = process.env.UMAMI_WEBSITE_ID;
         const scriptSrc = process.env.UMAMI_SCRIPT_SRC;
 
-        if (mode === 'production' && (!websiteId || !scriptSrc)) return html;
+        if (mode !== 'production' || !websiteId || !scriptSrc) return html;
 
         return html.replace(
           '<!-- %UMAMI% -->',
-          `<script async defer data-website-id='${websiteId}' src='${scriptSrc}'></script>`,
+          `<script async defer data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`,
         );
       },
     },
