@@ -30,7 +30,6 @@ export const Toolbar: Component<{
         />
 
         <HStack marginLeft={'auto'} spacing={'2'}>
-          <GenerateLinkButton />
           <Box display={'inlineBlock'}>
             <ShareButton />
           </Box>
