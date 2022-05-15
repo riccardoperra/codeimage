@@ -7,7 +7,7 @@ import {frame$, setScale} from '@codeimage/store/frame';
 import {setTabName, terminal$} from '@codeimage/store/terminal';
 import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {initEffects} from '@ngneat/effects';
-import {createEffect, createSignal, on, Show} from 'solid-js';
+import {createEffect, createSignal, on, onMount, Show} from 'solid-js';
 import {BottomBar} from './components/BottomBar/BottomBar';
 import {CustomEditor} from './components/CustomEditor/CustomEditor';
 import {Footer} from './components/Footer/Footer';
@@ -24,6 +24,7 @@ import {Toolbar} from './components/Toolbar/Toolbar';
 import {fromObservableObject} from './core/hooks/from-observable-object';
 import {useModality} from './core/hooks/isMobile';
 import {useEffects} from './core/store/use-effect';
+import {useServiceWorkerPrompt} from './hooks/use-sw-prompt';
 import {useTabIcon} from './hooks/use-tab-icon';
 import {uiStore} from './state/ui';
 import './theme/global.css';
@@ -42,6 +43,7 @@ const App = () => {
   connectStoreWithQueryParams();
   useEffects([onTabNameChange$, onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
+  onMount(() => useServiceWorkerPrompt());
 
   return (
     <Scaffold>

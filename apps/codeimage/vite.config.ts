@@ -46,7 +46,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
   srcDir: 'src',
   filename: 'sw.ts',
   strategies: 'injectManifest',
-  registerType: 'autoUpdate',
+  registerType: 'prompt',
 };
 
 export default defineConfig(({mode}) => ({
