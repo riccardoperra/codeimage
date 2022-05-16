@@ -165,13 +165,22 @@ export async function exportImage(
       return result;
     }
     case ExportMode.newTab: {
-      const url = location.origin;
-      const newTab = window.open(`${url}/assets/blank.html`);
-      const blob = await toBlob(ref, toImageOptions);
-      if (blob && newTab) {
-        newTab.location.href = URL.createObjectURL(blob);
-      }
-      return blob as Blob;
+      const link = document.createElement('a');
+      return toBlob(ref, toImageOptions)
+        .then(
+          blob =>
+            [blob, window.URL.createObjectURL(blob as Blob)] as [Blob, string],
+        )
+        .then(([blob, url]) => {
+          if (!IS_IOS) {
+            link.target = '_blank';
+          }
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          return blob as Blob;
+        });
     }
     case ExportMode.getBlob: {
       const blob = await toBlob(ref, toImageOptions);
