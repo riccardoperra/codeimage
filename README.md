@@ -75,8 +75,6 @@ CodeImage front-end app currently relies on these technologies:
 - [solid-primitives](https://github.com/solidjs-community/solid-primitives): SolidJS primitives library
 - [solid-use](https://github.com/LXSMNSYC/solid-use): Collection of solid-js utilities
 - [material-icon-theme](https://github.com/PKief/vscode-material-icon-theme): Icons for custom terminal tabs
-- [@emotion/css](https://github.com/emotion-js/emotion/tree/main/packages/css): CSS Utility used for custom codemirror
-  themes
 - [floating-ui](https://github.com/floating-ui/floating-ui/): Utilities for positioning floating elements
 - [Lion](https://github.com/ing-bank/lion): White label web components in Lit (used for custom combobox)
 
