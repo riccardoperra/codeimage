@@ -1,4 +1,5 @@
 ![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/banner.png?raw=true)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Friccardoperra%2Fcodeimage.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Friccardoperra%2Fcodeimage?ref=badge_shield)
 
 > Create elegant code screenshots of your source code.
 
@@ -104,3 +105,6 @@ See the [CONTRIBUTING.md](/CONTRIBUTING.md) guide for more details.
 ## License
 
 MIT © [Riccardo Perra](https://github.com/riccardoperra)
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Friccardoperra%2Fcodeimage.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Friccardoperra%2Fcodeimage?ref=badge_large)
