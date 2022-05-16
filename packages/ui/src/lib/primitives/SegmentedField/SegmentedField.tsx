@@ -44,7 +44,6 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
         />
         <For each={props.items}>
           {(item, index) => (
-            // TODO: div broke build
             <Box
               class={clsx(styles.segment, segmentStyle())}
               data-active={index() === activeIndex()}
