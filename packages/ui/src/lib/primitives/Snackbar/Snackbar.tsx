@@ -47,7 +47,7 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
                 pill
                 variant={'solid'}
                 theme={'secondary'}
-                onClick={dismiss}
+                onPress={dismiss}
               >
                 <SvgIcon
                   xmlns="http://www.w3.org/2000/svg"

@@ -89,4 +89,7 @@ export default defineConfig(({mode}) => ({
     cssCodeSplit: true,
     reportCompressedSize: true,
   },
+  optimizeDeps: {
+    include: ['@solid-aria/primitives'],
+  },
 }));

@@ -23,7 +23,7 @@ export const ThemeToggleButton: Component<ThemeTogglerProps> = props => {
       aria-label={t('toolbar.toggleTheme')}
       theme="secondary"
       variant="solid"
-      onClick={() => props.onThemeToggle()}
+      onPress={() => props.onThemeToggle()}
     >
       <SvgIcon
         xmlns="http://www.w3.org/2000/svg"

@@ -1,27 +1,35 @@
+import {AriaButtonProps, createButton} from '@solid-aria/button';
+import clsx from 'clsx';
+import {JSXElement, mergeProps} from 'solid-js';
+import {BaseComponentProps, ElementType} from '../../utils';
 import * as styles from './Button.css';
-import {Button as ShButton} from 'solid-headless';
-import {ButtonProps as ShButtonProps} from 'solid-headless/dist/types/components/Button';
-import {ValidConstructor} from 'solid-headless/dist/types/utils/dynamic-prop';
-import {JSXElement} from 'solid-js';
 
-type ButtonProps<T extends ValidConstructor = 'button'> = ShButtonProps<T> &
-  styles.ButtonVariants;
+type ButtonProps<T extends ElementType = 'button'> = BaseComponentProps<
+  T,
+  AriaButtonProps<T> & styles.ButtonVariants
+>;
 
-export function Button<T extends ValidConstructor = 'button'>(
+export function Button<T extends ElementType = 'button'>(
   props: ButtonProps<T>,
 ): JSXElement {
-  return (
-    <ShButton
-      {...props}
-      class={`${styles.buttonVariant({
+  let ref: HTMLButtonElement | undefined;
+  const createButtonProps = mergeProps(() => ({elementType: props.as}), props);
+  const {buttonProps} = createButton(createButtonProps, () => ref);
+  const classes = () =>
+    clsx(
+      styles.buttonVariant({
         pill: props.pill,
         block: props.block,
         theme: props.theme,
         variant: props.variant,
         size: props.size || 'sm',
-      })} ${props.class || ''}`}
-    >
+      }),
+      props.class,
+    );
+
+  return (
+    <button {...buttonProps()} ref={ref} class={classes()}>
       {props.children}
-    </ShButton>
+    </button>
   );
 }

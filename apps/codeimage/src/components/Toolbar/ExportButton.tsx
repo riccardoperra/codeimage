@@ -82,7 +82,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         variant={'solid'}
         theme={'primary'}
         disabled={data.loading}
-        onClick={() => openModal()}
+        onPress={() => openModal()}
       >
         <DownloadIcon />
 
@@ -316,7 +316,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               type="button"
               variant={'solid'}
               theme={'secondary'}
-              onClick={() => props.onClose?.()}
+              onPress={() => props.onClose?.()}
             >
               {t('common.close')}
             </Button>
@@ -326,7 +326,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
               size={'md'}
               type="submit"
               variant={'solid'}
-              onClick={onConfirm}
+              onPress={onConfirm}
             >
               {t('common.confirm')}
             </Button>

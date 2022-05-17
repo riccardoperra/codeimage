@@ -60,7 +60,7 @@ export const GenerateLinkButton: Component = () => {
       variant={'solid'}
       theme={'secondary'}
       disabled={data.loading}
-      onClick={() => notify(true)}
+      onPress={() => notify(true)}
     >
       <LinkIcon />
       <Box marginLeft={2}>{t('toolbar.generateLink')}</Box>
