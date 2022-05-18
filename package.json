@@ -1,6 +1,6 @@
 {
   "name": "codeimage",
-  "version": "0.16.1",
+  "version": "0.17.0",
   "description": "Create elegant code screenshots of your source code",
   "info": "Codeimage is the newest open source tool to help developers to create beautiful screenshots of their code, providing several features to speed up the process to post in social media. It's built on the top of solid-js and has a rich choice of customizations, 15+ custom themes, supports for mobile devices and much more!",
   "homepage": "https://codeimage.dev/",
