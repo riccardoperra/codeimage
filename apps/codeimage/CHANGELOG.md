@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.17.0
+
+### Minor Changes
+
+- [#237](https://github.com/riccardoperra/codeimage/pull/237) [`ee59ba6`](https://github.com/riccardoperra/codeimage/commit/ee59ba6228624ef9c636646d8ee95df26d93b72a) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add umami analytics
+
 ## 0.16.1
 
 ### Patch Changes
