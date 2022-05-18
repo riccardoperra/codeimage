@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.17.1
+
+### Patch Changes
+
+- [#251](https://github.com/riccardoperra/codeimage/pull/251) [`6c7d55b`](https://github.com/riccardoperra/codeimage/commit/6c7d55ba18d5481f096bc2d40887ca457ebc5b95) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix query param conversion base64
+
 ## 0.17.0
 
 ### Minor Changes
