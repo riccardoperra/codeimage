@@ -1,7 +1,7 @@
-import {Box} from '@codeimage/ui';
-import {ParentComponent} from 'solid-js';
 import * as styles from './EditorSidebar.css';
+import {Component} from 'solid-js';
+import {Box} from '@codeimage/ui';
 
-export const EditorForm: ParentComponent = props => (
+export const EditorForm: Component = props => (
   <Box class={styles.sidebar}>{props.children}</Box>
 );

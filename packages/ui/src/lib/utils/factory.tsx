@@ -9,7 +9,6 @@ import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 
 export type DOMElements = keyof JSX.IntrinsicElements;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ElementType<Props = any> = DOMElements | Component<Props>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
