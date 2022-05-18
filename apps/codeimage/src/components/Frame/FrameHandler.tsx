@@ -10,7 +10,7 @@ import {
   from,
   JSXElement,
   on,
-  PropsWithChildren,
+  ParentProps,
 } from 'solid-js';
 import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
 import {createRef} from '../../core/helpers/create-ref';
@@ -26,7 +26,7 @@ type FrameHandlerProps = WithRef<'div'> & {
 };
 
 export function FrameHandler(
-  props: PropsWithChildren<FrameHandlerProps>,
+  props: ParentProps<FrameHandlerProps>,
 ): JSXElement {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ref, setInternalRef] = createSignal<HTMLDivElement>();

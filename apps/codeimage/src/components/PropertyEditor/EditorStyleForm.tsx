@@ -90,7 +90,6 @@ export const EditorStyleForm = () => {
             itemContent={({label, value, selected}) => (
               <Text
                 size={'xs'}
-                display={'block'}
                 weight={selected ? 'medium' : 'normal'}
                 style={{'font-family': `${value.name}, monospace`}}
               >

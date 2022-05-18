@@ -1,15 +1,14 @@
-import {Component, Show} from 'solid-js';
-import * as styles from './Frame.css';
+import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createHorizontalResize} from '../../core/hooks/resizable';
+import {ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
-import {Box} from '@codeimage/ui';
-import {FadeInOutTransition} from '@codeimage/ui';
 import {useModality} from '../../core/hooks/isMobile';
+import {createHorizontalResize} from '../../core/hooks/resizable';
+import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;
 
-export const Frame: Component<{
+export const Frame: ParentComponent<{
   background: string | null | undefined;
   padding: number;
   radius: number;

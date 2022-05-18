@@ -1,17 +1,17 @@
-import {Component, Show} from 'solid-js';
+import {Box, sprinkles, Text} from '@codeimage/ui';
+import clsx from 'clsx';
+import {ParentComponent, Show} from 'solid-js';
+import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
+import {TabIcon} from '../TabIcon';
+import {TabName} from '../TabName';
 import * as baseStyles from '../terminal.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './WindowsTerminal.css';
-import {Box, sprinkles, Text} from '@codeimage/ui';
 import {WindowsTerminalControls} from './WindowsTerminalControls';
-import {TabIcon} from '../TabIcon';
-import {TabName} from '../TabName';
-import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
-import clsx from 'clsx';
 
 export const exportExclude = _exportExclude;
 
-export const WindowsTerminal: Component<BaseTerminalProps> = props => {
+export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
   return (
     <TerminalHost {...props} theme={styles.theme}>
       <Show when={props.showHeader}>
