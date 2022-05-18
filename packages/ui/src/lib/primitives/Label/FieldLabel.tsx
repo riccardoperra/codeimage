@@ -1,17 +1,16 @@
-import clsx from 'clsx';
-import {Component, ParentComponent, Show} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
-import {omitProps} from 'solid-use';
-import {mergeProps2} from '../../utils/types';
-import {Box} from '../Box';
-import {Text, TextProps} from '../Text';
+import {Component, mergeProps, Show} from 'solid-js';
 import * as styles from './FieldLabel.css';
+import {omitProps} from 'solid-use';
+import clsx from 'clsx';
+import {Dynamic} from 'solid-js/web';
+import {TextProps, Text} from '../Text';
+import {Box} from '../Box';
 
 type FieldLabelProps = TextProps<'label'> & {
   icon?: Component;
 };
 
-export const FieldLabel: ParentComponent<FieldLabelProps> = props => {
+export const FieldLabel: Component<FieldLabelProps> = props => {
   return (
     <Text
       {...omitProps(props, ['class', 'children'])}
@@ -25,10 +24,10 @@ export const FieldLabel: ParentComponent<FieldLabelProps> = props => {
 };
 
 export const FieldLabelHint: Component<FieldLabelProps> = props => {
-  const computedProps = mergeProps2(
+  const computedProps = mergeProps(
     {
       weight: 'semibold',
-    } as FieldLabelProps,
+    },
     props,
   );
 
@@ -41,9 +40,9 @@ export const FieldLabelHint: Component<FieldLabelProps> = props => {
       </Show>
 
       <Text
+        {...omitProps(computedProps, ['class', 'children'])}
         as={'label'}
         class={clsx(styles.labelHint, props.class)}
-        {...omitProps(computedProps, ['class', 'children'])}
       >
         {props.children}
       </Text>

@@ -87,6 +87,12 @@ export const CustomEditor = () => {
       fontWeight: editor.fontWeight,
     });
 
+  const externalStylesheet = createMemo(
+    () => themeConfiguration()?.externalStylesheet,
+    null,
+    {equals: (prev, next) => prev?.scope === next?.scope},
+  );
+
   setTimeout(() => {
     const content = document.querySelector('.cm-content');
     if (!content) {
@@ -153,8 +159,15 @@ export const CustomEditor = () => {
 
   return (
     <Show when={themeConfiguration()}>
-      <code class={clsx(`language-${selectedLanguage()?.id ?? 'default'}`)}>
-        <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
+      <code
+        class={clsx(
+          externalStylesheet()?.parentClass,
+          `language-${selectedLanguage()?.id ?? 'default'}`,
+        )}
+      >
+        <div class={externalStylesheet()?.className}>
+          <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
+        </div>
       </code>
     </Show>
   );

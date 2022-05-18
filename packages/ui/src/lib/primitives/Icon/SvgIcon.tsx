@@ -1,13 +1,12 @@
-import clsx from 'clsx';
-import {JSX, ParentProps} from 'solid-js';
-import {mergeProps2} from '../../utils/types';
+import {JSX, mergeProps, PropsWithChildren} from 'solid-js';
 import {svgIcon, SvgIconProps as _SvgIconProps} from './SvgIcon.css';
+import clsx from 'clsx';
 
 export type SvgIconProps = _SvgIconProps &
-  ParentProps<JSX.IntrinsicElements['svg']>;
+  PropsWithChildren<JSX.IntrinsicElements['svg']>;
 
 export function SvgIcon(props: SvgIconProps): JSX.Element {
-  const computedProps = mergeProps2({size: 'md'} as _SvgIconProps, props);
+  const computedProps = mergeProps({size: 'md'}, props);
 
   return (
     <svg
