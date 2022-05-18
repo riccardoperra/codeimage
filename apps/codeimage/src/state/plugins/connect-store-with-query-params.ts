@@ -45,7 +45,7 @@ export function connectStoreWithQueryParams() {
 
     if (data) {
       try {
-        const params = JSON.parse(window.atob(decodeURIComponent(data)));
+        const params = JSON.parse(decodeURIComponent(window.atob(data)));
         if (params) {
           if (params.terminal) {
             updateTerminalStore(state => ({...state, ...params.terminal}));
