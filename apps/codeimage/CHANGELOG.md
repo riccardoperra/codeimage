@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.17.2
+
+### Patch Changes
+
+- [`a9556b8`](https://github.com/riccardoperra/codeimage/commit/a9556b830c351208b7084b2fefafef762d90bae2) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix umami script
+
 ## 0.17.1
 
 ### Patch Changes
