@@ -13,7 +13,7 @@ module.exports = defineConfig({
     },
     cssCodeSplit: true,
     rollupOptions: {
-      external: ['solid-js'],
+      external: ['solid-js', '@solid-primitives/i18n'],
       output: {},
     },
   },

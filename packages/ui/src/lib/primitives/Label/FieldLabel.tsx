@@ -1,10 +1,10 @@
-import {Component, mergeProps, Show} from 'solid-js';
-import * as styles from './FieldLabel.css';
-import {omitProps} from 'solid-use';
 import clsx from 'clsx';
+import {Component, mergeProps, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {TextProps, Text} from '../Text';
+import {omitProps} from 'solid-use';
 import {Box} from '../Box';
+import {Text, TextProps} from '../Text';
+import * as styles from './FieldLabel.css';
 
 type FieldLabelProps = TextProps<'label'> & {
   icon?: Component;

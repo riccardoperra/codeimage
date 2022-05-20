@@ -4,8 +4,7 @@ import {
   ValidConstructor,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {JSXElement, mergeProps} from 'solid-js';
-import {PropsWithChildren} from 'solid-js/types/render/component';
+import {JSXElement, mergeProps, ParentProps} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 import {useTheme} from '../../tokens';
@@ -23,15 +22,10 @@ export type TextProps<T extends ValidConstructor = 'span'> = {
   TextComponentProps;
 
 export function Text<T extends ValidConstructor>(
-  props: PropsWithChildren<TextProps<T>>,
+  props: ParentProps<TextProps<T>>,
 ): JSXElement {
   const baseTheme = useTheme().text;
-
-  const defaultProps = {
-    weight: baseTheme.weight,
-    size: baseTheme.size,
-  };
-
+  const defaultProps = {weight: baseTheme.weight, size: baseTheme.size};
   const propsWithDefault = mergeProps(defaultProps, props);
 
   const classes = () =>
