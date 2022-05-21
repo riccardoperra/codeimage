@@ -1,18 +1,19 @@
-import {PanelHeader} from './PanelHeader';
-import {PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {ColorPicker, RangeField, SegmentedField} from '@codeimage/ui';
-import {Show} from 'solid-js';
+import {useI18n} from '@codeimage/locale';
 import {
   frame$,
   setBackground,
   setOpacity,
   setVisibility,
 } from '@codeimage/store/frame';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {useI18n} from '@codeimage/locale';
-import {setPadding} from '../../state/frame';
+import {RangeField, SegmentedField} from '@codeimage/ui';
+import {Show} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
+import {setPadding} from '../../state/frame';
+import {CustomColorPicker} from '../../ui/CustomColorPicker/CustomColorPicker';
+import {PanelHeader} from './PanelHeader';
+import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 
 export const FrameStyleForm = () => {
   const [t] = useI18n<AppLocaleEntries>();
@@ -71,7 +72,7 @@ export const FrameStyleForm = () => {
       <Show when={frame.visible}>
         <PanelRow for={'colorField'} label={t('frame.color')}>
           <TwoColumnPanelRow>
-            <ColorPicker
+            <CustomColorPicker
               id={'colorField'}
               onChange={setBackground}
               value={frame.background ?? undefined}
