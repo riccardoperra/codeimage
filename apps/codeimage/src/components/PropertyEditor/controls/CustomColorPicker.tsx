@@ -3,7 +3,7 @@ import {ColorPicker} from '@codeimage/ui';
 import {Middleware} from '@floating-ui/dom';
 import {SIDEBAR_POPOVER_HOST_ID} from '../SidebarPopoverHost';
 
-export type CustomColorPickerProps = Parameters<typeof ColorPicker>[0] & {};
+export type CustomColorPickerProps = Parameters<typeof ColorPicker>[0];
 
 export function CustomColorPicker(props: CustomColorPickerProps) {
   const resetFloatingHorizontalSpace: Middleware = {
