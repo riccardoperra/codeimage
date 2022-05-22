@@ -32,8 +32,6 @@ export function Popover(props: PopoverProps) {
     'onClose',
   ]);
 
-  console.log(local);
-
   // Handle interacting outside the dialog and pressing
   // the Escape key to close the modal.
   const {overlayProps} = createOverlay(

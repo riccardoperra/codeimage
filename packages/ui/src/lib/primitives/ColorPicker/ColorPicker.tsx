@@ -1,6 +1,5 @@
-import {offset} from '@floating-ui/dom';
+import {autoPlacement, Placement} from '@floating-ui/dom';
 import {createButton} from '@solid-aria/button';
-
 import {createOverlayTrigger, OverlayContainer} from '@solid-aria/overlays';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -8,7 +7,6 @@ import {
   createSignal,
   For,
   on,
-  onMount,
   PropsWithChildren,
   Show,
 } from 'solid-js';
@@ -17,6 +15,7 @@ import {backgroundColorVar} from '../../theme';
 import {Box, VStack} from '../Box';
 import {FlexField} from '../Field';
 import {Popover} from '../Popover';
+import {createPopoverPortal} from '../Popover/create-popover-portal';
 import {SegmentedField} from '../SegmentedField';
 import {TextField} from '../TextField';
 import * as styles from './ColorPicker.css';
@@ -31,6 +30,8 @@ export interface ColorPickerProps {
   value: string | undefined;
   onChange: (value: string) => void;
   title?: string;
+  popoverPlacement?: Placement;
+  popoverRoot?: string;
 }
 
 export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
@@ -49,18 +50,22 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
     () => triggerRef,
   );
 
-  const [portal, setPortal] = createSignal<HTMLDivElement>();
-
+  const portal = createPopoverPortal({id: props.popoverRoot});
   createEffect(on(() => props.value, setInternalColor));
 
   const floating = useFloating({
-    placement: 'right-start',
-    strategy: 'fixed',
-    middleware: [offset(10)],
-  });
-
-  onMount(() => {
-    setPortal(document.querySelector('#portal-host') as HTMLDivElement);
+    strategy: 'absolute',
+    placement: props.popoverPlacement ?? 'right-start',
+    middleware: [
+      autoPlacement({
+        allowedPlacements: [
+          'right-start',
+          'top-start',
+          'bottom-start',
+          'left-start',
+        ],
+      }),
+    ],
   });
 
   return (
@@ -69,7 +74,10 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
         {...buttonProps()}
         {...triggerProps()}
         class={styles.input}
-        ref={floating.setReference}
+        ref={ref => {
+          triggerRef = ref;
+          floating.setReference(ref);
+        }}
       >
         <div
           class={styles.inputColor}
@@ -87,7 +95,6 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
             title={props.title}
             style={{
               top: `${floating.y}px`,
-              left: `${floating.x}px`,
               position: floating.strategy,
             }}
             isOpen={state.isOpen()}
@@ -207,6 +214,7 @@ type ColorPickerPresetItemProps = {
   title: string;
   color: string;
   onClick: (color: string) => void;
+  active: boolean;
 } & ColorPickerColorItemProps;
 
 export function ColorPickerPresetItem(

@@ -10,8 +10,13 @@ export const container = style({
   display: 'flex',
   flexDirection: 'column',
   width: '260px',
-  boxShadow: themeVars.boxShadow.md,
+  boxShadow: themeVars.dynamicColors.dialog.panelShadow,
   maxWidth: '300px',
+
+  ':focus-visible': {
+    outline: 'none',
+    boxShadow: themeVars.boxShadow.outline,
+  },
 });
 
 export const title = style([
