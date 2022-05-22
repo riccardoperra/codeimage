@@ -1,4 +1,4 @@
-import {autoPlacement, Placement} from '@floating-ui/dom';
+import {autoPlacement, Middleware, Placement} from '@floating-ui/dom';
 import {createButton} from '@solid-aria/button';
 import {createOverlayTrigger, OverlayContainer} from '@solid-aria/overlays';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -16,8 +16,11 @@ export interface ColorPickerProps {
   value: string | undefined;
   onChange: (value: string) => void;
   title?: string;
+  colors?: string[];
+  gradients?: string[];
   popoverPlacement?: Placement;
   popoverRoot?: string;
+  popoverMiddlewares?: Middleware[];
 }
 
 export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
@@ -38,7 +41,7 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
 
   const floating = useFloating({
     strategy: 'absolute',
-    placement: props.popoverPlacement ?? 'right-start',
+    placement: 'right-start',
     middleware: [
       autoPlacement({
         allowedPlacements: [
@@ -48,6 +51,7 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
           'left-start',
         ],
       }),
+      ...(props?.popoverMiddlewares ?? []),
     ],
   });
 
@@ -78,6 +82,7 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
             title={props.title}
             style={{
               top: `${floating.y}px`,
+              left: `${floating.x}px`,
               position: floating.strategy,
             }}
             isOpen={state.isOpen()}
@@ -86,8 +91,8 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
             <ColorPickerPopover
               value={props.value}
               onChange={props.onChange}
-              colors={[]}
-              gradientColors={[]}
+              colors={props.colors}
+              gradientColors={props.gradients}
             />
           </Popover>
         </OverlayContainer>
