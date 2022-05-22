@@ -1,4 +1,5 @@
 import {style} from '@vanilla-extract/css';
+import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {backgroundColorVar, themeVars} from '../../theme';
 import * as textFieldStyles from '../TextField/TextField.css';
 
@@ -27,3 +28,22 @@ export const colorGrid = style({
   gap: themeVars.spacing['3'],
   gridTemplateColumns: 'repeat(6, 1fr)',
 });
+
+export const colorItem = recipe({
+  base: {
+    borderRadius: themeVars.borderRadius.lg,
+    cursor: 'pointer',
+    width: '28px',
+    height: '28px',
+    background: backgroundColorVar,
+  },
+  variants: {
+    active: {
+      true: {
+        boxShadow: themeVars.boxShadow.outline,
+      },
+    },
+  },
+});
+
+export type ColorPickerColorItemProps = RecipeVariants<typeof colorItem>;

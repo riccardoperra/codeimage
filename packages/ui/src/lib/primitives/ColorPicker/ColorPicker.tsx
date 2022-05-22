@@ -20,6 +20,7 @@ import {Popover} from '../Popover';
 import {SegmentedField} from '../SegmentedField';
 import {TextField} from '../TextField';
 import * as styles from './ColorPicker.css';
+import {ColorPickerColorItemProps} from './ColorPicker.css';
 
 enum ColorPickerSelectionMode {
   gradient = 'gradient',
@@ -148,15 +149,11 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
                     ]}
                   >
                     {item => (
-                      <Box
-                        tabIndex={0}
-                        style={{
-                          width: '28px',
-                          height: '28px',
-                          background: item,
-                        }}
+                      <ColorPickerPresetItem
+                        color={item}
+                        title={item}
+                        active={props.value === item}
                         onClick={() => props.onChange(item)}
-                        borderRadius={'full'}
                       />
                     )}
                   </For>
@@ -188,17 +185,11 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
                     ]}
                   >
                     {item => (
-                      <Box
+                      <ColorPickerPresetItem
+                        color={item}
                         title={item}
-                        tabIndex={0}
-                        role={'button'}
-                        style={{
-                          width: '28px',
-                          height: '28px',
-                          background: item,
-                        }}
+                        active={props.value === item}
                         onClick={() => props.onChange(item)}
-                        borderRadius={'full'}
                       />
                     )}
                   </For>
@@ -209,5 +200,28 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
         </OverlayContainer>
       </Show>
     </>
+  );
+}
+
+type ColorPickerPresetItemProps = {
+  title: string;
+  color: string;
+  onClick: (color: string) => void;
+} & ColorPickerColorItemProps;
+
+export function ColorPickerPresetItem(
+  props: PropsWithChildren<ColorPickerPresetItemProps>,
+) {
+  return (
+    <Box
+      class={styles.colorItem({
+        active: props.active,
+      })}
+      title={props.title}
+      style={assignInlineVars({
+        [backgroundColorVar]: props.color,
+      })}
+      onClick={() => props.onClick(props.color)}
+    />
   );
 }
