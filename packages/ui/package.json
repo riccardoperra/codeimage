@@ -43,6 +43,7 @@
     "@floating-ui/core": "^0.6.2"
   },
   "dependencies": {
+    "@codeimage/locale": "workspace:*",
     "@vanilla-extract/css": "^1.7.0",
     "@vanilla-extract/sprinkles": "^1.4.0",
     "@vanilla-extract/recipes": "^0.2.4",

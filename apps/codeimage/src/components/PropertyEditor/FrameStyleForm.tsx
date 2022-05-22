@@ -13,6 +13,7 @@ import {AppLocaleEntries} from '../../i18n';
 import {setPadding} from '../../state/frame';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
+import {SIDEBAR_POPOVER_HOST_ID} from './SidebarPopoverHost';
 
 export const FrameStyleForm = () => {
   const [t] = useI18n<AppLocaleEntries>();
@@ -72,8 +73,9 @@ export const FrameStyleForm = () => {
         <PanelRow for={'colorField'} label={t('frame.color')}>
           <TwoColumnPanelRow>
             <ColorPicker
-              id={'colorField'}
               title={'Color'}
+              popoverPlacement={'right-start'}
+              popoverRoot={SIDEBAR_POPOVER_HOST_ID}
               onChange={setBackground}
               value={frame.background ?? ''}
             />

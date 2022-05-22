@@ -308,6 +308,7 @@ importers:
 
   packages/ui:
     specifiers:
+      '@codeimage/locale': workspace:*
       '@floating-ui/core': ^0.6.2
       '@floating-ui/dom': ^0.4.5
       '@solid-aria/button': ^0.0.3
@@ -339,6 +340,7 @@ importers:
       vite-plugin-dts: ^1.1.1
       vite-plugin-solid: ^2.2.6
     dependencies:
+      '@codeimage/locale': link:../locale
       '@floating-ui/core': 0.6.2
       '@floating-ui/dom': 0.4.5
       '@solid-aria/button': 0.0.3_fe97468346ddf59651ebea2f1c16a607
