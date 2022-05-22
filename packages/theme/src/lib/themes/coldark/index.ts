@@ -8,7 +8,7 @@ export const coldarkColdTheme = createTheme({
   properties: {
     darkMode: false,
     label: 'Coldark Cold',
-    previewBackground: '#A2B1D2',
+    previewBackground: 'linear-gradient(-45deg, #402662 0%, #F59ABE 100%)',
     terminal: {
       main: '#e3eaf2',
       text: '#111b27',
@@ -22,7 +22,8 @@ export const coldarkDarkTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Coldark Dark',
-    previewBackground: '#213043',
+    previewBackground:
+      'linear-gradient(to left top, #162b46, #192c45, #1c2e45, #1e2f44, #213043)',
     terminal: {
       main: '#111b27',
       text: palette.white,

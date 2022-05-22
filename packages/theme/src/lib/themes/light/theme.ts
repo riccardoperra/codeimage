@@ -7,7 +7,7 @@ export const lightTheme = createTheme({
   properties: {
     darkMode: false,
     label: 'One light',
-    previewBackground: '#0d6985',
+    previewBackground: 'linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%)',
     terminal: {
       main: '#ffffff',
       text: '#000000',

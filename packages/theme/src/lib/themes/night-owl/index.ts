@@ -7,7 +7,7 @@ export const nightOwlTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Night Owl',
-    previewBackground: '#15357F',
+    previewBackground: 'linear-gradient(135deg, #FFE174 0%, #FFBF40 100%)',
     terminal: {
       main: '#011627',
       text: '#D0D8E5',

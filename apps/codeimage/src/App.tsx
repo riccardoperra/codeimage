@@ -1,9 +1,9 @@
 import {useI18n} from '@codeimage/locale';
-import {connectStoreWithQueryParams} from '@codeimage/store/plugins/connect-store-with-query-params';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onTabNameChange$} from '@codeimage/store/effects/onTabNameChange';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {frame$, setScale} from '@codeimage/store/frame';
+import {connectStoreWithQueryParams} from '@codeimage/store/plugins/connect-store-with-query-params';
 import {setTabName, terminal$} from '@codeimage/store/terminal';
 import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {initEffects} from '@ngneat/effects';
@@ -15,6 +15,7 @@ import {Frame} from './components/Frame/Frame';
 import {FrameHandler} from './components/Frame/FrameHandler';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from './components/PropertyEditor/EditorSidebar';
+import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
@@ -45,6 +46,8 @@ const App = () => {
 
   return (
     <Scaffold>
+      <PortalHost id={'floating-portal-popover'} />
+      <SidebarPopoverHost />
       <SnackbarHost />
 
       <Show when={modality === 'full'}>
@@ -57,7 +60,6 @@ const App = () => {
 
       <Canvas>
         <Toolbar canvasRef={frameRef()} />
-
         <Show when={modality === 'full'}>
           <Box paddingLeft={4} paddingTop={3}>
             <KeyboardShortcuts />

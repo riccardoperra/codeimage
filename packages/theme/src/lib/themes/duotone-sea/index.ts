@@ -7,7 +7,8 @@ export const duotoneSeaTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Duotone Sea',
-    previewBackground: '#06535d',
+    previewBackground:
+      'linear-gradient(to right bottom, #1e737e, #186b76, #13636d, #0d5b65, #06535d)',
     terminal: {
       main: '#1D262F',
       text: '#D6E9FF',

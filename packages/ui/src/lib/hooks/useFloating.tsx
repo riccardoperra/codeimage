@@ -12,7 +12,7 @@ type Data = Omit<ComputePositionReturn, 'x' | 'y'> & {
   y: number | null;
 };
 
-type UseFloatingReturn = Data & {
+export type UseFloatingReturn = Data & {
   update: () => void;
   setReference: (node: ReferenceElement | null) => void;
   setFloating: (node: ReferenceElement | null) => void;

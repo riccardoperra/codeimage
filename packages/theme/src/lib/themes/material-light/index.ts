@@ -7,7 +7,7 @@ export const materialLightTheme = createTheme({
   properties: {
     darkMode: false,
     label: 'Material Light',
-    previewBackground: '#d4b8ff',
+    previewBackground: 'linear-gradient(135deg, #54D2EF 0%, #2AA6DA 100%)',
     terminal: {
       main: '#ffffff',
       text: '#90a4ae',
