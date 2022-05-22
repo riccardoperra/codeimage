@@ -5,13 +5,12 @@ import {
   setOpacity,
   setVisibility,
 } from '@codeimage/store/frame';
-import {RangeField, SegmentedField} from '@codeimage/ui';
+import {ColorPicker, RangeField, SegmentedField} from '@codeimage/ui';
 import {Show} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
 import {setPadding} from '../../state/frame';
-import {CustomColorPicker} from '../../ui/CustomColorPicker/CustomColorPicker';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 
@@ -72,10 +71,11 @@ export const FrameStyleForm = () => {
       <Show when={frame.visible}>
         <PanelRow for={'colorField'} label={t('frame.color')}>
           <TwoColumnPanelRow>
-            <CustomColorPicker
+            <ColorPicker
               id={'colorField'}
+              title={'Color'}
               onChange={setBackground}
-              value={frame.background ?? undefined}
+              value={frame.background ?? ''}
             />
           </TwoColumnPanelRow>
         </PanelRow>
