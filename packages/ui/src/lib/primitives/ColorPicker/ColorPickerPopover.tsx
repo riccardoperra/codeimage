@@ -5,6 +5,7 @@ import {
   createSignal,
   For,
   on,
+  onMount,
   Show,
 } from 'solid-js';
 import {VStack} from '../Box';
@@ -45,6 +46,15 @@ export function ColorPickerPopover(props: ColorPickerPopoverProps) {
       },
     ]);
 
+  onMount(() => {
+    console.log('test', props.colors, props.value);
+    if (props.colors?.includes(props.value ?? '')) {
+      setMode(ColorPickerSelectionMode.color);
+    } else {
+      setMode(ColorPickerSelectionMode.gradient);
+    }
+  });
+
   return (
     <VStack spacing={'4'}>
       <FlexField size={'md'}>
@@ -73,7 +83,9 @@ export function ColorPickerPopover(props: ColorPickerPopoverProps) {
                 color={item}
                 title={item}
                 active={props.value === item}
-                onClick={() => props.onChange(item)}
+                onClick={() => {
+                  props.onChange(item);
+                }}
               />
             )}
           </For>

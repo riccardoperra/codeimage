@@ -14,7 +14,6 @@ import {setPadding} from '../../state/frame';
 import {CustomColorPicker} from './controls/CustomColorPicker';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {SIDEBAR_POPOVER_HOST_ID} from './SidebarPopoverHost';
 
 export const FrameStyleForm = () => {
   const [t] = useI18n<AppLocaleEntries>();
@@ -75,9 +74,10 @@ export const FrameStyleForm = () => {
           <TwoColumnPanelRow>
             <CustomColorPicker
               title={'Color'}
-              popoverPlacement={'right-start'}
-              popoverRoot={SIDEBAR_POPOVER_HOST_ID}
-              onChange={setBackground}
+              onChange={color => {
+                console.log(color);
+                setBackground(color);
+              }}
               value={frame.background ?? ''}
             />
           </TwoColumnPanelRow>

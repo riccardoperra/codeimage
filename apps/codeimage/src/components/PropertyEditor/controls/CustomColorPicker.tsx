@@ -13,12 +13,12 @@ export function CustomColorPicker(props: CustomColorPickerProps) {
 
   return (
     <ColorPicker
-      {...props}
       colors={AVAILABLE_COLORS}
       gradients={AVAILABLE_GRADIENTS}
       popoverRoot={SIDEBAR_POPOVER_HOST_ID}
       popoverPlacement={'right-start'}
       popoverMiddlewares={[resetFloatingHorizontalSpace]}
+      {...props}
     />
   );
 }
