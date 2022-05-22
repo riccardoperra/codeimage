@@ -47,7 +47,6 @@ export function ColorPickerPopover(props: ColorPickerPopoverProps) {
     ]);
 
   onMount(() => {
-    console.log('test', props.colors, props.value);
     if (props.colors?.includes(props.value ?? '')) {
       setMode(ColorPickerSelectionMode.color);
     } else {

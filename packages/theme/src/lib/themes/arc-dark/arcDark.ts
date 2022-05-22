@@ -3,7 +3,7 @@ import {tags as t} from '@lezer/highlight';
 import {defineEditorTheme} from '../../core';
 
 export const palette = {
-  background: '#21252bff',
+  background: '#0a0b0e',
   gray: '#383c4a',
   grayLight: '#a2a2a2',
   pink: '#C586C0',

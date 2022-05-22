@@ -31,11 +31,12 @@ export const colorGrid = style({
 
 export const colorItem = recipe({
   base: {
-    borderRadius: themeVars.borderRadius.lg,
+    borderRadius: themeVars.borderRadius.full,
     cursor: 'pointer',
     width: '28px',
     height: '28px',
     background: backgroundColorVar,
+    boxShadow: themeVars.boxShadow.md,
   },
   variants: {
     active: {

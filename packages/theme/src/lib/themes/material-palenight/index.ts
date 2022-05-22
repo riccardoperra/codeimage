@@ -9,7 +9,7 @@ export const materialPalenightTheme = createTheme({
     label: 'Material Palenight',
     previewBackground: '#1e222f',
     terminal: {
-      main: '#292D3E',
+      main: '#24293B',
       text: palette.gray,
     },
   },

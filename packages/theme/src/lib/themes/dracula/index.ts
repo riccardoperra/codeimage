@@ -7,7 +7,7 @@ export const draculaTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Dracula',
-    previewBackground: palette.purple,
+    previewBackground: `linear-gradient(135deg,  rgba(171,73,222,1) 0%,rgba(73,84,222,1) 100%)`,
     terminal: {
       main: palette.background,
       text: palette.purple,
