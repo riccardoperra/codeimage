@@ -7,7 +7,7 @@ export const materialOceanTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Material Ocean',
-    previewBackground: palette.defaultAccent,
+    previewBackground: `linear-gradient(to right bottom, #2be7b5, #1edea2, #16d58f, #13cb7c, #16c268, #0db866, #04ae64, #00a462, #00976c, #008971, #007b72, #006d6d)`,
     terminal: {
       main: palette.backgroundAlt,
       text: palette.white,
