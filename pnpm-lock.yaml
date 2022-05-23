@@ -86,8 +86,11 @@ importers:
       '@ngneat/elf': ^2.0.0
       '@ngneat/elf-devtools': ^1.2.1
       '@ngneat/elf-persist-state': ^1.1.1
+      '@solid-aria/button': ^0.0.1
+      '@solid-aria/primitives': ^0.0.6
       '@solid-primitives/i18n': ^1.1.0
       '@solid-primitives/resize-observer': ^1.1.0
+      '@solid-primitives/utils': ^2.0.1
       '@types/downloadjs': ^1.4.3
       '@vanilla-extract/css': ^1.7.0
       '@vanilla-extract/dynamic': ^2.0.2
@@ -156,8 +159,11 @@ importers:
       '@ngneat/elf': 2.0.0_typescript@4.6.4
       '@ngneat/elf-devtools': 1.2.1
       '@ngneat/elf-persist-state': 1.1.1
+      '@solid-aria/button': 0.0.1_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/primitives': 0.0.6_64a4fb2dcc550f0987ca4c5abb4cdf8b
       '@solid-primitives/i18n': 1.1.0_solid-js@1.4.2
       '@solid-primitives/resize-observer': 1.1.0_solid-js@1.4.2
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
       '@vanilla-extract/css': 1.7.0
       '@vanilla-extract/dynamic': 2.0.2
       '@vanilla-extract/recipes': 0.2.4_@vanilla-extract+css@1.7.0
@@ -307,6 +313,7 @@ importers:
       '@solid-aria/i18n': ^0.0.6
       '@solid-aria/interactions': ^0.0.5
       '@solid-aria/overlays': ^0.0.3
+      '@solid-aria/primitives': ^0.0.6
       '@solid-aria/utils': ^0.0.5
       '@solid-primitives/props': ^2.1.2
       '@solid-primitives/refs': ^0.2.0
@@ -338,6 +345,7 @@ importers:
       '@solid-aria/i18n': 0.0.6_64a4fb2dcc550f0987ca4c5abb4cdf8b
       '@solid-aria/interactions': 0.0.5_2f71d154d6adcc3a6224d45820010cc7
       '@solid-aria/overlays': 0.0.3_2f71d154d6adcc3a6224d45820010cc7
+      '@solid-aria/primitives': 0.0.6_64a4fb2dcc550f0987ca4c5abb4cdf8b
       '@solid-aria/utils': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
       '@solid-primitives/props': 2.1.2_solid-js@1.4.2
       '@solid-primitives/refs': 0.2.0_solid-js@1.4.2
@@ -2690,6 +2698,23 @@ packages:
       string-argv: 0.3.1
     dev: true
 
+  /@solid-aria/button/0.0.1_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-gQirvgCANSGpXM8w13Y5j7RxQUzfHxNwph6HjLJmVu/PBnrGmaOmL3Pjf8Fyf7AR6E8GrdPEzaiUCklx7b4Ubw==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/focus': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/interactions': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/toggle': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
   /@solid-aria/button/0.0.4_2f71d154d6adcc3a6224d45820010cc7:
     resolution: {integrity: sha512-aI3yKn+0tQVVD3FO8EP20+nwC73wJUpy6YrBucYXdH0VBDdLUWCuqxBvrP09PoFz7RKmxc6Ul6wBURiWCo7gfA==}
     peerDependencies:
@@ -2709,6 +2734,36 @@ packages:
       - clsx
     dev: false
 
+  /@solid-aria/checkbox/0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-rmnP7RQkqhx39T9iv1MApmexBArrn5MThMlwwP5RBvVE1ezwF8qghnhhAbjIqmdqYiFs7UfXfo7R2MP1Mn3zFg==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/label': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/toggle': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
+  /@solid-aria/collection/0.0.3_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-mIXQQ7q3OIdrkDhZ+LmMalhObwgJSa8lbUYIj7tsuPGCGXTtZEjhBuOvrikao7zOftnxTdWuGcgz3x+FUckkZw==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
   /@solid-aria/dialog/0.0.2_2f71d154d6adcc3a6224d45820010cc7:
     resolution: {integrity: sha512-vYCwKdePdJJ7SU7b2DvTwmK+6ytpiT2s8f7x0LONXz/84N4JA28BjoVTKJ8kZAK8QjwfEjZKOCRIVA0YBuP+RQ==}
     peerDependencies:
@@ -2722,6 +2777,21 @@ packages:
       solid-js: 1.4.2
     transitivePeerDependencies:
       - '@solid-primitives/props'
+      - clsx
+    dev: false
+
+  /@solid-aria/focus/0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-kzVN+ciplNmmIkbO6I60tRV+pGmrlEvG4yMPpHfdYbnFq5BGYz452D0ZXUPJq/P7UMyDoON1PpPLvbx3CGkR/g==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/interactions': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
       - clsx
     dev: false
 
@@ -2759,6 +2829,20 @@ packages:
       - clsx
     dev: false
 
+  /@solid-aria/i18n/0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-2PmRJsvwWQQKwzvBq75Uv8t8Tni524rot3k9zKORFB4DJOxsEern2jwpHCj5UwkVrwhEWgwaiYRY1d4ewcyH1A==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
   /@solid-aria/i18n/0.0.6_64a4fb2dcc550f0987ca4c5abb4cdf8b:
     resolution: {integrity: sha512-INfaE7E5geEyCJyAiLvGszXi4oYIPfep+f6L6/rFjHbvKWoZM/bfJad2Phabfr3FUKBKeHolXe35QBzxKjW91A==}
     peerDependencies:
@@ -2767,6 +2851,20 @@ packages:
     dependencies:
       '@solid-aria/types': 0.0.4_ba938e31c4787d866ab4d7868777aed8
       '@solid-aria/utils': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
+  /@solid-aria/interactions/0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-1JIv8xhFNhcbNQ2o2KGNEPKH+TCupiCtG7sZZ53aKqYFw7hnLmIXvun3+FLs1QOYUjecCl+QyEkSAEDRxOKUNQ==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
       '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
       solid-js: 1.4.2
     transitivePeerDependencies:
@@ -2783,6 +2881,39 @@ packages:
       '@solid-aria/types': 0.0.4_ba938e31c4787d866ab4d7868777aed8
       '@solid-aria/utils': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
       '@solid-primitives/props': 2.1.2_solid-js@1.4.2
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
+  /@solid-aria/label/0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-jCBZMq9mti0IOrNHUfnu6XlAw04lJc8vJNNUc7+VytvnlRQi/1gI10pJo/SiHDwuZg+d3kO2nKT4k/RBs+eEoQ==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
+  /@solid-aria/listbox/0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-PBCHt33QPBn+WE/SPi6M+OSM9V1neSjVFqnXIPBB0Yma9EtDwOlHdNJiy1AEy/PdtZvLDP5ro7gys7+XSExOpA==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/collection': 0.0.3_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/focus': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/interactions': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/label': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/selection': 0.0.3_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
       '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
       solid-js: 1.4.2
     transitivePeerDependencies:
@@ -2809,6 +2940,97 @@ packages:
       - clsx
     dev: false
 
+  /@solid-aria/primitives/0.0.6_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-HLBZyPBHURmOYkyETP1NyCL9HQT3Ej3xboQ/0N0YUbIdcQCW/vPNl4jZXkbJPVQiDrtYdu7alBZU0ew2uMmKmg==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/button': 0.0.1_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/checkbox': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/collection': 0.0.3_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/focus': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/i18n': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/interactions': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/label': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/listbox': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/radio': 0.0.6_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/selection': 0.0.3_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/switch': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/toggle': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/visually-hidden': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
+  /@solid-aria/radio/0.0.6_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-wN0OZPC4NLlIRyf9xFqSARMRfuZM1cURTu3h2fQP+YsnIvLenL2ZtAbX7BBbod1fASJDJv1JlZpXcUN9rF7IHA==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/focus': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/i18n': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/interactions': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/label': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
+  /@solid-aria/selection/0.0.3_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-+ERGfqqj73gES1NJk4rJHkAQ5zSZ/+bTemlAKOHC3sj3j+dAwc2xfIg9c7Pe2pSOS7HBIgzqobL6lgbaRusnYQ==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/collection': 0.0.3_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/i18n': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
+  /@solid-aria/switch/0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-wwzVMMiwAz8s/gW6ApN1gW4uEv/TNyYHhJ9E2NTyb/NAhGHDWv8GbbyezlpYfavjz+skzPS9qf4GrpnHakUuFQ==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/toggle': 0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
+  /@solid-aria/toggle/0.0.5_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-pHAOljXQbTUQHVA7encrHKCy4yf//cc9L0gMS8cB+YuOS72kgRJ7B/tfo9OV/QQz1apOiUoaccGEdab8jRa+PQ==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/focus': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/interactions': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
+    dev: false
+
   /@solid-aria/toggle/0.0.8_2f71d154d6adcc3a6224d45820010cc7:
     resolution: {integrity: sha512-7wp8oD7fHDIn3SoqZ+TBMOjksaidr/oqINZ16AR9KVibkkWdaSVN9AOz8Ypq54C6EBnDnyCDxFbZE1Fosit/aw==}
     peerDependencies:
@@ -2827,6 +3049,16 @@ packages:
       - clsx
     dev: false
 
+  /@solid-aria/types/0.0.3_ba938e31c4787d866ab4d7868777aed8:
+    resolution: {integrity: sha512-Sh0DWWvmdqcOxpiQ+h+U/s3p362FnEJXyXolpD8sedoFtdJgo2ZRp//vszreBNWO5kfB61eHn9raYkiFb5QEcg==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    dev: false
+
   /@solid-aria/types/0.0.4_ba938e31c4787d866ab4d7868777aed8:
     resolution: {integrity: sha512-GYZIqFj9AM0+lKa7edQMTS689NIKUspbBE771rImUeQFRHwgyGWwlnTFsAsjZCrRU+nsjhaZMnio8IDSFi5myA==}
     peerDependencies:
@@ -2834,6 +3066,19 @@ packages:
       solid-js: ^1.4.0
     dependencies:
       '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    dev: false
+
+  /@solid-aria/utils/0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-xATHs3n/1qt/NvA/wTBtEt9YT0znhjek9kZClDvqDQ6fJcdOhGn1NmlYtzdezJtRryyr5hTMpdv+KuO3rbuyrw==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      clsx: ^1.1.1
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      clsx: 1.1.1
       solid-js: 1.4.2
     dev: false
 
@@ -2848,6 +3093,21 @@ packages:
       '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
       clsx: 1.1.1
       solid-js: 1.4.2
+    dev: false
+
+  /@solid-aria/visually-hidden/0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b:
+    resolution: {integrity: sha512-I8sPDeFqjvfNQ0QTKAoTkL7xlZEcJYxvi37jgIYo3juO8wwODVPaMSL8/i22Cc0pr6raTSkN32lQL2XXcx8Yeg==}
+    peerDependencies:
+      '@solid-primitives/utils': ^1.3.0
+      solid-js: ^1.3.15
+    dependencies:
+      '@solid-aria/interactions': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-aria/types': 0.0.3_ba938e31c4787d866ab4d7868777aed8
+      '@solid-aria/utils': 0.0.4_64a4fb2dcc550f0987ca4c5abb4cdf8b
+      '@solid-primitives/utils': 2.0.1_solid-js@1.4.2
+      solid-js: 1.4.2
+    transitivePeerDependencies:
+      - clsx
     dev: false
 
   /@solid-aria/visually-hidden/0.0.5_2f71d154d6adcc3a6224d45820010cc7:
