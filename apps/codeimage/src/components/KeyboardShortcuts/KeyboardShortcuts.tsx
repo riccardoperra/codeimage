@@ -117,7 +117,7 @@ export function KeyboardShortcuts(): JSXElement {
           theme={'secondary'}
           type={'button'}
           variant={'solid'}
-          onClick={() => setShow(true)}
+          onPress={() => setShow(true)}
         >
           <HStack spacing={'2'}>
             <HintIcon />

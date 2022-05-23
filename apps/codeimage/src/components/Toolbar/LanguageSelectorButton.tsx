@@ -35,11 +35,12 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
       {({isOpen, setState}) => (
         <>
           <PopoverButton
-            ref={floating.setReference}
             as={Button}
             aria-label={t('toolbar.changeLanguage')}
             variant={'solid'}
             theme={'secondary'}
+            ref={floating.setReference}
+            onPress={() => setState(true)}
           >
             <SvgIcon
               xmlns="http://www.w3.org/2000/svg"
