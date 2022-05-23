@@ -1,6 +1,6 @@
 import {createStore, Reducer, select, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
-import {distinctUntilChanged, map, shareReplay, tap} from 'rxjs';
+import {distinctUntilChanged, map} from 'rxjs';
 import {appEnvironment} from '../core/configuration';
 import {SUPPORTED_FONTS} from '../core/configuration/font';
 import shallow from '../core/helpers/shallow';
