@@ -1,7 +1,6 @@
 import {EDITOR_BASE_SETUP} from '@codeimage/config';
 import {editor$, setFocus} from '@codeimage/store/editor';
 import {EditorView, lineNumbers} from '@codemirror/view';
-import clsx from 'clsx';
 import {debounceTime, ReplaySubject, takeUntil} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
 import {
@@ -10,7 +9,6 @@ import {
   createMemo,
   createResource,
   onCleanup,
-  Show,
 } from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
@@ -40,8 +38,8 @@ export const CustomEditor = () => {
     plugin(),
   );
 
-  const themeConfiguration = createMemo(() =>
-    themes.find(theme => theme.id === editor.themeId),
+  const themeConfiguration = createMemo(
+    () => themes.find(theme => theme.id === editor.themeId) ?? themes[0],
   );
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];
@@ -86,12 +84,6 @@ export const CustomEditor = () => {
         fonts.find(({id}) => editor.fontId === id)?.name || fonts[0].name,
       fontWeight: editor.fontWeight,
     });
-
-  const externalStylesheet = createMemo(
-    () => themeConfiguration()?.externalStylesheet,
-    null,
-    {equals: (prev, next) => prev?.scope === next?.scope},
-  );
 
   setTimeout(() => {
     const content = document.querySelector('.cm-content');
@@ -158,17 +150,8 @@ export const CustomEditor = () => {
   });
 
   return (
-    <Show when={themeConfiguration()}>
-      <code
-        class={clsx(
-          externalStylesheet()?.parentClass,
-          `language-${selectedLanguage()?.id ?? 'default'}`,
-        )}
-      >
-        <div class={externalStylesheet()?.className}>
-          <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
-        </div>
-      </code>
-    </Show>
+    <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
+      <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
+    </code>
   );
 };

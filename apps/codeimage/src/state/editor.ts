@@ -1,4 +1,4 @@
-import {createStore, select, withProps} from '@ngneat/elf';
+import {createStore, Reducer, select, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged, map} from 'rxjs';
 import {appEnvironment} from '../core/configuration';
@@ -31,7 +31,8 @@ const store = createStore(
   withProps<EditorState>(initialState),
 );
 
-export const updateEditorStore = store.update.bind(store);
+export const updateEditorStore = (value: Reducer<EditorState>) =>
+  store.update(value);
 
 persistState(store, {storage: localStorageStrategy, key: '@store/editor'});
 
