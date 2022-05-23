@@ -27,8 +27,9 @@ export const SUPPORTED_THEMES = [
   oneDarkTheme,
   lightTheme,
   materialPalenightTheme,
-  arcDarkTheme,
-  holiTheme,
+  // TODO: to refactor -> ugly themes
+  // arcDarkTheme,
+  // holiTheme,
   duotoneSeaTheme,
   duotoneDarkTheme,
   coldarkColdTheme,

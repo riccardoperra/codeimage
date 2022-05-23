@@ -36,8 +36,9 @@ export const AVAILABLE_GRADIENTS = [
   'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
   'linear-gradient(135deg,  rgba(171,73,222,1) 0%,rgba(73,84,222,1) 100%)',
   // Blue
-  'linear-gradient(to right top, #3547be, #285acd, #186ddb, #047ee7, #0090f2, #0091f3, #0091f4, #0092f5, #0082ec, #0071e2, #0060d7, #174ecb)',
-  'linear-gradient(135deg,  rgba(73,84,222,1) 0%,rgba(73,221,216,1) 100%)',
+  'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
+  'linear-gradient(to right bottom, #1cb1f2, #00a9f2, #00a0f2, #0097f1, #008def, #0086f1, #007ff2, #0078f2, #0071f6, #006afa, #0062fd, #0059ff)',
+  'linear-gradient(-45deg, rgba(73,84,222,1) 0%,rgba(73,221,216,1) 100%)',
   'linear-gradient(135deg, #54D2EF 0%, #2AA6DA 100%)',
   'linear-gradient(135deg, #2AA6DA 0%, #1B7B77 100%)',
   // Green
@@ -50,12 +51,14 @@ export const AVAILABLE_GRADIENTS = [
   'linear-gradient(135deg, #FFE174 0%, #FFBF40 100%)',
   'linear-gradient(to right bottom, #ffcc99, #f6bd83, #edad6e, #e49e59, #da8f44)',
   'linear-gradient(to right bottom, #f66283, #e45475, #d34768, #c2395b, #b12a4e, #a92246, #a1183e, #990d36, #970931, #95052b, #930226, #900020)',
+  'linear-gradient(140deg, rgb(241 160 61), rgb(192 74 65),  rgb(115, 52, 52))',
   'linear-gradient(135deg, #E233FF 0%, #FF6B00 100%)',
   // Mix
   'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
   'linear-gradient(to right bottom, #d44be1, #c945d7, #be3fcd, #b43ac3, #a934b9, #b330af, #bb2ca6, #c12a9c, #d6308f, #e73c83, #f34d77, #fb5f6d)',
   'linear-gradient(-45deg, #402662 0%, #F59ABE 100%)',
   // Light
+  'linear-gradient(140deg, rgb(165, 142, 251), rgb(233, 191, 248))',
   'linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%)',
   'linear-gradient(to right bottom, #82aaff, #6c88cb, #566899, #3f4969, #292d3e)',
   'linear-gradient(to right bottom, #e5e5e5, #d0cfd5, #bbbac5, #a5a6b6, #9092a7, #83869d, #777a93, #6a6f89, #646881, #5d6279, #575b71, #515569)',
