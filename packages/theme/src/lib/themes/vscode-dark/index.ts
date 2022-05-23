@@ -9,7 +9,7 @@ export const vsCodeDarkTheme = createTheme({
     darkMode: true,
     label: 'VSCode Dark',
     previewBackground:
-      'linear-gradient(to right top, #3547be, #285acd, #186ddb, #047ee7, #0090f2, #0091f3, #0091f4, #0092f5, #0082ec, #0071e2, #0060d7, #174ecb)',
+      'linear-gradient(to right bottom, #1cb1f2, #00a9f2, #00a0f2, #0097f1, #008def, #0086f1, #007ff2, #0078f2, #0071f6, #006afa, #0062fd, #0059ff)',
     terminal: {
       main: palette.background,
       text: '#FFF',

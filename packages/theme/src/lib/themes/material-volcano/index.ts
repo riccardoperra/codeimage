@@ -8,7 +8,7 @@ export const materialVolcanoTheme = createTheme({
     darkMode: true,
     label: 'Material Volcano',
     previewBackground:
-      'linear-gradient(to right bottom, #f66283, #e45475, #d34768, #c2395b, #b12a4e, #a92246, #a1183e, #990d36, #970931, #95052b, #930226, #900020)',
+      'linear-gradient(140deg, rgb(241, 160, 61), rgb(192, 74, 65), rgb(115, 52, 52))',
     terminal: {
       main: palette.background,
       text: palette.white,
