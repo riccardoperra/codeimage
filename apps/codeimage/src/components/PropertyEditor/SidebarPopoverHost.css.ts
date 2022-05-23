@@ -5,7 +5,7 @@ export const wrapper = style({
   marginLeft: `calc(${scaffoldVars.panelWidth} + 10px)`,
   position: 'absolute',
   maxWidth: scaffoldVars.panelWidth,
-  height: '100%',
-  width: '100%',
+  height: '0px',
+  width: '0px',
   zIndex: 5,
 });

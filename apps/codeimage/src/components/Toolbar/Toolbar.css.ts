@@ -15,7 +15,7 @@ export const wrapper = style([
     color: themeVars.textColor.blue['900'],
     fontSize: '18px',
     fontWeight: 'bold',
-    zIndex: 60,
+    zIndex: 30,
     height: toolbarVars.toolbarHeight,
     width: '100%',
     backgroundColor: themeVars.dynamicColors.panel.background,
