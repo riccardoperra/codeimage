@@ -3,12 +3,13 @@ import {
   ComponentProps,
   JSX,
   mergeProps,
-  PropsWithChildren,
+  ParentProps,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 
 export type DOMElements = keyof JSX.IntrinsicElements;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ElementType<Props = any> = DOMElements | Component<Props>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -23,10 +24,20 @@ export type PropsOf<C extends ElementType> = LibraryManagedAttributes<
   ComponentProps<C>
 >;
 
+export type BaseComponentProps<
+  C extends ElementType,
+  Additional = Record<string, unknown>,
+> = ParentProps<
+  {
+    as?: C;
+    class?: string;
+  } & Additional
+>;
+
 export type CustomComponentProps<
   C extends ElementType,
   Additional = Record<string, unknown>,
-> = PropsWithChildren<PropsOf<C>> & Additional & {as?: C};
+> = ParentProps<PropsOf<C>> & Additional & {as?: C; class?: string};
 
 export type CustomComponent<
   T extends ElementType,

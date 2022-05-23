@@ -1,6 +1,3 @@
-import {PanelHeader} from './PanelHeader';
-import {PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {SegmentedField, Select, Text} from '@codeimage/ui';
 import {useI18n} from '@codeimage/locale';
 import {
   editor$,
@@ -10,14 +7,17 @@ import {
   setLanguageId,
   setShowLineNumbers,
 } from '@codeimage/store/editor';
-import {appEnvironment} from '../../core/configuration';
-import {useModality} from '../../core/hooks/isMobile';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {from} from 'solid-js';
+import {SegmentedField, Select, Text} from '@codeimage/ui';
 import {map} from 'rxjs';
+import {from, ParentComponent} from 'solid-js';
+import {appEnvironment} from '../../core/configuration';
+import {fromObservableObject} from '../../core/hooks/from-observable-object';
+import {useModality} from '../../core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
+import {PanelHeader} from './PanelHeader';
+import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 
-export const EditorStyleForm = () => {
+export const EditorStyleForm: ParentComponent = () => {
   const {languages, fonts} = appEnvironment;
   const editor = fromObservableObject(editor$);
   const modality = useModality();
@@ -90,7 +90,6 @@ export const EditorStyleForm = () => {
             itemContent={({label, value, selected}) => (
               <Text
                 size={'xs'}
-                display={'block'}
                 weight={selected ? 'medium' : 'normal'}
                 style={{'font-family': `${value.name}, monospace`}}
               >

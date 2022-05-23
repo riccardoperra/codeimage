@@ -8,14 +8,14 @@ import {
   terminal$,
 } from '@codeimage/store/terminal';
 import {SegmentedField} from '@codeimage/ui';
-import {Show} from 'solid-js';
+import {ParentComponent, Show} from 'solid-js';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 
-export const WindowStyleForm = () => {
+export const WindowStyleForm: ParentComponent = () => {
   const terminal = fromObservableObject(terminal$);
   const [t] = useI18n<AppLocaleEntries>();
 

@@ -1,7 +1,7 @@
 import {CustomTheme} from '@codeimage/theme';
 import {backgroundColorVar, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {Component} from 'solid-js';
+import {ParentComponent} from 'solid-js';
 import * as styles from './ThemeSwitcher.css';
 
 interface ThemeBoxProps {
@@ -10,7 +10,7 @@ interface ThemeBoxProps {
   onClick: (evt: MouseEvent) => void;
 }
 
-export const ThemeBox: Component<ThemeBoxProps> = props => {
+export const ThemeBox: ParentComponent<ThemeBoxProps> = props => {
   return (
     <div
       class={styles.themeBox}

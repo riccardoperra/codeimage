@@ -1,11 +1,11 @@
-import {ParentComponent} from 'solid-js';
+import {FlowComponent} from 'solid-js';
 import {Box} from '../Box';
 import * as styles from './Group.css';
 import {GroupVariants} from './Group.css';
 
 type GroupProps = GroupVariants;
 
-export const Group: ParentComponent<GroupProps> = props => {
+export const Group: FlowComponent<GroupProps> = props => {
   return (
     <Box
       data-orientation={props.orientation}

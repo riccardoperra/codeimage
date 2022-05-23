@@ -58,4 +58,4 @@ export function Bootstrap() {
   );
 }
 
-render(Bootstrap, document.getElementById('root') as HTMLElement);
+render(() => <Bootstrap />, document.getElementById('root') as HTMLElement);

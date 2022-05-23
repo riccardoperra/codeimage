@@ -1,16 +1,16 @@
 import clsx from 'clsx';
-import {Component, mergeProps, Show} from 'solid-js';
+import {Component, FlowComponent, mergeProps, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 import {Box} from '../Box';
-import {Text, TextProps} from '../Text';
+import {Text, TextComponentProps, TextProps} from '../Text';
 import * as styles from './FieldLabel.css';
 
 type FieldLabelProps = TextProps<'label'> & {
   icon?: Component;
 };
 
-export const FieldLabel: Component<FieldLabelProps> = props => {
+export const FieldLabel: FlowComponent<FieldLabelProps> = props => {
   return (
     <Text
       {...omitProps(props, ['class', 'children'])}
@@ -23,11 +23,11 @@ export const FieldLabel: Component<FieldLabelProps> = props => {
   );
 };
 
-export const FieldLabelHint: Component<FieldLabelProps> = props => {
+export const FieldLabelHint: FlowComponent<FieldLabelProps> = props => {
   const computedProps = mergeProps(
     {
       weight: 'semibold',
-    },
+    } as TextComponentProps,
     props,
   );
 

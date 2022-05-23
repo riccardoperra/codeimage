@@ -18,10 +18,10 @@ export type TextComponentProps = {
 export type TextProps<T extends ValidConstructor = 'span'> = {
   as?: T | ValidConstructor;
 } & WithRef<T> &
-  Omit<DynamicProps<T>, 'as' | 'ref'> &
+  Omit<DynamicProps<T>, 'ref' | 'as'> &
   TextComponentProps;
 
-export function Text<T extends ValidConstructor>(
+export function Text<T extends ValidConstructor = 'span'>(
   props: ParentProps<TextProps<T>>,
 ): JSXElement {
   const baseTheme = useTheme().text;

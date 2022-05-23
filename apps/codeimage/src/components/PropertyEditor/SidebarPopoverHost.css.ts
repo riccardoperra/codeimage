@@ -1,4 +1,3 @@
-import {themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 import {scaffoldVars} from '../Scaffold/Scaffold.css';
 
@@ -8,5 +7,5 @@ export const wrapper = style({
   maxWidth: scaffoldVars.panelWidth,
   height: '100%',
   width: '100%',
-  zIndex: themeVars.zIndex['50'],
+  zIndex: 5,
 });

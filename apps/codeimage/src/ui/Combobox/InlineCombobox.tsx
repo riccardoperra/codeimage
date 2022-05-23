@@ -14,7 +14,6 @@ interface InlineComboboxEventMap extends HTMLElementEventMap {
 export class InlineCombobox extends LionCombobox {
   valueMapper?: (value: string) => string;
   placeholder: string | null | undefined;
-  _noTypeAhead: boolean | null | undefined;
   value: string | null | undefined;
 
   readonly destroy$ = new Subject<void>();
