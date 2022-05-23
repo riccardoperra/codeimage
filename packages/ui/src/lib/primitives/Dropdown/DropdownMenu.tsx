@@ -3,12 +3,12 @@ import {
   PopoverPanel as ShPopoverPanel,
   PopoverPanelProps,
 } from 'solid-headless';
-import {Component} from 'solid-js';
+import {Component, ParentComponent} from 'solid-js';
 import * as styles from './Dropdown.css';
 
 type DropdownMenuPanel = PopoverPanelProps<'div'>;
 
-export const DropdownMenu: Component<DropdownMenuPanel> = props => {
+export const DropdownMenu: ParentComponent<DropdownMenuPanel> = props => {
   return (
     <ShPopoverPanel
       as={'div'}
