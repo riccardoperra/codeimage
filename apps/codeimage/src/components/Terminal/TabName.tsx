@@ -93,6 +93,7 @@ export function TabName(props: TabNameProps): JSXElement {
       }
       on:inputTextChange={event => onChange(event.detail.value)}
       prop:valueMapper={getFormattedValue}
+      prop:_noTypeAhead={true}
       prop:autocomplete={'none'}
     >
       <Box

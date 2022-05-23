@@ -14,6 +14,7 @@ interface InlineComboboxEventMap extends HTMLElementEventMap {
 export class InlineCombobox extends LionCombobox {
   valueMapper?: (value: string) => string;
   placeholder: string | null | undefined;
+  _noTypeAhead: boolean | null | undefined;
   value: string | null | undefined;
 
   readonly destroy$ = new Subject<void>();
@@ -23,6 +24,9 @@ export class InlineCombobox extends LionCombobox {
       ...super.properties,
       placeholder: {type: String},
       value: {type: String},
+      _noTypeAhead: {
+        type: Boolean,
+      },
     };
   }
 
@@ -228,6 +232,7 @@ declare module 'solid-js' {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             children: any;
             class: string;
+            'prop:_noTypeAhead': InlineCombobox['_noTypeAhead'];
             'prop:valueMapper': InlineCombobox['valueMapper'];
             'prop:autocomplete': InlineCombobox['autocomplete'];
             'on:selectedItemChange': (
