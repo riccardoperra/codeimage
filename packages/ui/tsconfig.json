@@ -7,5 +7,8 @@
     "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
     "preserveSymlinks": true
-  }
+  },
+  "include": [
+    "./src"
+  ]
 }

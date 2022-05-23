@@ -1,16 +1,16 @@
-import * as styles from './BottomBar.css';
 import {Box, Button, FadeInOutTransition} from '@codeimage/ui';
+import {createSignal, ParentComponent, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
-import {Component, createSignal, Show} from 'solid-js';
-import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
+import {CloseIcon} from '../Icons/CloseIcon';
+import {CodeIcon} from '../Icons/Code';
+import {ColorSwatchIcon} from '../Icons/ColorSwatch';
+import {SparklesIcon} from '../Icons/SparklesIcon';
 import {EditorForm} from '../PropertyEditor/EditorForm';
+import {EditorStyleForm} from '../PropertyEditor/EditorStyleForm';
 import {FrameStyleForm} from '../PropertyEditor/FrameStyleForm';
 import {WindowStyleForm} from '../PropertyEditor/WindowStyleForm';
-import {EditorStyleForm} from '../PropertyEditor/EditorStyleForm';
-import {SparklesIcon} from '../Icons/SparklesIcon';
-import {ColorSwatchIcon} from '../Icons/ColorSwatch';
-import {CodeIcon} from '../Icons/Code';
-import {CloseIcon} from '../Icons/CloseIcon';
+import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
+import * as styles from './BottomBar.css';
 
 type Mode = 'themes' | 'style' | 'editor';
 
@@ -18,7 +18,7 @@ interface BottomBarProps {
   portalHostRef: Node | undefined;
 }
 
-export const BottomBar: Component<BottomBarProps> = props => {
+export const BottomBar: ParentComponent<BottomBarProps> = props => {
   const [mode, setMode] = createSignal<Mode | null>(null);
 
   return (

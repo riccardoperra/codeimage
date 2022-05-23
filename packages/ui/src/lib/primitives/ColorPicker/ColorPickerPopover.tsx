@@ -1,3 +1,4 @@
+import {useI18n} from '@codeimage/locale';
 import {
   Accessor,
   createEffect,
@@ -7,6 +8,7 @@ import {
   on,
   onMount,
   Show,
+  VoidProps,
 } from 'solid-js';
 import {VStack} from '../Box';
 import {FlexField} from '../Field';
@@ -14,7 +16,6 @@ import {SegmentedField, SegmentedFieldItem} from '../SegmentedField';
 import {TextField} from '../TextField';
 import {ColorPickerPresetItem} from './ColorPicker';
 import * as styles from './ColorPicker.css';
-import {useI18n} from '@codeimage/locale';
 
 enum ColorPickerSelectionMode {
   gradient = 'gradient',
@@ -28,11 +29,11 @@ export interface ColorPickerPopoverProps {
   colors?: string[];
 }
 
-export function ColorPickerPopover(props: ColorPickerPopoverProps) {
+export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
   const [internalColor, setInternalColor] = createSignal<string>();
   const [mode, setMode] = createSignal(ColorPickerSelectionMode.gradient);
   const [, {tUnsafe}] = useI18n();
-  createEffect(on(() => props.value, setInternalColor));
+  createEffect(on(() => props.value ?? '', setInternalColor));
 
   const modalities: Accessor<SegmentedFieldItem<ColorPickerSelectionMode>[]> =
     createMemo(() => [

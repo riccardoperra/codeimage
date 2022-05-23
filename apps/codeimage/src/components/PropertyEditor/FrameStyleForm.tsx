@@ -6,7 +6,7 @@ import {
   setVisibility,
 } from '@codeimage/store/frame';
 import {RangeField, SegmentedField} from '@codeimage/ui';
-import {Show} from 'solid-js';
+import {ParentComponent, Show} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
@@ -15,7 +15,7 @@ import {CustomColorPicker} from './controls/CustomColorPicker';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 
-export const FrameStyleForm = () => {
+export const FrameStyleForm: ParentComponent = () => {
   const [t] = useI18n<AppLocaleEntries>();
   const {editorPadding} = appEnvironment;
   const frame = fromObservableObject(frame$);
@@ -75,7 +75,6 @@ export const FrameStyleForm = () => {
             <CustomColorPicker
               title={'Color'}
               onChange={color => {
-                console.log(color);
                 setBackground(color);
               }}
               value={frame.background ?? ''}

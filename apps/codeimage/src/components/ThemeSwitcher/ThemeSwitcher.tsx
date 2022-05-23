@@ -13,11 +13,11 @@ import {
 import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
-  Component,
   createMemo,
   createSelector,
   createSignal,
   For,
+  ParentComponent,
   Show,
 } from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
@@ -46,7 +46,7 @@ function useFilteredThemes() {
   return [themes, filteredThemes, search, setSearch] as const;
 }
 
-export const ThemeSwitcher: Component<ThemeSwitcherVariant> = props => {
+export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const terminal = fromObservableObject(terminal$);
   const editor = fromObservableObject(editor$);
   const modality = useModality();

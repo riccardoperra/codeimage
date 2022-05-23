@@ -27,21 +27,21 @@
   "dependencies": {
     "@codemirror/theme-one-dark": "^0.20.0",
     "@emotion/css": "^11.9.0",
-    "@codemirror/language": "^0.20.0",
+    "@codemirror/language": "^0.20.2",
     "@codemirror/state": "^0.20.0",
-    "@codemirror/view": "^0.20.4",
+    "@codemirror/view": "^0.20.6",
     "@lezer/highlight": "^0.16.0"
   },
   "peerDependencies": {
-    "@codemirror/language": "^0.20.0",
-    "@codemirror/view": "^0.20.4",
+    "@codemirror/language": "^0.20.2",
+    "@codemirror/view": "^0.20.6",
     "@codemirror/state": "^0.20.0",
     "@lezer/highlight": "^0.16.0"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
     "typescript": "^4.6.4",
-    "vite": "^2.9.8",
+    "vite": "^2.9.9",
     "vite-plugin-dts": "^1.1.1",
     "vite-plugin-solid": "^2.2.6"
   }

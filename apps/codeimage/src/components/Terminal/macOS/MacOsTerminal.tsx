@@ -1,6 +1,6 @@
 import {backgroundColorVar, Box, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {Component, Show} from 'solid-js';
+import {ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import {TabIcon} from '../TabIcon';
 import {TabName} from '../TabName';
@@ -10,7 +10,7 @@ import * as styles from './MacOsTerminal.css';
 
 export const exportExclude = _exportExclude;
 
-export const MacOsTerminal: Component<BaseTerminalProps> = props => {
+export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
   return (
     <TerminalHost {...props} theme={styles.theme}>
       <Show when={props.showHeader}>
