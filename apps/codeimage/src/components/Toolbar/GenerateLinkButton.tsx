@@ -59,7 +59,7 @@ export const GenerateLinkButton: Component = () => {
       aria-label={t('toolbar.share')}
       variant={'solid'}
       theme={'secondary'}
-      disabled={data.loading}
+      isDisabled={data.loading}
       onPress={() => notify(true)}
     >
       <LinkIcon />

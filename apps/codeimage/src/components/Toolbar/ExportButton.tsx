@@ -81,7 +81,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
       <Button
         variant={'solid'}
         theme={'primary'}
-        disabled={data.loading}
+        isDisabled={data.loading}
         onPress={() => openModal()}
       >
         <DownloadIcon />
