@@ -19,6 +19,10 @@ export const [appEnvironment] = createConfiguration({
   version,
   locales: SUPPORTED_LOCALES,
   themes: SUPPORTED_THEMES,
+  languages: [],
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  terminalThemes: {},
   editorPadding: [16, 32, 64, 128],
   fonts: SUPPORTED_FONTS,
   defaultState: {

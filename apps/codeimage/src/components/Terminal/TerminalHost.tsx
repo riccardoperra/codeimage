@@ -1,13 +1,9 @@
 import {LanguageIconDefinition} from '@codeimage/config';
-import {frame$} from '@codeimage/store/frame';
 import {FadeInOutTransition, themeVars} from '@codeimage/ui';
-import {select} from '@ngneat/elf';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
-import {rgba} from 'polished';
-import {map} from 'rxjs';
 import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
-import {FlowComponent, from} from 'solid-js';
+import {FlowComponent} from 'solid-js';
 import {TerminalState} from '../../state/terminal';
 import * as styles from './terminal.css';
 import {TerminalGlassReflection} from './TerminalGlassReflection';

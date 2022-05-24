@@ -2,7 +2,6 @@ import {focusedEditor$} from '@codeimage/store/editor';
 import {onCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {
   isAlternativeTheme$,
-  setAlternativeTheme,
   toggleAlternativeTheme,
 } from '@codeimage/store/terminal';
 import {Box, Button} from '@codeimage/ui';

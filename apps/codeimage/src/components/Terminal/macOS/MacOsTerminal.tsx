@@ -1,11 +1,9 @@
 import {backgroundColorVar, Box, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {darken, rgba, tint} from 'polished';
 import {ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import {TabIcon} from '../TabIcon';
 import {TabName} from '../TabName';
-import {terminalVars} from '../terminal.css';
 import * as baseStyles from '../terminal.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './MacOsTerminal.css';
