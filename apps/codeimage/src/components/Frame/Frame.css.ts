@@ -46,7 +46,7 @@ export const handler = style([
 export const content = style({
   width: '100%',
   height: '100%',
-  marginTop: '10px',
+  marginTop: '20px',
   marginBottom: '40px',
   position: 'relative',
 });
@@ -183,24 +183,4 @@ export const watermark = style({
   position: 'absolute',
   right: '32px',
   bottom: '24px',
-});
-
-export const presets = style({
-  display: 'inline-flex',
-  width: 'auto',
-  alignItems: 'center',
-  paddingLeft: themeVars.spacing['2'],
-  paddingRight: themeVars.spacing['2'],
-  height: '42px',
-  backgroundColor: darkGrayScale.gray3,
-  borderRadius: themeVars.borderRadius.lg,
-  boxShadow: themeVars.boxShadow.lg,
-  columnGap: themeVars.spacing['2'],
-});
-
-export const toolbar = style({
-  height: '28px',
-  width: 'auto',
-  display: 'flex',
-  justifyContent: 'flex-end',
 });

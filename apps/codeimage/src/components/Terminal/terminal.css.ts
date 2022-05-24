@@ -94,6 +94,9 @@ export const tab = recipe({
   base: {
     background: 'transparent',
     padding: `0 ${themeVars.spacing['3']}`,
+    verticalAlign: 'middle',
+    marginTop: 'auto',
+    marginBottom: 'auto',
     paddingLeft: 0,
     fontSize: themeVars.fontSize.sm,
     borderRadius: `${themeVars.borderRadius.md} ${themeVars.borderRadius.md} 0 0`,
@@ -109,6 +112,7 @@ export const tab = recipe({
          */
         height: `calc(${terminalVars.headerHeight} - ${terminalVars.tabDelta})`,
         marginTop: 'auto',
+        marginBottom: 0,
         paddingTop: terminalVars.tabDelta,
         paddingLeft: themeVars.spacing['3'],
         backgroundColor: terminalVars.backgroundColor,
