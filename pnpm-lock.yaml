@@ -103,6 +103,7 @@ importers:
       https-localhost: ^4.7.1
       inter-ui: ^3.19.3
       modern-normalize: ^1.1.0
+      polished: 4.2.2
       prettier: ^2.6.2
       rimraf: ^3.0.2
       rxjs: ^7.5.5
@@ -170,6 +171,7 @@ importers:
       html-to-image: 1.9.0
       inter-ui: 3.19.3
       modern-normalize: 1.1.0
+      polished: 4.2.2
       rxjs: 7.5.5
       solid-app-router: 0.3.3_solid-js@1.4.2
       solid-codemirror: 1.0.3
@@ -1626,7 +1628,6 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.9
-    dev: true
 
   /@babel/template/7.16.7:
     resolution: {integrity: sha512-I8j/x8kHUrbYRTUxXrrMbfCa7jxkE7tZre39x3kjr9hvI82cK1FfqLygotcWN5kdPGWcLdWMHpSBavse5tWw3w==}
@@ -6150,6 +6151,13 @@ packages:
       find-up: 4.1.0
     dev: true
 
+  /polished/4.2.2:
+    resolution: {integrity: sha512-Sz2Lkdxz6F2Pgnpi9U5Ng/WdWAUZxmHrNPoVlm3aAemxoy2Qy7LGjQg4uf8qKelDAUW94F4np3iH2YPf2qefcQ==}
+    engines: {node: '>=10'}
+    dependencies:
+      '@babel/runtime': 7.18.0
+    dev: false
+
   /postcss-load-config/3.1.4_postcss@8.4.13+ts-node@10.8.0:
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
     engines: {node: '>= 10'}
@@ -6370,12 +6378,11 @@ packages:
 
   /regenerator-runtime/0.13.9:
     resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==}
-    dev: true
 
   /regenerator-transform/0.15.0:
     resolution: {integrity: sha512-LsrGtPmbYg19bcPHwdtmXwbW+TqNvtY4riE3P83foeHRroMbH6/2ddFBfab3t7kbzc7v7p4wbkIecHImqt0QNg==}
     dependencies:
-      '@babel/runtime': 7.17.9
+      '@babel/runtime': 7.18.0
     dev: true
 
   /regexp.prototype.flags/1.4.3:

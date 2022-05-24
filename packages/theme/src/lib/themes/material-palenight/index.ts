@@ -7,7 +7,7 @@ export const materialPalenightTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Material Palenight',
-    previewBackground: '#1e222f',
+    previewBackground: 'linear-gradient(135deg, #54D2EF 0%, #2AA6DA 100%)',
     terminal: {
       main: '#24293B',
       text: palette.gray,

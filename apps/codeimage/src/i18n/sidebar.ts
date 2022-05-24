@@ -17,6 +17,7 @@ export default {
       font: 'Font',
       fontWeight: 'Font weight',
       reflection: 'Reflection',
+      backgroundType: 'Background',
     },
   },
   it: {
@@ -37,6 +38,7 @@ export default {
       fontWeight: 'Peso carattere',
       reflection: 'Riflesso',
       watermark: 'Watermark',
+      backgroundType: 'Tipo background',
     },
   },
   de: {
@@ -57,6 +59,7 @@ export default {
       fontWeight: 'Schriftart',
       reflection: 'Reflex',
       watermark: 'Schriftstärke',
+      backgroundType: 'Background type',
     },
   },
 } as const;

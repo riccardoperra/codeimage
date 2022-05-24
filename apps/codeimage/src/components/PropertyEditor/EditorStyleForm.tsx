@@ -1,3 +1,4 @@
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {
   editor$,
@@ -10,7 +11,7 @@ import {
 import {SegmentedField, Select, Text} from '@codeimage/ui';
 import {map} from 'rxjs';
 import {from, ParentComponent} from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
+import {SUPPORTED_FONTS} from '../../core/configuration/font';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {useModality} from '../../core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
@@ -18,7 +19,8 @@ import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 
 export const EditorStyleForm: ParentComponent = () => {
-  const {languages, fonts} = appEnvironment;
+  const languages = SUPPORTED_LANGUAGES;
+  const fonts = SUPPORTED_FONTS;
   const editor = fromObservableObject(editor$);
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();

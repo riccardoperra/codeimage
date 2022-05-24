@@ -22,12 +22,23 @@ export interface TerminalHostProps extends BaseTerminalProps {
 }
 
 export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
+  const background = () => {
+    if (props.alternativeTheme) {
+      return `rgba(${styles.terminalVars.headerColor}, .70)`;
+    }
+    const opacity = (props.opacity ?? 100) / 100;
+    if (props.opacity !== 100) {
+      return `rgba(0,0,0, ${opacity})`;
+    }
+    return props.background;
+  };
+
   return (
     <div
       class={clsx(styles.wrapper, props.theme)}
       data-theme-mode={props.darkMode ? 'dark' : 'light'}
       style={assignInlineVars({
-        [styles.terminalVars.backgroundColor]: props.background,
+        [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
         [styles.terminalVars.boxShadow]: props.shadow ?? themeVars.boxShadow.lg,
       })}

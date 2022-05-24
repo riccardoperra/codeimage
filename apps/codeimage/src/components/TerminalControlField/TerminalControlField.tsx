@@ -1,8 +1,8 @@
-import {For, JSXElement} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
 import {terminal$} from '@codeimage/store/terminal';
 import {Box, Group, RadioBlock} from '@codeimage/ui';
-import {appEnvironment} from '../../core/configuration';
+import {For, JSXElement} from 'solid-js';
+import {Dynamic} from 'solid-js/web';
+import {AVAILABLE_TERMINAL_THEMES} from '../../core/configuration/terminal-themes';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 interface TerminalControlFieldProps {
@@ -13,7 +13,7 @@ interface TerminalControlFieldProps {
 export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
-  const {terminalThemes} = appEnvironment;
+  const terminalThemes = AVAILABLE_TERMINAL_THEMES;
   const terminalState = fromObservableObject(terminal$);
 
   return (
@@ -38,6 +38,8 @@ export function TerminalControlField(
                 readonlyTab={true}
                 showHeader={true}
                 showWatermark={false}
+                alternativeTheme={false}
+                opacity={100}
                 showGlassReflection={terminalState.showGlassReflection}
               />
             </Box>

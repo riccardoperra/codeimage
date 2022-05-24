@@ -1,7 +1,7 @@
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {Box, useFloating} from '@codeimage/ui';
 import createResizeObserver from '@solid-primitives/resize-observer';
 import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
 import {highlight as _highlight} from '../../core/directives/highlight';
 import '../../ui/Combobox/InlineCombobox';
 import {InlineCombobox} from '../../ui/Combobox/InlineCombobox';
@@ -28,7 +28,7 @@ export function TabName(props: TabNameProps): JSXElement {
     }
   }
 
-  const icons = appEnvironment.languages.flatMap(language => language.icons);
+  const icons = SUPPORTED_LANGUAGES.flatMap(language => language.icons);
 
   const extension = createMemo(() => {
     if (!props.value) return '';

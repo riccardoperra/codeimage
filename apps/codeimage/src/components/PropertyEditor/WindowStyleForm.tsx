@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {
   setAccentVisible,
+  setAlternativeTheme,
   setShowGlassReflection,
   setShowHeader,
   setShowWatermark,
@@ -22,6 +23,20 @@ export const WindowStyleForm: ParentComponent = () => {
   return (
     <>
       <PanelHeader label={t('frame.terminal')} />
+
+      <PanelRow for={'frameAlternativeField'} label={t('frame.backgroundType')}>
+        <TwoColumnPanelRow>
+          <SegmentedField
+            size={'xs'}
+            value={terminal.alternativeTheme}
+            onChange={setAlternativeTheme}
+            items={[
+              {label: 'Default', value: false},
+              {label: 'Alternative', value: true},
+            ]}
+          />
+        </TwoColumnPanelRow>
+      </PanelRow>
 
       <PanelRow for={'frameHeaderField'} label={t('frame.header')}>
         <TwoColumnPanelRow>
@@ -49,7 +64,7 @@ export const WindowStyleForm: ParentComponent = () => {
         </PanelRow>
       </Show>
 
-      <Show when={terminal.showHeader}>
+      <Show when={terminal.showHeader && !terminal.alternativeTheme}>
         <PanelRow for={'frameTabAccentField'} label={t('frame.tabAccent')}>
           <TwoColumnPanelRow>
             <SegmentedField

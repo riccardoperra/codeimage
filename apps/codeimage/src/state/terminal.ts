@@ -4,10 +4,8 @@ import {dispatch} from '@ngneat/effects';
 import {createStore, select, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
-import {
-  appEnvironment,
-  SUPPORTED_THEMES_DICTIONARY,
-} from '../core/configuration';
+import {SUPPORTED_THEMES_DICTIONARY} from '../core/configuration';
+import {AVAILABLE_TERMINAL_THEMES} from '../core/configuration/terminal-themes';
 import shallow from '../core/helpers/shallow';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
@@ -23,13 +21,14 @@ export interface TerminalState {
   readonly darkMode: boolean;
   readonly showWatermark: boolean;
   readonly showGlassReflection: boolean;
+  readonly opacity: number;
+  readonly alternativeTheme: boolean;
 }
 
 const initialState: TerminalState = {
   showHeader: true,
-  type: appEnvironment.terminalThemes.entries[
-    appEnvironment.terminalThemes.keys[0]
-  ].name,
+  type: AVAILABLE_TERMINAL_THEMES.entries[AVAILABLE_TERMINAL_THEMES.keys[0]]
+    .name,
   tabName: 'index.ts',
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
@@ -40,6 +39,8 @@ const initialState: TerminalState = {
   darkMode: SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.darkMode,
   showWatermark: true,
   showGlassReflection: false,
+  opacity: 100,
+  alternativeTheme: false,
 };
 
 const store = createStore(
@@ -61,6 +62,8 @@ export const {
   setType,
   setBackground,
   setShowGlassReflection,
+  setOpacity,
+  setAlternativeTheme,
 } = elfAutoSettersFactory(store);
 
 export function toggleShowHeader() {
@@ -82,3 +85,7 @@ export function setTabName(tabName: string) {
 export const terminal$ = store.pipe(distinctUntilChanged(shallow));
 
 export const tabName$ = store.pipe(select(state => state.tabName));
+
+export const isAlternativeTheme$ = store.pipe(
+  select(state => state.alternativeTheme),
+);

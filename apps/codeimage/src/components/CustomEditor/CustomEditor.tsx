@@ -1,4 +1,8 @@
-import {EDITOR_BASE_SETUP} from '@codeimage/config';
+import {
+  EDITOR_BASE_SETUP,
+  SUPPORTED_LANGUAGES,
+  SUPPORTED_THEMES,
+} from '@codeimage/config';
 import {editor$, setFocus} from '@codeimage/store/editor';
 import {EditorView, lineNumbers} from '@codemirror/view';
 import {debounceTime, ReplaySubject, takeUntil} from 'rxjs';
@@ -10,7 +14,7 @@ import {
   createResource,
   onCleanup,
 } from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
+import {SUPPORTED_FONTS} from '../../core/configuration/font';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {focusedEditor$, setCode} from '../../state/editor';
 import {createCustomFontExtension} from './custom-font-extension';
@@ -18,9 +22,10 @@ import {observeFocusExtension} from './observe-focus-extension';
 
 export const CustomEditor = () => {
   let editorEl!: HTMLDivElement;
-
   const destroy$ = new ReplaySubject<void>(1);
-  const {languages, themes, fonts} = appEnvironment;
+  const themes = SUPPORTED_THEMES;
+  const languages = SUPPORTED_LANGUAGES;
+  const fonts = SUPPORTED_FONTS;
   const editor = fromObservableObject(editor$);
 
   const selectedLanguage = createMemo(() =>

@@ -89,6 +89,8 @@ export function App() {
               showGlassReflection={terminal.showGlassReflection}
               tabIcon={tabIcon()?.content}
               showWatermark={terminal.showWatermark}
+              opacity={terminal.opacity}
+              alternativeTheme={terminal.alternativeTheme}
             >
               <CustomEditor />
             </DynamicTerminal>
