@@ -28,16 +28,13 @@ export function connectStoreWithQueryParams() {
       'showWatermark',
       'showGlassReflection',
     ]),
-    distinctUntilChanged(shallow),
   );
   const frameState$ = frame$.pipe(
     selectSlice(['background', 'padding', 'radius', 'visible', 'opacity']),
-    distinctUntilChanged(shallow),
   );
 
   const editorState$ = editor$.pipe(
     selectSlice(['code', 'languageId', 'themeId', 'showLineNumbers', 'fontId']),
-    distinctUntilChanged(shallow),
   );
 
   onMount(() => {
