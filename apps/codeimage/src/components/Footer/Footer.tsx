@@ -1,3 +1,4 @@
+import {activeLink} from './Footer.css';
 import * as styles from './Footer.css';
 import {Box, Link} from '@codeimage/ui';
 import {appEnvironment} from '../../core/configuration';
@@ -20,17 +21,17 @@ export const Footer = () => {
             href={'https://github.com/riccardoperra/codeimage/issues'}
             size="xs"
           >
-            Report issue
+            Issue & Feedback
           </Link>
         </Box>
 
         <Box marginRight={5}>
           <Link
             as={'a'}
-            href={'https://github.com/riccardoperra/codeimage/discussions'}
+            href={'https://github.com/riccardoperra/codeimage/releases'}
             size="xs"
           >
-            Feedback
+            Changelog
           </Link>
         </Box>
 
