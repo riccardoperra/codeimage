@@ -1,5 +1,20 @@
 # @codeimage/theme
 
+## 6.0.0
+
+### Minor Changes
+
+- [#262](https://github.com/riccardoperra/codeimage/pull/262) [`f12b7ee`](https://github.com/riccardoperra/codeimage/commit/f12b7eeeb2dcc11d1856a64617381847b4cf6868) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add editor background type
+
+* [#258](https://github.com/riccardoperra/codeimage/pull/258) [`79058e8`](https://github.com/riccardoperra/codeimage/commit/79058e84bfbe627430cdd79939d19ae7322244b6) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add support for gradient colors
+
+### Patch Changes
+
+- [#256](https://github.com/riccardoperra/codeimage/pull/256) [`10839dc`](https://github.com/riccardoperra/codeimage/commit/10839dc41edc22ca81002083c34d5150f705df3e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - build: update SolidJS to 1.4.2
+
+- Updated dependencies [[`41d2949`](https://github.com/riccardoperra/codeimage/commit/41d294914fb0ec241476fdaf62aa8ae3dfd5f408), [`f12b7ee`](https://github.com/riccardoperra/codeimage/commit/f12b7eeeb2dcc11d1856a64617381847b4cf6868), [`10839dc`](https://github.com/riccardoperra/codeimage/commit/10839dc41edc22ca81002083c34d5150f705df3e), [`79058e8`](https://github.com/riccardoperra/codeimage/commit/79058e84bfbe627430cdd79939d19ae7322244b6)]:
+  - @codeimage/theme@0.8.0
+
 ## 5.0.0
 
 ### Minor Changes
