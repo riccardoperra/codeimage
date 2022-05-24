@@ -90,6 +90,7 @@ export function App() {
               tabIcon={tabIcon()?.content}
               showWatermark={terminal.showWatermark}
               opacity={terminal.opacity}
+              alternativeTheme={terminal.alternativeTheme}
             >
               <CustomEditor />
             </DynamicTerminal>

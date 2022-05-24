@@ -46,7 +46,7 @@ export const handler = style([
 export const content = style({
   width: '100%',
   height: '100%',
-  marginTop: '20px',
+  marginTop: '10px',
   marginBottom: '40px',
   position: 'relative',
 });
@@ -198,23 +198,9 @@ export const presets = style({
   columnGap: themeVars.spacing['2'],
 });
 
-export const presetsContainer = style({
+export const toolbar = style({
   height: '28px',
   width: 'auto',
-  borderRadius: themeVars.borderRadius.lg,
   display: 'flex',
-  alignItems: 'center',
-  backgroundColor: darkGrayScale.gray5,
-  columnGap: '8px',
-  color: darkGrayScale.gray11,
-  paddingRight: themeVars.spacing['4'],
-});
-
-export const presetsBox = style({
-  display: 'block',
-  height: '28px',
-  width: '28px',
-  borderRadius: themeVars.borderRadius.lg,
-  background: backgroundColorVar,
-  marginRight: themeVars.spacing['1'],
+  justifyContent: 'flex-end',
 });

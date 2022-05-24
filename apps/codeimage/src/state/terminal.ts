@@ -22,6 +22,7 @@ export interface TerminalState {
   readonly showWatermark: boolean;
   readonly showGlassReflection: boolean;
   readonly opacity: number;
+  readonly alternativeTheme: boolean;
 }
 
 const initialState: TerminalState = {
@@ -39,6 +40,7 @@ const initialState: TerminalState = {
   showWatermark: true,
   showGlassReflection: false,
   opacity: 100,
+  alternativeTheme: false,
 };
 
 const store = createStore(
@@ -67,6 +69,10 @@ export function toggleShowHeader() {
   store.update(setProp('showHeader', showHeader => !showHeader));
 }
 
+export function toggleAlternativeTheme() {
+  store.update(setProp('alternativeTheme', alternative => !alternative));
+}
+
 export function toggleWatermark() {
   store.update(setProp('showWatermark', showWatermark => !showWatermark));
 }
@@ -82,3 +88,7 @@ export function setTabName(tabName: string) {
 export const terminal$ = store.pipe(distinctUntilChanged(shallow));
 
 export const tabName$ = store.pipe(select(state => state.tabName));
+
+export const isAlternativeTheme$ = store.pipe(
+  select(state => state.alternativeTheme),
+);

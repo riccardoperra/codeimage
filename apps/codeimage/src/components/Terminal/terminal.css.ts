@@ -10,6 +10,7 @@ export const [terminalTheme, terminalVars] = createTheme({
   textColor: themeVars.backgroundColor.gray['800'],
   boxShadow: themeVars.boxShadow.lg,
   tabDelta: '10px',
+  headerColor: '0, 0, 0',
 });
 
 export const wrapper = style([
@@ -22,6 +23,18 @@ export const wrapper = style([
     borderRadius: terminalVars.radius,
     boxShadow: terminalVars.boxShadow,
     transition: 'box-shadow .2s, border-radius .2s',
+    selectors: {
+      '&[data-theme-mode=light]': {
+        vars: {
+          [terminalVars.headerColor]: `255, 255, 255`,
+        },
+      },
+      '&[data-theme-mode=dark] &': {
+        vars: {
+          [terminalVars.headerColor]: `0, 0, 0`,
+        },
+      },
+    },
   },
 ]);
 

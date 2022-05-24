@@ -27,11 +27,14 @@ export interface TerminalHostProps extends BaseTerminalProps {
 
 export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
   const background = () => {
+    if (props.alternativeTheme) {
+      return `rgba(${styles.terminalVars.headerColor}, .70)`;
+    }
     const opacity = (props.opacity ?? 100) / 100;
     if (props.opacity !== 100) {
       return `rgba(0,0,0, ${opacity})`;
     }
-    return rgba(props.background, opacity);
+    return props.background;
   };
 
   return (
