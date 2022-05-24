@@ -1,5 +1,6 @@
 import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
+import {darkGrayScale} from '../../theme/dark-theme.css';
 
 export const [frameHandler, frameHandlerVars] = createTheme({
   scale: '1',
@@ -182,4 +183,38 @@ export const watermark = style({
   position: 'absolute',
   right: '32px',
   bottom: '24px',
+});
+
+export const presets = style({
+  display: 'inline-flex',
+  width: 'auto',
+  alignItems: 'center',
+  paddingLeft: themeVars.spacing['2'],
+  paddingRight: themeVars.spacing['2'],
+  height: '42px',
+  backgroundColor: darkGrayScale.gray3,
+  borderRadius: themeVars.borderRadius.lg,
+  boxShadow: themeVars.boxShadow.lg,
+  columnGap: themeVars.spacing['2'],
+});
+
+export const presetsContainer = style({
+  height: '28px',
+  width: 'auto',
+  borderRadius: themeVars.borderRadius.lg,
+  display: 'flex',
+  alignItems: 'center',
+  backgroundColor: darkGrayScale.gray5,
+  columnGap: '8px',
+  color: darkGrayScale.gray11,
+  paddingRight: themeVars.spacing['4'],
+});
+
+export const presetsBox = style({
+  display: 'block',
+  height: '28px',
+  width: '28px',
+  borderRadius: themeVars.borderRadius.lg,
+  background: backgroundColorVar,
+  marginRight: themeVars.spacing['1'],
 });

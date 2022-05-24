@@ -1,13 +1,14 @@
 import {useI18n} from '@codeimage/locale';
 import {
   setAccentVisible,
+  setOpacity,
   setShowGlassReflection,
   setShowHeader,
   setShowWatermark,
   setType,
   terminal$,
 } from '@codeimage/store/terminal';
-import {SegmentedField} from '@codeimage/ui';
+import {RangeField, SegmentedField} from '@codeimage/ui';
 import {ParentComponent, Show} from 'solid-js';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
@@ -89,6 +90,16 @@ export const WindowStyleForm: ParentComponent = () => {
               {label: t('common.show'), value: true},
               {label: t('common.hide'), value: false},
             ]}
+          />
+        </TwoColumnPanelRow>
+      </PanelRow>
+
+      <PanelRow for={'frameOpacityField'} label={t('frame.opacity')}>
+        <TwoColumnPanelRow>
+          <RangeField
+            size={'xs'}
+            value={terminal.opacity}
+            onChange={setOpacity}
           />
         </TwoColumnPanelRow>
       </PanelRow>
