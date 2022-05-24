@@ -1,11 +1,9 @@
 import {
-  arcDarkTheme,
   coldarkColdTheme,
   coldarkDarkTheme,
   draculaTheme,
   duotoneDarkTheme,
   duotoneSeaTheme,
-  holiTheme,
   lightTheme,
   materialLightTheme,
   materialOceanTheme,
