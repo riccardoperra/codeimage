@@ -1,6 +1,6 @@
 {
   "name": "@codeimage/ui",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [

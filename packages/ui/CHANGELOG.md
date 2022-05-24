@@ -1,5 +1,18 @@
 # @codeimage/ui
 
+## 0.7.0
+
+### Minor Changes
+
+- [#258](https://github.com/riccardoperra/codeimage/pull/258) [`79058e8`](https://github.com/riccardoperra/codeimage/commit/79058e84bfbe627430cdd79939d19ae7322244b6) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add support for gradient colors
+
+### Patch Changes
+
+- [#256](https://github.com/riccardoperra/codeimage/pull/256) [`10839dc`](https://github.com/riccardoperra/codeimage/commit/10839dc41edc22ca81002083c34d5150f705df3e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - build: update SolidJS to 1.4.2
+
+- Updated dependencies [[`10839dc`](https://github.com/riccardoperra/codeimage/commit/10839dc41edc22ca81002083c34d5150f705df3e)]:
+  - @codeimage/locale@0.5.1
+
 ## 0.6.0
 
 ### Minor Changes
