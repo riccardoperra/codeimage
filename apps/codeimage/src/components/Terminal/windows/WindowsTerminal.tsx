@@ -12,19 +12,22 @@ import {WindowsTerminalControls} from './WindowsTerminalControls';
 export const exportExclude = _exportExclude;
 
 export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
+  const showTab = () => !!props.accentVisible && !props.alternativeTheme;
   return (
     <TerminalHost {...props} theme={styles.theme}>
       <Show when={props.showHeader}>
         <div
           class={baseStyles.header}
           data-theme-mode={props.darkMode ? 'dark' : 'light'}
-          data-accent-visible={props.accentVisible}
+          data-accent-visible={showTab()}
         >
           <Show when={props.showTab}>
             <div
               use:exportExclude={!props.tabName?.length}
               class={clsx(
-                baseStyles.tab({accent: props.accentVisible}),
+                baseStyles.tab({
+                  accent: showTab(),
+                }),
                 sprinkles({marginLeft: 6}),
               )}
             >

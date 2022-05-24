@@ -1,27 +1,20 @@
-import {Component, useContext} from 'solid-js';
-import {StaticConfigurationContext} from './ConfigurationProvider';
 import {CustomTheme} from '@codeimage/theme';
-import {TerminalDefinitionMap} from '../types/terminal-def';
+import {useContext} from 'solid-js';
 import {AppStaticConfiguration} from '../types/configuration';
 import {LanguageDefinition} from '../types/language-def';
+import {StaticConfigurationContext} from './ConfigurationProvider';
 
 export function createConfiguration<
   V extends string,
   Themes extends readonly CustomTheme[],
   Locales extends readonly string[],
   Languages extends readonly LanguageDefinition[],
-  TerminalThemes extends TerminalDefinitionMap<
-    readonly string[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Component<any>
-  >,
   Configuration extends AppStaticConfiguration<
     V,
     Themes,
     Locales,
-    Languages,
-    TerminalThemes
-  > = AppStaticConfiguration<V, Themes, Locales, Languages, TerminalThemes>,
+    Languages
+  > = AppStaticConfiguration<V, Themes, Locales, Languages>,
 >(configuration: Configuration): [Configuration, () => Configuration] {
   if (!configuration.version) {
     throw new Error('No version specified');

@@ -1,14 +1,14 @@
 import {useI18n} from '@codeimage/locale';
 import {
   setAccentVisible,
-  setOpacity,
+  setAlternativeTheme,
   setShowGlassReflection,
   setShowHeader,
   setShowWatermark,
   setType,
   terminal$,
 } from '@codeimage/store/terminal';
-import {RangeField, SegmentedField} from '@codeimage/ui';
+import {SegmentedField} from '@codeimage/ui';
 import {ParentComponent, Show} from 'solid-js';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
@@ -23,6 +23,20 @@ export const WindowStyleForm: ParentComponent = () => {
   return (
     <>
       <PanelHeader label={t('frame.terminal')} />
+
+      <PanelRow for={'frameAlternativeField'} label={t('frame.backgroundType')}>
+        <TwoColumnPanelRow>
+          <SegmentedField
+            size={'xs'}
+            value={terminal.alternativeTheme}
+            onChange={setAlternativeTheme}
+            items={[
+              {label: 'Default', value: false},
+              {label: 'Alternative', value: true},
+            ]}
+          />
+        </TwoColumnPanelRow>
+      </PanelRow>
 
       <PanelRow for={'frameHeaderField'} label={t('frame.header')}>
         <TwoColumnPanelRow>
@@ -50,7 +64,7 @@ export const WindowStyleForm: ParentComponent = () => {
         </PanelRow>
       </Show>
 
-      <Show when={terminal.showHeader}>
+      <Show when={terminal.showHeader && !terminal.alternativeTheme}>
         <PanelRow for={'frameTabAccentField'} label={t('frame.tabAccent')}>
           <TwoColumnPanelRow>
             <SegmentedField
@@ -90,16 +104,6 @@ export const WindowStyleForm: ParentComponent = () => {
               {label: t('common.show'), value: true},
               {label: t('common.hide'), value: false},
             ]}
-          />
-        </TwoColumnPanelRow>
-      </PanelRow>
-
-      <PanelRow for={'frameOpacityField'} label={t('frame.opacity')}>
-        <TwoColumnPanelRow>
-          <RangeField
-            size={'xs'}
-            value={terminal.opacity}
-            onChange={setOpacity}
           />
         </TwoColumnPanelRow>
       </PanelRow>

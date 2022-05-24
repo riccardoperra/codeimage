@@ -63,14 +63,11 @@ export const {
   setBackground,
   setShowGlassReflection,
   setOpacity,
+  setAlternativeTheme,
 } = elfAutoSettersFactory(store);
 
 export function toggleShowHeader() {
   store.update(setProp('showHeader', showHeader => !showHeader));
-}
-
-export function toggleAlternativeTheme() {
-  store.update(setProp('alternativeTheme', alternative => !alternative));
 }
 
 export function toggleWatermark() {

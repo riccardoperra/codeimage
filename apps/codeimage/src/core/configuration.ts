@@ -20,9 +20,6 @@ export const [appEnvironment] = createConfiguration({
   locales: SUPPORTED_LOCALES,
   themes: SUPPORTED_THEMES,
   languages: [],
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  terminalThemes: {},
   editorPadding: [16, 32, 64, 128],
   fonts: SUPPORTED_FONTS,
   defaultState: {
@@ -44,5 +41,5 @@ export const [appEnvironment] = createConfiguration({
       theme: SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme,
       font: SUPPORTED_FONTS_DICTIONARY['jetbrains-mono'],
     },
-  },
+  } as const,
 });

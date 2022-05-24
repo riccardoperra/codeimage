@@ -2,7 +2,6 @@ import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {createMemo, JSXElement, ParentComponent} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
-import {appEnvironment} from '../../../core/configuration';
 import {AVAILABLE_TERMINAL_THEMES} from '../../../core/configuration/terminal-themes';
 import {CodeImageLogo} from '../../Icons/CodeImageLogo';
 import * as styles from '../terminal.css';
@@ -20,7 +19,7 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
   const terminal = createMemo(
     () =>
       terminalThemes.entries[
-        props.type as typeof appEnvironment['terminalThemes']['keys'][number]
+        props.type as typeof terminalThemes['keys'][number]
       ].component,
   );
 

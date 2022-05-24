@@ -11,14 +11,14 @@ import * as styles from './MacOsTerminal.css';
 export const exportExclude = _exportExclude;
 
 export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
-  const hasAccent = () => props.accentVisible && props.opacity === 100;
+  const showTab = () => props.accentVisible && !props.alternativeTheme;
   return (
     <TerminalHost {...props} theme={styles.theme}>
       <Show when={props.showHeader}>
         <div
           class={baseStyles.header}
           data-theme-mode={props.darkMode ? 'dark' : 'light'}
-          data-accent-visible={hasAccent()}
+          data-accent-visible={showTab()}
         >
           <div class={styles.headerIconRow}>
             <div
@@ -44,7 +44,7 @@ export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
           <Show when={props.showTab}>
             <div
               use:exportExclude={!props.tabName?.length}
-              class={baseStyles.tab({accent: hasAccent()})}
+              class={baseStyles.tab({accent: showTab()})}
             >
               <Show when={props.tabIcon}>
                 {icon => <TabIcon content={icon} />}

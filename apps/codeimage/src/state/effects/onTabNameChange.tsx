@@ -1,8 +1,8 @@
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {editorLanguageId$, setLanguageId} from '@codeimage/store/editor';
 import {createAction, createEffect, ofType, props} from '@ngneat/effects';
 import {filterNil} from '@ngneat/elf';
 import {debounceTime, map, tap, withLatestFrom} from 'rxjs';
-import {appEnvironment} from '../../core/configuration';
 
 export const updateTabName = createAction(
   '[CodeImage] Update Tab Name',
@@ -19,7 +19,7 @@ export const onTabNameChange$ = createEffect(actions =>
       languageId,
     })),
     map(({tabName, languageId}) => {
-      const matches = appEnvironment.languages.filter(language => {
+      const matches = SUPPORTED_LANGUAGES.filter(language => {
         return language.icons.some(({matcher}) => matcher.test(tabName));
       });
 

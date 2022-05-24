@@ -1,10 +1,6 @@
 import {focusedEditor$} from '@codeimage/store/editor';
 import {onCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
-import {
-  isAlternativeTheme$,
-  toggleAlternativeTheme,
-} from '@codeimage/store/terminal';
-import {Box, Button} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
 import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
@@ -46,8 +42,6 @@ export function FrameHandler(
 
   const ratio = 0.1;
 
-  const isAlternative = from(isAlternativeTheme$);
-
   createEffect(
     on([handlerRef], ([frame]) => {
       if (modality === 'mobile') {
@@ -83,20 +77,6 @@ export function FrameHandler(
         }
         ref={setHandlerRef}
       >
-        <div class={styles.toolbar}>
-          <Button
-            variant={'solid'}
-            size={'xs'}
-            theme={'secondary'}
-            style={{height: 'auto'}}
-            onClick={() => toggleAlternativeTheme()}
-          >
-            {isAlternative()
-              ? 'Apply default theme'
-              : 'Apply alternative theme'}
-          </Button>
-        </div>
-
         <div
           class={styles.content}
           ref={createRef<'div'>(props, e => {

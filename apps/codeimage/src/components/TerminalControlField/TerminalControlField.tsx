@@ -38,6 +38,8 @@ export function TerminalControlField(
                 readonlyTab={true}
                 showHeader={true}
                 showWatermark={false}
+                alternativeTheme={false}
+                opacity={100}
                 showGlassReflection={terminalState.showGlassReflection}
               />
             </Box>
