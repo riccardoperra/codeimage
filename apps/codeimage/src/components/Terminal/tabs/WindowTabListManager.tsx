@@ -1,5 +1,5 @@
 import {getRootEditorsState} from '@codeimage/store/editor';
-import {For} from 'solid-js';
+import {For, VoidProps} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import * as styles from './Tab.css';
@@ -8,7 +8,11 @@ import {WindowTab} from './WindowTab';
 
 const exportExclude = _exportExclude;
 
-export function WindowTabListManager() {
+export interface WindowTabListManager {
+  accent: boolean;
+}
+
+export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
   const {
     tabs,
     editors,
@@ -23,8 +27,9 @@ export function WindowTabListManager() {
     <div
       class={styles.wrapper({
         multi: tabs.length > 0,
-        accent: true,
+        accent: props.accent,
       })}
+      data-accent-visible={props.accent}
     >
       <div class={styles.tabListWrapper}>
         <For each={tabs}>
@@ -44,7 +49,7 @@ export function WindowTabListManager() {
                 tabName={tab.tabName}
                 tabIcon={icon()?.content}
                 readonlyTab={!active()}
-                accentMode={false}
+                accentMode={props.accent}
                 active={active()}
                 onClick={() => setActiveEditor(editor)}
                 onTabChange={tabName => setTabName(tab.tabId, tabName)}

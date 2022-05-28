@@ -19,7 +19,9 @@ export const wrapper = recipe({
   ],
   variants: {
     accent: {
-      true: {},
+      true: {
+        marginTop: 'auto',
+      },
       false: {},
     },
     multi: {
@@ -32,9 +34,13 @@ export const wrapper = recipe({
 export const tabListWrapper = style({
   display: 'flex',
   overflow: 'hidden',
-  columnGap: '8px',
   marginRight: themeVars.spacing['1'],
   transition: 'all 150ms ease-in-out',
+  selectors: {
+    '[data-accent-visible=false] &': {
+      columnGap: '8px',
+    },
+  },
 });
 
 export const tab = recipe({
@@ -53,7 +59,8 @@ export const tab = recipe({
       lineHeight: tabVars.tabHeight,
       display: 'flex',
       alignItems: 'center',
-      transition: 'all 150ms ease-in-out',
+      transition:
+        'width 150ms ease-in-out, margin 100ms ease-out, height 50ms ease-in-out',
       maxWidth: '400px',
       minWidth: '0px',
       flex: '0 1 auto',
@@ -69,11 +76,19 @@ export const tab = recipe({
         height: `calc(${terminalVars.headerHeight} - ${terminalVars.tabDelta})`,
         marginTop: 'auto',
         marginBottom: 0,
-        paddingTop: terminalVars.tabDelta,
+        paddingTop: 0,
         paddingLeft: themeVars.spacing['3'],
         backgroundColor: terminalVars.backgroundColor,
+        boxShadow: '0px 10px 10px 0 rgba(0,0,0,.30)',
 
+        ':first-child': {
+          borderTopRightRadius: 0,
+          marginRight: '4px',
+        },
         selectors: {
+          '&:nth-child(1)': {
+            marginRight: '-8px',
+          },
           '&:before, &:after': {
             content: '',
             display: 'block',
@@ -121,6 +136,28 @@ export const tab = recipe({
         ':hover': {
           background: 'rgba(255,255,255, .15)',
         },
+      },
+    },
+    {
+      variants: {
+        accent: true,
+        active: true,
+      },
+      style: {
+        zIndex: 10,
+      },
+    },
+    {
+      variants: {
+        accent: true,
+        active: false,
+      },
+      style: {
+        // TODO: polished could be needed
+        backgroundColor: `${terminalVars.backgroundColor}`,
+        filter: 'brightness(0.90)',
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
       },
     },
   ],

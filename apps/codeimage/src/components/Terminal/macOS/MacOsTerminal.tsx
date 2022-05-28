@@ -41,7 +41,7 @@ export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
           </div>
 
           <Show when={props.showTab}>
-            <WindowTabListManager />
+            <WindowTabListManager accent={props.accentVisible} />
             {/*<WindowTab*/}
             {/*  tabName={props.tabName ?? 'Untitled'}*/}
             {/*  tabIcon={props.tabIcon}*/}
