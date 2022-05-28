@@ -8,10 +8,15 @@ export const [tabTheme, tabVars] = createTheme({
 });
 
 export const wrapper = recipe({
-  base: {
-    display: 'flex',
-    width: '100%',
-  },
+  base: [
+    {
+      display: 'flex',
+      width: '100%',
+      alignItems: 'center',
+      marginRight: themeVars.spacing['2'],
+      overflow: 'hidden',
+    },
+  ],
   variants: {
     accent: {
       true: {},
@@ -22,6 +27,14 @@ export const wrapper = recipe({
       false: {},
     },
   },
+});
+
+export const tabListWrapper = style({
+  display: 'flex',
+  overflow: 'hidden',
+  columnGap: '8px',
+  marginRight: themeVars.spacing['1'],
+  transition: 'all 150ms ease-in-out',
 });
 
 export const tab = recipe({
@@ -41,6 +54,9 @@ export const tab = recipe({
       display: 'flex',
       alignItems: 'center',
       transition: 'all 150ms ease-in-out',
+      maxWidth: '400px',
+      minWidth: '0px',
+      flex: '0 1 auto',
     },
   ],
   variants: {
@@ -89,7 +105,9 @@ export const tab = recipe({
       },
     },
     active: {
-      true: {},
+      true: {
+        minWidth: 'unset',
+      },
     },
   },
   compoundVariants: [
@@ -109,9 +127,13 @@ export const tab = recipe({
 });
 
 export const tabCloseIcon = style({
-  marginLeft: themeVars.spacing['3'],
+  marginLeft: themeVars.spacing['1'],
+  fontWeight: themeVars.fontWeight.semibold,
   borderRadius: themeVars.borderRadius.full,
   cursor: 'pointer',
+  width: '14px',
+  display: 'inline-block',
+  height: '14px',
   ':hover': {
     background: 'rgba(255,255,255, .15)',
   },
@@ -121,4 +143,17 @@ export const tabCloseIcon = style({
   ':active': {
     background: 'rgba(255,255,255, .25)',
   },
+});
+
+export const tabTextContent = style({
+  marginTop: 'auto',
+  marginBottom: 'auto',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+});
+
+export const fallbackText = style({
+  fontSize: '14px',
+  opacity: '.50',
+  fontWeight: 'normal',
 });

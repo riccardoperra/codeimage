@@ -76,10 +76,18 @@ export async function exportImage(
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
 
   const toImageOptions: HtmlToImageExportOptions = {
-    filter: (node: Node) => {
+    filter: (node: Node | undefined) => {
+      const isNotExcluded = () => {
+        const el = node as Element | null;
+        if (!el) return true;
+        const attr = el?.getAttribute?.('data-export-exclude');
+        return !attr || attr === 'false';
+      };
+
       return (
-        !node.hasOwnProperty(EXPORT_EXCLUDE) ||
-        !(node as Node & {[EXPORT_EXCLUDE]: boolean})[EXPORT_EXCLUDE]
+        isNotExcluded() &&
+        (!node?.hasOwnProperty(EXPORT_EXCLUDE) ||
+          !(node as Node & {[EXPORT_EXCLUDE]: boolean})[EXPORT_EXCLUDE])
       );
     },
     style: {

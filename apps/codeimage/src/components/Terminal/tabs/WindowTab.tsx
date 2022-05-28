@@ -1,11 +1,11 @@
 import {LanguageIconDefinition} from '@codeimage/config';
-import {Box, Text} from '@codeimage/ui';
+import {Text} from '@codeimage/ui';
 import {Show, VoidProps} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import {CloseIcon} from '../../Icons/CloseIcon';
 import * as styles from './Tab.css';
-import {TabIcon} from './TabIcon';
-import {TabName} from './TabName';
+import {TabIcon} from './TabIcon/TabIcon';
+import {TabName} from './TabName/TabName';
 
 const exportExclude = _exportExclude;
 
@@ -31,22 +31,27 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
       onClick={() => props.onClick?.()}
     >
       <Show when={props.tabIcon}>{icon => <TabIcon content={icon} />}</Show>
-      <Box marginY={'auto'}>
+      <div class={styles.tabTextContent}>
         <Show
-          fallback={<Text size={'sm'}>{props.tabName || 'Untitled'}</Text>}
-          when={!props.readonlyTab && props.active}
+          fallback={
+            <Text size={'sm'} class={styles.fallbackText}>
+              {props.tabName || 'Untitled'}
+            </Text>
+          }
+          when={!props.readonlyTab}
         >
           <TabName
-            readonly={props.readonlyTab}
+            readonly={props.readonlyTab && !props.active}
             value={props.tabName ?? ''}
             onValueChange={value => props.onTabChange?.(value)}
           />
         </Show>
-      </Box>
+      </div>
       <CloseIcon
         class={styles.tabCloseIcon}
         onClick={() => props.onClose?.()}
         size={'xs'}
+        data-export-exclude={true}
       />
     </div>
   );

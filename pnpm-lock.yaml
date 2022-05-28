@@ -164,7 +164,7 @@ importers:
       '@vanilla-extract/dynamic': 2.0.2
       '@vanilla-extract/recipes': 0.2.4_@vanilla-extract+css@1.7.0
       '@vanilla-extract/sprinkles': 1.4.1_@vanilla-extract+css@1.7.0
-      '@vanilla-extract/vite-plugin': 3.1.4_vite@2.9.9
+      '@vanilla-extract/vite-plugin': 3.1.4_ts-node@10.8.0+vite@2.9.9
       bind-event-listener: 2.1.0
       clsx: 1.1.1
       csstype: 3.1.0
@@ -3223,7 +3223,7 @@ packages:
       '@vanilla-extract/css': 1.7.0
     dev: false
 
-  /@vanilla-extract/vite-plugin/3.1.4_vite@2.9.9:
+  /@vanilla-extract/vite-plugin/3.1.4_ts-node@10.8.0+vite@2.9.9:
     resolution: {integrity: sha512-FLORJJ92FbPSf2HLSQfs3GiYS/ceZUhBLB1vQ2dwmXCeybpIeTcettzSIYdbrkFNy2gHbLD9yRSTMg7nCPEqUw==}
     peerDependencies:
       vite: ^2.2.3
@@ -3231,7 +3231,7 @@ packages:
       '@vanilla-extract/integration': 3.0.1
       outdent: 0.8.0
       postcss: 8.4.13
-      postcss-load-config: 3.1.4_postcss@8.4.13
+      postcss-load-config: 3.1.4_postcss@8.4.13+ts-node@10.8.0
       vite: 2.9.9_sass@1.52.1
     transitivePeerDependencies:
       - ts-node
@@ -6166,7 +6166,7 @@ packages:
       '@babel/runtime': 7.18.0
     dev: false
 
-  /postcss-load-config/3.1.4_postcss@8.4.13:
+  /postcss-load-config/3.1.4_postcss@8.4.13+ts-node@10.8.0:
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
     engines: {node: '>= 10'}
     peerDependencies:
@@ -6180,6 +6180,7 @@ packages:
     dependencies:
       lilconfig: 2.0.5
       postcss: 8.4.13
+      ts-node: 10.8.0_41d1a55f6f77a300c723819e22d6c86b
       yaml: 1.10.2
     dev: false
 

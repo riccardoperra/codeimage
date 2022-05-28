@@ -1,4 +1,5 @@
 import {createStoreNotifier} from '@codeimage/store/plugins/store-notifier';
+import {createUniqueId, versionateId} from '@codeimage/store/plugins/unique-id';
 import {
   createStore as $createStore,
   Reducer,
@@ -11,7 +12,6 @@ import {
   createRoot,
   createSelector,
   createSignal,
-  createUniqueId,
   onCleanup,
   onMount,
 } from 'solid-js';
@@ -65,18 +65,32 @@ function $createEditors() {
   const [editors, setEditors] = createStore<EditorState[]>([]);
 
   onMount(() => {
-    idb.get<IndexedDbState>('$editor').then(result => {
-      if (!result) return;
-      batch(() => {
-        setTabs(result.tabs);
-        setEditors(result.editors);
+    idb
+      .get<IndexedDbState>('$editor')
+      .then(result => {
+        if (!result) return;
+        batch(() => {
+          const tabs = result.tabs.map(tab => ({
+            ...tab,
+            tabId: versionateId(tab.tabId),
+          }));
+          $setActiveEditorId(tabs[0].tabId ?? null);
+          setTabs(tabs);
+          setEditors(
+            result.editors.map(editor => ({
+              ...editor,
+              id: versionateId(editor.id),
+            })),
+          );
+        });
+      })
+      .then(() => {
+        const sub = onChange$.pipe(debounceTime(100)).subscribe(() => {
+          const state: IndexedDbState = {editors, tabs};
+          idb.set('$editor', unwrap(state));
+        });
+        onCleanup(() => sub.unsubscribe());
       });
-    });
-    const sub = onChange$.pipe(debounceTime(100)).subscribe(() => {
-      const state: IndexedDbState = {editors, tabs};
-      idb.set('$editor', unwrap(state));
-    });
-    onCleanup(() => sub.unsubscribe());
   });
 
   const setActiveEditor = withNotifier((editor: EditorState) =>
