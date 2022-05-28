@@ -6,14 +6,7 @@ import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {frame$, setScale} from '@codeimage/store/frame';
 import {connectStoreWithQueryParams} from '@codeimage/store/plugins/connect-store-with-query-params';
 import {setTabName, terminal$} from '@codeimage/store/terminal';
-import {
-  Box,
-  FadeInOutTransition,
-  Loading,
-  LoadingOverlay,
-  PortalHost,
-  SnackbarHost,
-} from '@codeimage/ui';
+import {Box, LoadingOverlay, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {initEffects} from '@ngneat/effects';
 import {createEffect, createSignal, on, Show} from 'solid-js';
 import {BottomBar} from './components/BottomBar/BottomBar';
@@ -28,6 +21,7 @@ import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
+import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {fromObservableObject} from './core/hooks/from-observable-object';
 import {useModality} from './core/hooks/isMobile';
@@ -118,9 +112,9 @@ export function App() {
         when={modality === 'full'}
         fallback={<BottomBar portalHostRef={portalHostRef()} />}
       >
-        {/*<Sidebar position={'right'}>*/}
-        {/*  <ThemeSwitcher orientation={'vertical'} />*/}
-        {/*</Sidebar>*/}
+        <Sidebar position={'right'}>
+          <ThemeSwitcher orientation={'vertical'} />
+        </Sidebar>
       </Show>
     </Scaffold>
   );

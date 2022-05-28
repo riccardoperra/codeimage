@@ -53,7 +53,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
                 active={active()}
                 onClick={() => setActiveEditor(editor)}
                 onTabChange={tabName => setTabName(tab.tabId, tabName)}
-                onClose={() => removeEditor(editor.id)}
+                onClose={tabs.length > 1 ? () => removeEditor(editor.id) : null}
               />
             );
           }}

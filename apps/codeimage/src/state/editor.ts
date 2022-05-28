@@ -9,7 +9,6 @@ import {
 import {debounceTime, distinctUntilChanged, map} from 'rxjs';
 import {
   batch,
-  createResource,
   createRoot,
   createSelector,
   createSignal,
@@ -59,12 +58,17 @@ type IndexedDbState = {
 function $createEditors() {
   const idb = useIdb();
   const [, withNotifier, onChange$] = createStoreNotifier();
-  const [$activeEditorId, $setActiveEditorId] = createSignal<string>();
+  // TODO: Fix initial state sync
+  const [$activeEditorId, $setActiveEditorId] = createSignal<string>('default');
   const [ready, setReady] = createSignal(false);
   const $isActive = createSelector($activeEditorId);
 
-  const [tabs, setTabs] = createStore<TabsState[]>([]);
-  const [editors, setEditors] = createStore<EditorState[]>([]);
+  const [tabs, setTabs] = createStore<TabsState[]>([
+    {tabName: 'index.tsx', tabId: 'default'},
+  ]);
+  const [editors, setEditors] = createStore<EditorState[]>([
+    {...initialState, id: 'default'},
+  ]);
 
   onMount(() => {
     idb
@@ -113,8 +117,15 @@ function $createEditors() {
 
   const removeEditor = withNotifier((id: string) =>
     batch(() => {
+      if (editors.length === 1) {
+        return;
+      }
       setEditors(editors => editors.filter(editor => editor.id !== id));
       setTabs(tabs => tabs.filter(tab => tab.tabId !== id));
+      // Side effect?
+      if ($isActive(id)) {
+        $setActiveEditorId(editors[0].id);
+      }
     }),
   );
 

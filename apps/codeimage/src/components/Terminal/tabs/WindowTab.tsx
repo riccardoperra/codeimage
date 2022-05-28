@@ -17,7 +17,7 @@ interface WindowTabProps {
   readonly active: boolean;
   readonly onTabChange: (value: string) => void;
   readonly onClick?: () => void;
-  readonly onClose?: () => void;
+  readonly onClose?: (() => void) | null;
 }
 
 export function WindowTab(props: VoidProps<WindowTabProps>) {
@@ -47,12 +47,16 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
           />
         </Show>
       </div>
-      <CloseIcon
-        class={styles.tabCloseIcon}
-        onClick={() => props.onClose?.()}
-        size={'xs'}
-        data-export-exclude={true}
-      />
+      <Show when={props.onClose}>
+        {onClose => (
+          <CloseIcon
+            class={styles.tabCloseIcon}
+            onClick={() => onClose()}
+            size={'xs'}
+            data-export-exclude={true}
+          />
+        )}
+      </Show>
     </div>
   );
 }

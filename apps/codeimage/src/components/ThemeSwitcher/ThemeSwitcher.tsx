@@ -101,13 +101,12 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                   shadow={terminal.shadow}
                   showTab={true}
                   readonlyTab={true}
-                  showHeader={true}
+                  showHeader={false}
                   type={terminal.type}
                   showWatermark={false}
                   showGlassReflection={terminal.showGlassReflection}
                   opacity={100}
                   alternativeTheme={terminal.alternativeTheme}
-                  editors={[]}
                 >
                   <Text size={'sm'}>{`// Code here`}</Text>
                 </DynamicTerminal>
