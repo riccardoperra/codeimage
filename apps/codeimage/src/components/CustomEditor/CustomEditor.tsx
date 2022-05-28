@@ -3,7 +3,7 @@ import {
   SUPPORTED_LANGUAGES,
   SUPPORTED_THEMES,
 } from '@codeimage/config';
-import {getActiveEditorState, setFocus} from '@codeimage/store/editor';
+import {getActiveEditorState} from '@codeimage/store/editor';
 import {EditorView, lineNumbers} from '@codemirror/view';
 import {debounceTime, ReplaySubject, takeUntil} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
@@ -15,7 +15,7 @@ import {
   onCleanup,
 } from 'solid-js';
 import {SUPPORTED_FONTS} from '../../core/configuration/font';
-import {focusedEditor$, setCode} from '../../state/editor';
+import {focusedEditor$} from '../../state/editor';
 import {createCustomFontExtension} from './custom-font-extension';
 import {observeFocusExtension} from './observe-focus-extension';
 
@@ -25,7 +25,7 @@ export const CustomEditor = () => {
   const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
-  const {editor} = getActiveEditorState();
+  const {editor, themeId, setCode, setFocused} = getActiveEditorState();
 
   const selectedLanguage = createMemo(() =>
     languages.find(language => language.id === editor()?.languageId),
@@ -43,7 +43,7 @@ export const CustomEditor = () => {
   );
 
   const themeConfiguration = createMemo(
-    () => themes.find(theme => theme.id === editor()?.themeId) ?? themes[0],
+    () => themes.find(theme => theme.id === themeId()) ?? themes[0],
   );
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];
@@ -127,7 +127,7 @@ export const CustomEditor = () => {
           baseTheme,
           supportsLineWrap,
           observeFocusExtension(
-            focused => setFocus(focused),
+            focused => setFocused(focused),
             vu => {
               // ATTENTION: a lot of multiple calls to fix!!
               focusedEditor$

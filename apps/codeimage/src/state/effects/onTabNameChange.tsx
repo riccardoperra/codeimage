@@ -1,5 +1,5 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {editorLanguageId$, setLanguageId} from '@codeimage/store/editor';
+import {editorLanguageId$} from '@codeimage/store/editor';
 import {createAction, createEffect, ofType, props} from '@ngneat/effects';
 import {filterNil} from '@ngneat/elf';
 import {debounceTime, map, tap, withLatestFrom} from 'rxjs';
@@ -9,6 +9,7 @@ export const updateTabName = createAction(
   props<{tabName: string}>(),
 );
 
+// TODO: fix
 export const onTabNameChange$ = createEffect(actions =>
   actions.pipe(
     ofType(updateTabName),
@@ -32,6 +33,6 @@ export const onTabNameChange$ = createEffect(actions =>
       return matches[0].id;
     }),
     filterNil(),
-    tap(setLanguageId),
+    // tap(setLanguageId),
   ),
 );
