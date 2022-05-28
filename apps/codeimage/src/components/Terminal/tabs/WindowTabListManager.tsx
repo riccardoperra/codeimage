@@ -1,4 +1,4 @@
-import {$rootEditorState} from '@codeimage/store/editor';
+import {getRootEditorsState} from '@codeimage/store/editor';
 import {For} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
@@ -17,7 +17,7 @@ export function WindowTabListManager() {
     removeEditor,
     setActiveEditor,
     setTabName,
-  } = $rootEditorState;
+  } = getRootEditorsState();
 
   return (
     <div

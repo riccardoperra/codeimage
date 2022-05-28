@@ -9,6 +9,7 @@ import {
 import {debounceTime, distinctUntilChanged, map} from 'rxjs';
 import {
   batch,
+  createResource,
   createRoot,
   createSelector,
   createSignal,
@@ -59,6 +60,7 @@ function $createEditors() {
   const idb = useIdb();
   const [, withNotifier, onChange$] = createStoreNotifier();
   const [$activeEditorId, $setActiveEditorId] = createSignal<string>();
+  const [ready, setReady] = createSignal(false);
   const $isActive = createSelector($activeEditorId);
 
   const [tabs, setTabs] = createStore<TabsState[]>([]);
@@ -85,6 +87,7 @@ function $createEditors() {
         });
       })
       .then(() => {
+        setReady(true);
         const sub = onChange$.pipe(debounceTime(100)).subscribe(() => {
           const state: IndexedDbState = {editors, tabs};
           idb.set('$editor', unwrap(state));
@@ -133,10 +136,17 @@ function $createEditors() {
     setActiveEditor,
     addEditor,
     setTabName,
+    setEditors,
+    setTabs,
+    ready,
   } as const;
 }
 
-export const $rootEditorState = createRoot($createEditors);
+const $rootEditorState = createRoot($createEditors);
+
+export function getRootEditorsState() {
+  return $rootEditorState;
+}
 
 const store = $createStore(
   {name: 'editor'},
@@ -155,6 +165,51 @@ export const updateEditorStore = (value: Reducer<EditorState>) =>
 //   storage: localStorageStrategy,
 //   key: '@store/editors',
 // });
+function $activeEditors() {
+  const {editors, setEditors, isActive} = $rootEditorState;
+  const currentEditor = () => editors.find(editor => isActive(editor.id));
+
+  const currentEditorIndex = () =>
+    editors.findIndex(editor => editor.id === currentEditor()?.id);
+
+  const setFocused = (focused: boolean) =>
+    setEditors(currentEditorIndex(), 'focused', focused);
+
+  const setFontId = (fontId: string) =>
+    setEditors(currentEditorIndex(), 'fontId', fontId);
+
+  const setFontWeight = (fontWeight: number) =>
+    setEditors(currentEditorIndex(), 'fontWeight', fontWeight);
+
+  const setLanguageId = (languageId: string) =>
+    setEditors(currentEditorIndex(), 'languageId', languageId);
+
+  const setShowLineNumbers = (showLineNumbers: boolean) =>
+    setEditors(currentEditorIndex(), 'showLineNumbers', showLineNumbers);
+
+  const setThemeId = (themeId: string) =>
+    setEditors(currentEditorIndex(), 'themeId', themeId);
+
+  const setCode = (code: string) =>
+    setEditors(currentEditorIndex(), 'themeId', code);
+
+  return {
+    editor: currentEditor,
+    setFocused,
+    setFontId,
+    setFontWeight,
+    setLanguageId,
+    setShowLineNumbers,
+    setThemeId,
+    setCode,
+  };
+}
+
+const $activeEditorState = createRoot($activeEditors);
+
+export function getActiveEditorState() {
+  return $activeEditorState;
+}
 
 export const {
   setFocused: setFocus,

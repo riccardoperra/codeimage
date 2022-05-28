@@ -3,7 +3,7 @@ import {
   SUPPORTED_LANGUAGES,
   SUPPORTED_THEMES,
 } from '@codeimage/config';
-import {editor$, setFocus} from '@codeimage/store/editor';
+import {getActiveEditorState, setFocus} from '@codeimage/store/editor';
 import {EditorView, lineNumbers} from '@codemirror/view';
 import {debounceTime, ReplaySubject, takeUntil} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
@@ -15,7 +15,6 @@ import {
   onCleanup,
 } from 'solid-js';
 import {SUPPORTED_FONTS} from '../../core/configuration/font';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {focusedEditor$, setCode} from '../../state/editor';
 import {createCustomFontExtension} from './custom-font-extension';
 import {observeFocusExtension} from './observe-focus-extension';
@@ -26,10 +25,10 @@ export const CustomEditor = () => {
   const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
-  const editor = fromObservableObject(editor$);
+  const {editor} = getActiveEditorState();
 
   const selectedLanguage = createMemo(() =>
-    languages.find(language => language.id === editor.languageId),
+    languages.find(language => language.id === editor()?.languageId),
   );
 
   const {view, setOptions, setContainer} = createCodeMirror({
@@ -44,7 +43,7 @@ export const CustomEditor = () => {
   );
 
   const themeConfiguration = createMemo(
-    () => themes.find(theme => theme.id === editor.themeId) ?? themes[0],
+    () => themes.find(theme => theme.id === editor()?.themeId) ?? themes[0],
   );
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];
@@ -86,8 +85,9 @@ export const CustomEditor = () => {
   const customFontExtension = () =>
     createCustomFontExtension({
       fontName:
-        fonts.find(({id}) => editor.fontId === id)?.name || fonts[0].name,
-      fontWeight: editor.fontWeight,
+        fonts.find(({id}) => editor()?.fontId === id)?.name || fonts[0].name,
+      // TODO editor fix type never null
+      fontWeight: editor()?.fontWeight ?? 400,
     });
 
   setTimeout(() => {
@@ -112,7 +112,7 @@ export const CustomEditor = () => {
 
   createEffect(() => {
     setOptions(() => ({
-      value: editor.code,
+      value: editor()?.code,
     }));
   });
 
@@ -142,7 +142,7 @@ export const CustomEditor = () => {
           customFontExtension(),
           currentLanguage() || [],
           currentTheme(),
-          editor.showLineNumbers ? lineNumbers() : [],
+          editor()?.showLineNumbers ? lineNumbers() : [],
         ],
       }),
     );

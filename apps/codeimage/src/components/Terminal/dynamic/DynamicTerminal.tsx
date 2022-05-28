@@ -11,7 +11,6 @@ import {BaseTerminalProps} from '../TerminalHost';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;
-  editors: readonly EditorState[];
 }
 
 export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
