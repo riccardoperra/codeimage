@@ -1,10 +1,7 @@
-import {backgroundColorVar, Box, Text} from '@codeimage/ui';
+import {backgroundColorVar, Box} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
-import {TabIcon} from '../tabs/TabIcon';
-import {TabName} from '../tabs/TabName';
-import {WindowTab} from '../tabs/WindowTab';
 import {WindowTabListManager} from '../tabs/WindowTabListManager';
 import * as baseStyles from '../terminal.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';

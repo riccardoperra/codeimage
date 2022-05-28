@@ -75,6 +75,7 @@
     "csstype": "^3.1.0",
     "downloadjs": "^1.4.7",
     "html-to-image": "^1.9.0",
+    "idb-keyval": "6.1.0",
     "inter-ui": "^3.19.3",
     "modern-normalize": "^1.1.0",
     "polished": "4.2.2",

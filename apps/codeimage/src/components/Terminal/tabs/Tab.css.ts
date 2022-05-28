@@ -1,9 +1,11 @@
 import {themeVars} from '@codeimage/ui';
-import {createTheme} from '@vanilla-extract/css';
+import {createTheme, style} from '@vanilla-extract/css';
 import {recipe} from '@vanilla-extract/recipes';
 import {terminalVars} from '../terminal.css';
 
-export const [tabTheme, tabVars] = createTheme({});
+export const [tabTheme, tabVars] = createTheme({
+  tabHeight: '30px',
+});
 
 export const wrapper = recipe({
   base: {
@@ -23,24 +25,25 @@ export const wrapper = recipe({
 });
 
 export const tab = recipe({
-  base: {
-    background: 'transparent',
-    padding: `0 ${themeVars.spacing['3']}`,
-    verticalAlign: 'middle',
-    marginTop: 'auto',
-    marginBottom: 'auto',
-    paddingLeft: 0,
-    fontSize: themeVars.fontSize.sm,
-    borderRadius: `${themeVars.borderRadius.md} ${themeVars.borderRadius.md} 0 0`,
-    position: 'relative',
-    lineHeight: 1,
-  },
-  variants: {
-    clickable: {
-      true: {
-        cursor: 'pointer',
-      },
+  base: [
+    tabTheme,
+    {
+      background: 'transparent',
+      height: tabVars.tabHeight,
+      padding: `0px ${themeVars.spacing['3']}`,
+      verticalAlign: 'middle',
+      marginTop: 'auto',
+      marginBottom: 'auto',
+      fontSize: themeVars.fontSize.sm,
+      borderRadius: `${themeVars.borderRadius.md} ${themeVars.borderRadius.md} 0 0`,
+      position: 'relative',
+      lineHeight: tabVars.tabHeight,
+      display: 'flex',
+      alignItems: 'center',
+      transition: 'all 150ms ease-in-out',
     },
+  ],
+  variants: {
     accent: {
       true: {
         /**
@@ -77,6 +80,13 @@ export const tab = recipe({
           transform: 'scaleX(-1)',
         },
       },
+      false: {
+        borderRadius: themeVars.borderRadius.lg,
+
+        ':hover': {
+          background: 'rgba(255,255,255, .03)',
+        },
+      },
     },
     active: {
       true: {},
@@ -89,10 +99,26 @@ export const tab = recipe({
         active: true,
       },
       style: {
-        borderRadius: themeVars.borderRadius.lg,
         background: 'rgba(255,255,255, .10)',
-        padding: `4px 12px`,
+        ':hover': {
+          background: 'rgba(255,255,255, .15)',
+        },
       },
     },
   ],
+});
+
+export const tabCloseIcon = style({
+  marginLeft: themeVars.spacing['3'],
+  borderRadius: themeVars.borderRadius.full,
+  cursor: 'pointer',
+  ':hover': {
+    background: 'rgba(255,255,255, .15)',
+  },
+  ':focus': {
+    background: 'rgba(255,255,255, .25)',
+  },
+  ':active': {
+    background: 'rgba(255,255,255, .25)',
+  },
 });

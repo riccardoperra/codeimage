@@ -1,11 +1,11 @@
 import {LionCombobox} from '@lion/combobox';
+import '@lion/combobox/define';
 import {css, html, PropertyValues} from '@lion/core';
 import {LionOption} from '@lion/listbox';
-import '@lion/combobox/define';
 import '@lion/listbox/define';
 import {map, Subject, takeUntil} from 'rxjs';
-import {resizeObserverFactory$} from '../../core/operators/create-resize-observer';
 import {mutationObserverFactory$} from '../../core/operators/create-mutation-observer';
+import {resizeObserverFactory$} from '../../core/operators/create-resize-observer';
 
 interface InlineComboboxEventMap extends HTMLElementEventMap {
   selectedItem: CustomEvent<{value: string}>;
@@ -73,37 +73,40 @@ export class InlineCombobox extends LionCombobox {
     `,
   ];
 
+  protected firstUpdated(_changedProperties: PropertyValues) {
+    super.firstUpdated(_changedProperties);
+
+    this._inputNode.style.setProperty('appearance', 'none');
+    this._inputNode.style.setProperty('-webkit-appearance', 'none');
+
+    if (this.hiddenValueNode) {
+      resizeObserverFactory$(this.hiddenValueNode, {box: 'content-box'})
+        .pipe(
+          takeUntil(this.destroy$),
+          map(entries => entries[0].contentRect.width),
+        )
+        .subscribe(width => this.recalculateWidth(width));
+
+      mutationObserverFactory$(this._listboxNode.firstChild as HTMLElement, {
+        childList: true,
+      })
+        .pipe(
+          map(() => this.formElements),
+          map(() => (this.activeIndex === -1 ? 0 : this.activeIndex)),
+          takeUntil(this.destroy$),
+        )
+        .subscribe(activeIndex => (this.activeIndex = activeIndex));
+    }
+  }
+
   connectedCallback() {
     super.connectedCallback();
+
     this.config = {
       placementMode: 'global',
       isTooltip: false,
       isBlocking: false,
     };
-
-    setTimeout(() => {
-      this._inputNode.style.setProperty('appearance', 'none');
-      this._inputNode.style.setProperty('-webkit-appearance', 'none');
-
-      if (this.hiddenValueNode) {
-        resizeObserverFactory$(this.hiddenValueNode, {box: 'content-box'})
-          .pipe(
-            takeUntil(this.destroy$),
-            map(entries => entries[0].contentRect.width),
-          )
-          .subscribe(width => this.recalculateWidth(width));
-
-        mutationObserverFactory$(this._listboxNode.firstChild as HTMLElement, {
-          childList: true,
-        })
-          .pipe(
-            map(() => this.formElements),
-            map(() => (this.activeIndex === -1 ? 0 : this.activeIndex)),
-            takeUntil(this.destroy$),
-          )
-          .subscribe(activeIndex => (this.activeIndex = activeIndex));
-      }
-    });
   }
 
   addEventListener<K extends keyof InlineComboboxEventMap>(
@@ -208,7 +211,19 @@ export class InlineCombobox extends LionCombobox {
       );
     }
 
-    super._listboxOnKeyDown(ev);
+    if (this.opened && this.formElements.length > 0) {
+      super._listboxOnKeyDown(ev);
+    }
+  }
+
+  __requestShowOverlay(ev: KeyboardEvent) {
+    const lastKey = ev && ev.key;
+    this.opened =
+      !!this.formElements.length &&
+      this._showOverlayCondition({
+        lastKey,
+        currentValue: this._inputNode.value,
+      });
   }
 }
 

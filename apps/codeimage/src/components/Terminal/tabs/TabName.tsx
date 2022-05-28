@@ -5,8 +5,8 @@ import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
 import {highlight as _highlight} from '../../../core/directives/highlight';
 import '../../../ui/Combobox/InlineCombobox';
 import {InlineCombobox} from '../../../ui/Combobox/InlineCombobox';
-import {TabIcon} from './TabIcon';
 import * as styles from '../terminal.css';
+import {TabIcon} from './TabIcon';
 
 interface TabNameProps {
   readonly: boolean;

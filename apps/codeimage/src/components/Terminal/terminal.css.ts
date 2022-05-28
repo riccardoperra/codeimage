@@ -162,9 +162,8 @@ export const tab = recipe({
 
 export const tabIcon = style([
   {
-    display: 'inline-block',
+    display: 'inline-flex',
     marginRight: themeVars.spacing['2'],
-    verticalAlign: 'middle',
   },
 ]);
 
