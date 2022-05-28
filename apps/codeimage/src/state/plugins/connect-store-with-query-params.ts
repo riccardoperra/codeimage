@@ -1,4 +1,3 @@
-import {editor$, updateEditorStore} from '@codeimage/store/editor';
 import {frame$, updateFrameStore} from '@codeimage/store/frame';
 import {terminal$, updateTerminalStore} from '@codeimage/store/terminal';
 import {
@@ -33,9 +32,9 @@ export function connectStoreWithQueryParams() {
     selectSlice(['background', 'padding', 'radius', 'visible', 'opacity']),
   );
 
-  const editorState$ = editor$.pipe(
-    selectSlice(['code', 'languageId', 'themeId', 'showLineNumbers', 'fontId']),
-  );
+  // const editorState$ = editor$.pipe(
+  //   selectSlice(['code', 'languageId', 'themeId', 'showLineNumbers', 'fontId']),
+  // );
 
   onMount(() => {
     const data = searchParams.p;
@@ -47,9 +46,9 @@ export function connectStoreWithQueryParams() {
           if (params.terminal) {
             updateTerminalStore(state => ({...state, ...params.terminal}));
           }
-          if (params.editor) {
-            updateEditorStore(state => ({...state, ...params.editor}));
-          }
+          // if (params.editor) {
+          //   updateEditorStore(state => ({...state, ...params.editor}));
+          // }
           if (params.frame) {
             updateFrameStore(state => ({...state, ...params.frame}));
           }
@@ -58,13 +57,12 @@ export function connectStoreWithQueryParams() {
         console.warn('[CodeImage] Error while parsing query params data', e);
       }
     } else {
-      combineLatest([terminalState$, frameState$, editorState$])
+      combineLatest([terminalState$, frameState$])
         .pipe(
           debounceTime(1000),
-          map(([terminal, frame, editor]) => ({
+          map(([terminal, frame]) => ({
             terminal,
             frame,
-            editor,
           })),
           distinctUntilChanged(shallow),
           skip(1),

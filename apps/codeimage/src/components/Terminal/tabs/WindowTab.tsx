@@ -51,7 +51,11 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
         {onClose => (
           <CloseIcon
             class={styles.tabCloseIcon}
-            onClick={() => onClose()}
+            onClick={evt => {
+              onClose();
+              evt.stopPropagation();
+              evt.preventDefault();
+            }}
             size={'xs'}
             data-export-exclude={true}
           />

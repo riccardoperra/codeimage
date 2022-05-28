@@ -9,6 +9,7 @@ import {
 import {debounceTime, distinctUntilChanged, map} from 'rxjs';
 import {
   batch,
+  createEffect,
   createRoot,
   createSelector,
   createSignal,
@@ -19,7 +20,6 @@ import {createStore, unwrap} from 'solid-js/store';
 import {appEnvironment} from '../core/configuration';
 import {SUPPORTED_FONTS} from '../core/configuration/font';
 import shallow from '../core/helpers/shallow';
-import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 import {useIdb} from '../hooks/use-indexed-db';
 
 export interface TabsState {
@@ -58,7 +58,8 @@ function $createEditors() {
   const idb = useIdb();
   const [, withNotifier, onChange$] = createStoreNotifier();
   // TODO: Fix initial state sync
-  const [$activeEditorId, $setActiveEditorId] = createSignal<string>('default');
+  const initialId = createUniqueId();
+  const [$activeEditorId, $setActiveEditorId] = createSignal<string>(initialId);
   const [$themeId, $setThemeId] = createSignal<string>(
     appEnvironment.defaultState.editor.theme.id,
   );
@@ -66,11 +67,13 @@ function $createEditors() {
   const $isActive = createSelector($activeEditorId);
 
   const [tabs, setTabs] = createStore<TabsState[]>([
-    {tabName: 'index.tsx', tabId: 'default'},
+    {tabName: 'index.tsx', tabId: initialId},
   ]);
   const [editors, setEditors] = createStore<EditorState[]>([
-    {...initialState, id: 'default'},
+    {...initialState, id: initialId},
   ]);
+
+  createEffect(() => console.log($activeEditorId()));
 
   onMount(() => {
     idb
@@ -118,19 +121,19 @@ function $createEditors() {
       }),
   );
 
-  const removeEditor = withNotifier((id: string) =>
-    batch(() => {
-      if (editors.length === 1) {
-        return;
-      }
-      setEditors(editors => editors.filter(editor => editor.id !== id));
-      setTabs(tabs => tabs.filter(tab => tab.tabId !== id));
-      // Side effect?
-      if ($isActive(id)) {
-        $setActiveEditorId(editors[0].id);
-      }
-    }),
-  );
+  const removeEditor = withNotifier((id: string) => {
+    if (editors.length === 1) {
+      return;
+    }
+    const isActive = $isActive(id);
+    setEditors(editors => editors.filter(editor => editor.id !== id));
+    setTabs(tabs => tabs.filter(tab => tab.tabId !== id));
+    // Side effect?
+    if (isActive) {
+      const previousEditor = editors[editors.length - 1];
+      setActiveEditor(previousEditor ?? editors[0]);
+    }
+  });
 
   const setTabName = withNotifier((id: string, name: string) =>
     setTabs(
@@ -175,12 +178,6 @@ const store = $createStore(
 export const updateEditorStore = (value: Reducer<EditorState>) =>
   store.update(value);
 
-// persistState(store, {storage: localStorageStrategy, key: '@store/editor'});
-//
-// persistState(editorsStore, {
-//   storage: localStorageStrategy,
-//   key: '@store/editors',
-// });
 function $activeEditors() {
   const {editors, setEditors, isActive, themeId} = $rootEditorState;
   const currentEditor = () => editors.find(editor => isActive(editor.id));

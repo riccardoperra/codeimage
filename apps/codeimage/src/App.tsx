@@ -1,5 +1,8 @@
 import {useI18n} from '@codeimage/locale';
-import {getRootEditorsState} from '@codeimage/store/editor';
+import {
+  getActiveEditorState,
+  getRootEditorsState,
+} from '@codeimage/store/editor';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onTabNameChange$} from '@codeimage/store/effects/onTabNameChange';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
@@ -99,7 +102,9 @@ export function App() {
                 opacity={terminal.opacity}
                 alternativeTheme={terminal.alternativeTheme}
               >
-                <CustomEditor />
+                <Show when={getActiveEditorState().editor()}>
+                  <CustomEditor />
+                </Show>
               </DynamicTerminal>
             </Frame>
           </Show>
