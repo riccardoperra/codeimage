@@ -107,6 +107,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                   showGlassReflection={terminal.showGlassReflection}
                   opacity={100}
                   alternativeTheme={terminal.alternativeTheme}
+                  editors={[]}
                 >
                   <Text size={'sm'}>{`// Code here`}</Text>
                 </DynamicTerminal>

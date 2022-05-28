@@ -25,7 +25,6 @@ import {Toolbar} from './components/Toolbar/Toolbar';
 import {fromObservableObject} from './core/hooks/from-observable-object';
 import {useModality} from './core/hooks/isMobile';
 import {useEffects} from './core/store/use-effect';
-import {useTabIcon} from './hooks/use-tab-icon';
 import {uiStore} from './state/ui';
 import './theme/global.css';
 
@@ -39,7 +38,6 @@ export function App() {
   const terminal = fromObservableObject(terminal$);
   const modality = useModality();
   const [, {locale}] = useI18n();
-  const [tabIcon] = useTabIcon({withDefault: true});
   connectStoreWithQueryParams();
   useEffects([onTabNameChange$, onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
@@ -87,10 +85,10 @@ export function App() {
               onTabChange={setTabName}
               showHeader={terminal.showHeader}
               showGlassReflection={terminal.showGlassReflection}
-              tabIcon={tabIcon()?.content}
               showWatermark={terminal.showWatermark}
               opacity={terminal.opacity}
               alternativeTheme={terminal.alternativeTheme}
+              editors={[]}
             >
               <CustomEditor />
             </DynamicTerminal>

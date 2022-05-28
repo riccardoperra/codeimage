@@ -2559,6 +2559,10 @@ packages:
     resolution: {integrity: sha512-emoTCmOxzFI3H04HGpagfaMY9OzmoCvTLoKGvTtN0Fx+JHLhj/HXzSzirAxrkWUwmNTAhCcOmbPPNjAeL1QAuA==}
     dev: false
 
+  /@ngneat/elf-entities/4.3.1:
+    resolution: {integrity: sha512-CoCWgO8XsHN9bJOQHC517ZbYEEmRQrPEgMMoVrV210U9Q43/yfyEeRoyt2AOvw1PB8d5/I+/VqwHKVxJkuRFBA==}
+    dev: false
+
   /@ngneat/elf-persist-state/1.1.1:
     resolution: {integrity: sha512-19riZeAul29RDpoizeFYJtRddVUiTVGZLKivhZPVzeezLuH6dJTpkd1kLy3jGhlS6UOQX4NKJUl72HqYGiF0zA==}
     dev: false

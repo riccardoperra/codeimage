@@ -141,7 +141,23 @@ export const tab = recipe({
         },
       },
     },
+    active: {
+      true: {},
+    },
   },
+  compoundVariants: [
+    {
+      variants: {
+        accent: false,
+        active: true,
+      },
+      style: {
+        borderRadius: themeVars.borderRadius.lg,
+        background: themeVars.backgroundColor.gray['800'],
+        padding: `6px 12px`,
+      },
+    },
+  ],
 });
 
 export const tabIcon = style([

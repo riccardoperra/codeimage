@@ -1,4 +1,6 @@
+import {EditorState} from '@codeimage/store/editor';
 import {Box, FadeInOutTransition} from '@codeimage/ui';
+
 import {createMemo, JSXElement, ParentComponent} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
@@ -9,6 +11,7 @@ import {BaseTerminalProps} from '../TerminalHost';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;
+  editors: readonly EditorState[];
 }
 
 export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
