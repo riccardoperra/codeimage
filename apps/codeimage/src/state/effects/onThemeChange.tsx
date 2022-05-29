@@ -1,4 +1,4 @@
-import {getRootEditorsState, updateEditorStore} from '@codeimage/store/editor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {updateFrameStore} from '@codeimage/store/frame';
 import {updateTerminalStore} from '@codeimage/store/terminal';
 import {CustomTheme} from '@codeimage/theme';
@@ -27,8 +27,8 @@ export const onThemeChange$ = createEffect(actions =>
         }),
       );
 
-      const editor = getRootEditorsState();
-      editor.setThemeId(theme.id);
+      const editor = getRootEditorStore();
+      editor.actions.setThemeId(theme.id);
     }),
   ),
 );

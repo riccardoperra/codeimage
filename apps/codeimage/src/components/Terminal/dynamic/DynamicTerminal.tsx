@@ -1,4 +1,4 @@
-import {EditorState} from '@codeimage/store/editor';
+import {EditorState} from '@codeimage/store/editor/createActiveEditor';
 import {Box, FadeInOutTransition} from '@codeimage/ui';
 
 import {createMemo, JSXElement, ParentComponent} from 'solid-js';

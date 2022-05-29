@@ -1,10 +1,9 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
-import {
-  getActiveEditorState,
-  getRootEditorsState,
-} from '@codeimage/store/editor';
+import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {SegmentedField, Select, Text} from '@codeimage/ui';
+import {get, map} from '@solid-primitives/immutable';
 import {createMemo, ParentComponent, Show} from 'solid-js';
 import {SUPPORTED_FONTS} from '../../core/configuration/font';
 import {useModality} from '../../core/hooks/isMobile';
@@ -17,25 +16,27 @@ export const EditorStyleForm: ParentComponent = () => {
   const fonts = SUPPORTED_FONTS;
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
-  const {editor, setLanguageId} = getActiveEditorState();
+  const {editor, setLanguageId} = getActiveEditorStore();
   const {
-    editor: editorState,
-    setShowLineNumbers,
-    setFontId,
-    setFontWeight,
-  } = getRootEditorsState();
+    options,
+    actions: {setShowLineNumbers, setFontWeight, setFontId},
+    computed: {font},
+    // editor: editorState,
+  } = getRootEditorStore();
 
-  const font = () =>
-    SUPPORTED_FONTS.find(font => font.id === editorState.fontId);
+  const fontOptions = createMemo(() =>
+    map(fonts, font => ({
+      label: font.name,
+      value: font,
+    })),
+  );
 
-  const fontWeightOptions = createMemo(() => {
-    const font = SUPPORTED_FONTS.find(font => font.id === editorState.fontId);
-    const types = font?.types || [];
-    return types.map(type => ({
+  const fontWeightOptions = createMemo(() =>
+    map(get(font(), 'types'), type => ({
       label: type.name,
       value: type.weight,
-    }));
-  });
+    })),
+  );
 
   return (
     <Show when={editor()}>
@@ -71,7 +72,7 @@ export const EditorStyleForm: ParentComponent = () => {
               <SegmentedField
                 size={'xs'}
                 id={'frameLineNumbersField'}
-                value={editorState.showLineNumbers}
+                value={options.showLineNumbers}
                 onChange={setShowLineNumbers}
                 items={[
                   {label: t('common.show'), value: true},
@@ -87,11 +88,8 @@ export const EditorStyleForm: ParentComponent = () => {
                 id={'frameFontField'}
                 native={modality === 'mobile'}
                 multiple={false}
-                items={fonts.map(font => ({
-                  label: font.name,
-                  value: font,
-                }))}
-                value={fonts.find(font => font.id === editorState.fontId)}
+                items={fontOptions()}
+                value={font()}
                 itemContent={({label, value, selected}) => (
                   <Text
                     size={'xs'}
@@ -113,7 +111,7 @@ export const EditorStyleForm: ParentComponent = () => {
                 native={modality === 'mobile'}
                 multiple={false}
                 items={fontWeightOptions()}
-                value={editorState.fontWeight}
+                value={options.fontWeight}
                 onSelectChange={value =>
                   setFontWeight(value ?? font()?.types[0].weight ?? 400)
                 }

@@ -87,6 +87,7 @@ importers:
       '@ngneat/elf-devtools': ^1.2.1
       '@ngneat/elf-persist-state': ^1.1.1
       '@solid-primitives/i18n': ^1.1.0
+      '@solid-primitives/immutable': 0.1.0
       '@solid-primitives/resize-observer': ^1.1.0
       '@types/downloadjs': ^1.4.3
       '@vanilla-extract/css': ^1.7.0
@@ -159,6 +160,7 @@ importers:
       '@ngneat/elf-devtools': 1.2.1
       '@ngneat/elf-persist-state': 1.1.1
       '@solid-primitives/i18n': 1.1.0_solid-js@1.4.2
+      '@solid-primitives/immutable': 0.1.0_solid-js@1.4.2
       '@solid-primitives/resize-observer': 1.1.0_solid-js@1.4.2
       '@vanilla-extract/css': 1.7.0
       '@vanilla-extract/dynamic': 2.0.2

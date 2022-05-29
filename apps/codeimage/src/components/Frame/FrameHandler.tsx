@@ -1,4 +1,4 @@
-import {focusedEditor$} from '@codeimage/store/editor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {onCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {Box} from '@codeimage/ui';
 import {dispatch} from '@ngneat/effects';
@@ -7,7 +7,6 @@ import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {
   createEffect,
   createSignal,
-  from,
   JSXElement,
   on,
   ParentProps,
@@ -32,13 +31,12 @@ export function FrameHandler(
   const [ref, setInternalRef] = createSignal<HTMLDivElement>();
   const [handlerRef, setHandlerRef] = createSignal<HTMLDivElement>();
   const [canvasScale, setCanvasScale] = createSignal(1);
+  const editorStore = getRootEditorStore();
 
   const modality = useModality();
 
-  const focusedEditor = from(focusedEditor$);
-
   const filterHotKey = () =>
-    focusedEditor() || document.activeElement?.nodeName === 'INPUT';
+    editorStore.options.focused || document.activeElement?.nodeName === 'INPUT';
 
   const ratio = 0.1;
 

@@ -1,4 +1,4 @@
-import {getRootEditorsState} from '@codeimage/store/editor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {For, VoidProps} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
@@ -14,30 +14,24 @@ export interface WindowTabListManager {
 
 export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
   const {
-    tabs,
     editors,
-    addEditor,
+    actions: {addEditor, removeEditor, setActiveEditorId, setTabName},
     isActive,
-    removeEditor,
-    setActiveEditor,
-    setTabName,
-  } = getRootEditorsState();
+  } = getRootEditorStore();
 
   return (
     <div
       class={styles.wrapper({
-        multi: tabs.length > 0,
+        multi: editors.length > 0,
         accent: props.accent,
       })}
       data-accent-visible={props.accent}
     >
       <div class={styles.tabListWrapper}>
-        <For each={tabs}>
-          {(tab, index) => {
-            const editor = editors[index()];
-
+        <For each={editors}>
+          {editor => {
             const icon = createTabIcon(
-              () => tab.tabName ?? null,
+              () => editor.tab.tabName ?? null,
               () => editor.languageId,
               true,
             );
@@ -46,14 +40,16 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
 
             return (
               <WindowTab
-                tabName={tab.tabName}
+                tabName={editor.tab.tabName}
                 tabIcon={icon()?.content}
                 readonlyTab={!active()}
                 accentMode={props.accent}
                 active={active()}
-                onClick={() => setActiveEditor(editor)}
-                onTabChange={tabName => setTabName(tab.tabId, tabName)}
-                onClose={tabs.length > 1 ? () => removeEditor(editor.id) : null}
+                onClick={() => setActiveEditorId(editor.id)}
+                onTabChange={tabName => setTabName(editor.id, tabName)}
+                onClose={
+                  editors.length > 1 ? () => removeEditor(editor.id) : null
+                }
               />
             );
           }}

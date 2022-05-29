@@ -1,5 +1,9 @@
+import {useI18n} from '@codeimage/locale';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {updateTheme} from '@codeimage/store/effects/onThemeChange';
-import {createMemo, createSignal, For, from, JSXElement} from 'solid-js';
+import * as frame from '@codeimage/store/frame';
+import * as terminal from '@codeimage/store/terminal';
+import * as ui from '@codeimage/store/ui';
 import {
   Button,
   FadeInOutTransition,
@@ -8,20 +12,15 @@ import {
   PortalHostContext,
   useFloating,
 } from '@codeimage/ui';
-import {HintIcon} from '../Icons/Hint';
-import {useI18n} from '@codeimage/locale';
-import {AppLocaleEntries} from '../../i18n';
-import {Popover, PopoverButton} from 'solid-headless';
-import * as styles from './KeyboardShortcuts.css';
 import {offset} from '@floating-ui/dom';
-import * as frame from '@codeimage/store/frame';
-import * as editor from '@codeimage/store/editor';
-import * as terminal from '@codeimage/store/terminal';
-import {appEnvironment} from '../../core/configuration';
-import {focusedEditor$} from '../../state/editor';
-import {useHotkey} from '../../hooks/use-hotkey';
-import * as ui from '@codeimage/store/ui';
 import {dispatch} from '@ngneat/effects';
+import {Popover, PopoverButton} from 'solid-headless';
+import {createMemo, createSignal, For, JSXElement} from 'solid-js';
+import {appEnvironment} from '../../core/configuration';
+import {useHotkey} from '../../hooks/use-hotkey';
+import {AppLocaleEntries} from '../../i18n';
+import {HintIcon} from '../Icons/Hint';
+import * as styles from './KeyboardShortcuts.css';
 
 export interface KeyboardShortcut {
   label: string;
@@ -32,6 +31,7 @@ export function KeyboardShortcuts(): JSXElement {
   const {themes} = appEnvironment;
   const [t] = useI18n<AppLocaleEntries>();
   const [show, setShow] = createSignal(false);
+  const editor = getRootEditorStore();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [
     {label: t('shortcut.focusCodeEditor'), key: ['F']},
@@ -56,19 +56,17 @@ export function KeyboardShortcuts(): JSXElement {
     middleware: [offset(10)],
   });
 
-  const focusedEditor = from(focusedEditor$);
-
   const filterHotKey = () =>
-    focusedEditor() || document.activeElement?.nodeName === 'INPUT';
+    editor.options.focused || document.activeElement?.nodeName === 'INPUT';
 
   useHotkey(document.body, {
     F: event => {
       if (filterHotKey()) return;
       event.preventDefault();
-      editor.setFocus(true);
+      editor.actions.setFocused(true);
     },
     Escape: () => {
-      if (focusedEditor()) {
+      if (editor.options.focused) {
         if (!document.activeElement) return;
         (document.activeElement as HTMLElement).blur();
       } else {

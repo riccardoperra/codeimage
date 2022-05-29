@@ -1,8 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {
-  getActiveEditorState,
-  getRootEditorsState,
-} from '@codeimage/store/editor';
+import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onTabNameChange$} from '@codeimage/store/effects/onTabNameChange';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
@@ -45,7 +43,7 @@ export function App() {
   connectStoreWithQueryParams();
   useEffects([onTabNameChange$, onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
-  const {ready} = getRootEditorsState();
+  const {ready} = getRootEditorStore();
 
   return (
     <Scaffold>
@@ -102,7 +100,7 @@ export function App() {
                 opacity={terminal.opacity}
                 alternativeTheme={terminal.alternativeTheme}
               >
-                <Show when={getActiveEditorState().editor()}>
+                <Show when={getActiveEditorStore().editor()}>
                   <CustomEditor />
                 </Show>
               </DynamicTerminal>

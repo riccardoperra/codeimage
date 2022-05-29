@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {getRootEditorsState} from '@codeimage/store/editor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {updateTheme} from '@codeimage/store/effects/onThemeChange';
 import {terminal$} from '@codeimage/store/terminal';
 import {CustomTheme} from '@codeimage/theme';
@@ -48,14 +48,12 @@ function useFilteredThemes() {
 
 export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const terminal = fromObservableObject(terminal$);
-  const {editor} = getRootEditorsState();
+  const {options} = getRootEditorStore();
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
   const [themes, filteredThemes, search, setSearch] = useFilteredThemes();
-
   const filteredThemeIds = () => filteredThemes().map(theme => theme.id);
-
-  const isSelected = createSelector(() => editor.themeId);
+  const isSelected = createSelector(() => options.themeId);
 
   const onSelectTheme = (theme: CustomTheme) => {
     dispatch(updateTheme({theme}));
