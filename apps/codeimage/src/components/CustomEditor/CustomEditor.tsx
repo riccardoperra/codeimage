@@ -3,7 +3,10 @@ import {
   SUPPORTED_LANGUAGES,
   SUPPORTED_THEMES,
 } from '@codeimage/config';
-import {getActiveEditorState} from '@codeimage/store/editor';
+import {
+  getActiveEditorState,
+  getRootEditorsState,
+} from '@codeimage/store/editor';
 import {EditorView, lineNumbers} from '@codemirror/view';
 import {debounceTime, ReplaySubject, takeUntil} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
@@ -25,7 +28,8 @@ export const CustomEditor = () => {
   const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
-  const {editor, themeId, setCode, setFocused} = getActiveEditorState();
+  const {editor: editorState} = getRootEditorsState();
+  const {editor, setCode, setFocused} = getActiveEditorState();
 
   const selectedLanguage = createMemo(() =>
     languages.find(language => language.id === editor()?.languageId),
@@ -43,7 +47,7 @@ export const CustomEditor = () => {
   );
 
   const themeConfiguration = createMemo(
-    () => themes.find(theme => theme.id === themeId()) ?? themes[0],
+    () => themes.find(theme => theme.id === editorState.themeId) ?? themes[0],
   );
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];
@@ -85,9 +89,9 @@ export const CustomEditor = () => {
   const customFontExtension = () =>
     createCustomFontExtension({
       fontName:
-        fonts.find(({id}) => editor()?.fontId === id)?.name || fonts[0].name,
+        fonts.find(({id}) => editorState.fontId === id)?.name || fonts[0].name,
       // TODO editor fix type never null
-      fontWeight: editor()?.fontWeight ?? 400,
+      fontWeight: editorState.fontWeight ?? 400,
     });
 
   setTimeout(() => {
@@ -142,7 +146,7 @@ export const CustomEditor = () => {
           customFontExtension(),
           currentLanguage() || [],
           currentTheme(),
-          editor()?.showLineNumbers ? lineNumbers() : [],
+          editorState.showLineNumbers ? lineNumbers() : [],
         ],
       }),
     );

@@ -1,9 +1,11 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
-import {font$, getActiveEditorState} from '@codeimage/store/editor';
+import {
+  getActiveEditorState,
+  getRootEditorsState,
+} from '@codeimage/store/editor';
 import {SegmentedField, Select, Text} from '@codeimage/ui';
-import {map} from 'rxjs';
-import {from, ParentComponent, Show} from 'solid-js';
+import {createMemo, ParentComponent, Show} from 'solid-js';
 import {SUPPORTED_FONTS} from '../../core/configuration/font';
 import {useModality} from '../../core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
@@ -15,22 +17,25 @@ export const EditorStyleForm: ParentComponent = () => {
   const fonts = SUPPORTED_FONTS;
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
-  const {editor, setShowLineNumbers, setFontId, setFontWeight, setLanguageId} =
-    getActiveEditorState();
+  const {editor, setLanguageId} = getActiveEditorState();
+  const {
+    editor: editorState,
+    setShowLineNumbers,
+    setFontId,
+    setFontWeight,
+  } = getRootEditorsState();
 
-  const font = from(font$);
+  const font = () =>
+    SUPPORTED_FONTS.find(font => font.id === editorState.fontId);
 
-  const fontWeightOptions = from(
-    font$.pipe(
-      map(font => font?.types || []),
-      map(types =>
-        types.map(type => ({
-          label: type.name,
-          value: type.weight,
-        })),
-      ),
-    ),
-  );
+  const fontWeightOptions = createMemo(() => {
+    const font = SUPPORTED_FONTS.find(font => font.id === editorState.fontId);
+    const types = font?.types || [];
+    return types.map(type => ({
+      label: type.name,
+      value: type.weight,
+    }));
+  });
 
   return (
     <Show when={editor()}>
@@ -66,7 +71,7 @@ export const EditorStyleForm: ParentComponent = () => {
               <SegmentedField
                 size={'xs'}
                 id={'frameLineNumbersField'}
-                value={editor.showLineNumbers}
+                value={editorState.showLineNumbers}
                 onChange={setShowLineNumbers}
                 items={[
                   {label: t('common.show'), value: true},
@@ -86,7 +91,7 @@ export const EditorStyleForm: ParentComponent = () => {
                   label: font.name,
                   value: font,
                 }))}
-                value={fonts.find(font => font.id === editor.fontId)}
+                value={fonts.find(font => font.id === editorState.fontId)}
                 itemContent={({label, value, selected}) => (
                   <Text
                     size={'xs'}
@@ -108,7 +113,7 @@ export const EditorStyleForm: ParentComponent = () => {
                 native={modality === 'mobile'}
                 multiple={false}
                 items={fontWeightOptions()}
-                value={editor.fontWeight}
+                value={editorState.fontWeight}
                 onSelectChange={value =>
                   setFontWeight(value ?? font()?.types[0].weight ?? 400)
                 }

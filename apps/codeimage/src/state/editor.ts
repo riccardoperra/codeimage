@@ -6,7 +6,7 @@ import {
   select,
   withProps,
 } from '@ngneat/elf';
-import {debounceTime, distinctUntilChanged, map} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs';
 import {
   batch,
   createEffect,
@@ -18,7 +18,6 @@ import {
 } from 'solid-js';
 import {createStore, unwrap} from 'solid-js/store';
 import {appEnvironment} from '../core/configuration';
-import {SUPPORTED_FONTS} from '../core/configuration/font';
 import shallow from '../core/helpers/shallow';
 import {useIdb} from '../hooks/use-indexed-db';
 
@@ -28,30 +27,29 @@ export interface TabsState {
   readonly tabIcon?: string;
 }
 
-export interface EditorState {
-  readonly id: string;
-  readonly languageId: string;
-  readonly code: string;
+export interface EditorSharedState {
   readonly fontId: string;
   readonly fontWeight: number;
   readonly showLineNumbers: boolean;
   readonly focused: boolean;
-  readonly tabIcon?: string;
+  readonly themeId: string;
+}
+
+export interface EditorState {
+  readonly id: string;
+  readonly languageId: string;
+  readonly code: string;
 }
 
 const initialState: Omit<EditorState, 'id'> = {
   code: appEnvironment.defaultState.editor.code,
   languageId: appEnvironment.defaultState.editor.languageId,
-  showLineNumbers: false,
-  fontId: appEnvironment.defaultState.editor.font.id,
-  fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
-  focused: false,
 };
 
 type IndexedDbState = {
   readonly editors: readonly EditorState[];
   readonly tabs: readonly TabsState[];
-  readonly themeId: string;
+  readonly customization: EditorSharedState;
 };
 
 function $createEditors() {
@@ -59,10 +57,14 @@ function $createEditors() {
   const [, withNotifier, onChange$] = createStoreNotifier();
   // TODO: Fix initial state sync
   const initialId = createUniqueId();
+  const [state, setState] = createStore<EditorSharedState>({
+    themeId: appEnvironment.defaultState.editor.theme.id,
+    showLineNumbers: false,
+    fontId: appEnvironment.defaultState.editor.font.id,
+    fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
+    focused: false,
+  });
   const [$activeEditorId, $setActiveEditorId] = createSignal<string>(initialId);
-  const [$themeId, $setThemeId] = createSignal<string>(
-    appEnvironment.defaultState.editor.theme.id,
-  );
   const [ready, setReady] = createSignal(false);
   const $isActive = createSelector($activeEditorId);
 
@@ -86,7 +88,7 @@ function $createEditors() {
             tabId: versionateId(tab.tabId),
           }));
           $setActiveEditorId(tabs[0].tabId ?? null);
-          $setThemeId(result.themeId);
+          setState(result.customization);
           setTabs(tabs);
           setEditors(
             result.editors.map(editor => ({
@@ -99,8 +101,12 @@ function $createEditors() {
       .then(() => {
         setReady(true);
         const sub = onChange$.pipe(debounceTime(100)).subscribe(() => {
-          const state: IndexedDbState = {editors, tabs, themeId: $themeId()};
-          idb.set('$editor', unwrap(state));
+          const idbState: IndexedDbState = {
+            editors,
+            tabs,
+            customization: state,
+          };
+          idb.set('$editor', unwrap(idbState));
         });
         onCleanup(() => sub.unsubscribe());
       });
@@ -155,8 +161,11 @@ function $createEditors() {
     setTabName,
     setEditors,
     setTabs,
-    themeId: $themeId,
-    setThemeId: $setThemeId,
+    editor: state,
+    setFontId: (fontId: string) => setState('fontId', fontId),
+    setThemeId: (themeId: string) => setState('themeId', themeId),
+    setFontWeight: (fontWeight: number) => setState('fontWeight', fontWeight),
+    setShowLineNumbers: (show: boolean) => setState('showLineNumbers', show),
     ready,
   } as const;
 }
@@ -179,39 +188,22 @@ export const updateEditorStore = (value: Reducer<EditorState>) =>
   store.update(value);
 
 function $activeEditors() {
-  const {editors, setEditors, isActive, themeId} = $rootEditorState;
+  const {editors, setEditors, isActive} = $rootEditorState;
   const currentEditor = () => editors.find(editor => isActive(editor.id));
 
   const currentEditorIndex = () =>
     editors.findIndex(editor => editor.id === currentEditor()?.id);
 
-  const setFocused = (focused: boolean) =>
-    setEditors(currentEditorIndex(), 'focused', focused);
-
-  const setFontId = (fontId: string) =>
-    setEditors(currentEditorIndex(), 'fontId', fontId);
-
-  const setFontWeight = (fontWeight: number) =>
-    setEditors(currentEditorIndex(), 'fontWeight', fontWeight);
-
   const setLanguageId = (languageId: string) =>
     setEditors(currentEditorIndex(), 'languageId', languageId);
-
-  const setShowLineNumbers = (showLineNumbers: boolean) =>
-    setEditors(currentEditorIndex(), 'showLineNumbers', showLineNumbers);
 
   const setCode = (code: string) =>
     setEditors(currentEditorIndex(), 'code', code);
 
   return {
     editor: currentEditor,
-    setFocused,
-    setFontId,
-    setFontWeight,
     setLanguageId,
-    setShowLineNumbers,
     setCode,
-    themeId,
   };
 }
 
@@ -223,14 +215,8 @@ export function getActiveEditorState() {
 
 export const editor$ = store.pipe(distinctUntilChanged(shallow));
 
-const fontId$ = editor$.pipe(select(store => store.fontId));
-
 export const editorLanguageId$ = editor$.pipe(
   select(store => store.languageId),
-);
-
-export const font$ = fontId$.pipe(
-  map(id => SUPPORTED_FONTS.find(font => font.id === id)),
 );
 
 export const focusedEditor$ = editor$.pipe(select(store => store.focused));

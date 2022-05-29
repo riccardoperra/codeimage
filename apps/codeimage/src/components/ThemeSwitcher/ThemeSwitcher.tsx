@@ -48,14 +48,14 @@ function useFilteredThemes() {
 
 export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const terminal = fromObservableObject(terminal$);
-  const {themeId} = getRootEditorsState();
+  const {editor} = getRootEditorsState();
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
   const [themes, filteredThemes, search, setSearch] = useFilteredThemes();
 
   const filteredThemeIds = () => filteredThemes().map(theme => theme.id);
 
-  const isSelected = createSelector(themeId);
+  const isSelected = createSelector(() => editor.themeId);
 
   const onSelectTheme = (theme: CustomTheme) => {
     dispatch(updateTheme({theme}));
