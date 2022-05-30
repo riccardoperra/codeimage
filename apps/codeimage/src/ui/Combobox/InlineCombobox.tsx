@@ -11,6 +11,8 @@ interface InlineComboboxEventMap extends HTMLElementEventMap {
   selectedItem: CustomEvent<{value: string}>;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export class InlineCombobox extends LionCombobox {
   valueMapper?: (value: string) => string;
   placeholder: string | null | undefined;

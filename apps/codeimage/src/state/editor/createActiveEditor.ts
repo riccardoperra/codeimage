@@ -1,31 +1,11 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {createRoot} from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
-
-export interface TabsState {
-  readonly tabId: string;
-  readonly tabName: string | null;
-  readonly tabIcon?: string;
-}
-
-export interface EditorSharedState {
-  readonly fontId: string;
-  readonly fontWeight: number;
-  readonly showLineNumbers: boolean;
-  readonly focused: boolean;
-  readonly themeId: string;
-}
 
 export interface EditorState {
   readonly id: string;
   readonly languageId: string;
   readonly code: string;
 }
-
-const initialState: Omit<EditorState, 'id'> = {
-  code: appEnvironment.defaultState.editor.code,
-  languageId: appEnvironment.defaultState.editor.languageId,
-};
 
 function $activeEditors() {
   const {

@@ -1,12 +1,9 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {For, VoidProps} from 'solid-js';
-import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import * as styles from './Tab.css';
 import {TabAddButton} from './TabAddButton/TabAddButton';
 import {WindowTab} from './WindowTab';
-
-const exportExclude = _exportExclude;
 
 export interface WindowTabListManager {
   accent: boolean;
