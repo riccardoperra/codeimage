@@ -1,7 +1,14 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {Box, useFloating} from '@codeimage/ui';
 import createResizeObserver from '@solid-primitives/resize-observer';
-import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  JSXElement,
+  onMount,
+} from 'solid-js';
 import {highlight as _highlight} from '../../../../core/directives/highlight';
 import '../../../../ui/Combobox/InlineCombobox';
 import {InlineCombobox} from '../../../../ui/Combobox/InlineCombobox';
@@ -75,6 +82,12 @@ export function TabName(props: TabNameProps): JSXElement {
       onResize: resize => setWidth(resize.width),
     });
 
+    if (!props.readonly) {
+      queueMicrotask(() => {
+        ref.focus();
+      });
+    }
+
     observe(ref);
   });
 
@@ -86,7 +99,6 @@ export function TabName(props: TabNameProps): JSXElement {
       }}
       name="tabName"
       value={props.value}
-      autofocus={!props.readonly}
       placeholder={'Untitled'}
       onInput={event => onChange((event.target as HTMLInputElement).value)}
       on:selectedItemChange={event =>

@@ -75,6 +75,9 @@ function $createEditorsStore() {
         const id = createUniqueId();
         const editor: EditorState = {
           ...getInitialEditorState(),
+          tab: {
+            tabName: null,
+          },
           ...(state ?? {}),
           id,
         };
