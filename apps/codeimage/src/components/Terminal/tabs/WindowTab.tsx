@@ -1,5 +1,6 @@
 import {LanguageIconDefinition} from '@codeimage/config';
 import {Text} from '@codeimage/ui';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Show, VoidProps} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
 import {CloseIcon} from '../../Icons/CloseIcon';
@@ -10,6 +11,7 @@ import {TabName} from './TabName/TabName';
 const exportExclude = _exportExclude;
 
 interface WindowTabProps {
+  readonly index: number;
   readonly tabName?: string | null;
   readonly tabIcon?: LanguageIconDefinition['content'];
   readonly readonlyTab: boolean;
@@ -28,6 +30,12 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
         accent: props.accentMode,
         active: props.active,
       })}
+      data-host-index={props.index}
+      data-accent-visible={props.accentMode}
+      style={assignInlineVars({
+        [styles.tabVars.tabIndex]: String(props.index),
+      })}
+      data-active={props.active}
       onClick={() => props.onClick?.()}
     >
       <Show when={props.tabIcon}>{icon => <TabIcon content={icon} />}</Show>
@@ -57,6 +65,7 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
               evt.preventDefault();
             }}
             size={'xs'}
+            stroke-width={3}
             data-export-exclude={true}
           />
         )}

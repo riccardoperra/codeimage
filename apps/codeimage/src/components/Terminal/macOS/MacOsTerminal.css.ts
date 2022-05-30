@@ -15,7 +15,6 @@ export const headerIconRow = style({
   alignItems: 'center',
   display: 'flex',
   paddingLeft: themeVars.spacing['4'],
-  paddingRight: themeVars.spacing['4'],
   columnGap: themeVars.spacing['2'],
 });
 

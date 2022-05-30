@@ -1,5 +1,5 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {For, VoidProps} from 'solid-js';
+import {createMemo, For, VoidProps} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import * as styles from './Tab.css';
 import {TabAddButton} from './TabAddButton/TabAddButton';
@@ -26,7 +26,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
     >
       <div class={styles.tabListWrapper}>
         <For each={editors}>
-          {editor => {
+          {(editor, index) => {
             const icon = createTabIcon(
               () => editor.tab.tabName ?? null,
               () => editor.languageId,
@@ -35,8 +35,17 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
 
             const active = () => isActive(editor.id);
 
+            const zIndex = createMemo(() => {
+              if (active()) {
+                return 20;
+              } else {
+                return 20 - (index() + 1);
+              }
+            });
+
             return (
               <WindowTab
+                index={zIndex()}
                 tabName={editor.tab.tabName}
                 tabIcon={icon()?.content}
                 readonlyTab={!active()}

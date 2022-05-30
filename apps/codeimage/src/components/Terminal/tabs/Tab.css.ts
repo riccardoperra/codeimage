@@ -5,6 +5,7 @@ import {terminalVars} from '../terminal.css';
 
 export const [tabTheme, tabVars] = createTheme({
   tabHeight: '30px',
+  tabIndex: 0,
 });
 
 export const wrapper = recipe({
@@ -15,6 +16,7 @@ export const wrapper = recipe({
       alignItems: 'center',
       marginRight: themeVars.spacing['2'],
       overflow: 'hidden',
+      marginLeft: themeVars.spacing['2'],
     },
   ],
   variants: {
@@ -35,10 +37,14 @@ export const tabListWrapper = style({
   display: 'flex',
   overflow: 'hidden',
   marginRight: themeVars.spacing['1'],
+  paddingLeft: themeVars.spacing['2'],
   transition: 'all 150ms ease-in-out',
   selectors: {
     '[data-accent-visible=false] &': {
       columnGap: '8px',
+    },
+    '[data-accent-visible=true] &': {
+      paddingLeft: '8px',
     },
   },
 });
@@ -80,14 +86,17 @@ export const tab = recipe({
         paddingLeft: themeVars.spacing['3'],
         backgroundColor: terminalVars.backgroundColor,
         boxShadow: '0px 10px 10px 0 rgba(0,0,0,.30)',
-
-        ':first-child': {
-          borderTopRightRadius: 0,
-          marginRight: '4px',
-        },
+        zIndex: tabVars.tabIndex,
         selectors: {
-          '&:nth-child(1)': {
+          '&:first-child': {
             marginRight: '-8px',
+          },
+          '&:nth-child(n + 2)': {
+            marginRight: '-8px',
+            paddingLeft: `calc(${themeVars.spacing['3']} + 8px)`,
+          },
+          '&:nth-child(n + 2):last-child': {
+            marginRight: '8px',
           },
           '&:before, &:after': {
             content: '',
@@ -123,6 +132,7 @@ export const tab = recipe({
       true: {
         minWidth: 'unset',
       },
+      false: {},
     },
   },
   compoundVariants: [
@@ -141,23 +151,23 @@ export const tab = recipe({
     {
       variants: {
         accent: true,
-        active: true,
-      },
-      style: {
-        zIndex: 10,
-      },
-    },
-    {
-      variants: {
-        accent: true,
         active: false,
       },
       style: {
         // TODO: polished could be needed
         backgroundColor: `${terminalVars.backgroundColor}`,
+        selectors: {
+          '&:not(:first-child) &': {
+            borderTopLeftRadius: 0,
+          },
+          '[data-active=true] &': {
+            marginLeft: '-8px',
+          },
+          '&:not(:last-child)': {
+            borderTopRightRadius: 0,
+          },
+        },
         filter: 'brightness(0.90)',
-        borderTopLeftRadius: 0,
-        borderTopRightRadius: 0,
       },
     },
   ],
@@ -169,6 +179,7 @@ export const tabCloseIcon = style({
   borderRadius: themeVars.borderRadius.full,
   cursor: 'pointer',
   width: '14px',
+  minWidth: '14px',
   display: 'inline-block',
   height: '14px',
   ':hover': {
@@ -191,6 +202,7 @@ export const tabTextContent = style({
 
 export const fallbackText = style({
   fontSize: '14px',
+  lineHeight: '14px',
+  marginRight: themeVars.spacing['2'],
   opacity: '.50',
-  fontWeight: 'normal',
 });
