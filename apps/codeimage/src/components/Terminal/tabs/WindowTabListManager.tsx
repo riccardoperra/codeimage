@@ -13,6 +13,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
   const {
     editors,
     actions: {addEditor, removeEditor, setActiveEditorId, setTabName},
+    computed: {canAddEditor},
     isActive,
   } = getRootEditorStore();
 
@@ -61,7 +62,10 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
           }}
         </For>
       </div>
-      <TabAddButton onAdd={() => addEditor(null, true)} />
+      <TabAddButton
+        disabled={!canAddEditor()}
+        onAdd={() => addEditor(null, true)}
+      />
     </div>
   );
 }

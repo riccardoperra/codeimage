@@ -14,13 +14,19 @@ export const button = style({
   backgroundColor: 'transparent',
   color: 'white',
   cursor: 'pointer',
-  ':hover': {
-    backgroundColor: 'rgba(255,255,255, .10)',
+  ':disabled': {
+    cursor: 'not-allowed',
+    opacity: '.25',
   },
   ':focus': {
     backgroundColor: 'rgba(255,255,255, .05)',
   },
-  ':active': {
-    backgroundColor: 'rgba(255,255,255, .25)',
+  selectors: {
+    '&:not(:disabled):active': {
+      backgroundColor: 'rgba(255,255,255, .25)',
+    },
+    '&:not(:disabled):hover': {
+      backgroundColor: 'rgba(255,255,255, .10)',
+    },
   },
 });

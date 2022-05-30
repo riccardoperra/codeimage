@@ -5,6 +5,7 @@ import * as styles from './TabAddButton.css';
 
 export interface TabAddButtonProps {
   onAdd: () => void;
+  disabled: boolean;
 }
 
 export function TabAddButton(props: VoidProps<TabAddButtonProps>) {
@@ -14,6 +15,7 @@ export function TabAddButton(props: VoidProps<TabAddButtonProps>) {
     <button
       use:exportExclude={true}
       tabIndex={-1}
+      disabled={props.disabled}
       class={styles.button}
       onClick={() => props.onAdd()}
     >

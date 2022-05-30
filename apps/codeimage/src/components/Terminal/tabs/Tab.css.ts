@@ -5,7 +5,7 @@ import {terminalVars} from '../terminal.css';
 
 export const [tabTheme, tabVars] = createTheme({
   tabHeight: '30px',
-  tabIndex: 0,
+  tabIndex: '0',
 });
 
 export const wrapper = recipe({
@@ -167,7 +167,7 @@ export const tab = recipe({
             borderTopRightRadius: 0,
           },
         },
-        filter: 'brightness(0.90)',
+        filter: 'brightness(0.80)',
       },
     },
   ],

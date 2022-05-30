@@ -36,7 +36,7 @@ function getInitialEditorState(): EditorState {
 
 function $createEditorsStore() {
   const IDB_KEY = 'editor';
-
+  const MAX_TABS = 6;
   const idb = useIdb();
   const [, withNotifier, version$] = createStoreNotifier();
   const [options, setOptions, optionsActions] = getRootEditorOptions();
@@ -49,7 +49,7 @@ function $createEditorsStore() {
     const idbState = await idb.get<PersistedEditorState>(IDB_KEY);
     if (idbState) {
       // Versioning state tabs -> TODO: not needed if id is not createUniqueId from solid
-      const editors = idbState.editors.map(editor => ({
+      const editors = idbState.editors.slice(0, MAX_TABS).map(editor => ({
         ...editor,
         id: versionateId(editor.id),
       }));
@@ -69,7 +69,8 @@ function $createEditorsStore() {
   );
 
   const addEditor = withNotifier(
-    (state?: Partial<EditorState> | null, active?: boolean) =>
+    (state?: Partial<EditorState> | null, active?: boolean) => {
+      if (editors.length === MAX_TABS) return;
       batch(() => {
         const id = createUniqueId();
         const editor: EditorState = {
@@ -79,18 +80,22 @@ function $createEditorsStore() {
         };
         setEditors(editors => [...editors, editor]);
         if (active) setActiveEditorId(id);
-      }),
+      });
+    },
   );
+
+  const canAddEditor = () => editors.length < MAX_TABS;
 
   const removeEditor = withNotifier((id: string) => {
     if (editors.length === 1) {
       return;
     }
     const $isActive = isActive(id);
+    const currentIndex = editors.findIndex(editor => editor.id === id);
+    const newActiveEditor = editors[currentIndex - 1];
     setEditors(editors => editors.filter(editor => editor.id !== id));
     if ($isActive) {
-      const previousEditor = editors[editors.length - 1];
-      setActiveEditorId(previousEditor?.id ?? editors[0]?.id);
+      setActiveEditorId(newActiveEditor?.id ?? editors[0]?.id);
     }
   });
 
@@ -114,6 +119,7 @@ function $createEditorsStore() {
     isActive,
     computed: {
       font,
+      canAddEditor,
     },
     actions: {
       addEditor,
