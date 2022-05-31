@@ -83,9 +83,8 @@ export function TabName(props: TabNameProps): JSXElement {
     });
 
     if (!props.readonly) {
-      queueMicrotask(() => {
-        ref.focus();
-      });
+      // Cannot use queueScheduler
+      requestAnimationFrame(() => ref.focus());
     }
 
     observe(ref);

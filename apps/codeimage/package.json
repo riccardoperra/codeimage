@@ -66,6 +66,7 @@
     "@solid-primitives/i18n": "^1.1.0",
     "@solid-primitives/immutable": "0.1.0",
     "@solid-primitives/resize-observer": "^1.1.0",
+    "@thisbeyond/solid-dnd": "0.6.1",
     "@vanilla-extract/css": "^1.7.0",
     "@vanilla-extract/dynamic": "^2.0.2",
     "@vanilla-extract/recipes": "^0.2.4",

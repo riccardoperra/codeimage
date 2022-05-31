@@ -1,5 +1,6 @@
 import {LanguageIconDefinition} from '@codeimage/config';
 import {Text} from '@codeimage/ui';
+import {createSortable, maybeTransformStyle} from '@thisbeyond/solid-dnd';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Show, VoidProps} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
@@ -11,6 +12,7 @@ import {TabName} from './TabName/TabName';
 const exportExclude = _exportExclude;
 
 interface WindowTabProps {
+  readonly id: string;
   readonly index: number;
   readonly tabName?: string | null;
   readonly tabIcon?: LanguageIconDefinition['content'];
@@ -23,9 +25,18 @@ interface WindowTabProps {
 }
 
 export function WindowTab(props: VoidProps<WindowTabProps>) {
+  const sortable = createSortable(props.id);
+
+  const dragStyle = () =>
+    maybeTransformStyle({
+      ...sortable.transform,
+      y: 0,
+    });
+
   return (
     <div
       use:exportExclude={!props.tabName?.length}
+      ref={sortable.ref}
       class={styles.tab({
         accent: props.accentMode,
         active: props.active,
@@ -34,9 +45,11 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
       data-accent-visible={props.accentMode}
       style={assignInlineVars({
         [styles.tabVars.tabIndex]: String(props.index),
+        ...dragStyle(),
       })}
       data-active={props.active}
-      onClick={() => props.onClick?.()}
+      onMouseDown={() => props.onClick?.()}
+      {...sortable.dragActivators}
     >
       <Show when={props.tabIcon}>{icon => <TabIcon content={icon} />}</Show>
       <div class={styles.tabTextContent}>
