@@ -1,8 +1,8 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {
-  closestCenter,
   DragDropProvider,
   DragDropSensors,
+  mostIntersecting,
   SortableProvider,
 } from '@thisbeyond/solid-dnd';
 import {DragEventHandler} from '@thisbeyond/solid-dnd/dist/types/drag-drop-context';
@@ -53,11 +53,13 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
       data-accent-visible={props.accent}
     >
       <div class={styles.tabListWrapper}>
+        {/* @ts-expect-error: TODO: Should update library types */}
         <DragDropProvider
           onDragEnd={handleDragEnd}
-          collisionDetector={closestCenter}
+          collisionDetector={mostIntersecting}
         >
           <DragDropSensors />
+          {/* @ts-expect-error: TODO: Should update library types */}
           <SortableProvider
             ids={createMemo(() => editors.map(editor => editor.id))()}
           >
@@ -87,7 +89,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
                     tabIcon={icon()?.content}
                     readonlyTab={!active()}
                     accentMode={props.accent}
-                    active={active()}
+                    active={active() && editors.length > 1}
                     onClick={() => setActiveEditorId(editor.id)}
                     onTabChange={tabName => {
                       setTabName(editor.id, tabName, true);

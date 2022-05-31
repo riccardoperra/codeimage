@@ -71,6 +71,14 @@ export const tab = recipe({
       minWidth: '0px',
       flex: '0 1 auto',
     },
+    {
+      selectors: {
+        '&[data-active-drag=true]': {
+          zIndex: 21,
+          backdropFilter: 'blur(20px) saturate(180%)',
+        },
+      },
+    },
   ],
   variants: {
     accent: {
@@ -90,6 +98,10 @@ export const tab = recipe({
         selectors: {
           '&:first-child': {
             marginRight: '-8px',
+          },
+          '&:first-child:last-child': {
+            marginRight: '8px',
+            filter: 'unset',
           },
           '&:nth-child(n + 2)': {
             marginRight: '-8px',

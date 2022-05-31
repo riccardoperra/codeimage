@@ -1,14 +1,7 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {Box, useFloating} from '@codeimage/ui';
 import createResizeObserver from '@solid-primitives/resize-observer';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  JSXElement,
-  onMount,
-} from 'solid-js';
+import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
 import {highlight as _highlight} from '../../../../core/directives/highlight';
 import '../../../../ui/Combobox/InlineCombobox';
 import {InlineCombobox} from '../../../../ui/Combobox/InlineCombobox';

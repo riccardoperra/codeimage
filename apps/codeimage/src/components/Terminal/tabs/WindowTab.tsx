@@ -11,7 +11,7 @@ import {TabName} from './TabName/TabName';
 
 const exportExclude = _exportExclude;
 
-interface WindowTabProps {
+export interface WindowTabProps {
   readonly id: string;
   readonly index: number;
   readonly tabName?: string | null;
@@ -41,6 +41,7 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
         accent: props.accentMode,
         active: props.active,
       })}
+      data-active-drag={sortable.isActiveDraggable}
       data-host-index={props.index}
       data-accent-visible={props.accentMode}
       style={assignInlineVars({
