@@ -89,7 +89,9 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
                     accentMode={props.accent}
                     active={active()}
                     onClick={() => setActiveEditorId(editor.id)}
-                    onTabChange={tabName => setTabName(editor.id, tabName)}
+                    onTabChange={tabName => {
+                      setTabName(editor.id, tabName, true);
+                    }}
                     onClose={
                       editors.length > 1 ? () => removeEditor(editor.id) : null
                     }

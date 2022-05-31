@@ -1,6 +1,4 @@
-import {updateTabName} from '@codeimage/store/effects/onTabNameChange';
 import {themeVars} from '@codeimage/ui';
-import {dispatch} from '@ngneat/effects';
 import {createStore, select, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
@@ -72,14 +70,6 @@ export function toggleShowHeader() {
 
 export function toggleWatermark() {
   store.update(setProp('showWatermark', showWatermark => !showWatermark));
-}
-
-export function setTabName(tabName: string) {
-  store.update(setProp('tabName', tabName));
-  if (!tabName) {
-    return;
-  }
-  dispatch(updateTabName({tabName}));
 }
 
 export const terminal$ = store.pipe(distinctUntilChanged(shallow));

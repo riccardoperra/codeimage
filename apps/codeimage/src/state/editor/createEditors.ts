@@ -1,3 +1,4 @@
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {createStoreNotifier} from '@codeimage/store/plugins/store-notifier';
 import {createUniqueId, versionateId} from '@codeimage/store/plugins/unique-id';
 import {filter} from '@solid-primitives/immutable';
@@ -102,13 +103,23 @@ function $createEditorsStore() {
     }
   });
 
-  const setTabName = withNotifier((id: string, name: string) =>
-    setEditors(
-      editors.findIndex(tab => tab.id === id),
-      'tab',
-      'tabName',
-      name,
-    ),
+  const setTabName = withNotifier(
+    (id: string, name: string, updateLanguage: boolean) => {
+      const index = editors.findIndex(tab => tab.id === id);
+      setEditors(index, 'tab', 'tabName', name);
+      if (updateLanguage) {
+        const matches = SUPPORTED_LANGUAGES.filter(language => {
+          return language.icons.some(({matcher}) => matcher.test(name));
+        });
+        if (
+          !matches.length ||
+          matches.map(match => match.id).includes(editors[index].languageId)
+        ) {
+          return;
+        }
+        setEditors(index, 'languageId', matches[0].id);
+      }
+    },
   );
 
   const font = createMemo(

@@ -2,11 +2,10 @@ import {useI18n} from '@codeimage/locale';
 import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
-import {onTabNameChange$} from '@codeimage/store/effects/onTabNameChange';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {frame$, setScale} from '@codeimage/store/frame';
 import {connectStoreWithQueryParams} from '@codeimage/store/plugins/connect-store-with-query-params';
-import {setTabName, terminal$} from '@codeimage/store/terminal';
+import {terminal$} from '@codeimage/store/terminal';
 import {Box, LoadingOverlay, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {initEffects} from '@ngneat/effects';
 import {createEffect, createSignal, on, Show} from 'solid-js';
@@ -41,7 +40,7 @@ export function App() {
   const modality = useModality();
   const [, {locale}] = useI18n();
   connectStoreWithQueryParams();
-  useEffects([onTabNameChange$, onThemeChange$, copyToClipboard$]);
+  useEffects([onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
   const {ready} = getRootEditorStore();
 
@@ -93,7 +92,6 @@ export function App() {
                 accentVisible={terminal.accentVisible}
                 darkMode={terminal.darkMode}
                 textColor={terminal.textColor}
-                onTabChange={setTabName}
                 showHeader={terminal.showHeader}
                 showGlassReflection={terminal.showGlassReflection}
                 showWatermark={terminal.showWatermark}
