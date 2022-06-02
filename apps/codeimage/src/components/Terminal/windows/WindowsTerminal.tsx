@@ -1,9 +1,7 @@
-import {Box, sprinkles, Text} from '@codeimage/ui';
-import clsx from 'clsx';
+import {Box} from '@codeimage/ui';
 import {ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
-import {TabIcon} from '../tabs/TabIcon/TabIcon';
-import {TabName} from '../tabs/TabName/TabName';
+import {WindowTabListManager} from '../tabs/WindowTabListManager';
 import * as baseStyles from '../terminal.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './WindowsTerminal.css';
@@ -12,7 +10,7 @@ import {WindowsTerminalControls} from './WindowsTerminalControls';
 export const exportExclude = _exportExclude;
 
 export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
-  const showTab = () => !!props.accentVisible && !props.alternativeTheme;
+  const showTab = () => props.accentVisible && !props.alternativeTheme;
   return (
     <TerminalHost {...props} theme={styles.theme}>
       <Show when={props.showHeader}>
@@ -22,32 +20,9 @@ export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
           data-accent-visible={showTab()}
         >
           <Show when={props.showTab}>
-            <div
-              use:exportExclude={!props.tabName?.length}
-              class={clsx(
-                baseStyles.tab({
-                  accent: showTab(),
-                }),
-                sprinkles({marginLeft: 6}),
-              )}
-            >
-              <Show when={props.tabIcon}>
-                {icon => <TabIcon content={icon} />}
-              </Show>
-
-              <Show
-                fallback={
-                  <Text size={'sm'}>{props.tabName ?? 'Untitled'}</Text>
-                }
-                when={!props.readonlyTab}
-              >
-                <TabName
-                  readonly={false}
-                  value={props.tabName ?? ''}
-                  onValueChange={value => props.onTabChange?.(value)}
-                />
-              </Show>
-            </div>
+            <WindowTabListManager
+              accent={props.accentVisible && !props.alternativeTheme}
+            />
           </Show>
 
           <WindowsTerminalControls />
