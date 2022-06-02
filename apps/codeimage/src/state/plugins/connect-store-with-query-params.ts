@@ -12,6 +12,9 @@ import {onMount} from 'solid-js';
 import shallow from '../../core/helpers/shallow';
 import {selectSlice} from '../../core/operators/selectSlice';
 
+/**
+ * @deprecated This feature must be refactored.
+ */
 export function connectStoreWithQueryParams() {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -32,10 +35,6 @@ export function connectStoreWithQueryParams() {
     selectSlice(['background', 'padding', 'radius', 'visible', 'opacity']),
   );
 
-  // const editorState$ = editor$.pipe(
-  //   selectSlice(['code', 'languageId', 'themeId', 'showLineNumbers', 'fontId']),
-  // );
-
   onMount(() => {
     const data = searchParams.p;
 
@@ -46,9 +45,6 @@ export function connectStoreWithQueryParams() {
           if (params.terminal) {
             updateTerminalStore(state => ({...state, ...params.terminal}));
           }
-          // if (params.editor) {
-          //   updateEditorStore(state => ({...state, ...params.editor}));
-          // }
           if (params.frame) {
             updateFrameStore(state => ({...state, ...params.frame}));
           }
