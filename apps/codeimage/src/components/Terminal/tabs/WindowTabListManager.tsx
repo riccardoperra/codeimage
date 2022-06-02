@@ -1,13 +1,16 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {
+  createPointerSensor,
   DragDropProvider,
   DragDropSensors,
   mostIntersecting,
   SortableProvider,
+  useDragDropContext,
 } from '@thisbeyond/solid-dnd';
 import {DragEventHandler} from '@thisbeyond/solid-dnd/dist/types/drag-drop-context';
-import {createMemo, For, VoidProps} from 'solid-js';
+import {createMemo, For, onMount, VoidProps} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
+import {DragDropSensorsWithBoundary} from './DndCustomSensor';
 import * as styles from './Tab.css';
 import {TabAddButton} from './TabAddButton/TabAddButton';
 import {WindowTab} from './WindowTab';
@@ -17,6 +20,8 @@ export interface WindowTabListManager {
 }
 
 export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
+  let wrapperRef: HTMLDivElement;
+
   const {
     editors,
     actions: {
@@ -52,19 +57,21 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
       })}
       data-accent-visible={props.accent}
     >
-      <div class={styles.tabListWrapper}>
+      <div class={styles.tabListWrapper} ref={wrapperRef!}>
         {/* @ts-expect-error: TODO: Should update library types */}
         <DragDropProvider
           onDragEnd={handleDragEnd}
           collisionDetector={mostIntersecting}
         >
-          <DragDropSensors />
+          <DragDropSensorsWithBoundary boundary={() => wrapperRef} />
           {/* @ts-expect-error: TODO: Should update library types */}
           <SortableProvider
             ids={createMemo(() => editors.map(editor => editor.id))()}
           >
             <For each={editors}>
               {(editor, index) => {
+                let ref: HTMLDivElement;
+
                 const icon = createTabIcon(
                   () => editor.tab.tabName ?? null,
                   () => editor.languageId,
@@ -83,6 +90,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
 
                 return (
                   <WindowTab
+                    ref={ref}
                     id={editor.id}
                     index={zIndex()}
                     tabName={editor.tab.tabName}
