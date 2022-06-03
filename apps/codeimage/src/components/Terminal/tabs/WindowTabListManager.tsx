@@ -1,13 +1,12 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {DragDropSensorsWithBoundary, DragEventParam} from '@core/modules/dnd';
 import {
   closestCorners,
   DragDropProvider,
   SortableProvider,
 } from '@thisbeyond/solid-dnd';
-import {DragEventHandler} from '@thisbeyond/solid-dnd/dist/types/drag-drop-context';
 import {createMemo, For, VoidProps} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
-import {DragDropSensorsWithBoundary} from './DndCustomSensor';
 import * as styles from './Tab.css';
 import {TabAddButton} from './TabAddButton/TabAddButton';
 import {WindowTab} from './WindowTab';
@@ -32,7 +31,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
     isActive,
   } = getRootEditorStore();
 
-  function handleDragEnd(handler: Parameters<DragEventHandler>[0]) {
+  function handleDragEnd(handler: DragEventParam) {
     if (handler.draggable && handler.droppable) {
       const droppableId = handler.droppable.id;
       const draggableId = handler.draggable.id;
@@ -48,10 +47,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
 
   return (
     <div
-      class={styles.wrapper({
-        multi: editors.length > 0,
-        accent: props.accent,
-      })}
+      class={styles.wrapper({accent: props.accent})}
       data-accent-visible={props.accent}
     >
       <div class={styles.tabListWrapper} ref={wrapperRef!}>
@@ -100,9 +96,9 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
                     accentMode={props.accent}
                     active={active() && editors.length > 1}
                     onClick={() => setActiveEditorId(editor.id)}
-                    onTabChange={tabName => {
-                      setTabName(editor.id, tabName, true);
-                    }}
+                    onTabChange={tabName =>
+                      setTabName(editor.id, tabName, true)
+                    }
                     onClose={
                       editors.length > 1 ? () => removeEditor(editor.id) : null
                     }

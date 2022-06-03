@@ -1,7 +1,7 @@
 import {backgroundColorVar, Box} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {ParentComponent, Show} from 'solid-js';
-import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {WindowTabListManager} from '../tabs/WindowTabListManager';
 import * as baseStyles from '../terminal.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
@@ -44,13 +44,6 @@ export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
             <WindowTabListManager
               accent={props.accentVisible && !props.alternativeTheme}
             />
-            {/*<WindowTab*/}
-            {/*  tabName={props.tabName ?? 'Untitled'}*/}
-            {/*  tabIcon={props.tabIcon}*/}
-            {/*  readonlyTab={props.readonlyTab}*/}
-            {/*  accentMode={showTab()}*/}
-            {/*  onTabChange={value => props.onTabChange?.(value)}*/}
-            {/*/>*/}
           </Show>
         </div>
       </Show>

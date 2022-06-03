@@ -1,15 +1,16 @@
+import {DndRect} from './types';
 import {useDragDropContext} from '@thisbeyond/solid-dnd';
-import {Accessor, onCleanup, onMount, ParentComponent} from 'solid-js';
-import {pickProps} from 'solid-use';
+import {Accessor, onCleanup, onMount} from 'solid-js';
 
-export const createPointerSensorWithBoundaryAndLockAxis = (
+/**
+ * @private
+ * @param boundary
+ * @param boundaryPadding
+ * @param id
+ */
+export const createSensorWithBoundary = (
   boundary: Accessor<HTMLElement>,
-  boundaryPadding?: {
-    left?: number;
-    top?: number;
-    bottom?: number;
-    right?: number;
-  },
+  boundaryPadding?: DndRect,
   id: string | number = 'pointer-sensor-with-boundary',
 ): void => {
   const [
@@ -139,21 +140,4 @@ export const createPointerSensorWithBoundaryAndLockAxis = (
   const clearSelection = () => {
     window.getSelection()?.removeAllRanges();
   };
-};
-
-export const DragDropSensorsWithBoundary: ParentComponent<{
-  boundary: Accessor<HTMLElement>;
-  boundaryPadding?: {
-    left?: number;
-    top?: number;
-    right?: number;
-    bottom?: number;
-  };
-}> = props => {
-  const pickedProps = pickProps(props, ['boundary', 'boundaryPadding']);
-  createPointerSensorWithBoundaryAndLockAxis(
-    pickedProps.boundary,
-    pickedProps.boundaryPadding,
-  );
-  return <>{props.children}</>;
 };

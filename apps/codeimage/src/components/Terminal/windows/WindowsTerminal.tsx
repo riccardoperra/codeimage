@@ -1,6 +1,6 @@
 import {Box} from '@codeimage/ui';
 import {ParentComponent, Show} from 'solid-js';
-import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {WindowTabListManager} from '../tabs/WindowTabListManager';
 import * as baseStyles from '../terminal.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';

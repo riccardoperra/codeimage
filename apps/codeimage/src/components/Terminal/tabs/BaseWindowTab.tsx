@@ -2,7 +2,7 @@ import {LanguageIconDefinition} from '@codeimage/config';
 import {Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {Show, VoidProps} from 'solid-js';
-import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import * as styles from './Tab.css';
 import {TabIcon} from './TabIcon/TabIcon';
 

@@ -1,9 +1,9 @@
 import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {ParentComponent, Show} from 'solid-js';
-import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
-import {useModality} from '../../core/hooks/isMobile';
-import {createHorizontalResize} from '../../core/hooks/resizable';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
+import {useModality} from '@core/hooks/isMobile';
+import {createHorizontalResize} from '@core/hooks/resizable';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;

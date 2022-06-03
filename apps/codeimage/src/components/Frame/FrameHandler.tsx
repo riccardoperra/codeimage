@@ -11,10 +11,10 @@ import {
   on,
   ParentProps,
 } from 'solid-js';
-import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
-import {createRef} from '../../core/helpers/create-ref';
-import {getScaleByRatio} from '../../core/helpers/getScale';
-import {useModality} from '../../core/hooks/isMobile';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
+import {createRef} from '@core/helpers/create-ref';
+import {getScaleByRatio} from '@core/helpers/getScale';
+import {useModality} from '@core/hooks/isMobile';
 import {useHotkey} from '../../hooks/use-hotkey';
 import * as styles from './Frame.css';
 

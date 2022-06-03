@@ -19,6 +19,9 @@
     "paths": {
       "@codeimage/store/*": [
         "./src/state/*"
+      ],
+      "@core/*": [
+        "./src/core/*"
       ]
     }
   },

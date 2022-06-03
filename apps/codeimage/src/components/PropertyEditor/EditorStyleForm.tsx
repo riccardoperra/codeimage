@@ -3,10 +3,9 @@ import {useI18n} from '@codeimage/locale';
 import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {SegmentedField, Select, Text} from '@codeimage/ui';
-import {get, map} from '@solid-primitives/immutable';
+import {SUPPORTED_FONTS} from '@core/configuration/font';
+import {useModality} from '@core/hooks/isMobile';
 import {createMemo, ParentComponent, Show} from 'solid-js';
-import {SUPPORTED_FONTS} from '../../core/configuration/font';
-import {useModality} from '../../core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
@@ -21,18 +20,17 @@ export const EditorStyleForm: ParentComponent = () => {
     options,
     actions: {setShowLineNumbers, setFontWeight, setFontId},
     computed: {font},
-    // editor: editorState,
   } = getRootEditorStore();
 
   const fontOptions = createMemo(() =>
-    map(fonts, font => ({
+    fonts.map(font => ({
       label: font.name,
       value: font,
     })),
   );
 
   const fontWeightOptions = createMemo(() =>
-    map(get(font(), 'types'), type => ({
+    font().types.map(type => ({
       label: type.name,
       value: type.weight,
     })),

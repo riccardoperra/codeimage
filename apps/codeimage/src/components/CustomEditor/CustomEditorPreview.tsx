@@ -13,6 +13,7 @@ import {
 } from 'solid-js';
 import {SUPPORTED_FONTS} from '../../core/configuration/font';
 import {createCustomFontExtension} from './custom-font-extension';
+import {fixCodeMirrorAriaRole} from './fix-cm-aria-roles-lighthouse';
 
 interface CustomEditorPreviewProps {
   themeId: string;
@@ -26,6 +27,8 @@ export const CustomEditorPreview = (
   props: VoidProps<CustomEditorPreviewProps>,
 ) => {
   let editorEl!: HTMLDivElement;
+  fixCodeMirrorAriaRole();
+
   const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
@@ -61,20 +64,6 @@ export const CustomEditorPreview = (
     '.cm-line': {
       padding: '0 2px 0 8px',
     },
-  });
-
-  setTimeout(() => {
-    const content = document.querySelector('.cm-content');
-    if (!content) {
-      return;
-    }
-
-    /**
-     * **🚀 Seo tip: fix invalid aria roles for CodeMirror**
-     */
-    content.setAttribute('id', 'codeEditor');
-    content.setAttribute('aria-label', 'codeimage-editor');
-    content.removeAttribute('aria-expanded');
   });
 
   const customFontExtension = () =>

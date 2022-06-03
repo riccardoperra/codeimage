@@ -4,7 +4,7 @@ import createResizeObserver from '@solid-primitives/resize-observer';
 import {createSortable} from '@thisbeyond/solid-dnd';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createMemo, createSignal, onMount, Show, VoidProps} from 'solid-js';
-import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {CloseIcon} from '../../Icons/CloseIcon';
 import * as styles from './Tab.css';
 import {TabIcon} from './TabIcon/TabIcon';

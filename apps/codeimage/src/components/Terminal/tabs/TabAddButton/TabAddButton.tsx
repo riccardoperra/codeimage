@@ -1,5 +1,5 @@
 import {VoidProps} from 'solid-js';
-import {exportExclude as _exportExclude} from '../../../../core/directives/exportExclude';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {PlusIcon} from '../../../Icons/PlusIcon';
 import * as styles from './TabAddButton.css';
 

@@ -17,20 +17,22 @@ import {
 } from 'solid-js';
 import {SUPPORTED_FONTS} from '../../core/configuration/font';
 import {createCustomFontExtension} from './custom-font-extension';
+import {fixCodeMirrorAriaRole} from './fix-cm-aria-roles-lighthouse';
 import {observeFocusExtension} from './observe-focus-extension';
 
 export const CustomEditor = () => {
   let editorEl!: HTMLDivElement;
+  fixCodeMirrorAriaRole();
   const destroy$ = new ReplaySubject<void>(1);
   const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
+
   const {
     options: editorOptions,
     actions: {setFocused},
   } = getRootEditorStore();
   const {editor, setCode} = getActiveEditorStore();
-
   const selectedLanguage = createMemo(() =>
     languages.find(language => language.id === editor()?.languageId),
   );
@@ -94,20 +96,6 @@ export const CustomEditor = () => {
       // TODO editor fix type never null
       fontWeight: editorOptions.fontWeight ?? 400,
     });
-
-  setTimeout(() => {
-    const content = document.querySelector('.cm-content');
-    if (!content) {
-      return;
-    }
-
-    /**
-     * **🚀 Seo tip: fix invalid aria roles for CodeMirror**
-     */
-    content.setAttribute('id', 'codeEditor');
-    content.setAttribute('aria-label', 'codeimage-editor');
-    content.removeAttribute('aria-expanded');
-  });
 
   createEffect(() => {
     batch(() => {

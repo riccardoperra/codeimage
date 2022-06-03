@@ -24,11 +24,6 @@ export const wrapper = recipe({
       true: {
         marginTop: 'auto',
       },
-      false: {},
-    },
-    multi: {
-      true: {},
-      false: {},
     },
   },
 });
@@ -191,8 +186,7 @@ export const tabCloseIcon = style({
   cursor: 'pointer',
   width: '14px',
   minWidth: '14px',
-  display: 'inline-block',
-  height: '14px',
+
   ':hover': {
     background: 'rgba(255,255,255, .15)',
   },
