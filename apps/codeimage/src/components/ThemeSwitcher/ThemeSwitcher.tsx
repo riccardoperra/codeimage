@@ -7,7 +7,6 @@ import {
   Box,
   FadeInOutWithScaleTransition,
   FlexField,
-  Text,
   TextField,
 } from '@codeimage/ui';
 import {dispatch} from '@ngneat/effects';
@@ -24,6 +23,7 @@ import {appEnvironment} from '../../core/configuration';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {useModality} from '../../core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
+import {CustomEditorPreview} from '../CustomEditor/CustomEditorPreview';
 import {CheckCircle} from '../Icons/CheckCircle';
 import {EmptyCircle} from '../Icons/EmptyCircle';
 import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
@@ -59,6 +59,13 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
     dispatch(updateTheme({theme}));
     umami.trackEvent(theme.id, `theme-change`);
   };
+
+  const exampleCode =
+    '// Just a code example \n' +
+    'export function Preview() {\n' +
+    ' const [count, setCount] = \n' +
+    '   createSignal(0);\n' +
+    '}';
 
   return (
     <Box
@@ -106,7 +113,13 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                   opacity={100}
                   alternativeTheme={terminal.alternativeTheme}
                 >
-                  <Text size={'sm'}>{`// Code here`}</Text>
+                  <div class={styles.themeBoxCodeContainer}>
+                    <CustomEditorPreview
+                      themeId={theme.id}
+                      languageId={'typescript'}
+                      code={exampleCode}
+                    />
+                  </div>
                 </DynamicTerminal>
               </ThemeBox>
 

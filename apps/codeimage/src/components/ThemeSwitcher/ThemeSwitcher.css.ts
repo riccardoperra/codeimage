@@ -65,4 +65,8 @@ export const themeBoxFooter = style({
   },
 });
 
+export const themeBoxCodeContainer = style({
+  margin: '-12px',
+});
+
 export type ThemeSwitcherVariant = RecipeVariants<typeof grid>;
