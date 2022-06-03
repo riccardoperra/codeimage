@@ -82,8 +82,7 @@ export const CustomEditorPreview = (
       fontName:
         fonts.find(({id}) => editorOptions.fontId === id)?.name ||
         fonts[0].name,
-      // TODO editor fix type never null
-      fontWeight: editorOptions.fontWeight ?? 400,
+      fontWeight: editorOptions.fontWeight,
     });
 
   const {view, setOptions, setContainer} = createCodeMirror({
@@ -105,7 +104,7 @@ export const CustomEditorPreview = (
           baseTheme,
           supportsLineWrap,
           currentTheme(),
-          currentLanguage()!,
+          currentLanguage() || [],
         ],
       });
     }),
@@ -113,5 +112,5 @@ export const CustomEditorPreview = (
 
   onCleanup(() => view()?.destroy());
 
-  return <div ref={ref => (editorEl = ref)} class={`solid-cm`} />;
+  return <div ref={ref => (editorEl = ref)} />;
 };

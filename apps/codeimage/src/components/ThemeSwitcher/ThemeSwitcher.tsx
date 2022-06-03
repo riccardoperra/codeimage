@@ -116,8 +116,8 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                   <div class={styles.themeBoxCodeContainer}>
                     <CustomEditorPreview
                       themeId={theme.id}
-                      languageId={'typescript'}
-                      code={exampleCode}
+                      languageId={/*@once*/ 'typescript'}
+                      code={/*@once*/ exampleCode}
                     />
                   </div>
                 </DynamicTerminal>
