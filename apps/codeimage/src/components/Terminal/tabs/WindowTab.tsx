@@ -21,6 +21,7 @@ export interface WindowTabProps {
   readonly accentMode: boolean;
   readonly active: boolean;
   readonly onTabChange: (value: string) => void;
+  readonly exportExclude: boolean;
   readonly onClick?: () => void;
   readonly onClose?: (() => void) | null;
 }
@@ -43,7 +44,7 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
     <div
       // @ts-expect-error Update solid-dnd
       use:sortable
-      use:exportExclude={!props.tabName?.length}
+      use:exportExclude={props.exportExclude}
       class={styles.tab({
         accent: props.accentMode,
         active: props.active,

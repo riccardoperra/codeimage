@@ -88,6 +88,10 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
 
                 return (
                   <WindowTab
+                    exportExclude={
+                      !editor.tab.tabName?.length &&
+                      (editors.length === 1 || !active())
+                    }
                     id={editor.id}
                     index={zIndex()}
                     tabName={editor.tab.tabName}
