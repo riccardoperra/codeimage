@@ -88,15 +88,17 @@ export class InlineCombobox extends LionCombobox {
         )
         .subscribe(width => this.recalculateWidth(width));
 
-      mutationObserverFactory$(this._listboxNode.firstChild as HTMLElement, {
-        childList: true,
-      })
-        .pipe(
-          map(() => this.formElements),
-          map(() => (this.activeIndex === -1 ? 0 : this.activeIndex)),
-          takeUntil(this.destroy$),
-        )
-        .subscribe(activeIndex => (this.activeIndex = activeIndex));
+      if (!!this._listboxNode && !!this._listboxNode.firstChild) {
+        mutationObserverFactory$(this._listboxNode.firstChild as HTMLElement, {
+          childList: true,
+        })
+          .pipe(
+            map(() => this.formElements),
+            map(() => (this.activeIndex === -1 ? 0 : this.activeIndex)),
+            takeUntil(this.destroy$),
+          )
+          .subscribe(activeIndex => (this.activeIndex = activeIndex));
+      }
     }
   }
 

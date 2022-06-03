@@ -4,6 +4,12 @@ import {pickProps} from 'solid-use';
 
 export const createPointerSensorWithBoundaryAndLockAxis = (
   boundary: Accessor<HTMLElement>,
+  boundaryPadding?: {
+    left?: number;
+    top?: number;
+    bottom?: number;
+    right?: number;
+  },
   id: string | number = 'pointer-sensor-with-boundary',
 ): void => {
   const [
@@ -76,13 +82,26 @@ export const createPointerSensorWithBoundaryAndLockAxis = (
     Math.max(min, Math.min(max, value));
 
   const constrainedBoundary = (event: PointerEvent): {x: number; y: number} => {
+    const defaultPadding = {
+      left: 0,
+      top: 0,
+      bottom: 0,
+      right: 0,
+      ...(boundaryPadding ?? {}),
+    };
     const boundaryRect = boundary().getBoundingClientRect();
     const x = event.clientX - initialCoordinates.x;
     const y = event.clientY - initialCoordinates.y;
-    const spaceLeft = boundaryRect.left - initialCoordinates.rect.left;
-    const spaceRight = boundaryRect.right - initialCoordinates.rect.right;
-    const spaceTop = boundaryRect.top - initialCoordinates.rect.top;
-    const spaceBottom = boundaryRect.bottom - initialCoordinates.rect.bottom;
+    const spaceLeft =
+      boundaryRect.left - initialCoordinates.rect.left + defaultPadding.left;
+    const spaceRight =
+      boundaryRect.right - initialCoordinates.rect.right - defaultPadding.right;
+    const spaceTop =
+      boundaryRect.top - initialCoordinates.rect.top - defaultPadding.top;
+    const spaceBottom =
+      boundaryRect.bottom -
+      initialCoordinates.rect.bottom -
+      defaultPadding.bottom;
     return {
       x: clamp(x, spaceLeft, spaceRight),
       y: clamp(y, spaceBottom, spaceTop),
@@ -124,8 +143,17 @@ export const createPointerSensorWithBoundaryAndLockAxis = (
 
 export const DragDropSensorsWithBoundary: ParentComponent<{
   boundary: Accessor<HTMLElement>;
+  boundaryPadding?: {
+    left?: number;
+    top?: number;
+    right?: number;
+    bottom?: number;
+  };
 }> = props => {
-  const pickedProps = pickProps(props, ['boundary']);
-  createPointerSensorWithBoundaryAndLockAxis(pickedProps.boundary);
+  const pickedProps = pickProps(props, ['boundary', 'boundaryPadding']);
+  createPointerSensorWithBoundaryAndLockAxis(
+    pickedProps.boundary,
+    pickedProps.boundaryPadding,
+  );
   return <>{props.children}</>;
 };

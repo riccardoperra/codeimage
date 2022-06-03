@@ -60,15 +60,16 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
           onDragEnd={handleDragEnd}
           collisionDetector={closestCorners}
         >
-          <DragDropSensorsWithBoundary boundary={() => wrapperRef} />
+          <DragDropSensorsWithBoundary
+            boundaryPadding={{left: 8, right: 8, top: 0, bottom: 0}}
+            boundary={() => wrapperRef}
+          />
           {/* @ts-expect-error: TODO: Should update library types */}
           <SortableProvider
             ids={createMemo(() => editors.map(editor => editor.id))()}
           >
             <For each={editors}>
               {(editor, index) => {
-                let ref: HTMLDivElement;
-
                 const icon = createTabIcon(
                   () => editor.tab.tabName ?? null,
                   () => editor.languageId,
@@ -87,7 +88,6 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
 
                 return (
                   <WindowTab
-                    ref={ref}
                     id={editor.id}
                     index={zIndex()}
                     tabName={editor.tab.tabName}

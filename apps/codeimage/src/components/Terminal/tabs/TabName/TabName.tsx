@@ -77,7 +77,7 @@ export function TabName(props: TabNameProps): JSXElement {
 
     if (!props.readonly) {
       // Cannot use queueScheduler
-      requestAnimationFrame(() => ref.focus());
+      requestAnimationFrame(() => ref?.focus());
     }
 
     observe(ref);

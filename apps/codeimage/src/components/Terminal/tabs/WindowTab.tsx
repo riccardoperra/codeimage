@@ -1,10 +1,10 @@
 import {LanguageIconDefinition} from '@codeimage/config';
 import {Text} from '@codeimage/ui';
-import {createSortable, maybeTransformStyle} from '@thisbeyond/solid-dnd';
+import createResizeObserver from '@solid-primitives/resize-observer';
+import {createSortable} from '@thisbeyond/solid-dnd';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {Ref, Show, VoidProps} from 'solid-js';
+import {createMemo, createSignal, onMount, Show, VoidProps} from 'solid-js';
 import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
-import {createRef} from '../../../core/helpers/create-ref';
 import {CloseIcon} from '../../Icons/CloseIcon';
 import * as styles from './Tab.css';
 import {TabIcon} from './TabIcon/TabIcon';
@@ -13,7 +13,6 @@ import {TabName} from './TabName/TabName';
 const exportExclude = _exportExclude;
 
 export interface WindowTabProps {
-  readonly ref: Ref<HTMLDivElement>;
   readonly id: string;
   readonly index: number;
   readonly tabName?: string | null;
@@ -27,17 +26,29 @@ export interface WindowTabProps {
 }
 
 export function WindowTab(props: VoidProps<WindowTabProps>) {
+  let ref!: HTMLDivElement;
+  const [width, setWidth] = createSignal<number>(0);
   const sortable = createSortable(props.id);
+
+  onMount(() => {
+    const resize = createResizeObserver({
+      onResize: size => setWidth(size.width),
+    });
+    resize(ref);
+  });
+
+  const hasEnoughSpace = createMemo(() => width() >= 32);
 
   return (
     <div
+      // @ts-expect-error Update solid-dnd
       use:sortable
       use:exportExclude={!props.tabName?.length}
-      ref={createRef(props, sortable.ref)}
       class={styles.tab({
         accent: props.accentMode,
         active: props.active,
       })}
+      ref={ref}
       data-active-drag={sortable.isActiveDraggable}
       data-host-index={props.index}
       data-accent-visible={props.accentMode}
@@ -64,12 +75,12 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
           />
         </Show>
       </div>
-      <Show when={props.onClose}>
-        {onClose => (
+      <Show when={props.onClose && hasEnoughSpace()}>
+        {() => (
           <CloseIcon
             class={styles.tabCloseIcon}
             onClick={evt => {
-              onClose();
+              props.onClose?.();
               evt.stopPropagation();
               evt.preventDefault();
             }}
