@@ -1,4 +1,3 @@
-import pre from '@changesets/cli/dist/declarations/src/commands/pre';
 import {useDragDropContext} from '@thisbeyond/solid-dnd';
 import {Accessor, onCleanup, onMount, ParentComponent} from 'solid-js';
 import {pickProps} from 'solid-use';
@@ -17,7 +16,6 @@ export const createPointerSensorWithBoundaryAndLockAxis = (
       dragStart,
       dragMove,
       dragEnd,
-      activeDraggable,
       anySensorActive,
     },
   ] = useDragDropContext()!;
@@ -33,9 +31,7 @@ export const createPointerSensorWithBoundaryAndLockAxis = (
   });
 
   const isActiveSensor = () => state.active.sensor === id;
-
-  const initialCoordinates = {x: 0, y: 0};
-
+  const initialCoordinates = {x: 0, y: 0, rect: {} as DOMRect};
   let activationDelayTimeoutId: number | null = null;
   let activationDraggableId: string | number | null = null;
 
@@ -44,6 +40,9 @@ export const createPointerSensorWithBoundaryAndLockAxis = (
     document.addEventListener('pointerup', onPointerUp);
 
     activationDraggableId = draggableId;
+    initialCoordinates.rect = (
+      event.currentTarget as HTMLElement
+    ).getBoundingClientRect();
     initialCoordinates.x = event.clientX;
     initialCoordinates.y = event.clientY;
 
@@ -73,29 +72,27 @@ export const createPointerSensorWithBoundaryAndLockAxis = (
     }
   };
 
-  function clamp(value: number, min: number, max: number) {
-    return Math.max(min, Math.min(max, value));
-  }
+  const clamp = (value: number, min: number, max: number) =>
+    Math.max(min, Math.min(max, value));
 
-  const constrainedBoundary = (event: PointerEvent): number => {
-    const active = activeDraggable();
-    if (!active) return 0;
-    const x = event.clientX - initialCoordinates.x;
+  const constrainedBoundary = (event: PointerEvent): {x: number; y: number} => {
     const boundaryRect = boundary().getBoundingClientRect();
-    const previewPos = -(initialCoordinates.x - boundaryRect.left);
-    // TODO
-    const minX = x <= 0 ? 0 : previewPos;
-
-    const maxX =
-      boundaryRect.right -
-      (initialCoordinates.x + active.node.getBoundingClientRect().width);
-    return clamp(x, minX, maxX);
+    const x = event.clientX - initialCoordinates.x;
+    const y = event.clientY - initialCoordinates.y;
+    const spaceLeft = boundaryRect.left - initialCoordinates.rect.left;
+    const spaceRight = boundaryRect.right - initialCoordinates.rect.right;
+    const spaceTop = boundaryRect.top - initialCoordinates.rect.top;
+    const spaceBottom = boundaryRect.bottom - initialCoordinates.rect.bottom;
+    return {
+      x: clamp(x, spaceLeft, spaceRight),
+      y: clamp(y, spaceBottom, spaceTop),
+    };
   };
 
   const onPointerMove = (event: PointerEvent): void => {
     const transform = {
       x: event.clientX - initialCoordinates.x,
-      y: 0,
+      y: event.clientY - initialCoordinates.y,
     };
 
     if (!anySensorActive()) {
@@ -106,13 +103,8 @@ export const createPointerSensorWithBoundaryAndLockAxis = (
 
     if (isActiveSensor()) {
       event.preventDefault();
-
-      const x = constrainedBoundary(event);
-
-      dragMove({
-        y: 0,
-        x,
-      });
+      const transformWithBoundary = constrainedBoundary(event);
+      dragMove(transformWithBoundary);
     }
   };
 

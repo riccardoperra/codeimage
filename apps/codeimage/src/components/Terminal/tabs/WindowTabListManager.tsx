@@ -1,14 +1,11 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {
-  createPointerSensor,
+  closestCorners,
   DragDropProvider,
-  DragDropSensors,
-  mostIntersecting,
   SortableProvider,
-  useDragDropContext,
 } from '@thisbeyond/solid-dnd';
 import {DragEventHandler} from '@thisbeyond/solid-dnd/dist/types/drag-drop-context';
-import {createMemo, For, onMount, VoidProps} from 'solid-js';
+import {createMemo, For, VoidProps} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import {DragDropSensorsWithBoundary} from './DndCustomSensor';
 import * as styles from './Tab.css';
@@ -61,7 +58,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
         {/* @ts-expect-error: TODO: Should update library types */}
         <DragDropProvider
           onDragEnd={handleDragEnd}
-          collisionDetector={mostIntersecting}
+          collisionDetector={closestCorners}
         >
           <DragDropSensorsWithBoundary boundary={() => wrapperRef} />
           {/* @ts-expect-error: TODO: Should update library types */}

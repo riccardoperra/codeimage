@@ -65,8 +65,7 @@ export const tab = recipe({
       lineHeight: tabVars.tabHeight,
       display: 'flex',
       alignItems: 'center',
-      transition:
-        'width 150ms ease-in-out, margin 100ms ease-out, height 50ms ease-in-out',
+      transition: 'width 150ms ease-in-out, height 50ms ease-in-out',
       maxWidth: '400px',
       minWidth: '0px',
       flex: '0 1 auto',
