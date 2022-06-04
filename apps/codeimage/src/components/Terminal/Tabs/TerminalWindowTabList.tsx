@@ -7,15 +7,17 @@ import {
 } from '@thisbeyond/solid-dnd';
 import {createMemo, For, VoidProps} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
-import * as styles from './Tab.css';
+import * as styles from './Tab/Tab.css';
+import {WindowTab} from './Tab/WindowTab';
 import {TabAddButton} from './TabAddButton/TabAddButton';
-import {WindowTab} from './WindowTab';
 
-export interface WindowTabListManager {
+export interface TerminalWindowTabListProps {
   accent: boolean;
 }
 
-export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
+export function TerminalWindowTabList(
+  props: VoidProps<TerminalWindowTabListProps>,
+) {
   let wrapperRef: HTMLDivElement;
 
   const {
@@ -31,6 +33,8 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
     isActive,
   } = getRootEditorStore();
 
+  const sortableIds = createMemo(() => editors.map(editor => editor.id));
+
   function handleDragEnd(handler: DragEventParam) {
     if (handler.draggable && handler.droppable) {
       const droppableId = handler.droppable.id;
@@ -43,6 +47,10 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
         setEditors(updatedItems);
       }
     }
+  }
+
+  function handleTabNameChange(id: string, updatedName: string) {
+    setTabName(id, updatedName, true);
   }
 
   return (
@@ -61,9 +69,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
             boundary={() => wrapperRef}
           />
           {/* @ts-expect-error: TODO: Should update library types */}
-          <SortableProvider
-            ids={createMemo(() => editors.map(editor => editor.id))()}
-          >
+          <SortableProvider ids={sortableIds()}>
             <For each={editors}>
               {(editor, index) => {
                 const icon = createTabIcon(
@@ -76,9 +82,9 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
 
                 const zIndex = createMemo(() => {
                   if (active()) {
-                    return 20;
+                    return 10;
                   } else {
-                    return 20 - (index() + 1);
+                    return 10 - (index() + 1);
                   }
                 });
 
@@ -97,7 +103,7 @@ export function WindowTabListManager(props: VoidProps<WindowTabListManager>) {
                     active={active() && editors.length > 1}
                     onClick={() => setActiveEditorId(editor.id)}
                     onTabChange={tabName =>
-                      setTabName(editor.id, tabName, true)
+                      handleTabNameChange(editor.id, tabName)
                     }
                     onClose={
                       editors.length > 1 ? () => removeEditor(editor.id) : null

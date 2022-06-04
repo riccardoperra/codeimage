@@ -1,6 +1,5 @@
 import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
-import {recipe} from '@vanilla-extract/recipes';
 
 export const [terminalTheme, terminalVars] = createTheme({
   headerHeight: '50px',
@@ -90,76 +89,6 @@ export const headerIconRowCircle = style({
   },
 });
 
-export const tab = recipe({
-  base: {
-    background: 'transparent',
-    padding: `0 ${themeVars.spacing['3']}`,
-    verticalAlign: 'middle',
-    marginTop: 'auto',
-    marginBottom: 'auto',
-    paddingLeft: 0,
-    fontSize: themeVars.fontSize.sm,
-    borderRadius: `${themeVars.borderRadius.md} ${themeVars.borderRadius.md} 0 0`,
-    position: 'relative',
-    lineHeight: 1,
-  },
-  variants: {
-    accent: {
-      true: {
-        /**
-         * ATTENTION: this is a workaround related to https://github.com/riccardoperra/codeimage/issues/41
-         *            Flex properties in safari are broken on export with HtmlToImage
-         */
-        height: `calc(${terminalVars.headerHeight} - ${terminalVars.tabDelta})`,
-        marginTop: 'auto',
-        marginBottom: 0,
-        paddingTop: terminalVars.tabDelta,
-        paddingLeft: themeVars.spacing['3'],
-        backgroundColor: terminalVars.backgroundColor,
-
-        selectors: {
-          '&:before, &:after': {
-            content: '',
-            display: 'block',
-            position: 'absolute',
-            bottom: 0,
-            backgroundColor: 'transparent',
-            width: '8px',
-            height: '8px',
-            boxShadow: `1px 0px 0px 0px ${terminalVars.backgroundColor}, 3px 4px 0px 0px ${terminalVars.backgroundColor}`,
-            overflow: 'hidden',
-          },
-        },
-        ':before': {
-          left: '-8px',
-          borderBottomRightRadius: '8px',
-        },
-        ':after': {
-          right: '-8px',
-          borderBottomRightRadius: '12px',
-          transform: 'scaleX(-1)',
-        },
-      },
-    },
-    active: {
-      true: {},
-    },
-  },
-  compoundVariants: [
-    {
-      variants: {
-        accent: false,
-        active: true,
-      },
-      style: {
-        borderRadius: themeVars.borderRadius.lg,
-        background: themeVars.backgroundColor.gray['800'],
-        padding: `6px 12px`,
-      },
-    },
-  ],
-});
-
 export const watermark = style({
   position: 'absolute',
   right: '6px',
@@ -167,35 +96,3 @@ export const watermark = style({
   opacity: 0.35,
   backgroundColor: 'inherit',
 });
-
-export const glassReflection = {
-  wrapper: style({
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-    overflow: 'hidden',
-    pointerEvents: 'none',
-  }),
-  content: style({
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    width: '100%',
-    height: '100%',
-    transform: `skewX(-18deg) translateX(-55%)`,
-    zIndex: '100',
-
-    selectors: {
-      '[data-theme-mode=light] &': {
-        background:
-          'linear-gradient(rgba(100,100,100, .035) 35%, rgba(0,0,0,0%) 100%)',
-      },
-      '[data-theme-mode=dark] &': {
-        background:
-          'linear-gradient(rgba(255,255,255, .035) 35%, rgba(255,255,255,0%) 100%)',
-      },
-    },
-  }),
-};

@@ -23,7 +23,7 @@ export function TabName(props: TabNameProps): JSXElement {
   const showHint = createMemo(() => hasDot.test(props.value ?? ''));
 
   function onChange(value: string): void {
-    if (props.onValueChange) {
+    if (props.onValueChange && value !== props.value) {
       props.onValueChange(value);
     }
   }

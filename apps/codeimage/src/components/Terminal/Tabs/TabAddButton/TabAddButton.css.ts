@@ -1,6 +1,6 @@
 import {themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
-import {tabVars} from '../Tab.css';
+import {tabVars} from '../Tab/Tab.css';
 
 export const button = style({
   display: 'flex',

@@ -1,5 +1,5 @@
-import {MacOsTerminal} from '../../components/Terminal/macOS/MacOsTerminal';
-import {WindowsTerminal} from '../../components/Terminal/windows/WindowsTerminal';
+import {MacOsTerminal} from '../../components/Terminal/MacOsTerminal/MacOsTerminal';
+import {WindowsTerminal} from '../../components/Terminal/WindowsTerminal/WindowsTerminal';
 
 export const AVAILABLE_TERMINAL_THEMES = {
   keys: ['macOs', 'windows'] as const,
