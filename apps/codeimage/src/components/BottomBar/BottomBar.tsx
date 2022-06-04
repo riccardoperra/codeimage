@@ -10,6 +10,10 @@ import {EditorStyleForm} from '../PropertyEditor/EditorStyleForm';
 import {FrameStyleForm} from '../PropertyEditor/FrameStyleForm';
 import {WindowStyleForm} from '../PropertyEditor/WindowStyleForm';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
+
+import {useI18n} from '@codeimage/locale';
+import {AppLocaleEntries} from '../../i18n';
+
 import * as styles from './BottomBar.css';
 
 type Mode = 'themes' | 'style' | 'editor';
@@ -20,7 +24,7 @@ interface BottomBarProps {
 
 export const BottomBar: ParentComponent<BottomBarProps> = props => {
   const [mode, setMode] = createSignal<Mode | null>(null);
-
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <div class={styles.wrapper}>
       <Button
@@ -29,7 +33,7 @@ export const BottomBar: ParentComponent<BottomBarProps> = props => {
         onClick={() => setMode('themes')}
       >
         <ColorSwatchIcon />
-        <Box as={'span'}>Themes</Box>
+        <Box as={'span'}>{t('bottomBar.themes')}</Box>
       </Button>
 
       <Button
@@ -38,7 +42,7 @@ export const BottomBar: ParentComponent<BottomBarProps> = props => {
         onClick={() => setMode('style')}
       >
         <SparklesIcon />
-        <Box as={'span'}>Style</Box>
+        <Box as={'span'}>{t('bottomBar.styles')}</Box>
       </Button>
 
       <Button
@@ -47,7 +51,7 @@ export const BottomBar: ParentComponent<BottomBarProps> = props => {
         onClick={() => setMode('editor')}
       >
         <CodeIcon />
-        Editor
+        {t('bottomBar.editor')}
       </Button>
 
       <Show when={props.portalHostRef}>

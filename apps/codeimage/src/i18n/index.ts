@@ -1,6 +1,6 @@
 import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
-
+import {bottomBar} from './bottombar';
 export const locale = {
   it: {
     common: {
@@ -74,6 +74,7 @@ export const locale = {
     },
     ...sidebarLocale.it,
     ...uiLocale.it,
+    ...bottomBar.it,
   },
   en: {
     ...sidebarLocale.en,
@@ -145,6 +146,7 @@ export const locale = {
       search: 'Search theme...',
     },
     ...uiLocale.en,
+    ...bottomBar.en,
   },
   de: {
     common: {
@@ -216,6 +218,7 @@ export const locale = {
     },
     ...sidebarLocale.de,
     ...uiLocale.de,
+    ...bottomBar.de,
   },
 };
 
