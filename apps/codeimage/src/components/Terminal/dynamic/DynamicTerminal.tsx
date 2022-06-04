@@ -1,6 +1,6 @@
 import {Box, FadeInOutTransition} from '@codeimage/ui';
 
-import {createMemo, JSXElement, ParentComponent} from 'solid-js';
+import {children, createMemo, JSXElement, ParentComponent} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
 import {AVAILABLE_TERMINAL_THEMES} from '../../../core/configuration/terminal-themes';
@@ -24,9 +24,11 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
       ].component,
   );
 
+  const resolvedChildren = children(() => props.children);
+
   return (
     <Dynamic component={terminal()} {...omitProps(props, ['type'])}>
-      {props.children}
+      {resolvedChildren()}
 
       <FadeInOutTransition show={props.showWatermark}>
         <Box class={styles.watermark}>

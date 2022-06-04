@@ -19,14 +19,14 @@ import {
   ParentComponent,
   Show,
 } from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {useModality} from '../../core/hooks/isMobile';
+import {appEnvironment} from '@core/configuration';
+import {fromObservableObject} from '@core/hooks/from-observable-object';
+import {useModality} from '@core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
 import {CustomEditorPreview} from '../CustomEditor/CustomEditorPreview';
 import {CheckCircle} from '../Icons/CheckCircle';
 import {EmptyCircle} from '../Icons/EmptyCircle';
-import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
+import {TerminalHost} from '../Terminal/TerminalHost';
 import {ThemeBox} from './ThemeBox';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
@@ -97,30 +97,28 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                 selected={isSelected(theme.id)}
                 onClick={() => onSelectTheme(theme)}
               >
-                <DynamicTerminal
+                <TerminalHost
+                  theme={styles.themeBoxTerminalHost}
                   tabName={'Untitled'}
                   textColor={theme.properties.terminal.text}
                   background={theme.properties.terminal.main}
                   darkMode={theme.properties.darkMode}
                   accentVisible={false}
-                  shadow={terminal.shadow}
-                  showTab={true}
+                  shadow={/*@once*/ terminal.shadow}
+                  showTab={false}
                   readonlyTab={true}
                   showHeader={false}
-                  type={terminal.type}
                   showWatermark={false}
                   showGlassReflection={terminal.showGlassReflection}
                   opacity={100}
                   alternativeTheme={terminal.alternativeTheme}
                 >
-                  <div class={styles.themeBoxCodeContainer}>
-                    <CustomEditorPreview
-                      themeId={theme.id}
-                      languageId={/*@once*/ 'typescript'}
-                      code={/*@once*/ exampleCode}
-                    />
-                  </div>
-                </DynamicTerminal>
+                  <CustomEditorPreview
+                    themeId={theme.id}
+                    languageId={/*@once*/ 'typescript'}
+                    code={/*@once*/ exampleCode}
+                  />
+                </TerminalHost>
               </ThemeBox>
 
               <Box display={'flex'} justifyContent={'center'} marginTop={4}>

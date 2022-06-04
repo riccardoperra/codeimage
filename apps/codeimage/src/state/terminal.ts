@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {createStore, select, setProp, withProps} from '@ngneat/elf';
+import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
 import {SUPPORTED_THEMES_DICTIONARY} from '../core/configuration';
@@ -73,9 +73,3 @@ export function toggleWatermark() {
 }
 
 export const terminal$ = store.pipe(distinctUntilChanged(shallow));
-
-export const tabName$ = store.pipe(select(state => state.tabName));
-
-export const isAlternativeTheme$ = store.pipe(
-  select(state => state.alternativeTheme),
-);
