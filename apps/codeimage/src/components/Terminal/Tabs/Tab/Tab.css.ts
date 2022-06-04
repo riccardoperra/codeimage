@@ -6,11 +6,14 @@ import {terminalVars} from '../../terminal.css';
 export const [tabTheme, tabVars] = createTheme({
   tabHeight: '30px',
   tabIndex: '0',
-  tabSecondaryButtonHoverBg: '255, 255, 255',
+  tabSecondaryHoverBg: '255, 255, 255',
+  tabGap: '8px',
+  tabMaxWidth: '400px',
 });
 
 export const wrapper = recipe({
   base: [
+    tabTheme,
     {
       display: 'flex',
       width: '100%',
@@ -37,17 +40,16 @@ export const tabListWrapper = style({
   transition: 'all 150ms ease-in-out',
   selectors: {
     '[data-accent-visible=false] &': {
-      columnGap: '8px',
+      columnGap: tabVars.tabGap,
     },
     '[data-accent-visible=true] &': {
-      paddingLeft: '8px',
+      paddingLeft: tabVars.tabGap,
     },
   },
 });
 
 export const tab = recipe({
   base: [
-    tabTheme,
     {
       background: 'transparent',
       height: tabVars.tabHeight,
@@ -62,7 +64,7 @@ export const tab = recipe({
       display: 'flex',
       alignItems: 'center',
       transition: 'width 150ms ease-in-out, height 50ms ease-in-out',
-      maxWidth: '400px',
+      maxWidth: tabVars.tabMaxWidth,
       minWidth: '0px',
       flex: '0 1 auto',
     },
@@ -71,6 +73,16 @@ export const tab = recipe({
         '&[data-active-drag=true]': {
           zIndex: 21,
           backdropFilter: 'blur(20px) saturate(180%)',
+        },
+        '[data-theme-mode=dark] &': {
+          vars: {
+            [tabVars.tabSecondaryHoverBg]: '255, 255, 255',
+          },
+        },
+        '[data-theme-mode=light] &': {
+          vars: {
+            [tabVars.tabSecondaryHoverBg]: '0, 0, 0',
+          },
         },
       },
     },
@@ -86,24 +98,23 @@ export const tab = recipe({
         marginTop: 'auto',
         marginBottom: 0,
         paddingTop: 0,
-        paddingLeft: themeVars.spacing['3'],
+        paddingLeft: `calc(${themeVars.spacing['2']} + ${tabVars.tabGap})`,
         backgroundColor: terminalVars.backgroundColor,
         boxShadow: '0px 10px 10px 0 rgba(0,0,0,.30)',
         zIndex: tabVars.tabIndex,
         selectors: {
           '&:first-child': {
-            marginRight: '-8px',
+            marginRight: `calc(${tabVars.tabGap} * -1)`,
           },
           '&:first-child:last-child': {
-            marginRight: '8px',
+            marginRight: tabVars.tabGap,
             filter: 'unset',
           },
           '&:nth-child(n + 2)': {
-            marginRight: '-8px',
-            paddingLeft: `calc(${themeVars.spacing['3']} + 8px)`,
+            marginRight: `calc(${tabVars.tabGap} * -1)`,
           },
           '&:nth-child(n + 2):last-child': {
-            marginRight: '8px',
+            marginRight: tabVars.tabGap,
           },
           '&:before, &:after': {
             content: '',
@@ -111,18 +122,18 @@ export const tab = recipe({
             position: 'absolute',
             bottom: 0,
             backgroundColor: 'transparent',
-            width: '8px',
-            height: '8px',
+            width: tabVars.tabGap,
+            height: tabVars.tabGap,
             boxShadow: `1px 0px 0px 0px ${terminalVars.backgroundColor}, 3px 4px 0px 0px ${terminalVars.backgroundColor}`,
             overflow: 'hidden',
           },
         },
         ':before': {
-          left: '-8px',
-          borderBottomRightRadius: '8px',
+          left: `calc(${tabVars.tabGap} * -1)`,
+          borderBottomRightRadius: tabVars.tabGap,
         },
         ':after': {
-          right: '-8px',
+          right: `calc(${tabVars.tabGap} * -1)`,
           borderBottomRightRadius: '12px',
           transform: 'scaleX(-1)',
         },
@@ -131,7 +142,7 @@ export const tab = recipe({
         borderRadius: themeVars.borderRadius.lg,
 
         ':hover': {
-          background: 'rgba(255,255,255, .03)',
+          background: `rgba(${tabVars.tabSecondaryHoverBg}, .03)`,
         },
       },
     },
@@ -139,6 +150,7 @@ export const tab = recipe({
       true: {
         minWidth: 'unset',
       },
+      // Needed to generate compound variants
       false: {},
     },
   },
@@ -149,9 +161,9 @@ export const tab = recipe({
         active: true,
       },
       style: {
-        background: 'rgba(255,255,255, .10)',
+        background: `rgba(${tabVars.tabSecondaryHoverBg}, .10)`,
         ':hover': {
-          background: 'rgba(255,255,255, .15)',
+          background: `rgba(${tabVars.tabSecondaryHoverBg}, .15)`,
         },
       },
     },
@@ -161,14 +173,13 @@ export const tab = recipe({
         active: false,
       },
       style: {
-        // TODO: polished could be needed
         backgroundColor: `${terminalVars.backgroundColor}`,
         selectors: {
           '&:not(:first-child) &': {
             borderTopLeftRadius: 0,
           },
-          '[data-active=true] &': {
-            marginLeft: '-8px',
+          '&:nth-child(n + 2)': {
+            paddingLeft: `calc(${themeVars.spacing['2']} + ${tabVars.tabGap})`,
           },
           '&:not(:last-child)': {
             borderTopRightRadius: 0,
@@ -190,25 +201,19 @@ export const tabCloseIcon = style({
   selectors: {
     '[data-theme-mode=dark] &': {
       color: themeVars.backgroundColor.white,
-      vars: {
-        [tabVars.tabSecondaryButtonHoverBg]: '255, 255, 255',
-      },
     },
     '[data-theme-mode=light] &': {
       color: themeVars.backgroundColor.black,
-      vars: {
-        [tabVars.tabSecondaryButtonHoverBg]: '0, 0, 0',
-      },
     },
   },
   ':active': {
-    backgroundColor: `rgba(${tabVars.tabSecondaryButtonHoverBg}, .25)`,
+    backgroundColor: `rgba(${tabVars.tabSecondaryHoverBg}, .25)`,
   },
   ':focus': {
-    backgroundColor: `rgba(${tabVars.tabSecondaryButtonHoverBg}, .25)`,
+    backgroundColor: `rgba(${tabVars.tabSecondaryHoverBg}, .25)`,
   },
   ':hover': {
-    backgroundColor: `rgba(${tabVars.tabSecondaryButtonHoverBg}, .10)`,
+    backgroundColor: `rgba(${tabVars.tabSecondaryHoverBg}, .10)`,
   },
 });
 

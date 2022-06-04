@@ -21,26 +21,26 @@ export const button = style({
     opacity: '.25',
   },
   ':focus': {
-    backgroundColor: 'rgba(255,255,255, .05)',
+    backgroundColor: `rgba(${tabVars.tabSecondaryHoverBg}, .05)`,
   },
   selectors: {
     '[data-theme-mode=dark] &': {
       color: themeVars.backgroundColor.white,
       vars: {
-        [tabVars.tabSecondaryButtonHoverBg]: '255, 255, 255',
+        [tabVars.tabSecondaryHoverBg]: '255, 255, 255',
       },
     },
     '[data-theme-mode=light] &': {
       color: themeVars.backgroundColor.black,
       vars: {
-        [tabVars.tabSecondaryButtonHoverBg]: '0, 0, 0',
+        [tabVars.tabSecondaryHoverBg]: '0, 0, 0',
       },
     },
     '&:not(:disabled):active': {
-      backgroundColor: `rgba(${tabVars.tabSecondaryButtonHoverBg}, .25)`,
+      backgroundColor: `rgba(${tabVars.tabSecondaryHoverBg}, .25)`,
     },
     '&:not(:disabled):hover': {
-      backgroundColor: `rgba(${tabVars.tabSecondaryButtonHoverBg}, .10)`,
+      backgroundColor: `rgba(${tabVars.tabSecondaryHoverBg}, .10)`,
     },
   },
 });

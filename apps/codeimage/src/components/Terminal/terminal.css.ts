@@ -1,5 +1,5 @@
-import {backgroundColorVar, themeVars} from '@codeimage/ui';
-import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
+import {themeVars} from '@codeimage/ui';
+import {createTheme, style} from '@vanilla-extract/css';
 
 export const [terminalTheme, terminalVars] = createTheme({
   headerHeight: '50px',
@@ -60,31 +60,6 @@ export const header = style({
     },
     '[data-theme-mode=dark] &[data-accent-visible=true]': {
       backgroundColor: `rgba(255, 255, 255, .06)`,
-    },
-  },
-});
-
-export const headerIconRow = style({
-  selectors: {
-    [`${header} &`]: {
-      display: 'flex',
-      paddingInlineStart: themeVars.spacing['4'],
-      paddingInlineEnd: themeVars.spacing['4'],
-      columnGap: themeVars.spacing['2'],
-    },
-  },
-});
-
-export const headerIconRowCircle = style({
-  selectors: {
-    [`${headerIconRow} &`]: {
-      width: '15px',
-      height: '15px',
-      borderRadius: themeVars.borderRadius.full,
-      backgroundColor: fallbackVar(
-        backgroundColorVar,
-        themeVars.backgroundColor.gray['500'],
-      ),
     },
   },
 });

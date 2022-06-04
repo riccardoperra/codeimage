@@ -4,8 +4,8 @@ import {css, html, PropertyValues} from '@lion/core';
 import {LionOption} from '@lion/listbox';
 import '@lion/listbox/define';
 import {map, Subject, takeUntil} from 'rxjs';
-import {mutationObserverFactory$} from '../../core/operators/create-mutation-observer';
-import {resizeObserverFactory$} from '../../core/operators/create-resize-observer';
+import {mutationObserverFactory$} from '@core/operators/create-mutation-observer';
+import {resizeObserverFactory$} from '@core/operators/create-resize-observer';
 
 interface InlineComboboxEventMap extends HTMLElementEventMap {
   selectedItem: CustomEvent<{value: string}>;
@@ -188,7 +188,7 @@ export class InlineCombobox extends LionCombobox {
 
   private recalculateWidth(width: number): void {
     if (this.hiddenValueNode) {
-      this.style.setProperty('width', `${width + 10}px`);
+      this.style.setProperty('width', `${width + 8}px`);
     }
   }
 
