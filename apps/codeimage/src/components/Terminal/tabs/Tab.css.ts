@@ -6,6 +6,7 @@ import {terminalVars} from '../terminal.css';
 export const [tabTheme, tabVars] = createTheme({
   tabHeight: '30px',
   tabIndex: '0',
+  tabSecondaryButtonHoverBg: '255, 255, 255',
 });
 
 export const wrapper = recipe({
@@ -186,15 +187,28 @@ export const tabCloseIcon = style({
   cursor: 'pointer',
   width: '14px',
   minWidth: '14px',
-
-  ':hover': {
-    background: 'rgba(255,255,255, .15)',
-  },
-  ':focus': {
-    background: 'rgba(255,255,255, .25)',
+  selectors: {
+    '[data-theme-mode=dark] &': {
+      color: themeVars.backgroundColor.white,
+      vars: {
+        [tabVars.tabSecondaryButtonHoverBg]: '255, 255, 255',
+      },
+    },
+    '[data-theme-mode=light] &': {
+      color: themeVars.backgroundColor.black,
+      vars: {
+        [tabVars.tabSecondaryButtonHoverBg]: '0, 0, 0',
+      },
+    },
   },
   ':active': {
-    background: 'rgba(255,255,255, .25)',
+    backgroundColor: `rgba(${tabVars.tabSecondaryButtonHoverBg}, .25)`,
+  },
+  ':focus': {
+    backgroundColor: `rgba(${tabVars.tabSecondaryButtonHoverBg}, .25)`,
+  },
+  ':hover': {
+    backgroundColor: `rgba(${tabVars.tabSecondaryButtonHoverBg}, .10)`,
   },
 });
 
