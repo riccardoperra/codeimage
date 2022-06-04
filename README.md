@@ -56,7 +56,7 @@ $ pnpm dev
 - Production mode (no reload, serve static files):
 
 ```bash
-$ pnpm build:prod && pnpm serve --filter=@codeimage/app
+$ pnpm build:prod && pnpm --filter=@codeimage/app serve
 ```
 
 ## 🤖 Tech stack

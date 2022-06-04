@@ -1,6 +1,5 @@
 import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
-import {darkGrayScale} from '../../theme/dark-theme.css';
 
 export const [frameHandler, frameHandlerVars] = createTheme({
   scale: '1',
