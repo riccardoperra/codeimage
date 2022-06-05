@@ -84,6 +84,7 @@ export default defineConfig(({mode}) => ({
     brotliSize: true,
     sourcemap: false,
     minify: true,
+
     polyfillModulePreload: false,
     polyfillDynamicImport: false,
     cssCodeSplit: true,

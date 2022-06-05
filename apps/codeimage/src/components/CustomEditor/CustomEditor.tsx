@@ -1,12 +1,9 @@
-import {
-  EDITOR_BASE_SETUP,
-  SUPPORTED_LANGUAGES,
-  SUPPORTED_THEMES,
-} from '@codeimage/config';
+import {SUPPORTED_LANGUAGES, SUPPORTED_THEMES} from '@codeimage/config';
 import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {Loading} from '@codeimage/ui';
 import {EditorView, lineNumbers} from '@codemirror/view';
-import {MANY_THEMES} from '@core/configuration';
+import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {ReplaySubject} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
 import {
@@ -15,17 +12,21 @@ import {
   createMemo,
   createResource,
   onCleanup,
+  Suspense,
 } from 'solid-js';
-import {SUPPORTED_FONTS} from '../../core/configuration/font';
 import {createCustomFontExtension} from './custom-font-extension';
 import {fixCodeMirrorAriaRole} from './fix-cm-aria-roles-lighthouse';
 import {observeFocusExtension} from './observe-focus-extension';
 
-export const CustomEditor = () => {
+export default function CustomEditor() {
+  const [basicSetup] = createResource(
+    () => true,
+    () => import('./basic-setup').then(e => e.EDITOR_BASE_SETUP),
+  );
+
   let editorEl!: HTMLDivElement;
-  fixCodeMirrorAriaRole(() => editorEl);
   const destroy$ = new ReplaySubject<void>(1);
-  const themes = MANY_THEMES;
+  const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
 
@@ -118,23 +119,23 @@ export const CustomEditor = () => {
   });
 
   createEffect(() => {
-    batch(() =>
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      // TODO: to fix type deep instantion
-      setOptions({
-        extensions: [
-          EDITOR_BASE_SETUP,
-          baseTheme,
-          supportsLineWrap,
-          observeFocusExtension(focused => setFocused(focused)),
-          customFontExtension(),
-          currentLanguage() || [],
-          currentTheme(),
-          editorOptions.showLineNumbers ? lineNumbers() : [],
-        ],
-      }),
-    );
+    const $basicSetup = basicSetup();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // TODO: to fix type deep instantion
+    setOptions({
+      extensions: [
+        $basicSetup || [],
+        baseTheme,
+        supportsLineWrap,
+        observeFocusExtension(focused => setFocused(focused)),
+        customFontExtension(),
+        currentLanguage() || [],
+        currentTheme(),
+        editorOptions.showLineNumbers ? lineNumbers() : [],
+      ],
+    });
+    fixCodeMirrorAriaRole(() => editorEl);
   });
 
   onCleanup(() => {
@@ -144,8 +145,12 @@ export const CustomEditor = () => {
   });
 
   return (
-    <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
-      <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
-    </code>
+    <Suspense fallback={<Loading size={'3x'} />}>
+      {!basicSetup() && (
+        <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
+          <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
+        </code>
+      )}
+    </Suspense>
   );
-};
+}

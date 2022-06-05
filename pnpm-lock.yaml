@@ -263,7 +263,6 @@ importers:
   packages/dom-export:
     specifiers:
       '@types/node': 17.0.40
-      imagediff: ^1.0.8
       lint-staged: ^13.0.0
       prettier: ^2.6.2
       rimraf: ^3.0.2
@@ -273,7 +272,6 @@ importers:
       vite-plugin-dts: ^1.2.0
     devDependencies:
       '@types/node': 17.0.40
-      imagediff: 1.0.8
       lint-staged: 13.0.0
       prettier: 2.6.2
       rimraf: 3.0.2
@@ -308,7 +306,7 @@ importers:
       '@codemirror/theme-one-dark': ^0.20.0
       '@codemirror/view': ^0.20.6
       '@lezer/highlight': ^0.16.0
-      '@rollup/plugin-typescript': 8.3.2
+      '@rollup/plugin-typescript': ^8.3.2
       rimraf: ^3.0.2
       rollup: 2.75.5
       rollup-plugin-dts: 4.2.2
@@ -3734,15 +3732,6 @@ packages:
     resolution: {integrity: sha512-q6ibZUO2t88QCIPayP/euuDREq+aMAxFE5S70PkrLh0iTDj/zEhgvJRKC2+CvXY6EWc6oQwUR48lL5vCW6jiXQ==}
     dev: true
 
-  /canvas/1.1.6:
-    resolution: {integrity: sha512-WGxt6UQMO0aVc084DUK2lefWxSEWvNrtmTs4Hyg5FzZLUHCGrSFB9QdUAEmXnt0zNqNG8oGB9JWQUy9KjE2/ug==}
-    engines: {node: '>= 0.6.0'}
-    requiresBuild: true
-    dependencies:
-      nan: 1.2.0
-    dev: true
-    optional: true
-
   /chalk/2.4.2:
     resolution: {integrity: sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==}
     engines: {node: '>=4'}
@@ -5306,14 +5295,6 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
-  /imagediff/1.0.8:
-    resolution: {integrity: sha512-B9JR4DMZ9BZObKC0ETJhXkBq2aPJWhhN+nhXrDZGnJ3CFKEM8Ef8FrCWzuvj+zqHZTCCj22HpNj1yK4ey2V54A==}
-    engines: {node: '>= 0.6.0'}
-    hasBin: true
-    optionalDependencies:
-      canvas: 1.1.6
-    dev: true
-
   /immutable/4.0.0:
     resolution: {integrity: sha512-zIE9hX70qew5qTUjSS7wi1iwj/l7+m54KWU247nhM3v806UdGj1yDndXj+IOYxxtW9zyLI+xqFNZjTuDaLUqFw==}
     dev: true
@@ -6094,11 +6075,6 @@ packages:
   /ms/2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
     dev: true
-
-  /nan/1.2.0:
-    resolution: {integrity: sha512-+iQUm6k6b0RnqPbly89pWp42YzGncSg0hJsonfk0P6q1/kNaT6vWHEAT6fY5ld0BpE4gch5EWDIisCzv+94Gpg==}
-    dev: true
-    optional: true
 
   /nanoid/3.3.4:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}

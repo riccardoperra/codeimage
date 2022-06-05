@@ -1,8 +1,6 @@
-import {resolve} from 'path';
 import {defineConfig} from 'rollup';
 import typescript from '@rollup/plugin-typescript';
 import * as pkg from './package.json';
-import ts from 'typescript';
 
 const themes = [
   'arc-dark',
