@@ -111,7 +111,7 @@ export const tab = recipe({
         paddingTop: 0,
         paddingLeft: `calc(${themeVars.spacing['2']} + ${tabVars.tabGap})`,
         backgroundColor: tabVars.tabForeground,
-        boxShadow: '0px 10px 10px 0 rgba(0,0,0,.30)',
+        boxShadow: '1px 10px 5px 1px rgba(0,0,0,.25)',
         zIndex: tabVars.tabIndex,
         selectors: {
           '&:first-child': {

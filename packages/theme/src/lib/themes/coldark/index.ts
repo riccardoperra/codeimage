@@ -11,8 +11,11 @@ export const coldarkColdTheme = createTheme({
     previewBackground:
       'linear-gradient(140deg, rgb(165, 142, 251), rgb(233, 191, 248))',
     terminal: {
-      main: '#e3eaf2',
+      main: '#fae7ff',
       text: '#111b27',
+      tabs: {
+        inactiveTabBackground: '#e5d4e9',
+      },
     },
   },
 } as const);
