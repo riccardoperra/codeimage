@@ -4,7 +4,6 @@ import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {frame$, setScale} from '@codeimage/store/frame';
-import {connectStoreWithQueryParams} from '@codeimage/store/plugins/connect-store-with-query-params';
 import {terminal$} from '@codeimage/store/terminal';
 import {Box, LoadingOverlay, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {fromObservableObject} from '@core/hooks/from-observable-object';
@@ -40,7 +39,8 @@ export function App() {
   const modality = useModality();
   const editor = getRootEditorStore();
   const [, {locale}] = useI18n();
-  connectStoreWithQueryParams();
+  // TODO: currently disabled
+  // connectStoreWithQueryParams();
   useEffects([onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
   const {ready} = getRootEditorStore();
