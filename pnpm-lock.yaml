@@ -55,6 +55,7 @@ importers:
   apps/codeimage:
     specifiers:
       '@codeimage/config': workspace:*
+      '@codeimage/html-export': workspace:*
       '@codeimage/locale': workspace:*
       '@codeimage/theme': workspace:*
       '@codeimage/ui': workspace:*
@@ -101,7 +102,6 @@ importers:
       cross-env: ^7.0.3
       csstype: ^3.1.0
       downloadjs: ^1.4.7
-      html-to-image: ^1.9.0
       https-localhost: ^4.7.1
       idb-keyval: 6.1.0
       inter-ui: ^3.19.3
@@ -129,6 +129,7 @@ importers:
       workbox-window: ^6.5.3
     dependencies:
       '@codeimage/config': link:../../packages/config
+      '@codeimage/html-export': link:../../packages/html-export
       '@codeimage/locale': link:../../packages/locale
       '@codeimage/theme': link:../../packages/theme
       '@codeimage/ui': link:../../packages/ui
@@ -173,7 +174,6 @@ importers:
       clsx: 1.1.1
       csstype: 3.1.0
       downloadjs: 1.4.7
-      html-to-image: link:../../packages/html-export
       idb-keyval: 6.1.0
       inter-ui: 3.19.3
       modern-normalize: 1.1.0

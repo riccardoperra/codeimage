@@ -1,12 +1,12 @@
+import {toBlob, toJpeg, toPng, toSvg} from '@codeimage/html-export';
+import {Options as HtmlToImageExportOptions} from '@codeimage/html-export/options';
+import {IS_IOS} from '@core/constants/browser';
+import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
+import {cloneNodeSafe} from '@core/export/cloneNode';
+import {useAsyncAction} from '@core/hooks/async-action';
+import {useWebshare} from '@core/hooks/use-webshare';
 import download from 'downloadjs';
-import {toBlob, toJpeg, toPng, toSvg} from 'html-to-image';
-import {Options as HtmlToImageExportOptions} from 'html-to-image/es/options';
 import {Resource} from 'solid-js';
-import {IS_IOS} from '../core/constants/browser';
-import {EXPORT_EXCLUDE} from '../core/directives/exportExclude';
-import {cloneNodeSafe} from '../core/export/cloneNode';
-import {useAsyncAction} from '../core/hooks/async-action';
-import {useWebshare} from '../core/hooks/use-webshare';
 
 export const enum ExportMode {
   export = 'export',
