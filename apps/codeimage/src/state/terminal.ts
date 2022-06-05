@@ -2,10 +2,10 @@ import {themeVars} from '@codeimage/ui';
 import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
-import {SUPPORTED_THEMES_DICTIONARY} from '../core/configuration';
-import {AVAILABLE_TERMINAL_THEMES} from '../core/configuration/terminal-themes';
+import {SUPPORTED_THEMES_DICTIONARY} from '@core/configuration';
+import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import shallow from '../core/helpers/shallow';
-import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
+import {elfAutoSettersFactory} from '@core/store/elf-auto-setters-factory';
 
 export interface TerminalState {
   readonly showHeader: boolean;
@@ -30,11 +30,9 @@ const initialState: TerminalState = {
   tabName: 'index.ts',
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
-  background:
-    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.terminal.main,
-  textColor:
-    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.terminal.text,
-  darkMode: SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.darkMode,
+  background: '',
+  textColor: '',
+  darkMode: true,
   showWatermark: true,
   showGlassReflection: false,
   opacity: 100,

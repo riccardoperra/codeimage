@@ -1,13 +1,124 @@
 {
   "name": "@codeimage/theme",
   "version": "0.8.0",
-  "module": "./dist/theme.es.js",
+  "module": "./dist/index.js",
   "source": "./src/public-api.ts",
-  "types": "./dist/public-api.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/theme.es.js",
-      "types": "./dist/public-api.d.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/source/public-api.d.ts"
+    },
+    "./arc-dark": {
+      "import": "./dist/arc-dark.js",
+      "types": "./dist/source/lib/themes/arc-dark/index.d.ts"
+    },
+    "./coldark": {
+      "import": "./dist/coldark.js",
+      "types": "./dist/source/lib/themes/coldark/index.d.ts"
+    },
+    "./dracula": {
+      "import": "./dist/dracula.js",
+      "types": "./dist/source/lib/themes/dracula/index.d.ts"
+    },
+    "./duotone-dark": {
+      "import": "./dist/duotone-dark.js",
+      "types": "./dist/source/lib/themes/duotone-dark/index.d.ts"
+    },
+    "./duotone-sea": {
+      "import": "./dist/duotone-sea.js",
+      "types": "./dist/source/lib/themes/duotone-sea/index.d.ts"
+    },
+    "./holi": {
+      "import": "./dist/holi.js",
+      "types": "./dist/source/lib/themes/holi/index.d.ts"
+    },
+    "./light": {
+      "import": "./dist/light.js",
+      "types": "./dist/source/lib/themes/light/index.d.ts"
+    },
+    "./material-light": {
+      "import": "./dist/material-light.js",
+      "types": "./dist/source/lib/themes/material-light/index.d.ts"
+    },
+    "./material-ocean": {
+      "import": "./dist/material-ocean.js",
+      "types": "./dist/source/lib/themes/material-ocean/index.d.ts"
+    },
+    "./material-palenight": {
+      "import": "./dist/material-palenight.js",
+      "types": "./dist/source/lib/themes/material-palenight/index.d.ts"
+    },
+    "./material-volcano": {
+      "import": "./dist/material-volcano.js",
+      "types": "./dist/source/lib/themes/material-volcano/index.d.ts"
+    },
+    "./night-owl": {
+      "import": "./dist/night-owl.js",
+      "types": "./dist/source/lib/themes/night-owl/index.d.ts"
+    },
+    "./one-dark": {
+      "import": "./dist/one-dark.js",
+      "types": "./dist/source/lib/themes/one-dark/index.d.ts"
+    },
+    "./synthwave84": {
+      "import": "./dist/synthwave84.js",
+      "types": "./dist/source/lib/themes/synthwave84/index.d.ts"
+    },
+    "./vscode-dark": {
+      "import": "./dist/vscode-dark.js",
+      "types": "./dist/source/lib/themes/vscode-dark/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/source/public-api.d.ts"
+      ],
+      "./arc-dark": [
+        "./dist/source/lib/themes/arc-dark/index.d.ts"
+      ],
+      "./coldark": [
+        "./dist/source/lib/themes/coldark/index.d.ts"
+      ],
+      "./dracula": [
+        "./dist/source/lib/themes/dracula/index.d.ts"
+      ],
+      "./duotone-dark": [
+        "./dist/source/lib/themes/duotone-dark/index.d.ts"
+      ],
+      "./duotone-sea": [
+        "./dist/source/lib/themes/duotone-sea/index.d.ts"
+      ],
+      "./holi": [
+        "./dist/source/lib/themes/holi/index.d.ts"
+      ],
+      "./light": [
+        "./dist/source/lib/themes/light/index.d.ts"
+      ],
+      "./material-light": [
+        "./dist/source/lib/themes/material-light/index.d.ts"
+      ],
+      "./material-ocean": [
+        "./dist/source/lib/themes/material-ocean/index.d.ts"
+      ],
+      "./material-palenight": [
+        "./dist/source/lib/themes/material-palenight/index.d.ts"
+      ],
+      "./material-volcano": [
+        "./dist/source/lib/themes/material-volcano/index.d.ts"
+      ],
+      "./night-owl": [
+        "./dist/source/lib/themes/night-owl/index.d.ts"
+      ],
+      "./one-dark": [
+        "./dist/source/lib/themes/one-dark/index.d.ts"
+      ],
+      "./synthwave84": [
+        "./dist/source/lib/themes/synthwave84/index.d.ts"
+      ],
+      "./vscode-dark": [
+        "./dist/source/lib/themes/vscode-dark/index.d.ts"
+      ]
     }
   },
   "scripts": {
@@ -25,20 +136,22 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
-    "@codemirror/theme-one-dark": "^0.20.0",
     "@codemirror/language": "^0.20.2",
     "@codemirror/state": "^0.20.0",
+    "@codemirror/theme-one-dark": "^0.20.0",
     "@codemirror/view": "^0.20.6",
     "@lezer/highlight": "^0.16.0"
   },
   "peerDependencies": {
     "@codemirror/language": "^0.20.2",
-    "@codemirror/view": "^0.20.6",
     "@codemirror/state": "^0.20.0",
+    "@codemirror/view": "^0.20.6",
     "@lezer/highlight": "^0.16.0"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
+    "rollup": "2.75.5",
+    "rollup-plugin-dts": "4.2.2",
     "typescript": "^4.6.4",
     "vite": "^2.9.9",
     "vite-plugin-dts": "^1.1.1",

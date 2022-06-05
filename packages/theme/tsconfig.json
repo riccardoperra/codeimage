@@ -5,6 +5,7 @@
       "jsxImportSource": "solid-js",
     },
     "include": [
-      "./src"
+      "./src",
+      "rollup.config.ts"
     ]
   }

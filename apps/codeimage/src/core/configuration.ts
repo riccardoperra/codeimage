@@ -1,19 +1,30 @@
-import {
-  createConfiguration,
-  SUPPORTED_LOCALES,
-  SUPPORTED_THEMES,
-} from '@codeimage/config';
+import {createConfiguration, SUPPORTED_LOCALES} from '@codeimage/config';
 import {version} from '../../package.json';
 import {
   SUPPORTED_FONTS,
   SUPPORTED_FONTS_DICTIONARY,
 } from './configuration/font';
-import {mapToDictionary} from './helpers/mapToDictionary';
 
-export const SUPPORTED_THEMES_DICTIONARY = mapToDictionary(
-  SUPPORTED_THEMES,
-  'id',
-);
+export const MANY_THEMES = [
+  import('@codeimage/theme/vscode-dark').then(m => m.vsCodeDarkTheme),
+  import('@codeimage/theme/night-owl').then(m => m.nightOwlTheme),
+  import('@codeimage/theme/dracula').then(m => m.draculaTheme),
+  import('@codeimage/theme/material-ocean').then(m => m.materialOceanTheme),
+  import('@codeimage/theme/synthwave84').then(m => m.synthwave84Theme),
+  import('@codeimage/theme/material-volcano').then(m => m.materialVolcanoTheme),
+  import('@codeimage/theme/one-dark').then(m => m.oneDarkTheme),
+  import('@codeimage/theme/light').then(m => m.lightTheme),
+  import('@codeimage/theme/material-palenight').then(
+    m => m.materialPalenightTheme,
+  ),
+  import('@codeimage/theme/duotone-sea').then(m => m.duotoneSeaTheme),
+  import('@codeimage/theme/duotone-dark').then(m => m.duotoneDarkTheme),
+  import('@codeimage/theme/coldark').then(m => m),
+  import('@codeimage/theme/material-light').then(m => m.materialLightTheme),
+];
+
+export let SUPPORTED_THEMES_DICTIONARY = {};
+export let SUPPORTED_THEMES = [];
 
 export const [appEnvironment] = createConfiguration({
   version,
@@ -38,7 +49,7 @@ export const [appEnvironment] = createConfiguration({
         '\n',
       // TODO: should be auto
       languageId: 'typescript',
-      theme: SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme,
+      theme: '',
       font: SUPPORTED_FONTS_DICTIONARY['jetbrains-mono'],
     },
   } as const,

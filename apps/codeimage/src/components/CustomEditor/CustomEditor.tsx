@@ -6,6 +6,7 @@ import {
 import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {EditorView, lineNumbers} from '@codemirror/view';
+import {MANY_THEMES} from '@core/configuration';
 import {ReplaySubject} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
 import {
@@ -24,7 +25,7 @@ export const CustomEditor = () => {
   let editorEl!: HTMLDivElement;
   fixCodeMirrorAriaRole(() => editorEl);
   const destroy$ = new ReplaySubject<void>(1);
-  const themes = SUPPORTED_THEMES;
+  const themes = MANY_THEMES;
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
 

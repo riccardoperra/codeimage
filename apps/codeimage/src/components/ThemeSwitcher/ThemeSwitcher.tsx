@@ -13,6 +13,7 @@ import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createMemo,
+  createResource,
   createSelector,
   createSignal,
   For,
@@ -30,7 +31,6 @@ import {TerminalHost} from '../Terminal/TerminalHost';
 import {ThemeBox} from './ThemeBox';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
-
 function useFilteredThemes() {
   const {themes} = appEnvironment;
   const [search, setSearch] = createSignal('');

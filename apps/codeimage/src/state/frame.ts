@@ -1,10 +1,7 @@
 import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
-import {
-  appEnvironment,
-  SUPPORTED_THEMES_DICTIONARY,
-} from '../core/configuration';
+import {appEnvironment} from '../core/configuration';
 import shallow from '../core/helpers/shallow';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
@@ -19,8 +16,7 @@ export interface FrameStateSlice {
 }
 
 const initialState: FrameStateSlice = {
-  background:
-    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.previewBackground,
+  background: '',
   padding: 128,
   radius: 24,
   visible: true,
