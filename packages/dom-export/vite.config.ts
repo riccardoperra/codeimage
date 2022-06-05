@@ -5,7 +5,7 @@ import dts from 'vite-plugin-dts';
 module.exports = defineConfig({
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
+      entry: path.resolve(__dirname, 'src/public-api.ts'),
       name: '@codeimage/dom-export',
       fileName: 'dom-export',
       formats: ['es'],

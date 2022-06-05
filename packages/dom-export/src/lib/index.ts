@@ -136,5 +136,3 @@ export async function getFontEmbedCSS<T extends HTMLElement>(
 ): Promise<string> {
   return getWebFontCSS(node, options);
 }
-
-export {Options as HtmlExportOptions} from './options';

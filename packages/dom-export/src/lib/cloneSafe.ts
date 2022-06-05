@@ -1,4 +1,4 @@
-import {getNodeHeight, getNodeWidth} from 'html-to-image/es/util';
+import {getNodeHeight, getNodeWidth} from './util';
 
 export async function cloneNodeSafe(node: HTMLElement) {
   return Promise.resolve(node).then(el => {

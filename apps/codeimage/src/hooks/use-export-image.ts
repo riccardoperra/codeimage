@@ -4,10 +4,10 @@ import {
   toPng,
   toSvg,
   HtmlExportOptions,
+  cloneNodeSafe,
 } from '@codeimage/dom-export';
 import {IS_IOS} from '@core/constants/browser';
 import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
-import {cloneNodeSafe} from '@core/export/cloneNode';
 import {useAsyncAction} from '@core/hooks/async-action';
 import {useWebshare} from '@core/hooks/use-webshare';
 import download from 'downloadjs';
