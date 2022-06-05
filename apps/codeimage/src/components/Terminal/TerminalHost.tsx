@@ -44,15 +44,16 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
       data-theme-mode={props.darkMode ? 'dark' : 'light'}
       data-fallback-inactive-tab={tabTheme()?.shouldFallbackInactiveColor}
       style={assignInlineVars({
-        [styles.terminalVars.headerBackgroundColor]: tabTheme()?.background,
+        [styles.terminalVars.headerBackgroundColor]:
+          tabTheme()?.background ?? '',
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
         [styles.terminalVars.boxShadow]: props.shadow ?? themeVars.boxShadow.lg,
-        [styles.terminalVars.tabTextColor]: tabTheme()?.textColor,
+        [styles.terminalVars.tabTextColor]: tabTheme()?.textColor ?? '',
         [styles.terminalVars.tabAccentActiveBackground]:
-          tabTheme().activeTabBackground,
+          tabTheme().activeTabBackground ?? '',
         [styles.terminalVars.tabAccentInactiveBackground]:
-          tabTheme().inactiveTabBackground,
+          tabTheme().inactiveTabBackground ?? '',
       })}
     >
       <FadeInOutTransition show={props.showGlassReflection}>

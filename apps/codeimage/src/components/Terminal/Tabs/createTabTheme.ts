@@ -4,7 +4,7 @@ import {CustomTheme} from '@codeimage/theme/src/lib/core';
 import {Accessor, createMemo} from 'solid-js';
 
 export interface TabThemeProps extends TerminalTabsTheme {
-  readonly shouldFallbackInactiveColor: boolean;
+  shouldFallbackInactiveColor: boolean;
 }
 
 export function createTabTheme(
@@ -23,12 +23,8 @@ export function createTabTheme(
         shouldFallbackInactiveColor: true,
       };
 
-    const {
-      activeTabBackground = null,
-      background = null,
-      inactiveTabBackground = null,
-      textColor = null,
-    } = theme.properties?.terminal?.tabs || {};
+    const {activeTabBackground, background, inactiveTabBackground, textColor} =
+      theme.properties?.terminal?.tabs || {};
 
     return {
       shouldFallbackInactiveColor: !inactiveTabBackground,
