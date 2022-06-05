@@ -9,6 +9,10 @@ export interface TerminalThemeProperties {
    * description Base text color of terminal frame
    */
   text: string;
+  /**
+   *
+   */
+  tabs: any[];
 }
 
 export interface CustomThemeProperties {
