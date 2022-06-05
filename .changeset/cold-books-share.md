@@ -1,5 +1,5 @@
 ---
-'@codeimage/html-export': minor
+'@codeimage/dom-export': minor
 ---
 
-fix: fix align on safari
+build: fork and fixes
