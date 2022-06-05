@@ -13,6 +13,7 @@ export const [terminalTheme, terminalVars] = createTheme({
   headerBackground: 'rgba(0, 0, 0, 0)',
   tabAccentActiveBackground: 'unset',
   tabAccentInactiveBackground: 'unset',
+  tabTextColor: 'unset',
 });
 
 export const wrapper = style([

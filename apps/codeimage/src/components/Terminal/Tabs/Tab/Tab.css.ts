@@ -9,6 +9,7 @@ export const [tabTheme, tabVars] = createTheme({
   tabSecondaryHoverBg: '255, 255, 255',
   tabGap: '8px',
   tabMaxWidth: '400px',
+  textColor: fallbackVar(terminalVars.tabTextColor, terminalVars.textColor),
   accentActiveBackground: terminalVars.tabAccentActiveBackground,
   accentInactiveBackground: terminalVars.tabAccentInactiveBackground,
   tabForeground: terminalVars.tabAccentActiveBackground,
@@ -56,6 +57,7 @@ export const tab = recipe({
     {
       background: 'transparent',
       height: tabVars.tabHeight,
+      color: tabVars.textColor,
       padding: `0px ${themeVars.spacing['3']}`,
       verticalAlign: 'middle',
       marginTop: 'auto',
@@ -197,6 +199,9 @@ export const tab = recipe({
           },
           '&:not(:last-child)': {
             borderTopRightRadius: 0,
+          },
+          '[data-fallback-inactive-tab=true] &': {
+            filter: 'brightness(0.85)',
           },
         },
       },

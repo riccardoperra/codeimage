@@ -1,7 +1,7 @@
 import type {Extension} from '@codemirror/state';
 
 export interface TerminalTabsTheme {
-  background: string;
+  background?: string;
   activeTabBackground?: string;
   inactiveTabBackground?: string;
   textColor?: string;
