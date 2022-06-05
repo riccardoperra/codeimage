@@ -2,7 +2,7 @@ import {LionCombobox} from '@lion/combobox';
 import '@lion/combobox/define';
 import {css, html, PropertyValues} from '@lion/core';
 import {LionOption} from '@lion/listbox';
-import '@lion/listbox/define';
+import '@lion/listbox/define-option';
 import {map, Subject, takeUntil} from 'rxjs';
 import {mutationObserverFactory$} from '@core/operators/create-mutation-observer';
 import {resizeObserverFactory$} from '@core/operators/create-resize-observer';

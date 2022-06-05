@@ -1,14 +1,20 @@
 import {LanguageIconDefinition} from '@codeimage/config';
 import {Text} from '@codeimage/ui';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import createResizeObserver from '@solid-primitives/resize-observer';
 import {createSortable} from '@thisbeyond/solid-dnd';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createMemo, createSignal, onMount, Show, VoidProps} from 'solid-js';
-import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
+import {
+  createMemo,
+  createSignal,
+  lazy,
+  onMount,
+  Show,
+  VoidProps,
+} from 'solid-js';
 import {CloseIcon} from '../../../Icons/CloseIcon';
-import * as styles from './Tab.css';
 import {TabIcon} from '../TabIcon/TabIcon';
-import {TabName} from '../TabName/TabName';
+import * as styles from './Tab.css';
 
 const exportExclude = _exportExclude;
 
@@ -25,6 +31,10 @@ export interface WindowTabProps {
   readonly onClick?: () => void;
   readonly onClose?: (() => void) | null;
 }
+
+export const TabName = lazy(() =>
+  import('../TabName/TabName').then(c => ({default: c.TabName})),
+);
 
 export function WindowTab(props: VoidProps<WindowTabProps>) {
   let ref!: HTMLDivElement;

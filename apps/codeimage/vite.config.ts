@@ -3,6 +3,7 @@ import solidPlugin from 'vite-plugin-solid';
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import {visualizer} from 'rollup-plugin-visualizer';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   base: '/',
@@ -72,6 +73,7 @@ export default defineConfig(({mode}) => ({
         );
       },
     },
+    visualizer(),
   ],
   server: {
     strictPort: true,
