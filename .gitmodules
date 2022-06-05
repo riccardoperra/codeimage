@@ -1,3 +1,0 @@
-[submodule "packages/html-export"]
-	path = packages/html-export
-	url = git@github.com:riccardoperra/codeimage-export.git

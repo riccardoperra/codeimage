@@ -4,7 +4,7 @@ import {
   toPng,
   toSvg,
   HtmlExportOptions,
-} from '@codeimage/html-export';
+} from '@codeimage/dom-export';
 import {IS_IOS} from '@core/constants/browser';
 import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
 import {cloneNodeSafe} from '@core/export/cloneNode';
