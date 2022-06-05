@@ -27,7 +27,7 @@ export const CustomEditorPreview = (
   props: VoidProps<CustomEditorPreviewProps>,
 ) => {
   let editorEl!: HTMLDivElement;
-  fixCodeMirrorAriaRole();
+  fixCodeMirrorAriaRole(() => editorEl);
 
   const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;

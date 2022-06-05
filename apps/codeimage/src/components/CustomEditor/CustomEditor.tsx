@@ -22,7 +22,7 @@ import {observeFocusExtension} from './observe-focus-extension';
 
 export const CustomEditor = () => {
   let editorEl!: HTMLDivElement;
-  fixCodeMirrorAriaRole();
+  fixCodeMirrorAriaRole(() => editorEl);
   const destroy$ = new ReplaySubject<void>(1);
   const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;
