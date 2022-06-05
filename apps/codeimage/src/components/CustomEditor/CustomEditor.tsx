@@ -3,9 +3,10 @@ import {
   SUPPORTED_LANGUAGES,
   SUPPORTED_THEMES,
 } from '@codeimage/config';
-import {editor$, setFocus} from '@codeimage/store/editor';
+import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {EditorView, lineNumbers} from '@codemirror/view';
-import {debounceTime, ReplaySubject, takeUntil} from 'rxjs';
+import {ReplaySubject} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
 import {
   batch,
@@ -15,21 +16,25 @@ import {
   onCleanup,
 } from 'solid-js';
 import {SUPPORTED_FONTS} from '../../core/configuration/font';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {focusedEditor$, setCode} from '../../state/editor';
 import {createCustomFontExtension} from './custom-font-extension';
+import {fixCodeMirrorAriaRole} from './fix-cm-aria-roles-lighthouse';
 import {observeFocusExtension} from './observe-focus-extension';
 
 export const CustomEditor = () => {
   let editorEl!: HTMLDivElement;
+  fixCodeMirrorAriaRole(() => editorEl);
   const destroy$ = new ReplaySubject<void>(1);
   const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
-  const editor = fromObservableObject(editor$);
 
+  const {
+    options: editorOptions,
+    actions: {setFocused},
+  } = getRootEditorStore();
+  const {editor, setCode} = getActiveEditorStore();
   const selectedLanguage = createMemo(() =>
-    languages.find(language => language.id === editor.languageId),
+    languages.find(language => language.id === editor()?.languageId),
   );
 
   const {view, setOptions, setContainer} = createCodeMirror({
@@ -44,7 +49,7 @@ export const CustomEditor = () => {
   );
 
   const themeConfiguration = createMemo(
-    () => themes.find(theme => theme.id === editor.themeId) ?? themes[0],
+    () => themes.find(theme => theme.id === editorOptions.themeId) ?? themes[0],
   );
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];
@@ -86,23 +91,11 @@ export const CustomEditor = () => {
   const customFontExtension = () =>
     createCustomFontExtension({
       fontName:
-        fonts.find(({id}) => editor.fontId === id)?.name || fonts[0].name,
-      fontWeight: editor.fontWeight,
+        fonts.find(({id}) => editorOptions.fontId === id)?.name ||
+        fonts[0].name,
+      // TODO editor fix type never null
+      fontWeight: editorOptions.fontWeight ?? 400,
     });
-
-  setTimeout(() => {
-    const content = document.querySelector('.cm-content');
-    if (!content) {
-      return;
-    }
-
-    /**
-     * **🚀 Seo tip: fix invalid aria roles for CodeMirror**
-     */
-    content.setAttribute('id', 'codeEditor');
-    content.setAttribute('aria-label', 'codeimage-editor');
-    content.removeAttribute('aria-expanded');
-  });
 
   createEffect(() => {
     batch(() => {
@@ -112,8 +105,15 @@ export const CustomEditor = () => {
 
   createEffect(() => {
     setOptions(() => ({
-      value: editor.code,
+      value: editor()?.code,
     }));
+  });
+
+  createEffect(() => {
+    const focused = editorOptions.focused;
+    if (focused && !view()?.hasFocus) {
+      view()?.focus();
+    }
   });
 
   createEffect(() => {
@@ -126,23 +126,11 @@ export const CustomEditor = () => {
           EDITOR_BASE_SETUP,
           baseTheme,
           supportsLineWrap,
-          observeFocusExtension(
-            focused => setFocus(focused),
-            vu => {
-              // ATTENTION: a lot of multiple calls to fix!!
-              focusedEditor$
-                .pipe(takeUntil(destroy$), debounceTime(0))
-                .subscribe(focused => {
-                  if (focused && !vu.view.hasFocus) {
-                    vu.view.focus();
-                  }
-                });
-            },
-          ),
+          observeFocusExtension(focused => setFocused(focused)),
           customFontExtension(),
           currentLanguage() || [],
           currentTheme(),
-          editor.showLineNumbers ? lineNumbers() : [],
+          editorOptions.showLineNumbers ? lineNumbers() : [],
         ],
       }),
     );

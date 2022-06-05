@@ -1,5 +1,5 @@
 import {Box, Link} from '@codeimage/ui';
-import {appEnvironment} from '../../core/configuration';
+import {appEnvironment} from '@core/configuration';
 import * as styles from './Footer.css';
 
 export const Footer = () => {

@@ -6,7 +6,7 @@ import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {FlowComponent} from 'solid-js';
 import {TerminalState} from '../../state/terminal';
 import * as styles from './terminal.css';
-import {TerminalGlassReflection} from './TerminalGlassReflection';
+import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
 
 export interface BaseTerminalProps
   extends Omit<TerminalState, 'type'>,

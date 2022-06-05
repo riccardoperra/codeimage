@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {editor$} from '@codeimage/store/editor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {updateTheme} from '@codeimage/store/effects/onThemeChange';
 import {terminal$} from '@codeimage/store/terminal';
 import {CustomTheme} from '@codeimage/theme';
@@ -7,7 +7,6 @@ import {
   Box,
   FadeInOutWithScaleTransition,
   FlexField,
-  Text,
   TextField,
 } from '@codeimage/ui';
 import {dispatch} from '@ngneat/effects';
@@ -20,13 +19,14 @@ import {
   ParentComponent,
   Show,
 } from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {useModality} from '../../core/hooks/isMobile';
+import {appEnvironment} from '@core/configuration';
+import {fromObservableObject} from '@core/hooks/from-observable-object';
+import {useModality} from '@core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
+import {CustomEditorPreview} from '../CustomEditor/CustomEditorPreview';
 import {CheckCircle} from '../Icons/CheckCircle';
 import {EmptyCircle} from '../Icons/EmptyCircle';
-import {DynamicTerminal} from '../Terminal/dynamic/DynamicTerminal';
+import {TerminalHost} from '../Terminal/TerminalHost';
 import {ThemeBox} from './ThemeBox';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
@@ -48,19 +48,24 @@ function useFilteredThemes() {
 
 export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const terminal = fromObservableObject(terminal$);
-  const editor = fromObservableObject(editor$);
+  const {options} = getRootEditorStore();
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
   const [themes, filteredThemes, search, setSearch] = useFilteredThemes();
-
   const filteredThemeIds = () => filteredThemes().map(theme => theme.id);
-
-  const isSelected = createSelector(() => editor.themeId);
+  const isSelected = createSelector(() => options.themeId);
 
   const onSelectTheme = (theme: CustomTheme) => {
     dispatch(updateTheme({theme}));
     umami.trackEvent(theme.id, `theme-change`);
   };
+
+  const exampleCode =
+    '// Just a code example \n' +
+    'export function Preview() {\n' +
+    ' const [count, setCount] = \n' +
+    '   createSignal(0);\n' +
+    '}';
 
   return (
     <Box
@@ -92,24 +97,28 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                 selected={isSelected(theme.id)}
                 onClick={() => onSelectTheme(theme)}
               >
-                <DynamicTerminal
+                <TerminalHost
+                  theme={styles.themeBoxTerminalHost}
                   tabName={'Untitled'}
                   textColor={theme.properties.terminal.text}
                   background={theme.properties.terminal.main}
                   darkMode={theme.properties.darkMode}
                   accentVisible={false}
-                  shadow={terminal.shadow}
-                  showTab={true}
+                  shadow={/*@once*/ terminal.shadow}
+                  showTab={false}
                   readonlyTab={true}
-                  showHeader={true}
-                  type={terminal.type}
+                  showHeader={false}
                   showWatermark={false}
                   showGlassReflection={terminal.showGlassReflection}
                   opacity={100}
                   alternativeTheme={terminal.alternativeTheme}
                 >
-                  <Text size={'sm'}>{`// Code here`}</Text>
-                </DynamicTerminal>
+                  <CustomEditorPreview
+                    themeId={theme.id}
+                    languageId={/*@once*/ 'typescript'}
+                    code={/*@once*/ exampleCode}
+                  />
+                </TerminalHost>
               </ThemeBox>
 
               <Box display={'flex'} justifyContent={'center'} marginTop={4}>

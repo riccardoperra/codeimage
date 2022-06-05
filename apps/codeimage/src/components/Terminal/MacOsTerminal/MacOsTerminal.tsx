@@ -1,9 +1,8 @@
-import {backgroundColorVar, Box, Text} from '@codeimage/ui';
+import {backgroundColorVar, Box} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {ParentComponent, Show} from 'solid-js';
-import {exportExclude as _exportExclude} from '../../../core/directives/exportExclude';
-import {TabIcon} from '../TabIcon';
-import {TabName} from '../TabName';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
+import {TerminalWindowTabList} from '../Tabs/TerminalWindowTabList';
 import * as baseStyles from '../terminal.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './MacOsTerminal.css';
@@ -42,30 +41,12 @@ export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
           </div>
 
           <Show when={props.showTab}>
-            <div
-              use:exportExclude={!props.tabName?.length}
-              class={baseStyles.tab({accent: showTab()})}
-            >
-              <Show when={props.tabIcon}>
-                {icon => <TabIcon content={icon} />}
-              </Show>
-              <Show
-                fallback={
-                  <Text size={'sm'}>{props.tabName ?? 'Untitled'}</Text>
-                }
-                when={!props.readonlyTab}
-              >
-                <TabName
-                  readonly={false}
-                  value={props.tabName ?? ''}
-                  onValueChange={value => props.onTabChange?.(value)}
-                />
-              </Show>
-            </div>
+            <TerminalWindowTabList
+              accent={props.accentVisible && !props.alternativeTheme}
+            />
           </Show>
         </div>
       </Show>
-
       <Show when={props.children}>
         <div class={baseStyles.content}>
           <Box position={'relative'}>

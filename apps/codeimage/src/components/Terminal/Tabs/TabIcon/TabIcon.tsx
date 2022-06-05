@@ -1,6 +1,6 @@
 import {JSXElement, mergeProps} from 'solid-js';
 import {Box, RemoteSvgIcon} from '@codeimage/ui';
-import * as styles from './terminal.css';
+import * as styles from './TabIcon.css';
 import {LanguageIconDefinition} from '@codeimage/config';
 
 interface TabIconProps {

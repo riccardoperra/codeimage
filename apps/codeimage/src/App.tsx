@@ -1,11 +1,15 @@
 import {useI18n} from '@codeimage/locale';
+import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
-import {onTabNameChange$} from '@codeimage/store/effects/onTabNameChange';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {frame$, setScale} from '@codeimage/store/frame';
 import {connectStoreWithQueryParams} from '@codeimage/store/plugins/connect-store-with-query-params';
-import {setTabName, terminal$} from '@codeimage/store/terminal';
-import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
+import {terminal$} from '@codeimage/store/terminal';
+import {Box, LoadingOverlay, PortalHost, SnackbarHost} from '@codeimage/ui';
+import {fromObservableObject} from '@core/hooks/from-observable-object';
+import {useModality} from '@core/hooks/isMobile';
+import {useEffects} from '@core/store/use-effect';
 import {initEffects} from '@ngneat/effects';
 import {createEffect, createSignal, on, Show} from 'solid-js';
 import {BottomBar} from './components/BottomBar/BottomBar';
@@ -19,13 +23,9 @@ import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
+import {DynamicTerminal} from './components/Terminal/DynamicTerminal/DynamicTerminal';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {Toolbar} from './components/Toolbar/Toolbar';
-import {fromObservableObject} from './core/hooks/from-observable-object';
-import {useModality} from './core/hooks/isMobile';
-import {useEffects} from './core/store/use-effect';
-import {useTabIcon} from './hooks/use-tab-icon';
 import {uiStore} from './state/ui';
 import './theme/global.css';
 
@@ -39,10 +39,10 @@ export function App() {
   const terminal = fromObservableObject(terminal$);
   const modality = useModality();
   const [, {locale}] = useI18n();
-  const [tabIcon] = useTabIcon({withDefault: true});
   connectStoreWithQueryParams();
-  useEffects([onTabNameChange$, onThemeChange$, copyToClipboard$]);
+  useEffects([onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
+  const {ready} = getRootEditorStore();
 
   return (
     <Scaffold>
@@ -67,34 +67,43 @@ export function App() {
         </Show>
 
         <FrameHandler ref={setFrameRef} onScaleChange={setScale}>
-          <Frame
-            radius={0}
-            padding={frame.padding}
-            background={frame.background}
-            opacity={frame.opacity}
-            visible={frame.visible}
+          <Show
+            when={ready()}
+            fallback={
+              <div style={{height: '400px', width: '600px'}}>
+                <LoadingOverlay overlay={true} size={'lg'} />
+              </div>
+            }
           >
-            <DynamicTerminal
-              type={terminal.type}
-              readonlyTab={false}
-              tabName={terminal.tabName}
-              showTab={true}
-              shadow={terminal.shadow}
-              background={terminal.background}
-              accentVisible={terminal.accentVisible}
-              darkMode={terminal.darkMode}
-              textColor={terminal.textColor}
-              onTabChange={setTabName}
-              showHeader={terminal.showHeader}
-              showGlassReflection={terminal.showGlassReflection}
-              tabIcon={tabIcon()?.content}
-              showWatermark={terminal.showWatermark}
-              opacity={terminal.opacity}
-              alternativeTheme={terminal.alternativeTheme}
+            <Frame
+              radius={0}
+              padding={frame.padding}
+              background={frame.background}
+              opacity={frame.opacity}
+              visible={frame.visible}
             >
-              <CustomEditor />
-            </DynamicTerminal>
-          </Frame>
+              <DynamicTerminal
+                type={terminal.type}
+                readonlyTab={false}
+                tabName={terminal.tabName}
+                showTab={true}
+                shadow={terminal.shadow}
+                background={terminal.background}
+                accentVisible={terminal.accentVisible}
+                darkMode={terminal.darkMode}
+                textColor={terminal.textColor}
+                showHeader={terminal.showHeader}
+                showGlassReflection={terminal.showGlassReflection}
+                showWatermark={terminal.showWatermark}
+                opacity={terminal.opacity}
+                alternativeTheme={terminal.alternativeTheme}
+              >
+                <Show when={getActiveEditorStore().editor()}>
+                  <CustomEditor />
+                </Show>
+              </DynamicTerminal>
+            </Frame>
+          </Show>
         </FrameHandler>
 
         <Footer />
