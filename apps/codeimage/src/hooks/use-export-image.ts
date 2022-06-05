@@ -1,5 +1,10 @@
-import {toBlob, toJpeg, toPng, toSvg} from '@codeimage/html-export';
-import {Options as HtmlToImageExportOptions} from '@codeimage/html-export/options';
+import {
+  toBlob,
+  toJpeg,
+  toPng,
+  toSvg,
+  HtmlExportOptions,
+} from '@codeimage/html-export';
 import {IS_IOS} from '@core/constants/browser';
 import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
 import {cloneNodeSafe} from '@core/export/cloneNode';
@@ -79,7 +84,7 @@ export async function exportImage(
   const mimeType = resolveMimeType(extension);
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
 
-  const toImageOptions: HtmlToImageExportOptions = {
+  const toImageOptions: HtmlExportOptions = {
     filter: (node: Node | undefined) => {
       const isNotExcluded = () => {
         const el = node as Element | null;
