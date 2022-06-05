@@ -1,12 +1,17 @@
+import {
+  toBlob,
+  toJpeg,
+  toPng,
+  toSvg,
+  HtmlExportOptions,
+  cloneNodeSafe,
+} from '@codeimage/dom-export';
+import {IS_IOS} from '@core/constants/browser';
+import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
+import {useAsyncAction} from '@core/hooks/async-action';
+import {useWebshare} from '@core/hooks/use-webshare';
 import download from 'downloadjs';
-import {toBlob, toJpeg, toPng, toSvg} from 'html-to-image';
-import {Options as HtmlToImageExportOptions} from 'html-to-image/es/options';
 import {Resource} from 'solid-js';
-import {IS_IOS} from '../core/constants/browser';
-import {EXPORT_EXCLUDE} from '../core/directives/exportExclude';
-import {cloneNodeSafe} from '../core/export/cloneNode';
-import {useAsyncAction} from '../core/hooks/async-action';
-import {useWebshare} from '../core/hooks/use-webshare';
 
 export const enum ExportMode {
   export = 'export',
@@ -79,7 +84,7 @@ export async function exportImage(
   const mimeType = resolveMimeType(extension);
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
 
-  const toImageOptions: HtmlToImageExportOptions = {
+  const toImageOptions: HtmlExportOptions = {
     filter: (node: Node | undefined) => {
       const isNotExcluded = () => {
         const el = node as Element | null;
