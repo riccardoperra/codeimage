@@ -15,8 +15,8 @@ import {
   onMount,
 } from 'solid-js';
 import {createStore, unwrap} from 'solid-js/store';
-import {appEnvironment} from '../../core/configuration';
-import {SUPPORTED_FONTS} from '../../core/configuration/font';
+import {appEnvironment} from '@core/configuration';
+import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {getRootEditorOptions} from './createEditorOptions';
 import {EditorState, PersistedEditorState} from './model';
@@ -101,10 +101,10 @@ function $createEditorsStore() {
     const $isActive = isActive(id);
     const currentIndex = editors.findIndex(editor => editor.id === id);
     const newActiveEditor = editors[currentIndex - 1];
-    setEditors(editors => editors.filter(editor => editor.id !== id));
     if ($isActive) {
       setActiveEditorId(newActiveEditor?.id ?? editors[0]?.id);
     }
+    setEditors(editors => editors.filter(editor => editor.id !== id));
   });
 
   const setTabName = withNotifier(

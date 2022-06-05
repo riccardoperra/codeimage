@@ -100,7 +100,7 @@ export function TerminalWindowTabList(
                     tabIcon={icon()?.content}
                     readonlyTab={!active()}
                     accentMode={props.accent}
-                    active={active() && editors.length > 1}
+                    active={active()}
                     onClick={() => setActiveEditorId(editor.id)}
                     onTabChange={tabName =>
                       handleTabNameChange(editor.id, tabName)
