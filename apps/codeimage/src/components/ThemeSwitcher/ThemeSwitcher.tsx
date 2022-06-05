@@ -98,7 +98,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                 onClick={() => onSelectTheme(theme)}
               >
                 <TerminalHost
-                  theme={styles.themeBoxTerminalHost}
+                  themeClass={styles.themeBoxTerminalHost}
                   tabName={'Untitled'}
                   textColor={theme.properties.terminal.text}
                   background={theme.properties.terminal.main}
@@ -111,6 +111,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                   showWatermark={false}
                   showGlassReflection={terminal.showGlassReflection}
                   opacity={100}
+                  themeId={theme.id}
                   alternativeTheme={terminal.alternativeTheme}
                 >
                   <CustomEditorPreview

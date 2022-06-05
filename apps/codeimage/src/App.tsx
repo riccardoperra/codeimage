@@ -38,6 +38,7 @@ export function App() {
   const frame = fromObservableObject(frame$);
   const terminal = fromObservableObject(terminal$);
   const modality = useModality();
+  const editor = getRootEditorStore();
   const [, {locale}] = useI18n();
   connectStoreWithQueryParams();
   useEffects([onThemeChange$, copyToClipboard$]);
@@ -97,6 +98,7 @@ export function App() {
                 showWatermark={terminal.showWatermark}
                 opacity={terminal.opacity}
                 alternativeTheme={terminal.alternativeTheme}
+                themeId={editor.options.themeId}
               >
                 <Show when={getActiveEditorStore().editor()}>
                   <CustomEditor />

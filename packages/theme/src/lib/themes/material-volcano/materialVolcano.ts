@@ -3,7 +3,7 @@ import {tags as t} from '@lezer/highlight';
 import {defineEditorTheme} from '../../core';
 
 export const palette = {
-  background: '#200000',
+  background: '#2a0303',
   cyan: '#89DDFF',
   sand: '#7F6451',
   indigo: '#82AAFF',
@@ -19,16 +19,6 @@ export const palette = {
 };
 
 export const materialVolcano = [
-  syntaxHighlighting(
-    HighlightStyle.define([
-      {tag: t.null, color: palette.orange},
-      {tag: t.typeOperator, color: palette.purple},
-      {tag: t.labelName, color: palette.red},
-      {tag: t.variableName, color: palette.indigo},
-      {tag: [t.function(t.variableName)], color: palette.yellow},
-    ]),
-  ),
-
   defineEditorTheme({
     darkMode: true,
     selection: {
@@ -58,7 +48,7 @@ export const materialVolcano = [
       className: palette.yellow,
       strings: palette.green,
       numbers: palette.orange,
-      variableName: palette.purple,
+      variableName: palette.indigo,
       regexp: palette.yellow,
       propertyName: palette.indigo,
       annotation: palette.cyan,
@@ -73,6 +63,15 @@ export const materialVolcano = [
       brackets: palette.cyan,
     },
   }),
+  syntaxHighlighting(
+    HighlightStyle.define([
+      {tag: t.null, color: palette.orange},
+      {tag: t.typeOperator, color: palette.purple},
+      {tag: t.labelName, color: palette.red},
+      {tag: t.variableName, color: palette.orange},
+      {tag: [t.function(t.variableName)], color: palette.yellow},
+    ]),
+  ),
 ];
 
 // export const materialVolcano = [highlightStyle, theme];

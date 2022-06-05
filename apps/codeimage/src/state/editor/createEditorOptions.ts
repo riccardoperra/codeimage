@@ -1,6 +1,7 @@
+import {createStoreNotifier} from '@codeimage/store/plugins/store-notifier';
 import {createRoot} from 'solid-js';
 import {createStore} from 'solid-js/store';
-import {appEnvironment} from '../../core/configuration';
+import {appEnvironment} from '@core/configuration';
 
 export interface EditorUIOptions {
   readonly fontId: string;
@@ -11,6 +12,7 @@ export interface EditorUIOptions {
 }
 
 function $createEditorOptions() {
+  const [, withNotifier, version] = createStoreNotifier();
   const [state, setState] = createStore<EditorUIOptions>({
     themeId: appEnvironment.defaultState.editor.theme.id,
     showLineNumbers: false,
@@ -23,21 +25,23 @@ function $createEditorOptions() {
     state,
     setState,
     {
-      setFocused(focused: boolean) {
+      version,
+
+      setFocused: withNotifier((focused: boolean) => {
         setState('focused', focused);
-      },
-      setFontId(fontId: string) {
+      }),
+      setFontId: withNotifier((fontId: string) => {
         setState('fontId', fontId);
-      },
-      setThemeId(themeId: string) {
+      }),
+      setThemeId: withNotifier((themeId: string) => {
         setState('themeId', themeId);
-      },
-      setFontWeight(fontWeight: number) {
+      }),
+      setFontWeight: withNotifier((fontWeight: number) => {
         setState('fontWeight', fontWeight);
-      },
-      setShowLineNumbers(show: boolean) {
+      }),
+      setShowLineNumbers: withNotifier((show: boolean) => {
         setState('showLineNumbers', show);
-      },
+      }),
     },
   ] as const;
 }

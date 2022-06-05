@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {createTheme, style} from '@vanilla-extract/css';
+import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
 import {recipe} from '@vanilla-extract/recipes';
 import {terminalVars} from '../../terminal.css';
 
@@ -9,6 +9,9 @@ export const [tabTheme, tabVars] = createTheme({
   tabSecondaryHoverBg: '255, 255, 255',
   tabGap: '8px',
   tabMaxWidth: '400px',
+  accentActiveBackground: terminalVars.tabAccentActiveBackground,
+  accentInactiveBackground: terminalVars.tabAccentInactiveBackground,
+  tabForeground: terminalVars.tabAccentActiveBackground,
 });
 
 export const wrapper = recipe({
@@ -90,6 +93,12 @@ export const tab = recipe({
   variants: {
     accent: {
       true: {
+        vars: {
+          [tabVars.tabForeground]: fallbackVar(
+            terminalVars.tabAccentActiveBackground,
+            terminalVars.backgroundColor,
+          ),
+        },
         /**
          * ATTENTION: this is a workaround related to https://github.com/riccardoperra/codeimage/issues/41
          *            Flex properties in safari are broken on export with HtmlToImage
@@ -99,7 +108,7 @@ export const tab = recipe({
         marginBottom: 0,
         paddingTop: 0,
         paddingLeft: `calc(${themeVars.spacing['2']} + ${tabVars.tabGap})`,
-        backgroundColor: terminalVars.backgroundColor,
+        backgroundColor: tabVars.tabForeground,
         boxShadow: '0px 10px 10px 0 rgba(0,0,0,.30)',
         zIndex: tabVars.tabIndex,
         selectors: {
@@ -124,7 +133,7 @@ export const tab = recipe({
             backgroundColor: 'transparent',
             width: tabVars.tabGap,
             height: tabVars.tabGap,
-            boxShadow: `1px 0px 0px 0px ${terminalVars.backgroundColor}, 3px 4px 0px 0px ${terminalVars.backgroundColor}`,
+            boxShadow: `1px 0px 0px 0px ${tabVars.tabForeground}, 3px 4px 0px 0px ${tabVars.tabForeground}`,
             overflow: 'hidden',
           },
         },
@@ -173,7 +182,12 @@ export const tab = recipe({
         active: false,
       },
       style: {
-        backgroundColor: `${terminalVars.backgroundColor}`,
+        vars: {
+          [tabVars.tabForeground]: fallbackVar(
+            tabVars.accentInactiveBackground,
+            terminalVars.backgroundColor,
+          ),
+        },
         selectors: {
           '&:not(:first-child) &': {
             borderTopLeftRadius: 0,
@@ -185,7 +199,6 @@ export const tab = recipe({
             borderTopRightRadius: 0,
           },
         },
-        filter: 'brightness(0.80)',
       },
     },
   ],

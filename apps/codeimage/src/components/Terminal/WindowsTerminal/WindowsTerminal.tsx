@@ -12,7 +12,7 @@ export const exportExclude = _exportExclude;
 export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
   const showTab = () => props.accentVisible && !props.alternativeTheme;
   return (
-    <TerminalHost {...props} theme={styles.theme}>
+    <TerminalHost {...props} themeClass={styles.theme}>
       <Show when={props.showHeader}>
         <div
           class={baseStyles.header}
