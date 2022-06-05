@@ -16,7 +16,7 @@ export const palette = {
   brown: '#916b53',
   pink: '#ff9cac',
   violet: '#bb80b3',
-  backgroundAlt: '#192429',
+  backgroundAlt: '#212d33',
   defaultAccent: '#80CBC4',
   background: '#263238',
   comments: '#546E7A',
