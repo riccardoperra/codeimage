@@ -11,6 +11,10 @@ export const materialLightTheme = createTheme({
     terminal: {
       main: '#ffffff',
       text: '#90a4ae',
+      tabs: {
+        inactiveTabBackground: '#e5e5e5',
+        textColor: '#000',
+      },
     },
   },
 } as const);

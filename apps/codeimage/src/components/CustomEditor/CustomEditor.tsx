@@ -15,7 +15,7 @@ import {
   createResource,
   onCleanup,
 } from 'solid-js';
-import {SUPPORTED_FONTS} from '../../core/configuration/font';
+import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {createCustomFontExtension} from './custom-font-extension';
 import {fixCodeMirrorAriaRole} from './fix-cm-aria-roles-lighthouse';
 import {observeFocusExtension} from './observe-focus-extension';

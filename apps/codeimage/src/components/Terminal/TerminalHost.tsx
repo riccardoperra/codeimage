@@ -5,8 +5,9 @@ import clsx from 'clsx';
 import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {FlowComponent} from 'solid-js';
 import {TerminalState} from '../../state/terminal';
-import * as styles from './terminal.css';
 import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
+import {createTabTheme} from './Tabs/createTabTheme';
+import * as styles from './terminal.css';
 
 export interface BaseTerminalProps
   extends Omit<TerminalState, 'type'>,
@@ -15,13 +16,17 @@ export interface BaseTerminalProps
   readonlyTab: boolean;
   tabIcon?: LanguageIconDefinition['content'];
   onTabChange?: (tab: string) => void;
+  themeId: string;
 }
 
 export interface TerminalHostProps extends BaseTerminalProps {
-  theme: string;
+  themeClass: string;
+  themeId: string;
 }
 
 export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
+  const tabTheme = createTabTheme(() => props.themeId);
+
   const background = () => {
     if (props.alternativeTheme) {
       return `rgba(${styles.terminalVars.headerColor}, .70)`;
@@ -35,12 +40,20 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
 
   return (
     <div
-      class={clsx(styles.wrapper, props.theme)}
+      class={clsx(styles.wrapper, props.themeClass)}
       data-theme-mode={props.darkMode ? 'dark' : 'light'}
+      data-fallback-inactive-tab={tabTheme()?.shouldFallbackInactiveColor}
       style={assignInlineVars({
+        [styles.terminalVars.headerBackgroundColor]:
+          tabTheme()?.background ?? '',
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
         [styles.terminalVars.boxShadow]: props.shadow ?? themeVars.boxShadow.lg,
+        [styles.terminalVars.tabTextColor]: tabTheme()?.textColor ?? '',
+        [styles.terminalVars.tabAccentActiveBackground]:
+          tabTheme().activeTabBackground ?? '',
+        [styles.terminalVars.tabAccentInactiveBackground]:
+          tabTheme().inactiveTabBackground ?? '',
       })}
     >
       <FadeInOutTransition show={props.showGlassReflection}>
