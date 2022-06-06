@@ -1,9 +1,10 @@
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {terminal$} from '@codeimage/store/terminal';
 import {Box, Group, RadioBlock} from '@codeimage/ui';
+import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
+import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {For, JSXElement} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {AVAILABLE_TERMINAL_THEMES} from '../../core/configuration/terminal-themes';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
 
 interface TerminalControlFieldProps {
   selectedTerminal: string;
@@ -15,6 +16,7 @@ export function TerminalControlField(
 ): JSXElement {
   const terminalThemes = AVAILABLE_TERMINAL_THEMES;
   const terminalState = fromObservableObject(terminal$);
+  const {options} = getRootEditorStore();
 
   return (
     <Group orientation={'vertical'}>
@@ -40,6 +42,7 @@ export function TerminalControlField(
                 showWatermark={false}
                 alternativeTheme={false}
                 opacity={100}
+                themeId={options.themeId}
                 showGlassReflection={terminalState.showGlassReflection}
               />
             </Box>

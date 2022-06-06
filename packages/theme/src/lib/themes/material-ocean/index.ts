@@ -11,6 +11,9 @@ export const materialOceanTheme = createTheme({
     terminal: {
       main: palette.backgroundAlt,
       text: palette.white,
+      tabs: {
+        inactiveTabBackground: '#152025',
+      },
     },
   },
 } as const);

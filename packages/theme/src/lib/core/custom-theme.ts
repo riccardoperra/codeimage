@@ -1,5 +1,12 @@
 import type {Extension} from '@codemirror/state';
 
+export interface TerminalTabsTheme {
+  background?: string;
+  activeTabBackground?: string;
+  inactiveTabBackground?: string;
+  textColor?: string;
+}
+
 export interface TerminalThemeProperties {
   /**
    * @description Main background color of terminal
@@ -9,6 +16,10 @@ export interface TerminalThemeProperties {
    * description Base text color of terminal frame
    */
   text: string;
+  /**
+   *
+   */
+  tabs?: TerminalTabsTheme;
 }
 
 export interface CustomThemeProperties {

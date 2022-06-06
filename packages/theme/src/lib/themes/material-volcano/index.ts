@@ -12,6 +12,12 @@ export const materialVolcanoTheme = createTheme({
     terminal: {
       main: palette.background,
       text: palette.white,
+      tabs: {
+        background: '#501316',
+        activeTabBackground: palette.background,
+        inactiveTabBackground: '#3d0606',
+        textColor: palette.white,
+      },
     },
   },
 } as const);

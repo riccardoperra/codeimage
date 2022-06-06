@@ -11,6 +11,9 @@ export const synthwave84Theme = createTheme({
     terminal: {
       main: palette.background,
       text: palette.white,
+      tabs: {
+        inactiveTabBackground: '#1f1637',
+      },
     },
   },
 } as const);

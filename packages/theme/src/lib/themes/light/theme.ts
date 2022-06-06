@@ -11,6 +11,9 @@ export const lightTheme = createTheme({
     terminal: {
       main: '#ffffff',
       text: '#000000',
+      tabs: {
+        inactiveTabBackground: '#e5e5e5',
+      },
     },
   },
 });

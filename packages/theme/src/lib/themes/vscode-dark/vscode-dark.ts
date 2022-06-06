@@ -1,7 +1,7 @@
 import {EditorView} from '@codemirror/view';
 import {defineEditorTheme} from '../../core';
 
-export const background = 'hsl(204, 3%, 12%)';
+export const background = '#262335';
 const foreground = 'hsl(204, 3%, 98%)';
 const identifier = 'hsl(204, 98%, 80%)';
 const selection = 'hsl(210, 52%, 31%)';

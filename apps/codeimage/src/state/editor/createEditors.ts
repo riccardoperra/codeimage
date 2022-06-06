@@ -2,7 +2,7 @@ import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {createStoreNotifier} from '@codeimage/store/plugins/store-notifier';
 import {createUniqueId, versionateId} from '@codeimage/store/plugins/unique-id';
 import {filter} from '@solid-primitives/immutable';
-import {debounceTime} from 'rxjs';
+import {debounceTime, merge} from 'rxjs';
 import {
   batch,
   createEffect,
@@ -15,8 +15,8 @@ import {
   onMount,
 } from 'solid-js';
 import {createStore, unwrap} from 'solid-js/store';
-import {appEnvironment} from '../../core/configuration';
-import {SUPPORTED_FONTS} from '../../core/configuration/font';
+import {appEnvironment} from '@core/configuration';
+import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {getRootEditorOptions} from './createEditorOptions';
 import {EditorState, PersistedEditorState} from './model';
@@ -40,7 +40,8 @@ function $createEditorsStore() {
   const MAX_TABS = 6;
   const idb = useIdb();
   const [, withNotifier, version$] = createStoreNotifier();
-  const [options, setOptions, optionsActions] = getRootEditorOptions();
+  const [options, setOptions, {version: optionVersion$, ...optionsActions}] =
+    getRootEditorOptions();
   const [editors, setEditors] = createStore([getInitialEditorState()]);
   const [ready, setReady] = createSignal(false);
   const [activeEditorId, setActiveEditorId] = createSignal<string>(defaultId);
@@ -62,11 +63,14 @@ function $createEditorsStore() {
   });
 
   createEffect(
-    on([from(version$.pipe(debounceTime(1000))), ready], ([_, ready]) => {
-      if (!ready) return;
-      const state: PersistedEditorState = {editors, options};
-      idb.set(IDB_KEY, unwrap(state));
-    }),
+    on(
+      [from(merge(optionVersion$, version$).pipe(debounceTime(1000))), ready],
+      ([_, ready]) => {
+        if (!ready) return;
+        const state: PersistedEditorState = {editors, options};
+        idb.set(IDB_KEY, unwrap(state));
+      },
+    ),
   );
 
   const addEditor = withNotifier(
@@ -97,10 +101,11 @@ function $createEditorsStore() {
     const $isActive = isActive(id);
     const currentIndex = editors.findIndex(editor => editor.id === id);
     const newActiveEditor = editors[currentIndex - 1];
-    setEditors(editors => editors.filter(editor => editor.id !== id));
+    const updatedEditors = editors.filter(editor => editor.id !== id);
     if ($isActive) {
-      setActiveEditorId(newActiveEditor?.id ?? editors[0]?.id);
+      setActiveEditorId(newActiveEditor?.id ?? updatedEditors[0]?.id);
     }
+    setEditors(updatedEditors);
   });
 
   const setTabName = withNotifier(

@@ -1,15 +1,19 @@
 import {themeVars} from '@codeimage/ui';
-import {createTheme, style} from '@vanilla-extract/css';
+import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
 
 export const [terminalTheme, terminalVars] = createTheme({
   headerHeight: '50px',
   radius: '12px',
-  headerBackgroundColor: themeVars.backgroundColor.white,
+  headerBackgroundColor: 'unset',
   backgroundColor: themeVars.backgroundColor.white,
   textColor: themeVars.backgroundColor.gray['800'],
   boxShadow: themeVars.boxShadow.lg,
   tabDelta: '10px',
   headerColor: '0, 0, 0',
+  headerBackground: 'rgba(0, 0, 0, 0)',
+  tabAccentActiveBackground: 'unset',
+  tabAccentInactiveBackground: 'unset',
+  tabTextColor: 'unset',
 });
 
 export const wrapper = style([
@@ -56,10 +60,16 @@ export const header = style({
 
   selectors: {
     '[data-theme-mode=light] &[data-accent-visible=true]': {
-      backgroundColor: `rgba(0, 0, 0, .06)`,
+      backgroundColor: fallbackVar(
+        terminalVars.headerBackgroundColor,
+        `rgba(0, 0, 0, .06)`,
+      ),
     },
     '[data-theme-mode=dark] &[data-accent-visible=true]': {
-      backgroundColor: `rgba(255, 255, 255, .06)`,
+      backgroundColor: fallbackVar(
+        terminalVars.headerBackgroundColor,
+        `rgba(255, 255, 255, .06)`,
+      ),
     },
   },
 });
