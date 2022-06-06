@@ -1,5 +1,18 @@
 # @codeimage/app
 
+## 0.19.0
+
+### Minor Changes
+
+- [#265](https://github.com/riccardoperra/codeimage/pull/265) [`6f9154d`](https://github.com/riccardoperra/codeimage/commit/6f9154d04d8e1774cf7d6d8590bda8db9727ec49) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add support for multiple tabs
+
+### Patch Changes
+
+- [#266](https://github.com/riccardoperra/codeimage/pull/266) [`d7e246b`](https://github.com/riccardoperra/codeimage/commit/d7e246bdd5408fc06614314a566703a5ba24df3b) Thanks [@hackpirodev](https://github.com/hackpirodev)! - fix: Missing bottom bar translations #207
+
+- Updated dependencies [[`fc3b8fc`](https://github.com/riccardoperra/codeimage/commit/fc3b8fc413cd82eb6b461d0a1aad72b53ee35b35)]:
+  - @codeimage/dom-export@1.10.0
+
 ## 0.18.0
 
 ### Minor Changes
