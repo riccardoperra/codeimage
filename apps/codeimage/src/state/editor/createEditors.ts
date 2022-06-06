@@ -101,10 +101,11 @@ function $createEditorsStore() {
     const $isActive = isActive(id);
     const currentIndex = editors.findIndex(editor => editor.id === id);
     const newActiveEditor = editors[currentIndex - 1];
+    const updatedEditors = editors.filter(editor => editor.id !== id);
     if ($isActive) {
-      setActiveEditorId(newActiveEditor?.id ?? editors[0]?.id);
+      setActiveEditorId(newActiveEditor?.id ?? updatedEditors[0]?.id);
     }
-    setEditors(editors => editors.filter(editor => editor.id !== id));
+    setEditors(updatedEditors);
   });
 
   const setTabName = withNotifier(
