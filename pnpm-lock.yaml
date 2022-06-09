@@ -228,7 +228,7 @@ importers:
       material-icon-theme: ^4.17.0
       rimraf: ^3.0.2
       solid-js: ^1.4.2
-      typescript: ^4.6.4
+      typescript: ^4.7.3
       vite: ^2.9.8
       vite-plugin-dts: ^1.1.1
       vite-plugin-solid: ^2.2.6
@@ -257,7 +257,7 @@ importers:
       solid-js: 1.4.2
     devDependencies:
       rimraf: 3.0.2
-      typescript: 4.6.4
+      typescript: 4.7.3
       vite: 2.9.8
       vite-plugin-dts: 1.1.1_vite@2.9.8
       vite-plugin-solid: 2.2.6
@@ -289,7 +289,7 @@ importers:
       '@solid-primitives/i18n': ^1.1.0
       rimraf: ^3.0.2
       solid-js: ^1.4.2
-      typescript: ^4.6.4
+      typescript: ^4.7.3
       vite: ^2.9.8
       vite-plugin-dts: ^1.1.1
       vite-plugin-solid: ^2.2.6
@@ -298,7 +298,7 @@ importers:
       solid-js: 1.4.2
     devDependencies:
       rimraf: 3.0.2
-      typescript: 4.6.4
+      typescript: 4.7.3
       vite: 2.9.8
       vite-plugin-dts: 1.1.1_vite@2.9.8
       vite-plugin-solid: 2.2.6
@@ -311,7 +311,7 @@ importers:
       '@codemirror/view': ^0.20.6
       '@lezer/highlight': ^0.16.0
       rimraf: ^3.0.2
-      typescript: ^4.6.4
+      typescript: ^4.7.3
       vite: ^2.9.9
       vite-plugin-dts: ^1.1.1
       vite-plugin-solid: ^2.2.6
@@ -323,7 +323,7 @@ importers:
       '@lezer/highlight': 0.16.0
     devDependencies:
       rimraf: 3.0.2
-      typescript: 4.6.4
+      typescript: 4.7.3
       vite: 2.9.9
       vite-plugin-dts: 1.1.1_vite@2.9.9
       vite-plugin-solid: 2.2.6
@@ -356,7 +356,7 @@ importers:
       solid-js: ^1.4.2
       solid-use: ^0.3.4
       tiny-glob: ^0.2.9
-      typescript: ^4.6.4
+      typescript: ^4.7.3
       vite: ^2.9.8
       vite-plugin-dts: ^1.1.1
       vite-plugin-solid: ^2.2.6
@@ -388,7 +388,7 @@ importers:
       rimraf: 3.0.2
       solid-js: 1.4.2
       tiny-glob: 0.2.9
-      typescript: 4.6.4
+      typescript: 4.7.3
       vite: 2.9.9
       vite-plugin-dts: 1.1.1_vite@2.9.9
       vite-plugin-solid: 2.2.6
@@ -512,7 +512,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/helper-explode-assignable-expression': 7.16.7
-      '@babel/types': 7.17.10
+      '@babel/types': 7.18.4
     dev: true
 
   /@babel/helper-compilation-targets/7.17.10_@babel+core@7.17.10:
@@ -622,7 +622,7 @@ packages:
     resolution: {integrity: sha512-KyUenhWMC8VrxzkGP0Jizjo4/Zx+1nNZhgocs+gLzyZyB8SHidhoq9KK/8Ato4anhwsivfkBLftky7gvzbZMtQ==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.17.10
+      '@babel/types': 7.18.4
     dev: true
 
   /@babel/helper-function-name/7.17.9:
@@ -716,7 +716,7 @@ packages:
     dependencies:
       '@babel/helper-annotate-as-pure': 7.16.7
       '@babel/helper-wrap-function': 7.16.8
-      '@babel/types': 7.17.10
+      '@babel/types': 7.18.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -752,7 +752,7 @@ packages:
     resolution: {integrity: sha512-+il1gTy0oHwUsBQZyJvukbB4vPMdcYBrFHa0Uc4AizLxbq6BOYC51Rv4tWocX9BLBDLZ4kc6qUFpQ6HRgL+3zw==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.17.10
+      '@babel/types': 7.18.4
     dev: true
 
   /@babel/helper-split-export-declaration/7.16.7:
@@ -779,7 +779,7 @@ packages:
       '@babel/helper-function-name': 7.17.9
       '@babel/template': 7.16.7
       '@babel/traverse': 7.17.10
-      '@babel/types': 7.17.10
+      '@babel/types': 7.18.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -819,18 +819,24 @@ packages:
     resolution: {integrity: sha512-n2Q6i+fnJqzOaq2VkdXxy2TCPCWQZHiCo0XqmrCvDWcZQKRyZzYi4Z0yxlBuN0w+r2ZHmre+Q087DSrw3pbJDQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+    dependencies:
+      '@babel/types': 7.18.4
     dev: true
 
   /@babel/parser/7.18.0:
     resolution: {integrity: sha512-AqDccGC+m5O/iUStSJy3DGRIUFu7WbY/CppZYwrEUB4N0tZlnI8CSTsgL7v5fHVFmUbRv2sd+yy27o8Ydt4MGg==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+    dependencies:
+      '@babel/types': 7.18.4
     dev: true
 
   /@babel/parser/7.18.4:
     resolution: {integrity: sha512-FDge0dFazETFcxGw/EXzOkN8uJp0PC7Qbm+Pe9T+av2zlBpOgunFHkQPPn+eRuClU73JF+98D531UgayY89tow==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+    dependencies:
+      '@babel/types': 7.18.4
     dev: true
 
   /@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression/7.16.7_@babel+core@7.17.10:
@@ -1655,7 +1661,7 @@ packages:
       '@babel/helper-plugin-utils': 7.16.7
       '@babel/plugin-proposal-unicode-property-regex': 7.16.7_@babel+core@7.17.10
       '@babel/plugin-transform-dotall-regex': 7.16.7_@babel+core@7.17.10
-      '@babel/types': 7.17.10
+      '@babel/types': 7.18.4
       esutils: 2.0.3
     dev: true
 
