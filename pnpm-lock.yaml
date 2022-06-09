@@ -222,6 +222,7 @@ importers:
       '@codemirror/lang-rust': ^0.20.0
       '@codemirror/lang-sql': ^0.20.0
       '@codemirror/language': ^0.20.2
+      '@codemirror/legacy-modes': ^0.20.0
       '@codemirror/lint': ^0.20.2
       '@codemirror/search': ^0.20.1
       '@codemirror/state': ^0.20.0
@@ -249,6 +250,7 @@ importers:
       '@codemirror/lang-rust': 0.20.0
       '@codemirror/lang-sql': 0.20.0
       '@codemirror/language': 0.20.2
+      '@codemirror/legacy-modes': 0.20.0
       '@codemirror/lint': 0.20.2
       '@codemirror/search': 0.20.1
       '@codemirror/state': 0.20.0
@@ -2130,6 +2132,12 @@ packages:
       '@lezer/highlight': 0.16.0
       '@lezer/lr': 0.16.2
       style-mod: 4.0.0
+    dev: false
+
+  /@codemirror/legacy-modes/0.20.0:
+    resolution: {integrity: sha512-SYllodnzD8OI6Y6NoFzCv+77cU9aTdfqDO0Zn8j5PbjUIAD+pIofwHAvecd9/ePLAICr+EYCEuqUxldHAR+pLQ==}
+    dependencies:
+      '@codemirror/language': 0.20.2
     dev: false
 
   /@codemirror/lint/0.20.2:

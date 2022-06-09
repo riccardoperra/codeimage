@@ -1,79 +1,66 @@
 import {
   createEffect,
+  createMemo,
   createResource,
   createSignal,
+  createUniqueId,
   JSXElement,
+  on,
   Suspense,
 } from 'solid-js';
-import {SvgIcon} from './SvgIcon';
 import {Loading} from '../Loader';
+import {SvgIcon} from './SvgIcon';
 
 interface SvgExternalIconProps {
   content?: string | (() => Promise<typeof import('*.svg')>) | null;
   delay?: number;
 }
 
-export function convertSolidSVGDOMProperty(str: string) {
-  return str.replace(/[-|:]([a-z])/g, function (g) {
-    return g[1].toUpperCase();
-  });
-}
+/**
+ * Randomize all svg ids of `fill` property when using url(#reference) and defs.
+ * ATTENTION: this fixed a Chrome/Firefox bug which is unable to render svg icons
+ * if loaded dynamically while using <defs/> and fill property with `url(#reference)`
+ *
+ * @param svgContent
+ */
+function randomizeSvgUrlIds(svgContent: string): string {
+  const extractSvgUrl = /url\(([^)]+)\)/g;
+  const regexpResult = [...extractSvgUrl[Symbol.matchAll](svgContent)];
+  const groups = regexpResult.map(result => [result[0], result[1]] as const);
 
-export function startsWith(str: string, substring: string) {
-  return str.indexOf(substring) === 0;
-}
-
-const DataPropPrefix = 'data-';
-
-// Serialize `Attr` objects in `NamedNodeMap`
-export function serializeAttrs(map: NamedNodeMap) {
-  const ret: Record<string, unknown> = {};
-  for (let prop, i = 0; i < map.length; i++) {
-    const attr = map[i];
-    if (!startsWith(attr.name, DataPropPrefix)) {
-      prop = convertSolidSVGDOMProperty(attr.name);
-    } else {
-      prop = attr.name;
-    }
-    ret[prop] = map[i].value;
-  }
-  return ret;
-}
-
-export function getSVGFromSource(src: string) {
-  const svgContainer = document.createElement('div');
-  svgContainer.innerHTML = src;
-  const svg = svgContainer.firstElementChild as HTMLElement;
-  svg.remove ? svg.remove() : svgContainer.removeChild(svg); // deref from parent element
-  return svg;
-}
-
-// get <svg /> element props
-export function extractSVGProps(src: string) {
-  const map = getSVGFromSource(src).attributes;
-  return map.length > 0 ? serializeAttrs(map) : null;
+  return groups.reduce((acc, [url, id]) => {
+    const uniqueUid = createUniqueId();
+    return acc
+      .replaceAll(url, `url(#${uniqueUid})`)
+      .replaceAll(`id="${id.split('#')[1]}"`, `id="${uniqueUid}"`);
+  }, svgContent);
 }
 
 export function RemoteSvgIcon(props: SvgExternalIconProps): JSXElement {
   const [src, setSrc] = createSignal<SvgExternalIconProps['content'] | null>();
+  const content = createMemo(() => props.content);
 
   const [data] = createResource(src, async content => {
     const svgResponse =
       typeof content === 'string'
         ? await fetch(content).then(res => res.text())
         : await content().then(e => e.default);
-    const svgProps = extractSVGProps(svgResponse) || {};
     if (props.delay) {
       await new Promise(r => setTimeout(r, props.delay));
     }
-    const innerHTML = getSVGFromSource(svgResponse).innerHTML;
+
+    const innerHTML = randomizeSvgUrlIds(svgResponse);
+
     return {
-      ...svgProps,
       innerHTML,
     };
   });
 
-  createEffect(() => setSrc(() => props.content));
+  createEffect(
+    on(content, content => {
+      setSrc(() => content as SvgExternalIconProps['content']);
+    }),
+  );
 
   return (
     <Suspense fallback={<Loading size={'md'} />}>

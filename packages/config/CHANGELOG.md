@@ -1,5 +1,11 @@
 # @codeimage/theme
 
+## 6.1.0
+
+### Minor Changes
+
+- [#274](https://github.com/riccardoperra/codeimage/pull/274) [`8f15683`](https://github.com/riccardoperra/codeimage/commit/8f156838938a012a0666632218153724667c0377) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add kotlin language legacy support
+
 ## 6.0.0
 
 ### Minor Changes

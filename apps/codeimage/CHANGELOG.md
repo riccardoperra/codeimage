@@ -1,5 +1,13 @@
 # @codeimage/app
 
+## 0.19.1
+
+### Patch Changes
+
+- Updated dependencies [[`167a8f0`](https://github.com/riccardoperra/codeimage/commit/167a8f0d3a142c0ad314cc7b19ea93245f32f490), [`8f15683`](https://github.com/riccardoperra/codeimage/commit/8f156838938a012a0666632218153724667c0377)]:
+  - @codeimage/ui@0.7.1
+  - @codeimage/config@6.1.0
+
 ## 0.19.0
 
 ### Minor Changes
