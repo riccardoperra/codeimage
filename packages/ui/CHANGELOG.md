@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.7.1
+
+### Patch Changes
+
+- [#274](https://github.com/riccardoperra/codeimage/pull/274) [`167a8f0`](https://github.com/riccardoperra/codeimage/commit/167a8f0d3a142c0ad314cc7b19ea93245f32f490) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix RemoteSvgIcon rendering issue
+
 ## 0.7.0
 
 ### Minor Changes
