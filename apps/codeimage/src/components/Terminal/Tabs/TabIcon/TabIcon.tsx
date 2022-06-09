@@ -18,7 +18,10 @@ export function TabIcon(props: TabIconProps): JSXElement {
 
   return (
     <Box class={styles.tabIcon}>
-      <RemoteSvgIcon content={props.content} delay={computedProps.delay} />
+      <RemoteSvgIcon
+        content={computedProps.content}
+        delay={computedProps.delay}
+      />
     </Box>
   );
 }
