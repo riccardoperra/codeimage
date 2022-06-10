@@ -42,7 +42,7 @@
     "libs:build:watch": "pnpm --parallel --aggregate-output --filter ./packages --filter='!@codeimage/config' --filter build:watch",
     "lint": "pnpm lint --recursive --parallel --filter='@codeimage/*'",
     "typecheck": "pnpm typecheck --recursive --parallel --filter='@codeimage/*'",
-    "build:prod": "pnpm patch-solid-exports && pnpm libs:build && pnpm build --filter=@codeimage/app",
+    "build:prod": "pnpm patch-solid-exports && pnpm libs:build && pnpm --filter=@codeimage/app build",
     "changeset:pr": "changeset version && ts-node scripts/sync-package.ts",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
