@@ -4,9 +4,11 @@ import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {frame$, setScale} from '@codeimage/store/frame';
-import {connectStoreWithQueryParams} from '@codeimage/store/plugins/connect-store-with-query-params';
 import {terminal$} from '@codeimage/store/terminal';
 import {Box, LoadingOverlay, PortalHost, SnackbarHost} from '@codeimage/ui';
+import {fromObservableObject} from '@core/hooks/from-observable-object';
+import {useModality} from '@core/hooks/isMobile';
+import {useEffects} from '@core/store/use-effect';
 import {initEffects} from '@ngneat/effects';
 import {createEffect, createSignal, on, Show} from 'solid-js';
 import {BottomBar} from './components/BottomBar/BottomBar';
@@ -20,13 +22,9 @@ import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {DynamicTerminal} from './components/Terminal/dynamic/DynamicTerminal';
+import {DynamicTerminal} from './components/Terminal/DynamicTerminal/DynamicTerminal';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {Toolbar} from './components/Toolbar/Toolbar';
-import {fromObservableObject} from './core/hooks/from-observable-object';
-import {useModality} from './core/hooks/isMobile';
-import {useEffects} from './core/store/use-effect';
-import idbReady, {useIdb} from './hooks/use-indexed-db';
 import {uiStore} from './state/ui';
 import './theme/global.css';
 
@@ -34,17 +32,19 @@ initEffects();
 
 export function App() {
   document.querySelector('#launcher')?.remove();
-  const idb = useIdb();
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const frame = fromObservableObject(frame$);
   const terminal = fromObservableObject(terminal$);
   const modality = useModality();
+  const editor = getRootEditorStore();
   const [, {locale}] = useI18n();
-  connectStoreWithQueryParams();
+  // TODO: currently disabled
+  // connectStoreWithQueryParams();
   useEffects([onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
   const {ready} = getRootEditorStore();
+
   return (
     <Scaffold>
       <PortalHost id={'floating-portal-popover'} />
@@ -98,6 +98,7 @@ export function App() {
                 showWatermark={terminal.showWatermark}
                 opacity={terminal.opacity}
                 alternativeTheme={terminal.alternativeTheme}
+                themeId={editor.options.themeId}
               >
                 <Show when={getActiveEditorStore().editor()}>
                   <CustomEditor />
