@@ -85,7 +85,7 @@
     "solid-app-router": "^0.3.3",
     "solid-codemirror": "^1.0.3",
     "solid-headless": "^0.10.12",
-    "solid-js": "^1.4.2",
+    "solid-js": "^1.4.4",
     "solid-use": "^0.3.4",
     "tinykeys": "^1.4.0",
     "workbox-precaching": "^6.5.3",
