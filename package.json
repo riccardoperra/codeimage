@@ -35,13 +35,14 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "dev": "pnpm dev --filter=@codeimage/app",
-    "libs:build": "pnpm --parallel --filter='./packages' --filter='!@codeimage/config' build && pnpm libs:build:config",
+    "dev": "pnpm --filter=@codeimage/app dev",
+    "libs:build": "pnpm libs:build:core && pnpm libs:build:config",
+    "libs:build:core": "pnpm --filter \"{packages/**}\" --filter='!@codeimage/config' --parallel build",
     "libs:build:config": "pnpm --filter=@codeimage/config build",
-    "libs:build:watch": "pnpm --parallel --aggregate-output --filter ./packages --filter='!@codeimage/config' --filter build:watch",
-    "lint": "pnpm lint --recursive --parallel --filter='@codeimage/*'",
-    "typecheck": "pnpm typecheck --recursive --parallel --filter='@codeimage/*'",
-    "build:prod": "pnpm patch-solid-exports && pnpm libs:build && pnpm --filter='@codeimage/config' --filter='@codeimage/app' build",
+    "libs:build:watch": "pnpm --filter \"{packages/**}\" --filter='!@codeimage/config' --parallel --aggregate-output build:watch",
+    "lint": "pnpm --filter='@codeimage/*' --parallel -r lint",
+    "typecheck": "pnpm --filter='@codeimage/*' --recursive --parallel typecheck",
+    "build:prod": "pnpm patch-solid-exports && pnpm libs:build && pnpm --filter=@codeimage/app build",
     "changeset:pr": "changeset version && ts-node scripts/sync-package.ts",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
@@ -76,7 +77,6 @@
     "typescript": "^4.7.3"
   },
   "engines": {
-    "node": ">=14.x",
-    "pnpm": ">=6.23.2"
+    "pnpm": ">=7"
   }
 }

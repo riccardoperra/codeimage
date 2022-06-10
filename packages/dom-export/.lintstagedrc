@@ -1,0 +1,7 @@
+{
+  "**/*.{ts,tsx,js,jsx,json}": [
+    "pnpm lint",
+    "pnpm pre-commit-prettier",
+    "pnpm pre-commit-eslint"
+  ]
+}
