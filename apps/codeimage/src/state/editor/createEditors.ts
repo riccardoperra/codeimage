@@ -48,7 +48,9 @@ function $createEditorsStore() {
   const isActive = createSelector(activeEditorId);
 
   onMount(async () => {
-    const idbState = await idb.get<PersistedEditorState>(IDB_KEY);
+    const idbState = await idb
+      .get<PersistedEditorState>(IDB_KEY)
+      .catch(() => null);
     if (idbState) {
       // Versioning state tabs -> TODO: not needed if id is not createUniqueId from solid
       const editors = idbState.editors.slice(0, MAX_TABS).map(editor => ({

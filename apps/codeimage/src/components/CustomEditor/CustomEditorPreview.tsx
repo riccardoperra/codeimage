@@ -85,7 +85,6 @@ export const CustomEditorPreview = (
 
   createEffect(() =>
     batch(() => {
-      // @ts-expect-error Deep type
       setOptions({
         value: props.code,
         extensions: [
