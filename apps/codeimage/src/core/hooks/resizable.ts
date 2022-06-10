@@ -94,10 +94,9 @@ export function createHorizontalResize(
     const max = maxWidth();
     const isLTR = state.startX > middle;
 
-    const computedWidth =
-      (isLTR
-        ? state.startWidth + x - state.startX
-        : state.startWidth - x + state.startX) * window.devicePixelRatio;
+    const computedWidth = isLTR
+      ? state.startWidth + x - state.startX
+      : state.startWidth - x + state.startX;
 
     setState({width: clamp(computedWidth, min, max)});
   };

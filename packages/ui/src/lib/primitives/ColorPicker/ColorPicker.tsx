@@ -32,7 +32,7 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
 
   const {buttonProps} = createButton(
     {
-      onPress: () => state.open(),
+      onClick: () => state.open(),
     },
     () => triggerRef,
   );
