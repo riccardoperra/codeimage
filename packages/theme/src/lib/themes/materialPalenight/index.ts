@@ -1,5 +1,5 @@
 import {createTheme} from '../../core';
-import {materialPalenight, palette} from './material-palenight';
+import {materialPalenight, palette} from './materialPalenight';
 
 export const materialPalenightTheme = createTheme({
   id: 'materialPalenight',
