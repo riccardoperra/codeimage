@@ -1,5 +1,5 @@
 import {createTheme} from '../../core';
-import {vsCodeDark, background} from './vscode-dark';
+import {vsCodeDark, background} from './vsCodeDark';
 
 export const vsCodeDarkTheme = createTheme({
   id: 'vsCodeDarkTheme',

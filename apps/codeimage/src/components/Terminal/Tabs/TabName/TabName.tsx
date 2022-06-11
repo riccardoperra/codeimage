@@ -9,7 +9,6 @@ import {
   JSXElement,
   onMount,
   Show,
-  Suspense,
 } from 'solid-js';
 import {highlight as _highlight} from '../../../../core/directives/highlight';
 import {InlineCombobox} from '../../../../ui/Combobox/InlineCombobox';

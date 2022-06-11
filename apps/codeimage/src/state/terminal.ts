@@ -1,11 +1,10 @@
 import {themeVars} from '@codeimage/ui';
+import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
+import {elfAutoSettersFactory} from '@core/store/elf-auto-setters-factory';
 import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
-import {SUPPORTED_THEMES_DICTIONARY} from '@core/configuration';
-import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import shallow from '../core/helpers/shallow';
-import {elfAutoSettersFactory} from '@core/store/elf-auto-setters-factory';
 
 export interface TerminalState {
   readonly showHeader: boolean;

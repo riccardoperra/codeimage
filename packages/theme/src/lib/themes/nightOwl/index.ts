@@ -1,5 +1,5 @@
 import {createTheme} from '../../core';
-import {nightOwl} from './night-owl';
+import {nightOwl} from './nightOwl';
 
 export const nightOwlTheme = createTheme({
   id: 'nightOwlTheme',

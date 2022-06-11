@@ -10,7 +10,7 @@ import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {useModality} from '@core/hooks/isMobile';
 import {useEffects} from '@core/store/use-effect';
 import {initEffects} from '@ngneat/effects';
-import {createEffect, createSignal, lazy, on, Show} from 'solid-js';
+import {createEffect, createSignal, on, Show} from 'solid-js';
 import {BottomBar} from './components/BottomBar/BottomBar';
 import CustomEditor from './components/CustomEditor/CustomEditor';
 import {Footer} from './components/Footer/Footer';

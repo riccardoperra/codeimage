@@ -1,5 +1,5 @@
 import {createTheme} from '../../core';
-import {duotoneDark, palette} from './duotone-dark';
+import {duotoneDark, palette} from './duotoneDark';
 
 export const duotoneDarkTheme = createTheme({
   id: 'duotoneDark',

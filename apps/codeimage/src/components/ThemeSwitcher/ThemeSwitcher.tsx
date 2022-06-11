@@ -9,20 +9,19 @@ import {
   FlexField,
   TextField,
 } from '@codeimage/ui';
+import {appEnvironment} from '@core/configuration';
+import {fromObservableObject} from '@core/hooks/from-observable-object';
+import {useModality} from '@core/hooks/isMobile';
 import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createMemo,
-  createResource,
   createSelector,
   createSignal,
   For,
   ParentComponent,
   Show,
 } from 'solid-js';
-import {appEnvironment} from '@core/configuration';
-import {fromObservableObject} from '@core/hooks/from-observable-object';
-import {useModality} from '@core/hooks/isMobile';
 import {AppLocaleEntries} from '../../i18n';
 import {CustomEditorPreview} from '../CustomEditor/CustomEditorPreview';
 import {CheckCircle} from '../Icons/CheckCircle';
@@ -31,6 +30,7 @@ import {TerminalHost} from '../Terminal/TerminalHost';
 import {ThemeBox} from './ThemeBox';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
+
 function useFilteredThemes() {
   const {themes} = appEnvironment;
   const [search, setSearch] = createSignal('');

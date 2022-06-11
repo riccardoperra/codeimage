@@ -1,5 +1,5 @@
 import {createTheme} from '../../core';
-import {duotoneSea} from './duotone-sea';
+import {duotoneSea} from './duotoneSea';
 
 export const duotoneSeaTheme = createTheme({
   id: 'duotoneSea',
