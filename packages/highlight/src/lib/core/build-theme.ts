@@ -31,6 +31,6 @@ export function createThemeFactory<
 }
 
 export const createTheme = createThemeFactory(
-  '@codeimage/base-highlight',
+  '@codeimage/base-theme',
   <T extends CustomTheme>(_: T): T => _,
 );
