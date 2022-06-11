@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {updateTheme} from '@codeimage/store/effects/onThemeChange';
 import {terminal$} from '@codeimage/store/terminal';
-import {CustomTheme} from '@codeimage/theme';
+import {CustomTheme} from '@codeimage/highlight';
 import {
   Box,
   FadeInOutWithScaleTransition,

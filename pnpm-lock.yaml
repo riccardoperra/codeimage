@@ -56,8 +56,8 @@ importers:
     specifiers:
       '@codeimage/config': workspace:*
       '@codeimage/dom-export': workspace:*
+      '@codeimage/highlight': workspace:*
       '@codeimage/locale': workspace:*
-      '@codeimage/theme': workspace:*
       '@codeimage/ui': workspace:*
       '@codemirror/autocomplete': ^0.20.1
       '@codemirror/commands': ^0.20.0
@@ -130,8 +130,8 @@ importers:
     dependencies:
       '@codeimage/config': link:../../packages/config
       '@codeimage/dom-export': link:../../packages/dom-export
+      '@codeimage/highlight': link:../../packages/highlight
       '@codeimage/locale': link:../../packages/locale
-      '@codeimage/theme': link:../../packages/theme
       '@codeimage/ui': link:../../packages/ui
       '@codemirror/autocomplete': 0.20.1
       '@codemirror/commands': 0.20.0
@@ -205,7 +205,7 @@ importers:
 
   packages/config:
     specifiers:
-      '@codeimage/theme': workspace:*
+      '@codeimage/highlight': workspace:*
       '@codemirror/autocomplete': ^0.20.1
       '@codemirror/commands': ^0.20.0
       '@codemirror/lang-cpp': ^0.20.0
@@ -233,7 +233,7 @@ importers:
       vite-plugin-dts: ^1.1.1
       vite-plugin-solid: ^2.2.6
     dependencies:
-      '@codeimage/theme': link:../theme
+      '@codeimage/highlight': link:../highlight
       '@codemirror/autocomplete': 0.20.1
       '@codemirror/commands': 0.20.0
       '@codemirror/lang-cpp': 0.20.0
@@ -282,6 +282,37 @@ importers:
       vite: 2.9.9
       vite-plugin-dts: 1.2.0_vite@2.9.9
 
+  packages/highlight:
+    specifiers:
+      '@codemirror/language': ^0.20.2
+      '@codemirror/state': ^0.20.0
+      '@codemirror/theme-one-dark': ^0.20.0
+      '@codemirror/view': ^0.20.6
+      '@lezer/highlight': ^0.16.0
+      '@rollup/plugin-typescript': ^8.3.3
+      '@types/node': ^17.0.42
+      rimraf: ^3.0.2
+      rollup: ^2.75.6
+      rollup-plugin-dts: ^4.2.2
+      typescript: ^4.7.3
+      vite: ^2.9.9
+      vite-plugin-dts: ^1.2.0
+    dependencies:
+      '@codemirror/language': 0.20.2
+      '@codemirror/state': 0.20.0
+      '@codemirror/theme-one-dark': 0.20.0
+      '@codemirror/view': 0.20.6
+      '@lezer/highlight': 0.16.0
+    devDependencies:
+      '@rollup/plugin-typescript': 8.3.3_fgms252lqu3rk7srzpqqayl4ya
+      '@types/node': 17.0.42
+      rimraf: 3.0.2
+      rollup: 2.75.6
+      rollup-plugin-dts: 4.2.2_fgms252lqu3rk7srzpqqayl4ya
+      typescript: 4.7.3
+      vite: 2.9.9
+      vite-plugin-dts: 1.2.0_vite@2.9.9
+
   packages/locale:
     specifiers:
       '@solid-primitives/i18n': ^1.1.0
@@ -299,31 +330,6 @@ importers:
       typescript: 4.7.3
       vite: 2.9.8
       vite-plugin-dts: 1.1.1_vite@2.9.8
-      vite-plugin-solid: 2.2.6
-
-  packages/theme:
-    specifiers:
-      '@codemirror/language': ^0.20.2
-      '@codemirror/state': ^0.20.0
-      '@codemirror/theme-one-dark': ^0.20.0
-      '@codemirror/view': ^0.20.6
-      '@lezer/highlight': ^0.16.0
-      rimraf: ^3.0.2
-      typescript: ^4.7.3
-      vite: ^2.9.9
-      vite-plugin-dts: ^1.1.1
-      vite-plugin-solid: ^2.2.6
-    dependencies:
-      '@codemirror/language': 0.20.2
-      '@codemirror/state': 0.20.0
-      '@codemirror/theme-one-dark': 0.20.0
-      '@codemirror/view': 0.20.6
-      '@lezer/highlight': 0.16.0
-    devDependencies:
-      rimraf: 3.0.2
-      typescript: 4.7.3
-      vite: 2.9.9
-      vite-plugin-dts: 1.1.1_vite@2.9.9
       vite-plugin-solid: 2.2.6
 
   packages/ui:
@@ -2756,6 +2762,23 @@ packages:
       rollup: 2.71.1
     dev: true
 
+  /@rollup/plugin-typescript/8.3.3_fgms252lqu3rk7srzpqqayl4ya:
+    resolution: {integrity: sha512-55L9SyiYu3r/JtqdjhwcwaECXP7JeJ9h1Sg1VWRJKIutla2MdZQodTgcCNybXLMCnqpNLEhS2vGENww98L1npg==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      rollup: ^2.14.0
+      tslib: '*'
+      typescript: '>=3.7.0'
+    peerDependenciesMeta:
+      tslib:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.75.6
+      resolve: 1.22.0
+      rollup: 2.75.6
+      typescript: 4.7.3
+    dev: true
+
   /@rollup/pluginutils/3.1.0_rollup@2.71.1:
     resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
     engines: {node: '>= 8.0.0'}
@@ -2766,6 +2789,18 @@ packages:
       estree-walker: 1.0.1
       picomatch: 2.3.1
       rollup: 2.71.1
+    dev: true
+
+  /@rollup/pluginutils/3.1.0_rollup@2.75.6:
+    resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
+    engines: {node: '>= 8.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      picomatch: 2.3.1
+      rollup: 2.75.6
     dev: true
 
   /@rushstack/node-core-library/3.45.4:
@@ -3099,6 +3134,10 @@ packages:
 
   /@types/node/17.0.40:
     resolution: {integrity: sha512-UXdBxNGqTMtm7hCwh9HtncFVLrXoqA3oJW30j6XWp5BH/wu3mVeaxo7cq5benFdBw34HB3XDT2TRPI7rXZ+mDg==}
+    dev: true
+
+  /@types/node/17.0.42:
+    resolution: {integrity: sha512-Q5BPGyGKcvQgAMbsr7qEGN/kIPN6zZecYYABeTDBizOsau+2NMdSVTar9UQw21A2+JyA2KRNDYaYrPB0Rpk2oQ==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:
@@ -5798,6 +5837,13 @@ packages:
       sourcemap-codec: 1.4.8
     dev: true
 
+  /magic-string/0.26.2:
+    resolution: {integrity: sha512-NzzlXpclt5zAbmo6h6jNc8zl2gNRGHvmsZW4IvZhTC4W7k4OlLP+S5YLussa/r3ixNT66KOQfNORlXHSOy/X4A==}
+    engines: {node: '>=12'}
+    dependencies:
+      sourcemap-codec: 1.4.8
+    dev: true
+
   /make-error/1.3.6:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
     dev: true
@@ -6627,6 +6673,20 @@ packages:
       glob: 7.2.3
     dev: true
 
+  /rollup-plugin-dts/4.2.2_fgms252lqu3rk7srzpqqayl4ya:
+    resolution: {integrity: sha512-A3g6Rogyko/PXeKoUlkjxkP++8UDVpgA7C+Tdl77Xj4fgEaIjPSnxRmR53EzvoYy97VMVwLAOcWJudaVAuxneQ==}
+    engines: {node: '>=v12.22.11'}
+    peerDependencies:
+      rollup: ^2.55
+      typescript: ^4.1
+    dependencies:
+      magic-string: 0.26.2
+      rollup: 2.75.6
+      typescript: 4.7.3
+    optionalDependencies:
+      '@babel/code-frame': 7.16.7
+    dev: true
+
   /rollup-plugin-terser/7.0.2_rollup@2.71.1:
     resolution: {integrity: sha512-w3iIaU4OxcF52UUXiZNsNeuXIMDvFrr+ZXK6bFZ0Q60qyVfq4uLptoS4bbq3paG3x216eQllFZX7zt6TIImguQ==}
     peerDependencies:
@@ -6653,6 +6713,14 @@ packages:
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
+
+  /rollup/2.75.6:
+    resolution: {integrity: sha512-OEf0TgpC9vU6WGROJIk1JA3LR5vk/yvqlzxqdrE2CzzXnqKXNzbAwlWUXis8RS3ZPe7LAq+YUxsRa0l3r27MLA==}
+    engines: {node: '>=10.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
 
   /run-parallel/1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}

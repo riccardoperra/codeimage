@@ -15,7 +15,7 @@ export interface TerminalState {
   readonly shadow: string;
   readonly background: string;
   readonly textColor: string;
-  // TODO: this state should be removed. This is a slice of selected theme!!
+  // TODO: this state should be removed. This is a slice of selected highlight!!
   readonly darkMode: boolean;
   readonly showWatermark: boolean;
   readonly showGlassReflection: boolean;

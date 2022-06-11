@@ -1,6 +1,6 @@
 import {createContext, JSXElement, PropsWithChildren} from 'solid-js';
 import {AppStaticConfiguration} from '../types/configuration';
-import {CustomTheme} from '@codeimage/theme';
+import {CustomTheme} from '@codeimage/highlight';
 import {LanguageDefinition} from '../types/language-def';
 
 type BaseAppStaticConfiguration = AppStaticConfiguration<

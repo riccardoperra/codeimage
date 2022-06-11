@@ -1,4 +1,4 @@
-# @codeimage/theme
+# @codeimage/highlight
 
 ## 6.1.0
 
@@ -19,7 +19,7 @@
 - [#256](https://github.com/riccardoperra/codeimage/pull/256) [`10839dc`](https://github.com/riccardoperra/codeimage/commit/10839dc41edc22ca81002083c34d5150f705df3e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - build: update SolidJS to 1.4.2
 
 - Updated dependencies [[`41d2949`](https://github.com/riccardoperra/codeimage/commit/41d294914fb0ec241476fdaf62aa8ae3dfd5f408), [`f12b7ee`](https://github.com/riccardoperra/codeimage/commit/f12b7eeeb2dcc11d1856a64617381847b4cf6868), [`10839dc`](https://github.com/riccardoperra/codeimage/commit/10839dc41edc22ca81002083c34d5150f705df3e), [`79058e8`](https://github.com/riccardoperra/codeimage/commit/79058e84bfbe627430cdd79939d19ae7322244b6)]:
-  - @codeimage/theme@0.8.0
+  - @codeimage/highlight@0.8.0
 
 ## 5.0.0
 
@@ -38,7 +38,7 @@
 - [#223](https://github.com/riccardoperra/codeimage/pull/223) [`6350e1b`](https://github.com/riccardoperra/codeimage/commit/6350e1bbd36b76d114242ce30f8ceb92c92d0de1) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Style improvements for MacOSX
 
 - Updated dependencies [[`719ac23`](https://github.com/riccardoperra/codeimage/commit/719ac23d91f93e11fe522633206787b56f8ef073), [`2b7248e`](https://github.com/riccardoperra/codeimage/commit/2b7248e9ba080dec9de44f954a56d7f560dfd899), [`e8aa8a3`](https://github.com/riccardoperra/codeimage/commit/e8aa8a3a2dd10e024991a42a9c858c665092d1e7), [`e3ca614`](https://github.com/riccardoperra/codeimage/commit/e3ca6148a66cee7919d8a34311cf5033480e692e)]:
-  - @codeimage/theme@0.7.0
+  - @codeimage/highlight@0.7.0
 
 ## 4.0.0
 
@@ -49,7 +49,7 @@
 ### Patch Changes
 
 - Updated dependencies [[`c868a0f`](https://github.com/riccardoperra/codeimage/commit/c868a0fe5a0590454067675ff93dd6d958404066)]:
-  - @codeimage/theme@0.6.0
+  - @codeimage/highlight@0.6.0
 
 ## 3.4.3
 
@@ -64,7 +64,7 @@
 - [#165](https://github.com/riccardoperra/codeimage/pull/165) [`fa30bbe`](https://github.com/riccardoperra/codeimage/commit/fa30bbeaf83ab528973cbb23db97113b61a3f87e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - build: update vite dependency
 
 - Updated dependencies [[`7012ef8`](https://github.com/riccardoperra/codeimage/commit/7012ef8db63c6ae956c79bb09d652f474f6f4ee7), [`fa30bbe`](https://github.com/riccardoperra/codeimage/commit/fa30bbeaf83ab528973cbb23db97113b61a3f87e)]:
-  - @codeimage/theme@0.5.3
+  - @codeimage/highlight@0.5.3
 
 ## 3.4.1
 
@@ -84,7 +84,7 @@
 
 - 03789fb: feat: add german language
 - Updated dependencies [b84600e]
-  - @codeimage/theme@0.5.2
+  - @codeimage/highlight@0.5.2
 
 ## 3.3.0
 
@@ -112,7 +112,7 @@
 
 - 9d538e7: feat: add material palenight theme
 - Updated dependencies [9d538e7]
-  - @codeimage/theme@0.5.1
+  - @codeimage/highlight@0.5.1
 
 ## 3.1.0
 
@@ -134,7 +134,7 @@
 - Updated dependencies [0e38805]
 - Updated dependencies [36f7cde]
 - Updated dependencies [1266e9c]
-  - @codeimage/theme@0.5.0
+  - @codeimage/highlight@0.5.0
 
 ## 2.0.4
 
@@ -142,7 +142,7 @@
 
 - ff4d634: fix: fix broken image export using safari
 - Updated dependencies [ff4d634]
-  - @codeimage/theme@0.4.4
+  - @codeimage/highlight@0.4.4
 
 ## 2.0.3
 
@@ -150,7 +150,7 @@
 
 - 4d087e3: Workflow update
 - Updated dependencies [4d087e3]
-  - @codeimage/theme@0.4.3
+  - @codeimage/highlight@0.4.3
 
 ## 2.0.2
 
@@ -158,7 +158,7 @@
 
 - c8ffdf7: New changeset workflow
 - Updated dependencies [c8ffdf7]
-  - @codeimage/theme@0.4.2
+  - @codeimage/highlight@0.4.2
 
 ## 2.0.1
 
@@ -166,7 +166,7 @@
 
 - 96e2b77: feat: add arc dark theme
 - Updated dependencies [96e2b77]
-  - @codeimage/theme@0.4.1
+  - @codeimage/highlight@0.4.1
 
 ## 2.0.0
 
@@ -183,7 +183,7 @@
 - Updated dependencies [d44324d]
 - Updated dependencies [da5674c]
 - Updated dependencies [97ab722]
-  - @codeimage/theme@0.4.0
+  - @codeimage/highlight@0.4.0
 
 ## 1.0.0
 
@@ -195,7 +195,7 @@
 
 - Updated dependencies [f653b6f]
 - Updated dependencies [fda1ee7]
-  - @codeimage/theme@0.3.0
+  - @codeimage/highlight@0.3.0
 
 ## 0.2.0
 

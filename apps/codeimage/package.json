@@ -33,7 +33,7 @@
   "dependencies": {
     "@codeimage/config": "workspace:*",
     "@codeimage/locale": "workspace:*",
-    "@codeimage/theme": "workspace:*",
+    "@codeimage/highlight": "workspace:*",
     "@codeimage/dom-export": "workspace:*",
     "@codeimage/ui": "workspace:*",
     "@codemirror/autocomplete": "^0.20.1",

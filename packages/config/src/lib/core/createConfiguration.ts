@@ -1,4 +1,4 @@
-import {CustomTheme} from '@codeimage/theme';
+import {CustomTheme} from '@codeimage/highlight';
 import {useContext} from 'solid-js';
 import {AppStaticConfiguration} from '../types/configuration';
 import {LanguageDefinition} from '../types/language-def';
