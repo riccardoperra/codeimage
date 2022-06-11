@@ -4,7 +4,7 @@
   "version": "0.19.2",
   "scripts": {
     "start": "vite",
-    "dev": "vite --host --force",
+    "dev": "vite --host",
     "build": "rimraf dist && vite build",
     "build-sw": "rimraf dist && cross-env BASE_URL=/ SW=true SOURCE_MAP=true RELOAD_SW=true vite build",
     "serve:https": "serve dist",

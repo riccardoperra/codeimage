@@ -1,14 +1,21 @@
 import {LanguageIconDefinition} from '@codeimage/config';
-import {Text} from '@codeimage/ui';
+import {Box, Loading, Text} from '@codeimage/ui';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import createResizeObserver from '@solid-primitives/resize-observer';
 import {createSortable} from '@thisbeyond/solid-dnd';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createMemo, createSignal, onMount, Show, VoidProps} from 'solid-js';
-import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
+import {
+  createMemo,
+  createSignal,
+  onMount,
+  Show,
+  Suspense,
+  VoidProps,
+} from 'solid-js';
 import {CloseIcon} from '../../../Icons/CloseIcon';
-import * as styles from './Tab.css';
 import {TabIcon} from '../TabIcon/TabIcon';
 import {TabName} from '../TabName/TabName';
+import * as styles from './Tab.css';
 
 const exportExclude = _exportExclude;
 
@@ -59,23 +66,39 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
       data-active={props.active}
       onMouseDown={() => props.onClick?.()}
     >
-      <Show when={props.tabIcon}>{icon => <TabIcon content={icon} />}</Show>
-      <div class={styles.tabTextContent}>
-        <Show
-          fallback={
-            <Text size={'sm'} class={styles.fallbackText}>
-              {props.tabName || 'Untitled'}
-            </Text>
-          }
-          when={!props.readonlyTab}
-        >
-          <TabName
-            readonly={props.readonlyTab && !props.active}
-            value={props.tabName ?? ''}
-            onValueChange={value => props.onTabChange?.(value)}
-          />
-        </Show>
-      </div>
+      <Suspense
+        fallback={
+          <>
+            <Loading size={'sm'} />
+            <Box marginLeft={2}>
+              <div class={styles.tabTextContent}>
+                <Text size={'sm'} class={styles.fallbackText}>
+                  {props.tabName || 'Untitled'}
+                </Text>
+              </div>
+            </Box>
+          </>
+        }
+      >
+        <Show when={props.tabIcon}>{icon => <TabIcon content={icon} />}</Show>
+        <div class={styles.tabTextContent}>
+          <Show
+            fallback={
+              <Text size={'sm'} class={styles.fallbackText}>
+                {props.tabName || 'Untitled'}
+              </Text>
+            }
+            when={!props.readonlyTab}
+          >
+            <TabName
+              readonly={props.readonlyTab && !props.active}
+              value={props.tabName ?? ''}
+              onValueChange={value => props.onTabChange?.(value)}
+            />
+          </Show>
+        </div>
+      </Suspense>
+
       <Show when={props.onClose && hasEnoughSpace()}>
         {() => (
           <CloseIcon
