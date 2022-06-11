@@ -1,8 +1,6 @@
 import {LionCombobox} from '@lion/combobox';
-import '@lion/combobox/define';
 import {css, html, PropertyValues} from '@lion/core';
 import {LionOption} from '@lion/listbox';
-import '@lion/listbox/define';
 import {map, Subject, takeUntil} from 'rxjs';
 import {mutationObserverFactory$} from '@core/operators/create-mutation-observer';
 import {resizeObserverFactory$} from '@core/operators/create-resize-observer';
@@ -230,50 +228,8 @@ export class InlineCombobox extends LionCombobox {
   }
 }
 
-class ComboboxOption extends LionOption {
+export class ComboboxOption extends LionOption {
   protected createRenderRoot(): Element | ShadowRoot {
     return this;
-  }
-}
-
-customElements.define('cmg-inline-combobox', InlineCombobox);
-customElements.define('cmg-combobox-option', ComboboxOption);
-
-declare module 'solid-js' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'cmg-inline-combobox': Partial<
-        InlineCombobox &
-          JSX.DOMAttributes<InlineCombobox> & {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            children: any;
-            class: string;
-            'prop:_noTypeAhead': InlineCombobox['_noTypeAhead'];
-            'prop:valueMapper': InlineCombobox['valueMapper'];
-            'prop:autocomplete': InlineCombobox['autocomplete'];
-            'on:selectedItemChange': (
-              event: CustomEvent<{value: string}>,
-            ) => void;
-            'on:inputTextChange': (event: CustomEvent<{value: string}>) => void;
-          }
-      >;
-      'cmg-combobox-option': Partial<
-        ComboboxOption &
-          JSX.DOMAttributes<ComboboxOption> & {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            children: any;
-            class: string;
-            'prop:choiceValue': ComboboxOption['choiceValue'];
-          }
-      >;
-    }
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'cmg-inline-combobox': InlineCombobox;
-    'cmg-combobox-option': ComboboxOption;
   }
 }
