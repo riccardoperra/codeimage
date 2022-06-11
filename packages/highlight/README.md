@@ -1,4 +1,4 @@
-# @codeimage/theme
+# @codeimage/highlight
 
 ![Latest release Version](https://img.shields.io/badge/dynamic/json?style=for-the-badge&color=success&label=Version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Friccardoperra%2Fcodeimage%2Fmain%2Fpackages%2Ftheme%2Fpackage.json)
 [![Built with SolidJS](https://img.shields.io/badge/Built%20with-SolidJS-blue?style=for-the-badge)](https://github.com/solidjs/solid)

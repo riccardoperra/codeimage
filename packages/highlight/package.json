@@ -1,12 +1,10 @@
 {
-  "name": "@codeimage/theme",
+  "name": "@codeimage/highlight",
   "version": "0.8.0",
   "module": "./dist/index.js",
   "types": "./dist/public-api.d.ts",
   "scripts": {
     "build": "rollup -c",
-    "build:watch": "vite build --watch",
-    "preview": "vite preview",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
@@ -31,6 +29,7 @@
     "@lezer/highlight": "^0.16.0"
   },
   "devDependencies": {
+    "@types/node": "^17.0.42",
     "rimraf": "^3.0.2",
     "typescript": "^4.7.3",
     "rollup": "^2.75.6",

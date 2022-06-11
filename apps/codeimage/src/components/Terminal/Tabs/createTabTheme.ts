@@ -1,6 +1,5 @@
 import {SUPPORTED_THEMES} from '@codeimage/config';
-import {TerminalTabsTheme} from '@codeimage/theme';
-import {CustomTheme} from '@codeimage/theme/src/lib/core';
+import {TerminalTabsTheme, CustomTheme} from '@codeimage/highlight';
 import {Accessor, createMemo} from 'solid-js';
 
 export interface TabThemeProps extends TerminalTabsTheme {

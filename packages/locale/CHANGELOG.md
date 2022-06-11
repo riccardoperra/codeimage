@@ -1,4 +1,4 @@
-# @codeimage/theme
+# @codeimage/locale
 
 ## 0.5.1
 

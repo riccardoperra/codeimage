@@ -74,4 +74,4 @@ export const materialVolcano = [
   ),
 ];
 
-// export const materialVolcano = [highlightStyle, theme];
+// export const materialVolcano = [highlightStyle, highlight];

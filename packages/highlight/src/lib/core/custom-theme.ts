@@ -24,34 +24,34 @@ export interface TerminalThemeProperties {
 
 export interface CustomThemeProperties {
   /**
-   * @description Label of theme box preview
+   * @description Label of highlight box preview
    */
   label: string;
   /**
-   * @description Background of theme box preview
+   * @description Background of highlight box preview
    */
   previewBackground: string;
   /**
-   * @description Enable/disable dark mode theme
+   * @description Enable/disable dark mode highlight
    */
   darkMode: boolean;
   /**
-   * @description MacOsTerminal theme properties
+   * @description MacOsTerminal highlight properties
    */
   terminal: TerminalThemeProperties;
 }
 
 export interface CustomTheme {
   /**
-   * Custom theme identifier
+   * Custom highlight identifier
    */
   id: string;
   /**
-   * Custom theme editor base theme extension
+   * Custom highlight editor base highlight extension
    */
   editorTheme: Extension;
   /**
-   * Custom theme properties
+   * Custom highlight properties
    */
   properties: CustomThemeProperties;
 }

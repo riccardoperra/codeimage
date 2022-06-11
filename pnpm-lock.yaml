@@ -56,8 +56,8 @@ importers:
     specifiers:
       '@codeimage/config': workspace:*
       '@codeimage/dom-export': workspace:*
+      '@codeimage/highlight': workspace:*
       '@codeimage/locale': workspace:*
-      '@codeimage/theme': workspace:*
       '@codeimage/ui': workspace:*
       '@codemirror/autocomplete': ^0.20.1
       '@codemirror/commands': ^0.20.0
@@ -130,8 +130,8 @@ importers:
     dependencies:
       '@codeimage/config': link:../../packages/config
       '@codeimage/dom-export': link:../../packages/dom-export
+      '@codeimage/highlight': link:../../packages/highlight
       '@codeimage/locale': link:../../packages/locale
-      '@codeimage/theme': link:../../packages/theme
       '@codeimage/ui': link:../../packages/ui
       '@codemirror/autocomplete': 0.20.1
       '@codemirror/commands': 0.20.0
@@ -205,7 +205,7 @@ importers:
 
   packages/config:
     specifiers:
-      '@codeimage/theme': workspace:*
+      '@codeimage/highlight': workspace:*
       '@codemirror/autocomplete': ^0.20.1
       '@codemirror/commands': ^0.20.0
       '@codemirror/lang-cpp': ^0.20.0
@@ -233,7 +233,7 @@ importers:
       vite-plugin-dts: ^1.1.1
       vite-plugin-solid: ^2.2.6
     dependencies:
-      '@codeimage/theme': link:../theme
+      '@codeimage/highlight': link:../highlight
       '@codemirror/autocomplete': 0.20.1
       '@codemirror/commands': 0.20.0
       '@codemirror/lang-cpp': 0.20.0
@@ -282,6 +282,37 @@ importers:
       vite: 2.9.9
       vite-plugin-dts: 1.2.0_vite@2.9.9
 
+  packages/highlight:
+    specifiers:
+      '@codemirror/language': ^0.20.2
+      '@codemirror/state': ^0.20.0
+      '@codemirror/theme-one-dark': ^0.20.0
+      '@codemirror/view': ^0.20.6
+      '@lezer/highlight': ^0.16.0
+      '@rollup/plugin-typescript': ^8.3.3
+      '@types/node': ^17.0.42
+      rimraf: ^3.0.2
+      rollup: ^2.75.6
+      rollup-plugin-dts: ^4.2.2
+      typescript: ^4.7.3
+      vite: ^2.9.9
+      vite-plugin-dts: ^1.2.0
+    dependencies:
+      '@codemirror/language': 0.20.2
+      '@codemirror/state': 0.20.0
+      '@codemirror/theme-one-dark': 0.20.0
+      '@codemirror/view': 0.20.6
+      '@lezer/highlight': 0.16.0
+    devDependencies:
+      '@rollup/plugin-typescript': 8.3.3_fgms252lqu3rk7srzpqqayl4ya
+      '@types/node': 17.0.42
+      rimraf: 3.0.2
+      rollup: 2.75.6
+      rollup-plugin-dts: 4.2.2_fgms252lqu3rk7srzpqqayl4ya
+      typescript: 4.7.3
+      vite: 2.9.9
+      vite-plugin-dts: 1.2.0_vite@2.9.9
+
   packages/locale:
     specifiers:
       '@solid-primitives/i18n': ^1.1.0
@@ -300,35 +331,6 @@ importers:
       vite: 2.9.8
       vite-plugin-dts: 1.1.1_vite@2.9.8
       vite-plugin-solid: 2.2.6
-
-  packages/theme:
-    specifiers:
-      '@codemirror/language': ^0.20.2
-      '@codemirror/state': ^0.20.0
-      '@codemirror/theme-one-dark': ^0.20.0
-      '@codemirror/view': ^0.20.6
-      '@lezer/highlight': ^0.16.0
-      '@rollup/plugin-typescript': ^8.3.3
-      rimraf: ^3.0.2
-      rollup: ^2.75.6
-      rollup-plugin-dts: ^4.2.2
-      typescript: ^4.7.3
-      vite: ^2.9.9
-      vite-plugin-dts: ^1.2.0
-    dependencies:
-      '@codemirror/language': 0.20.2
-      '@codemirror/state': 0.20.0
-      '@codemirror/theme-one-dark': 0.20.0
-      '@codemirror/view': 0.20.6
-      '@lezer/highlight': 0.16.0
-    devDependencies:
-      '@rollup/plugin-typescript': 8.3.3_fgms252lqu3rk7srzpqqayl4ya
-      rimraf: 3.0.2
-      rollup: 2.75.6
-      rollup-plugin-dts: 4.2.2_fgms252lqu3rk7srzpqqayl4ya
-      typescript: 4.7.3
-      vite: 2.9.9
-      vite-plugin-dts: 1.2.0_vite@2.9.9
 
   packages/ui:
     specifiers:
@@ -3132,6 +3134,10 @@ packages:
 
   /@types/node/17.0.40:
     resolution: {integrity: sha512-UXdBxNGqTMtm7hCwh9HtncFVLrXoqA3oJW30j6XWp5BH/wu3mVeaxo7cq5benFdBw34HB3XDT2TRPI7rXZ+mDg==}
+    dev: true
+
+  /@types/node/17.0.42:
+    resolution: {integrity: sha512-Q5BPGyGKcvQgAMbsr7qEGN/kIPN6zZecYYABeTDBizOsau+2NMdSVTar9UQw21A2+JyA2KRNDYaYrPB0Rpk2oQ==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:

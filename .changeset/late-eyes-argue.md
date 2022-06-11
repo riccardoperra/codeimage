@@ -1,6 +1,6 @@
 ---
 '@codeimage/config': patch
-'@codeimage/theme': patch
+'@codeimage/highlight': patch
 ---
 
-perf: add @codeimage/theme chunk split
+perf: add @codeimage/highlight chunk split

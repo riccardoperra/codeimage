@@ -1,4 +1,4 @@
-# @codeimage/theme
+# @codeimage/highlight
 
 ## 0.8.0
 

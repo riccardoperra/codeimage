@@ -1,8 +1,8 @@
 import {defineConfig} from 'rollup';
 import typescript from '@rollup/plugin-typescript';
 import * as pkg from './package.json';
-import {rmSync, writeFileSync} from 'fs';
-import {posix, resolve} from 'path';
+import {rmSync} from 'fs';
+import {posix} from 'path';
 
 const {normalize} = posix;
 
