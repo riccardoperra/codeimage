@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 0.19.2
+
+### Patch Changes
+
+- [#277](https://github.com/riccardoperra/codeimage/pull/277) [`9903fb6`](https://github.com/riccardoperra/codeimage/commit/9903fb67bdacd1e4d8327f7363ddfcfc5dd0eecc) Thanks [@alexandercerutti](https://github.com/alexandercerutti)! - fix: fix resize issue on Mac with different devicePixelRatio
+
 ## 0.19.1
 
 ### Patch Changes
