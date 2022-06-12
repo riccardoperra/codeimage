@@ -1,5 +1,6 @@
 import {createI18nContext, I18nContext} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {uiStore} from '@codeimage/store/ui';
 import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
@@ -39,6 +40,7 @@ export function Bootstrap() {
     {
       path: '',
       component: lazy(() => {
+        setTimeout(() => getThemeStore().loadThemes());
         return import('./App').then(component => {
           document.querySelector('#launcher')?.remove();
           return component;

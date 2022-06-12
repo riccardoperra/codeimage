@@ -2,7 +2,6 @@ import {useI18n} from '@codeimage/locale';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {setScale} from '@codeimage/store/frame';
-import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
 import {useEffects} from '@core/store/use-effect';
@@ -26,7 +25,7 @@ import './theme/global.css';
 initEffects();
 
 const ManagedFrame = lazy(() =>
-  Promise.all([import('./components/Frame/ManagedFrame')]).then(([c]) => ({
+  import('./components/Frame/ManagedFrame').then(c => ({
     default: c.ManagedFrame,
   })),
 );
@@ -36,8 +35,6 @@ export function App() {
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const modality = useModality();
   const [, {locale}] = useI18n();
-  getThemeStore().loadThemes();
-
   // TODO: currently disabled
   // connectStoreWithQueryParams();
   useEffects([onThemeChange$, copyToClipboard$]);
