@@ -1,4 +1,3 @@
-import {skeleton} from './FrameSkeleton.css';
 import * as styles from './FrameSkeleton.css';
 
 export function FrameSkeleton() {

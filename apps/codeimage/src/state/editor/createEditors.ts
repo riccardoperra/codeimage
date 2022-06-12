@@ -1,6 +1,8 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {createStoreNotifier} from '@codeimage/store/plugins/store-notifier';
 import {createUniqueId, versionateId} from '@codeimage/store/plugins/unique-id';
+import {appEnvironment} from '@core/configuration';
+import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
 import {debounceTime, merge} from 'rxjs';
 import {
@@ -15,8 +17,6 @@ import {
   onMount,
 } from 'solid-js';
 import {createStore, unwrap} from 'solid-js/store';
-import {appEnvironment} from '@core/configuration';
-import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {getRootEditorOptions} from './createEditorOptions';
 import {EditorState, PersistedEditorState} from './model';
@@ -66,7 +66,7 @@ function $createEditorsStore() {
 
   createEffect(
     on(
-      [from(merge(optionVersion$, version$).pipe(debounceTime(1000))), ready],
+      [from(merge(optionVersion$, version$).pipe(debounceTime(0))), ready],
       ([_, ready]) => {
         if (!ready) return;
         const state: PersistedEditorState = {editors, options};

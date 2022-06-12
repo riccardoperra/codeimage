@@ -43,6 +43,10 @@
       "import": "./index.js",
       "types": "./public-api.d.ts"
     },
+    "./themes": {
+      "import": "./dist/lib/themes/index.js",
+      "types": "./dist/lib/themes/index.d.ts"
+    },
     "./arcDark": {
       "import": "./dist/lib/themes/arcDark/index.js",
       "types": "./dist/lib/themes/arcDark/index.d.ts"
@@ -157,6 +161,9 @@
       ],
       "vsCodeDark": [
         "./dist/lib/themes/vsCodeDark/index.d.ts"
+      ],
+      "themes": [
+        "./dist/lib/themes/index.d.ts"
       ]
     }
   }

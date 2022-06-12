@@ -1,22 +1,21 @@
-import {themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 import {darkGrayScale} from '../../theme/dark-theme.css';
-import {withShimmerAnimation} from '../ThemeSwitcher/ThemeBoxSkeleton.css';
-import {container} from './Frame.css';
 import * as terminalStyle from '../Terminal/terminal.css';
+import {withShimmerAnimation} from '../ThemeSwitcher/ThemeBoxSkeleton.css';
 
 export const wrapper = style([
-  container,
   {
     backgroundColor: darkGrayScale.gray3,
     padding: '32px',
+    opacity: '100%',
+    width: '600px',
+    visibility: 'visible',
+    position: 'relative',
+    zIndex: 1,
+    boxSizing: 'border-box',
+    userSelect: 'none',
   },
 ]);
-
-export const header = style({
-  height: '400px',
-  width: '600px',
-});
 
 export const terminal = {
   base: style([

@@ -1,4 +1,5 @@
 import {createI18nContext, I18nContext} from '@codeimage/locale';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {CodeImageThemeProvider} from '@codeimage/ui';
 import {enableElfProdMode} from '@ngneat/elf';
 import {devTools} from '@ngneat/elf-devtools';
@@ -26,8 +27,17 @@ const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
 };
 
 export function Bootstrap() {
+  getRootEditorStore();
   const Routes = useRoutes([
-    {path: '', component: lazy(() => import('./App'))},
+    {
+      path: '',
+      component: lazy(() => {
+        return import('./App').then(component => {
+          document.querySelector('#launcher')?.remove();
+          return component;
+        });
+      }),
+    },
   ]);
 
   onMount(() => {
@@ -48,11 +58,11 @@ export function Bootstrap() {
   return (
     <Router>
       <I18nContext.Provider value={i18n}>
-        <Suspense>
-          <CodeImageThemeProvider theme={theme}>
+        <CodeImageThemeProvider theme={theme}>
+          <Suspense>
             <Routes />
-          </CodeImageThemeProvider>
-        </Suspense>
+          </Suspense>
+        </CodeImageThemeProvider>
       </I18nContext.Provider>
     </Router>
   );

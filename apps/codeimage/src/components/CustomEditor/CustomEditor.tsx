@@ -1,8 +1,31 @@
-import {EDITOR_BASE_SETUP, SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {EditorView, lineNumbers} from '@codemirror/view';
+import {
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
+  completionKeymap,
+} from '@codemirror/autocomplete';
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  indentWithTab,
+} from '@codemirror/commands';
+import {bracketMatching, indentOnInput} from '@codemirror/language';
+import {EditorState, Extension} from '@codemirror/state';
+import {
+  crosshairCursor,
+  drawSelection,
+  dropCursor,
+  EditorView,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+  rectangularSelection,
+} from '@codemirror/view';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {ReplaySubject} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
@@ -13,14 +36,39 @@ import {
   createResource,
   onCleanup,
 } from 'solid-js';
-import {createCustomFontExtension} from './custom-font-extension';
-import {fixCodeMirrorAriaRole} from './fix-cm-aria-roles-lighthouse';
 import {observeFocusExtension} from './observe-focus-extension';
 
-export const CustomEditor = () => {
+interface CustomFontExtensionOptions {
+  fontName: string;
+  fontWeight: number;
+}
+
+const EDITOR_BASE_SETUP: Extension = [
+  highlightSpecialChars(),
+  drawSelection(),
+  dropCursor(),
+  EditorState.allowMultipleSelections.of(true),
+  indentOnInput(),
+  bracketMatching(),
+  closeBrackets(),
+  autocompletion(),
+  rectangularSelection(),
+  crosshairCursor(),
+  history(),
+  keymap.of([
+    ...closeBracketsKeymap,
+    ...defaultKeymap,
+    ...completionKeymap,
+    ...historyKeymap,
+    indentWithTab,
+  ]),
+];
+
+export default function CustomEditor() {
   let editorEl!: HTMLDivElement;
   const {themeArray: themes} = getThemeStore();
-  fixCodeMirrorAriaRole(() => editorEl);
+
+  // fixCodeMirrorAriaRole(() => editorEl);
   const destroy$ = new ReplaySubject<void>(1);
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
@@ -87,18 +135,37 @@ export const CustomEditor = () => {
     },
   });
 
+  const createCustomFontExtension = (
+    options: CustomFontExtensionOptions,
+  ): Extension => {
+    return EditorView.theme({
+      '.cm-content *': {
+        fontFamily: `${options.fontName}, monospace`,
+        fontWeight: options.fontWeight,
+        fontVariantLigatures: 'normal',
+      },
+      '.cm-gutters': {
+        fontFamily: `${options.fontName}, monospace`,
+        fontWeight: 400,
+        fontVariantLigatures: 'normal',
+      },
+    });
+  };
+
   const customFontExtension = () =>
     createCustomFontExtension({
       fontName:
         fonts.find(({id}) => editorOptions.fontId === id)?.name ||
         fonts[0].name,
-      // TODO editor fix type never null
-      fontWeight: editorOptions.fontWeight ?? 400,
+      fontWeight: editorOptions.fontWeight,
     });
 
   createEffect(() => {
     batch(() => {
       setContainer(editorEl);
+      import('./fix-cm-aria-roles-lighthouse').then(m =>
+        m.fixCodeMirrorAriaRole(() => editorEl),
+      );
     });
   });
 
@@ -117,12 +184,8 @@ export const CustomEditor = () => {
 
   createEffect(() => {
     batch(() =>
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      // TODO: to fix type deep instantion
       setOptions({
         extensions: [
-          EDITOR_BASE_SETUP,
           baseTheme,
           supportsLineWrap,
           observeFocusExtension(focused => setFocused(focused)),
@@ -130,6 +193,7 @@ export const CustomEditor = () => {
           currentLanguage() || [],
           currentTheme(),
           editorOptions.showLineNumbers ? lineNumbers() : [],
+          EDITOR_BASE_SETUP,
         ],
       }),
     );
@@ -146,4 +210,4 @@ export const CustomEditor = () => {
       <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
     </code>
   );
-};
+}

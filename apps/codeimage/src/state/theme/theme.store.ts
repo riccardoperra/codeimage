@@ -1,10 +1,19 @@
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
-import {createMemo, createResource, createRoot, mapArray} from 'solid-js';
+import {
+  createMemo,
+  createResource,
+  createRoot,
+  createSignal,
+  mapArray,
+} from 'solid-js';
 
 function $getThemeStore() {
+  const [loaded, setLoaded] = createSignal(false, {equals: false});
+
   const themes = Object.fromEntries(
     Object.values(THEME_REGISTRY).map(
-      theme => [theme.id, createResource(theme.load)] as const,
+      theme => [theme.id, createResource(loaded, theme.load)] as const,
     ),
   );
 
@@ -22,12 +31,15 @@ function $getThemeStore() {
   const getThemeDef = (id: string) =>
     THEME_REGISTRY.find(theme => theme.id === id);
 
+  const loadThemes = () => setLoaded(true);
+
   return {
     themeResources: themes,
     themeArray,
     themeLoading,
     getThemeDef,
     getThemeResource,
+    loadThemes,
   } as const;
 }
 

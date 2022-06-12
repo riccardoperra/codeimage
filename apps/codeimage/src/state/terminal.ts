@@ -55,7 +55,7 @@ export const [readyTerminalState, setReadyTerminalState] = createSignal(false);
 
 createRoot(() => {
   const registry = getThemeStore();
-  const [resource] = registry.getThemeResource('vsCodeDark');
+  const [resource] = registry.getThemeResource('vsCodeDarkTheme');
   createEffect(
     on(resource, resource => {
       if (resource) {
