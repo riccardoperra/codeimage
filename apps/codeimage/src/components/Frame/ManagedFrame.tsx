@@ -9,10 +9,7 @@ import {Frame} from './Frame';
 import {FrameSkeleton} from './FrameSkeleton';
 
 const CustomEditor = lazy(() => {
-  return Promise.all([
-    import('solid-codemirror'),
-    import('../CustomEditor/CustomEditor'),
-  ]).then(([, editor]) => editor);
+  return import('../CustomEditor/CustomEditor');
 });
 
 export function ManagedFrame() {

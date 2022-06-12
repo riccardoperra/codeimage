@@ -2,6 +2,7 @@ import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {EditorView} from '@codemirror/view';
+import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {createCodeMirror} from 'solid-codemirror';
 import {
   batch,
@@ -12,9 +13,7 @@ import {
   onMount,
   VoidProps,
 } from 'solid-js';
-import {SUPPORTED_FONTS} from '../../core/configuration/font';
-import {createCustomFontExtension} from './custom-font-extension';
-import {fixCodeMirrorAriaRole} from './fix-cm-aria-roles-lighthouse';
+import {supportsLineWrap} from './supportsLineWrap';
 
 interface CustomEditorPreviewProps {
   themeId: string;
@@ -28,7 +27,6 @@ export default function CustomEditorPreview(
   props: VoidProps<CustomEditorPreviewProps>,
 ) {
   let editorEl!: HTMLDivElement;
-  fixCodeMirrorAriaRole(() => editorEl);
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
@@ -50,9 +48,17 @@ export default function CustomEditorPreview(
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];
 
-  const supportsLineWrap = EditorView.lineWrapping;
+  const {view, setOptions, setContainer} = createCodeMirror({
+    container: editorEl,
+    editable: false,
+    extensions: [],
+    'aria-readonly': 'true',
+  });
 
-  const baseTheme = EditorView.theme({
+  const fontName =
+    fonts.find(({id}) => editorOptions.fontId === id)?.name || fonts[0].name;
+
+  const previewEditorBaseTheme = EditorView.theme({
     '&': {
       textAlign: 'left',
       fontSize: '11px',
@@ -66,21 +72,11 @@ export default function CustomEditorPreview(
     '.cm-line': {
       padding: '0 2px 0 8px',
     },
-  });
-
-  const customFontExtension = () =>
-    createCustomFontExtension({
-      fontName:
-        fonts.find(({id}) => editorOptions.fontId === id)?.name ||
-        fonts[0].name,
-      fontWeight: editorOptions.fontWeight,
-    });
-
-  const {view, setOptions, setContainer} = createCodeMirror({
-    container: editorEl,
-    editable: false,
-    extensions: [],
-    'aria-readonly': 'true',
+    '.cm-content *': {
+      fontFamily: `${fontName}, monospace`,
+      fontWeight: 400,
+      fontVariantLigatures: 'normal',
+    },
   });
 
   onMount(() => setContainer(editorEl));
@@ -90,8 +86,7 @@ export default function CustomEditorPreview(
       setOptions({
         value: props.code,
         extensions: [
-          customFontExtension(),
-          baseTheme,
+          previewEditorBaseTheme,
           supportsLineWrap,
           currentTheme(),
           currentLanguage() || [],

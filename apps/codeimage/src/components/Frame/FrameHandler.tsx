@@ -3,7 +3,7 @@ import {onCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {Box} from '@codeimage/ui';
 import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
+import {type WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {
   createEffect,
   createSignal,

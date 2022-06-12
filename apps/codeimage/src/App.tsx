@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {setScale} from '@codeimage/store/frame';
-import {Box, LoadingOverlay, PortalHost, SnackbarHost} from '@codeimage/ui';
+import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
 import {useEffects} from '@core/store/use-effect';
 import {initEffects} from '@ngneat/effects';

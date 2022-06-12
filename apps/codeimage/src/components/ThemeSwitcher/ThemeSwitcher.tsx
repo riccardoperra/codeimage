@@ -29,10 +29,7 @@ import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
 
 const CustomEditorPreview = lazy(() => {
-  return Promise.all([
-    import('solid-codemirror'),
-    import('../CustomEditor/CustomEditorPreview'),
-  ]).then(([, editor]) => editor);
+  return import('../CustomEditor/CustomEditorPreview');
 });
 
 export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
