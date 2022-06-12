@@ -1,14 +1,19 @@
 import {createI18nContext, I18nContext} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {CodeImageThemeProvider} from '@codeimage/ui';
+import {uiStore} from '@codeimage/store/ui';
+import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
+import {enableUmami} from '@core/constants/umami';
 import {enableElfProdMode} from '@ngneat/elf';
 import {devTools} from '@ngneat/elf-devtools';
+import {setElementVars} from '@vanilla-extract/dynamic';
 import {Router, useRoutes} from 'solid-app-router';
-import {lazy, onMount, Suspense} from 'solid-js';
+import {createEffect, lazy, on, onMount, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
-import {enableUmami} from './core/constants/umami';
 import {locale} from './i18n';
+import './theme/dark-theme.css';
+import {darkGrayScale} from './theme/dark-theme.css';
+import './theme/light-theme.css';
 
 if (import.meta.env.DEV) {
   devTools();
@@ -28,6 +33,8 @@ const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
 
 export function Bootstrap() {
   getRootEditorStore();
+  const mode = () => uiStore.themeMode;
+
   const Routes = useRoutes([
     {
       path: '',
@@ -54,6 +61,20 @@ export function Bootstrap() {
     // TODO: auto-track must be fixed when app is multi-page
     document.addEventListener('readystatechange', trackView, true);
   });
+
+  createEffect(
+    on(mode, theme => {
+      const scheme = document.querySelector('meta[name="theme-color"]');
+      if (scheme) {
+        const color = theme === 'dark' ? darkGrayScale.gray1 : '#FFFFFF';
+        scheme.setAttribute('content', color);
+        document.body.setAttribute('data-codeimage-theme', theme);
+        setElementVars(document.body, {
+          [backgroundColorVar]: color,
+        });
+      }
+    }),
+  );
 
   return (
     <Router>
