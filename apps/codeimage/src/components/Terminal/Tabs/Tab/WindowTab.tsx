@@ -7,7 +7,6 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createMemo,
   createSignal,
-  lazy,
   onMount,
   Show,
   Suspense,
@@ -15,11 +14,8 @@ import {
 } from 'solid-js';
 import {CloseIcon} from '../../../Icons/CloseIcon';
 import {TabIcon} from '../TabIcon/TabIcon';
+import {TabName} from '../TabName/TabName';
 import * as styles from './Tab.css';
-
-const TabName = lazy(() =>
-  import('../TabName/TabName').then(m => ({default: m.TabName})),
-);
 
 const exportExclude = _exportExclude;
 

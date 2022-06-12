@@ -48,11 +48,9 @@ export function Bootstrap() {
   return (
     <Router>
       <I18nContext.Provider value={i18n}>
-        <Suspense>
-          <CodeImageThemeProvider theme={theme}>
-            <Routes />
-          </CodeImageThemeProvider>
-        </Suspense>
+        <CodeImageThemeProvider theme={theme}>
+          <Routes />
+        </CodeImageThemeProvider>
       </I18nContext.Provider>
     </Router>
   );
