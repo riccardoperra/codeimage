@@ -26,7 +26,6 @@ import './theme/global.css';
 initEffects();
 
 export function App() {
-  document.querySelector('#launcher')?.remove();
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const modality = useModality();

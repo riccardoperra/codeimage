@@ -27,7 +27,15 @@ const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
 
 export function Bootstrap() {
   const Routes = useRoutes([
-    {path: '', component: lazy(() => import('./App'))},
+    {
+      path: '',
+      component: lazy(() => {
+        return import('./App').then(component => {
+          document.querySelector('#launcher')?.remove();
+          return component;
+        });
+      }),
+    },
   ]);
 
   onMount(() => {
@@ -49,7 +57,9 @@ export function Bootstrap() {
     <Router>
       <I18nContext.Provider value={i18n}>
         <CodeImageThemeProvider theme={theme}>
-          <Routes />
+          <Suspense>
+            <Routes />
+          </Suspense>
         </CodeImageThemeProvider>
       </I18nContext.Provider>
     </Router>

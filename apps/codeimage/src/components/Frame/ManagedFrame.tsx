@@ -9,7 +9,10 @@ import {Frame} from './Frame';
 import {FrameSkeleton} from './FrameSkeleton';
 
 const CustomEditor = lazy(() => {
-  return import('../CustomEditor/CustomEditor');
+  return import('../CustomEditor/CustomEditor').then(async e => {
+    await new Promise(r => setTimeout(r));
+    return e;
+  });
 });
 
 export function ManagedFrame() {
