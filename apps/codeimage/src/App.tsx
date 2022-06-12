@@ -6,12 +6,11 @@ import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
 import {useEffects} from '@core/store/use-effect';
 import {initEffects} from '@ngneat/effects';
-import {createEffect, createSignal, on, Show, Suspense} from 'solid-js';
+import {createEffect, createSignal, lazy, on, Show, Suspense} from 'solid-js';
 import {BottomBar} from './components/BottomBar/BottomBar';
 import {Footer} from './components/Footer/Footer';
 import {FrameHandler} from './components/Frame/FrameHandler';
 import {FrameSkeleton} from './components/Frame/FrameSkeleton';
-import {ManagedFrame} from './components/Frame/ManagedFrame';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from './components/PropertyEditor/EditorSidebar';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
@@ -24,6 +23,12 @@ import {uiStore} from './state/ui';
 import './theme/global.css';
 
 initEffects();
+
+const ManagedFrame = lazy(() =>
+  import('./components/Frame/ManagedFrame').then(c => ({
+    default: c.ManagedFrame,
+  })),
+);
 
 export function App() {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();

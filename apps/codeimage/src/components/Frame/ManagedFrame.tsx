@@ -8,12 +8,7 @@ import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import {Frame} from './Frame';
 import {FrameSkeleton} from './FrameSkeleton';
 
-const CustomEditor = lazy(() => {
-  return import('../CustomEditor/CustomEditor').then(async e => {
-    await new Promise(r => setTimeout(r));
-    return e;
-  });
-});
+const CustomEditor = lazy(() => import('../CustomEditor/CustomEditor'));
 
 export function ManagedFrame() {
   const frame = fromObservableObject(frame$);

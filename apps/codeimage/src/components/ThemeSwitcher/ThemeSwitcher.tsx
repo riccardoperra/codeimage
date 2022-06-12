@@ -75,64 +75,62 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
         </FlexField>
       </Show>
 
-      <SuspenseList revealOrder={'forwards'}>
+      <SuspenseList revealOrder={'together'}>
         <For each={themeArray()}>
           {theme => {
             return (
               <Suspense fallback={<ThemeBoxSkeleton />}>
                 <Show when={theme()}>
                   {theme => (
-                    <FadeInOutTransition show={isMatched(theme.id)}>
-                      <Box>
-                        <ThemeBox
-                          theme={theme}
-                          selected={isSelected(theme.id)}
-                          onClick={() => onSelectTheme(theme)}
+                    <FadeInOutTransition as={Box} show={isMatched(theme.id)}>
+                      <ThemeBox
+                        theme={theme}
+                        selected={isSelected(theme.id)}
+                        onClick={() => onSelectTheme(theme)}
+                      >
+                        <TerminalHost
+                          themeClass={styles.themeBoxTerminalHost}
+                          tabName={'Untitled'}
+                          textColor={theme.properties.terminal.text}
+                          background={theme.properties.terminal.main}
+                          darkMode={theme.properties.darkMode}
+                          accentVisible={false}
+                          shadow={/*@once*/ terminal.shadow}
+                          showTab={false}
+                          readonlyTab={true}
+                          showHeader={false}
+                          showWatermark={false}
+                          showGlassReflection={terminal.showGlassReflection}
+                          opacity={100}
+                          themeId={theme.id}
+                          alternativeTheme={terminal.alternativeTheme}
                         >
-                          <TerminalHost
-                            themeClass={styles.themeBoxTerminalHost}
-                            tabName={'Untitled'}
-                            textColor={theme.properties.terminal.text}
-                            background={theme.properties.terminal.main}
-                            darkMode={theme.properties.darkMode}
-                            accentVisible={false}
-                            shadow={/*@once*/ terminal.shadow}
-                            showTab={false}
-                            readonlyTab={true}
-                            showHeader={false}
-                            showWatermark={false}
-                            showGlassReflection={terminal.showGlassReflection}
-                            opacity={100}
+                          <CustomEditorPreview
                             themeId={theme.id}
-                            alternativeTheme={terminal.alternativeTheme}
-                          >
-                            <CustomEditorPreview
-                              themeId={theme.id}
-                              languageId={/*@once*/ 'typescript'}
-                              code={/*@once*/ exampleCode}
-                            />
-                          </TerminalHost>
-                        </ThemeBox>
+                            languageId={/*@once*/ 'typescript'}
+                            code={/*@once*/ exampleCode}
+                          />
+                        </TerminalHost>
+                      </ThemeBox>
 
-                        <Box
-                          display={'flex'}
-                          justifyContent={'center'}
-                          marginTop={4}
+                      <Box
+                        display={'flex'}
+                        justifyContent={'center'}
+                        marginTop={4}
+                      >
+                        <Show
+                          when={isSelected(theme.id)}
+                          fallback={
+                            <EmptyCircle
+                              cursor={'pointer'}
+                              onClick={() => dispatch(updateTheme({theme}))}
+                              size={'md'}
+                              opacity={0.35}
+                            />
+                          }
                         >
-                          <Show
-                            when={isSelected(theme.id)}
-                            fallback={
-                              <EmptyCircle
-                                cursor={'pointer'}
-                                onClick={() => dispatch(updateTheme({theme}))}
-                                size={'md'}
-                                opacity={0.35}
-                              />
-                            }
-                          >
-                            <CheckCircle size={'md'} />
-                          </Show>
-                        </Box>
+                          <CheckCircle size={'md'} />
+                        </Show>
                       </Box>
                     </FadeInOutTransition>
                   )}

@@ -1,6 +1,10 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {onCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {Box} from '@codeimage/ui';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
+import {createRef} from '@core/helpers/create-ref';
+import {getScaleByRatio} from '@core/helpers/getScale';
+import {useModality} from '@core/hooks/isMobile';
 import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {type WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
@@ -11,12 +15,8 @@ import {
   on,
   ParentProps,
 } from 'solid-js';
-import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
-import {createRef} from '@core/helpers/create-ref';
-import {getScaleByRatio} from '@core/helpers/getScale';
-import {useModality} from '@core/hooks/isMobile';
 import {useHotkey} from '../../hooks/use-hotkey';
-import * as styles from './Frame.css';
+import * as styles from './FrameHandler.css';
 
 const exportExclude = _exportExclude;
 
