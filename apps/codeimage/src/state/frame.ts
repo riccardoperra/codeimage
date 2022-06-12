@@ -47,7 +47,7 @@ export const updateFrameStore = store.update.bind(store);
 
 createRoot(() => {
   const registry = getThemeStore();
-  const [resource] = registry.getThemeResource('vsCodeDark');
+  const [resource] = registry.getThemeResource('vsCodeDarkTheme');
   createEffect(
     on(resource, resource => {
       if (resource) {

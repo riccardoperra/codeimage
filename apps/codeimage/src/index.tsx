@@ -1,4 +1,5 @@
 import {createI18nContext, I18nContext} from '@codeimage/locale';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {CodeImageThemeProvider} from '@codeimage/ui';
 import {enableElfProdMode} from '@ngneat/elf';
 import {devTools} from '@ngneat/elf-devtools';
@@ -26,6 +27,7 @@ const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
 };
 
 export function Bootstrap() {
+  getRootEditorStore();
   const Routes = useRoutes([
     {
       path: '',

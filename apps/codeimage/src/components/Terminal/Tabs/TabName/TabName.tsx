@@ -2,7 +2,7 @@ import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {Box, useFloating} from '@codeimage/ui';
 import {highlight as _highlight} from '@core/directives/highlight';
 import createResizeObserver from '@solid-primitives/resize-observer';
-import {type InlineCombobox} from '@ui/Combobox';
+import {InlineCombobox} from '@ui/Combobox';
 import {
   createEffect,
   createMemo,
@@ -23,10 +23,13 @@ interface TabNameProps {
 
 const highlight = _highlight;
 
+let wcAlreadyLoaded = false;
+
 export function TabName(props: TabNameProps): JSXElement {
-  const [wcLoaded] = createResource(
-    () => true,
-    () => import('@ui/Combobox').then(() => true).catch(() => false),
+  const [wcLoaded] = createResource(() =>
+    !wcAlreadyLoaded
+      ? import('@ui/Combobox').then(() => true).catch(() => false)
+      : true,
   );
 
   let ref: InlineCombobox;
@@ -88,9 +91,13 @@ export function TabName(props: TabNameProps): JSXElement {
         onResize: resize => setWidth(resize.width),
       });
 
-      if (!props.readonly) {
+      if (!props.readonly && wcAlreadyLoaded) {
         // Cannot use queueScheduler
         requestAnimationFrame(() => ref?.focus());
+      }
+
+      if (!wcAlreadyLoaded) {
+        wcAlreadyLoaded = true;
       }
 
       observe(ref);

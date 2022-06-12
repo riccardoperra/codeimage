@@ -157,13 +157,15 @@ export default function CustomEditor() {
       fontName:
         fonts.find(({id}) => editorOptions.fontId === id)?.name ||
         fonts[0].name,
-      // TODO editor fix type never null
-      fontWeight: editorOptions.fontWeight ?? 400,
+      fontWeight: editorOptions.fontWeight,
     });
 
   createEffect(() => {
     batch(() => {
       setContainer(editorEl);
+      import('./fix-cm-aria-roles-lighthouse').then(m =>
+        m.fixCodeMirrorAriaRole(() => editorEl),
+      );
     });
   });
 

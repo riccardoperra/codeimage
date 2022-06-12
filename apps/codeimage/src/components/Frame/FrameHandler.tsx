@@ -43,7 +43,7 @@ export function FrameHandler(
   createEffect(
     on([handlerRef], ([frame]) => {
       if (modality === 'mobile') {
-        setTimeout(() => {
+        requestAnimationFrame(() => {
           const scale = getScaleByRatio(frame?.parentElement, frame, 1 + ratio);
           props.onScaleChange(scale);
           setCanvasScale(scale);

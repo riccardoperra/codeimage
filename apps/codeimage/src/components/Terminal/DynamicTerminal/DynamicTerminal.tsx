@@ -1,9 +1,9 @@
 import {Box, FadeInOutTransition} from '@codeimage/ui';
+import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 
 import {children, createMemo, JSXElement, ParentComponent} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
-import {AVAILABLE_TERMINAL_THEMES} from '../../../core/configuration/terminal-themes';
 import {CodeImageLogo} from '../../Icons/CodeImageLogo';
 import * as styles from '../terminal.css';
 import {BaseTerminalProps} from '../TerminalHost';
