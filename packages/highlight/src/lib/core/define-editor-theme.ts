@@ -33,7 +33,6 @@ export const defineEditorTheme = (theme: ThemeOptions) => {
   const base = EditorView.theme({
     '&': {
       color: highlight.base,
-      background: highlight.background ?? '#000000bf',
     },
   });
 
