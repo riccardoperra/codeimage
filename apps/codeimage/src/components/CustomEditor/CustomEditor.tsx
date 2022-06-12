@@ -1,4 +1,4 @@
-import {EDITOR_BASE_SETUP, SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
@@ -20,6 +20,11 @@ import {observeFocusExtension} from './observe-focus-extension';
 export const CustomEditor = () => {
   let editorEl!: HTMLDivElement;
   const {themeArray: themes} = getThemeStore();
+
+  const [basicSetup] = createResource(() =>
+    import('./basic-setup').then(e => e.EDITOR_BASE_SETUP),
+  );
+
   fixCodeMirrorAriaRole(() => editorEl);
   const destroy$ = new ReplaySubject<void>(1);
   const languages = SUPPORTED_LANGUAGES;
@@ -122,7 +127,6 @@ export const CustomEditor = () => {
       // TODO: to fix type deep instantion
       setOptions({
         extensions: [
-          EDITOR_BASE_SETUP,
           baseTheme,
           supportsLineWrap,
           observeFocusExtension(focused => setFocused(focused)),
@@ -130,6 +134,7 @@ export const CustomEditor = () => {
           currentLanguage() || [],
           currentTheme(),
           editorOptions.showLineNumbers ? lineNumbers() : [],
+          basicSetup() || [],
         ],
       }),
     );
