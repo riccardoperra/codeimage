@@ -1,11 +1,9 @@
-import {
-  EDITOR_BASE_SETUP,
-  SUPPORTED_LANGUAGES,
-  SUPPORTED_THEMES,
-} from '@codeimage/config';
+import {EDITOR_BASE_SETUP, SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {EditorView, lineNumbers} from '@codemirror/view';
+import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {ReplaySubject} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
 import {
@@ -15,16 +13,15 @@ import {
   createResource,
   onCleanup,
 } from 'solid-js';
-import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {createCustomFontExtension} from './custom-font-extension';
 import {fixCodeMirrorAriaRole} from './fix-cm-aria-roles-lighthouse';
 import {observeFocusExtension} from './observe-focus-extension';
 
 export const CustomEditor = () => {
   let editorEl!: HTMLDivElement;
+  const {themeArray: themes} = getThemeStore();
   fixCodeMirrorAriaRole(() => editorEl);
   const destroy$ = new ReplaySubject<void>(1);
-  const themes = SUPPORTED_THEMES;
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
 
@@ -49,7 +46,9 @@ export const CustomEditor = () => {
   );
 
   const themeConfiguration = createMemo(
-    () => themes.find(theme => theme.id === editorOptions.themeId) ?? themes[0],
+    () =>
+      themes().find(theme => theme()?.id === editorOptions.themeId)?.() ??
+      themes()[0]()!,
   );
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];

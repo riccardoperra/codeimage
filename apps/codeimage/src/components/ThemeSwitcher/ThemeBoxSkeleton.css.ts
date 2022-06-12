@@ -56,8 +56,8 @@ export const skeleton = {
   rectangle2: style([
     withShimmerAnimation,
     {
-      height: '24px',
-      width: '80%',
+      height: '20px',
+      width: '100%',
       background: darkGrayScale.gray6,
       borderRadius: '8px',
       overflow: 'hidden',

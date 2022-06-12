@@ -1,5 +1,6 @@
-import {SUPPORTED_LANGUAGES, SUPPORTED_THEMES} from '@codeimage/config';
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {EditorView} from '@codemirror/view';
 import {createCodeMirror} from 'solid-codemirror';
 import {
@@ -28,8 +29,7 @@ export const CustomEditorPreview = (
 ) => {
   let editorEl!: HTMLDivElement;
   fixCodeMirrorAriaRole(() => editorEl);
-
-  const themes = SUPPORTED_THEMES;
+  const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
   const {options: editorOptions} = getRootEditorStore();
@@ -43,7 +43,9 @@ export const CustomEditorPreview = (
   );
 
   const themeConfiguration = createMemo(
-    () => themes.find(theme => theme.id === props.themeId) ?? themes[0],
+    () =>
+      themes().find(theme => theme()?.id === props.themeId)?.() ??
+      themes()[0]?.(),
   );
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];

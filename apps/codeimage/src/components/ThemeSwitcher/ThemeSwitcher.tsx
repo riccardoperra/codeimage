@@ -5,27 +5,15 @@ import {updateTheme} from '@codeimage/store/effects/onThemeChange';
 import {terminal$} from '@codeimage/store/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
-import {
-  Box,
-  FadeInOutWithScaleTransition,
-  FlexField,
-  Loading,
-  TextField,
-} from '@codeimage/ui';
-import {appEnvironment} from '@core/configuration';
+import {Box, FadeInOutTransition, FlexField, TextField} from '@codeimage/ui';
 import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {useModality} from '@core/hooks/isMobile';
 import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
-  Accessor,
-  createEffect,
-  createMemo,
   createSelector,
-  createSignal,
   For,
   ParentComponent,
-  Resource,
   Show,
   Suspense,
   SuspenseList,
@@ -90,7 +78,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
               <Suspense fallback={<ThemeBoxSkeleton />}>
                 <Show when={theme()}>
                   {theme => (
-                    <FadeInOutWithScaleTransition show={isMatched(theme.id)}>
+                    <FadeInOutTransition show={isMatched(theme.id)}>
                       <Box>
                         <ThemeBox
                           theme={theme}
@@ -142,7 +130,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                           </Show>
                         </Box>
                       </Box>
-                    </FadeInOutWithScaleTransition>
+                    </FadeInOutTransition>
                   )}
                 </Show>
               </Suspense>

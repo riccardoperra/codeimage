@@ -1,5 +1,5 @@
-import {SUPPORTED_THEMES} from '@codeimage/config';
-import {TerminalTabsTheme, CustomTheme} from '@codeimage/highlight';
+import {CustomTheme, TerminalTabsTheme} from '@codeimage/highlight';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {Accessor, createMemo} from 'solid-js';
 
 export interface TabThemeProps extends TerminalTabsTheme {
@@ -9,10 +9,12 @@ export interface TabThemeProps extends TerminalTabsTheme {
 export function createTabTheme(
   themeId: Accessor<string>,
 ): Accessor<TabThemeProps> {
-  const themes = SUPPORTED_THEMES;
+  const {themeArray: themes} = getThemeStore();
 
   const $theme = createMemo(() =>
-    themeId() ? themes.find(({id}) => id === themeId()) : null,
+    themeId()
+      ? themes().find(resource => resource()?.id === themeId())?.()
+      : null,
   );
 
   return () => {

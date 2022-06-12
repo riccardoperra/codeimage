@@ -1,13 +1,15 @@
 import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
 import {createMemo, createResource, createRoot, mapArray} from 'solid-js';
 
-function $getThemeRegistry() {
-  const themes = Object.values(THEME_REGISTRY).map(theme =>
-    createResource(theme),
+function $getThemeStore() {
+  const themes = Object.fromEntries(
+    Object.values(THEME_REGISTRY).map(
+      theme => [theme.id, createResource(theme.load)] as const,
+    ),
   );
 
   const themeArray = mapArray(
-    () => themes,
+    () => Object.values(themes),
     ([theme]) => theme,
   );
 
@@ -15,14 +17,21 @@ function $getThemeRegistry() {
     themeArray().some(theme => theme.loading),
   );
 
+  const getThemeResource = (themeId: string) => themes[themeId];
+
+  const getThemeDef = (id: string) =>
+    THEME_REGISTRY.find(theme => theme.id === id);
+
   return {
     themeResources: themes,
     themeArray,
     themeLoading,
-  };
+    getThemeDef,
+    getThemeResource,
+  } as const;
 }
 
-export const themeStore = createRoot($getThemeRegistry);
+export const themeStore = createRoot($getThemeStore);
 
 export function getThemeStore() {
   return themeStore;
