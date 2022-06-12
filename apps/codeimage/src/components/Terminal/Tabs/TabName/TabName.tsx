@@ -1,7 +1,7 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {Box, useFloating} from '@codeimage/ui';
 import {highlight as _highlight} from '@core/directives/highlight';
-import createResizeObserver from '@solid-primitives/resize-observer';
+import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {InlineCombobox} from '@ui/Combobox';
 import {
   createEffect,
@@ -87,9 +87,10 @@ export function TabName(props: TabNameProps): JSXElement {
 
   createEffect(() => {
     if (wcLoaded()) {
-      const observe = createResizeObserver({
-        onResize: resize => setWidth(resize.width),
-      });
+      createResizeObserver(
+        () => ref,
+        ({width}) => setWidth(width),
+      );
 
       if (!props.readonly && wcAlreadyLoaded) {
         // Cannot use queueScheduler
@@ -99,8 +100,6 @@ export function TabName(props: TabNameProps): JSXElement {
       if (!wcAlreadyLoaded) {
         wcAlreadyLoaded = true;
       }
-
-      observe(ref);
     }
   });
 

@@ -1,7 +1,7 @@
 import {LanguageIconDefinition} from '@codeimage/config';
 import {Loading, Text} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
-import createResizeObserver from '@solid-primitives/resize-observer';
+import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {createSortable} from '@thisbeyond/solid-dnd';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -40,10 +40,10 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
   const sortable = createSortable(props.id);
 
   onMount(() => {
-    const resize = createResizeObserver({
-      onResize: size => setWidth(size.width),
-    });
-    resize(ref);
+    createResizeObserver(
+      () => ref,
+      ({width}) => setWidth(width),
+    );
   });
 
   const hasEnoughSpace = createMemo(() => width() >= 32);

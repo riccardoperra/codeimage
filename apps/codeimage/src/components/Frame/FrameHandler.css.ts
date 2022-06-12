@@ -1,3 +1,4 @@
+import {themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
 
 export const [frameHandler, frameHandlerVars] = createTheme({
@@ -32,4 +33,19 @@ export const content = style({
   marginTop: '20px',
   marginBottom: '40px',
   position: 'relative',
+});
+
+export const squaredBackgroundOverlay = style({
+  backgroundImage: `
+    linear-gradient(45deg,  ${themeVars.dynamicColors.emptySquareBackgroundColor} 25%,transparent 0),
+    linear-gradient(-45deg, ${themeVars.dynamicColors.emptySquareBackgroundColor} 25%,transparent 0),
+    linear-gradient(45deg,transparent 75%, ${themeVars.dynamicColors.emptySquareBackgroundColor} 0),
+    linear-gradient(-45deg,transparent 75%, ${themeVars.dynamicColors.emptySquareBackgroundColor} 0)
+  `,
+  backgroundSize: '20px 20px',
+  backgroundPosition: '0 0,0 10px, 10px -10px, -10px 0',
+  zIndex: 1,
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
 });

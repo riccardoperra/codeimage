@@ -16,17 +16,17 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
-    "@codemirror/language": "^0.20.2",
-    "@codemirror/state": "^0.20.0",
-    "@codemirror/theme-one-dark": "^0.20.0",
-    "@codemirror/view": "^0.20.6",
-    "@lezer/highlight": "^0.16.0"
+    "@codemirror/language": "^6.0.0",
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/theme-one-dark": "^6.0.0",
+    "@codemirror/view": "^6.0.0",
+    "@lezer/highlight": "^1.0.0"
   },
   "peerDependencies": {
-    "@codemirror/language": "^0.20.2",
-    "@codemirror/state": "^0.20.0",
-    "@codemirror/view": "^0.20.6",
-    "@lezer/highlight": "^0.16.0"
+    "@codemirror/language": "^6.0.0",
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/view": "^6.0.0",
+    "@lezer/highlight": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.42",
@@ -34,7 +34,7 @@
     "typescript": "^4.7.3",
     "rollup": "^2.75.6",
     "rollup-plugin-dts": "^4.2.2",
-    "vite": "^2.9.9",
+    "vite": "^2.9.12",
     "vite-plugin-dts": "^1.2.0",
     "@rollup/plugin-typescript": "^8.3.3"
   },

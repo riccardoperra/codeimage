@@ -28,7 +28,6 @@ export const [appEnvironment] = createConfiguration({
         '\n',
       // TODO: should be auto
       languageId: 'typescript',
-      theme: '',
       font: SUPPORTED_FONTS_DICTIONARY['jetbrains-mono'],
     },
   } as const,
