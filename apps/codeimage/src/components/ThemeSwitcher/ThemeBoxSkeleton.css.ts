@@ -26,6 +26,8 @@ export const content = style({
 });
 
 export const withShimmerAnimation = style({
+  position: 'relative',
+
   ':before': {
     position: 'absolute',
     content: '',

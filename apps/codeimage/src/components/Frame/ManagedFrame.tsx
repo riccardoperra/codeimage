@@ -2,12 +2,12 @@ import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {frame$} from '@codeimage/store/frame';
 import {terminal$} from '@codeimage/store/terminal';
-import {LoadingOverlay} from '@codeimage/ui';
 import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {Show} from 'solid-js';
 import {CustomEditor} from '../CustomEditor/CustomEditor';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import {Frame} from './Frame';
+import {FrameSkeleton} from './FrameSkeleton';
 
 export function ManagedFrame() {
   const frame = fromObservableObject(frame$);
@@ -16,14 +16,7 @@ export function ManagedFrame() {
   const {ready} = getRootEditorStore();
 
   return (
-    <Show
-      when={ready()}
-      fallback={
-        <div style={{height: '400px', width: '600px'}}>
-          <LoadingOverlay overlay={true} size={'lg'} />
-        </div>
-      }
-    >
+    <Show when={ready()} fallback={<FrameSkeleton />}>
       <Frame
         radius={0}
         padding={frame.padding}

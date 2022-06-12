@@ -10,6 +10,7 @@ import {createEffect, createSignal, on, Show, Suspense} from 'solid-js';
 import {BottomBar} from './components/BottomBar/BottomBar';
 import {Footer} from './components/Footer/Footer';
 import {FrameHandler} from './components/Frame/FrameHandler';
+import {FrameSkeleton} from './components/Frame/FrameSkeleton';
 import {ManagedFrame} from './components/Frame/ManagedFrame';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from './components/PropertyEditor/EditorSidebar';
@@ -59,13 +60,7 @@ export function App() {
         </Show>
 
         <FrameHandler ref={setFrameRef} onScaleChange={setScale}>
-          <Suspense
-            fallback={
-              <div style={{height: '400px', width: '600px', background: 'red'}}>
-                <LoadingOverlay overlay={true} size={'lg'} />
-              </div>
-            }
-          >
+          <Suspense fallback={<FrameSkeleton />}>
             <ManagedFrame />
           </Suspense>
         </FrameHandler>
