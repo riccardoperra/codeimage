@@ -18,7 +18,7 @@ export interface TerminalWindowTabListProps {
 export function TerminalWindowTabList(
   props: VoidProps<TerminalWindowTabListProps>,
 ) {
-  let wrapperRef: HTMLDivElement;
+  let wrapperRef!: HTMLDivElement;
 
   const {
     editors,
@@ -58,7 +58,7 @@ export function TerminalWindowTabList(
       class={styles.wrapper({accent: props.accent})}
       data-accent-visible={props.accent}
     >
-      <div class={styles.tabListWrapper} ref={wrapperRef!}>
+      <div class={styles.tabListWrapper} ref={wrapperRef}>
         {/* @ts-expect-error: TODO: Should update library types */}
         <DragDropProvider
           onDragEnd={handleDragEnd}

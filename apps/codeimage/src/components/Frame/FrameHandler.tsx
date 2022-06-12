@@ -53,6 +53,7 @@ export function FrameHandler(
   );
 
   useHotkey(document.body, {
+    // eslint-disable-next-line solid/reactivity
     'Control+C': () => {
       if (filterHotKey()) return;
       const el = ref();

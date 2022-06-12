@@ -96,7 +96,7 @@ export default function CustomEditor() {
   const themeConfiguration = createMemo(
     () =>
       themes().find(theme => theme()?.id === editorOptions.themeId)?.() ??
-      themes()[0]()!,
+      themes()[0](),
   );
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];

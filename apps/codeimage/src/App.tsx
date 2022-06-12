@@ -18,7 +18,6 @@ import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {ThemeBoxSkeleton} from './components/ThemeSwitcher/ThemeBoxSkeleton';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {uiStore} from './state/ui';

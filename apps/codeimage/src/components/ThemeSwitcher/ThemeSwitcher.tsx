@@ -5,13 +5,7 @@ import {updateTheme} from '@codeimage/store/effects/onThemeChange';
 import {terminal$} from '@codeimage/store/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
-import {
-  Box,
-  FadeInOutTransition,
-  FadeInOutWithScaleTransition,
-  FlexField,
-  TextField,
-} from '@codeimage/ui';
+import {Box, FadeInOutTransition, FlexField, TextField} from '@codeimage/ui';
 import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {useModality} from '@core/hooks/isMobile';
 import {dispatch} from '@ngneat/effects';
@@ -88,10 +82,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
               <Suspense fallback={<ThemeBoxSkeleton />}>
                 <Show when={theme()}>
                   {theme => (
-                    <FadeInOutWithScaleTransition
-                      as={Box}
-                      show={isMatched(theme.id)}
-                    >
+                    <FadeInOutTransition show={isMatched(theme.id)}>
                       <ThemeBox
                         theme={theme}
                         selected={isSelected(theme.id)}
@@ -141,7 +132,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                           <CheckCircle size={'md'} />
                         </Show>
                       </Box>
-                    </FadeInOutWithScaleTransition>
+                    </FadeInOutTransition>
                   )}
                 </Show>
               </Suspense>

@@ -1,7 +1,7 @@
-import {backgroundColorVar, themeVars} from '@codeimage/ui';
+import {backgroundColorVar} from '@codeimage/ui';
 import {keyframes, style} from '@vanilla-extract/css';
 import {darkGrayScale} from '../../theme/dark-theme.css';
-import {themeBox, themeBoxContent} from './ThemeSwitcher.css';
+import {themeBox} from './ThemeSwitcher.css';
 
 export const wrapper = style([
   themeBox,

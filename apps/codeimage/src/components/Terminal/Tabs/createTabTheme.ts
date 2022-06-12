@@ -17,6 +17,7 @@ export function createTabTheme(
       : null,
   );
 
+  // eslint-disable-next-line solid/reactivity
   return () => {
     const theme = $theme() as CustomTheme | null;
     if (!theme)

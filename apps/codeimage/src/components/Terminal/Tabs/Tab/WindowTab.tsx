@@ -36,6 +36,7 @@ export interface WindowTabProps {
 export function WindowTab(props: VoidProps<WindowTabProps>) {
   let ref!: HTMLDivElement;
   const [width, setWidth] = createSignal<number>(0);
+  // eslint-disable-next-line solid/reactivity
   const sortable = createSortable(props.id);
 
   onMount(() => {

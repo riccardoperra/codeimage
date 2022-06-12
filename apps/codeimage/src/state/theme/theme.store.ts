@@ -1,4 +1,3 @@
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
 import {
   createMemo,
@@ -13,7 +12,11 @@ function $getThemeStore() {
 
   const themes = Object.fromEntries(
     Object.values(THEME_REGISTRY).map(
-      theme => [theme.id, createResource(loaded, theme.load)] as const,
+      theme =>
+        [
+          theme.id,
+          createResource(loaded, theme.load, {deferStream: false}),
+        ] as const,
     ),
   );
 

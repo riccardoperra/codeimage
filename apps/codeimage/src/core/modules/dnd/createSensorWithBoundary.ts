@@ -1,6 +1,6 @@
-import {DndRect} from './types';
 import {useDragDropContext} from '@thisbeyond/solid-dnd';
 import {Accessor, onCleanup, onMount} from 'solid-js';
+import {DndRect} from './types';
 
 /**
  * @private
@@ -25,6 +25,7 @@ export const createSensorWithBoundary = (
       dragEnd,
       anySensorActive,
     },
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   ] = useDragDropContext()!;
   const activationDelay = 250; // milliseconds
   const activationDistance = 10; // pixels
@@ -70,6 +71,7 @@ export const createSensorWithBoundary = (
   const onActivate = (): void => {
     if (!anySensorActive()) {
       sensorStart(id);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       dragStart(activationDraggableId!);
 
       clearSelection();

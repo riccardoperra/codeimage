@@ -139,7 +139,7 @@ export function TabName(props: TabNameProps): JSXElement {
               return (
                 <cmg-combobox-option
                   onClick={() => onChange(getFormattedValue(value))}
-                  className={styles.tabHintDropdownOption}
+                  class={styles.tabHintDropdownOption}
                   prop:choiceValue={value}
                 >
                   <Box class={styles.tabHintDropdownItemContent}>
