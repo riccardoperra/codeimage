@@ -24,9 +24,9 @@ interface CustomEditorPreviewProps {
 
 // TODO: create a `runMode` plugin like cm5
 
-export const CustomEditorPreview = (
+export default function CustomEditorPreview(
   props: VoidProps<CustomEditorPreviewProps>,
-) => {
+) {
   let editorEl!: HTMLDivElement;
   fixCodeMirrorAriaRole(() => editorEl);
   const {themeArray: themes} = getThemeStore();
@@ -103,4 +103,4 @@ export const CustomEditorPreview = (
   onCleanup(() => view()?.destroy());
 
   return <div ref={ref => (editorEl = ref)} />;
-};
+}

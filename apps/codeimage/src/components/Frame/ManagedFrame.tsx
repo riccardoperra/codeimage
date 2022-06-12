@@ -3,11 +3,17 @@ import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {frame$} from '@codeimage/store/frame';
 import {terminal$} from '@codeimage/store/terminal';
 import {fromObservableObject} from '@core/hooks/from-observable-object';
-import {Show} from 'solid-js';
-import {CustomEditor} from '../CustomEditor/CustomEditor';
+import {lazy, Show} from 'solid-js';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import {Frame} from './Frame';
 import {FrameSkeleton} from './FrameSkeleton';
+
+const CustomEditor = lazy(() => {
+  return Promise.all([
+    import('solid-codemirror'),
+    import('../CustomEditor/CustomEditor'),
+  ]).then(([, editor]) => editor);
+});
 
 export function ManagedFrame() {
   const frame = fromObservableObject(frame$);

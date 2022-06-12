@@ -13,13 +13,13 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createSelector,
   For,
+  lazy,
   ParentComponent,
   Show,
   Suspense,
   SuspenseList,
 } from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
-import {CustomEditorPreview} from '../CustomEditor/CustomEditorPreview';
 import {CheckCircle} from '../Icons/CheckCircle';
 import {EmptyCircle} from '../Icons/EmptyCircle';
 import {TerminalHost} from '../Terminal/TerminalHost';
@@ -27,6 +27,13 @@ import {ThemeBox} from './ThemeBox';
 import {ThemeBoxSkeleton} from './ThemeBoxSkeleton';
 import * as styles from './ThemeSwitcher.css';
 import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
+
+const CustomEditorPreview = lazy(() => {
+  return Promise.all([
+    import('solid-codemirror'),
+    import('../CustomEditor/CustomEditorPreview'),
+  ]).then(([, editor]) => editor);
+});
 
 export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const terminal = fromObservableObject(terminal$);

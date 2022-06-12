@@ -17,7 +17,7 @@ import {createCustomFontExtension} from './custom-font-extension';
 import {fixCodeMirrorAriaRole} from './fix-cm-aria-roles-lighthouse';
 import {observeFocusExtension} from './observe-focus-extension';
 
-export const CustomEditor = () => {
+export default function CustomEditor() {
   let editorEl!: HTMLDivElement;
   const {themeArray: themes} = getThemeStore();
 
@@ -151,4 +151,4 @@ export const CustomEditor = () => {
       <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
     </code>
   );
-};
+}
