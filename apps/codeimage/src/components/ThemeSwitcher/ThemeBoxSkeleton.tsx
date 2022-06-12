@@ -1,16 +1,18 @@
+import {SkeletonLine} from '@ui/Skeleton/Skeleton';
+import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
 import * as styles from './ThemeBoxSkeleton.css';
 
 export function ThemeBoxSkeleton() {
   return (
     <div class={styles.wrapper}>
       <div class={styles.content}>
-        <div class={styles.skeleton.rectangle} />
-        <div class={styles.skeleton.divider2} />
-        <div class={styles.skeleton.line1} />
-        <div class={styles.skeleton.divider} />
-        <div class={styles.skeleton.line1} />
-        <div class={styles.skeleton.divider} />
-        <div class={styles.skeleton.line2} />
+        <SkeletonLine width={'100%'} height={'60px'} />
+        <SkeletonDivider height={'20px'} />
+        <SkeletonLine width={'90%'} height={'6px'} />
+        <SkeletonDivider height={'12px'} />
+        <SkeletonLine width={'90%'} height={'6px'} />
+        <SkeletonDivider height={'12px'} />
+        <SkeletonLine width={'80%'} height={'6px'} />
       </div>
     </div>
   );

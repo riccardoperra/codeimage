@@ -1,3 +1,5 @@
+import {SkeletonLine} from '@ui/Skeleton/Skeleton';
+import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
 import * as styles from './FrameSkeleton.css';
 
 export function FrameSkeleton() {
@@ -5,25 +7,22 @@ export function FrameSkeleton() {
     <div class={styles.wrapper}>
       <div class={styles.terminal.base}>
         <div class={styles.terminal.header} />
-
         <div class={styles.terminal.content}>
-          <div class={styles.skeleton.line1} />
-          <div class={styles.skeleton.divider} />
-          <div class={styles.skeleton.line1} />
-          <div class={styles.skeleton.divider} />
-          <div class={styles.skeleton.line2} />
-          <div class={styles.skeleton.divider2} />
-          <div class={styles.skeleton.divider2} />
-          <div class={styles.skeleton.line2} />
-          <div class={styles.skeleton.divider} />
-          <div class={styles.skeleton.line1} />
-          <div class={styles.skeleton.divider2} />
-          <div class={styles.skeleton.divider2} />
-          <div class={styles.skeleton.line3} />
-          <div class={styles.skeleton.divider} />
-          <div class={styles.skeleton.line4} />
-          <div class={styles.skeleton.divider} />
-          <div class={styles.skeleton.line5} />
+          <SkeletonLine width={'95%'} height={'16px'} />
+          <SkeletonDivider height={'12px'} />
+          <SkeletonLine width={'95%'} height={'16px'} />
+          <SkeletonDivider height={'13px'} />
+          <SkeletonLine width={'80%'} height={'16px'} />
+          <SkeletonDivider height={'40px'} />
+          <SkeletonLine width={'80%'} height={'16px'} />
+          <SkeletonDivider height={'12px'} />
+          <SkeletonLine width={'95%'} height={'16px'} />
+          <SkeletonDivider height={'40px'} />
+          <SkeletonLine width={'75%'} height={'16px'} />
+          <SkeletonDivider height={'12px'} />
+          <SkeletonLine width={'55%'} height={'16px'} />
+          <SkeletonDivider height={'12px'} />
+          <SkeletonLine width={'50%'} height={'16px'} />
         </div>
       </div>
     </div>
