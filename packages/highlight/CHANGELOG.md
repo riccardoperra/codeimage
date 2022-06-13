@@ -1,5 +1,15 @@
 # @codeimage/highlight
 
+## 0.9.0
+
+### Minor Changes
+
+- [#281](https://github.com/riccardoperra/codeimage/pull/281) [`18c1e22`](https://github.com/riccardoperra/codeimage/commit/18c1e224c4b717cad54b7c36f87d9501501197ce) Thanks [@riccardoperra](https://github.com/riccardoperra)! - perf: bundle/performance improvements, skeleton, split chunks and lazy loading
+
+### Patch Changes
+
+- [#280](https://github.com/riccardoperra/codeimage/pull/280) [`6fa601c`](https://github.com/riccardoperra/codeimage/commit/6fa601c553f564fe94c54ad3469b1634d6b333b0) Thanks [@riccardoperra](https://github.com/riccardoperra)! - perf: add @codeimage/highlight chunk split
+
 ## 0.8.0
 
 ### Minor Changes
