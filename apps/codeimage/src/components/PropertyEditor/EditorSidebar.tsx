@@ -12,13 +12,19 @@ export const EditorSidebar = () => {
       <div class={styles.sidebarLogo}>
         <CodeImageLogo width={'70%'} />
       </div>
-      <FrameStyleForm />
+      <div>
+        <FrameStyleForm />
+      </div>
       <PanelDivider />
 
-      <WindowStyleForm />
+      <div>
+        <WindowStyleForm />
+      </div>
       <PanelDivider />
 
-      <EditorStyleForm />
+      <div>
+        <EditorStyleForm />
+      </div>
     </EditorForm>
   );
 };

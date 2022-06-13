@@ -1,5 +1,5 @@
 import {themeColors, themeVars} from '@codeimage/ui';
-import {createTheme} from '@vanilla-extract/css';
+import {createGlobalTheme} from '@vanilla-extract/css';
 
 export const darkGrayScale = {
   gray1: '#111111',
@@ -17,7 +17,7 @@ export const darkGrayScale = {
   white: '#ffffff',
 } as const;
 
-export const darkThemeCss = createTheme(themeColors, {
+createGlobalTheme('[data-codeimage-theme="dark"]', themeColors, {
   primary: themeVars.backgroundColor.blue['400'],
   background: darkGrayScale.gray2,
   baseText: themeVars.textColor.gray['800'],

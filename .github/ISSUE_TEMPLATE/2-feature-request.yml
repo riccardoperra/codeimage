@@ -12,7 +12,7 @@ body:
         - codeimage
         - config
         - locale
-        - theme
+        - highlight
         - ui
         - Don't known / other
       multiple: true

@@ -1,10 +1,9 @@
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
-import {
-  appEnvironment,
-  SUPPORTED_THEMES_DICTIONARY,
-} from '../core/configuration';
+import {createEffect, createRoot, on} from 'solid-js';
+import {appEnvironment} from '../core/configuration';
 import shallow from '../core/helpers/shallow';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
 
@@ -19,8 +18,8 @@ export interface FrameStateSlice {
 }
 
 const initialState: FrameStateSlice = {
-  background:
-    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.previewBackground,
+  // lazy initialization
+  background: null,
   padding: 128,
   radius: 24,
   visible: true,
@@ -46,7 +45,25 @@ export const {
 
 export const updateFrameStore = store.update.bind(store);
 
-persistState(store, {key: '@store/frame', storage: localStorageStrategy});
+createRoot(() => {
+  const registry = getThemeStore();
+  const [resource] = registry.getThemeResource('vsCodeDarkTheme');
+  createEffect(
+    on(resource, resource => {
+      if (resource) {
+        if (store.state.background === null) {
+          store.update(
+            setProp('background', resource.properties.previewBackground),
+          );
+        }
+        persistState(store, {
+          key: '@store/frame',
+          storage: localStorageStrategy,
+        });
+      }
+    }),
+  );
+});
 
 export function toggleVisibility(): void {
   store.update(setProp('visible', visible => !visible));

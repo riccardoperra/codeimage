@@ -1,10 +1,11 @@
 import {uiStore} from '@codeimage/store/ui';
-import {PropsWithChildren} from 'solid-js';
-import {darkThemeCss} from '../../theme/dark-theme.css';
-import {lightThemeCss} from '../../theme/light-theme.css';
+import {ParentProps} from 'solid-js';
 
-export function InvertedThemeWrapper(props: PropsWithChildren) {
+export function InvertedThemeWrapper(props: ParentProps) {
   const mode = uiStore.themeMode;
-  const theme = () => (mode === 'light' ? darkThemeCss : lightThemeCss);
-  return <div class={theme()}>{props.children}</div>;
+  return (
+    <div data-codeimage-theme={mode === 'light' ? 'dark' : 'light'}>
+      {props.children}
+    </div>
+  );
 }

@@ -1,6 +1,5 @@
-import {SUPPORTED_THEMES} from '@codeimage/config';
-import {TerminalTabsTheme} from '@codeimage/theme';
-import {CustomTheme} from '@codeimage/theme/src/lib/core';
+import {CustomTheme, TerminalTabsTheme} from '@codeimage/highlight';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {Accessor, createMemo} from 'solid-js';
 
 export interface TabThemeProps extends TerminalTabsTheme {
@@ -10,12 +9,15 @@ export interface TabThemeProps extends TerminalTabsTheme {
 export function createTabTheme(
   themeId: Accessor<string>,
 ): Accessor<TabThemeProps> {
-  const themes = SUPPORTED_THEMES;
+  const {themeArray: themes} = getThemeStore();
 
   const $theme = createMemo(() =>
-    themeId() ? themes.find(({id}) => id === themeId()) : null,
+    themeId()
+      ? themes().find(resource => resource()?.id === themeId())?.()
+      : null,
   );
 
+  // eslint-disable-next-line solid/reactivity
   return () => {
     const theme = $theme() as CustomTheme | null;
     if (!theme)

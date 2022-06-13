@@ -1,8 +1,6 @@
-import {CustomTheme} from '@codeimage/theme';
-import {useContext} from 'solid-js';
+import {type CustomTheme} from '@codeimage/highlight';
 import {AppStaticConfiguration} from '../types/configuration';
 import {LanguageDefinition} from '../types/language-def';
-import {StaticConfigurationContext} from './ConfigurationProvider';
 
 export function createConfiguration<
   V extends string,
@@ -15,20 +13,10 @@ export function createConfiguration<
     Locales,
     Languages
   > = AppStaticConfiguration<V, Themes, Locales, Languages>,
->(configuration: Configuration): [Configuration, () => Configuration] {
+>(configuration: Configuration): [Configuration] {
   if (!configuration.version) {
     throw new Error('No version specified');
   }
 
-  const useConfiguration = () => {
-    const context = useContext(StaticConfigurationContext);
-
-    if (!context) {
-      throw new Error('Static configuration missing');
-    }
-
-    return context as unknown as Configuration;
-  };
-
-  return [configuration as Configuration, useConfiguration];
+  return [configuration as Configuration];
 }

@@ -1,4 +1,4 @@
-import {CustomTheme} from '@codeimage/theme';
+import {CustomTheme} from '@codeimage/highlight';
 import {backgroundColorVar, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {ParentComponent} from 'solid-js';

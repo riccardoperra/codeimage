@@ -1,8 +1,9 @@
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {themeVars} from '@codeimage/ui';
 import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
-import {SUPPORTED_THEMES_DICTIONARY} from '../core/configuration';
+import {createEffect, createRoot, createSignal, on} from 'solid-js';
 import {AVAILABLE_TERMINAL_THEMES} from '../core/configuration/terminal-themes';
 import shallow from '../core/helpers/shallow';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
@@ -15,7 +16,7 @@ export interface TerminalState {
   readonly shadow: string;
   readonly background: string;
   readonly textColor: string;
-  // TODO: this state should be removed. This is a slice of selected theme!!
+  // TODO: this state should be removed. This is a slice of selected highlight!!
   readonly darkMode: boolean;
   readonly showWatermark: boolean;
   readonly showGlassReflection: boolean;
@@ -23,18 +24,20 @@ export interface TerminalState {
   readonly alternativeTheme: boolean;
 }
 
+const terminalName =
+  AVAILABLE_TERMINAL_THEMES.entries[AVAILABLE_TERMINAL_THEMES.keys[0]].name;
+
 const initialState: TerminalState = {
   showHeader: true,
-  type: AVAILABLE_TERMINAL_THEMES.entries[AVAILABLE_TERMINAL_THEMES.keys[0]]
-    .name,
+  type: terminalName,
   tabName: 'index.ts',
   shadow: themeVars.boxShadow.lg,
   accentVisible: true,
-  background:
-    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.terminal.main,
-  textColor:
-    SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.terminal.text,
-  darkMode: SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme.properties.darkMode,
+  // lazy initialization
+  background: '',
+  // lazy initialization
+  textColor: '',
+  darkMode: true,
   showWatermark: true,
   showGlassReflection: false,
   opacity: 100,
@@ -48,7 +51,31 @@ const store = createStore(
 
 export const updateTerminalStore = store.update.bind(store);
 
-persistState(store, {storage: localStorageStrategy, key: '@store/terminal'});
+export const [readyTerminalState, setReadyTerminalState] = createSignal(false);
+
+createRoot(() => {
+  const registry = getThemeStore();
+  const [resource] = registry.getThemeResource('vsCodeDarkTheme');
+  createEffect(
+    on(resource, resource => {
+      if (resource) {
+        store.update(
+          !store.state.background
+            ? setProp('background', resource.properties.terminal.main)
+            : s => s,
+          !store.state.textColor
+            ? setProp('textColor', resource.properties.terminal.text)
+            : s => s,
+        );
+        setReadyTerminalState(true);
+        persistState(store, {
+          storage: localStorageStrategy,
+          key: '@store/terminal',
+        });
+      }
+    }),
+  );
+});
 
 export const {
   setShadow,

@@ -1,10 +1,17 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {Box, useFloating} from '@codeimage/ui';
-import createResizeObserver from '@solid-primitives/resize-observer';
-import {createMemo, createSignal, For, JSXElement, onMount} from 'solid-js';
-import {highlight as _highlight} from '../../../../core/directives/highlight';
-import '../../../../ui/Combobox/InlineCombobox';
-import {InlineCombobox} from '../../../../ui/Combobox/InlineCombobox';
+import {highlight as _highlight} from '@core/directives/highlight';
+import {createResizeObserver} from '@solid-primitives/resize-observer';
+import {InlineCombobox} from '@ui/Combobox';
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  createSignal,
+  For,
+  JSXElement,
+  Show,
+} from 'solid-js';
 import {TabIcon} from '../TabIcon/TabIcon';
 import * as styles from './TabName.css';
 
@@ -16,7 +23,15 @@ interface TabNameProps {
 
 const highlight = _highlight;
 
+let wcAlreadyLoaded = false;
+
 export function TabName(props: TabNameProps): JSXElement {
+  const [wcLoaded] = createResource(() =>
+    !wcAlreadyLoaded
+      ? import('@ui/Combobox').then(() => true).catch(() => false)
+      : true,
+  );
+
   let ref: InlineCombobox;
   const hasDot = /^[a-zA-Z0-9$_-]{2,}\./;
   const [width, setWidth] = createSignal(0);
@@ -70,67 +85,74 @@ export function TabName(props: TabNameProps): JSXElement {
     runAutoUpdate: true,
   });
 
-  onMount(() => {
-    const observe = createResizeObserver({
-      onResize: resize => setWidth(resize.width),
-    });
+  createEffect(() => {
+    if (wcLoaded()) {
+      createResizeObserver(
+        () => ref,
+        ({width}) => setWidth(width),
+      );
 
-    if (!props.readonly) {
-      // Cannot use queueScheduler
-      requestAnimationFrame(() => ref?.focus());
+      if (!props.readonly && wcAlreadyLoaded) {
+        // Cannot use queueScheduler
+        requestAnimationFrame(() => ref?.focus());
+      }
+
+      if (!wcAlreadyLoaded) {
+        wcAlreadyLoaded = true;
+      }
     }
-
-    observe(ref);
   });
 
   return (
-    <cmg-inline-combobox
-      ref={el => {
-        ref = el;
-        floating.setReference(el);
-      }}
-      name="tabName"
-      value={props.value}
-      placeholder={'Untitled'}
-      onInput={event => onChange((event.target as HTMLInputElement).value)}
-      on:selectedItemChange={event =>
-        setTimeout(() => onChange(event.detail.value))
-      }
-      on:inputTextChange={event => onChange(event.detail.value)}
-      prop:valueMapper={getFormattedValue}
-      prop:_noTypeAhead={true}
-      prop:autocomplete={'none'}
-    >
-      <Box
-        ref={floating.setFloating}
-        class={styles.tabHint}
-        display={showHint() ? 'block' : 'none'}
-        style={{
-          position: floating.strategy,
-          top: `${floating.y ?? 0}px`,
-          left: `${(floating.x ?? 0) + width() - 20}px`,
+    <Show when={wcLoaded()}>
+      <cmg-inline-combobox
+        ref={el => {
+          ref = el;
+          floating.setReference(el);
         }}
+        name="tabName"
+        value={props.value}
+        placeholder={'Untitled'}
+        onInput={event => onChange((event.target as HTMLInputElement).value)}
+        on:selectedItemChange={event =>
+          setTimeout(() => onChange(event.detail.value))
+        }
+        on:inputTextChange={event => onChange(event.detail.value)}
+        prop:valueMapper={getFormattedValue}
+        prop:_noTypeAhead={true}
+        prop:autocomplete={'none'}
       >
-        <For each={matchedIcons()}>
-          {icon => {
-            const value = icon.extension.replace('.', '');
-            return (
-              <cmg-combobox-option
-                onClick={() => onChange(getFormattedValue(value))}
-                class={styles.tabHintDropdownOption}
-                prop:choiceValue={value}
-              >
-                <Box class={styles.tabHintDropdownItemContent}>
-                  <TabIcon delay={0} content={icon.content} />
-                  <div use:highlight={extension()} class={styles.tabText}>
-                    {icon.extension}
-                  </div>
-                </Box>
-              </cmg-combobox-option>
-            );
+        <Box
+          ref={floating.setFloating}
+          class={styles.tabHint}
+          display={showHint() ? 'block' : 'none'}
+          style={{
+            position: floating.strategy,
+            top: `${floating.y ?? 0}px`,
+            left: `${(floating.x ?? 0) + width() - 20}px`,
           }}
-        </For>
-      </Box>
-    </cmg-inline-combobox>
+        >
+          <For each={matchedIcons()}>
+            {icon => {
+              const value = icon.extension.replace('.', '');
+              return (
+                <cmg-combobox-option
+                  onClick={() => onChange(getFormattedValue(value))}
+                  class={styles.tabHintDropdownOption}
+                  prop:choiceValue={value}
+                >
+                  <Box class={styles.tabHintDropdownItemContent}>
+                    <TabIcon delay={0} content={icon.content} />
+                    <div use:highlight={extension()} class={styles.tabText}>
+                      {icon.extension}
+                    </div>
+                  </Box>
+                </cmg-combobox-option>
+              );
+            }}
+          </For>
+        </Box>
+      </cmg-inline-combobox>
+    </Show>
   );
 }

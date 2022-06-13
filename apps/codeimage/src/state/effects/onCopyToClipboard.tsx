@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, HStack, useSnackbarStore} from '@codeimage/ui';
 import {createAction, createEffect, ofType, props} from '@ngneat/effects';
+import {InvertedThemeWrapper} from '@ui/InvertedThemeWrapper/InvertedThemeWrapper';
 import {catchError, delay, EMPTY, exhaustMap, from, switchMap, tap} from 'rxjs';
 import {CheckCircle} from '../../components/Icons/CheckCircle';
 import {
@@ -10,7 +11,6 @@ import {
   ExportOptions,
 } from '../../hooks/use-export-image';
 import {AppLocaleEntries} from '../../i18n';
-import {InvertedThemeWrapper} from '../../ui/InvertedThemeWrapper/InvertedThemeWrapper';
 
 interface CopyToClipboardEvent {
   ref: HTMLElement;

@@ -1,24 +1,14 @@
-import {
-  createConfiguration,
-  SUPPORTED_LOCALES,
-  SUPPORTED_THEMES,
-} from '@codeimage/config';
+import {createConfiguration, SUPPORTED_LOCALES} from '@codeimage/config';
 import {version} from '../../package.json';
 import {
   SUPPORTED_FONTS,
   SUPPORTED_FONTS_DICTIONARY,
 } from './configuration/font';
-import {mapToDictionary} from './helpers/mapToDictionary';
-
-export const SUPPORTED_THEMES_DICTIONARY = mapToDictionary(
-  SUPPORTED_THEMES,
-  'id',
-);
 
 export const [appEnvironment] = createConfiguration({
   version,
   locales: SUPPORTED_LOCALES,
-  themes: SUPPORTED_THEMES,
+  themes: [],
   languages: [],
   editorPadding: [16, 32, 64, 128],
   fonts: SUPPORTED_FONTS,
@@ -38,7 +28,6 @@ export const [appEnvironment] = createConfiguration({
         '\n',
       // TODO: should be auto
       languageId: 'typescript',
-      theme: SUPPORTED_THEMES_DICTIONARY.vsCodeDarkTheme,
       font: SUPPORTED_FONTS_DICTIONARY['jetbrains-mono'],
     },
   } as const,
