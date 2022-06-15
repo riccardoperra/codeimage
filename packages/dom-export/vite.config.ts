@@ -1,0 +1,25 @@
+import {defineConfig} from 'vite';
+import path from 'path';
+import dts from 'vite-plugin-dts';
+
+module.exports = defineConfig({
+  build: {
+    lib: {
+      entry: path.resolve(__dirname, 'src/public-api.ts'),
+      name: '@codeimage/dom-export',
+      fileName: 'dom-export',
+      formats: ['es'],
+    },
+    cssCodeSplit: true,
+    rollupOptions: {
+      external: [
+        '@codemirror/state',
+        '@codemirror/language',
+        '@codemirror/view',
+        '@lezer/highlight',
+      ],
+      output: {},
+    },
+  },
+  plugins: [dts()],
+});

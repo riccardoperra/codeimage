@@ -1,23 +1,22 @@
-import {focusedEditor$} from '@codeimage/store/editor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {onCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {Box} from '@codeimage/ui';
+import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
+import {createRef} from '@core/helpers/create-ref';
+import {getScaleByRatio} from '@core/helpers/getScale';
+import {useModality} from '@core/hooks/isMobile';
 import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
+import {type WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {
   createEffect,
   createSignal,
-  from,
   JSXElement,
   on,
-  PropsWithChildren,
+  ParentProps,
 } from 'solid-js';
-import {exportExclude as _exportExclude} from '../../core/directives/exportExclude';
-import {createRef} from '../../core/helpers/create-ref';
-import {getScaleByRatio} from '../../core/helpers/getScale';
-import {useModality} from '../../core/hooks/isMobile';
 import {useHotkey} from '../../hooks/use-hotkey';
-import * as styles from './Frame.css';
+import * as styles from './FrameHandler.css';
 
 const exportExclude = _exportExclude;
 
@@ -26,26 +25,25 @@ type FrameHandlerProps = WithRef<'div'> & {
 };
 
 export function FrameHandler(
-  props: PropsWithChildren<FrameHandlerProps>,
+  props: ParentProps<FrameHandlerProps>,
 ): JSXElement {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ref, setInternalRef] = createSignal<HTMLDivElement>();
   const [handlerRef, setHandlerRef] = createSignal<HTMLDivElement>();
   const [canvasScale, setCanvasScale] = createSignal(1);
+  const editorStore = getRootEditorStore();
 
   const modality = useModality();
 
-  const focusedEditor = from(focusedEditor$);
-
   const filterHotKey = () =>
-    focusedEditor() || document.activeElement?.nodeName === 'INPUT';
+    editorStore.options.focused || document.activeElement?.nodeName === 'INPUT';
 
   const ratio = 0.1;
 
   createEffect(
     on([handlerRef], ([frame]) => {
       if (modality === 'mobile') {
-        setTimeout(() => {
+        requestAnimationFrame(() => {
           const scale = getScaleByRatio(frame?.parentElement, frame, 1 + ratio);
           props.onScaleChange(scale);
           setCanvasScale(scale);
@@ -55,6 +53,7 @@ export function FrameHandler(
   );
 
   useHotkey(document.body, {
+    // eslint-disable-next-line solid/reactivity
     'Control+C': () => {
       if (filterHotKey()) return;
       const el = ref();

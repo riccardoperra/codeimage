@@ -1,6 +1,6 @@
 {
   "name": "codeimage",
-  "version": "0.16.1",
+  "version": "0.20.0",
   "description": "Create elegant code screenshots of your source code",
   "info": "Codeimage is the newest open source tool to help developers to create beautiful screenshots of their code, providing several features to speed up the process to post in social media. It's built on the top of solid-js and has a rich choice of customizations, 15+ custom themes, supports for mobile devices and much more!",
   "homepage": "https://codeimage.dev/",
@@ -35,13 +35,14 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "dev": "pnpm dev --filter=@codeimage/app",
-    "libs:build": "pnpm --parallel --filter='./packages' --filter='!@codeimage/config' build && pnpm libs:build:config",
+    "dev": "pnpm --filter=@codeimage/app dev",
+    "libs:build": "pnpm libs:build:core && pnpm libs:build:config",
+    "libs:build:core": "pnpm --filter \"{packages/**}\" --filter='!@codeimage/config' --parallel build",
     "libs:build:config": "pnpm --filter=@codeimage/config build",
-    "libs:build:watch": "pnpm --parallel --aggregate-output --filter ./packages --filter='!@codeimage/config' --filter build:watch",
-    "lint": "pnpm lint --recursive --parallel --filter='@codeimage/*'",
-    "typecheck": "pnpm typecheck --recursive --parallel --filter='@codeimage/*'",
-    "build:prod": "pnpm patch-solid-exports && pnpm libs:build && pnpm --filter='@codeimage/config' --filter='@codeimage/app' build",
+    "libs:build:watch": "pnpm --filter \"{packages/**}\" --filter='!@codeimage/config' --parallel --aggregate-output build:watch",
+    "lint": "pnpm --filter='@codeimage/*' --parallel -r lint",
+    "typecheck": "pnpm --filter='@codeimage/*' --recursive --parallel typecheck",
+    "build:prod": "pnpm patch-solid-exports && pnpm libs:build && pnpm --filter=@codeimage/app build",
     "changeset:pr": "changeset version && ts-node scripts/sync-package.ts",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
@@ -60,25 +61,22 @@
     "@commitlint/cli": "16.2.3",
     "@commitlint/config-angular": "16.2.3",
     "@commitlint/config-conventional": "^16.2.4",
-    "@manypkg/get-packages": "^1.1.3",
-    "@types/node": "^17.0.31",
-    "@types/prettier": "^2.6.0",
-    "@typescript-eslint/eslint-plugin": "^5.22.0",
-    "@typescript-eslint/parser": "^5.22.0",
+    "@types/node": "^17.0.40",
+    "@types/prettier": "^2.6.3",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
     "cross-env": "^7.0.3",
-    "eslint": "^8.14.0",
+    "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-solid": "^0.4.7",
     "husky": "7.0.4",
-    "lint-staged": "^12.4.1",
-    "lodash": "4.17.21",
+    "lint-staged": "^12.5.0",
     "prettier": "^2.6.2",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.6.4"
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3"
   },
   "engines": {
-    "node": ">=14.x",
-    "pnpm": ">=6.23.2"
+    "pnpm": ">=7"
   }
 }

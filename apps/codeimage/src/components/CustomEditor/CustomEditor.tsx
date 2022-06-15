@@ -1,8 +1,33 @@
-import {EDITOR_BASE_SETUP} from '@codeimage/config';
-import {editor$, setFocus} from '@codeimage/store/editor';
-import {EditorView, lineNumbers} from '@codemirror/view';
-import clsx from 'clsx';
-import {debounceTime, ReplaySubject, takeUntil} from 'rxjs';
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
+import {
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
+  completionKeymap,
+} from '@codemirror/autocomplete';
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  indentWithTab,
+} from '@codemirror/commands';
+import {bracketMatching, indentOnInput} from '@codemirror/language';
+import {EditorState, Extension} from '@codemirror/state';
+import {
+  crosshairCursor,
+  drawSelection,
+  dropCursor,
+  EditorView,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+  rectangularSelection,
+} from '@codemirror/view';
+import {SUPPORTED_FONTS} from '@core/configuration/font';
+import {ReplaySubject} from 'rxjs';
 import {createCodeMirror} from 'solid-codemirror';
 import {
   batch,
@@ -10,23 +35,51 @@ import {
   createMemo,
   createResource,
   onCleanup,
-  Show,
 } from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
-import {focusedEditor$, setCode} from '../../state/editor';
-import {createCustomFontExtension} from './custom-font-extension';
 import {observeFocusExtension} from './observe-focus-extension';
 
-export const CustomEditor = () => {
+interface CustomFontExtensionOptions {
+  fontName: string;
+  fontWeight: number;
+}
+
+const EDITOR_BASE_SETUP: Extension = [
+  highlightSpecialChars(),
+  drawSelection(),
+  dropCursor(),
+  EditorState.allowMultipleSelections.of(true),
+  indentOnInput(),
+  bracketMatching(),
+  closeBrackets(),
+  autocompletion(),
+  rectangularSelection(),
+  crosshairCursor(),
+  history(),
+  keymap.of([
+    ...closeBracketsKeymap,
+    ...defaultKeymap,
+    ...completionKeymap,
+    ...historyKeymap,
+    indentWithTab,
+  ]),
+];
+
+export default function CustomEditor() {
   let editorEl!: HTMLDivElement;
+  const {themeArray: themes} = getThemeStore();
 
+  // fixCodeMirrorAriaRole(() => editorEl);
   const destroy$ = new ReplaySubject<void>(1);
-  const {languages, themes, fonts} = appEnvironment;
-  const editor = fromObservableObject(editor$);
+  const languages = SUPPORTED_LANGUAGES;
+  const fonts = SUPPORTED_FONTS;
 
+  const {
+    options: editorOptions,
+    actions: {setFocused},
+  } = getRootEditorStore();
+  const {editor, setCode} = getActiveEditorStore();
   const selectedLanguage = createMemo(() =>
-    languages.find(language => language.id === editor.languageId),
+    languages.find(language => language.id === editor()?.languageId),
   );
 
   const {view, setOptions, setContainer} = createCodeMirror({
@@ -40,8 +93,10 @@ export const CustomEditor = () => {
     plugin(),
   );
 
-  const themeConfiguration = createMemo(() =>
-    themes.find(theme => theme.id === editor.themeId),
+  const themeConfiguration = createMemo(
+    () =>
+      themes().find(theme => theme()?.id === editorOptions.themeId)?.() ??
+      themes()[0](),
   );
 
   const currentTheme = () => themeConfiguration()?.editorTheme || [];
@@ -80,72 +135,65 @@ export const CustomEditor = () => {
     },
   });
 
+  const createCustomFontExtension = (
+    options: CustomFontExtensionOptions,
+  ): Extension => {
+    return EditorView.theme({
+      '.cm-content *': {
+        fontFamily: `${options.fontName}, monospace`,
+        fontWeight: options.fontWeight,
+        fontVariantLigatures: 'normal',
+      },
+      '.cm-gutters': {
+        fontFamily: `${options.fontName}, monospace`,
+        fontWeight: 400,
+        fontVariantLigatures: 'normal',
+      },
+    });
+  };
+
   const customFontExtension = () =>
     createCustomFontExtension({
       fontName:
-        fonts.find(({id}) => editor.fontId === id)?.name || fonts[0].name,
-      fontWeight: editor.fontWeight,
+        fonts.find(({id}) => editorOptions.fontId === id)?.name ||
+        fonts[0].name,
+      fontWeight: editorOptions.fontWeight,
     });
-
-  const externalStylesheet = createMemo(
-    () => themeConfiguration()?.externalStylesheet,
-    null,
-    {equals: (prev, next) => prev?.scope === next?.scope},
-  );
-
-  setTimeout(() => {
-    const content = document.querySelector('.cm-content');
-    if (!content) {
-      return;
-    }
-
-    /**
-     * **🚀 Seo tip: fix invalid aria roles for CodeMirror**
-     */
-    content.setAttribute('id', 'codeEditor');
-    content.setAttribute('aria-label', 'codeimage-editor');
-    content.removeAttribute('aria-expanded');
-  });
 
   createEffect(() => {
     batch(() => {
       setContainer(editorEl);
+      import('./fix-cm-aria-roles-lighthouse').then(m =>
+        m.fixCodeMirrorAriaRole(() => editorEl),
+      );
     });
   });
 
   createEffect(() => {
     setOptions(() => ({
-      value: editor.code,
+      value: editor()?.code,
     }));
   });
 
   createEffect(() => {
+    const focused = editorOptions.focused;
+    if (focused && !view()?.hasFocus) {
+      view()?.focus();
+    }
+  });
+
+  createEffect(() => {
     batch(() =>
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      // TODO: to fix type deep instantion
       setOptions({
         extensions: [
-          EDITOR_BASE_SETUP,
           baseTheme,
           supportsLineWrap,
-          observeFocusExtension(
-            focused => setFocus(focused),
-            vu => {
-              // ATTENTION: a lot of multiple calls to fix!!
-              focusedEditor$
-                .pipe(takeUntil(destroy$), debounceTime(0))
-                .subscribe(focused => {
-                  if (focused && !vu.view.hasFocus) {
-                    vu.view.focus();
-                  }
-                });
-            },
-          ),
+          observeFocusExtension(focused => setFocused(focused)),
           customFontExtension(),
           currentLanguage() || [],
           currentTheme(),
-          editor.showLineNumbers ? lineNumbers() : [],
+          editorOptions.showLineNumbers ? lineNumbers() : [],
+          EDITOR_BASE_SETUP,
         ],
       }),
     );
@@ -158,17 +206,8 @@ export const CustomEditor = () => {
   });
 
   return (
-    <Show when={themeConfiguration()}>
-      <code
-        class={clsx(
-          externalStylesheet()?.parentClass,
-          `language-${selectedLanguage()?.id ?? 'default'}`,
-        )}
-      >
-        <div class={externalStylesheet()?.className}>
-          <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
-        </div>
-      </code>
-    </Show>
+    <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
+      <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
+    </code>
   );
-};
+}

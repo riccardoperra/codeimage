@@ -1,4 +1,15 @@
+import {
+  type LanguageSupport as LSupport,
+  type StreamParser,
+} from '@codemirror/language';
 import {LanguageDefinition} from '../types/language-def';
+
+const importLegacy = () =>
+  import('@codemirror/language').then(({LanguageSupport, StreamLanguage}) => {
+    return function legacy(parser: StreamParser<unknown>): LSupport {
+      return new LanguageSupport(StreamLanguage.define(parser));
+    };
+  });
 
 export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
@@ -196,6 +207,23 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.java',
         content: () => import('material-icon-theme/icons/javaclass.svg?raw'),
         matcher: /^.*\.(java)$/,
+      },
+    ],
+  },
+  {
+    id: 'kotlin',
+    label: 'Kotlin',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/clike'),
+      ]).then(([cb, m]) => cb(m.kotlin)),
+    icons: [
+      {
+        name: 'kotlin',
+        extension: '.kt',
+        content: () => import('material-icon-theme/icons/kotlin.svg?raw'),
+        matcher: /^.*\.(kt)$/,
       },
     ],
   },

@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {
   setAccentVisible,
+  setAlternativeTheme,
   setShowGlassReflection,
   setShowHeader,
   setShowWatermark,
@@ -8,20 +9,34 @@ import {
   terminal$,
 } from '@codeimage/store/terminal';
 import {SegmentedField} from '@codeimage/ui';
-import {Show} from 'solid-js';
+import {ParentComponent, Show} from 'solid-js';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 
-export const WindowStyleForm = () => {
+export const WindowStyleForm: ParentComponent = () => {
   const terminal = fromObservableObject(terminal$);
   const [t] = useI18n<AppLocaleEntries>();
 
   return (
     <>
       <PanelHeader label={t('frame.terminal')} />
+
+      <PanelRow for={'frameAlternativeField'} label={t('frame.backgroundType')}>
+        <TwoColumnPanelRow>
+          <SegmentedField
+            size={'xs'}
+            value={terminal.alternativeTheme}
+            onChange={setAlternativeTheme}
+            items={[
+              {label: 'Default', value: false},
+              {label: 'Alternative', value: true},
+            ]}
+          />
+        </TwoColumnPanelRow>
+      </PanelRow>
 
       <PanelRow for={'frameHeaderField'} label={t('frame.header')}>
         <TwoColumnPanelRow>
@@ -49,7 +64,7 @@ export const WindowStyleForm = () => {
         </PanelRow>
       </Show>
 
-      <Show when={terminal.showHeader}>
+      <Show when={terminal.showHeader && !terminal.alternativeTheme}>
         <PanelRow for={'frameTabAccentField'} label={t('frame.tabAccent')}>
           <TwoColumnPanelRow>
             <SegmentedField

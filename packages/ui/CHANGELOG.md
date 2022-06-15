@@ -1,5 +1,35 @@
 # @codeimage/ui
 
+## 0.8.0
+
+### Minor Changes
+
+- [#281](https://github.com/riccardoperra/codeimage/pull/281) [`18c1e22`](https://github.com/riccardoperra/codeimage/commit/18c1e224c4b717cad54b7c36f87d9501501197ce) Thanks [@riccardoperra](https://github.com/riccardoperra)! - perf: bundle/performance improvements, skeleton, split chunks and lazy loading
+
+### Patch Changes
+
+- Updated dependencies [[`18c1e22`](https://github.com/riccardoperra/codeimage/commit/18c1e224c4b717cad54b7c36f87d9501501197ce)]:
+  - @codeimage/locale@0.6.0
+
+## 0.7.1
+
+### Patch Changes
+
+- [#274](https://github.com/riccardoperra/codeimage/pull/274) [`167a8f0`](https://github.com/riccardoperra/codeimage/commit/167a8f0d3a142c0ad314cc7b19ea93245f32f490) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix RemoteSvgIcon rendering issue
+
+## 0.7.0
+
+### Minor Changes
+
+- [#258](https://github.com/riccardoperra/codeimage/pull/258) [`79058e8`](https://github.com/riccardoperra/codeimage/commit/79058e84bfbe627430cdd79939d19ae7322244b6) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add support for gradient colors
+
+### Patch Changes
+
+- [#256](https://github.com/riccardoperra/codeimage/pull/256) [`10839dc`](https://github.com/riccardoperra/codeimage/commit/10839dc41edc22ca81002083c34d5150f705df3e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - build: update SolidJS to 1.4.2
+
+- Updated dependencies [[`10839dc`](https://github.com/riccardoperra/codeimage/commit/10839dc41edc22ca81002083c34d5150f705df3e)]:
+  - @codeimage/locale@0.5.1
+
 ## 0.6.0
 
 ### Minor Changes

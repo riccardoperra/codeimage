@@ -1,23 +1,22 @@
-import {Component, Show} from 'solid-js';
+import {Box, Text} from '@codeimage/ui';
+import {FlowComponent, Show} from 'solid-js';
 import * as styles from './EditorSidebar.css';
 import {panelRowContent} from './EditorSidebar.css';
-import {Text} from '@codeimage/ui';
-import {Box} from '@codeimage/ui';
 
 interface PanelRowProps {
   label?: string;
   for: string;
 }
 
-export const FullWidthPanelRow: Component = props => (
+export const FullWidthPanelRow: FlowComponent = props => (
   <Box class={panelRowContent({threeColumn: true})}>{props.children}</Box>
 );
 
-export const TwoColumnPanelRow: Component = props => (
+export const TwoColumnPanelRow: FlowComponent = props => (
   <Box class={panelRowContent({twoColumn: true})}>{props.children}</Box>
 );
 
-export const PanelRow: Component<PanelRowProps> = props => {
+export const PanelRow: FlowComponent<PanelRowProps> = props => {
   return (
     <div class={styles.panelRow}>
       <Show when={props.label}>

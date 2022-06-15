@@ -1,4 +1,4 @@
-import {Component, Show} from 'solid-js';
+import {ParentComponent, Show} from 'solid-js';
 import {Dynamic, Portal} from 'solid-js/web';
 
 type DropdownPortalProps = {
@@ -6,7 +6,7 @@ type DropdownPortalProps = {
   mount: HTMLElement | null;
 };
 
-export const DropdownPortal: Component<DropdownPortalProps> = props => {
+export const DropdownPortal: ParentComponent<DropdownPortalProps> = props => {
   return (
     <Show when={props.isOpen}>
       <Dynamic

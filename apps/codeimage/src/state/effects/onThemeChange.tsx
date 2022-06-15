@@ -1,7 +1,7 @@
-import {updateEditorStore} from '@codeimage/store/editor';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {updateFrameStore} from '@codeimage/store/frame';
 import {updateTerminalStore} from '@codeimage/store/terminal';
-import {CustomTheme} from '@codeimage/theme';
+import {CustomTheme} from '@codeimage/highlight';
 import {createAction, createEffect, ofType, props} from '@ngneat/effects';
 import {setProps} from '@ngneat/elf';
 import {tap} from 'rxjs';
@@ -27,7 +27,8 @@ export const onThemeChange$ = createEffect(actions =>
         }),
       );
 
-      updateEditorStore(setProps({themeId: theme.id}));
+      const editor = getRootEditorStore();
+      editor.actions.setThemeId(theme.id);
     }),
   ),
 );

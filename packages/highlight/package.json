@@ -1,0 +1,170 @@
+{
+  "name": "@codeimage/highlight",
+  "version": "0.9.0",
+  "module": "./dist/index.js",
+  "types": "./dist/public-api.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "pre-commit": "lint-staged --relative",
+    "pre-commit-prettier": "prettier --write",
+    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
+    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "clean": "rimraf dist",
+    "build-esm": "tsc -p tsconfig.esm.json",
+    "build-dts": "tsc -p tsconfig.dts.json",
+    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
+    "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
+  },
+  "dependencies": {
+    "@codemirror/language": "^6.0.0",
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/theme-one-dark": "^6.0.0",
+    "@codemirror/view": "^6.0.0",
+    "@lezer/highlight": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@codemirror/language": "^6.0.0",
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/view": "^6.0.0",
+    "@lezer/highlight": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.42",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.3",
+    "rollup": "^2.75.6",
+    "rollup-plugin-dts": "^4.2.2",
+    "vite": "^2.9.12",
+    "vite-plugin-dts": "^1.2.0",
+    "@rollup/plugin-typescript": "^8.3.3"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./public-api.d.ts"
+    },
+    "./themes": {
+      "import": "./dist/lib/themes/index.js",
+      "types": "./dist/lib/themes/index.d.ts"
+    },
+    "./arcDark": {
+      "import": "./dist/lib/themes/arcDark/index.js",
+      "types": "./dist/lib/themes/arcDark/index.d.ts"
+    },
+    "./coldarkCold": {
+      "import": "./dist/lib/themes/coldarkCold/index.js",
+      "types": "./dist/lib/themes/coldarkCold/index.d.ts"
+    },
+    "./coldarkDark": {
+      "import": "./dist/lib/themes/coldarkDark/index.js",
+      "types": "./dist/lib/themes/coldarkDark/index.d.ts"
+    },
+    "./dracula": {
+      "import": "./dist/lib/themes/dracula/index.js",
+      "types": "./dist/lib/themes/dracula/index.d.ts"
+    },
+    "./duotoneDark": {
+      "import": "./dist/lib/themes/duotoneDark/index.js",
+      "types": "./dist/lib/themes/duotoneDark/index.d.ts"
+    },
+    "./duotoneSea": {
+      "import": "./dist/lib/themes/duotoneSea/index.js",
+      "types": "./dist/lib/themes/duotoneSea/index.d.ts"
+    },
+    "./holi": {
+      "import": "./dist/lib/themes/holi/index.js",
+      "types": "./dist/lib/themes/holi/index.d.ts"
+    },
+    "./light": {
+      "import": "./dist/lib/themes/light/index.js",
+      "types": "./dist/lib/themes/light/index.d.ts"
+    },
+    "./materialLight": {
+      "import": "./dist/lib/themes/materialLight/index.js",
+      "types": "./dist/lib/themes/materialLight/index.d.ts"
+    },
+    "./materialOcean": {
+      "import": "./dist/lib/themes/materialOcean/index.js",
+      "types": "./dist/lib/themes/materialOcean/index.d.ts"
+    },
+    "./materialPalenight": {
+      "import": "./dist/lib/themes/materialPalenight/index.js",
+      "types": "./dist/lib/themes/materialPalenight/index.d.ts"
+    },
+    "./materialVolcano": {
+      "import": "./dist/lib/themes/materialVolcano/index.js",
+      "types": "./dist/lib/themes/materialVolcano/index.d.ts"
+    },
+    "./nightOwl": {
+      "import": "./dist/lib/themes/nightOwl/index.js",
+      "types": "./dist/lib/themes/nightOwl/index.d.ts"
+    },
+    "./oneDark": {
+      "import": "./dist/lib/themes/oneDark/index.js",
+      "types": "./dist/lib/themes/oneDark/index.d.ts"
+    },
+    "./synthwave84": {
+      "import": "./dist/lib/themes/synthwave84/index.js",
+      "types": "./dist/lib/themes/synthwave84/index.d.ts"
+    },
+    "./vsCodeDark": {
+      "import": "./dist/lib/themes/vsCodeDark/index.js",
+      "types": "./dist/lib/themes/vsCodeDark/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "arcDark": [
+        "./dist/lib/themes/arcDark/index.d.ts"
+      ],
+      "coldarkCold": [
+        "./dist/lib/themes/coldarkCold/index.d.ts"
+      ],
+      "coldarkDark": [
+        "./dist/lib/themes/coldarkDark/index.d.ts"
+      ],
+      "dracula": [
+        "./dist/lib/themes/dracula/index.d.ts"
+      ],
+      "duotoneDark": [
+        "./dist/lib/themes/duotoneDark/index.d.ts"
+      ],
+      "duotoneSea": [
+        "./dist/lib/themes/duotoneSea/index.d.ts"
+      ],
+      "holi": [
+        "./dist/lib/themes/holi/index.d.ts"
+      ],
+      "light": [
+        "./dist/lib/themes/light/index.d.ts"
+      ],
+      "materialLight": [
+        "./dist/lib/themes/materialLight/index.d.ts"
+      ],
+      "materialOcean": [
+        "./dist/lib/themes/materialOcean/index.d.ts"
+      ],
+      "materialPalenight": [
+        "./dist/lib/themes/materialPalenight/index.d.ts"
+      ],
+      "materialVolcano": [
+        "./dist/lib/themes/materialVolcano/index.d.ts"
+      ],
+      "nightOwl": [
+        "./dist/lib/themes/nightOwl/index.d.ts"
+      ],
+      "oneDark": [
+        "./dist/lib/themes/oneDark/index.d.ts"
+      ],
+      "synthwave84": [
+        "./dist/lib/themes/synthwave84/index.d.ts"
+      ],
+      "vsCodeDark": [
+        "./dist/lib/themes/vsCodeDark/index.d.ts"
+      ],
+      "themes": [
+        "./dist/lib/themes/index.d.ts"
+      ]
+    }
+  }
+}

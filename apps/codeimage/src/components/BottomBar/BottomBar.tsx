@@ -1,16 +1,20 @@
-import * as styles from './BottomBar.css';
 import {Box, Button, FadeInOutTransition} from '@codeimage/ui';
+import {createSignal, ParentComponent, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
-import {Component, createSignal, Show} from 'solid-js';
-import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
+import {CloseIcon} from '../Icons/CloseIcon';
+import {CodeIcon} from '../Icons/Code';
+import {ColorSwatchIcon} from '../Icons/ColorSwatch';
+import {SparklesIcon} from '../Icons/SparklesIcon';
 import {EditorForm} from '../PropertyEditor/EditorForm';
+import {EditorStyleForm} from '../PropertyEditor/EditorStyleForm';
 import {FrameStyleForm} from '../PropertyEditor/FrameStyleForm';
 import {WindowStyleForm} from '../PropertyEditor/WindowStyleForm';
-import {EditorStyleForm} from '../PropertyEditor/EditorStyleForm';
-import {SparklesIcon} from '../Icons/SparklesIcon';
-import {ColorSwatchIcon} from '../Icons/ColorSwatch';
-import {CodeIcon} from '../Icons/Code';
-import {CloseIcon} from '../Icons/CloseIcon';
+import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
+
+import {useI18n} from '@codeimage/locale';
+import {AppLocaleEntries} from '../../i18n';
+
+import * as styles from './BottomBar.css';
 
 type Mode = 'themes' | 'style' | 'editor';
 
@@ -18,9 +22,9 @@ interface BottomBarProps {
   portalHostRef: Node | undefined;
 }
 
-export const BottomBar: Component<BottomBarProps> = props => {
+export const BottomBar: ParentComponent<BottomBarProps> = props => {
   const [mode, setMode] = createSignal<Mode | null>(null);
-
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <div class={styles.wrapper}>
       <Button
@@ -29,7 +33,7 @@ export const BottomBar: Component<BottomBarProps> = props => {
         onClick={() => setMode('themes')}
       >
         <ColorSwatchIcon />
-        <Box as={'span'}>Themes</Box>
+        <Box as={'span'}>{t('bottomBar.themes')}</Box>
       </Button>
 
       <Button
@@ -38,7 +42,7 @@ export const BottomBar: Component<BottomBarProps> = props => {
         onClick={() => setMode('style')}
       >
         <SparklesIcon />
-        <Box as={'span'}>Style</Box>
+        <Box as={'span'}>{t('bottomBar.styles')}</Box>
       </Button>
 
       <Button
@@ -47,7 +51,7 @@ export const BottomBar: Component<BottomBarProps> = props => {
         onClick={() => setMode('editor')}
       >
         <CodeIcon />
-        Editor
+        {t('bottomBar.editor')}
       </Button>
 
       <Show when={props.portalHostRef}>

@@ -56,7 +56,7 @@ $ pnpm dev
 - Production mode (no reload, serve static files):
 
 ```bash
-$ pnpm build:prod && pnpm serve --filter=@codeimage/app
+$ pnpm build:prod && pnpm --filter=@codeimage/app serve
 ```
 
 ## 🤖 Tech stack
@@ -75,8 +75,6 @@ CodeImage front-end app currently relies on these technologies:
 - [solid-primitives](https://github.com/solidjs-community/solid-primitives): SolidJS primitives library
 - [solid-use](https://github.com/LXSMNSYC/solid-use): Collection of solid-js utilities
 - [material-icon-theme](https://github.com/PKief/vscode-material-icon-theme): Icons for custom terminal tabs
-- [@emotion/css](https://github.com/emotion-js/emotion/tree/main/packages/css): CSS Utility used for custom codemirror
-  themes
 - [floating-ui](https://github.com/floating-ui/floating-ui/): Utilities for positioning floating elements
 - [Lion](https://github.com/ing-bank/lion): White label web components in Lit (used for custom combobox)
 
@@ -87,10 +85,19 @@ CodeImage front-end app currently relies on these technologies:
 When contributing, it's better to first discuss the change you wish to make via issue or discussion, or any other method
 with the owners of this repository before making a change.
 
-Until the end of [solid hackathon](https://hack.solidjs.com/) voting ends phase, pull request must target
-the [next](https://github.com/riccardoperra/codeimage/tree/next) branch
-
 See the [CONTRIBUTING.md](/CONTRIBUTING.md) guide for more details.
+
+
+---
+
+
+<p align="left">
+  <img src="https://user-images.githubusercontent.com/37072694/168666273-22af1fed-6ee5-49a5-be2a-6e0b9da998cf.png" width="600">
+</p>
+<p align="left">
+  CodeImage is the winner of <a href="https://hack.solidjs.com">SolidHack 2022</a> for the Best Application category!
+</p>
+
 
 ## License
 

@@ -16,7 +16,7 @@ export {TextField, textFieldStyles, type TextFieldProps} from './TextField';
 
 export {RangeField, rangeFieldStyles} from './RangeField';
 
-export {ColorPicker} from './ColorPicker';
+export {NativeColorPicker, ColorPicker} from './ColorPicker';
 
 export {Box, VStack, HStack} from './Box';
 
@@ -66,3 +66,5 @@ export {
 export {Loading, type LoaderProps, LoadingOverlay} from './Loader';
 
 export {Toggle} from './Toggle';
+
+export {Popover} from './Popover';

@@ -1,5 +1,5 @@
 import {resolve} from 'path';
-import {defineConfig, Plugin} from 'vite';
+import {defineConfig, type Plugin} from 'vite';
 import dts from 'vite-plugin-dts';
 import solidPlugin from 'vite-plugin-solid';
 import {dependencies, peerDependencies} from './package.json';

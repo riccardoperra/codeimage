@@ -82,3 +82,8 @@ export const titleWrapper = style([
     },
   },
 ]);
+
+export const panelDivider = style({
+  borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+  paddingTop: themeVars.spacing['4'],
+});

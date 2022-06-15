@@ -65,4 +65,8 @@ export const themeBoxFooter = style({
   },
 });
 
+export const themeBoxTerminalHost = style({
+  padding: `${themeVars.spacing['2']} ${themeVars.spacing['1']}`,
+});
+
 export type ThemeSwitcherVariant = RecipeVariants<typeof grid>;
