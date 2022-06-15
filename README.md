@@ -31,7 +31,7 @@ features to speed up the process to post in social media.
 
 ## 💻 Run locally
 
-To run the project locally, you must have in your local machine pnpm >= 6.23.2 and node >= 14.x;
+To run the project locally, you must have in your local machine pnpm >= 7 and node >= 14.x;
 
 1. Install dependencies
 
@@ -67,7 +67,7 @@ CodeImage front-end app currently relies on these technologies:
 - [CodeMirror6](https://codemirror.net/6/): Code Editor
 - [vanilla-extract](https://github.com/seek-oss/vanilla-extract): Design system and app theme
 - [HeroIcons](https://heroicons.com/): Icons
-- [solid-headless](https://github.com/LXSMNSYC/solid-headless): Headless WAI-ARIA widgets for SolidJS
+- [solid-aria](https://github.com/solidjs-community/solid-aria): High-quality primitives that help to build accessible user interfaces
 - [@ngneat/elf](https://github.com/ngneat/elf) + [RxJS](https://github.com/ReactiveX/rxjs): Reactive state management
 
 #### Other libraries:
