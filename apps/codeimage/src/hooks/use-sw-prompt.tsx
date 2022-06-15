@@ -1,7 +1,6 @@
 import {Box, Button, useSnackbarStore} from '@codeimage/ui';
 import {createEffect} from 'solid-js';
 import {useRegisterSW} from 'virtual:pwa-register/solid';
-import {InvertedThemeWrapper} from '../ui/InvertedThemeWrapper/InvertedThemeWrapper';
 
 export const useServiceWorkerPrompt = () => {
   const notificationStore = useSnackbarStore();
@@ -31,7 +30,6 @@ export const useServiceWorkerPrompt = () => {
   createEffect(() => {
     if (offlineReady() || needRefresh()) {
       toastId = notificationStore.create({
-        wrapper: InvertedThemeWrapper,
         message: offlineReady()
           ? `App ready to work offline`
           : `New content available, click on reload button to update`,

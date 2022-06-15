@@ -1,9 +1,5 @@
-import {
-  cleanupOutdatedCaches,
-  createHandlerBoundToURL,
-  precacheAndRoute,
-} from 'workbox-precaching';
-import {NavigationRoute, registerRoute} from 'workbox-routing';
+import {cleanupOutdatedCaches, precacheAndRoute} from 'workbox-precaching';
+import {registerRoute} from 'workbox-routing';
 import {StaleWhileRevalidate} from 'workbox-strategies';
 
 declare let self: ServiceWorkerGlobalScope;
@@ -21,4 +17,4 @@ registerRoute(({url}) => url.origin === '/assets/', new StaleWhileRevalidate());
 cleanupOutdatedCaches();
 
 // to allow work offline
-registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
+// registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));

@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {setScale} from '@codeimage/store/frame';
-import {Box, PortalHost, SnackbarHost} from '@codeimage/ui';
+import {Box, PortalHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
 import {useEffects} from '@core/store/use-effect';
 import {initEffects} from '@ngneat/effects';
@@ -13,14 +13,11 @@ import {FrameHandler} from './components/Frame/FrameHandler';
 import {FrameSkeleton} from './components/Frame/FrameSkeleton';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from './components/PropertyEditor/EditorSidebar';
-import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {Toolbar} from './components/Toolbar/Toolbar';
-import {useModality} from './core/hooks/isMobile';
-import {useEffects} from './core/store/use-effect';
 import {uiStore} from './state/ui';
 import './theme/global.css';
 
@@ -45,8 +42,6 @@ export function App() {
   return (
     <Scaffold>
       <PortalHost id={'floating-portal-popover'} />
-      <SidebarPopoverHost />
-      <SnackbarHost />
 
       <Show when={modality === 'full'}>
         <Sidebar position={'left'}>

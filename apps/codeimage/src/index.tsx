@@ -2,7 +2,11 @@ import {createI18nContext, I18nContext} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {uiStore} from '@codeimage/store/ui';
-import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
+import {
+  backgroundColorVar,
+  CodeImageThemeProvider,
+  SnackbarHost,
+} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
 import {enableElfProdMode} from '@ngneat/elf';
 import {devTools} from '@ngneat/elf-devtools';
@@ -36,6 +40,7 @@ const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
 export function Bootstrap() {
   getRootEditorStore();
   onMount(() => useServiceWorkerPrompt());
+
   const mode = () => uiStore.themeMode;
 
   const Routes = useRoutes([
@@ -85,6 +90,7 @@ export function Bootstrap() {
       <I18nContext.Provider value={i18n}>
         <CodeImageThemeProvider theme={theme}>
           <Suspense>
+            <SnackbarHost />
             <Routes />
           </Suspense>
         </CodeImageThemeProvider>
