@@ -31,7 +31,7 @@ features to speed up the process to post in social media.
 
 ## 💻 Run locally
 
-To run the project locally, you must have in your local machine pnpm >= 7 and node >= 14.x;
+**CodeImage** use a monorepo structure using pnpm. To run the project locally, you must have in your local machine pnpm >= 7 and node >= 16.x;
 
 1. Install dependencies
 
@@ -47,26 +47,17 @@ $ pnpm libs:build
 
 3. Run @codeimage/app
 
-- Development mode:
-
 ```bash
 $ pnpm dev
 ```
 
-- Production mode (no reload, serve static files):
-
-```bash
-$ pnpm build:prod && pnpm --filter=@codeimage/app serve
-```
-
 ## 🤖 Tech stack
 
-CodeImage front-end app currently relies on these technologies:
+CodeImage front-end app is entirely built with [SolidJS](https://github.com/solidjs/solid), and currently relies on these technologies:
 
-- [SolidJS](https://github.com/solidjs/solid): UI framework
 - [CodeMirror6](https://codemirror.net/6/): Code Editor
 - [vanilla-extract](https://github.com/seek-oss/vanilla-extract): Design system and app theme
-- [HeroIcons](https://heroicons.com/): Icons
+- [HeroIcons](https://heroicons.com/): App icons
 - [solid-aria](https://github.com/solidjs-community/solid-aria): High-quality primitives that help to build accessible user interfaces
 - [@ngneat/elf](https://github.com/ngneat/elf) + [RxJS](https://github.com/ReactiveX/rxjs): Reactive state management
 
