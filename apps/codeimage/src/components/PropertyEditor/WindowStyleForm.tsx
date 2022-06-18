@@ -2,20 +2,21 @@ import {useI18n} from '@codeimage/locale';
 import {
   setAccentVisible,
   setAlternativeTheme,
+  setShadow,
   setShowGlassReflection,
   setShowHeader,
   setShowWatermark,
   setType,
   terminal$,
 } from '@codeimage/store/terminal';
-import {SegmentedField} from '@codeimage/ui';
+import {SegmentedField, Select} from '@codeimage/ui';
 import {ParentComponent, Show} from 'solid-js';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
+import {shadowsLabel} from '../Terminal/terminal.css';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
-
 export const WindowStyleForm: ParentComponent = () => {
   const terminal = fromObservableObject(terminal$);
   const [t] = useI18n<AppLocaleEntries>();
@@ -104,6 +105,15 @@ export const WindowStyleForm: ParentComponent = () => {
               {label: t('common.show'), value: true},
               {label: t('common.hide'), value: false},
             ]}
+          />
+        </TwoColumnPanelRow>
+      </PanelRow>
+      <PanelRow for={'frameSelectShadow'} label={t('frame.shadows')}>
+        <TwoColumnPanelRow>
+          <Select
+            items={shadowsLabel}
+            value={terminal.shadow}
+            onSelectChange={value => setShadow(value!)}
           />
         </TwoColumnPanelRow>
       </PanelRow>
