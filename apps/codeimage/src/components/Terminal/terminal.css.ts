@@ -82,53 +82,39 @@ export const watermark = style({
   backgroundColor: 'inherit',
 });
 
-export const terminalShadows = {
-  small: 'rgba(0, 0, 0, 0.08) 0px 4px 12px;',
-  md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-  lg: 'rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px',
-  xl: 'rgba(0, 0, 0, 0.56) 0px 22px 70px 4px',
-  '3d': 'rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset',
-  multicolor:
-    'rgb(85, 91, 255) 0px 0px 0px 3px, rgb(31, 193, 27) 0px 0px 0px 6px, rgb(255, 217, 19) 0px 0px 0px 9px, rgb(255, 156, 85) 0px 0px 0px 12px, rgb(255, 85, 85) 0px 0px 0px 15px',
-  outline: 'rgba(3, 102, 214, 0.3) 0px 0px 0px 3px',
-};
-
-export const shadowsLabel = Object.entries(terminalShadows).map(
-  ([key, value]) => ({
-    label: key,
-    value,
-  }),
-);
-
-// better this solution?
-
-// export const shadowsLabel = [
-//   {
-//     label: 'small',
-//     value: 'rgba(0, 0, 0, 0.08) 0px 4px 12px;',
-//   },
-//   {
-//     label: 'md',
-//     value: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-//   },
-//   {
-//     label: 'lg',
-//     value: 'rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px',
-//   },
-//   {
-//     label: 'xl',
-//     value: 'rgba(0, 0, 0, 0.56) 0px 22px 70px 4px',
-//   },
-//   {
-//     label: '3d',
-//     value: 'rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset',
-//   },
-//   {
-//     label: 'multicolor',
-//     value: 'rgb(85, 91, 255) 0px 0px 0px 3px, rgb(31, 193, 27) 0px 0px 0px 6px, rgb(255, 217, 19) 0px 0px 0px 9px, rgb(255, 156, 85) 0px 0px 0px 12px, rgb(255, 85, 85) 0px 0px 0px 15px',
-//   },
-//   {
-//     label: 'outline',
-//     value: 'rgba(3, 102, 214, 0.3) 0px 0px 0px 3px',
-//   }
-// ];
+export const shadowsLabel = [
+  {
+    label: 'none',
+    value: 'none',
+  },
+  {
+    label: 'bottom',
+    value: 'rgba(0, 0, 0, 0.45) 0px 25px 20px -20px',
+  },
+  {
+    label: 'small',
+    value:
+      'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px',
+  },
+  {
+    label: 'medium',
+    value: 'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px',
+  },
+  {
+    label: 'large',
+    value: themeVars.boxShadow.lg,
+  },
+  {
+    label: 'extra large',
+    value: 'rgba(0, 0, 0, 0.56) 0px 22px 70px 4px',
+  },
+  {
+    label: '3d',
+    value:
+      'rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset',
+  },
+  {
+    label: 'outlined',
+    value: 'rgba(3, 102, 214, 0.3) 0px 0px 0px 3px',
+  },
+];
