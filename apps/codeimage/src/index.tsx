@@ -6,6 +6,7 @@ import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
 import {enableElfProdMode} from '@ngneat/elf';
 import {devTools} from '@ngneat/elf-devtools';
+import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Router, useRoutes} from 'solid-app-router';
 import {createEffect, lazy, on, onMount, Suspense} from 'solid-js';
@@ -79,15 +80,17 @@ export function Bootstrap() {
   );
 
   return (
-    <Router>
-      <I18nContext.Provider value={i18n}>
-        <CodeImageThemeProvider theme={theme}>
-          <Suspense>
-            <Routes />
-          </Suspense>
-        </CodeImageThemeProvider>
-      </I18nContext.Provider>
-    </Router>
+    <OverlayProvider>
+      <Router>
+        <I18nContext.Provider value={i18n}>
+          <CodeImageThemeProvider theme={theme}>
+            <Suspense>
+              <Routes />
+            </Suspense>
+          </CodeImageThemeProvider>
+        </I18nContext.Provider>
+      </Router>
+    </OverlayProvider>
   );
 }
 

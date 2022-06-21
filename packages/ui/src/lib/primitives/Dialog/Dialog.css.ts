@@ -1,5 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
+import {recipe, type RecipeVariants} from '@vanilla-extract/recipes';
 import {adaptiveFullScreenHeight, themeVars} from '../../theme';
 import * as textStyles from '../Text/Text.css';
 
@@ -14,6 +14,10 @@ export const host = style([
     inset: 0,
     zIndex: themeVars.zIndex['50'],
     overflowY: 'auto',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 ]);
 
@@ -21,6 +25,7 @@ export const wrapper = style({
   minHeight: themeVars.minHeight.full,
   padding: `0 ${themeVars.spacing['4']}`,
   display: 'flex',
+  width: '100%',
   alignItems: 'center',
   justifyContent: 'center',
   selectors: {
@@ -31,11 +36,15 @@ export const wrapper = style({
   },
 });
 
-export const overlay = style({
-  position: 'fixed',
-  inset: 0,
-  backgroundColor: themeVars.dynamicColors.dialog.overlayBackgroundColor,
-});
+export const overlay = style([
+  host,
+  {
+    backgroundColor: themeVars.dynamicColors.dialog.overlayBackgroundColor,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+]);
 
 export const title = style([
   textStyles.fontSize.lg,

@@ -1,56 +1,58 @@
+import {AriaDialogProps, createDialog} from '@solid-aria/dialog';
+import {FocusScope} from '@solid-aria/focus';
 import {
-  Dialog as ShDialog,
-  DialogOverlay,
-  DialogProps as ShDialogProps,
-} from 'solid-headless';
-import {JSXElement, Show} from 'solid-js';
-import {omitProps} from 'solid-use';
-import clsx from 'clsx';
+  AriaModalProps,
+  AriaOverlayProps,
+  createModal,
+  createOverlay,
+  createPreventScroll,
+} from '@solid-aria/overlays';
+import {JSXElement, ParentProps, Show} from 'solid-js';
 import * as styles from './Dialog.css';
-import {FadeInOutTransition, FadeInOutWithScaleTransition} from '../Transition';
-import {PropsWithChildren} from 'solid-js/types/render/component';
-import {DialogTitle} from './DialogTitle';
 import {DialogPanel, DialogPanelProps} from './DialogPanel';
-import {Box} from '../Box';
 
-export type DialogProps = Omit<ShDialogProps, 'children'> & {
+export interface DialogProps
+  extends AriaDialogProps,
+    AriaModalProps,
+    AriaOverlayProps {
   title?: string;
+  // @ts-expect-error Fix vanilla-extract typing
   fullScreen?: DialogPanelProps['fullScreen'];
+  // @ts-expect-error Fix vanilla-extract typing
   size: DialogPanelProps['size'];
-};
+}
 
-export function Dialog(props: PropsWithChildren<DialogProps>): JSXElement {
+export function Dialog(props: ParentProps<DialogProps>): JSXElement {
+  let ref: HTMLDivElement | undefined;
+  const {overlayProps, underlayProps} = createOverlay(props, () => ref);
+  createPreventScroll();
+  const {modalProps} = createModal();
+  const {dialogProps, titleProps} = createDialog(props, () => ref);
+
   return (
-    <ShDialog
-      class={clsx(styles.host, props.class)}
+    <div
+      class={styles.overlay}
       data-full-screen={props.fullScreen}
-      {...omitProps(props, ['class'])}
+      {...underlayProps}
     >
-      <div class={styles.wrapper}>
-        <FadeInOutTransition childTransition={true}>
-          <DialogOverlay class={styles.overlay} />
-        </FadeInOutTransition>
-
-        {/* This element is to trick the browser into centering the modal contents. */}
-        <span class="inline-block h-screen align-middle" aria-hidden="true">
-          &#8203;
-        </span>
-
-        <FadeInOutWithScaleTransition
-          childTransition={true}
-          as={Box}
-          width={'100%'}
-          display={'flex'}
-          justifyContent={'center'}
+      <FocusScope contain restoreFocus autofocus>
+        <div
+          {...overlayProps}
+          {...dialogProps}
+          {...modalProps}
+          ref={ref}
+          class={styles.wrapper}
         >
           <DialogPanel fullScreen={props.fullScreen} size={props.size}>
             <Show when={props.title}>
-              <DialogTitle as={'h3'}>{props.title}</DialogTitle>
+              <h3 {...titleProps} class={styles.title}>
+                {props.title}
+              </h3>
             </Show>
             {props.children}
           </DialogPanel>
-        </FadeInOutWithScaleTransition>
-      </div>
-    </ShDialog>
+        </div>
+      </FocusScope>
+    </div>
   );
 }

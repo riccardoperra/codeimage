@@ -58,8 +58,8 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
   return (
     <>
       <button
-        {...buttonProps()}
-        {...triggerProps()}
+        {...buttonProps}
+        {...triggerProps}
         class={styles.input}
         ref={ref => {
           triggerRef = ref;
@@ -77,7 +77,7 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
       <Show when={state.isOpen()}>
         <OverlayContainer portalContainer={portal()!}>
           <Popover
-            {...overlayProps()}
+            {...overlayProps}
             ref={floating.setFloating}
             title={props.title}
             style={{

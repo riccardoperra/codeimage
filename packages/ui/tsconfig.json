@@ -6,7 +6,7 @@
     "jsx": "preserve",
     "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
-    "preserveSymlinks": true
+    "preserveSymlinks": true,
   },
   "include": [
     "./src"
