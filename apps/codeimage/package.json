@@ -60,6 +60,7 @@
     "@lion/combobox": "^0.11.0",
     "@lion/core": "^0.23.0",
     "@lion/listbox": "^0.14.0",
+    "@motionone/solid": "10.10.0",
     "@ngneat/effects": "^1.1.1",
     "@ngneat/elf": "^2.0.0",
     "@ngneat/elf-devtools": "^1.2.1",

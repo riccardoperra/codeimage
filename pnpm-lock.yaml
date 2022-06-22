@@ -83,6 +83,7 @@ importers:
       '@lion/combobox': ^0.11.0
       '@lion/core': ^0.23.0
       '@lion/listbox': ^0.14.0
+      '@motionone/solid': 10.10.0
       '@ngneat/effects': ^1.1.1
       '@ngneat/elf': ^2.0.0
       '@ngneat/elf-devtools': ^1.2.1
@@ -159,6 +160,7 @@ importers:
       '@lion/combobox': 0.11.0
       '@lion/core': 0.23.0
       '@lion/listbox': 0.14.0
+      '@motionone/solid': 10.10.0_solid-js@1.4.4
       '@ngneat/effects': 1.1.1
       '@ngneat/elf': 2.0.0_typescript@4.6.4
       '@ngneat/elf-devtools': 1.2.1
@@ -341,6 +343,7 @@ importers:
       '@codeimage/locale': workspace:*
       '@floating-ui/core': ^0.7.3
       '@floating-ui/dom': ^0.5.3
+      '@motionone/solid': 10.10.0
       '@solid-aria/button': ^0.1.3
       '@solid-aria/dialog': ^0.1.4
       '@solid-aria/focus': ^0.1.4
@@ -372,6 +375,7 @@ importers:
       '@codeimage/locale': link:../locale
       '@floating-ui/core': 0.7.3
       '@floating-ui/dom': 0.5.3
+      '@motionone/solid': 10.10.0_solid-js@1.4.4
       '@solid-aria/button': 0.1.3_solid-js@1.4.4
       '@solid-aria/dialog': 0.1.4_solid-js@1.4.4
       '@solid-aria/focus': 0.1.4_solid-js@1.4.4
@@ -2663,6 +2667,64 @@ packages:
   /@microsoft/tsdoc/0.14.1:
     resolution: {integrity: sha512-6Wci+Tp3CgPt/B9B0a3J4s3yMgLNSku6w5TV6mN+61C71UqsRBv2FUibBf3tPGlNxebgPHMEUzKpb1ggE8KCKw==}
     dev: true
+
+  /@motionone/animation/10.9.0:
+    resolution: {integrity: sha512-RsT6Y/JbTldNgwSy2IQGghqVVd6CH8yeexNs71+Gziz802rNiksVdMdgYuvXeTU8TJTG30f18V/rnm7mAUyO+A==}
+    dependencies:
+      '@motionone/easing': 10.9.0
+      '@motionone/types': 10.9.0
+      '@motionone/utils': 10.9.0
+      tslib: 2.4.0
+    dev: false
+
+  /@motionone/dom/10.10.0:
+    resolution: {integrity: sha512-7IsOcEUYJthabt101ckQUsaM8mM3f2PxgXlRR0Xye6+C2ltuyKLXyiJwDv7LaqoblXl+xmf9mzBvcrZ6bVqJNQ==}
+    dependencies:
+      '@motionone/animation': 10.9.0
+      '@motionone/generators': 10.9.0
+      '@motionone/types': 10.9.0
+      '@motionone/utils': 10.9.0
+      hey-listen: 1.0.8
+      tslib: 2.4.0
+    dev: false
+
+  /@motionone/easing/10.9.0:
+    resolution: {integrity: sha512-FYIr3HlQEb7aE5LOpY6BPQUaPyKeJt6VfGA+npy73+JIGqoVOjbrdZ1ZQxzTXqO76mG3UZvv1+twrDamRQsxFw==}
+    dependencies:
+      '@motionone/utils': 10.9.0
+      tslib: 2.4.0
+    dev: false
+
+  /@motionone/generators/10.9.0:
+    resolution: {integrity: sha512-BOkHx4qQswJV+z/6k05qdvRENE4hG606NI5cIPTsLtSuksnRn83utuj/15VTNoFeYHuTdhwzxvIPvlPVayIGTg==}
+    dependencies:
+      '@motionone/types': 10.9.0
+      '@motionone/utils': 10.9.0
+      tslib: 2.4.0
+    dev: false
+
+  /@motionone/solid/10.10.0_solid-js@1.4.4:
+    resolution: {integrity: sha512-RkiCxbudjD8RSfLbcx74+cxuHh7xfnAuVM5J+jd7gnCKF/jaO38Cf8nXB3fyPcfvZJ7L8wjT5a0xerHG+jjGHQ==}
+    peerDependencies:
+      solid-js: ^1.4.1
+    dependencies:
+      '@motionone/dom': 10.10.0
+      '@solid-primitives/props': 2.1.7_solid-js@1.4.4
+      solid-js: 1.4.4
+      tslib: 2.4.0
+    dev: false
+
+  /@motionone/types/10.9.0:
+    resolution: {integrity: sha512-ZcEDfsrS2ym9+vExV7+59avkzEO/PLkNj16uaDvbWhi0Q/vOZ72j2LQTrtDLWVyZRIeUaB/i8DJP017Gj6UYQw==}
+    dev: false
+
+  /@motionone/utils/10.9.0:
+    resolution: {integrity: sha512-5IgmwQ8TdH1HsQ9d2QZeBCu9+HkqjoYRYItRpmusoyiedPMZaKdU3pr3qFP5nbAj68Ww2sTUxgEZEOF20qJA6w==}
+    dependencies:
+      '@motionone/types': 10.9.0
+      hey-listen: 1.0.8
+      tslib: 2.4.0
+    dev: false
 
   /@ngneat/effects/1.1.1:
     resolution: {integrity: sha512-otGhdLA25BBkNzTFfmGppi07ai79h3tkLSdE/uZz7jWVMqZ+isPI1INI7tzH8Oe93W8PIbjgnJGYCDusz8OsRg==}
@@ -5173,6 +5235,10 @@ packages:
     engines: {node: '>= 0.4.0'}
     dependencies:
       function-bind: 1.1.1
+
+  /hey-listen/1.0.8:
+    resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
+    dev: false
 
   /hosted-git-info/2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}

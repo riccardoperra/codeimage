@@ -1,3 +1,4 @@
+import {Motion} from '@motionone/solid';
 import {AriaDialogProps, createDialog} from '@solid-aria/dialog';
 import {FocusScope} from '@solid-aria/focus';
 import {
@@ -43,14 +44,21 @@ export function Dialog(props: ParentProps<DialogProps>): JSXElement {
           ref={ref}
           class={styles.wrapper}
         >
-          <DialogPanel fullScreen={props.fullScreen} size={props.size}>
-            <Show when={props.title}>
-              <h3 {...titleProps} class={styles.title}>
-                {props.title}
-              </h3>
-            </Show>
-            {props.children}
-          </DialogPanel>
+          <Motion.div
+            initial={{opacity: 0, scale: 0.95}}
+            animate={{opacity: 1, scale: 1}}
+            exit={{opacity: 0, scale: 0.95}}
+            transition={{duration: 0.2, ease: 'ease-in-out'}}
+          >
+            <DialogPanel fullScreen={props.fullScreen} size={props.size}>
+              <Show when={props.title}>
+                <h3 {...titleProps} class={styles.title}>
+                  {props.title}
+                </h3>
+              </Show>
+              {props.children}
+            </DialogPanel>
+          </Motion.div>
         </div>
       </FocusScope>
     </div>
