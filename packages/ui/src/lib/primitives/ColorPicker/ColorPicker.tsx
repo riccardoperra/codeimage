@@ -1,5 +1,5 @@
 import {autoPlacement, Middleware, Placement} from '@floating-ui/dom';
-import {createButton} from '@solid-aria/button';
+import {AriaButtonProps, createButton} from '@solid-aria/button';
 import {createOverlayTrigger, OverlayContainer} from '@solid-aria/overlays';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {PropsWithChildren, Show} from 'solid-js';
@@ -32,8 +32,8 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
 
   const {buttonProps} = createButton(
     {
-      onClick: () => state.open(),
-    },
+      onPress: () => state.open(),
+    } as AriaButtonProps<'button'>,
     () => triggerRef,
   );
 

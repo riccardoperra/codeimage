@@ -43,11 +43,9 @@ interface ExportButtonProps {
 
 export const ExportButton: Component<ExportButtonProps> = props => {
   let openButtonRef: HTMLButtonElement | undefined;
-
   const snackbarStore = useSnackbarStore();
   const [t] = useI18n<AppLocaleEntries>();
   const modality = useModality();
-
   const overlayState = createOverlayTriggerState({});
 
   const {buttonProps: openButtonProps} = createButton(
@@ -210,7 +208,6 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
     <Dialog
       onClose={props.onClose}
       fullScreen={props.fullScreen}
-      role={'dialog'}
       isOpen
       isDismissable
       size={'md'}

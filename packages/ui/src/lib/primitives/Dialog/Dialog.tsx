@@ -37,29 +37,26 @@ export function Dialog(props: ParentProps<DialogProps>): JSXElement {
       {...underlayProps}
     >
       <FocusScope contain restoreFocus autofocus>
-        <div
+        <Motion.div
+          initial={{opacity: 0, scale: 0.95}}
+          animate={{opacity: 1, scale: 1}}
+          exit={{opacity: 0, scale: 0.95}}
+          transition={{duration: 0.2, ease: 'ease-in-out'}}
           {...overlayProps}
           {...dialogProps}
           {...modalProps}
           ref={ref}
-          class={styles.wrapper}
+          class={styles.wrapper({fullScreen: !!props.fullScreen})}
         >
-          <Motion.div
-            initial={{opacity: 0, scale: 0.95}}
-            animate={{opacity: 1, scale: 1}}
-            exit={{opacity: 0, scale: 0.95}}
-            transition={{duration: 0.2, ease: 'ease-in-out'}}
-          >
-            <DialogPanel fullScreen={props.fullScreen} size={props.size}>
-              <Show when={props.title}>
-                <h3 {...titleProps} class={styles.title}>
-                  {props.title}
-                </h3>
-              </Show>
-              {props.children}
-            </DialogPanel>
-          </Motion.div>
-        </div>
+          <DialogPanel fullScreen={props.fullScreen} size={props.size}>
+            <Show when={props.title}>
+              <h3 {...titleProps} class={styles.title}>
+                {props.title}
+              </h3>
+            </Show>
+            {props.children}
+          </DialogPanel>
+        </Motion.div>
       </FocusScope>
     </div>
   );

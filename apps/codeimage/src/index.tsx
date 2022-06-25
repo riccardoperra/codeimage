@@ -12,6 +12,8 @@ import {Router, useRoutes} from 'solid-app-router';
 import {createEffect, lazy, on, onMount, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
+import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
+import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
 import './theme/dark-theme.css';
 import {darkGrayScale} from './theme/dark-theme.css';
@@ -80,17 +82,20 @@ export function Bootstrap() {
   );
 
   return (
-    <OverlayProvider>
-      <Router>
-        <I18nContext.Provider value={i18n}>
-          <CodeImageThemeProvider theme={theme}>
-            <Suspense>
-              <Routes />
-            </Suspense>
-          </CodeImageThemeProvider>
-        </I18nContext.Provider>
-      </Router>
-    </OverlayProvider>
+    <Scaffold>
+      <OverlayProvider>
+        <Router>
+          <I18nContext.Provider value={i18n}>
+            <CodeImageThemeProvider theme={theme}>
+              <Suspense>
+                <Routes />
+              </Suspense>
+            </CodeImageThemeProvider>
+          </I18nContext.Provider>
+        </Router>
+      </OverlayProvider>
+      <SidebarPopoverHost />
+    </Scaffold>
   );
 }
 
