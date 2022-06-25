@@ -3,7 +3,7 @@ import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
 import {createEffect, createRoot, createSignal, on} from 'solid-js';
-import {WINDOWS_SHADOWS} from '../components/Terminal/WindowsTerminal/WindowsShadows';
+import {TERMINAL_SHADOWS} from '@core/configuration/WindowsShadows';
 import {AVAILABLE_TERMINAL_THEMES} from '../core/configuration/terminal-themes';
 import shallow from '../core/helpers/shallow';
 import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
@@ -31,7 +31,7 @@ const initialState: TerminalState = {
   showHeader: true,
   type: terminalName,
   tabName: 'index.ts',
-  shadow: WINDOWS_SHADOWS.bottom,
+  shadow: TERMINAL_SHADOWS.bottom,
   accentVisible: true,
   // lazy initialization
   background: '',

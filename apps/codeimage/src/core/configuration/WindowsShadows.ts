@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {AppLocaleEntries} from '../../../i18n';
+import {AppLocaleEntries} from '../../i18n';
 
-export const WINDOWS_SHADOWS = {
+export const TERMINAL_SHADOWS = {
   none: 'none',
   bottom: 'rgba(0, 0, 0, 0.45) 0px 25px 20px -20px',
   sm: 'rgba(0, 0, 0, 0.5) 0px 0px 5px 0px, rgba(0, 0, 0, 0.5) 0px 0px 1px 0px',
@@ -15,27 +15,27 @@ export const shadowsLabel = () => {
   return [
     {
       label: t('shadows.none'),
-      value: WINDOWS_SHADOWS.none,
+      value: TERMINAL_SHADOWS.none,
     },
     {
       label: t('shadows.sm'),
-      value: WINDOWS_SHADOWS.sm,
+      value: TERMINAL_SHADOWS.sm,
     },
     {
       label: t('shadows.md'),
-      value: WINDOWS_SHADOWS.md,
+      value: TERMINAL_SHADOWS.md,
     },
     {
       label: t('shadows.lg'),
-      value: WINDOWS_SHADOWS.lg,
+      value: TERMINAL_SHADOWS.lg,
     },
     {
       label: t('shadows.bottom'),
-      value: WINDOWS_SHADOWS.bottom,
+      value: TERMINAL_SHADOWS.bottom,
     },
     {
       label: t('shadows.3d'),
-      value: WINDOWS_SHADOWS['3d'],
+      value: TERMINAL_SHADOWS['3d'],
     },
   ];
 };
