@@ -2,24 +2,30 @@ import {useI18n} from '@codeimage/locale';
 import {
   setAccentVisible,
   setAlternativeTheme,
+  setShadow,
   setShowGlassReflection,
   setShowHeader,
   setShowWatermark,
   setType,
   terminal$,
 } from '@codeimage/store/terminal';
-import {SegmentedField} from '@codeimage/ui';
+import {SegmentedField, Select} from '@codeimage/ui';
+import {useModality} from '@core/hooks/isMobile';
 import {ParentComponent, Show} from 'solid-js';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
+import {
+  shadowsLabel,
+  TERMINAL_SHADOWS,
+} from '@core/configuration/WindowsShadows';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
-
 export const WindowStyleForm: ParentComponent = () => {
   const terminal = fromObservableObject(terminal$);
   const [t] = useI18n<AppLocaleEntries>();
-
+  const terminalShadows = () => shadowsLabel();
+  const modality = useModality();
   return (
     <>
       <PanelHeader label={t('frame.terminal')} />
@@ -104,6 +110,21 @@ export const WindowStyleForm: ParentComponent = () => {
               {label: t('common.show'), value: true},
               {label: t('common.hide'), value: false},
             ]}
+          />
+        </TwoColumnPanelRow>
+      </PanelRow>
+      <PanelRow for={'frameSelectShadow'} label={t('frame.shadows')}>
+        <TwoColumnPanelRow>
+          <Select
+            id={'frameSelectShadow'}
+            native={modality === 'mobile'}
+            items={terminalShadows()}
+            value={terminal.shadow}
+            onSelectChange={value => {
+              const shadowSelected = value ?? TERMINAL_SHADOWS.bottom;
+              umami.trackEvent(shadowSelected, 'change-shadow');
+              setShadow(shadowSelected);
+            }}
           />
         </TwoColumnPanelRow>
       </PanelRow>

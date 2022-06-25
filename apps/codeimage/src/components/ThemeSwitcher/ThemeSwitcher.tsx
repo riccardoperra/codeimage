@@ -6,6 +6,7 @@ import {terminal$} from '@codeimage/store/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
 import {Box, FlexField, TextField} from '@codeimage/ui';
+import {TERMINAL_SHADOWS} from '@core/configuration/WindowsShadows';
 import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {useModality} from '@core/hooks/isMobile';
 import {dispatch} from '@ngneat/effects';
@@ -46,7 +47,6 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
     dispatch(updateTheme({theme}));
     umami.trackEvent(theme.id, `theme-change`);
   };
-
   const exampleCode =
     '// Just a code example \n' +
     'export function Preview() {\n' +
@@ -96,7 +96,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                             background={theme.properties.terminal.main}
                             darkMode={theme.properties.darkMode}
                             accentVisible={false}
-                            shadow={/*@once*/ terminal.shadow}
+                            shadow={/*@once*/ TERMINAL_SHADOWS.bottom}
                             showTab={false}
                             readonlyTab={true}
                             showHeader={false}
