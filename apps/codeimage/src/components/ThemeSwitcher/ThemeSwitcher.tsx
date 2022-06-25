@@ -46,7 +46,6 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
     dispatch(updateTheme({theme}));
     umami.trackEvent(theme.id, `theme-change`);
   };
-
   const exampleCode =
     '// Just a code example \n' +
     'export function Preview() {\n' +

@@ -1,40 +1,41 @@
 import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../../i18n';
 
-export const windowsShadows = {
+export const WINDOWS_SHADOWS = {
   none: 'none',
   bottom: 'rgba(0, 0, 0, 0.45) 0px 25px 20px -20px',
-  sm: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px',
-  md: 'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px',
-  xl: 'rgba(0, 0, 0, 0.56) 0px 22px 70px 4px',
+  sm: 'rgba(0, 0, 0, 0.5) 0px 0px 5px 0px, rgba(0, 0, 0, 0.5) 0px 0px 1px 0px',
+  md: 'rgb(0 0 0 / 40%) 0px 30px 55px',
+  lg: 'rgba(0, 0, 0, 0.60) 0px 45px 70px 4px ',
   '3d': 'rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset',
-};
+} as const;
+
 export const shadowsLabel = () => {
   const [t] = useI18n<AppLocaleEntries>();
   return [
     {
       label: t('shadows.none'),
-      value: windowsShadows.none,
-    },
-    {
-      label: t('shadows.bottom'),
-      value: windowsShadows.bottom,
+      value: WINDOWS_SHADOWS.none,
     },
     {
       label: t('shadows.sm'),
-      value: windowsShadows.sm,
+      value: WINDOWS_SHADOWS.sm,
     },
     {
       label: t('shadows.md'),
-      value: windowsShadows.md,
+      value: WINDOWS_SHADOWS.md,
     },
     {
-      label: t('shadows.xl'),
-      value: windowsShadows.xl,
+      label: t('shadows.lg'),
+      value: WINDOWS_SHADOWS.lg,
+    },
+    {
+      label: t('shadows.bottom'),
+      value: WINDOWS_SHADOWS.bottom,
     },
     {
       label: t('shadows.3d'),
-      value: windowsShadows['3d'],
+      value: WINDOWS_SHADOWS['3d'],
     },
   ];
 };

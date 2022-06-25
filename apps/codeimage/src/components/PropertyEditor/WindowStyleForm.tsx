@@ -10,17 +10,22 @@ import {
   terminal$,
 } from '@codeimage/store/terminal';
 import {SegmentedField, Select} from '@codeimage/ui';
-import {ParentComponent, Show} from 'solid-js';
+import {useModality} from '@core/hooks/isMobile';
+import {createMemo, ParentComponent, Show} from 'solid-js';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
-import {shadowsLabel} from '../Terminal/WindowsTerminal/WindowsShadows';
+import {
+  shadowsLabel,
+  WINDOWS_SHADOWS,
+} from '../Terminal/WindowsTerminal/WindowsShadows';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 export const WindowStyleForm: ParentComponent = () => {
   const terminal = fromObservableObject(terminal$);
   const [t] = useI18n<AppLocaleEntries>();
-
+  const labelShadows = createMemo(() => shadowsLabel());
+  const modality = useModality();
   return (
     <>
       <PanelHeader label={t('frame.terminal')} />
@@ -111,9 +116,13 @@ export const WindowStyleForm: ParentComponent = () => {
       <PanelRow for={'frameSelectShadow'} label={t('frame.shadows')}>
         <TwoColumnPanelRow>
           <Select
-            items={shadowsLabel()}
+            id={'frameSelectShadow'}
+            native={modality === 'mobile'}
+            items={labelShadows()}
             value={terminal.shadow}
-            onSelectChange={value => setShadow(value!)}
+            onSelectChange={value => {
+              setShadow(value ?? WINDOWS_SHADOWS.bottom);
+            }}
           />
         </TwoColumnPanelRow>
       </PanelRow>
