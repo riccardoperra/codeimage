@@ -1,4 +1,3 @@
-import {adaptiveFullScreenHeight} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
 
 export const [scaffoldTheme, scaffoldVars] = createTheme({
@@ -7,18 +6,4 @@ export const [scaffoldTheme, scaffoldVars] = createTheme({
   virtualHeightFallback: '1vh',
 });
 
-export const scaffold = style([
-  scaffoldTheme,
-  adaptiveFullScreenHeight,
-  {
-    width: '100vw',
-    position: 'relative',
-    display: 'flex',
-
-    '@media': {
-      'screen and (max-width: 768px)': {
-        flexDirection: 'column',
-      },
-    },
-  },
-]);
+export const scaffold = style([scaffoldTheme]);
