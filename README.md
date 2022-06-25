@@ -31,7 +31,15 @@ features to speed up the process to post in social media.
 
 ## 💻 Run locally
 
-**CodeImage** use a monorepo structure using pnpm. To run the project locally, you must have in your local machine pnpm >= 7 and node >= 16.x;
+**CodeImage** use a monorepo structure with pnpm. It's currently subdivided in these packages:
+- [`@codeimage/app`](./apps/codeimage): front-end application
+- [`@codeimage/config`](./packages/config): A package where the editor configuration are situated
+- [`@codeimage/dom-export`](./packages/dom-export): A fork of html-to-image which includes several fix for image export
+- [`@codeimage/highlight`](./packages/highlight): Editor themes and highlighting
+- [`@codeimage/locale`](./packages/locale): Wrapper of @solid-primitives/i18n which includes strict typing
+- [`@codeimage/ui`](./packages/ui): Custom ui kit of CodeImage
+
+To run the project locally, you must have in your local machine pnpm >= 7 and node >= 16.x;
 
 1. Install dependencies
 
