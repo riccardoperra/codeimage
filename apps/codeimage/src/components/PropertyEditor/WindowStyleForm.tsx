@@ -13,7 +13,7 @@ import {SegmentedField, Select} from '@codeimage/ui';
 import {ParentComponent, Show} from 'solid-js';
 import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
-import {shadowsLabel} from '../Terminal/WindowsTerminal/shadows';
+import {shadowsLabel} from '../Terminal/WindowsTerminal/WindowsShadows';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
