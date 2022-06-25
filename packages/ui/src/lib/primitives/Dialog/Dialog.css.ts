@@ -1,41 +1,65 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
+import {recipe, type RecipeVariants} from '@vanilla-extract/recipes';
 import {adaptiveFullScreenHeight, themeVars} from '../../theme';
 import * as textStyles from '../Text/Text.css';
 
 export const [dialogTheme, dialogThemeVars] = createTheme({
   contentPadding: themeVars.spacing['6'],
+  panelRadius: themeVars.borderRadius.lg,
 });
 
 export const host = style([
   dialogTheme,
   {
     position: 'fixed',
-    inset: 0,
     zIndex: themeVars.zIndex['50'],
-    overflowY: 'auto',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 ]);
 
-export const wrapper = style({
-  minHeight: themeVars.minHeight.full,
-  padding: `0 ${themeVars.spacing['4']}`,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  selectors: {
-    '[data-full-screen=true] &': {
-      padding: 0,
-      margin: 0,
+export const wrapper = recipe({
+  base: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: dialogThemeVars.panelRadius,
+    ':focus-visible': {
+      boxShadow: themeVars.boxShadow.outline,
+      outline: 'none',
+    },
+  },
+  variants: {
+    fullScreen: {
+      true: {
+        padding: 0,
+        margin: 0,
+        minHeight: themeVars.minHeight.full,
+        width: '100%',
+        height: '100%',
+        ':focus-visible': {
+          boxShadow: 'none',
+          outline: 'none',
+        },
+      },
     },
   },
 });
 
-export const overlay = style({
-  position: 'fixed',
-  inset: 0,
-  backgroundColor: themeVars.dynamicColors.dialog.overlayBackgroundColor,
-});
+export const overlay = style([
+  host,
+  {
+    backgroundColor: themeVars.dynamicColors.dialog.overlayBackgroundColor,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+]);
 
 export const title = style([
   textStyles.fontSize.lg,
@@ -81,13 +105,13 @@ export const panel = recipe({
     flexDirection: 'column',
     width: themeVars.width.full,
     padding: 0,
-    margin: `${themeVars.margin['8']} 0`,
+    height: themeVars.minHeight.full,
     overflow: 'hidden',
     textAlign: 'left',
     color: themeVars.dynamicColors.dialog.panelTextColor,
     alignItems: 'stretch',
     boxShadow: themeVars.dynamicColors.dialog.panelShadow,
-    borderRadius: themeVars.borderRadius.lg,
+    borderRadius: dialogThemeVars.panelRadius,
     backgroundColor: themeVars.dynamicColors.dialog.panelBackgroundColor,
     transform: 'translate(0, 0)',
   },

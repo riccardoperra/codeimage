@@ -36,11 +36,9 @@ export {
   DialogPanelFooter,
   DialogPanelContent,
   Dialog,
-  DialogTitle,
   DialogPanel,
   type DialogProps,
   type DialogPanelProps,
-  type DialogTitleProps,
 } from './Dialog';
 
 export {

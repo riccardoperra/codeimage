@@ -13,13 +13,12 @@ import {FrameHandler} from './components/Frame/FrameHandler';
 import {FrameSkeleton} from './components/Frame/FrameSkeleton';
 import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from './components/PropertyEditor/EditorSidebar';
-import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Canvas} from './components/Scaffold/Canvas/Canvas';
-import {Scaffold} from './components/Scaffold/Scaffold';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
 import {Toolbar} from './components/Toolbar/Toolbar';
 import {uiStore} from './state/ui';
+import * as styles from './App.css';
 import './theme/global.css';
 
 initEffects();
@@ -41,9 +40,7 @@ export function App() {
   createEffect(on(() => uiStore.locale, locale));
 
   return (
-    <Scaffold>
-      <PortalHost id={'floating-portal-popover'} />
-      <SidebarPopoverHost />
+    <div class={styles.wrapper}>
       <SnackbarHost />
 
       <Show when={modality === 'full'}>
@@ -79,7 +76,7 @@ export function App() {
           <ThemeSwitcher orientation={'vertical'} />
         </Sidebar>
       </Show>
-    </Scaffold>
+    </div>
   );
 }
 
