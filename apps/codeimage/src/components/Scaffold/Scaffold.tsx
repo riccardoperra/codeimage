@@ -1,11 +1,5 @@
 import {dynamicFullHeight} from '@codeimage/ui';
 import {createPlatformProps} from '@core/hooks/createPlatformProps';
-import {
-  isAndroid,
-  isChrome,
-  isFirefox,
-  isIOS,
-} from '@solid-primitives/platform';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
 import {ParentComponent} from 'solid-js';

@@ -1,15 +1,15 @@
 import {
+  cloneNodeSafe,
+  HtmlExportOptions,
   toBlob,
   toJpeg,
   toPng,
   toSvg,
-  HtmlExportOptions,
-  cloneNodeSafe,
 } from '@codeimage/dom-export';
-import {IS_IOS} from '@core/constants/browser';
 import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
 import {useAsyncAction} from '@core/hooks/async-action';
 import {useWebshare} from '@core/hooks/use-webshare';
+import {isIOS} from '@solid-primitives/platform';
 import download from 'downloadjs';
 import {Resource} from 'solid-js';
 
@@ -155,7 +155,7 @@ export async function exportImage(
            * even if the pending is present, an error by the platform/userAgent of iOS will be thrown
            *
            * */
-          if (IS_IOS) {
+          if (isIOS) {
             await Promise.race([
               safeShare(),
               new Promise(r => setTimeout(r, 3000)),
@@ -190,7 +190,7 @@ export async function exportImage(
             ];
           })
           .then(([blob, url]) => {
-            if (!IS_IOS) {
+            if (!isIOS) {
               link.target = '_blank';
             }
             link.href = url;

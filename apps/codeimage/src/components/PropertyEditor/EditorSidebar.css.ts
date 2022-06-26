@@ -1,5 +1,5 @@
-import {createTheme, globalStyle, style} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
+import {createTheme, style} from '@vanilla-extract/css';
 import {recipe} from '@vanilla-extract/recipes';
 
 export const [sidebarTheme, sidebarVars] = createTheme({
