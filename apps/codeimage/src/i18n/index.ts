@@ -293,9 +293,9 @@ export const locale = {
     themeSwitcher: {
       search: 'Busca tema...',
     },
-    ...sidebarLocale.esp,
-    ...uiLocale.esp,
-    ...bottomBar.esp,
+    ...sidebarLocale.es,
+    ...uiLocale.es,
+    ...bottomBar.es,
   },
 };
 

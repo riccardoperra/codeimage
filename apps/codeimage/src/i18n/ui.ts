@@ -47,7 +47,7 @@ export const uiLocale = {
       outlined: 'Umrissen',
     },
   },
-  esp: {
+  es: {
     colorPicker: {
       color: 'Color',
       gradient: 'Gradiente',

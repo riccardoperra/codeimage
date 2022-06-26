@@ -62,7 +62,7 @@ export default {
       backgroundType: 'Background type',
     },
   },
-  esp: {
+  es: {
     frame: {
       frame: 'Estructura',
       padding: 'Espaciado',

@@ -20,7 +20,7 @@ export const bottomBar = {
       editor: 'Editor',
     },
   },
-  esp: {
+  es: {
     bottomBar: {
       themes: 'Temas',
       styles: 'Estilos',
