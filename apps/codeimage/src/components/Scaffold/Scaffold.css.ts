@@ -6,4 +6,9 @@ export const [scaffoldTheme, scaffoldVars] = createTheme({
   virtualHeightFallback: '1vh',
 });
 
-export const scaffold = style([scaffoldTheme]);
+export const scaffold = style([
+  scaffoldTheme,
+  {
+    height: '100%',
+  },
+]);
