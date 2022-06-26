@@ -6,7 +6,7 @@ import {terminal$} from '@codeimage/store/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
 import {Box, FlexField, TextField} from '@codeimage/ui';
-import {TERMINAL_SHADOWS} from '@core/configuration/WindowsShadows';
+import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {useModality} from '@core/hooks/isMobile';
 import {dispatch} from '@ngneat/effects';
