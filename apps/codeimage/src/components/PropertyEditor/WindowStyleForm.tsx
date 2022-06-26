@@ -13,7 +13,7 @@ import {SegmentedField, Select} from '@codeimage/ui';
 import {shadowsLabel, TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {useModality} from '@core/hooks/isMobile';
-import {ParentComponent, Show} from 'solid-js';
+import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
@@ -22,7 +22,7 @@ import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 export const WindowStyleForm: ParentComponent = () => {
   const terminal = fromObservableObject(terminal$);
   const [t] = useI18n<AppLocaleEntries>();
-  const terminalShadows = () => shadowsLabel();
+  const terminalShadows = createMemo(shadowsLabel);
   const modality = useModality();
   return (
     <>
