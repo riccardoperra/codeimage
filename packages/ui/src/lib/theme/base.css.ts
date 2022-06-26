@@ -3,9 +3,6 @@ import {dynamicFullHeight} from './variables.css';
 
 export const adaptiveFullScreenHeight = style({
   height: '100vh',
-  vars: {
-    [dynamicFullHeight]: '1vh',
-  },
   '@media': {
     'screen and (max-width: 768px)': {
       height: `calc(${dynamicFullHeight} * 100)`,
