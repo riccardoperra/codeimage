@@ -19,7 +19,7 @@ export const locale = {
       it: 'Italiano',
       en: 'Inglese',
       de: 'Tedesco',
-      esp: 'Spagnolo',
+      es: 'Spagnolo',
     },
     toolbar: {
       export: 'Exporta',
@@ -95,7 +95,7 @@ export const locale = {
       it: 'Italian',
       en: 'English',
       de: 'German',
-      esp: 'Spanish',
+      es: 'Spanish',
     },
     toolbar: {
       export: 'Export',
@@ -167,7 +167,7 @@ export const locale = {
       it: 'Italienisch',
       en: 'Englisch',
       de: 'Deutsch',
-      esp: 'Spanisch',
+      es: 'Spanisch',
     },
     toolbar: {
       export: 'Export',
@@ -223,7 +223,7 @@ export const locale = {
     ...uiLocale.de,
     ...bottomBar.de,
   },
-  esp: {
+  es: {
     common: {
       close: 'Cerrar',
       confirm: 'Confirmar',
@@ -240,7 +240,7 @@ export const locale = {
       it: 'Italiano',
       en: 'Inglés',
       de: 'Alemán',
-      esp: 'Español',
+      es: 'Español',
     },
     toolbar: {
       export: 'Exportar',
