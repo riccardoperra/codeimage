@@ -1,4 +1,4 @@
-import {createTheme, style} from '@vanilla-extract/css';
+import {createTheme, globalStyle, style} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
 import {recipe} from '@vanilla-extract/recipes';
 
@@ -14,11 +14,15 @@ export const sidebar = style([
     padding: `0px ${sidebarVars.gap} ${sidebarVars.gap}`,
     overflowY: 'auto',
     height: '100%',
-    '@supports': {
-      '(scrollbar-gutter: stable)': {
-        paddingLeft: 0,
-        paddingRight: 0,
-        scrollbarGutter: 'stable both-edges',
+    selectors: {
+      '&:not([data-platform=firefox])': {
+        '@supports': {
+          '(scrollbar-gutter: stable both-edges)': {
+            paddingLeft: 0,
+            paddingRight: 0,
+            scrollbarGutter: 'stable both-edges',
+          },
+        },
       },
     },
   },

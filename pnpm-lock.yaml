@@ -92,6 +92,7 @@ importers:
       '@solid-aria/overlays': ^0.1.3
       '@solid-primitives/i18n': ^1.1.0
       '@solid-primitives/immutable': ^0.1.0
+      '@solid-primitives/platform': 0.0.100
       '@solid-primitives/resize-observer': ^2.0.2
       '@thisbeyond/solid-dnd': ^0.6.1
       '@types/downloadjs': ^1.4.3
@@ -169,6 +170,7 @@ importers:
       '@solid-aria/overlays': 0.1.3_solid-js@1.4.4
       '@solid-primitives/i18n': 1.1.0_solid-js@1.4.4
       '@solid-primitives/immutable': 0.1.0_solid-js@1.4.4
+      '@solid-primitives/platform': 0.0.100_solid-js@1.4.4
       '@solid-primitives/resize-observer': 2.0.2_solid-js@1.4.4
       '@thisbeyond/solid-dnd': 0.6.1_solid-js@1.4.4
       '@vanilla-extract/css': 1.7.2
