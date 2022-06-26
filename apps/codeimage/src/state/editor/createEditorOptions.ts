@@ -14,7 +14,7 @@ export interface EditorUIOptions {
 function $createEditorOptions() {
   const [, withNotifier, version] = createStoreNotifier();
   const [state, setState] = createStore<EditorUIOptions>({
-    themeId: '',
+    themeId: 'vsCodeDarkTheme',
     showLineNumbers: false,
     fontId: appEnvironment.defaultState.editor.font.id,
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
