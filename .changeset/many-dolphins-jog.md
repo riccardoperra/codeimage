@@ -2,4 +2,4 @@
 '@codeimage/highlight': minor
 ---
 
-feat(highlight): github light theme
+feat(highlight): add github light theme

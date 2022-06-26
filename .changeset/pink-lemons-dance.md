@@ -2,4 +2,4 @@
 '@codeimage/app': patch
 ---
 
-fix(app): fix shadow store initial value if item doesn't match
+fix(app): fix shadow store initial value when selected item doesn't match
