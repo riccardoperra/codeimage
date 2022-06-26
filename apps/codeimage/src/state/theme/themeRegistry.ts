@@ -17,6 +17,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.nightOwlTheme),
   },
   {
+    id: 'githubDark',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.githubDarkTheme),
+  },
+  {
     id: 'dracula',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.draculaTheme),

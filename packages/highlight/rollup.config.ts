@@ -1,8 +1,8 @@
-import {defineConfig} from 'rollup';
 import typescript from '@rollup/plugin-typescript';
-import * as pkg from './package.json';
 import {rmSync} from 'fs';
 import {posix} from 'path';
+import {defineConfig} from 'rollup';
+import * as pkg from './package.json';
 
 const {normalize} = posix;
 
@@ -23,11 +23,13 @@ const themes = [
   'oneDark',
   'synthwave84',
   'vsCodeDark',
+  'githubDark',
 ];
 
 const external = [
   ...Object.keys(pkg.dependencies || {}),
   ...Object.keys(pkg.peerDependencies || {}),
+  '@primer/primitives/dist/ts/colors/dark',
 ];
 
 const inputs = themes.reduce((acc, theme) => {

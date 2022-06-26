@@ -14,3 +14,4 @@ export * from './nightOwl';
 export * from './oneDark';
 export * from './synthwave84';
 export * from './vsCodeDark';
+export * from './githubDark';

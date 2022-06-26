@@ -7,7 +7,7 @@ module.exports = {
       [
         'app',
         'ui',
-        'theme',
+        'highlight',
         'config',
         'locale',
         // Only using changeset
