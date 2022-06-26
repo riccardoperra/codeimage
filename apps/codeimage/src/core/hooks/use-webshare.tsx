@@ -1,5 +1,5 @@
+import {isFirefox} from '@solid-primitives/platform';
 import {Accessor, createSignal, onMount} from 'solid-js';
-import {IS_FIREFOX} from '../constants/browser';
 
 export function useWebshare(): [
   supported: Accessor<boolean>,
@@ -18,7 +18,7 @@ export function useWebshare(): [
     if (navigator['canShare']) {
       return navigator.canShare(data);
     }
-    if (IS_FIREFOX) {
+    if (isFirefox) {
       return !data.files;
     }
     return true;
