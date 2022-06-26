@@ -1,5 +1,16 @@
 # @codeimage/highlight
 
+## 8.0.0
+
+### Minor Changes
+
+- [#293](https://github.com/riccardoperra/codeimage/pull/293) [`05b9b94`](https://github.com/riccardoperra/codeimage/commit/05b9b941edd70d60aef49dc1b86fcef531a0f968) Thanks [@hackpirodev](https://github.com/hackpirodev)! - added new language: Spanish
+
+### Patch Changes
+
+- Updated dependencies [[`09882a0`](https://github.com/riccardoperra/codeimage/commit/09882a071b87b198691f4884dc3756ddccfe3c49), [`97833d0`](https://github.com/riccardoperra/codeimage/commit/97833d07a26f5ad4270a6a495594ac9f92a3c08d)]:
+  - @codeimage/highlight@0.10.0
+
 ## 7.0.0
 
 ### Minor Changes

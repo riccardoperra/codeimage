@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.8.1
+
+### Patch Changes
+
+- [#288](https://github.com/riccardoperra/codeimage/pull/288) [`9939393`](https://github.com/riccardoperra/codeimage/commit/99393936f53b09067a4c9884ea953fc0b9285b19) Thanks [@riccardoperra](https://github.com/riccardoperra)! - refactor: @solid-aria/dialog integration
+
 ## 0.8.0
 
 ### Minor Changes
