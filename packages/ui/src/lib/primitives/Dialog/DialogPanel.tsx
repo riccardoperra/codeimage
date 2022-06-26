@@ -1,36 +1,26 @@
-import {
-  DialogPanel as ShDialogPanel,
-  DialogPanelProps as ShDialogPanelProps,
-} from 'solid-headless';
-import {JSXElement} from 'solid-js';
-import {omitProps} from 'solid-use';
-import clsx from 'clsx';
-import * as styles from './Dialog.css';
-import {DialogPanelVariants} from './Dialog.css';
-import {PropsWithChildren} from 'solid-js/types/render/component';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {JSXElement, ParentProps} from 'solid-js';
+import {PropsWithChildren} from 'solid-js/types/render/component';
 import {dynamicFullHeight} from '../../theme/variables.css';
 import {Box} from '../Box';
+import * as styles from './Dialog.css';
+import {DialogPanelVariants} from './Dialog.css';
 
-export type DialogPanelProps = ShDialogPanelProps & DialogPanelVariants;
+export type DialogPanelProps = DialogPanelVariants;
 
-export function DialogPanel(props: DialogPanelProps): JSXElement {
+export function DialogPanel(props: ParentProps<DialogPanelProps>): JSXElement {
   return (
-    <ShDialogPanel
-      {...omitProps(props, ['children', 'class'])}
-      class={clsx(
-        styles.panel({
-          size: props.size,
-          fullScreen: props.fullScreen,
-        }),
-        props.class,
-      )}
+    <div
+      class={styles.panel({
+        size: props.size,
+        fullScreen: props.fullScreen,
+      })}
       style={assignInlineVars({
         [dynamicFullHeight]: `${window.innerHeight * 0.01}px`,
       })}
     >
       {props.children}
-    </ShDialogPanel>
+    </div>
   );
 }
 

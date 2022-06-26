@@ -6,11 +6,14 @@ import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
 import {enableElfProdMode} from '@ngneat/elf';
 import {devTools} from '@ngneat/elf-devtools';
+import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Router, useRoutes} from 'solid-app-router';
 import {createEffect, lazy, on, onMount, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
+import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
+import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
 import './theme/dark-theme.css';
 import {darkGrayScale} from './theme/dark-theme.css';
@@ -79,15 +82,20 @@ export function Bootstrap() {
   );
 
   return (
-    <Router>
-      <I18nContext.Provider value={i18n}>
-        <CodeImageThemeProvider theme={theme}>
-          <Suspense>
-            <Routes />
-          </Suspense>
-        </CodeImageThemeProvider>
-      </I18nContext.Provider>
-    </Router>
+    <Scaffold>
+      <OverlayProvider>
+        <Router>
+          <I18nContext.Provider value={i18n}>
+            <CodeImageThemeProvider theme={theme}>
+              <Suspense>
+                <Routes />
+              </Suspense>
+            </CodeImageThemeProvider>
+          </I18nContext.Provider>
+        </Router>
+      </OverlayProvider>
+      <SidebarPopoverHost />
+    </Scaffold>
   );
 }
 

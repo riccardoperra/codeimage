@@ -9,7 +9,7 @@ import {
 import {combineProps} from '@solid-primitives/props';
 import {mergeRefs} from '@solid-primitives/refs';
 import {access} from '@solid-primitives/utils';
-import {createMemo, JSX, Show, splitProps} from 'solid-js';
+import {JSX, Show, splitProps} from 'solid-js';
 import * as styles from './Popover.css';
 
 interface PopoverProps extends AriaOverlayProps {
@@ -32,8 +32,6 @@ export function Popover(props: PopoverProps) {
     'onClose',
   ]);
 
-  // Handle interacting outside the dialog and pressing
-  // the Escape key to close the modal.
   const {overlayProps} = createOverlay(
     {
       onClose: local.onClose,
@@ -49,14 +47,12 @@ export function Popover(props: PopoverProps) {
   // Get props for the dialog and its title
   const {dialogProps, titleProps} = createDialog({}, () => ref);
 
-  const rootProps = createMemo(() => {
-    return combineProps(overlayProps(), dialogProps(), modalProps(), others);
-  });
+  const rootProps = combineProps(overlayProps, dialogProps, modalProps, others);
 
   return (
     <FocusScope restoreFocus>
       <div
-        {...rootProps()}
+        {...rootProps}
         ref={mergeRefs(el => (ref = el), local.ref)}
         class={styles.container}
       >
