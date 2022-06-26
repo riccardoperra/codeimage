@@ -1,5 +1,13 @@
 # @codeimage/highlight
 
+## 0.10.0
+
+### Minor Changes
+
+- [#291](https://github.com/riccardoperra/codeimage/pull/291) [`09882a0`](https://github.com/riccardoperra/codeimage/commit/09882a071b87b198691f4884dc3756ddccfe3c49) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(highlight): add github dark theme
+
+* [#291](https://github.com/riccardoperra/codeimage/pull/291) [`97833d0`](https://github.com/riccardoperra/codeimage/commit/97833d07a26f5ad4270a6a495594ac9f92a3c08d) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(highlight): add github light theme
+
 ## 0.9.0
 
 ### Minor Changes

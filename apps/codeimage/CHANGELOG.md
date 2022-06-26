@@ -1,5 +1,26 @@
 # @codeimage/app
 
+## 0.21.0
+
+### Minor Changes
+
+- [#293](https://github.com/riccardoperra/codeimage/pull/293) [`05b9b94`](https://github.com/riccardoperra/codeimage/commit/05b9b941edd70d60aef49dc1b86fcef531a0f968) Thanks [@hackpirodev](https://github.com/hackpirodev)! - added new language: Spanish
+
+* [`978c3b3`](https://github.com/riccardoperra/codeimage/commit/978c3b3a964d4b4691433be30fbea8072648dc43) Thanks [@hackpirodev](https://github.com/hackpirodev)! - feat(app): add new control on sidebar to change terminal's shadow
+
+### Patch Changes
+
+- [#295](https://github.com/riccardoperra/codeimage/pull/295) [`96960d5`](https://github.com/riccardoperra/codeimage/commit/96960d5c4f6b6bf67b0bbb78a577402304a84f8b) Thanks [@hackpirodev](https://github.com/hackpirodev)! - added shadow singular property on i18n
+
+* [#290](https://github.com/riccardoperra/codeimage/pull/290) [`fe9275d`](https://github.com/riccardoperra/codeimage/commit/fe9275da4b42fc85a50ee53a64c1cced10111843) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(app): fix shadow store initial value when selected item doesn't match
+
+- [#288](https://github.com/riccardoperra/codeimage/pull/288) [`9939393`](https://github.com/riccardoperra/codeimage/commit/99393936f53b09067a4c9884ea953fc0b9285b19) Thanks [@riccardoperra](https://github.com/riccardoperra)! - refactor: @solid-aria/dialog integration
+
+- Updated dependencies [[`09882a0`](https://github.com/riccardoperra/codeimage/commit/09882a071b87b198691f4884dc3756ddccfe3c49), [`97833d0`](https://github.com/riccardoperra/codeimage/commit/97833d07a26f5ad4270a6a495594ac9f92a3c08d), [`9939393`](https://github.com/riccardoperra/codeimage/commit/99393936f53b09067a4c9884ea953fc0b9285b19), [`05b9b94`](https://github.com/riccardoperra/codeimage/commit/05b9b941edd70d60aef49dc1b86fcef531a0f968)]:
+  - @codeimage/highlight@0.10.0
+  - @codeimage/ui@0.8.1
+  - @codeimage/config@8.0.0
+
 ## 0.20.0
 
 ### Minor Changes
