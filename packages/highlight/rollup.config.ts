@@ -24,12 +24,14 @@ const themes = [
   'synthwave84',
   'vsCodeDark',
   'githubDark',
+  'githubLight',
 ];
 
 const external = [
   ...Object.keys(pkg.dependencies || {}),
   ...Object.keys(pkg.peerDependencies || {}),
   '@primer/primitives/dist/ts/colors/dark',
+  '@primer/primitives/dist/ts/colors/light',
 ];
 
 const inputs = themes.reduce((acc, theme) => {

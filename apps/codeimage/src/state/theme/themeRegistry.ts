@@ -57,6 +57,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.materialPalenightTheme),
   },
   {
+    id: 'githubLight',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.githubLightTheme),
+  },
+  {
     id: 'duotoneSea',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.duotoneSeaTheme),

@@ -115,6 +115,10 @@
     "./githubDark": {
       "import": "./dist/lib/themes/githubDark/index.js",
       "types": "./dist/lib/themes/githubDark/index.d.ts"
+    },
+    "./githubLight": {
+      "import": "./dist/lib/themes/githubLight/index.js",
+      "types": "./dist/lib/themes/githubLight/index.d.ts"
     }
   },
   "typesVersions": {
@@ -169,6 +173,9 @@
       ],
       "githubDark": [
         "./dist/lib/themes/githubDark/index.d.ts"
+      ],
+      "githubLight": [
+        "./dist/lib/themes/githubLight/index.d.ts"
       ],
       "themes": [
         "./dist/lib/themes/index.d.ts"
