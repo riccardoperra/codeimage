@@ -40,6 +40,7 @@ export const githubDark = [
       comments: libColors.prettylights.syntax.comment,
       attrName: libColors.prettylights.syntax.constant,
       function: libColors.prettylights.syntax.entity,
+      typeName: libColors.prettylights.syntax.constant,
     },
   }),
   syntaxHighlighting(
