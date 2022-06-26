@@ -3,7 +3,7 @@ import {themeVars} from '@codeimage/ui';
 import {recipe} from '@vanilla-extract/recipes';
 
 export const [sidebarTheme, sidebarVars] = createTheme({
-  gap: themeVars.spacing['4'],
+  gap: themeVars.spacing['3'],
   panelTitleTextColor: themeVars.dynamicColors.panel.textColor,
   panelRowsTextColor: themeVars.dynamicColors.panel.textColorAlt,
 });
