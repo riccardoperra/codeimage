@@ -47,4 +47,20 @@ export const uiLocale = {
       outlined: 'Umrissen',
     },
   },
+  es: {
+    colorPicker: {
+      color: 'Color',
+      gradient: 'Gradiente',
+    },
+    shadows: {
+      lg: 'Larga',
+      md: 'Media',
+      sm: 'Pequeña',
+      none: 'Ninguna',
+      bottom: 'Baja',
+      xl: 'Extra larga',
+      '3d': 'Efecto 3D',
+      outlined: 'Contorno',
+    },
+  },
 };
