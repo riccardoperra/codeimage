@@ -111,7 +111,7 @@ export const WindowStyleForm: ParentComponent = () => {
           />
         </TwoColumnPanelRow>
       </PanelRow>
-      <PanelRow for={'frameSelectShadow'} label={t('frame.shadows')}>
+      <PanelRow for={'frameSelectShadow'} label={t('frame.shadow')}>
         <TwoColumnPanelRow>
           <Select
             id={'frameSelectShadow'}
