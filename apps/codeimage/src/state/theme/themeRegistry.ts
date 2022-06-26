@@ -17,6 +17,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.nightOwlTheme),
   },
   {
+    id: 'githubDark',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.githubDarkTheme),
+  },
+  {
     id: 'dracula',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.draculaTheme),
@@ -50,6 +55,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     id: 'materialPalenight',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.materialPalenightTheme),
+  },
+  {
+    id: 'githubLight',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.githubLightTheme),
   },
   {
     id: 'duotoneSea',
