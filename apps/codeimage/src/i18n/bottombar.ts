@@ -20,4 +20,11 @@ export const bottomBar = {
       editor: 'Editor',
     },
   },
+  esp: {
+    bottomBar: {
+      themes: 'Temas',
+      styles: 'Estilos',
+      editor: 'Editor',
+    },
+  },
 };
