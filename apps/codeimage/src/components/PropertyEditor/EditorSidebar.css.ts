@@ -14,6 +14,13 @@ export const sidebar = style([
     padding: `0px ${sidebarVars.gap} ${sidebarVars.gap}`,
     overflowY: 'auto',
     height: '100%',
+    '@supports': {
+      '(scrollbar-gutter: stable)': {
+        paddingLeft: 0,
+        paddingRight: 0,
+        scrollbarGutter: 'stable both-edges',
+      },
+    },
   },
 ]);
 
