@@ -1,12 +1,12 @@
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
+import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
 import {createEffect, createRoot, createSignal, on} from 'solid-js';
-import {TERMINAL_SHADOWS} from '@core/configuration/WindowsShadows';
-import {AVAILABLE_TERMINAL_THEMES} from '../core/configuration/terminal-themes';
+import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import shallow from '../core/helpers/shallow';
-import {elfAutoSettersFactory} from '../core/store/elf-auto-setters-factory';
+import {elfAutoSettersFactory} from '@core/store/elf-auto-setters-factory';
 
 export interface TerminalState {
   readonly showHeader: boolean;
@@ -71,6 +71,13 @@ createRoot(() => {
         persistState(store, {
           storage: localStorageStrategy,
           key: '@store/terminal',
+          preStoreInit: store => {
+            const shadows = TERMINAL_SHADOWS;
+            if (!Object.values<string>(shadows).includes(store.shadow)) {
+              return {...store, shadow: shadows.bottom};
+            }
+            return store;
+          },
         });
       }
     }),
