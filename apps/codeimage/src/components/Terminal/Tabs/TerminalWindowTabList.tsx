@@ -57,6 +57,7 @@ export function TerminalWindowTabList(
     <div
       class={styles.wrapper({accent: props.accent})}
       data-accent-visible={props.accent}
+      data-tabs={editors.length}
     >
       <div class={styles.tabListWrapper} ref={wrapperRef}>
         {/* @ts-expect-error: TODO: Should update library types */}

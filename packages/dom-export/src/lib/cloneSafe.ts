@@ -13,6 +13,15 @@ export async function cloneNodeSafe(node: HTMLElement) {
       .querySelectorAll('[data-export-exclude=true]')
       .forEach(cb => cb.remove());
 
+    const firstTab = clonedNode
+      .querySelector('[data-tabs="1"]')
+      ?.querySelector('[class*="Tab_undefined_compound"]');
+    firstTab?.classList.forEach(c => {
+      if (c.indexOf('Tab_undefined_compound') == 0) {
+        firstTab.classList.remove(c);
+      }
+    });
+
     return clonedNode;
   });
 }
