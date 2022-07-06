@@ -27,16 +27,12 @@ import {
   rectangularSelection,
 } from '@codemirror/view';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
-import {ReplaySubject} from 'rxjs';
-import {createCodeMirror} from 'solid-codemirror';
 import {
-  batch,
-  createEffect,
-  createMemo,
-  createResource,
-  onCleanup,
-} from 'solid-js';
-import {observeFocusExtension} from './observe-focus-extension';
+  createCodeMirror,
+  createEditorControlledValue,
+  createEditorFocus,
+} from 'solid-codemirror';
+import {createMemo, createResource, onMount} from 'solid-js';
 
 interface CustomFontExtensionOptions {
   fontName: string;
@@ -67,9 +63,6 @@ const EDITOR_BASE_SETUP: Extension = [
 export default function CustomEditor() {
   let editorEl!: HTMLDivElement;
   const {themeArray: themes} = getThemeStore();
-
-  // fixCodeMirrorAriaRole(() => editorEl);
-  const destroy$ = new ReplaySubject<void>(1);
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
 
@@ -82,11 +75,13 @@ export default function CustomEditor() {
     languages.find(language => language.id === editor()?.languageId),
   );
 
-  const {view, setOptions, setContainer} = createCodeMirror({
-    container: editorEl,
-    onChange: setCode,
-    extensions: [],
-    editable: true,
+  const {
+    editorView,
+    ref: setRef,
+    createExtension,
+  } = createCodeMirror({
+    value: editor()?.code,
+    onValueChange: setCode,
   });
 
   const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
@@ -98,10 +93,6 @@ export default function CustomEditor() {
       themes().find(theme => theme()?.id === editorOptions.themeId)?.() ??
       themes()[0](),
   );
-
-  const currentTheme = () => themeConfiguration()?.editorTheme || [];
-
-  const supportsLineWrap = EditorView.lineWrapping;
 
   const baseTheme = EditorView.theme({
     '&': {
@@ -160,54 +151,26 @@ export default function CustomEditor() {
       fontWeight: editorOptions.fontWeight,
     });
 
-  createEffect(() => {
-    batch(() => {
-      setContainer(editorEl);
-      import('./fix-cm-aria-roles-lighthouse').then(m =>
-        m.fixCodeMirrorAriaRole(() => editorEl),
-      );
-    });
-  });
-
-  createEffect(() => {
-    setOptions(() => ({
-      value: editor()?.code,
-    }));
-  });
-
-  createEffect(() => {
-    const focused = editorOptions.focused;
-    if (focused && !view()?.hasFocus) {
-      view()?.focus();
-    }
-  });
-
-  createEffect(() => {
-    batch(() =>
-      setOptions({
-        extensions: [
-          baseTheme,
-          supportsLineWrap,
-          observeFocusExtension(focused => setFocused(focused)),
-          customFontExtension(),
-          currentLanguage() || [],
-          currentTheme(),
-          editorOptions.showLineNumbers ? lineNumbers() : [],
-          EDITOR_BASE_SETUP,
-        ],
-      }),
+  onMount(() => {
+    setRef(editorEl);
+    import('./fix-cm-aria-roles-lighthouse').then(m =>
+      m.fixCodeMirrorAriaRole(() => editorEl),
     );
   });
 
-  onCleanup(() => {
-    view()?.destroy();
-    destroy$.next();
-    destroy$.complete();
-  });
+  createEditorFocus(editorView, setFocused);
+  createEditorControlledValue(editorView, () => editor()?.code ?? '');
+  createExtension(baseTheme);
+  createExtension(EditorView.lineWrapping);
+  createExtension(customFontExtension);
+  createExtension(currentLanguage);
+  createExtension(() => (editorOptions.showLineNumbers ? lineNumbers() : []));
+  createExtension(() => themeConfiguration()?.editorTheme || []);
+  createExtension(EDITOR_BASE_SETUP);
 
   return (
     <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
-      <div ref={ref => (editorEl = ref)} class={`solid-cm`} />
+      <div ref={ref => (editorEl = ref)} />
     </code>
   );
 }

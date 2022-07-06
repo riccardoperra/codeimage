@@ -1,12 +1,18 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
+import {Extension} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
-import {createCodeMirror} from 'solid-codemirror';
+import {
+  createCodeMirror,
+  createEditorControlledValue,
+  createEditorReadonly,
+} from 'solid-codemirror';
 import {
   createEffect,
   createMemo,
   createResource,
+  on,
   onCleanup,
   onMount,
   VoidProps,
@@ -19,8 +25,6 @@ interface CustomEditorPreviewProps {
   code: string;
 }
 
-// TODO: create a `runMode` plugin like cm5
-
 export default function CustomEditorPreview(
   props: VoidProps<CustomEditorPreviewProps>,
 ) {
@@ -28,6 +32,10 @@ export default function CustomEditorPreview(
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
+
+  const {editorView, ref: setEditorRef, createExtension} = createCodeMirror();
+  createEditorControlledValue(editorView, () => props.code);
+  createEditorReadonly(editorView, () => true);
 
   const selectedLanguage = createMemo(() =>
     languages.find(language => language.id === props.languageId),
@@ -67,33 +75,24 @@ export default function CustomEditorPreview(
       },
     });
 
-  const {view, setOptions, setContainer} = createCodeMirror({
-    container: editorEl,
-    editable: false,
-    extensions: [],
-    'aria-readonly': 'true',
-  });
+  const extensions = (): Extension => [
+    previewEditorBaseTheme(),
+    supportsLineWrap,
+    currentLanguage() || [],
+    currentTheme(),
+  ];
+
+  // eslint-disable-next-line solid/reactivity
+  const reconfigure = createExtension(extensions());
 
   onMount(() => {
-    setContainer(editorEl);
+    setEditorRef(editorEl);
     import('./fix-cm-aria-roles-lighthouse').then(m =>
       m.fixCodeMirrorAriaRole(() => editorEl),
     );
   });
 
-  createEffect(() =>
-    setOptions({
-      value: props.code,
-      extensions: [
-        previewEditorBaseTheme(),
-        supportsLineWrap,
-        currentLanguage() || [],
-        currentTheme(),
-      ],
-    }),
-  );
+  createEffect(on(extensions, extensions => reconfigure(extensions)));
 
-  onCleanup(() => view()?.destroy());
-
-  return <div ref={ref => (editorEl = ref)} />;
+  return <div aria-readonly={true} ref={editorEl} />;
 }
