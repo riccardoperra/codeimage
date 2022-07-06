@@ -2,6 +2,7 @@
   "name": "@codeimage/app",
   "private": true,
   "version": "0.21.0",
+  "type": "module",
   "scripts": {
     "start": "vite",
     "dev": "vite --host",
@@ -87,7 +88,7 @@
     "polished": "^4.2.2",
     "rxjs": "^7.5.5",
     "solid-app-router": "^0.4.1",
-    "solid-codemirror": "^2.0.0",
+    "solid-codemirror": "^2.0.1",
     "solid-headless": "^0.11.1",
     "solid-js": "^1.4.6",
     "solid-use": "^0.5.0",

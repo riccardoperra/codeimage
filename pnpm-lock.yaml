@@ -116,7 +116,7 @@ importers:
       rxjs: ^7.5.5
       sass: ^1.52.1
       solid-app-router: ^0.4.1
-      solid-codemirror: ^2.0.0
+      solid-codemirror: ^2.0.1
       solid-headless: ^0.11.1
       solid-js: ^1.4.6
       solid-use: ^0.5.0
@@ -188,7 +188,7 @@ importers:
       polished: 4.2.2
       rxjs: 7.5.5
       solid-app-router: 0.4.1_solid-js@1.4.6
-      solid-codemirror: 2.0.0
+      solid-codemirror: 2.0.1
       solid-headless: 0.11.1_solid-js@1.4.6
       solid-js: 1.4.6
       solid-use: 0.5.0_solid-js@1.4.6
@@ -6999,10 +6999,9 @@ packages:
       solid-js: 1.4.6
     dev: false
 
-  /solid-codemirror/2.0.0:
-    resolution: {integrity: sha512-sKiihsUfJ9qrF0HkMsN2WLRrVOXfePpF0SQjed+FUGwJgMInUx8H6TXY7outbgCDmiQoVKASe9+MQb+F7mGijQ==}
+  /solid-codemirror/2.0.1:
+    resolution: {integrity: sha512-A/3uY36SSfTHE9XHaRxdGF7gTr8qE7wgnCyxuz6K47h2A+1VWm34kpBcEJP7FUR+yatCk+535mPc07MQDWvj8Q==}
     engines: {node: '>=14'}
-    requiresBuild: true
     dependencies:
       '@changesets/cli': 2.23.0
       '@codemirror/state': 6.1.0

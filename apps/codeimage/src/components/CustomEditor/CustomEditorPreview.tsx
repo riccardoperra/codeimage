@@ -13,7 +13,6 @@ import {
   createMemo,
   createResource,
   on,
-  onCleanup,
   onMount,
   VoidProps,
 } from 'solid-js';
