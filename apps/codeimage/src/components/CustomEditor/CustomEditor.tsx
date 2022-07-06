@@ -160,12 +160,12 @@ export default function CustomEditor() {
 
   createEditorFocus(editorView, setFocused);
   createEditorControlledValue(editorView, () => editor()?.code ?? '');
-  createExtension(baseTheme);
   createExtension(EditorView.lineWrapping);
   createExtension(customFontExtension);
   createExtension(currentLanguage);
   createExtension(() => (editorOptions.showLineNumbers ? lineNumbers() : []));
   createExtension(() => themeConfiguration()?.editorTheme || []);
+  createExtension(baseTheme);
   createExtension(EDITOR_BASE_SETUP);
 
   return (
