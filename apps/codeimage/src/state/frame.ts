@@ -20,7 +20,7 @@ export interface FrameStateSlice {
 const initialState: FrameStateSlice = {
   // lazy initialization
   background: null,
-  padding: 128,
+  padding: 64,
   radius: 24,
   visible: true,
   opacity: 100,
