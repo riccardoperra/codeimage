@@ -20,6 +20,7 @@
     "@types/downloadjs": "^1.4.3",
     "cross-env": "^7.0.3",
     "https-localhost": "^4.7.1",
+    "msw": "0.43.1",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
     "sass": "^1.52.1",
@@ -96,5 +97,8 @@
     "workbox-precaching": "^6.5.3",
     "workbox-routing": "^6.5.3",
     "workbox-strategies": "^6.5.3"
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }

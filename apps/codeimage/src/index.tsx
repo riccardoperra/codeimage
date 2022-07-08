@@ -21,6 +21,8 @@ import './theme/light-theme.css';
 
 if (import.meta.env.DEV) {
   devTools();
+  const {worker} = await import('./mocks/browser');
+  worker.start();
 }
 
 if (import.meta.env.PROD) {
@@ -45,6 +47,16 @@ export function Bootstrap() {
       component: lazy(() => {
         setTimeout(() => getThemeStore().loadThemes());
         return import('./App').then(component => {
+          document.querySelector('#launcher')?.remove();
+          return component;
+        });
+      }),
+    },
+    {
+      path: 'dashboard',
+      component: lazy(() => {
+        setTimeout(() => getThemeStore().loadThemes());
+        return import('./Dashboard').then(component => {
           document.querySelector('#launcher')?.remove();
           return component;
         });
