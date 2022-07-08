@@ -2,7 +2,36 @@ import {rest} from 'msw';
 import {WorkspaceItem} from '../Dashboard';
 
 export const handlers = [
-  rest.get('/workspace', (req, res, ctx) => {
+  rest.get('/workspace/folders', (req, res, ctx) => {
+    return res(
+      ctx.json<WorkspaceItem[]>([
+        {
+          id: '4',
+          name: 'Folder RxJS',
+          createDate: Date.now().toString(),
+          lastUpdateDate: Date.now().toString(),
+          type: 'folder',
+        },
+        {
+          id: '5',
+          name: 'Folder Typescript',
+          createDate: Date.now().toString(),
+          lastUpdateDate: Date.now().toString(),
+          type: 'folder',
+        },
+        {
+          id: '6',
+          name: 'Folder Angular',
+          createDate: Date.now().toString(),
+          lastUpdateDate: Date.now().toString(),
+          type: 'folder',
+        },
+      ]),
+    );
+  }),
+  rest.get('/workspace/folders/4', async (req, res, ctx) => {
+    await new Promise(resolve => setTimeout(resolve, 1250));
+
     return res(
       ctx.json<WorkspaceItem[]>([
         {
@@ -19,26 +48,19 @@ export const handlers = [
           lastUpdateDate: Date.now().toString(),
           type: 'project',
         },
-        {
-          id: '5',
-          name: 'Folder Typescript',
-          createDate: Date.now().toString(),
-          lastUpdateDate: Date.now().toString(),
-          type: 'folder',
-        },
+      ]),
+    );
+  }),
+  rest.get('/workspace/folders/5', async (req, res, ctx) => {
+    await new Promise(resolve => setTimeout(resolve, 1250));
+    return res(
+      ctx.json<WorkspaceItem[]>([
         {
           id: '3',
           name: 'Angular Proj 3',
           createDate: Date.now().toString(),
           lastUpdateDate: Date.now().toString(),
           type: 'project',
-        },
-        {
-          id: '4',
-          name: 'Folder RxJS',
-          createDate: Date.now().toString(),
-          lastUpdateDate: Date.now().toString(),
-          type: 'folder',
         },
         {
           id: '6',
@@ -57,6 +79,20 @@ export const handlers = [
         {
           id: '8',
           name: 'bun.sh test',
+          createDate: Date.now().toString(),
+          lastUpdateDate: Date.now().toString(),
+          type: 'project',
+        },
+      ]),
+    );
+  }),
+  rest.get('/workspace/folders/6', async (req, res, ctx) => {
+    await new Promise(resolve => setTimeout(resolve, 1250));
+    return res(
+      ctx.json<WorkspaceItem[]>([
+        {
+          id: '12',
+          name: 'Solid',
           createDate: Date.now().toString(),
           lastUpdateDate: Date.now().toString(),
           type: 'project',
