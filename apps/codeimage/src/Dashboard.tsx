@@ -1,9 +1,25 @@
-import {Text} from '@codeimage/ui';
-import {Link} from 'solid-app-router';
-import {createEffect, createResource, For, Show} from 'solid-js';
+import {Box, Text} from '@codeimage/ui';
+import {SkeletonLine} from '@ui/Skeleton/Skeleton';
+import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
+import {Link, useParams} from 'solid-app-router';
+import {useRoute} from 'solid-app-router/dist/routing';
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  For,
+  on,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {Footer} from './components/Footer/Footer';
 import {CodeIcon} from './components/Icons/Code';
+import {CodeImageLogo} from './components/Icons/CodeImageLogo';
 import {FolderIcon} from './components/Icons/Folder';
+import {EditorForm} from './components/PropertyEditor/EditorForm';
+import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
+import {sidebarLogo} from './components/Scaffold/Sidebar/Sidebar.css';
+import {Toolbar} from './components/Toolbar/Toolbar';
 import * as styles from './Dashboard.css';
 
 export type WorkspaceItemType = 'folder' | 'project';
@@ -16,43 +32,158 @@ export interface WorkspaceItem {
   lastUpdateDate: string;
 }
 
-export default function Dashboard() {
-  const [data] = createResource<WorkspaceItem[]>(() =>
-    fetch('/workspace')
-      .then(res => res.json())
-      .then((res: WorkspaceItem[]) =>
-        res.sort(a => (a.type === 'folder' ? -1 : 1)),
-      ),
-  );
+function fetchFolders(): Promise<WorkspaceItem[]> {
+  return fetch('/workspace/folders').then(res => res.json());
+}
 
-  createEffect(() => console.log(data()));
+function fetchFolderContent(id: string): Promise<WorkspaceItem[]> {
+  return fetch(`/workspace/folders/${id}`).then(res => res.json());
+}
+
+export default function Dashboard() {
+  const [folders] = createResource(fetchFolders);
+  const [folderId, setFolderId] = createSignal<string>();
+  const params = useParams<{folderId: string}>();
+  const [data] = createResource(folderId, fetchFolderContent, {
+    initialValue: [],
+  });
+
+  createEffect(on(() => params.folderId, setFolderId));
 
   return (
-    <div class={styles.wrapper}>
-      <div class={styles.main}>
-        <h1 class={styles.title}>Workspace</h1>
+    <div class={styles.scaffold}>
+      <Toolbar />
 
-        <ul class={styles.gridList}>
-          <For each={data()}>
-            {item => (
-              <li class={styles.item}>
-                <Link href={`/${item.id}`} class={styles.itemLink} />
-                <div class={styles.itemTitle}>
-                  <Show
-                    fallback={<CodeIcon size={'lg'} />}
-                    when={item.type === 'folder'}
-                  >
-                    <FolderIcon size={'lg'} />
-                  </Show>
-                  <Text size={'lg'}>{item.name}</Text>
-                </div>
-              </li>
-            )}
-          </For>
-        </ul>
-      </div>
+      <Box display={'flex'} height={'100%'}>
+        <Sidebar position={'left'}>
+          <EditorForm>
+            <div class={sidebarLogo}>
+              <CodeImageLogo width={'70%'} />
+            </div>
 
-      <Footer />
+            <ul>
+              <For each={folders()}>
+                {folder => (
+                  <li>
+                    <Link href={`/dashboard/${folder.id}`}>{folder.name}</Link>
+                  </li>
+                )}
+              </For>
+            </ul>
+          </EditorForm>
+        </Sidebar>
+
+        <div class={styles.wrapper}>
+          <div class={styles.main}>
+            <h1 class={styles.title}>Recent projects</h1>
+
+            <ul class={styles.gridList}>
+              <Suspense
+                fallback={
+                  <>
+                    <li class={styles.itemSkeleton}>
+                      <SkeletonLine width={'95%'} height={'16px'} />
+                      <SkeletonDivider height={'12px'} />
+                      <SkeletonLine width={'65%'} height={'16px'} />
+                      <SkeletonDivider height={'13px'} />
+                    </li>
+
+                    <li class={styles.itemSkeleton}>
+                      <SkeletonLine width={'95%'} height={'16px'} />
+                      <SkeletonDivider height={'12px'} />
+                      <SkeletonLine width={'65%'} height={'16px'} />
+                      <SkeletonDivider height={'13px'} />
+                    </li>
+
+                    <li class={styles.itemSkeleton}>
+                      <SkeletonLine width={'95%'} height={'16px'} />
+                      <SkeletonDivider height={'12px'} />
+                      <SkeletonLine width={'65%'} height={'16px'} />
+                      <SkeletonDivider height={'13px'} />
+                    </li>
+                  </>
+                }
+              >
+                <For each={data()?.slice(0, 3)}>
+                  {item => (
+                    <li class={styles.item}>
+                      <Link href={`/`} class={styles.itemLink} />
+                      {/*<Link href={`/${item.id}`} class={styles.itemLink} />*/}
+                      <div class={styles.itemTitle}>
+                        <Show
+                          fallback={<CodeIcon size={'lg'} />}
+                          when={item.type === 'folder'}
+                        >
+                          <FolderIcon size={'lg'} />
+                        </Show>
+                        <Text size={'lg'}>{item.name}</Text>
+                      </div>
+                    </li>
+                  )}
+                </For>
+              </Suspense>
+            </ul>
+
+            <h1 class={styles.title}>Workspace</h1>
+
+            <ul class={styles.gridList}>
+              <Suspense
+                fallback={
+                  <>
+                    <li class={styles.itemSkeleton}>
+                      <SkeletonLine width={'95%'} height={'16px'} />
+                      <SkeletonDivider height={'12px'} />
+                      <SkeletonLine width={'65%'} height={'16px'} />
+                      <SkeletonDivider height={'13px'} />
+                    </li>
+
+                    <li class={styles.itemSkeleton}>
+                      <SkeletonLine width={'95%'} height={'16px'} />
+                      <SkeletonDivider height={'12px'} />
+                      <SkeletonLine width={'65%'} height={'16px'} />
+                      <SkeletonDivider height={'13px'} />
+                    </li>
+
+                    <li class={styles.itemSkeleton}>
+                      <SkeletonLine width={'95%'} height={'16px'} />
+                      <SkeletonDivider height={'12px'} />
+                      <SkeletonLine width={'65%'} height={'16px'} />
+                      <SkeletonDivider height={'13px'} />
+                    </li>
+
+                    <li class={styles.itemSkeleton}>
+                      <SkeletonLine width={'95%'} height={'16px'} />
+                      <SkeletonDivider height={'12px'} />
+                      <SkeletonLine width={'65%'} height={'16px'} />
+                      <SkeletonDivider height={'13px'} />
+                    </li>
+                  </>
+                }
+              >
+                <For each={data()}>
+                  {item => (
+                    <li class={styles.item}>
+                      <Link href={`/`} class={styles.itemLink} />
+                      {/*<Link href={`/${item.id}`} class={styles.itemLink} />*/}
+                      <div class={styles.itemTitle}>
+                        <Show
+                          fallback={<CodeIcon size={'lg'} />}
+                          when={item.type === 'folder'}
+                        >
+                          <FolderIcon size={'lg'} />
+                        </Show>
+                        <Text size={'lg'}>{item.name}</Text>
+                      </div>
+                    </li>
+                  )}
+                </For>
+              </Suspense>
+            </ul>
+          </div>
+
+          <Footer />
+        </div>
+      </Box>
     </div>
   );
 }
