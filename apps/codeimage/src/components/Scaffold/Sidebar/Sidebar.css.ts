@@ -34,10 +34,8 @@ export const sidebar = recipe({
 });
 
 export const sidebarLogo = style({
-  height: scaffoldVars.toolbarHeight,
   display: 'flex',
   alignItems: 'center',
-  borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
 });
 
 export type SidebarVariants = RecipeVariants<typeof sidebar>;
