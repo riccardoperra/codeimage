@@ -20,7 +20,7 @@ export const darkGrayScale = {
 createGlobalTheme('[data-codeimage-theme="dark"]', themeColors, {
   primary: themeVars.backgroundColor.blue['400'],
   background: darkGrayScale.gray2,
-  baseText: themeVars.textColor.gray['800'],
+  baseText: darkGrayScale.gray12,
   descriptionTextColor: '#999999',
   secondary: themeVars.backgroundColor.gray['200'],
   divider: '#252525',
