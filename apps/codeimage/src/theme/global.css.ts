@@ -5,7 +5,7 @@ globalStyle('body', {
   '@supports': {
     '(font-variation-settings: normal)': {
       // Inter var
-      fontFamily: 'Inter,  system-ui, -apple-system, sans-serif',
+      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
     },
   },
 });
