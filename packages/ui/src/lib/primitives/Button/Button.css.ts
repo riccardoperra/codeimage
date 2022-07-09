@@ -11,7 +11,6 @@ export const button = style([
     height: '36px',
     padding: `0 ${themeVars.spacing['3']}`,
     borderRadius: themeVars.borderRadius.lg,
-    cursor: 'pointer',
     fontSize: themeVars.fontSize.sm,
     fontWeight: themeVars.fontWeight.medium,
     lineHeight: 1,

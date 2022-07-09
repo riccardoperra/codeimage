@@ -1,6 +1,11 @@
+import {EditorState} from '@codeimage/store/editor/createActiveEditor';
+import {EditorUIOptions} from '@codeimage/store/editor/createEditorOptions';
+import {FrameStateSlice} from '@codeimage/store/frame';
+import {TerminalState} from '@codeimage/store/terminal';
 import {
   Box,
   Button,
+  HStack,
   SegmentedField,
   SegmentedFieldItem,
   Text,
@@ -11,12 +16,24 @@ import {Link} from 'solid-app-router';
 import {createResource, createSignal, For, Show, Suspense} from 'solid-js';
 import {Footer} from './components/Footer/Footer';
 import {CodeIcon} from './components/Icons/Code';
+import {CodeImageLogo} from './components/Icons/CodeImageLogo';
+import {DotVerticalIcon} from './components/Icons/DotVertical';
 import {FolderIcon} from './components/Icons/Folder';
 import {GridIcon, ListIcon} from './components/Icons/Grid';
 import {PlusIcon} from './components/Icons/PlusIcon';
+import {sidebarLogo} from './components/Scaffold/Sidebar/Sidebar.css';
+import {actionBox, wrapper} from './components/Toolbar/Toolbar.css';
+import {UserBadge} from './components/UserBadge/UserBadge';
 import * as styles from './Dashboard.css';
 
 export type WorkspaceItemType = 'folder' | 'project';
+
+type WorkspaceMetadata = {
+  frame: FrameStateSlice;
+  terminal: TerminalState;
+  options: EditorUIOptions;
+  editors: EditorState[];
+};
 
 export interface WorkspaceItem {
   id: string;
@@ -24,6 +41,7 @@ export interface WorkspaceItem {
   name: string;
   createDate: string;
   lastUpdateDate: string;
+  metadata?: WorkspaceMetadata;
 }
 
 function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
@@ -53,6 +71,9 @@ export default function Dashboard() {
     <div class={styles.scaffold}>
       <Box display={'flex'} height={'100%'}>
         <div class={styles.wrapper}>
+          <Box>
+            <Toolbar />
+          </Box>
           <div class={styles.main}>
             <Box display={'flex'} marginBottom={8}>
               <h1 class={styles.title}>Workspace</h1>
@@ -134,6 +155,24 @@ export default function Dashboard() {
 
           <Footer />
         </div>
+      </Box>
+    </div>
+  );
+}
+
+export function Toolbar() {
+  return (
+    <div class={wrapper}>
+      <Box display={'flex'} alignItems={'center'} flexGrow={1}>
+        <div class={sidebarLogo}>
+          <CodeImageLogo width={'140px'} />
+        </div>
+      </Box>
+
+      <Box class={actionBox} style={{flex: 1}}>
+        <HStack spacing={'2'} marginLeft={'auto'}>
+          <UserBadge />
+        </HStack>
       </Box>
     </div>
   );
