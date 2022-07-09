@@ -1,4 +1,4 @@
-import {Box, Text} from '@codeimage/ui';
+import {Box, Button, Text} from '@codeimage/ui';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
 import {Link, useParams} from 'solid-app-router';
@@ -16,6 +16,7 @@ import {Footer} from './components/Footer/Footer';
 import {CodeIcon} from './components/Icons/Code';
 import {CodeImageLogo} from './components/Icons/CodeImageLogo';
 import {FolderIcon} from './components/Icons/Folder';
+import {PlusIcon} from './components/Icons/PlusIcon';
 import {EditorForm} from './components/PropertyEditor/EditorForm';
 import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
 import {sidebarLogo} from './components/Scaffold/Sidebar/Sidebar.css';
@@ -52,8 +53,6 @@ export default function Dashboard() {
 
   return (
     <div class={styles.scaffold}>
-      <Toolbar />
-
       <Box display={'flex'} height={'100%'}>
         <Sidebar position={'left'}>
           <EditorForm>
@@ -75,56 +74,21 @@ export default function Dashboard() {
 
         <div class={styles.wrapper}>
           <div class={styles.main}>
-            <h1 class={styles.title}>Recent projects</h1>
-
-            <ul class={styles.gridList}>
-              <Suspense
-                fallback={
-                  <>
-                    <li class={styles.itemSkeleton}>
-                      <SkeletonLine width={'95%'} height={'16px'} />
-                      <SkeletonDivider height={'12px'} />
-                      <SkeletonLine width={'65%'} height={'16px'} />
-                      <SkeletonDivider height={'13px'} />
-                    </li>
-
-                    <li class={styles.itemSkeleton}>
-                      <SkeletonLine width={'95%'} height={'16px'} />
-                      <SkeletonDivider height={'12px'} />
-                      <SkeletonLine width={'65%'} height={'16px'} />
-                      <SkeletonDivider height={'13px'} />
-                    </li>
-
-                    <li class={styles.itemSkeleton}>
-                      <SkeletonLine width={'95%'} height={'16px'} />
-                      <SkeletonDivider height={'12px'} />
-                      <SkeletonLine width={'65%'} height={'16px'} />
-                      <SkeletonDivider height={'13px'} />
-                    </li>
-                  </>
-                }
-              >
-                <For each={data()?.slice(0, 3)}>
-                  {item => (
-                    <li class={styles.item}>
-                      <Link href={`/`} class={styles.itemLink} />
-                      {/*<Link href={`/${item.id}`} class={styles.itemLink} />*/}
-                      <div class={styles.itemTitle}>
-                        <Show
-                          fallback={<CodeIcon size={'lg'} />}
-                          when={item.type === 'folder'}
-                        >
-                          <FolderIcon size={'lg'} />
-                        </Show>
-                        <Text size={'lg'}>{item.name}</Text>
-                      </div>
-                    </li>
-                  )}
-                </For>
-              </Suspense>
-            </ul>
-
-            <h1 class={styles.title}>Workspace</h1>
+            <Box display={'flex'}>
+              <h1 class={styles.title}>
+                Workspace /
+                <Box as={'span'} marginLeft={2}>
+                  {folders()?.find(folder => folder.id === folderId())?.name}
+                </Box>
+              </h1>
+              <div style={{flex: 1}} />
+              <Button theme="primary" variant="solid">
+                <PlusIcon size={'sm'} />
+                <Box as={'span'} marginLeft={2}>
+                  New
+                </Box>
+              </Button>
+            </Box>
 
             <ul class={styles.gridList}>
               <Suspense
