@@ -1,7 +1,14 @@
 import {setLocale, toggleThemeMode, uiStore} from '@codeimage/store/ui';
-import {Box, HStack} from '@codeimage/ui';
+import {Box, Button, HStack, Text} from '@codeimage/ui';
 import {Component} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
+import {ArrowNarrowLeft} from '../Icons/ArrowNarrowLeft';
+import {ChevronDownIcon} from '../Icons/ChevronDown';
+import {CodeImageLogo} from '../Icons/CodeImageLogo';
+import {CollectionIcon} from '../Icons/Collection';
+import {DotVerticalIcon} from '../Icons/DotVertical';
+import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
+import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
 import {ExportInNewTabButton} from './ExportNewTabButton';
 import {LanguageSelectorButton} from './LanguageSelectorButton';
@@ -16,24 +23,42 @@ export const Toolbar: Component<{
 
   return (
     <div class={styles.wrapper}>
-      <Box class={styles.actionBox}>
-        <LanguageSelectorButton
-          locales={locales}
-          currentLocale={uiStore.locale}
-          onLocaleChange={setLocale}
-        />
+      <div style={{flex: 1}}>
+        <Button variant={'solid'} theme={'secondary'}>
+          <DotVerticalIcon />
+        </Button>
 
-        <ThemeToggleButton
-          theme={uiStore.themeMode}
-          onThemeToggle={toggleThemeMode}
-        />
+        <div class={sidebarLogo} style={{marginLeft: '1rem'}}>
+          <CodeImageLogo width={'140px'} />
+        </div>
+      </div>
+
+      <Box display={'flex'} alignItems={'center'}>
+        <Text size={'sm'}>Untitled</Text>
+        <ChevronDownIcon width={20} height={20} />
+      </Box>
+
+      <Box class={styles.actionBox} style={{flex: 1}}>
+        {/*<LanguageSelectorButton*/}
+        {/*  locales={locales}*/}
+        {/*  currentLocale={uiStore.locale}*/}
+        {/*  onLocaleChange={setLocale}*/}
+        {/*/>*/}
+
+        {/*<ThemeToggleButton*/}
+        {/*  theme={uiStore.themeMode}*/}
+        {/*  onThemeToggle={toggleThemeMode}*/}
+        {/*/>*/}
 
         <HStack marginLeft={'auto'} spacing={'2'}>
-          <Box display={'inlineBlock'}>
-            <ShareButton />
-          </Box>
-          <ExportInNewTabButton canvasRef={props.canvasRef} />
+          <Button variant={'solid'} theme={'secondary'}>
+            <CollectionIcon />
+            <Box marginLeft={2}>Go to dashboard</Box>
+          </Button>
+
           <ExportButton canvasRef={props.canvasRef} />
+
+          <UserBadge />
         </HStack>
       </Box>
     </div>
