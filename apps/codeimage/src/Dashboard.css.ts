@@ -26,8 +26,8 @@ export const scaffold = style([
 export const wrapper = style([
   {
     position: 'relative',
-    width: '1280px',
     height: '100%',
+    width: '100%',
     marginLeft: 'auto',
     marginRight: 'auto',
     color: themeVars.dynamicColors.panel.textColor,
@@ -39,6 +39,9 @@ export const wrapper = style([
 export const main = style({
   marginTop: themeVars.spacing['12'],
   display: 'flex',
+  width: '1280px',
+  marginLeft: 'auto',
+  marginRight: 'auto',
   flexDirection: 'column',
   overflow: 'hidden',
 });
