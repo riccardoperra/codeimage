@@ -15,6 +15,7 @@ import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
+import {worker} from './mocks/browser';
 import {darkGrayScale} from './theme/dark-theme.css';
 import './theme/dark-theme.css';
 import './theme/global.css';
@@ -22,9 +23,9 @@ import './theme/light-theme.css';
 
 if (import.meta.env.DEV) {
   devTools();
-  const {worker} = await import('./mocks/browser');
-  worker.start();
 }
+
+worker.start();
 
 if (import.meta.env.PROD) {
   enableElfProdMode();
