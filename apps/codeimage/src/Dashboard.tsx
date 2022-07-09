@@ -1,3 +1,4 @@
+import {getAuthState} from '@codeimage/store/auth/auth';
 import {EditorState} from '@codeimage/store/editor/createActiveEditor';
 import {EditorUIOptions} from '@codeimage/store/editor/createEditorOptions';
 import {FrameStateSlice} from '@codeimage/store/frame';
@@ -10,6 +11,7 @@ import {
   SegmentedFieldItem,
   Text,
 } from '@codeimage/ui';
+import {supabase} from '@core/constants/supabase';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
 import {Link} from 'solid-app-router';
@@ -17,7 +19,6 @@ import {createResource, createSignal, For, Show, Suspense} from 'solid-js';
 import {Footer} from './components/Footer/Footer';
 import {CodeIcon} from './components/Icons/Code';
 import {CodeImageLogo} from './components/Icons/CodeImageLogo';
-import {DotVerticalIcon} from './components/Icons/DotVertical';
 import {FolderIcon} from './components/Icons/Folder';
 import {GridIcon, ListIcon} from './components/Icons/Grid';
 import {PlusIcon} from './components/Icons/PlusIcon';
@@ -37,6 +38,7 @@ type WorkspaceMetadata = {
 
 export interface WorkspaceItem {
   id: string;
+  userId: string;
   type: WorkspaceItemType;
   name: string;
   createDate: string;
@@ -45,7 +47,11 @@ export interface WorkspaceItem {
 }
 
 function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
-  return fetch(`/workspace`).then(res => res.json());
+  return supabase
+    .from<WorkspaceItem>('workspace_item')
+    .select('*, snippets(*)')
+    .filter('userId', 'eq', getAuthState().user()?.user?.id)
+    .then(res => res.body ?? []) as Promise<WorkspaceItem[]>;
 }
 
 export default function Dashboard() {
