@@ -55,7 +55,7 @@ export function Bootstrap() {
       }),
     },
     {
-      path: 'dashboard/:folderId',
+      path: 'dashboard',
       component: lazy(() => {
         setTimeout(() => getThemeStore().loadThemes());
         return import('./Dashboard').then(component => {

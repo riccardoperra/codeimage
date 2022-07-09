@@ -1,19 +1,16 @@
 import {
   adaptiveFullScreenHeight,
   backgroundColorVar,
-  dynamicFullHeight,
   textStyles,
   themeVars,
 } from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
+import {recipe} from '@vanilla-extract/recipes';
 import {darkGrayScale} from './theme/dark-theme.css';
 
 export const title = style([
-  textStyles.fontSize['3xl'],
+  textStyles.fontSize['2xl'],
   textStyles.fontWeight.medium,
-  {
-    marginBottom: themeVars.spacing['8'],
-  },
 ]);
 
 export const scaffold = style([
@@ -41,20 +38,36 @@ export const wrapper = style([
 
 export const main = style({
   marginTop: themeVars.spacing['12'],
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
 });
 
-export const gridList = style({
-  display: 'grid',
-  gap: themeVars.spacing['3'],
-  gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))',
-  width: '100%',
-  marginBottom: themeVars.spacing['12'],
+export const gridList = recipe({
+  base: {
+    display: 'grid',
+    gap: themeVars.spacing['3'],
+    gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))',
+    width: '100%',
+    marginBottom: themeVars.spacing['12'],
+    overflow: 'auto',
+    minHeight: '0',
+  },
+  variants: {
+    displayMode: {
+      grid: {
+        gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))',
+      },
+      list: {
+        gridTemplateColumns: 'repeat(1, minmax(0px, 1fr))',
+      },
+    },
+  },
 });
 
 export const item = style({
   backgroundColor: themeVars.dynamicColors.input.backgroundColor,
   width: '100%',
-  height: '180px',
   borderRadius: themeVars.borderRadius.sm,
   padding: '24px',
   boxShadow: themeVars.dynamicColors.dialog.panelShadow,
@@ -64,6 +77,14 @@ export const item = style({
   ':hover': {
     backgroundColor: themeVars.dynamicColors.input.backgroundColor,
     color: themeVars.dynamicColors.baseText,
+  },
+  selectors: {
+    '[data-displayMode="grid"] &': {
+      height: '128px',
+    },
+    '[data-displayMode="list"] &': {
+      height: '64px',
+    },
   },
 });
 
