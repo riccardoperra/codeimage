@@ -20,6 +20,7 @@ export const scaffold = style([
   adaptiveFullScreenHeight,
   {
     color: themeVars.dynamicColors.panel.textColor,
+    background: themeVars.dynamicColors.background,
     display: 'flex',
     flexDirection: 'column',
   },
@@ -51,7 +52,7 @@ export const gridList = style({
 });
 
 export const item = style({
-  backgroundColor: themeVars.dynamicColors.dialog.panelBackgroundColor,
+  backgroundColor: themeVars.dynamicColors.input.backgroundColor,
   width: '100%',
   height: '180px',
   borderRadius: themeVars.borderRadius.sm,
