@@ -3,15 +3,25 @@ import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {EditorState} from '@codeimage/store/editor/model';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
-import {setScale, updateFrameStore} from '@codeimage/store/frame';
-import {updateTerminalStore} from '@codeimage/store/terminal';
+import {frame$, setScale, updateFrameStore} from '@codeimage/store/frame';
+import {terminal$, updateTerminalStore} from '@codeimage/store/terminal';
 import {uiStore} from '@codeimage/store/ui';
 import {Box, Button, HStack, PortalHost, SnackbarHost} from '@codeimage/ui';
+import {supabase} from '@core/constants/supabase';
 import {useModality} from '@core/hooks/isMobile';
 import {useEffects} from '@core/store/use-effect';
 import {initEffects} from '@ngneat/effects';
+import {combineLatest, debounceTime, merge} from 'rxjs';
 import {useRouteData} from 'solid-app-router';
-import {createEffect, createSignal, lazy, on, Show, Suspense} from 'solid-js';
+import {
+  createEffect,
+  createSignal,
+  lazy,
+  on,
+  onCleanup,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
@@ -46,13 +56,36 @@ export function App() {
   useEffects([onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
 
+  const editorStore = getRootEditorStore();
+
   const data = useRouteData<WorkspaceItem | null>();
 
   if (data) {
-    getRootEditorStore().actions.setFromWorkspace(data);
+    editorStore.actions.setFromWorkspace(data);
     updateTerminalStore(state => ({...state, ...data.snippets.terminal}));
     updateFrameStore(state => ({...state, ...data.snippets.frame}));
   }
+
+  // TODO: CLEAN UP DIRTY CODE
+  const subscription = combineLatest([frame$, terminal$, editorStore.onChange$])
+    .pipe(debounceTime(3000))
+    .subscribe(([frame, terminal]) => {
+      supabase
+        .from<WorkspaceItem['snippets']>('snippets')
+        .update({
+          frame,
+          terminal,
+          editors: editorStore.editors.map(editor => ({
+            ...editor,
+            code: window.btoa(editor.code),
+          })),
+          options: editorStore.options,
+        })
+        .filter('id', 'eq', data?.snippets.id)
+        .then();
+    });
+
+  onCleanup(() => subscription.unsubscribe());
 
   return (
     <>

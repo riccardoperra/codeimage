@@ -4,7 +4,7 @@ import {createUniqueId, versionateId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
-import {debounceTime, merge} from 'rxjs';
+import {debounceTime, merge, Subject} from 'rxjs';
 import {
   batch,
   createEffect,
@@ -47,6 +47,7 @@ function $createEditorsStore() {
   const [ready, setReady] = createSignal(false);
   const [activeEditorId, setActiveEditorId] = createSignal<string>(defaultId);
   const isActive = createSelector(activeEditorId);
+  const onChange$ = new Subject<PersistedEditorState>();
 
   onMount(async () => {
     const idbState = await idb
@@ -71,6 +72,8 @@ function $createEditorsStore() {
       ([_, ready]) => {
         if (!ready) return;
         const state: PersistedEditorState = {editors, options};
+        // todo: DIRTY CODE NOT LISTENING TO CODE CHANGES
+        onChange$.next(state);
         idb.set(IDB_KEY, unwrap(state));
       },
     ),
@@ -141,11 +144,13 @@ function $createEditorsStore() {
         code: window.atob(editor.code),
       })),
     );
+    setActiveEditorId(editors[0].id);
     setOptions(item.snippets.options);
   };
 
   return {
     ready,
+    onChange$,
     editors,
     options,
     isActive,
