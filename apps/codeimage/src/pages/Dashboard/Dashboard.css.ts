@@ -43,7 +43,6 @@ export const main = style({
   marginLeft: 'auto',
   marginRight: 'auto',
   flexDirection: 'column',
-  overflow: 'hidden',
 });
 
 export const gridList = recipe({
@@ -77,6 +76,8 @@ export const item = style({
   color: themeVars.dynamicColors.descriptionTextColor,
   transition: 'background-color 0.2s ease-in-out',
   position: 'relative',
+  display: 'inline-flex',
+  justifyContent: 'space-between',
   ':hover': {
     backgroundColor: themeVars.dynamicColors.input.backgroundColor,
     color: themeVars.dynamicColors.baseText,
@@ -87,6 +88,9 @@ export const item = style({
     },
     '[data-displayMode="list"] &': {
       height: '64px',
+      paddingTop: 0,
+      paddingBottom: 0,
+      alignItems: 'center',
     },
   },
 });

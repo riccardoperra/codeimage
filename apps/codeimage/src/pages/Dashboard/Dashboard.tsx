@@ -14,6 +14,9 @@ import {
 import {
   Box,
   Button,
+  DropdownItem,
+  DropdownMenu,
+  FadeInOutTransition,
   HStack,
   SegmentedField,
   SegmentedFieldItem,
@@ -23,10 +26,12 @@ import {supabase} from '@core/constants/supabase';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
 import {Link, useNavigate} from 'solid-app-router';
+import {Popover, PopoverButton} from 'solid-headless';
 import {createResource, createSignal, For, Show, Suspense} from 'solid-js';
 import {Footer} from '../../components/Footer/Footer';
 import {CodeIcon} from '../../components/Icons/Code';
 import {CodeImageLogo} from '../../components/Icons/CodeImageLogo';
+import {DotVerticalIcon} from '../../components/Icons/DotVertical';
 import {FolderIcon} from '../../components/Icons/Folder';
 import {GridIcon, ListIcon} from '../../components/Icons/Grid';
 import {PlusIcon} from '../../components/Icons/PlusIcon';
@@ -67,7 +72,7 @@ function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
 }
 
 export default function Dashboard() {
-  const [data] = createResource(fetchWorkspaceContent, {
+  const [data, {mutate}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
   });
 
@@ -120,6 +125,12 @@ export default function Dashboard() {
         });
       }
     }
+  }
+
+  async function deleteItem(item: WorkspaceItem) {
+    await supabase.from('workspace_item').delete().eq('id', item.id);
+    await supabase.from('snippets').delete().eq('id', item.snippetId);
+    mutate(items => items.filter(i => i.id !== item.id));
   }
 
   return (
@@ -199,15 +210,41 @@ export default function Dashboard() {
                         href={`/${item.id}`}
                         class={styles.itemLink}
                       />
-                      <div class={styles.itemTitle}>
-                        <Show
-                          fallback={<CodeIcon size={'lg'} />}
-                          when={item.type === 'folder'}
-                        >
-                          <FolderIcon size={'lg'} />
-                        </Show>
-                        <Text size={'lg'}>{item.name}</Text>
+                      <div>
+                        <div class={styles.itemTitle}>
+                          <Show
+                            fallback={<CodeIcon size={'lg'} />}
+                            when={item.type === 'folder'}
+                          >
+                            <FolderIcon size={'lg'} />
+                          </Show>
+                          <Text size={'lg'}>{item.name}</Text>
+                        </div>
                       </div>
+                      <Popover>
+                        {({isOpen, setState}) => (
+                          <>
+                            <PopoverButton
+                              as={Button}
+                              variant={'link'}
+                              theme={'secondary'}
+                              size={'xs'}
+                            >
+                              <DotVerticalIcon size={'sm'} />
+                            </PopoverButton>
+                            <FadeInOutTransition show={isOpen()}>
+                              <DropdownMenu
+                                unmount={false}
+                                style={{position: 'fixed'}}
+                              >
+                                <DropdownItem onClick={() => deleteItem(item)}>
+                                  Delete
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </FadeInOutTransition>
+                          </>
+                        )}
+                      </Popover>
                     </li>
                   )}
                 </For>
