@@ -22,8 +22,8 @@ import './theme/light-theme.css';
 
 if (import.meta.env.DEV) {
   devTools();
-  const {worker} = await import('./mocks/browser');
-  worker.start();
+  // const {worker} = await import('./mocks/browser');
+  // worker.start();
 }
 
 if (import.meta.env.PROD) {
@@ -44,10 +44,17 @@ export function Bootstrap() {
 
   const Routes = useRoutes([
     {
-      path: '',
+      path: ':snippetId?',
+      data: ({params, location}) => {
+        const state = location.state;
+        if (params.snippetId) {
+          return state;
+        }
+        return null;
+      },
       component: lazy(() => {
         setTimeout(() => getThemeStore().loadThemes());
-        return import('./App').then(component => {
+        return import('./pages/Editor/App').then(component => {
           document.querySelector('#launcher')?.remove();
           return component;
         });
@@ -55,13 +62,12 @@ export function Bootstrap() {
     },
     {
       path: 'dashboard',
-      component: lazy(() => {
-        setTimeout(() => getThemeStore().loadThemes());
-        return import('./Dashboard').then(component => {
+      component: lazy(() =>
+        import('./pages/Dashboard/Dashboard').then(component => {
           document.querySelector('#launcher')?.remove();
           return component;
-        });
-      }),
+        }),
+      ),
     },
   ]);
 

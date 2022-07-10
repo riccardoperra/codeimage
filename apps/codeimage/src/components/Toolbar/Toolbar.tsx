@@ -1,7 +1,8 @@
 import {Box, Button, HStack, Text} from '@codeimage/ui';
-import {Link} from 'solid-app-router';
+import {Link, useRouteData} from 'solid-app-router';
 import {Component} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
+import {WorkspaceItem} from '../../pages/Dashboard/Dashboard';
 import {ChevronDownIcon} from '../Icons/ChevronDown';
 import {CodeImageLogo} from '../Icons/CodeImageLogo';
 import {CollectionIcon} from '../Icons/Collection';
@@ -15,6 +16,7 @@ export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
   const {locales} = appEnvironment;
+  const {name = 'Untitled'} = useRouteData<WorkspaceItem>() ?? {};
 
   return (
     <div class={styles.wrapper}>
@@ -25,7 +27,7 @@ export const Toolbar: Component<{
       </Box>
 
       <Box display={'flex'} alignItems={'center'}>
-        <Text size={'sm'}>Untitled</Text>
+        <Text size={'sm'}>{name}</Text>
         <ChevronDownIcon width={20} height={20} />
       </Box>
 

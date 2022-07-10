@@ -1,7 +1,6 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {onCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
-import {Box, Button} from '@codeimage/ui';
-import {HStack} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {createRef} from '@core/helpers/create-ref';
 import {getScaleByRatio} from '@core/helpers/getScale';
@@ -16,12 +15,7 @@ import {
   on,
   ParentProps,
 } from 'solid-js';
-import {canvasToolbar} from '../../App.css';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {ClipboardIcon} from '../Icons/Clipboard';
-import {ColorSwatchIcon} from '../Icons/ColorSwatch';
-import {ExportInNewTabButton} from '../Toolbar/ExportNewTabButton';
-import {ShareButton} from '../Toolbar/ShareButton';
 import * as styles from './FrameHandler.css';
 
 const exportExclude = _exportExclude;

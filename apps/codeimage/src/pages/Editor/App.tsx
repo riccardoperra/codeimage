@@ -1,35 +1,37 @@
 import {useI18n} from '@codeimage/locale';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {EditorState} from '@codeimage/store/editor/model';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
-import {setScale} from '@codeimage/store/frame';
+import {setScale, updateFrameStore} from '@codeimage/store/frame';
+import {updateTerminalStore} from '@codeimage/store/terminal';
+import {uiStore} from '@codeimage/store/ui';
 import {Box, Button, HStack, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
 import {useEffects} from '@core/store/use-effect';
 import {initEffects} from '@ngneat/effects';
+import {useRouteData} from 'solid-app-router';
 import {createEffect, createSignal, lazy, on, Show, Suspense} from 'solid-js';
-import {canvasToolbar} from './App.css';
+import {BottomBar} from '../../components/BottomBar/BottomBar';
+import {Footer} from '../../components/Footer/Footer';
+import {FrameHandler} from '../../components/Frame/FrameHandler';
+import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
+import {ClipboardIcon} from '../../components/Icons/Clipboard';
+import {ColorSwatchIcon} from '../../components/Icons/ColorSwatch';
+import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
+import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
+import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
+import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
+import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
+import {ShareButton} from '../../components/Toolbar/ShareButton';
+import {Toolbar} from '../../components/Toolbar/Toolbar';
+import {WorkspaceItem} from '../Dashboard/Dashboard';
 import * as styles from './App.css';
-import {BottomBar} from './components/BottomBar/BottomBar';
-import {Footer} from './components/Footer/Footer';
-import {FrameHandler} from './components/Frame/FrameHandler';
-import {FrameSkeleton} from './components/Frame/FrameSkeleton';
-import {ClipboardIcon} from './components/Icons/Clipboard';
-import {ColorSwatchIcon} from './components/Icons/ColorSwatch';
-import {KeyboardShortcuts} from './components/KeyboardShortcuts/KeyboardShortcuts';
-import {EditorSidebar} from './components/PropertyEditor/EditorSidebar';
-import {Canvas} from './components/Scaffold/Canvas/Canvas';
-import {Sidebar} from './components/Scaffold/Sidebar/Sidebar';
-import {ThemeSwitcher} from './components/ThemeSwitcher/ThemeSwitcher';
-import {ExportInNewTabButton} from './components/Toolbar/ExportNewTabButton';
-import {ShareButton} from './components/Toolbar/ShareButton';
-import {Toolbar} from './components/Toolbar/Toolbar';
-import {uiStore} from './state/ui';
-import './theme/global.css';
 
 initEffects();
 
 const ManagedFrame = lazy(() =>
-  import('./components/Frame/ManagedFrame').then(c => ({
+  import('../../components/Frame/ManagedFrame').then(c => ({
     default: c.ManagedFrame,
   })),
 );
@@ -43,6 +45,14 @@ export function App() {
   // connectStoreWithQueryParams();
   useEffects([onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
+
+  const data = useRouteData<WorkspaceItem | null>();
+
+  if (data) {
+    getRootEditorStore().actions.setFromWorkspace(data);
+    updateTerminalStore(state => ({...state, ...data.snippets.terminal}));
+    updateFrameStore(state => ({...state, ...data.snippets.frame}));
+  }
 
   return (
     <>
