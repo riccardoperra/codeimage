@@ -28,6 +28,19 @@ const initialState: FrameStateSlice = {
   scale: 1,
 };
 
+export function getInitialFrameState(): FrameStateSlice {
+  return {
+    // lazy initialization
+    background: null,
+    padding: 64,
+    radius: 24,
+    visible: true,
+    opacity: 100,
+    autoWidth: false,
+    scale: 1,
+  };
+}
+
 const store = createStore(
   {name: 'frame'},
   withProps<FrameStateSlice>(initialState),

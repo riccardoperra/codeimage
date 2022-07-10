@@ -1,12 +1,12 @@
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
+import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
+import {elfAutoSettersFactory} from '@core/store/elf-auto-setters-factory';
 import {createStore, setProp, withProps} from '@ngneat/elf';
 import {localStorageStrategy, persistState} from '@ngneat/elf-persist-state';
 import {distinctUntilChanged} from 'rxjs';
 import {createEffect, createRoot, createSignal, on} from 'solid-js';
-import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import shallow from '../core/helpers/shallow';
-import {elfAutoSettersFactory} from '@core/store/elf-auto-setters-factory';
 
 export interface TerminalState {
   readonly showHeader: boolean;
@@ -27,22 +27,27 @@ export interface TerminalState {
 const terminalName =
   AVAILABLE_TERMINAL_THEMES.entries[AVAILABLE_TERMINAL_THEMES.keys[0]].name;
 
-const initialState: TerminalState = {
-  showHeader: true,
-  type: terminalName,
-  tabName: 'index.ts',
-  shadow: TERMINAL_SHADOWS.bottom,
-  accentVisible: true,
-  // lazy initialization
-  background: '',
-  // lazy initialization
-  textColor: '',
-  darkMode: true,
-  showWatermark: true,
-  showGlassReflection: false,
-  opacity: 100,
-  alternativeTheme: false,
-};
+// TODO move
+export function getInitialTerminalState(): TerminalState {
+  return {
+    showHeader: true,
+    type: terminalName,
+    tabName: 'index.ts',
+    shadow: TERMINAL_SHADOWS.bottom,
+    accentVisible: true,
+    // lazy initialization
+    background: '',
+    // lazy initialization
+    textColor: '',
+    darkMode: true,
+    showWatermark: true,
+    showGlassReflection: false,
+    opacity: 100,
+    alternativeTheme: false,
+  };
+}
+
+const initialState: TerminalState = getInitialTerminalState();
 
 const store = createStore(
   {name: 'terminal'},
