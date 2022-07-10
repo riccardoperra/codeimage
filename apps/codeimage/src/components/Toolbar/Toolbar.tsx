@@ -11,12 +11,12 @@ import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
 import * as styles from './Toolbar.css';
+import {ToolbarSnippetName} from './ToolbarSnippetName';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
   const {locales} = appEnvironment;
-  const {name = 'Untitled'} = useRouteData<WorkspaceItem>() ?? {};
 
   return (
     <div class={styles.wrapper}>
@@ -26,10 +26,7 @@ export const Toolbar: Component<{
         </div>
       </Box>
 
-      <Box display={'flex'} alignItems={'center'}>
-        <Text size={'sm'}>{name}</Text>
-        <ChevronDownIcon width={20} height={20} />
-      </Box>
+      <ToolbarSnippetName />
 
       <Box class={styles.actionBox} style={{flex: 1}}>
         {/*<LanguageSelectorButton*/}
