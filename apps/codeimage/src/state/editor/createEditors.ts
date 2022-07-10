@@ -18,6 +18,7 @@ import {
 } from 'solid-js';
 import {createStore, unwrap} from 'solid-js/store';
 import {useIdb} from '../../hooks/use-indexed-db';
+import {WorkspaceItem} from '../../pages/Dashboard/Dashboard';
 import {getRootEditorOptions} from './createEditorOptions';
 import {EditorState, PersistedEditorState} from './model';
 
@@ -133,6 +134,16 @@ function $createEditorsStore() {
     () => filter(SUPPORTED_FONTS, font => font.id === options.fontId)[0],
   );
 
+  const setFromWorkspace = (item: WorkspaceItem) => {
+    setEditors(
+      item.snippets.editors.map(editor => ({
+        ...editor,
+        code: window.atob(editor.code),
+      })),
+    );
+    setOptions(item.snippets.options);
+  };
+
   return {
     ready,
     editors,
@@ -148,6 +159,7 @@ function $createEditorsStore() {
       removeEditor,
       setActiveEditorId,
       setTabName,
+      setFromWorkspace,
       ...optionsActions,
     },
   } as const;

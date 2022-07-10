@@ -1,5 +1,5 @@
 import {getAuthState} from '@codeimage/store/auth/auth';
-import {EditorState} from '@codeimage/store/editor/createActiveEditor';
+import {EditorState} from '@codeimage/store/editor/model';
 import {EditorUIOptions} from '@codeimage/store/editor/createEditorOptions';
 import {FrameStateSlice} from '@codeimage/store/frame';
 import {TerminalState} from '@codeimage/store/terminal';
@@ -16,15 +16,15 @@ import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
 import {Link} from 'solid-app-router';
 import {createResource, createSignal, For, Show, Suspense} from 'solid-js';
-import {Footer} from './components/Footer/Footer';
-import {CodeIcon} from './components/Icons/Code';
-import {CodeImageLogo} from './components/Icons/CodeImageLogo';
-import {FolderIcon} from './components/Icons/Folder';
-import {GridIcon, ListIcon} from './components/Icons/Grid';
-import {PlusIcon} from './components/Icons/PlusIcon';
-import {sidebarLogo} from './components/Scaffold/Sidebar/Sidebar.css';
-import {actionBox, wrapper} from './components/Toolbar/Toolbar.css';
-import {UserBadge} from './components/UserBadge/UserBadge';
+import {Footer} from '../../components/Footer/Footer';
+import {CodeIcon} from '../../components/Icons/Code';
+import {CodeImageLogo} from '../../components/Icons/CodeImageLogo';
+import {FolderIcon} from '../../components/Icons/Folder';
+import {GridIcon, ListIcon} from '../../components/Icons/Grid';
+import {PlusIcon} from '../../components/Icons/PlusIcon';
+import {sidebarLogo} from '../../components/Scaffold/Sidebar/Sidebar.css';
+import {actionBox, wrapper} from '../../components/Toolbar/Toolbar.css';
+import {UserBadge} from '../../components/UserBadge/UserBadge';
 import * as styles from './Dashboard.css';
 
 export type WorkspaceItemType = 'folder' | 'project';
@@ -38,12 +38,14 @@ type WorkspaceMetadata = {
 
 export interface WorkspaceItem {
   id: string;
+  created_at: string;
+  name: string;
+  snippetId: string;
+  snippets: {
+    id: string;
+  } & WorkspaceMetadata;
   userId: string;
   type: WorkspaceItemType;
-  name: string;
-  createDate: string;
-  lastUpdateDate: string;
-  metadata?: WorkspaceMetadata;
 }
 
 function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
@@ -141,8 +143,11 @@ export default function Dashboard() {
                 <For each={data()}>
                   {item => (
                     <li class={styles.item}>
-                      <Link href={`/`} class={styles.itemLink} />
-                      {/*<Link href={`/${item.id}`} class={styles.itemLink} />*/}
+                      <Link
+                        state={item}
+                        href={`/${item.id}`}
+                        class={styles.itemLink}
+                      />
                       <div class={styles.itemTitle}>
                         <Show
                           fallback={<CodeIcon size={'lg'} />}

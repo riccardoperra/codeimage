@@ -6,7 +6,7 @@ import {
 } from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 import {recipe} from '@vanilla-extract/recipes';
-import {darkGrayScale} from './theme/dark-theme.css';
+import {darkGrayScale} from '../../theme/dark-theme.css';
 
 export const title = style([
   textStyles.fontSize['2xl'],
