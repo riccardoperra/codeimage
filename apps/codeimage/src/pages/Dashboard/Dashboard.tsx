@@ -30,6 +30,8 @@ import * as styles from './Dashboard.css';
 export type WorkspaceItemType = 'folder' | 'project';
 
 type WorkspaceMetadata = {
+  id: string;
+  created_at: string;
   frame: FrameStateSlice;
   terminal: TerminalState;
   options: EditorUIOptions;
@@ -41,9 +43,9 @@ export interface WorkspaceItem {
   created_at: string;
   name: string;
   snippetId: string;
-  snippets: {
-    id: string;
-  } & WorkspaceMetadata;
+
+  snippets: WorkspaceMetadata;
+
   userId: string;
   type: WorkspaceItemType;
 }
