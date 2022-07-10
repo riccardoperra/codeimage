@@ -24,7 +24,7 @@ import {EditorState, PersistedEditorState} from './model';
 
 const defaultId = createUniqueId();
 
-function getInitialEditorState(): EditorState {
+export function getInitialEditorState(): EditorState {
   return {
     id: defaultId,
     code: appEnvironment.defaultState.editor.code,

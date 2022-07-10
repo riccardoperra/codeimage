@@ -1,8 +1,16 @@
 import {getAuthState} from '@codeimage/store/auth/auth';
+import {
+  EditorUIOptions,
+  getInitialEditorUiOptions,
+} from '@codeimage/store/editor/createEditorOptions';
+import {getInitialEditorState} from '@codeimage/store/editor/createEditors';
 import {EditorState} from '@codeimage/store/editor/model';
-import {EditorUIOptions} from '@codeimage/store/editor/createEditorOptions';
-import {FrameStateSlice} from '@codeimage/store/frame';
-import {TerminalState} from '@codeimage/store/terminal';
+import {FrameStateSlice, getInitialFrameState} from '@codeimage/store/frame';
+import {createUniqueId} from '@codeimage/store/plugins/unique-id';
+import {
+  getInitialTerminalState,
+  TerminalState,
+} from '@codeimage/store/terminal';
 import {
   Box,
   Button,
@@ -14,7 +22,7 @@ import {
 import {supabase} from '@core/constants/supabase';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
-import {Link} from 'solid-app-router';
+import {Link, useNavigate} from 'solid-app-router';
 import {createResource, createSignal, For, Show, Suspense} from 'solid-js';
 import {Footer} from '../../components/Footer/Footer';
 import {CodeIcon} from '../../components/Icons/Code';
@@ -77,6 +85,43 @@ export default function Dashboard() {
     },
   ];
 
+  const navigate = useNavigate();
+
+  async function createNew() {
+    // TODO refactor
+    const editor = {...getInitialEditorState(), id: createUniqueId()};
+
+    const result = await supabase
+      .from<WorkspaceMetadata>('snippets')
+      .insert({
+        terminal: getInitialTerminalState(),
+        frame: getInitialFrameState(),
+        options: getInitialEditorUiOptions(),
+        editors: [{...editor, code: window.btoa(editor.code)}],
+      })
+      .then(res => res.body?.[0]);
+
+    if (result) {
+      const workspaceItem = await supabase
+        .from<WorkspaceItem>('workspace_item')
+        .insert({
+          name: 'Untitled',
+          snippetId: result.id,
+          userId: getAuthState().user()?.user?.id,
+        })
+        .then(res => res.body?.[0]);
+
+      if (workspaceItem) {
+        navigate(`/${result.id}`, {
+          state: {
+            ...workspaceItem,
+            snippets: result,
+          },
+        });
+      }
+    }
+  }
+
   return (
     <div class={styles.scaffold}>
       <Box display={'flex'} height={'100%'}>
@@ -96,7 +141,11 @@ export default function Dashboard() {
                   items={tableModeItems}
                 />
               </Box>
-              <Button theme="primary" variant="solid">
+              <Button
+                theme="primary"
+                variant="solid"
+                onClick={() => createNew()}
+              >
                 <PlusIcon size={'sm'} />
                 <Box as={'span'} marginLeft={2}>
                   New
