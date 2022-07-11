@@ -16,13 +16,16 @@ import {
   Button,
   DropdownItem,
   DropdownMenu,
+  DropdownMenuV2,
   FadeInOutTransition,
   HStack,
+  MenuButton,
   SegmentedField,
   SegmentedFieldItem,
   Text,
 } from '@codeimage/ui';
 import {supabase} from '@core/constants/supabase';
+import {Item} from '@solid-aria/collection';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
 import {Link, useNavigate} from 'solid-app-router';
@@ -221,30 +224,26 @@ export default function Dashboard() {
                           <Text size={'lg'}>{item.name}</Text>
                         </div>
                       </div>
-                      <Popover>
-                        {({isOpen, setState}) => (
-                          <>
-                            <PopoverButton
-                              as={Button}
-                              variant={'link'}
-                              theme={'secondary'}
-                              size={'xs'}
-                            >
-                              <DotVerticalIcon size={'sm'} />
-                            </PopoverButton>
-                            <FadeInOutTransition show={isOpen()}>
-                              <DropdownMenu
-                                unmount={false}
-                                style={{position: 'fixed'}}
-                              >
-                                <DropdownItem onClick={() => deleteItem(item)}>
-                                  Delete
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </FadeInOutTransition>
-                          </>
-                        )}
-                      </Popover>
+                      <DropdownMenuV2
+                        selectionType={'none'}
+                        menuButton={
+                          <MenuButton
+                            as={Button}
+                            variant={'link'}
+                            theme={'secondary'}
+                            size={'xs'}
+                          >
+                            <DotVerticalIcon size={'sm'} />
+                          </MenuButton>
+                        }
+                        onAction={action => {
+                          if (action === 'delete') {
+                            deleteItem(item);
+                          }
+                        }}
+                      >
+                        <Item key={'delete'}>Delete</Item>
+                      </DropdownMenuV2>
                     </li>
                   )}
                 </For>

@@ -1,6 +1,5 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {EditorState} from '@codeimage/store/editor/model';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {frame$, setScale, updateFrameStore} from '@codeimage/store/frame';
@@ -11,7 +10,7 @@ import {supabase} from '@core/constants/supabase';
 import {useModality} from '@core/hooks/isMobile';
 import {useEffects} from '@core/store/use-effect';
 import {initEffects} from '@ngneat/effects';
-import {combineLatest, debounceTime, merge} from 'rxjs';
+import {combineLatest, debounceTime} from 'rxjs';
 import {useRouteData} from 'solid-app-router';
 import {
   createEffect,

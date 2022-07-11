@@ -66,3 +66,10 @@ export {Loading, type LoaderProps, LoadingOverlay} from './Loader';
 export {Toggle} from './Toggle';
 
 export {Popover} from './Popover';
+
+export {
+  DropdownMenu as DropdownMenuV2,
+  MenuButton,
+  MenuItem,
+  MenuPopup,
+} from './Menu';
