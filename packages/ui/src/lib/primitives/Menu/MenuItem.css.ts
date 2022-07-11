@@ -4,8 +4,10 @@ import * as buttonStyles from '../Button/Button.css';
 
 export const menuItem = style([
   buttonStyles.button,
+  buttonStyles.buttonVariant({size: 'sm'}),
   {
     textAlign: 'left',
+    justifyContent: 'flex-start',
     border: 0,
     margin: 0,
     padding: `${themeVars.spacing['2']}`,

@@ -16,7 +16,6 @@ import {
   FlowProps,
   JSX,
   mergeProps,
-  ParentProps,
   Show,
   useContext,
 } from 'solid-js';
@@ -65,6 +64,7 @@ export function DropdownMenu(props: DropdownMenuProps) {
 
   const floating = useFloating({
     placement: 'bottom-start',
+    strategy: 'fixed',
     middleware: [
       offset(10),
       autoPlacement({

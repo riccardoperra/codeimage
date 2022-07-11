@@ -1,28 +1,46 @@
-import {Box, Button, HStack, Text} from '@codeimage/ui';
-import {Link, useRouteData} from 'solid-app-router';
-import {Component} from 'solid-js';
+import {getAuthState} from '@codeimage/store/auth/auth';
+import {Box, Button, DropdownMenuV2, HStack, MenuButton} from '@codeimage/ui';
+import {supabase} from '@core/constants/supabase';
+import {Item} from '@solid-aria/collection';
+import {
+  createOverlayTriggerState,
+  OverlayContainer,
+} from '@solid-aria/overlays';
+import {Link, useNavigate} from 'solid-app-router';
+import {
+  Component,
+  createComponent,
+  getOwner,
+  runWithOwner,
+  Show,
+} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
-import {WorkspaceItem} from '../../pages/Dashboard/Dashboard';
-import {ChevronDownIcon} from '../Icons/ChevronDown';
 import {CodeImageLogo} from '../Icons/CodeImageLogo';
 import {CollectionIcon} from '../Icons/Collection';
-import {DotVerticalIcon} from '../Icons/DotVertical';
+import {DotHorizontalIocn} from '../Icons/DotVertical';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
+import {SettingsDialog} from './SettingsDialog';
 import * as styles from './Toolbar.css';
+import {ToolbarSettingsButton} from './ToolbarSettings';
 import {ToolbarSnippetName} from './ToolbarSnippetName';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
-  const {locales} = appEnvironment;
-
   return (
     <div class={styles.wrapper}>
-      <Box display={'flex'} alignItems={'center'} flexGrow={1}>
-        <div class={sidebarLogo} style={{marginLeft: '1rem'}}>
-          <CodeImageLogo width={'140px'} />
+      <ToolbarSettingsButton />
+      <Box
+        display={'flex'}
+        alignItems={'center'}
+        flexGrow={1}
+        marginLeft={5}
+        marginTop={1}
+      >
+        <div class={sidebarLogo}>
+          <CodeImageLogo width={'160px'} />
         </div>
       </Box>
 
@@ -54,8 +72,6 @@ export const Toolbar: Component<{
           <ExportButton canvasRef={props.canvasRef} />
 
           <UserBadge />
-
-          <DotVerticalIcon />
         </HStack>
       </Box>
     </div>
