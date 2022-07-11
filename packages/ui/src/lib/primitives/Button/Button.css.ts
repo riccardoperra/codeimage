@@ -22,6 +22,7 @@ export const button = style([
     backgroundColor: backgroundColorVar,
     color: colorVar,
     userSelect: 'none',
+    textDecoration: 'none',
 
     ':disabled': {
       cursor: 'default',

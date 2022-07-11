@@ -1,27 +1,12 @@
-import {getAuthState} from '@codeimage/store/auth/auth';
-import {Box, Button, DropdownMenuV2, HStack, MenuButton} from '@codeimage/ui';
-import {supabase} from '@core/constants/supabase';
-import {Item} from '@solid-aria/collection';
-import {
-  createOverlayTriggerState,
-  OverlayContainer,
-} from '@solid-aria/overlays';
-import {Link, useNavigate} from 'solid-app-router';
-import {
-  Component,
-  createComponent,
-  getOwner,
-  runWithOwner,
-  Show,
-} from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
+import {Box, Button, HStack} from '@codeimage/ui';
+import {Link} from 'solid-app-router';
+import {Component} from 'solid-js';
 import {CodeImageLogo} from '../Icons/CodeImageLogo';
 import {CollectionIcon} from '../Icons/Collection';
-import {DotHorizontalIocn} from '../Icons/DotVertical';
+import {ColorSwatchIcon} from '../Icons/ColorSwatch';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
-import {SettingsDialog} from './SettingsDialog';
 import * as styles from './Toolbar.css';
 import {ToolbarSettingsButton} from './ToolbarSettings';
 import {ToolbarSnippetName} from './ToolbarSnippetName';
@@ -32,43 +17,42 @@ export const Toolbar: Component<{
   return (
     <div class={styles.wrapper}>
       <ToolbarSettingsButton />
-      <Box
-        display={'flex'}
-        alignItems={'center'}
-        flexGrow={1}
-        marginLeft={5}
-        marginTop={1}
-      >
+      <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={5}>
         <div class={sidebarLogo}>
-          <CodeImageLogo width={'160px'} />
+          <CodeImageLogo width={'156px'} />
         </div>
-      </Box>
 
-      <ToolbarSnippetName />
-
-      <Box class={styles.actionBox} style={{flex: 1}}>
-        {/*<LanguageSelectorButton*/}
-        {/*  locales={locales}*/}
-        {/*  currentLocale={uiStore.locale}*/}
-        {/*  onLocaleChange={setLocale}*/}
-        {/*/>*/}
-
-        {/*<ThemeToggleButton*/}
-        {/*  theme={uiStore.themeMode}*/}
-        {/*  onThemeToggle={toggleThemeMode}*/}
-        {/*/>*/}
-
-        <HStack marginLeft={'auto'} spacing={'2'}>
+        <Box marginLeft={16}>
           <Button
             as={Link}
             href={'/dashboard'}
-            variant={'solid'}
+            variant={'link'}
             theme={'secondary'}
           >
             <CollectionIcon />
-            <Box marginLeft={2}>Go to dashboard</Box>
+            <Box marginLeft={2}>Dashboard</Box>
           </Button>
+        </Box>
 
+        <Box marginLeft={2}>
+          <Button
+            as={Link}
+            href={'/dashboard'}
+            variant={'link'}
+            theme={'secondary'}
+          >
+            <ColorSwatchIcon />
+            <Box marginLeft={2}>Theme editor</Box>
+          </Button>
+        </Box>
+      </Box>
+
+      <Box flexGrow={1}>
+        <ToolbarSnippetName />
+      </Box>
+
+      <Box class={styles.actionBox} style={{flex: 1}}>
+        <HStack marginLeft={'auto'} spacing={'2'}>
           <ExportButton canvasRef={props.canvasRef} />
 
           <UserBadge />
