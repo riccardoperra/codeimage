@@ -27,6 +27,7 @@ import {FrameHandler} from '../../components/Frame/FrameHandler';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {ClipboardIcon} from '../../components/Icons/Clipboard';
 import {ColorSwatchIcon} from '../../components/Icons/ColorSwatch';
+import {KeyboardShortcuts} from '../../components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
 import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
 import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
@@ -101,6 +102,14 @@ export function App() {
         <PortalHost ref={setPortalHostRef} />
 
         <Canvas>
+          <Box paddingLeft={4} paddingTop={3}>
+            <HStack spacing={'2'}>
+              <Show when={modality === 'full'}>
+                <KeyboardShortcuts />
+              </Show>
+            </HStack>
+          </Box>
+
           <Show when={modality === 'mobile'}>
             <Box paddingLeft={4} paddingTop={3} paddingRight={4}>
               <HStack spacing={'2'}>
@@ -112,15 +121,6 @@ export function App() {
                 >
                   <ClipboardIcon />
                   <Box marginLeft={1}>Copy</Box>
-                </Button>
-                <Button
-                  size={'xs'}
-                  variant={'solid'}
-                  theme={'secondary'}
-                  style={{width: 'auto', height: '30px'}}
-                >
-                  <ColorSwatchIcon />
-                  <Box marginLeft={1}>Format code</Box>
                 </Button>
                 <div style={{flex: 1}} />
                 <ShareButton showLabel={true} />

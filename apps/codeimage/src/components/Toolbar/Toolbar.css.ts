@@ -38,6 +38,7 @@ export const wrapper = style([
             overflow: 'auto',
           },
         },
+        overflow: 'auto',
       },
     },
   },
