@@ -14,10 +14,7 @@ import {
 import {
   Box,
   Button,
-  DropdownItem,
-  DropdownMenu,
   DropdownMenuV2,
-  FadeInOutTransition,
   HStack,
   MenuButton,
   SegmentedField,
@@ -29,7 +26,6 @@ import {Item} from '@solid-aria/collection';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
 import {Link, useNavigate} from 'solid-app-router';
-import {Popover, PopoverButton} from 'solid-headless';
 import {createResource, createSignal, For, Show, Suspense} from 'solid-js';
 import {Footer} from '../../components/Footer/Footer';
 import {CodeIcon} from '../../components/Icons/Code';
@@ -40,6 +36,7 @@ import {GridIcon, ListIcon} from '../../components/Icons/Grid';
 import {PlusIcon} from '../../components/Icons/PlusIcon';
 import {sidebarLogo} from '../../components/Scaffold/Sidebar/Sidebar.css';
 import {actionBox, wrapper} from '../../components/Toolbar/Toolbar.css';
+import {ToolbarSettingsButton} from '../../components/Toolbar/ToolbarSettings';
 import {UserBadge} from '../../components/UserBadge/UserBadge';
 import * as styles from './Dashboard.css';
 
@@ -261,7 +258,9 @@ export default function Dashboard() {
 export function Toolbar() {
   return (
     <div class={wrapper}>
-      <Box display={'flex'} alignItems={'center'} flexGrow={1}>
+      <ToolbarSettingsButton />
+
+      <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={4}>
         <div class={sidebarLogo}>
           <CodeImageLogo width={'140px'} />
         </div>
