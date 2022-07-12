@@ -1,44 +1,26 @@
-import {getAuthState} from '@codeimage/store/auth/auth';
-import {
-  EditorUIOptions,
-  getInitialEditorUiOptions,
-} from '@codeimage/store/editor/createEditorOptions';
-import {getInitialEditorState} from '@codeimage/store/editor/createEditors';
+import {EditorUIOptions} from '@codeimage/store/editor/createEditorOptions';
 import {EditorState} from '@codeimage/store/editor/model';
-import {FrameStateSlice, getInitialFrameState} from '@codeimage/store/frame';
-import {createUniqueId} from '@codeimage/store/plugins/unique-id';
-import {
-  getInitialTerminalState,
-  TerminalState,
-} from '@codeimage/store/terminal';
+import {FrameStateSlice} from '@codeimage/store/frame';
+import {TerminalState} from '@codeimage/store/terminal';
 import {
   Box,
   Button,
-  DropdownMenuV2,
   HStack,
-  MenuButton,
   SegmentedField,
   SegmentedFieldItem,
-  Text,
 } from '@codeimage/ui';
-import {supabase} from '@core/constants/supabase';
-import {Item} from '@solid-aria/collection';
-import {SkeletonLine} from '@ui/Skeleton/Skeleton';
-import {SkeletonDivider} from '@ui/Skeleton/SkeletonDivider';
-import {Link, useNavigate} from 'solid-app-router';
-import {createResource, createSignal, For, Show, Suspense} from 'solid-js';
+import {useNavigate} from 'solid-app-router';
 import {Footer} from '../../components/Footer/Footer';
-import {CodeIcon} from '../../components/Icons/Code';
 import {CodeImageLogo} from '../../components/Icons/CodeImageLogo';
-import {DotVerticalIcon} from '../../components/Icons/DotVertical';
-import {FolderIcon} from '../../components/Icons/Folder';
 import {GridIcon, ListIcon} from '../../components/Icons/Grid';
 import {PlusIcon} from '../../components/Icons/PlusIcon';
 import {sidebarLogo} from '../../components/Scaffold/Sidebar/Sidebar.css';
 import {actionBox, wrapper} from '../../components/Toolbar/Toolbar.css';
 import {ToolbarSettingsButton} from '../../components/Toolbar/ToolbarSettings';
 import {UserBadge} from '../../components/UserBadge/UserBadge';
+import {ProjectList} from './components/ProjectList/ProjectList';
 import * as styles from './Dashboard.css';
+import {DashboardProvider, getDashboardState} from './DashboardContext';
 
 export type WorkspaceItemType = 'folder' | 'project';
 
@@ -63,20 +45,16 @@ export interface WorkspaceItem {
   type: WorkspaceItemType;
 }
 
-function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
-  return supabase
-    .from<WorkspaceItem>('workspace_item')
-    .select('*, snippets(*)')
-    .filter('userId', 'eq', getAuthState().user()?.user?.id)
-    .then(res => res.body ?? []) as Promise<WorkspaceItem[]>;
-}
+export function DashboardContent() {
+  const navigate = useNavigate();
+  const {mode, setMode, createNewProject} = getDashboardState();
 
-export default function Dashboard() {
-  const [data, {mutate}] = createResource(fetchWorkspaceContent, {
-    initialValue: [],
-  });
+  async function createNew() {
+    const result = await createNewProject();
+    if (!result) return;
+    navigate(`/${result.id}`);
+  }
 
-  const [mode, setMode] = createSignal<'grid' | 'list'>('grid');
   const tableModeItems: SegmentedFieldItem<'grid' | 'list'>[] = [
     {
       // @ts-expect-error Support custom elements in segmented field
@@ -89,49 +67,6 @@ export default function Dashboard() {
       value: 'list',
     },
   ];
-
-  const navigate = useNavigate();
-
-  async function createNew() {
-    // TODO refactor
-    const editor = {...getInitialEditorState(), id: createUniqueId()};
-
-    const result = await supabase
-      .from<WorkspaceMetadata>('snippets')
-      .insert({
-        terminal: getInitialTerminalState(),
-        frame: getInitialFrameState(),
-        options: getInitialEditorUiOptions(),
-        editors: [{...editor, code: window.btoa(editor.code)}],
-      })
-      .then(res => res.body?.[0]);
-
-    if (result) {
-      const workspaceItem = await supabase
-        .from<WorkspaceItem>('workspace_item')
-        .insert({
-          name: 'Untitled',
-          snippetId: result.id,
-          userId: getAuthState().user()?.user?.id,
-        })
-        .then(res => res.body?.[0]);
-
-      if (workspaceItem) {
-        navigate(`/${result.id}`, {
-          state: {
-            ...workspaceItem,
-            snippets: result,
-          },
-        });
-      }
-    }
-  }
-
-  async function deleteItem(item: WorkspaceItem) {
-    await supabase.from('workspace_item').delete().eq('id', item.id);
-    await supabase.from('snippets').delete().eq('id', item.snippetId);
-    mutate(items => items.filter(i => i.id !== item.id));
-  }
 
   return (
     <div class={styles.scaffold}>
@@ -164,94 +99,21 @@ export default function Dashboard() {
               </Button>
             </Box>
 
-            <Box
-              as={'ul'}
-              data-displayMode={mode()}
-              class={styles.gridList({displayMode: mode()})}
-            >
-              <Suspense
-                fallback={
-                  <>
-                    <li class={styles.itemSkeleton}>
-                      <SkeletonLine width={'95%'} height={'16px'} />
-                      <SkeletonDivider height={'12px'} />
-                      <SkeletonLine width={'65%'} height={'16px'} />
-                      <SkeletonDivider height={'13px'} />
-                    </li>
-
-                    <li class={styles.itemSkeleton}>
-                      <SkeletonLine width={'95%'} height={'16px'} />
-                      <SkeletonDivider height={'12px'} />
-                      <SkeletonLine width={'65%'} height={'16px'} />
-                      <SkeletonDivider height={'13px'} />
-                    </li>
-
-                    <li class={styles.itemSkeleton}>
-                      <SkeletonLine width={'95%'} height={'16px'} />
-                      <SkeletonDivider height={'12px'} />
-                      <SkeletonLine width={'65%'} height={'16px'} />
-                      <SkeletonDivider height={'13px'} />
-                    </li>
-
-                    <li class={styles.itemSkeleton}>
-                      <SkeletonLine width={'95%'} height={'16px'} />
-                      <SkeletonDivider height={'12px'} />
-                      <SkeletonLine width={'65%'} height={'16px'} />
-                      <SkeletonDivider height={'13px'} />
-                    </li>
-                  </>
-                }
-              >
-                <For each={data()}>
-                  {item => (
-                    <li class={styles.item}>
-                      <Link
-                        state={item}
-                        href={`/${item.id}`}
-                        class={styles.itemLink}
-                      />
-                      <div>
-                        <div class={styles.itemTitle}>
-                          <Show
-                            fallback={<CodeIcon size={'lg'} />}
-                            when={item.type === 'folder'}
-                          >
-                            <FolderIcon size={'lg'} />
-                          </Show>
-                          <Text size={'lg'}>{item.name}</Text>
-                        </div>
-                      </div>
-                      <DropdownMenuV2
-                        selectionType={'none'}
-                        menuButton={
-                          <MenuButton
-                            as={Button}
-                            variant={'link'}
-                            theme={'secondary'}
-                            size={'xs'}
-                          >
-                            <DotVerticalIcon size={'sm'} />
-                          </MenuButton>
-                        }
-                        onAction={action => {
-                          if (action === 'delete') {
-                            deleteItem(item);
-                          }
-                        }}
-                      >
-                        <Item key={'delete'}>Delete</Item>
-                      </DropdownMenuV2>
-                    </li>
-                  )}
-                </For>
-              </Suspense>
-            </Box>
+            <ProjectList />
           </div>
 
           <Footer />
         </div>
       </Box>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <DashboardProvider>
+      <DashboardContent />
+    </DashboardProvider>
   );
 }
 
