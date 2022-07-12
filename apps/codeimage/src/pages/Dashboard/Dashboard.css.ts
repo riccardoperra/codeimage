@@ -1,11 +1,6 @@
 import {adaptiveFullScreenHeight, textStyles, themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 
-export const title = style([
-  textStyles.fontSize['2xl'],
-  textStyles.fontWeight.medium,
-]);
-
 export const scaffold = style([
   adaptiveFullScreenHeight,
   {
@@ -33,7 +28,16 @@ export const main = style({
   marginTop: themeVars.spacing['12'],
   display: 'flex',
   width: '1280px',
+  height: '100%',
+  minHeight: '0',
   marginLeft: 'auto',
   marginRight: 'auto',
   flexDirection: 'column',
+});
+
+export const scrollableList = style({
+  flex: 1,
+  overflow: 'auto',
+  minHeight: '0',
+  height: '100%',
 });

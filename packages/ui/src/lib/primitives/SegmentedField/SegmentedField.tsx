@@ -1,12 +1,12 @@
 import * as styles from './SegmentedField.css';
-import {createMemo, For, JSX} from 'solid-js';
+import {createMemo, For, JSX, JSXElement} from 'solid-js';
 import clsx from 'clsx';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {useText, UseTextProps} from '../Text';
 import {Box} from '../Box';
 
 export interface SegmentedFieldItem<T> {
-  label: string;
+  label: string | JSXElement;
   value: T;
 }
 
