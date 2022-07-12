@@ -37,6 +37,7 @@ export {
   DialogPanelContent,
   Dialog,
   DialogPanel,
+  createStandaloneDialog,
   type DialogProps,
   type DialogPanelProps,
 } from './Dialog';

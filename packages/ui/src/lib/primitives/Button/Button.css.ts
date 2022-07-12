@@ -136,6 +136,21 @@ export const buttonVariant = recipe({
           },
         },
       },
+      danger: {
+        vars: {
+          [backgroundColorVar]:
+            themeVars.dynamicColors.button.danger.backgroundColor,
+          [colorVar]: themeVars.dynamicColors.button.danger.textColor,
+        },
+        selectors: {
+          '&:not(:disabled):hover': {
+            vars: {
+              [backgroundColorVar]:
+                themeVars.dynamicColors.button.danger.hoverColor,
+            },
+          },
+        },
+      },
     },
 
     size: {
