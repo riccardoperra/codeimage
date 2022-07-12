@@ -58,6 +58,12 @@ createGlobalTheme('[data-codeimage-theme="dark"]', themeColors, {
       hoverColor: themeVars.backgroundColor.blue['600'],
       textColor: themeVars.backgroundColor.white,
     },
+    danger: {
+      backgroundColor: themeVars.backgroundColor.red['500'],
+      activeColor: themeVars.backgroundColor.red['700'],
+      hoverColor: themeVars.backgroundColor.red['600'],
+      textColor: themeVars.backgroundColor.white,
+    },
   },
 
   listBox: {
