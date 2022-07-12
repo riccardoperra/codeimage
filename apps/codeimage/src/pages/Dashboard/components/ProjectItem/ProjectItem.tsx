@@ -1,5 +1,12 @@
-import {Button, DropdownMenuV2, MenuButton, Text} from '@codeimage/ui';
+import {
+  Button,
+  createStandaloneDialog,
+  DropdownMenuV2,
+  MenuButton,
+  Text,
+} from '@codeimage/ui';
 import {Item} from '@solid-aria/collection';
+import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {Link} from 'solid-app-router';
 import {VoidProps} from 'solid-js';
 import {DotVerticalIcon} from '../../../../components/Icons/DotVertical';
@@ -13,6 +20,7 @@ interface ProjectItemProps {
 
 export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const {deleteProject} = getDashboardState();
+  const createDialog = createStandaloneDialog();
 
   return (
     <li class={styles.item}>
@@ -39,7 +47,12 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
         }
         onAction={action => {
           if (action === 'delete') {
-            deleteProject(props.item);
+            createDialog(ConfirmDialog, {
+              title: 'Delete project',
+              message: 'This action is not reversible.',
+              onConfirm: () => deleteProject(props.item),
+              actionType: 'danger',
+            });
           }
         }}
       >
