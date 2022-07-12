@@ -41,6 +41,10 @@ function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
   return supabase
     .from<WorkspaceItem>('workspace_item')
     .select('*, snippets(*)')
+    .order('created_at', {
+      ascending: false,
+      nullsFirst: true,
+    })
     .filter('userId', 'eq', authState.user()?.user?.id)
     .then(res => res.body ?? []) as Promise<WorkspaceItem[]>;
 }

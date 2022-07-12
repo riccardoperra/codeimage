@@ -8,7 +8,7 @@ import {
 import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {Link} from 'solid-app-router';
-import {VoidProps} from 'solid-js';
+import {startTransition, VoidProps} from 'solid-js';
 import {DotVerticalIcon} from '../../../../components/Icons/DotVertical';
 import {WorkspaceItem} from '../../Dashboard';
 import {getDashboardState} from '../../DashboardContext';
@@ -47,12 +47,15 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
         }
         onAction={action => {
           if (action === 'delete') {
-            createDialog(ConfirmDialog, {
+            createDialog(ConfirmDialog, state => ({
               title: 'Delete project',
               message: 'This action is not reversible.',
-              onConfirm: () => deleteProject(props.item),
+              onConfirm: () => {
+                deleteProject(props.item);
+                state.close();
+              },
               actionType: 'danger',
-            });
+            }));
           }
         }}
       >

@@ -118,6 +118,13 @@ export const panel = recipe({
 
   variants: {
     size: {
+      xs: {
+        '@media': {
+          'screen and (min-width: 768px)': {
+            width: '24rem',
+          },
+        },
+      },
       sm: {
         '@media': {
           'screen and (min-width: 768px)': {
