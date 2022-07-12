@@ -144,7 +144,7 @@ function $createEditorsStore() {
         code: window.atob(editor.code),
       })),
     );
-    setActiveEditorId(editors[0].id);
+    setActiveEditorId(item.snippets.editors[0].id);
     setOptions(item.snippets.options);
   };
 

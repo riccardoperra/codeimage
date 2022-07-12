@@ -1,3 +1,5 @@
+import {useI18n} from '@codeimage/locale';
+import {uiStore} from '@codeimage/store/ui';
 import {
   Button,
   createStandaloneDialog,
@@ -8,7 +10,7 @@ import {
 import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {Link} from 'solid-app-router';
-import {startTransition, VoidProps} from 'solid-js';
+import {VoidProps} from 'solid-js';
 import {DotVerticalIcon} from '../../../../components/Icons/DotVertical';
 import {WorkspaceItem} from '../../Dashboard';
 import {getDashboardState} from '../../DashboardContext';
@@ -20,7 +22,13 @@ interface ProjectItemProps {
 
 export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const {deleteProject} = getDashboardState();
+  const locale = () => uiStore.locale;
   const createDialog = createStandaloneDialog();
+
+  const date = () => {
+    const rtf1 = new Intl.DateTimeFormat(locale(), {dateStyle: 'long'});
+    return rtf1.format(new Date(props.item.created_at));
+  };
 
   return (
     <li class={styles.item}>
@@ -33,6 +41,8 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
         <div class={styles.itemTitle}>
           <Text size={'lg'}>{props.item.name}</Text>
         </div>
+
+        <Text size={'xs'}>{date()}</Text>
       </div>
       <DropdownMenuV2
         menuButton={

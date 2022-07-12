@@ -8,8 +8,6 @@ export const gridList = recipe({
     gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))',
     width: '100%',
     marginBottom: themeVars.spacing['12'],
-    overflow: 'auto',
-    minHeight: '0',
   },
   variants: {
     displayMode: {
