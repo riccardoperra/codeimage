@@ -1,32 +1,16 @@
 import typescript from '@rollup/plugin-typescript';
-import {rmSync} from 'fs';
+import {readdirSync, rmSync, statSync} from 'fs';
 import {posix} from 'path';
 import {defineConfig} from 'rollup';
 import * as pkg from './package.json';
 
 const {normalize} = posix;
 
-const themes = [
-  'arcDark',
-  'coldarkDark',
-  'coldarkCold',
-  'dracula',
-  'duotoneDark',
-  'duotoneSea',
-  'holi',
-  'light',
-  'materialLight',
-  'materialOcean',
-  'materialPalenight',
-  'materialVolcano',
-  'nightOwl',
-  'oneDark',
-  'synthwave84',
-  'vsCodeDark',
-  'githubDark',
-  'githubLight',
-  'poimandres',
-];
+const themesPath = posix.join(__dirname, 'src/lib/themes');
+
+const themes = readdirSync(themesPath).filter(file =>
+  statSync(posix.join(themesPath, file)).isDirectory(),
+);
 
 const external = [
   ...Object.keys(pkg.dependencies || {}),

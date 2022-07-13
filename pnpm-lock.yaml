@@ -300,6 +300,8 @@ importers:
       '@primer/primitives': ^7.8.4
       '@rollup/plugin-typescript': ^8.3.3
       '@types/node': ^17.0.42
+      chalk: 4.1.2
+      enquirer: 2.3.6
       rimraf: ^3.0.2
       rollup: ^2.75.6
       rollup-plugin-dts: ^4.2.2
@@ -316,6 +318,8 @@ importers:
     devDependencies:
       '@rollup/plugin-typescript': 8.3.3_fgms252lqu3rk7srzpqqayl4ya
       '@types/node': 17.0.42
+      chalk: 4.1.2
+      enquirer: 2.3.6
       rimraf: 3.0.2
       rollup: 2.75.6
       rollup-plugin-dts: 4.2.2_fgms252lqu3rk7srzpqqayl4ya
@@ -436,6 +440,7 @@ packages:
   /@babel/code-frame/7.16.7:
     resolution: {integrity: sha512-iAXqUn8IIeBTNd72xsFlgaXHkMBMt6y4HJp1tIaK465CWLT/fG1aqB7ykr95gHHmlBdGbFeWWfyB4NJJ0nmeIg==}
     engines: {node: '>=6.9.0'}
+    requiresBuild: true
     dependencies:
       '@babel/highlight': 7.17.12
 
@@ -4017,6 +4022,7 @@ packages:
 
   /commander/2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
+    requiresBuild: true
     dev: true
 
   /commander/9.3.0:
