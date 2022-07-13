@@ -1,14 +1,13 @@
 import {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {updateTheme} from '@codeimage/store/effects/onThemeChange';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
 import {Box, FlexField, TextField} from '@codeimage/ui';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {useModality} from '@core/hooks/isMobile';
-import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createSelector,
@@ -43,7 +42,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const isSelected = createSelector(() => options.themeId);
 
   const onSelectTheme = (theme: CustomTheme) => {
-    dispatch(updateTheme({theme}));
+    dispatchUpdateTheme({theme});
     umami.trackEvent(theme.id, `theme-change`);
   };
   const exampleCode =
@@ -123,7 +122,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                             fallback={
                               <EmptyCircle
                                 cursor={'pointer'}
-                                onClick={() => dispatch(updateTheme({theme}))}
+                                onClick={() => dispatchUpdateTheme({theme})}
                                 size={'md'}
                                 opacity={0.35}
                               />

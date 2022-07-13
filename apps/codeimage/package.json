@@ -63,7 +63,6 @@
     "@lion/core": "^0.23.1",
     "@lion/listbox": "^0.14.0",
     "@motionone/solid": "^10.11.2",
-    "@ngneat/effects": "^1.1.1",
     "@solid-aria/button": "^0.1.3",
     "@solid-aria/collection": "0.1.4",
     "@solid-aria/overlays": "^0.1.3",
