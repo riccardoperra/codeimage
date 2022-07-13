@@ -1,6 +1,7 @@
+import {getAuthState} from '@codeimage/store/auth/auth';
 import {Box, Button, HStack} from '@codeimage/ui';
 import {Link} from 'solid-app-router';
-import {Component} from 'solid-js';
+import {Component, Show} from 'solid-js';
 import {CodeImageLogo} from '../Icons/CodeImageLogo';
 import {CollectionIcon} from '../Icons/Collection';
 import {ColorSwatchIcon} from '../Icons/ColorSwatch';
@@ -14,6 +15,8 @@ import {ToolbarSnippetName} from './ToolbarSnippetName';
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
+  const loggedIn = () => getAuthState().loggedIn();
+
   return (
     <div class={styles.wrapper}>
       <ToolbarSettingsButton />
@@ -22,29 +25,31 @@ export const Toolbar: Component<{
           <CodeImageLogo width={'156px'} />
         </div>
 
-        <Box marginLeft={16}>
-          <Button
-            as={Link}
-            href={'/dashboard'}
-            variant={'link'}
-            theme={'secondary'}
-          >
-            <CollectionIcon />
-            <Box marginLeft={2}>Dashboard</Box>
-          </Button>
-        </Box>
+        <Show when={loggedIn()}>
+          <Box marginLeft={16}>
+            <Button
+              as={Link}
+              href={'/dashboard'}
+              variant={'link'}
+              theme={'secondary'}
+            >
+              <CollectionIcon />
+              <Box marginLeft={2}>Dashboard</Box>
+            </Button>
+          </Box>
 
-        <Box marginLeft={2}>
-          <Button
-            as={Link}
-            href={'/dashboard'}
-            variant={'link'}
-            theme={'secondary'}
-          >
-            <ColorSwatchIcon />
-            <Box marginLeft={2}>Theme editor</Box>
-          </Button>
-        </Box>
+          <Box marginLeft={2}>
+            <Button
+              as={Link}
+              href={'/dashboard'}
+              variant={'link'}
+              theme={'secondary'}
+            >
+              <ColorSwatchIcon />
+              <Box marginLeft={2}>Theme editor</Box>
+            </Button>
+          </Box>
+        </Show>
       </Box>
 
       <Box flexGrow={1}>

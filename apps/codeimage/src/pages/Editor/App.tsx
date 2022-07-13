@@ -1,4 +1,5 @@
 import {useI18n} from '@codeimage/locale';
+import {getAuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
@@ -20,6 +21,7 @@ import {
   onCleanup,
   Show,
   Suspense,
+  untrack,
 } from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
@@ -53,6 +55,7 @@ export function App() {
   useEffects([onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
 
+  const authState = getAuthState();
   const editorStore = getRootEditorStore();
   const frameStore = getFrameState();
   const terminalStore = getTerminalState();
@@ -73,19 +76,21 @@ export function App() {
   ])
     .pipe(debounceTime(3000))
     .subscribe(([frame, terminal]) => {
-      supabase
-        .from<WorkspaceItem['snippets']>('snippets')
-        .update({
-          frame,
-          terminal,
-          editors: editorStore.editors.map(editor => ({
-            ...editor,
-            code: window.btoa(editor.code),
-          })),
-          options: editorStore.options,
-        })
-        .filter('id', 'eq', data?.snippets.id)
-        .then();
+      if (untrack(authState.loggedIn) && !!data?.snippets?.id) {
+        supabase
+          .from<WorkspaceItem['snippets']>('snippets')
+          .update({
+            frame,
+            terminal,
+            editors: editorStore.editors.map(editor => ({
+              ...editor,
+              code: window.btoa(editor.code),
+            })),
+            options: editorStore.options,
+          })
+          .filter('id', 'eq', data?.snippets.id)
+          .then();
+      }
     });
 
   onCleanup(() => subscription.unsubscribe());
