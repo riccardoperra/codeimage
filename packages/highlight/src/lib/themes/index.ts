@@ -13,6 +13,7 @@ export * from './materialVolcano';
 export * from './nightOwl';
 export * from './oneDark';
 export * from './synthwave84';
+export * from './poimandres';
 export * from './vsCodeDark';
 export * from './githubDark';
 export * from './githubLight';
