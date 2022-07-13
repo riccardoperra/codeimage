@@ -16,7 +16,6 @@ import {
   onMount,
   VoidProps,
 } from 'solid-js';
-import {supportsLineWrap} from './supportsLineWrap';
 
 interface CustomEditorPreviewProps {
   themeId: string;
