@@ -1,16 +1,9 @@
 import {useI18n} from '@codeimage/locale';
-import {
-  frame$,
-  setBackground,
-  setOpacity,
-  setVisibility,
-} from '@codeimage/store/frame';
+import {getFrameState} from '@codeimage/store/frame/createFrame';
 import {RangeField, SegmentedField} from '@codeimage/ui';
 import {ParentComponent, Show} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
-import {fromObservableObject} from '../../core/hooks/from-observable-object';
 import {AppLocaleEntries} from '../../i18n';
-import {setPadding} from '../../state/frame';
 import {CustomColorPicker} from './controls/CustomColorPicker';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
@@ -18,7 +11,7 @@ import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 export const FrameStyleForm: ParentComponent = () => {
   const [t] = useI18n<AppLocaleEntries>();
   const {editorPadding} = appEnvironment;
-  const frame = fromObservableObject(frame$);
+  const frame = getFrameState();
 
   return (
     <>
@@ -29,8 +22,8 @@ export const FrameStyleForm: ParentComponent = () => {
           <SegmentedField
             id={'paddingField'}
             size={'xs'}
-            value={frame.padding}
-            onChange={setPadding}
+            value={frame.store.padding}
+            onChange={frame.setPadding}
             items={editorPadding.map(padding => ({
               label: padding.toString(),
               value: padding,
@@ -44,8 +37,8 @@ export const FrameStyleForm: ParentComponent = () => {
           <SegmentedField
             id={'visibleField'}
             size={'xs'}
-            value={frame.visible}
-            onChange={setVisibility}
+            value={frame.store.visible}
+            onChange={frame.setVisibility}
             items={[
               {label: t('common.yes'), value: true},
               {label: t('common.no'), value: false},
@@ -54,30 +47,28 @@ export const FrameStyleForm: ParentComponent = () => {
         </TwoColumnPanelRow>
       </PanelRow>
 
-      <Show when={frame.visible}>
+      <Show when={frame.store.visible}>
         <PanelRow for={'opacityField'} label={t('frame.opacity')}>
           <TwoColumnPanelRow>
             <RangeField
               id={'opacityField'}
-              value={frame.opacity}
+              value={frame.store.opacity}
               min={0}
-              disabled={!frame.visible}
+              disabled={!frame.store.visible}
               max={100}
-              onChange={setOpacity}
+              onChange={frame.setOpacity}
             />
           </TwoColumnPanelRow>
         </PanelRow>
       </Show>
 
-      <Show when={frame.visible}>
+      <Show when={frame.store.visible}>
         <PanelRow for={'colorField'} label={t('frame.color')}>
           <TwoColumnPanelRow>
             <CustomColorPicker
               title={'Color'}
-              onChange={color => {
-                setBackground(color);
-              }}
-              value={frame.background ?? ''}
+              onChange={color => frame.setBackground(color)}
+              value={frame.store.background ?? ''}
             />
           </TwoColumnPanelRow>
         </PanelRow>

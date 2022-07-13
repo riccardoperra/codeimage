@@ -1,8 +1,8 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getFrameState} from '@codeimage/store/frame/createFrame';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
-import {frame$, setScale, updateFrameStore} from '@codeimage/store/frame';
 import {terminal$, updateTerminalStore} from '@codeimage/store/terminal';
 import {uiStore} from '@codeimage/store/ui';
 import {Box, Button, HStack, PortalHost, SnackbarHost} from '@codeimage/ui';
@@ -16,6 +16,7 @@ import {
   createEffect,
   createSignal,
   lazy,
+  observable,
   on,
   onCleanup,
   Show,
@@ -26,7 +27,6 @@ import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {ClipboardIcon} from '../../components/Icons/Clipboard';
-import {ColorSwatchIcon} from '../../components/Icons/ColorSwatch';
 import {KeyboardShortcuts} from '../../components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
 import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
@@ -35,7 +35,7 @@ import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
-import {WorkspaceItem} from '../Dashboard/Dashboard';
+import {WorkspaceItem} from '../Dashboard/dashboard.state';
 import * as styles from './App.css';
 
 initEffects();
@@ -57,19 +57,25 @@ export function App() {
   createEffect(on(() => uiStore.locale, locale));
 
   const editorStore = getRootEditorStore();
+  const frameStore = getFrameState();
 
   const data = useRouteData<WorkspaceItem | null>();
 
   if (data) {
     editorStore.actions.setFromWorkspace(data);
     updateTerminalStore(state => ({...state, ...data.snippets.terminal}));
-    updateFrameStore(state => ({...state, ...data.snippets.frame}));
+    frameStore.setStore(state => ({...state, ...data.snippets.frame}));
   }
 
   // TODO: CLEAN UP DIRTY CODE
-  const subscription = combineLatest([frame$, terminal$, editorStore.onChange$])
+  const subscription = combineLatest([
+    frameStore.state$,
+    terminal$,
+    editorStore.onChange$,
+  ])
     .pipe(debounceTime(3000))
     .subscribe(([frame, terminal]) => {
+      console.log('change test');
       supabase
         .from<WorkspaceItem['snippets']>('snippets')
         .update({
@@ -129,7 +135,7 @@ export function App() {
             </Box>
           </Show>
 
-          <FrameHandler ref={setFrameRef} onScaleChange={setScale}>
+          <FrameHandler ref={setFrameRef} onScaleChange={frameStore.setScale}>
             <Suspense fallback={<FrameSkeleton />}>
               <ManagedFrame />
             </Suspense>

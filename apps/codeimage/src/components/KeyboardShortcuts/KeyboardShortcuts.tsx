@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getFrameState} from '@codeimage/store/frame/createFrame';
 import {updateTheme} from '@codeimage/store/effects/onThemeChange';
-import * as frame from '@codeimage/store/frame';
 import * as terminal from '@codeimage/store/terminal';
 import * as ui from '@codeimage/store/ui';
 import {
@@ -32,6 +32,7 @@ export function KeyboardShortcuts(): JSXElement {
   const [t] = useI18n<AppLocaleEntries>();
   const [show, setShow] = createSignal(false);
   const editor = getRootEditorStore();
+  const frame = getFrameState();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [
     {label: t('shortcut.focusCodeEditor'), key: ['F']},

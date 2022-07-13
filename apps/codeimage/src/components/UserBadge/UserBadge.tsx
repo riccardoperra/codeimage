@@ -15,7 +15,6 @@ export function UserBadge() {
     return `${first[0]}${last[0]}`;
   };
 
-  setTimeout(() => console.log(user()), 1000);
   return (
     <Show
       fallback={

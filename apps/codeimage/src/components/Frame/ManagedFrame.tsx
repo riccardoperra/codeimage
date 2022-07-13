@@ -1,6 +1,6 @@
 import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {frame$} from '@codeimage/store/frame';
+import {getFrameState} from '@codeimage/store/frame/createFrame';
 import {terminal$} from '@codeimage/store/terminal';
 import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {lazy, Show} from 'solid-js';
@@ -10,7 +10,7 @@ import {Frame} from './Frame';
 const CustomEditor = lazy(() => import('../CustomEditor/CustomEditor'));
 
 export function ManagedFrame() {
-  const frame = fromObservableObject(frame$);
+  const frame = getFrameState().store;
   const terminal = fromObservableObject(terminal$);
   const editor = getRootEditorStore();
 
