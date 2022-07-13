@@ -37,6 +37,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.synthwave84Theme),
   },
   {
+    id: 'poimandres',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.poimandresTheme),
+  },
+  {
     id: 'materialVolcano',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.materialVolcanoTheme),
