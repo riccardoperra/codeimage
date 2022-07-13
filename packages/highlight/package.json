@@ -9,6 +9,7 @@
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "generate:theme": "ts-node scripts/generate-theme.ts",
     "clean": "rimraf dist",
     "build-esm": "tsc -p tsconfig.esm.json",
     "build-dts": "tsc -p tsconfig.dts.json",
@@ -30,14 +31,16 @@
     "@lezer/highlight": "^1.0.0"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.3.3",
     "@types/node": "^17.0.42",
+    "chalk": "4.1.2",
+    "enquirer": "2.3.6",
     "rimraf": "^3.0.2",
-    "typescript": "^4.7.3",
     "rollup": "^2.75.6",
     "rollup-plugin-dts": "^4.2.2",
+    "typescript": "^4.7.3",
     "vite": "^2.9.12",
-    "vite-plugin-dts": "^1.2.0",
-    "@rollup/plugin-typescript": "^8.3.3"
+    "vite-plugin-dts": "^1.2.0"
   },
   "exports": {
     ".": {
