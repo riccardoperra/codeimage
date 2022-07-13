@@ -1,8 +1,8 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {getFrameState} from '@codeimage/store/frame/createFrame';
 import {updateTheme} from '@codeimage/store/effects/onThemeChange';
-import * as terminal from '@codeimage/store/terminal';
+import {getFrameState} from '@codeimage/store/frame/createFrame';
+import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import * as ui from '@codeimage/store/ui';
 import {
   Button,
@@ -33,6 +33,7 @@ export function KeyboardShortcuts(): JSXElement {
   const [show, setShow] = createSignal(false);
   const editor = getRootEditorStore();
   const frame = getFrameState();
+  const terminal = getTerminalState();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [
     {label: t('shortcut.focusCodeEditor'), key: ['F']},

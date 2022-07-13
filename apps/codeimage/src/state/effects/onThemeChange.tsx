@@ -1,10 +1,10 @@
 import {CustomTheme} from '@codeimage/highlight';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {getFrameState} from '@codeimage/store/frame/createFrame';
-import {updateTerminalStore} from '@codeimage/store/terminal';
+import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import {createAction, createEffect, ofType, props} from '@ngneat/effects';
-import {setProps} from '@ngneat/elf';
 import {tap} from 'rxjs';
+import {batch} from 'solid-js';
 
 export const updateTheme = createAction(
   '[CodeImage] Update Theme',
@@ -18,13 +18,11 @@ export const onThemeChange$ = createEffect(actions =>
       const frame = getFrameState();
       frame.setBackground(theme.properties.previewBackground);
 
-      updateTerminalStore(
-        setProps({
-          background: theme.properties.terminal.main,
-          textColor: theme.properties.terminal.text,
-          darkMode: theme.properties.darkMode,
-        }),
-      );
+      const terminal = getTerminalState();
+      batch(() => {
+        terminal.setState('background', theme.properties.terminal.main);
+        terminal.setState('textColor', theme.properties.terminal.text);
+      });
 
       const editor = getRootEditorStore();
       editor.actions.setThemeId(theme.id);

@@ -1,10 +1,10 @@
 import {LanguageIconDefinition} from '@codeimage/config';
+import {TerminalState} from '@codeimage/store/terminal/model';
 import {FadeInOutTransition, themeVars} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
 import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {FlowComponent} from 'solid-js';
-import {TerminalState} from '../../state/terminal';
 import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
 import {createTabTheme} from './Tabs/createTabTheme';
 import * as styles from './terminal.css';
@@ -26,6 +26,7 @@ export interface TerminalHostProps extends BaseTerminalProps {
 
 export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
   const tabTheme = createTabTheme(() => props.themeId);
+  const darkMode = () => tabTheme().darkMode;
 
   const background = () => {
     if (props.alternativeTheme) {
@@ -41,7 +42,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
   return (
     <div
       class={clsx(styles.wrapper, props.themeClass)}
-      data-theme-mode={props.darkMode ? 'dark' : 'light'}
+      data-theme-mode={darkMode() ? 'dark' : 'light'}
       data-fallback-inactive-tab={tabTheme()?.shouldFallbackInactiveColor}
       style={assignInlineVars({
         [styles.terminalVars.headerBackgroundColor]:

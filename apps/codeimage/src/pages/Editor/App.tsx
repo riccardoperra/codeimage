@@ -1,9 +1,9 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {getFrameState} from '@codeimage/store/frame/createFrame';
 import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
 import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
-import {terminal$, updateTerminalStore} from '@codeimage/store/terminal';
+import {getFrameState} from '@codeimage/store/frame/createFrame';
+import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import {uiStore} from '@codeimage/store/ui';
 import {Box, Button, HStack, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {supabase} from '@core/constants/supabase';
@@ -16,7 +16,6 @@ import {
   createEffect,
   createSignal,
   lazy,
-  observable,
   on,
   onCleanup,
   Show,
@@ -51,31 +50,29 @@ export function App() {
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const modality = useModality();
   const [, {locale}] = useI18n();
-  // TODO: currently disabled
-  // connectStoreWithQueryParams();
   useEffects([onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
 
   const editorStore = getRootEditorStore();
   const frameStore = getFrameState();
+  const terminalStore = getTerminalState();
 
   const data = useRouteData<WorkspaceItem | null>();
 
   if (data) {
     editorStore.actions.setFromWorkspace(data);
-    updateTerminalStore(state => ({...state, ...data.snippets.terminal}));
+    terminalStore.setState(state => ({...state, ...data.snippets.terminal}));
     frameStore.setStore(state => ({...state, ...data.snippets.frame}));
   }
 
   // TODO: CLEAN UP DIRTY CODE
   const subscription = combineLatest([
     frameStore.state$,
-    terminal$,
+    terminalStore.state$,
     editorStore.onChange$,
   ])
     .pipe(debounceTime(3000))
     .subscribe(([frame, terminal]) => {
-      console.log('change test');
       supabase
         .from<WorkspaceItem['snippets']>('snippets')
         .update({

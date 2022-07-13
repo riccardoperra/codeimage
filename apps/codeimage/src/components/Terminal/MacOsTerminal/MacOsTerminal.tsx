@@ -14,11 +14,7 @@ export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
   return (
     <TerminalHost {...props} themeClass={styles.theme}>
       <Show when={props.showHeader}>
-        <div
-          class={baseStyles.header}
-          data-theme-mode={props.darkMode ? 'dark' : 'light'}
-          data-accent-visible={showTab()}
-        >
+        <div class={baseStyles.header} data-accent-visible={showTab()}>
           <div class={styles.headerIconRow}>
             <div
               class={styles.headerIconRowCircle}

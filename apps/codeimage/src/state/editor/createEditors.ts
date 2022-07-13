@@ -18,7 +18,7 @@ import {
 } from 'solid-js';
 import {createStore, unwrap} from 'solid-js/store';
 import {useIdb} from '../../hooks/use-indexed-db';
-import {WorkspaceItem} from '../../pages/Dashboard/Dashboard';
+import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
 import {getRootEditorOptions} from './createEditorOptions';
 import {EditorState, PersistedEditorState} from './model';
 
