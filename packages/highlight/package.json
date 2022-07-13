@@ -119,6 +119,10 @@
     "./githubLight": {
       "import": "./dist/lib/themes/githubLight/index.js",
       "types": "./dist/lib/themes/githubLight/index.d.ts"
+    },
+    "./poimandres": {
+      "import": "./dist/lib/themes/poimandres/index.js",
+      "types": "./dist/lib/themes/poimandres/index.d.ts"
     }
   },
   "typesVersions": {
@@ -176,6 +180,9 @@
       ],
       "githubLight": [
         "./dist/lib/themes/githubLight/index.d.ts"
+      ],
+      "poimandres": [
+        "./dist/lib/themes/poimandres/index.d.ts"
       ],
       "themes": [
         "./dist/lib/themes/index.d.ts"

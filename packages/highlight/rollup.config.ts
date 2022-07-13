@@ -25,6 +25,7 @@ const themes = [
   'vsCodeDark',
   'githubDark',
   'githubLight',
+  'poimandres',
 ];
 
 const external = [
