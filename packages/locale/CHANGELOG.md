@@ -1,5 +1,11 @@
 # @codeimage/locale
 
+## 0.6.1
+
+### Patch Changes
+
+- [#298](https://github.com/riccardoperra/codeimage/pull/298) [`ac93b10`](https://github.com/riccardoperra/codeimage/commit/ac93b10887d52648a68a57e72ba6a1e427494c55) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update dependencies and solid-codemirror to 2.0.0
+
 ## 0.6.0
 
 ### Minor Changes
