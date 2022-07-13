@@ -1,7 +1,7 @@
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {updateFrameStore} from '@codeimage/store/frame';
-import {updateTerminalStore} from '@codeimage/store/terminal';
 import {CustomTheme} from '@codeimage/highlight';
+import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getFrameState} from '@codeimage/store/frame/createFrame';
+import {updateTerminalStore} from '@codeimage/store/terminal';
 import {createAction, createEffect, ofType, props} from '@ngneat/effects';
 import {setProps} from '@ngneat/elf';
 import {tap} from 'rxjs';
@@ -15,9 +15,8 @@ export const onThemeChange$ = createEffect(actions =>
   actions.pipe(
     ofType(updateTheme),
     tap(({theme}) => {
-      updateFrameStore(
-        setProps({background: theme.properties.previewBackground}),
-      );
+      const frame = getFrameState();
+      frame.setBackground(theme.properties.previewBackground);
 
       updateTerminalStore(
         setProps({
