@@ -1,20 +1,35 @@
 # @codeimage/highlight
 
-![Latest release Version](https://img.shields.io/badge/dynamic/json?style=for-the-badge&color=success&label=Version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Friccardoperra%2Fcodeimage%2Fmain%2Fpackages%2Ftheme%2Fpackage.json)
-[![Built with SolidJS](https://img.shields.io/badge/Built%20with-SolidJS-blue?style=for-the-badge)](https://github.com/solidjs/solid)
+![Latest release Version](https://img.shields.io/badge/dynamic/json?style=for-the-badge&color=success&label=Version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Friccardoperra%2Fcodeimage%2Fmain%2Fpackages%2Fhighlight%2Fpackage.json)
 [![Built with CodeMirror6](https://img.shields.io/badge/Built%20with-CodeMirror6-blue?style=for-the-badge)](https://codemirror.net/6/)
 
-> Custom editor themes for [@codeimage/app](https://github.com/riccardoperra/codeimage/tree/main/apps/codeimage)
+> Custom CodeMirror6 editor themes
+> for [@codeimage/app](https://github.com/riccardoperra/codeimage/tree/main/apps/codeimage)
 
-CodeImage editor themes are made by the internal `createThemeFactory` api function.
+CodeImage editor themes are made by the internal `createTheme` api function.
 
-Each theme must implement the [CustomTheme](./src/lib/core/custom-theme.ts) interface that provides binding for
+Each theme must implement
+the [CustomTheme](./src/lib/core/custom-theme.ts) interface that provides binding for
 CodeMirror editor theme and the style for the theme switcher preview.
 
-There are two ways of creating themes:
+## How to create a new theme
 
-- `createTheme`: themes based on the new @codemirror/highlight api.
-- `createPrismJSTheme`: themes that uses the PrismJS token binding class for highlighting.
+To create a new theme, you need to run the `generate:theme` command.
+
+```bash
+$ pnpm generate:theme
+```
+
+It will ask you for a name of for the theme.
+
+> **Warning** Theme name **must be in lower camel case**. \
+> ex. githubDark is a valid theme name.
+
+The script will do the following:
+
+- Creates a new folder in the [`src/lib/themes`](./src/lib/themes) folder with the name you used.
+- Generate a `index.ts` and `{{yourTheme}}.ts` file in the new folder.
+- Automatically add the `export` and `typesVersion` entry in the [package.json](./package.json)
 
 ## Available themes
 
