@@ -1,8 +1,9 @@
+import {getAuthState} from '@codeimage/store/auth/auth';
 import {Box, FlexField, Text, TextField} from '@codeimage/ui';
 import {supabase} from '@core/constants/supabase';
 import clickOutside from '@core/directives/clickOutside';
 import {useRouteData} from 'solid-app-router';
-import {createSignal, onMount, Show} from 'solid-js';
+import {createSignal, onMount, Show, untrack} from 'solid-js';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {WorkspaceItem} from '../../pages/Dashboard/Dashboard';
 import {ChevronDownIcon} from '../Icons/ChevronDown';
@@ -12,6 +13,7 @@ void clickOutside;
 export function ToolbarSnippetName() {
   const [editing, setEditing] = createSignal(false);
   const {name, id} = useRouteData<WorkspaceItem>() ?? {};
+  const loggedIn = () => getAuthState().loggedIn();
   const [value, setValue] = createSignal(name);
 
   async function updateSnippetName(newName: string) {
@@ -25,15 +27,20 @@ export function ToolbarSnippetName() {
       .eq('id', id);
   }
 
+  function toggleEdit() {
+    if (untrack(loggedIn)) {
+      setEditing(true);
+    }
+  }
+
   return (
     <Box display={'flex'} alignItems={'center'}>
       <Show
         fallback={
           <>
-            <Text size={'sm'} onClick={() => setEditing(true)}>
+            <Text size={'sm'} onClick={toggleEdit}>
               {value()}
             </Text>
-            <ChevronDownIcon width={20} height={20} />
           </>
         }
         when={editing()}
