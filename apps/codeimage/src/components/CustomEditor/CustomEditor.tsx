@@ -32,7 +32,7 @@ import {
   createEditorControlledValue,
   createEditorFocus,
 } from 'solid-codemirror';
-import {createMemo, createResource, onMount} from 'solid-js';
+import {createEffect, createMemo, createResource, on, onMount} from 'solid-js';
 
 interface CustomFontExtensionOptions {
   fontName: string;
@@ -158,7 +158,11 @@ export default function CustomEditor() {
     );
   });
 
-  createEditorFocus(editorView, setFocused);
+  const {setFocused: editorSetFocused} = createEditorFocus(
+    editorView,
+    setFocused,
+  );
+
   createEditorControlledValue(editorView, () => editor()?.code ?? '');
   createExtension(EditorView.lineWrapping);
   createExtension(customFontExtension);
@@ -167,6 +171,23 @@ export default function CustomEditor() {
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
   createExtension(EDITOR_BASE_SETUP);
+
+  createEffect(
+    on(editorView, view => {
+      if (view) {
+        createEffect(
+          on(
+            () => editorOptions.focused,
+            isFocused => {
+              if (view && !view.hasFocus && isFocused) {
+                editorSetFocused(true);
+              }
+            },
+          ),
+        );
+      }
+    }),
+  );
 
   return (
     <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>

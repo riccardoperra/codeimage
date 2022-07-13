@@ -76,7 +76,7 @@ export default function CustomEditorPreview(
 
   const extensions = (): Extension => [
     previewEditorBaseTheme(),
-    supportsLineWrap,
+    EditorView.lineWrapping,
     currentLanguage() || [],
     currentTheme(),
   ];
