@@ -8,10 +8,7 @@ import {EditorState} from '@codeimage/store/editor/model';
 import {getInitialFrameState} from '@codeimage/store/frame/createFrame';
 import {FrameState} from '@codeimage/store/frame/model';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
-import {
-  getInitialTerminalState,
-  TerminalState,
-} from '@codeimage/store/terminal';
+import {TerminalState} from '@codeimage/store/terminal/model';
 import {supabase} from '@core/constants/supabase';
 import {createResource, createSignal} from 'solid-js';
 

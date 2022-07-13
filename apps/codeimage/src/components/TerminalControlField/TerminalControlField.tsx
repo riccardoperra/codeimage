@@ -1,10 +1,10 @@
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {readyTerminalState, terminal$} from '@codeimage/store/terminal';
+import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import {Box, Group, RadioBlock} from '@codeimage/ui';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {For, JSXElement, Show, Suspense} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
+import {createTabTheme} from '../Terminal/Tabs/createTabTheme';
 import {TerminalControlSkeleton} from './TerminalControlFieldSkeleton';
 
 interface TerminalControlFieldProps {
@@ -16,7 +16,7 @@ export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
   const terminalThemes = AVAILABLE_TERMINAL_THEMES;
-  const terminalState = fromObservableObject(terminal$);
+  const terminalState = getTerminalState();
   const {options} = getRootEditorStore();
 
   return (
@@ -31,17 +31,15 @@ export function TerminalControlField(
             <Box padding={2} width={'100%'}>
               <Suspense fallback={<TerminalControlSkeleton />}>
                 <Show
-                  when={readyTerminalState()}
+                  when={terminalState.ready()}
                   fallback={<TerminalControlSkeleton />}
                 >
                   <Dynamic
                     showTab={false}
                     shadow={'none'}
-                    tabName={'Untitled'}
                     component={terminal.component}
-                    textColor={terminalState.textColor}
-                    background={terminalState.background}
-                    darkMode={terminalState.darkMode}
+                    textColor={terminalState.state.textColor}
+                    background={terminalState.state.background}
                     accentVisible={true}
                     readonlyTab={true}
                     showHeader={true}
@@ -49,7 +47,9 @@ export function TerminalControlField(
                     alternativeTheme={false}
                     opacity={100}
                     themeId={options.themeId}
-                    showGlassReflection={terminalState.showGlassReflection}
+                    showGlassReflection={
+                      terminalState.state.showGlassReflection
+                    }
                   />
                 </Show>
               </Suspense>

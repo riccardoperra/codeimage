@@ -1,17 +1,8 @@
 import {useI18n} from '@codeimage/locale';
-import {
-  setAccentVisible,
-  setAlternativeTheme,
-  setShadow,
-  setShowGlassReflection,
-  setShowHeader,
-  setShowWatermark,
-  setType,
-  terminal$,
-} from '@codeimage/store/terminal';
+import {setShowWatermark} from '@codeimage/store/terminal';
+import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import {SegmentedField, Select} from '@codeimage/ui';
 import {shadowsLabel, TERMINAL_SHADOWS} from '@core/configuration/shadow';
-import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {useModality} from '@core/hooks/isMobile';
 import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -20,7 +11,7 @@ import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 
 export const WindowStyleForm: ParentComponent = () => {
-  const terminal = fromObservableObject(terminal$);
+  const terminal = getTerminalState();
   const [t] = useI18n<AppLocaleEntries>();
   const terminalShadows = createMemo(shadowsLabel);
   const modality = useModality();
@@ -32,8 +23,8 @@ export const WindowStyleForm: ParentComponent = () => {
         <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
-            value={terminal.alternativeTheme}
-            onChange={setAlternativeTheme}
+            value={terminal.state.alternativeTheme}
+            onChange={terminal.setAlternativeTheme}
             items={[
               {label: 'Default', value: false},
               {label: 'Alternative', value: true},
@@ -47,8 +38,8 @@ export const WindowStyleForm: ParentComponent = () => {
           <SegmentedField
             size={'xs'}
             id={'frameHeaderInput'}
-            value={terminal.showHeader}
-            onChange={setShowHeader}
+            value={terminal.state.showHeader}
+            onChange={terminal.setShowHeader}
             items={[
               {label: t('common.yes'), value: true},
               {label: t('common.no'), value: false},
@@ -57,24 +48,26 @@ export const WindowStyleForm: ParentComponent = () => {
         </TwoColumnPanelRow>
       </PanelRow>
 
-      <Show when={terminal.showHeader}>
+      <Show when={terminal.state.showHeader}>
         <PanelRow for={'frameTerminalTypeField'}>
           <FullWidthPanelRow>
             <TerminalControlField
-              selectedTerminal={terminal.type}
-              onTerminalChange={setType}
+              selectedTerminal={terminal.state.type}
+              onTerminalChange={terminal.setType}
             />
           </FullWidthPanelRow>
         </PanelRow>
       </Show>
 
-      <Show when={terminal.showHeader && !terminal.alternativeTheme}>
+      <Show
+        when={terminal.state.showHeader && !terminal.state.alternativeTheme}
+      >
         <PanelRow for={'frameTabAccentField'} label={t('frame.tabAccent')}>
           <TwoColumnPanelRow>
             <SegmentedField
               size={'xs'}
-              value={terminal.accentVisible}
-              onChange={setAccentVisible}
+              value={terminal.state.accentVisible}
+              onChange={terminal.setAccentVisible}
               items={[
                 {label: t('common.yes'), value: true},
                 {label: t('common.no'), value: false},
@@ -88,8 +81,8 @@ export const WindowStyleForm: ParentComponent = () => {
         <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
-            value={terminal.showGlassReflection}
-            onChange={setShowGlassReflection}
+            value={terminal.state.showGlassReflection}
+            onChange={terminal.setShowGlassReflection}
             items={[
               {label: t('common.show'), value: true},
               {label: t('common.hide'), value: false},
@@ -102,8 +95,8 @@ export const WindowStyleForm: ParentComponent = () => {
         <TwoColumnPanelRow>
           <SegmentedField
             size={'xs'}
-            value={terminal.showWatermark}
-            onChange={setShowWatermark}
+            value={terminal.state.showWatermark}
+            onChange={terminal.setShowWatermark}
             items={[
               {label: t('common.show'), value: true},
               {label: t('common.hide'), value: false},
@@ -117,11 +110,11 @@ export const WindowStyleForm: ParentComponent = () => {
             id={'frameSelectShadow'}
             native={modality === 'mobile'}
             items={terminalShadows()}
-            value={terminal.shadow}
+            value={terminal.state.shadow}
             onSelectChange={value => {
               const shadowSelected = value ?? TERMINAL_SHADOWS.bottom;
               umami.trackEvent(shadowSelected, 'change-shadow');
-              setShadow(shadowSelected);
+              terminal.setShadow(shadowSelected);
             }}
           />
         </TwoColumnPanelRow>

@@ -1,4 +1,3 @@
-import {PersistedEditorState} from '@codeimage/store/editor/model';
 import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
@@ -54,7 +53,7 @@ export function $createFrameState() {
       }
 
       const idbState = await idb
-        .get<PersistedEditorState>(IDB_KEY)
+        .get<PersistedFrameState>(IDB_KEY)
         .catch(() => null);
 
       if (idbState) {

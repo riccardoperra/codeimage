@@ -4,8 +4,6 @@ import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {uiStore} from '@codeimage/store/ui';
 import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
-import {enableElfProdMode} from '@ngneat/elf';
-import {devTools} from '@ngneat/elf-devtools';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Router, useRoutes} from 'solid-app-router';
@@ -19,16 +17,6 @@ import {darkGrayScale} from './theme/dark-theme.css';
 import './theme/dark-theme.css';
 import './theme/global.css';
 import './theme/light-theme.css';
-
-if (import.meta.env.DEV) {
-  devTools();
-  // const {worker} = await import('./mocks/browser');
-  // worker.start();
-}
-
-if (import.meta.env.PROD) {
-  enableElfProdMode();
-}
 
 const i18n = createI18nContext(locale);
 

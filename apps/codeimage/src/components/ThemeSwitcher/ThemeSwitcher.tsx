@@ -2,12 +2,11 @@ import {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {updateTheme} from '@codeimage/store/effects/onThemeChange';
-import {terminal$} from '@codeimage/store/terminal';
+import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
 import {Box, FlexField, TextField} from '@codeimage/ui';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
-import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {useModality} from '@core/hooks/isMobile';
 import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -34,7 +33,7 @@ const CustomEditorPreview = lazy(() => {
 });
 
 export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
-  const terminal = fromObservableObject(terminal$);
+  const terminal = getTerminalState();
   const {options} = getRootEditorStore();
   const modality = useModality();
   const {themeArray, themeLoading} = getThemeStore();
@@ -91,20 +90,20 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                         >
                           <TerminalHost
                             themeClass={styles.themeBoxTerminalHost}
-                            tabName={'Untitled'}
                             textColor={theme.properties.terminal.text}
                             background={theme.properties.terminal.main}
-                            darkMode={theme.properties.darkMode}
                             accentVisible={false}
                             shadow={/*@once*/ TERMINAL_SHADOWS.bottom}
                             showTab={false}
                             readonlyTab={true}
                             showHeader={false}
                             showWatermark={false}
-                            showGlassReflection={terminal.showGlassReflection}
+                            showGlassReflection={
+                              terminal.state.showGlassReflection
+                            }
                             opacity={100}
                             themeId={theme.id}
-                            alternativeTheme={terminal.alternativeTheme}
+                            alternativeTheme={terminal.state.alternativeTheme}
                           >
                             <CustomEditorPreview
                               themeId={theme.id}
