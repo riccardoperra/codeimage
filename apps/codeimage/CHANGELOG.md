@@ -1,5 +1,17 @@
 # @codeimage/app
 
+## 0.21.1
+
+### Patch Changes
+
+- [#298](https://github.com/riccardoperra/codeimage/pull/298) [`ac93b10`](https://github.com/riccardoperra/codeimage/commit/ac93b10887d52648a68a57e72ba6a1e427494c55) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update dependencies and solid-codemirror to 2.0.0
+
+- Updated dependencies [[`ac93b10`](https://github.com/riccardoperra/codeimage/commit/ac93b10887d52648a68a57e72ba6a1e427494c55)]:
+  - @codeimage/config@8.0.1
+  - @codeimage/highlight@0.10.1
+  - @codeimage/locale@0.6.1
+  - @codeimage/ui@0.8.2
+
 ## 0.21.0
 
 ### Minor Changes
