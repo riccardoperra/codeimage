@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {updateTheme} from '@codeimage/store/effects/onThemeChange';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getFrameState} from '@codeimage/store/frame/createFrame';
 import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import * as ui from '@codeimage/store/ui';
@@ -13,7 +13,6 @@ import {
   useFloating,
 } from '@codeimage/ui';
 import {offset} from '@floating-ui/dom';
-import {dispatch} from '@ngneat/effects';
 import {Popover, PopoverButton} from 'solid-headless';
 import {createMemo, createSignal, For, JSXElement} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
@@ -99,7 +98,7 @@ export function KeyboardShortcuts(): JSXElement {
       if (filterHotKey()) return;
       const index = Math.floor(Math.random() * themes.length);
       const theme = themes[index];
-      dispatch(updateTheme({theme}));
+      dispatchUpdateTheme({theme});
     },
     // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
     'Shift+?': () => {

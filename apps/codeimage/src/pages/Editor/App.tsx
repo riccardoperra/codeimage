@@ -1,16 +1,12 @@
 import {useI18n} from '@codeimage/locale';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {copyToClipboard$} from '@codeimage/store/effects/onCopyToClipboard';
-import {onThemeChange$} from '@codeimage/store/effects/onThemeChange';
 import {getFrameState} from '@codeimage/store/frame/createFrame';
 import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import {uiStore} from '@codeimage/store/ui';
 import {Box, Button, HStack, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {supabase} from '@core/constants/supabase';
 import {useModality} from '@core/hooks/isMobile';
-import {useEffects} from '@core/store/use-effect';
-import {initEffects} from '@ngneat/effects';
 import {combineLatest, debounceTime} from 'rxjs';
 import {useRouteData} from 'solid-app-router';
 import {
@@ -39,8 +35,6 @@ import {Toolbar} from '../../components/Toolbar/Toolbar';
 import {WorkspaceItem} from '../Dashboard/dashboard.state';
 import * as styles from './App.css';
 
-initEffects();
-
 const ManagedFrame = lazy(() =>
   import('../../components/Frame/ManagedFrame').then(c => ({
     default: c.ManagedFrame,
@@ -52,7 +46,6 @@ export function App() {
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const modality = useModality();
   const [, {locale}] = useI18n();
-  useEffects([onThemeChange$, copyToClipboard$]);
   createEffect(on(() => uiStore.locale, locale));
 
   const authState = getAuthState();
