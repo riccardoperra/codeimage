@@ -31,14 +31,18 @@ export const poimandres = [
       {tag: t.definitionKeyword, color: palette.desaturatedBlue},
       {tag: t.controlKeyword, color: palette.lowerMint},
       {
-        tag: t.attributeName,
-        color: palette.desaturatedBlue,
-      },
-      {
         tag: t.comment,
         fontStyle: 'italic',
       },
       {tag: t.processingInstruction, color: palette.lighterGray},
+      {
+        tag: [t.definition(t.function(t.variableName))],
+        color: palette.lightBlue,
+      },
+      {
+        tag: [t.literal],
+        color: palette.brightMint,
+      },
     ]),
   ),
   defineEditorTheme({
@@ -51,7 +55,7 @@ export const poimandres = [
       brackets: palette.gray,
       paren: palette.gray,
       comments: palette.darkerGray,
-      attrValue: palette.brightMint,
+      attrValue: palette.desaturatedBlue,
       function: palette.lighterGray,
       typeName: palette.darkerGray,
       propertyName: palette.lightBlue,
