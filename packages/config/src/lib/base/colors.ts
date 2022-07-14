@@ -33,6 +33,7 @@ export const AVAILABLE_GRADIENTS = [
   // Purple
   'linear-gradient(-45deg, #402662 0%, #8000FF 100%)',
   'linear-gradient(135deg, #6a3cc0 0%, #240573 100%)',
+  'linear-gradient(to right top, #8155c6, #9e56cb, #ba55ce, #d654cf, #f053ce)',
   'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
   'linear-gradient(135deg,  rgba(171,73,222,1) 0%,rgba(73,84,222,1) 100%)',
   // Blue
@@ -43,6 +44,7 @@ export const AVAILABLE_GRADIENTS = [
   'linear-gradient(135deg, #2AA6DA 0%, #1B7B77 100%)',
   // Green
   'linear-gradient(to right bottom, #1e737e, #186b76, #13636d, #0d5b65, #06535d)',
+  'linear-gradient(140deg, rgb(165, 142, 251), rgb(65, 206, 189))',
   'linear-gradient(to right bottom, #00ffc7, #00c6a5, #148f7e, #205b55, #1e2c2b)',
   'linear-gradient(to right bottom, #2be7b5, #1edea2, #16d58f, #13cb7c, #16c268, #0db866, #04ae64, #00a462, #00976c, #008971, #007b72, #006d6d)',
   'linear-gradient(135deg, #33CC99 0%, #FFCC33 100%)',

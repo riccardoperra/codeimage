@@ -57,6 +57,7 @@ export const poimandres = [
       comments: palette.darkerGray,
       attrValue: palette.desaturatedBlue,
       function: palette.lighterGray,
+      attrName: palette.desaturatedBlue,
       typeName: palette.darkerGray,
       propertyName: palette.lightBlue,
       variableName: palette.brightMint,

@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 0.10.2
+
+### Patch Changes
+
+- [#302](https://github.com/riccardoperra/codeimage/pull/302) [`01cc5fd`](https://github.com/riccardoperra/codeimage/commit/01cc5fd0886ec14d3ef07d7f965a6bcbfed25bdc) Thanks [@Kalmarv](https://github.com/Kalmarv)! - feat(highlight): add poimandres theme
+
 ## 0.10.1
 
 ### Patch Changes
