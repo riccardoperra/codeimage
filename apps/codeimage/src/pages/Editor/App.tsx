@@ -1,23 +1,21 @@
 import {useI18n} from '@codeimage/locale';
-import {getAuthState} from '@codeimage/store/auth/auth';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {
+  createEditorSyncAdapter,
+  getEditorSyncAdapter,
+} from '@codeimage/store/editor/createEditorInit';
 import {getFrameState} from '@codeimage/store/frame/createFrame';
-import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
 import {uiStore} from '@codeimage/store/ui';
 import {Box, Button, HStack, PortalHost, SnackbarHost} from '@codeimage/ui';
-import {supabase} from '@core/constants/supabase';
 import {useModality} from '@core/hooks/isMobile';
-import {combineLatest, debounceTime} from 'rxjs';
-import {useRouteData} from 'solid-app-router';
 import {
   createEffect,
   createSignal,
   lazy,
   on,
   onCleanup,
+  onMount,
   Show,
   Suspense,
-  untrack,
 } from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
@@ -32,7 +30,6 @@ import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
-import {WorkspaceItem} from '../Dashboard/dashboard.state';
 import * as styles from './App.css';
 
 const ManagedFrame = lazy(() =>
@@ -46,47 +43,10 @@ export function App() {
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const modality = useModality();
   const [, {locale}] = useI18n();
-  createEffect(on(() => uiStore.locale, locale));
-
-  const authState = getAuthState();
-  const editorStore = getRootEditorStore();
   const frameStore = getFrameState();
-  const terminalStore = getTerminalState();
-
-  const data = useRouteData<WorkspaceItem | null>();
-
-  if (data) {
-    editorStore.actions.setFromWorkspace(data);
-    terminalStore.setState(state => ({...state, ...data.snippets.terminal}));
-    frameStore.setStore(state => ({...state, ...data.snippets.frame}));
-  }
-
-  // TODO: CLEAN UP DIRTY CODE
-  const subscription = combineLatest([
-    frameStore.state$,
-    terminalStore.state$,
-    editorStore.onChange$,
-  ])
-    .pipe(debounceTime(3000))
-    .subscribe(([frame, terminal]) => {
-      if (untrack(authState.loggedIn) && !!data?.snippets?.id) {
-        supabase
-          .from<WorkspaceItem['snippets']>('snippets')
-          .update({
-            frame,
-            terminal,
-            editors: editorStore.editors.map(editor => ({
-              ...editor,
-              code: window.btoa(editor.code),
-            })),
-            options: editorStore.options,
-          })
-          .filter('id', 'eq', data?.snippets.id)
-          .then();
-      }
-    });
-
-  onCleanup(() => subscription.unsubscribe());
+  const {initRemoteDbSync} = getEditorSyncAdapter();
+  createEffect(on(() => uiStore.locale, locale));
+  onMount(() => initRemoteDbSync());
 
   return (
     <>

@@ -1,4 +1,4 @@
-import {useI18n} from '@codeimage/locale';
+import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
 import {uiStore} from '@codeimage/store/ui';
 import {
   Button,
@@ -12,8 +12,7 @@ import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {Link} from 'solid-app-router';
 import {VoidProps} from 'solid-js';
 import {DotVerticalIcon} from '../../../../components/Icons/DotVertical';
-import {WorkspaceItem} from '../../Dashboard';
-import {getDashboardState} from '../../DashboardContext';
+import {getDashboardState, WorkspaceItem} from '../../dashboard.state';
 import * as styles from './ProjectItem.css';
 
 interface ProjectItemProps {
@@ -21,7 +20,8 @@ interface ProjectItemProps {
 }
 
 export function ProjectItem(props: VoidProps<ProjectItemProps>) {
-  const {deleteProject} = getDashboardState();
+  const dashboard = getDashboardState()!;
+  const {setActiveWorkspace} = getEditorSyncAdapter();
   const locale = () => uiStore.locale;
   const createDialog = createStandaloneDialog();
 
@@ -33,9 +33,9 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   return (
     <li class={styles.item}>
       <Link
-        state={props.item}
-        href={`/${props.item.id}`}
         class={styles.itemLink}
+        href={`/${props.item.snippetId}`}
+        onClick={() => setActiveWorkspace(props.item)}
       />
       <div>
         <div class={styles.itemTitle}>
@@ -61,7 +61,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
               title: 'Delete project',
               message: 'This action is not reversible.',
               onConfirm: () => {
-                deleteProject(props.item);
+                dashboard?.deleteProject(props.item);
                 state.close();
               },
               actionType: 'danger',
