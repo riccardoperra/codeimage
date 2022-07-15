@@ -1,18 +1,18 @@
 import {Box} from '@codeimage/ui';
 import {For, Suspense} from 'solid-js';
-import {getDashboardState} from '../../DashboardContext';
+import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';
 import {ProjectItemSkeleton} from '../ProjectItemSkeleton/ProjectItemSkeleton';
 import * as styles from './ProjectList.css';
 
 export function ProjectList() {
-  const {mode, data} = getDashboardState();
+  const dashboard = getDashboardState()!;
 
   return (
     <Box
       as={'ul'}
-      data-displayMode={mode()}
-      class={styles.gridList({displayMode: mode()})}
+      data-displayMode={dashboard.mode()}
+      class={styles.gridList({displayMode: dashboard.mode()})}
     >
       <Suspense
         fallback={
@@ -24,7 +24,7 @@ export function ProjectList() {
           </>
         }
       >
-        <For each={data()}>{item => <ProjectItem item={item} />}</For>
+        <For each={dashboard.data()}>{item => <ProjectItem item={item} />}</For>
       </Suspense>
     </Box>
   );

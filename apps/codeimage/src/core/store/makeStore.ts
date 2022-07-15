@@ -1,5 +1,6 @@
-import {createSignal} from 'solid-js';
-import {createStore} from 'solid-js/store';
+import {from, map, Observable, shareReplay} from 'rxjs';
+import {createSignal, observable} from 'solid-js';
+import {createStore, unwrap} from 'solid-js/store';
 
 export const makeStore = <T>(
   ...args: Parameters<typeof createStore<T>>
@@ -13,7 +14,25 @@ export const makeStore = <T>(
     return returnValue;
   };
 
-  return [store, setStore, signal] as [typeof store, typeof internalSetStore, typeof signal];
+  // eslint-disable-next-line solid/reactivity
+  const signal$ = observable(signal) as unknown as Observable<symbol>;
+
+  const state$: Observable<T> = from(signal$).pipe(
+    map(() => unwrap(store)),
+    shareReplay({refCount: true, bufferSize: 1})
+  );
+
+  return [
+    store,
+    setStore,
+    {
+      state$
+    }
+  ] as [
+    typeof store,
+    typeof internalSetStore,
+    {state$: Observable<T>}
+  ];
 };
 
 export default makeStore;

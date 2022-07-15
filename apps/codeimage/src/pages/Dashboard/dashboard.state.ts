@@ -8,8 +8,10 @@ import {EditorState} from '@codeimage/store/editor/model';
 import {getInitialFrameState} from '@codeimage/store/frame/createFrame';
 import {FrameState} from '@codeimage/store/frame/model';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
+import {getInitialTerminalState} from '@codeimage/store/terminal/createTerminal';
 import {TerminalState} from '@codeimage/store/terminal/model';
 import {supabase} from '@core/constants/supabase';
+import {createContextProvider} from '@solid-primitives/context';
 import {createResource, createSignal} from 'solid-js';
 
 type DashboardViewMode = 'grid' | 'list';
@@ -32,8 +34,6 @@ export interface WorkspaceItem {
   userId: string;
 }
 
-export type DashboardState = ReturnType<typeof $dashboardState>;
-
 function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
   const authState = getAuthState();
 
@@ -48,7 +48,7 @@ function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
     .then(res => res.body ?? []) as Promise<WorkspaceItem[]>;
 }
 
-export default function $dashboardState() {
+function makeDashboardState() {
   const [mode, setMode] = createSignal<DashboardViewMode>('grid');
 
   const [data, {mutate}] = createResource(fetchWorkspaceContent, {
@@ -72,7 +72,6 @@ export default function $dashboardState() {
       return supabase
         .from<WorkspaceItem>('workspace_item')
         .insert({
-          name: 'Untitled',
           snippetId: result.id,
           userId: getAuthState().user()?.user?.id,
         })
@@ -97,3 +96,6 @@ export default function $dashboardState() {
     deleteProject,
   };
 }
+
+export const [DashboardProvider, getDashboardState] =
+  createContextProvider(makeDashboardState);

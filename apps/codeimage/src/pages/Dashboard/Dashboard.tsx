@@ -4,7 +4,7 @@ import {DashboardHeader} from './components/DashboardHeader/DashboardHeader';
 import {ProjectList} from './components/ProjectList/ProjectList';
 import {ProjectToolbar} from './components/ProjectToolbar/ProjectToolbar';
 import * as styles from './Dashboard.css';
-import {DashboardProvider} from './DashboardContext';
+import {DashboardProvider} from './dashboard.state';
 
 export function DashboardContent() {
   return (

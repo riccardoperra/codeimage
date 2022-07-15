@@ -1,3 +1,4 @@
+import {PersistedFrameState} from '@codeimage/store/frame/model';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
@@ -37,17 +38,12 @@ export function getInitialTerminalState(): TerminalState {
 }
 
 export function $createTerminalState() {
-  const [state, setState, signal] = makeStore(getInitialTerminalState());
+  const [state, setState, {state$}] = makeStore(getInitialTerminalState());
   const idb = useIdb();
   const IDB_KEY = 'terminal';
-  const [ready, setReady] = createSignal(false);
+  const [initialized, setInitialized] = createSignal(false);
   const registry = getThemeStore();
   const [resource] = registry.getThemeResource('vsCodeDarkTheme');
-
-  const state$ = from(observable(signal) as unknown as Observable<symbol>).pipe(
-    map(() => unwrap(state)),
-    shareReplay({refCount: true, bufferSize: 1}),
-  );
 
   createEffect(
     on(resource, async resource => {
@@ -72,27 +68,8 @@ export function $createTerminalState() {
           });
         }
 
-        setReady(true);
+        setInitialized(true);
       }
-    }),
-  );
-
-  createEffect(
-    on([$from(state$.pipe(debounceTime(0))), ready], ([state, ready]) => {
-      if (!ready) return;
-      const persistedFrameState: PersistedTerminalState = {
-        alternativeTheme: state.alternativeTheme,
-        showGlassReflection: state.showGlassReflection,
-        showWatermark: state.showWatermark,
-        textColor: state.textColor,
-        background: state.background,
-        opacity: state.opacity,
-        shadow: state.shadow,
-        showHeader: state.showHeader,
-        type: state.type,
-        accentVisible: state.accentVisible,
-      };
-      idb.set(IDB_KEY, persistedFrameState);
     }),
   );
 
@@ -100,7 +77,22 @@ export function $createTerminalState() {
     state$,
     state,
     setState,
-    ready,
+    initialized,
+    get stateToPersist(): PersistedTerminalState {
+      const $$state = unwrap(state);
+      return {
+        alternativeTheme: $$state.alternativeTheme,
+        showGlassReflection: $$state.showGlassReflection,
+        showWatermark: $$state.showWatermark,
+        textColor: $$state.textColor,
+        background: $$state.background,
+        opacity: $$state.opacity,
+        shadow: $$state.shadow,
+        showHeader: $$state.showHeader,
+        type: $$state.type,
+        accentVisible: $$state.accentVisible,
+      };
+    },
     setShadow: (shadow: string) => setState('shadow', shadow),
     setType: (type: string) => setState('type', type),
     setAccentVisible: (accentVisible: boolean) =>

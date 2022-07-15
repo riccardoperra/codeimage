@@ -1,5 +1,6 @@
 import {getAuthState} from '@codeimage/store/auth/auth';
-import {Box, FlexField, Text, TextField} from '@codeimage/ui';
+import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
+import {Box, FlexField, Loading, Text, TextField} from '@codeimage/ui';
 import {supabase} from '@core/constants/supabase';
 import clickOutside from '@core/directives/clickOutside';
 import {useRouteData} from 'solid-app-router';
@@ -15,6 +16,7 @@ export function ToolbarSnippetName() {
   const {name, id} = useRouteData<WorkspaceItem>() ?? {};
   const loggedIn = () => getAuthState().loggedIn();
   const [value, setValue] = createSignal(name);
+  const {remoteSync} = getEditorSyncAdapter();
 
   async function updateSnippetName(newName: string) {
     if (name === value()) {
@@ -38,8 +40,9 @@ export function ToolbarSnippetName() {
       <Show
         fallback={
           <>
+            <Loading visibility={remoteSync() ? 'visible' : 'hidden'} />
             <Text size={'sm'} onClick={toggleEdit}>
-              {value()}
+              {value() ?? 'Untitled'}
             </Text>
           </>
         }

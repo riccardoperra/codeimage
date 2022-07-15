@@ -1,22 +1,19 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {createStoreNotifier} from '@codeimage/store/plugins/store-notifier';
 import {createUniqueId, versionateId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
+import makeStore from '@core/store/makeStore';
 import {filter} from '@solid-primitives/immutable';
-import {debounceTime, merge, Subject} from 'rxjs';
+import {combineLatest, map} from 'rxjs';
 import {
   batch,
-  createEffect,
   createMemo,
   createRoot,
   createSelector,
   createSignal,
-  from,
-  on,
   onMount,
 } from 'solid-js';
-import {createStore, unwrap} from 'solid-js/store';
+import {unwrap} from 'solid-js/store';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
 import {getRootEditorOptions} from './createEditorOptions';
@@ -40,14 +37,20 @@ function $createEditorsStore() {
   const IDB_KEY = 'editor';
   const MAX_TABS = 6;
   const idb = useIdb();
-  const [, withNotifier, version$] = createStoreNotifier();
-  const [options, setOptions, {version: optionVersion$, ...optionsActions}] =
+
+  const [options, setOptions, optionsState$, optionActions] =
     getRootEditorOptions();
-  const [editors, setEditors] = createStore([getInitialEditorState()]);
+  const [editors, setEditors, {state$: editorState$}] = makeStore([
+    getInitialEditorState(),
+  ]);
+
   const [ready, setReady] = createSignal(false);
   const [activeEditorId, setActiveEditorId] = createSignal<string>(defaultId);
   const isActive = createSelector(activeEditorId);
-  const onChange$ = new Subject<PersistedEditorState>();
+
+  const state$ = combineLatest([editorState$, optionsState$]).pipe(
+    map(([editors, options]) => ({options, editors})),
+  );
 
   onMount(async () => {
     const idbState = await idb
@@ -66,41 +69,26 @@ function $createEditorsStore() {
     setReady(true);
   });
 
-  createEffect(
-    on(
-      [from(merge(optionVersion$, version$).pipe(debounceTime(0))), ready],
-      ([_, ready]) => {
-        if (!ready) return;
-        const state: PersistedEditorState = {editors, options};
-        // todo: DIRTY CODE NOT LISTENING TO CODE CHANGES
-        onChange$.next(state);
-        idb.set(IDB_KEY, unwrap(state));
-      },
-    ),
-  );
-
-  const addEditor = withNotifier(
-    (state?: Partial<EditorState> | null, active?: boolean) => {
-      if (editors.length === MAX_TABS) return;
-      batch(() => {
-        const id = createUniqueId();
-        const editor: EditorState = {
-          ...getInitialEditorState(),
-          tab: {
-            tabName: null,
-          },
-          ...(state ?? {}),
-          id,
-        };
-        setEditors(editors => [...editors, editor]);
-        if (active) setActiveEditorId(id);
-      });
-    },
-  );
+  const addEditor = (state?: Partial<EditorState> | null, active?: boolean) => {
+    if (editors.length === MAX_TABS) return;
+    batch(() => {
+      const id = createUniqueId();
+      const editor: EditorState = {
+        ...getInitialEditorState(),
+        tab: {
+          tabName: null,
+        },
+        ...(state ?? {}),
+        id,
+      };
+      setEditors(editors => [...editors, editor]);
+      if (active) setActiveEditorId(id);
+    });
+  };
 
   const canAddEditor = () => editors.length < MAX_TABS;
 
-  const removeEditor = withNotifier((id: string) => {
+  const removeEditor = (id: string) => {
     if (editors.length === 1) {
       return;
     }
@@ -112,26 +100,24 @@ function $createEditorsStore() {
       setActiveEditorId(newActiveEditor?.id ?? updatedEditors[0]?.id);
     }
     setEditors(updatedEditors);
-  });
+  };
 
-  const setTabName = withNotifier(
-    (id: string, name: string, updateLanguage: boolean) => {
-      const index = editors.findIndex(tab => tab.id === id);
-      setEditors(index, 'tab', 'tabName', name);
-      if (updateLanguage) {
-        const matches = SUPPORTED_LANGUAGES.filter(language => {
-          return language.icons.some(({matcher}) => matcher.test(name));
-        });
-        if (
-          !matches.length ||
-          matches.map(match => match.id).includes(editors[index].languageId)
-        ) {
-          return;
-        }
-        setEditors(index, 'languageId', matches[0].id);
+  const setTabName = (id: string, name: string, updateLanguage: boolean) => {
+    const index = editors.findIndex(tab => tab.id === id);
+    setEditors(index, 'tab', 'tabName', name);
+    if (updateLanguage) {
+      const matches = SUPPORTED_LANGUAGES.filter(language => {
+        return language.icons.some(({matcher}) => matcher.test(name));
+      });
+      if (
+        !matches.length ||
+        matches.map(match => match.id).includes(editors[index].languageId)
+      ) {
+        return;
       }
-    },
-  );
+      setEditors(index, 'languageId', matches[0].id);
+    }
+  };
 
   const font = createMemo(
     () => filter(SUPPORTED_FONTS, font => font.id === options.fontId)[0],
@@ -150,10 +136,21 @@ function $createEditorsStore() {
 
   return {
     ready,
-    onChange$,
+    state$,
     editors,
     options,
     isActive,
+    get stateToPersist(): PersistedEditorState {
+      const $$editor = unwrap(editors);
+      const $$options = unwrap(options);
+      return {
+        editors: $$editor.map(editor => ({
+          ...editor,
+          code: window.btoa(editor.code),
+        })),
+        options: $$options,
+      };
+    },
     computed: {
       font,
       canAddEditor,
@@ -165,7 +162,7 @@ function $createEditorsStore() {
       setActiveEditorId,
       setTabName,
       setFromWorkspace,
-      ...optionsActions,
+      ...optionActions,
     },
   } as const;
 }

@@ -1,4 +1,5 @@
 import {createI18nContext, I18nContext} from '@codeimage/locale';
+import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
 import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {uiStore} from '@codeimage/store/ui';
@@ -7,7 +8,7 @@ import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Router, useRoutes} from 'solid-app-router';
-import {createEffect, lazy, on, onMount, Suspense} from 'solid-js';
+import {createEffect, lazy, on, onMount, Suspense, untrack} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
@@ -33,11 +34,15 @@ export function Bootstrap() {
   const Routes = useRoutes([
     {
       path: ':snippetId?',
-      data: ({params, location}) => {
-        const state = location.state;
-        if (params.snippetId) {
-          return state;
+      data: ({params}) => {
+        const {activeWorkspace, loadData} = getEditorSyncAdapter();
+        if (!params.snippetId) {
+          loadData({activeWorkspace: null, snippetId: null});
         }
+        loadData({
+          activeWorkspace: activeWorkspace(),
+          snippetId: params.snippetId,
+        });
         return null;
       },
       component: lazy(() => {

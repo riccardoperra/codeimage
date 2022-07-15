@@ -2,15 +2,15 @@ import {Box, Button, SegmentedField, SegmentedFieldItem} from '@codeimage/ui';
 import {useNavigate} from 'solid-app-router';
 import {GridIcon, ListIcon} from '../../../../components/Icons/Grid';
 import {PlusIcon} from '../../../../components/Icons/PlusIcon';
-import {getDashboardState} from '../../DashboardContext';
+import {getDashboardState} from '../../dashboard.state';
 import * as styles from './ProjectToolbar.css';
 
 export function ProjectToolbar() {
   const navigate = useNavigate();
-  const {mode, setMode, createNewProject} = getDashboardState();
+  const dashboard = getDashboardState()!;
 
   async function createNew() {
-    const result = await createNewProject();
+    const result = await dashboard?.createNewProject();
     if (!result) return;
     navigate(`/${result.id}`);
   }
@@ -33,8 +33,8 @@ export function ProjectToolbar() {
       <Box display={'flex'} style={{width: '80px'}} marginRight={3}>
         <SegmentedField
           size={'sm'}
-          value={mode()}
-          onChange={setMode}
+          value={dashboard.mode()}
+          onChange={dashboard.setMode}
           items={tableModeItems}
         />
       </Box>

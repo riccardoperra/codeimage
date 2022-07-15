@@ -2,13 +2,12 @@ import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
 import makeStore from '@core/store/makeStore';
-import {debounceTime, from, map, Observable, shareReplay} from 'rxjs';
+import {debounceTime} from 'rxjs';
 import {
   createEffect,
   createRoot,
   createSignal,
   from as $from,
-  observable,
   on,
 } from 'solid-js';
 import {unwrap} from 'solid-js/store';
@@ -28,16 +27,11 @@ export function getInitialFrameState(): FrameState {
 }
 
 export function $createFrameState() {
-  const [store, setStore, signal] = makeStore<FrameState>(
+  const [store, setStore, {state$}] = makeStore<FrameState>(
     getInitialFrameState(),
   );
 
-  const state$ = from(observable(signal) as unknown as Observable<symbol>).pipe(
-    map(() => unwrap(store)),
-    shareReplay({refCount: true, bufferSize: 1}),
-  );
-
-  const [ready, setReady] = createSignal(false);
+  const [initialized, setInitialized] = createSignal(false);
   const IDB_KEY = 'frame';
   const idb = useIdb();
   const registry = getThemeStore();
@@ -60,21 +54,7 @@ export function $createFrameState() {
         setStore(state => ({...state, ...idbState}));
       }
 
-      setReady(true);
-    }),
-  );
-
-  createEffect(
-    on([$from(state$.pipe(debounceTime(0))), ready], ([state, ready]) => {
-      if (!ready) return;
-      const persistedFrameState: PersistedFrameState = {
-        background: state.background,
-        opacity: state.opacity,
-        padding: state.padding,
-        radius: state.radius,
-        visible: state.visible,
-      };
-      idb.set(IDB_KEY, persistedFrameState);
+      setInitialized(true);
     }),
   );
 
@@ -82,7 +62,17 @@ export function $createFrameState() {
     store,
     setStore,
     state$,
-    ready,
+    get stateToPersist(): PersistedFrameState {
+      const state = unwrap(store);
+      return {
+        background: state.background,
+        opacity: state.opacity,
+        padding: state.padding,
+        radius: state.radius,
+        visible: state.visible,
+      };
+    },
+    initialized,
     setBackground: (background: string) => setStore('background', background),
     setOpacity: (opacity: number) => setStore('opacity', opacity),
     setPadding: (padding: number) => setStore('padding', padding),

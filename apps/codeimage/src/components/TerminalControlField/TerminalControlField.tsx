@@ -30,10 +30,7 @@ export function TerminalControlField(
           >
             <Box padding={2} width={'100%'}>
               <Suspense fallback={<TerminalControlSkeleton />}>
-                <Show
-                  when={terminalState.ready()}
-                  fallback={<TerminalControlSkeleton />}
-                >
+                <Show when={true} fallback={<TerminalControlSkeleton />}>
                   <Dynamic
                     showTab={false}
                     shadow={'none'}
