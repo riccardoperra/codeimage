@@ -1,4 +1,4 @@
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {DragDropSensorsWithBoundary, DragEventParam} from '@core/modules/dnd';
 import {
   closestCorners,
@@ -21,7 +21,7 @@ export function TerminalWindowTabList(
   let wrapperRef!: HTMLDivElement;
 
   const {
-    editors,
+    state,
     actions: {
       addEditor,
       removeEditor,
@@ -33,16 +33,16 @@ export function TerminalWindowTabList(
     isActive,
   } = getRootEditorStore();
 
-  const sortableIds = createMemo(() => editors.map(editor => editor.id));
+  const sortableIds = createMemo(() => state.editors.map(editor => editor.id));
 
   function handleDragEnd(handler: DragEventParam) {
     if (handler.draggable && handler.droppable) {
       const droppableId = handler.droppable.id;
       const draggableId = handler.draggable.id;
-      const fromIndex = editors.findIndex(({id}) => id === draggableId);
-      const toIndex = editors.findIndex(({id}) => id === droppableId);
+      const fromIndex = state.editors.findIndex(({id}) => id === draggableId);
+      const toIndex = state.editors.findIndex(({id}) => id === droppableId);
       if (fromIndex !== toIndex) {
-        const updatedItems = editors.slice();
+        const updatedItems = state.editors.slice();
         updatedItems.splice(toIndex, 0, ...updatedItems.splice(fromIndex, 1));
         setEditors(updatedItems);
       }
@@ -70,7 +70,7 @@ export function TerminalWindowTabList(
           />
           {/* @ts-expect-error: TODO: Should update library types */}
           <SortableProvider ids={sortableIds()}>
-            <For each={editors}>
+            <For each={state.editors}>
               {(editor, index) => {
                 const icon = createTabIcon(
                   () => editor.tab.tabName ?? null,
@@ -92,7 +92,7 @@ export function TerminalWindowTabList(
                   <WindowTab
                     exportExclude={
                       !editor.tab.tabName?.length &&
-                      (editors.length === 1 || !active())
+                      (state.editors.length === 1 || !active())
                     }
                     id={editor.id}
                     index={zIndex()}
@@ -106,7 +106,9 @@ export function TerminalWindowTabList(
                       handleTabNameChange(editor.id, tabName)
                     }
                     onClose={
-                      editors.length > 1 ? () => removeEditor(editor.id) : null
+                      state.editors.length > 1
+                        ? () => removeEditor(editor.id)
+                        : null
                     }
                   />
                 );

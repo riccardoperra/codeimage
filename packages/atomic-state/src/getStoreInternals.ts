@@ -3,7 +3,7 @@ import {$STORE, StoreInternals} from './createStore';
 /**
  * @internal
  */
-export default function getStoreInternals<T extends object>(store: Store<T>) {
+export function getStoreInternals<T extends object>(store: Store<T>) {
   const {$$isStore, $$setter, events$} = (
     store as T & {
       [$STORE]: StoreInternals<T>;

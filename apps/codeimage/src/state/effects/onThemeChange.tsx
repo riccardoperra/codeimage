@@ -1,7 +1,7 @@
 import {CustomTheme} from '@codeimage/highlight';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {getFrameState} from '@codeimage/store/frame/createFrame';
-import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {batch} from 'solid-js';
 
 export type DispatchUpdateThemeParams = {theme: CustomTheme};

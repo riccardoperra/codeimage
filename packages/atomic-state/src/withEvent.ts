@@ -1,5 +1,5 @@
 import {Store} from 'solid-js/store';
-import getStoreInternals from './getStoreInternals';
+import {getStoreInternals} from './getStoreInternals';
 
 export function withEvent<
   T extends {},

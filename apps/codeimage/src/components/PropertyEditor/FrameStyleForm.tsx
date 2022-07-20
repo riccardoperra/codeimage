@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {getFrameState} from '@codeimage/store/frame/createFrame';
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {RangeField, SegmentedField} from '@codeimage/ui';
 import {ParentComponent, Show} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';

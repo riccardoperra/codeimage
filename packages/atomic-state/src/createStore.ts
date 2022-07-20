@@ -89,7 +89,6 @@ export function createStore<T extends {}>(
     store,
     setStore,
     {
-      initialized,
       state$,
       events$: events$.asObservable(),
     },
@@ -97,7 +96,6 @@ export function createStore<T extends {}>(
     typeof store,
     typeof internalSetStore,
     {
-      initialized: Accessor<boolean>;
       events$: Observable<StoreEvent>;
       state$: Observable<T>;
     },

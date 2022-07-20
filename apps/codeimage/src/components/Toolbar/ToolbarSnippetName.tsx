@@ -1,4 +1,5 @@
 import {getAuthState} from '@codeimage/store/auth/auth';
+import {getEditorStore} from '@codeimage/store/editor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
 import {Box, FlexField, Loading, Text, TextField} from '@codeimage/ui';
 import {supabase} from '@core/constants/supabase';
@@ -13,20 +14,20 @@ void clickOutside;
 
 export function ToolbarSnippetName() {
   const [editing, setEditing] = createSignal(false);
-  const {name, id} = useRouteData<WorkspaceItem>() ?? {};
+  const {activeWorkspace} = getEditorSyncAdapter();
   const loggedIn = () => getAuthState().loggedIn();
-  const [value, setValue] = createSignal(name);
+  const [value, setValue] = createSignal(activeWorkspace()?.name || undefined);
   const {remoteSync} = getEditorSyncAdapter();
 
   async function updateSnippetName(newName: string) {
-    if (name === value()) {
+    if (activeWorkspace()?.name === value()) {
       return;
     }
     setValue(newName);
     await supabase
       .from<WorkspaceItem>('workspace_item')
       .update({name: newName})
-      .eq('id', id);
+      .eq('id', activeWorkspace()?.id);
   }
 
   function toggleEdit() {

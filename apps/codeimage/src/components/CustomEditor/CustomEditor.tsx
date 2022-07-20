@@ -1,6 +1,6 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {
   autocompletion,
@@ -67,7 +67,7 @@ export default function CustomEditor() {
   const fonts = SUPPORTED_FONTS;
 
   const {
-    options: editorOptions,
+    state: editorState,
     actions: {setFocused},
   } = getRootEditorStore();
   const {editor, setCode} = getActiveEditorStore();
@@ -90,7 +90,7 @@ export default function CustomEditor() {
 
   const themeConfiguration = createMemo(
     () =>
-      themes().find(theme => theme()?.id === editorOptions.themeId)?.() ??
+      themes().find(theme => theme()?.id === editorState.options.themeId)?.() ??
       themes()[0](),
   );
 
@@ -146,9 +146,9 @@ export default function CustomEditor() {
   const customFontExtension = () =>
     createCustomFontExtension({
       fontName:
-        fonts.find(({id}) => editorOptions.fontId === id)?.name ||
+        fonts.find(({id}) => editorState.options.fontId === id)?.name ||
         fonts[0].name,
-      fontWeight: editorOptions.fontWeight,
+      fontWeight: editorState.options.fontWeight,
     });
 
   onMount(() => {
@@ -167,7 +167,9 @@ export default function CustomEditor() {
   createExtension(EditorView.lineWrapping);
   createExtension(customFontExtension);
   createExtension(currentLanguage);
-  createExtension(() => (editorOptions.showLineNumbers ? lineNumbers() : []));
+  createExtension(() =>
+    editorState.options.showLineNumbers ? lineNumbers() : [],
+  );
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
   createExtension(EDITOR_BASE_SETUP);
@@ -177,7 +179,7 @@ export default function CustomEditor() {
       if (view) {
         createEffect(
           on(
-            () => editorOptions.focused,
+            () => editorState.options.focused,
             isFocused => {
               if (view && !view.hasFocus && isFocused) {
                 editorSetFocused(true);

@@ -1,7 +1,7 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
-import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {SegmentedField, Select, Text} from '@codeimage/ui';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {useModality} from '@core/hooks/isMobile';
@@ -17,7 +17,7 @@ export const EditorStyleForm: ParentComponent = () => {
   const [t] = useI18n<AppLocaleEntries>();
   const {editor, setLanguageId} = getActiveEditorStore();
   const {
-    options,
+    state,
     actions: {setShowLineNumbers, setFontWeight, setFontId},
     computed: {font},
   } = getRootEditorStore();
@@ -70,7 +70,7 @@ export const EditorStyleForm: ParentComponent = () => {
               <SegmentedField
                 size={'xs'}
                 id={'frameLineNumbersField'}
-                value={options.showLineNumbers}
+                value={state.options.showLineNumbers}
                 onChange={setShowLineNumbers}
                 items={[
                   {label: t('common.show'), value: true},
@@ -109,7 +109,7 @@ export const EditorStyleForm: ParentComponent = () => {
                 native={modality === 'mobile'}
                 multiple={false}
                 items={fontWeightOptions()}
-                value={options.fontWeight}
+                value={state.options.fontWeight}
                 onSelectChange={value =>
                   setFontWeight(value ?? font()?.types[0].weight ?? 400)
                 }
