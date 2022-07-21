@@ -108,7 +108,6 @@ function createEditorSyncAdapter() {
 
   function initRemoteDbSync() {
     createEffect(() => {
-      console.log('init remote');
       const subscription = onChange$
         .pipe(
           filter(() => authState.loggedIn()),
