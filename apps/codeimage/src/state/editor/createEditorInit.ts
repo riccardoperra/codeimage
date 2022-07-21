@@ -4,7 +4,6 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
-import {supabase} from '@core/constants/supabase';
 import {
   combineLatest,
   debounceTime,
@@ -21,8 +20,10 @@ import {
   observable,
   on,
   onCleanup,
+  untrack,
 } from 'solid-js';
 import {unwrap} from 'solid-js/store';
+import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
 
@@ -44,11 +45,7 @@ function createEditorSyncAdapter() {
     data,
     async ({activeWorkspace, snippetId}) => {
       if (snippetId && (!activeWorkspace || activeWorkspace.id !== snippetId)) {
-        const storedWorkspaceData = await supabase
-          .from<WorkspaceItem>('workspace_item')
-          .select('*, snippets(*)')
-          .eq('id', snippetId)
-          .maybeSingle();
+        const storedWorkspaceData = await API.workpace.loadSnippet(snippetId);
         if (storedWorkspaceData.data) {
           updateStateFromRemote(storedWorkspaceData.data);
         }
@@ -57,12 +54,14 @@ function createEditorSyncAdapter() {
         updateStateFromRemote(activeWorkspace);
         return activeWorkspace;
       }
-      return null;
+      return {};
     },
   );
 
   const isReadyToSync = () => {
-    return !loadedSnippet.loading && store.initialized();
+    const loading = loadedSnippet.loading,
+      initialized = store.initialized();
+    return !loading && initialized;
   };
 
   const onChange$ = combineLatest([
@@ -109,8 +108,10 @@ function createEditorSyncAdapter() {
 
   function initRemoteDbSync() {
     createEffect(() => {
+      console.log('init remote');
       const subscription = onChange$
         .pipe(
+          filter(() => authState.loggedIn()),
           tap(() => setRemoteSync(false)),
           debounceTime(500),
           tap(() => setRemoteSync(true)),
@@ -125,34 +126,27 @@ function createEditorSyncAdapter() {
             options,
           };
 
-          const loggedIn = authState.loggedIn();
-          if (!loggedIn) return;
+          const workspace = untrack(activeWorkspace);
+          if (!workspace) return;
 
           if (activeWorkspace()) {
-            await supabase
-              .from<WorkspaceItem['snippets']>('snippets')
-              .update(dataToSave)
-              .filter('id', 'eq', activeWorkspace()?.id);
+            const snippet = await API.workpace.updateSnippet(
+              workspace.snippetId,
+              dataToSave,
+            );
+            if (!snippet) return;
+            // setActiveWorkspace({
+            //   ...workspace,
+            //   snippets: snippet,
+            // });
           } else {
-            const snippetResponse = await supabase
-              .from<WorkspaceItem['snippets']>('snippets')
-              .insert(dataToSave);
-
-            if (snippetResponse.body?.[0].id) {
-              return supabase
-                .from<WorkspaceItem>('workspace_item')
-                .insert({
-                  snippetId: snippetResponse?.body?.[0].id,
-                  userId: getAuthState().user()?.user?.id,
-                })
-                .then(res => {
-                  console.log('SET ACTIVE');
-                  setActiveWorkspace(() => ({
-                    ...res.body?.[0]!,
-                    snippets: snippetResponse.body?.[0]!,
-                  }));
-                });
-            }
+            const userId = getAuthState().user()?.user?.id;
+            if (!userId) return;
+            const workspaceItem = await API.workpace.createSnippet(
+              userId,
+              dataToSave,
+            );
+            setActiveWorkspace(workspaceItem ?? undefined);
           }
         });
 
@@ -166,7 +160,6 @@ function createEditorSyncAdapter() {
     loadData,
     activeWorkspace,
     setActiveWorkspace,
-    remoteLoading: () => loadedSnippet.loading,
     remoteSync,
     initRemoteDbSync,
   };
