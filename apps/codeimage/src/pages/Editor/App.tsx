@@ -3,7 +3,7 @@ import {
   createEditorSyncAdapter,
   getEditorSyncAdapter,
 } from '@codeimage/store/editor/createEditorInit';
-import {getFrameState} from '@codeimage/store/frame/createFrame';
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {uiStore} from '@codeimage/store/ui';
 import {Box, Button, HStack, PortalHost, SnackbarHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';

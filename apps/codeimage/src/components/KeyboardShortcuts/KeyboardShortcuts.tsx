@@ -1,8 +1,8 @@
 import {useI18n} from '@codeimage/locale';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
-import {getFrameState} from '@codeimage/store/frame/createFrame';
-import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
 import * as ui from '@codeimage/store/ui';
 import {
   Button,
@@ -58,7 +58,8 @@ export function KeyboardShortcuts(): JSXElement {
   });
 
   const filterHotKey = () =>
-    editor.options.focused || document.activeElement?.nodeName === 'INPUT';
+    editor.state.options.focused ||
+    document.activeElement?.nodeName === 'INPUT';
 
   useHotkey(document.body, {
     F: event => {
@@ -67,7 +68,7 @@ export function KeyboardShortcuts(): JSXElement {
       editor.actions.setFocused(true);
     },
     Escape: () => {
-      if (editor.options.focused) {
+      if (editor.state.options.focused) {
         if (!document.activeElement) return;
         (document.activeElement as HTMLElement).blur();
       } else {

@@ -1,4 +1,4 @@
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {Box} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';

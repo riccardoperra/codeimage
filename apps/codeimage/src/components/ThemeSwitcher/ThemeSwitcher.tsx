@@ -1,8 +1,8 @@
 import {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
-import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
 import {Box, FlexField, TextField} from '@codeimage/ui';
@@ -33,13 +33,13 @@ const CustomEditorPreview = lazy(() => {
 
 export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const terminal = getTerminalState();
-  const {options} = getRootEditorStore();
+  const editor = getRootEditorStore();
   const modality = useModality();
   const {themeArray, themeLoading} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
   const [filteredThemes, search, setSearch, isMatched] =
     useFilteredThemes(themeArray);
-  const isSelected = createSelector(() => options.themeId);
+  const isSelected = createSelector(() => editor.state.options.themeId);
 
   const onSelectTheme = (theme: CustomTheme) => {
     dispatchUpdateTheme({theme});

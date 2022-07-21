@@ -1,5 +1,6 @@
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
+import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Box, Group, RadioBlock} from '@codeimage/ui';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {For, JSXElement, Show, Suspense} from 'solid-js';
@@ -16,8 +17,9 @@ export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
   const terminalThemes = AVAILABLE_TERMINAL_THEMES;
+  const {remoteLoading} = getEditorSyncAdapter();
   const terminalState = getTerminalState();
-  const {options} = getRootEditorStore();
+  const {state: editorState} = getRootEditorStore();
 
   return (
     <Group orientation={'vertical'}>
@@ -30,7 +32,10 @@ export function TerminalControlField(
           >
             <Box padding={2} width={'100%'}>
               <Suspense fallback={<TerminalControlSkeleton />}>
-                <Show when={true} fallback={<TerminalControlSkeleton />}>
+                <Show
+                  when={!remoteLoading()}
+                  fallback={<TerminalControlSkeleton />}
+                >
                   <Dynamic
                     showTab={false}
                     shadow={'none'}
@@ -43,7 +48,7 @@ export function TerminalControlField(
                     showWatermark={false}
                     alternativeTheme={false}
                     opacity={100}
-                    themeId={options.themeId}
+                    themeId={editorState.options.themeId}
                     showGlassReflection={
                       terminalState.state.showGlassReflection
                     }
