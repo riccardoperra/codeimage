@@ -1,15 +1,17 @@
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {
-  EditorUIOptions,
+  getInitialEditorState,
   getInitialEditorUiOptions,
-} from '@codeimage/store/editor/createEditorOptions';
-import {getInitialEditorState} from '@codeimage/store/editor/createEditors';
-import {EditorState} from '@codeimage/store/editor/model';
-import {getInitialFrameState} from '@codeimage/store/frame/createFrame';
+} from '@codeimage/store/editor/editor';
+import {
+  EditorState,
+  EditorUIOptions,
+  TerminalState,
+} from '@codeimage/store/editor/model';
+import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {FrameState} from '@codeimage/store/frame/model';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
-import {getInitialTerminalState} from '@codeimage/store/terminal/createTerminal';
-import {TerminalState} from '@codeimage/store/terminal/model';
+import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {supabase} from '@core/constants/supabase';
 import {createContextProvider} from '@solid-primitives/context';
 import {createResource, createSignal} from 'solid-js';
@@ -82,9 +84,9 @@ function makeDashboardState() {
   }
 
   async function deleteProject(item: WorkspaceItem) {
+    mutate(items => items.filter(i => i.id !== item.id));
     await supabase.from('workspace_item').delete().eq('id', item.id);
     await supabase.from('snippets').delete().eq('id', item.snippetId);
-    mutate(items => items.filter(i => i.id !== item.id));
   }
 
   return {

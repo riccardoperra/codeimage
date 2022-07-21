@@ -1,14 +1,15 @@
 import {getAuthState} from '@codeimage/store/auth/auth';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {getFrameState} from '@codeimage/store/frame/createFrame';
-import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {getEditorStore} from '@codeimage/store/editor/index';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
 import {supabase} from '@core/constants/supabase';
 import {
-  auditTime,
   combineLatest,
   debounceTime,
   filter,
+  from,
   shareReplay,
   tap,
 } from 'rxjs';
@@ -36,6 +37,7 @@ function createEditorSyncAdapter() {
   const frameStore = getFrameState();
   const terminalStore = getTerminalState();
   const editorStore = getRootEditorStore();
+  const store = getEditorStore();
   const idb = useIdb();
 
   const [loadedSnippet] = createResource(
@@ -45,14 +47,13 @@ function createEditorSyncAdapter() {
         const storedWorkspaceData = await supabase
           .from<WorkspaceItem>('workspace_item')
           .select('*, snippets(*)')
-          .filter('snippetId', 'eq', snippetId)
+          .eq('id', snippetId)
           .maybeSingle();
         if (storedWorkspaceData.data) {
           updateStateFromRemote(storedWorkspaceData.data);
         }
         return storedWorkspaceData?.data;
       } else if (activeWorkspace) {
-        console.log(activeWorkspace);
         updateStateFromRemote(activeWorkspace);
         return activeWorkspace;
       }
@@ -60,21 +61,18 @@ function createEditorSyncAdapter() {
     },
   );
 
-  const isReadyToSync = () =>
-    frameStore.initialized() &&
-    terminalStore.initialized() &&
-    editorStore.ready() &&
-    !loadedSnippet.loading;
+  const isReadyToSync = () => {
+    return !loadedSnippet.loading && store.initialized();
+  };
 
   const onChange$ = combineLatest([
-    frameStore.state$,
-    terminalStore.state$,
-    editorStore.state$,
-    observable(activeWorkspace),
+    frameStore.stateToPersist$,
+    terminalStore.stateToPersist$,
+    editorStore.stateToPersist$,
+    from(observable(activeWorkspace)),
   ]).pipe(
     filter(() => isReadyToSync()),
-    auditTime(0),
-    tap(x => console.log('state change', x)),
+    debounceTime(150),
     shareReplay({refCount: true, bufferSize: 1}),
   );
 
@@ -88,9 +86,9 @@ function createEditorSyncAdapter() {
               $workspaceId: activeWorkspace()?.id,
               $snippetId: activeWorkspace()?.snippetId,
               $version: appEnvironment.version,
-              frame: frameStore.stateToPersist,
-              terminal: terminalStore.stateToPersist,
-              editor: editorStore.stateToPersist,
+              frame: frameStore.stateToPersist(),
+              terminal: terminalStore.stateToPersist(),
+              editor: editorStore.stateToPersist(),
             });
             idb.set('document', state);
           });
@@ -119,15 +117,12 @@ function createEditorSyncAdapter() {
           debounceTime(3000),
           tap(() => setRemoteSync(false)),
         )
-        .subscribe(async () => {
+        .subscribe(async ([frame, terminal, {editors, options}]) => {
           const dataToSave = {
-            frame: frameStore.store,
-            terminal: terminalStore.state,
-            editors: editorStore.editors.map(editor => ({
-              ...editor,
-              code: window.btoa(editor.code),
-            })),
-            options: editorStore.options,
+            frame,
+            terminal,
+            editors,
+            options,
           };
 
           const loggedIn = authState.loggedIn();
@@ -136,8 +131,8 @@ function createEditorSyncAdapter() {
           if (activeWorkspace()) {
             await supabase
               .from<WorkspaceItem['snippets']>('snippets')
-              .upsert(dataToSave)
-              .filter('id', 'eq', activeWorkspace()?.snippetId);
+              .update(dataToSave)
+              .filter('id', 'eq', activeWorkspace()?.id);
           } else {
             const snippetResponse = await supabase
               .from<WorkspaceItem['snippets']>('snippets')

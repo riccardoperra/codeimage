@@ -1,22 +1,16 @@
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {createRoot} from 'solid-js';
-
-export interface EditorState {
-  readonly id: string;
-  readonly languageId: string;
-  readonly code: string;
-}
 
 function $activeEditors() {
   const {
-    editors,
-    actions: {setEditors},
+    state,
     isActive,
+    actions: {setEditors},
   } = getRootEditorStore();
-  const currentEditor = () => editors.find(editor => isActive(editor.id));
+  const currentEditor = () => state.editors.find(editor => isActive(editor.id));
 
   const currentEditorIndex = () =>
-    editors.findIndex(editor => editor.id === currentEditor()?.id);
+    state.editors.findIndex(editor => editor.id === currentEditor()?.id);
 
   const setLanguageId = (languageId: string) =>
     setEditors(currentEditorIndex(), 'languageId', languageId);

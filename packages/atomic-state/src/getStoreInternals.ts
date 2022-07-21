@@ -1,21 +1,18 @@
 import {Store} from 'solid-js/store';
 import {$STORE, StoreInternals} from './createStore';
-/**
- * @internal
- */
-export default function getStoreInternals<T extends object>(store: Store<T>) {
-  const {$$isStore, $$setter, events$} = (
+
+export function getStoreInternals<T extends object>(
+  store: Store<T>,
+): StoreInternals<T> {
+  const internals = (
     store as T & {
       [$STORE]: StoreInternals<T>;
     }
   )[$STORE];
 
-  if (!$$isStore) {
-    throw new Error('Given parameter is not a given store.');
+  if (!internals.$$isStore) {
+    throw new Error('Given parameter is not a store.');
   }
 
-  return {
-    $$setter,
-    events$,
-  };
+  return internals;
 }

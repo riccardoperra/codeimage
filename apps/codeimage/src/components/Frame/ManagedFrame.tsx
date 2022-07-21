@@ -1,7 +1,7 @@
-import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {getFrameState} from '@codeimage/store/frame/createFrame';
-import {getTerminalState} from '@codeimage/store/terminal/createTerminal';
+import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {lazy, Show} from 'solid-js';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import {Frame} from './Frame';
@@ -34,7 +34,7 @@ export function ManagedFrame() {
         showWatermark={terminal.showWatermark}
         opacity={terminal.opacity}
         alternativeTheme={terminal.alternativeTheme}
-        themeId={editor.options.themeId}
+        themeId={editor.state.options.themeId}
       >
         <Show when={getActiveEditorStore().editor()}>
           <CustomEditor />
