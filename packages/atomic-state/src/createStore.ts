@@ -1,12 +1,5 @@
 import {from as rxjsFrom, map, type Observable, Subject} from 'rxjs';
-import {
-  Accessor,
-  createEffect,
-  createSignal,
-  from,
-  observable,
-  on,
-} from 'solid-js';
+import {createSignal, from, observable} from 'solid-js';
 import {
   createStore as coreCreateStore,
   SetStoreFunction,
@@ -18,12 +11,6 @@ export type StoreEvent = {
   value: unknown;
 };
 
-interface CreateStoreOptions<T> {
-  middlewares?: readonly ((
-    args: [state: Accessor<T | undefined>, setState: SetStoreFunction<T>],
-  ) => unknown | Promise<unknown>)[];
-}
-
 export interface StoreInternals<T> {
   events$: Subject<StoreEvent>;
   $$setter: SetStoreFunction<T>;
@@ -32,10 +19,7 @@ export interface StoreInternals<T> {
 
 export const $STORE = Symbol('store-internals');
 
-export function createStore<T extends {}>(
-  initialState: T,
-  options: CreateStoreOptions<T> = {},
-) {
+export function createStore<T>(initialState: T) {
   const events$ = new Subject<StoreEvent>();
   const [store, internalSetStore] = coreCreateStore<T>(
     Object.assign(initialState, {
@@ -54,7 +38,6 @@ export function createStore<T extends {}>(
     }),
   );
   const [signal, setSignal] = createSignal<symbol>();
-  const [initialized, setInitialized] = createSignal(false);
 
   const setStore = (...args: Parameters<typeof internalSetStore>) => {
     const returnValue = internalSetStore(...args);
@@ -67,33 +50,21 @@ export function createStore<T extends {}>(
 
   const storeAccessor = from(state$);
 
-  createEffect(
-    on(initialized, initialized => {
-      if (initialized) {
-        events$.next({type: '$$INIT', value: unwrap(store)});
-      }
-    }),
-  );
-
-  createEffect(() => {
-    if (options.middlewares) {
-      const resolvedMiddlewares = options.middlewares.map(middleware => {
-        const result = middleware([storeAccessor, internalSetStore]);
-        return result instanceof Promise ? result : Promise.resolve(result);
-      });
-      Promise.all(resolvedMiddlewares).then(() => setInitialized(true));
-    }
+  const storeWithAccessor = Object.assign(store, {
+    accessor() {
+      return storeAccessor();
+    },
   });
 
   return [
-    store,
+    storeWithAccessor,
     setStore,
     {
       state$,
       events$: events$.asObservable(),
     },
   ] as [
-    typeof store,
+    typeof storeWithAccessor,
     typeof internalSetStore,
     {
       events$: Observable<StoreEvent>;

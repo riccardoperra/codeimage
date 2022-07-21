@@ -1,10 +1,12 @@
 import {createDerivedObservable, createStore} from '@codeimage/atomic-state';
+import {createDerivedSetter} from '@codeimage/atomic-state/src';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
-import {createMemo, createSelector} from 'solid-js';
+import {createEffect, createMemo, createSelector, on} from 'solid-js';
+import {createStore as coreCreateStore, SetStoreFunction} from 'solid-js/store';
 import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
 import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
 
@@ -123,6 +125,8 @@ export function createEditorsStore() {
     setState('options', item.snippets.options);
   };
 
+  const setEditors = createDerivedSetter(state, ['editors']);
+
   return {
     state,
     isActive,
@@ -133,6 +137,7 @@ export function createEditorsStore() {
       canAddEditor,
     },
     actions: {
+      setEditors,
       addEditor,
       removeEditor,
       setTabName,

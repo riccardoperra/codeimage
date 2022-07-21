@@ -2,17 +2,14 @@ import {getAuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
-import shallow from '@codeimage/store/editor/shallow';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
 import {supabase} from '@core/constants/supabase';
 import {
   combineLatest,
   debounceTime,
-  distinctUntilChanged,
   filter,
   from,
-  map,
   shareReplay,
   tap,
 } from 'rxjs';
