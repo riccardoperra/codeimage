@@ -1,12 +1,14 @@
-import {createDerivedObservable, createStore} from '@codeimage/atomic-state';
-import {createDerivedSetter} from '@codeimage/atomic-state/src';
+import {
+  createDerivedObservable,
+  createDerivedSetter,
+  createStore,
+} from '@codeimage/atomic-state';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
-import {createEffect, createMemo, createSelector, on} from 'solid-js';
-import {createStore as coreCreateStore, SetStoreFunction} from 'solid-js/store';
+import {createMemo, createSelector} from 'solid-js';
 import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
 import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
 

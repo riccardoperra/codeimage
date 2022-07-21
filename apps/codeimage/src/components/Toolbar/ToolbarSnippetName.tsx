@@ -1,14 +1,10 @@
 import {getAuthState} from '@codeimage/store/auth/auth';
-import {getEditorStore} from '@codeimage/store/editor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
 import {Box, FlexField, Loading, Text, TextField} from '@codeimage/ui';
-import {supabase} from '@core/constants/supabase';
 import clickOutside from '@core/directives/clickOutside';
-import {useRouteData} from 'solid-app-router';
 import {createSignal, onMount, Show, untrack} from 'solid-js';
+import {API} from '../../data-access/api';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {WorkspaceItem} from '../../pages/Dashboard/Dashboard';
-import {ChevronDownIcon} from '../Icons/ChevronDown';
 
 void clickOutside;
 
@@ -20,14 +16,10 @@ export function ToolbarSnippetName() {
   const {remoteSync} = getEditorSyncAdapter();
 
   async function updateSnippetName(newName: string) {
-    if (activeWorkspace()?.name === value()) {
-      return;
-    }
+    const $$activeWorkspace = activeWorkspace();
+    if (!$$activeWorkspace || $$activeWorkspace.name === value()) return;
     setValue(newName);
-    await supabase
-      .from<WorkspaceItem>('workspace_item')
-      .update({name: newName})
-      .eq('id', activeWorkspace()?.id);
+    await API.workpace.updateSnippetName($$activeWorkspace.id, newName);
   }
 
   function toggleEdit() {
