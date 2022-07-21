@@ -34,7 +34,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
     <li class={styles.item}>
       <Link
         class={styles.itemLink}
-        href={`/${props.item.snippetId}`}
+        href={`/${props.item.id}`}
         onClick={() => setActiveWorkspace(props.item)}
       />
       <div>
