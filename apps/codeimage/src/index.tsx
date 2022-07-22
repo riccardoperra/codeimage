@@ -1,13 +1,16 @@
 import {createI18nContext, I18nContext} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
+import {
+  EditorSyncProvider,
+  getEditorSyncAdapter,
+} from '@codeimage/store/editor/createEditorInit';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {uiStore} from '@codeimage/store/ui';
 import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import {Router, useRoutes} from 'solid-app-router';
+import {Router, useParams, useRoutes} from 'solid-app-router';
 import {createEffect, lazy, on, onMount, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
@@ -34,24 +37,43 @@ export function Bootstrap() {
   const Routes = useRoutes([
     {
       path: ':snippetId?',
-      data: ({params}) => {
-        const {activeWorkspace, loadData} = getEditorSyncAdapter();
-        if (!params.snippetId) {
-          loadData({activeWorkspace: null, snippetId: null});
-        }
-        loadData({
-          activeWorkspace: activeWorkspace(),
-          snippetId: params.snippetId,
+      component: () => {
+        const AppComponent = lazy(() => {
+          setTimeout(() => getThemeStore().loadThemes());
+          return import('./pages/Editor/App').then(component => {
+            document.querySelector('#launcher')?.remove();
+            return component;
+          });
         });
-        return null;
+
+        return (
+          <EditorSyncProvider>
+            {() => {
+              const {activeWorkspace, loadData} = getEditorSyncAdapter();
+              const params = useParams();
+
+              console.log(activeWorkspace);
+
+              createEffect(
+                on(
+                  () => params.snippetId,
+                  snippetId => {
+                    if (!snippetId) {
+                      loadData({activeWorkspace: null, snippetId: null});
+                    }
+                    loadData({
+                      activeWorkspace: activeWorkspace(),
+                      snippetId: params.snippetId,
+                    });
+                    return null;
+                  },
+                ),
+              );
+              return <AppComponent />;
+            }}
+          </EditorSyncProvider>
+        );
       },
-      component: lazy(() => {
-        setTimeout(() => getThemeStore().loadThemes());
-        return import('./pages/Editor/App').then(component => {
-          document.querySelector('#launcher')?.remove();
-          return component;
-        });
-      }),
     },
     {
       path: 'dashboard',
