@@ -44,9 +44,7 @@ export function App() {
   const modality = useModality();
   const [, {locale}] = useI18n();
   const frameStore = getFrameState();
-  const {initRemoteDbSync} = getEditorSyncAdapter();
   createEffect(on(() => uiStore.locale, locale));
-  onMount(() => initRemoteDbSync());
 
   return (
     <>
