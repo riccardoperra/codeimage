@@ -1,5 +1,5 @@
 import {from as rxjsFrom, map, type Observable, Subject} from 'rxjs';
-import {createSignal, from, observable} from 'solid-js';
+import {Accessor, createSignal, from, observable} from 'solid-js';
 import {
   createStore as coreCreateStore,
   SetStoreFunction,
@@ -23,7 +23,6 @@ export function createStore<T>(initialState: T) {
   const events$ = new Subject<StoreEvent>();
   const [store, internalSetStore] = coreCreateStore<T>(
     Object.assign(initialState, {
-      ...initialState,
       get [$STORE](): StoreInternals<T> {
         return {
           get events$() {
@@ -34,6 +33,9 @@ export function createStore<T>(initialState: T) {
           },
           $$isStore: true,
         };
+      },
+      accessor() {
+        return storeAccessor();
       },
     }),
   );
@@ -50,11 +52,9 @@ export function createStore<T>(initialState: T) {
 
   const storeAccessor = from(state$);
 
-  const storeWithAccessor = Object.assign(store, {
-    accessor() {
-      return storeAccessor();
-    },
-  });
+  const storeWithAccessor = store as typeof store & {
+    accessor: Accessor<T>;
+  };
 
   return [
     storeWithAccessor,
