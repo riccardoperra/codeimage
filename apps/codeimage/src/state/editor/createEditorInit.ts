@@ -15,6 +15,7 @@ import {
 } from 'rxjs';
 import {
   createEffect,
+  createMemo,
   createResource,
   createSignal,
   observable,
@@ -41,22 +42,18 @@ function createEditorSyncAdapter() {
   const store = getEditorStore();
   const idb = useIdb();
 
-  const [loadedSnippet] = createResource(
-    data,
-    async ({activeWorkspace, snippetId}) => {
-      if (snippetId && (!activeWorkspace || activeWorkspace.id !== snippetId)) {
-        const storedWorkspaceData = await API.workpace.loadSnippet(snippetId);
-        if (storedWorkspaceData.data) {
-          updateStateFromRemote(storedWorkspaceData.data);
-        }
-        return storedWorkspaceData?.data;
-      } else if (activeWorkspace) {
-        updateStateFromRemote(activeWorkspace);
-        return activeWorkspace;
+  const snippetId = createMemo(() => data()?.snippetId);
+
+  const [loadedSnippet] = createResource(snippetId, async snippetId => {
+    if (snippetId) {
+      const storedWorkspaceData = await API.workpace.loadSnippet(snippetId);
+      if (storedWorkspaceData.data) {
+        updateStateFromRemote(storedWorkspaceData.data);
       }
-      return {};
-    },
-  );
+      return storedWorkspaceData?.data;
+    }
+    return {};
+  });
 
   const isReadyToSync = () => {
     const loading = loadedSnippet.loading,
@@ -166,5 +163,4 @@ function createEditorSyncAdapter() {
 
 export const [EditorSyncProvider, getEditorSyncAdapter] = createContextProvider(
   createEditorSyncAdapter,
-  {} as ReturnType<typeof createEditorSyncAdapter>,
 );
