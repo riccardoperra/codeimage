@@ -2,7 +2,7 @@ import {getAuthState} from '@codeimage/store/auth/auth';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
 import {Box, FlexField, Loading, Text, TextField} from '@codeimage/ui';
 import clickOutside from '@core/directives/clickOutside';
-import {createSignal, onMount, Show, untrack} from 'solid-js';
+import {createEffect, createSignal, on, onMount, Show, untrack} from 'solid-js';
 import {API} from '../../data-access/api';
 import {useHotkey} from '../../hooks/use-hotkey';
 
@@ -10,10 +10,12 @@ void clickOutside;
 
 export function ToolbarSnippetName() {
   const [editing, setEditing] = createSignal(false);
-  const {activeWorkspace} = getEditorSyncAdapter();
   const loggedIn = () => getAuthState().loggedIn();
+  const {remoteSync, activeWorkspace} = getEditorSyncAdapter()!;
   const [value, setValue] = createSignal(activeWorkspace()?.name || undefined);
-  const {remoteSync} = getEditorSyncAdapter();
+  createEffect(
+    on(activeWorkspace, workspace => setValue(workspace?.name || undefined)),
+  );
 
   async function updateSnippetName(newName: string) {
     const $$activeWorkspace = activeWorkspace();

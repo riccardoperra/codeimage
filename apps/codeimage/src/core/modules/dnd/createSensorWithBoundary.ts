@@ -23,7 +23,6 @@ export const createSensorWithBoundary = (
       dragStart,
       dragMove,
       dragEnd,
-      anySensorActive,
     },
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   ] = useDragDropContext()!;
@@ -69,7 +68,7 @@ export const createSensorWithBoundary = (
   };
 
   const onActivate = (): void => {
-    if (!anySensorActive()) {
+    if (!!state.active.sensor) {
       sensorStart(id);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       dragStart(activationDraggableId!);
@@ -117,7 +116,7 @@ export const createSensorWithBoundary = (
       y: event.clientY - initialCoordinates.y,
     };
 
-    if (!anySensorActive()) {
+    if (!!state.active.sensor) {
       if (Math.sqrt(transform.x ** 2 + transform.y ** 2) > activationDistance) {
         onActivate();
       }

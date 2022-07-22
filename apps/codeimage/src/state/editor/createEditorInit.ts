@@ -52,7 +52,6 @@ function createEditorSyncAdapter() {
       }
       return storedWorkspaceData?.data;
     }
-    return {};
   });
 
   const isReadyToSync = () => {
@@ -153,12 +152,13 @@ function createEditorSyncAdapter() {
   }
 
   return {
+    loadedSnippet,
     loadData,
     activeWorkspace,
     setActiveWorkspace,
     remoteSync,
     initRemoteDbSync,
-  };
+  } as const;
 }
 
 export const [EditorSyncProvider, getEditorSyncAdapter] = createContextProvider(
