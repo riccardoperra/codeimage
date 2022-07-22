@@ -1,21 +1,9 @@
 import {createEditorsStore} from '@codeimage/store/editor/editor';
 import {createFrameState} from '@codeimage/store/editor/frame';
+import {EditorFinalState, TerminalState} from '@codeimage/store/editor/model';
 import {createTerminalState} from '@codeimage/store/editor/terminal';
-import {
-  EditorFinalState,
-  PersistedEditorState,
-  TerminalState,
-} from '@codeimage/store/editor/model';
-import {versionateId} from '@codeimage/store/plugins/unique-id';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {
-  batch,
-  createEffect,
-  createRoot,
-  createSignal,
-  on,
-  onMount,
-} from 'solid-js';
+import {createEffect, createRoot, createSignal, on} from 'solid-js';
 import {useIdb} from '../../hooks/use-indexed-db';
 
 export type EditorState = {

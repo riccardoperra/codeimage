@@ -4,6 +4,7 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
+import {createContextProvider} from '@solid-primitives/context';
 import {
   combineLatest,
   debounceTime,
@@ -15,7 +16,6 @@ import {
 import {
   createEffect,
   createResource,
-  createRoot,
   createSignal,
   observable,
   on,
@@ -164,8 +164,7 @@ function createEditorSyncAdapter() {
   };
 }
 
-export const $editorSyncAdapter = createRoot(createEditorSyncAdapter);
-
-export function getEditorSyncAdapter() {
-  return $editorSyncAdapter;
-}
+export const [EditorSyncProvider, getEditorSyncAdapter] = createContextProvider(
+  createEditorSyncAdapter,
+  {} as ReturnType<typeof createEditorSyncAdapter>,
+);
