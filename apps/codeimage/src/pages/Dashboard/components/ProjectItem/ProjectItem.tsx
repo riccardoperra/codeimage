@@ -21,7 +21,6 @@ interface ProjectItemProps {
 
 export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const dashboard = getDashboardState()!;
-  const {setActiveWorkspace} = getEditorSyncAdapter();
   const locale = () => uiStore.locale;
   const createDialog = createStandaloneDialog();
 
@@ -32,11 +31,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
 
   return (
     <li class={styles.item}>
-      <Link
-        class={styles.itemLink}
-        href={`/${props.item.id}`}
-        onClick={() => setActiveWorkspace(props.item)}
-      />
+      <Link class={styles.itemLink} href={`/${props.item.id}`} />
       <div>
         <div class={styles.itemTitle}>
           <Text size={'lg'}>{props.item.name}</Text>

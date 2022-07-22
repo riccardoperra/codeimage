@@ -52,8 +52,6 @@ export function Bootstrap() {
               const {activeWorkspace, loadData} = getEditorSyncAdapter();
               const params = useParams();
 
-              console.log(activeWorkspace);
-
               createEffect(
                 on(
                   () => params.snippetId,
