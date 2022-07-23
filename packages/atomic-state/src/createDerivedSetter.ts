@@ -27,7 +27,7 @@ export function createDerivedSetter<T extends object, TPaths extends Path<T>>(
     ...args: unknown[]
   ) => {
     const localSetState = $$setter as (...args: unknown[]) => void;
-    localSetState([...path, ...args]);
+    localSetState(...path, ...args);
   };
   return setState;
 }

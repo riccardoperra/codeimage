@@ -1,7 +1,11 @@
 import {createI18nContext, I18nContext} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {uiStore} from '@codeimage/store/ui';
-import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
+import {
+  backgroundColorVar,
+  CodeImageThemeProvider,
+  LoadingOverlay,
+} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
@@ -26,6 +30,13 @@ const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
   },
 };
 
+const Dashboard = lazy(() =>
+  import('./pages/Dashboard/Dashboard').then(component => {
+    document.querySelector('#launcher')?.remove();
+    return component;
+  }),
+);
+
 export function Bootstrap() {
   getRootEditorStore();
   const mode = () => uiStore.themeMode;
@@ -37,12 +48,19 @@ export function Bootstrap() {
     },
     {
       path: 'dashboard',
-      component: lazy(() =>
-        import('./pages/Dashboard/Dashboard').then(component => {
-          document.querySelector('#launcher')?.remove();
-          return component;
-        }),
-      ),
+      component: () => {
+        return (
+          <Suspense
+            fallback={
+              <div style={{position: 'fixed', height: '100%', width: '100%'}}>
+                <LoadingOverlay overlay={true} size={'3x'} />
+              </div>
+            }
+          >
+            <Dashboard />
+          </Suspense>
+        );
+      },
     },
   ]);
 
