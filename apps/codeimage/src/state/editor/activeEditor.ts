@@ -1,7 +1,7 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {createRoot} from 'solid-js';
 
-function $activeEditors() {
+const $activeEditorState = createRoot(() => {
   const {
     state,
     isActive,
@@ -23,9 +23,7 @@ function $activeEditors() {
     setLanguageId,
     setCode,
   };
-}
-
-const $activeEditorState = createRoot($activeEditors);
+});
 
 export function getActiveEditorStore() {
   return $activeEditorState;

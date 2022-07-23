@@ -1,6 +1,6 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getRootEditorStore} from '@codeimage/store/editor';
+import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {
   autocompletion,

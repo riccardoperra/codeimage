@@ -64,11 +64,13 @@ function createEditorSyncAdapter() {
     frameStore.stateToPersist$,
     terminalStore.stateToPersist$,
     editorStore.stateToPersist$,
-    from(observable(activeWorkspace)),
+    from(observable(snippetId)),
   ]).pipe(
+    tap(() => console.log('CHECKKKKKKKKKK')),
     filter(() => isReadyToSync()),
     debounceTime(150),
     shareReplay({refCount: true, bufferSize: 1}),
+    tap(() => console.log('test')),
   );
 
   createEffect(

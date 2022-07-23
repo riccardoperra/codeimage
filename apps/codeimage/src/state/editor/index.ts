@@ -1,14 +1,10 @@
 import {createEditorsStore} from '@codeimage/store/editor/editor';
 import {createFrameState} from '@codeimage/store/editor/frame';
-import {EditorFinalState, TerminalState} from '@codeimage/store/editor/model';
+import {EditorFinalState} from '@codeimage/store/editor/model';
 import {createTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {createEffect, createRoot, createSignal, on} from 'solid-js';
 import {useIdb} from '../../hooks/use-indexed-db';
-
-export type EditorState = {
-  terminal: TerminalState;
-};
 
 export function createEditorStore() {
   const terminal = createTerminalState();
@@ -30,15 +26,17 @@ export function createEditorStore() {
           frame.setBackground(resource.properties.previewBackground);
         }
 
-        const idbState = await idb
-          .get<EditorFinalState>('document')
-          .catch(() => null);
+        try {
+          const idbState = await idb
+            .get<EditorFinalState>('document')
+            .catch(() => null);
 
-        if (idbState) {
-          editor.actions.setFromPersistedState(idbState.editor);
-          frame.setFromPersistedState(idbState.frame);
-          terminal.setFromPersistedState(idbState.terminal);
-        }
+          if (idbState) {
+            editor.actions.setFromPersistedState(idbState.editor);
+            frame.setFromPersistedState(idbState.frame);
+            terminal.setFromPersistedState(idbState.terminal);
+          }
+        } catch (e) {}
         setInitialized(true);
       }
     }),

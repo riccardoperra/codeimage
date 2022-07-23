@@ -46,19 +46,26 @@ export function createEditorsStore() {
   });
 
   const isActive = createSelector(() => state.activeEditorId);
+  const setEditors = createDerivedSetter(state, ['editors']);
 
-  const [stateToPersist$, stateToPersist] = createDerivedObservable(() => ({
-    editors: state.editors.map(editor => ({
-      ...editor,
-      code: window.btoa(editor.code),
-    })),
-    options: {
-      themeId: state.options.themeId,
-      showLineNumbers: state.options.showLineNumbers,
-      fontId: state.options.fontId,
-      fontWeight: state.options.fontWeight,
-    },
-  }));
+  const [stateToPersist$, stateToPersist] = createDerivedObservable(() => {
+    return {
+      editors: state.editors.map(editor => {
+        return {
+          languageId: editor.languageId,
+          code: window.btoa(editor.code),
+          tab: editor.tab,
+          id: editor.id,
+        };
+      }),
+      options: {
+        themeId: state.options.themeId,
+        showLineNumbers: state.options.showLineNumbers,
+        fontId: state.options.fontId,
+        fontWeight: state.options.fontWeight,
+      },
+    };
+  });
 
   const addEditor = (
     editorState?: Partial<EditorState> | null,
@@ -74,7 +81,7 @@ export function createEditorsStore() {
       ...(editorState ?? {}),
       id,
     };
-    setState('editors', editors => [...editors, editor]);
+    setEditors(editors => [...editors, editor]);
     if (active) setState('activeEditorId', id);
   };
 
@@ -91,12 +98,12 @@ export function createEditorsStore() {
     if ($isActive) {
       setState('activeEditorId', newActiveEditor?.id ?? updatedEditors[0]?.id);
     }
-    setState('editors', updatedEditors);
+    setEditors(updatedEditors);
   };
 
   const setTabName = (id: string, name: string, updateLanguage: boolean) => {
-    const index = state.editors.findIndex(tab => tab.id === id);
-    setState('editors', index, 'tab', 'tabName', name);
+    const index = state.editors.findIndex(tab => isActive(tab.id));
+    setEditors(index, 'tab', 'tabName', name);
     if (updateLanguage) {
       const matches = SUPPORTED_LANGUAGES.filter(language => {
         return language.icons.some(({matcher}) => matcher.test(name));
@@ -107,7 +114,7 @@ export function createEditorsStore() {
       ) {
         return;
       }
-      setState('editors', index, 'languageId', matches[0].id);
+      setEditors(index, 'languageId', matches[0].id);
     }
   };
 
@@ -116,8 +123,7 @@ export function createEditorsStore() {
   );
 
   const setFromWorkspace = (item: WorkspaceItem) => {
-    setState(
-      'editors',
+    setEditors(
       item.snippets.editors.map(editor => ({
         ...editor,
         code: window.atob(editor.code),
@@ -126,8 +132,6 @@ export function createEditorsStore() {
     setState('activeEditorId', item.snippets.editors[0].id);
     setState('options', item.snippets.options);
   };
-
-  const setEditors = createDerivedSetter(state, ['editors']);
 
   return {
     state,
@@ -154,7 +158,7 @@ export function createEditorsStore() {
         setState(state => ({
           options: {...state.options, ...state.options},
           activeEditorId: editors[0].id,
-          editors,
+          editors: [...editors],
         }));
       },
       setActiveEditorId: (id: string) => {
