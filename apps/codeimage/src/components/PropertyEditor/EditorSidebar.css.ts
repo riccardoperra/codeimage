@@ -89,6 +89,8 @@ export const titleWrapper = style([
         paddingLeft: '15px',
         alignItems: 'center',
         userSelect: 'none',
+        hyphens: 'auto', // ???
+        wordBreak: 'break-word',
       },
     },
   },
