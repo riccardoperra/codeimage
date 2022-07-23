@@ -33,8 +33,8 @@ export const uiLocale = {
   },
   de: {
     colorPicker: {
-      color: 'Color',
-      gradient: 'Gradient',
+      color: 'Farbe',
+      gradient: 'Farbverlauf',
     },
     shadows: {
       lg: 'Groß',
@@ -44,7 +44,7 @@ export const uiLocale = {
       bottom: 'Unterseite',
       xl: 'Extra groß',
       '3d': '3D-Effekt',
-      outlined: 'Umrissen',
+      outlined: 'Umriss',
     },
   },
   es: {
