@@ -22,7 +22,7 @@ import {
 import {omitProps} from 'solid-use';
 import {useFloating} from '../../hooks';
 import {UseFloatingReturn} from '../../hooks/useFloating';
-import {CustomComponentProps} from '../../utils';
+import {CustomComponentProps, styled} from '../../utils';
 import {MenuPopup} from './MenuPopup';
 
 type DropdownMenuProps = FlowProps<
@@ -82,7 +82,7 @@ export function DropdownMenu(props: DropdownMenuProps) {
         floating,
       }}
     >
-      <div style={{position: 'relative', display: 'inline-block'}}>
+      <styled.div style={{position: 'relative', display: 'inline-block'}}>
         {props.menuButton}
         <Show when={triggerAria.state.isOpen()}>
           <MenuPopup
@@ -93,7 +93,7 @@ export function DropdownMenu(props: DropdownMenuProps) {
             onClose={() => triggerAria.state.close()}
           />
         </Show>
-      </div>
+      </styled.div>
     </DropdownContext.Provider>
   );
 }
