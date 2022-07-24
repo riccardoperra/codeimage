@@ -53,7 +53,7 @@ export function createEditorsStore() {
       editors: state.editors.map(editor => {
         return {
           languageId: editor.languageId,
-          code: window.btoa(editor.code),
+          code: editor.code,
           tab: editor.tab,
           id: editor.id,
         };
@@ -126,7 +126,7 @@ export function createEditorsStore() {
     setEditors(
       item.snippets.editors.map(editor => ({
         ...editor,
-        code: window.atob(editor.code),
+        code: editor.code,
       })),
     );
     setState('activeEditorId', item.snippets.editors[0].id);
@@ -153,7 +153,7 @@ export function createEditorsStore() {
           .slice(0, MAX_TABS)
           .map(editor => ({
             ...editor,
-            code: window.atob(editor.code),
+            code: editor.code,
           }));
         setState(state => ({
           options: {...state.options, ...state.options},
