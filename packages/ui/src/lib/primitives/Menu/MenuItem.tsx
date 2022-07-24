@@ -1,5 +1,6 @@
 import {AriaMenuItemProps, createMenuItem} from '@solid-aria/menu';
 import {ParentProps} from 'solid-js';
+import {styled} from '../../utils';
 import * as styles from './MenuItem.css';
 
 export function MenuItem(props: ParentProps<AriaMenuItemProps>) {
@@ -12,7 +13,7 @@ export function MenuItem(props: ParentProps<AriaMenuItemProps>) {
   );
 
   return (
-    <li
+    <styled.li
       {...menuItemProps}
       ref={ref}
       class={styles.menuItem}
@@ -20,6 +21,6 @@ export function MenuItem(props: ParentProps<AriaMenuItemProps>) {
       data-focused={isFocused()}
     >
       {props.children}
-    </li>
+    </styled.li>
   );
 }

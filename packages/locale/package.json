@@ -26,10 +26,10 @@
   },
   "dependencies": {
     "@solid-primitives/i18n": "^1.1.0",
-    "solid-js": "^1.4.6"
+    "solid-js": "^1.4.8"
   },
   "peerDependencies": {
-    "solid-js": "^1.4.6"
+    "solid-js": "^1.4.8"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",

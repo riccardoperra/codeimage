@@ -7,6 +7,7 @@ import {
   DismissButton,
 } from '@solid-aria/overlays';
 import {UseFloatingReturn} from '../../hooks/useFloating';
+import {styled} from '../../utils';
 import {MenuItem} from './MenuItem';
 import * as styles from './MenuPopup.css';
 
@@ -38,9 +39,9 @@ export function MenuPopup(
   return (
     <MenuProvider>
       <FocusScope restoreFocus>
-        <div {...overlayProps} ref={overlayRef}>
+        <styled.div {...overlayProps} ref={overlayRef}>
           <DismissButton onDismiss={props.onClose} />
-          <ul
+          <styled.ul
             {...menuProps}
             ref={ulRef => {
               ref = ulRef;
@@ -64,9 +65,9 @@ export function MenuPopup(
                 </MenuItem>
               )}
             </ForItems>
-          </ul>
+          </styled.ul>
           <DismissButton onDismiss={props.onClose} />
-        </div>
+        </styled.div>
       </FocusScope>
     </MenuProvider>
   );
