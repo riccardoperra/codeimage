@@ -59,7 +59,7 @@ function makeDashboardState() {
       terminal: getInitialTerminalState(),
       frame: getInitialFrameState(),
       options: getInitialEditorUiOptions(),
-      editors: [{...editor, code: window.btoa(editor.code)}],
+      editors: [{...editor, code: editor.code}],
     };
 
     return API.workpace.createNewProject(userId, data);

@@ -5,20 +5,12 @@ import {getEditorStore} from '@codeimage/store/editor/index';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
-import {
-  combineLatest,
-  debounceTime,
-  filter,
-  from,
-  shareReplay,
-  tap,
-} from 'rxjs';
+import {combineLatest, debounceTime, filter, tap} from 'rxjs';
 import {
   createEffect,
   createMemo,
   createResource,
   createSignal,
-  observable,
   on,
   onCleanup,
   untrack,
@@ -64,13 +56,9 @@ function createEditorSyncAdapter() {
     frameStore.stateToPersist$,
     terminalStore.stateToPersist$,
     editorStore.stateToPersist$,
-    from(observable(snippetId)),
   ]).pipe(
-    tap(() => console.log('CHECKKKKKKKKKK')),
     filter(() => isReadyToSync()),
     debounceTime(150),
-    shareReplay({refCount: true, bufferSize: 1}),
-    tap(() => console.log('test')),
   );
 
   createEffect(
