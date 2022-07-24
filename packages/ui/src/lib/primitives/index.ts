@@ -37,6 +37,7 @@ export {
   DialogPanelContent,
   Dialog,
   DialogPanel,
+  createStandaloneDialog,
   type DialogProps,
   type DialogPanelProps,
 } from './Dialog';
@@ -66,3 +67,10 @@ export {Loading, type LoaderProps, LoadingOverlay} from './Loader';
 export {Toggle} from './Toggle';
 
 export {Popover} from './Popover';
+
+export {
+  DropdownMenu as DropdownMenuV2,
+  MenuButton,
+  MenuItem,
+  MenuPopup,
+} from './Menu';

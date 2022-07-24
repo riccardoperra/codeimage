@@ -1,39 +1,66 @@
-import {setLocale, toggleThemeMode, uiStore} from '@codeimage/store/ui';
-import {Box, HStack} from '@codeimage/ui';
-import {Component} from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
+import {getAuthState} from '@codeimage/store/auth/auth';
+import {Box, Button, HStack} from '@codeimage/ui';
+import {Link} from 'solid-app-router';
+import {Component, Show} from 'solid-js';
+import {CodeImageLogo} from '../Icons/CodeImageLogo';
+import {CollectionIcon} from '../Icons/Collection';
+import {ColorSwatchIcon} from '../Icons/ColorSwatch';
+import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
+import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
-import {ExportInNewTabButton} from './ExportNewTabButton';
-import {LanguageSelectorButton} from './LanguageSelectorButton';
-import {ShareButton} from './ShareButton';
-import {ThemeToggleButton} from './ThemeToggleButton';
 import * as styles from './Toolbar.css';
+import {ToolbarSettingsButton} from './ToolbarSettings';
+import {ToolbarSnippetName} from './ToolbarSnippetName';
 
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
-  const {locales} = appEnvironment;
+  const loggedIn = () => getAuthState().loggedIn();
 
   return (
     <div class={styles.wrapper}>
-      <Box class={styles.actionBox}>
-        <LanguageSelectorButton
-          locales={locales}
-          currentLocale={uiStore.locale}
-          onLocaleChange={setLocale}
-        />
+      <ToolbarSettingsButton />
+      <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={5}>
+        <div class={sidebarLogo}>
+          <CodeImageLogo width={'156px'} />
+        </div>
 
-        <ThemeToggleButton
-          theme={uiStore.themeMode}
-          onThemeToggle={toggleThemeMode}
-        />
-
-        <HStack marginLeft={'auto'} spacing={'2'}>
-          <Box display={'inlineBlock'}>
-            <ShareButton />
+        <Show when={loggedIn()}>
+          <Box marginLeft={16}>
+            <Button
+              as={Link}
+              href={'/dashboard'}
+              variant={'link'}
+              theme={'secondary'}
+            >
+              <CollectionIcon />
+              <Box marginLeft={2}>Dashboard</Box>
+            </Button>
           </Box>
-          <ExportInNewTabButton canvasRef={props.canvasRef} />
+
+          <Box marginLeft={2}>
+            <Button
+              as={Link}
+              href={'/dashboard'}
+              variant={'link'}
+              theme={'secondary'}
+            >
+              <ColorSwatchIcon />
+              <Box marginLeft={2}>Theme editor</Box>
+            </Button>
+          </Box>
+        </Show>
+      </Box>
+
+      <Box flexGrow={1}>
+        <ToolbarSnippetName />
+      </Box>
+
+      <Box class={styles.actionBox} style={{flex: 1}}>
+        <HStack marginLeft={'auto'} spacing={'2'}>
           <ExportButton canvasRef={props.canvasRef} />
+
+          <UserBadge />
         </HStack>
       </Box>
     </div>

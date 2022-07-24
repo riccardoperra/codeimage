@@ -11,7 +11,6 @@ export const button = style([
     height: '36px',
     padding: `0 ${themeVars.spacing['3']}`,
     borderRadius: themeVars.borderRadius.lg,
-    cursor: 'pointer',
     fontSize: themeVars.fontSize.sm,
     fontWeight: themeVars.fontWeight.medium,
     lineHeight: 1,
@@ -23,6 +22,7 @@ export const button = style([
     backgroundColor: backgroundColorVar,
     color: colorVar,
     userSelect: 'none',
+    textDecoration: 'none',
 
     ':disabled': {
       cursor: 'default',
@@ -122,6 +122,21 @@ export const buttonVariant = recipe({
             vars: {
               [backgroundColorVar]:
                 themeVars.dynamicColors.button.base.hoverColor,
+            },
+          },
+        },
+      },
+      danger: {
+        vars: {
+          [backgroundColorVar]:
+            themeVars.dynamicColors.button.danger.backgroundColor,
+          [colorVar]: themeVars.dynamicColors.button.danger.textColor,
+        },
+        selectors: {
+          '&:not(:disabled):hover': {
+            vars: {
+              [backgroundColorVar]:
+                themeVars.dynamicColors.button.danger.hoverColor,
             },
           },
         },

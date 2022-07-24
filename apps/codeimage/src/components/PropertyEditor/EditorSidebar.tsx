@@ -9,9 +9,6 @@ import {WindowStyleForm} from './WindowStyleForm';
 export const EditorSidebar = () => {
   return (
     <EditorForm>
-      <div class={styles.sidebarLogo}>
-        <CodeImageLogo width={'70%'} />
-      </div>
       <div>
         <FrameStyleForm />
       </div>

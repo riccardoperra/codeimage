@@ -1,11 +1,10 @@
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {onCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {Box} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {createRef} from '@core/helpers/create-ref';
 import {getScaleByRatio} from '@core/helpers/getScale';
 import {useModality} from '@core/hooks/isMobile';
-import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {type WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {
@@ -58,7 +57,7 @@ export function FrameHandler(
       if (filterHotKey()) return;
       const el = ref();
       if (!el) return;
-      dispatch(onCopyToClipboard({ref: el}));
+      dispatchCopyToClipboard({ref: el});
     },
   });
 
@@ -76,6 +75,35 @@ export function FrameHandler(
         }
         ref={setHandlerRef}
       >
+        {/*<div class={canvasToolbar}>*/}
+        {/*  <HStack spacing={'2'}>*/}
+        {/*    <Button*/}
+        {/*      size={'xs'}*/}
+        {/*      variant={'solid'}*/}
+        {/*      theme={'secondary'}*/}
+        {/*      style={{width: 'auto', height: '30px'}}*/}
+        {/*    >*/}
+        {/*      <ClipboardIcon />*/}
+        {/*      <Box marginLeft={1}>Copy</Box>*/}
+        {/*    </Button>*/}
+
+        {/*    <Button*/}
+        {/*      size={'xs'}*/}
+        {/*      variant={'solid'}*/}
+        {/*      theme={'secondary'}*/}
+        {/*      style={{width: 'auto', height: '30px'}}*/}
+        {/*    >*/}
+        {/*      <ColorSwatchIcon />*/}
+        {/*      <Box marginLeft={1}>Format code</Box>*/}
+        {/*    </Button>*/}
+        {/*  </HStack>*/}
+        {/*  <div style={{flex: 1}} />*/}
+        {/*  <HStack spacing={'2'}>*/}
+        {/*    <ShareButton showLabel={true} />*/}
+        {/*    <ExportInNewTabButton />*/}
+        {/*  </HStack>*/}
+        {/*</div>*/}
+
         <div
           class={styles.content}
           ref={createRef<'div'>(props, e => {

@@ -41,6 +41,12 @@ export const themeColors = createThemeContract({
       hoverColor: null,
       textColor: null,
     },
+    danger: {
+      backgroundColor: null,
+      activeColor: null,
+      hoverColor: null,
+      textColor: null,
+    },
   },
 
   listBox: {

@@ -1,8 +1,16 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, HStack, useSnackbarStore} from '@codeimage/ui';
-import {createAction, createEffect, ofType, props} from '@ngneat/effects';
 import {InvertedThemeWrapper} from '@ui/InvertedThemeWrapper/InvertedThemeWrapper';
-import {catchError, delay, EMPTY, exhaustMap, from, switchMap, tap} from 'rxjs';
+import {
+  catchError,
+  delay,
+  EMPTY,
+  exhaustMap,
+  from,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
 import {CheckCircle} from '../../components/Icons/CheckCircle';
 import {
   ExportExtension,
@@ -16,14 +24,14 @@ interface CopyToClipboardEvent {
   ref: HTMLElement;
 }
 
-export const onCopyToClipboard = createAction(
-  '[CodeImage] Copy to clipyboard',
-  props<CopyToClipboardEvent>(),
-);
+const event$ = new Subject<CopyToClipboardEvent>();
 
-export const copyToClipboard$ = createEffect(actions =>
-  actions.pipe(
-    ofType(onCopyToClipboard),
+export function dispatchCopyToClipboard(event: CopyToClipboardEvent) {
+  event$.next(event);
+}
+
+event$
+  .pipe(
     exhaustMap(({ref}) => {
       const options: ExportOptions = {
         mode: ExportMode.getBlob,
@@ -52,8 +60,8 @@ export const copyToClipboard$ = createEffect(actions =>
         }),
       );
     }),
-  ),
-);
+  )
+  .subscribe();
 
 function openSnackbar(): void {
   const snackbarStore = useSnackbarStore();

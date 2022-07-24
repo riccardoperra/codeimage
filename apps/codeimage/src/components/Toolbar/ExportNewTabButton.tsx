@@ -62,6 +62,8 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
       theme={'primaryAlt'}
       disabled={data.loading}
       onClick={() => openInTab()}
+      size={'sm'}
+      style={{height: '32px'}}
     >
       <ExternalLinkIcon />
 

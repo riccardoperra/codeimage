@@ -1,16 +1,12 @@
+import {DOMElements, ElementType} from '@solid-aria/types';
 import {
-  Component,
   ComponentProps,
+  createComponent,
   JSX,
   mergeProps,
   ParentProps,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {omitProps} from 'solid-use';
-
-export type DOMElements = keyof JSX.IntrinsicElements;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ElementType<Props = any> = DOMElements | Component<Props>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type LibraryManagedAttributes<Component, Props> = Props;
@@ -53,18 +49,19 @@ export type HTMLCustomComponents = {
 const _styled: CustomComponentFactory = <T extends ElementType>(
   component: T,
 ) => {
-  const customComponent: CustomComponent<T> = props => {
-    const propsWithDefault = mergeProps({as: component}, props);
-
-    return (
-      <Dynamic
-        component={propsWithDefault.as ?? 'div'}
-        {...omitProps(propsWithDefault, ['as'])}
-      />
+  const componentFactory: CustomComponent<T> = props => {
+    const propsWithDefault = mergeProps(
+      {
+        get component() {
+          return component;
+        },
+      },
+      props,
     );
+    return createComponent(Dynamic, propsWithDefault);
   };
 
-  return customComponent;
+  return componentFactory;
 };
 
 function factory() {

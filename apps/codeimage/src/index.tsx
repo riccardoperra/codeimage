@@ -1,11 +1,12 @@
 import {createI18nContext, I18nContext} from '@codeimage/locale';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {getThemeStore} from '@codeimage/store/theme/theme.store';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {uiStore} from '@codeimage/store/ui';
-import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
+import {
+  backgroundColorVar,
+  CodeImageThemeProvider,
+  LoadingOverlay,
+} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
-import {enableElfProdMode} from '@ngneat/elf';
-import {devTools} from '@ngneat/elf-devtools';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Router, useRoutes} from 'solid-app-router';
@@ -15,17 +16,11 @@ import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
-import './theme/dark-theme.css';
+import {Editor} from './pages/Editor/Editor';
 import {darkGrayScale} from './theme/dark-theme.css';
+import './theme/dark-theme.css';
+import './theme/global.css';
 import './theme/light-theme.css';
-
-if (import.meta.env.DEV) {
-  devTools();
-}
-
-if (import.meta.env.PROD) {
-  enableElfProdMode();
-}
 
 const i18n = createI18nContext(locale);
 
@@ -35,20 +30,37 @@ const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
   },
 };
 
+const Dashboard = lazy(() =>
+  import('./pages/Dashboard/Dashboard').then(component => {
+    document.querySelector('#launcher')?.remove();
+    return component;
+  }),
+);
+
 export function Bootstrap() {
   getRootEditorStore();
   const mode = () => uiStore.themeMode;
 
   const Routes = useRoutes([
     {
-      path: '',
-      component: lazy(() => {
-        setTimeout(() => getThemeStore().loadThemes());
-        return import('./App').then(component => {
-          document.querySelector('#launcher')?.remove();
-          return component;
-        });
-      }),
+      path: ':snippetId?',
+      component: lazy(() => import('./pages/Editor/Editor')),
+    },
+    {
+      path: 'dashboard',
+      component: () => {
+        return (
+          <Suspense
+            fallback={
+              <div style={{position: 'fixed', height: '100%', width: '100%'}}>
+                <LoadingOverlay overlay={true} size={'3x'} />
+              </div>
+            }
+          >
+            <Dashboard />
+          </Suspense>
+        );
+      },
     },
   ]);
 

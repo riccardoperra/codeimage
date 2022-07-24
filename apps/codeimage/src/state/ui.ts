@@ -20,6 +20,10 @@ export function setLocale(locale: string): void {
   setUiStore('locale', () => locale);
 }
 
+export function setThemeMode(themeMode: 'light' | 'dark'): void {
+  setUiStore('themeMode', () => themeMode);
+}
+
 export function toggleThemeMode(): void {
   setUiStore('themeMode', mode => (mode === 'light' ? 'dark' : 'light'));
 }

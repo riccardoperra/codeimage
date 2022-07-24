@@ -4,6 +4,7 @@ import {Accessor, createMemo} from 'solid-js';
 
 export interface TabThemeProps extends TerminalTabsTheme {
   shouldFallbackInactiveColor: boolean;
+  darkMode: boolean;
 }
 
 export function createTabTheme(
@@ -23,6 +24,7 @@ export function createTabTheme(
     if (!theme)
       return {
         shouldFallbackInactiveColor: true,
+        darkMode: true,
       };
 
     const {activeTabBackground, background, inactiveTabBackground, textColor} =
@@ -34,6 +36,7 @@ export function createTabTheme(
       textColor: textColor,
       activeTabBackground,
       inactiveTabBackground,
+      darkMode: theme.properties.darkMode,
     };
   };
 }
