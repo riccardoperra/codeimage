@@ -5,7 +5,7 @@ import {getEditorStore} from '@codeimage/store/editor/index';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
-import {combineLatest, debounceTime, filter, tap} from 'rxjs';
+import {combineLatest, debounceTime, filter, skip, tap} from 'rxjs';
 import {
   createEffect,
   createMemo,
@@ -59,6 +59,7 @@ function createEditorSyncAdapter() {
   ]).pipe(
     filter(() => isReadyToSync()),
     debounceTime(150),
+    skip(1),
   );
 
   createEffect(

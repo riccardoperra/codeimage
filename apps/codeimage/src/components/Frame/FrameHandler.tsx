@@ -35,7 +35,8 @@ export function FrameHandler(
   const modality = useModality();
 
   const filterHotKey = () =>
-    editorStore.options.focused || document.activeElement?.nodeName === 'INPUT';
+    editorStore.state.options.focused ||
+    document.activeElement?.nodeName === 'INPUT';
 
   const ratio = 0.1;
 

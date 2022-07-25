@@ -50,8 +50,6 @@ export function App() {
     <>
       <Toolbar canvasRef={frameRef()} />
       <div class={styles.wrapper}>
-        <SnackbarHost />
-
         <Show when={modality === 'full'}>
           <Sidebar position={'left'}>
             <EditorSidebar />
