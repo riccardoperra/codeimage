@@ -69,8 +69,8 @@ function createEditorSyncAdapter() {
           .pipe(debounceTime(1000))
           .subscribe(() => {
             const state = unwrap({
-              $workspaceId: activeWorkspace()?.id,
-              $snippetId: activeWorkspace()?.snippetId,
+              $workspaceId: data()?.activeWorkspace?.id,
+              $snippetId: data()?.activeWorkspace?.snippetId,
               $version: appEnvironment.version,
               frame: frameStore.stateToPersist(),
               terminal: terminalStore.stateToPersist(),

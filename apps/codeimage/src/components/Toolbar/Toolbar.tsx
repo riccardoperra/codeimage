@@ -4,7 +4,6 @@ import {Link} from 'solid-app-router';
 import {Component, Show} from 'solid-js';
 import {CodeImageLogo} from '../Icons/CodeImageLogo';
 import {CollectionIcon} from '../Icons/Collection';
-import {ColorSwatchIcon} from '../Icons/ColorSwatch';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
@@ -35,18 +34,6 @@ export const Toolbar: Component<{
             >
               <CollectionIcon />
               <Box marginLeft={2}>Dashboard</Box>
-            </Button>
-          </Box>
-
-          <Box marginLeft={2}>
-            <Button
-              as={Link}
-              href={'/dashboard'}
-              variant={'link'}
-              theme={'secondary'}
-            >
-              <ColorSwatchIcon />
-              <Box marginLeft={2}>Theme editor</Box>
             </Button>
           </Box>
         </Show>
