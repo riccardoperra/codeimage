@@ -9,7 +9,7 @@ import {supabase} from '@core/constants/supabase';
 import {Item} from '@solid-aria/collection';
 import {useNavigate} from 'solid-app-router';
 import {Show} from 'solid-js';
-import {DotHorizontalIocn} from '../Icons/DotVertical';
+import {DotHorizontalIocn, MenuAlt2Icon} from '../Icons/DotVertical';
 import {SettingsDialog} from './SettingsDialog';
 
 export function ToolbarSettingsButton() {
@@ -40,7 +40,7 @@ export function ToolbarSettingsButton() {
           size={'xs'}
           theme={'secondary'}
         >
-          <DotHorizontalIocn />
+          <MenuAlt2Icon />
         </MenuButton>
       }
     >

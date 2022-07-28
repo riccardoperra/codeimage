@@ -11,6 +11,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
+import {createRoot, getOwner, runWithOwner} from 'solid-js';
 import {CheckCircle} from '../../components/Icons/CheckCircle';
 import {
   ExportExtension,
@@ -30,38 +31,43 @@ export function dispatchCopyToClipboard(event: CopyToClipboardEvent) {
   event$.next(event);
 }
 
-event$
-  .pipe(
-    exhaustMap(({ref}) => {
-      const options: ExportOptions = {
-        mode: ExportMode.getBlob,
-        quality: 100,
-        pixelRatio: Math.floor(window.devicePixelRatio),
-        extension: ExportExtension.png,
-      };
-      return from(exportImage({ref, options})).pipe(
-        switchMap(data => {
-          if (!(data instanceof Blob)) return EMPTY;
-          return from(
-            navigator.clipboard.write([
-              new ClipboardItem(
-                {
-                  [data.type]: data,
-                },
-                {presentationStyle: 'attachment'},
-              ),
-            ]),
-          ).pipe(
-            catchError(() => EMPTY),
-            tap(openSnackbar),
-            tap(() => umami.trackEvent('true', `copy-to-clipboard`)),
-            delay(1000),
-          );
-        }),
-      );
-    }),
-  )
-  .subscribe();
+createRoot(() => {
+  const owner = getOwner()!;
+  event$
+    .pipe(
+      exhaustMap(({ref}) => {
+        const options: ExportOptions = {
+          mode: ExportMode.getBlob,
+          quality: 100,
+          pixelRatio: Math.floor(window.devicePixelRatio),
+          extension: ExportExtension.png,
+        };
+        return from(
+          runWithOwner(owner, () => exportImage({ref, options})),
+        ).pipe(
+          switchMap(data => {
+            if (!(data instanceof Blob)) return EMPTY;
+            return from(
+              navigator.clipboard.write([
+                new ClipboardItem(
+                  {
+                    [data.type]: data,
+                  },
+                  {presentationStyle: 'attachment'},
+                ),
+              ]),
+            ).pipe(
+              catchError(() => EMPTY),
+              tap(() => runWithOwner(owner, openSnackbar)),
+              tap(() => umami.trackEvent('true', `copy-to-clipboard`)),
+              delay(1000),
+            );
+          }),
+        );
+      }),
+    )
+    .subscribe();
+});
 
 function openSnackbar(): void {
   const snackbarStore = useSnackbarStore();
