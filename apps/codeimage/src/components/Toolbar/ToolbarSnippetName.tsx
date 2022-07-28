@@ -1,10 +1,11 @@
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
-import {Box, FlexField, Loading, Text, TextField} from '@codeimage/ui';
+import {Box, FlexField, HStack, Loading, Text, TextField} from '@codeimage/ui';
 import clickOutside from '@core/directives/clickOutside';
 import {createEffect, createSignal, on, onMount, Show, untrack} from 'solid-js';
 import {API} from '../../data-access/api';
 import {useHotkey} from '../../hooks/use-hotkey';
+import {PencilAlt} from '../Icons/Pencil';
 
 void clickOutside;
 
@@ -17,9 +18,13 @@ export function ToolbarSnippetName() {
     on(activeWorkspace, workspace => setValue(workspace?.name || undefined)),
   );
 
-  async function updateSnippetName(newName: string) {
+  console.log(activeWorkspace());
+
+  async function updateSnippetName(newName: string | undefined) {
     const $$activeWorkspace = activeWorkspace();
-    if (!$$activeWorkspace || $$activeWorkspace.name === value()) return;
+    if (!newName || !$$activeWorkspace || $$activeWorkspace.name === value()) {
+      return;
+    }
     setValue(newName);
     await API.workpace.updateSnippetName($$activeWorkspace.id, newName);
   }
@@ -34,12 +39,13 @@ export function ToolbarSnippetName() {
     <Box display={'flex'} alignItems={'center'}>
       <Show
         fallback={
-          <>
+          <HStack spacing={'2'} alignItems={'center'} lineHeight={'normal'}>
             <Loading visibility={remoteSync() ? 'visible' : 'hidden'} />
             <Text size={'sm'} onClick={toggleEdit}>
               {value() ?? 'Untitled'}
             </Text>
-          </>
+            <PencilAlt size={'sm'} />
+          </HStack>
         }
         when={editing()}
       >
@@ -51,18 +57,21 @@ export function ToolbarSnippetName() {
         >
           {() => {
             let ref: HTMLInputElement | undefined;
-            onMount(() =>
+            onMount(() => {
+              ref?.focus();
+              ref?.select();
               useHotkey(ref!, {
                 Enter: () => {
                   setEditing(false);
                   updateSnippetName(value());
                 },
-                Esc: () => {
+                Escape: () => {
+                  console.log('esc click');
                   setEditing(false);
-                  setValue(name);
+                  setValue(value());
                 },
-              }),
-            );
+              });
+            });
 
             return (
               <FlexField size={'xs'}>
