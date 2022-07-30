@@ -18,6 +18,7 @@
   "author": "Riccardo Perra",
   "license": "ISC",
   "dependencies": {
+    "@codeimage/prisma-models": "workspace:*",
     "@fastify/autoload": "^5.0.0",
     "@fastify/sensible": "^4.1.0",
     "@prisma/client": "^4.1.1",

@@ -54,6 +54,7 @@ importers:
 
   apps/api:
     specifiers:
+      '@codeimage/prisma-models': workspace:0.0.1
       '@fastify/autoload': ^5.0.0
       '@fastify/sensible': ^4.1.0
       '@prisma/client': ^4.1.1
@@ -72,6 +73,7 @@ importers:
       ts-node: ^10.4.0
       typescript: ^4.5.4
     dependencies:
+      '@codeimage/prisma-models': link:../../packages/prisma-models
       '@fastify/autoload': 5.1.0
       '@fastify/sensible': 4.1.0
       '@prisma/client': 4.1.1_prisma@4.1.1
@@ -98,6 +100,7 @@ importers:
       '@codeimage/dom-export': workspace:*
       '@codeimage/highlight': workspace:*
       '@codeimage/locale': workspace:*
+      '@codeimage/prisma-models': workspace:0.0.1
       '@codeimage/ui': workspace:*
       '@codemirror/autocomplete': ^6.0.3
       '@codemirror/commands': ^6.0.1
@@ -177,6 +180,7 @@ importers:
       '@codeimage/dom-export': link:../../packages/dom-export
       '@codeimage/highlight': link:../../packages/highlight
       '@codeimage/locale': link:../../packages/locale
+      '@codeimage/prisma-models': link:../../packages/prisma-models
       '@codeimage/ui': link:../../packages/ui
       '@codemirror/autocomplete': 6.0.3
       '@codemirror/commands': 6.0.1
@@ -406,6 +410,12 @@ importers:
       vite: 2.9.12
       vite-plugin-dts: 1.1.1_vite@2.9.12
       vite-plugin-solid: 2.2.6
+
+  packages/prisma-models:
+    specifiers: {}
+
+  packages/prisma-models/generated/client:
+    specifiers: {}
 
   packages/ui:
     specifiers:
