@@ -40,8 +40,8 @@ model Snippet {
 
 model SnippetFrame {
   id         String   @id @default(uuid())
-  snippetId  String   @unique
   snippet    Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  snippetId  String   @unique
   background String?
   padding    Int?
   radius     Int?
@@ -51,8 +51,8 @@ model SnippetFrame {
 
 model SnippetTerminal {
   id                  String   @id @default(uuid())
-  snippetId           String   @unique
   snippet             Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  snippetId           String   @unique
   showHeader          Boolean?
   type                String?
   accentVisible       Boolean?
@@ -67,8 +67,8 @@ model SnippetTerminal {
 
 model SnippetEditorOptions {
   id              String   @id @default(uuid())
-  snippetId       String   @unique
   snippet         Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  snippetId       String   @unique
   fontId          String?
   fontWeight      Int?
   showLineNumbers Boolean?
@@ -77,8 +77,8 @@ model SnippetEditorOptions {
 
 model SnippetEditorTab {
   id         String  @id @default(uuid())
-  snippetId  String  @unique
   snippet    Snippet @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  snippetId  String  @unique
   code       String?
   languageId String?
   tabName    String?

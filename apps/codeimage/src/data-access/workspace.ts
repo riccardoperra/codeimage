@@ -30,7 +30,7 @@ export async function getWorkspaceContent(userId: string): Promise<any> {
 }
 
 export async function createWorkspaceItem(
-  data: Pick<Omit<WorkspaceItem, 'snippets'>, 'snippetId' | 'userId'>,
+  data: Pick<Omit<WorkspaceItem, 'snippet'>, 'snippetId' | 'userId'>,
 ) {
   return supabase
     .from<WorkspaceItem>('workspace_item')
@@ -41,12 +41,12 @@ export async function createWorkspaceItem(
 export async function updateSnippet(
   snippetId: string,
   dataToSave: Pick<
-    WorkspaceItem['snippets'],
+    WorkspaceItem['snippet'],
     'terminal' | 'frame' | 'options' | 'editors'
   >,
 ) {
   return supabase
-    .from<WorkspaceItem['snippets']>('snippets')
+    .from<WorkspaceItem['snippet']>('snippets')
     .update(dataToSave)
     .filter('id', 'eq', snippetId)
     .then(res => res?.body?.[0]);
@@ -54,29 +54,16 @@ export async function updateSnippet(
 
 export async function createSnippet(
   userId: string,
-  data: Pick<
-    WorkspaceItem['snippets'],
-    'terminal' | 'frame' | 'options' | 'editors'
-  >,
+  data: any,
 ): Promise<WorkspaceItem | null> {
-  const snippetResponse = await supabase
-    .from<WorkspaceItem['snippets']>('snippets')
-    .insert(data)
-    .then(res => res.body?.[0]);
+  const headers = new Headers();
+  headers.set('user-id', userId);
 
-  if (!snippetResponse) return null;
-
-  const workspaceItem = await createWorkspaceItem({
-    snippetId: snippetResponse.id,
-    userId,
-  });
-
-  if (!workspaceItem) return null;
-
-  return {
-    ...workspaceItem,
-    snippets: snippetResponse,
-  };
+  return fetch('/api/workspace', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(data),
+  }).then(res => res.json());
 }
 
 export async function loadSnippet(workspaceItemId: string) {
