@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(uuid())
+  createdAt      DateTime        @default(now())
+  provider       String
+  workspaceItems WorkspaceItem[]
+}
+
+model WorkspaceItem {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  snippet   Snippet?
+}
+
+model Snippet {
+  id              String                @id @default(uuid())
+  workspaceItem   WorkspaceItem         @relation(fields: [workspaceItemId], references: [id], onDelete: Cascade)
+  workspaceItemId String                @unique
+  snippetFrame    SnippetFrame?
+  terminal        SnippetTerminal?
+  editorOptions   SnippetEditorOptions?
+  editorTabs      SnippetEditorTab[]
+}
+
+model SnippetFrame {
+  id         String   @id @default(uuid())
+  snippetId  String   @unique
+  snippet    Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  background String?
+  padding    Int?
+  radius     Int?
+  visible    Boolean?
+  opacity    Float?
+}
+
+model SnippetTerminal {
+  id                  String   @id @default(uuid())
+  snippetId           String   @unique
+  snippet             Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  showHeader          Boolean?
+  type                String?
+  accentVisible       Boolean?
+  shadow              String?
+  background          String?
+  textColor           String?
+  showWatermark       Boolean?
+  showGlassReflection Boolean?
+  opacity             Float?
+  alternativeTheme    Boolean?
+}
+
+model SnippetEditorOptions {
+  id              String   @id @default(uuid())
+  snippetId       String   @unique
+  snippet         Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  fontId          String?
+  fontWeight      Int?
+  showLineNumbers Boolean?
+  themeId         String?
+}
+
+model SnippetEditorTab {
+  id         String  @id @default(uuid())
+  snippetId  String  @unique
+  snippet    Snippet @relation(fields: [snippetId], references: [id], onDelete: Cascade)
+  code       String?
+  languageId String?
+  tabName    String?
+}
