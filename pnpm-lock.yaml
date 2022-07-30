@@ -54,7 +54,7 @@ importers:
 
   apps/api:
     specifiers:
-      '@codeimage/prisma-models': workspace:0.0.1
+      '@codeimage/prisma-models': workspace:*
       '@fastify/autoload': ^5.0.0
       '@fastify/sensible': ^4.1.0
       '@prisma/client': ^4.1.1
@@ -100,7 +100,7 @@ importers:
       '@codeimage/dom-export': workspace:*
       '@codeimage/highlight': workspace:*
       '@codeimage/locale': workspace:*
-      '@codeimage/prisma-models': workspace:0.0.1
+      '@codeimage/prisma-models': workspace:*
       '@codeimage/ui': workspace:*
       '@codemirror/autocomplete': ^6.0.3
       '@codemirror/commands': ^6.0.1
@@ -412,9 +412,6 @@ importers:
       vite-plugin-solid: 2.2.6
 
   packages/prisma-models:
-    specifiers: {}
-
-  packages/prisma-models/generated/client:
     specifiers: {}
 
   packages/ui:
