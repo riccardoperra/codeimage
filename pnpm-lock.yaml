@@ -66,6 +66,7 @@ importers:
       fastify-cli: ^4.4.0
       fastify-plugin: ^3.0.0
       fastify-tsconfig: ^1.0.1
+      fluent-json-schema: 3.1.0
       graphql: 16.5.0
       mercurius: 10.1.0
       mercurius-codegen: 4.0.1
@@ -83,6 +84,7 @@ importers:
       fastify: 4.3.0
       fastify-cli: 4.4.0
       fastify-plugin: 3.0.1
+      fluent-json-schema: 3.1.0
       graphql: 16.5.0
       mercurius: 10.1.0
       mercurius-codegen: 4.0.1_xf7v3rvlbcuc32owjvtoakzei4
@@ -412,6 +414,9 @@ importers:
       vite-plugin-solid: 2.2.6
 
   packages/prisma-models:
+    specifiers: {}
+
+  packages/prisma-models/generated/client:
     specifiers: {}
 
   packages/ui:
@@ -7047,6 +7052,13 @@ packages:
   /flatted/3.2.5:
     resolution: {integrity: sha512-WIWGi2L3DyTUvUrwRKgGi9TwxQMUEqPOPQBVi71R96jZXJdFskXEmf54BoZaS1kknGODoIGASGEzBUYdyMCBJg==}
     dev: true
+
+  /fluent-json-schema/3.1.0:
+    resolution: {integrity: sha512-Ft7WGihiwpcZkZsJuXVCcEHLDOJ1vGS4wFK8V08xWffFthadgjwpSExfBWz/72VxHZ0xe7/N3T38hOxskwxd3A==}
+    engines: {node: '>=12'}
+    dependencies:
+      deepmerge: 4.2.2
+    dev: false
 
   /foreground-child/2.0.0:
     resolution: {integrity: sha512-dCIq9FpEcyQyXKCkyzmlPTFNgrCzPudOe+mhvJU5zAtlBnGVy2yKxtfsxK2tQBThwq225jcvBjpw1Gr40uzZCA==}

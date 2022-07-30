@@ -58,6 +58,7 @@ export async function createSnippet(
 ): Promise<WorkspaceItem | null> {
   const headers = new Headers();
   headers.set('user-id', userId);
+  headers.set('Content-Type', 'application/json');
 
   return fetch('/api/workspace', {
     method: 'POST',
