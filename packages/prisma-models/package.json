@@ -1,0 +1,25 @@
+{
+  "name": "@codeimage/prisma-models",
+  "version": "0.0.1",
+  "description": "",
+  "types": "./index.d.ts",
+  "exports": {
+    "default": "./index.d.ts"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./generated/client/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "generated"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Riccardo Perra",
+  "license": "MIT"
+}
