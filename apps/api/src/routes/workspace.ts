@@ -1,11 +1,13 @@
-import {WorkspaceItem} from '@prisma/client';
+import {WorkspaceItem} from '@codeimage/prisma-models';
 import {FastifyPluginAsync} from 'fastify';
 
-const workspace: FastifyPluginAsync = async (fastify, opts) => {
+const workspace: FastifyPluginAsync = async fastify => {
   fastify.get(
     '/workspace',
-    async (_request, _reply): Promise<WorkspaceItem[]> => {
-      return fastify.prisma.workspaceItem.findMany({});
+    {preHandler: fastify.authorize},
+    async (request): Promise<WorkspaceItem[]> => {
+      const {userId} = request;
+      return fastify.workspace.findAllByUserId(userId);
     },
   );
 };

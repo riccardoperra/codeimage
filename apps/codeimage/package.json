@@ -33,12 +33,13 @@
     "workbox-window": "^6.5.4"
   },
   "dependencies": {
+    "@codeimage/atomic-state": "workspace:*",
     "@codeimage/config": "workspace:*",
     "@codeimage/dom-export": "workspace:*",
     "@codeimage/highlight": "workspace:*",
     "@codeimage/locale": "workspace:*",
+    "@codeimage/prisma-models": "workspace:*",
     "@codeimage/ui": "workspace:*",
-    "@codeimage/atomic-state": "workspace:*",
     "@codemirror/autocomplete": "^6.0.3",
     "@codemirror/commands": "^6.0.1",
     "@codemirror/lang-cpp": "^6.0.1",
