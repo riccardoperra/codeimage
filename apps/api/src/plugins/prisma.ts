@@ -10,7 +10,19 @@ declare module 'fastify' {
 }
 
 const prismaPlugin: FastifyPluginAsync = fp(async server => {
-  const prisma = new PrismaClient();
+  const prisma = new PrismaClient({
+    log: ['query'],
+  });
+
+  // @ts-ignore
+  prisma.$on('query', e => {
+    // @ts-ignore
+    console.log('Query: ' + e.query);
+    // @ts-ignore
+    console.log('Params: ' + e.params);
+    // @ts-ignore
+    console.log('Duration: ' + e.duration + 'ms');
+  });
 
   await prisma.$connect();
 

@@ -1,3 +1,10 @@
+import {
+  SnippetEditorOptions,
+  SnippetEditorTab,
+  SnippetFrame,
+  SnippetTerminal,
+  WorkspaceItem as SnippetWorkspaceItem,
+} from '@codeimage/prisma-models';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {
   getInitialEditorState,
@@ -11,6 +18,7 @@ import {
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {PersistedFrameState} from '@codeimage/store/frame/model';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
+import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
 import {createResource, createSignal} from 'solid-js';
 import {API} from '../../data-access/api';
@@ -31,7 +39,7 @@ export interface WorkspaceItem {
   created_at: string;
   name: string;
   snippetId: string;
-  snippets: WorkspaceMetadata;
+  snippet: WorkspaceMetadata;
   userId: string;
 }
 
@@ -55,14 +63,32 @@ function makeDashboardState() {
       return;
     }
     const editor = {...getInitialEditorState(), id: createUniqueId()};
-    const data = {
-      terminal: getInitialTerminalState(),
-      frame: getInitialFrameState(),
-      options: getInitialEditorUiOptions(),
-      editors: [{...editor, code: editor.code}],
+
+    type IdAndSnippetId = 'id' | 'snippetId';
+    type WorkspaceRequest = {
+      name: SnippetWorkspaceItem['name'];
+      editorOptions: Omit<SnippetEditorOptions, IdAndSnippetId>;
+      terminal: Omit<SnippetTerminal, IdAndSnippetId>;
+      frame: Omit<SnippetFrame, IdAndSnippetId>;
+      editors: Omit<SnippetEditorTab, IdAndSnippetId>[];
     };
 
-    return API.workpace.createNewProject(userId, data);
+    const data: WorkspaceRequest = {
+      name: 'Untitled',
+      editorOptions: getInitialEditorUiOptions(),
+      terminal: getInitialTerminalState(),
+      // @ts-expect-error TODO: fix
+      frame: getInitialFrameState(),
+      editors: [
+        {
+          code: appEnvironment.defaultState.editor.code,
+          languageId: appEnvironment.defaultState.editor.languageId,
+          tabName: 'index.tsx',
+        },
+      ],
+    };
+
+    return API.workpace.createSnippet(userId, data);
   }
 
   async function deleteProject(item: WorkspaceItem) {

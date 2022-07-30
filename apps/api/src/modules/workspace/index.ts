@@ -9,18 +9,24 @@ import fp from 'fastify-plugin';
 
 interface WorkspaceHandler {
   findAllByUserId(id: string): Promise<WorkspaceItem[]>;
+
   deleteById(id: string): Promise<WorkspaceItem>;
+
   create(data: WorkspaceRequest, userId: string): Promise<WorkspaceItem>;
+
   updateById(data: WorkspaceItem): Promise<WorkspaceItem>;
 }
+
 type IdAndSnippetId = 'id' | 'snippetId';
-interface WorkspaceRequest {
+
+export interface WorkspaceRequest {
   name: WorkspaceItem['name'];
   editorOptions: Omit<SnippetEditorOptions, IdAndSnippetId>;
   terminal: Omit<SnippetTerminal, IdAndSnippetId>;
   frame: Omit<SnippetFrame, IdAndSnippetId>;
   editors: Omit<SnippetEditorTab, IdAndSnippetId>[];
 }
+
 export default fp(async fastify => {
   const handler: WorkspaceHandler = {
     findAllByUserId(id: string): Promise<WorkspaceItem[]> {
@@ -38,35 +44,53 @@ export default fp(async fastify => {
         },
       });
     },
-    create(data: WorkspaceRequest, userId: string): Promise<WorkspaceItem> {
-      // const dati = fastify.prisma.workspaceItem.create({
-      //   data,
-      // });
-      return fastify.prisma.workspaceItem.create({
+    async create(
+      data: WorkspaceRequest,
+      userId: string,
+    ): Promise<WorkspaceItem> {
+      const workspaceItem = await fastify.prisma.workspaceItem.create({
         data: {
-          name: data.name,
-          userId: userId,
-          snippet: {
-            create: {
-              editorOptions: {
-                create: data.editorOptions,
-              },
-              terminal: {
-                create: data.terminal,
-              },
-              editorTabs: {
-                create: data.editors,
-              },
-              snippetFrame: {
-                create: data.frame,
-              },
-            },
-          },
+          name: 'Untitled',
+          userId,
+          snippet: {create: {}},
         },
         include: {
           snippet: true,
         },
       });
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // @ts-ignore
+      const editorOptions = await fastify.prisma.snippetEditorOptions.create({
+        data: {
+          ...data.editorOptions,
+          snippetId: workspaceItem.snippet!.id,
+        },
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // @ts-ignore
+      const editorsTab = await fastify.prisma.snippetEditorTab.createMany({
+        data: [
+          ...data.editors.map(editor => ({
+            snippetId: workspaceItem.snippet!.id,
+            ...editor,
+          })),
+        ],
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // @ts-ignore
+      const a = await fastify.prisma.snippetTerminal.create({
+        data: {
+          ...data.terminal,
+          snippetId: workspaceItem.snippet!.id,
+        },
+      });
+
+      return {
+        ...workspaceItem,
+      };
     },
     updateById(data: WorkspaceItem): Promise<WorkspaceItem> {
       return fastify.prisma.workspaceItem.update({
