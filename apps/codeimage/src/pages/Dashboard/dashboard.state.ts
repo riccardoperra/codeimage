@@ -39,7 +39,7 @@ async function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
   const authState = getAuthState();
   const userId = authState.user()?.user?.id;
   if (!userId) return [];
-  return API.workpace.getWorkspaceContent(userId).then(res => res.body ?? []);
+  return API.workpace.getWorkspaceContent(userId);
 }
 
 function makeDashboardState() {

@@ -19,15 +19,14 @@ export async function updateSnippetName(
     .eq('id', workspaceItemId);
 }
 
-export async function getWorkspaceContent(userId: string) {
-  return supabase
-    .from<WorkspaceItem>('workspace_item')
-    .select('*, snippets(*)')
-    .order('created_at', {
-      ascending: false,
-      nullsFirst: true,
-    })
-    .filter('userId', 'eq', userId);
+export async function getWorkspaceContent(userId: string): Promise<any> {
+  const headers = new Headers();
+  headers.set('user-id', userId);
+
+  return fetch('/api/workspace', {
+    method: 'GET',
+    headers,
+  }).then(res => res.json());
 }
 
 export async function createWorkspaceItem(
