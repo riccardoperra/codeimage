@@ -32,7 +32,7 @@ model Snippet {
   id              String                @id @default(uuid())
   workspaceItem   WorkspaceItem         @relation(fields: [workspaceItemId], references: [id], onDelete: Cascade)
   workspaceItemId String                @unique
-  snippetFrame    SnippetFrame?
+  frame           SnippetFrame?
   terminal        SnippetTerminal?
   editorOptions   SnippetEditorOptions?
   editorTabs      SnippetEditorTab[]

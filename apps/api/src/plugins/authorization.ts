@@ -10,6 +10,14 @@ const authorization: FastifyPluginAsync = async fastify => {
     req: FastifyRequest<{Headers: AuthorizationHeaders}>,
   ) {
     const userId = req.headers['user-id'];
+
+    // TODO: Remove fake auth
+    const user = await fastify.prisma.user.findFirst({where: {id: userId}});
+    if (!user) {
+      await fastify.prisma.user.create({
+        data: {provider: 'github', id: userId},
+      });
+    }
     req.userId = userId;
     return userId;
   }

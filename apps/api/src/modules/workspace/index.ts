@@ -1,9 +1,9 @@
 import {
-  WorkspaceItem,
   SnippetEditorOptions,
-  SnippetTerminal,
-  SnippetFrame,
   SnippetEditorTab,
+  SnippetFrame,
+  SnippetTerminal,
+  WorkspaceItem,
 } from '@codeimage/prisma-models';
 import fp from 'fastify-plugin';
 
@@ -12,14 +12,14 @@ interface WorkspaceHandler {
 
   deleteById(id: string): Promise<WorkspaceItem>;
 
-  create(data: WorkspaceRequest, userId: string): Promise<WorkspaceItem>;
+  create(data: WorkspaceCreateRequest, userId: string): Promise<WorkspaceItem>;
 
   updateById(data: WorkspaceItem): Promise<WorkspaceItem>;
 }
 
 type IdAndSnippetId = 'id' | 'snippetId';
 
-export interface WorkspaceRequest {
+export interface WorkspaceCreateRequest {
   name: WorkspaceItem['name'];
   editorOptions: Omit<SnippetEditorOptions, IdAndSnippetId>;
   terminal: Omit<SnippetTerminal, IdAndSnippetId>;
@@ -44,53 +44,63 @@ export default fp(async fastify => {
         },
       });
     },
-    async create(
-      data: WorkspaceRequest,
-      userId: string,
-    ): Promise<WorkspaceItem> {
-      const workspaceItem = await fastify.prisma.workspaceItem.create({
+    async create(data: WorkspaceCreateRequest, userId: string) {
+      return fastify.prisma.workspaceItem.create({
         data: {
           name: 'Untitled',
           userId,
-          snippet: {create: {}},
+          snippet: {
+            create: {
+              editorOptions: {
+                create: {
+                  fontId: data.editorOptions.fontId,
+                  fontWeight: data.editorOptions.fontWeight,
+                  showLineNumbers: data.editorOptions.showLineNumbers,
+                  themeId: data.editorOptions.themeId,
+                },
+              },
+              editorTabs: {
+                createMany: {
+                  data: data.editors,
+                },
+              },
+              snippetFrame: {
+                create: {
+                  background: data.frame.background,
+                  opacity: data.frame.opacity,
+                  radius: data.frame.radius,
+                  padding: data.frame.padding,
+                  visible: data.frame.visible,
+                },
+              },
+              terminal: {
+                create: {
+                  accentVisible: data.terminal.accentVisible,
+                  alternativeTheme: data.terminal.alternativeTheme,
+                  background: data.terminal.background,
+                  opacity: data.terminal.opacity,
+                  shadow: data.terminal.shadow,
+                  showGlassReflection: data.terminal.showGlassReflection,
+                  showHeader: data.terminal.showHeader,
+                  showWatermark: data.terminal.showWatermark,
+                  textColor: data.terminal.textColor,
+                  type: data.terminal.type,
+                },
+              },
+            },
+          },
         },
         include: {
-          snippet: true,
+          snippet: {
+            include: {
+              editorOptions: true,
+              editorTabs: true,
+              snippetFrame: true,
+              terminal: true,
+            },
+          },
         },
       });
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      // @ts-ignore
-      const editorOptions = await fastify.prisma.snippetEditorOptions.create({
-        data: {
-          ...data.editorOptions,
-          snippetId: workspaceItem.snippet!.id,
-        },
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      // @ts-ignore
-      const editorsTab = await fastify.prisma.snippetEditorTab.createMany({
-        data: [
-          ...data.editors.map(editor => ({
-            snippetId: workspaceItem.snippet!.id,
-            ...editor,
-          })),
-        ],
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      // @ts-ignore
-      const a = await fastify.prisma.snippetTerminal.create({
-        data: {
-          ...data.terminal,
-          snippetId: workspaceItem.snippet!.id,
-        },
-      });
-
-      return {
-        ...workspaceItem,
-      };
     },
     updateById(data: WorkspaceItem): Promise<WorkspaceItem> {
       return fastify.prisma.workspaceItem.update({

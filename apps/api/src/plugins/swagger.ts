@@ -15,6 +15,7 @@ export default fp(async fastify => {
       schemes: ['http'],
       consumes: ['application/json'],
       produces: ['application/json'],
+      tags: [{name: 'Workspace', description: 'Workspace'}],
     },
     uiConfig: {
       docExpansion: 'full',

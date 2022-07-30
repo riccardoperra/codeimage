@@ -26,6 +26,7 @@
     "fastify": "^4.0.0",
     "fastify-cli": "^4.4.0",
     "fastify-plugin": "^3.0.0",
+    "fluent-json-schema": "3.1.0",
     "graphql": "16.5.0",
     "mercurius": "10.1.0",
     "mercurius-codegen": "4.0.1",
