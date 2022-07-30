@@ -19,6 +19,13 @@ import {unwrap} from 'solid-js/store';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
+import {
+  SnippetEditorOptions,
+  SnippetTerminal,
+  SnippetFrame,
+  SnippetEditorTab,
+  WorkspaceItem as PrismaWorkspaceItem,
+} from '@codeimage/prisma-models';
 
 function createEditorSyncAdapter() {
   const [remoteSync, setRemoteSync] = createSignal(false);
@@ -88,9 +95,9 @@ function createEditorSyncAdapter() {
     editorStore.actions.setFromWorkspace(data);
     terminalStore.setState(state => ({
       ...state,
-      ...data.snippets.terminal,
+      ...data.snippet.terminal,
     }));
-    frameStore.setStore(state => ({...state, ...data.snippets.frame}));
+    frameStore.setStore(state => ({...state, ...data.snippet.frame}));
   }
 
   function initRemoteDbSync() {

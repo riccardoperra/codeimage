@@ -26,7 +26,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
 
   const date = () => {
     const rtf1 = new Intl.DateTimeFormat(locale(), {dateStyle: 'long'});
-    return rtf1.format(new Date(props.item.created_at));
+    return rtf1.format(new Date(props.item.createdAt));
   };
 
   return (

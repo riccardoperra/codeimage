@@ -124,13 +124,13 @@ export function createEditorsStore() {
 
   const setFromWorkspace = (item: WorkspaceItem) => {
     setEditors(
-      item.snippets.editors.map(editor => ({
+      item.snippet.editors.map(editor => ({
         ...editor,
         code: editor.code,
       })),
     );
-    setState('activeEditorId', item.snippets.editors[0].id);
-    setState('options', item.snippets.options);
+    setState('activeEditorId', item.snippet.editors[0].id);
+    setState('options', item.snippet.options);
   };
 
   return {

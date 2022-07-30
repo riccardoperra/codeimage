@@ -4,18 +4,18 @@
   "description": "",
   "types": "./index.d.ts",
   "exports": {
-    "default": "./index.d.ts"
+    ".": {
+      "default": "./index.js",
+      "types": "./index.d.ts"
+    }
   },
   "typesVersions": {
     "*": {
       "*": [
-        "./generated/client/index.d.ts"
+        "./index.d.ts"
       ]
     }
   },
-  "files": [
-    "generated"
-  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -21,6 +21,7 @@
     "@codeimage/prisma-models": "workspace:*",
     "@fastify/autoload": "^5.0.0",
     "@fastify/sensible": "^4.1.0",
+    "@fastify/swagger": "7.4.1",
     "@prisma/client": "^4.1.1",
     "fastify": "^4.0.0",
     "fastify-cli": "^4.4.0",
@@ -35,6 +36,7 @@
     "@types/tap": "^15.0.5",
     "concurrently": "^7.0.0",
     "fastify-tsconfig": "^1.0.1",
+    "prisma-json-schema-generator": "3.0.1",
     "tap": "^16.1.0",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
