@@ -7,7 +7,7 @@ const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
     {preHandler: fastify.authorize},
     async (request): Promise<Project[]> => {
       const {userId} = request;
-      return fastify.workspace.findAllByUserId(userId);
+      return fastify.projectRepository.findAllByUserId(userId);
     },
   );
 };
