@@ -10,8 +10,6 @@ const app: FastifyPluginAsync<AppOptions> = async (
   fastify,
   opts,
 ): Promise<void> => {
-  // Place here your custom code!
-
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins
@@ -25,6 +23,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
   void fastify.register(AutoLoad, {
     dir: join(__dirname, 'modules'),
     options: opts,
+    maxDepth: 1,
   });
 
   // This loads all plugins defined in routes
