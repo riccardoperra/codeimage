@@ -35,6 +35,25 @@ const workspace: FastifyPluginAsync = async fastify => {
       return fastify.workspace.create(body, userId);
     },
   );
+
+  fastify.delete<{
+    Params: {id: string};
+  }>(
+    '/workspace/:id',
+    {
+      preHandler: fastify.authorize,
+      schema: {
+        tags: ['Workspace'],
+      },
+    },
+    async request => {
+      const {
+        userId,
+        params: {id},
+      } = request;
+      return fastify.workspace.deleteById(id, userId);
+    },
+  );
 };
 
 export default workspace;

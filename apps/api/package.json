@@ -7,11 +7,12 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \\\"test/**/*.test.ts\\\"",
+    "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts './test/**/*.test.ts'",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
     "prisma:generate": "prisma generate dev && pnpm --filter=@codeimage/prisma-models build",
+    "prisma:migrate:test": "dotenv -e .env.test -- pnpm exec prisma migrate dev --name init",
     "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
     "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js"
   },
@@ -21,9 +22,11 @@
   "dependencies": {
     "@codeimage/prisma-models": "workspace:*",
     "@fastify/autoload": "^5.0.0",
+    "@fastify/env": "4.0.0",
     "@fastify/sensible": "^4.1.0",
     "@fastify/swagger": "7.4.1",
     "@prisma/client": "^4.1.1",
+    "dotenv-cli": "6.0.0",
     "fastify": "^4.0.0",
     "fastify-cli": "^4.4.0",
     "fastify-plugin": "^3.0.0",
