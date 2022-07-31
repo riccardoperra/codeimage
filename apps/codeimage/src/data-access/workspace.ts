@@ -11,7 +11,7 @@ export async function deleteProject(
   const headers = new Headers();
   headers.set('user-id', userId);
 
-  return fetch(`/api/workspace/${item.id}`, {
+  return fetch(`/api/v1/project/${item.id}`, {
     method: 'DELETE',
     headers,
   }).then(res => res.json());
@@ -31,7 +31,7 @@ export async function getWorkspaceContent(userId: string): Promise<any> {
   const headers = new Headers();
   headers.set('user-id', userId);
 
-  return fetch('/api/workspace', {
+  return fetch('/api/v1/project', {
     method: 'GET',
     headers,
   }).then(res => res.json());
@@ -68,7 +68,7 @@ export async function createSnippet(
   headers.set('user-id', userId);
   headers.set('Content-Type', 'application/json');
 
-  return fetch('/api/workspace', {
+  return fetch('/api/v1/project', {
     method: 'POST',
     headers,
     body: JSON.stringify(data),

@@ -1,9 +1,18 @@
-import {FastifyPluginAsync} from 'fastify';
+import {FastifyPluginAsync, FastifySchema} from 'fastify';
 import {ProjectCreateRequest} from '../../../modules/workspace';
-import {
-  workspaceCreateRequestSchema,
-  workspaceCreateResponseSchema,
-} from '../../../modules/workspace/workspace.schema';
+
+const schema: FastifySchema = {
+  tags: ['Workspace'],
+  description: 'Create a new CodeImage project',
+  body: {
+    $ref: 'projectCreateRequest',
+  },
+  response: {
+    200: {
+      $ref: 'projectCreateResponse',
+    },
+  },
+};
 
 const createRoute: FastifyPluginAsync = async fastify => {
   fastify.post<{
@@ -12,13 +21,7 @@ const createRoute: FastifyPluginAsync = async fastify => {
     '/',
     {
       preHandler: fastify.authorize,
-      schema: {
-        tags: ['Workspace'],
-        body: workspaceCreateRequestSchema,
-        response: {
-          200: workspaceCreateResponseSchema,
-        },
-      },
+      schema,
     },
     async request => {
       const {userId, body} = request;

@@ -20,17 +20,19 @@ const app: FastifyPluginAsync<AppOptions> = async (
     options: opts,
   });
 
-  void fastify.register(AutoLoad, {
+  await fastify.register(AutoLoad, {
     dir: join(__dirname, 'modules'),
     options: opts,
+    encapsulate: false,
     maxDepth: 1,
   });
 
   // This loads all plugins defined in routes
   // define your routes in one of these
-  void fastify.register(AutoLoad, {
+  await fastify.register(AutoLoad, {
     dir: join(__dirname, 'routes'),
-    options: opts,
+    options: {prefix: '/api/'},
+    routeParams: true,
   });
 
   fastify.ready(() => fastify.log.info(`\n${fastify.printRoutes()}`));
