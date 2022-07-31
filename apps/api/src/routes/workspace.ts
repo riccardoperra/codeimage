@@ -1,6 +1,6 @@
-import {WorkspaceItem} from '@codeimage/prisma-models';
+import {Project} from '@codeimage/prisma-models';
 import {FastifyPluginAsync} from 'fastify';
-import {WorkspaceCreateRequest} from '../modules/workspace';
+import {ProjectCreateRequest} from '../modules/workspace';
 import {
   workspaceCreateRequestSchema,
   workspaceCreateResponseSchema,
@@ -10,14 +10,14 @@ const workspace: FastifyPluginAsync = async fastify => {
   fastify.get(
     '/workspace',
     {preHandler: fastify.authorize},
-    async (request): Promise<WorkspaceItem[]> => {
+    async (request): Promise<Project[]> => {
       const {userId} = request;
       return fastify.workspace.findAllByUserId(userId);
     },
   );
 
   fastify.post<{
-    Body: WorkspaceCreateRequest;
+    Body: ProjectCreateRequest;
   }>(
     '/workspace',
     {
@@ -30,7 +30,7 @@ const workspace: FastifyPluginAsync = async fastify => {
         },
       },
     },
-    async (request): Promise<WorkspaceItem> => {
+    async (request): Promise<Project> => {
       const {userId, body} = request;
       return fastify.workspace.create(body, userId);
     },
