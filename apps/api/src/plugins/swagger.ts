@@ -1,4 +1,4 @@
-import {prismaModelJsonSchema} from '@codeimage/prisma-models';
+// import {prismaModelJsonSchema} from '@codeimage/prisma-models';
 import fastifySwagger from '@fastify/swagger';
 import fp from 'fastify-plugin';
 
@@ -26,5 +26,5 @@ export default fp(async fastify => {
     exposeRoute: true,
   });
 
-  await fastify.addSchema(prismaModelJsonSchema);
+  // await fastify.addSchema({});
 });

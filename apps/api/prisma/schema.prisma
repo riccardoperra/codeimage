@@ -12,36 +12,29 @@ datasource db {
 }
 
 model User {
-  id             String          @id @default(uuid())
-  createdAt      DateTime        @default(now())
-  provider       String
-  workspaceItems WorkspaceItem[]
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  provider  String
+  projects  Project[]
 }
 
-model WorkspaceItem {
-  id        String   @id @default(uuid())
-  name      String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  snippet   Snippet?
-}
-
-model Snippet {
-  id              String                @id @default(uuid())
-  workspaceItem   WorkspaceItem         @relation(fields: [workspaceItemId], references: [id], onDelete: Cascade)
-  workspaceItemId String                @unique
-  frame           SnippetFrame?
-  terminal        SnippetTerminal?
-  editorOptions   SnippetEditorOptions?
-  editorTabs      SnippetEditorTab[]
+model Project {
+  id            String                @id @default(uuid())
+  name          String
+  frame         SnippetFrame?
+  terminal      SnippetTerminal?
+  editorOptions SnippetEditorOptions?
+  editorTabs    SnippetEditorTab[]
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  user          User?                 @relation(fields: [userId], references: [id])
+  userId        String?
 }
 
 model SnippetFrame {
   id         String   @id @default(uuid())
-  snippet    Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
-  snippetId  String   @unique
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId  String   @unique
   background String?
   padding    Int?
   radius     Int?
@@ -51,8 +44,8 @@ model SnippetFrame {
 
 model SnippetTerminal {
   id                  String   @id @default(uuid())
-  snippet             Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
-  snippetId           String   @unique
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId           String   @unique
   showHeader          Boolean?
   type                String?
   accentVisible       Boolean?
@@ -67,8 +60,8 @@ model SnippetTerminal {
 
 model SnippetEditorOptions {
   id              String   @id @default(uuid())
-  snippet         Snippet  @relation(fields: [snippetId], references: [id], onDelete: Cascade)
-  snippetId       String   @unique
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId       String   @unique
   fontId          String?
   fontWeight      Int?
   showLineNumbers Boolean?
@@ -77,8 +70,8 @@ model SnippetEditorOptions {
 
 model SnippetEditorTab {
   id         String  @id @default(uuid())
-  snippet    Snippet @relation(fields: [snippetId], references: [id], onDelete: Cascade)
-  snippetId  String  @unique
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId  String  @unique
   code       String?
   languageId String?
   tabName    String?
