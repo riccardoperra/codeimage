@@ -4,9 +4,17 @@ import {
   WorkspaceMetadata,
 } from '../pages/Dashboard/dashboard.state';
 
-export async function deleteProject(item: WorkspaceItem): Promise<void> {
-  await supabase.from('workspace_item').delete().eq('id', item.id);
-  await supabase.from('snippets').delete().eq('id', item.snippetId);
+export async function deleteProject(
+  userId: string,
+  item: WorkspaceItem,
+): Promise<void> {
+  const headers = new Headers();
+  headers.set('user-id', userId);
+
+  return fetch(`/api/workspace/${item.id}`, {
+    method: 'DELETE',
+    headers,
+  }).then(res => res.json());
 }
 
 export async function updateSnippetName(

@@ -1,16 +1,16 @@
 import {
+  Project,
   SnippetEditorOptions,
   SnippetEditorTab,
   SnippetFrame,
   SnippetTerminal,
-  Project,
 } from '@codeimage/prisma-models';
 import fp from 'fastify-plugin';
 
 interface ProjectHandler {
   findAllByUserId(id: string): Promise<Project[]>;
 
-  deleteById(id: string): Promise<Project>;
+  deleteById(id: string, userId: string): Promise<Project>;
 
   create(data: ProjectCreateRequest, userId: string): Promise<Project>;
 
@@ -37,14 +37,18 @@ export default fp(async fastify => {
       });
     },
 
-    deleteById(id: string): Promise<Project> {
+    deleteById(id: string, userId: string): Promise<Project> {
       return fastify.prisma.project.delete({
         where: {
-          id,
+          id_userId: {
+            id,
+            userId,
+          },
         },
       });
     },
-    async create(data: ProjectCreateRequest, userId: string) {
+
+    create(data: ProjectCreateRequest, userId: string) {
       return fastify.prisma.project.create({
         data: {
           name: 'Untitled',
@@ -94,6 +98,7 @@ export default fp(async fastify => {
         },
       });
     },
+
     updateById(data: Project): Promise<Project> {
       return fastify.prisma.project.update({
         where: {

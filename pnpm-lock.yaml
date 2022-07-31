@@ -55,35 +55,39 @@ importers:
   apps/api:
     specifiers:
       '@codeimage/prisma-models': workspace:*
-      '@fastify/autoload': ^5.1.0
-      '@fastify/sensible': ^5.1.0
+      '@fastify/autoload': ^5.0.0
+      '@fastify/env': 4.0.0
+      '@fastify/sensible': ^4.1.0
       '@fastify/swagger': 7.4.1
       '@prisma/client': ^4.1.1
-      '@types/node': ^18.6.3
-      '@types/tap': ^15.0.7
-      concurrently: ^7.3.0
-      fastify: ^4.3.0
+      '@types/node': ^18.0.0
+      '@types/tap': ^15.0.5
+      concurrently: ^7.0.0
+      dotenv-cli: 6.0.0
+      fastify: ^4.0.0
       fastify-cli: ^4.4.0
-      fastify-plugin: ^4.0.0
+      fastify-plugin: ^3.0.0
       fastify-tsconfig: ^1.0.1
-      fluent-json-schema: ^3.1.0
-      graphql: ^16.5.0
-      mercurius: ^10.1.0
-      mercurius-codegen: ^4.0.1
-      prisma: ^4.1.1
+      fluent-json-schema: 3.1.0
+      graphql: 16.5.0
+      mercurius: 10.1.0
+      mercurius-codegen: 4.0.1
+      prisma: 4.1.1
       prisma-json-schema-generator: 3.0.1
-      tap: ^16.3.0
-      ts-node: ^10.9.1
-      typescript: ^4.7.4
+      tap: ^16.1.0
+      ts-node: ^10.4.0
+      typescript: ^4.5.4
     dependencies:
       '@codeimage/prisma-models': link:../../packages/prisma-models
       '@fastify/autoload': 5.1.0
-      '@fastify/sensible': 5.1.0
+      '@fastify/env': 4.0.0
+      '@fastify/sensible': 4.1.0
       '@fastify/swagger': 7.4.1
       '@prisma/client': 4.1.1_prisma@4.1.1
+      dotenv-cli: 6.0.0
       fastify: 4.3.0
       fastify-cli: 4.4.0
-      fastify-plugin: 4.0.0
+      fastify-plugin: 3.0.1
       fluent-json-schema: 3.1.0
       graphql: 16.5.0
       mercurius: 10.1.0
@@ -3009,6 +3013,13 @@ packages:
     resolution: {integrity: sha512-E8Hfdvs1bG6u0N4vN5Nty6JONUfTdOciyD5rn8KnEsLKIenvOVcr210BQR9t34PRkNyjqnMLGk3e0BsaxRdL+g==}
     dev: false
 
+  /@fastify/env/4.0.0:
+    resolution: {integrity: sha512-ZpvEH6E2dhYaDgxlyQSmTpVDhKFXRF6DH7N9sNsjpn+GIWDbIYTiYf3ttr0wGXgBWIc0bJFpTFTjlNmP2VaZ/w==}
+    dependencies:
+      env-schema: 4.0.0
+      fastify-plugin: 3.0.1
+    dev: false
+
   /@fastify/error/3.0.0:
     resolution: {integrity: sha512-dPRyT40GiHRzSCll3/Jn2nPe25+E1VXc9tDwRAIKwFCxd5Np5wzgz1tmooWG3sV0qKgrBibihVoCna2ru4SEFg==}
     dev: false
@@ -3019,8 +3030,9 @@ packages:
       fast-json-stringify: 5.1.0
     dev: false
 
-  /@fastify/sensible/5.1.0:
-    resolution: {integrity: sha512-ZLuYDpBZecCsr5ZlTKtcyA1dg9ExiEHdTxarYMaBnCJzPBUvTNoDMypMCC6XcC1VS7idMmKjlGmHfmMAaz761Q==}
+  /@fastify/sensible/4.1.0:
+    resolution: {integrity: sha512-8TBlmCK055y6WO9jZlndmceB9x8NyNcLEbnJtdu44zelfmY1ebBMSB7MOqyMteyDvpSMq3CVaPknBu35d9FRlA==}
+    engines: {node: '>=14.0.0'}
     dependencies:
       fast-deep-equal: 3.1.3
       fastify-plugin: 3.0.1
@@ -5753,7 +5765,6 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
-    dev: true
 
   /crypto-random-string/2.0.0:
     resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
@@ -5961,6 +5972,21 @@ packages:
       is-obj: 2.0.0
     dev: true
 
+  /dotenv-cli/6.0.0:
+    resolution: {integrity: sha512-qXlCOi3UMDhCWFKe0yq5sg3X+pJAz+RQDiFN38AMSbUrnY3uZshSfDJUAge951OS7J9gwLZGfsBlWRSOYz/TRg==}
+    hasBin: true
+    dependencies:
+      cross-spawn: 7.0.3
+      dotenv: 16.0.1
+      dotenv-expand: 8.0.3
+      minimist: 1.2.6
+    dev: false
+
+  /dotenv-expand/8.0.3:
+    resolution: {integrity: sha512-SErOMvge0ZUyWd5B0NXMQlDkN+8r+HhVUsxgOO7IoPDOdDRD2JjExpN6y3KnFR66jsJMwSn1pqIivhU5rcJiNg==}
+    engines: {node: '>=12'}
+    dev: false
+
   /dotenv/16.0.1:
     resolution: {integrity: sha512-1K6hR6wtk2FviQ4kEiSjFiH5rpzEVi8WW0x96aztHVMhEspNpc4DVOUTEHtEva5VThQ8IaBX1Pe4gSzpVVUsKQ==}
     engines: {node: '>=12'}
@@ -6018,6 +6044,14 @@ packages:
     resolution: {integrity: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==}
     engines: {node: '>=6'}
     dev: true
+
+  /env-schema/4.0.0:
+    resolution: {integrity: sha512-hM5OwjrUPxxrCjC1Ykf+wPld2lbnN3/m9Y9wuMPt0jmYluJpAV3OXc1HiliZxFkxLzw2FcrSOXdw/3uI7PYCFA==}
+    dependencies:
+      ajv: 8.11.0
+      dotenv: 16.0.1
+      dotenv-expand: 8.0.3
+    dev: false
 
   /error-ex/1.3.2:
     resolution: {integrity: sha512-7dFHNmqeFSEt2ZBsCriorKnn3Z2pj+fd9kmI6QoWw4//DL+icEBfc0U7qJCisqrTsKTjw4fNFy2pW9OqStD84g==}
@@ -9154,7 +9188,6 @@ packages:
   /path-key/3.1.1:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
     engines: {node: '>=8'}
-    dev: true
 
   /path-key/4.0.0:
     resolution: {integrity: sha512-haREypq7xkM7ErfgIyA0z+Bj4AGKlMSdlQE2jvJo6huWD1EdkKYV+G/T4nq0YEF2vgTT8kqMFKo1uHn950r4SQ==}
@@ -9965,7 +9998,6 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       shebang-regex: 3.0.0
-    dev: true
 
   /shebang-regex/1.0.0:
     resolution: {integrity: sha512-wpoSFAxys6b2a2wHZ1XpDSgD7N9iVjg29Ph9uV/uaP9Ex/KXlkTZTeddxDPSYQpgvzKLGJke2UU0AzoGCjNIvQ==}
@@ -9974,7 +10006,6 @@ packages:
   /shebang-regex/3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
-    dev: true
 
   /shell-quote/1.7.3:
     resolution: {integrity: sha512-Vpfqwm4EnqGdlsBFNmHhxhElJYrdfcxPThu+ryKS5J8L/fhAwLazFZtq+S+TWZ9ANj2piSQLGj6NQg+lKPmxrw==}
@@ -11450,7 +11481,6 @@ packages:
     hasBin: true
     dependencies:
       isexe: 2.0.0
-    dev: true
 
   /word-wrap/1.2.3:
     resolution: {integrity: sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==}
