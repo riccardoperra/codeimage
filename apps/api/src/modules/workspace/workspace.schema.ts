@@ -81,17 +81,12 @@ export const workspaceCreateResponseSchema = S.object()
     S.string().description('The last update date of the snippet'),
   )
   .prop('name', S.string().description('The name of the snippet'))
-  .prop(
-    'snippet',
-    S.object()
-      .id('id')
-      .required()
-      .prop('editorOptions', editorOptionsCreateRequest)
-      .required()
-      .prop('snippetFrame', snippetFrameCreateRequest)
-      .required()
-      .prop('terminal', snippetTerminalCreateRequest)
-      .required()
-      .prop('editorTabs', snippetEditorTabsCreateRequest)
-      .required(),
-  );
+  .required()
+  .prop('editorOptions', editorOptionsCreateRequest)
+  .required()
+  .prop('snippetFrame', snippetFrameCreateRequest)
+  .required()
+  .prop('terminal', snippetTerminalCreateRequest)
+  .required()
+  .prop('editorTabs', snippetEditorTabsCreateRequest)
+  .required();

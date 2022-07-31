@@ -3,7 +3,7 @@ import {
   SnippetEditorTab,
   SnippetFrame,
   SnippetTerminal,
-  WorkspaceItem as SnippetWorkspaceItem,
+  Project as SnippetProject,
 } from '@codeimage/prisma-models';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {
@@ -64,9 +64,9 @@ function makeDashboardState() {
     }
     const editor = {...getInitialEditorState(), id: createUniqueId()};
 
-    type IdAndSnippetId = 'id' | 'snippetId';
+    type IdAndSnippetId = 'id' | 'projectId';
     type WorkspaceRequest = {
-      name: SnippetWorkspaceItem['name'];
+      name: SnippetProject['name'];
       editorOptions: Omit<SnippetEditorOptions, IdAndSnippetId>;
       terminal: Omit<SnippetTerminal, IdAndSnippetId>;
       frame: Omit<SnippetFrame, IdAndSnippetId>;
@@ -92,8 +92,9 @@ function makeDashboardState() {
   }
 
   async function deleteProject(item: WorkspaceItem) {
+    const userId = getAuthState().user()?.user?.id;
     mutate(items => items.filter(i => i.id !== item.id));
-    await API.workpace.deleteProject(item);
+    await API.workpace.deleteProject(userId!, item);
   }
 
   return {
