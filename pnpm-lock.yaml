@@ -414,7 +414,10 @@ importers:
       vite-plugin-solid: 2.2.6
 
   packages/prisma-models:
-    specifiers: {}
+    specifiers:
+      typescript: 4.7.4
+    devDependencies:
+      typescript: 4.7.4
 
   packages/prisma-models/generated/client:
     specifiers: {}
