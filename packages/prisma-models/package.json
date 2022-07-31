@@ -2,23 +2,29 @@
   "name": "@codeimage/prisma-models",
   "version": "0.0.1",
   "description": "",
-  "types": "./index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./index.d.ts"
+      "node": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "typesVersions": {
     "*": {
       "*": [
-        "./index.d.ts"
+        "./dist/index.d.ts"
       ]
     }
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "Riccardo Perra",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "4.7.4"
+  }
 }
