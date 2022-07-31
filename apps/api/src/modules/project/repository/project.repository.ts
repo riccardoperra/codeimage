@@ -8,4 +8,6 @@ export interface ProjectRepository {
   ): Promise<ProjectCreateResponse>;
 
   deleteProject(id: string, userId: string): Promise<Project>;
+
+  findAllByUserId(userId: string): Promise<Project[]>;
 }
