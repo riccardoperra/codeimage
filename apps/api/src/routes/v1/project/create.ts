@@ -1,9 +1,9 @@
 import {FastifyPluginAsync, FastifySchema} from 'fastify';
 import {
+  ProjectCreateRequest,
   ProjectCreateRequestSchema,
   ProjectCreateResponseSchema,
 } from '../../../modules/project/schema';
-import {ProjectCreateRequest} from '../../../modules/workspace';
 
 const createRoute: FastifyPluginAsync = async fastify => {
   const schema: FastifySchema = {
