@@ -64,10 +64,17 @@ export async function createSnippet(
   }).then(res => res.json());
 }
 
-export async function loadSnippet(workspaceItemId: string) {
-  return supabase
-    .from<WorkspaceItem>('workspace_item')
-    .select('*, snippets(*)')
-    .eq('id', workspaceItemId)
-    .maybeSingle();
+export async function loadSnippet(
+  userId: string | null | undefined,
+  projectId: string,
+): Promise<ProjectSchema.ProjectGetByIdResponse> {
+  const headers = new Headers();
+  if (userId) {
+    headers.set('user-id', userId);
+  }
+
+  return fetch(`/api/v1/project/${projectId}`, {
+    method: 'GET',
+    headers,
+  }).then(res => res.json());
 }

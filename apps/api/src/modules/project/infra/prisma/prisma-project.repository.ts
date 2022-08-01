@@ -5,6 +5,20 @@ import {ProjectRepository} from '../../repository';
 export function makePrismaProjectRepository(
   client: PrismaClient,
 ): ProjectRepository {
+  function findById(id: string): Promise<Project> {
+    return client.project.findFirstOrThrow({
+      where: {
+        id,
+      },
+      include: {
+        editorTabs: true,
+        terminal: true,
+        editorOptions: true,
+        frame: true,
+      },
+    });
+  }
+
   function findAllByUserId(userId: string): Promise<Project[]> {
     return client.project.findMany({
       where: {
@@ -87,6 +101,7 @@ export function makePrismaProjectRepository(
   }
 
   return {
+    findById,
     findAllByUserId,
     createNewProject,
     deleteProject,

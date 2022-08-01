@@ -1,3 +1,4 @@
+import {ProjectSchema} from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -19,14 +20,6 @@ import {unwrap} from 'solid-js/store';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
-import {
-  SnippetEditorOptions,
-  SnippetTerminal,
-  SnippetFrame,
-  SnippetEditorTab,
-  WorkspaceItem as PrismaWorkspaceItem,
-} from '@codeimage/prisma-models';
-import {ProjectSchema} from '@codeimage/api/bff-types';
 
 function createEditorSyncAdapter() {
   const [remoteSync, setRemoteSync] = createSignal(false);
@@ -45,12 +38,16 @@ function createEditorSyncAdapter() {
   const snippetId = createMemo(() => data()?.snippetId);
 
   const [loadedSnippet] = createResource(snippetId, async snippetId => {
+    const userId = authState.user()?.user?.id;
     if (snippetId) {
-      const storedWorkspaceData = await API.workpace.loadSnippet(snippetId);
-      if (storedWorkspaceData.data) {
-        updateStateFromRemote(storedWorkspaceData.data);
+      const storedWorkspaceData = await API.workpace.loadSnippet(
+        userId,
+        snippetId,
+      );
+      if (storedWorkspaceData) {
+        updateStateFromRemote(storedWorkspaceData);
       }
-      return storedWorkspaceData?.data;
+      return storedWorkspaceData;
     }
   });
 
@@ -91,14 +88,14 @@ function createEditorSyncAdapter() {
     }),
   );
 
-  function updateStateFromRemote(data: WorkspaceItem) {
-    setActiveWorkspace(data);
+  function updateStateFromRemote(data: ProjectSchema.ProjectGetByIdResponse) {
+    setActiveWorkspace();
     editorStore.actions.setFromWorkspace(data);
     terminalStore.setState(state => ({
       ...state,
-      ...data.snippet.terminal,
+      ...data.terminal,
     }));
-    frameStore.setStore(state => ({...state, ...data.snippet.frame}));
+    frameStore.setStore(state => ({...state, ...data.frame}));
   }
 
   function initRemoteDbSync() {

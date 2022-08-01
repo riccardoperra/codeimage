@@ -1,3 +1,4 @@
+import {ProjectSchema} from '@codeimage/api/api-types';
 import {
   createDerivedObservable,
   createDerivedSetter,
@@ -9,7 +10,6 @@ import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
 import {createMemo, createSelector} from 'solid-js';
-import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
 import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
 
 const defaultId = createUniqueId();
@@ -122,15 +122,22 @@ export function createEditorsStore() {
     () => filter(SUPPORTED_FONTS, font => font.id === state.options.fontId)[0],
   );
 
-  const setFromWorkspace = (item: WorkspaceItem) => {
+  const setFromWorkspace = (item: ProjectSchema.ProjectGetByIdResponse) => {
     setEditors(
-      item.snippet.editors.map(editor => ({
-        ...editor,
-        code: editor.code,
-      })),
+      item.editorTabs.map(
+        editor =>
+          ({
+            tab: {
+              tabName: editor.tabName,
+            },
+            languageId: editor.languageId,
+            id: editor.id,
+            code: editor.code,
+          } as EditorState),
+      ),
     );
-    setState('activeEditorId', item.snippet.editors[0].id);
-    setState('options', item.snippet.options);
+    setState('activeEditorId', item.editorTabs[0].id);
+    setState('options', item.editorOptions);
   };
 
   return {

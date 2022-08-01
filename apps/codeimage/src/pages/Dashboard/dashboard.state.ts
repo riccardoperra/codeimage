@@ -8,6 +8,7 @@ import {
 } from '@codeimage/store/editor/model';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {PersistedFrameState} from '@codeimage/store/frame/model';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
 import {createResource, createSignal} from 'solid-js';
@@ -53,22 +54,29 @@ function makeDashboardState() {
       return;
     }
 
+    const theme = await getThemeStore().getThemeDef('vsCodeDarkTheme')?.load();
+
     const frame = getInitialFrameState();
 
     const data: ProjectSchema.ProjectCreateRequest = {
       name: 'Untitled',
       editorOptions: getInitialEditorUiOptions(),
-      terminal: getInitialTerminalState(),
+      terminal: {
+        ...getInitialTerminalState(),
+        background: theme?.properties.terminal.main ?? null,
+        textColor: theme?.properties.terminal.text ?? null,
+      },
       frame: {
         visible: frame.visible ?? false,
         padding: frame.padding ?? 0,
         radius: frame.radius ?? 0,
-        background: frame.background ?? '#000',
+        background:
+          theme?.properties.previewBackground ?? frame.background ?? '#000',
         opacity: frame.opacity ?? 1,
       },
       editors: [
         {
-          code: appEnvironment.defaultState.editor.code,
+          code: `from server: ${appEnvironment.defaultState.editor.code}`,
           languageId: appEnvironment.defaultState.editor.languageId,
           tabName: 'index.tsx',
         },

@@ -3,6 +3,8 @@ import type {ProjectCreateRequest} from '../domain';
 import {ProjectCreateResponse} from '../domain';
 
 export interface ProjectRepository {
+  findById(id: string): Promise<Project | null>;
+
   createNewProject(
     userId: string,
     data: ProjectCreateRequest,
