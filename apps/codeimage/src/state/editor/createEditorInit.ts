@@ -26,6 +26,7 @@ import {
   SnippetEditorTab,
   WorkspaceItem as PrismaWorkspaceItem,
 } from '@codeimage/prisma-models';
+import {ProjectSchema} from '@codeimage/api/bff-types';
 
 function createEditorSyncAdapter() {
   const [remoteSync, setRemoteSync] = createSignal(false);
@@ -112,7 +113,7 @@ function createEditorSyncAdapter() {
           tap(() => setRemoteSync(false)),
         )
         .subscribe(async ([frame, terminal, {editors, options}]) => {
-          const dataToSave = {
+          const dataToSave: ProjectSchema.ProjectCreateRequest = {
             frame,
             terminal,
             editors,

@@ -59,7 +59,9 @@ importers:
       '@fastify/env': 4.0.0
       '@fastify/sensible': ^4.1.0
       '@fastify/swagger': 7.4.1
+      '@fastify/type-provider-typebox': 2.2.0
       '@prisma/client': ^4.1.1
+      '@sinclair/typebox': 0.24.22
       '@types/node': ^18.0.0
       '@types/tap': ^15.0.5
       concurrently: ^7.0.0
@@ -83,7 +85,9 @@ importers:
       '@fastify/env': 4.0.0
       '@fastify/sensible': 4.1.0
       '@fastify/swagger': 7.4.1
+      '@fastify/type-provider-typebox': 2.2.0_gn4psg6oqy3csz3ntpslqj66ya
       '@prisma/client': 4.1.1_prisma@4.1.1
+      '@sinclair/typebox': 0.24.22
       dotenv-cli: 6.0.0
       fastify: 4.3.0
       fastify-cli: 4.4.0
@@ -103,8 +107,12 @@ importers:
       ts-node: 10.9.1_e2tlcjkk7tlngjdlhzx5hjlnv4
       typescript: 4.7.4
 
+  apps/api/bff-types:
+    specifiers: {}
+
   apps/codeimage:
     specifiers:
+      '@codeimage/api': workspace:*
       '@codeimage/atomic-state': workspace:*
       '@codeimage/config': workspace:*
       '@codeimage/dom-export': workspace:*
@@ -185,6 +193,7 @@ importers:
       workbox-strategies: ^6.5.3
       workbox-window: ^6.5.4
     dependencies:
+      '@codeimage/api': link:../api
       '@codeimage/atomic-state': link:../../packages/atomic-state
       '@codeimage/config': link:../../packages/config
       '@codeimage/dom-export': link:../../packages/dom-export
@@ -3075,6 +3084,16 @@ packages:
       - supports-color
     dev: false
 
+  /@fastify/type-provider-typebox/2.2.0_gn4psg6oqy3csz3ntpslqj66ya:
+    resolution: {integrity: sha512-BpqVX1wDjzxydWdDxCsnGeFU9NDnkytoN674JSC8I5RoihTNRWHPuNTDdoVNZXjB9OjyKh9IQ0Ac3tgJZn5sWQ==}
+    peerDependencies:
+      '@sinclair/typebox': ^0.24.1
+      fastify: ^4.0.0
+    dependencies:
+      '@sinclair/typebox': 0.24.22
+      fastify: 4.3.0
+    dev: false
+
   /@fastify/websocket/6.0.1:
     resolution: {integrity: sha512-RdrPMpD/gjm7ocqFZN2TVHRAjDNG483dvH7cbMXJPTvIei2xz/sqa5TwtqGPrupU91GZjlUYQqUjQb/cQHA7kw==}
     dependencies:
@@ -4023,6 +4042,10 @@ packages:
       colors: 1.2.5
       string-argv: 0.3.1
     dev: true
+
+  /@sinclair/typebox/0.24.22:
+    resolution: {integrity: sha512-JsBe3cOFpNZ6yjBYnXKhcENWy5qZE3PQZwExQ5ksA/h8qp4bwwxFmy07A6bC2R6qv6+RF3SfrbQTskTwYNTXUQ==}
+    dev: false
 
   /@solid-aria/button/0.1.3_solid-js@1.4.8:
     resolution: {integrity: sha512-gN7/d5YkHAbQPhzBVbNNp9grf9w+mxFRulbmeXjp61hFNLOJRDcdMPCri5MmfUJ8D2BwefcyHvCGTCc62Ua23A==}

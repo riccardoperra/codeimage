@@ -3,6 +3,7 @@ import {
   WorkspaceItem,
   WorkspaceMetadata,
 } from '../pages/Dashboard/dashboard.state';
+import {ProjectSchema} from '@codeimage/api/bff-types';
 
 export async function deleteProject(
   userId: string,
@@ -62,8 +63,8 @@ export async function updateSnippet(
 
 export async function createSnippet(
   userId: string,
-  data: any,
-): Promise<WorkspaceItem | null> {
+  data: ProjectSchema.ProjectCreateRequest,
+): Promise<ProjectSchema.ProjectCreateResponse> {
   const headers = new Headers();
   headers.set('user-id', userId);
   headers.set('Content-Type', 'application/json');
@@ -86,7 +87,7 @@ export async function loadSnippet(workspaceItemId: string) {
 export async function createNewProject(
   userId: string,
   data: Pick<WorkspaceMetadata, 'terminal' | 'frame' | 'options' | 'editors'>,
-) {
+): Promise<ProjectSchema> {
   const workspaceItem = await supabase
     .from<WorkspaceMetadata>('snippets')
     .insert(data)

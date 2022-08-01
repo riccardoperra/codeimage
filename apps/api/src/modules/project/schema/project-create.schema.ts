@@ -1,6 +1,7 @@
+import {Static, Type} from '@sinclair/typebox';
 import S from 'fluent-json-schema';
 
-const editorOptionsCreateRequest = S.object()
+export const editorOptionsCreateRequest = S.object()
   .id('editorOptionsCreateRequest')
   .prop(
     'fontId',
@@ -13,83 +14,80 @@ const editorOptionsCreateRequest = S.object()
   )
   .prop('themeId', S.string().description('The theme id of the snippet'));
 
-const snippetFrameCreateRequest = S.object()
-  .id('snippetFrameCreateRequest')
-  .prop(
-    'background',
-    S.string().description('The background color of the frame'),
-  )
-  .prop('opacity', S.number().description('The opacity of the frame'))
-  .prop('radius', S.number().description('The radius of the frame'))
-  .prop('padding', S.number().description('The padding of the frame'))
-  .prop('visible', S.boolean().description('Show/hide the background frame'));
+export const SnippetFrameCreateRequestSchema = Type.Object({
+  background: Type.Optional(Type.String()),
+  opacity: Type.Optional(Type.Number()),
+  radius: Type.Optional(Type.Number()),
+  padding: Type.Optional(Type.Number()),
+  visible: Type.Optional(Type.Boolean()),
+});
 
-const snippetEditorTabsCreateRequest = S.array()
-  .id('snippetEditorTabsCreateRequest')
-  .items(
-    S.object()
-      .prop('code', S.string().description('The code of the tab'))
-      .prop(
-        'languageId',
-        S.string().description(
-          'The CodeMirror6 language package id of the tab',
-        ),
-      )
-      .prop('tabName', S.string().description('The name of the tab')),
-  );
+export const SnippetEditorTabsCreateRequestSchema = Type.Array(
+  Type.Object(
+    {
+      code: Type.String(),
+      languageId: Type.String(),
+      tabName: Type.String(),
+    },
+    {$id: 'SnippetEditorTabCreateRequest'},
+  ),
+  {$id: 'SnippetEditorTabsCreateRequest'},
+);
 
-const snippetTerminalCreateRequest = S.object()
-  .id('snippetTerminalCreateRequest')
-  .prop(
-    'accentVisible',
-    S.boolean().description('Show/hide the terminal accent tab'),
-  )
-  .prop(
-    'alternativeTheme',
-    S.boolean().description('Use the alternative theme'),
-  )
-  .prop(
-    'background',
-    S.string().description('The background color of the terminal'),
-  )
-  .prop('opacity', S.number().description('The opacity of the terminal'))
-  .prop('shadow', S.string().description('The shadow of the editor frame'))
-  .prop(
-    'showGlassReflection',
-    S.boolean().description('Show/hide the glass reflection'),
-  )
-  .prop('showHeader', S.boolean().description('Show/hide the terminal header'))
-  .prop('showWatermark', S.boolean().description('Show/hide the watermark'))
-  .prop('textColor', S.string().description('The text color of the terminal'))
-  .prop('type', S.string().description('The type of the terminal'));
+const SnippetTerminalCreateRequestSchema = Type.Object(
+  {
+    accentVisible: Type.Boolean(),
+    alternativeTheme: Type.Boolean(),
+    background: Type.String(),
+    opacity: Type.Number(),
+    shadow: Type.String(),
+    showGlassReflection: Type.Boolean(),
+    showHeader: Type.Boolean(),
+    showWatermark: Type.Boolean(),
+    textColor: Type.String(),
+    type: Type.String(),
+  },
+  {id: 'SnippetTerminalCreateRequest'},
+);
 
-export const projectCreateRequestSchema = S.object()
-  .id('projectCreateRequest')
-  .prop('name', S.string().description('The name of the snippet').required())
-  .prop('editorOptions', editorOptionsCreateRequest)
-  .required()
-  .prop('frame', snippetFrameCreateRequest)
-  .required()
-  .prop('terminal', snippetTerminalCreateRequest)
-  .required()
-  .prop('editors', snippetEditorTabsCreateRequest)
-  .required();
+const EditorOptionsCreateRequestSchema = Type.Object(
+  {
+    fontId: Type.Optional(Type.String()),
+    fontWeight: Type.Optional(Type.Number()),
+    showLineNumbers: Type.Optional(Type.Boolean()),
+    themeId: Type.Optional(Type.String()),
+  },
+  {
+    $id: 'EditorOptionsCreateRequest',
+  },
+);
 
-export const projectCreateResponseSchema = S.object()
-  .id('projectCreateResponse')
-  .prop('id', S.string().description('The id of the snippet'))
-  .prop('createdAt', S.string().description('The creation date of the snippet'))
-  .prop(
-    'updatedAt',
-    S.string().description('The last update date of the snippet'),
-  )
-  .prop('name', S.string().description('The name of the snippet'))
-  .required()
-  .prop('editorOptions', editorOptionsCreateRequest)
-  .required()
-  .prop('frame', snippetFrameCreateRequest)
-  .required()
-  .prop('terminal', snippetTerminalCreateRequest)
-  .required()
-  .prop('editorTabs', snippetEditorTabsCreateRequest)
-  .required();
+export const ProjectCreateRequestSchema = Type.Object(
+  {
+    name: Type.String(),
+    editorOptions: EditorOptionsCreateRequestSchema,
+    frame: SnippetFrameCreateRequestSchema,
+    terminal: SnippetTerminalCreateRequestSchema,
+    editors: SnippetEditorTabsCreateRequestSchema,
+  },
+  {$id: 'ProjectCreateRequest'},
+);
+
+export const ProjectCreateResponseSchema = Type.Object(
+  {
+    id: Type.String(),
+    createdAt: Type.String(),
+    updatedAt: Type.String(),
+    name: Type.String(),
+    editorOptions: Type.Required(EditorOptionsCreateRequestSchema),
+    frame: Type.Required(SnippetFrameCreateRequestSchema),
+    terminal: Type.Required(SnippetTerminalCreateRequestSchema),
+    editors: SnippetEditorTabsCreateRequestSchema,
+  },
+  {
+    $id: 'ProjectCreateResponse',
+  },
+);
+
+export type ProjectCreateRequest = Static<typeof ProjectCreateRequestSchema>;
+export type ProjectCreateResponse = Static<typeof ProjectCreateResponseSchema>;

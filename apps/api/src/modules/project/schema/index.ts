@@ -1,4 +1,6 @@
 export {
-  projectCreateRequestSchema,
-  projectCreateResponseSchema,
+  ProjectCreateRequestSchema,
+  ProjectCreateRequest,
+  ProjectCreateResponse,
+  ProjectCreateResponseSchema,
 } from './project-create.schema';

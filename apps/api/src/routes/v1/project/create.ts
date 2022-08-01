@@ -1,20 +1,20 @@
 import {FastifyPluginAsync, FastifySchema} from 'fastify';
+import {
+  ProjectCreateRequestSchema,
+  ProjectCreateResponseSchema,
+} from '../../../modules/project/schema';
 import {ProjectCreateRequest} from '../../../modules/workspace';
 
-const schema: FastifySchema = {
-  tags: ['Workspace'],
-  description: 'Create a new CodeImage project',
-  body: {
-    $ref: 'projectCreateRequest',
-  },
-  response: {
-    200: {
-      $ref: 'projectCreateResponse',
-    },
-  },
-};
-
 const createRoute: FastifyPluginAsync = async fastify => {
+  const schema: FastifySchema = {
+    tags: ['Workspace'],
+    description: 'Create a new CodeImage project',
+    body: ProjectCreateRequestSchema,
+    response: {
+      200: ProjectCreateResponseSchema,
+    },
+  };
+
   fastify.post<{
     Body: ProjectCreateRequest;
   }>(
