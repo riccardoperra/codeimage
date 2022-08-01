@@ -1,15 +1,7 @@
-import type {
-  ProjectCreateRequest,
-  ProjectCreateResponse,
-  ProjectDeleteResponse,
-  ProjectGetByIdResponse,
-} from '../src/schemas';
-
-export declare namespace ProjectSchema {
+export declare namespace ApiTypes {
   export {
-    ProjectCreateResponse,
-    ProjectCreateRequest,
-    ProjectDeleteResponse,
-    ProjectGetByIdResponse,
-  };
+    GetProjectByIdApi,
+    DeleteProjectApi,
+    CreateProjectApi,
+  } from '../src/schemas';
 }

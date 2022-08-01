@@ -1,20 +1,23 @@
-import {FastifyPluginAsync, FastifySchema} from 'fastify';
+import {FastifyPluginAsync} from 'fastify';
+import {GetApiTypes} from '../../../common/types/extract-api-types';
 import {
   ProjectCreateRequest,
   ProjectCreateRequestSchema,
   ProjectCreateResponseSchema,
 } from '../../../modules/project/schema';
 
-const createRoute: FastifyPluginAsync = async fastify => {
-  const schema: FastifySchema = {
-    tags: ['Project'],
-    description: 'Create a new CodeImage project',
-    body: ProjectCreateRequestSchema,
-    response: {
-      200: ProjectCreateResponseSchema,
-    },
-  };
+const schema = {
+  tags: ['Project'],
+  description: 'Create a new CodeImage project',
+  body: ProjectCreateRequestSchema,
+  response: {
+    200: ProjectCreateResponseSchema,
+  },
+};
 
+export type CreateProjectApi = GetApiTypes<typeof schema>;
+
+const createRoute: FastifyPluginAsync = async fastify => {
   fastify.post<{
     Body: ProjectCreateRequest;
   }>(

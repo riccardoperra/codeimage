@@ -1,4 +1,4 @@
-import {ProjectSchema} from '@codeimage/api/api-types';
+import {ApiTypes} from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -88,7 +88,7 @@ function createEditorSyncAdapter() {
     }),
   );
 
-  function updateStateFromRemote(data: ProjectSchema.ProjectGetByIdResponse) {
+  function updateStateFromRemote(data: ApiTypes.GetProjectByIdApi['response']) {
     setActiveWorkspace();
     editorStore.actions.setFromWorkspace(data);
     terminalStore.setState(state => ({
@@ -133,10 +133,9 @@ function createEditorSyncAdapter() {
           } else {
             const userId = getAuthState().user()?.user?.id;
             if (!userId) return;
-            const workspaceItem = await API.workpace.createSnippet(
-              userId,
-              dataToSave,
-            );
+            const workspaceItem = await API.workpace.createSnippet(userId, {
+              body: dataToSave,
+            });
             setActiveWorkspace(workspaceItem ?? undefined);
           }
         });

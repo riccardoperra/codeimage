@@ -1,17 +1,20 @@
-import {ProjectSchema} from '@codeimage/api/api-types';
+import {ApiTypes} from '@codeimage/api/api-types';
 import {supabase} from '@core/constants/supabase';
 import {WorkspaceItem} from '../pages/Dashboard/dashboard.state';
+import {makeFetch} from './client';
 
 export async function deleteProject(
   userId: string,
-  item: WorkspaceItem,
-): Promise<ProjectSchema.ProjectDeleteResponse> {
-  const headers = new Headers();
-  headers.set('user-id', userId);
-
-  return fetch(`/api/v1/project/${item.id}`, {
+  request: ApiTypes.DeleteProjectApi['request'],
+): Promise<ApiTypes.DeleteProjectApi['response']> {
+  return makeFetch(`/api/v1/project/:id`, {
     method: 'DELETE',
-    headers,
+    headers: {
+      'user-id': userId,
+    },
+    params: {
+      id: request.params?.id,
+    },
   }).then(res => res.json());
 }
 
@@ -26,12 +29,11 @@ export async function updateSnippetName(
 }
 
 export async function getWorkspaceContent(userId: string): Promise<any> {
-  const headers = new Headers();
-  headers.set('user-id', userId);
-
-  return fetch('/api/v1/project', {
+  return makeFetch(`/api/v1/project`, {
     method: 'GET',
-    headers,
+    headers: {
+      'user-id': userId,
+    },
   }).then(res => res.json());
 }
 
@@ -51,30 +53,28 @@ export async function updateSnippet(
 
 export async function createSnippet(
   userId: string,
-  data: ProjectSchema.ProjectCreateRequest,
-): Promise<ProjectSchema.ProjectCreateResponse> {
-  const headers = new Headers();
-  headers.set('user-id', userId);
-  headers.set('Content-Type', 'application/json');
-
-  return fetch('/api/v1/project', {
+  request: ApiTypes.CreateProjectApi['request'],
+): Promise<ApiTypes.CreateProjectApi['response']> {
+  return makeFetch(`/api/v1/project`, {
     method: 'POST',
-    headers,
-    body: JSON.stringify(data),
+    headers: {
+      'user-id': userId,
+    },
+    body: request.body,
   }).then(res => res.json());
 }
 
 export async function loadSnippet(
   userId: string | null | undefined,
   projectId: string,
-): Promise<ProjectSchema.ProjectGetByIdResponse> {
-  const headers = new Headers();
-  if (userId) {
-    headers.set('user-id', userId);
-  }
-
-  return fetch(`/api/v1/project/${projectId}`, {
+): Promise<ApiTypes.GetProjectByIdApi['response']> {
+  return makeFetch(`/api/v1/project/:id`, {
     method: 'GET',
-    headers,
+    params: {
+      id: projectId,
+    },
+    headers: {
+      'user-id': userId,
+    },
   }).then(res => res.json());
 }

@@ -1,19 +1,22 @@
 import {Type} from '@sinclair/typebox';
 import {FastifyPluginAsync, FastifySchema} from 'fastify';
-import {ProjectGetByIdResponseSchema} from '../../../modules/project/schema/project-get-by-id.schema';
+import {GetApiTypes} from '../../../common/types/extract-api-types';
+import {ProjectGetByIdResponseSchema} from '../../../modules/project/schema';
+
+const schema: FastifySchema = {
+  tags: ['Project'],
+  description: 'Returns a CodeImage project by id',
+  params: Type.Object({
+    id: Type.String(),
+  }),
+  response: {
+    200: ProjectGetByIdResponseSchema,
+  },
+};
+
+export type GetProjectByIdApi = GetApiTypes<typeof schema>;
 
 const getByIdRoute: FastifyPluginAsync = async fastify => {
-  const schema: FastifySchema = {
-    tags: ['Project'],
-    description: 'Returns a CodeImage project by id',
-    params: Type.Object({
-      id: Type.String(),
-    }),
-    response: {
-      200: ProjectGetByIdResponseSchema,
-    },
-  };
-
   fastify.get<{
     Params: {
       id: string;

@@ -1,4 +1,4 @@
-import {ProjectSchema} from '@codeimage/api/api-types';
+import {ApiTypes} from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
@@ -58,29 +58,31 @@ function makeDashboardState() {
 
     const frame = getInitialFrameState();
 
-    const data: ProjectSchema.ProjectCreateRequest = {
-      name: 'Untitled',
-      editorOptions: getInitialEditorUiOptions(),
-      terminal: {
-        ...getInitialTerminalState(),
-        background: theme?.properties.terminal.main ?? null,
-        textColor: theme?.properties.terminal.text ?? null,
-      },
-      frame: {
-        visible: frame.visible ?? false,
-        padding: frame.padding ?? 0,
-        radius: frame.radius ?? 0,
-        background:
-          theme?.properties.previewBackground ?? frame.background ?? '#000',
-        opacity: frame.opacity ?? 1,
-      },
-      editors: [
-        {
-          code: `from server: ${appEnvironment.defaultState.editor.code}`,
-          languageId: appEnvironment.defaultState.editor.languageId,
-          tabName: 'index.tsx',
+    const data: ApiTypes.CreateProjectApi['request'] = {
+      body: {
+        name: 'Untitled',
+        editorOptions: getInitialEditorUiOptions(),
+        terminal: {
+          ...getInitialTerminalState(),
+          background: theme?.properties.terminal.main ?? null,
+          textColor: theme?.properties.terminal.text ?? null,
         },
-      ],
+        frame: {
+          visible: frame.visible ?? false,
+          padding: frame.padding ?? 0,
+          radius: frame.radius ?? 0,
+          background:
+            theme?.properties.previewBackground ?? frame.background ?? '#000',
+          opacity: frame.opacity ?? 1,
+        },
+        editors: [
+          {
+            code: `from server: ${appEnvironment.defaultState.editor.code}`,
+            languageId: appEnvironment.defaultState.editor.languageId,
+            tabName: 'index.tsx',
+          },
+        ],
+      },
     };
 
     return API.workpace.createSnippet(userId, data);
@@ -90,7 +92,11 @@ function makeDashboardState() {
     const userId = getAuthState().user()?.user?.id;
     if (!userId) return;
     mutate(items => items.filter(i => i.id !== item.id));
-    await API.workpace.deleteProject(userId, item);
+    await API.workpace.deleteProject(userId, {
+      params: {
+        id: item.id,
+      },
+    });
   }
 
   return {
