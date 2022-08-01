@@ -6,6 +6,11 @@
   "directories": {
     "test": "test"
   },
+  "exports": {
+    "./api-types": {
+      "types": "./index.d.ts"
+    }
+  },
   "scripts": {
     "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts './test/**/*.test.ts'",
     "start": "npm run build:ts && fastify start -l info dist/app.js",

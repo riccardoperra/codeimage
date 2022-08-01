@@ -1,5 +1,6 @@
 import {Project} from '@codeimage/prisma-models';
-import type {ProjectCreateRequest, ProjectCreateResponse} from '../domain';
+import type {ProjectCreateRequest} from '../domain';
+import {ProjectCreateResponse} from '../domain';
 
 export interface ProjectRepository {
   createNewProject(

@@ -1,15 +1,6 @@
-import {
-  SnippetEditorOptions,
-  SnippetEditorTab,
-  SnippetFrame,
-  SnippetTerminal,
-  Project as SnippetProject,
-} from '@codeimage/prisma-models';
+import {ProjectSchema} from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
-import {
-  getInitialEditorState,
-  getInitialEditorUiOptions,
-} from '@codeimage/store/editor/editor';
+import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {
   PersistedEditorState,
@@ -17,7 +8,6 @@ import {
 } from '@codeimage/store/editor/model';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {PersistedFrameState} from '@codeimage/store/frame/model';
-import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
 import {createResource, createSignal} from 'solid-js';
@@ -62,23 +52,20 @@ function makeDashboardState() {
     if (!userId) {
       return;
     }
-    const editor = {...getInitialEditorState(), id: createUniqueId()};
 
-    type IdAndSnippetId = 'id' | 'projectId';
-    type WorkspaceRequest = {
-      name: SnippetProject['name'];
-      editorOptions: Omit<SnippetEditorOptions, IdAndSnippetId>;
-      terminal: Omit<SnippetTerminal, IdAndSnippetId>;
-      frame: Omit<SnippetFrame, IdAndSnippetId>;
-      editors: Omit<SnippetEditorTab, IdAndSnippetId>[];
-    };
+    const frame = getInitialFrameState();
 
-    const data: WorkspaceRequest = {
+    const data: ProjectSchema.ProjectCreateRequest = {
       name: 'Untitled',
       editorOptions: getInitialEditorUiOptions(),
       terminal: getInitialTerminalState(),
-      // @ts-expect-error TODO: fix
-      frame: getInitialFrameState(),
+      frame: {
+        visible: frame.visible ?? false,
+        padding: frame.padding ?? 0,
+        radius: frame.radius ?? 0,
+        background: frame.background ?? '#000',
+        opacity: frame.opacity ?? 1,
+      },
       editors: [
         {
           code: appEnvironment.defaultState.editor.code,
@@ -93,8 +80,9 @@ function makeDashboardState() {
 
   async function deleteProject(item: WorkspaceItem) {
     const userId = getAuthState().user()?.user?.id;
+    if (!userId) return;
     mutate(items => items.filter(i => i.id !== item.id));
-    await API.workpace.deleteProject(userId!, item);
+    await API.workpace.deleteProject(userId, item);
   }
 
   return {

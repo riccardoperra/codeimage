@@ -37,18 +37,20 @@ export function makePrismaProjectRepository(
     return client.project.create({
       data: {
         name: 'Untitled',
-        userId,
+        user: {
+          connect: {id: userId},
+        },
+        editorTabs: {
+          createMany: {
+            data: data.editors,
+          },
+        },
         editorOptions: {
           create: {
             fontId: data.editorOptions.fontId,
             fontWeight: data.editorOptions.fontWeight,
             showLineNumbers: data.editorOptions.showLineNumbers,
             themeId: data.editorOptions.themeId,
-          },
-        },
-        editorTabs: {
-          createMany: {
-            data: data.editors,
           },
         },
         frame: {

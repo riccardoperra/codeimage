@@ -1,33 +1,27 @@
-import {Static, Type} from '@sinclair/typebox';
-import S from 'fluent-json-schema';
+import {Static, TSchema, Type} from '@sinclair/typebox';
 
-export const editorOptionsCreateRequest = S.object()
-  .id('editorOptionsCreateRequest')
-  .prop(
-    'fontId',
-    S.string().description('The font id of the snippet').required(),
-  )
-  .prop('fontWeight', S.number().description('The font weight of the snippet'))
-  .prop(
-    'showLineNumbers',
-    S.boolean().description('Show/hide the editor line numbers'),
-  )
-  .prop('themeId', S.string().description('The theme id of the snippet'));
+const Nullable = <T extends TSchema>(type: T) =>
+  Type.Union([type, Type.Null()]);
 
-export const SnippetFrameCreateRequestSchema = Type.Object({
-  background: Type.Optional(Type.String()),
-  opacity: Type.Optional(Type.Number()),
-  radius: Type.Optional(Type.Number()),
-  padding: Type.Optional(Type.Number()),
-  visible: Type.Optional(Type.Boolean()),
-});
+export const SnippetFrameCreateRequestSchema = Type.Object(
+  {
+    background: Nullable(Type.String()),
+    opacity: Nullable(Type.Number()),
+    radius: Nullable(Type.Number()),
+    padding: Nullable(Type.Number()),
+    visible: Nullable(Type.Boolean()),
+  },
+  {
+    $id: 'SnippetFrameCreateRequest',
+  },
+);
 
 export const SnippetEditorTabsCreateRequestSchema = Type.Array(
   Type.Object(
     {
-      code: Type.String(),
-      languageId: Type.String(),
-      tabName: Type.String(),
+      code: Nullable(Type.String()),
+      languageId: Nullable(Type.String()),
+      tabName: Nullable(Type.String()),
     },
     {$id: 'SnippetEditorTabCreateRequest'},
   ),
@@ -36,26 +30,26 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
 
 const SnippetTerminalCreateRequestSchema = Type.Object(
   {
-    accentVisible: Type.Boolean(),
-    alternativeTheme: Type.Boolean(),
-    background: Type.String(),
-    opacity: Type.Number(),
-    shadow: Type.String(),
-    showGlassReflection: Type.Boolean(),
-    showHeader: Type.Boolean(),
-    showWatermark: Type.Boolean(),
-    textColor: Type.String(),
-    type: Type.String(),
+    accentVisible: Nullable(Type.Boolean()),
+    alternativeTheme: Nullable(Type.Boolean()),
+    background: Nullable(Type.String()),
+    opacity: Nullable(Type.Number()),
+    shadow: Nullable(Type.String()),
+    showGlassReflection: Nullable(Type.Boolean()),
+    showHeader: Nullable(Type.Boolean()),
+    showWatermark: Nullable(Type.Boolean()),
+    textColor: Nullable(Type.String()),
+    type: Nullable(Type.String()),
   },
-  {id: 'SnippetTerminalCreateRequest'},
+  {$id: 'SnippetTerminalCreateRequest'},
 );
 
 const EditorOptionsCreateRequestSchema = Type.Object(
   {
-    fontId: Type.Optional(Type.String()),
-    fontWeight: Type.Optional(Type.Number()),
-    showLineNumbers: Type.Optional(Type.Boolean()),
-    themeId: Type.Optional(Type.String()),
+    fontId: Nullable(Type.String()),
+    fontWeight: Nullable(Type.Number()),
+    showLineNumbers: Nullable(Type.Boolean()),
+    themeId: Nullable(Type.String()),
   },
   {
     $id: 'EditorOptionsCreateRequest',
@@ -76,13 +70,13 @@ export const ProjectCreateRequestSchema = Type.Object(
 export const ProjectCreateResponseSchema = Type.Object(
   {
     id: Type.String(),
-    createdAt: Type.String(),
-    updatedAt: Type.String(),
+    createdAt: Type.String({format: 'date-time'}),
+    updatedAt: Type.String({format: 'date-time'}),
     name: Type.String(),
     editorOptions: Type.Required(EditorOptionsCreateRequestSchema),
     frame: Type.Required(SnippetFrameCreateRequestSchema),
     terminal: Type.Required(SnippetTerminalCreateRequestSchema),
-    editors: SnippetEditorTabsCreateRequestSchema,
+    editorTabs: SnippetEditorTabsCreateRequestSchema,
   },
   {
     $id: 'ProjectCreateResponse',

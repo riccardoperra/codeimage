@@ -1,14 +1,11 @@
+import {ProjectSchema} from '@codeimage/api/api-types';
 import {supabase} from '@core/constants/supabase';
-import {
-  WorkspaceItem,
-  WorkspaceMetadata,
-} from '../pages/Dashboard/dashboard.state';
-import {ProjectSchema} from '@codeimage/api/bff-types';
+import {WorkspaceItem} from '../pages/Dashboard/dashboard.state';
 
 export async function deleteProject(
   userId: string,
   item: WorkspaceItem,
-): Promise<void> {
+): Promise<ProjectSchema.ProjectDeleteResponse> {
   const headers = new Headers();
   headers.set('user-id', userId);
 
@@ -36,15 +33,6 @@ export async function getWorkspaceContent(userId: string): Promise<any> {
     method: 'GET',
     headers,
   }).then(res => res.json());
-}
-
-export async function createWorkspaceItem(
-  data: Pick<Omit<WorkspaceItem, 'snippet'>, 'snippetId' | 'userId'>,
-) {
-  return supabase
-    .from<WorkspaceItem>('workspace_item')
-    .insert(data)
-    .then(res => res.body?.[0]);
 }
 
 export async function updateSnippet(
@@ -82,24 +70,4 @@ export async function loadSnippet(workspaceItemId: string) {
     .select('*, snippets(*)')
     .eq('id', workspaceItemId)
     .maybeSingle();
-}
-
-export async function createNewProject(
-  userId: string,
-  data: Pick<WorkspaceMetadata, 'terminal' | 'frame' | 'options' | 'editors'>,
-): Promise<ProjectSchema> {
-  const workspaceItem = await supabase
-    .from<WorkspaceMetadata>('snippets')
-    .insert(data)
-    .then(res => res?.body?.[0]);
-
-  if (!workspaceItem) return null;
-
-  return supabase
-    .from<WorkspaceItem>('workspace_item')
-    .insert({
-      snippetId: workspaceItem.id,
-      userId,
-    })
-    .then(res => res?.body?.[0]);
 }

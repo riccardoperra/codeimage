@@ -1,5 +1,4 @@
 import AutoLoad, {AutoloadPluginOptions} from '@fastify/autoload';
-import {TypeBoxTypeProvider} from '@fastify/type-provider-typebox';
 import {FastifyPluginAsync} from 'fastify';
 import fp from 'fastify-plugin';
 import {join} from 'path';
@@ -13,7 +12,6 @@ const app: FastifyPluginAsync<AppOptions> = async (
   fastify,
   opts,
 ): Promise<void> => {
-  Object.assign(fastify, fastify.withTypeProvider<TypeBoxTypeProvider>());
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins

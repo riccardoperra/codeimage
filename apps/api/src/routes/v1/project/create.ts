@@ -7,7 +7,7 @@ import {ProjectCreateRequest} from '../../../modules/workspace';
 
 const createRoute: FastifyPluginAsync = async fastify => {
   const schema: FastifySchema = {
-    tags: ['Workspace'],
+    tags: ['Project'],
     description: 'Create a new CodeImage project',
     body: ProjectCreateRequestSchema,
     response: {

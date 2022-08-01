@@ -50,6 +50,7 @@ export default fp(async fastify => {
 
     create(data: ProjectCreateRequest, userId: string) {
       return fastify.prisma.project.create({
+        // @ts-ignore
         data: {
           name: 'Untitled',
           userId,
