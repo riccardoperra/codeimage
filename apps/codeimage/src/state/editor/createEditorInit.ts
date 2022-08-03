@@ -1,3 +1,4 @@
+import {ApiTypes} from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -19,13 +20,6 @@ import {unwrap} from 'solid-js/store';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
-import {
-  SnippetEditorOptions,
-  SnippetTerminal,
-  SnippetFrame,
-  SnippetEditorTab,
-  WorkspaceItem as PrismaWorkspaceItem,
-} from '@codeimage/prisma-models';
 
 function createEditorSyncAdapter() {
   const [remoteSync, setRemoteSync] = createSignal(false);
@@ -44,12 +38,16 @@ function createEditorSyncAdapter() {
   const snippetId = createMemo(() => data()?.snippetId);
 
   const [loadedSnippet] = createResource(snippetId, async snippetId => {
+    const userId = authState.user()?.user?.id;
     if (snippetId) {
-      const storedWorkspaceData = await API.workpace.loadSnippet(snippetId);
-      if (storedWorkspaceData.data) {
-        updateStateFromRemote(storedWorkspaceData.data);
+      const storedWorkspaceData = await API.workpace.loadSnippet(
+        userId,
+        snippetId,
+      );
+      if (storedWorkspaceData) {
+        updateStateFromRemote(storedWorkspaceData);
       }
-      return storedWorkspaceData?.data;
+      return storedWorkspaceData;
     }
   });
 
@@ -90,14 +88,14 @@ function createEditorSyncAdapter() {
     }),
   );
 
-  function updateStateFromRemote(data: WorkspaceItem) {
+  function updateStateFromRemote(data: ApiTypes.GetProjectByIdApi['response']) {
     setActiveWorkspace(data);
     editorStore.actions.setFromWorkspace(data);
     terminalStore.setState(state => ({
       ...state,
-      ...data.snippet.terminal,
+      ...data.terminal,
     }));
-    frameStore.setStore(state => ({...state, ...data.snippet.frame}));
+    frameStore.setStore(state => ({...state, ...data.frame}));
   }
 
   function initRemoteDbSync() {
@@ -112,21 +110,21 @@ function createEditorSyncAdapter() {
           tap(() => setRemoteSync(false)),
         )
         .subscribe(async ([frame, terminal, {editors, options}]) => {
-          const dataToSave = {
+          const dataToSave: ApiTypes.CreateProjectApi['request']['body'] = {
             frame,
             terminal,
             editors,
-            options,
+            editorOptions: options,
           };
 
           const workspace = untrack(activeWorkspace);
           if (!workspace) return;
 
           if (activeWorkspace()) {
-            const snippet = await API.workpace.updateSnippet(
-              workspace.snippetId,
-              dataToSave,
-            );
+            const snippet = await API.workpace.updateSnippet(workspace.userId, {
+              body: dataToSave,
+              params: {id: workspace.id},
+            });
             if (!snippet) return;
             // setActiveWorkspace({
             //   ...workspace,
@@ -135,10 +133,9 @@ function createEditorSyncAdapter() {
           } else {
             const userId = getAuthState().user()?.user?.id;
             if (!userId) return;
-            const workspaceItem = await API.workpace.createSnippet(
-              userId,
-              dataToSave,
-            );
+            const workspaceItem = await API.workpace.createSnippet(userId, {
+              body: dataToSave,
+            });
             setActiveWorkspace(workspaceItem ?? undefined);
           }
         });

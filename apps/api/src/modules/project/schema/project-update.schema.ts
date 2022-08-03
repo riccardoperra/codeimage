@@ -3,7 +3,7 @@ import {Static, TSchema, Type} from '@sinclair/typebox';
 const Nullable = <T extends TSchema>(type: T) =>
   Type.Union([type, Type.Null()]);
 
-export const SnippetFrameCreateRequestSchema = Type.Object(
+export const SnippetFrameUpdateRequestSchema = Type.Object(
   {
     background: Nullable(Type.String()),
     opacity: Nullable(Type.Number()),
@@ -12,23 +12,23 @@ export const SnippetFrameCreateRequestSchema = Type.Object(
     visible: Nullable(Type.Boolean()),
   },
   {
-    $id: 'SnippetFrameCreateRequest',
+    $id: 'SnippetFrameUpdateRequest',
   },
 );
 
-export const SnippetEditorTabsCreateRequestSchema = Type.Array(
+export const SnippetEditorTabsUpdateRequestSchema = Type.Array(
   Type.Object(
     {
       code: Nullable(Type.String()),
       languageId: Nullable(Type.String()),
       tabName: Nullable(Type.String()),
     },
-    {$id: 'SnippetEditorTabCreateRequest'},
+    {$id: 'SnippetEditorTabUpdateRequest'},
   ),
-  {$id: 'SnippetEditorTabsCreateRequest'},
+  {$id: 'SnippetEditorTabsUpdateRequest'},
 );
 
-const SnippetTerminalCreateRequestSchema = Type.Object(
+const SnippetTerminalUpdateRequestSchema = Type.Object(
   {
     accentVisible: Nullable(Type.Boolean()),
     alternativeTheme: Nullable(Type.Boolean()),
@@ -41,10 +41,10 @@ const SnippetTerminalCreateRequestSchema = Type.Object(
     textColor: Nullable(Type.String()),
     type: Nullable(Type.String()),
   },
-  {$id: 'SnippetTerminalCreateRequest'},
+  {$id: 'SnippetTerminalUpdateRequest'},
 );
 
-const EditorOptionsCreateRequestSchema = Type.Object(
+const EditorOptionsUpdateRequestSchema = Type.Object(
   {
     fontId: Nullable(Type.String()),
     fontWeight: Nullable(Type.Number()),
@@ -52,36 +52,35 @@ const EditorOptionsCreateRequestSchema = Type.Object(
     themeId: Nullable(Type.String()),
   },
   {
-    $id: 'EditorOptionsCreateRequest',
+    $id: 'EditorOptionsUpdateRequest',
   },
 );
 
-export const ProjectCreateRequestSchema = Type.Object(
+export const ProjectUpdateRequestSchema = Type.Object(
   {
-    name: Type.String(),
-    editorOptions: EditorOptionsCreateRequestSchema,
-    frame: SnippetFrameCreateRequestSchema,
-    terminal: SnippetTerminalCreateRequestSchema,
-    editors: SnippetEditorTabsCreateRequestSchema,
+    editorOptions: EditorOptionsUpdateRequestSchema,
+    frame: SnippetFrameUpdateRequestSchema,
+    terminal: SnippetTerminalUpdateRequestSchema,
+    editors: SnippetEditorTabsUpdateRequestSchema,
   },
-  {$id: 'ProjectCreateRequest'},
+  {$id: 'ProjectUpdateRequest'},
 );
 
-export const ProjectCreateResponseSchema = Type.Object(
+export const ProjectUpdateResponseSchema = Type.Object(
   {
     id: Type.String(),
     createdAt: Type.String({format: 'date-time'}),
     updatedAt: Type.String({format: 'date-time'}),
     name: Type.String(),
-    editorOptions: Type.Required(EditorOptionsCreateRequestSchema),
-    frame: Type.Required(SnippetFrameCreateRequestSchema),
-    terminal: Type.Required(SnippetTerminalCreateRequestSchema),
-    editorTabs: SnippetEditorTabsCreateRequestSchema,
+    editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
+    frame: Type.Required(SnippetFrameUpdateRequestSchema),
+    terminal: Type.Required(SnippetTerminalUpdateRequestSchema),
+    editorTabs: SnippetEditorTabsUpdateRequestSchema,
   },
   {
-    $id: 'ProjectCreateResponse',
+    $id: 'ProjectUpdateResponse',
   },
 );
 
-export type ProjectCreateRequest = Static<typeof ProjectCreateRequestSchema>;
-export type ProjectCreateResponse = Static<typeof ProjectCreateResponseSchema>;
+export type ProjectUpdateRequest = Static<typeof ProjectUpdateRequestSchema>;
+export type ProjectUpdateResponse = Static<typeof ProjectUpdateResponseSchema>;
