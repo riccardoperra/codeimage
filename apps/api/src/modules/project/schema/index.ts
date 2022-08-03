@@ -6,6 +6,13 @@ export {
 } from './project-create.schema';
 
 export {
+  ProjectUpdateRequest,
+  ProjectUpdateResponse,
+  ProjectUpdateRequestSchema,
+  ProjectUpdateResponseSchema,
+} from './project-update.schema';
+
+export {
   ProjectDeleteResponseSchema,
   ProjectDeleteResponse,
 } from './project-delete.schema';

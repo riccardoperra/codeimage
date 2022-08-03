@@ -1,8 +1,6 @@
 import AutoLoad, {AutoloadPluginOptions} from '@fastify/autoload';
 import {FastifyPluginAsync} from 'fastify';
-import fp from 'fastify-plugin';
 import {join} from 'path';
-import project from './modules/project';
 
 export type AppOptions = {
   // Place your custom options for app below here.
@@ -30,7 +28,12 @@ const app: FastifyPluginAsync<AppOptions> = async (
     routeParams: true,
   });
 
-  await fastify.register(fp(project));
+  await fastify.register(AutoLoad, {
+    dir: join(__dirname, 'modules'),
+    options: opts,
+    encapsulate: false,
+    maxDepth: 1,
+  });
 
   fastify.ready(() => fastify.log.info(`\n${fastify.printRoutes()}`));
 };

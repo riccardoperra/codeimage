@@ -54,7 +54,7 @@ export function createEditorsStore() {
         return {
           languageId: editor.languageId,
           code: editor.code,
-          tab: editor.tab,
+          tabName: editor.tab.tabName,
           id: editor.id,
         };
       }),
@@ -159,13 +159,24 @@ export function createEditorsStore() {
         const editors = (state.editors ?? [])
           .slice(0, MAX_TABS)
           .map(editor => ({
-            ...editor,
+            tabName: editor.tab.tabName,
+            languageId: editor.languageId,
+            id: editor.id,
             code: editor.code,
           }));
         setState(state => ({
           options: {...state.options, ...state.options},
           activeEditorId: editors[0].id,
-          editors: [...editors],
+          editors: editors.map(editor => {
+            return {
+              code: editor.code,
+              languageId: editor.languageId,
+              tab: {
+                tabName: editor.tabName,
+              },
+              id: editor.id,
+            };
+          }),
         }));
       },
       setActiveEditorId: (id: string) => {

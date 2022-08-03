@@ -110,21 +110,21 @@ function createEditorSyncAdapter() {
           tap(() => setRemoteSync(false)),
         )
         .subscribe(async ([frame, terminal, {editors, options}]) => {
-          const dataToSave: ApiTypes.CreateProjectApi = {
+          const dataToSave: ApiTypes.CreateProjectApi['request']['body'] = {
             frame,
             terminal,
             editors,
-            options,
+            editorOptions: options,
           };
 
           const workspace = untrack(activeWorkspace);
           if (!workspace) return;
 
           if (activeWorkspace()) {
-            const snippet = await API.workpace.updateSnippet(
-              workspace.snippetId,
-              dataToSave,
-            );
+            const snippet = await API.workpace.updateSnippet(workspace.userId, {
+              body: dataToSave,
+              params: {id: workspace.id},
+            });
             if (!snippet) return;
             // setActiveWorkspace({
             //   ...workspace,

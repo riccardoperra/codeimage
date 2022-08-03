@@ -55,25 +55,25 @@ importers:
   apps/api:
     specifiers:
       '@codeimage/prisma-models': workspace:*
-      '@fastify/autoload': ^5.0.0
-      '@fastify/env': 4.0.0
-      '@fastify/sensible': ^4.1.0
-      '@fastify/swagger': 7.4.1
-      '@fastify/type-provider-typebox': 2.2.0
+      '@fastify/autoload': ^5.1.0
+      '@fastify/env': ^4.0.0
+      '@fastify/sensible': ^5.1.0
+      '@fastify/swagger': ^7.4.1
+      '@fastify/type-provider-typebox': ^2.2.0
       '@prisma/client': ^4.1.1
-      '@sinclair/typebox': 0.24.22
+      '@sinclair/typebox': ^0.24.26
       '@types/node': ^18.0.0
       '@types/tap': ^15.0.5
       concurrently: ^7.0.0
-      dotenv-cli: 6.0.0
-      fastify: ^4.0.0
+      dotenv-cli: ^6.0.0
+      fastify: ^4.3.0
       fastify-cli: ^4.4.0
-      fastify-plugin: ^3.0.0
+      fastify-plugin: ^4.0.0
       fastify-tsconfig: ^1.0.1
-      fluent-json-schema: 3.1.0
-      graphql: 16.5.0
-      mercurius: 10.1.0
-      mercurius-codegen: 4.0.1
+      fluent-json-schema: ^3.1.0
+      graphql: ^16.5.0
+      mercurius: ^10.1.0
+      mercurius-codegen: ^4.0.1
       prisma: 4.1.1
       prisma-json-schema-generator: 3.0.1
       tap: ^16.1.0
@@ -83,15 +83,15 @@ importers:
       '@codeimage/prisma-models': link:../../packages/prisma-models
       '@fastify/autoload': 5.1.0
       '@fastify/env': 4.0.0
-      '@fastify/sensible': 4.1.0
+      '@fastify/sensible': 5.1.0
       '@fastify/swagger': 7.4.1
-      '@fastify/type-provider-typebox': 2.2.0_gn4psg6oqy3csz3ntpslqj66ya
+      '@fastify/type-provider-typebox': 2.2.0_a75yjc2tfv5mts5ixrv6fsbfre
       '@prisma/client': 4.1.1_prisma@4.1.1
-      '@sinclair/typebox': 0.24.22
+      '@sinclair/typebox': 0.24.26
       dotenv-cli: 6.0.0
       fastify: 4.3.0
       fastify-cli: 4.4.0
-      fastify-plugin: 3.0.1
+      fastify-plugin: 4.0.0
       fluent-json-schema: 3.1.0
       graphql: 16.5.0
       mercurius: 10.1.0
@@ -106,9 +106,6 @@ importers:
       tap: 16.3.0_6oasmw356qmm23djlsjgkwvrtm
       ts-node: 10.9.1_e2tlcjkk7tlngjdlhzx5hjlnv4
       typescript: 4.7.4
-
-  apps/api/bff-types:
-    specifiers: {}
 
   apps/codeimage:
     specifiers:
@@ -3044,9 +3041,8 @@ packages:
       fast-json-stringify: 5.1.0
     dev: false
 
-  /@fastify/sensible/4.1.0:
-    resolution: {integrity: sha512-8TBlmCK055y6WO9jZlndmceB9x8NyNcLEbnJtdu44zelfmY1ebBMSB7MOqyMteyDvpSMq3CVaPknBu35d9FRlA==}
-    engines: {node: '>=14.0.0'}
+  /@fastify/sensible/5.1.0:
+    resolution: {integrity: sha512-ZLuYDpBZecCsr5ZlTKtcyA1dg9ExiEHdTxarYMaBnCJzPBUvTNoDMypMCC6XcC1VS7idMmKjlGmHfmMAaz761Q==}
     dependencies:
       fast-deep-equal: 3.1.3
       fastify-plugin: 3.0.1
@@ -3084,13 +3080,13 @@ packages:
       - supports-color
     dev: false
 
-  /@fastify/type-provider-typebox/2.2.0_gn4psg6oqy3csz3ntpslqj66ya:
+  /@fastify/type-provider-typebox/2.2.0_a75yjc2tfv5mts5ixrv6fsbfre:
     resolution: {integrity: sha512-BpqVX1wDjzxydWdDxCsnGeFU9NDnkytoN674JSC8I5RoihTNRWHPuNTDdoVNZXjB9OjyKh9IQ0Ac3tgJZn5sWQ==}
     peerDependencies:
       '@sinclair/typebox': ^0.24.1
       fastify: ^4.0.0
     dependencies:
-      '@sinclair/typebox': 0.24.22
+      '@sinclair/typebox': 0.24.26
       fastify: 4.3.0
     dev: false
 
@@ -4043,8 +4039,8 @@ packages:
       string-argv: 0.3.1
     dev: true
 
-  /@sinclair/typebox/0.24.22:
-    resolution: {integrity: sha512-JsBe3cOFpNZ6yjBYnXKhcENWy5qZE3PQZwExQ5ksA/h8qp4bwwxFmy07A6bC2R6qv6+RF3SfrbQTskTwYNTXUQ==}
+  /@sinclair/typebox/0.24.26:
+    resolution: {integrity: sha512-1ZVIyyS1NXDRVT8GjWD5jULjhDyM3IsIHef2VGUMdnWOlX2tkPjyEX/7K0TGSH2S8EaPhp1ylFdjSjUGQ+gecg==}
     dev: false
 
   /@solid-aria/button/0.1.3_solid-js@1.4.8:

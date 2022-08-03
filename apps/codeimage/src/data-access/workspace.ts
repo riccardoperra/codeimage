@@ -44,17 +44,19 @@ export async function getWorkspaceContent(userId: string): Promise<any> {
 }
 
 export async function updateSnippet(
-  snippetId: string,
-  dataToSave: Pick<
-    WorkspaceItem['snippet'],
-    'terminal' | 'frame' | 'options' | 'editors'
-  >,
+  userId: string,
+  data: ApiTypes.UpdateProjectApi['request'],
 ) {
-  return supabase
-    .from<WorkspaceItem['snippet']>('snippets')
-    .update(dataToSave)
-    .filter('id', 'eq', snippetId)
-    .then(res => res?.body?.[0]);
+  return makeFetch('/api/v1/project/:id', {
+    method: 'PUT',
+    params: {
+      id: data.params.id,
+    },
+    body: data.body,
+    headers: {
+      'user-id': userId,
+    },
+  });
 }
 
 export async function createSnippet(

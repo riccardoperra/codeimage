@@ -74,8 +74,10 @@ model SnippetEditorOptions {
 model SnippetEditorTab {
   id         String  @id @default(uuid())
   project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId  String  @unique
+  projectId  String
   code       String?
   languageId String?
   tabName    String?
+
+  @@unique([id, projectId])
 }

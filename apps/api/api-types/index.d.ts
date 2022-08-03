@@ -4,5 +4,6 @@ export namespace ApiTypes {
     DeleteProjectApi,
     CreateProjectApi,
     UpdateProjectNameApi,
+    UpdateProjectApi,
   } from '../src/schemas';
 }
