@@ -100,8 +100,20 @@ export function makePrismaProjectRepository(
     });
   }
 
+  function updateProjectName(userId: string, projectId: string, name: string) {
+    return client.project.update({
+      data: {
+        name,
+      },
+      where: {
+        id: projectId,
+      },
+    });
+  }
+
   return {
     findById,
+    updateProjectName,
     findAllByUserId,
     createNewProject,
     deleteProject,

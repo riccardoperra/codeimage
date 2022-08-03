@@ -19,13 +19,19 @@ export async function deleteProject(
 }
 
 export async function updateSnippetName(
-  workspaceItemId: string,
-  newName: string,
-) {
-  return supabase
-    .from<WorkspaceItem>('workspace_item')
-    .update({name: newName})
-    .eq('id', workspaceItemId);
+  userId: string,
+  data: ApiTypes.UpdateProjectNameApi['request'],
+): ApiTypes.UpdateProjectNameApi['response'] {
+  return makeFetch('/api/v1/project/:id/name', {
+    method: 'PUT',
+    params: {
+      id: data.params.id,
+    },
+    body: data.body,
+    headers: {
+      'user-id': userId,
+    },
+  });
 }
 
 export async function getWorkspaceContent(userId: string): Promise<any> {

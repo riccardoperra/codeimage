@@ -89,7 +89,7 @@ function createEditorSyncAdapter() {
   );
 
   function updateStateFromRemote(data: ApiTypes.GetProjectByIdApi['response']) {
-    setActiveWorkspace();
+    setActiveWorkspace(data);
     editorStore.actions.setFromWorkspace(data);
     terminalStore.setState(state => ({
       ...state,
@@ -110,7 +110,7 @@ function createEditorSyncAdapter() {
           tap(() => setRemoteSync(false)),
         )
         .subscribe(async ([frame, terminal, {editors, options}]) => {
-          const dataToSave: ProjectSchema.ProjectCreateRequest = {
+          const dataToSave: ApiTypes.CreateProjectApi = {
             frame,
             terminal,
             editors,
