@@ -35,6 +35,7 @@
   "dependencies": {
     "@codeimage/atomic-state": "workspace:*",
     "@codeimage/config": "workspace:*",
+    "@codeimage/api": "workspace:*",
     "@codeimage/dom-export": "workspace:*",
     "@codeimage/highlight": "workspace:*",
     "@codeimage/locale": "workspace:*",

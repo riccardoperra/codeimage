@@ -26,7 +26,14 @@ export function ToolbarSnippetName() {
       return;
     }
     setValue(newName);
-    await API.workpace.updateSnippetName($$activeWorkspace.id, newName);
+    await API.workpace.updateSnippetName($$activeWorkspace.id, {
+      params: {
+        id: $$activeWorkspace.id,
+      },
+      body: {
+        name: newName,
+      },
+    });
   }
 
   function toggleEdit() {

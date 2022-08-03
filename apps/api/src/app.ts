@@ -15,16 +15,9 @@ const app: FastifyPluginAsync<AppOptions> = async (
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused
   // through your application
-  void fastify.register(AutoLoad, {
+  await void fastify.register(AutoLoad, {
     dir: join(__dirname, 'plugins'),
     options: opts,
-  });
-
-  await fastify.register(AutoLoad, {
-    dir: join(__dirname, 'modules'),
-    options: opts,
-    encapsulate: false,
-    maxDepth: 1,
   });
 
   // This loads all plugins defined in routes
@@ -33,6 +26,13 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dir: join(__dirname, 'routes'),
     options: {prefix: '/api/'},
     routeParams: true,
+  });
+
+  await fastify.register(AutoLoad, {
+    dir: join(__dirname, 'modules'),
+    options: opts,
+    encapsulate: false,
+    maxDepth: 1,
   });
 
   fastify.ready(() => fastify.log.info(`\n${fastify.printRoutes()}`));

@@ -1,15 +1,6 @@
-import {
-  SnippetEditorOptions,
-  SnippetEditorTab,
-  SnippetFrame,
-  SnippetTerminal,
-  Project as SnippetProject,
-} from '@codeimage/prisma-models';
+import {ApiTypes} from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
-import {
-  getInitialEditorState,
-  getInitialEditorUiOptions,
-} from '@codeimage/store/editor/editor';
+import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {
   PersistedEditorState,
@@ -17,7 +8,7 @@ import {
 } from '@codeimage/store/editor/model';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {PersistedFrameState} from '@codeimage/store/frame/model';
-import {createUniqueId} from '@codeimage/store/plugins/unique-id';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
 import {createResource, createSignal} from 'solid-js';
@@ -62,30 +53,36 @@ function makeDashboardState() {
     if (!userId) {
       return;
     }
-    const editor = {...getInitialEditorState(), id: createUniqueId()};
 
-    type IdAndSnippetId = 'id' | 'projectId';
-    type WorkspaceRequest = {
-      name: SnippetProject['name'];
-      editorOptions: Omit<SnippetEditorOptions, IdAndSnippetId>;
-      terminal: Omit<SnippetTerminal, IdAndSnippetId>;
-      frame: Omit<SnippetFrame, IdAndSnippetId>;
-      editors: Omit<SnippetEditorTab, IdAndSnippetId>[];
-    };
+    const theme = await getThemeStore().getThemeDef('vsCodeDarkTheme')?.load();
 
-    const data: WorkspaceRequest = {
-      name: 'Untitled',
-      editorOptions: getInitialEditorUiOptions(),
-      terminal: getInitialTerminalState(),
-      // @ts-expect-error TODO: fix
-      frame: getInitialFrameState(),
-      editors: [
-        {
-          code: appEnvironment.defaultState.editor.code,
-          languageId: appEnvironment.defaultState.editor.languageId,
-          tabName: 'index.tsx',
+    const frame = getInitialFrameState();
+
+    const data: ApiTypes.CreateProjectApi['request'] = {
+      body: {
+        name: 'Untitled',
+        editorOptions: getInitialEditorUiOptions(),
+        terminal: {
+          ...getInitialTerminalState(),
+          background: theme?.properties.terminal.main ?? null,
+          textColor: theme?.properties.terminal.text ?? null,
         },
-      ],
+        frame: {
+          visible: frame.visible ?? false,
+          padding: frame.padding ?? 0,
+          radius: frame.radius ?? 0,
+          background:
+            theme?.properties.previewBackground ?? frame.background ?? '#000',
+          opacity: frame.opacity ?? 1,
+        },
+        editors: [
+          {
+            code: `from server: ${appEnvironment.defaultState.editor.code}`,
+            languageId: appEnvironment.defaultState.editor.languageId,
+            tabName: 'index.tsx',
+          },
+        ],
+      },
     };
 
     return API.workpace.createSnippet(userId, data);
@@ -93,8 +90,13 @@ function makeDashboardState() {
 
   async function deleteProject(item: WorkspaceItem) {
     const userId = getAuthState().user()?.user?.id;
+    if (!userId) return;
     mutate(items => items.filter(i => i.id !== item.id));
-    await API.workpace.deleteProject(userId!, item);
+    await API.workpace.deleteProject(userId, {
+      params: {
+        id: item.id,
+      },
+    });
   }
 
   return {
