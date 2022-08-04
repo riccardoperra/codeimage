@@ -26,7 +26,7 @@ export function ToolbarSnippetName() {
       return;
     }
     setValue(newName);
-    await API.workpace.updateSnippetName($$activeWorkspace.id, {
+    await API.project.updateSnippetName($$activeWorkspace.id, {
       params: {
         id: $$activeWorkspace.id,
       },

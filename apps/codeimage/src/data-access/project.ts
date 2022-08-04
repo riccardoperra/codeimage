@@ -1,6 +1,4 @@
 import {ApiTypes} from '@codeimage/api/api-types';
-import {supabase} from '@core/constants/supabase';
-import {WorkspaceItem} from '../pages/Dashboard/dashboard.state';
 import {makeFetch} from './client';
 
 export async function deleteProject(

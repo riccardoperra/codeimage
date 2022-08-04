@@ -38,7 +38,7 @@ async function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
   const authState = getAuthState();
   const userId = authState.user()?.user?.id;
   if (!userId) return [];
-  return API.workpace.getWorkspaceContent(userId);
+  return API.project.getWorkspaceContent(userId);
 }
 
 function makeDashboardState() {
@@ -85,14 +85,14 @@ function makeDashboardState() {
       },
     };
 
-    return API.workpace.createSnippet(userId, data);
+    return API.project.createSnippet(userId, data);
   }
 
   async function deleteProject(item: WorkspaceItem) {
     const userId = getAuthState().user()?.user?.id;
     if (!userId) return;
     mutate(items => items.filter(i => i.id !== item.id));
-    await API.workpace.deleteProject(userId, {
+    await API.project.deleteProject(userId, {
       params: {
         id: item.id,
       },
