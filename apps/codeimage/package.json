@@ -33,9 +33,9 @@
     "workbox-window": "^6.5.4"
   },
   "dependencies": {
+    "@codeimage/api": "workspace:*",
     "@codeimage/atomic-state": "workspace:*",
     "@codeimage/config": "workspace:*",
-    "@codeimage/api": "workspace:*",
     "@codeimage/dom-export": "workspace:*",
     "@codeimage/highlight": "workspace:*",
     "@codeimage/locale": "workspace:*",
@@ -61,6 +61,7 @@
     "@codemirror/view": "^6.0.2",
     "@floating-ui/core": "^0.7.3",
     "@floating-ui/dom": "^0.5.4",
+    "@formatjs/intl-relativetimeformat": "11.0.3",
     "@lezer/highlight": "^1.0.0",
     "@lion/combobox": "^0.11.0",
     "@lion/core": "^0.23.1",

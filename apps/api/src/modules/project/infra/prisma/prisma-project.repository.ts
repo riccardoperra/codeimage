@@ -29,6 +29,9 @@ export function makePrismaProjectRepository(
       where: {
         userId,
       },
+      orderBy: {
+        updatedAt: 'desc',
+      },
       include: {
         editorOptions: true,
         terminal: true,
