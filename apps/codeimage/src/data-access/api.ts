@@ -1,5 +1,5 @@
-import * as workspaceApi from './workspace';
+import * as projectApi from './project';
 
 export const API = {
-  workpace: workspaceApi,
+  project: projectApi,
 } as const;

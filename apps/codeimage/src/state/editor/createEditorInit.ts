@@ -40,7 +40,7 @@ function createEditorSyncAdapter() {
   const [loadedSnippet] = createResource(snippetId, async snippetId => {
     const userId = authState.user()?.user?.id;
     if (snippetId) {
-      const storedWorkspaceData = await API.workpace.loadSnippet(
+      const storedWorkspaceData = await API.project.loadSnippet(
         userId,
         snippetId,
       );
@@ -121,7 +121,7 @@ function createEditorSyncAdapter() {
           if (!workspace) return;
 
           if (activeWorkspace()) {
-            const snippet = await API.workpace.updateSnippet(workspace.userId, {
+            const snippet = await API.project.updateSnippet(workspace.userId, {
               body: dataToSave,
               params: {id: workspace.id},
             });
@@ -133,7 +133,7 @@ function createEditorSyncAdapter() {
           } else {
             const userId = getAuthState().user()?.user?.id;
             if (!userId) return;
-            const workspaceItem = await API.workpace.createSnippet(userId, {
+            const workspaceItem = await API.project.createSnippet(userId, {
               body: dataToSave,
             });
             setActiveWorkspace(workspaceItem ?? undefined);
