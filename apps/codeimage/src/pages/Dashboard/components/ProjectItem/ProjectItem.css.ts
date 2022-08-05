@@ -6,15 +6,15 @@ export const item = style({
   width: '100%',
   borderRadius: themeVars.borderRadius.sm,
   padding: '24px',
+  paddingBottom: '12px',
   boxShadow: themeVars.dynamicColors.dialog.panelShadow,
-  color: themeVars.dynamicColors.descriptionTextColor,
+  color: themeVars.dynamicColors.textColor,
   transition: 'background-color 0.2s ease-in-out',
   position: 'relative',
   display: 'inline-flex',
-  justifyContent: 'space-between',
+  flexDirection: 'column',
   ':hover': {
-    backgroundColor: themeVars.dynamicColors.input.backgroundColor,
-    color: themeVars.dynamicColors.baseText,
+    backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
   },
   selectors: {
     '[data-displayMode="grid"] &': {
@@ -29,6 +29,16 @@ export const item = style({
   },
 });
 
+export const projectInfo = style({
+  fontWeight: 300,
+  color: themeVars.dynamicColors.descriptionTextColor,
+  marginTop: 'auto',
+});
+
+export const projectLanguages = style({
+  color: themeVars.dynamicColors.descriptionTextColor,
+});
+
 export const itemLink = style({
   position: 'absolute',
   top: '0',
@@ -41,5 +51,5 @@ export const itemLink = style({
 export const itemTitle = style({
   display: 'flex',
   alignItems: 'center',
-  columnGap: themeVars.spacing['2'],
+  justifyContent: 'space-between',
 });

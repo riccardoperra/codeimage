@@ -36,28 +36,63 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
     return formatDistanceToNow(locale(), props.item.updatedAt);
   };
 
+  const languages = (): LanguageDefinition[] => {
+    return props.item.editorTabs.reduce<LanguageDefinition[]>(
+      (acc, editorTab) => {
+        const language = SUPPORTED_LANGUAGES.find(tab =>
+          tab.icons.find(icon => icon.matcher.test(editorTab.tabName)),
+        );
+
+        return language && !acc.find(({id}) => language.id === id)
+          ? [...acc, language]
+          : acc;
+      },
+      [],
+    );
+  };
+
   return (
     <li class={styles.item}>
       <Link class={styles.itemLink} href={`/${props.item.id}`} />
-      <div>
-        <div class={styles.itemTitle}>
-          <Text size={'lg'}>{props.item.name}</Text>
+      <div class={styles.itemTitle}>
+        <Text size={'lg'}>{props.item.name}</Text>
+
+        <div>
+          <DropdownMenuV2
+            menuButton={
+              <MenuButton
+                as={Button}
+                variant={'link'}
+                theme={'secondary'}
+                size={'xs'}
+                pill={true}
+              >
+                <DotVerticalIcon size={'sm'} />
+              </MenuButton>
+            }
+            onAction={action => {
+              if (action === 'delete') {
+                createDialog(ConfirmDialog, state => ({
+                  title: 'Delete project',
+                  message: 'This action is not reversible.',
+                  onConfirm: () => {
+                    dashboard?.deleteProject(props.item);
+                    state.close();
+                  },
+                  actionType: 'danger',
+                }));
+              }
+            }}
+          >
+            <Item key={'delete'}>Delete</Item>
+          </DropdownMenuV2>
         </div>
+      </div>
 
-        <Text size={'xs'}>Created {date()}</Text>
-        <Box as={'span'} marginX={'2'} display={'inlineBlock'}>
-          /
-        </Box>
-        <Text size={'xs'}>Updated {lastUpdateDate()}</Text>
-
+      <div class={styles.projectLanguages}>
         <HStack spacing={'2'} marginTop={3} flexWrap={'wrap'}>
-          <For each={props.item.editorTabs}>
-            {editorTab => {
-              const language: LanguageDefinition | null =
-                SUPPORTED_LANGUAGES.find(tab =>
-                  tab.icons.find(icon => icon.matcher.test(editorTab.tabName)),
-                ) ?? null;
-
+          <For each={languages()}>
+            {language => {
               return (
                 <Show when={language}>
                   {language => (
@@ -79,33 +114,14 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
           </For>
         </HStack>
       </div>
-      <DropdownMenuV2
-        menuButton={
-          <MenuButton
-            as={Button}
-            variant={'link'}
-            theme={'secondary'}
-            size={'xs'}
-          >
-            <DotVerticalIcon size={'sm'} />
-          </MenuButton>
-        }
-        onAction={action => {
-          if (action === 'delete') {
-            createDialog(ConfirmDialog, state => ({
-              title: 'Delete project',
-              message: 'This action is not reversible.',
-              onConfirm: () => {
-                dashboard?.deleteProject(props.item);
-                state.close();
-              },
-              actionType: 'danger',
-            }));
-          }
-        }}
-      >
-        <Item key={'delete'}>Delete</Item>
-      </DropdownMenuV2>
+
+      <div class={styles.projectInfo}>
+        <Text size={'xs'}>Created {date()}</Text>
+        <Box as={'span'} marginX={2} display={'inlineBlock'}>
+          /
+        </Box>
+        <Text size={'xs'}>Updated {lastUpdateDate()}</Text>
+      </div>
     </li>
   );
 }
