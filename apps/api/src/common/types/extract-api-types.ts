@@ -13,7 +13,7 @@ type GetApiRequest<T extends FastifySchema> = {
 type GetApiResponse<T extends FastifySchema> = T['response'] extends {
   200?: infer U;
 }
-  ? StaticSchemaOrType<U>
+  ? Static<U & TSchema>
   : never;
 
 export interface GetApiTypes<T extends FastifySchema> {
