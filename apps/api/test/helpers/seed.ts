@@ -1,17 +1,13 @@
 import {PrismaClient} from '@codeimage/prisma-models';
 import t from 'tap';
 
-export const getSeeder = () => {
-  const client = new PrismaClient();
+const client = new PrismaClient();
 
+export const getSeeder = () => {
   const cleanSeed = () =>
     t.teardown(async () => {
       await client.$transaction([
         client.project.deleteMany(),
-        client.snippetFrame.deleteMany(),
-        client.snippetEditorTab.deleteMany(),
-        client.snippetEditorOptions.deleteMany(),
-        client.snippetTerminal.deleteMany(),
         client.user.deleteMany(),
       ]);
     });
@@ -27,4 +23,52 @@ export const getSeeder = () => {
     setupSeedBefore,
     cleanSeed,
   };
+};
+
+export const userSeed = {
+  clean: () => client.$transaction([client.user.deleteMany()]),
+  createUser() {
+    return client.user.create({
+      data: {
+        provider: 'integration-test',
+      },
+    });
+  },
+};
+
+export const projectSeed = {
+  clean: () => client.$transaction([client.project.deleteMany()]),
+  createProject(projectName: string, userId: string) {
+    return client.project.create({
+      data: {
+        name: projectName,
+        frame: {create: {}},
+        terminal: {
+          create: {
+            type: 'macOS',
+          },
+        },
+        editorTabs: {
+          createMany: {
+            data: [{languageId: '1', code: 'code', tabName: 'index.tsx'}],
+          },
+        },
+        editorOptions: {
+          create: {
+            fontId: 'fontId',
+            themeId: 'themeId',
+          },
+        },
+        user: {connect: {id: userId}},
+      },
+      include: {
+        user: true,
+        editorTabs: true,
+        frame: true,
+        terminal: true,
+        editorOptions: true,
+        _count: true,
+      },
+    });
+  },
 };

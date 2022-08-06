@@ -1,11 +1,12 @@
-import {stub} from 'sinon';
+import {HttpErrors} from '@fastify/sensible/lib/httpError';
+import * as sinon from 'sinon';
 import t from 'tap';
-import {ProjectRepository} from '../../../../dist/modules/project/repository';
-import {makeProjectService} from '../../../../dist/modules/project/service/project.service';
 import {ProjectCreateResponse} from '../../../../src/modules/project/domain';
+import {makeProjectService} from '../../../../src/modules/project/handlers/project.service';
+import {ProjectRepository} from '../../../../src/modules/project/repository';
 
 t.test('create project', async t => {
-  const mockRepository = stub({
+  const mockRepository = sinon.stub({
     createNewProject: function () {},
   } as unknown as ProjectRepository);
   const data = {
@@ -38,7 +39,7 @@ t.test('create project', async t => {
     },
   };
 
-  const service = makeProjectService(mockRepository);
+  const service = makeProjectService(mockRepository, {} as HttpErrors);
 
   mockRepository.createNewProject.returns(
     Promise.resolve({

@@ -1,7 +1,7 @@
 import {FastifyPluginAsync} from 'fastify';
+import {makeProjectService, ProjectService} from './handlers/project.service';
 import {makePrismaProjectRepository} from './infra/prisma/prisma-project.repository';
 import {ProjectRepository} from './repository';
-import {makeProjectService, ProjectService} from './handlers/project.service';
 
 export const project: FastifyPluginAsync = async fastify => {
   fastify.decorate(
@@ -11,7 +11,7 @@ export const project: FastifyPluginAsync = async fastify => {
 
   fastify.decorate(
     'projectService',
-    makeProjectService(fastify.projectRepository),
+    makeProjectService(fastify.projectRepository, fastify.httpErrors),
   );
 };
 
