@@ -12,7 +12,7 @@ export const gridList = recipe({
   variants: {
     displayMode: {
       grid: {
-        gridTemplateColumns: 'repeat(3, minmax(0px, 1fr))',
+        gridTemplateColumns: 'repeat(2, minmax(0px, 1fr))',
       },
       list: {
         gridTemplateColumns: 'repeat(1, minmax(0px, 1fr))',

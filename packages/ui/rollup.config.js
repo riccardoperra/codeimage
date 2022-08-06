@@ -1,5 +1,7 @@
 import withSolid from 'rollup-preset-solid';
 import {dependencies, peerDependencies} from './package.json';
+import ts from 'typescript';
+import {resolve} from 'path';
 
 const externals = [
   ...Object.keys(peerDependencies),
@@ -47,6 +49,29 @@ export default withSolid({
       exports: 'named',
       dir: './dist/cjs',
       format: 'cjs',
+    },
+  ],
+  plugins: [
+    {
+      name: 'ts',
+      buildEnd() {
+        const program = ts.createProgram([resolve('src/index.tsx')], {
+          target: ts.ScriptTarget.ESNext,
+          module: ts.ModuleKind.ESNext,
+          moduleResolution: ts.ModuleResolutionKind.NodeJs,
+          jsx: ts.JsxEmit.Preserve,
+          jsxImportSource: 'solid-js',
+          allowSyntheticDefaultImports: true,
+          esModuleInterop: true,
+          outDir: `dist/source`,
+          declarationDir: `dist/types`,
+          declaration: true,
+          allowJs: true,
+          preserveSymlinks: true,
+        });
+
+        program.emit();
+      },
     },
   ],
 });

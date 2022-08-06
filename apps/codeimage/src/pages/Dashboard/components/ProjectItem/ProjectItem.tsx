@@ -15,7 +15,10 @@ import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {Link} from 'solid-app-router';
 import {For, Show, VoidProps} from 'solid-js';
-import {DotVerticalIcon} from '../../../../components/Icons/DotVertical';
+import {
+  DotHorizontalIocn,
+  DotVerticalIcon,
+} from '../../../../components/Icons/DotVertical';
 import {getDashboardState} from '../../dashboard.state';
 import * as styles from './ProjectItem.css';
 
@@ -62,12 +65,12 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
             menuButton={
               <MenuButton
                 as={Button}
-                variant={'link'}
+                variant={'solid'}
                 theme={'secondary'}
                 size={'xs'}
-                pill={true}
+                style={{width: '30px', height: '30px'}}
               >
-                <DotVerticalIcon size={'sm'} />
+                <DotHorizontalIocn />
               </MenuButton>
             }
             onAction={action => {

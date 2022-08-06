@@ -4,10 +4,11 @@ import {style} from '@vanilla-extract/css';
 export const item = style({
   backgroundColor: themeVars.dynamicColors.input.backgroundColor,
   width: '100%',
-  borderRadius: themeVars.borderRadius.sm,
+  borderRadius: themeVars.borderRadius.md,
   padding: '24px',
   paddingBottom: '12px',
-  boxShadow: themeVars.dynamicColors.dialog.panelShadow,
+  // boxShadow: themeVars.dynamicColors.dialog.panelShadow,
+  boxShadow: 'inset 0 1px 0 0 rgb(255 255 255 / 5%)',
   color: themeVars.dynamicColors.textColor,
   transition: 'background-color 0.2s ease-in-out',
   position: 'relative',

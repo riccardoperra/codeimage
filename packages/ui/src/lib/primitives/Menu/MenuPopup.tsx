@@ -43,7 +43,7 @@ export function MenuPopup(
           <DismissButton onDismiss={props.onClose} />
           <styled.ul
             {...menuProps}
-            ref={ulRef => {
+            ref={(ulRef: HTMLUListElement) => {
               ref = ulRef;
               props.floating.setFloating(ref);
             }}
