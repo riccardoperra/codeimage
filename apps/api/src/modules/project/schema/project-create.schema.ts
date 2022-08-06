@@ -6,10 +6,14 @@ const Nullable = <T extends TSchema>(type: T) =>
 export const SnippetFrameCreateRequestSchema = Type.Object(
   {
     background: Nullable(Type.String()),
-    opacity: Nullable(Type.Number()),
+    opacity: Type.Number({
+      minimum: 0,
+      maximum: 100,
+      default: 100,
+    }),
     radius: Nullable(Type.Number()),
-    padding: Nullable(Type.Number()),
-    visible: Nullable(Type.Boolean()),
+    padding: Type.Number(),
+    visible: Type.Boolean({default: true}),
   },
   {
     title: 'SnippetFrameCreateRequest',
@@ -19,9 +23,9 @@ export const SnippetFrameCreateRequestSchema = Type.Object(
 export const SnippetEditorTabsCreateRequestSchema = Type.Array(
   Type.Object(
     {
-      code: Nullable(Type.String()),
-      languageId: Nullable(Type.String()),
-      tabName: Nullable(Type.String()),
+      code: Type.String(),
+      languageId: Type.String(),
+      tabName: Type.String(),
     },
     {title: 'SnippetEditorTabCreateRequest'},
   ),
@@ -30,26 +34,26 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
 
 const SnippetTerminalCreateRequestSchema = Type.Object(
   {
-    accentVisible: Nullable(Type.Boolean()),
-    alternativeTheme: Nullable(Type.Boolean()),
+    accentVisible: Type.Boolean({default: false}),
+    alternativeTheme: Type.Boolean({default: false}),
     background: Nullable(Type.String()),
-    opacity: Nullable(Type.Number()),
     shadow: Nullable(Type.String()),
-    showGlassReflection: Nullable(Type.Boolean()),
-    showHeader: Nullable(Type.Boolean()),
-    showWatermark: Nullable(Type.Boolean()),
+    showGlassReflection: Type.Boolean(),
     textColor: Nullable(Type.String()),
-    type: Nullable(Type.String()),
+    type: Type.String(),
+    opacity: Type.Number({minimum: 0, maximum: 100, default: 100}),
+    showHeader: Type.Boolean(),
+    showWatermark: Type.Boolean(),
   },
   {title: 'SnippetTerminalCreateRequest'},
 );
 
 const EditorOptionsCreateRequestSchema = Type.Object(
   {
-    fontId: Nullable(Type.String()),
-    fontWeight: Nullable(Type.Number()),
-    showLineNumbers: Nullable(Type.Boolean()),
-    themeId: Nullable(Type.String()),
+    fontId: Type.String(),
+    fontWeight: Type.Number({default: 400}),
+    themeId: Type.String(),
+    showLineNumbers: Type.Boolean({default: false}),
   },
   {
     title: 'EditorOptionsCreateRequest',
@@ -67,14 +71,31 @@ export const ProjectCreateRequestSchema = Type.Object(
   {title: 'ProjectCreateRequest'},
 );
 
+export const SnippetFrameCreateResponseSchema = Type.Object(
+  {
+    background: Nullable(Type.String()),
+    opacity: Type.Number({
+      minimum: 0,
+      maximum: 100,
+      default: 100,
+    }),
+    radius: Nullable(Type.Number()),
+    padding: Type.Number(),
+    visible: Nullable(Type.Boolean({default: true})),
+  },
+  {
+    title: 'SnippetFrameCreateResponse',
+  },
+);
+
 export const ProjectCreateResponseSchema = Type.Object(
   {
     id: Type.String(),
-    createdAt: Type.String({format: 'date-time'}),
-    updatedAt: Type.String({format: 'date-time'}),
     name: Type.String(),
+    createdAt: Type.Unsafe<Date>({format: 'date-time'}),
+    updatedAt: Type.Unsafe<Date>({format: 'date-time'}),
     editorOptions: Type.Required(EditorOptionsCreateRequestSchema),
-    frame: Type.Required(SnippetFrameCreateRequestSchema),
+    frame: Type.Required(SnippetFrameCreateResponseSchema),
     terminal: Type.Required(SnippetTerminalCreateRequestSchema),
     editorTabs: SnippetEditorTabsCreateRequestSchema,
   },

@@ -23,7 +23,7 @@ const createRoute: FastifyPluginAsyncTypebox = async fastify => {
       preHandler: req => fastify.authorize(req),
       schema,
     },
-    async request => {
+    request => {
       const {userId, body} = request;
       return fastify.projectService.createNewProject(userId, body);
     },

@@ -1,26 +1,21 @@
 import {Project} from '@codeimage/prisma-models';
-import type {
-  ProjectCreateRequest,
-  ProjectUpdateRequest,
-  ProjectUpdateResponse,
-} from '../domain';
-import {ProjectCreateResponse} from '../domain';
+import type * as DomainModel from '../domain';
 
 export interface ProjectRepository {
-  findById(id: string): Promise<Project | null>;
+  findById(id: string): Promise<Project>;
 
   updateProjectName(projectId: string, newName: string): Promise<Project>;
 
   createNewProject(
     userId: string,
-    data: ProjectCreateRequest,
-  ): Promise<ProjectCreateResponse>;
+    data: DomainModel.ProjectCreateRequest,
+  ): Promise<DomainModel.ProjectCreateResponse>;
 
   updateProject(
     userId: string,
     projectId: string,
-    data: ProjectUpdateRequest,
-  ): Promise<ProjectUpdateResponse>;
+    data: DomainModel.ProjectUpdateRequest,
+  ): Promise<DomainModel.ProjectUpdateResponse>;
 
   deleteProject(id: string, userId: string): Promise<Project>;
 
