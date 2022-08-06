@@ -12,7 +12,7 @@ export const SnippetFrameCreateRequestSchema = Type.Object(
     visible: Nullable(Type.Boolean()),
   },
   {
-    $id: 'SnippetFrameCreateRequest',
+    title: 'SnippetFrameCreateRequest',
   },
 );
 
@@ -23,9 +23,9 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
       languageId: Nullable(Type.String()),
       tabName: Nullable(Type.String()),
     },
-    {$id: 'SnippetEditorTabCreateRequest'},
+    {title: 'SnippetEditorTabCreateRequest'},
   ),
-  {$id: 'SnippetEditorTabsCreateRequest'},
+  {title: 'SnippetEditorTabsCreateRequest'},
 );
 
 const SnippetTerminalCreateRequestSchema = Type.Object(
@@ -41,7 +41,7 @@ const SnippetTerminalCreateRequestSchema = Type.Object(
     textColor: Nullable(Type.String()),
     type: Nullable(Type.String()),
   },
-  {$id: 'SnippetTerminalCreateRequest'},
+  {title: 'SnippetTerminalCreateRequest'},
 );
 
 const EditorOptionsCreateRequestSchema = Type.Object(
@@ -52,7 +52,7 @@ const EditorOptionsCreateRequestSchema = Type.Object(
     themeId: Nullable(Type.String()),
   },
   {
-    $id: 'EditorOptionsCreateRequest',
+    title: 'EditorOptionsCreateRequest',
   },
 );
 
@@ -64,7 +64,7 @@ export const ProjectCreateRequestSchema = Type.Object(
     terminal: SnippetTerminalCreateRequestSchema,
     editors: SnippetEditorTabsCreateRequestSchema,
   },
-  {$id: 'ProjectCreateRequest'},
+  {title: 'ProjectCreateRequest'},
 );
 
 export const ProjectCreateResponseSchema = Type.Object(
@@ -79,7 +79,7 @@ export const ProjectCreateResponseSchema = Type.Object(
     editorTabs: SnippetEditorTabsCreateRequestSchema,
   },
   {
-    $id: 'ProjectCreateResponse',
+    title: 'ProjectCreateResponse',
   },
 );
 

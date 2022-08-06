@@ -12,7 +12,7 @@ export const SnippetFrameUpdateRequestSchema = Type.Object(
     visible: Nullable(Type.Boolean()),
   },
   {
-    $id: 'SnippetFrameUpdateRequest',
+    title: 'SnippetFrameUpdateRequest',
   },
 );
 
@@ -23,9 +23,9 @@ export const SnippetEditorTabsUpdateRequestSchema = Type.Array(
       languageId: Nullable(Type.String()),
       tabName: Nullable(Type.String()),
     },
-    {$id: 'SnippetEditorTabUpdateRequest'},
+    {title: 'SnippetEditorTabUpdateRequest'},
   ),
-  {$id: 'SnippetEditorTabsUpdateRequest'},
+  {title: 'SnippetEditorTabsUpdateRequest'},
 );
 
 const SnippetTerminalUpdateRequestSchema = Type.Object(
@@ -41,7 +41,7 @@ const SnippetTerminalUpdateRequestSchema = Type.Object(
     textColor: Nullable(Type.String()),
     type: Nullable(Type.String()),
   },
-  {$id: 'SnippetTerminalUpdateRequest'},
+  {title: 'SnippetTerminalUpdateRequest'},
 );
 
 const EditorOptionsUpdateRequestSchema = Type.Object(
@@ -52,7 +52,7 @@ const EditorOptionsUpdateRequestSchema = Type.Object(
     themeId: Nullable(Type.String()),
   },
   {
-    $id: 'EditorOptionsUpdateRequest',
+    title: 'EditorOptionsUpdateRequest',
   },
 );
 
@@ -63,7 +63,7 @@ export const ProjectUpdateRequestSchema = Type.Object(
     terminal: SnippetTerminalUpdateRequestSchema,
     editors: SnippetEditorTabsUpdateRequestSchema,
   },
-  {$id: 'ProjectUpdateRequest'},
+  {title: 'ProjectUpdateRequest'},
 );
 
 export const ProjectUpdateResponseSchema = Type.Object(
@@ -78,7 +78,7 @@ export const ProjectUpdateResponseSchema = Type.Object(
     editorTabs: SnippetEditorTabsUpdateRequestSchema,
   },
   {
-    $id: 'ProjectUpdateResponse',
+    title: 'ProjectUpdateResponse',
   },
 );
 

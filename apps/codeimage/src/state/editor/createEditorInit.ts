@@ -1,4 +1,4 @@
-import {ApiTypes} from '@codeimage/api/api-types';
+import * as ApiTypes from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -110,27 +110,31 @@ function createEditorSyncAdapter() {
           tap(() => setRemoteSync(false)),
         )
         .subscribe(async ([frame, terminal, {editors, options}]) => {
-          const dataToSave: ApiTypes.CreateProjectApi['request']['body'] = {
-            frame,
-            terminal,
-            editors,
-            editorOptions: options,
-          };
-
           const workspace = untrack(activeWorkspace);
           if (!workspace) return;
 
           if (activeWorkspace()) {
+            const dataToSave: ApiTypes.UpdateProjectApi['request']['body'] = {
+              frame,
+              terminal,
+              editors,
+              editorOptions: options,
+            };
+
             const snippet = await API.project.updateSnippet(workspace.userId, {
               body: dataToSave,
               params: {id: workspace.id},
             });
             if (!snippet) return;
-            // setActiveWorkspace({
-            //   ...workspace,
-            //   snippets: snippet,
-            // });
           } else {
+            const dataToSave: ApiTypes.CreateProjectApi['request']['body'] = {
+              name: workspace.name,
+              frame,
+              terminal,
+              editors,
+              editorOptions: options,
+            };
+
             const userId = getAuthState().user()?.user?.id;
             if (!userId) return;
             const workspaceItem = await API.project.createSnippet(userId, {
@@ -143,6 +147,7 @@ function createEditorSyncAdapter() {
       return onCleanup(() => {
         // TODO: refactor
         const dataToSave: ApiTypes.CreateProjectApi['request']['body'] = {
+          name: 'Untitled',
           frame: frameStore.stateToPersist(),
           terminal: terminalStore.stateToPersist(),
           editors: editorStore.stateToPersist().editors,

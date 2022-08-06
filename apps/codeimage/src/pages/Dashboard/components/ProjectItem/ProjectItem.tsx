@@ -1,4 +1,4 @@
-import {ApiTypes} from '@codeimage/api/api-types';
+import * as ApiTypes from '@codeimage/api/api-types';
 import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {uiStore} from '@codeimage/store/ui';
 import {
@@ -43,7 +43,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
     return props.item.editorTabs.reduce<LanguageDefinition[]>(
       (acc, editorTab) => {
         const language = SUPPORTED_LANGUAGES.find(tab =>
-          tab.icons.find(icon => icon.matcher.test(editorTab.tabName)),
+          tab.icons.find(icon => icon.matcher.test(editorTab.tabName ?? '')),
         );
 
         return language && !acc.find(({id}) => language.id === id)

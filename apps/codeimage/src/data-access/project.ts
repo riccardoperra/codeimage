@@ -1,4 +1,4 @@
-import {ApiTypes} from '@codeimage/api/api-types';
+import * as ApiTypes from '@codeimage/api/api-types';
 import {makeFetch} from './client';
 
 export async function deleteProject(
@@ -19,17 +19,17 @@ export async function deleteProject(
 export async function updateSnippetName(
   userId: string,
   data: ApiTypes.UpdateProjectNameApi['request'],
-): ApiTypes.UpdateProjectNameApi['response'] {
+): Promise<ApiTypes.UpdateProjectNameApi['response']> {
   return makeFetch('/api/v1/project/:id/name', {
     method: 'PUT',
     params: {
-      id: data.params.id,
+      id: data.params?.id,
     },
     body: data.body,
     headers: {
       'user-id': userId,
     },
-  });
+  }).then(res => res.json());
 }
 
 export async function getWorkspaceContent(userId: string): Promise<any> {
@@ -48,7 +48,7 @@ export async function updateSnippet(
   return makeFetch('/api/v1/project/:id', {
     method: 'PUT',
     params: {
-      id: data.params.id,
+      id: data.params?.id,
     },
     body: data.body,
     headers: {

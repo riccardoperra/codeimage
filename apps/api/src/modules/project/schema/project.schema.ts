@@ -9,7 +9,6 @@ export const BaseProjectResponseSchema = Type.Object(
     userId: Type.String({format: 'uuid'}),
   },
   {
-    $id: 'BaseProjectResponse',
     title: 'BaseProjectResponse',
   },
 );
