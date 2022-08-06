@@ -1,7 +1,6 @@
-import {FastifyPluginAsync} from 'fastify';
+import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {GetApiTypes} from '../../../common/types/extract-api-types';
 import {
-  ProjectCreateRequest,
   ProjectCreateRequestSchema,
   ProjectCreateResponseSchema,
 } from '../../../modules/project/schema';
@@ -17,20 +16,16 @@ const schema = {
 
 export type CreateProjectApi = GetApiTypes<typeof schema>;
 
-const createRoute: FastifyPluginAsync = async fastify => {
-  fastify.post<{
-    Body: ProjectCreateRequest;
-  }>(
+const createRoute: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.post(
     '/',
     {
-      preHandler: fastify.authorize,
+      preHandler: req => fastify.authorize(req),
       schema,
     },
     async request => {
       const {userId, body} = request;
-      // TODO: move to service
-      const response = fastify.projectRepository.createNewProject(userId, body);
-      return response;
+      return fastify.projectService.createNewProject(userId, body);
     },
   );
 };

@@ -2,7 +2,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
-    "noEmit": true
+    "noEmit": true,
+//    "paths": {
+//      "~*": [
+//        "../src/*"
+//      ]
+//    }
   },
   "include": ["../src/**/*.ts", "**/*.ts"]
 }

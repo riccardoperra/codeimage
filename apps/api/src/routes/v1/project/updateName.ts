@@ -31,17 +31,11 @@ const updateProjectName: FastifyPluginAsync = async fastify => {
     },
     async request => {
       const {
-        userId,
         body,
+        userId,
         params: {id},
       } = request;
-      // TODO: move to service
-      const response = fastify.projectRepository.updateProjectName(
-        userId,
-        id,
-        body.name,
-      );
-      return response;
+      return fastify.projectService.updateName(userId, id, body.name);
     },
   );
 };

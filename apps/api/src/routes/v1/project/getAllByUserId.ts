@@ -12,7 +12,7 @@ const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
     },
     async (request): Promise<Project[]> => {
       const {userId} = request;
-      return fastify.projectRepository.findAllByUserId(userId);
+      return fastify.projectService.findAllByUserId(userId);
     },
   );
 };
