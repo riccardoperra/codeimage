@@ -11,10 +11,8 @@ import {PersistedFrameState} from '@codeimage/store/frame/model';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
-import {createResource, createSignal} from 'solid-js';
+import {createResource} from 'solid-js';
 import {API} from '../../data-access/api';
-
-type DashboardViewMode = 'grid' | 'list';
 
 export type WorkspaceMetadata = {
   id: string;
@@ -42,8 +40,6 @@ async function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
 }
 
 function makeDashboardState() {
-  const [mode, setMode] = createSignal<DashboardViewMode>('grid');
-
   const [data, {mutate}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
   });
@@ -100,8 +96,6 @@ function makeDashboardState() {
   }
 
   return {
-    mode,
-    setMode,
     data,
     mutateData: mutate,
     createNewProject,

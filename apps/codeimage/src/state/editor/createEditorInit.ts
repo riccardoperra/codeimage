@@ -141,6 +141,27 @@ function createEditorSyncAdapter() {
         });
 
       return onCleanup(() => {
+        // TODO: refactor
+        const dataToSave: ApiTypes.CreateProjectApi['request']['body'] = {
+          frame: frameStore.stateToPersist(),
+          terminal: terminalStore.stateToPersist(),
+          editors: editorStore.stateToPersist().editors,
+          editorOptions: editorStore.stateToPersist().options,
+        };
+
+        const workspace = untrack(activeWorkspace);
+        if (!workspace) return;
+
+        if (activeWorkspace()) {
+          const snippet = API.project
+            .updateSnippet(workspace.userId, {
+              body: dataToSave,
+              params: {id: workspace.id},
+            })
+            .then();
+          if (!snippet) return;
+        }
+
         subscription.unsubscribe();
       });
     });

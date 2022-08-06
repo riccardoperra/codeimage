@@ -70,7 +70,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
                 size={'xs'}
                 style={{width: '30px', height: '30px'}}
               >
-                <DotHorizontalIocn />
+                <DotHorizontalIocn size={'sm'} />
               </MenuButton>
             }
             onAction={action => {
@@ -93,29 +93,27 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
       </div>
 
       <div class={styles.projectLanguages}>
-        <HStack spacing={'2'} marginTop={3} flexWrap={'wrap'}>
-          <For each={languages()}>
-            {language => {
-              return (
-                <Show when={language}>
-                  {language => (
-                    <HStack spacing={'2'}>
-                      <div
-                        style={{
-                          'border-radius': '50%',
-                          'background-color': language.color,
-                          height: '12px',
-                          width: '12px',
-                        }}
-                      />
-                      <Text size={'xs'}>{language.label}</Text>
-                    </HStack>
-                  )}
-                </Show>
-              );
-            }}
-          </For>
-        </HStack>
+        <For each={languages()}>
+          {language => {
+            return (
+              <Show when={language}>
+                {language => (
+                  <HStack spacing={'2'}>
+                    <div
+                      style={{
+                        'border-radius': '50%',
+                        'background-color': language.color,
+                        height: '12px',
+                        width: '12px',
+                      }}
+                    />
+                    <Text size={'xs'}>{language.label}</Text>
+                  </HStack>
+                )}
+              </Show>
+            );
+          }}
+        </For>
       </div>
 
       <div class={styles.projectInfo}>
