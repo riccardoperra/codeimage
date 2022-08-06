@@ -2,38 +2,19 @@ import * as sinon from 'sinon';
 import t from 'tap';
 
 import {build} from '../../../helper';
-import {getSeeder} from '../../../helpers/seed';
+import {projectSeed, userSeed} from '../../../helpers/seed';
 
-const {cleanSeed, setupSeedBefore} = getSeeder();
-
-const userId = 'd8f4fe3f-199f-4a97-8f08-10b21c8e7cdd';
-const projectId = 'a7a1cb1d-2e4c-4f2f-8801-f73adddd8a6d';
-
-setupSeedBefore(async client => {
-  const user = await client.user.create({
-    data: {id: userId, provider: 'test'},
-  });
-  await client.project.create({
-    data: {
-      name: 'name',
-      id: projectId,
-      frame: {create: {}},
-      terminal: {create: {}},
-      editorTabs: {
-        createMany: {
-          data: [{languageId: '1', code: 'code', tabName: 'index.tsx'}],
-        },
-      },
-      editorOptions: {create: {}},
-      user: {connect: {id: user.id}},
-    },
-  });
+t.before(async () => {
+  const user = await userSeed.createUser();
+  const project1 = await projectSeed.createProject('delete test', user.id);
+  t.context.user = user;
+  t.context.project1 = project1;
 });
 
 t.test('DELETE /v1/project/:id [Delete Project] -> 200', async t => {
   const fastify = await build(t);
-  const userId = 'd8f4fe3f-199f-4a97-8f08-10b21c8e7cdd';
-  const projectId = 'a7a1cb1d-2e4c-4f2f-8801-f73adddd8a6d';
+  const userId = t.context.user.id;
+  const projectId = t.context.project1.id;
   const spy = sinon.spy(fastify.projectRepository, 'deleteProject');
 
   const response = await fastify.inject({
@@ -47,5 +28,3 @@ t.test('DELETE /v1/project/:id [Delete Project] -> 200', async t => {
   t.ok(spy.withArgs(projectId, userId).calledOnce, 'has been called once');
   t.same(response.statusCode, 200, 'return status 200');
 });
-
-cleanSeed();

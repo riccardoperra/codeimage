@@ -1,4 +1,5 @@
-import {Project} from '@codeimage/prisma-models';
+import {Prisma, Project} from '@codeimage/prisma-models';
+import {HttpErrors} from '@fastify/sensible/lib/httpError';
 import {createProjectRequestMapper} from '../mapper/create-project-mapper';
 import {ProjectRepository} from '../repository';
 import {
@@ -33,10 +34,16 @@ export interface ProjectService {
 
 export function makeProjectService(
   repository: ProjectRepository,
+  httpErrors: HttpErrors,
 ): ProjectService {
   return {
     async findById(id: string): Promise<Project> {
-      return repository.findById(id);
+      return repository.findById(id).catch(e => {
+        if (e instanceof Prisma.NotFoundError) {
+          throw httpErrors.notFound(`Project with id ${id} not found`);
+        }
+        throw e;
+      });
     },
     async findAllByUserId(userId: string): Promise<Project[]> {
       return repository.findAllByUserId(userId);
