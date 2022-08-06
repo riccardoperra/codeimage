@@ -1,4 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
+import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {themeVars} from '../../theme';
 import {inputHeight} from '../Field/FlexField.css';
 
@@ -29,12 +30,26 @@ export const baseField = style([
   },
 ]);
 
-export const textField = style([
-  baseField,
-  {
-    paddingRight: themeVars.spacing['3'],
-    paddingTop: 0,
-    paddingBottom: themeVars.spacing.px,
-    paddingLeft: themeVars.spacing['3'],
+export const textField = recipe({
+  base: [
+    baseField,
+    {
+      paddingRight: themeVars.spacing['3'],
+      paddingTop: 0,
+      paddingBottom: themeVars.spacing.px,
+      paddingLeft: themeVars.spacing['3'],
+    },
+  ],
+  variants: {
+    inline: {
+      true: {
+        backgroundColor: 'transparent',
+        border: 'none',
+        borderBottom: `2px solid ${textFieldVars.background}`,
+        borderRadius: 0,
+      },
+    },
   },
-]);
+});
+
+export type TextFieldProps = RecipeVariants<typeof textField>;
