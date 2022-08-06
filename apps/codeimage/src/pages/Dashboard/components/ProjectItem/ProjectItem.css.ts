@@ -7,6 +7,7 @@ export const item = style({
   borderRadius: themeVars.borderRadius.md,
   padding: '24px',
   paddingBottom: '12px',
+  height: '128px',
   // boxShadow: themeVars.dynamicColors.dialog.panelShadow,
   boxShadow: 'inset 0 1px 0 0 rgb(255 255 255 / 5%)',
   color: themeVars.dynamicColors.textColor,
@@ -16,17 +17,6 @@ export const item = style({
   flexDirection: 'column',
   ':hover': {
     backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
-  },
-  selectors: {
-    '[data-displayMode="grid"] &': {
-      height: '128px',
-    },
-    '[data-displayMode="list"] &': {
-      height: '64px',
-      paddingTop: 0,
-      paddingBottom: 0,
-      alignItems: 'center',
-    },
   },
 });
 
@@ -38,6 +28,10 @@ export const projectInfo = style({
 
 export const projectLanguages = style({
   color: themeVars.dynamicColors.descriptionTextColor,
+  display: 'flex',
+  flexWrap: 'wrap',
+  marginTop: themeVars.spacing['2'],
+  gap: themeVars.spacing['2'],
 });
 
 export const itemLink = style({
