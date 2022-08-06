@@ -41,43 +41,43 @@ model SnippetFrame {
   id         String   @id @default(uuid())
   project    Project?
   background String?
-  padding    Int?
+  padding    Int      @default(32)
   radius     Int?
-  visible    Boolean?
-  opacity    Float?
+  visible    Boolean  @default(true)
+  opacity    Float    @default(100)
 }
 
 model SnippetTerminal {
   id                  String   @id @default(uuid())
   project             Project?
-  showHeader          Boolean?
-  type                String?
-  accentVisible       Boolean?
+  showHeader          Boolean  @default(true)
+  type                String
+  accentVisible       Boolean  @default(false)
   shadow              String?
   background          String?
   textColor           String?
-  showWatermark       Boolean?
-  showGlassReflection Boolean?
-  opacity             Float?
-  alternativeTheme    Boolean?
+  showWatermark       Boolean  @default(true)
+  showGlassReflection Boolean  @default(false)
+  opacity             Float    @default(100)
+  alternativeTheme    Boolean  @default(false)
 }
 
 model SnippetEditorOptions {
   id              String   @id @default(uuid())
   project         Project?
-  fontId          String?
-  fontWeight      Int?
-  showLineNumbers Boolean?
-  themeId         String?
+  fontId          String
+  fontWeight      Int      @default(400)
+  showLineNumbers Boolean  @default(false)
+  themeId         String
 }
 
 model SnippetEditorTab {
   id         String  @id @default(uuid())
   project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId  String
-  code       String?
-  languageId String?
-  tabName    String?
+  code       String  @default("")
+  languageId String
+  tabName    String  @default("")
 
   @@unique([id, projectId])
 }

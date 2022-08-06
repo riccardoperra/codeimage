@@ -25,7 +25,7 @@ const getByIdRoute: FastifyPluginAsync = async fastify => {
     const {
       params: {id},
     } = request;
-    return fastify.projectRepository.findById(id);
+    return fastify.projectService.findById(id);
   });
 };
 

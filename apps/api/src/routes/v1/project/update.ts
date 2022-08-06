@@ -1,8 +1,7 @@
-import {Static, Type} from '@sinclair/typebox';
-import {FastifyPluginAsync} from 'fastify';
+import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import {Type} from '@sinclair/typebox';
 import {GetApiTypes} from '../../../common/types/extract-api-types';
 import {
-  ProjectUpdateRequest,
   ProjectUpdateRequestSchema,
   ProjectUpdateResponseSchema,
 } from '../../../modules/project/schema';
@@ -21,30 +20,20 @@ const schema = {
 
 export type UpdateProjectApi = GetApiTypes<typeof schema>;
 
-const updateRoute: FastifyPluginAsync = async fastify => {
-  fastify.put<{
-    Body: Static<typeof schema['body']>;
-    Params: Static<typeof schema['params']>;
-  }>(
+const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.put(
     '/:id',
     {
-      preHandler: fastify.authorize,
+      preHandler: req => fastify.authorize(req),
       schema,
     },
-    async request => {
+    request => {
       const {
         userId,
         body,
         params: {id},
       } = request;
-      // TODO: move to service
-      const response = fastify.projectRepository.updateProject(
-        userId,
-        id,
-        // @ts-ignore
-        body as ProjectUpdateRequest,
-      );
-      return response;
+      return fastify.projectService.update(userId, id, body);
     },
   );
 };

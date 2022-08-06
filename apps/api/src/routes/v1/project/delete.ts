@@ -39,7 +39,6 @@ const deleteRoute: FastifyPluginAsync = async fastify => {
         userId,
         params: {id},
       } = request;
-      // TODO: move to service
       return fastify.projectRepository.deleteProject(id, userId);
     },
   );
