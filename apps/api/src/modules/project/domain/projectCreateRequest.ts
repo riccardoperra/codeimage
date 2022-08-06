@@ -17,8 +17,8 @@ export interface ProjectCreateRequest {
 }
 
 export type ProjectCreateResponse = Project & {
-  editorOptions: SnippetEditorOptions | null;
-  terminal: SnippetTerminal | null;
-  frame: SnippetFrame | null;
+  editorOptions: SnippetEditorOptions;
+  terminal: SnippetTerminal;
+  frame: SnippetFrame;
   editorTabs: SnippetEditorTab[];
 };

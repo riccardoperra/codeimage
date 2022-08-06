@@ -186,7 +186,7 @@ export function makePrismaProjectRepository(
     });
   }
 
-  function updateProjectName(userId: string, projectId: string, name: string) {
+  async function updateProjectName(projectId: string, name: string) {
     return client.project.update({
       data: {
         name,
