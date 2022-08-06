@@ -20,7 +20,9 @@ export function ProjectList() {
           </>
         }
       >
-        <For each={dashboard.data()}>{item => <ProjectItem item={item} />}</For>
+        <For each={dashboard.filteredData()}>
+          {item => <ProjectItem item={item} />}
+        </For>
       </Suspense>
     </ul>
   );

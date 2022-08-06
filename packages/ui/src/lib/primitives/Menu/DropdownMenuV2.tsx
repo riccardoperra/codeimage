@@ -58,7 +58,7 @@ export function MenuButton<T extends ElementType>(
   );
 }
 
-export function DropdownMenu(props: DropdownMenuProps) {
+export function DropdownMenuV2(props: DropdownMenuProps) {
   const [btnRef, setBtnRef] = createSignal<HTMLElement>();
   const triggerAria = createMenuTrigger({}, btnRef);
 

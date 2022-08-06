@@ -1,4 +1,4 @@
-import {Box, Button, LoadingOverlay} from '@codeimage/ui';
+import {Box, Button, FlexField, LoadingOverlay, TextField} from '@codeimage/ui';
 import {useAsyncAction} from '@core/hooks/async-action';
 import {useNavigate} from 'solid-app-router';
 import {Show} from 'solid-js';
@@ -18,18 +18,31 @@ export function ProjectToolbar() {
   }
 
   return (
-    <Box display={'flex'} marginBottom={8}>
-      <Show when={data.loading}>
-        <LoadingOverlay overlay={true} size={'3x'} />
-      </Show>
-      <h1 class={styles.title}>Workspace</h1>
-      <div style={{flex: 1}} />
-      <Button theme="primary" variant="solid" onClick={() => notify(0)}>
-        <PlusIcon size={'sm'} />
-        <Box as={'span'} marginLeft={2}>
-          New
-        </Box>
-      </Button>
-    </Box>
+    <>
+      <Box display={'flex'} marginBottom={2}>
+        <Show when={data.loading}>
+          <LoadingOverlay overlay={true} size={'3x'} />
+        </Show>
+        <h1 class={styles.title}>Workspace</h1>
+        <div style={{flex: 1}} />
+        <Button theme="primary" variant="solid" onClick={() => notify(0)}>
+          <PlusIcon size={'sm'} />
+          <Box as={'span'} marginLeft={2}>
+            New
+          </Box>
+        </Button>
+      </Box>
+      <Box marginBottom={6}>
+        <FlexField size={'lg'}>
+          <TextField
+            type={'text'}
+            value={dashboard.search()}
+            onChange={value => dashboard.setSearch(value)}
+            placeholder={'Search'}
+            inline={true}
+          ></TextField>
+        </FlexField>
+      </Box>
+    </>
   );
 }

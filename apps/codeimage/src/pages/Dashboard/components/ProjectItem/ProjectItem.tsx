@@ -15,10 +15,7 @@ import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {Link} from 'solid-app-router';
 import {For, Show, VoidProps} from 'solid-js';
-import {
-  DotHorizontalIocn,
-  DotVerticalIcon,
-} from '../../../../components/Icons/DotVertical';
+import {DotHorizontalIocn} from '../../../../components/Icons/DotVertical';
 import {getDashboardState} from '../../dashboard.state';
 import * as styles from './ProjectItem.css';
 
