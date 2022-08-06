@@ -1,4 +1,4 @@
-import {ApiTypes} from '@codeimage/api/api-types';
+import * as ApiTypes from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';

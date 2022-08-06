@@ -1,9 +1,9 @@
 import {Type} from '@sinclair/typebox';
-import {FastifyPluginAsync, FastifySchema} from 'fastify';
+import {FastifyPluginAsync} from 'fastify';
 import {GetApiTypes} from '../../../common/types/extract-api-types';
 import {ProjectGetByIdResponseSchema} from '../../../modules/project/schema';
 
-const schema: FastifySchema = {
+const schema = {
   tags: ['Project'],
   description: 'Returns a CodeImage project by id',
   params: Type.Object({

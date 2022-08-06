@@ -4,7 +4,6 @@ import {BaseProjectResponseSchema} from './project.schema';
 export const ProjectDeleteResponseSchema = Type.Intersect(
   [BaseProjectResponseSchema],
   {
-    $id: 'ProjectDeleteResponse',
     title: 'ProjectDeleteResponse',
   },
 );
