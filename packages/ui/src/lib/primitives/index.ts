@@ -68,9 +68,4 @@ export {Toggle} from './Toggle';
 
 export {Popover} from './Popover';
 
-export {
-  DropdownMenu as DropdownMenuV2,
-  MenuButton,
-  MenuItem,
-  MenuPopup,
-} from './Menu';
+export {MenuButton, MenuItem, MenuPopup, DropdownMenuV2} from './Menu';

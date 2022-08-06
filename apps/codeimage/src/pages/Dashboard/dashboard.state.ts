@@ -11,7 +11,7 @@ import {PersistedFrameState} from '@codeimage/store/frame/model';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
-import {createResource} from 'solid-js';
+import {createResource, createSignal} from 'solid-js';
 import {API} from '../../data-access/api';
 
 export type WorkspaceMetadata = {
@@ -43,6 +43,17 @@ function makeDashboardState() {
   const [data, {mutate}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
   });
+
+  const [search, setSearch] = createSignal('');
+
+  const filteredData = () => {
+    const searchValue = search();
+    if (!data()) return [];
+    if (!searchValue || searchValue.length < 2) return data();
+    return data().filter(item =>
+      item.name.toLowerCase().includes(searchValue.toLowerCase()),
+    );
+  };
 
   async function createNewProject() {
     const userId = getAuthState().user()?.user?.id;
@@ -97,6 +108,9 @@ function makeDashboardState() {
 
   return {
     data,
+    search,
+    setSearch,
+    filteredData,
     mutateData: mutate,
     createNewProject,
     deleteProject,
