@@ -64,7 +64,6 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
       leftIcon={() => <ExternalLinkIcon />}
       onClick={() => openInTab()}
       size={'sm'}
-      style={{height: '32px'}}
     >
       {label()}
     </Button>
