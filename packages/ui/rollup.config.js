@@ -68,6 +68,7 @@ export default withSolid({
           declaration: true,
           allowJs: true,
           preserveSymlinks: true,
+          strict: true,
         });
 
         program.emit();

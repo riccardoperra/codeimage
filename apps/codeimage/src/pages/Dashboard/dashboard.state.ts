@@ -1,4 +1,4 @@
-import * as ApiTypes from '@codeimage/api/api-types';
+import type * as ApiTypes from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
@@ -95,13 +95,13 @@ function makeDashboardState() {
     return API.project.createSnippet(userId, data);
   }
 
-  async function deleteProject(item: WorkspaceItem) {
+  async function deleteProject(projectId: string) {
     const userId = getAuthState().user()?.user?.id;
     if (!userId) return;
-    mutate(items => items.filter(i => i.id !== item.id));
+    mutate(items => items.filter(i => i.id !== projectId));
     await API.project.deleteProject(userId, {
       params: {
-        id: item.id,
+        id: projectId,
       },
     });
   }

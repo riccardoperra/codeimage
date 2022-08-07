@@ -1,3 +1,4 @@
+import {GetProjectByIdApi} from '@codeimage/api/api-types';
 import {
   createDerivedObservable,
   createDerivedSetter,
@@ -53,7 +54,7 @@ export function createEditorsStore() {
         return {
           languageId: editor.languageId,
           code: editor.code,
-          tabName: editor.tab.tabName,
+          tabName: editor.tab.tabName ?? '',
           id: editor.id,
         };
       }),
@@ -121,9 +122,7 @@ export function createEditorsStore() {
     () => filter(SUPPORTED_FONTS, font => font.id === state.options.fontId)[0],
   );
 
-  const setFromWorkspace = (item: GetProjectByIdApi) => {
-    const x = item;
-
+  const setFromWorkspace = (item: GetProjectByIdApi['response']) => {
     setEditors(
       item.editorTabs.map(
         editor =>
