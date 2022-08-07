@@ -80,15 +80,9 @@ jobs:
       - name: Cache packages
         uses: actions/cache@v3
         with:
-          path: |
-            packages/highlight/dist
-            packages/locale/dist
-            packages/prisma-models/
-            packages/atomic-state/dist
-            packages/config/dist
-            packages/dom-export/dist
-            packages/ui/dist
+          path: packages
           key: packages-${{ github.run_id }}
+          restore-keys: packages-
 
   build-app:
     name: Build App
@@ -105,21 +99,20 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Restore dist
         uses: actions/cache@v3
         with:
-          path: |
-            packages/highlight/dist
-            packages/locale/dist
-            packages/prisma-models
-            packages/atomic-state/dist
-            packages/config/dist
-            packages/dom-export/dist
-            packages/ui/dist
+          path: packages
           key: packages-${{ github.run_id }}
+
+      - name: ls test
+        run: |
+          cd packages/ui
+          ls
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Build app
         run: |
@@ -176,13 +169,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            packages/highlight/dist
-            packages/locale/dist
-            packages/prisma-models
-            packages/atomic-state/dist
-            packages/config/dist
-            packages/dom-export/dist
-            packages/ui/dist
+            packages
           key: packages-${{ github.run_id }}
 
       - name: Typecheck packages
@@ -211,13 +198,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            packages/highlight/dist
-            packages/locale/dist
-            packages/prisma-models
-            packages/atomic-state/dist
-            packages/config/dist
-            packages/dom-export/dist
-            packages/ui/dist
+            packages
           key: packages-${{ github.run_id }}
 
       - name: Typecheck packages
@@ -228,13 +209,11 @@ jobs:
     name: Api test
     needs: install
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
 
     services:
       postgres:
         # Docker Hub image
-        image: postgres
+        image: postgres:13-alpine
         # Provide the password for postgres
         env:
           POSTGRES_USER: postgres
@@ -275,19 +254,33 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            packages/highlight/dist
-            packages/locale/dist
-            packages/prisma-models
-            packages/atomic-state/dist
-            packages/config/dist
-            packages/dom-export/dist
-            packages/ui/dist
+            packages
           key: packages-${{ github.run_id }}
 
       - name: Test
         run: pnpm --filter=@codeimage/api test
 
+  deploy-next:
+    # Next branch only
+    if: github.ref == 'refs/heads/next'
+    name: Deploy next
+    needs: [ build-app, build-api, typecheck-packages, typecheck-app, be-test ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Execute tests
+        run: exit 0
 
+  deploy-prod:
+    # Next branch only
+    if: github.ref == 'refs/heads/main'
+    name: Deploy prod
+    needs: [ lint, build-app, build-api, typecheck-packages, typecheck-app, be-test ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Execute tests
+        run: exit 0
 
 concurrency:
   group: main-${{ github.head_ref }}
