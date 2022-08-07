@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "test": "npm run build:ts && tsc -p test/tsconfig.json && dotenv -e .env.test -- tap --ts --reporter=terse './test/**/*.test.ts' --before=test/before-test.ts",
+    "test": "npm run build:ts && tsc -p test/tsconfig.json && dotenv -e .env.test -- tap --ts --reporter=specy './test/**/*.test.ts' --before=test/before-test.ts",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",

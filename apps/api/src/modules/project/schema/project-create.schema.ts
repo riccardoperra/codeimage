@@ -1,19 +1,21 @@
-import {Static, TSchema, Type} from '@sinclair/typebox';
+import {SchemaOptions, Static, TSchema, Type} from '@sinclair/typebox';
 
-const Nullable = <T extends TSchema>(type: T) =>
-  Type.Union([type, Type.Null()]);
+const Nullable = <T extends TSchema>(type: T, options?: SchemaOptions) =>
+  Type.Union([type, Type.Null()], options);
 
 export const SnippetFrameCreateRequestSchema = Type.Object(
   {
     background: Nullable(Type.String()),
-    opacity: Type.Number({
-      minimum: 0,
-      maximum: 100,
-      default: 100,
-    }),
-    radius: Nullable(Type.Number()),
-    padding: Type.Number(),
-    visible: Type.Boolean({default: true}),
+    opacity: Nullable(
+      Type.Number({
+        minimum: 0,
+        maximum: 100,
+      }),
+      {default: 100},
+    ),
+    radius: Nullable(Type.Number(), {default: 24}),
+    padding: Nullable(Type.Number(), {default: 32}),
+    visible: Nullable(Type.Boolean(), {default: true}),
   },
   {
     title: 'SnippetFrameCreateRequest',
@@ -32,28 +34,28 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
   {title: 'SnippetEditorTabsCreateRequest'},
 );
 
-const SnippetTerminalCreateRequestSchema = Type.Object(
+export const SnippetTerminalCreateRequestSchema = Type.Object(
   {
-    accentVisible: Type.Boolean({default: false}),
-    alternativeTheme: Type.Boolean({default: false}),
+    accentVisible: Nullable(Type.Boolean(), {default: false}),
+    alternativeTheme: Nullable(Type.Boolean(), {default: false}),
     background: Nullable(Type.String()),
     shadow: Nullable(Type.String()),
-    showGlassReflection: Type.Boolean(),
+    showGlassReflection: Nullable(Type.Boolean(), {default: false}),
     textColor: Nullable(Type.String()),
     type: Type.String(),
-    opacity: Type.Number({minimum: 0, maximum: 100, default: 100}),
+    opacity: Nullable(Type.Number({minimum: 0, maximum: 100}), {default: 100}),
     showHeader: Type.Boolean(),
-    showWatermark: Type.Boolean(),
+    showWatermark: Nullable(Type.Boolean(), {default: true}),
   },
   {title: 'SnippetTerminalCreateRequest'},
 );
 
-const EditorOptionsCreateRequestSchema = Type.Object(
+export const EditorOptionsCreateRequestSchema = Type.Object(
   {
     fontId: Type.String(),
     fontWeight: Type.Number({default: 400}),
     themeId: Type.String(),
-    showLineNumbers: Type.Boolean({default: false}),
+    showLineNumbers: Nullable(Type.Boolean(), {default: false}),
   },
   {
     title: 'EditorOptionsCreateRequest',
@@ -81,7 +83,7 @@ export const SnippetFrameCreateResponseSchema = Type.Object(
     }),
     radius: Nullable(Type.Number()),
     padding: Type.Number(),
-    visible: Nullable(Type.Boolean({default: true})),
+    visible: Nullable(Type.Boolean(), {default: true}),
   },
   {
     title: 'SnippetFrameCreateResponse',
