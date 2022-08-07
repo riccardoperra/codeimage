@@ -1,7 +1,7 @@
 import {getAuthState} from '@codeimage/store/auth/auth';
-import {Button} from '@codeimage/ui';
+import {Badge, Button} from '@codeimage/ui';
 import {Show} from 'solid-js';
-import * as styles from './UserBadge.css';
+import {badge} from './UserBadge.css';
 
 export function UserBadge() {
   const {loggedIn, signInWithGithub, user} = getAuthState();
@@ -28,7 +28,9 @@ export function UserBadge() {
       }
       when={loggedIn()}
     >
-      <div class={styles.badge}>{initials()}</div>
+      <Badge theme={badge} size={'md'}>
+        {initials()}
+      </Badge>
     </Show>
   );
 }
