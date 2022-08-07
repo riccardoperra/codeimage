@@ -71,3 +71,5 @@ export {Popover} from './Popover';
 export {MenuButton, MenuItem, MenuPopup, DropdownMenuV2} from './Menu';
 
 export {RadioField, RadioGroupField} from './Radio';
+
+export {Badge, type BadgeProps} from './Badge';
