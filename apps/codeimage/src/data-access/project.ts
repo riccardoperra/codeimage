@@ -1,4 +1,4 @@
-import * as ApiTypes from '@codeimage/api/api-types';
+import type * as ApiTypes from '@codeimage/api/api-types';
 import {makeFetch} from './client';
 
 export async function deleteProject(

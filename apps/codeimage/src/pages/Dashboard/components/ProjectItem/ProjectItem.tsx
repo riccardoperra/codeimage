@@ -1,4 +1,4 @@
-import * as ApiTypes from '@codeimage/api/api-types';
+import type * as ApiTypes from '@codeimage/api/api-types';
 import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {uiStore} from '@codeimage/store/ui';
 import {
@@ -29,11 +29,11 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const createDialog = createStandaloneDialog();
 
   const date = () => {
-    return formatDistanceToNow(locale(), props.item.createdAt);
+    return formatDistanceToNow(locale(), props.item.createdAt as string);
   };
 
   const lastUpdateDate = () => {
-    return formatDistanceToNow(locale(), props.item.updatedAt);
+    return formatDistanceToNow(locale(), props.item.updatedAt as string);
   };
 
   const languages = (): LanguageDefinition[] => {
@@ -70,13 +70,13 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
                 <DotHorizontalIocn size={'sm'} />
               </MenuButton>
             }
-            onAction={action => {
+            onAction={(action: string) => {
               if (action === 'delete') {
                 createDialog(ConfirmDialog, state => ({
                   title: 'Delete project',
                   message: 'This action is not reversible.',
                   onConfirm: () => {
-                    dashboard?.deleteProject(props.item);
+                    dashboard?.deleteProject(props.item.id);
                     state.close();
                   },
                   actionType: 'danger',

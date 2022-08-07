@@ -1,6 +1,9 @@
 import '@formatjs/intl-relativetimeformat/polyfill';
 
-export function formatDistanceToNow(locale: string, value: string): string {
+export function formatDistanceToNow(
+  locale: string,
+  value: string | Date,
+): string {
   const diff = (new Date().getTime() - new Date(value).getTime()) / 1000;
   const minutes = Math.floor(diff / 60);
   const hours = Math.floor(minutes / 60);

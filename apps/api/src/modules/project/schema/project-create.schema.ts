@@ -94,8 +94,8 @@ export const ProjectCreateResponseSchema = Type.Object(
   {
     id: Type.String(),
     name: Type.String(),
-    createdAt: Type.Unsafe<Date>({format: 'date-time'}),
-    updatedAt: Type.Unsafe<Date>({format: 'date-time'}),
+    createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
+    updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     editorOptions: Type.Required(EditorOptionsCreateRequestSchema),
     frame: Type.Required(SnippetFrameCreateResponseSchema),
     terminal: Type.Required(SnippetTerminalCreateRequestSchema),
