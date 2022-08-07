@@ -3,10 +3,6 @@ name: Main
 on:
   pull_request:
 
-env:
-  REF_NAME: ${{ github.ref_name }}
-
-
 jobs:
   install:
     runs-on: ubuntu-20.04
@@ -28,6 +24,66 @@ jobs:
 
   lint:
     name: Lint
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
+      - name: Lint
+        run: pnpm lint
+
+  build:
+    name: Build
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
+      - name: Build
+        run: |
+          pnpm build:prod
+
+  #      TODO: fix
+  #      - name: Typecheck
+  #        run: |
+  #          pnpm typecheck
+
+  be-test:
+    name: Test
     needs: install
     runs-on: ubuntu-latest
 
@@ -68,54 +124,15 @@ jobs:
         run: |
           cd apps/api
           pnpm exec prisma migrate deploy
+          pnpm exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
-      - name: Lint
-        run: pnpm lint
+      - name: Typescript
+        run: pnpm --filter=@codeimage/api build:ts
 
-  build:
-    name: Build
-    needs: install
-    runs-on: ubuntu-latest
+      - name: Test
+        run: pnpm --filter=@codeimage/api test
 
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build
-        run: |
-          pnpm build:prod
-
-  typecheck:
-    name: Typecheck
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Typecheck
-        run: |
-          pnpm typecheck
 
 
 concurrency:
