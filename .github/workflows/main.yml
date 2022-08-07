@@ -2,7 +2,10 @@ name: Main
 
 on:
   pull_request:
-  push:
+
+env:
+  REF_NAME: ${{ github.ref_name }}
+
 
 jobs:
   install:
@@ -28,6 +31,26 @@ jobs:
     needs: install
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps TCP port 5432 on service container to the host
+          - 5432:5432
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ga_codeimage?schema=${{ github.ref_name }}
+
     steps:
       - uses: actions/checkout@v2
       - uses: pnpm/action-setup@v2.2.2
@@ -40,6 +63,12 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma migrate deploy
+          pnpm --filter=@codeimage/prisma-models build
 
       - name: Lint
         run: pnpm lint
