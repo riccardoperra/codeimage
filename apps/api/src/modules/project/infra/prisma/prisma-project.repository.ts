@@ -10,8 +10,8 @@ import {ProjectRepository} from '../../repository';
 export function makePrismaProjectRepository(
   client: PrismaClient,
 ): ProjectRepository {
-  function findById(id: string): Promise<Project> {
-    return client.project.findFirstOrThrow({
+  function findById(id: string): Promise<Project | null> {
+    return client.project.findFirst({
       where: {
         id,
       },
