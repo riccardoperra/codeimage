@@ -1,3 +1,4 @@
+import type * as ApiTypes from '@codeimage/api/api-types';
 import {getAuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -26,7 +27,9 @@ function createEditorSyncAdapter() {
     activeWorkspace?: WorkspaceItem | null;
     snippetId?: string | null;
   }>();
-  const [activeWorkspace, setActiveWorkspace] = createSignal<WorkspaceItem>();
+  const [activeWorkspace, setActiveWorkspace] = createSignal<
+    ApiTypes.GetProjectByIdApi['response'] | null
+  >();
   const authState = getAuthState();
   const frameStore = getFrameState();
   const terminalStore = getTerminalState();
@@ -37,12 +40,16 @@ function createEditorSyncAdapter() {
   const snippetId = createMemo(() => data()?.snippetId);
 
   const [loadedSnippet] = createResource(snippetId, async snippetId => {
+    const userId = authState.user()?.user?.id;
     if (snippetId) {
-      const storedWorkspaceData = await API.workpace.loadSnippet(snippetId);
-      if (storedWorkspaceData.data) {
-        updateStateFromRemote(storedWorkspaceData.data);
+      const storedWorkspaceData = await API.project.loadSnippet(
+        userId,
+        snippetId,
+      );
+      if (storedWorkspaceData) {
+        updateStateFromRemote(storedWorkspaceData);
       }
-      return storedWorkspaceData?.data;
+      return storedWorkspaceData;
     }
   });
 
@@ -83,14 +90,14 @@ function createEditorSyncAdapter() {
     }),
   );
 
-  function updateStateFromRemote(data: WorkspaceItem) {
+  function updateStateFromRemote(data: ApiTypes.GetProjectByIdApi['response']) {
     setActiveWorkspace(data);
     editorStore.actions.setFromWorkspace(data);
     terminalStore.setState(state => ({
       ...state,
-      ...data.snippets.terminal,
+      ...data.terminal,
     }));
-    frameStore.setStore(state => ({...state, ...data.snippets.frame}));
+    frameStore.setStore(state => ({...state, ...data.frame}));
   }
 
   function initRemoteDbSync() {
@@ -105,38 +112,62 @@ function createEditorSyncAdapter() {
           tap(() => setRemoteSync(false)),
         )
         .subscribe(async ([frame, terminal, {editors, options}]) => {
-          const dataToSave = {
-            frame,
-            terminal,
-            editors,
-            options,
-          };
-
           const workspace = untrack(activeWorkspace);
           if (!workspace) return;
 
           if (activeWorkspace()) {
-            const snippet = await API.workpace.updateSnippet(
-              workspace.snippetId,
-              dataToSave,
-            );
+            const dataToSave: ApiTypes.UpdateProjectApi['request']['body'] = {
+              frame,
+              terminal,
+              editors,
+              editorOptions: options,
+            };
+
+            const snippet = await API.project.updateSnippet(workspace.userId, {
+              body: dataToSave,
+              params: {id: workspace.id},
+            });
             if (!snippet) return;
-            // setActiveWorkspace({
-            //   ...workspace,
-            //   snippets: snippet,
-            // });
-          } else {
-            const userId = getAuthState().user()?.user?.id;
-            if (!userId) return;
-            const workspaceItem = await API.workpace.createSnippet(
-              userId,
-              dataToSave,
-            );
-            setActiveWorkspace(workspaceItem ?? undefined);
           }
+          // else {
+          //   const dataToSave: ApiTypes.CreateProjectApi['request']['body'] = {
+          //     name: workspace.name,
+          //     frame,
+          //     terminal,
+          //     editors,
+          //     editorOptions: options,
+          //   };
+          //
+          //   const userId = getAuthState().user()?.user?.id;
+          //   if (!userId) return;
+          //   const workspaceItem = await API.project.createSnippet(userId, {
+          //     body: dataToSave,
+          //   });
+          //   setActiveWorkspace(
+          //     workspaceItem as unknown as ApiTypes.GetProjectByIdApi['response'],
+          //   );
+          // }
         });
 
       return onCleanup(() => {
+        const workspace = untrack(activeWorkspace);
+        if (!workspace) return;
+
+        if (activeWorkspace()) {
+          const snippet = API.project
+            .updateSnippet(workspace.userId, {
+              body: {
+                frame: frameStore.stateToPersist(),
+                terminal: terminalStore.stateToPersist(),
+                editors: editorStore.stateToPersist().editors,
+                editorOptions: editorStore.stateToPersist().options,
+              },
+              params: {id: workspace.id},
+            })
+            .then();
+          if (!snippet) return;
+        }
+
         subscription.unsubscribe();
       });
     });

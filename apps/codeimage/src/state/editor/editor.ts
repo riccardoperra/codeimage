@@ -1,3 +1,4 @@
+import {GetProjectByIdApi} from '@codeimage/api/api-types';
 import {
   createDerivedObservable,
   createDerivedSetter,
@@ -9,7 +10,6 @@ import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
 import {createMemo, createSelector} from 'solid-js';
-import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
 import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
 
 const defaultId = createUniqueId();
@@ -54,7 +54,7 @@ export function createEditorsStore() {
         return {
           languageId: editor.languageId,
           code: editor.code,
-          tab: editor.tab,
+          tabName: editor.tab.tabName ?? '',
           id: editor.id,
         };
       }),
@@ -122,15 +122,22 @@ export function createEditorsStore() {
     () => filter(SUPPORTED_FONTS, font => font.id === state.options.fontId)[0],
   );
 
-  const setFromWorkspace = (item: WorkspaceItem) => {
+  const setFromWorkspace = (item: GetProjectByIdApi['response']) => {
     setEditors(
-      item.snippets.editors.map(editor => ({
-        ...editor,
-        code: editor.code,
-      })),
+      item.editorTabs.map(
+        editor =>
+          ({
+            tab: {
+              tabName: editor.tabName,
+            },
+            languageId: editor.languageId,
+            id: editor.id,
+            code: editor.code,
+          } as EditorState),
+      ),
     );
-    setState('activeEditorId', item.snippets.editors[0].id);
-    setState('options', item.snippets.options);
+    setState('activeEditorId', item.editorTabs[0].id);
+    setState('options', item.editorOptions);
   };
 
   return {
@@ -152,13 +159,24 @@ export function createEditorsStore() {
         const editors = (state.editors ?? [])
           .slice(0, MAX_TABS)
           .map(editor => ({
-            ...editor,
+            tabName: editor.tab.tabName,
+            languageId: editor.languageId,
+            id: editor.id,
             code: editor.code,
           }));
         setState(state => ({
           options: {...state.options, ...state.options},
           activeEditorId: editors[0].id,
-          editors: [...editors],
+          editors: editors.map(editor => {
+            return {
+              code: editor.code,
+              languageId: editor.languageId,
+              tab: {
+                tabName: editor.tabName,
+              },
+              id: editor.id,
+            };
+          }),
         }));
       },
       setActiveEditorId: (id: string) => {

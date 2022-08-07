@@ -1,4 +1,8 @@
-import {adaptiveFullScreenHeight, themeVars} from '@codeimage/ui';
+import {
+  adaptiveFullScreenHeight,
+  backgroundColorVar,
+  themeVars,
+} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 
 export const wrapper = style([
@@ -17,10 +21,11 @@ export const wrapper = style([
 ]);
 
 export const canvasToolbar = style({
-  height: '46px',
-  backgroundColor: themeVars.dynamicColors.input.backgroundColor,
+  height: '42px',
+  backgroundColor: backgroundColorVar,
+  color: themeVars.dynamicColors.baseText,
   width: '100%',
-  borderRadius: themeVars.borderRadius.lg,
+  borderRadius: '0',
   boxShadow: themeVars.boxShadow.md,
   display: 'flex',
   alignItems: 'center',

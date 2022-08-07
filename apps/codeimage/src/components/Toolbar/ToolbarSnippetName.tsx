@@ -6,6 +6,7 @@ import {createEffect, createSignal, on, onMount, Show, untrack} from 'solid-js';
 import {API} from '../../data-access/api';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {PencilAlt} from '../Icons/Pencil';
+import * as styles from './Toolbar.css';
 
 void clickOutside;
 
@@ -26,7 +27,14 @@ export function ToolbarSnippetName() {
       return;
     }
     setValue(newName);
-    await API.workpace.updateSnippetName($$activeWorkspace.id, newName);
+    await API.project.updateSnippetName($$activeWorkspace.id, {
+      params: {
+        id: $$activeWorkspace.id,
+      },
+      body: {
+        name: newName,
+      },
+    });
   }
 
   function toggleEdit() {
@@ -36,11 +44,13 @@ export function ToolbarSnippetName() {
   }
 
   return (
-    <Box display={'flex'} alignItems={'center'}>
+    <Box display={'flex'} alignItems={'center'} class={styles.toolbarSnippet}>
       <Show
         fallback={
           <HStack spacing={'2'} alignItems={'center'} lineHeight={'normal'}>
-            <Loading visibility={remoteSync() ? 'visible' : 'hidden'} />
+            <Show when={remoteSync()}>
+              <Loading visibility={remoteSync() ? 'visible' : 'hidden'} />
+            </Show>
             <Text size={'sm'} onClick={toggleEdit}>
               {value() ?? 'Untitled'}
             </Text>
@@ -74,8 +84,9 @@ export function ToolbarSnippetName() {
             });
 
             return (
-              <FlexField size={'xs'}>
+              <FlexField size={'md'}>
                 <TextField
+                  inline={true}
                   ref={ref}
                   size={'sm'}
                   type={'text'}

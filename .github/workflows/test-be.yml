@@ -1,0 +1,47 @@
+name: Api backend test
+
+on:
+  pull_request:
+    paths:
+      - 'apps/api**'
+    branches:
+      - main
+      - develop
+      - '!release/**'
+  push:
+    paths:
+      - 'apps/api**'
+    branches:
+      - main
+      - develop
+      - '!release/**'
+
+env:
+  IS_MAIN_BRANCH: ${{ github.ref == 'refs/heads/main' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [ 16.13.2 ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Test
+        run: |
+          pnpm test --filter=@codeimage/api
+
+concurrency:
+  group: be-test-${{ github.head_ref }}
+  cancel-in-progress: true

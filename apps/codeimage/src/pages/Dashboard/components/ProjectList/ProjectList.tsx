@@ -9,11 +9,7 @@ export function ProjectList() {
   const dashboard = getDashboardState()!;
 
   return (
-    <Box
-      as={'ul'}
-      data-displayMode={dashboard.mode()}
-      class={styles.gridList({displayMode: dashboard.mode()})}
-    >
+    <ul class={styles.gridList}>
       <Suspense
         fallback={
           <>
@@ -24,8 +20,10 @@ export function ProjectList() {
           </>
         }
       >
-        <For each={dashboard.data()}>{item => <ProjectItem item={item} />}</For>
+        <For each={dashboard.filteredData()}>
+          {item => <ProjectItem item={item} />}
+        </For>
       </Suspense>
-    </Box>
+    </ul>
   );
 }

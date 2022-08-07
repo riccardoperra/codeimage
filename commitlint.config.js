@@ -14,6 +14,7 @@ module.exports = {
         'changeset',
         // Must be used for ci only or deploy commit
         'release',
+        'api',
       ],
     ],
   },

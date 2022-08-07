@@ -7,14 +7,15 @@ import {createMemo, PropsWithChildren} from 'solid-js';
 import {omitProps} from 'solid-use';
 import {styled} from '../../utils';
 import {useText, UseTextProps} from '../Text';
-import {textField} from './TextField.css';
+import {textField, TextFieldProps as $TextFieldProps} from './TextField.css';
 
 export type TextFieldProps = {
   type: 'text' | 'number';
   value?: string | number;
   onChange?: (value: string) => void;
   size?: UseTextProps['size'];
-} & WithRef<'input'> &
+} & $TextFieldProps &
+  WithRef<'input'> &
   Omit<DynamicProps<'input'>, 'as' | 'ref' | 'onInput' | 'onChange' | 'type'>;
 
 export function TextField(props: PropsWithChildren<TextFieldProps>) {
@@ -26,7 +27,11 @@ export function TextField(props: PropsWithChildren<TextFieldProps>) {
   }
 
   const classes = createMemo(() =>
-    clsx(useText({size: props.size}), textField, props.class),
+    clsx(
+      useText({size: props.size}),
+      textField({inline: props.inline ?? false}),
+      props.class,
+    ),
   );
 
   return (

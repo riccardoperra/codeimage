@@ -4,29 +4,34 @@ import {style} from '@vanilla-extract/css';
 export const item = style({
   backgroundColor: themeVars.dynamicColors.input.backgroundColor,
   width: '100%',
-  borderRadius: themeVars.borderRadius.sm,
+  borderRadius: themeVars.borderRadius.md,
   padding: '24px',
-  boxShadow: themeVars.dynamicColors.dialog.panelShadow,
-  color: themeVars.dynamicColors.descriptionTextColor,
+  paddingBottom: '12px',
+  height: '128px',
+  // boxShadow: themeVars.dynamicColors.dialog.panelShadow,
+  boxShadow: 'inset 0 1px 0 0 rgb(255 255 255 / 5%)',
+  color: themeVars.dynamicColors.textColor,
   transition: 'background-color 0.2s ease-in-out',
   position: 'relative',
   display: 'inline-flex',
-  justifyContent: 'space-between',
+  flexDirection: 'column',
   ':hover': {
-    backgroundColor: themeVars.dynamicColors.input.backgroundColor,
-    color: themeVars.dynamicColors.baseText,
+    backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
   },
-  selectors: {
-    '[data-displayMode="grid"] &': {
-      height: '128px',
-    },
-    '[data-displayMode="list"] &': {
-      height: '64px',
-      paddingTop: 0,
-      paddingBottom: 0,
-      alignItems: 'center',
-    },
-  },
+});
+
+export const projectInfo = style({
+  fontWeight: 300,
+  color: themeVars.dynamicColors.descriptionTextColor,
+  marginTop: 'auto',
+});
+
+export const projectLanguages = style({
+  color: themeVars.dynamicColors.descriptionTextColor,
+  display: 'flex',
+  flexWrap: 'wrap',
+  marginTop: themeVars.spacing['2'],
+  gap: themeVars.spacing['2'],
 });
 
 export const itemLink = style({
@@ -41,5 +46,5 @@ export const itemLink = style({
 export const itemTitle = style({
   display: 'flex',
   alignItems: 'center',
-  columnGap: themeVars.spacing['2'],
+  justifyContent: 'space-between',
 });

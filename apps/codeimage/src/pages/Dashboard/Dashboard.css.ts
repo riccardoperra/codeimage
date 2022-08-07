@@ -26,6 +26,7 @@ export const wrapper = style([
 
 export const main = style({
   marginTop: themeVars.spacing['12'],
+  flex: 1,
   display: 'flex',
   width: '1280px',
   height: '100%',

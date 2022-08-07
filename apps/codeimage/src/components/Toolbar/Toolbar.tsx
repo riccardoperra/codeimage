@@ -7,6 +7,7 @@ import {CollectionIcon} from '../Icons/Collection';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
+import {ExportInNewTabButton} from './ExportNewTabButton';
 import * as styles from './Toolbar.css';
 import {ToolbarSettingsButton} from './ToolbarSettings';
 import {ToolbarSnippetName} from './ToolbarSnippetName';
@@ -19,9 +20,9 @@ export const Toolbar: Component<{
   return (
     <div class={styles.wrapper}>
       <ToolbarSettingsButton />
-      <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={5}>
+      <Box display={'flex'} alignItems={'center'} marginLeft={5}>
         <div class={sidebarLogo}>
-          <CodeImageLogo width={'156px'} />
+          <CodeImageLogo width={'140px'} />
         </div>
 
         <Show when={loggedIn()}>
@@ -39,12 +40,14 @@ export const Toolbar: Component<{
         </Show>
       </Box>
 
-      <Box flexGrow={1}>
+      <div class={styles.toolbarSnippetBox}>
         <ToolbarSnippetName />
-      </Box>
+      </div>
 
       <Box class={styles.actionBox} style={{flex: 1}}>
         <HStack marginLeft={'auto'} spacing={'2'}>
+          <ExportInNewTabButton canvasRef={props.canvasRef} />
+
           <ExportButton canvasRef={props.canvasRef} />
 
           <UserBadge />

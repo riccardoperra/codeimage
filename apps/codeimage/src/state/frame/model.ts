@@ -1,5 +1,5 @@
 export interface FrameState {
-  background: string | null | undefined;
+  background: string | null;
   padding: number;
   radius: number;
   visible: boolean;

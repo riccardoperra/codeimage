@@ -1,22 +1,26 @@
-import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
+import type * as ApiTypes from '@codeimage/api/api-types';
+import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {uiStore} from '@codeimage/store/ui';
 import {
+  Box,
   Button,
   createStandaloneDialog,
   DropdownMenuV2,
+  HStack,
   MenuButton,
   Text,
 } from '@codeimage/ui';
+import {formatDistanceToNow} from '@core/helpers/date';
 import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {Link} from 'solid-app-router';
-import {VoidProps} from 'solid-js';
-import {DotVerticalIcon} from '../../../../components/Icons/DotVertical';
-import {getDashboardState, WorkspaceItem} from '../../dashboard.state';
+import {For, Show, VoidProps} from 'solid-js';
+import {DotHorizontalIocn} from '../../../../components/Icons/DotVertical';
+import {getDashboardState} from '../../dashboard.state';
 import * as styles from './ProjectItem.css';
 
 interface ProjectItemProps {
-  item: WorkspaceItem;
+  item: ApiTypes.CreateProjectApi['response'];
 }
 
 export function ProjectItem(props: VoidProps<ProjectItemProps>) {
@@ -25,47 +29,97 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const createDialog = createStandaloneDialog();
 
   const date = () => {
-    const rtf1 = new Intl.DateTimeFormat(locale(), {dateStyle: 'long'});
-    return rtf1.format(new Date(props.item.created_at));
+    return formatDistanceToNow(locale(), props.item.createdAt as string);
+  };
+
+  const lastUpdateDate = () => {
+    return formatDistanceToNow(locale(), props.item.updatedAt as string);
+  };
+
+  const languages = (): LanguageDefinition[] => {
+    return props.item.editorTabs.reduce<LanguageDefinition[]>(
+      (acc, editorTab) => {
+        const language = SUPPORTED_LANGUAGES.find(tab =>
+          tab.icons.find(icon => icon.matcher.test(editorTab.tabName ?? '')),
+        );
+
+        return language && !acc.find(({id}) => language.id === id)
+          ? [...acc, language]
+          : acc;
+      },
+      [],
+    );
   };
 
   return (
     <li class={styles.item}>
       <Link class={styles.itemLink} href={`/${props.item.id}`} />
-      <div>
-        <div class={styles.itemTitle}>
-          <Text size={'lg'}>{props.item.name}</Text>
-        </div>
+      <div class={styles.itemTitle}>
+        <Text size={'lg'}>{props.item.name}</Text>
 
-        <Text size={'xs'}>{date()}</Text>
-      </div>
-      <DropdownMenuV2
-        menuButton={
-          <MenuButton
-            as={Button}
-            variant={'link'}
-            theme={'secondary'}
-            size={'xs'}
+        <div>
+          <DropdownMenuV2
+            menuButton={
+              <MenuButton
+                as={Button}
+                variant={'solid'}
+                theme={'secondary'}
+                size={'xs'}
+                style={{width: '30px', height: '30px'}}
+              >
+                <DotHorizontalIocn size={'sm'} />
+              </MenuButton>
+            }
+            onAction={(action: string) => {
+              if (action === 'delete') {
+                createDialog(ConfirmDialog, state => ({
+                  title: 'Delete project',
+                  message: 'This action is not reversible.',
+                  onConfirm: () => {
+                    dashboard?.deleteProject(props.item.id);
+                    state.close();
+                  },
+                  actionType: 'danger',
+                }));
+              }
+            }}
           >
-            <DotVerticalIcon size={'sm'} />
-          </MenuButton>
-        }
-        onAction={action => {
-          if (action === 'delete') {
-            createDialog(ConfirmDialog, state => ({
-              title: 'Delete project',
-              message: 'This action is not reversible.',
-              onConfirm: () => {
-                dashboard?.deleteProject(props.item);
-                state.close();
-              },
-              actionType: 'danger',
-            }));
-          }
-        }}
-      >
-        <Item key={'delete'}>Delete</Item>
-      </DropdownMenuV2>
+            <Item key={'delete'}>Delete</Item>
+          </DropdownMenuV2>
+        </div>
+      </div>
+
+      <div class={styles.projectLanguages}>
+        <For each={languages()}>
+          {language => {
+            return (
+              <Show when={language}>
+                {language => (
+                  <HStack spacing={'2'}>
+                    <div
+                      style={{
+                        'border-radius': '50%',
+                        'background-color': language.color,
+                        height: '12px',
+                        width: '12px',
+                      }}
+                    />
+                    <Text size={'xs'}>{language.label}</Text>
+                  </HStack>
+                )}
+              </Show>
+            );
+          }}
+        </For>
+      </div>
+
+      <div class={styles.projectInfo}>
+        <Text size={'xs'}>Created {date()}</Text>
+        <Box as={'span'} marginX={2} display={'inlineBlock'}>
+          /
+        </Box>
+        <Text size={'xs'}>Updated {lastUpdateDate()}</Text>
+      </div>
     </li>
   );
 }
