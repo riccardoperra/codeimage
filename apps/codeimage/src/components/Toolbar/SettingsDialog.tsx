@@ -11,27 +11,20 @@ import {
   Group,
   HStack,
   RadioBlock,
-  SegmentedField,
-  SegmentedFieldItem,
+  RadioField,
+  RadioGroupField,
   SvgIcon,
   Text,
   themeVars,
   VStack,
 } from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
-import {For} from 'solid-js';
+import {For, ParentProps} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 
-export function SettingsDialog(props) {
+export function SettingsDialog(props: ParentProps) {
   const ui = uiStore;
-  const [, {tUnsafe}] = useI18n<AppLocaleEntries>();
   const {locales} = appEnvironment;
-
-  const localesItems = (): SegmentedFieldItem<string>[] =>
-    locales.map(locale => ({
-      label: tUnsafe(`locales.${locale}`),
-      value: locale,
-    }));
 
   const [t] = useI18n<AppLocaleEntries>();
 
@@ -101,33 +94,26 @@ export function SettingsDialog(props) {
               </Group>
             </FlexField>
             <FlexField size={'lg'}>
-              <FieldLabel size={'sm'} for={'locale'}>
-                Locale
-              </FieldLabel>
-              <Group orientation={'vertical'}>
+              <RadioGroupField
+                orientation={'vertical'}
+                value={ui.locale}
+                name={'language-field'}
+                label={'Locale'}
+                onChange={locale => {
+                  setLocale(locale);
+                  umami.trackEvent(locale, `change-app-language`);
+                }}
+              >
                 <For each={locales}>
                   {locale => (
-                    <RadioBlock
-                      selected={locale === ui.locale}
-                      onSelect={() => {
-                        setLocale(locale);
-                        umami.trackEvent(locale, `change-app-language`);
-                      }}
-                      value={locale}
-                    >
-                      <Box
-                        display={'flex'}
-                        paddingLeft={4}
-                        height={'100%'}
-                        alignItems={'center'}
-                        justifyContent={'spaceBetween'}
-                      >
-                        {tUnsafe(`locales.${locale}`)}
+                    <RadioField value={locale}>
+                      <Box paddingLeft={2}>
+                        <Text size={'sm'}>{t(`locales.${locale}`)}</Text>
                       </Box>
-                    </RadioBlock>
+                    </RadioField>
                   )}
                 </For>
-              </Group>
+              </RadioGroupField>
             </FlexField>
           </VStack>
         </Box>

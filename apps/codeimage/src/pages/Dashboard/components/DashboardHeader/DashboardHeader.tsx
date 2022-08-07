@@ -10,7 +10,7 @@ export function DashboardHeader() {
     <div class={wrapper}>
       <ToolbarSettingsButton />
 
-      <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={4}>
+      <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={5}>
         <div class={sidebarLogo}>
           <CodeImageLogo width={'140px'} />
         </div>

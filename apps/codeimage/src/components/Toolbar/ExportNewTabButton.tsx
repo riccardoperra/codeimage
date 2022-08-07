@@ -63,7 +63,6 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
       disabled={data.loading}
       onClick={() => openInTab()}
       size={'sm'}
-      style={{height: '32px'}}
     >
       <ExternalLinkIcon />
 

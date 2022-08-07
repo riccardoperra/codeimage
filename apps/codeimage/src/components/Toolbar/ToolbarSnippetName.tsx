@@ -47,7 +47,9 @@ export function ToolbarSnippetName() {
       <Show
         fallback={
           <HStack spacing={'2'} alignItems={'center'} lineHeight={'normal'}>
-            <Loading visibility={remoteSync() ? 'visible' : 'hidden'} />
+            <Show when={remoteSync()}>
+              <Loading visibility={remoteSync() ? 'visible' : 'hidden'} />
+            </Show>
             <Text size={'sm'} onClick={toggleEdit}>
               {value() ?? 'Untitled'}
             </Text>

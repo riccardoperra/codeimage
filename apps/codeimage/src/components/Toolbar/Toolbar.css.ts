@@ -20,25 +20,13 @@ export const wrapper = style([
     backgroundColor: themeVars.dynamicColors.panel.background,
     color: themeVars.dynamicColors.panel.textColor,
     borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+    paddingLeft: themeVars.spacing['4'],
+    paddingRight: themeVars.spacing['4'],
 
     '@media': {
       'screen and (max-width: 768px)': {
         height: `calc(${toolbarVars.toolbarHeight} + env(safe-area-inset-top, 0))`,
         paddingTop: `env(safe-area-inset-top, 0)`,
-      },
-    },
-
-    selectors: {
-      '&:not([data-platform=firefox])': {
-        '@supports': {
-          '(scrollbar-gutter: stable both-edges)': {
-            paddingLeft: 0,
-            paddingRight: 0,
-            scrollbarGutter: 'stable both-edges',
-            overflow: 'auto',
-          },
-        },
-        overflow: 'auto',
       },
     },
   },
