@@ -49,8 +49,85 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-  build:
-    name: Build
+  build-packages:
+    name: Build packages
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
+      - name: Build packages
+        run: |
+          pnpm libs:build
+
+      - name: Cache packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            packages/highlight/dist
+            packages/locale/dist
+            packages/prisma-models/
+            packages/atomic-state/dist
+            packages/config/dist
+            packages/dom-export/dist
+            packages/ui/dist
+          key: packages-${{ github.run_id }}
+
+  build-app:
+    name: Build App
+    needs: build-packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: |
+            packages/highlight/dist
+            packages/locale/dist
+            packages/prisma-models
+            packages/atomic-state/dist
+            packages/config/dist
+            packages/dom-export/dist
+            packages/ui/dist
+          key: packages-${{ github.run_id }}
+
+      - name: Build app
+        run: |
+          pnpm --filter=@codeimage/app build
+
+
+  build-api:
+    name: Build Api
     needs: install
     runs-on: ubuntu-latest
 
@@ -75,17 +152,84 @@ jobs:
 
       - name: Build
         run: |
-          pnpm build:prod
+          pnpm --filter=@codeimage/api build:ts
 
-  #      TODO: fix
-  #      - name: Typecheck
-  #        run: |
-  #          pnpm typecheck
+  typecheck-app:
+    name: Typecheck app
+    needs: build-packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: |
+            packages/highlight/dist
+            packages/locale/dist
+            packages/prisma-models
+            packages/atomic-state/dist
+            packages/config/dist
+            packages/dom-export/dist
+            packages/ui/dist
+          key: packages-${{ github.run_id }}
+
+      - name: Typecheck packages
+        run: |
+          pnpm --filter='@codeimage/app' typecheck
+
+  typecheck-packages:
+    name: Typecheck packages
+    needs: build-packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: |
+            packages/highlight/dist
+            packages/locale/dist
+            packages/prisma-models
+            packages/atomic-state/dist
+            packages/config/dist
+            packages/dom-export/dist
+            packages/ui/dist
+          key: packages-${{ github.run_id }}
+
+      - name: Typecheck packages
+        run: |
+          pnpm --filter='./packages/**' --recursive --parallel typecheck
 
   be-test:
-    name: Test
+    name: Api test
     needs: install
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
 
     services:
       postgres:
@@ -127,8 +271,18 @@ jobs:
           pnpm exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
-      - name: Typescript
-        run: pnpm --filter=@codeimage/api build:ts
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: |
+            packages/highlight/dist
+            packages/locale/dist
+            packages/prisma-models
+            packages/atomic-state/dist
+            packages/config/dist
+            packages/dom-export/dist
+            packages/ui/dist
+          key: packages-${{ github.run_id }}
 
       - name: Test
         run: pnpm --filter=@codeimage/api test
