@@ -1,4 +1,4 @@
-import {createI18nContext, I18nContext} from '@codeimage/locale';
+import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {uiStore} from '@codeimage/store/ui';
 import {
@@ -39,6 +39,8 @@ const Dashboard = lazy(() =>
 
 export function Bootstrap() {
   getRootEditorStore();
+  const [, {locale}] = useI18n();
+  createEffect(on(() => uiStore.locale, locale));
   const mode = () => uiStore.themeMode;
 
   const Routes = useRoutes([
@@ -97,13 +99,11 @@ export function Bootstrap() {
     <Scaffold>
       <OverlayProvider>
         <Router>
-          <I18nContext.Provider value={i18n}>
-            <CodeImageThemeProvider theme={theme}>
-              <Suspense>
-                <Routes />
-              </Suspense>
-            </CodeImageThemeProvider>
-          </I18nContext.Provider>
+          <CodeImageThemeProvider theme={theme}>
+            <Suspense>
+              <Routes />
+            </Suspense>
+          </CodeImageThemeProvider>
         </Router>
       </OverlayProvider>
       <SidebarPopoverHost />
@@ -111,4 +111,11 @@ export function Bootstrap() {
   );
 }
 
-render(() => <Bootstrap />, document.getElementById('root') as HTMLElement);
+render(
+  () => (
+    <I18nContext.Provider value={i18n}>
+      <Bootstrap />
+    </I18nContext.Provider>
+  ),
+  document.getElementById('root') as HTMLElement,
+);

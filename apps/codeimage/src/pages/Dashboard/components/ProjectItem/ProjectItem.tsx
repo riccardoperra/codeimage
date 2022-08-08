@@ -1,5 +1,6 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {useI18n} from '@codeimage/locale';
 import {uiStore} from '@codeimage/store/ui';
 import {
   Box,
@@ -17,6 +18,7 @@ import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import {Link} from 'solid-app-router';
 import {For, Show, VoidProps} from 'solid-js';
 import {DotHorizontalIocn} from '../../../../components/Icons/DotVertical';
+import {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
 import * as styles from './ProjectItem.css';
 
@@ -28,6 +30,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const dashboard = getDashboardState()!;
   const locale = () => uiStore.locale;
   const createDialog = createStandaloneDialog();
+  const [t] = useI18n<AppLocaleEntries>();
 
   const date = () => {
     return formatDistanceToNow(locale(), props.item.createdAt as string);
@@ -74,8 +77,8 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
             onAction={(action: string | number) => {
               if (action === 'delete') {
                 createDialog(ConfirmDialog, state => ({
-                  title: 'Delete project',
-                  message: 'This action is not reversible.',
+                  title: t('dashboard.deleteProject.confirmTitle'),
+                  message: t('dashboard.deleteProject.confirmMessage'),
                   onConfirm: () => {
                     dashboard?.deleteProject(props.item.id);
                     state.close();
@@ -85,8 +88,8 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
               }
               if (action === 'rename') {
                 createDialog(RenameContentDialog, state => ({
-                  title: 'Rename project',
-                  message: 'Enter a new name for the project.',
+                  title: t('dashboard.renameProject.confirmTitle'),
+                  message: t('dashboard.renameProject.confirmMessage'),
                   initialValue: props.item.name,
                   onConfirm: async name => {
                     state.close();
@@ -100,8 +103,12 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
               }
             }}
           >
-            <Item key={'rename'}>Rename</Item>
-            <Item key={'delete'}>Delete</Item>
+            <Item key={'rename'}>
+              {t('dashboard.renameProject.dropdownLabel')}
+            </Item>
+            <Item key={'delete'}>
+              {t('dashboard.deleteProject.dropdownLabel')}
+            </Item>
           </DropdownMenuV2>
         </div>
       </div>
@@ -131,11 +138,15 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
       </div>
 
       <div class={styles.projectInfo}>
-        <Text size={'xs'}>Created {date()}</Text>
+        <Text size={'xs'}>
+          {t('dashboard.created')} {date()}
+        </Text>
         <Box as={'span'} marginX={2} display={'inlineBlock'}>
           /
         </Box>
-        <Text size={'xs'}>Updated {lastUpdateDate()}</Text>
+        <Text size={'xs'}>
+          {t('dashboard.updated')} {lastUpdateDate()}
+        </Text>
       </div>
     </li>
   );
