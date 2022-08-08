@@ -3,13 +3,20 @@ name: Main
 on:
   pull_request:
 
+env:
+  IS_MAIN_BRANCH: ${{ github.ref == 'refs/heads/main' }}
+  IS_NEXT_BRANCH: ${{ github.ref == 'refs/heads/next' }}
+
 jobs:
-  prepare-diff:
-    name: Export change folders variables
+  install:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [ 16.13.2 ]
     steps:
       - uses: actions/checkout@v2
       - uses: dorny/paths-filter@v2
+        if: (${{ env.IS_MAIN_BRANCH == 'false' }} || ${{ env.IS_NEXT_BRANCH == 'false' }})
         id: diff-changes
         with:
           filters: |
@@ -26,19 +33,6 @@ jobs:
               - 'apps/api/**'
               - package.json
               - pnpm-lock.json
-    outputs:
-      backend-change: ${{ steps.filter.outputs.backend }}
-      app-change: ${{ steps.filter.outputs.app }}
-      libs-change: ${{ steps.filter.outputs.libs }}
-
-  install:
-    needs: prepare-diff
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        node-version: [ 16.13.2 ]
-    steps:
-      - uses: actions/checkout@v2
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -49,6 +43,13 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+    outputs:
+      backend-change: 'true'
+      app-change: 'true'
+      libs-change: 'true'
+#      backend-change: ${{ steps.filter.outputs.backend }}
+#      app-change: ${{ steps.filter.outputs.app }}
+#      libs-change: ${{ steps.filter.outputs.libs }}
 
   lint:
     name: Lint
@@ -79,7 +80,7 @@ jobs:
 
   build-packages:
     name: Build packages
-    needs: [ install, prepare-diff ]
+    needs: [ install ]
     runs-on: ubuntu-latest
 
     steps:
@@ -114,8 +115,8 @@ jobs:
 
   build-app:
     name: Build App
-    needs: [ build-packages, prepare-diff ]
-    if: (${{ needs.prepare-diff.outputs.app-change == 'true' }} || ${{ needs.prepare-diff.outputs.libs-change == 'true' }})
+    needs: [ build-packages ]
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
     steps:
@@ -151,9 +152,9 @@ jobs:
 
 
   build-api:
-    if: ${{ needs.prepare-diff.outputs.backend-change == 'true' }}
+    if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Build Api
-    needs: [ install, prepare-diff ]
+    needs: [ install ]
     runs-on: ubuntu-latest
 
     steps:
@@ -181,9 +182,9 @@ jobs:
 
 
   typecheck-app:
-    if: (${{ needs.prepare-diff.outputs.app-change == 'true' }} || ${{ needs.prepare-diff.outputs.libs-change == 'true' }})
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     name: Typecheck app
-    needs: [ build-packages, prepare-diff ]
+    needs: [ build-packages ]
     runs-on: ubuntu-latest
 
     steps:
@@ -212,9 +213,9 @@ jobs:
 
 
   typecheck-packages:
-    if: ${{ needs.prepare-diff.outputs.libs-change == 'true' }}
+    if: ${{ needs.install.outputs.libs-change == 'true' }}
     name: Typecheck packages
-    needs: [ build-packages, prepare-diff ]
+    needs: [ build-packages ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -242,9 +243,9 @@ jobs:
 
 
   be-test:
-    if: ${{ needs.prepare-diff.outputs.backend-change == 'true' }}
+    if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Api test
-    needs: [ install, prepare-diff ]
+    needs: [ install ]
     runs-on: ubuntu-latest
 
     services:
@@ -300,9 +301,10 @@ jobs:
 
   deploy-next:
     # Next branch only
-    if: github.ref == 'refs/heads/next'
+    #    if: github.ref == 'refs/heads/next'
+    environment: Next
     name: Deploy next
-    needs: [ build-app, build-api, typecheck-packages, typecheck-app, be-test ]
+    needs: [ build-app, build-api, be-test ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -312,6 +314,7 @@ jobs:
   deploy-prod:
     # Next branch only
     if: github.ref == 'refs/heads/main'
+    environment: Production
     name: Deploy prod
     needs: [ lint, build-app, build-api, typecheck-packages, typecheck-app, be-test ]
     runs-on: ubuntu-latest
