@@ -78,7 +78,7 @@ jobs:
 
   build-packages:
     name: Build packages
-    needs: install
+    needs: [install, prepare-diff]
     runs-on: ubuntu-latest
 
     steps:
@@ -112,9 +112,9 @@ jobs:
           restore-keys: packages-
 
   build-app:
-    if: ${{ jobs.prepare-diff.outputs.app == 'true' }}
     name: Build App
-    needs: build-packages
+    needs: [build-packages, prepare-diff]
+    if: ${{ needs.prepare-diff.outputs.app == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -148,10 +148,11 @@ jobs:
 
 
 
+
   build-api:
-    if: ${{ jobs.prepare-diff.outputs.backend == 'true' }}
+    if: ${{ needs.prepare-diff.outputs.backend == 'true' }}
     name: Build Api
-    needs: install
+    needs: [install, prepare-diff]
     runs-on: ubuntu-latest
 
     steps:
@@ -177,10 +178,11 @@ jobs:
         run: |
           pnpm --filter=@codeimage/api build:ts
 
+
   typecheck-app:
-    if: ${{ jobs.prepare-diff.outputs.app == 'true' }}
+    if: ${{ needs.prepare-diff.outputs.app == 'true' }}
     name: Typecheck app
-    needs: build-packages
+    needs: [build-packages, prepare-diff]
     runs-on: ubuntu-latest
 
     steps:
@@ -207,10 +209,11 @@ jobs:
         run: |
           pnpm --filter='@codeimage/app' typecheck
 
+
   typecheck-packages:
-    if: ${{ jobs.prepare-diff.outputs.libs == 'true' }}
+    if: ${{ needs.prepare-diff.outputs.libs == 'true' }}
     name: Typecheck packages
-    needs: build-packages
+    needs: [build-packages, prepare-diff]
     runs-on: ubuntu-latest
 
     steps:
@@ -237,10 +240,11 @@ jobs:
         run: |
           pnpm --filter='./packages/**' --recursive --parallel typecheck
 
+
   be-test:
-    if: ${{ jobs.prepare-diff.outputs.backend == 'true' }}
+    if: ${{ needs.prepare-diff.outputs.backend == 'true' }}
     name: Api test
-    needs: install
+    needs: [install, prepare-diff]
     runs-on: ubuntu-latest
 
     services:
