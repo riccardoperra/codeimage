@@ -11,7 +11,7 @@ export function formatDistanceToNow(
   const months = Math.floor(days / 30);
   const years = Math.floor(months / 12);
   const rtf = new Intl.RelativeTimeFormat(locale, {
-    numeric: 'auto',
+    numeric: 'always',
     localeMatcher: 'best fit',
     style: 'long',
   });

@@ -1,6 +1,8 @@
+import {dashboard} from './dashboard';
 import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
+
 export const locale = {
   it: {
     common: {
@@ -74,11 +76,13 @@ export const locale = {
       search: 'Cerca tema...',
     },
     ...sidebarLocale.it,
+    ...dashboard.it,
     ...uiLocale.it,
     ...bottomBar.it,
   },
   en: {
     ...sidebarLocale.en,
+    ...dashboard.en,
     canvas: {
       copiedToClipboard: 'Snippet copied to clipboard',
       linkGeneratedToClipboard: 'Link copied to clipboard',
@@ -223,6 +227,7 @@ export const locale = {
     ...sidebarLocale.de,
     ...uiLocale.de,
     ...bottomBar.de,
+    ...dashboard.de,
   },
   es: {
     common: {
@@ -297,6 +302,7 @@ export const locale = {
     ...sidebarLocale.es,
     ...uiLocale.es,
     ...bottomBar.es,
+    ...dashboard.es,
   },
 };
 

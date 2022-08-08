@@ -1,4 +1,3 @@
-import {Box} from '@codeimage/ui';
 import {For, Suspense} from 'solid-js';
 import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';
