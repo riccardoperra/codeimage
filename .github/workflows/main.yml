@@ -126,6 +126,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'packages/prisma-models/**'
+              - 'apps/api/**'
+              - package.json
+              - pnpm-lock.json
+
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -135,15 +145,18 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
+        if: steps.filter.outputs.src == 'true'
         run: pnpm install
 
       - name: Prisma migrate
+        if: steps.filter.outputs.src == 'true'
         run: |
           cd apps/api
           pnpm exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Build
+        if: steps.filter.outputs.src == 'true'
         run: |
           pnpm --filter=@codeimage/api build:ts
 
@@ -232,6 +245,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'packages/prisma-models/**'
+              - 'apps/api/**'
+              - package.json
+              - pnpm-lock.json
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -240,24 +262,29 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Prisma migrate
-        run: |
-          cd apps/api
-          pnpm exec prisma migrate deploy
-          pnpm exec prisma generate
-          pnpm --filter=@codeimage/prisma-models build
 
       - name: Restore dist
+        if: steps.filter.outputs.src == 'true'
         uses: actions/cache@v3
         with:
           path: |
             packages
           key: packages-${{ github.run_id }}
 
+      - name: Install dependencies
+        if: steps.filter.outputs.src == 'true'
+        run: pnpm install
+
+      - name: Prisma migrate
+        if: steps.filter.outputs.src == 'true'
+        run: |
+          cd apps/api
+          pnpm exec prisma migrate deploy
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
       - name: Test
+        if: steps.filter.outputs.src == 'true'
         run: pnpm --filter=@codeimage/api test
 
   deploy-next:
