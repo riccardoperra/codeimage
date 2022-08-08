@@ -4,24 +4,43 @@ import {
   Dialog,
   DialogPanelContent,
   DialogPanelFooter,
+  FieldLabel,
+  FlexField,
   HStack,
   Text,
+  TextField,
 } from '@codeimage/ui';
-import {JSXElement, mergeProps, VoidProps} from 'solid-js';
+import {
+  createSignal,
+  JSXElement,
+  mergeProps,
+  onMount,
+  VoidProps,
+} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 
-export interface ConfirmDialogProps {
-  onConfirm: () => void;
+export interface RenameContentDialogProps {
+  onConfirm: (name: string) => void;
   onClose?: () => void;
-  title: string;
   message: JSXElement;
-  actionType?: 'primary' | 'danger';
+  title: string;
+  initialValue?: string;
 }
 
-export function ConfirmDialog(
-  props: VoidProps<ConfirmDialogProps>,
+export function RenameContentDialog(
+  props: VoidProps<RenameContentDialogProps>,
 ): JSXElement {
   const [t] = useI18n<AppLocaleEntries>();
+  const [name, setName] = createSignal(props.initialValue ?? '');
+  let textField!: HTMLInputElement;
+
+  onMount(() => {
+    requestAnimationFrame(() => {
+      textField?.focus();
+      textField?.select();
+    });
+  });
+
   const propsWithDefault = mergeProps({actionType: 'primary'} as const, props);
   return (
     <Dialog
@@ -31,7 +50,17 @@ export function ConfirmDialog(
       isOpen={true}
     >
       <DialogPanelContent>
-        <Text size={'sm'}>{propsWithDefault.message}</Text>
+        <FlexField size={'lg'}>
+          {/*// TODO: add support for weight*/}
+          <FieldLabel size={'sm'}>{propsWithDefault.message}</FieldLabel>
+          <TextField
+            ref={textField}
+            type={'text'}
+            value={name()}
+            onChange={setName}
+            autofocus={true}
+          />
+        </FlexField>
       </DialogPanelContent>
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
@@ -52,7 +81,7 @@ export function ConfirmDialog(
             type="submit"
             theme={propsWithDefault.actionType}
             variant={'solid'}
-            onClick={propsWithDefault.onConfirm}
+            onClick={() => propsWithDefault.onConfirm(name())}
           >
             {t('common.confirm')}
           </Button>

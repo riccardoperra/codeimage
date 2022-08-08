@@ -32,7 +32,9 @@ export interface WorkspaceItem {
   userId: string;
 }
 
-async function fetchWorkspaceContent(): Promise<WorkspaceItem[]> {
+async function fetchWorkspaceContent(): Promise<
+  ApiTypes.GetProjectByIdApi['response'][]
+> {
   const authState = getAuthState();
   const userId = authState.user()?.user?.id;
   if (!userId) return [];
@@ -106,6 +108,37 @@ function makeDashboardState() {
     });
   }
 
+  async function updateSnippetName(
+    id: string,
+    oldName: string,
+    newName: string | undefined,
+  ) {
+    const userId = getAuthState().user()?.user?.id;
+    if (!userId || !newName || oldName === newName) {
+      return;
+    }
+    mutate(items =>
+      items.map(item => {
+        if (item.id === id) {
+          return {
+            ...item,
+            name: newName,
+            updatedAt: new Date().toString(),
+          };
+        }
+        return item;
+      }),
+    );
+    await API.project.updateSnippetName(userId, {
+      params: {
+        id,
+      },
+      body: {
+        name: newName,
+      },
+    });
+  }
+
   return {
     data,
     search,
@@ -114,6 +147,7 @@ function makeDashboardState() {
     mutateData: mutate,
     createNewProject,
     deleteProject,
+    updateSnippetName,
   };
 }
 
