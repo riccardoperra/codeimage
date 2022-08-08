@@ -65,6 +65,7 @@ importers:
       '@types/node': ^18.0.0
       '@types/sinon': 10.0.13
       '@types/tap': ^15.0.5
+      close-with-grace: 1.1.0
       concurrently: ^7.0.0
       dotenv: 16.0.1
       dotenv-cli: ^6.0.0
@@ -91,6 +92,7 @@ importers:
       '@fastify/type-provider-typebox': 2.2.0_a75yjc2tfv5mts5ixrv6fsbfre
       '@prisma/client': 4.1.1_prisma@4.1.1
       '@sinclair/typebox': 0.24.26
+      close-with-grace: 1.1.0
       dotenv-cli: 6.0.0
       fastify: 4.3.0
       fastify-cli: 4.4.0
