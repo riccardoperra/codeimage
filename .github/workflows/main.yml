@@ -4,7 +4,34 @@ on:
   pull_request:
 
 jobs:
+  prepare-diff:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: diff-changes
+        with:
+          filters: |
+            app:
+              - apps/codeimage/**
+              - package.json
+              - pnpm-lock.json
+            libs:
+              - packages/**
+              - package.json
+              - pnpm-lock.json
+            backend:
+              - 'packages/prisma-models/**'
+              - 'apps/api/**'
+              - package.json
+              - pnpm-lock.json
+    outputs:
+      backend-change: ${{steps.filter.outputs.backend}}
+      app-change: ${{steps.filter.outputs.app}}
+      libs-change: ${{steps.filter.outputs.libs}}
+
   install:
+    needs: prepare-diff
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -85,6 +112,7 @@ jobs:
           restore-keys: packages-
 
   build-app:
+    if: ${{ jobs.prepare-diff.outputs.app == 'true' }}
     name: Build App
     needs: build-packages
     runs-on: ubuntu-latest
@@ -119,23 +147,15 @@ jobs:
           pnpm --filter=@codeimage/app build
 
 
+
   build-api:
+    if: ${{ jobs.prepare-diff.outputs.backend == 'true' }}
     name: Build Api
     needs: install
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            src:
-              - 'packages/prisma-models/**'
-              - 'apps/api/**'
-              - package.json
-              - pnpm-lock.json
-
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -145,22 +165,20 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        if: steps.filter.outputs.src == 'true'
         run: pnpm install
 
       - name: Prisma migrate
-        if: steps.filter.outputs.src == 'true'
         run: |
           cd apps/api
           pnpm exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Build
-        if: steps.filter.outputs.src == 'true'
         run: |
           pnpm --filter=@codeimage/api build:ts
 
   typecheck-app:
+    if: ${{ jobs.prepare-diff.outputs.app == 'true' }}
     name: Typecheck app
     needs: build-packages
     runs-on: ubuntu-latest
@@ -190,6 +208,7 @@ jobs:
           pnpm --filter='@codeimage/app' typecheck
 
   typecheck-packages:
+    if: ${{ jobs.prepare-diff.outputs.libs == 'true' }}
     name: Typecheck packages
     needs: build-packages
     runs-on: ubuntu-latest
@@ -219,6 +238,7 @@ jobs:
           pnpm --filter='./packages/**' --recursive --parallel typecheck
 
   be-test:
+    if: ${{ jobs.prepare-diff.outputs.backend == 'true' }}
     name: Api test
     needs: install
     runs-on: ubuntu-latest
@@ -245,15 +265,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            src:
-              - 'packages/prisma-models/**'
-              - 'apps/api/**'
-              - package.json
-              - pnpm-lock.json
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -264,7 +275,6 @@ jobs:
           cache: 'pnpm'
 
       - name: Restore dist
-        if: steps.filter.outputs.src == 'true'
         uses: actions/cache@v3
         with:
           path: |
@@ -272,11 +282,9 @@ jobs:
           key: packages-${{ github.run_id }}
 
       - name: Install dependencies
-        if: steps.filter.outputs.src == 'true'
         run: pnpm install
 
       - name: Prisma migrate
-        if: steps.filter.outputs.src == 'true'
         run: |
           cd apps/api
           pnpm exec prisma migrate deploy
@@ -284,7 +292,6 @@ jobs:
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Test
-        if: steps.filter.outputs.src == 'true'
         run: pnpm --filter=@codeimage/api test
 
   deploy-next:
