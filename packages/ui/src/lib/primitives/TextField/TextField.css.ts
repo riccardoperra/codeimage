@@ -47,6 +47,12 @@ export const textField = recipe({
         border: 'none',
         borderBottom: `2px solid ${textFieldVars.background}`,
         borderRadius: 0,
+        paddingLeft: 0,
+      },
+    },
+    withLeftIcon: {
+      true: {
+        paddingLeft: themeVars.spacing['6'],
       },
     },
   },

@@ -1,22 +1,8 @@
-import {useI18n} from '@codeimage/locale';
-import {
-  createEditorSyncAdapter,
-  getEditorSyncAdapter,
-} from '@codeimage/store/editor/createEditorInit';
+import {createEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {uiStore} from '@codeimage/store/ui';
-import {Box, Button, HStack, PortalHost, SnackbarHost} from '@codeimage/ui';
+import {Box, Button, HStack, PortalHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
-import {
-  createEffect,
-  createSignal,
-  lazy,
-  on,
-  onCleanup,
-  onMount,
-  Show,
-  Suspense,
-} from 'solid-js';
+import {createSignal, lazy, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
@@ -42,9 +28,7 @@ export function App() {
   const [frameRef, setFrameRef] = createSignal<HTMLElement>();
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const modality = useModality();
-  const [, {locale}] = useI18n();
   const frameStore = getFrameState();
-  createEffect(on(() => uiStore.locale, locale));
 
   return (
     <>
