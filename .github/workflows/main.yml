@@ -28,7 +28,7 @@ jobs:
     outputs:
       backend-change: ${{steps.filter.outputs.backend}}
       app-change: ${{steps.filter.outputs.app}}
-      libs-change: ${{steps.filter.outputs.libs}}
+      libs-change: ${{steps.filter.outputs.libs-change}}
 
   install:
     needs: prepare-diff
@@ -114,7 +114,7 @@ jobs:
   build-app:
     name: Build App
     needs: [build-packages, prepare-diff]
-    if: ${{ needs.prepare-diff.outputs.app == 'true' }}
+    if: (${{ needs.prepare-diff.outputs.app-change == 'true' }} || ${{ needs.prepare-diff.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
     steps:
@@ -150,7 +150,7 @@ jobs:
 
 
   build-api:
-    if: ${{ needs.prepare-diff.outputs.backend == 'true' }}
+    if: ${{ needs.prepare-diff.outputs.backend-change == 'true' }}
     name: Build Api
     needs: [install, prepare-diff]
     runs-on: ubuntu-latest
@@ -180,7 +180,7 @@ jobs:
 
 
   typecheck-app:
-    if: ${{ needs.prepare-diff.outputs.app == 'true' }}
+    if: (${{ needs.prepare-diff.outputs.app-change == 'true' }} || ${{ needs.prepare-diff.outputs.libs-change == 'true' }})
     name: Typecheck app
     needs: [build-packages, prepare-diff]
     runs-on: ubuntu-latest
@@ -211,7 +211,7 @@ jobs:
 
 
   typecheck-packages:
-    if: ${{ needs.prepare-diff.outputs.libs == 'true' }}
+    if: ${{ needs.prepare-diff.outputs.libs-change == 'true' }}
     name: Typecheck packages
     needs: [build-packages, prepare-diff]
     runs-on: ubuntu-latest
@@ -242,7 +242,7 @@ jobs:
 
 
   be-test:
-    if: ${{ needs.prepare-diff.outputs.backend == 'true' }}
+    if: ${{ needs.prepare-diff.outputs.backend-change == 'true' }}
     name: Api test
     needs: [install, prepare-diff]
     runs-on: ubuntu-latest
