@@ -47,9 +47,9 @@ jobs:
       backend-change: 'true'
       app-change: 'true'
       libs-change: 'true'
-#      backend-change: ${{ steps.filter.outputs.backend }}
-#      app-change: ${{ steps.filter.outputs.app }}
-#      libs-change: ${{ steps.filter.outputs.libs }}
+  #      backend-change: ${{ steps.filter.outputs.backend }}
+  #      app-change: ${{ steps.filter.outputs.app }}
+  #      libs-change: ${{ steps.filter.outputs.libs }}
 
   lint:
     name: Lint
@@ -250,9 +250,7 @@ jobs:
 
     services:
       postgres:
-        # Docker Hub image
         image: postgres:13-alpine
-        # Provide the password for postgres
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -262,7 +260,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          # Maps TCP port 5432 on service container to the host
           - 5432:5432
 
     env:
@@ -301,10 +298,10 @@ jobs:
 
   deploy-next:
     # Next branch only
-    #    if: github.ref == 'refs/heads/next'
+    if: github.ref == 'refs/heads/next'
     environment: Next
     name: Deploy next
-    needs: [ build-app, build-api, be-test ]
+    needs: [ lint, build-app, build-api, typecheck-packages, typecheck-app, be-test ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -312,7 +309,7 @@ jobs:
         run: exit 0
 
   deploy-prod:
-    # Next branch only
+    # Production branch only
     if: github.ref == 'refs/heads/main'
     environment: Production
     name: Deploy prod
