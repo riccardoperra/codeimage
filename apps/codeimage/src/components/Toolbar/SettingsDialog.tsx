@@ -23,7 +23,7 @@ import {appEnvironment} from '@core/configuration';
 import {createSignal, For, Match, ParentProps, Switch} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 
-export function SettingsDialog(props: ParentProps) {
+export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
   const [page, setPage] = createSignal<'general' | 'account'>('general');
   const ui = uiStore;
   const {locales} = appEnvironment;

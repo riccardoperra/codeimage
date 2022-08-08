@@ -15,11 +15,13 @@ import {
 export function createStandaloneDialog() {
   const owner = getOwner();
 
-  return <T extends (props: {}) => JSXElement>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return <T extends (props: any) => JSXElement>(
     dialogEl: T,
     props: (state: OverlayTriggerState) => Parameters<T>[0],
-  ) =>
-    runWithOwner(owner!, () => {
+  ) => {
+    if (!owner) return;
+    return runWithOwner(owner, () => {
       const overlayState = createOverlayTriggerState({defaultOpen: true});
       createComponent(Show, {
         get when() {
@@ -30,6 +32,7 @@ export function createStandaloneDialog() {
             get children() {
               return createComponent(
                 dialogEl,
+                // eslint-disable-next-line solid/reactivity
                 mergeProps(
                   {
                     onClose: () => {
@@ -44,4 +47,5 @@ export function createStandaloneDialog() {
         },
       });
     });
+  };
 }

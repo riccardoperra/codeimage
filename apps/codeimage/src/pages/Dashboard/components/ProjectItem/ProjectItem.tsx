@@ -13,6 +13,7 @@ import {
 import {formatDistanceToNow} from '@core/helpers/date';
 import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
+import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import {Link} from 'solid-app-router';
 import {For, Show, VoidProps} from 'solid-js';
 import {DotHorizontalIocn} from '../../../../components/Icons/DotVertical';
@@ -70,7 +71,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
                 <DotHorizontalIocn size={'sm'} />
               </MenuButton>
             }
-            onAction={(action: string) => {
+            onAction={(action: string | number) => {
               if (action === 'delete') {
                 createDialog(ConfirmDialog, state => ({
                   title: 'Delete project',
@@ -79,11 +80,27 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
                     dashboard?.deleteProject(props.item.id);
                     state.close();
                   },
-                  actionType: 'danger',
+                  actionType: 'danger' as const,
+                }));
+              }
+              if (action === 'rename') {
+                createDialog(RenameContentDialog, state => ({
+                  title: 'Rename project',
+                  message: 'Enter a new name for the project.',
+                  initialValue: props.item.name,
+                  onConfirm: async name => {
+                    state.close();
+                    await dashboard.updateSnippetName(
+                      props.item.id,
+                      props.item.name,
+                      name,
+                    );
+                  },
                 }));
               }
             }}
           >
+            <Item key={'rename'}>Rename</Item>
             <Item key={'delete'}>Delete</Item>
           </DropdownMenuV2>
         </div>

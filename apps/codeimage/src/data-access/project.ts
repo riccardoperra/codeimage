@@ -32,7 +32,9 @@ export async function updateSnippetName(
   }).then(res => res.json());
 }
 
-export async function getWorkspaceContent(userId: string): Promise<any> {
+export async function getWorkspaceContent(
+  userId: string,
+): Promise<ApiTypes.GetProjectByIdApi['response'][]> {
   return makeFetch(`/api/v1/project`, {
     method: 'GET',
     headers: {
