@@ -1,7 +1,7 @@
 {
   "name": "@codeimage/api",
   "version": "0.0.1",
-  "description": "This project was bootstrapped with Fastify-CLI.",
+  "description": "CodeImage api rest server",
   "main": "app.ts",
   "directories": {
     "test": "test"
@@ -36,6 +36,7 @@
     "@sinclair/typebox": "^0.24.26",
     "close-with-grace": "1.1.0",
     "dotenv-cli": "^6.0.0",
+    "dotenv": "16.0.1",
     "fastify": "^4.3.0",
     "fastify-cli": "^4.4.0",
     "fastify-plugin": "^4.0.0",
@@ -47,7 +48,6 @@
     "@types/sinon": "10.0.13",
     "@types/tap": "^15.0.5",
     "concurrently": "^7.0.0",
-    "dotenv": "16.0.1",
     "fastify-tsconfig": "^1.0.1",
     "prisma-json-schema-generator": "3.0.1",
     "sinon": "14.0.0",

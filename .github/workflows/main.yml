@@ -174,18 +174,16 @@ jobs:
       - name: Build
         run: |
           pnpm --filter=@codeimage/api build:ts
-
-      - name: Prepare deployable build
-        run: |
           pnpm prepare:api:deploy
 
 
       - name: Cache build
         uses: actions/cache@v3
         with:
-          path: dist/api-bundle
-          key: api-bundle-${{ github.run_id }}
-          restore-keys: api-
+          path: |
+            dist/api-bundle/**
+          key: rest-api-bundle-${{ github.run_id }}
+          restore-keys: rest-api-bundle-${{ github.run_id }}
 
 
   typecheck-app:
@@ -305,16 +303,16 @@ jobs:
 
   deploy-next:
     # Next branch only
-#    if: (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/feat/workspace-ci')
+    #    if: (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/feat/workspace-ci')
     environment: Next
     name: Deploy next
     needs: [
       #      lint,
-      build-app,
+      #      build-app,
       build-api,
       #      typecheck-packages,
       #      typecheck-app,
-      be-test
+      #      be-test
     ]
     runs-on: ubuntu-latest
     steps:
@@ -331,8 +329,9 @@ jobs:
       - name: Restore api build
         uses: actions/cache@v3
         with:
-          path: dist/api-bundle
-          key: api-bundle-${{ github.run_id }}
+          path: |
+            dist/api-bundle/**
+          key: rest-api-bundle-${{ github.run_id }}
 
       - name: Install Railway
         run: pnpm i -g @railway/cli
@@ -340,6 +339,7 @@ jobs:
       - name: Deploy
         run: |
           cd dist/api-bundle
+          ls
           railway up
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
@@ -374,17 +374,17 @@ jobs:
   #            docker system prune -f
   #            docker run --name codeimage-api -dit -p 3000:3000 ghcr.io/riccardoperra/codeimage/api-next:latest
 
-  deploy-prod:
-    # Production branch only
-    if: github.ref == 'refs/heads/main'
-    environment: Production
-    name: Deploy prod
-    needs: [ lint, build-app, build-api, typecheck-packages, typecheck-app, be-test ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Execute tests
-        run: exit 0
+  #  deploy-prod:
+  #    # Production branch only
+  #    if: github.ref == 'refs/heads/main'
+  #    environment: Production
+  #    name: Deploy prod
+  #    needs: [ lint, build-app, build-api, typecheck-packages, typecheck-app, be-test ]
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - uses: actions/checkout@v2
+  #      - name: Execute tests
+  #        run: exit 0
 
 concurrency:
   group: main-${{ github.head_ref }}
