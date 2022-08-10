@@ -78,6 +78,53 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+  typecheck-packages:
+    if: ${{ needs.install.outputs.libs-change == 'true' }}
+    name: Typecheck packages
+    needs: [ install ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Typecheck packages
+        run: |
+          pnpm --filter='./packages/**' --recursive typecheck:ci
+
+
+  typecheck-app:
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    name: Typecheck app
+    needs: [ typecheck-packages ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Typecheck packages
+        run: |
+          pnpm --filter='@codeimage/app' typecheck
+
+
   build-packages:
     name: Build packages
     needs: [ install ]
@@ -186,67 +233,6 @@ jobs:
           restore-keys: rest-api-bundle-${{ github.run_id }}
 
 
-  typecheck-app:
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
-    name: Typecheck app
-    needs: [ build-packages ]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Restore dist
-        uses: actions/cache@v3
-        with:
-          path: |
-            packages
-          key: packages-${{ github.run_id }}
-
-      - name: Typecheck packages
-        run: |
-          pnpm --filter='@codeimage/app' typecheck
-
-
-  typecheck-packages:
-    if: ${{ needs.install.outputs.libs-change == 'true' }}
-    name: Typecheck packages
-    needs: [ build-packages ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Restore dist
-        uses: actions/cache@v3
-        with:
-          path: |
-            packages
-          key: packages-${{ github.run_id }}
-
-      - name: Typecheck packages
-        run: |
-          pnpm --filter='./packages/**' --recursive --parallel typecheck
-
-
   be-test:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Api test
@@ -310,8 +296,8 @@ jobs:
       #      lint,
       #      build-app,
       build-api,
-      #      typecheck-packages,
-      #      typecheck-app,
+      typecheck-packages,
+#      typecheck-app,
       #      be-test
     ]
     runs-on: ubuntu-latest
@@ -339,7 +325,10 @@ jobs:
       - name: Deploy
         run: |
           cd dist/api-bundle
-          ls
+          rm -rf .gitignore
+          touch .gitignore
+          npm i
+          ls -al
           railway up
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
