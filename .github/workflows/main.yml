@@ -327,6 +327,7 @@ jobs:
           cd dist/api-bundle
           rm -rf .gitignore
           touch .gitignore
+          touch .dockerignore
           npm i
           ls -al
           railway up
