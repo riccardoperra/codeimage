@@ -3,13 +3,13 @@ import {getAuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
+import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
 import {combineLatest, debounceTime, filter, skip, tap} from 'rxjs';
 import {
   createEffect,
-  createMemo,
   createResource,
   createSignal,
   on,
@@ -19,14 +19,10 @@ import {
 import {unwrap} from 'solid-js/store';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
-import {WorkspaceItem} from '../../pages/Dashboard/dashboard.state';
 
 function createEditorSyncAdapter() {
   const [remoteSync, setRemoteSync] = createSignal(false);
-  const [data, loadData] = createSignal<{
-    activeWorkspace?: WorkspaceItem | null;
-    snippetId?: string | null;
-  }>();
+  const [snippetId, setSnippetId] = createSignal<string | null>();
   const [activeWorkspace, setActiveWorkspace] = createSignal<
     ApiTypes.GetProjectByIdApi['response'] | null
   >();
@@ -36,8 +32,6 @@ function createEditorSyncAdapter() {
   const editorStore = getRootEditorStore();
   const store = getEditorStore();
   const idb = useIdb();
-
-  const snippetId = createMemo(() => data()?.snippetId);
 
   const [loadedSnippet] = createResource(snippetId, async snippetId => {
     const userId = authState.user()?.user?.id;
@@ -70,14 +64,13 @@ function createEditorSyncAdapter() {
   );
 
   createEffect(
-    on(isReadyToSync, ready => {
+    on(store.initialized, ready => {
       if (ready) {
         const subscription = onChange$
           .pipe(debounceTime(1000))
           .subscribe(() => {
-            const state = unwrap({
-              $workspaceId: data()?.activeWorkspace?.id,
-              $snippetId: data()?.activeWorkspace?.snippetId,
+            const state: ProjectEditorPersistedState = unwrap({
+              $snippetId: untrack(snippetId) ?? null,
               $version: appEnvironment.version,
               frame: frameStore.stateToPersist(),
               terminal: terminalStore.stateToPersist(),
@@ -174,8 +167,9 @@ function createEditorSyncAdapter() {
   }
 
   return {
+    indexedDbState: () => idb.get<ProjectEditorPersistedState>('document'),
     loadedSnippet,
-    loadData,
+    setSnippetId,
     activeWorkspace,
     setActiveWorkspace,
     remoteSync,
