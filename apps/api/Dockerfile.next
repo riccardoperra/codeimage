@@ -5,9 +5,8 @@ ENV NODE_ENV=production
 
 COPY . /app
 
-RUN ls
+RUN npm i -g pnpm
 
-RUN npm install
-
+RUN pnpm i
 
 EXPOSE 3000
