@@ -24,7 +24,8 @@
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
     "clean": "rimraf dist",
-    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json"
+    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
+    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
   },
   "peerDependencies": {
     "@floating-ui/core": "^0.7.3",

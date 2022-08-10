@@ -50,7 +50,8 @@
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c .eslintrc.js --fix",
     "postinstall": "pnpm patch-solid-exports",
     "patch-solid-exports": "cross-env APPLY_PATCH=true ts-node scripts/patch-solid-exports.ts",
-    "unpatch-solid-exports": "cross-env APPLY_PATCH=false ts-node scripts/patch-solid-exports.ts"
+    "unpatch-solid-exports": "cross-env APPLY_PATCH=false ts-node scripts/patch-solid-exports.ts",
+    "prepare:api:deploy": "pnpm-bundle-workspace-package @codeimage/api --outDir=dist/api-bundle && rm -rf dist/api-bundle/workspace-dependencies/prisma-models/.gitignore"
   },
   "devDependencies": {
     "@changesets/assemble-release-plan": "^5.1.2",
@@ -75,7 +76,8 @@
     "lint-staged": "^12.5.0",
     "prettier": "^2.6.2",
     "ts-node": "^10.8.1",
-    "typescript": "^4.7.3"
+    "typescript": "^4.7.3",
+    "pnpm-bundle-workspace-package": "^1.0.2"
   },
   "engines": {
     "pnpm": ">=7"

@@ -1,0 +1,12 @@
+FROM node:18-alpine
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY . /app
+
+RUN npm i -g pnpm
+
+RUN pnpm i
+
+EXPOSE 3000

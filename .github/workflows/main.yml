@@ -1,0 +1,379 @@
+name: Main
+
+on:
+  pull_request:
+
+env:
+  IS_MAIN_BRANCH: ${{ github.ref == 'refs/heads/main' }}
+  IS_NEXT_BRANCH: ${{ github.ref == 'refs/heads/next' }}
+
+jobs:
+  install:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [ 16.13.2 ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        if: (${{ env.IS_MAIN_BRANCH == 'false' }} || ${{ env.IS_NEXT_BRANCH == 'false' }})
+        id: diff-changes
+        with:
+          filters: |
+            app:
+              - apps/codeimage/**
+              - package.json
+              - pnpm-lock.json
+            libs:
+              - packages/**
+              - package.json
+              - pnpm-lock.json
+            backend:
+              - 'packages/prisma-models/**'
+              - 'apps/api/**'
+              - package.json
+              - pnpm-lock.json
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+    outputs:
+      backend-change: 'true'
+      app-change: 'true'
+      libs-change: 'true'
+  #      backend-change: ${{ steps.filter.outputs.backend }}
+  #      app-change: ${{ steps.filter.outputs.app }}
+  #      libs-change: ${{ steps.filter.outputs.libs }}
+
+  lint:
+    name: Lint
+    needs: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
+      - name: Lint
+        run: pnpm lint
+
+  typecheck-packages:
+    if: ${{ needs.install.outputs.libs-change == 'true' }}
+    name: Typecheck packages
+    needs: [ install ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Typecheck packages
+        run: |
+          pnpm --filter='./packages/**' --recursive typecheck:ci
+
+
+  typecheck-app:
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    name: Typecheck app
+    needs: [ typecheck-packages ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Typecheck packages
+        run: |
+          pnpm --filter='@codeimage/app' typecheck
+
+
+  build-packages:
+    name: Build packages
+    needs: [ install ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
+      - name: Build packages
+        run: |
+          pnpm libs:build
+
+      - name: Cache packages
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-${{ github.run_id }}
+          restore-keys: packages-
+
+  build-app:
+    name: Build App
+    needs: [ build-packages ]
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-${{ github.run_id }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build app
+        run: |
+          pnpm --filter=@codeimage/app build
+
+
+
+
+  build-api:
+    if: ${{ needs.install.outputs.backend-change == 'true' }}
+    name: Build Api
+    needs: [ install, typecheck-packages, build-packages ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
+      - name: Build
+        run: |
+          pnpm --filter=@codeimage/api build:ts
+          pnpm prepare:api:deploy
+
+      - name: Cache build
+        uses: actions/cache@v3
+        with:
+          path: |
+            dist/api-bundle/**
+          key: rest-api-bundle-${{ github.run_id }}
+          restore-keys: rest-api-bundle-${{ github.run_id }}
+
+
+  be-test:
+    if: ${{ needs.install.outputs.backend-change == 'true' }}
+    name: Api test
+    needs: [ install ]
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ga_codeimage?schema=${{ github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: |
+            packages
+          key: packages-${{ github.run_id }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma migrate deploy
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
+      - name: Test
+        run: pnpm --filter=@codeimage/api test
+
+  deploy-next:
+    # Next branch only
+    if: github.ref == 'refs/heads/next'
+    environment: Next
+    name: Deploy next
+    needs: [
+      lint,
+      build-packages,
+      build-api,
+      typecheck-packages,
+      typecheck-app,
+      be-test
+    ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Restore api build
+        uses: actions/cache@v3
+        with:
+          path: |
+            dist/api-bundle/**
+          key: rest-api-bundle-${{ github.run_id }}
+
+      - name: Install Railway
+        run: pnpm i -g @railway/cli
+
+      - name: Deploy
+        run: |
+          cd dist/api-bundle
+          rm -rf .gitignore
+          touch .gitignore
+          touch .dockerignore
+          ls -al
+          railway up
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+  #      - name: Build and Publish to Github Packages Registry
+  #        uses: elgohr/Publish-Docker-Github-Action@master
+  #        env:
+  #          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  #        with:
+  #          name: riccardoperra/codeimage/api-next
+  #          registry: ghcr.io
+  #          username: ${{ secrets.USERNAME }}
+  #          password: ${{ secrets.GITHUB_TOKEN }}
+  #          dockerfile: Dockerfile
+  #          buildargs: DATABASE_URL
+  #          tags: latest
+  #
+  #      - name: Deploy package
+  #        uses: appleboy/ssh-action@master
+  #        env:
+  #          GITHUB_USERNAME: ${{ secrets.USERNAME }}
+  #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #        with:
+  #          host: ${{ secrets.DEPLOY_HOST }}
+  #          port: ${{ secrets.DEPLOY_PORT }}
+  #          username: ${{ secrets.DEPLOY_USER }}
+  #          key: ${{ secrets.SSH_PRIVATE_KEY  }}
+  #          envs: GITHUB_USERNAME, GITHUB_TOKEN
+  #          script: |
+  #            docker login ghcr.io -u $GITHUB_USERNAME -p $GITHUB_TOKEN
+  #            docker pull ghcr.io/riccardoperra/codeimage/api-next:latest
+  #            docker stop codeimage-api
+  #            docker system prune -f
+  #            docker run --name codeimage-api -dit -p 3000:3000 ghcr.io/riccardoperra/codeimage/api-next:latest
+
+  #  deploy-prod:
+  #    # Production branch only
+  #    if: github.ref == 'refs/heads/main'
+  #    environment: Production
+  #    name: Deploy prod
+  #    needs: [ lint, build-app, build-api, typecheck-packages, typecheck-app, be-test ]
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - uses: actions/checkout@v2
+  #      - name: Execute tests
+  #        run: exit 0
+
+concurrency:
+  group: main-${{ github.head_ref }}
+  cancel-in-progress: true
