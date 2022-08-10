@@ -288,16 +288,16 @@ jobs:
 
   deploy-next:
     # Next branch only
-    #    if: (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/feat/workspace-ci')
+    if: github.ref == 'refs/heads/next'
     environment: Next
     name: Deploy next
     needs: [
-      #      lint,
+      lint,
       build-packages,
       build-api,
       typecheck-packages,
+      typecheck-app,
       be-test
-      #      typecheck-app,
     ]
     runs-on: ubuntu-latest
     steps:
