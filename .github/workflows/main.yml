@@ -294,10 +294,11 @@ jobs:
     name: Deploy next
     needs: [
       #      lint,
-      #      build-app,
+      build-app,
+      build-packages,
       build-api,
       typecheck-packages,
-#      typecheck-app,
+      #      typecheck-app,
       #      be-test
     ]
     runs-on: ubuntu-latest
