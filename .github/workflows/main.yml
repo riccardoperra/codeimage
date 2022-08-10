@@ -100,10 +100,6 @@ jobs:
         run: |
           pnpm --filter='./packages/**' --recursive typecheck:ci
 
-      - name: Build Prisma typings
-        run: |
-          pnpm --filter='./packages/prisma-models' build
-
 
   typecheck-app:
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
@@ -200,7 +196,7 @@ jobs:
   build-api:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Build Api
-    needs: [ install, typecheck-packages ]
+    needs: [ install, typecheck-packages, build-packages ]
     runs-on: ubuntu-latest
 
     steps:
