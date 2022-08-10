@@ -1,0 +1,13 @@
+# docker-compose -f docker-compose.yml -p codeimage2 up -d
+
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: .
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@codeimage_db_1:5432/codeimage?schema=prod
+    ports:
+      - '3000:3000'
