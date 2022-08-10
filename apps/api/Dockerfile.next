@@ -1,0 +1,16 @@
+FROM node:18-alpine
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+ARG CACHEBUST=0
+
+COPY . /app
+
+RUN npm install
+
+ARG CACHEBUST=1
+
+RUN ls
+
+EXPOSE 3000
