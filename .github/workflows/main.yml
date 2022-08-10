@@ -102,7 +102,7 @@ jobs:
 
       - name: Build Prisma typings
         run: |
-          pnpm --filter='./packages/prisma-models build
+          pnpm --filter='./packages/prisma-models' build
 
 
   typecheck-app:
@@ -200,7 +200,7 @@ jobs:
   build-api:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Build Api
-    needs: [ install, typecheck-packages]
+    needs: [ install, typecheck-packages ]
     runs-on: ubuntu-latest
 
     steps:
@@ -226,7 +226,6 @@ jobs:
         run: |
           pnpm --filter=@codeimage/api build:ts
           pnpm prepare:api:deploy
-
 
       - name: Cache build
         uses: actions/cache@v3
@@ -301,8 +300,8 @@ jobs:
       build-packages,
       build-api,
       typecheck-packages,
+      be-test
       #      typecheck-app,
-      #      be-test
     ]
     runs-on: ubuntu-latest
     steps:
