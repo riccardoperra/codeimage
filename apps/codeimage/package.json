@@ -33,6 +33,7 @@
     "workbox-window": "^6.5.4"
   },
   "dependencies": {
+    "@auth0/auth0-spa-js": "1.22.2",
     "@codeimage/api": "workspace:*",
     "@codeimage/atomic-state": "workspace:*",
     "@codeimage/config": "workspace:*",
