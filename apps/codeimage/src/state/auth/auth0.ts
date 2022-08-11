@@ -1,52 +1,36 @@
 import {User} from '@auth0/auth0-spa-js';
 import {auth0} from '@core/constants/auth0';
-import {createEffect, createRoot, createSignal, onMount} from 'solid-js';
+import {createEffect, createRoot, createSignal} from 'solid-js';
 
 type AuthState = User | null;
 
 export function $auth0State() {
   const [state, setState] = createSignal<AuthState>();
 
-  onMount(async () => {
+  async function initLogin() {
     const queryParams = new URLSearchParams(window.location.search);
 
-    await auth0.checkSession();
-    const isAuthenticated = await auth0.isAuthenticated();
-
     if (queryParams.has('code') && queryParams.has('state')) {
-      const data = await auth0.handleRedirectCallback().catch(e => {
-        console.log('TEST ERROR', e);
-        return null;
-      });
+      const data = await auth0.handleRedirectCallback().catch(() => null);
+      setState(await auth0.getUser());
+      history.replaceState(data?.appState, '', window.location.origin);
       if (data) {
-        // should be null
-        return;
+        // should always be null?
+      }
+    } else {
+      await auth0.checkSession();
+      if (await auth0.isAuthenticated()) {
+        setState(await auth0.getUser());
       }
     }
-
-    if (isAuthenticated) {
-      const user = await auth0.getUser();
-      setState(user);
-    }
-  });
+  }
 
   async function login() {
     auth0.loginWithRedirect({connection: 'github'});
   }
 
-  async function isAuth() {
-    try {
-      const isAuth = await auth0.isAuthenticated();
-      console.log('user', isAuth);
-      return isAuth;
-    } catch {
-      console.error('Error getting user');
-      return undefined;
-    }
-  }
-
   async function signOut() {
-    await auth0.logout({returnTo: 'http://localhost:4200'});
+    await auth0.logout({returnTo: window.location.origin});
   }
 
   const loggedIn = () => !!state();
@@ -60,7 +44,7 @@ export function $auth0State() {
     login,
     signOut,
     loggedIn,
-    isAuth,
+    initLogin,
   };
 }
 
