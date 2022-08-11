@@ -1,6 +1,5 @@
-import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
-import {header} from '../terminal.css';
+import {createTheme, style} from '@vanilla-extract/css';
 
 export const [theme, vars] = createTheme({
   iconFill: themeVars.backgroundColor.black,

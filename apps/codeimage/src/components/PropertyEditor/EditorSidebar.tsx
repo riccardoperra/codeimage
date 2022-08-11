@@ -1,5 +1,3 @@
-import {CodeImageLogo} from '../Icons/CodeImageLogo';
-import * as styles from '../Scaffold/Sidebar/Sidebar.css';
 import {EditorForm} from './EditorForm';
 import {EditorStyleForm} from './EditorStyleForm';
 import {FrameStyleForm} from './FrameStyleForm';
