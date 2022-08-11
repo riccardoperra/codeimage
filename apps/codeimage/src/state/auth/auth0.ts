@@ -1,70 +1,39 @@
 import {User} from '@auth0/auth0-spa-js';
 import {auth0} from '@core/constants/auth0';
-import {createRoot, createSignal, createResource} from 'solid-js';
+import {createEffect, createRoot, createSignal, onMount} from 'solid-js';
 
 type AuthState = User | null;
-const env = import.meta.env;
 
 export function $auth0State() {
-  //   const [isAuthenticated, setIsAuthenticated] = createSignal<
-  //     boolean | undefined
-  //   >(undefined);
-  //   const [userResource] = createResource(async () => {
-  //     const url = getUrl()!;
-  //     if (isRedirect(url)) {
-  //       const {appState} = await auth0.handleRedirectCallback(url);
-  //       onLogin!(appState, env.VITE_PUBLIC_MY_CALLBACK_URL);
-  //     }
-  //     if (setIsAuthenticated(await auth0.isAuthenticated())) {
-  //       const user = await auth0.getUser();
-  //       setState(user);
-  //       return user;
-  //     }
-  //   });
-
-  //   function getUrl() {
-  //     return window.location.href;
-  //   }
-  //   function isRedirect(url: string) {
-  //     const [, query] = url.split('?');
-  //     return query && query.includes('code=') && query.includes('state=');
-  //   }
-  //   function onLogin(_appState: any, loginRedirectUri: string) {
-  //     window.history.replaceState(undefined, '', loginRedirectUri);
-  //   }
-  //   supabase.auth.onAuthStateChange((event, session) => {
-  //     if (event === 'SIGNED_IN' && session) {
-  //       setState(session);
-  //     }
-  //     if (event === 'SIGNED_OUT') {
-  //       setState(null);
-  //     }
-  //   });
   const [state, setState] = createSignal<AuthState>();
 
+  onMount(async () => {
+    const queryParams = new URLSearchParams(window.location.search);
+
+    await auth0.checkSession();
+    const isAuthenticated = await auth0.isAuthenticated();
+
+    if (queryParams.has('code') && queryParams.has('state')) {
+      const data = await auth0.handleRedirectCallback().catch(e => {
+        console.log('TEST ERROR', e);
+        return null;
+      });
+      if (data) {
+        // should be null
+        return;
+      }
+    }
+
+    if (isAuthenticated) {
+      const user = await auth0.getUser();
+      setState(user);
+    }
+  });
+
   async function login() {
-    await auth0.loginWithRedirect({redirectMethod: 'assign'});
-    try {
-      const user = await auth0.getUser();
-      console.log('user', user);
-      setState(user);
-    } catch {
-      console.error('Error getting user');
-      setState(null);
-    }
+    auth0.loginWithRedirect({connection: 'github'});
   }
-  async function getUser() {
-    try {
-      const user = await auth0.getUser();
-      console.log('user', user);
-      setState(user);
-      return user;
-    } catch {
-      console.error('Error getting user');
-      setState(null);
-      return undefined;
-    }
-  }
+
   async function isAuth() {
     try {
       const isAuth = await auth0.isAuthenticated();
@@ -75,11 +44,16 @@ export function $auth0State() {
       return undefined;
     }
   }
+
   async function signOut() {
-    await auth0.logout({returnTo: window.location.origin});
+    await auth0.logout({returnTo: 'http://localhost:4200'});
   }
 
   const loggedIn = () => !!state();
+
+  createEffect(() => {
+    console.log('AUTH USER STATE', state());
+  });
 
   return {
     user: state,
@@ -87,7 +61,6 @@ export function $auth0State() {
     signOut,
     loggedIn,
     isAuth,
-    getUser,
   };
 }
 
