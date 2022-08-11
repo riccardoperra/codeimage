@@ -119,7 +119,7 @@ export function makePrismaProjectRepository(
       },
       data: {
         // Update automatically the `updatedAt` field
-        // id: projectId,
+        id: projectId,
         editorTabs: {
           deleteMany: {
             NOT: {
