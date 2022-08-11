@@ -22,7 +22,7 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
     <>
       <DropdownMenuV2
         selectionMode={'single'}
-        onAction={item => onUpdateLanguage(item)}
+        onAction={item => onUpdateLanguage(item as string)}
         selectedKeys={[props.currentLocale]}
         menuButton={
           <MenuButton

@@ -1,5 +1,5 @@
 import {LanguageIconDefinition} from '@codeimage/config';
-import {TerminalState} from '@codeimage/store/terminal/model';
+import {TerminalState} from '@codeimage/store/editor/model';
 import {FadeInOutTransition, themeVars} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';

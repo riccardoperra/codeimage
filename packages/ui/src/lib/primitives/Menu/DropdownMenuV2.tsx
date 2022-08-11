@@ -26,7 +26,7 @@ import {CustomComponentProps, styled} from '../../utils';
 import {MenuPopup} from './MenuPopup';
 
 type DropdownMenuProps = FlowProps<
-  AriaMenuTriggerProps & AriaMenuProps & {menuButton: JSX.Element}
+  AriaMenuTriggerProps & AriaMenuProps & {menuButton?: JSX.Element}
 >;
 
 interface DropdownMenuContext {
@@ -39,7 +39,7 @@ interface DropdownMenuContext {
 const DropdownContext = createContext<DropdownMenuContext>();
 
 export function MenuButton<T extends ElementType>(
-  props: CustomComponentProps<T, DropdownMenuProps>,
+  props: CustomComponentProps<T, Omit<DropdownMenuProps, 'menuButton'>>,
 ) {
   const context = useContext(DropdownContext) as DropdownMenuContext;
   const {buttonProps} = createButton(
