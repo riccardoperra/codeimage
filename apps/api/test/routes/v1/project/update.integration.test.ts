@@ -135,6 +135,6 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
     ] as ProjectUpdateResponse['editorTabs'],
     'return updated editor tabs',
   );
-  t.not(body.updatedAt, t.context.project1.updatedAt);
+  t.notSame(body.updatedAt, t.context.project1.updatedAt.toISOString());
   t.same(body.name, 'project to update', 'return same name');
 });
