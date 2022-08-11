@@ -1,4 +1,4 @@
-import {adaptiveFullScreenHeight, textStyles, themeVars} from '@codeimage/ui';
+import {adaptiveFullScreenHeight, themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 
 export const scaffold = style([
