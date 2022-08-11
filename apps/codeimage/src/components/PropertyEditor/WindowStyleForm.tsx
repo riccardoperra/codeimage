@@ -1,5 +1,4 @@
 import {useI18n} from '@codeimage/locale';
-import {setShowWatermark} from '@codeimage/store/terminal';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {SegmentedField, Select} from '@codeimage/ui';
 import {shadowsLabel, TERMINAL_SHADOWS} from '@core/configuration/shadow';
