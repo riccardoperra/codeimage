@@ -1,4 +1,5 @@
 import createAuth0Client from '@auth0/auth0-spa-js';
+
 const env = import.meta.env;
 
 export const auth0 = await createAuth0Client({
