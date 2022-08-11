@@ -21,6 +21,7 @@ import {darkGrayScale} from './theme/dark-theme.css';
 import './theme/dark-theme.css';
 import './theme/global.css';
 import './theme/light-theme.css';
+import {Auth0} from './auth0';
 
 const i18n = createI18nContext(locale);
 
@@ -113,9 +114,16 @@ export function Bootstrap() {
 
 render(
   () => (
-    <I18nContext.Provider value={i18n}>
-      <Bootstrap />
-    </I18nContext.Provider>
+    <Auth0
+      domain="https://codeimage.eu.auth0.com" // domain from Auth0
+      clientId="j52nYMfUSFzUQMWzUlLuxqRfcfbirlar" // client_id from Auth0
+      logoutRedirectUri={`${window.location.origin}/logout`} // Absolute URI Auth0 logout redirect
+      loginRedirectUri={`${window.location.origin}/`} // Absolute URI Auth0 login
+    >
+      <I18nContext.Provider value={i18n}>
+        <Bootstrap />
+      </I18nContext.Provider>
+    </Auth0>
   ),
   document.getElementById('root') as HTMLElement,
 );
