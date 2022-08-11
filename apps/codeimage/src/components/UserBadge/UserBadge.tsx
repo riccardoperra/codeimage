@@ -5,15 +5,7 @@ import {badge} from './UserBadge.css';
 
 export function UserBadge() {
   const {loggedIn, signInWithGithub, user} = getAuthState();
-  const name = () => user()?.user?.user_metadata.name as string | null;
-  const initials = () => {
-    const $name = name();
-    if (!$name) {
-      return null;
-    }
-    const [first = '', last = ''] = $name.split(' ');
-    return `${first[0]}${last[0]}`;
-  };
+  const profileImage = () => user()?.user?.user_metadata.avatar_url;
 
   return (
     <Show
@@ -29,7 +21,7 @@ export function UserBadge() {
       when={loggedIn()}
     >
       <Badge theme={badge} size={'md'}>
-        {initials()}
+        <img width={36} height={36} src={profileImage()} />
       </Badge>
     </Show>
   );
