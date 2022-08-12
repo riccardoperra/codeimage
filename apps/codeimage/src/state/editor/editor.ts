@@ -48,24 +48,25 @@ export function createEditorsStore() {
   const isActive = createSelector(() => state.activeEditorId);
   const setEditors = createDerivedSetter(state, ['editors']);
 
-  const [stateToPersist$, stateToPersist] = createDerivedObservable(() => {
-    return {
-      editors: state.editors.map(editor => {
-        return {
-          languageId: editor.languageId,
-          code: editor.code,
-          tabName: editor.tab.tabName ?? '',
-          id: editor.id,
-        };
-      }),
-      options: {
-        themeId: state.options.themeId,
-        showLineNumbers: state.options.showLineNumbers,
-        fontId: state.options.fontId,
-        fontWeight: state.options.fontWeight,
-      },
-    };
-  });
+  const [stateToPersist$, stateToPersist] =
+    createDerivedObservable<PersistedEditorState>(() => {
+      return {
+        editors: state.editors.map(editor => {
+          return {
+            languageId: editor.languageId,
+            code: editor.code,
+            tabName: editor.tab.tabName ?? '',
+            id: editor.id,
+          };
+        }),
+        options: {
+          themeId: state.options.themeId,
+          showLineNumbers: state.options.showLineNumbers,
+          fontId: state.options.fontId,
+          fontWeight: state.options.fontWeight,
+        },
+      };
+    });
 
   const addEditor = (
     editorState?: Partial<EditorState> | null,

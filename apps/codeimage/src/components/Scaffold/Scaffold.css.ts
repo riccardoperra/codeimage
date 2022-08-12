@@ -1,7 +1,7 @@
 import {createTheme, style} from '@vanilla-extract/css';
 
 export const [scaffoldTheme, scaffoldVars] = createTheme({
-  toolbarHeight: '60px',
+  toolbarHeight: '56px',
   panelWidth: '280px',
   virtualHeightFallback: '1vh',
 });

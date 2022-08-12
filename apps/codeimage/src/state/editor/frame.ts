@@ -19,15 +19,16 @@ export function getInitialFrameState(): FrameState {
 export function createFrameState() {
   const [store, setStore] = createStore<FrameState>(getInitialFrameState());
 
-  const [stateToPersist$, stateToPersist] = createDerivedObservable(() => {
-    return {
-      background: store.background,
-      opacity: store.opacity,
-      padding: store.padding,
-      radius: store.radius,
-      visible: store.visible,
-    };
-  });
+  const [stateToPersist$, stateToPersist] =
+    createDerivedObservable<PersistedFrameState>(() => {
+      return {
+        background: store.background,
+        opacity: store.opacity,
+        padding: store.padding,
+        radius: store.radius,
+        visible: store.visible,
+      };
+    });
 
   return {
     store,

@@ -4,6 +4,7 @@ import {
   themeVars,
 } from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
+import {scaffoldVars} from '../../components/Scaffold/Scaffold.css';
 
 export const wrapper = style([
   adaptiveFullScreenHeight,
@@ -11,6 +12,7 @@ export const wrapper = style([
     width: '100vw',
     position: 'relative',
     display: 'flex',
+    height: `calc(100vh - ${scaffoldVars.toolbarHeight})`,
 
     '@media': {
       'screen and (max-width: 768px)': {

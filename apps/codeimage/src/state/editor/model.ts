@@ -30,7 +30,12 @@ export interface EditorUIOptions {
 
 export interface PersistedEditorState {
   readonly options: Omit<EditorUIOptions, 'focused'>;
-  readonly editors: readonly EditorState[];
+  readonly editors: {
+    id: string;
+    code: string;
+    tabName: string;
+    languageId: string;
+  }[];
 }
 
 export interface TerminalState {
@@ -60,10 +65,9 @@ export type PersistedTerminalState = Pick<
   | 'alternativeTheme'
 >;
 
-export interface EditorFinalState {
-  $workspaceId: string | null;
+export interface ProjectEditorPersistedState {
   $snippetId: string | null;
-  $version: number;
+  $version: string;
   frame: PersistedFrameState;
   terminal: PersistedTerminalState;
   editor: PersistedEditorState;

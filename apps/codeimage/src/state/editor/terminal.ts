@@ -30,20 +30,21 @@ export function getInitialTerminalState(): TerminalState {
 export function createTerminalState() {
   const [state, setState] = createStore(getInitialTerminalState());
 
-  const [stateToPersist$, stateToPersist] = createDerivedObservable(() => {
-    return {
-      alternativeTheme: state.alternativeTheme,
-      showGlassReflection: state.showGlassReflection,
-      showWatermark: state.showWatermark,
-      textColor: state.textColor,
-      background: state.background,
-      opacity: state.opacity,
-      shadow: state.shadow,
-      showHeader: state.showHeader,
-      type: state.type,
-      accentVisible: state.accentVisible,
-    };
-  });
+  const [stateToPersist$, stateToPersist] =
+    createDerivedObservable<TerminalState>(() => {
+      return {
+        alternativeTheme: state.alternativeTheme,
+        showGlassReflection: state.showGlassReflection,
+        showWatermark: state.showWatermark,
+        textColor: state.textColor,
+        background: state.background,
+        opacity: state.opacity,
+        shadow: state.shadow,
+        showHeader: state.showHeader,
+        type: state.type,
+        accentVisible: state.accentVisible,
+      };
+    });
 
   return {
     state,
