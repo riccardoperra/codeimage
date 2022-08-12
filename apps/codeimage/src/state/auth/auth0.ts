@@ -34,8 +34,16 @@ export function $auth0State() {
 
   const loggedIn = () => !!state();
 
+  const user = () => {
+    const $user = state();
+    if (!$user) return null;
+    return Object.assign($user, {
+      id: $user.sub?.split('|')[1],
+    });
+  };
+
   return {
-    user: state,
+    user,
     login,
     signOut,
     loggedIn,
