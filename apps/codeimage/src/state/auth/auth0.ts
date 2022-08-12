@@ -18,7 +18,6 @@ export function $auth0State() {
         // should always be null?
       }
     } else {
-      await auth0.checkSession();
       if (await auth0.isAuthenticated()) {
         setState(await auth0.getUser());
       }
@@ -34,10 +33,6 @@ export function $auth0State() {
   }
 
   const loggedIn = () => !!state();
-
-  createEffect(() => {
-    console.log('AUTH USER STATE', state());
-  });
 
   return {
     user: state,
