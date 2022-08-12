@@ -1,9 +1,10 @@
-import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
+import {createTheme, style} from '@vanilla-extract/css';
+import {scaffoldVars} from '../Scaffold/Scaffold.css';
 
 export const [toolbarTheme, toolbarVars] = createTheme({
   backgroundColor: themeVars.backgroundColor.white,
-  toolbarHeight: '56px',
+  toolbarHeight: scaffoldVars.toolbarHeight,
 });
 
 export const wrapper = style([

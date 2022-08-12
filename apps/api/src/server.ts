@@ -1,6 +1,6 @@
 // Read the .env file.
 // Require library to exit fastify process, gracefully (if possible)
-import * as closeWithGrace from 'close-with-grace';
+import closeWithGrace from 'close-with-grace';
 import * as dotenv from 'dotenv';
 // Require the framework
 import Fastify from 'fastify';
@@ -16,7 +16,11 @@ const app = Fastify({
 app.register(import('./app'));
 
 // delay is the number of milliseconds for the graceful close to finish
-const closeListeners = closeWithGrace({delay: 500}, async function ({err}) {
+const closeListeners = closeWithGrace({delay: 500}, async function ({
+  signal: _signal,
+  err,
+  manual: _manual,
+}) {
   if (err) {
     app.log.error(err);
   }
@@ -30,8 +34,11 @@ app.addHook('onClose', async (instance, done) => {
 
 // Start listening.
 app.listen(
-  {host: '0.0.0.0', port: parseInt(process.env.PORT as string) || 3000},
-  (err: any) => {
+  {
+    host: process.env.HOST || '0.0.0.0',
+    port: parseInt(process.env.PORT as string) || 3000,
+  },
+  err => {
     if (err) {
       app.log.error(err);
       process.exit(1);

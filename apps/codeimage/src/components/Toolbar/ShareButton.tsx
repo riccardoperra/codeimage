@@ -10,6 +10,7 @@ interface ShareButtonProps {
 }
 
 export const ShareButton: Component<ShareButtonProps> = props => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const computedProps = mergeProps({showLabel: false, props});
   const [support, shareable, share] = useWebshare();
   const canShare = createMemo(() => support() && shareable(getData()));

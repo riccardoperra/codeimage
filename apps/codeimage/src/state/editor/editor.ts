@@ -1,4 +1,4 @@
-import {GetProjectByIdApi} from '@codeimage/api/api-types';
+import type * as ApiTypes from '@codeimage/api/api-types';
 import {
   createDerivedObservable,
   createDerivedSetter,
@@ -48,24 +48,25 @@ export function createEditorsStore() {
   const isActive = createSelector(() => state.activeEditorId);
   const setEditors = createDerivedSetter(state, ['editors']);
 
-  const [stateToPersist$, stateToPersist] = createDerivedObservable(() => {
-    return {
-      editors: state.editors.map(editor => {
-        return {
-          languageId: editor.languageId,
-          code: editor.code,
-          tabName: editor.tab.tabName ?? '',
-          id: editor.id,
-        };
-      }),
-      options: {
-        themeId: state.options.themeId,
-        showLineNumbers: state.options.showLineNumbers,
-        fontId: state.options.fontId,
-        fontWeight: state.options.fontWeight,
-      },
-    };
-  });
+  const [stateToPersist$, stateToPersist] =
+    createDerivedObservable<PersistedEditorState>(() => {
+      return {
+        editors: state.editors.map(editor => {
+          return {
+            languageId: editor.languageId,
+            code: editor.code,
+            tabName: editor.tab.tabName ?? '',
+            id: editor.id,
+          };
+        }),
+        options: {
+          themeId: state.options.themeId,
+          showLineNumbers: state.options.showLineNumbers,
+          fontId: state.options.fontId,
+          fontWeight: state.options.fontWeight,
+        },
+      };
+    });
 
   const addEditor = (
     editorState?: Partial<EditorState> | null,
@@ -122,7 +123,7 @@ export function createEditorsStore() {
     () => filter(SUPPORTED_FONTS, font => font.id === state.options.fontId)[0],
   );
 
-  const setFromWorkspace = (item: GetProjectByIdApi['response']) => {
+  const setFromWorkspace = (item: ApiTypes.GetProjectByIdApi['response']) => {
     setEditors(
       item.editorTabs.map(
         editor =>
@@ -159,7 +160,7 @@ export function createEditorsStore() {
         const editors = (state.editors ?? [])
           .slice(0, MAX_TABS)
           .map(editor => ({
-            tabName: editor.tab.tabName,
+            tabName: editor.tabName,
             languageId: editor.languageId,
             id: editor.id,
             code: editor.code,

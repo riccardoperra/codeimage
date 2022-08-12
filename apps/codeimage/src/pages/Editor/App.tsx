@@ -1,4 +1,3 @@
-import {createEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {Box, Button, HStack, PortalHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
@@ -65,7 +64,7 @@ export function App() {
                 </Button>
                 <div style={{flex: 1}} />
                 <ShareButton showLabel={true} />
-                <ExportInNewTabButton />
+                <ExportInNewTabButton canvasRef={frameRef()} />
               </HStack>
             </Box>
           </Show>
