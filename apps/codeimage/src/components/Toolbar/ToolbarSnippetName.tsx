@@ -1,4 +1,4 @@
-import {getAuthState} from '@codeimage/store/auth/auth';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
 import {Box, FlexField, HStack, Loading, Text, TextField} from '@codeimage/ui';
 import clickOutside from '@core/directives/clickOutside';
@@ -11,7 +11,7 @@ void clickOutside;
 
 export function ToolbarSnippetName() {
   const [editing, setEditing] = createSignal(false);
-  const loggedIn = () => getAuthState().loggedIn();
+  const loggedIn = () => getAuth0State().loggedIn();
   const {remoteSync, activeWorkspace} = getEditorSyncAdapter()!;
   const [value, setValue] = createSignal(activeWorkspace()?.name || undefined);
   createEffect(

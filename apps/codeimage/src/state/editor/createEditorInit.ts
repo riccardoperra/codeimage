@@ -1,5 +1,5 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {getAuthState} from '@codeimage/store/auth/auth';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
@@ -26,7 +26,7 @@ function createEditorSyncAdapter() {
   const [activeWorkspace, setActiveWorkspace] = createSignal<
     ApiTypes.GetProjectByIdApi['response'] | null
   >();
-  const authState = getAuthState();
+  const authState = getAuth0State();
   const frameStore = getFrameState();
   const terminalStore = getTerminalState();
   const editorStore = getRootEditorStore();
