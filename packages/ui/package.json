@@ -18,6 +18,7 @@
   },
   "scripts": {
     "build": "rollup -c",
+    "build:vite": "vite build",
     "build:watch": "vite build --watch",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",

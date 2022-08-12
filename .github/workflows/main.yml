@@ -80,7 +80,7 @@ jobs:
 
   typecheck-packages:
     if: ${{ needs.install.outputs.libs-change == 'true' }}
-    name: Typecheck packages
+    name: Type-checking
     needs: [ install ]
     runs-on: ubuntu-latest
     steps:
@@ -96,32 +96,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
       - name: Typecheck packages
         run: |
           pnpm --filter='./packages/**' --recursive typecheck:ci
 
-
-  typecheck-app:
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
-    name: Typecheck app
-    needs: [ typecheck-packages ]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Typecheck packages
+      - name: Typecheck app
         run: |
+          pnpm --filter='@codeimage/api' typecheck:ci
           pnpm --filter='@codeimage/app' typecheck
 
 
@@ -296,7 +283,6 @@ jobs:
       build-packages,
       build-api,
       typecheck-packages,
-      typecheck-app,
       be-test
     ]
     runs-on: ubuntu-latest

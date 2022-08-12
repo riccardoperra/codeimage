@@ -4,4 +4,4 @@ export type {
   UpdateProjectApi,
   UpdateProjectNameApi,
   GetProjectByIdApi,
-} from '../src/schemas';
+} from '../dist/schemas';

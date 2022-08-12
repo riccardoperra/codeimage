@@ -7,7 +7,6 @@ import {
   FieldLabel,
   FlexField,
   HStack,
-  Text,
   TextField,
 } from '@codeimage/ui';
 import {

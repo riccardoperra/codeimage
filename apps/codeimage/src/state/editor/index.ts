@@ -1,6 +1,6 @@
 import {createEditorsStore} from '@codeimage/store/editor/editor';
 import {createFrameState} from '@codeimage/store/editor/frame';
-import {EditorFinalState} from '@codeimage/store/editor/model';
+import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {createTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {createEffect, createRoot, createSignal, on} from 'solid-js';
@@ -28,7 +28,7 @@ export function createEditorStore() {
 
         try {
           const idbState = await idb
-            .get<EditorFinalState>('document')
+            .get<ProjectEditorPersistedState>('document')
             .catch(() => null);
 
           if (idbState) {

@@ -1,7 +1,6 @@
 import withSolid from 'rollup-preset-solid';
-import {dependencies, peerDependencies} from './package.json';
 import ts from 'typescript';
-import {resolve} from 'path';
+import {dependencies, peerDependencies} from './package.json';
 
 const externals = [
   ...Object.keys(peerDependencies),
@@ -11,7 +10,8 @@ const externals = [
   '@vanilla-extract/recipes/createRuntimeFn',
 ];
 
-export default withSolid({
+/** @type {import('rollup').RollupOptions} */
+const solidConfig = withSolid({
   input: 'src/index.tsx',
   targets: ['esm', 'cjs'],
   external: externals,
@@ -28,7 +28,6 @@ export default withSolid({
       assetFileNames({name}) {
         return name.replace(/^src\//, '');
       },
-
       exports: 'named',
       dir: './dist/esm',
       format: 'esm',
@@ -51,28 +50,52 @@ export default withSolid({
       format: 'cjs',
     },
   ],
-  plugins: [
-    {
-      name: 'ts',
-      buildEnd() {
-        const program = ts.createProgram([resolve('src/index.tsx')], {
-          target: ts.ScriptTarget.ESNext,
-          module: ts.ModuleKind.ESNext,
-          moduleResolution: ts.ModuleResolutionKind.NodeJs,
-          jsx: ts.JsxEmit.Preserve,
-          jsxImportSource: 'solid-js',
-          allowSyntheticDefaultImports: true,
-          esModuleInterop: true,
-          outDir: `dist/source`,
-          declarationDir: `dist/types`,
-          declaration: true,
-          allowJs: true,
-          preserveSymlinks: true,
-          strict: true,
-        });
-
-        program.emit();
-      },
-    },
-  ],
 });
+
+/** @type {import('rollup').Plugin} */
+const customTsPlugin = {
+  name: 'ts',
+  buildEnd() {
+    const currentDir = process.cwd();
+    const configFile = ts.findConfigFile(
+      currentDir,
+      ts.sys.fileExists,
+      'tsconfig.json',
+    );
+    if (!configFile) throw Error('tsconfig.json not found');
+    const {config} = ts.readConfigFile(configFile, ts.sys.readFile);
+
+    const {options, fileNames, errors} = ts.parseJsonConfigFileContent(
+      config,
+      ts.sys,
+      currentDir,
+    );
+
+    const program = ts.createProgram({
+      options: {
+        ...options,
+        target: ts.ScriptTarget.ESNext,
+        module: ts.ModuleKind.ESNext,
+        moduleResolution: ts.ModuleResolutionKind.NodeJs,
+        jsx: ts.JsxEmit.Preserve,
+        jsxImportSource: 'solid-js',
+        declarationMap: false,
+        outDir: `dist/source`,
+        declarationDir: 'dist/types',
+      },
+      rootNames: fileNames,
+      configFileParsingDiagnostics: errors,
+    });
+
+    program.emit();
+  },
+};
+
+solidConfig.plugins = (solidConfig.plugins || []).map(plugin => {
+  if (plugin && plugin.name === 'ts') {
+    return customTsPlugin;
+  }
+  return plugin;
+});
+
+export default solidConfig;

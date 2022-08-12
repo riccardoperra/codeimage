@@ -10,7 +10,7 @@ export const item = style({
   height: '128px',
   // boxShadow: themeVars.dynamicColors.dialog.panelShadow,
   boxShadow: 'inset 0 1px 0 0 rgb(255 255 255 / 5%)',
-  color: themeVars.dynamicColors.textColor,
+  color: themeVars.dynamicColors.baseText,
   transition: 'background-color 0.2s ease-in-out',
   position: 'relative',
   display: 'inline-flex',
