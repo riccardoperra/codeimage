@@ -1,4 +1,5 @@
 import {useI18n} from '@codeimage/locale';
+import {getAuthState} from '@codeimage/store/auth/auth';
 import {setLocale, setThemeMode, uiStore} from '@codeimage/store/ui';
 import {
   Box,
@@ -25,6 +26,7 @@ import {AppLocaleEntries} from '../../i18n';
 
 export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
   const [page, setPage] = createSignal<'general' | 'account'>('general');
+  const {user, loggedIn} = getAuthState();
   const ui = uiStore;
   const {locales} = appEnvironment;
 
@@ -36,6 +38,7 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
         <Box display={'flex'}>
           <div class={styles.dialogLeftPanel}>
             <span onClick={() => setPage('general')}>General</span>
+            <span onClick={() => setPage('account')}>Account</span>
           </div>
           <div class={styles.dialogContent}>
             <Switch>
@@ -122,8 +125,52 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                   </FlexField>
                 </VStack>
               </Match>
-              <Match when={page() === 'account'}>
-                <VStack spacing={'8'} flexGrow={1}></VStack>
+              <Match when={page() === 'account' && loggedIn()}>
+                <VStack spacing={'8'} flexGrow={1}>
+                  <Box
+                    display={'flex'}
+                    flexDirection={'column'}
+                    alignItems={'center'}
+                    justifyContent={'center'}
+                  >
+                    <img
+                      style={{
+                        'border-radius': '50%',
+                      }}
+                      width={72}
+                      height={72}
+                      src={
+                        'https://avatars.githubusercontent.com/u/37072694?v=4'
+                      }
+                    />
+
+                    <VStack spacing={'3'} marginTop={6} alignItems={'center'}>
+                      <Text size={'lg'}>
+                        {user()?.user?.user_metadata.full_name}
+                      </Text>
+                      <Text size={'xs'} weight={'normal'}>
+                        {user()?.user?.user_metadata.email}
+                      </Text>
+                    </VStack>
+                  </Box>
+
+                  <VStack spacing={'4'} marginTop={6} marginBottom={0}>
+                    <div>
+                      <Button
+                        variant={'solid'}
+                        theme={'danger'}
+                        size={'md'}
+                        block
+                      >
+                        Delete your account
+                      </Button>
+                    </div>
+                    <Text size={'sm'}>
+                      *Once your account is deleted, you will lose all persisted
+                      data, including your saved projects.
+                    </Text>
+                  </VStack>
+                </VStack>
               </Match>
             </Switch>
           </div>
