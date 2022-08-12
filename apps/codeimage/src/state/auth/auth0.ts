@@ -29,7 +29,7 @@ export function $auth0State() {
   }
 
   async function signOut() {
-    await auth0.logout({returnTo: window.location.origin});
+    await auth0.logout();
   }
 
   const loggedIn = () => !!state();
