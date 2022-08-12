@@ -1,11 +1,10 @@
-import {getAuthState} from '@codeimage/store/auth/auth';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {
   Button,
   createStandaloneDialog,
   DropdownMenuV2,
   MenuButton,
 } from '@codeimage/ui';
-import {supabase} from '@core/constants/supabase';
 import {Item} from '@solid-aria/collection';
 import {useNavigate} from 'solid-app-router';
 import {Show} from 'solid-js';
@@ -15,11 +14,12 @@ import {SettingsDialog} from './SettingsDialog';
 export function ToolbarSettingsButton() {
   const navigate = useNavigate();
   const createDialog = createStandaloneDialog();
+  const {signOut, loggedIn} = getAuth0State();
 
   const onMenuAction = (item: string | number) => {
     switch (item) {
       case 'logout':
-        supabase.auth.signOut().then(() => navigate('/'));
+        signOut().then(() => navigate('/'));
         break;
       case 'settings': {
         createDialog(SettingsDialog, () => ({}));
@@ -45,7 +45,7 @@ export function ToolbarSettingsButton() {
       }
     >
       <Item key={'settings'}>Settings</Item>
-      <Show when={getAuthState().loggedIn()}>
+      <Show when={loggedIn()}>
         <Item key={'logout'}>Logout</Item>
       </Show>
     </DropdownMenuV2>

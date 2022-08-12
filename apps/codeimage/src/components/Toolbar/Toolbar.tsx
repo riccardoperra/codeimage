@@ -5,7 +5,6 @@ import {Component, Show} from 'solid-js';
 import {CodeImageLogo} from '../Icons/CodeImageLogo';
 import {CollectionIcon} from '../Icons/Collection';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
-import {UserAuth0} from '../UserBadge/UserAuth0';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
 import {ExportInNewTabButton} from './ExportNewTabButton';
@@ -58,9 +57,6 @@ export const Toolbar: Component<{
 
           <ExportButton canvasRef={props.canvasRef} />
 
-          {/* <Button onClick={loggedInAuth0}>LOGIN</Button>
-          <Button onClick={logout}>logout</Button> */}
-          <UserAuth0 />
           <UserBadge />
         </HStack>
       </Box>

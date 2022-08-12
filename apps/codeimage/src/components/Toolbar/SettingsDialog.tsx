@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {getAuthState} from '@codeimage/store/auth/auth';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {setLocale, setThemeMode, uiStore} from '@codeimage/store/ui';
 import {
   Box,
@@ -19,14 +19,14 @@ import {
   themeVars,
   VStack,
 } from '@codeimage/ui';
-import * as styles from './SettingsDialog.css';
 import {appEnvironment} from '@core/configuration';
 import {createSignal, For, Match, ParentProps, Switch} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
+import * as styles from './SettingsDialog.css';
 
 export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
   const [page, setPage] = createSignal<'general' | 'account'>('general');
-  const {user, loggedIn} = getAuthState();
+  const {user, loggedIn} = getAuth0State();
   const ui = uiStore;
   const {locales} = appEnvironment;
 
@@ -139,17 +139,15 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                       }}
                       width={72}
                       height={72}
-                      src={
-                        'https://avatars.githubusercontent.com/u/37072694?v=4'
-                      }
+                      src={user()?.picture}
                     />
 
                     <VStack spacing={'3'} marginTop={6} alignItems={'center'}>
                       <Text size={'lg'}>
-                        {user()?.user?.user_metadata.full_name}
+                        {user()?.name} ({user()?.nickname})
                       </Text>
                       <Text size={'xs'} weight={'normal'}>
-                        {user()?.user?.user_metadata.email}
+                        {user()?.email}
                       </Text>
                     </VStack>
                   </Box>
