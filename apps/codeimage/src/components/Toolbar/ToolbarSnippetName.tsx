@@ -18,8 +18,6 @@ export function ToolbarSnippetName() {
     on(activeWorkspace, workspace => setValue(workspace?.name || undefined)),
   );
 
-  console.log(activeWorkspace());
-
   async function updateSnippetName(newName: string | undefined) {
     const $$activeWorkspace = activeWorkspace();
     if (!newName || !$$activeWorkspace || $$activeWorkspace.name === value()) {

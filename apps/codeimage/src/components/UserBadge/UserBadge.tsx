@@ -1,5 +1,6 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {Badge, Button} from '@codeimage/ui';
+import {Badge} from '@codeimage/ui';
+import {GithubLoginButton} from '@ui/GithubLoginButton/GithubLoginButton';
 import {Show} from 'solid-js';
 import * as styles from './UserBadge.css';
 
@@ -15,14 +16,7 @@ export function UserBadge() {
   };
 
   return (
-    <Show
-      fallback={
-        <Button theme={'secondary'} variant={'solid'} onClick={() => login()}>
-          Sign in with GitHub
-        </Button>
-      }
-      when={loggedIn()}
-    >
+    <Show fallback={<GithubLoginButton onClick={login} />} when={loggedIn()}>
       <Badge theme={styles.badge} size={'md'}>
         {initials()}
         <img class={styles.badgePicture} src={profileImage()} />

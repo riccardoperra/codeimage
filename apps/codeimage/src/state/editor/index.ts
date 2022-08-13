@@ -22,7 +22,6 @@ export function createEditorStore() {
         terminal.setState('background', resource.properties.terminal.main);
         terminal.setState('textColor', resource.properties.terminal.text);
         if (frame.store.background === null) {
-          console.log(frame);
           frame.setBackground(resource.properties.previewBackground);
         }
 
