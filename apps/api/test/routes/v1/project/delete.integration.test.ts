@@ -20,9 +20,6 @@ t.test('DELETE /v1/project/:id [Delete Project] -> 200', async t => {
   const response = await fastify.inject({
     url: `/api/v1/project/${projectId}`,
     method: 'DELETE',
-    headers: {
-      'user-id': userId,
-    },
   });
 
   t.ok(spy.withArgs(projectId, userId).calledOnce, 'has been called once');
