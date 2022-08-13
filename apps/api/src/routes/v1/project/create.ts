@@ -20,12 +20,12 @@ const createRoute: FastifyPluginAsyncTypebox = async fastify => {
   fastify.post(
     '/',
     {
-      preHandler: req => fastify.authorize(req),
+      preValidation: req => fastify.authorize(req),
       schema,
     },
     request => {
-      const {userId, body} = request;
-      return fastify.projectService.createNewProject(userId, body);
+      const {appUser, body} = request;
+      return fastify.projectService.createNewProject(appUser.id, body);
     },
   );
 };

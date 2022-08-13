@@ -5,14 +5,14 @@ const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
   fastify.get(
     '/',
     {
-      preHandler: fastify.authorize,
+      preValidation: fastify.authorize,
       schema: {
         tags: ['Project'],
       },
     },
     async (request): Promise<Project[]> => {
-      const {userId} = request;
-      return fastify.projectService.findAllByUserId(userId);
+      const {appUser} = request;
+      return fastify.projectService.findAllByUserId(appUser.id);
     },
   );
 };

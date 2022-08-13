@@ -24,16 +24,16 @@ const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
   fastify.put(
     '/:id',
     {
-      preHandler: req => fastify.authorize(req),
+      preValidation: req => fastify.authorize(req),
       schema,
     },
     request => {
       const {
-        userId,
+        appUser,
         body,
         params: {id},
       } = request;
-      return fastify.projectService.update(userId, id, body);
+      return fastify.projectService.update(appUser.id, id, body);
     },
   );
 };
