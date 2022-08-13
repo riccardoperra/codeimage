@@ -34,12 +34,8 @@ function createEditorSyncAdapter() {
   const idb = useIdb();
 
   const [loadedSnippet] = createResource(snippetId, async snippetId => {
-    const userId = authState.user()?.user?.id;
     if (snippetId) {
-      const storedWorkspaceData = await API.project.loadSnippet(
-        userId,
-        snippetId,
-      );
+      const storedWorkspaceData = await API.project.loadSnippet(snippetId);
       if (storedWorkspaceData) {
         updateStateFromRemote(storedWorkspaceData);
       }
@@ -116,7 +112,7 @@ function createEditorSyncAdapter() {
               editorOptions: options,
             };
 
-            const snippet = await API.project.updateSnippet(workspace.userId, {
+            const snippet = await API.project.updateSnippet({
               body: dataToSave,
               params: {id: workspace.id},
             });
@@ -148,7 +144,7 @@ function createEditorSyncAdapter() {
 
         if (activeWorkspace()) {
           const snippet = API.project
-            .updateSnippet(workspace.userId, {
+            .updateSnippet({
               body: {
                 frame: frameStore.stateToPersist(),
                 terminal: terminalStore.stateToPersist(),
