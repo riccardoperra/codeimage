@@ -59,6 +59,7 @@ importers:
       '@codeimage/prisma-models': workspace:*
       '@fastify/autoload': ^5.2.0
       '@fastify/env': ^4.1.0
+      '@fastify/jwt': 6.3.2
       '@fastify/sensible': ^5.1.0
       '@fastify/swagger': ^7.4.1
       '@fastify/type-provider-typebox': ^2.3.0
@@ -87,6 +88,7 @@ importers:
       '@codeimage/prisma-models': link:../../packages/prisma-models
       '@fastify/autoload': 5.2.0
       '@fastify/env': 4.1.0
+      '@fastify/jwt': 6.3.2
       '@fastify/sensible': 5.1.0
       '@fastify/swagger': 7.4.1
       '@fastify/type-provider-typebox': 2.3.0_nhvifmkfyxezjyejhmx5soilbe
@@ -8130,7 +8132,7 @@ packages:
     engines: {node: '>= 8'}
 
   /methods/1.1.2:
-    resolution: {integrity: sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=}
+    resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
     engines: {node: '>= 0.6'}
     dev: true
 

@@ -15,7 +15,7 @@ datasource db {
 model User {
   id        String    @id @default(uuid())
   createdAt DateTime  @default(now())
-  provider  String
+  email     String    @unique
   projects  Project[]
 }
 

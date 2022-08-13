@@ -20,9 +20,6 @@ t.test('/v1/project -> 200', async t => {
   const response = await fastify.inject({
     url: '/api/v1/project',
     method: 'GET',
-    headers: {
-      'user-id': userId,
-    },
   });
 
   const body = JSON.parse(response.body) as Project[];

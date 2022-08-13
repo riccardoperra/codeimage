@@ -1,6 +1,6 @@
 import {User} from '@auth0/auth0-spa-js';
 import {auth0} from '@core/constants/auth0';
-import {createEffect, createRoot, createSignal} from 'solid-js';
+import {createRoot, createSignal} from 'solid-js';
 
 type AuthState = User | null;
 
