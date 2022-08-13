@@ -38,7 +38,7 @@ async function fetchWorkspaceContent(): Promise<
   const authState = getAuth0State();
   const userId = authState.user()?.id;
   if (!userId) return [];
-  return API.project.getWorkspaceContent(userId);
+  return API.project.getWorkspaceContent();
 }
 
 function makeDashboardState() {
@@ -58,11 +58,6 @@ function makeDashboardState() {
   };
 
   async function createNewProject() {
-    const userId = getAuth0State().user()?.user?.id;
-    if (!userId) {
-      return;
-    }
-
     const theme = await getThemeStore().getThemeDef('vsCodeDarkTheme')?.load();
 
     const frame = getInitialFrameState();
@@ -94,14 +89,12 @@ function makeDashboardState() {
       },
     };
 
-    return API.project.createSnippet(userId, data);
+    return API.project.createSnippet(data);
   }
 
   async function deleteProject(projectId: string) {
-    const userId = getAuth0State().user()?.user?.id;
-    if (!userId) return;
     mutate(items => items.filter(i => i.id !== projectId));
-    await API.project.deleteProject(userId, {
+    await API.project.deleteProject({
       params: {
         id: projectId,
       },
@@ -129,7 +122,7 @@ function makeDashboardState() {
         return item;
       }),
     );
-    await API.project.updateSnippetName(userId, {
+    await API.project.updateSnippetName({
       params: {
         id,
       },
