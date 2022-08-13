@@ -1,5 +1,6 @@
 import {User} from '@codeimage/prisma-models';
 import {FastifyPluginAsync, FastifyReply, FastifyRequest} from 'fastify';
+import fastifyAuth0Verify from 'fastify-auth0-verify';
 import fp from 'fastify-plugin';
 
 declare module '@fastify/jwt/jwt' {
@@ -14,7 +15,7 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
     if (options.authProvider) {
       await fastify.register(options.authProvider);
     } else {
-      await fastify.register(import('fastify-auth0-verify'), {
+      await fastify.register(fastifyAuth0Verify, {
         domain: process.env.DOMAIN_AUTH0,
         secret: process.env.CLIENT_SECRET_AUTH,
         audience: process.env.AUDIENCE_AUTH0,
