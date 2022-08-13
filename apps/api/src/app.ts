@@ -13,6 +13,7 @@ declare module 'fastify' {
 }
 
 export type AppOptions = {
+  authProvider: FastifyPluginAsync;
   // Place your custom options for app below here.
 } & Partial<AutoloadPluginOptions>;
 

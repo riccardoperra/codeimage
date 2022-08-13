@@ -53,9 +53,6 @@ t.test('POST /v1/project/ [Create Project] -> 200', async t => {
     url: `/api/v1/project`,
     method: 'POST',
     payload: data,
-    headers: {
-      'user-id': userId,
-    },
   });
 
   const body = JSON.parse(response.body) as ProjectCreateResponse;

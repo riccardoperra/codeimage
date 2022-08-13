@@ -240,7 +240,11 @@ jobs:
           - 5432:5432
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ga_codeimage?schema=${{ github.ref_name }}
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_codeimage
+      DOMAIN_AUTH0: https://example.it
+      CLIENT_SECRET_AUTH: <client-secret-auth>
+      AUDIENCE_AUTH0: <audience>
+
 
     steps:
       - uses: actions/checkout@v2
