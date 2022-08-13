@@ -111,13 +111,15 @@ export function Bootstrap() {
   );
 }
 
-await getAuth0State().initLogin();
-
-render(
-  () => (
-    <I18nContext.Provider value={i18n}>
-      <Bootstrap />
-    </I18nContext.Provider>
-  ),
-  document.getElementById('root') as HTMLElement,
-);
+getAuth0State()
+  .initLogin()
+  .then(() => {
+    render(
+      () => (
+        <I18nContext.Provider value={i18n}>
+          <Bootstrap />
+        </I18nContext.Provider>
+      ),
+      document.getElementById('root') as HTMLElement,
+    );
+  });

@@ -1,15 +1,17 @@
-import {User} from '@auth0/auth0-spa-js';
-import {auth0} from '@core/constants/auth0';
+import {Auth0Client, User} from '@auth0/auth0-spa-js';
+import {auth0 as $auth0} from '@core/constants/auth0';
 import {createRoot, createSignal} from 'solid-js';
 
 type AuthState = User | null;
 
 export function $auth0State() {
+  let auth0!: Auth0Client;
   const [state, setState] = createSignal<AuthState>();
 
   async function initLogin() {
+    auth0 = await $auth0;
     const queryParams = new URLSearchParams(window.location.search);
-
+    if (!auth0) return;
     if (queryParams.has('code') && queryParams.has('state')) {
       const data = await auth0.handleRedirectCallback().catch(() => null);
       setState(await auth0.getUser());
@@ -32,6 +34,10 @@ export function $auth0State() {
     await auth0.logout();
   }
 
+  const getToken = () => {
+    return auth0.getTokenSilently();
+  };
+
   const loggedIn = () => !!state();
 
   const user = () => {
@@ -44,6 +50,7 @@ export function $auth0State() {
 
   return {
     user,
+    getToken,
     login,
     signOut,
     loggedIn,

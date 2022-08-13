@@ -1,4 +1,4 @@
-import {auth0} from '@core/constants/auth0';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 
 export interface RequestParams {
   body?: unknown;
@@ -16,12 +16,14 @@ export async function makeFetch(
   input: RequestInfo,
   requestParams: Omit<RequestInit, keyof RequestParams> & RequestParams,
 ): Promise<Response> {
+  const {getToken} = getAuth0State();
+
   let url = typeof input === 'string' ? input : input.url;
   const headers = new Headers();
   const request: RequestInit = {...(requestParams as RequestInit)};
 
   try {
-    const token = await auth0.getTokenSilently();
+    const token = await getToken();
     if (token) {
       headers.append('Authorization', `Bearer ${token}`);
     }
