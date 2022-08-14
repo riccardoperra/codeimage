@@ -148,7 +148,7 @@ jobs:
           restore-keys: packages-
 
   build-app:
-    name: Build App
+    name: Build App and Preview
     environment: Preview
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
@@ -184,44 +184,13 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - name: Cache dist
-        uses: actions/cache@v3
-        with:
-          path: apps/codeimage/dist
-          key: app-dist-${{ github.run_id }}
-          restore-keys: app-dist-
-
-  deploy-app-preview:
-    name: Deploy app preview
-    environment: Preview
-    needs: [ build-app ]
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Restore app dist
-        uses: actions/cache@v3
-        with:
-          path: apps/codeimage/dist
-          key: app-dist-${{ github.run_id }}
-
       - name: Build vercel output
         run: |
           cd apps/codeimage
+          ls
           mkdir -p .vercel/output/static
           echo '{"version": 3}' > .vercel/output/config.json
           mv dist/** .vercel/output/static
-
       - uses: amondnet/vercel-action@v19
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
@@ -232,6 +201,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
             codeimage-pr-{{PR_NUMBER}}.vercel.app
+
 
   build-api:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
