@@ -149,6 +149,7 @@ jobs:
 
   build-app:
     name: Build App
+    environment: Preview
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
@@ -174,6 +175,12 @@ jobs:
         run: pnpm install
 
       - name: Build app
+        env:
+          VITE_PUBLIC_AUTH0_DOMAIN: true
+          VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
+          VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
+          UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
+          UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
         run: |
           pnpm --filter=@codeimage/app build
 
