@@ -31,15 +31,15 @@ const deleteRoute: FastifyPluginAsync = async fastify => {
   }>(
     '/:id',
     {
-      preHandler: fastify.authorize,
+      preValidation: fastify.authorize,
       schema,
     },
     async request => {
       const {
-        userId,
+        appUser,
         params: {id},
       } = request;
-      return fastify.projectRepository.deleteProject(id, userId);
+      return fastify.projectRepository.deleteProject(id, appUser.id);
     },
   );
 };

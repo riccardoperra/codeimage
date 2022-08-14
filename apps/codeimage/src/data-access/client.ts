@@ -1,3 +1,5 @@
+import {getAuth0State} from '@codeimage/store/auth/auth0';
+
 export interface RequestParams {
   body?: unknown;
   querystring?: Record<string, string | number | boolean | symbol>;
@@ -10,13 +12,22 @@ export interface Schema {
   response: any;
 }
 
-export function makeFetch(
+export async function makeFetch(
   input: RequestInfo,
   requestParams: Omit<RequestInit, keyof RequestParams> & RequestParams,
 ): Promise<Response> {
+  const {getToken} = getAuth0State();
+
   let url = typeof input === 'string' ? input : input.url;
   const headers = new Headers();
   const request: RequestInit = {...(requestParams as RequestInit)};
+
+  try {
+    const token = await getToken();
+    if (token) {
+      headers.append('Authorization', `Bearer ${token}`);
+    }
+  } catch (e) {}
 
   if (requestParams.querystring) {
     const querystring = new URLSearchParams();

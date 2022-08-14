@@ -22,9 +22,6 @@ t.test('PUT /v1/project/:id/name [Update Name] -> 200', async t => {
     url: `/api/v1/project/${projectId}/name`,
     method: 'PUT',
     payload: {name: newName},
-    headers: {
-      'user-id': userId,
-    },
   });
 
   t.ok(

@@ -49,6 +49,8 @@ const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'autoUpdate',
 };
 
+console.log(process.env);
+
 export default defineConfig(({mode}) => ({
   clearScreen: true,
   plugins: [

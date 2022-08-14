@@ -26,16 +26,16 @@ const updateProjectName: FastifyPluginAsync = async fastify => {
   }>(
     '/:id/name',
     {
-      preHandler: fastify.authorize,
+      preValidation: fastify.authorize,
       schema,
     },
     async request => {
       const {
         body,
-        userId,
+        appUser,
         params: {id},
       } = request;
-      return fastify.projectService.updateName(userId, id, body.name);
+      return fastify.projectService.updateName(appUser.id, id, body.name);
     },
   );
 };

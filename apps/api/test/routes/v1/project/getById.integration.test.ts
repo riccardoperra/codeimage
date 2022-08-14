@@ -14,16 +14,12 @@ t.before(async () => {
 
 t.test('/v1/project -> 200', async t => {
   const fastify = await build(t);
-  const userId = t.context.user.id;
   const projectId = t.context.project1.id;
   const spy = sinon.spy(fastify.projectService, 'findById');
 
   const response = await fastify.inject({
     url: `/api/v1/project/${projectId}`,
     method: 'GET',
-    headers: {
-      'user-id': userId,
-    },
   });
 
   const body = JSON.parse(response.body) as Project;

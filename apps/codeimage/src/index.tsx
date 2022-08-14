@@ -1,4 +1,5 @@
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {uiStore} from '@codeimage/store/ui';
 import {
@@ -110,11 +111,15 @@ export function Bootstrap() {
   );
 }
 
-render(
-  () => (
-    <I18nContext.Provider value={i18n}>
-      <Bootstrap />
-    </I18nContext.Provider>
-  ),
-  document.getElementById('root') as HTMLElement,
-);
+getAuth0State()
+  .initLogin()
+  .then(() => {
+    render(
+      () => (
+        <I18nContext.Provider value={i18n}>
+          <Bootstrap />
+        </I18nContext.Provider>
+      ),
+      document.getElementById('root') as HTMLElement,
+    );
+  });

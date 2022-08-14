@@ -1,4 +1,4 @@
-import {getAuthState} from '@codeimage/store/auth/auth';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {Box, Button, HStack} from '@codeimage/ui';
 import {Link} from 'solid-app-router';
 import {Component, Show} from 'solid-js';
@@ -15,8 +15,16 @@ import {ToolbarSnippetName} from './ToolbarSnippetName';
 export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
-  const loggedIn = () => getAuthState().loggedIn();
-
+  const loggedIn = () => getAuth0State().loggedIn();
+  // const loggedInAuth0 = async () =>
+  //   auth0.loginWithPopup().then((data: any) => console.log('test', data));
+  // const logout = () => auth0.logout();
+  // const user = async () => {
+  //   const user = await auth0.getUser();
+  //   console.log('check in arrow', user);
+  //   return user;
+  // };
+  // console.log('user', user());
   return (
     <div class={styles.wrapper}>
       <ToolbarSettingsButton />
@@ -24,7 +32,6 @@ export const Toolbar: Component<{
         <div class={sidebarLogo}>
           <CodeImageLogo width={'140px'} />
         </div>
-
         <Show when={loggedIn()}>
           <Box marginLeft={16}>
             <Button

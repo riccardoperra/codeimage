@@ -67,9 +67,6 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
     url: `/api/v1/project/${t.context.project1.id}`,
     method: 'PUT',
     payload: data,
-    headers: {
-      'user-id': userId,
-    },
   });
 
   const body = JSON.parse(response.body) as ProjectUpdateResponse;

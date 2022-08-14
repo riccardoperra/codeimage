@@ -1,5 +1,5 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {getAuthState} from '@codeimage/store/auth/auth';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {
@@ -35,10 +35,10 @@ export interface WorkspaceItem {
 async function fetchWorkspaceContent(): Promise<
   ApiTypes.GetProjectByIdApi['response'][]
 > {
-  const authState = getAuthState();
-  const userId = authState.user()?.user?.id;
+  const authState = getAuth0State();
+  const userId = authState.user()?.id;
   if (!userId) return [];
-  return API.project.getWorkspaceContent(userId);
+  return API.project.getWorkspaceContent();
 }
 
 function makeDashboardState() {
@@ -58,11 +58,6 @@ function makeDashboardState() {
   };
 
   async function createNewProject() {
-    const userId = getAuthState().user()?.user?.id;
-    if (!userId) {
-      return;
-    }
-
     const theme = await getThemeStore().getThemeDef('vsCodeDarkTheme')?.load();
 
     const frame = getInitialFrameState();
@@ -94,14 +89,12 @@ function makeDashboardState() {
       },
     };
 
-    return API.project.createSnippet(userId, data);
+    return API.project.createSnippet(data);
   }
 
   async function deleteProject(projectId: string) {
-    const userId = getAuthState().user()?.user?.id;
-    if (!userId) return;
     mutate(items => items.filter(i => i.id !== projectId));
-    await API.project.deleteProject(userId, {
+    await API.project.deleteProject({
       params: {
         id: projectId,
       },
@@ -113,7 +106,7 @@ function makeDashboardState() {
     oldName: string,
     newName: string | undefined,
   ) {
-    const userId = getAuthState().user()?.user?.id;
+    const userId = getAuth0State().user()?.id;
     if (!userId || !newName || oldName === newName) {
       return;
     }
@@ -129,7 +122,7 @@ function makeDashboardState() {
         return item;
       }),
     );
-    await API.project.updateSnippetName(userId, {
+    await API.project.updateSnippetName({
       params: {
         id,
       },

@@ -1,4 +1,5 @@
 import {PrismaClient} from '@codeimage/prisma-models';
+import * as crypto from 'crypto';
 import t from 'tap';
 
 const client = new PrismaClient();
@@ -27,10 +28,10 @@ export const getSeeder = () => {
 
 export const userSeed = {
   clean: () => client.$transaction([client.user.deleteMany()]),
-  createUser() {
+  createUser(email = `email-${crypto.randomUUID()}@example.it`) {
     return client.user.create({
       data: {
-        provider: 'integration-test',
+        email: email,
       },
     });
   },

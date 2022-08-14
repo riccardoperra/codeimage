@@ -1,9 +1,0 @@
-FROM node:18-alpine
-
-ENV NODE_ENV=production
-
-COPY . .
-
-RUN ls
-
-EXPOSE 3000
