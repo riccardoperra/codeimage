@@ -4,5 +4,8 @@
       "source": "/(.*)",
       "destination": "/"
     }
-  ]
+  ],
+  "github": {
+    "enabled": false
+  }
 }
