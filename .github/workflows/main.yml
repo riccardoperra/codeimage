@@ -349,7 +349,7 @@ jobs:
         run: |
           cd dist/api-bundle
           rm -rf .gitignore
-          pnpm i
+          npm i
           touch .gitignore
           touch .dockerignore
           ls -al
