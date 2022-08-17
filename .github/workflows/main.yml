@@ -337,6 +337,8 @@ jobs:
       - name: Run migrations
         run: |
           cd apps/api
+          touch .env
+          echo DATABASE_URL=${{ secrets.NEXT_DATABASE_URL }} >> .env
           pnpm exec prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
