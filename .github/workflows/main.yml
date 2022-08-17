@@ -302,7 +302,7 @@ jobs:
 
   deploy-next:
     # Next branch only
-    if: github.ref == 'refs/heads/next'
+    # if: github.ref == 'refs/heads/next'
     environment: Next
     name: Deploy next
     needs: [
@@ -334,10 +334,19 @@ jobs:
       - name: Install Railway
         run: pnpm i -g @railway/cli
 
+      - name: Run migrations
+        run: |
+          cd apps/api
+          pnpm exec prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
       - name: Deploy
         run: |
           cd dist/api-bundle
           rm -rf .gitignore
+          pnpm i
           touch .gitignore
           touch .dockerignore
           ls -al
