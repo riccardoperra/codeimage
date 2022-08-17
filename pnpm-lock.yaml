@@ -58,6 +58,7 @@ importers:
     specifiers:
       '@codeimage/prisma-models': workspace:*
       '@fastify/autoload': ^5.2.0
+      '@fastify/cors': 8.1.0
       '@fastify/env': ^4.1.0
       '@fastify/jwt': 6.3.2
       '@fastify/sensible': ^5.1.0
@@ -87,6 +88,7 @@ importers:
     dependencies:
       '@codeimage/prisma-models': link:../../packages/prisma-models
       '@fastify/autoload': 5.2.0
+      '@fastify/cors': 8.1.0
       '@fastify/env': 4.1.0
       '@fastify/jwt': 6.3.2
       '@fastify/sensible': 5.1.0
@@ -2746,6 +2748,13 @@ packages:
     dependencies:
       cookie: 0.5.0
       fastify-plugin: 4.1.0
+    dev: false
+
+  /@fastify/cors/8.1.0:
+    resolution: {integrity: sha512-1OmjwyxQZ8GePxa5t1Rpsn2qS56+1ouKMvZufpgJWhXtoCeM/ffA+PsNW8pyslPr4W0E27gVoFqtvHwhXW1U2w==}
+    dependencies:
+      fastify-plugin: 4.1.0
+      mnemonist: 0.39.2
     dev: false
 
   /@fastify/deepmerge/1.1.0:
