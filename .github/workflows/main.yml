@@ -190,7 +190,7 @@ jobs:
           cd apps/codeimage
           ls
           mkdir -p .vercel/output/static
-          echo '{"version": 3}' > .vercel/output/config.json
+          echo '{"version": 3, "routes": [{ "handle": "filesystem" }, {"check": true, "src": "/(.*)", "dest": "/"}]}' > .vercel/output/config.json
           mv dist/** .vercel/output/static
       - uses: amondnet/vercel-action@v19
         with:
@@ -202,7 +202,6 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
             codeimage-pr-{{PR_NUMBER}}.vercel.app
-
 
   build-api:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
@@ -303,7 +302,7 @@ jobs:
 
   deploy-next:
     # Next branch only
-    # if: github.ref == 'refs/heads/next'
+    if: github.ref == 'refs/heads/next'
     environment: Next
     name: Deploy next
     needs: [
