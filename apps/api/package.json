@@ -29,6 +29,7 @@
   "dependencies": {
     "@codeimage/prisma-models": "workspace:*",
     "@fastify/autoload": "^5.2.0",
+    "@fastify/cors": "8.1.0",
     "@fastify/env": "^4.1.0",
     "@fastify/jwt": "6.3.2",
     "@fastify/sensible": "^5.1.0",
