@@ -15,7 +15,7 @@ const app = Fastify({
 
 app.register(fastifyCors, {
   // TODO: fix
-  origin: false,
+  origin: '*',
 });
 // Register your application as a normal plugin.
 app.register(import('./app'));
