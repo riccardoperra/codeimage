@@ -43,7 +43,6 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
-
     outputs:
       backend-change: 'true'
       app-change: 'true'
