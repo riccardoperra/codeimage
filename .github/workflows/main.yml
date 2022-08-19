@@ -44,11 +44,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Check
-        run: |
-          echo ${{ env.IS_NEXT_BRANCH }}
-          echo ${{ github.ref }}
-          echo ${{ github.head_ref }}
     outputs:
       backend-change: 'true'
       app-change: 'true'
@@ -308,7 +303,7 @@ jobs:
 
   deploy-next:
     # Next branch only
-    if: ${{ github.base_ref == 'next' }}
+    if: ${{ github.head_ref == 'next' }}
     environment: Next
     name: Deploy next
     needs: [
