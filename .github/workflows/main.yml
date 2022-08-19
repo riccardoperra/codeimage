@@ -303,7 +303,7 @@ jobs:
 
   deploy-next:
     # Next branch only
-    if: ${{ github.ref == 'refs/heads/next' }}
+    if: ${{ github.base_ref == 'next' }}
     environment: Next
     name: Deploy next
     needs: [
