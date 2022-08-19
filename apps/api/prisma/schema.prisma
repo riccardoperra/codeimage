@@ -2,9 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../../../packages/prisma-models/generated/client"
-  binaryTargets   = ["native", "debian-openssl-1.1.x", "linux-musl"]
+  provider      = "prisma-client-js"
+  output        = "../../../packages/prisma-models/generated/client"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-musl"]
 }
 
 datasource db {
@@ -22,16 +22,16 @@ model User {
 model Project {
   id              String               @id @default(uuid())
   name            String
-  frame           SnippetFrame         @relation(fields: [frameId], references: [id])
-  terminal        SnippetTerminal      @relation(fields: [terminalId], references: [id])
-  editorOptions   SnippetEditorOptions @relation(fields: [editorOptionsId], references: [id])
+  frame           SnippetFrame         @relation(fields: [frameId], references: [id], onDelete: Cascade)
   frameId         String               @unique
+  terminal        SnippetTerminal      @relation(fields: [terminalId], references: [id], onDelete: Cascade)
   terminalId      String               @unique
+  editorOptions   SnippetEditorOptions @relation(fields: [editorOptionsId], references: [id], onDelete: Cascade)
   editorOptionsId String               @unique
   editorTabs      SnippetEditorTab[]
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
-  user            User                 @relation(fields: [userId], references: [id])
+  user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String
 
   @@unique([id, userId])
