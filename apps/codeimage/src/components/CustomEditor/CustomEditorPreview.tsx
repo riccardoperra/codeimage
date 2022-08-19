@@ -12,8 +12,10 @@ import {
   createEffect,
   createMemo,
   createResource,
+  getOwner,
   on,
   onMount,
+  runWithOwner,
   VoidProps,
 } from 'solid-js';
 
@@ -30,6 +32,7 @@ export default function CustomEditorPreview(
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
+  const owner = getOwner();
 
   const {editorView, ref: setEditorRef, createExtension} = createCodeMirror();
   createEditorControlledValue(editorView, () => props.code);
@@ -85,9 +88,10 @@ export default function CustomEditorPreview(
 
   onMount(() => {
     setEditorRef(editorEl);
-    import('./fix-cm-aria-roles-lighthouse').then(m =>
-      m.fixCodeMirrorAriaRole(() => editorEl),
-    );
+    import('./fix-cm-aria-roles-lighthouse').then(m => {
+      if (!owner) return;
+      runWithOwner(owner, () => m.fixCodeMirrorAriaRole(() => editorEl));
+    });
   });
 
   createEffect(on(extensions, extensions => reconfigure(extensions)));

@@ -32,7 +32,15 @@ import {
   createEditorControlledValue,
   createEditorFocus,
 } from 'solid-codemirror';
-import {createEffect, createMemo, createResource, on, onMount} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  getOwner,
+  on,
+  onMount,
+  runWithOwner,
+} from 'solid-js';
 
 interface CustomFontExtensionOptions {
   fontName: string;
@@ -65,6 +73,7 @@ export default function CustomEditor() {
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
+  const owner = getOwner();
 
   const {
     state: editorState,
@@ -153,9 +162,10 @@ export default function CustomEditor() {
 
   onMount(() => {
     setRef(editorEl);
-    import('./fix-cm-aria-roles-lighthouse').then(m =>
-      m.fixCodeMirrorAriaRole(() => editorEl),
-    );
+    import('./fix-cm-aria-roles-lighthouse').then(m => {
+      if (!owner) return;
+      runWithOwner(owner, () => m.fixCodeMirrorAriaRole(() => editorEl));
+    });
   });
 
   const {setFocused: editorSetFocused} = createEditorFocus(
