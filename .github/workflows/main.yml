@@ -43,6 +43,7 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+
     outputs:
       backend-change: 'true'
       app-change: 'true'
@@ -302,7 +303,7 @@ jobs:
 
   deploy-next:
     # Next branch only
-    if: github.ref == 'refs/heads/next'
+    if: ${{ github.head_ref == 'next' }}
     environment: Next
     name: Deploy next
     needs: [
