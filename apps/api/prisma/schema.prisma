@@ -22,11 +22,11 @@ model User {
 model Project {
   id              String               @id @default(uuid())
   name            String
-  frame           SnippetFrame         @relation(fields: [frameId], references: [id], onDelete: Cascade)
+  frame           SnippetFrame         @relation(fields: [frameId], references: [id])
   frameId         String               @unique
-  terminal        SnippetTerminal      @relation(fields: [terminalId], references: [id], onDelete: Cascade)
+  terminal        SnippetTerminal      @relation(fields: [terminalId], references: [id])
   terminalId      String               @unique
-  editorOptions   SnippetEditorOptions @relation(fields: [editorOptionsId], references: [id], onDelete: Cascade)
+  editorOptions   SnippetEditorOptions @relation(fields: [editorOptionsId], references: [id])
   editorOptionsId String               @unique
   editorTabs      SnippetEditorTab[]
   createdAt       DateTime             @default(now())
