@@ -1,7 +1,10 @@
 import {Box, Button, Text, VStack} from '@codeimage/ui';
 import {useNavigate} from 'solid-app-router';
 import {Show} from 'solid-js';
+import {PlusIcon} from '../../../../components/Icons/PlusIcon';
 import {getDashboardState} from '../../dashboard.state';
+import {CreateNewProjectButton} from '../CreateNewProjectButton/CreateNewProjectButton';
+import * as styles from './ProjectList.css';
 
 function EmptyBox() {
   return (
@@ -25,7 +28,6 @@ function EmptyBox() {
 
 export function ProjectEmptyListMessage() {
   const dashboard = getDashboardState()!;
-  const navigate = useNavigate();
 
   const noMatchingProjects = () => {
     return (
@@ -35,42 +37,34 @@ export function ProjectEmptyListMessage() {
     );
   };
 
-  const createNewProject = async () => {
-    // TODO: move out
-    const result = await dashboard?.createNewProject();
-    if (!result) return;
-    navigate(`/${result.id}`);
-  };
-
   return (
-    <VStack
-      display={'flex'}
-      alignItems={'center'}
-      justifyContent={'center'}
-      spacing={'2'}
-    >
+    <div class={styles.fallbackContainer}>
       <EmptyBox />
 
       <Show
         when={noMatchingProjects()}
         fallback={
           <>
-            <Text size={'3xl'}>You don't have any project saved yet!</Text>
+            <Text size={'2xl'} class={styles.fallbackTextTitle}>
+              No projects yet
+            </Text>
+            <Text size={'base'}>
+              Create a new project from scratch <br /> and share your snippets.
+            </Text>
             <Box marginTop={5}>
-              <Button
-                variant={'solid'}
-                theme={'primary'}
-                size={'md'}
-                onClick={createNewProject}
-              >
-                Create a new project
-              </Button>
+              <CreateNewProjectButton />
             </Box>
           </>
         }
       >
-        <Text size={'3xl'}>Oops! No matching projects.</Text>
+        <Text size={'2xl'} class={styles.fallbackTextTitle}>
+          No result
+        </Text>
+        <Text size={'base'}>
+          Oops! There are no projects <br />
+          matching your search.
+        </Text>
       </Show>
-    </VStack>
+    </div>
   );
 }

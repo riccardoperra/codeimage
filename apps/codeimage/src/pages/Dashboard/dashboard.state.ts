@@ -132,8 +132,13 @@ function makeDashboardState() {
     });
   }
 
+  const listIsEmpty = () => {
+    return !data.error && data().length === 0;
+  };
+
   return {
     data,
+    listIsEmpty,
     refetch,
     search,
     setSearch,
