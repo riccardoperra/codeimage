@@ -1,4 +1,4 @@
-import {Box, Text} from '@codeimage/ui';
+import {Box, Text, VStack} from '@codeimage/ui';
 import {Show} from 'solid-js';
 import {getDashboardState} from '../../dashboard.state';
 import {CreateNewProjectButton} from '../CreateNewProjectButton/CreateNewProjectButton';
@@ -7,7 +7,7 @@ import * as styles from './ProjectList.css';
 function EmptyBox() {
   return (
     <svg
-      width="250"
+      width="225"
       viewBox="0 0 559 476"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -84,30 +84,33 @@ export function ProjectEmptyListMessage() {
     <div class={styles.fallbackContainer}>
       <EmptyBox />
 
-      <Show
-        when={noMatchingProjects()}
-        fallback={
-          <>
-            <Text size={'2xl'} class={styles.fallbackTextTitle}>
-              No projects yet
-            </Text>
-            <Text size={'base'}>
-              Create a new project from scratch <br /> and share your snippets.
-            </Text>
-            <Box marginTop={5}>
-              <CreateNewProjectButton />
-            </Box>
-          </>
-        }
-      >
-        <Text size={'2xl'} class={styles.fallbackTextTitle}>
-          No result
-        </Text>
-        <Text size={'base'}>
-          Oops! There are no projects <br />
-          matching your search.
-        </Text>
-      </Show>
+      <VStack spacing={'2'} marginTop={'6'}>
+        <Show
+          when={noMatchingProjects()}
+          fallback={
+            <>
+              <Text size={'2xl'} class={styles.fallbackTextTitle}>
+                No projects yet
+              </Text>
+              <Text size={'base'}>
+                Create a new project from scratch <br /> and share your
+                snippets.
+              </Text>
+              <Box marginTop={5}>
+                <CreateNewProjectButton />
+              </Box>
+            </>
+          }
+        >
+          <Text size={'2xl'} class={styles.fallbackTextTitle}>
+            No result
+          </Text>
+          <Text size={'base'}>
+            Oops! There are no projects <br />
+            matching your search.
+          </Text>
+        </Show>
+      </VStack>
     </div>
   );
 }

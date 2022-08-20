@@ -37,7 +37,7 @@ export const fallbackContainer = style({
   flexDirection: 'column',
   color: themeVars.dynamicColors.descriptionTextColor,
   textAlign: 'center',
-  gap: themeVars.spacing['2'],
+  borderRadius: themeVars.borderRadius.lg,
   selectors: {
     '[data-codeimage-theme=dark] &': {
       backgroundColor: darkGrayScale.gray3,
