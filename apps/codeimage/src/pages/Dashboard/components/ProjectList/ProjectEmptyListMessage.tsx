@@ -1,7 +1,5 @@
-import {Box, Button, Text, VStack} from '@codeimage/ui';
-import {useNavigate} from 'solid-app-router';
+import {Box, Text} from '@codeimage/ui';
 import {Show} from 'solid-js';
-import {PlusIcon} from '../../../../components/Icons/PlusIcon';
 import {getDashboardState} from '../../dashboard.state';
 import {CreateNewProjectButton} from '../CreateNewProjectButton/CreateNewProjectButton';
 import * as styles from './ProjectList.css';
