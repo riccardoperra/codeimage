@@ -50,9 +50,4 @@ export const scrollableList = style({
   overflow: 'auto',
   minHeight: '0',
   height: '100%',
-  '@media': {
-    [`(max-width: 768px)`]: {
-      marginRight: `calc(${themeVars.spacing['3']} * -1)`,
-    },
-  },
 });

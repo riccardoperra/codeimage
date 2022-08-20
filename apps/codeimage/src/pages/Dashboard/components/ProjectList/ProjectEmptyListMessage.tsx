@@ -7,8 +7,7 @@ import * as styles from './ProjectList.css';
 function EmptyBox() {
   return (
     <svg
-      width="279.5"
-      height="300"
+      width="250"
       viewBox="0 0 559 476"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
