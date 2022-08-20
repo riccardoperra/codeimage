@@ -11,6 +11,7 @@ import {
   MenuButton,
   Text,
 } from '@codeimage/ui';
+import {highlight as _highlight} from '@core/directives/highlight';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
@@ -25,6 +26,8 @@ import * as styles from './ProjectItem.css';
 interface ProjectItemProps {
   item: ApiTypes.CreateProjectApi['response'];
 }
+
+const highlight = _highlight;
 
 export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const dashboard = getDashboardState()!;
@@ -59,7 +62,9 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
     <li class={styles.item}>
       <Link class={styles.itemLink} href={`/${props.item.id}`} />
       <div class={styles.itemTitle}>
-        <Text size={'lg'}>{props.item.name}</Text>
+        <Text size={'lg'} as={'div'}>
+          <span use:highlight={dashboard.search()}>{props.item.name}</span>
+        </Text>
 
         <div>
           <DropdownMenuV2

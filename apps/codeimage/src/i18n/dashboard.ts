@@ -15,12 +15,39 @@ export const dashboard = {
       },
       created: 'Creato',
       updated: 'Modificato',
+      empty: {
+        title: 'Nessun progetto',
+        description:
+          'Crea un nuovo progetto da zero e <br/> condividi i tuoi snippets',
+      },
+      errorLoadingList: {
+        title: 'Qualcosa è andato storto!',
+        description: "Scusa! C'è stato un problema con la tua richiesta.",
+      },
+      noMatchingProjects: {
+        title: 'Nessun risultato',
+        description:
+          'Ops! Non ci sono progetti <br /> corrispondenti alla tua ricerca.',
+      },
     },
   },
   en: {
     dashboard: {
       myProjects: 'My projects',
       new: 'New',
+      empty: {
+        title: 'No projects yet',
+        description:
+          'Create a new project from scratch <br/> and share your snippets',
+      },
+      errorLoadingList: {
+        title: 'Something went wrong!',
+        description: 'Sorry! There was a problem with your request.',
+      },
+      noMatchingProjects: {
+        title: 'No result',
+        description: 'Oops! There are no projects <br /> matching your search.',
+      },
       deleteProject: {
         dropdownLabel: 'Delete',
         confirmTitle: 'Delete project',
@@ -41,6 +68,19 @@ export const dashboard = {
       new: 'New',
       created: 'Created',
       updated: 'Updated',
+      empty: {
+        title: 'No projects yet',
+        description:
+          'Create a new project from scratch <br/> and share your snippets',
+      },
+      errorLoadingList: {
+        title: 'Something went wrong!',
+        description: 'Sorry! There was a problem with your request.',
+      },
+      noMatchingProjects: {
+        title: 'No result',
+        description: 'Oops! There are no projects <br /> matching your search.',
+      },
     },
   },
   es: {
@@ -49,6 +89,19 @@ export const dashboard = {
       new: 'New',
       created: 'Created',
       updated: 'Updated',
+      empty: {
+        title: 'No projects yet',
+        description:
+          'Create a new project from scratch <br/> and share your snippets',
+      },
+      errorLoadingList: {
+        title: 'Something went wrong!',
+        description: 'Sorry! There was a problem with your request.',
+      },
+      noMatchingProjects: {
+        title: 'No result',
+        description: 'Oops! There are no projects <br /> matching your search.',
+      },
     },
   },
 };

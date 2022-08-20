@@ -2,47 +2,15 @@ import type * as ApiTypes from '@codeimage/api/api-types';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
-import {
-  PersistedEditorState,
-  PersistedTerminalState,
-} from '@codeimage/store/editor/model';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
-import {PersistedFrameState} from '@codeimage/store/frame/model';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
 import {createResource, createSignal} from 'solid-js';
 import {API} from '../../data-access/api';
 
-export type WorkspaceMetadata = {
-  id: string;
-  created_at: string;
-  frame: PersistedFrameState;
-  terminal: PersistedTerminalState;
-  options: PersistedEditorState['options'];
-  editors: PersistedEditorState['editors'];
-};
-
-export interface WorkspaceItem {
-  id: string;
-  created_at: string;
-  name: string;
-  snippetId: string;
-  snippet: WorkspaceMetadata;
-  userId: string;
-}
-
-async function fetchWorkspaceContent(): Promise<
-  ApiTypes.GetProjectByIdApi['response'][]
-> {
-  const authState = getAuth0State();
-  const userId = authState.user()?.id;
-  if (!userId) return [];
-  return API.project.getWorkspaceContent();
-}
-
-function makeDashboardState() {
-  const [data, {mutate}] = createResource(fetchWorkspaceContent, {
+function makeDashboardState(authState = getAuth0State()) {
+  const [data, {mutate, refetch}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
   });
 
@@ -56,6 +24,14 @@ function makeDashboardState() {
       item.name.toLowerCase().includes(searchValue.toLowerCase()),
     );
   };
+
+  async function fetchWorkspaceContent(): Promise<
+    ApiTypes.GetProjectByIdApi['response'][]
+  > {
+    const userId = authState.user()?.id;
+    if (!userId) return [];
+    return API.project.getWorkspaceContent();
+  }
 
   async function createNewProject() {
     const theme = await getThemeStore().getThemeDef('vsCodeDarkTheme')?.load();
@@ -106,7 +82,7 @@ function makeDashboardState() {
     oldName: string,
     newName: string | undefined,
   ) {
-    const userId = getAuth0State().user()?.id;
+    const userId = authState.user()?.id;
     if (!userId || !newName || oldName === newName) {
       return;
     }
@@ -133,7 +109,12 @@ function makeDashboardState() {
   }
 
   return {
-    data,
+    data: Object.assign(data, {
+      isEmpty() {
+        return !data.error && !data.loading && data().length === 0;
+      },
+    }),
+    refetch,
     search,
     setSearch,
     filteredData,
@@ -144,5 +125,6 @@ function makeDashboardState() {
   };
 }
 
-export const [DashboardProvider, getDashboardState] =
-  createContextProvider(makeDashboardState);
+export const [DashboardProvider, getDashboardState] = createContextProvider(
+  () => makeDashboardState(),
+);

@@ -17,6 +17,7 @@ export type TextComponentProps = {
 
 export type TextProps<T extends ValidConstructor = 'span'> = {
   as?: T | ValidConstructor;
+  innerHTML?: JSXElement | string;
 } & WithRef<T> &
   Omit<DynamicProps<T>, 'ref' | 'as'> &
   TextComponentProps;
