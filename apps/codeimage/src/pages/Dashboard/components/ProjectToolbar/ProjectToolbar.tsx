@@ -15,12 +15,12 @@ export function ProjectToolbar() {
       <Box display={'flex'} marginBottom={2}>
         <h1 class={styles.title}>{t('dashboard.myProjects')}</h1>
         <div style={{flex: 1}} />
-        <Show when={!dashboard.listIsEmpty()}>
+        <Show when={!dashboard.data.isEmpty()}>
           <CreateNewProjectButton />
         </Show>
       </Box>
       <Box marginBottom={6}>
-        <Show when={!dashboard.listIsEmpty()}>
+        <Show when={!dashboard.data.isEmpty()}>
           <FlexField size={'lg'}>
             <TextField
               type={'text'}
