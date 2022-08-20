@@ -12,6 +12,7 @@ export const locale = {
       no: 'No',
       show: 'Mostra',
       hide: 'Nascondi',
+      reload: 'Ricarica',
     },
     canvas: {
       copiedToClipboard: 'Snippet copiato negli appunti',
@@ -94,6 +95,7 @@ export const locale = {
       no: 'No',
       show: 'Show',
       hide: 'Hide',
+      reload: 'Reload',
     },
     locales: {
       it: 'Italian',
@@ -162,6 +164,7 @@ export const locale = {
       no: 'Nein',
       show: 'Anzeigen',
       hide: 'Verstecken',
+      reload: 'Reload',
     },
     canvas: {
       copiedToClipboard: 'Code-Schnipsel in Zwischenablage kopiert',
@@ -237,6 +240,7 @@ export const locale = {
       no: 'No',
       show: 'Mostrar',
       hide: 'Esconder',
+      reload: 'Reload',
     },
     canvas: {
       copiedToClipboard: 'Snippet copiado al portapapeles',

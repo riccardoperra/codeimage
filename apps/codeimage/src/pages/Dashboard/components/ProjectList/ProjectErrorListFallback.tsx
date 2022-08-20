@@ -1,6 +1,8 @@
+import {useI18n} from '@codeimage/locale';
 import {Box, Button, Text} from '@codeimage/ui';
 import {VoidProps} from 'solid-js';
 import {ExclamationAltIcon} from '../../../../components/Icons/Exclamation';
+import {AppLocaleEntries} from '../../../../i18n';
 import * as styles from './ProjectList.css';
 
 interface Props {
@@ -10,15 +12,15 @@ interface Props {
 }
 
 export function ProjectErrorListFallback(props: VoidProps<Props>) {
-  // TODO: add i18n
+  const [t] = useI18n<AppLocaleEntries>();
 
   return (
     <div class={styles.fallbackContainer}>
       <ExclamationAltIcon size={'3x'} />
       <Text size={'2xl'} class={styles.fallbackTextTitle}>
-        Something went wrong!
+        {t('dashboard.errorLoadingList.title')}
       </Text>
-      <Text>Sorry! There was a problem with your request.</Text>
+      <Text>{t('dashboard.errorLoadingList.description')}</Text>
       <Box marginTop={5}>
         <Button
           variant={'solid'}
@@ -26,7 +28,7 @@ export function ProjectErrorListFallback(props: VoidProps<Props>) {
           size={'md'}
           onClick={() => props.onReload?.()}
         >
-          Reload
+          {t('dashboard.reload')}
         </Button>
       </Box>
     </div>

@@ -1,5 +1,7 @@
+import {useI18n} from '@codeimage/locale';
 import {Box, Text, VStack} from '@codeimage/ui';
 import {Show} from 'solid-js';
+import {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
 import {CreateNewProjectButton} from '../CreateNewProjectButton/CreateNewProjectButton';
 import * as styles from './ProjectList.css';
@@ -71,6 +73,7 @@ function EmptyBox() {
 
 export function ProjectEmptyListMessage() {
   const dashboard = getDashboardState()!;
+  const [t] = useI18n<AppLocaleEntries>();
 
   const noMatchingProjects = () => {
     return (
@@ -90,12 +93,13 @@ export function ProjectEmptyListMessage() {
           fallback={
             <>
               <Text size={'2xl'} class={styles.fallbackTextTitle}>
-                No projects yet
+                {t('dashboard.empty.title')}
               </Text>
-              <Text size={'base'}>
-                Create a new project from scratch <br /> and share your
-                snippets.
-              </Text>
+              <Text
+                // eslint-disable-next-line solid/no-innerhtml
+                innerHTML={t('dashboard.empty.description')}
+                size={'base'}
+              />
               <Box marginTop={5}>
                 <CreateNewProjectButton />
               </Box>
@@ -103,12 +107,13 @@ export function ProjectEmptyListMessage() {
           }
         >
           <Text size={'2xl'} class={styles.fallbackTextTitle}>
-            No result
+            {t('dashboard.noMatchingProjects.title')}
           </Text>
-          <Text size={'base'}>
-            Oops! There are no projects <br />
-            matching your search.
-          </Text>
+          <Text
+            size={'base'}
+            // eslint-disable-next-line solid/no-innerhtml
+            innerHTML={t('dashboard.noMatchingProjects.description')}
+          />
         </Show>
       </VStack>
     </div>
