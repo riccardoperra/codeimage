@@ -7,7 +7,17 @@ import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
-import {combineLatest, debounceTime, filter, skip, tap} from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  EMPTY,
+  filter,
+  of,
+  skip,
+  switchMap,
+  tap,
+  withLatestFrom,
+} from 'rxjs';
 import {
   createEffect,
   createResource,
@@ -90,75 +100,49 @@ function createEditorSyncAdapter() {
   }
 
   function initRemoteDbSync() {
-    createEffect(() => {
-      const subscription = onChange$
-        .pipe(
-          filter(() => authState.loggedIn()),
-          tap(() => setRemoteSync(false)),
-          debounceTime(500),
-          tap(() => setRemoteSync(true)),
-          debounceTime(3000),
-          tap(() => setRemoteSync(false)),
-        )
-        .subscribe(async ([frame, terminal, {editors, options}]) => {
-          const workspace = untrack(activeWorkspace);
-          if (!workspace) return;
+    const subscription = onChange$
+      .pipe(
+        filter(() => authState.loggedIn()),
+        tap(() => setRemoteSync(true)),
+        debounceTime(3000),
+        tap(() => setRemoteSync(false)),
+        withLatestFrom(of(untrack(activeWorkspace))),
+        switchMap(([[frame, terminal, {editors, options}], workspace]) => {
+          if (!workspace) return EMPTY;
+          const dataToSave: ApiTypes.UpdateProjectApi['request']['body'] = {
+            frame,
+            terminal,
+            editors,
+            editorOptions: options,
+          };
+          return API.project.updateSnippet({
+            body: dataToSave,
+            params: {id: workspace.id},
+          });
+        }),
+      )
+      .subscribe();
 
-          if (activeWorkspace()) {
-            const dataToSave: ApiTypes.UpdateProjectApi['request']['body'] = {
-              frame,
-              terminal,
-              editors,
-              editorOptions: options,
-            };
+    return onCleanup(() => {
+      const workspace = untrack(activeWorkspace);
+      if (!workspace) return;
 
-            const snippet = await API.project.updateSnippet({
-              body: dataToSave,
-              params: {id: workspace.id},
-            });
-            if (!snippet) return;
-          }
-          // else {
-          //   const dataToSave: ApiTypes.CreateProjectApi['request']['body'] = {
-          //     name: workspace.name,
-          //     frame,
-          //     terminal,
-          //     editors,
-          //     editorOptions: options,
-          //   };
-          //
-          //   const userId = getAuthState().user()?.user?.id;
-          //   if (!userId) return;
-          //   const workspaceItem = await API.project.createSnippet(userId, {
-          //     body: dataToSave,
-          //   });
-          //   setActiveWorkspace(
-          //     workspaceItem as unknown as ApiTypes.GetProjectByIdApi['response'],
-          //   );
-          // }
-        });
+      if (activeWorkspace()) {
+        const snippet = API.project
+          .updateSnippet({
+            body: {
+              frame: frameStore.stateToPersist(),
+              terminal: terminalStore.stateToPersist(),
+              editors: editorStore.stateToPersist().editors,
+              editorOptions: editorStore.stateToPersist().options,
+            },
+            params: {id: workspace.id},
+          })
+          .then();
+        if (!snippet) return;
+      }
 
-      return onCleanup(() => {
-        const workspace = untrack(activeWorkspace);
-        if (!workspace) return;
-
-        if (activeWorkspace()) {
-          const snippet = API.project
-            .updateSnippet({
-              body: {
-                frame: frameStore.stateToPersist(),
-                terminal: terminalStore.stateToPersist(),
-                editors: editorStore.stateToPersist().editors,
-                editorOptions: editorStore.stateToPersist().options,
-              },
-              params: {id: workspace.id},
-            })
-            .then();
-          if (!snippet) return;
-        }
-
-        subscription.unsubscribe();
-      });
+      subscription.unsubscribe();
     });
   }
 
