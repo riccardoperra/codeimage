@@ -42,7 +42,7 @@ async function fetchWorkspaceContent(): Promise<
 }
 
 function makeDashboardState() {
-  const [data, {mutate}] = createResource(fetchWorkspaceContent, {
+  const [data, {mutate, refetch}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
   });
 
@@ -134,6 +134,7 @@ function makeDashboardState() {
 
   return {
     data,
+    refetch,
     search,
     setSearch,
     filteredData,
