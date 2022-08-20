@@ -28,7 +28,7 @@ export function ProjectErrorListFallback(props: VoidProps<Props>) {
           size={'md'}
           onClick={() => props.onReload?.()}
         >
-          {t('dashboard.reload')}
+          {t('common.reload')}
         </Button>
       </Box>
     </div>

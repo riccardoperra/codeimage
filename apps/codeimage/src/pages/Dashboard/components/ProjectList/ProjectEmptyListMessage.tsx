@@ -87,7 +87,7 @@ export function ProjectEmptyListMessage() {
     <div class={styles.fallbackContainer}>
       <EmptyBox />
 
-      <VStack spacing={'2'} marginTop={'6'}>
+      <VStack spacing={'2'} marginTop={6}>
         <Show
           when={noMatchingProjects()}
           fallback={
