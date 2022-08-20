@@ -40,7 +40,7 @@ export function ToolbarSettingsButton() {
           size={'xs'}
           theme={'secondary'}
         >
-          <MenuAlt2Icon />
+          <MenuAlt2Icon size={'sm'} />
         </MenuButton>
       }
     >

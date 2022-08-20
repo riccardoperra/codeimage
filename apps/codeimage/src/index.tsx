@@ -2,11 +2,7 @@ import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {uiStore} from '@codeimage/store/ui';
-import {
-  backgroundColorVar,
-  CodeImageThemeProvider,
-  LoadingOverlay,
-} from '@codeimage/ui';
+import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
@@ -50,19 +46,7 @@ export function Bootstrap() {
     },
     {
       path: 'dashboard',
-      component: () => {
-        return (
-          <Suspense
-            fallback={
-              <div style={{position: 'fixed', height: '100%', width: '100%'}}>
-                <LoadingOverlay overlay={true} size={'3x'} />
-              </div>
-            }
-          >
-            <Dashboard />
-          </Suspense>
-        );
-      },
+      component: Dashboard,
     },
   ]);
 
