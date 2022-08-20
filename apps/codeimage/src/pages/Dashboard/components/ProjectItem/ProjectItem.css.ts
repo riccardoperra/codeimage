@@ -47,4 +47,7 @@ export const itemTitle = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+  vars: {
+    ['--highlight-color']: 'rgb(112, 182, 246, 0.25)',
+  },
 });
