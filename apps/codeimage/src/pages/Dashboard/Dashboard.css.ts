@@ -12,6 +12,7 @@ export const scaffold = style([
 ]);
 
 export const wrapper = style([
+  adaptiveFullScreenHeight,
   {
     position: 'relative',
     height: '100%',
@@ -29,12 +30,19 @@ export const main = style({
   marginBottom: themeVars.spacing['12'],
   flex: 1,
   display: 'flex',
-  width: '1280px',
+  width: '100%',
   height: '100%',
   minHeight: '0',
+  paddingLeft: themeVars.spacing['3'],
+  paddingRight: themeVars.spacing['3'],
   marginLeft: 'auto',
   marginRight: 'auto',
   flexDirection: 'column',
+  '@media': {
+    [`(min-width: 1280px)`]: {
+      width: '1280px',
+    },
+  },
 });
 
 export const scrollableList = style({
@@ -42,4 +50,9 @@ export const scrollableList = style({
   overflow: 'auto',
   minHeight: '0',
   height: '100%',
+  '@media': {
+    [`(max-width: 768px)`]: {
+      marginRight: `calc(${themeVars.spacing['3']} * -1)`,
+    },
+  },
 });
