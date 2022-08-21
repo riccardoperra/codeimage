@@ -4,10 +4,10 @@ import {useI18n} from '@codeimage/locale';
 import {uiStore} from '@codeimage/store/ui';
 import {
   Box,
-  Button,
   createStandaloneDialog,
   DropdownMenuV2,
   HStack,
+  IconButton,
   MenuButton,
   Text,
 } from '@codeimage/ui';
@@ -18,7 +18,7 @@ import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import {Link} from 'solid-app-router';
 import {For, Show, VoidProps} from 'solid-js';
-import {DotHorizontalIocn} from '../../../../components/Icons/DotVertical';
+import {DotHorizontalIcon} from '../../../../components/Icons/DotVertical';
 import {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
 import * as styles from './ProjectItem.css';
@@ -70,13 +70,12 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
           <DropdownMenuV2
             menuButton={
               <MenuButton
-                as={Button}
+                as={IconButton}
                 variant={'solid'}
                 theme={'secondary'}
                 size={'xs'}
-                style={{width: '30px', height: '30px'}}
               >
-                <DotHorizontalIocn size={'sm'} />
+                <DotHorizontalIcon size={'sm'} />
               </MenuButton>
             }
             onAction={(action: string | number) => {

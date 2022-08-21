@@ -9,14 +9,15 @@ import {CustomComponentProps} from '../../utils';
 import {LoadingCircle} from '../Loader';
 import * as styles from './Button.css';
 
-type ButtonProps<T extends ValidConstructor = 'button'> = CustomComponentProps<
-  T,
-  {
-    leftIcon?: JSXElement;
-    loading?: boolean;
-  } & ShButtonProps<T> &
-    styles.ButtonVariants
->;
+export type ButtonProps<T extends ValidConstructor = 'button'> =
+  CustomComponentProps<
+    T,
+    {
+      leftIcon?: JSXElement;
+      loading?: boolean;
+    } & ShButtonProps<T> &
+      styles.ButtonVariants
+  >;
 
 export function Button<T extends ValidConstructor = 'button'>(
   props: ParentProps<ButtonProps<T>>,

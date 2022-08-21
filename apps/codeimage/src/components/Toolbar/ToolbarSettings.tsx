@@ -3,6 +3,7 @@ import {
   Button,
   createStandaloneDialog,
   DropdownMenuV2,
+  IconButton,
   MenuButton,
 } from '@codeimage/ui';
 import {Item} from '@solid-aria/collection';
@@ -33,11 +34,10 @@ export function ToolbarSettingsButton() {
       onAction={item => onMenuAction(item)}
       menuButton={
         <MenuButton
-          as={Button}
+          as={IconButton}
           pill={true}
-          style={{width: '30px', height: '30px'}}
-          variant={'solid'}
           size={'xs'}
+          variant={'solid'}
           theme={'secondary'}
         >
           <MenuAlt2Icon size={'sm'} />
