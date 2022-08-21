@@ -543,8 +543,8 @@ importers:
       path: 0.12.7
       postcss: 8.4.16
       postcss-load-config: 4.0.1
-      rollup: 2.78.1
-      typescript: 4.7.4
+      rollup: ^2.78.1
+      typescript: ^4.7.4
       vite: 3.0.9
     dependencies:
       '@vanilla-extract/integration': 5.0.0
