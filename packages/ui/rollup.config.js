@@ -18,7 +18,6 @@ function buildOutput(format) {
   return {
     preserveModules: true,
     preserveModulesRoot: 'src',
-    // Apply preserveModulesRoot to asset names
     assetFileNames({name}) {
       return name.replace(/^src\//, '');
     },
