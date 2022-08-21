@@ -1,4 +1,5 @@
 export {Button, buttonStyles} from './Button';
+export {IconButton} from './IconButton';
 
 export {
   Text,

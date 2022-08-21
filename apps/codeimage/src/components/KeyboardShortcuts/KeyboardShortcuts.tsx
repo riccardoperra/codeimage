@@ -118,7 +118,6 @@ export function KeyboardShortcuts(): JSXElement {
           type={'button'}
           variant={'solid'}
           size={'xs'}
-          style={{height: '30px'}}
           onClick={() => setShow(true)}
         >
           <HStack spacing={'2'}>

@@ -16,15 +16,6 @@ export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
   const loggedIn = () => getAuth0State().loggedIn();
-  // const loggedInAuth0 = async () =>
-  //   auth0.loginWithPopup().then((data: any) => console.log('test', data));
-  // const logout = () => auth0.logout();
-  // const user = async () => {
-  //   const user = await auth0.getUser();
-  //   console.log('check in arrow', user);
-  //   return user;
-  // };
-  // console.log('user', user());
   return (
     <div class={styles.wrapper}>
       <ToolbarSettingsButton />

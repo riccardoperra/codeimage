@@ -14,6 +14,7 @@ import {
   RadioBlock,
   RadioField,
   RadioGroupField,
+  sprinkles,
   SvgIcon,
   Text,
   themeVars,
@@ -134,9 +135,9 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                     justifyContent={'center'}
                   >
                     <img
-                      style={{
-                        'border-radius': '50%',
-                      }}
+                      class={sprinkles({
+                        borderRadius: 'full',
+                      })}
                       width={72}
                       height={72}
                       src={user()?.picture}
