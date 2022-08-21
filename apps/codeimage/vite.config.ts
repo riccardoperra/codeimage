@@ -49,10 +49,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 //   registerType: 'autoUpdate',
 // };
 
-console.log(vanillaExtractPlugin);
-
 export default defineConfig(({mode}) => ({
-  clearScreen: true,
   plugins: [
     vanillaExtractPlugin(),
     solidPlugin(),
