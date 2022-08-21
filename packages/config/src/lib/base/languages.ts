@@ -355,6 +355,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'xml',
     label: 'XML',
+    color: '#0060ac',
     plugin: () => import('@codemirror/lang-xml').then(({xml}) => xml()),
     icons: [
       {
@@ -368,6 +369,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'json',
     label: 'JSON',
+    color: '#292929',
     plugin: () => import('@codemirror/lang-json').then(({json}) => json()),
     icons: [
       {
