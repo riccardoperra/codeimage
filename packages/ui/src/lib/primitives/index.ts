@@ -63,7 +63,12 @@ export {
   type SnackbarData,
 } from './Snackbar';
 
-export {Loading, type LoaderProps, LoadingOverlay} from './Loader';
+export {
+  Loading,
+  type LoaderProps,
+  LoadingOverlay,
+  LoadingCircle,
+} from './Loader';
 
 export {Toggle} from './Toggle';
 
