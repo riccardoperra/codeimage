@@ -1,6 +1,13 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
-import {Box, FlexField, HStack, Loading, Text, TextField} from '@codeimage/ui';
+import {
+  Box,
+  FlexField,
+  HStack,
+  LoadingCircle,
+  Text,
+  TextField,
+} from '@codeimage/ui';
 import clickOutside from '@core/directives/clickOutside';
 import {createEffect, createSignal, on, onMount, Show, untrack} from 'solid-js';
 import {API} from '../../data-access/api';
@@ -45,9 +52,10 @@ export function ToolbarSnippetName() {
       <Show
         fallback={
           <HStack spacing={'2'} alignItems={'center'} lineHeight={'normal'}>
-            <Show when={remoteSync()}>
-              <Loading visibility={remoteSync() ? 'visible' : 'hidden'} />
-            </Show>
+            <LoadingCircle
+              visibility={remoteSync() ? 'visible' : 'hidden'}
+              size={'sm'}
+            />
             <Text size={'sm'} onClick={toggleEdit}>
               {value() ?? 'Untitled'}
             </Text>
