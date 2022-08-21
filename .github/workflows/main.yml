@@ -166,14 +166,14 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Restore dist
         uses: actions/cache@v3
         with:
           path: packages
           key: packages-${{ github.run_id }}
-
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Build app
         env:
