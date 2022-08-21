@@ -29,8 +29,8 @@
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
   },
   "peerDependencies": {
-    "@floating-ui/core": "^0.7.3",
-    "@floating-ui/dom": "^0.5.3",
+    "@floating-ui/core": "^1.0.1",
+    "@floating-ui/dom": "^1.0.1",
     "@solid-primitives/props": "^2.1.7",
     "@solid-primitives/refs": "^0.2.0",
     "@solid-primitives/utils": "^2.1.1",
