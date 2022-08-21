@@ -342,9 +342,42 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     ],
   },
   {
+    id: 'xml',
+    label: 'XML',
+    plugin: () => import('@codemirror/lang-xml').then(({xml}) => xml()),
+    icons: [
+      {
+        name: 'xml',
+        extension: '.xml',
+        content: () => import('material-icon-theme/icons/xml.svg?raw'),
+        matcher: /^.*\.(xml)$/,
+      },
+    ],
+  },
+  {
+    id: 'json',
+    label: 'JSON',
+    plugin: () => import('@codemirror/lang-json').then(({json}) => json()),
+    icons: [
+      {
+        name: 'json',
+        extension: '.json',
+        content: () => import('material-icon-theme/icons/json.svg?raw'),
+        matcher: /^.*\.(json)$/,
+      },
+    ],
+  },
+  {
     id: 'sql',
     label: 'SQL',
     plugin: () => import('@codemirror/lang-sql').then(({sql}) => sql()),
-    icons: [],
+    icons: [
+      {
+        name: 'sql',
+        extension: '.sql',
+        content: () => import('material-icon-theme/icons/database.svg?raw'),
+        matcher: /^.*\.(sql)$/,
+      },
+    ],
   },
 ];
