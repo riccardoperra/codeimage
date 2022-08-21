@@ -1,6 +1,5 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {
-  Button,
   createStandaloneDialog,
   DropdownMenuV2,
   IconButton,
