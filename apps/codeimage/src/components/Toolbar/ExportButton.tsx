@@ -86,13 +86,10 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         ref={openButtonRef}
         variant={'solid'}
         theme={'primary'}
-        disabled={data.loading}
+        loading={data.loading}
+        leftIcon={() => <DownloadIcon />}
       >
-        <DownloadIcon />
-
-        <Box as={'span'} marginLeft={2}>
-          {label()}
-        </Box>
+        {label()}
       </Button>
 
       <Show when={overlayState.isOpen()}>
