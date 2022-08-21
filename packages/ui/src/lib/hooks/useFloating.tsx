@@ -1,11 +1,17 @@
 import type {
   ComputePositionConfig,
   ComputePositionReturn,
-  VirtualElement,
 } from '@floating-ui/core';
 import {autoUpdate, computePosition, ReferenceElement} from '@floating-ui/dom';
+import {
+  Accessor,
+  createEffect,
+  createSignal,
+  mergeProps,
+  on,
+  onCleanup,
+} from 'solid-js';
 import {createStore} from 'solid-js/store';
-import {Accessor, createEffect, createSignal, mergeProps, on} from 'solid-js';
 
 type Data = Omit<ComputePositionReturn, 'x' | 'y'> & {
   x: number | null;
@@ -35,10 +41,7 @@ export function useFloating({
   strategy,
   runAutoUpdate,
 }: UseFloatingOptions = {}): UseFloatingReturn {
-  const [reference, setReference] = createSignal<
-    Element | VirtualElement | null
-  >(null);
-
+  const [reference, setReference] = createSignal<ReferenceElement | null>(null);
   const [floating, setFloating] = createSignal<HTMLElement | null>(null);
 
   const [data, setData] = createStore<Data>({
@@ -49,39 +52,34 @@ export function useFloating({
     middlewareData: {},
   });
 
-  const update = () => {
-    const referenceEl = reference() as HTMLElement | null;
-    const floatingEl = floating() as HTMLElement | null;
-
+  function update() {
+    const referenceEl = reference();
+    const floatingEl = floating();
     if (!referenceEl || !floatingEl) {
       return;
     }
 
-    function updater() {
-      if (!referenceEl || !floatingEl) {
-        return;
+    computePosition(referenceEl, floatingEl, {
+      middleware: middleware,
+      placement,
+      strategy,
+    }).then(data => setData(data));
+  }
+
+  createEffect(
+    on([reference, floating], ([reference, floating]) => {
+      if (reference && floating) {
+        if (runAutoUpdate) {
+          const cleanup = autoUpdate(reference, floating, update);
+          if (cleanup) {
+            onCleanup(cleanup);
+          }
+        } else {
+          update();
+        }
       }
-
-      computePosition(referenceEl, floatingEl, {
-        middleware: middleware,
-        placement,
-        strategy,
-      }).then(data => setData(data));
-    }
-
-    if (runAutoUpdate) {
-      autoUpdate(referenceEl, floatingEl, updater, {
-        animationFrame: true,
-        ancestorResize: true,
-        ancestorScroll: true,
-        elementResize: true,
-      });
-    } else {
-      updater();
-    }
-  };
-
-  createEffect(on([reference, floating], () => update()));
+    }),
+  );
 
   const result = mergeProps(data, {
     update,
