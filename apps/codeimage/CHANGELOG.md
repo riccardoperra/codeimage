@@ -1,5 +1,14 @@
 # @codeimage/app
 
+## 0.21.3
+
+### Patch Changes
+
+- [#331](https://github.com/riccardoperra/codeimage/pull/331) [`1c079d0`](https://github.com/riccardoperra/codeimage/commit/1c079d035ff612b09e61dedeb180d8b6dab38f21) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(app): #330 loading indicator when exporting as image
+
+- Updated dependencies [[`1c079d0`](https://github.com/riccardoperra/codeimage/commit/1c079d035ff612b09e61dedeb180d8b6dab38f21)]:
+  - @codeimage/ui@0.9.0
+
 ## 0.21.2
 
 ### Patch Changes
