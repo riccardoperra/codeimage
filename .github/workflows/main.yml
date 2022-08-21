@@ -172,7 +172,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: packages
-          key: packages-${{ github.run_id }}
+          key: packages-dist-${{ github.run_id }}
 
       - name: Build app
         env:
