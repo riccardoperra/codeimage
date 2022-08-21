@@ -1,6 +1,6 @@
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
+import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
 // import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -50,10 +50,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // };
 
 export default defineConfig(({mode}) => ({
-  clearScreen: true,
   plugins: [
-    solidPlugin(),
     vanillaExtractPlugin(),
+    solidPlugin(),
     // VitePWA(pwaOptions),
     tsconfigPaths(),
     {
