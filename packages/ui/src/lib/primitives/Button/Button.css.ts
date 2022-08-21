@@ -1,14 +1,16 @@
-import {style} from '@vanilla-extract/css';
+import {createVar, style} from '@vanilla-extract/css';
 import {backgroundColorVar, colorVar} from '../../theme/variables.css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {themeVars} from '../../theme';
+
+export const buttonHeight = createVar();
 
 export const button = style([
   {
     position: 'relative',
     display: 'inline-flex',
     overflow: 'hidden',
-    height: '36px',
+    height: buttonHeight,
     padding: `0 ${themeVars.spacing['3']}`,
     borderRadius: themeVars.borderRadius.lg,
     fontSize: themeVars.fontSize.sm,
@@ -155,16 +157,29 @@ export const buttonVariant = recipe({
 
     size: {
       md: {
-        height: '42px',
+        vars: {
+          [buttonHeight]: '42px',
+        },
         minWidth: '72px',
         fontSize: themeVars.fontSize.base,
       },
       sm: {
-        height: '36px',
+        vars: {
+          [buttonHeight]: '36px',
+        },
         fontSize: themeVars.fontSize.sm,
       },
       xs: {
-        height: '24px',
+        vars: {
+          [buttonHeight]: '30px',
+        },
+        fontSize: themeVars.fontSize.xs,
+        padding: `0 ${themeVars.spacing['2']}`,
+      },
+      xxs: {
+        vars: {
+          [buttonHeight]: '24px',
+        },
         fontSize: themeVars.fontSize.xs,
         padding: `0 ${themeVars.spacing['2']}`,
       },
@@ -173,6 +188,7 @@ export const buttonVariant = recipe({
   defaultVariants: {
     variant: 'outline',
     theme: 'primary',
+    size: 'md',
   },
 });
 
