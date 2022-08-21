@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {Box, Button, useSnackbarStore} from '@codeimage/ui';
+import {Button, useSnackbarStore} from '@codeimage/ui';
 import {Component, createEffect} from 'solid-js';
 import {
   ExportExtension,
@@ -60,15 +60,12 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
     <Button
       variant={'solid'}
       theme={'primaryAlt'}
-      disabled={data.loading}
+      loading={data.loading}
+      leftIcon={() => <ExternalLinkIcon />}
       onClick={() => openInTab()}
       size={'sm'}
     >
-      <ExternalLinkIcon />
-
-      <Box as={'span'} marginLeft={2}>
-        {label()}
-      </Box>
+      {label()}
     </Button>
   );
 };

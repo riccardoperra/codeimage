@@ -26,7 +26,7 @@ export const button = style([
 
     ':disabled': {
       cursor: 'default',
-      opacity: 0.3,
+      opacity: 0.5,
     },
 
     ':focus': {
@@ -34,6 +34,10 @@ export const button = style([
     },
   },
 ]);
+
+export const buttonIcon = style({
+  marginRight: themeVars.spacing['2'],
+});
 
 export const buttonVariant = recipe({
   base: [button],
@@ -47,6 +51,12 @@ export const buttonVariant = recipe({
     pill: {
       true: {
         borderRadius: themeVars.borderRadius.full,
+      },
+    },
+    loading: {
+      true: {
+        opacity: 0.7,
+        pointerEvents: 'none',
       },
     },
     // Button type

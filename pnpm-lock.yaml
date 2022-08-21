@@ -324,6 +324,7 @@ importers:
       '@codemirror/lang-python': ^6.0.0
       '@codemirror/lang-rust': ^6.0.0
       '@codemirror/lang-sql': ^6.0.0
+      '@codemirror/lang-xml': 6.0.0
       '@codemirror/language': ^6.2.0
       '@codemirror/legacy-modes': ^6.1.0
       '@codemirror/lint': ^6.0.0
@@ -352,6 +353,7 @@ importers:
       '@codemirror/lang-python': 6.0.0
       '@codemirror/lang-rust': 6.0.0
       '@codemirror/lang-sql': 6.0.0
+      '@codemirror/lang-xml': 6.0.0
       '@codemirror/language': 6.2.0
       '@codemirror/legacy-modes': 6.1.0
       '@codemirror/lint': 6.0.0
@@ -2469,6 +2471,16 @@ packages:
       '@lezer/lr': 1.0.0
     dev: false
 
+  /@codemirror/lang-xml/6.0.0:
+    resolution: {integrity: sha512-M/HLWxIiP956xGjtrxkeHkCmDGVQGKu782x8pOH5CLJIMkWtiB1DWfDoDHqpFjdEE9dkfcqPWvYfVi6GbhuXEg==}
+    dependencies:
+      '@codemirror/autocomplete': 6.0.3
+      '@codemirror/language': 6.2.0
+      '@codemirror/state': 6.1.0
+      '@lezer/common': 1.0.0
+      '@lezer/xml': 1.0.0
+    dev: false
+
   /@codemirror/language/6.0.0:
     resolution: {integrity: sha512-rtjk5ifyMzOna1c7PBu7J1VCt0PvA5wy3o8eMVnxMKb7z8KA7JFecvD04dSn14vj/bBaAbqRsGed5OjtofEnLA==}
     dependencies:
@@ -3083,6 +3095,13 @@ packages:
 
   /@lezer/rust/1.0.0:
     resolution: {integrity: sha512-IpGAxIjNxYmX9ra6GfQTSPegdCAWNeq23WNmrsMMQI7YNSvKtYxO4TX5rgZUmbhEucWn0KTBMeDEPXg99YKtTA==}
+    dependencies:
+      '@lezer/highlight': 1.0.0
+      '@lezer/lr': 1.0.0
+    dev: false
+
+  /@lezer/xml/1.0.0:
+    resolution: {integrity: sha512-73iI9UK8iqSvWtLlOEl/g+50ivwQn8Ge6foHVN66AXUS1RccFnAoc7BYU8b3c8/rP6dfCOGqAGaWLxBzhj60MA==}
     dependencies:
       '@lezer/highlight': 1.0.0
       '@lezer/lr': 1.0.0

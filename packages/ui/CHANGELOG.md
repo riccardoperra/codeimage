@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.9.0
+
+### Minor Changes
+
+- [#331](https://github.com/riccardoperra/codeimage/pull/331) [`1c079d0`](https://github.com/riccardoperra/codeimage/commit/1c079d035ff612b09e61dedeb180d8b6dab38f21) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(ui): add LoadingCircle spinner icon and Button support for loading state and left icon
+
 ## 0.8.2
 
 ### Patch Changes

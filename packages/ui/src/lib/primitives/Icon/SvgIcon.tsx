@@ -7,13 +7,14 @@ export type SvgIconProps = _SvgIconProps &
 
 export function SvgIcon(props: SvgIconProps): JSX.Element {
   const computedProps = mergeProps({size: 'md'} as _SvgIconProps, props);
+  const classes = () => clsx(svgIcon({size: computedProps.size}), props.class);
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       {...props}
-      class={clsx(props.class, svgIcon({size: computedProps.size}))}
+      class={classes()}
     >
       {props.children}
     </svg>
