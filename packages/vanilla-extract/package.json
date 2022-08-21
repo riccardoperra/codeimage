@@ -44,7 +44,7 @@
     "@vanilla-extract/integration": "5.0.0",
     "outdent": "0.8.0",
     "postcss": "8.4.16",
-    "postcss-load-config": "4.0.1",
-    "vite": "3.0.9"
+    "postcss-load-config": "^4.0.1",
+    "vite": "^3.0.9"
   }
 }

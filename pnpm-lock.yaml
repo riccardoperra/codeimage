@@ -542,10 +542,10 @@ importers:
       outdent: 0.8.0
       path: 0.12.7
       postcss: 8.4.16
-      postcss-load-config: 4.0.1
+      postcss-load-config: ^4.0.1
       rollup: ^2.78.1
       typescript: ^4.7.4
-      vite: 3.0.9
+      vite: ^3.0.9
     dependencies:
       '@vanilla-extract/integration': 5.0.0
       outdent: 0.8.0
@@ -10895,6 +10895,7 @@ packages:
       rollup: 2.77.0
     optionalDependencies:
       fsevents: 2.3.2
+    dev: false
 
   /vite/3.0.9_sass@1.52.1:
     resolution: {integrity: sha512-waYABTM+G6DBTCpYAxvevpG50UOlZuynR0ckTK5PawNVt7ebX6X7wNXHaGIO6wYYFXSM7/WcuFuO2QzhBB6aMw==}
