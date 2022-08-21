@@ -10,46 +10,30 @@ const externals = [
   '@vanilla-extract/recipes/createRuntimeFn',
 ];
 
+/**
+ *
+ * @param {import('rollup').ModuleFormat} format
+ */
+function buildOutput(format) {
+  return {
+    preserveModules: true,
+    preserveModulesRoot: 'src',
+    // Apply preserveModulesRoot to asset names
+    assetFileNames({name}) {
+      return name.replace(/^src\//, '');
+    },
+    exports: 'named',
+    dir: `./dist/${format}`,
+    format: format,
+  };
+}
+
 /** @type {import('rollup').RollupOptions} */
 const solidConfig = withSolid({
   input: 'src/index.tsx',
   targets: ['esm', 'cjs'],
   external: externals,
-  output: [
-    {
-      preserveModules: true,
-      preserveModulesRoot: 'src',
-      // Change .css.js files to something else so that they don't get re-processed by consumer's setup
-      // entryFileNames({name}) {
-      //   return `${name.replace(/\.css$/, '.css.vanilla')}.js`;
-      // },
-
-      // Apply preserveModulesRoot to asset names
-      assetFileNames({name}) {
-        return name.replace(/^src\//, '');
-      },
-      exports: 'named',
-      dir: './dist/esm',
-      format: 'esm',
-    },
-    {
-      preserveModules: true,
-      preserveModulesRoot: 'src',
-      // Change .css.js files to something else so that they don't get re-processed by consumer's setup
-      // entryFileNames({name}) {
-      //   return `${name.replace(/\.css$/, '.css.vanilla')}.js`;
-      // },
-
-      // Apply preserveModulesRoot to asset names
-      assetFileNames({name}) {
-        return name.replace(/^src\//, '');
-      },
-
-      exports: 'named',
-      dir: './dist/cjs',
-      format: 'cjs',
-    },
-  ],
+  output: [buildOutput('esm'), buildOutput('cjs')],
 });
 
 /** @type {import('rollup').Plugin} */
