@@ -145,7 +145,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: packages
-          key: packages-dist-${{ github.run_id }}
+          key: packages-dist-${{ github.run_id }}-{{ github.run_number }}
           restore-keys: packages-dist-
 
   build-app:
@@ -173,7 +173,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: packages
-          key: packages-dist-${{ github.run_id }}
+          key: packages-dist-${{ github.run_id }}-{{ github.run_number }}
 
       - name: Build app
         env:
@@ -239,8 +239,8 @@ jobs:
         with:
           path: |
             dist/api-bundle/**
-          key: rest-api-bundle-${{ github.run_id }}
-          restore-keys: rest-api-bundle-${{ github.run_id }}
+          key: rest-api-bundle-${{ github.run_id }}-{{ github.run_number }}
+          restore-keys: rest-api-bundle-${{ github.run_id }}-{{ github.run_number }}
 
 
   be-test:
@@ -286,7 +286,7 @@ jobs:
         with:
           path: |
             packages
-          key: packages-${{ github.run_id }}
+          key: packages-${{ github.run_id }}-{{ github.run_number }}
 
       - name: Install dependencies
         run: pnpm install
@@ -333,7 +333,7 @@ jobs:
         with:
           path: |
             dist/api-bundle/**
-          key: rest-api-bundle-${{ github.run_id }}
+          key: rest-api-bundle-${{ github.run_id }}-{{ github.run_number }}
 
       - name: Install Railway
         run: pnpm i -g @railway/cli
