@@ -8,6 +8,7 @@ import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
 import {ExportInNewTabButton} from './ExportNewTabButton';
+import {ShareButton} from './ShareButton';
 import * as styles from './Toolbar.css';
 import {ToolbarSettingsButton} from './ToolbarSettings';
 import {ToolbarSnippetName} from './ToolbarSnippetName';
@@ -44,6 +45,8 @@ export const Toolbar: Component<{
 
       <Box class={styles.actionBox} style={{flex: 1}}>
         <HStack marginLeft={'auto'} spacing={'2'}>
+          <ShareButton showLabel={false} />
+
           <ExportInNewTabButton canvasRef={props.canvasRef} />
 
           <ExportButton canvasRef={props.canvasRef} />
