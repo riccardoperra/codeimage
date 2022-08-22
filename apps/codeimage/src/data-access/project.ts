@@ -38,7 +38,7 @@ export async function getWorkspaceContent(): Promise<
 export async function updateSnippet(
   data: ApiTypes.UpdateProjectApi['request'],
 ) {
-  return makeFetch('/api/v1/project/:id', {
+  return makeFetch(`${BASE_URL}/api/v1/project/:id`, {
     method: 'PUT',
     params: {
       id: data.params?.id,
