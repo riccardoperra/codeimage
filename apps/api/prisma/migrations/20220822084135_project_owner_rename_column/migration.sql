@@ -10,19 +10,10 @@
 ALTER TABLE "Project" DROP CONSTRAINT "Project_userId_fkey";
 
 -- DropIndex
-DROP INDEX "Project_id_userId_key";
+ALTER INDEX "Project_id_userId_key" RENAME TO "Project_id_ownerId_idx";
 
 -- DropIndex
-DROP INDEX "Project_name_userId_idx";
+ALTER INDEX "Project_name_userId_idx" RENAME TO "Project_name_ownerId_idx";
 
 -- AlterTable
 ALTER TABLE "Project" RENAME COLUMN "userId" TO "ownerId";
-
--- AlterIndex
-CREATE INDEX "Project_name_ownerId_idx" ON "Project"("name", "ownerId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Project_id_ownerId_key" ON "Project"("id", "ownerId");
-
--- AddForeignKey
-ALTER TABLE "Project" ADD CONSTRAINT "Project_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
