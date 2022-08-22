@@ -1,3 +1,4 @@
+import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
@@ -85,10 +86,9 @@ export const locale = {
     ...dashboard.it,
     ...uiLocale.it,
     ...bottomBar.it,
+    ...notFound.it,
   },
   en: {
-    ...sidebarLocale.en,
-    ...dashboard.en,
     canvas: {
       copiedToClipboard: 'Snippet copied to clipboard',
       linkGeneratedToClipboard: 'Link copied to clipboard',
@@ -165,6 +165,9 @@ export const locale = {
     },
     ...uiLocale.en,
     ...bottomBar.en,
+    ...sidebarLocale.en,
+    ...dashboard.en,
+    ...notFound.en,
   },
   de: {
     common: {
@@ -246,6 +249,7 @@ export const locale = {
     ...uiLocale.de,
     ...bottomBar.de,
     ...dashboard.de,
+    ...notFound.de,
   },
   es: {
     common: {
@@ -327,6 +331,7 @@ export const locale = {
     ...uiLocale.es,
     ...bottomBar.es,
     ...dashboard.es,
+    ...notFound.es,
   },
 };
 

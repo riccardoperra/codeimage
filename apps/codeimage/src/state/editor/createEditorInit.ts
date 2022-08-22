@@ -55,7 +55,6 @@ function createEditorSyncAdapter() {
       }
       const loadedProject = await API.project.loadSnippet(snippetId);
       if (loadedProject) {
-        console.log(loadedProject);
         updateStateFromRemote(loadedProject);
       }
       setReadonly(!loadedProject.isOwner);
@@ -78,6 +77,12 @@ function createEditorSyncAdapter() {
     debounceTime(150),
     skip(1),
   );
+
+  createEffect(() => {
+    if (loadedSnippet.error) {
+      navigate('/404');
+    }
+  });
 
   createEffect(
     on(store.initialized, ready => {
