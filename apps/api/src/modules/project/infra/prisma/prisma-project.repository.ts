@@ -2,6 +2,7 @@ import {PrismaClient, Project} from '@codeimage/prisma-models';
 import {
   ProjectCreateRequest,
   ProjectCreateResponse,
+  ProjectGetByIdResponse,
   ProjectUpdateRequest,
   ProjectUpdateResponse,
 } from '../../domain';
@@ -10,7 +11,7 @@ import {ProjectRepository} from '../../repository';
 export function makePrismaProjectRepository(
   client: PrismaClient,
 ): ProjectRepository {
-  function findById(id: string): Promise<Project | null> {
+  function findById(id: string): Promise<ProjectGetByIdResponse | null> {
     return client.project.findFirst({
       where: {
         id,

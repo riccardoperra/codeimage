@@ -1,5 +1,5 @@
+import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {FastifyPluginAsync} from 'fastify';
 import {GetApiTypes} from '../../../common/types/extract-api-types';
 import {ProjectGetByIdResponseSchema} from '../../../modules/project/schema';
 
@@ -16,17 +16,24 @@ const schema = {
 
 export type GetProjectByIdApi = GetApiTypes<typeof schema>;
 
-const getByIdRoute: FastifyPluginAsync = async fastify => {
-  fastify.get<{
-    Params: {
-      id: string;
-    };
-  }>('/:id', {preHandler: fastify.authorize, schema}, async request => {
-    const {
-      params: {id},
-    } = request;
-    return fastify.projectService.findById(id);
-  });
+const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.get(
+    '/:id',
+    {
+      preValidation: (req, reply) =>
+        fastify.authorize(req, reply, {
+          mustBeAuthenticated: false,
+        }),
+      schema,
+    },
+    async request => {
+      const {
+        appUser,
+        params: {id},
+      } = request;
+      return fastify.projectService.findById(appUser, id);
+    },
+  );
 };
 
 export default getByIdRoute;

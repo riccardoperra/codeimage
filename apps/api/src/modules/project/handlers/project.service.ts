@@ -1,16 +1,18 @@
-import {Project} from '@codeimage/prisma-models';
-import {HttpErrors} from '@fastify/sensible/lib/httpError';
+import {Project, User} from '@codeimage/prisma-models';
+import {HttpError, HttpErrors} from '@fastify/sensible/lib/httpError';
 import {createProjectRequestMapper} from '../mapper/create-project-mapper';
+import {createProjectGetByIdResponseMapper} from '../mapper/get-project-by-id-mapper';
 import {ProjectRepository} from '../repository';
 import {
   ProjectCreateRequest,
   ProjectCreateResponse,
+  ProjectGetByIdResponse,
   ProjectUpdateRequest,
   ProjectUpdateResponse,
 } from '../schema';
 
 export interface ProjectService {
-  findById(id: string): Promise<Project>;
+  findById(user: User | null, id: string): Promise<ProjectGetByIdResponse>;
 
   findAllByUserId(userId: string): Promise<Project[]>;
 
@@ -30,6 +32,8 @@ export interface ProjectService {
     projectId: string,
     data: ProjectUpdateRequest,
   ): Promise<ProjectUpdateResponse>;
+
+  clone(user: User, projectId: string): Promise<ProjectCreateResponse>;
 }
 
 export function makeProjectService(
@@ -37,14 +41,22 @@ export function makeProjectService(
   httpErrors: HttpErrors,
 ): ProjectService {
   return {
-    async findById(id: string): Promise<Project> {
+    async findById(
+      user: User | null,
+      id: string,
+    ): Promise<ProjectGetByIdResponse> {
       const project = await repository.findById(id);
 
       if (!project) {
         throw httpErrors.notFound(`Project with id ${id} not found`);
       }
 
-      return project;
+      const isOwner = !!user && user.id === project.ownerId;
+
+      const mappedProject = createProjectGetByIdResponseMapper(project);
+      mappedProject.isOwner = isOwner;
+
+      return mappedProject;
     },
     async findAllByUserId(userId: string): Promise<Project[]> {
       return repository.findAllByUserId(userId);
@@ -63,6 +75,26 @@ export function makeProjectService(
     },
     async update(userId, projectId, data) {
       return repository.updateProject(userId, projectId, data);
+    },
+    async clone(user: User, projectId: string): Promise<ProjectCreateResponse> {
+      try {
+        const project = await this.findById(user, projectId);
+        return this.createNewProject(user.id, {
+          name: project.name,
+          frame: project.frame,
+          editors: project.editorTabs,
+          editorOptions: project.editorOptions,
+          terminal: project.terminal,
+        });
+      } catch (e) {
+        const error = e as HttpError;
+        if (error && error.name === 'notFound') {
+          throw httpErrors.notFound(
+            `Cannot clone project with id ${projectId} since it does not exists`,
+          );
+        }
+        throw e;
+      }
     },
   };
 }

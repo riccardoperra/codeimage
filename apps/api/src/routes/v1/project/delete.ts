@@ -31,7 +31,7 @@ const deleteRoute: FastifyPluginAsync = async fastify => {
   }>(
     '/:id',
     {
-      preValidation: fastify.authorize,
+      preValidation: (req, reply) => fastify.authorize(req, reply),
       schema,
     },
     async request => {

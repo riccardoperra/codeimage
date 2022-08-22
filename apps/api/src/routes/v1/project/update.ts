@@ -24,7 +24,7 @@ const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
   fastify.put(
     '/:id',
     {
-      preValidation: req => fastify.authorize(req),
+      preValidation: (req, reply) => fastify.authorize(req, reply),
       schema,
     },
     request => {

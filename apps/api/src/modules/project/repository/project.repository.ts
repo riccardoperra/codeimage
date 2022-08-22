@@ -1,8 +1,9 @@
 import {Project} from '@codeimage/prisma-models';
 import type * as DomainModel from '../domain';
+import {ProjectGetByIdResponse} from '../domain';
 
 export interface ProjectRepository {
-  findById(id: string): Promise<Project | null>;
+  findById(id: string): Promise<ProjectGetByIdResponse | null>;
 
   updateProjectName(projectId: string, newName: string): Promise<Project>;
 

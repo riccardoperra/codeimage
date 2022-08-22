@@ -14,6 +14,7 @@ export const ProjectGetByIdResponseSchema = Type.Intersect([
     editorOptions: BaseSnippetEditorOptionsSchema,
     frame: BaseSnippetFrameSchema,
     terminal: BaseSnippetTerminalSchema,
+    isOwner: Type.Boolean(),
   }),
 ]);
 

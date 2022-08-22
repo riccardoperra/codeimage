@@ -1,4 +1,7 @@
-import {Type} from '@sinclair/typebox';
+import {SchemaOptions, TSchema, Type} from '@sinclair/typebox';
+
+const Nullable = <T extends TSchema>(type: T, options?: SchemaOptions) =>
+  Type.Union([type, Type.Null()], options);
 
 export const BaseProjectResponseSchema = Type.Object(
   {
@@ -37,7 +40,7 @@ export const BaseSnippetTerminalSchema = Type.Object({
   showHeader: Type.Boolean(),
   type: Type.String(),
   accentVisible: Type.Boolean(),
-  shadow: Type.String(),
+  shadow: Nullable(Type.String()),
   background: Type.String(),
   textColor: Type.String(),
   showWatermark: Type.Boolean(),

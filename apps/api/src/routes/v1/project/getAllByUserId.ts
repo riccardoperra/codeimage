@@ -5,7 +5,7 @@ const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
   fastify.get(
     '/',
     {
-      preValidation: fastify.authorize,
+      preValidation: (req, reply) => fastify.authorize(req, reply),
       schema: {
         tags: ['Project'],
       },
