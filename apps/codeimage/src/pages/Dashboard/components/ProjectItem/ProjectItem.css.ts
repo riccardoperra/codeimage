@@ -1,5 +1,6 @@
 import {themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
+import {darkGrayScale} from '../../../../theme/dark-theme.css';
 
 export const item = style({
   backgroundColor: themeVars.dynamicColors.input.backgroundColor,
@@ -8,15 +9,14 @@ export const item = style({
   padding: '24px',
   paddingBottom: '12px',
   height: '128px',
-  // boxShadow: themeVars.dynamicColors.dialog.panelShadow,
-  boxShadow: 'inset 0 1px 0 0 rgb(255 255 255 / 5%)',
+  boxShadow: themeVars.boxShadow.md,
   color: themeVars.dynamicColors.baseText,
   transition: 'background-color 0.2s ease-in-out',
   position: 'relative',
   display: 'inline-flex',
   flexDirection: 'column',
   ':hover': {
-    backgroundColor: themeVars.dynamicColors.listBox.hoverBackgroundColor,
+    backgroundColor: darkGrayScale.gray2,
   },
 });
 

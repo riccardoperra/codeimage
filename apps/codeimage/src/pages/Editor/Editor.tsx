@@ -4,8 +4,8 @@ import {
 } from '@codeimage/store/editor/createEditorInit';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {LoadingOverlay} from '@codeimage/ui';
-import {useNavigate, useParams} from 'solid-app-router';
-import {createEffect, createResource, lazy, on, onMount, Show} from 'solid-js';
+import {useParams} from 'solid-app-router';
+import {createEffect, lazy, on, onMount, Show} from 'solid-js';
 
 const App = lazy(() => {
   getThemeStore().loadThemes();
@@ -20,26 +20,14 @@ export default function Editor() {
     <EditorSyncProvider>
       {(() => {
         const params = useParams();
-        const navigate = useNavigate();
         // prettier-ignore
         const {
           loadedSnippet,
           setSnippetId,
-          initRemoteDbSync,
-          indexedDbState
+          initRemoteDbSync
         } = getEditorSyncAdapter()!;
 
-        const [idbState] = createResource(indexedDbState);
-
         onMount(() => initRemoteDbSync());
-
-        createEffect(
-          on(idbState, state => {
-            if (!params.snippetId && state && state.$snippetId) {
-              navigate(`/${state.$snippetId}`);
-            }
-          }),
-        );
 
         createEffect(
           on(
