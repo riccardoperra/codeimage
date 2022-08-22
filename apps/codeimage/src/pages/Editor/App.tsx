@@ -20,6 +20,7 @@ import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
 import {darkGrayScale} from '../../theme/dark-theme.css';
 import * as styles from './App.css';
+import {EditorReadOnlyBanner} from './components/EditorReadOnlyBanner';
 
 const ManagedFrame = lazy(() =>
   import('../../components/Frame/ManagedFrame').then(c => ({
@@ -33,8 +34,6 @@ export function App() {
   const modality = useModality();
   const frameStore = getFrameState();
   const {readOnly, clone} = getEditorSyncAdapter()!;
-
-  const [cloneAction, {notify: onClone}] = useAsyncAction(() => clone());
 
   return (
     <>
@@ -50,34 +49,7 @@ export function App() {
 
         <Canvas>
           <Show when={readOnly()}>
-            <Box
-              display={'flex'}
-              // TODO: fix
-              style={{
-                background: darkGrayScale.gray5,
-                color: darkGrayScale.gray12,
-              }}
-              alignItems={'center'}
-              paddingLeft={5}
-              paddingRight={5}
-              padding={2}
-            >
-              <HintIcon />
-              <Box as={Text} marginLeft={2}>
-                You are viewing the editor in read-only modality. Clone the
-                snippet to edit and save it in your workspace.
-              </Box>
-              <Box marginLeft={3}>
-                <Button
-                  variant={'solid'}
-                  theme={'primary'}
-                  loading={cloneAction.loading}
-                  onClick={onClone}
-                >
-                  Clone
-                </Button>
-              </Box>
-            </Box>
+            <EditorReadOnlyBanner onClone={clone} />
           </Show>
 
           <Show when={!readOnly()}>
