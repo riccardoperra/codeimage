@@ -54,7 +54,7 @@ export function createTerminalState() {
     setFromPersistedState(persistedState: PersistedTerminalState) {
       const shadows = TERMINAL_SHADOWS;
       setState(state => {
-        if (!Object.values<string>(shadows).includes(state.shadow)) {
+        if (!Object.values<string | null>(shadows).includes(state.shadow)) {
           state.shadow = shadows.bottom;
         }
         return {...state, ...persistedState};
