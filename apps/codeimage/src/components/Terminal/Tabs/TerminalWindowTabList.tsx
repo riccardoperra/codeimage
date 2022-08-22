@@ -5,8 +5,16 @@ import {
   DragDropProvider,
   SortableProvider,
 } from '@thisbeyond/solid-dnd';
-import {createMemo, For, Show, Suspense, VoidProps} from 'solid-js';
+import {
+  createMemo,
+  ErrorBoundary,
+  For,
+  Show,
+  Suspense,
+  VoidProps,
+} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
+import {FrameSkeleton} from '../../Frame/FrameSkeleton';
 import * as styles from './Tab/Tab.css';
 import {WindowTab} from './Tab/WindowTab';
 import {TabAddButton} from './TabAddButton/TabAddButton';
@@ -55,7 +63,7 @@ export function TerminalWindowTabList(
   }
 
   return (
-    <>
+    <ErrorBoundary fallback={<FrameSkeleton />}>
       <Suspense>
         <div
           class={styles.wrapper({accent: props.accent})}
@@ -128,6 +136,6 @@ export function TerminalWindowTabList(
           </Show>
         </div>
       </Suspense>
-    </>
+    </ErrorBoundary>
   );
 }
