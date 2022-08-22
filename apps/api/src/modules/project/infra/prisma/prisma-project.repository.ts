@@ -59,7 +59,7 @@ export function makePrismaProjectRepository(
   ): Promise<ProjectCreateResponse> {
     return client.project.create({
       data: {
-        name: 'Untitled',
+        name: data.name ?? 'Untitled',
         owner: {
           connect: {id: ownerId},
         },

@@ -69,16 +69,8 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
       req.appUserOptional = req.appUser;
     }
 
-    function authorizeCustom(
-      options: AuthorizeOptions,
-    ): (...args: Parameters<typeof authorize>) => ReturnType<typeof authorize> {
-      return (req, reply) => authorize(req, reply, options);
-    }
-
     fastify.decorateRequest('appUser', null);
-    fastify.decorate('appUserOptional', null);
     fastify.decorate('authorize', authorize);
-    fastify.decorate('authorizeCustom', authorizeCustom);
   },
 );
 

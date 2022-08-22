@@ -59,5 +59,5 @@ t.test('POST /v1/project/ [Create Project] -> 200', async t => {
 
   t.ok(spy.withArgs(userId, data).calledOnce, 'has been called once');
   t.same(response.statusCode, 200, 'return status 200');
-  t.strictSame(body.name, 'Untitled');
+  t.strictSame(body.name, 'Data');
 });

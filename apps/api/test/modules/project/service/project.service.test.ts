@@ -1,8 +1,11 @@
-import {Project} from '@codeimage/prisma-models';
+import {User} from '@codeimage/prisma-models';
 import {HttpErrors} from '@fastify/sensible/lib/httpError';
 import * as sinon from 'sinon';
 import t from 'tap';
-import {ProjectCreateResponse} from '../../../../src/modules/project/domain';
+import {
+  ProjectCreateResponse,
+  ProjectGetByIdResponse,
+} from '../../../../src/modules/project/domain';
 import {makeProjectService} from '../../../../src/modules/project/handlers/project.service';
 import {ProjectRepository} from '../../../../src/modules/project/repository';
 
@@ -70,6 +73,46 @@ export function makeMockProjectService() {
   };
 }
 
+const baseResponse = {
+  ownerId: 'userId',
+  id: '1',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  editorTabs: [],
+  editorOptions: {
+    id: 'editorOptionsId1',
+    fontId: 'fontId',
+    fontWeight: 300,
+    showLineNumbers: true,
+    themeId: 'themeId',
+  },
+  frame: {
+    background: '#fff',
+    opacity: 1,
+    padding: 32,
+    id: 'frameId1',
+    radius: 32,
+    visible: true,
+  },
+  terminal: {
+    opacity: 1,
+    background: '#fff',
+    id: 'terminalId1',
+    showGlassReflection: true,
+    showHeader: true,
+    alternativeTheme: false,
+    shadow: null,
+    textColor: '#fff',
+    type: 'macOS',
+    showWatermark: true,
+    accentVisible: true,
+  },
+  terminalId: 'terminalId1',
+  editorOptionsId: 'editorOptionsId1',
+  frameId: 'frameId1',
+  name: 'project1',
+} as ProjectGetByIdResponse;
+
 t.beforeEach(() => sinon.reset());
 
 t.test('create project', async t => {
@@ -122,26 +165,101 @@ t.test('create project', async t => {
 
 t.test('findById -> should return project', async t => {
   const id = 'projectId1';
+  const user: User = {
+    id: 'userId1',
+    email: 'email@example.it',
+    createdAt: new Date(),
+  };
   const {repository, service} = makeMockProjectService();
+
   sinon
     .stub(repository, 'findById')
     .withArgs(id)
-    .callsFake(() => Promise.resolve({} as Project));
+    .callsFake(() =>
+      Promise.resolve({
+        ...baseResponse,
+        ownerId: 'userId1',
+      }),
+    );
 
-  const result = await service.findById(id);
+  const result = await service.findById(user, id);
 
-  t.same(result, {});
+  t.ok(result.isOwner);
+  t.same(result.ownerId, user.id);
+  t.same(result.name, 'project1');
+});
+
+t.test('findById -> should return project and not owner', async t => {
+  const id = 'projectId1';
+  const user: User = {
+    id: 'userId2',
+    email: 'email@example.it',
+    createdAt: new Date(),
+  };
+  const {repository, service} = makeMockProjectService();
+
+  sinon
+    .stub(repository, 'findById')
+    .withArgs(id)
+    .callsFake(() =>
+      Promise.resolve({
+        ...baseResponse,
+        ownerId: 'differentOwner',
+        id: '1',
+      } as ProjectGetByIdResponse),
+    );
+
+  const result = await service.findById(user, id);
+
+  t.notOk(result.isOwner);
+  t.same(result.ownerId, 'differentOwner');
+  t.same(result.name, 'project1');
 });
 
 t.test(
   'findById -> should return 404 error when not found project',
   async t => {
     const id = 'projectId1';
+    const user: User = {
+      id: 'userId1',
+      email: 'email@example.it',
+      createdAt: new Date(),
+    };
     const {repository, service, httpErrors} = makeMockProjectService();
     const notFoundSpy = sinon.spy(httpErrors, 'notFound');
     sinon.stub(repository, 'findById').callsFake(async () => null);
 
-    await t.rejects(service.findById(id), 'will reject');
+    await t.rejects(service.findById(user, id), 'will reject');
+    t.ok(notFoundSpy.called, 'called not found spy');
+  },
+);
+
+t.test('clone -> should return created project', async t => {
+  const {repository, service} = makeMockProjectService();
+  sinon.stub(repository, 'findById').callsFake(async () => ({
+    ...baseResponse,
+    ownerId: 'userId1',
+  }));
+
+  const createNewProjectSpy = sinon.spy(service, 'createNewProject');
+
+  t.ok(createNewProjectSpy.calledOnce);
+});
+
+t.test(
+  'findById -> should return 404 error when not found project',
+  async t => {
+    const id = 'projectId1';
+    const user: User = {
+      id: 'userId1',
+      email: 'email@example.it',
+      createdAt: new Date(),
+    };
+    const {repository, service, httpErrors} = makeMockProjectService();
+    const notFoundSpy = sinon.spy(httpErrors, 'notFound');
+    sinon.stub(repository, 'findById').callsFake(async () => null);
+
+    await t.rejects(service.findById(user, id), 'will reject');
     t.ok(notFoundSpy.called, 'called not found spy');
   },
 );

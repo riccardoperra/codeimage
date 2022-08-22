@@ -24,7 +24,7 @@ t.test('/v1/project -> 200', async t => {
 
   const body = JSON.parse(response.body) as Project;
 
-  t.ok(spy.withArgs(projectId).calledOnce);
+  t.ok(spy.withArgs(t.context.user, projectId).calledOnce);
   t.same(response.statusCode, 200);
   t.same(body.id, projectId);
   t.same(body.name, 'get by id test');
@@ -46,7 +46,7 @@ t.test('/v1/project -> 404', async t => {
 
   const body = JSON.parse(response.body);
 
-  t.ok(spy.withArgs(projectId).calledOnce);
+  t.ok(spy.withArgs(t.context.user, projectId).calledOnce);
   t.same(response.statusCode, 404);
   t.same(body.message, `Project with id ${projectId} not found`);
 });

@@ -88,7 +88,7 @@ export function makeProjectService(
         });
       } catch (e) {
         const error = e as HttpError;
-        if (error && error.name === 'notFound') {
+        if (error && error.name === 'NotFoundError') {
           throw httpErrors.notFound(
             `Cannot clone project with id ${projectId} since it does not exists`,
           );

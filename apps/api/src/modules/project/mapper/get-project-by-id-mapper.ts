@@ -13,10 +13,10 @@ export function createProjectGetByIdResponseMapper(
     id: data.id,
     ownerId: data.ownerId,
     name: data.name,
-    createdAt: String(data.createdAt),
-    updatedAt: String(data.updatedAt),
+    createdAt: data.createdAt.toISOString(),
+    updatedAt: data.updatedAt.toISOString(),
     frame: {
-      id: data.id,
+      id: data.frame.id,
       padding:
         data.frame.padding ??
         SnippetFrameCreateRequestSchema.properties.padding.default,
@@ -32,7 +32,7 @@ export function createProjectGetByIdResponseMapper(
         SnippetFrameCreateRequestSchema.properties.radius.default,
     },
     terminal: {
-      id: data.id,
+      id: data.terminal.id,
       background: data.terminal.background ?? '',
       opacity:
         data.terminal.opacity ??
@@ -56,7 +56,7 @@ export function createProjectGetByIdResponseMapper(
       shadow: data.terminal.shadow ?? null,
     },
     editorOptions: {
-      id: data.id,
+      id: data.editorOptions.id,
       fontWeight: data.editorOptions.fontWeight,
       fontId: data.editorOptions.fontId,
       showLineNumbers:
