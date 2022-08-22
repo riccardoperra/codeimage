@@ -35,6 +35,13 @@ const Dashboard = lazy(() =>
 
 const Editor = lazy(() => import('./pages/Editor/Editor'));
 
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFound/NotFoundPage').then(c => {
+    document.querySelector('#launcher')?.remove();
+    return c;
+  }),
+);
+
 export function Bootstrap() {
   getRootEditorStore();
   const [, {locale}] = useI18n();
@@ -58,9 +65,18 @@ export function Bootstrap() {
       component: lazy(() => import('./pages/Editor/Editor')),
     },
     {
+      path: '404',
+      component: NotFoundPage,
+    },
+    {
       path: 'dashboard',
       data: ({navigate}) => navigate('/'),
       component: Dashboard,
+    },
+    {
+      path: '/*all',
+      data: ({navigate}) => navigate('/404'),
+      component: NotFoundPage,
     },
   ]);
 

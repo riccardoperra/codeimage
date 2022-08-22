@@ -60,9 +60,11 @@ export async function makeFetch(
 
   request.headers = headers;
 
-  return fetch(url, request).then(res => {
+  return fetch(url, request).then(async res => {
     if (!res.ok) {
-      throw res;
+      return res.json().then(error => {
+        return Promise.reject(error);
+      });
     }
     return res;
   });
