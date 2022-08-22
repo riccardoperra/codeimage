@@ -23,9 +23,9 @@ export function Box<T extends ValidConstructor = 'div'>(
 ): JSXElement {
   return (
     <styled.div
+      {...omitProps(props, ['as', 'ref'])}
       as={props.as ?? 'div'}
       ref={props.ref}
-      {...omitProps(props, ['as', 'ref'])}
       class={clsx(
         boxBase,
         props.class,

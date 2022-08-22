@@ -53,7 +53,7 @@ const _styled: CustomComponentFactory = <T extends ElementType>(
     const propsWithDefault = mergeProps(
       {
         get component() {
-          return component;
+          return props.as ?? component;
         },
       },
       props,

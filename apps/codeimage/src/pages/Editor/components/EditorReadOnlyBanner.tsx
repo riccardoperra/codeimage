@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {Box, Button} from '@codeimage/ui';
+import {Box, Button, Text} from '@codeimage/ui';
 import {useAsyncAction} from '@core/hooks/async-action';
 import {VoidProps} from 'solid-js';
 import {HintIcon} from '../../../components/Icons/Hint';
@@ -21,18 +21,21 @@ export function EditorReadOnlyBanner(
 
   return (
     <div class={styles.banner}>
-      <HintIcon />
-      <Box marginLeft={2}>{t('readOnlyBanner.title')}</Box>
-      <Box marginLeft={3}>
-        <Button
-          variant={'solid'}
-          theme={'primary'}
-          loading={cloneAction.loading}
-          onClick={onClone}
-        >
-          {t('common.clone')}
-        </Button>
+      <Box display={'flex'} alignItems={'center'}>
+        <HintIcon size={'sm'} />
+        <Box as={'span'} marginLeft={2}>
+          <Text size={'sm'}>{t('readOnlyBanner.title')}</Text>
+        </Box>
       </Box>
+      <Button
+        variant={'solid'}
+        theme={'primary'}
+        loading={cloneAction.loading}
+        onClick={onClone}
+        size={'xs'}
+      >
+        {t('common.clone')}
+      </Button>
     </div>
   );
 }

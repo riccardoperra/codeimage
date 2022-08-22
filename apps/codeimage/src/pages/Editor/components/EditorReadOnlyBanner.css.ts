@@ -4,8 +4,8 @@ import {darkGrayScale} from '../../../theme/dark-theme.css';
 
 export const banner = style({
   display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
+  flexDirection: 'column',
+  gap: themeVars.spacing['3'],
   padding: `${themeVars.spacing['2']} ${themeVars.spacing['5']}`,
   selectors: {
     '[data-codeimage-theme=dark] &': {
@@ -15,6 +15,12 @@ export const banner = style({
     '[data-codeimage-theme=light] &': {
       background: themeVars.backgroundColor.gray['200'],
       color: themeVars.backgroundColor.gray['900'],
+    },
+  },
+  '@media': {
+    '(min-width: 768px)': {
+      flexDirection: 'row',
+      alignItems: 'center',
     },
   },
 });
