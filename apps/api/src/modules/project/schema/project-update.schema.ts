@@ -73,7 +73,7 @@ export const ProjectUpdateResponseSchema = Type.Object(
     name: Type.String(),
     createdAt: Type.Unsafe<Date>({format: 'date-time'}),
     updatedAt: Type.Unsafe<Date>({format: 'date-time'}),
-    userId: Type.String(),
+    ownerId: Type.String({format: 'uuid'}),
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
     frame: Type.Required(SnippetFrameUpdateRequestSchema),
     terminal: Type.Required(SnippetTerminalUpdateRequestSchema),

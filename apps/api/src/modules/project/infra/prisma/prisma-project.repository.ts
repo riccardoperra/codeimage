@@ -24,10 +24,10 @@ export function makePrismaProjectRepository(
     });
   }
 
-  function findAllByUserId(userId: string): Promise<Project[]> {
+  function findAllByUserId(ownerId: string): Promise<Project[]> {
     return client.project.findMany({
       where: {
-        userId,
+        ownerId,
       },
       orderBy: {
         updatedAt: 'desc',
@@ -41,26 +41,26 @@ export function makePrismaProjectRepository(
     });
   }
 
-  function deleteProject(id: string, userId: string): Promise<Project> {
+  function deleteProject(id: string, ownerId: string): Promise<Project> {
     return client.project.delete({
       where: {
-        id_userId: {
+        id_ownerId: {
           id,
-          userId,
+          ownerId,
         },
       },
     });
   }
 
   function createNewProject(
-    userId: string,
+    ownerId: string,
     data: ProjectCreateRequest,
   ): Promise<ProjectCreateResponse> {
     return client.project.create({
       data: {
         name: 'Untitled',
-        user: {
-          connect: {id: userId},
+        owner: {
+          connect: {id: ownerId},
         },
         editorTabs: {
           createMany: {
