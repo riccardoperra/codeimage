@@ -7,4 +7,5 @@ export const auth0 = createAuth0Client({
   client_id: env.VITE_PUBLIC_AUTH0_CLIENT_ID,
   redirect_uri: `${window.location.protocol}//${window.location.host}`,
   audience: env.VITE_PUBLIC_AUTH0_AUDIENCE,
+  cacheLocation: 'localstorage',
 });
