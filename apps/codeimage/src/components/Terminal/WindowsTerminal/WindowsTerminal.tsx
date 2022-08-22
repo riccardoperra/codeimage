@@ -17,6 +17,7 @@ export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
         <div class={baseStyles.header} data-accent-visible={showTab()}>
           <Show when={props.showTab}>
             <TerminalWindowTabList
+              readOnly={props.readonlyTab}
               accent={props.accentVisible && !props.alternativeTheme}
             />
           </Show>

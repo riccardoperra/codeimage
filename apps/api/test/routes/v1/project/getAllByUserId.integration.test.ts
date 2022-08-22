@@ -26,7 +26,7 @@ t.test('/v1/project -> 200', async t => {
 
   t.ok(spy.withArgs(userId).calledOnce);
   t.ok(body.find(el => el.id === t.context.project1.id));
-  t.same(body[0].userId, userId);
+  t.same(body[0].ownerId, userId);
   t.same(response.statusCode, 200);
 });
 

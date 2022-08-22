@@ -42,7 +42,7 @@ export interface TerminalState {
   showHeader: boolean;
   type: string;
   accentVisible: boolean;
-  shadow: string;
+  shadow: string | null;
   background: string;
   textColor: string;
   showWatermark: boolean;

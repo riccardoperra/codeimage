@@ -10,6 +10,10 @@ declare module '@fastify/jwt/jwt' {
   }
 }
 
+interface AuthorizeOptions {
+  mustBeAuthenticated: boolean;
+}
+
 export default fp<{authProvider?: FastifyPluginAsync}>(
   async (fastify, options) => {
     if (options.authProvider) {
@@ -22,14 +26,28 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
       });
     }
 
-    async function authorize(req: FastifyRequest, reply: FastifyReply) {
+    async function authorize(
+      req: FastifyRequest,
+      reply: FastifyReply,
+      options: AuthorizeOptions = {
+        mustBeAuthenticated: true,
+      },
+    ) {
       try {
         await fastify.authenticate(req, reply);
       } catch (e) {
-        throw fastify.httpErrors.unauthorized();
+        if (options.mustBeAuthenticated) {
+          throw fastify.httpErrors.unauthorized();
+        }
       }
 
       const emailClaim = `${process.env.AUTH0_CLIENT_CLAIMS}/email`;
+
+      if (!req.user) {
+        req.appUserOptional = null;
+        return;
+      }
+
       const email = req.user[emailClaim] as string;
 
       const user = await fastify.prisma.user.findFirst({
@@ -47,6 +65,8 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
       } else {
         req.appUser = user;
       }
+
+      req.appUserOptional = req.appUser;
     }
 
     fastify.decorateRequest('appUser', null);
@@ -56,10 +76,15 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
 
 declare module 'fastify' {
   interface FastifyInstance {
-    authorize: (req: FastifyRequest) => string;
+    authorize: (
+      req: FastifyRequest,
+      reply: FastifyReply,
+      options?: AuthorizeOptions,
+    ) => void;
   }
 
   interface FastifyRequest {
     appUser: User;
+    appUserOptional: User | null;
   }
 }

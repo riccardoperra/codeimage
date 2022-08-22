@@ -26,7 +26,7 @@ const updateProjectName: FastifyPluginAsync = async fastify => {
   }>(
     '/:id/name',
     {
-      preValidation: fastify.authorize,
+      preValidation: (req, reply) => fastify.authorize(req, reply),
       schema,
     },
     async request => {
