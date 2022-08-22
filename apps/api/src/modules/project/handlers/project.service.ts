@@ -33,7 +33,11 @@ export interface ProjectService {
     data: ProjectUpdateRequest,
   ): Promise<ProjectUpdateResponse>;
 
-  clone(user: User, projectId: string): Promise<ProjectCreateResponse>;
+  clone(
+    user: User,
+    projectId: string,
+    newName: string | null,
+  ): Promise<ProjectCreateResponse>;
 }
 
 export function makeProjectService(
@@ -76,11 +80,15 @@ export function makeProjectService(
     async update(userId, projectId, data) {
       return repository.updateProject(userId, projectId, data);
     },
-    async clone(user: User, projectId: string): Promise<ProjectCreateResponse> {
+    async clone(
+      user: User,
+      projectId: string,
+      newName: string | null,
+    ): Promise<ProjectCreateResponse> {
       try {
         const project = await this.findById(user, projectId);
         return this.createNewProject(user.id, {
-          name: project.name,
+          name: newName ?? project.name,
           frame: project.frame,
           editors: project.editorTabs,
           editorOptions: project.editorOptions,

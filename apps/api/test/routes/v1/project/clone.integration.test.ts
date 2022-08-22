@@ -26,6 +26,9 @@ t.test('/v1/project/:id/clone -> 200', async t => {
   const response = await fastify.inject({
     url: `/api/v1/project/${projectId}/clone`,
     method: 'POST',
+    payload: {
+      newName: 'new name (copy)',
+    },
   });
 
   const body = response.json<ProjectCreateResponse>();
@@ -34,7 +37,7 @@ t.test('/v1/project/:id/clone -> 200', async t => {
   t.ok(createSpy.calledOnce);
   t.same(response.statusCode, 200);
   t.notSame(body.id, projectId);
-  t.same(body.name, 'existing project');
+  t.same(body.name, 'new name (copy)');
 });
 
 t.test('/v1/project/:id -> 404 -> when project by id not exists', async t => {
@@ -46,6 +49,7 @@ t.test('/v1/project/:id -> 404 -> when project by id not exists', async t => {
   const response = await fastify.inject({
     url: `/api/v1/project/${projectId}/clone`,
     method: 'POST',
+    payload: {},
     headers: {
       'user-id': userId,
     },

@@ -16,7 +16,7 @@ import {formatDistanceToNow} from '@core/helpers/date';
 import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
-import {Link} from 'solid-app-router';
+import {Link, useNavigate} from 'solid-app-router';
 import {For, Show, VoidProps} from 'solid-js';
 import {DotHorizontalIcon} from '../../../../components/Icons/DotVertical';
 import {AppLocaleEntries} from '../../../../i18n';
@@ -24,7 +24,7 @@ import {getDashboardState} from '../../dashboard.state';
 import * as styles from './ProjectItem.css';
 
 interface ProjectItemProps {
-  item: ApiTypes.CreateProjectApi['response'];
+  item: ApiTypes.GetProjectByIdApi['response'];
 }
 
 const highlight = _highlight;
@@ -33,6 +33,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const dashboard = getDashboardState()!;
   const locale = () => uiStore.locale;
   const createDialog = createStandaloneDialog();
+  const navigate = useNavigate();
   const [t] = useI18n<AppLocaleEntries>();
 
   const date = () => {
@@ -105,10 +106,18 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
                   },
                 }));
               }
+              if (action === 'clone') {
+                dashboard
+                  .cloneProject(props.item)
+                  ?.then(result => navigate(`/${result.id}`));
+              }
             }}
           >
             <Item key={'rename'}>
               {t('dashboard.renameProject.dropdownLabel')}
+            </Item>
+            <Item key={'clone'}>
+              {t('dashboard.cloneProject.dropdownLabel')}
             </Item>
             <Item key={'delete'}>
               {t('dashboard.deleteProject.dropdownLabel')}

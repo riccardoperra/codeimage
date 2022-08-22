@@ -252,10 +252,11 @@ t.test(
   },
 );
 
-t.test('clone -> should return created project', async t => {
+t.test('clone -> should return cloned project', async t => {
   const {repository, service} = makeMockProjectService();
   sinon.stub(repository, 'findById').callsFake(async () => ({
     ...baseResponse,
+    name: 'Existing',
     ownerId: 'userId1',
   }));
   const user: User = {
@@ -264,11 +265,36 @@ t.test('clone -> should return created project', async t => {
     createdAt: new Date(),
   };
 
-  const createNewProjectSpy = sinon.spy(service, 'createNewProject');
+  let createNewProjectStub = sinon.stub(service, 'createNewProject').resolves({
+    ...baseResponse,
+    id: baseResponse.id,
+    name: 'Existing',
+  });
 
-  await service.clone(user, 'projectId1');
+  const result1 = await service.clone(user, 'projectId1', null);
 
-  t.ok(createNewProjectSpy.calledOnce);
+  t.ok(createNewProjectStub.calledOnce);
+  t.same(result1.name, 'Existing');
+
+  sinon.restore();
+
+  sinon.stub(repository, 'findById').callsFake(async () => ({
+    ...baseResponse,
+    name: 'Existing',
+    ownerId: 'userId1',
+  }));
+
+  const createNewProjectStub2 = sinon
+    .stub(service, 'createNewProject')
+    .resolves({
+      ...baseResponse,
+      id: baseResponse.id,
+      name: 'new name',
+    });
+
+  const result2 = await service.clone(user, 'projectId1', 'new name');
+  t.same(result2.name, 'new name');
+  t.ok(createNewProjectStub2.calledOnce);
 });
 
 t.test('clone -> should not wrap exception', {only: true}, async t => {
@@ -286,7 +312,7 @@ t.test('clone -> should not wrap exception', {only: true}, async t => {
     .stub(repository, 'findById')
     .callsFake(async () => Promise.reject(error));
 
-  await t.rejects(service.clone(user, id), error);
+  await t.rejects(service.clone(user, id, null), error);
 
   sinon.restore();
 
@@ -294,7 +320,7 @@ t.test('clone -> should not wrap exception', {only: true}, async t => {
     .stub(repository, 'findById')
     .callsFake(async () => Promise.reject(httpErrors.notFound('not found')));
 
-  await t.rejects(service.clone(user, id), {
+  await t.rejects(service.clone(user, id, null), {
     message: `Cannot clone project with id ${id} since it does not exists`,
   });
 });

@@ -1,7 +1,6 @@
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {Box, Button, HStack, PortalHost, Text} from '@codeimage/ui';
-import {useAsyncAction} from '@core/hooks/async-action';
+import {Box, Button, HStack, PortalHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
 import {createSignal, lazy, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
@@ -9,7 +8,6 @@ import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {ClipboardIcon} from '../../components/Icons/Clipboard';
-import {HintIcon} from '../../components/Icons/Hint';
 import {KeyboardShortcuts} from '../../components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
 import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
@@ -18,7 +16,6 @@ import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
-import {darkGrayScale} from '../../theme/dark-theme.css';
 import * as styles from './App.css';
 import {EditorReadOnlyBanner} from './components/EditorReadOnlyBanner';
 

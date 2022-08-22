@@ -108,6 +108,16 @@ function makeDashboardState(authState = getAuth0State()) {
     });
   }
 
+  function cloneProject(project: ApiTypes.GetProjectByIdApi['response']) {
+    const userId = authState.user()?.id;
+    if (!userId) return;
+    return API.project.cloneSnippet(project.id, {
+      body: {
+        newName: `${project.name} (copy)`,
+      },
+    });
+  }
+
   return {
     data: Object.assign(data, {
       isEmpty() {
@@ -122,6 +132,7 @@ function makeDashboardState(authState = getAuth0State()) {
     createNewProject,
     deleteProject,
     updateSnippetName,
+    cloneProject,
   };
 }
 

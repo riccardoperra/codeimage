@@ -9,6 +9,9 @@ const schema = {
   params: Type.Object({
     id: Type.String(),
   }),
+  body: Type.Object({
+    newName: Type.Optional(Type.String()),
+  }),
   response: {
     200: ProjectCreateResponseSchema,
   },
@@ -24,8 +27,12 @@ const cloneRoute: FastifyPluginAsyncTypebox = async fastify => {
       schema,
     },
     request => {
-      const {appUser, params} = request;
-      return fastify.projectService.clone(appUser, params.id);
+      const {appUser, params, body} = request;
+      return fastify.projectService.clone(
+        appUser,
+        params.id,
+        body.newName ?? null,
+      );
     },
   );
 };
