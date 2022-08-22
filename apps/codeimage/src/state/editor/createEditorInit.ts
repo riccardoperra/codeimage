@@ -118,7 +118,9 @@ function createEditorSyncAdapter() {
       if (!projectId) return;
       await new Promise(r => setTimeout(r, 100));
       return API.project
-        .cloneSnippet(projectId)
+        .cloneSnippet(projectId, {
+          body: {},
+        })
         .then(({id}) => navigate(`/${id}`));
     }
   }
