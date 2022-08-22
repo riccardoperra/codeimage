@@ -60,5 +60,10 @@ export async function makeFetch(
 
   request.headers = headers;
 
-  return fetch(url, request);
+  return fetch(url, request).then(res => {
+    if (!res.ok) {
+      throw res;
+    }
+    return res;
+  });
 }

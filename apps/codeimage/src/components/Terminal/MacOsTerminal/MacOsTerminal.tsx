@@ -1,6 +1,6 @@
 import {backgroundColorVar, Box} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {ParentComponent, Show} from 'solid-js';
+import {createEffect, ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {TerminalWindowTabList} from '../Tabs/TerminalWindowTabList';
 import * as baseStyles from '../terminal.css';
@@ -11,6 +11,7 @@ export const exportExclude = _exportExclude;
 
 export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
   const showTab = () => props.accentVisible && !props.alternativeTheme;
+
   return (
     <TerminalHost {...props} themeClass={styles.theme}>
       <Show when={props.showHeader}>
@@ -38,6 +39,7 @@ export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
 
           <Show when={props.showTab}>
             <TerminalWindowTabList
+              readOnly={props.readonlyTab}
               accent={props.accentVisible && !props.alternativeTheme}
             />
           </Show>

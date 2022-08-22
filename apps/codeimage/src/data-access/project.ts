@@ -66,3 +66,14 @@ export async function loadSnippet(
     },
   }).then(res => res.json());
 }
+
+export async function cloneSnippet(
+  projectId: string,
+): Promise<ApiTypes.CloneProjectApi['response']> {
+  return makeFetch(`${BASE_URL}/api/v1/project/:id/clone`, {
+    method: 'POST',
+    params: {
+      id: projectId,
+    },
+  }).then(res => res.json());
+}
