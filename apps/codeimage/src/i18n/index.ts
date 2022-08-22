@@ -13,10 +13,15 @@ export const locale = {
       show: 'Mostra',
       hide: 'Nascondi',
       reload: 'Ricarica',
+      clone: 'Clona',
     },
     canvas: {
       copiedToClipboard: 'Snippet copiato negli appunti',
       linkGeneratedToClipboard: 'Link copiato negli appunti',
+    },
+    readOnlyBanner: {
+      title:
+        "Stai visualizzando l'editor in modalitá sola-lettura. Clona lo snippet per salvarlo nel workspace e modificarlo",
     },
     locales: {
       it: 'Italiano',
@@ -96,12 +101,17 @@ export const locale = {
       show: 'Show',
       hide: 'Hide',
       reload: 'Reload',
+      clone: 'Clone',
     },
     locales: {
       it: 'Italian',
       en: 'English',
       de: 'German',
       es: 'Spanish',
+    },
+    readOnlyBanner: {
+      title:
+        'You are viewing the editor in read-only modality. Clone the snippet to save in your workspace and edit it.',
     },
     toolbar: {
       export: 'Export',
@@ -165,10 +175,15 @@ export const locale = {
       show: 'Anzeigen',
       hide: 'Verstecken',
       reload: 'Reload',
+      clone: 'Clone',
     },
     canvas: {
       copiedToClipboard: 'Code-Schnipsel in Zwischenablage kopiert',
       linkGeneratedToClipboard: 'Link in Zwischenablage kopiert',
+    },
+    readOnlyBanner: {
+      title:
+        'You are viewing the editor in read-only modality. Clone the snippet to save in your workspace and edit it.',
     },
     locales: {
       it: 'Italienisch',
@@ -241,10 +256,15 @@ export const locale = {
       show: 'Mostrar',
       hide: 'Esconder',
       reload: 'Reload',
+      clone: 'Clone',
     },
     canvas: {
       copiedToClipboard: 'Snippet copiado al portapapeles',
       linkGeneratedToClipboard: 'Link copiado al portapapeles',
+    },
+    readOnlyBanner: {
+      title:
+        'You are viewing the editor in read-only modality. Clone the snippet to save in your workspace and edit it.',
     },
     locales: {
       it: 'Italiano',

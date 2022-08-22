@@ -8,6 +8,10 @@ export const dashboard = {
         confirmTitle: 'Rimuovi progetto',
         confirmMessage: 'Questa azione non è reversibile.',
       },
+      cloneProject: {
+        dropdownLabel: 'Clona',
+        confirmTitle: 'Clona progetto',
+      },
       renameProject: {
         dropdownLabel: 'Rinomina',
         confirmTitle: 'Rinomina progetto',
@@ -58,6 +62,10 @@ export const dashboard = {
         confirmTitle: 'Rename project',
         confirmMessage: 'Enter a new name for the project.',
       },
+      cloneProject: {
+        dropdownLabel: 'Clone',
+        confirmTitle: 'Clone project',
+      },
       created: 'Created',
       updated: 'Updated',
     },
@@ -81,6 +89,20 @@ export const dashboard = {
         title: 'No result',
         description: 'Oops! There are no projects <br /> matching your search.',
       },
+      deleteProject: {
+        dropdownLabel: 'Delete',
+        confirmTitle: 'Delete project',
+        confirmMessage: 'This action is not reversible.',
+      },
+      renameProject: {
+        dropdownLabel: 'Rename',
+        confirmTitle: 'Rename project',
+        confirmMessage: 'Enter a new name for the project.',
+      },
+      cloneProject: {
+        dropdownLabel: 'Clone',
+        confirmTitle: 'Clone project',
+      },
     },
   },
   es: {
@@ -101,6 +123,20 @@ export const dashboard = {
       noMatchingProjects: {
         title: 'No result',
         description: 'Oops! There are no projects <br /> matching your search.',
+      },
+      deleteProject: {
+        dropdownLabel: 'Delete',
+        confirmTitle: 'Delete project',
+        confirmMessage: 'This action is not reversible.',
+      },
+      renameProject: {
+        dropdownLabel: 'Rename',
+        confirmTitle: 'Rename project',
+        confirmMessage: 'Enter a new name for the project.',
+      },
+      cloneProject: {
+        dropdownLabel: 'Clone',
+        confirmTitle: 'Clone project',
       },
     },
   },

@@ -14,6 +14,7 @@ export const Frame: ParentComponent<{
   radius: number;
   opacity: number;
   visible: boolean;
+  readOnly: boolean;
 }> = props => {
   const {width, onResizeStart, setRef, resizing} = createHorizontalResize({
     minWidth: 600,
@@ -51,7 +52,7 @@ export const Frame: ParentComponent<{
           })}
         />
 
-        <Show when={modality === 'full'}>
+        <Show when={modality === 'full' && !props.readOnly}>
           <div class={styles.dragControls} use:exportExclude={true}>
             <div class={styles.dragControlLeft} onMouseDown={onResizeStart} />
             <div class={styles.dragControlRight} onMouseDown={onResizeStart} />

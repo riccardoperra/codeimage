@@ -18,10 +18,27 @@ async function build(t: Tap.Test) {
       await app.register(sensible);
       await app.register(prisma);
       await app.register(auth0);
-      await app.get('/', {preValidation: app.authorize}, async _ => ({
-        response: 'ok',
-        appUser: _.appUser,
-      }));
+
+      app.get(
+        '/',
+        {preValidation: (req, reply) => app.authorize(req, reply)},
+        async _ => ({
+          response: 'ok',
+          appUser: _.appUser,
+        }),
+      );
+
+      app.get(
+        '/optional',
+        {
+          preValidation: (req, reply) =>
+            app.authorize(req, reply, {mustBeAuthenticated: false}),
+        },
+        async _ => ({
+          response: 'ok',
+          appUser: _.appUserOptional,
+        }),
+      );
     }),
   );
   await app.ready();
@@ -43,6 +60,25 @@ t.test('should throw unauthorized if token is not valid', async t => {
   t.same(response.statusCode, 401);
   t.same(response.json().statusCode, 401);
 });
+
+t.test(
+  'should not throw unauthorized if token is not present and mustBeAuthenticated = false',
+  async t => {
+    const app = await build(t);
+    sinon
+      .stub(app, 'authenticate')
+      .callsFake(() => Promise.reject(new Error('Error')));
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/optional',
+    });
+
+    t.same(response.statusCode, 200);
+    t.same(response.json().response, 'ok');
+    t.same(response.json().appUser, null);
+  },
+);
 
 t.test('should decorate `appUser` if present', async t => {
   const app = await build(t);

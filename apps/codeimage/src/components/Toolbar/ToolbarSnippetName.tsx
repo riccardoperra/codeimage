@@ -19,7 +19,7 @@ void clickOutside;
 export function ToolbarSnippetName() {
   const [editing, setEditing] = createSignal(false);
   const loggedIn = () => getAuth0State().loggedIn();
-  const {remoteSync, activeWorkspace} = getEditorSyncAdapter()!;
+  const {remoteSync, activeWorkspace, readOnly} = getEditorSyncAdapter()!;
   const [value, setValue] = createSignal(activeWorkspace()?.name || undefined);
   createEffect(
     on(activeWorkspace, workspace => setValue(workspace?.name || undefined)),
@@ -50,61 +50,67 @@ export function ToolbarSnippetName() {
   return (
     <Box display={'flex'} alignItems={'center'}>
       <Show
-        fallback={
-          <HStack spacing={'2'} alignItems={'center'} lineHeight={'normal'}>
-            <LoadingCircle
-              visibility={remoteSync() ? 'visible' : 'hidden'}
-              size={'sm'}
-            />
-            <Text size={'sm'} onClick={toggleEdit}>
-              {value() ?? 'Untitled'}
-            </Text>
-            <PencilAlt size={'sm'} />
-          </HStack>
-        }
-        when={editing()}
+        when={!readOnly()}
+        fallback={<Text size={'sm'}>{value() ?? 'Untitled'}</Text>}
       >
-        <div
-          use:clickOutside={() => {
-            setEditing(false);
-            updateSnippetName(value());
-          }}
+        <Show
+          fallback={
+            <HStack spacing={'2'} alignItems={'center'} lineHeight={'normal'}>
+              <LoadingCircle
+                visibility={remoteSync() ? 'visible' : 'hidden'}
+                size={'sm'}
+              />
+              <Text size={'sm'} onClick={toggleEdit}>
+                {value() ?? 'Untitled'}
+              </Text>
+              <PencilAlt size={'sm'} />
+            </HStack>
+          }
+          when={editing()}
         >
-          {() => {
-            let ref: HTMLInputElement | undefined;
-            onMount(() => {
-              ref?.focus();
-              ref?.select();
-              useHotkey(ref!, {
-                Enter: () => {
-                  setEditing(false);
-                  updateSnippetName(value());
-                },
-                Escape: () => {
-                  console.log('esc click');
-                  setEditing(false);
-                  setValue(value());
-                },
+          <div
+            use:clickOutside={() => {
+              setEditing(false);
+              updateSnippetName(value());
+            }}
+          >
+            {() => {
+              let ref: HTMLInputElement | undefined;
+              onMount(() => {
+                ref?.focus();
+                ref?.select();
+                useHotkey(ref!, {
+                  Enter: () => {
+                    setEditing(false);
+                    updateSnippetName(value());
+                  },
+                  Escape: () => {
+                    console.log('esc click');
+                    setEditing(false);
+                    setValue(value());
+                  },
+                });
               });
-            });
 
-            return (
-              <FlexField size={'xs'}>
-                <TextField
-                  ref={ref}
-                  size={'sm'}
-                  type={'text'}
-                  autofocus={true}
-                  value={value()}
-                  onChange={value => setValue(value)}
-                  style={{
-                    'text-align': 'center',
-                  }}
-                />
-              </FlexField>
-            );
-          }}
-        </div>
+              return (
+                <FlexField size={'md'}>
+                  <TextField
+                    inline={true}
+                    ref={ref}
+                    size={'sm'}
+                    type={'text'}
+                    autofocus={true}
+                    value={value()}
+                    onChange={value => setValue(value)}
+                    style={{
+                      'text-align': 'center',
+                    }}
+                  />
+                </FlexField>
+              );
+            }}
+          </div>
+        </Show>
       </Show>
     </Box>
   );

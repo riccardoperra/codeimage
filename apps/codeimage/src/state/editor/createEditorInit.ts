@@ -18,6 +18,7 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs';
+import {useNavigate} from 'solid-app-router';
 import {
   createEffect,
   createResource,
@@ -32,7 +33,8 @@ import {useIdb} from '../../hooks/use-indexed-db';
 
 function createEditorSyncAdapter() {
   const [remoteSync, setRemoteSync] = createSignal(false);
-  const [snippetId, setSnippetId] = createSignal<string | null>();
+  const [readOnly, setReadonly] = createSignal(false);
+  const [snippetId, setSnippetId] = createSignal<string | null>(null);
   const [activeWorkspace, setActiveWorkspace] = createSignal<
     ApiTypes.GetProjectByIdApi['response'] | null
   >();
@@ -42,16 +44,24 @@ function createEditorSyncAdapter() {
   const editorStore = getRootEditorStore();
   const store = getEditorStore();
   const idb = useIdb();
+  const navigate = useNavigate();
 
-  const [loadedSnippet] = createResource(snippetId, async snippetId => {
-    if (snippetId) {
-      const storedWorkspaceData = await API.project.loadSnippet(snippetId);
-      if (storedWorkspaceData) {
-        updateStateFromRemote(storedWorkspaceData);
+  const [loadedSnippet, {refetch}] = createResource(
+    snippetId,
+    async (snippetId, fetcherInfo) => {
+      if (fetcherInfo.refetching === 'CLONE') {
+        setReadonly(false);
+        return fetcherInfo.value;
       }
-      return storedWorkspaceData;
-    }
-  });
+      const loadedProject = await API.project.loadSnippet(snippetId);
+      if (loadedProject) {
+        console.log(loadedProject);
+        updateStateFromRemote(loadedProject);
+      }
+      setReadonly(!loadedProject.isOwner);
+      return loadedProject;
+    },
+  );
 
   const isReadyToSync = () => {
     const loading = loadedSnippet.loading,
@@ -97,6 +107,22 @@ function createEditorSyncAdapter() {
       ...data.terminal,
     }));
     frameStore.setStore(state => ({...state, ...data.frame}));
+  }
+
+  async function clone() {
+    if (!authState.loggedIn()) {
+      navigate('/');
+      refetch('CLONE');
+    } else {
+      const projectId = snippetId();
+      if (!projectId) return;
+      await new Promise(r => setTimeout(r, 100));
+      return API.project
+        .cloneSnippet(projectId, {
+          body: {},
+        })
+        .then(({id}) => navigate(`/${id}`));
+    }
   }
 
   function initRemoteDbSync() {
@@ -149,6 +175,8 @@ function createEditorSyncAdapter() {
   return {
     indexedDbState: () => idb.get<ProjectEditorPersistedState>('document'),
     loadedSnippet,
+    readOnly,
+    clone,
     setSnippetId,
     activeWorkspace,
     setActiveWorkspace,

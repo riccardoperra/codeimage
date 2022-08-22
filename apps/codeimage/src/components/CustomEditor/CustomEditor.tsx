@@ -31,6 +31,7 @@ import {
   createCodeMirror,
   createEditorControlledValue,
   createEditorFocus,
+  createEditorReadonly,
 } from 'solid-codemirror';
 import {
   createEffect,
@@ -40,6 +41,7 @@ import {
   on,
   onMount,
   runWithOwner,
+  VoidProps,
 } from 'solid-js';
 
 interface CustomFontExtensionOptions {
@@ -68,7 +70,11 @@ const EDITOR_BASE_SETUP: Extension = [
   ]),
 ];
 
-export default function CustomEditor() {
+interface CustomEditorProps {
+  readOnly: boolean;
+}
+
+export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   let editorEl!: HTMLDivElement;
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
@@ -174,6 +180,7 @@ export default function CustomEditor() {
   );
 
   createEditorControlledValue(editorView, () => editor()?.code ?? '');
+  createEditorReadonly(editorView, () => props.readOnly);
   createExtension(EditorView.lineWrapping);
   createExtension(customFontExtension);
   createExtension(currentLanguage);

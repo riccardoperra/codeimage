@@ -5,7 +5,7 @@ import {
   DragDropProvider,
   SortableProvider,
 } from '@thisbeyond/solid-dnd';
-import {createMemo, For, VoidProps} from 'solid-js';
+import {createMemo, For, Show, VoidProps} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import * as styles from './Tab/Tab.css';
 import {WindowTab} from './Tab/WindowTab';
@@ -13,6 +13,7 @@ import {TabAddButton} from './TabAddButton/TabAddButton';
 
 export interface TerminalWindowTabListProps {
   accent: boolean;
+  readOnly: boolean;
 }
 
 export function TerminalWindowTabList(
@@ -98,7 +99,7 @@ export function TerminalWindowTabList(
                     index={zIndex()}
                     tabName={editor.tab.tabName}
                     tabIcon={icon()?.content}
-                    readonlyTab={!active()}
+                    readonlyTab={props.readOnly || !active()}
                     accentMode={props.accent}
                     active={active()}
                     onClick={() => setActiveEditorId(editor.id)}
@@ -117,10 +118,12 @@ export function TerminalWindowTabList(
           </SortableProvider>
         </DragDropProvider>
       </div>
-      <TabAddButton
-        disabled={!canAddEditor()}
-        onAdd={() => addEditor(null, true)}
-      />
+      <Show when={!props.readOnly}>
+        <TabAddButton
+          disabled={!canAddEditor()}
+          onAdd={() => addEditor(null, true)}
+        />
+      </Show>
     </div>
   );
 }

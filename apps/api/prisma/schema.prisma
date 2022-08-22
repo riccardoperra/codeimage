@@ -31,11 +31,11 @@ model Project {
   editorTabs      SnippetEditorTab[]
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
-  user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId          String
+  owner           User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId         String
 
-  @@unique([id, userId])
-  @@index([name, userId])
+  @@unique([id, ownerId])
+  @@index([name, ownerId])
 }
 
 model SnippetFrame {

@@ -39,7 +39,7 @@ export const userSeed = {
 
 export const projectSeed = {
   clean: () => client.$transaction([client.project.deleteMany()]),
-  createProject(projectName: string, userId: string) {
+  createProject(projectName: string, ownerId: string) {
     return client.project.create({
       data: {
         name: projectName,
@@ -60,10 +60,10 @@ export const projectSeed = {
             themeId: 'themeId',
           },
         },
-        user: {connect: {id: userId}},
+        owner: {connect: {id: ownerId}},
       },
       include: {
-        user: true,
+        owner: true,
         editorTabs: true,
         frame: true,
         terminal: true,
