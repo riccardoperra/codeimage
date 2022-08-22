@@ -5,7 +5,7 @@ export const scaffold = style([
   adaptiveFullScreenHeight,
   {
     color: themeVars.dynamicColors.panel.textColor,
-    background: themeVars.dynamicColors.background,
+    background: themeVars.dynamicColors.panel.background,
     display: 'flex',
     flexDirection: 'column',
   },

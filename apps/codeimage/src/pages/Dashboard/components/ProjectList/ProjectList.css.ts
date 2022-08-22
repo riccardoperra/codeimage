@@ -6,7 +6,7 @@ const gridListItemCount = createVar();
 
 export const gridList = style({
   vars: {
-    [gridListItemCount]: '3',
+    [gridListItemCount]: '2',
   },
   display: 'grid',
   gap: themeVars.spacing['3'],
