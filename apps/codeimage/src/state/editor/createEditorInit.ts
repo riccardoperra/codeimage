@@ -12,6 +12,7 @@ import {
   debounceTime,
   EMPTY,
   filter,
+  from,
   of,
   skip,
   switchMap,
@@ -53,12 +54,16 @@ function createEditorSyncAdapter() {
         setReadonly(false);
         return fetcherInfo.value;
       }
-      const loadedProject = await API.project.loadSnippet(snippetId);
-      if (loadedProject) {
-        updateStateFromRemote(loadedProject);
+      try {
+        const loadedProject = await API.project.loadSnippet(snippetId);
+        if (loadedProject) {
+          updateStateFromRemote(loadedProject);
+        }
+        setReadonly(!loadedProject.isOwner);
+        return loadedProject;
+      } catch (e) {
+        navigate('/404');
       }
-      setReadonly(!loadedProject.isOwner);
-      return loadedProject;
     },
   );
 
@@ -137,8 +142,8 @@ function createEditorSyncAdapter() {
         tap(() => setRemoteSync(true)),
         debounceTime(3000),
         tap(() => setRemoteSync(false)),
-        withLatestFrom(of(untrack(activeWorkspace))),
-        switchMap(([[frame, terminal, {editors, options}], workspace]) => {
+        switchMap(([frame, terminal, {editors, options}]) => {
+          const workspace = activeWorkspace();
           if (!workspace) return EMPTY;
           const dataToSave: ApiTypes.UpdateProjectApi['request']['body'] = {
             frame,
@@ -146,10 +151,12 @@ function createEditorSyncAdapter() {
             editors,
             editorOptions: options,
           };
-          return API.project.updateSnippet({
-            body: dataToSave,
-            params: {id: workspace.id},
-          });
+          return from(
+            API.project.updateSnippet({
+              body: dataToSave,
+              params: {id: workspace.id},
+            }),
+          );
         }),
       )
       .subscribe();
