@@ -20,50 +20,50 @@ export function makeMockProjectService() {
   } as unknown as ProjectRepository;
 
   const httpErrors = {
-    internalServerError: () => void 0,
-    notFound: () => void 0,
-    badGateway: () => void 0,
-    badRequest: () => void 0,
-    bandwidthLimitExceeded: () => void 0,
-    conflict: () => void 0,
-    createError: () => void 0,
-    expectationFailed: () => void 0,
-    failedDependency: () => void 0,
-    forbidden: () => void 0,
-    gatewayTimeout: () => void 0,
-    getHttpError: () => void 0,
-    gone: () => void 0,
-    HttpError: () => void 0,
-    httpVersionNotSupported: () => void 0,
-    imateapot: () => void 0,
-    insufficientStorage: () => void 0,
-    lengthRequired: () => void 0,
-    locked: () => void 0,
-    loopDetected: () => void 0,
-    methodNotAllowed: () => void 0,
-    misdirectedRequest: () => void 0,
-    networkAuthenticationRequired: () => void 0,
-    notAcceptable: () => void 0,
-    notExtended: () => void 0,
-    notImplemented: () => void 0,
-    payloadTooLarge: () => void 0,
-    paymentRequired: () => void 0,
-    preconditionFailed: () => void 0,
-    preconditionRequired: () => void 0,
-    proxyAuthenticationRequired: () => void 0,
-    rangeNotSatisfiable: () => void 0,
-    requestHeaderFieldsTooLarge: () => void 0,
-    requestTimeout: () => void 0,
-    serviceUnavailable: () => void 0,
-    tooEarly: () => void 0,
-    tooManyRequests: () => void 0,
-    unauthorized: () => void 0,
-    unavailableForLegalReasons: () => void 0,
-    unprocessableEntity: () => void 0,
-    unsupportedMediaType: () => void 0,
-    upgradeRequired: () => void 0,
-    uriTooLong: () => void 0,
-    variantAlsoNegotiates: () => void 0,
+    internalServerError: (a: string) => ({message: a}),
+    notFound: (a: string) => ({name: 'NotFoundError', message: a}),
+    badGateway: (a: string) => ({message: a}),
+    badRequest: (a: string) => ({message: a}),
+    bandwidthLimitExceeded: (a: string) => ({message: a}),
+    conflict: (a: string) => ({message: a}),
+    createError: (a: string) => ({message: a}),
+    expectationFailed: (a: string) => ({message: a}),
+    failedDependency: (a: string) => ({message: a}),
+    forbidden: (a: string) => ({message: a}),
+    gatewayTimeout: (a: string) => ({message: a}),
+    getHttpError: (a: string) => ({message: a}),
+    gone: (a: string) => ({message: a}),
+    HttpError: (a: string) => ({message: a}),
+    httpVersionNotSupported: (a: string) => ({message: a}),
+    imateapot: (a: string) => ({message: a}),
+    insufficientStorage: (a: string) => ({message: a}),
+    lengthRequired: (a: string) => ({message: a}),
+    locked: (a: string) => ({message: a}),
+    loopDetected: (a: string) => ({message: a}),
+    methodNotAllowed: (a: string) => ({message: a}),
+    misdirectedRequest: (a: string) => ({message: a}),
+    networkAuthenticationRequired: (a: string) => ({message: a}),
+    notAcceptable: (a: string) => ({message: a}),
+    notExtended: (a: string) => ({message: a}),
+    notImplemented: (a: string) => ({message: a}),
+    payloadTooLarge: (a: string) => ({message: a}),
+    paymentRequired: (a: string) => ({message: a}),
+    preconditionFailed: (a: string) => ({message: a}),
+    preconditionRequired: (a: string) => ({message: a}),
+    proxyAuthenticationRequired: (a: string) => ({message: a}),
+    rangeNotSatisfiable: (a: string) => ({message: a}),
+    requestHeaderFieldsTooLarge: (a: string) => ({message: a}),
+    requestTimeout: (a: string) => ({message: a}),
+    serviceUnavailable: (a: string) => ({message: a}),
+    tooEarly: (a: string) => ({message: a}),
+    tooManyRequests: (a: string) => ({message: a}),
+    unauthorized: (a: string) => ({message: a}),
+    unavailableForLegalReasons: (a: string) => ({message: a}),
+    unprocessableEntity: (a: string) => ({message: a}),
+    unsupportedMediaType: (a: string) => ({message: a}),
+    upgradeRequired: (a: string) => ({message: a}),
+    uriTooLong: (a: string) => ({message: a}),
+    variantAlsoNegotiates: (a: string) => ({message: a}),
   } as unknown as HttpErrors;
 
   return {
@@ -234,18 +234,6 @@ t.test(
   },
 );
 
-t.test('clone -> should return created project', async t => {
-  const {repository, service} = makeMockProjectService();
-  sinon.stub(repository, 'findById').callsFake(async () => ({
-    ...baseResponse,
-    ownerId: 'userId1',
-  }));
-
-  const createNewProjectSpy = sinon.spy(service, 'createNewProject');
-
-  t.ok(createNewProjectSpy.calledOnce);
-});
-
 t.test(
   'findById -> should return 404 error when not found project',
   async t => {
@@ -263,3 +251,50 @@ t.test(
     t.ok(notFoundSpy.called, 'called not found spy');
   },
 );
+
+t.test('clone -> should return created project', async t => {
+  const {repository, service} = makeMockProjectService();
+  sinon.stub(repository, 'findById').callsFake(async () => ({
+    ...baseResponse,
+    ownerId: 'userId1',
+  }));
+  const user: User = {
+    id: 'userId1',
+    email: 'email@example.it',
+    createdAt: new Date(),
+  };
+
+  const createNewProjectSpy = sinon.spy(service, 'createNewProject');
+
+  await service.clone(user, 'projectId1');
+
+  t.ok(createNewProjectSpy.calledOnce);
+});
+
+t.test('clone -> should not wrap exception', {only: true}, async t => {
+  const id = 'projectId1';
+  const user: User = {
+    id: 'userId1',
+    email: 'email@example.it',
+    createdAt: new Date(),
+  };
+  const {repository, service, httpErrors} = makeMockProjectService();
+
+  const error = new Error('same exception');
+
+  sinon
+    .stub(repository, 'findById')
+    .callsFake(async () => Promise.reject(error));
+
+  await t.rejects(service.clone(user, id), error);
+
+  sinon.restore();
+
+  sinon
+    .stub(repository, 'findById')
+    .callsFake(async () => Promise.reject(httpErrors.notFound('not found')));
+
+  await t.rejects(service.clone(user, id), {
+    message: `Cannot clone project with id ${id} since it does not exists`,
+  });
+});

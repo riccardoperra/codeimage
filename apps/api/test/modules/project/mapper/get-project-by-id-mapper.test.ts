@@ -16,7 +16,7 @@ t.test(
       frame: {
         id: 'frameId',
         visible: true,
-        radius: null,
+        radius: 24,
         padding: 32,
         opacity: 100,
         background: null,
