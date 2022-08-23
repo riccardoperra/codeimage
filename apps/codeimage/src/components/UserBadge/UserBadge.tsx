@@ -12,14 +12,19 @@ export function UserBadge() {
     const $user = user();
     if (!$user) return;
     const [first = '', last = ''] = ($user.name ?? '').split(' ');
-    return `${first[0]}${last[0]}`;
+    return [first, last]
+      .filter(data => !!data)
+      .map(data => data[0])
+      .join('');
   };
 
   return (
     <Show fallback={<GithubLoginButton onClick={login} />} when={loggedIn()}>
       <Badge theme={styles.badge} size={'md'}>
         {initials()}
-        <img class={styles.badgePicture} src={profileImage()} />
+        <Show when={profileImage()}>
+          <img class={styles.badgePicture} src={profileImage()} />
+        </Show>
       </Badge>
     </Show>
   );
