@@ -175,18 +175,24 @@ async function buildApiTestEnv() {
 }
 
 async function askForPrismaMigrations() {
-  const {runMigrations} = await prompt<{runMigrations: boolean}>({
-    type: 'confirm',
-    name: 'runMigrations',
-    message: 'Do you want to run prisma migrations? (recommended)',
-    initial: true,
-  });
-
+  let runMigrations = true;
+  if (!runOnCodeSandbox) {
+    const data = await prompt<{runMigrations: boolean}>({
+      type: 'confirm',
+      name: 'runMigrations',
+      message: 'Do you want to run prisma migrations? (recommended)',
+      initial: true,
+    });
+    runMigrations = data.runMigrations;
+  }
   if (runMigrations) {
     execSync('pnpm --filter=@codeimage/api prisma:migrate:deploy', {
       stdio: 'inherit',
     });
     execSync('pnpm --filter=@codeimage/api prisma:migrate:deploy-test', {
+      stdio: 'inherit',
+    });
+    execSync('pnpm --filter=@codeimage/api prisma:generate', {
       stdio: 'inherit',
     });
   }
@@ -200,7 +206,7 @@ function writeEnv(env: Record<string, string | number | boolean>, dir: string) {
 }
 
 async function askForBackup(dir: string) {
-  if (!fs.existsSync(dir)) {
+  if (runOnCodeSandbox || !fs.existsSync(dir)) {
     return;
   }
 
@@ -220,6 +226,13 @@ async function askForBackup(dir: string) {
 async function askIfWantOverride(
   filePath: string,
 ): Promise<{override: boolean; exists: boolean}> {
+  if (runOnCodeSandbox) {
+    return {
+      exists: false,
+      override: true,
+    };
+  }
+
   if (fs.existsSync(filePath)) {
     const fileName = path.basename(filePath);
     const result = await prompt<{override: boolean}>({
