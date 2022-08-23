@@ -1,7 +1,9 @@
-import {RequestHandler, rest} from 'msw';
-import {db} from './db';
 import * as ApiTypes from '@codeimage/api/api-types';
 import {randUuid} from '@ngneat/falso';
+import {RequestHandler, rest} from 'msw';
+import {db} from './db';
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
 function getProjectByIdOrThrowNotFound(id: string, ownerId?: string) {
   const whereClause: Parameters<typeof db.project.findFirst>[0]['where'] = {};
@@ -31,7 +33,7 @@ function getProjectByIdOrThrowNotFound(id: string, ownerId?: string) {
 }
 
 const handlers: RequestHandler[] = [
-  rest.get('/api/v1/project', (req, res, ctx) => {
+  rest.get(`${BASE_URL}/api/v1/project`, (req, res, ctx) => {
     const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
 
     const projects = db.project.findMany({
@@ -42,7 +44,7 @@ const handlers: RequestHandler[] = [
 
     return res(ctx.json(projects));
   }),
-  rest.get('/api/v1/project/:id', (req, res, ctx) => {
+  rest.get(`${BASE_URL}/api/v1/project/:id`, (req, res, ctx) => {
     const id = req.params['id'] as string;
     const {data, error} = getProjectByIdOrThrowNotFound(id);
     if (error) {
@@ -50,7 +52,7 @@ const handlers: RequestHandler[] = [
     }
     return res(ctx.json(data));
   }),
-  rest.delete('/api/v1/project/:id', (req, res, ctx) => {
+  rest.delete(`${BASE_URL}/api/v1/project/:id`, (req, res, ctx) => {
     const id = req.params['id'] as string;
     const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
 
@@ -75,7 +77,7 @@ const handlers: RequestHandler[] = [
       );
     }
   }),
-  rest.put('/api/v1/project/:id/name', (req, res, ctx) => {
+  rest.put(`${BASE_URL}/api/v1/project/:id/name`, (req, res, ctx) => {
     const id = req.params['id'] as string;
     const body = req.body as ApiTypes.UpdateProjectNameApi['request']['body'];
     const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
@@ -104,7 +106,7 @@ const handlers: RequestHandler[] = [
       );
     }
   }),
-  rest.put('/api/v1/project/:id', (req, res, ctx) => {
+  rest.put(`${BASE_URL}/api/v1/project/:id`, (req, res, ctx) => {
     const id = req.params['id'] as string;
     const body = req.body as ApiTypes.UpdateProjectApi['request']['body'];
     const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
@@ -163,7 +165,7 @@ const handlers: RequestHandler[] = [
       );
     }
   }),
-  rest.post('/api/v1/project', (req, res, ctx) => {
+  rest.post(`${BASE_URL}/api/v1/project`, (req, res, ctx) => {
     const body = req.body as ApiTypes.CreateProjectApi['request']['body'];
     const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
 
@@ -210,7 +212,7 @@ const handlers: RequestHandler[] = [
     });
     return res(ctx.json(project));
   }),
-  rest.post('/api/v1/project/:id/clone', (req, res, ctx) => {
+  rest.post(`${BASE_URL}/api/v1/project/:id/clone`, (req, res, ctx) => {
     const id = req.params['id'] as string;
     const body = req.body as ApiTypes.CloneProjectApi['request']['body'];
     const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
