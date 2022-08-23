@@ -9,12 +9,25 @@ import auth0 from '../../src/plugins/auth0';
 import prisma from '../../src/plugins/prisma';
 import sensible from '../../src/plugins/sensible';
 
-async function build(t: Tap.Test) {
+interface AppOptions {
+  mockAuth: boolean;
+}
+
+async function build(t: Tap.Test, options: AppOptions = {mockAuth: false}) {
+  if (options.mockAuth) {
+    process.env.MOCK_AUTH = 'true';
+    process.env.MOCK_AUTH_EMAIL = 'dev@example.it';
+  }
+
   const app = Fastify();
   await void app.register(
     fp(async app => {
       await app.register(fastifyEnv, {
-        schema: Type.Object({DATABASE_URL: Type.String()}),
+        schema: Type.Object({
+          DATABASE_URL: Type.String(),
+          MOCK_AUTH: Type.Boolean(),
+          MOCK_AUTH_EMAIL: Type.String(),
+        }),
       });
       await app.register(sensible);
       await app.register(prisma);
@@ -144,4 +157,22 @@ t.test('should also sync user in db if not exists', async t => {
   // t.ok(createSpy.calledOnce);
   t.same(resObj.response, 'ok');
   t.same(resObj.appUser?.email, 'email@example.it');
+});
+
+t.test('should mock auth', async t => {
+  const app = await build(t, {mockAuth: true});
+
+  const response = await app.inject({
+    method: 'GET',
+    url: '/',
+  });
+
+  sinon.stub(app.prisma.user, 'findFirst').resolves({
+    email: 'dev@example.it',
+    id: 'id',
+    createdAt: new Date(),
+  });
+
+  t.same(response.statusCode, 200);
+  t.same(response.json().email, 'dev@example.it');
 });

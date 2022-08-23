@@ -9,6 +9,7 @@ declare module 'fastify' {
     config: {
       DATABASE_URL: string;
       MOCK_AUTH: boolean;
+      MOCK_AUTH_EMAIL?: string;
       CLIENT_ID_AUTH0?: string;
       CLIENT_SECRET_AUTH0?: string;
       DOMAIN_AUTH0?: string;
@@ -53,6 +54,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
   // through your application
   await fastify.register(AutoLoad, {
     dir: join(__dirname, 'plugins'),
+    options: opts,
   });
 
   // This loads all plugins defined in routes

@@ -1,5 +1,10 @@
 import {User} from '@codeimage/prisma-models';
-import {FastifyPluginAsync, FastifyReply, FastifyRequest} from 'fastify';
+import {
+  FastifyInstance,
+  FastifyPluginAsync,
+  FastifyReply,
+  FastifyRequest,
+} from 'fastify';
 import fastifyAuth0Verify, {Authenticate} from 'fastify-auth0-verify';
 import fp from 'fastify-plugin';
 
@@ -14,18 +19,35 @@ interface AuthorizeOptions {
   mustBeAuthenticated: boolean;
 }
 
+export function mockAuthProvider(context: {email?: string} = {}) {
+  const plugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+    const auth0Authenticate: Authenticate = async req => {
+      console.log('is req');
+      const email = context?.email ?? process.env.MOCK_AUTH_EMAIL;
+      const clientClaim = process.env.AUTH0_CLIENT_CLAIMS ?? '';
+      const emailKey = `${clientClaim}/email`;
+      req.user = {
+        [emailKey]: email,
+      };
+      console.log('CALL AUTHENTICATE', email, clientClaim, req.user);
+    };
+
+    fastify.decorateRequest('user', null);
+    fastify.decorate('authenticate', auth0Authenticate);
+  };
+
+  return fp(plugin);
+}
+
 export default fp<{authProvider?: FastifyPluginAsync}>(
   async (fastify, options) => {
+    console.log(fastify.config);
     if (fastify.config.MOCK_AUTH) {
-      fastify.register(async () => {
-        const authMock: Authenticate = async req => {
-          req.user = {
-            '/email': 'dev@example.it',
-          };
-        };
-        fastify.decorateRequest('user', null);
-        fastify.decorate('authenticate', authMock);
-      });
+      await fastify.register(
+        mockAuthProvider({
+          email: fastify.config.MOCK_AUTH_EMAIL,
+        }),
+      );
     } else if (options.authProvider) {
       await fastify.register(options.authProvider);
     } else {
@@ -57,8 +79,6 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
         req.appUserOptional = null;
         return;
       }
-
-      console.log('email claim', emailClaim, req.user);
 
       const email = req.user[emailClaim] as string;
 

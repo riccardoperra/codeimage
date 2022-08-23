@@ -71,6 +71,7 @@ async function buildApiEnv() {
     AUDIENCE_AUTH0: '',
     GRANT_TYPE_AUTH0: 'client_credentials',
     MOCK_AUTH: true,
+    MOCK_AUTH_EMAIL: 'dev@example.it',
   };
 
   if (!runOnCodeSandbox) {
@@ -135,10 +136,11 @@ async function buildApiTestEnv() {
     CLIENT_ID_AUTH0: '<client-id-auth>',
     CLIENT_SECRET_AUTH0: '<client-secret-auth>',
     DOMAIN_AUTH0: 'https://example.it',
-    AUTH0_CLIENT_CLAIMS: '',
+    AUTH0_CLIENT_CLAIMS: '<claims>',
     AUDIENCE_AUTH0: '<audience>',
     GRANT_TYPE_AUTH0: 'client_credentials',
     MOCK_AUTH: false,
+    MOCK_AUTH_EMAIL: 'dev@example.it',
   };
 
   if (!runOnCodeSandbox) {
