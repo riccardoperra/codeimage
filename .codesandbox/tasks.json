@@ -12,6 +12,10 @@
     {
       "name": "Create env file",
       "command": "pnpm prepare:env:codesandbox"
+    },
+    {
+      "name": "Build core libraries",
+      "command": "pnpm libs:build"
     }
   ],
 
@@ -25,12 +29,12 @@
     "dev": {
       "name": "dev",
       "command": "pnpm dev",
-      "runAtStart": false
+      "runAtStart": true
     },
     "dev:api": {
       "name": "dev:api",
       "command": "pnpm dev:api",
-      "runAtStart": false
+      "runAtStart": true
     },
     "libs:build": {
       "name": "libs:build",
