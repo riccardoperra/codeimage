@@ -158,6 +158,8 @@ async function buildApiTestEnv() {
     );
   }
 
+  env.DATABASE_URL = dbUrl ?? defaultDatabase;
+
   fs.writeFileSync(apiEnvDir, makeEnvFile(env), {
     encoding: 'utf8',
   });
