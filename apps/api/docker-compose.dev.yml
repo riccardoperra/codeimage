@@ -10,8 +10,6 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - '5432:5432'
-    env_file:
-      - .env
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres

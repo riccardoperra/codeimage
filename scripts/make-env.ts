@@ -10,6 +10,8 @@ const appEnvLocalDir = join(__dirname, '..', 'apps', 'codeimage', '.env.local');
 const apiEnvDir = join(__dirname, '..', 'apps', 'api', '.env');
 const apiEnvTestDir = join(__dirname, '..', 'apps', 'api', '.env.test');
 
+const runOnCodeSandbox = process.env.RUN_ON_CODESANDBOX;
+
 async function run() {
   try {
     await buildAppEnvLocal();
@@ -61,7 +63,7 @@ async function buildApiEnv() {
     'postgres://postgres:postgres@localhost:5432/codeimage?schema=public';
 
   const env = {
-    DATABASE_URL: '',
+    DATABASE_URL: defaultDatabase,
     CLIENT_ID_AUTH0: '',
     CLIENT_SECRET_AUTH0: '',
     DOMAIN_AUTH0: '',
@@ -71,45 +73,47 @@ async function buildApiEnv() {
     MOCK_AUTH: true,
   };
 
-  const {dbUrl} = await prompt<{dbUrl: string}>({
-    type: 'input',
-    initial: defaultDatabase,
-    required: true,
-    name: 'dbUrl',
-    message: 'Please provide a db url connection (postgres)',
-  });
+  if (!runOnCodeSandbox) {
+    const {dbUrl} = await prompt<{dbUrl: string}>({
+      type: 'input',
+      initial: defaultDatabase,
+      required: true,
+      name: 'dbUrl',
+      message: 'Please provide a db url connection (postgres)',
+    });
 
-  if (dbUrl === defaultDatabase) {
-    log(
-      chalk.yellow(
-        'You are using the default url connection. Make sure to run the docker-compose.dev.yml or to have an existing postgres container.',
-      ),
-    );
-  } else {
-    log(
-      chalk.yellow(
-        'You are using a custom db url connection. Make sure your db is running and reachable',
-      ),
-    );
+    if (dbUrl === defaultDatabase) {
+      log(
+        chalk.yellow(
+          'You are using the default url connection. Make sure to run the docker-compose.dev.yml or to have an existing postgres container.',
+        ),
+      );
+    } else {
+      log(
+        chalk.yellow(
+          'You are using a custom db url connection. Make sure your db is running and reachable',
+        ),
+      );
+    }
+
+    const {mockAuth} = await prompt<{mockAuth: boolean}>({
+      type: 'confirm',
+      initial: true,
+      name: 'mockAuth',
+      message: 'Do you want to mock Auth0? (recommended)',
+    });
+
+    if (!mockAuth) {
+      log(
+        chalk.yellow(
+          'Auth0 will not be mocked. Follow the /docs/auth0.md guide to configure the authentication flow',
+        ),
+      );
+    }
+
+    env.MOCK_AUTH = mockAuth ?? true;
+    env.DATABASE_URL = dbUrl ?? defaultDatabase;
   }
-
-  const {mockAuth} = await prompt<{mockAuth: boolean}>({
-    type: 'confirm',
-    initial: true,
-    name: 'mockAuth',
-    message: 'Do you want to mock Auth0? (recommended)',
-  });
-
-  if (!mockAuth) {
-    log(
-      chalk.yellow(
-        'Auth0 will not be mocked. Follow the /docs/auth0.md guide to configure the authentication flow',
-      ),
-    );
-  }
-
-  env.MOCK_AUTH = mockAuth ?? true;
-  env.DATABASE_URL = dbUrl ?? defaultDatabase;
 
   writeEnv(env, apiEnvDir);
 
@@ -127,7 +131,7 @@ async function buildApiTestEnv() {
   const defaultDatabase = 'postgresql://prisma:prisma@localhost:5433/tests';
 
   const env = {
-    DATABASE_URL: '',
+    DATABASE_URL: defaultDatabase,
     CLIENT_ID_AUTH0: '<client-id-auth>',
     CLIENT_SECRET_AUTH0: '<client-secret-auth>',
     DOMAIN_AUTH0: 'https://example.it',
@@ -137,29 +141,31 @@ async function buildApiTestEnv() {
     MOCK_AUTH: false,
   };
 
-  const {dbUrl} = await prompt<{dbUrl: string}>({
-    type: 'input',
-    initial: defaultDatabase,
-    required: true,
-    name: 'dbUrl',
-    message: 'Please provide a test db url connection (postgres)',
-  });
+  if (!runOnCodeSandbox) {
+    const {dbUrl} = await prompt<{dbUrl: string}>({
+      type: 'input',
+      initial: defaultDatabase,
+      required: true,
+      name: 'dbUrl',
+      message: 'Please provide a test db url connection (postgres)',
+    });
 
-  if (dbUrl === defaultDatabase) {
-    log(
-      chalk.green(
-        'You are using the default url connection. Make sure to run the docker-compose.dev.yml or to have an existing postgres container.',
-      ),
-    );
-  } else {
-    log(
-      chalk.yellow(
-        'You are using a custom db url connection. Make sure your db is running and reachable',
-      ),
-    );
+    if (dbUrl === defaultDatabase) {
+      log(
+        chalk.green(
+          'You are using the default url connection. Make sure to run the docker-compose.dev.yml or to have an existing postgres container.',
+        ),
+      );
+    } else {
+      log(
+        chalk.yellow(
+          'You are using a custom db url connection. Make sure your db is running and reachable',
+        ),
+      );
+    }
+
+    env.DATABASE_URL = dbUrl ?? defaultDatabase;
   }
-
-  env.DATABASE_URL = dbUrl ?? defaultDatabase;
 
   writeEnv(env, apiEnvTestDir);
 

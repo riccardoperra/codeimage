@@ -457,9 +457,6 @@ importers:
     devDependencies:
       typescript: 4.7.4
 
-  packages/prisma-models/generated/client:
-    specifiers: {}
-
   packages/ui:
     specifiers:
       '@codeimage/locale': workspace:*
@@ -3805,7 +3802,7 @@ packages:
         optional: true
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.78.1
-      resolve: 1.22.1
+      resolve: 1.22.0
       rollup: 2.78.1
       typescript: 4.7.4
     dev: true
@@ -11323,6 +11320,7 @@ packages:
       rollup: 2.77.0
     optionalDependencies:
       fsevents: 2.3.2
+    dev: false
 
   /vite/3.0.9_sass@1.52.1:
     resolution: {integrity: sha512-waYABTM+G6DBTCpYAxvevpG50UOlZuynR0ckTK5PawNVt7ebX6X7wNXHaGIO6wYYFXSM7/WcuFuO2QzhBB6aMw==}
