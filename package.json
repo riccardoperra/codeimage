@@ -48,6 +48,7 @@
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c .eslintrc.js --fix",
+    "prepare:env": "ts-node ./scripts/make-env.ts",
     "prepare:api:deploy": "pnpm-bundle-workspace-package @codeimage/api --outDir=dist/api-bundle && rm -rf dist/api-bundle/workspace-dependencies/prisma-models/.gitignore"
   },
   "devDependencies": {
@@ -64,17 +65,20 @@
     "@types/prettier": "^2.6.3",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.27.0",
+    "chalk": "4.1.2",
     "cross-env": "^7.0.3",
+    "enquirer": "2.3.6",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-solid": "^0.4.7",
     "husky": "7.0.4",
     "lint-staged": "^12.5.0",
+    "pnpm-bundle-workspace-package": "^1.0.2",
     "prettier": "^2.6.2",
     "ts-node": "^10.8.1",
-    "typescript": "^4.7.3",
-    "pnpm-bundle-workspace-package": "^1.0.2"
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.3"
   },
   "engines": {
     "pnpm": ">=7"
