@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import {prompt} from 'enquirer';
 import * as fs from 'fs';
-import path, {join} from 'node:path';
 import {execSync} from 'node:child_process';
+import path, {join} from 'node:path';
 import {makeEnvFile} from './env-utils';
 
 const log = console.log;
@@ -11,28 +11,25 @@ const apiEnvDir = join(__dirname, '..', 'apps', 'api', '.env');
 const apiEnvTestDir = join(__dirname, '..', 'apps', 'api', '.env.test');
 
 async function run() {
-  log(chalk.cyan('Make variables for @codeimage/app'));
-  const canCreateAppEnv = await askIfWantOverride(appEnvLocalDir);
-  if (canCreateAppEnv) {
-    buildAppEnvLocal();
-  }
-  log(chalk.cyan('Make variables for @codeimage/api'));
-  const canCreateApiEnv = await askIfWantOverride(apiEnvDir);
-  if (canCreateApiEnv) {
+  try {
+    await buildAppEnvLocal();
     await buildApiEnv();
-  }
-
-  const canCreateApiTestEnv = await askIfWantOverride(apiEnvTestDir);
-  if (canCreateApiTestEnv) {
     await buildApiTestEnv();
+    log(chalk.bgGreen('All variables created successfully.'));
+    await askForPrismaMigrations();
+  } catch (e) {
+    process.exit(0);
   }
-
-  log(chalk.bgGreen('All variables created successfully.'));
-
-  await askForPrismaMigrations();
 }
 
-function buildAppEnvLocal() {
+async function buildAppEnvLocal() {
+  log(chalk.cyan('Make variables for @codeimage/app'));
+
+  const {exists, override} = await askIfWantOverride(appEnvLocalDir);
+  if (exists && !override) {
+    return;
+  }
+
   const env = {
     // Mocks
     VITE_ENABLE_MSW: true,
@@ -46,18 +43,20 @@ function buildAppEnvLocal() {
     VITE_PUBLIC_AUTH0_AUDIENCE: '',
   };
 
-  fs.writeFileSync(appEnvLocalDir, makeEnvFile(env), {
-    encoding: 'utf8',
-  });
+  writeEnv(env, appEnvLocalDir);
 
-  const message =
-    'Variables created successfully in /apps/codeimage/.env.local';
-
-  log(chalk.bgCyan(message));
-  log(chalk.green(JSON.stringify(env, undefined, 2)));
+  if (exists && override) {
+    await askForBackup(appEnvLocalDir);
+  }
 }
 
 async function buildApiEnv() {
+  log(chalk.cyan('Make variables for @codeimage/api'));
+  const {exists, override} = await askIfWantOverride(apiEnvDir);
+  if (exists && !override) {
+    return;
+  }
+
   const defaultDatabase =
     'postgres://postgres:postgres@localhost:5432/codeimage?schema=public';
 
@@ -82,7 +81,7 @@ async function buildApiEnv() {
 
   if (dbUrl === defaultDatabase) {
     log(
-      chalk.green(
+      chalk.yellow(
         'You are using the default url connection. Make sure to run the docker-compose.dev.yml or to have an existing postgres container.',
       ),
     );
@@ -94,16 +93,12 @@ async function buildApiEnv() {
     );
   }
 
-  env.DATABASE_URL = dbUrl ?? defaultDatabase;
-
   const {mockAuth} = await prompt<{mockAuth: boolean}>({
     type: 'confirm',
     initial: true,
     name: 'mockAuth',
     message: 'Do you want to mock Auth0? (recommended)',
   });
-
-  env.MOCK_AUTH = mockAuth ?? true;
 
   if (!mockAuth) {
     log(
@@ -113,16 +108,22 @@ async function buildApiEnv() {
     );
   }
 
-  fs.writeFileSync(apiEnvDir, makeEnvFile(env), {
-    encoding: 'utf8',
-  });
+  env.MOCK_AUTH = mockAuth ?? true;
+  env.DATABASE_URL = dbUrl ?? defaultDatabase;
 
-  const message = 'Variables created successfully in /apps/api/.env';
-  log(chalk.bgCyan(message));
-  log(chalk.green(JSON.stringify(env, undefined, 2)));
+  writeEnv(env, apiEnvDir);
+
+  if (exists && override) {
+    await askForBackup(apiEnvDir);
+  }
 }
 
 async function buildApiTestEnv() {
+  const {exists, override} = await askIfWantOverride(apiEnvTestDir);
+  if (exists && !override) {
+    return;
+  }
+
   const defaultDatabase = 'postgresql://prisma:prisma@localhost:5433/tests';
 
   const env = {
@@ -160,13 +161,11 @@ async function buildApiTestEnv() {
 
   env.DATABASE_URL = dbUrl ?? defaultDatabase;
 
-  fs.writeFileSync(apiEnvDir, makeEnvFile(env), {
-    encoding: 'utf8',
-  });
+  writeEnv(env, apiEnvTestDir);
 
-  const message = 'Variables created successfully in /apps/api/.env.test';
-  log(chalk.bgCyan(message));
-  log(chalk.green(JSON.stringify(env, undefined, 2)));
+  if (exists && override) {
+    await askForBackup(apiEnvTestDir);
+  }
 }
 
 async function askForPrismaMigrations() {
@@ -187,7 +186,34 @@ async function askForPrismaMigrations() {
   }
 }
 
-async function askIfWantOverride(filePath: string): Promise<boolean> {
+function writeEnv(env: Record<string, string | number | boolean>, dir: string) {
+  fs.writeFileSync(dir, makeEnvFile(env), {encoding: 'utf8'});
+  const message = `Variables created successfully in ${dir}`;
+  log(chalk.bgCyan(message));
+  log(chalk(JSON.stringify(env, undefined, 2)));
+}
+
+async function askForBackup(dir: string) {
+  if (!fs.existsSync(dir)) {
+    return;
+  }
+
+  const {backup} = await prompt<{backup: boolean}>({
+    name: 'backup',
+    type: 'confirm',
+    message: `Do you want to make a backup of your previous configuration?`,
+  });
+
+  if (!backup) return;
+
+  const dirName = path.parse(dir).dir;
+
+  fs.copyFileSync(dir, `${dirName}/${path.basename(dir)}.backup`);
+}
+
+async function askIfWantOverride(
+  filePath: string,
+): Promise<{override: boolean; exists: boolean}> {
   if (fs.existsSync(filePath)) {
     const fileName = path.basename(filePath);
     const result = await prompt<{override: boolean}>({
@@ -196,9 +222,15 @@ async function askIfWantOverride(filePath: string): Promise<boolean> {
       message: `Do you want to override existing ${fileName}? Your configuration will be reset.`,
     });
 
-    return result.override;
+    return {
+      exists: true,
+      override: result.override,
+    };
   }
-  return true;
+  return {
+    exists: false,
+    override: true,
+  };
 }
 
 run();
