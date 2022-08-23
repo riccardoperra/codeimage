@@ -7,7 +7,15 @@ import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Router, useRoutes} from 'solid-app-router';
-import {createEffect, lazy, on, onMount, Show, Suspense} from 'solid-js';
+import {
+  Component,
+  createEffect,
+  lazy,
+  on,
+  onMount,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
@@ -17,12 +25,21 @@ import {darkGrayScale} from './theme/dark-theme.css';
 import './theme/dark-theme.css';
 import './theme/global.css';
 import './theme/light-theme.css';
-import {worker} from './mocks/browser';
 
 const i18n = createI18nContext(locale);
 
-if (import.meta.env.DEV) {
-  await worker.start();
+if (import.meta.env.VITE_ENABLE_MSW) {
+  console.info('MSW Enabled');
+  import('./mocks/browser').then(({worker}) => worker.start());
+}
+
+function lazyWithNoLauncher(cp: () => Promise<{default: Component<any>}>) {
+  return lazy(() => {
+    queueMicrotask(() => {
+      document.querySelector('#launcher')?.remove();
+    });
+    return cp();
+  });
 }
 
 const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
@@ -31,20 +48,14 @@ const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
   },
 };
 
-const Dashboard = lazy(() =>
-  import('./pages/Dashboard/Dashboard').then(component => {
-    document.querySelector('#launcher')?.remove();
-    return component;
-  }),
+const Dashboard = lazyWithNoLauncher(
+  () => import('./pages/Dashboard/Dashboard'),
 );
 
-const Editor = lazy(() => import('./pages/Editor/Editor'));
+const Editor = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
 
-const NotFoundPage = lazy(() =>
-  import('./pages/NotFound/NotFoundPage').then(c => {
-    document.querySelector('#launcher')?.remove();
-    return c;
-  }),
+const NotFoundPage = lazyWithNoLauncher(
+  () => import('./pages/NotFound/NotFoundPage'),
 );
 
 export function Bootstrap() {
@@ -67,7 +78,7 @@ export function Bootstrap() {
     },
     {
       path: ':snippetId',
-      component: lazy(() => import('./pages/Editor/Editor')),
+      component: Editor,
     },
     {
       path: '404',

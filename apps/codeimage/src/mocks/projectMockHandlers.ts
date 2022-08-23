@@ -117,16 +117,12 @@ const handlers: RequestHandler[] = [
       const updateNameResult = db.project.update({
         data: {
           editorOptions: {
-            // @ts-ignore
-            id: body?.editorOptions?.id,
             fontId: body?.editorOptions.fontId,
             fontWeight: body?.editorOptions.fontWeight ?? 400,
             themeId: body?.editorOptions.themeId,
             showLineNumbers: body?.editorOptions.showLineNumbers ?? false,
           },
           frame: {
-            // @ts-ignore
-            id: body?.frame?.id,
             background: body?.frame.background,
             opacity: body?.frame.opacity ?? 100,
             padding: body?.frame.padding ?? 32,
@@ -135,8 +131,6 @@ const handlers: RequestHandler[] = [
           },
           isOwner: true,
           terminal: {
-            // @ts-ignore
-            id: body?.terminal?.id,
             opacity: body?.terminal.opacity ?? 100,
             shadow: body?.terminal.shadow,
             type: body?.terminal.type,
