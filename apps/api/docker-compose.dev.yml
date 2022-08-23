@@ -1,4 +1,4 @@
-# docker-compose -f docker-compose.yml -p codeimage up -d
+# docker-compose -f docker-compose.dev.yml -p codeimage up -d
 
 version: '3.8'
 
@@ -10,16 +10,13 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - '5432:5432'
-    env_file:
-      - .env
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=codeimage
   test_db:
     image: postgres:13-alpine
     restart: always
-    container_name: integration-tests-prisma
     ports:
       - '5433:5432'
     environment:
