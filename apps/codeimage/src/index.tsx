@@ -17,8 +17,13 @@ import {darkGrayScale} from './theme/dark-theme.css';
 import './theme/dark-theme.css';
 import './theme/global.css';
 import './theme/light-theme.css';
+import {worker} from './mocks/browser';
 
 const i18n = createI18nContext(locale);
+
+if (import.meta.env.DEV) {
+  await worker.start();
+}
 
 const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
   text: {
