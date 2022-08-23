@@ -1,0 +1,114 @@
+{
+  // These tasks will run in order when initializing your CodeSandbox project.
+  "setupTasks": [
+    {
+      "name": "Install Dependencies",
+      "command": "pnpm install"
+    },
+    {
+      "name": "Create docker container",
+      "command": "docker-compose -f apps/api/docker-compose.dev.yml -p codeimage up -d"
+    },
+    {
+      "name": "Create env file",
+      "command": "pnpm prepare:env:codesandbox"
+    },
+    {
+      "name": "Build core libraries",
+      "command": "pnpm libs:build"
+    }
+  ],
+
+  // These tasks can be run from CodeSandbox. Running one will open a log in the app.
+  "tasks": {
+    "prepare": {
+      "name": "prepare",
+      "command": "pnpm prepare",
+      "runAtStart": false
+    },
+    "dev": {
+      "name": "dev",
+      "command": "pnpm dev",
+      "runAtStart": true
+    },
+    "dev:api": {
+      "name": "dev:api",
+      "command": "pnpm dev:api",
+      "runAtStart": true
+    },
+    "libs:build": {
+      "name": "libs:build",
+      "command": "pnpm libs:build",
+      "runAtStart": false
+    },
+    "libs:build:core": {
+      "name": "libs:build:core",
+      "command": "pnpm libs:build:core",
+      "runAtStart": false
+    },
+    "libs:build:config": {
+      "name": "libs:build:config",
+      "command": "pnpm libs:build:config",
+      "runAtStart": false
+    },
+    "libs:build:watch": {
+      "name": "libs:build:watch",
+      "command": "pnpm libs:build:watch",
+      "runAtStart": false
+    },
+    "lint": {
+      "name": "lint",
+      "command": "pnpm lint",
+      "runAtStart": false
+    },
+    "typecheck": {
+      "name": "typecheck",
+      "command": "pnpm typecheck",
+      "runAtStart": false
+    },
+    "build:prod": {
+      "name": "build:prod",
+      "command": "pnpm build:prod",
+      "runAtStart": false
+    },
+    "changeset:pr": {
+      "name": "changeset:pr",
+      "command": "pnpm changeset:pr",
+      "runAtStart": false
+    },
+    "pre-commit": {
+      "name": "pre-commit",
+      "command": "pnpm pre-commit",
+      "runAtStart": false
+    },
+    "pre-commit-prettier": {
+      "name": "pre-commit-prettier",
+      "command": "pnpm pre-commit-prettier",
+      "runAtStart": false
+    },
+    "pre-commit-eslint": {
+      "name": "pre-commit-eslint",
+      "command": "pnpm pre-commit-eslint",
+      "runAtStart": false
+    },
+    "prepare:env": {
+      "name": "prepare:env",
+      "command": "pnpm prepare:env",
+      "runAtStart": false
+    },
+    "prepare:env:codesandbox": {
+      "name": "prepare:env:codesandbox",
+      "command": "pnpm prepare:env:codesandbox",
+      "runAtStart": false
+    },
+    "prepare:api:deploy": {
+      "name": "prepare:api:deploy",
+      "command": "pnpm prepare:api:deploy",
+      "runAtStart": false
+    },
+    "docker-compose -f ./apps/api/docker-compose.dev.yml -p codeimage up -d": {
+      "name": "docker-compose -f ./apps/api/docker-compose.dev.yml -p codeimage up -d",
+      "command": "docker-compose -f ./apps/api/docker-compose.dev.yml -p codeimage up -d"
+    }
+  }
+}

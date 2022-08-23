@@ -18,8 +18,11 @@
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:test": "dotenv -e .env.test -- pnpm exec prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:migrate:deploy-test": "dotenv -e .env.test -- pnpm exec prisma migrate deploy",
     "prisma:generate": "prisma generate dev && pnpm --filter=@codeimage/prisma-models build",
-    "prisma:migrate:test": "dotenv -e .env.test -- pnpm exec prisma migrate dev --name init",
     "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
     "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js"
   },
@@ -56,7 +59,6 @@
     "fastify-tsconfig": "^1.0.1",
     "sinon": "^14.0.0",
     "tap": "^16.3.0",
-    "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
   }
 }
