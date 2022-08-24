@@ -71,6 +71,26 @@ export default defineConfig(({mode}) => ({
         );
       },
     },
+    {
+      name: 'parse-environment-variables',
+
+      configResolved(resolvedConfig) {
+        const config = resolvedConfig as Omit<typeof resolvedConfig, 'env'> & {
+          env: typeof resolvedConfig['env'];
+        };
+        const env = config.env;
+        config.env = Object.keys(env).reduce((acc, key) => {
+          let parsed = config.env[key];
+          try {
+            parsed = JSON.parse(config.env[key]);
+          } catch {}
+          return {
+            ...acc,
+            [key]: parsed,
+          };
+        }, {});
+      },
+    },
   ],
   server: {
     strictPort: true,

@@ -29,7 +29,6 @@ import './theme/light-theme.css';
 const i18n = createI18nContext(locale);
 
 if (import.meta.env.VITE_ENABLE_MSW) {
-  console.info('MSW Enabled');
   import('./mocks/browser').then(({worker}) => worker.start());
 }
 

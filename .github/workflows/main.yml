@@ -265,8 +265,13 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_codeimage
       DOMAIN_AUTH0: https://example.it
-      CLIENT_SECRET_AUTH: <client-secret-auth>
-      AUDIENCE_AUTH0: <audience>
+      CLIENT_ID_AUTH0: <client-id-auth>
+      CLIENT_SECRET_AUTH0: <client-secret-auth>
+      AUTH0_CLIENT_CLAIMS: https://example.com
+      AUDIENCE_AUTH0: https://example.com
+      GRANT_TYPE_AUTH0: client_credentials
+      MOCK_AUTH: false
+      MOCK_AUTH_EMAIL: dev@example.it
 
 
     steps:
