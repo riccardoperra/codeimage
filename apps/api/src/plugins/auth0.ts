@@ -19,42 +19,37 @@ interface AuthorizeOptions {
   mustBeAuthenticated: boolean;
 }
 
-export function mockAuthProvider(context: {email?: string} = {}) {
-  const plugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+export function mockAuthProvider(context: {email: string}) {
+  return fp(async (fastify: FastifyInstance) => {
     const auth0Authenticate: Authenticate = async req => {
-      console.log('is req');
-      const email = context?.email ?? process.env.MOCK_AUTH_EMAIL;
-      const clientClaim = process.env.AUTH0_CLIENT_CLAIMS ?? '';
+      const email = context.email;
+      const clientClaim = fastify.config.AUTH0_CLIENT_CLAIMS;
       const emailKey = `${clientClaim}/email`;
       req.user = {
         [emailKey]: email,
       };
-      console.log('CALL AUTHENTICATE', email, clientClaim, req.user);
     };
 
     fastify.decorateRequest('user', null);
     fastify.decorate('authenticate', auth0Authenticate);
-  };
-
-  return fp(plugin);
+  });
 }
 
 export default fp<{authProvider?: FastifyPluginAsync}>(
   async (fastify, options) => {
-    console.log(fastify.config);
     if (fastify.config.MOCK_AUTH) {
       await fastify.register(
         mockAuthProvider({
-          email: fastify.config.MOCK_AUTH_EMAIL,
+          email: fastify.config.MOCK_AUTH_EMAIL as string,
         }),
       );
     } else if (options.authProvider) {
       await fastify.register(options.authProvider);
     } else {
       await fastify.register(fastifyAuth0Verify, {
-        domain: process.env.DOMAIN_AUTH0,
-        secret: process.env.CLIENT_SECRET_AUTH,
-        audience: process.env.AUDIENCE_AUTH0,
+        domain: fastify.config.DOMAIN_AUTH0,
+        secret: fastify.config.CLIENT_SECRET_AUTH,
+        audience: fastify.config.AUDIENCE_AUTH0,
       });
     }
 
@@ -73,7 +68,7 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
         }
       }
 
-      const emailClaim = `${process.env.AUTH0_CLIENT_CLAIMS ?? ''}/email`;
+      const emailClaim = `${fastify.config.AUTH0_CLIENT_CLAIMS}/email`;
 
       if (!req.user) {
         req.appUserOptional = null;

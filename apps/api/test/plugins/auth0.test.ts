@@ -13,6 +13,11 @@ interface AppOptions {
   mockAuth: boolean;
 }
 
+process.env.AUTH0_CLIENT_CLAIMS = 'claims';
+process.env.CLIENT_SECRET_AUTH = 'secret';
+process.env.DOMAIN_AUTH0 = 'domain';
+process.env.AUDIENCE_AUTH0 = 'audience';
+
 async function build(t: Tap.Test, options: AppOptions = {mockAuth: false}) {
   if (options.mockAuth) {
     process.env.MOCK_AUTH = 'true';
@@ -27,6 +32,10 @@ async function build(t: Tap.Test, options: AppOptions = {mockAuth: false}) {
           DATABASE_URL: Type.String(),
           MOCK_AUTH: Type.Boolean(),
           MOCK_AUTH_EMAIL: Type.String(),
+          AUTH0_CLIENT_CLAIMS: Type.String(),
+          CLIENT_SECRET_AUTH: Type.String(),
+          DOMAIN_AUTH0: Type.String(),
+          AUDIENCE_AUTH0: Type.String(),
         }),
       });
       await app.register(sensible);
@@ -38,6 +47,7 @@ async function build(t: Tap.Test, options: AppOptions = {mockAuth: false}) {
         {preValidation: (req, reply) => app.authorize(req, reply)},
         async _ => ({
           response: 'ok',
+          user: _.user,
           appUser: _.appUser,
         }),
       );
@@ -174,5 +184,25 @@ t.test('should mock auth', async t => {
   });
 
   t.same(response.statusCode, 200);
-  t.same(response.json().email, 'dev@example.it');
+  t.sameStrict(response.json().user, {'claims/email': 'dev@example.it'});
+  t.same(response.json().appUser.email, 'dev@example.it');
+});
+
+t.test('should mock auth with env fallback', async t => {
+  const app = await build(t, {mockAuth: true});
+
+  const response = await app.inject({
+    method: 'GET',
+    url: '/',
+  });
+
+  sinon.stub(app.prisma.user, 'findFirst').resolves({
+    email: 'dev@example.it',
+    id: 'id',
+    createdAt: new Date(),
+  });
+
+  t.same(response.statusCode, 200);
+  t.sameStrict(response.json().user, {'claims/email': 'dev@example.it'});
+  t.same(response.json().appUser.email, 'dev@example.it');
 });

@@ -15,6 +15,7 @@ declare module 'fastify' {
       DOMAIN_AUTH0?: string;
       AUTH0_CLIENT_CLAIMS?: string;
       AUDIENCE_AUTH0?: string;
+      CLIENT_SECRET_AUTH?: string;
       GRANT_TYPE_AUTH0?: string;
     };
   }
