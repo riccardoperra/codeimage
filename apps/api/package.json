@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "test": "npm run build:ts && tsc -p test/tsconfig.json && dotenv -e .env.test -- tap --ts --reporter=specy './test/**/*.test.ts' --before=test/before-test.ts",
+    "test": "dotenv -e .env.test -- tap --ts --reporter=specy './test/**/*.test.ts' --before=test/before-test.ts",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
@@ -23,8 +23,8 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:migrate:deploy-test": "dotenv -e .env.test -- pnpm exec prisma migrate deploy",
     "prisma:generate": "prisma generate dev && pnpm --filter=@codeimage/prisma-models build",
-    "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
-    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js"
+    "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"blue.bold,cyan.bold\" \"npm:dev:start\"",
+    "dev:start": "tsx watch node_modules/fastify-cli/cli.js start --ignore-watch=.ts$ -w -l info -P src/app.ts"
   },
   "keywords": [],
   "author": "Riccardo Perra",

@@ -29,12 +29,4 @@
     "scripts"
   ],
   "exclude": ["**/node_modules"],
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS",
-      "resolveJsonModule": true,
-      "types": ["node"],
-      "noImplicitAny": false
-    }
-  }
 }

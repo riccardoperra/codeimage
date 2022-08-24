@@ -355,7 +355,6 @@ jobs:
         run: |
           cd dist/api-bundle
           rm -rf .gitignore
-          npm i
           touch .gitignore
           touch .dockerignore
           ls -al
