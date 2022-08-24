@@ -64,13 +64,14 @@ async function buildApiEnv() {
 
   const env = {
     DATABASE_URL: defaultDatabase,
-    CLIENT_ID_AUTH0: '',
-    CLIENT_SECRET_AUTH0: '',
-    DOMAIN_AUTH0: '',
-    AUTH0_CLIENT_CLAIMS: '',
-    AUDIENCE_AUTH0: '',
+    CLIENT_ID_AUTH0: 'clientId',
+    CLIENT_SECRET_AUTH0: 'clientSecret',
+    DOMAIN_AUTH0: 'dev',
+    AUTH0_CLIENT_CLAIMS: 'https://example.com/',
+    AUDIENCE_AUTH0: 'https://example.com/',
     GRANT_TYPE_AUTH0: 'client_credentials',
     MOCK_AUTH: true,
+    MOCK_AUTH_EMAIL: 'dev@example.it',
   };
 
   if (!runOnCodeSandbox) {
@@ -134,11 +135,12 @@ async function buildApiTestEnv() {
     DATABASE_URL: defaultDatabase,
     CLIENT_ID_AUTH0: '<client-id-auth>',
     CLIENT_SECRET_AUTH0: '<client-secret-auth>',
-    DOMAIN_AUTH0: 'https://example.it',
-    AUTH0_CLIENT_CLAIMS: '',
+    DOMAIN_AUTH0: 'https://example.com',
+    AUTH0_CLIENT_CLAIMS: 'https://example.com',
     AUDIENCE_AUTH0: '<audience>',
     GRANT_TYPE_AUTH0: 'client_credentials',
     MOCK_AUTH: false,
+    MOCK_AUTH_EMAIL: 'dev@example.it',
   };
 
   if (!runOnCodeSandbox) {

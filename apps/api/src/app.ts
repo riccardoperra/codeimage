@@ -8,6 +8,15 @@ declare module 'fastify' {
   interface FastifyInstance {
     config: {
       DATABASE_URL: string;
+      MOCK_AUTH: boolean;
+      MOCK_AUTH_EMAIL?: string;
+      CLIENT_ID_AUTH0?: string;
+      CLIENT_SECRET_AUTH0?: string;
+      DOMAIN_AUTH0?: string;
+      AUTH0_CLIENT_CLAIMS?: string;
+      AUDIENCE_AUTH0?: string;
+      CLIENT_SECRET_AUTH?: string;
+      GRANT_TYPE_AUTH0?: string;
     };
   }
 }
@@ -27,6 +36,13 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dotenv: true,
     schema: Type.Object({
       DATABASE_URL: Type.String(),
+      MOCK_AUTH: Type.Boolean(),
+      CLIENT_ID_AUTH0: Type.String(),
+      CLIENT_SECRET_AUTH0: Type.String(),
+      DOMAIN_AUTH0: Type.String(),
+      AUTH0_CLIENT_CLAIMS: Type.RegEx(/^https?:/),
+      AUDIENCE_AUTH0: Type.RegEx(/^https?:/),
+      GRANT_TYPE_AUTH0: Type.String(),
     }),
   });
 

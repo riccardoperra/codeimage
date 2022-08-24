@@ -1,6 +1,11 @@
 import {User} from '@codeimage/prisma-models';
-import {FastifyPluginAsync, FastifyReply, FastifyRequest} from 'fastify';
-import fastifyAuth0Verify from 'fastify-auth0-verify';
+import {
+  FastifyInstance,
+  FastifyPluginAsync,
+  FastifyReply,
+  FastifyRequest,
+} from 'fastify';
+import fastifyAuth0Verify, {Authenticate} from 'fastify-auth0-verify';
 import fp from 'fastify-plugin';
 
 declare module '@fastify/jwt/jwt' {
@@ -14,15 +19,37 @@ interface AuthorizeOptions {
   mustBeAuthenticated: boolean;
 }
 
+export function mockAuthProvider(context: {email: string}) {
+  return fp(async (fastify: FastifyInstance) => {
+    const auth0Authenticate: Authenticate = async req => {
+      const email = context.email;
+      const clientClaim = fastify.config.AUTH0_CLIENT_CLAIMS;
+      const emailKey = `${clientClaim}/email`;
+      req.user = {
+        [emailKey]: email,
+      };
+    };
+
+    fastify.decorateRequest('user', null);
+    fastify.decorate('authenticate', auth0Authenticate);
+  });
+}
+
 export default fp<{authProvider?: FastifyPluginAsync}>(
   async (fastify, options) => {
-    if (options.authProvider) {
+    if (fastify.config.MOCK_AUTH) {
+      await fastify.register(
+        mockAuthProvider({
+          email: fastify.config.MOCK_AUTH_EMAIL as string,
+        }),
+      );
+    } else if (options.authProvider) {
       await fastify.register(options.authProvider);
     } else {
       await fastify.register(fastifyAuth0Verify, {
-        domain: process.env.DOMAIN_AUTH0,
-        secret: process.env.CLIENT_SECRET_AUTH,
-        audience: process.env.AUDIENCE_AUTH0,
+        domain: fastify.config.DOMAIN_AUTH0,
+        secret: fastify.config.CLIENT_SECRET_AUTH,
+        audience: fastify.config.AUDIENCE_AUTH0,
       });
     }
 
@@ -41,7 +68,7 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
         }
       }
 
-      const emailClaim = `${process.env.AUTH0_CLIENT_CLAIMS}/email`;
+      const emailClaim = `${fastify.config.AUTH0_CLIENT_CLAIMS}/email`;
 
       if (!req.user) {
         req.appUserOptional = null;
