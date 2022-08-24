@@ -37,16 +37,12 @@ const app: FastifyPluginAsync<AppOptions> = async (
     schema: Type.Object({
       DATABASE_URL: Type.String(),
       MOCK_AUTH: Type.Boolean(),
-      ...(process.env.MOCK_AUTH
-        ? {}
-        : {
-            CLIENT_ID_AUTH0: Type.String(),
-            CLIENT_SECRET_AUTH0: Type.String(),
-            DOMAIN_AUTH0: Type.String(),
-            AUTH0_CLIENT_CLAIMS: Type.String(),
-            AUDIENCE_AUTH0: Type.String(),
-            GRANT_TYPE_AUTH0: Type.String(),
-          }),
+      CLIENT_ID_AUTH0: Type.String(),
+      CLIENT_SECRET_AUTH0: Type.String(),
+      DOMAIN_AUTH0: Type.String(),
+      AUTH0_CLIENT_CLAIMS: Type.RegEx(/^https?:/),
+      AUDIENCE_AUTH0: Type.RegEx(/^https?:/),
+      GRANT_TYPE_AUTH0: Type.String(),
     }),
   });
 
