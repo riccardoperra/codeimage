@@ -167,6 +167,8 @@ importers:
       '@solid-primitives/context': 0.1.0
       '@solid-primitives/i18n': ^1.1.0
       '@solid-primitives/immutable': ^0.1.0
+      '@solid-primitives/intersection-observer': 2.0.0
+      '@solid-primitives/keyed': 1.0.1
       '@solid-primitives/platform': ^0.0.100
       '@solid-primitives/resize-observer': ^2.0.2
       '@supabase/supabase-js': 1.35.4
@@ -251,6 +253,8 @@ importers:
       '@solid-primitives/context': 0.1.0_solid-js@1.4.8
       '@solid-primitives/i18n': 1.1.0_solid-js@1.4.8
       '@solid-primitives/immutable': 0.1.0_solid-js@1.4.8
+      '@solid-primitives/intersection-observer': 2.0.0_solid-js@1.4.8
+      '@solid-primitives/keyed': 1.0.1_solid-js@1.4.8
       '@solid-primitives/platform': 0.0.100_solid-js@1.4.8
       '@solid-primitives/resize-observer': 2.0.2_solid-js@1.4.8
       '@supabase/supabase-js': 1.35.4
@@ -456,6 +460,9 @@ importers:
       typescript: 4.7.4
     devDependencies:
       typescript: 4.7.4
+
+  packages/prisma-models/generated/client:
+    specifiers: {}
 
   packages/ui:
     specifiers:
@@ -3940,7 +3947,7 @@ packages:
     dependencies:
       '@solid-aria/types': 0.1.3_solid-js@1.4.8
       '@solid-aria/utils': 0.2.0_solid-js@1.4.8
-      '@solid-primitives/keyed': 1.0.0_solid-js@1.4.8
+      '@solid-primitives/keyed': 1.0.1_solid-js@1.4.8
       '@solid-primitives/utils': 2.1.1_solid-js@1.4.8
       solid-js: 1.4.8
     dev: false
@@ -4199,8 +4206,17 @@ packages:
       - solid-js
     dev: false
 
-  /@solid-primitives/keyed/1.0.0_solid-js@1.4.8:
-    resolution: {integrity: sha512-9vznFq6xR1FLEcQH3S3aGZ3iWOY6EZmDEl0raNOXJxdgXnudHepcAOfx8G52bROHJ3AdPnIqv4ITIegPQOK2BA==}
+  /@solid-primitives/intersection-observer/2.0.0_solid-js@1.4.8:
+    resolution: {integrity: sha512-NACbg1bkVmX7W3o0CPIb4ULTPICAH1ZqUDiDIxveGjSaOx6ervFuP7LovMWimtso2/AjMTnICfPp6GrWuAOZ3w==}
+    peerDependencies:
+      solid-js: ^1.4.4
+    dependencies:
+      '@solid-primitives/utils': 3.0.1_solid-js@1.4.8
+      solid-js: 1.4.8
+    dev: false
+
+  /@solid-primitives/keyed/1.0.1_solid-js@1.4.8:
+    resolution: {integrity: sha512-UiS4InGsJ2q0fwdKTRHjKq38ax0t+9Itmrt5opeXvY92zuKiU5IbzjXZ2EcGhvGzswTArSj5JmKVWQdOjsGpMQ==}
     peerDependencies:
       solid-js: ^1.4.0
     dependencies:
@@ -4273,6 +4289,14 @@ packages:
 
   /@solid-primitives/utils/2.1.1_solid-js@1.4.8:
     resolution: {integrity: sha512-im/WJDgLnJgjuEhB2a46RgDU/ODoc4g+FMySjJ8erPTFrhyTwIe5wv9MSUf7SYsguLe4rfQirNEKLSSyLPETkw==}
+    peerDependencies:
+      solid-js: ^1.4.1
+    dependencies:
+      solid-js: 1.4.8
+    dev: false
+
+  /@solid-primitives/utils/3.0.1_solid-js@1.4.8:
+    resolution: {integrity: sha512-tQl0z8HG+iJ7eryq5KmRkr9xNk9oU06gOUQ37YKod0N5oPaWEvP+ATzi7Uo7w5L67wjaZuQCt80p9vlm1/J/Mg==}
     peerDependencies:
       solid-js: ^1.4.1
     dependencies:
@@ -11320,7 +11344,6 @@ packages:
       rollup: 2.77.0
     optionalDependencies:
       fsevents: 2.3.2
-    dev: false
 
   /vite/3.0.9_sass@1.52.1:
     resolution: {integrity: sha512-waYABTM+G6DBTCpYAxvevpG50UOlZuynR0ckTK5PawNVt7ebX6X7wNXHaGIO6wYYFXSM7/WcuFuO2QzhBB6aMw==}

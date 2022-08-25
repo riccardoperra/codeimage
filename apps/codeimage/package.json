@@ -77,6 +77,8 @@
     "@solid-primitives/context": "0.1.0",
     "@solid-primitives/i18n": "^1.1.0",
     "@solid-primitives/immutable": "^0.1.0",
+    "@solid-primitives/intersection-observer": "2.0.0",
+    "@solid-primitives/keyed": "1.0.1",
     "@solid-primitives/platform": "^0.0.100",
     "@solid-primitives/resize-observer": "^2.0.2",
     "@supabase/supabase-js": "1.35.4",

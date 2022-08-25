@@ -69,7 +69,7 @@ function makeDashboardState(authState = getAuth0State()) {
   }
 
   async function deleteProject(projectId: string) {
-    mutate(items => items.filter(i => i.id !== projectId));
+    mutate(items => items.filter(i => i.map(_ => _.id).id !== projectId));
     await API.project.deleteProject({
       params: {
         id: projectId,

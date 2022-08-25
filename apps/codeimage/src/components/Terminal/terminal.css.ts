@@ -22,7 +22,6 @@ export const wrapper = style([
     position: 'relative',
     backgroundColor: terminalVars.backgroundColor,
     color: terminalVars.textColor,
-    overflow: 'hidden',
     borderRadius: terminalVars.radius,
     boxShadow: terminalVars.boxShadow,
     transition: 'box-shadow .2s, border-radius .2s',

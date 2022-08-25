@@ -7,6 +7,8 @@ import * as styles from './Dashboard.css';
 import {DashboardProvider} from './dashboard.state';
 
 export function DashboardContent() {
+  let scrollElement!: HTMLDivElement;
+
   return (
     <div class={styles.scaffold}>
       <Box display={'flex'} height={'100%'}>
@@ -16,9 +18,9 @@ export function DashboardContent() {
           <div class={styles.main}>
             <ProjectToolbar />
 
-            <Box class={styles.scrollableList}>
-              <ProjectList />
-            </Box>
+            <div class={styles.scrollableList} ref={scrollElement}>
+              <ProjectList scrollElement={scrollElement} />
+            </div>
           </div>
 
           <Footer />

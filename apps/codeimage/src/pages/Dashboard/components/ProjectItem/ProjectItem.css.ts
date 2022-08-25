@@ -3,12 +3,12 @@ import {style} from '@vanilla-extract/css';
 import {darkGrayScale} from '../../../../theme/dark-theme.css';
 
 export const item = style({
+  height: '128px',
   backgroundColor: themeVars.dynamicColors.input.backgroundColor,
   width: '100%',
   borderRadius: themeVars.borderRadius.md,
   padding: '24px',
   paddingBottom: '12px',
-  height: '128px',
   boxShadow: themeVars.boxShadow.md,
   color: themeVars.dynamicColors.baseText,
   transition: 'background-color 0.2s ease-in-out',

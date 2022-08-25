@@ -2,7 +2,7 @@ import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 import {darkGrayScale} from '../../../../theme/dark-theme.css';
 
-const gridListItemCount = createVar();
+export const gridListItemCount = createVar();
 
 export const gridList = style({
   vars: {
@@ -11,8 +11,9 @@ export const gridList = style({
   display: 'grid',
   gap: themeVars.spacing['3'],
   width: '100%',
-  marginBottom: themeVars.spacing['12'],
+  height: `calc(128px + ${themeVars.spacing['3']})`,
   gridTemplateColumns: `repeat(${gridListItemCount}, minmax(0px, 1fr))`,
+  gridAutoRows: '128px',
   '@media': {
     [`(max-width: 1280px)`]: {
       vars: {
@@ -25,6 +26,11 @@ export const gridList = style({
       },
     },
   },
+});
+
+export const gridListItemWrapper = style({
+  height: `calc(128px + ${themeVars.spacing['3']})`,
+  width: '100%',
 });
 
 export const fallbackContainer = style({
