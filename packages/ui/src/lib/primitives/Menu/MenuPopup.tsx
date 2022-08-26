@@ -61,7 +61,7 @@ export function MenuPopup(
                   onAction={props.onAction}
                   onClose={props.onClose}
                 >
-                  {item().rendered()}
+                  {item().children}
                 </MenuItem>
               )}
             </ForItems>

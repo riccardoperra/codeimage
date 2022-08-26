@@ -131,19 +131,17 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
           {language => {
             return (
               <Show when={language}>
-                {language => (
-                  <HStack spacing={'2'}>
-                    <div
-                      style={{
-                        'border-radius': '50%',
-                        'background-color': language.color,
-                        height: '12px',
-                        width: '12px',
-                      }}
-                    />
-                    <Text size={'xs'}>{language.label}</Text>
-                  </HStack>
-                )}
+                <HStack spacing={'2'}>
+                  <div
+                    style={{
+                      'border-radius': '50%',
+                      'background-color': language.color,
+                      height: '12px',
+                      width: '12px',
+                    }}
+                  />
+                  <Text size={'xs'}>{language.label}</Text>
+                </HStack>
               </Show>
             );
           }}

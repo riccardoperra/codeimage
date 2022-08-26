@@ -12,6 +12,7 @@ import {API} from '../../data-access/api';
 function makeDashboardState(authState = getAuth0State()) {
   const [data, {mutate, refetch}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
+    ssrLoadFrom: 'initial',
   });
 
   const [search, setSearch] = createSignal('');
@@ -69,7 +70,7 @@ function makeDashboardState(authState = getAuth0State()) {
   }
 
   async function deleteProject(projectId: string) {
-    mutate(items => items.filter(i => i.id !== projectId));
+    mutate(items => items?.filter(i => i.id !== projectId));
     await API.project.deleteProject({
       params: {
         id: projectId,
@@ -87,7 +88,7 @@ function makeDashboardState(authState = getAuth0State()) {
       return;
     }
     mutate(items =>
-      items.map(item => {
+      items?.map(item => {
         if (item.id === id) {
           return {
             ...item,
