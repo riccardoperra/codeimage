@@ -1,14 +1,9 @@
-import {FadeInOutTransition} from '@codeimage/ui';
-import {VirtualizeContext, VirtualizeItem} from '@core/modules/virtual';
-import {Motion, Presence} from '@motionone/solid';
-import {Transition} from 'solid-headless';
+import {VirtualizeContext, VirtualizeList} from '@core/modules/virtual';
 import {
   ErrorBoundary,
-  For,
   Index,
   Show,
   Suspense,
-  SuspenseList,
   untrack,
   VoidProps,
 } from 'solid-js';
@@ -48,26 +43,24 @@ export function ProjectList(props: VoidProps<ProjectListProps>) {
       )}
     >
       <Show when={!listIsEmpty()} fallback={() => <ProjectEmptyListMessage />}>
-        <ul class={styles.gridList}>
-          <Suspense fallback={<ProjectSkeletons />}>
-            <VirtualizeContext
-              scrollElement={props.scrollElement}
-              rootMargin={`-128px 0px ${128}px 0px`}
-              threshold={0}
-            >
-              <For each={dashboard.filteredData()}>
-                {item => (
-                  <VirtualizeItem
-                    height={128}
-                    fallback={<ProjectItemSkeleton />}
-                  >
-                    <ProjectItem item={item} />
-                  </VirtualizeItem>
+        <Suspense fallback={<ProjectSkeletons />}>
+          <VirtualizeContext
+            scrollElement={props.scrollElement}
+            rootMargin={`-128px 0px ${128}px 0px`}
+            height={128}
+            threshold={0}
+            gridCount={3}
+            itemCount={dashboard.filteredData().length}
+          >
+            <ul class={styles.gridList}>
+              <VirtualizeList itemFallback={<ProjectItemSkeleton />}>
+                {index => (
+                  <ProjectItem item={dashboard.filteredData()[index]} />
                 )}
-              </For>
-            </VirtualizeContext>
-          </Suspense>
-        </ul>
+              </VirtualizeList>
+            </ul>
+          </VirtualizeContext>
+        </Suspense>
       </Show>
     </ErrorBoundary>
   );

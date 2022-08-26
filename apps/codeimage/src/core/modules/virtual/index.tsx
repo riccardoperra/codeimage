@@ -1,117 +1,142 @@
-import {createViewportObserver} from '@solid-primitives/intersection-observer';
+import {Range} from '@solid-primitives/range';
+import {debounceTime, fromEvent, startWith} from 'rxjs';
 import {
   Accessor,
   createContext,
   createMemo,
-  createResource,
-  createSignal,
   FlowProps,
   JSX,
-  onCleanup,
+  JSXElement,
   onMount,
-  Resource,
-  startTransition,
   Suspense,
-  SuspenseList,
   useContext,
 } from 'solid-js';
+import {createStore} from 'solid-js/store';
+import MyWorker from './worker?worker';
 
 interface VirtualizeItemProps {
-  height: number;
   fallback: JSX.Element;
+  key: number;
 }
 
 type VirtualizeContextProps = IntersectionObserverInit & {
   scrollElement: HTMLElement;
+  height: number;
+  itemCount: number;
+  gridCount: number;
 };
 
 type VirtualizeContext = {
-  register: (el: Accessor<HTMLElement>) => Accessor<boolean>;
-  unregister: (el: Accessor<HTMLElement>) => void;
+  register: (props: VirtualizeItemProps) => Accessor<boolean>;
+  visibilityRange: {start: number; end: number};
 };
+
+export function groupArrayByN<T>(data: T[], n: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < data.length; i += n) result.push(data.slice(i, i + n));
+  return result;
+}
 
 const $VirtualizeContext = createContext<VirtualizeContext>();
 
 export function VirtualizeContext(props: FlowProps<VirtualizeContextProps>) {
-  const [mounted, setMounted] = createSignal(false);
-  const [addObserver, {remove}] = createViewportObserver({
-    root: props.root,
-    rootMargin: props.rootMargin,
-    threshold: props.threshold,
+  const [visibilityRange, setVisibilityRange] = createStore({
+    start: -1,
+    end: -1,
   });
 
-  const reveal = createMemo(() => {
-    if (!mounted()) return 'together';
-    return 'forwards';
-  });
+  onMount(() => {
+    const array = new Array(props.itemCount)
+      .fill(undefined)
+      .map((_, index) => index);
+    const groupedArray = groupArrayByN(array, props.gridCount);
+    const worker = new MyWorker();
 
-  const register = (el: Accessor<HTMLElement>): Resource<boolean> => {
-    const [visibility, setVisibility] = createSignal(false);
-    const [visible] = createResource(
-      visibility,
-      async (visibility, {value}) => {
-        if (visibility === value) {
-          return visibility as boolean;
-        }
-
-        await new Promise(r => {
-          setTimeout(() => {
-            startTransition(() => r(true));
-          });
+    fromEvent(worker, 'message').subscribe(evt => {
+      const {start, end} = (evt as MessageEvent).data;
+      if (visibilityRange.start !== start || visibilityRange.end !== end) {
+        setVisibilityRange({
+          start: start ?? 0,
+          end: end ?? props.itemCount,
         });
-
-        return visibility;
-      },
-      {initialValue: false},
-    );
-
-    onMount(() => {
-      const ref = el();
-      let pendingId: number | undefined = undefined;
-      addObserver(ref, entry => {
-        if (pendingId !== undefined) {
-          clearTimeout(pendingId);
-          pendingId = window.setTimeout(() => {
-            setVisibility(entry.isIntersecting);
-          });
-        } else {
-          setVisibility(entry.isIntersecting);
-        }
-      });
-      onCleanup(() => remove(ref));
-      // TODO: not working with safari
-      window.requestIdleCallback(() => {
-        setMounted(true);
-      });
+      }
     });
 
-    return visible;
+    const notifyWorker = () => {
+      worker.postMessage({
+        groupedArray: groupedArray,
+        height: props.height,
+        scrollTop: props.scrollElement.scrollTop - props.height,
+        scrollBottom:
+          props.scrollElement.scrollTop +
+          props.scrollElement.offsetHeight +
+          props.height,
+      });
+    };
+
+    fromEvent(props.scrollElement, 'scroll')
+      .pipe(startWith(0), debounceTime(0))
+      .subscribe(() => notifyWorker());
+  });
+
+  const register = (): Accessor<boolean> => {
+    return () => true;
   };
 
-  const unregister = (el: Accessor<HTMLElement>) => remove(el());
+  const startHeight = () => {
+    return (visibilityRange.start * props.height) / props.gridCount;
+  };
+
+  const endHeight = createMemo(() => {
+    const delta = props.itemCount - visibilityRange.end;
+    return (delta * props.height) / props.gridCount;
+  });
 
   return (
     <$VirtualizeContext.Provider
       value={{
         register,
-        unregister,
+        visibilityRange,
       }}
     >
-      <SuspenseList revealOrder={reveal()}>{props.children}</SuspenseList>
+      <div
+        style={{
+          height: `${startHeight()}px`,
+        }}
+      />
+      {props.children}
+      <div
+        style={{
+          height: `${endHeight()}px`,
+        }}
+      />
     </$VirtualizeContext.Provider>
   );
 }
 
-export function VirtualizeItem(props: FlowProps<VirtualizeItemProps>) {
-  const {register} = useContext($VirtualizeContext)!;
-  const visible = register(() => ref);
-  let ref!: HTMLDivElement;
+export function VirtualizeItem(
+  props: FlowProps<VirtualizeItemProps, (index: number) => JSXElement>,
+) {
+  return (
+    <Suspense fallback={props.fallback}>{props.children(props.key)}</Suspense>
+  );
+}
+
+export function VirtualizeList(props: {
+  children: (index: number) => JSXElement;
+  itemFallback: JSXElement;
+}) {
+  const {visibilityRange} = useContext($VirtualizeContext)!;
 
   return (
-    <div style={{height: `${props.height}px`}} ref={ref}>
-      <Suspense fallback={props.fallback}>
-        {visible() && props.children}
-      </Suspense>
-    </div>
+    <Range start={visibilityRange.start} to={visibilityRange.end}>
+      {index => {
+        return (
+          <VirtualizeItem key={index} fallback={props.itemFallback}>
+            {props.children}
+          </VirtualizeItem>
+        );
+      }}
+    </Range>
   );
 }

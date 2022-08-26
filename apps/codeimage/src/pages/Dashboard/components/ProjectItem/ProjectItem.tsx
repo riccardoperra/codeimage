@@ -69,16 +69,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
 
         <div>
           <DropdownMenuV2
-            menuButton={
-              <MenuButton
-                as={IconButton}
-                variant={'solid'}
-                theme={'secondary'}
-                size={'xs'}
-              >
-                <DotHorizontalIcon size={'sm'} />
-              </MenuButton>
-            }
+            menuButton={<DotHorizontalIcon size={'sm'} />}
             onAction={(action: string | number) => {
               if (action === 'delete') {
                 createDialog(ConfirmDialog, state => ({

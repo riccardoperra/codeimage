@@ -11,7 +11,6 @@ export const gridList = style({
   display: 'grid',
   gap: themeVars.spacing['3'],
   width: '100%',
-  height: `calc(128px + ${themeVars.spacing['3']})`,
   gridTemplateColumns: `repeat(${gridListItemCount}, minmax(0px, 1fr))`,
   gridAutoRows: '128px',
   '@media': {
