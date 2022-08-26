@@ -16,7 +16,7 @@ import {formatDistanceToNow} from '@core/helpers/date';
 import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
-import {Link, useNavigate} from 'solid-app-router';
+import {Link, useNavigate} from '@solidjs/router';
 import {For, Show, VoidProps} from 'solid-js';
 import {DotHorizontalIcon} from '../../../../components/Icons/DotVertical';
 import {AppLocaleEntries} from '../../../../i18n';

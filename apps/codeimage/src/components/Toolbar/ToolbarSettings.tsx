@@ -6,7 +6,7 @@ import {
   MenuButton,
 } from '@codeimage/ui';
 import {Item} from '@solid-aria/collection';
-import {useNavigate} from 'solid-app-router';
+import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';
 import {MenuAlt2Icon} from '../Icons/DotVertical';
 import {SettingsDialog} from './SettingsDialog';
