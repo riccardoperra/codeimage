@@ -68,7 +68,9 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
       onMouseDown={() => props.onClick?.()}
     >
       <Suspense fallback={<Loading size={'sm'} />}>
-        <Show when={props.tabIcon}>{icon => <TabIcon content={icon} />}</Show>
+        <Show when={props.tabIcon} keyed>
+          {icon => <TabIcon content={icon} />}
+        </Show>
         <div class={styles.tabTextContent}>
           <Show
             fallback={

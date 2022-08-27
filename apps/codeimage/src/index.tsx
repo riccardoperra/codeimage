@@ -6,7 +6,7 @@ import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import {Router, useRoutes} from 'solid-app-router';
+import {Router, useRoutes} from '@solidjs/router';
 import {
   Component,
   createEffect,

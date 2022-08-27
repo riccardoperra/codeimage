@@ -1,6 +1,6 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {Box, Button, HStack} from '@codeimage/ui';
-import {Link} from 'solid-app-router';
+import {Link} from '@solidjs/router';
 import {Component, Show} from 'solid-js';
 import {CodeImageLogo} from '../Icons/CodeImageLogo';
 import {CollectionIcon} from '../Icons/Collection';

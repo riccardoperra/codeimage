@@ -78,7 +78,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
           {theme => {
             return (
               <Suspense fallback={<ThemeBoxSkeleton />}>
-                <Show when={theme()}>
+                <Show when={theme()} keyed={true}>
                   {theme => (
                     <Show when={isMatched(theme.id)}>
                       <div>

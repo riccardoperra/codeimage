@@ -16,7 +16,7 @@ import {formatDistanceToNow} from '@core/helpers/date';
 import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
-import {Link, useNavigate} from 'solid-app-router';
+import {Link, useNavigate} from '@solidjs/router';
 import {For, Show, VoidProps} from 'solid-js';
 import {DotHorizontalIcon} from '../../../../components/Icons/DotVertical';
 import {AppLocaleEntries} from '../../../../i18n';
@@ -131,19 +131,17 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
           {language => {
             return (
               <Show when={language}>
-                {language => (
-                  <HStack spacing={'2'}>
-                    <div
-                      style={{
-                        'border-radius': '50%',
-                        'background-color': language.color,
-                        height: '12px',
-                        width: '12px',
-                      }}
-                    />
-                    <Text size={'xs'}>{language.label}</Text>
-                  </HStack>
-                )}
+                <HStack spacing={'2'}>
+                  <div
+                    style={{
+                      'border-radius': '50%',
+                      'background-color': language.color,
+                      height: '12px',
+                      width: '12px',
+                    }}
+                  />
+                  <Text size={'xs'}>{language.label}</Text>
+                </HStack>
               </Show>
             );
           }}
