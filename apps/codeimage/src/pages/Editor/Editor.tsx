@@ -4,7 +4,7 @@ import {
 } from '@codeimage/store/editor/createEditorInit';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {LoadingOverlay} from '@codeimage/ui';
-import {useParams} from 'solid-app-router';
+import {useParams} from '@solidjs/router';
 import {createEffect, lazy, on, onMount, Show} from 'solid-js';
 
 const App = lazy(() => {

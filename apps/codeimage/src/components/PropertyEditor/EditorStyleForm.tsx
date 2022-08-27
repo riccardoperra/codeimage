@@ -37,7 +37,7 @@ export const EditorStyleForm: ParentComponent = () => {
   );
 
   return (
-    <Show when={editor()}>
+    <Show when={editor()} keyed>
       {editor => (
         <>
           <PanelHeader label={t('frame.editor')} />

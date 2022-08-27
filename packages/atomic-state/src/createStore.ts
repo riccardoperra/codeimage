@@ -19,7 +19,7 @@ export interface StoreInternals<T> {
 
 export const $STORE = Symbol('store-internals');
 
-export function createStore<T>(initialState: T) {
+export function createStore<T extends object>(initialState: T) {
   const events$ = new Subject<StoreEvent>();
   const [store, internalSetStore] = coreCreateStore<T>(
     Object.assign(initialState, {
@@ -47,7 +47,7 @@ export function createStore<T>(initialState: T) {
     return returnValue;
   };
 
-  const signal$ = rxjsFrom(observable(signal) as unknown as Observable<symbol>);
+  const signal$ = rxjsFrom(observable(signal));
   const state$ = signal$.pipe(map(() => unwrap(store)));
 
   const storeAccessor = from(state$);
