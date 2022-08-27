@@ -1,25 +1,24 @@
-import {Box} from '@codeimage/ui';
+import {IconButton} from '@codeimage/ui';
 import {ParentProps} from 'solid-js';
 
 const Page = (
   props: ParentProps<{
     onChange: (value: number) => void;
-    value: number;
+    value: number | string;
     active: boolean;
+    rigenerate: boolean;
   }>,
 ) => {
   return (
-    <Box
+    <IconButton
       style={{
         border: props.active ? '1px solid gray' : '',
       }}
-      onClick={() => props.onChange(props.value)}
-      padding={2}
-      cursor="pointer"
-      borderRadius="full"
+      onClick={() => props.onChange(props.value as number)}
+      disabled={props.value === '...'}
     >
-      {props.value === 0 ? '...' : props.value}
-    </Box>
+      {props.value}
+    </IconButton>
   );
 };
 

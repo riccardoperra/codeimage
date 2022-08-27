@@ -1,5 +1,5 @@
 import {Box, IconButton} from '@codeimage/ui';
-import {getnPage} from '@core/modules/pagination';
+import {getNPages} from '@core/modules/pagination/getnPage';
 import {
   createEffect,
   createSignal,
@@ -32,7 +32,9 @@ const Pagination = (props: ParentProps<PaginationProps>) => {
     {value: 1, maxValue: 1} as Required<PaginationProps>,
     props,
   );
-  const [buttons, setButtons] = createSignal<number[] | null>(null);
+  const [buttons, setButtons] = createSignal<Array<string | number> | null>(
+    null,
+  );
   const handleNext = () => {
     if (merged.value && merged.value > 1) {
       props.onChange(merged.value - 1);
@@ -45,19 +47,29 @@ const Pagination = (props: ParentProps<PaginationProps>) => {
   };
 
   createEffect(() => {
-    const array: number[] = new Array(10).fill(1);
-    setButtons(array.map((n, i) => getnPage(i, merged.maxValue)));
+    // const array: number[] = new Array(10).fill(1);
+    setButtons(getNPages(1, merged.maxValue));
   });
+  const listLocal = [4, 6, 2, 9];
+  const changePage = (start: number, page: number) => {
+    if (toRigenerate(listLocal, start)) {
+      setButtons(getNPages(start, merged.maxValue));
+    }
+    return props.onChange(page);
+  };
+  const toRigenerate = (list: number[], index: number) =>
+    list.some(v => v === index);
   return (
     <Box display={'flex'} flexDirection="column" style={{color: 'white'}}>
       <Box display={'flex'} gap={2}>
         <IconButton onClick={handleNext}>{'<'}</IconButton>
         <For each={buttons()}>
-          {page => (
+          {(page, i) => (
             <Page
               value={page}
-              onChange={props.onChange}
+              onChange={() => changePage(i(), page as number)}
               active={merged.value === page}
+              rigenerate={toRigenerate(listLocal, i())}
             />
           )}
         </For>
