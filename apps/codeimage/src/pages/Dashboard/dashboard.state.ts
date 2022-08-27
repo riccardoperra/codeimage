@@ -5,25 +5,41 @@ import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
+import {getLastPage} from '@core/modules/pagination';
 import {createContextProvider} from '@solid-primitives/context';
-import {createResource, createSignal} from 'solid-js';
+import {createResource, createSignal, createEffect} from 'solid-js';
 import {API} from '../../data-access/api';
-
 function makeDashboardState(authState = getAuth0State()) {
   const [data, {mutate, refetch}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
   });
 
   const [search, setSearch] = createSignal('');
+  const [page, setPage] = createSignal(1);
+  const [lastPage, setLastPage] = createSignal(1);
+  const perPage = 9;
 
   const filteredData = () => {
     const searchValue = search();
     if (!data()) return [];
-    if (!searchValue || searchValue.length < 2) return data();
-    return data().filter(item =>
+    if (!searchValue || searchValue.length < 2)
+      return dataPaginated(data(), page());
+    setPage(1);
+    const dataFiltered = data().filter(item =>
       item.name.toLowerCase().includes(searchValue.toLowerCase()),
     );
+    setLastPage(getLastPage(dataFiltered, perPage));
+    return dataPaginated(dataFiltered, page());
   };
+
+  const dataPaginated = <T>(data: T[], page: number): T[] => {
+    return data.slice(page * perPage, page * perPage + perPage);
+  };
+
+  createEffect(() => {
+    if (!data()) return 1;
+    setLastPage(getLastPage(data(), perPage));
+  });
 
   async function fetchWorkspaceContent(): Promise<
     ApiTypes.GetProjectByIdApi['response'][]
@@ -32,7 +48,6 @@ function makeDashboardState(authState = getAuth0State()) {
     if (!userId) return [];
     return API.project.getWorkspaceContent();
   }
-
   async function createNewProject() {
     const theme = await getThemeStore().getThemeDef('vsCodeDarkTheme')?.load();
 
@@ -133,6 +148,9 @@ function makeDashboardState(authState = getAuth0State()) {
     deleteProject,
     updateSnippetName,
     cloneProject,
+    lastPage,
+    page,
+    setPage,
   };
 }
 

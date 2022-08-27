@@ -1,4 +1,13 @@
-import {ErrorBoundary, For, Index, Show, Suspense, untrack} from 'solid-js';
+import {
+  createEffect,
+  ErrorBoundary,
+  For,
+  Index,
+  Show,
+  Suspense,
+  untrack,
+} from 'solid-js';
+import Pagination from '../../../../components/Pagination/Pagination';
 import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';
 import {ProjectItemSkeleton} from '../ProjectItemSkeleton/ProjectItemSkeleton';
@@ -23,7 +32,7 @@ export function ProjectList() {
     const list = Array.from({length: count || 5});
     return <Index each={list}>{() => <ProjectItemSkeleton />}</Index>;
   };
-
+  createEffect(() => console.log(dashboard.page(), dashboard.lastPage()));
   return (
     <ErrorBoundary
       fallback={(err, reset) => (
@@ -46,6 +55,11 @@ export function ProjectList() {
               {item => <ProjectItem item={item} />}
             </For>
           </ul>
+          <Pagination
+            value={dashboard.page()}
+            onChange={dashboard.setPage}
+            maxValue={dashboard.lastPage()}
+          />
         </Show>
       </Suspense>
     </ErrorBoundary>
