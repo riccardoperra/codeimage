@@ -1,9 +1,18 @@
-export const getnPage = (index: number, max: number): number => {
-  console.log('index', index);
-  if (index === 8 || index === 6) {
-    return 0;
-  }
-  if (index === 9) return max;
-  console.log(index + 1);
-  return index + 1;
+const range = (start: number, end: number) => {
+  const length = end - start + 1;
+  return Array.from({length}, (_, i) => start + i);
+};
+
+export const getNPages = (start: number, max: number) => {
+  const pages = range(start, start + 9);
+  const pagesTo = pages.map((p, i) => {
+    if (i === 3 || i === 5) {
+      return '...';
+    }
+    if (i === 9) {
+      return max;
+    }
+    return p;
+  });
+  return pagesTo;
 };

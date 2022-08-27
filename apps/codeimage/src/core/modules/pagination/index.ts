@@ -1,2 +1,2 @@
-export {getnPage} from './getnPage';
+export {getNPages as getnPage} from './getnPage';
 export {getLastPage} from './getLastPage';
