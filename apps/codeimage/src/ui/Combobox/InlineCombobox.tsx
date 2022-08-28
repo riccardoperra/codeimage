@@ -154,22 +154,6 @@ export class InlineCombobox extends LionCombobox {
     this.dispatchEvent(new CustomEvent('inputTextChange', {detail: {value}}));
   }
 
-  /**
-   * ATTENTION: override overlay to append content into scaffold and inherit styles
-   * @param config
-   * @protected
-   */
-  protected _defineOverlay(
-    config: Parameters<LionCombobox['_defineOverlay']>[0],
-  ): ReturnType<LionCombobox['_defineOverlay']> {
-    const controller = super._defineOverlay(config);
-    const portalHost = document.querySelector('#portal-host');
-    if (portalHost) {
-      portalHost.appendChild(controller.content);
-    }
-    return controller;
-  }
-
   protected update(changedProperties: PropertyValues) {
     if (changedProperties.has('placeholder')) {
       if (this.placeholder) {
