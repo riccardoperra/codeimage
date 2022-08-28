@@ -7,6 +7,7 @@ import {getEditorStore} from '@codeimage/store/editor/index';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
+import {createTrackContext} from '@core/store/trackContext';
 import {createContextProvider} from '@solid-primitives/context';
 import {useNavigate} from '@solidjs/router';
 import {
