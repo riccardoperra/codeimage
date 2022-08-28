@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Button, Text} from '@codeimage/ui';
-import {useAsyncAction} from '@core/hooks/async-action';
+import {createAsyncAction} from '@core/hooks/async-action';
 import {VoidProps} from 'solid-js';
 import {HintIcon} from '../../../components/Icons/Hint';
 import {AppLocaleEntries} from '../../../i18n';
@@ -13,7 +13,7 @@ interface EditorReadOnlyBannerProps {
 export function EditorReadOnlyBanner(
   props: VoidProps<EditorReadOnlyBannerProps>,
 ) {
-  const [cloneAction, {notify: onClone}] = useAsyncAction(() =>
+  const [cloneAction, {notify: onClone}] = createAsyncAction(() =>
     props.onClone(),
   );
 

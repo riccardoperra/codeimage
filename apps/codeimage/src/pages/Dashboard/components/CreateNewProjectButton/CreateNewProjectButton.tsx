@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {Box, Button, Loading} from '@codeimage/ui';
-import {useAsyncAction} from '@core/hooks/async-action';
+import {Box, Button, Loading, toast} from '@codeimage/ui';
+import {createAsyncAction} from '@core/hooks/async-action';
 import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';
 import {PlusIcon} from '../../../../components/Icons/PlusIcon';
@@ -11,16 +11,31 @@ export function CreateNewProjectButton() {
   const navigate = useNavigate();
   const dashboard = getDashboardState()!;
   const [t] = useI18n<AppLocaleEntries>();
-  const [data, {notify}] = useAsyncAction(createNew);
+  const [data, {notify}] = createAsyncAction(createNew);
 
   async function createNew() {
-    const result = await dashboard?.createNewProject();
-    if (!result) return;
-    navigate(`/${result.id}`);
+    try {
+      const result = await dashboard?.createNewProject();
+      if (!result) return;
+      toast.success(t('dashboard.projectCreateSuccess'), {
+        position: 'bottom-center',
+        duration: 100000,
+      });
+      navigate(`/${result.id}`);
+    } catch (e) {
+      toast.error(t('dashboard.errorCreatingProject'));
+    }
   }
 
   return (
-    <Button theme="primary" variant="solid" onClick={() => notify(0)}>
+    <Button
+      theme="primary"
+      variant="solid"
+      onClick={() => {
+        notify();
+        console.log('notify');
+      }}
+    >
       <Show when={data.loading} fallback={<PlusIcon size={'sm'} />}>
         <Loading size={'sm'} />
       </Show>

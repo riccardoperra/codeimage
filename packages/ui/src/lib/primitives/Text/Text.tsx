@@ -25,7 +25,7 @@ export type TextProps<T extends ValidConstructor = 'span'> = {
 export function Text<T extends ValidConstructor = 'span'>(
   props: ParentProps<TextProps<T>>,
 ): JSXElement {
-  const baseTheme = useTheme().text;
+  const baseTheme = useTheme().tokens.text;
   const defaultProps = {weight: baseTheme.weight, size: baseTheme.size};
   const propsWithDefault = mergeProps(defaultProps, props);
 

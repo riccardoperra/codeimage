@@ -2,11 +2,16 @@ import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {uiStore} from '@codeimage/store/ui';
-import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
+import {
+  backgroundColorVar,
+  CodeImageThemeProvider,
+  SnackbarHost,
+} from '@codeimage/ui';
+import {ThemeProviderProps} from '@codeimage/ui/src';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
-import {setElementVars} from '@vanilla-extract/dynamic';
 import {Router, useRoutes} from '@solidjs/router';
+import {setElementVars} from '@vanilla-extract/dynamic';
 import {
   Component,
   createEffect,
@@ -41,7 +46,7 @@ function lazyWithNoLauncher(cp: () => Promise<{default: Component<any>}>) {
   });
 }
 
-const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
+const tokens: ThemeProviderProps['tokens'] = {
   text: {
     weight: 'medium',
   },
@@ -116,7 +121,6 @@ export function Bootstrap() {
       if (scheme) {
         const color = theme === 'dark' ? darkGrayScale.gray1 : '#FFFFFF';
         scheme.setAttribute('content', color);
-        document.body.setAttribute('data-codeimage-theme', theme);
         setElementVars(document.body, {
           [backgroundColorVar]: color,
         });
@@ -126,15 +130,16 @@ export function Bootstrap() {
 
   return (
     <Scaffold>
-      <OverlayProvider>
-        <Router>
-          <CodeImageThemeProvider theme={theme}>
+      <CodeImageThemeProvider tokens={tokens} theme={uiStore.themeMode}>
+        <SnackbarHost />
+        <OverlayProvider>
+          <Router>
             <Suspense>
               <Routes />
             </Suspense>
-          </CodeImageThemeProvider>
-        </Router>
-      </OverlayProvider>
+          </Router>
+        </OverlayProvider>
+      </CodeImageThemeProvider>
       <SidebarPopoverHost />
     </Scaffold>
   );

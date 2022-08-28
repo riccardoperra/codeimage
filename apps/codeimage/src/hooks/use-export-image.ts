@@ -7,7 +7,7 @@ import {
   toSvg,
 } from '@codeimage/dom-export';
 import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
-import {useAsyncAction} from '@core/hooks/async-action';
+import {createAsyncAction} from '@core/hooks/async-action';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {isIOS} from '@solid-primitives/platform';
 import download from 'downloadjs';
@@ -43,11 +43,13 @@ export function useExportImage(): [
   Resource<Blob | string | undefined>,
   (data: ExportImagePayload) => void,
 ] {
-  const [data, {notify}] = useAsyncAction(async (ref: ExportImagePayload) => {
-    // @bad Find another way to prevent flickering
-    await new Promise(r => setTimeout(r, 50));
-    return exportImage(ref);
-  });
+  const [data, {notify}] = createAsyncAction(
+    async (ref: ExportImagePayload) => {
+      // @bad Find another way to prevent flickering
+      await new Promise(r => setTimeout(r, 50));
+      return exportImage(ref);
+    },
+  );
 
   return [data, notify];
 }

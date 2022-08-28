@@ -42,7 +42,7 @@ export function ProjectList() {
           fallback={() => <ProjectEmptyListMessage />}
         >
           <ul class={styles.gridList}>
-            <For each={dashboard.filteredData()}>
+            <For each={dashboard.filteredData().splice(0, 20)}>
               {item => <ProjectItem item={item} />}
             </For>
           </ul>

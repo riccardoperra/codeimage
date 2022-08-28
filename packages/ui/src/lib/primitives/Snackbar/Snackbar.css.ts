@@ -5,10 +5,10 @@ export const snackbar = style({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  backgroundColor: themeVars.dynamicColors.snackbar.backgroundColor,
-  color: themeVars.dynamicColors.snackbar.textColor,
-  borderRadius: themeVars.borderRadius.xl,
-  padding: themeVars.spacing['3'],
+  backgroundColor: `${themeVars.dynamicColors.snackbar.backgroundColor}!important`,
+  color: `${themeVars.dynamicColors.snackbar.textColor}!important`,
+  borderRadius: `${themeVars.borderRadius.xl}!important`,
+  padding: `${themeVars.spacing['3']}!important`,
 });
 
 export const hostWrapper = style({
