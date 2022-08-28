@@ -6,6 +6,7 @@ export const badge = style({
   color: themeVars.backgroundColor.white,
   overflow: 'hidden',
   position: 'relative',
+  cursor: 'pointer',
 });
 
 export const badgePicture = style({
