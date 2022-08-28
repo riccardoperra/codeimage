@@ -143,6 +143,7 @@ export function createEditorsStore() {
 
   return {
     state,
+    setState,
     isActive,
     stateToPersist,
     stateToPersist$,
