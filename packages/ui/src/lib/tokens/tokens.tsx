@@ -2,7 +2,6 @@ import {
   Accessor,
   createContext,
   createEffect,
-  on,
   ParentProps,
   useContext,
 } from 'solid-js';
@@ -37,14 +36,12 @@ export function CodeImageThemeProvider(props: ParentProps<ThemeProviderProps>) {
 
   const theme = () => props.theme ?? 'dark';
 
-  createEffect(
-    on(theme, theme => {
-      document.documentElement.setAttribute(
-        'data-codeimage-theme',
-        theme ?? 'dark',
-      );
-    }),
-  );
+  createEffect(() => {
+    document.documentElement.setAttribute(
+      'data-codeimage-theme',
+      props.theme ?? 'dark',
+    );
+  });
 
   return (
     <ThemeTokensContext.Provider

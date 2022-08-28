@@ -7,6 +7,7 @@ import {
   CodeImageThemeProvider,
   SnackbarHost,
 } from '@codeimage/ui';
+import {ThemeProviderProps} from '@codeimage/ui/src';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';
@@ -45,7 +46,7 @@ function lazyWithNoLauncher(cp: () => Promise<{default: Component<any>}>) {
   });
 }
 
-const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
+const tokens: ThemeProviderProps['tokens'] = {
   text: {
     weight: 'medium',
   },
@@ -129,7 +130,7 @@ export function Bootstrap() {
 
   return (
     <Scaffold>
-      <CodeImageThemeProvider tokens={theme}>
+      <CodeImageThemeProvider tokens={tokens} theme={uiStore.themeMode}>
         <SnackbarHost />
         <OverlayProvider>
           <Router>

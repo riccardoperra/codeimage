@@ -10,6 +10,7 @@ import {
   IconButton,
   MenuButton,
   Text,
+  toast,
 } from '@codeimage/ui';
 import {highlight as _highlight} from '@core/directives/highlight';
 import {formatDistanceToNow} from '@core/helpers/date';
@@ -59,6 +60,38 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
     );
   };
 
+  async function clone() {
+    try {
+      const result = await dashboard.cloneProject(props.item);
+      if (!result) throw new Error('Error');
+      toast.success(
+        t('dashboard.projectCloneSuccess', {name: props.item.name}),
+        {
+          position: 'bottom-center',
+        },
+      );
+      navigate(`/${result.id}`);
+    } catch (e) {
+      toast.error(t('dashboard.errorCreatingProject'));
+    }
+  }
+
+  async function deleteConfirm() {
+    const oldData = dashboard.data.latest ?? [];
+    try {
+      await dashboard?.deleteProject(props.item.id);
+      toast.success(
+        t('dashboard.projectCloneSuccess', {name: props.item.name}),
+        {
+          position: 'bottom-center',
+        },
+      );
+    } catch (e) {
+      toast.error(t('dashboard.errorCreatingProject'));
+      dashboard.mutateData(oldData);
+    }
+  }
+
   return (
     <li class={styles.item}>
       <Link class={styles.itemLink} href={`/${props.item.id}`} />
@@ -85,7 +118,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
                   title: t('dashboard.deleteProject.confirmTitle'),
                   message: t('dashboard.deleteProject.confirmMessage'),
                   onConfirm: () => {
-                    dashboard?.deleteProject(props.item.id);
+                    deleteConfirm();
                     state.close();
                   },
                   actionType: 'danger' as const,
@@ -107,9 +140,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
                 }));
               }
               if (action === 'clone') {
-                dashboard
-                  .cloneProject(props.item)
-                  ?.then(result => navigate(`/${result.id}`));
+                clone();
               }
             }}
           >
