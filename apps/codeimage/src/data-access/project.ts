@@ -37,14 +37,14 @@ export async function getWorkspaceContent(): Promise<
 
 export async function updateSnippet(
   data: ApiTypes.UpdateProjectApi['request'],
-) {
+): Promise<ApiTypes.UpdateProjectApi['response']> {
   return makeFetch(`${BASE_URL}/api/v1/project/:id`, {
     method: 'PUT',
     params: {
       id: data.params?.id,
     },
     body: data.body,
-  });
+  }).then(res => res.json());
 }
 
 export async function createSnippet(
