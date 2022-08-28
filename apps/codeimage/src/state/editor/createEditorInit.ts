@@ -6,7 +6,9 @@ import {getEditorStore} from '@codeimage/store/editor/index';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
+import {createTrackContext} from '@core/store/trackContext';
 import {createContextProvider} from '@solid-primitives/context';
+import {useNavigate} from '@solidjs/router';
 import {
   combineLatest,
   debounceTime,
@@ -17,7 +19,6 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import {useNavigate} from '@solidjs/router';
 import {
   createEffect,
   createResource,
@@ -26,7 +27,7 @@ import {
   onCleanup,
   untrack,
 } from 'solid-js';
-import {unwrap} from 'solid-js/store';
+import {reconcile, unwrap} from 'solid-js/store';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
 
@@ -37,6 +38,7 @@ function createEditorSyncAdapter() {
   const [activeWorkspace, setActiveWorkspace] = createSignal<
     ApiTypes.GetProjectByIdApi['response'] | null
   >();
+  const [tracked, untrackCallback] = createTrackContext();
   const authState = getAuth0State();
   const frameStore = getFrameState();
   const terminalStore = getTerminalState();
@@ -77,7 +79,6 @@ function createEditorSyncAdapter() {
     editorStore.stateToPersist$,
   ]).pipe(
     filter(() => isReadyToSync()),
-    debounceTime(150),
     skip(1),
   );
 
@@ -136,6 +137,8 @@ function createEditorSyncAdapter() {
   function initRemoteDbSync() {
     const subscription = onChange$
       .pipe(
+        filter(tracked),
+        debounceTime(150),
         filter(() => authState.loggedIn()),
         tap(() => setRemoteSync(true)),
         debounceTime(3000),
@@ -157,7 +160,60 @@ function createEditorSyncAdapter() {
           );
         }),
       )
-      .subscribe();
+      .subscribe(updatedSnippet => {
+        untrackCallback(() => {
+          const activeEditorIndex = editorStore.state.editors.findIndex(
+            ({id}) => id === editorStore.state.activeEditorId,
+          );
+
+          frameStore.setStore(state => ({
+            ...state,
+            visible: updatedSnippet.frame.visible,
+            opacity: updatedSnippet.frame.opacity,
+            radius: updatedSnippet.frame.radius ?? state.radius,
+            padding: updatedSnippet.frame.padding,
+            background: updatedSnippet.frame.background ?? state.background,
+          }));
+          editorStore.setState(
+            reconcile(
+              {
+                activeEditorId:
+                  updatedSnippet.editorTabs[activeEditorIndex].id ??
+                  updatedSnippet.editorTabs[0].id,
+                options: {
+                  focused: true,
+                  themeId: updatedSnippet.editorOptions.themeId,
+                  showLineNumbers: updatedSnippet.editorOptions.showLineNumbers,
+                  fontId: updatedSnippet.editorOptions.fontId,
+                  fontWeight: updatedSnippet.editorOptions.fontWeight,
+                },
+                editors: updatedSnippet.editorTabs.map(editor => ({
+                  code: editor.code,
+                  id: editor.id,
+                  tab: {
+                    tabName: editor.tabName,
+                  },
+                  languageId: editor.languageId,
+                })),
+              },
+              {merge: true},
+            ),
+          );
+          terminalStore.setState(state => ({
+            ...state,
+            type: updatedSnippet.terminal.type,
+            opacity: updatedSnippet.terminal.opacity,
+            showWatermark: updatedSnippet.terminal.showWatermark ?? false,
+            showHeader: updatedSnippet.terminal.showHeader,
+            background: updatedSnippet.terminal.background ?? state.background,
+            showGlassReflection: updatedSnippet.terminal.showGlassReflection,
+            alternativeTheme: updatedSnippet.terminal.alternativeTheme,
+            accentVisible: updatedSnippet.terminal.accentVisible,
+            textColor: updatedSnippet.terminal.textColor ?? state.textColor,
+            shadow: updatedSnippet.terminal.shadow,
+          }));
+        });
+      });
 
     return onCleanup(() => {
       const workspace = untrack(activeWorkspace);
