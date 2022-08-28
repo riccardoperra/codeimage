@@ -1,5 +1,5 @@
 import {offset} from '@floating-ui/core';
-import {autoPlacement} from '@floating-ui/dom';
+import {autoPlacement, flip} from '@floating-ui/dom';
 import {createButton} from '@solid-aria/button';
 import {
   AriaMenuProps,
@@ -49,7 +49,7 @@ export function MenuButton<T extends ElementType>(
 
   return createComponent(
     props.as,
-    mergeProps(omitProps(props, ['ref']), buttonProps, {
+    mergeProps(omitProps(props, ['ref', 'as']), buttonProps, {
       ref: (ref: Element) => {
         context.setBtnRef(ref);
         context.floating.setReference(ref);
@@ -65,12 +65,7 @@ export function DropdownMenuV2(props: DropdownMenuProps) {
   const floating = useFloating({
     placement: 'bottom-start',
     strategy: 'fixed',
-    middleware: [
-      offset(10),
-      autoPlacement({
-        allowedPlacements: ['bottom-start'],
-      }),
-    ],
+    middleware: [offset(10), flip()],
   });
 
   return (

@@ -1,12 +1,14 @@
 import clsx from 'clsx';
-import {ParentProps} from 'solid-js';
+import {JSX, ParentProps} from 'solid-js';
+import {omitProps} from 'solid-use';
 import {styled} from '../../utils';
 import * as styles from './Badge.css';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type BadgeProps = styles.BadgeVariants & {
-  theme: string;
-};
+export type BadgeProps = styles.BadgeVariants &
+  JSX.IntrinsicElements['div'] & {
+    theme: string;
+  };
 
 export function Badge(props: ParentProps<BadgeProps>) {
   const classes = () =>
@@ -18,5 +20,11 @@ export function Badge(props: ParentProps<BadgeProps>) {
       props.theme,
     );
 
-  return <styled.div class={classes()}>{props.children}</styled.div>;
+  const otherProps = omitProps(props, ['theme', 'variant', 'size', 'children']);
+
+  return (
+    <styled.div class={classes()} {...otherProps}>
+      {props.children}
+    </styled.div>
+  );
 }
