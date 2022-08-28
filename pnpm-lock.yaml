@@ -493,6 +493,7 @@ importers:
       rollup-preset-solid: ^1.4.0
       solid-headless: ^0.11.1
       solid-js: ^1.5.1
+      solid-toast: ^0.3.4
       solid-use: ^0.5.0
       tiny-glob: ^0.2.9
       typescript: ^4.8.2
@@ -528,6 +529,7 @@ importers:
       clsx: 1.2.1
       csstype: 3.1.0
       solid-headless: 0.11.1_solid-js@1.5.1
+      solid-toast: 0.3.4_solid-js@1.5.1
       solid-use: 0.5.0_solid-js@1.5.1
     devDependencies:
       '@types/node': 18.7.13
@@ -9726,6 +9728,14 @@ packages:
       '@babel/types': 7.18.9
       solid-js: 1.5.1
     dev: true
+
+  /solid-toast/0.3.4_solid-js@1.5.1:
+    resolution: {integrity: sha512-f4eXJPTlcPPNYW8hgN6NslvA8tqGF07TLX2smX0lDbVbsY7vrbwFIM2rUNbhPpFz5gzVOit0iDfFSYpXUZfJeg==}
+    peerDependencies:
+      solid-js: ^1.4.2
+    dependencies:
+      solid-js: 1.5.1
+    dev: false
 
   /solid-use/0.4.3_solid-js@1.5.1:
     resolution: {integrity: sha512-ap+PoOTIc6nOa3KbSpCX35kOs08PJZ7EPhjXMpyhJmQXa78fETaBTU0R4Ki+UDkbWGMNCEPXfD7GnsS25mYGJw==}

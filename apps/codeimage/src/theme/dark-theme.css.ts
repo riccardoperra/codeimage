@@ -89,7 +89,7 @@ createGlobalTheme('[data-codeimage-theme="dark"]', themeColors, {
   },
 
   snackbar: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: darkGrayScale.gray5,
     textColor: themeVars.backgroundColor.white,
   },
 

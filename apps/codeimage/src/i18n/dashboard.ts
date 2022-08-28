@@ -3,6 +3,11 @@ export const dashboard = {
     dashboard: {
       myProjects: 'I miei progetti',
       new: 'Nuovo',
+      errorCreatingProject: 'Si è verificato un errore!',
+      projectCreateSuccess: 'Progetto creato con successo',
+      projectCloneSuccess: 'Progetto {{name}} clonato con successo',
+      projectDeleteSuccess: 'Il progetto {{name}} è stato eliminato',
+      projectDeleteError: 'Impossibile eliminare il progetto {{name}}',
       deleteProject: {
         dropdownLabel: 'Rimuovi',
         confirmTitle: 'Rimuovi progetto',
@@ -39,6 +44,11 @@ export const dashboard = {
     dashboard: {
       myProjects: 'My projects',
       new: 'New',
+      errorCreatingProject: 'An error occurred!',
+      projectCreateSuccess: 'Project created successfully',
+      projectCloneSuccess: 'Project {{name}} cloned successfully',
+      projectDeleteSuccess: 'Project {{name}} has been deleted',
+      projectDeleteError: 'Cannot delete project {{name}}',
       empty: {
         title: 'No projects yet',
         description:
@@ -74,6 +84,10 @@ export const dashboard = {
     dashboard: {
       myProjects: 'My projects',
       new: 'New',
+      errorCreatingProject: 'An error occurred!',
+      projectCloneSuccess: 'Project {{name}} cloned successfully',
+      projectDeleteSuccess: 'Project {{name}} has been deleted',
+      projectDeleteError: 'Cannot delete project {{name}}',
       created: 'Created',
       updated: 'Updated',
       empty: {
@@ -111,6 +125,10 @@ export const dashboard = {
       new: 'New',
       created: 'Created',
       updated: 'Updated',
+      errorCreatingProject: 'An error occurred!',
+      projectCloneSuccess: 'Project {{name}} cloned successfully',
+      projectDeleteSuccess: 'Project {{name}} has been deleted',
+      projectDeleteError: 'Cannot delete project {{name}}',
       empty: {
         title: 'No projects yet',
         description:
