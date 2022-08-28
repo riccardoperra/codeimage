@@ -45,18 +45,19 @@ export function vanillaExtractPlugin({
     throw new Error('Invalid esbuild options');
   }
   if (!esbuildOptions.external) {
-    esbuildOptions.external = ['solid-js/web', 'solid-js/store'];
+    esbuildOptions.external = ['solid-js/web'];
   }
 
   let virtualExt: string;
   let packageName: string;
 
   // Fixes virtual file while importing from other packages in pnpm monorepo
+  // Path should be normalized to be able to use HMR
   const getAbsoluteVirtualFileId = (source: string) =>
     source.startsWith('..')
       ? normalizePath(path.join(config.root, source))
       : source.startsWith('/@id/')
-      ? source.substring(5)
+      ? normalizePath(path.join(config.root, source.substring(5)))
       : source;
 
   return {
@@ -113,15 +114,13 @@ export function vanillaExtractPlugin({
     load(id) {
       const [validId] = id.split('?');
 
+      console.log(validId, cssMap.has(validId));
+
       if (!cssMap.has(validId)) {
         return;
       }
 
       const css = cssMap.get(validId);
-
-      if (typeof css !== 'string') {
-        return;
-      }
 
       if (!server || server.config.isProduction) {
         return css;
@@ -130,12 +129,13 @@ export function vanillaExtractPlugin({
       return outdent`
         import { injectStyles } from '@vanilla-extract/css/injectStyles';
         const inject = (css) => injectStyles({
-          fileScope: ${JSON.stringify({filePath: validId})},
+          fileScope: ${JSON.stringify({filePath: id})},
           css
         });
         inject(${JSON.stringify(css)});
         if (import.meta.hot) {
-          import.meta.hot.on('${styleUpdateEvent(validId)}', (css) => {
+          import.meta.hot.on('${styleUpdateEvent(id)}', (css) => {
+            console.log('INJECT NOW');
             inject(css);
           });
         }
