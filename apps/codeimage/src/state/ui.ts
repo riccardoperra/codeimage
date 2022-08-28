@@ -16,6 +16,10 @@ export const [uiStore, setUiStore] = createPluggableStore(
   withLocalStorage({name: '@store/ui'}),
 );
 
+export function getInvertedThemeMode() {
+  return uiStore.themeMode === 'light' ? 'dark' : 'light';
+}
+
 export function setLocale(locale: string): void {
   setUiStore('locale', () => locale);
 }

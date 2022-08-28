@@ -1,7 +1,6 @@
 import {elements} from '@solid-primitives/refs';
 import clsx from 'clsx';
-import {Button as ShButton} from 'solid-headless';
-import {ButtonProps as ShButtonProps} from 'solid-headless/dist/types/components/Button';
+import {Button as ShButton, ButtonProps as ShButtonProps} from 'solid-headless';
 import {ValidConstructor} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {children, JSXElement, ParentProps, Show} from 'solid-js';
 import {omitProps} from 'solid-use';

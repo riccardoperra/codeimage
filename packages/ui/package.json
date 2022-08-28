@@ -73,6 +73,7 @@
     "clsx": "^1.2.1",
     "csstype": "^3.1.0",
     "solid-headless": "^0.11.1",
+    "solid-toast": "^0.3.4",
     "solid-use": "^0.5.0"
   },
   "devDependencies": {

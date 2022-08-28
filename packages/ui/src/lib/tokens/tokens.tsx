@@ -1,4 +1,11 @@
-import {createContext, PropsWithChildren, useContext} from 'solid-js';
+import {
+  Accessor,
+  createContext,
+  createEffect,
+  on,
+  ParentProps,
+  useContext,
+} from 'solid-js';
 import * as styles from '../primitives/Text/Text.css';
 
 export interface TextThemeTokens {
@@ -10,24 +17,48 @@ interface BaseThemeTokens {
   text: TextThemeTokens;
 }
 
-const ThemeTokensContext = createContext<BaseThemeTokens>();
+interface ThemeContext {
+  tokens: BaseThemeTokens;
+  theme: Accessor<string>;
+}
 
-export function CodeImageThemeProvider(
-  props: PropsWithChildren<{theme: Partial<BaseThemeTokens>}>,
-) {
-  const componentsTheme: BaseThemeTokens = {
+const ThemeTokensContext = createContext<ThemeContext>();
+
+export interface ThemeProviderProps {
+  tokens: Partial<BaseThemeTokens>;
+  theme?: string;
+}
+
+export function CodeImageThemeProvider(props: ParentProps<ThemeProviderProps>) {
+  const tokens: BaseThemeTokens = {
     // eslint-disable-next-line solid/reactivity
-    text: props.theme.text ?? {},
+    text: props.tokens.text ?? {},
   };
 
+  const theme = () => props.theme ?? 'dark';
+
+  createEffect(
+    on(theme, theme => {
+      document.documentElement.setAttribute(
+        'data-codeimage-theme',
+        theme ?? 'dark',
+      );
+    }),
+  );
+
   return (
-    <ThemeTokensContext.Provider value={componentsTheme}>
+    <ThemeTokensContext.Provider
+      value={{
+        theme,
+        tokens,
+      }}
+    >
       {props.children}
     </ThemeTokensContext.Provider>
   );
 }
 
-export function useTheme(): BaseThemeTokens {
+export function useTheme(): ThemeContext {
   const context = useContext(ThemeTokensContext);
   if (!context) {
     throw new Error('CodeImage theme provider is not registered');

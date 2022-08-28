@@ -1,9 +1,8 @@
 import {useI18n} from '@codeimage/locale';
-import {Box, HStack, useSnackbarStore} from '@codeimage/ui';
-import {InvertedThemeWrapper} from '@ui/InvertedThemeWrapper/InvertedThemeWrapper';
+import {getInvertedThemeMode} from '@codeimage/store/ui';
+import {toast} from '@codeimage/ui';
 import {
   catchError,
-  delay,
   EMPTY,
   exhaustMap,
   from,
@@ -12,7 +11,6 @@ import {
   tap,
 } from 'rxjs';
 import {createRoot, getOwner, runWithOwner} from 'solid-js';
-import {CheckCircle} from '../../components/Icons/CheckCircle';
 import {
   ExportExtension,
   exportImage,
@@ -57,10 +55,9 @@ createRoot(() => {
                 ),
               ]),
             ).pipe(
-              catchError(() => EMPTY),
               tap(() => runWithOwner(owner, openSnackbar)),
+              catchError(() => EMPTY),
               tap(() => umami.trackEvent('true', `copy-to-clipboard`)),
-              delay(1000),
             );
           }),
         );
@@ -70,21 +67,14 @@ createRoot(() => {
 });
 
 function openSnackbar(): void {
-  const snackbarStore = useSnackbarStore();
-  const snackbar = snackbarStore.create({
-    closeable: true,
-    wrapper: InvertedThemeWrapper,
-    message: () => {
+  toast.success(
+    () => {
       const [t] = useI18n<AppLocaleEntries>();
-      return (
-        <HStack alignItems={'center'} spacing={'2'}>
-          <Box color={'primary'} display={'flex'} alignItems={'center'}>
-            <CheckCircle />
-          </Box>
-          {t('canvas.copiedToClipboard')}
-        </HStack>
-      );
+      return t('canvas.copiedToClipboard');
     },
-  });
-  setTimeout(() => snackbarStore.remove(snackbar), 2500);
+    {
+      position: 'bottom-center',
+      theme: getInvertedThemeMode(),
+    },
+  );
 }

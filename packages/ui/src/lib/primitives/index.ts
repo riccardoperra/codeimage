@@ -55,13 +55,7 @@ export {SvgIcon, type SvgIconProps, RemoteSvgIcon} from './Icon';
 
 export {PortalHost, PortalHostContext} from './PortalHost';
 
-export {
-  useSnackbar,
-  useSnackbarStore,
-  SnackBar,
-  SnackbarHost,
-  type SnackbarData,
-} from './Snackbar';
+export {SnackBar, SnackbarHost, toast, type SnackbarData} from './Snackbar';
 
 export {
   Loading,
