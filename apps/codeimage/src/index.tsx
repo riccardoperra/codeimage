@@ -5,7 +5,7 @@ import {uiStore} from '@codeimage/store/ui';
 import {
   backgroundColorVar,
   CodeImageThemeProvider,
-  SnackbarHostV2,
+  SnackbarHost,
 } from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
@@ -130,7 +130,7 @@ export function Bootstrap() {
   return (
     <Scaffold>
       <CodeImageThemeProvider tokens={theme}>
-        <SnackbarHostV2 />
+        <SnackbarHost />
         <OverlayProvider>
           <Router>
             <Suspense>
