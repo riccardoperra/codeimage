@@ -3,11 +3,7 @@ import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 export function PlusIcon(props: SvgIconProps) {
   return (
     <SvgIcon viewBox="0 0 20 20" fill="currentColor" {...props}>
-      <path
-        fill-rule="evenodd"
-        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-        clip-rule="evenodd"
-      />
+      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
     </SvgIcon>
   );
 }
