@@ -49,14 +49,14 @@
     "@codemirror/state": "^6.1.1",
     "@codemirror/view": "^6.2.1",
     "material-icon-theme": "^4.20.0",
-    "solid-js": "^1.5.1"
+    "solid-js": "^1.5.2"
   },
   "peerDependencies": {
     "@codeimage/highlight": "workspace:*",
     "@codemirror/language": "^6.2.1",
     "@codemirror/state": "^6.1.1",
     "@codemirror/view": "^6.2.1",
-    "solid-js": "^1.5.1"
+    "solid-js": "^1.5.2"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
