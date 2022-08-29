@@ -7,8 +7,6 @@ import {
   createStandaloneDialog,
   DropdownMenuV2,
   HStack,
-  IconButton,
-  MenuButton,
   Text,
 } from '@codeimage/ui';
 import {highlight as _highlight} from '@core/directives/highlight';
@@ -69,7 +67,12 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
 
         <div>
           <DropdownMenuV2
-            menuButton={<DotHorizontalIcon size={'sm'} />}
+            menuButton={
+              // Performance
+              // <MenuButton as={Button} variant={'secondary'}>
+              <DotHorizontalIcon size={'sm'} />
+              // </MenuButton>
+            }
             onAction={(action: string | number) => {
               if (action === 'delete') {
                 createDialog(ConfirmDialog, state => ({

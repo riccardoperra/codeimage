@@ -1,5 +1,5 @@
 import {Range} from '@solid-primitives/range';
-import {debounceTime, fromEvent, startWith} from 'rxjs';
+import {debounceTime, fromEvent, startWith, throttleTime} from 'rxjs';
 import {
   Accessor,
   createContext,
@@ -7,12 +7,11 @@ import {
   FlowProps,
   JSX,
   JSXElement,
+  onCleanup,
   onMount,
-  Suspense,
   useContext,
 } from 'solid-js';
 import {createStore} from 'solid-js/store';
-import MyWorker from './worker?worker';
 
 interface VirtualizeItemProps {
   fallback: JSX.Element;
@@ -46,37 +45,59 @@ export function VirtualizeContext(props: FlowProps<VirtualizeContextProps>) {
   });
 
   onMount(() => {
-    const array = new Array(props.itemCount)
-      .fill(undefined)
-      .map((_, index) => index);
+    const array = Array.from({length: props.itemCount}, (_, i) => i);
     const groupedArray = groupArrayByN(array, props.gridCount);
-    const worker = new MyWorker();
 
-    fromEvent(worker, 'message').subscribe(evt => {
-      const {start, end} = (evt as MessageEvent).data;
+    const $ = fromEvent(props.scrollElement, 'scroll')
+      .pipe(startWith(0))
+      .subscribe(() =>
+        render(
+          props.height,
+          props.scrollElement.scrollTop - props.height,
+          props.scrollElement.scrollTop +
+            props.scrollElement.offsetHeight +
+            props.height,
+        ),
+      );
+
+    onCleanup(() => $.unsubscribe());
+
+    function render(height: number, scrollTop: number, scrollBottom: number) {
+      let start: number | undefined;
+      let end: number | undefined;
+
+      function calculateVisibility(index: number, height: number) {
+        const top = index * height;
+        const bottom = top + height;
+        return top <= scrollTop
+          ? scrollTop - top <= height
+          : bottom - scrollBottom <= height;
+      }
+
+      outerLoop: for (let i = 0; i < groupedArray.length; i++) {
+        const el = groupedArray[i];
+        for (let y = 0; y < el.length; y++) {
+          if (start !== undefined && end !== undefined) {
+            break outerLoop;
+          }
+          const visible = calculateVisibility(i, height);
+          if (start === undefined && visible) {
+            start = el[y];
+            continue;
+          }
+          if (start !== undefined && !visible) {
+            end = el[y];
+            break outerLoop;
+          }
+        }
+      }
       if (visibilityRange.start !== start || visibilityRange.end !== end) {
         setVisibilityRange({
           start: start ?? 0,
           end: end ?? props.itemCount,
         });
       }
-    });
-
-    const notifyWorker = () => {
-      worker.postMessage({
-        groupedArray: groupedArray,
-        height: props.height,
-        scrollTop: props.scrollElement.scrollTop - props.height,
-        scrollBottom:
-          props.scrollElement.scrollTop +
-          props.scrollElement.offsetHeight +
-          props.height,
-      });
-    };
-
-    fromEvent(props.scrollElement, 'scroll')
-      .pipe(startWith(0), debounceTime(0))
-      .subscribe(() => notifyWorker());
+    }
   });
 
   const register = (): Accessor<boolean> => {
@@ -117,9 +138,7 @@ export function VirtualizeContext(props: FlowProps<VirtualizeContextProps>) {
 export function VirtualizeItem(
   props: FlowProps<VirtualizeItemProps, (index: number) => JSXElement>,
 ) {
-  return (
-    <Suspense fallback={props.fallback}>{props.children(props.key)}</Suspense>
-  );
+  return props.children(props.key);
 }
 
 export function VirtualizeList(props: {
@@ -131,11 +150,13 @@ export function VirtualizeList(props: {
   return (
     <Range start={visibilityRange.start} to={visibilityRange.end}>
       {index => {
-        return (
-          <VirtualizeItem key={index} fallback={props.itemFallback}>
-            {props.children}
-          </VirtualizeItem>
-        );
+        return createMemo(() => {
+          return (
+            <VirtualizeItem key={index} fallback={props.itemFallback}>
+              {props.children}
+            </VirtualizeItem>
+          );
+        });
       }}
     </Range>
   );
