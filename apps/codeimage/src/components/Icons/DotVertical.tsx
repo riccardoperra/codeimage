@@ -1,17 +1,13 @@
 import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 
-export function DotVerticalIcon(props: SvgIconProps) {
-  return (
-    <SvgIcon viewBox="0 0 20 20" fill="currentColor" {...props}>
-      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-    </SvgIcon>
-  );
-}
-
 export function DotHorizontalIcon(props: SvgIconProps) {
   return (
-    <SvgIcon viewBox="0 0 20 20" fill="currentColor" {...props}>
-      <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+    <SvgIcon viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path
+        fill-rule="evenodd"
+        d="M4.5 12a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm6 0a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm6 0a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
+        clip-rule="evenodd"
+      />
     </SvgIcon>
   );
 }
@@ -26,7 +22,7 @@ export function MenuAlt2Icon(props: SvgIconProps) {
     >
       <path
         fill-rule="evenodd"
-        d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+        d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10zm0 5.25a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z"
         clip-rule="evenodd"
       />
     </SvgIcon>

@@ -118,12 +118,10 @@ export function KeyboardShortcuts(): JSXElement {
           type={'button'}
           variant={'solid'}
           size={'xs'}
+          leftIcon={<HintIcon size={'sm'} />}
           onClick={() => setShow(true)}
         >
-          <HStack spacing={'2'}>
-            <HintIcon />
-            {label()}
-          </HStack>
+          {label()}
         </PopoverButton>
 
         <FadeInOutTransition show={show()}>
