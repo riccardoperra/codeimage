@@ -5,6 +5,7 @@ import {uiStore} from '@codeimage/store/ui';
 import {
   backgroundColorVar,
   CodeImageThemeProvider,
+  LoadingOverlay,
   SnackbarHost,
 } from '@codeimage/ui';
 import {ThemeProviderProps} from '@codeimage/ui/src';
@@ -15,6 +16,7 @@ import {setElementVars} from '@vanilla-extract/dynamic';
 import {
   Component,
   createEffect,
+  JSXElement,
   lazy,
   on,
   onMount,
@@ -26,6 +28,7 @@ import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
+import {EditorPageSkeleton} from './pages/Editor/components/EditorSkeleton';
 import {darkGrayScale} from './theme/dark-theme.css';
 import './theme/dark-theme.css';
 import './theme/global.css';
@@ -56,7 +59,14 @@ const Dashboard = lazyWithNoLauncher(
   () => import('./pages/Dashboard/Dashboard'),
 );
 
-const Editor = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
+const Editor = () => {
+  const Page = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
+  return (
+    <Suspense fallback={<EditorPageSkeleton />}>
+      <Page />
+    </Suspense>
+  );
+};
 
 const NotFoundPage = lazyWithNoLauncher(
   () => import('./pages/NotFound/NotFoundPage'),

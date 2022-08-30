@@ -3,17 +3,10 @@ import {
   getEditorSyncAdapter,
 } from '@codeimage/store/editor/createEditorInit';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {LoadingOverlay} from '@codeimage/ui';
 import {useParams} from '@solidjs/router';
-import {createEffect, lazy, on, onMount, Show} from 'solid-js';
+import {createEffect, lazy, on, onMount} from 'solid-js';
 
-const App = lazy(() => {
-  getThemeStore().loadThemes();
-  return import('./App').then(component => {
-    document.querySelector('#launcher')?.remove();
-    return component;
-  });
-});
+const App = lazy(() => import('./App'));
 
 export default function Editor() {
   return (
@@ -29,6 +22,8 @@ export default function Editor() {
 
         onMount(() => initRemoteDbSync());
 
+        getThemeStore().loadThemes();
+
         createEffect(
           on(
             () => params.snippetId,
@@ -36,14 +31,7 @@ export default function Editor() {
           ),
         );
 
-        return (
-          <Show
-            when={!loadedSnippet.loading}
-            fallback={<LoadingOverlay overlay={true} size={'3x'} />}
-          >
-            <App />;
-          </Show>
-        );
+        return <App loading={loadedSnippet.loading} />;
       })()}
     </EditorSyncProvider>
   );

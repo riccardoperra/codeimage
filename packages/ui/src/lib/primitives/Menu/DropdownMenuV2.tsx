@@ -1,5 +1,5 @@
 import {offset} from '@floating-ui/core';
-import {autoPlacement, flip} from '@floating-ui/dom';
+import {flip} from '@floating-ui/dom';
 import {createButton} from '@solid-aria/button';
 import {
   AriaMenuProps,

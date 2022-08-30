@@ -1,8 +1,8 @@
 import {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
 import {Box, FlexField, TextField} from '@codeimage/ui';
@@ -15,12 +15,12 @@ import {
   lazy,
   ParentComponent,
   Show,
-  Suspense,
   SuspenseList,
 } from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import {CheckCircle} from '../Icons/CheckCircle';
 import {EmptyCircle} from '../Icons/EmptyCircle';
+import {SuspenseEditorItem} from '../PropertyEditor/SuspenseEditorItemt';
 import {TerminalHost} from '../Terminal/TerminalHost';
 import {ThemeBox} from './ThemeBox';
 import {ThemeBoxSkeleton} from './ThemeBoxSkeleton';
@@ -77,7 +77,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
         <For each={themeArray()}>
           {theme => {
             return (
-              <Suspense fallback={<ThemeBoxSkeleton />}>
+              <SuspenseEditorItem fallback={<ThemeBoxSkeleton />}>
                 <Show when={theme()} keyed={true}>
                   {theme => (
                     <Show when={isMatched(theme.id)}>
@@ -106,8 +106,8 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                           >
                             <CustomEditorPreview
                               themeId={theme.id}
-                              languageId={/*@once*/ 'typescript'}
-                              code={/*@once*/ exampleCode}
+                              languageId={'typescript'}
+                              code={exampleCode}
                             />
                           </TerminalHost>
                         </ThemeBox>
@@ -135,7 +135,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                     </Show>
                   )}
                 </Show>
-              </Suspense>
+              </SuspenseEditorItem>
             );
           }}
         </For>
