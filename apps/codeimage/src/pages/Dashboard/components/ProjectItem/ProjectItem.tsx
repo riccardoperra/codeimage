@@ -109,7 +109,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
                 theme={'secondary'}
                 size={'xs'}
               >
-                <DotHorizontalIcon size={'sm'} />
+                <DotHorizontalIcon />
               </MenuButton>
             }
             onAction={(action: string | number) => {
