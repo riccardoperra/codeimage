@@ -3,7 +3,6 @@ import {createFrameState} from '@codeimage/store/editor/frame';
 import {createTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {createEffect, createRoot, createSignal, on} from 'solid-js';
-import {useIdb} from '../../hooks/use-indexed-db';
 
 export function createEditorStore() {
   const terminal = createTerminalState();
@@ -11,7 +10,6 @@ export function createEditorStore() {
   const registry = getThemeStore();
   const frame = createFrameState();
   const editor = createEditorsStore();
-  const idb = useIdb();
 
   const [resource] = registry.getThemeResource('vsCodeDarkTheme');
 
