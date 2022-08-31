@@ -28,14 +28,7 @@ export function CreateNewProjectButton() {
   }
 
   return (
-    <Button
-      theme="primary"
-      variant="solid"
-      onClick={() => {
-        notify();
-        console.log('notify');
-      }}
-    >
+    <Button theme="primary" variant="solid" onClick={() => notify()}>
       <Show when={data.loading} fallback={<PlusIcon size={'sm'} />}>
         <Loading size={'sm'} />
       </Show>
