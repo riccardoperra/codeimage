@@ -24,7 +24,7 @@ export function SkeletonLine(props: VoidProps<SkeletonLineProps>) {
 
 export function SkeletonVCenter(props: ParentProps) {
   return (
-    <Box height={'100%'} display={'flex'} alignItems={'center'} flexGrow={'1'}>
+    <Box height={'100%'} display={'flex'} alignItems={'center'} flexGrow={1}>
       {props.children}
     </Box>
   );
