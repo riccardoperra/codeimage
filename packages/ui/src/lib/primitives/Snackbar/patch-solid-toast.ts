@@ -9,13 +9,13 @@ interface AugmentedOptions extends ToastOptions {
 
 export type AugmentedToastHandler = (
   message: Message,
-  options: AugmentedOptions,
+  options?: AugmentedOptions,
 ) => string;
 
 export function createPatch(_toast: typeof toast, key: keyof typeof toast) {
   const old = _toast[key] as ToastHandler;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (toast as any)[key] = (message: Message, options: AugmentedOptions) => {
+  (toast as any)[key] = (message: Message, options?: AugmentedOptions) => {
     if (options?.theme) {
       const theme = options.theme;
       const id = createUniqueId();
