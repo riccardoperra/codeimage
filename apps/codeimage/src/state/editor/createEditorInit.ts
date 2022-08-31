@@ -1,4 +1,3 @@
-// @solid-refresh
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -6,6 +5,7 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
 import {createTrackContext} from '@core/store/trackContext';
 import {createContextProvider} from '@solid-primitives/context';
@@ -22,20 +22,25 @@ import {
 } from 'rxjs';
 import {
   createEffect,
+  createMemo,
   createResource,
   createSignal,
   on,
   onCleanup,
+  onMount,
+  Resource,
   untrack,
 } from 'solid-js';
 import {reconcile, unwrap} from 'solid-js/store';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
 
-function createEditorSyncAdapter() {
+type ProjectResponse = Awaited<ReturnType<typeof API.project.loadSnippet>>;
+
+function createEditorSyncAdapter(props: {snippetId: string}) {
+  const snippetId = createMemo(() => props.snippetId);
   const [remoteSync, setRemoteSync] = createSignal(false);
   const [readOnly, setReadonly] = createSignal(false);
-  const [snippetId, setSnippetId] = createSignal<string | null>(null);
   const [activeWorkspace, setActiveWorkspace] = createSignal<
     ApiTypes.GetProjectByIdApi['response'] | null
   >();
@@ -68,6 +73,21 @@ function createEditorSyncAdapter() {
     },
   );
 
+  createEffect(() => {
+    if (!snippetId()) {
+      idb
+        .get<ProjectEditorPersistedState>('document')
+        .then(idbState => {
+          if (idbState) {
+            editorStore.actions.setFromPersistedState(idbState.editor);
+            frameStore.setFromPersistedState(idbState.frame);
+            terminalStore.setFromPersistedState(idbState.terminal);
+          }
+        })
+        .catch(() => null);
+    }
+  });
+
   const isReadyToSync = () => {
     const loading = loadedSnippet.loading,
       initialized = store.initialized();
@@ -92,18 +112,16 @@ function createEditorSyncAdapter() {
   createEffect(
     on(store.initialized, ready => {
       if (ready) {
-        const subscription = onChange$
-          .pipe(debounceTime(1000))
-          .subscribe(() => {
-            const state: ProjectEditorPersistedState = unwrap({
-              $snippetId: untrack(snippetId) ?? null,
-              $version: appEnvironment.version,
-              frame: frameStore.stateToPersist(),
-              terminal: terminalStore.stateToPersist(),
-              editor: editorStore.stateToPersist(),
-            });
-            idb.set('document', state);
+        const subscription = onChange$.pipe(debounceTime(250)).subscribe(() => {
+          const state: ProjectEditorPersistedState = unwrap({
+            $snippetId: untrack(snippetId) ?? null,
+            $version: appEnvironment.version,
+            frame: frameStore.stateToPersist(),
+            terminal: terminalStore.stateToPersist(),
+            editor: editorStore.stateToPersist(),
           });
+          idb.set('document', state);
+        });
         return onCleanup(() => subscription.unsubscribe());
       }
     }),
@@ -219,8 +237,7 @@ function createEditorSyncAdapter() {
     return onCleanup(() => {
       const workspace = untrack(activeWorkspace);
       if (!workspace) return;
-
-      if (activeWorkspace()) {
+      if (activeWorkspace() && remoteSync()) {
         const snippet = API.project
           .updateSnippet({
             body: {
@@ -234,17 +251,19 @@ function createEditorSyncAdapter() {
           .then();
         if (!snippet) return;
       }
-
       subscription.unsubscribe();
     });
   }
 
+  onMount(() => {
+    initRemoteDbSync();
+  });
+
   return {
     indexedDbState: () => idb.get<ProjectEditorPersistedState>('document'),
-    loadedSnippet,
+    loadedSnippet: loadedSnippet as Resource<ProjectResponse>,
     readOnly,
     clone,
-    setSnippetId,
     activeWorkspace,
     setActiveWorkspace,
     remoteSync,

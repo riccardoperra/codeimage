@@ -6,10 +6,12 @@ export function SuspenseEditorItem(
 ) {
   const {loadedSnippet} = getEditorSyncAdapter()!;
 
+  const render = () => {
+    loadedSnippet();
+    return true;
+  };
+
   return (
-    <Suspense fallback={props.fallback}>
-      {loadedSnippet.error && loadedSnippet() && false}
-      {props.children}
-    </Suspense>
+    <Suspense fallback={props.fallback}>{render() && props.children}</Suspense>
   );
 }

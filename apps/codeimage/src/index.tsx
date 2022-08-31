@@ -1,11 +1,11 @@
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {uiStore} from '@codeimage/store/ui';
 import {
   backgroundColorVar,
   CodeImageThemeProvider,
-  LoadingOverlay,
   SnackbarHost,
 } from '@codeimage/ui';
 import {ThemeProviderProps} from '@codeimage/ui/src';
@@ -16,7 +16,6 @@ import {setElementVars} from '@vanilla-extract/dynamic';
 import {
   Component,
   createEffect,
-  JSXElement,
   lazy,
   on,
   onMount,
@@ -61,6 +60,7 @@ const Dashboard = lazyWithNoLauncher(
 
 const Editor = () => {
   const Page = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
+  getThemeStore().loadThemes();
   return (
     <Suspense fallback={<EditorPageSkeleton />}>
       <Page />
