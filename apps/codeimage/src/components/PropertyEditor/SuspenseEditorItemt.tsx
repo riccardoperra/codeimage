@@ -8,10 +8,8 @@ export function SuspenseEditorItem(
 
   return (
     <Suspense fallback={props.fallback}>
-      <>
-        {loadedSnippet() && false}
-        {props.children}
-      </>
+      {loadedSnippet.error && loadedSnippet() && false}
+      {props.children}
     </Suspense>
   );
 }

@@ -15,14 +15,14 @@ export default function Editor() {
         const params = useParams();
         // prettier-ignore
         const {
-          loadedSnippet,
           setSnippetId,
           initRemoteDbSync
         } = getEditorSyncAdapter()!;
 
-        onMount(() => initRemoteDbSync());
-
-        getThemeStore().loadThemes();
+        onMount(() => {
+          getThemeStore().loadThemes();
+          initRemoteDbSync();
+        });
 
         createEffect(
           on(
@@ -31,7 +31,7 @@ export default function Editor() {
           ),
         );
 
-        return <App loading={loadedSnippet.loading} />;
+        return <App />;
       })()}
     </EditorSyncProvider>
   );

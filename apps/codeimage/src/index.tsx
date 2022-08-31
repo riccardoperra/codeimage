@@ -84,7 +84,7 @@ export function Bootstrap() {
       component: () => {
         const state = getAuth0State();
         return (
-          <Show fallback={() => <Editor />} when={state.loggedIn()}>
+          <Show fallback={<Editor />} when={state.loggedIn()}>
             <Dashboard />
           </Show>
         );
