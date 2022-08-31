@@ -1,6 +1,7 @@
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {uiStore} from '@codeimage/store/ui';
 import {
   backgroundColorVar,
@@ -26,6 +27,7 @@ import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
+import {EditorPageSkeleton} from './pages/Editor/components/EditorSkeleton';
 import {darkGrayScale} from './theme/dark-theme.css';
 import './theme/dark-theme.css';
 import './theme/global.css';
@@ -56,7 +58,15 @@ const Dashboard = lazyWithNoLauncher(
   () => import('./pages/Dashboard/Dashboard'),
 );
 
-const Editor = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
+const Editor = () => {
+  const Page = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
+  getThemeStore().loadThemes();
+  return (
+    <Suspense fallback={<EditorPageSkeleton />}>
+      <Page />
+    </Suspense>
+  );
+};
 
 const NotFoundPage = lazyWithNoLauncher(
   () => import('./pages/NotFound/NotFoundPage'),
@@ -74,7 +84,7 @@ export function Bootstrap() {
       component: () => {
         const state = getAuth0State();
         return (
-          <Show fallback={() => <Editor />} when={state.loggedIn()}>
+          <Show fallback={<Editor />} when={state.loggedIn()}>
             <Dashboard />
           </Show>
         );

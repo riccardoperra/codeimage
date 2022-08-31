@@ -1,4 +1,4 @@
-/*!
+/**
  * Original code by SEEK
  * MIT Licensed, Copyright(c) 2021 SEEK, see LICENSE.remix.md for details
  *
@@ -114,8 +114,6 @@ export function vanillaExtractPlugin({
     load(id) {
       const [validId] = id.split('?');
 
-      console.log(validId, cssMap.has(validId));
-
       if (!cssMap.has(validId)) {
         return;
       }
@@ -135,7 +133,6 @@ export function vanillaExtractPlugin({
         inject(${JSON.stringify(css)});
         if (import.meta.hot) {
           import.meta.hot.on('${styleUpdateEvent(id)}', (css) => {
-            console.log('INJECT NOW');
             inject(css);
           });
         }

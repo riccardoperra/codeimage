@@ -1,13 +1,12 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import * as ui from '@codeimage/store/ui';
 import {
   Button,
   FadeInOutTransition,
-  HStack,
   PopoverPanel,
   PortalHostContext,
   useFloating,

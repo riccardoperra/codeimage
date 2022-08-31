@@ -9,10 +9,13 @@ import {
   TextField,
 } from '@codeimage/ui';
 import clickOutside from '@core/directives/clickOutside';
+import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createEffect, createSignal, on, onMount, Show, untrack} from 'solid-js';
 import {API} from '../../data-access/api';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {PencilAlt} from '../Icons/Pencil';
+import {SuspenseEditorItem} from '../PropertyEditor/SuspenseEditorItemt';
+import * as styles from './Toolbar.css';
 
 void clickOutside;
 
@@ -48,70 +51,74 @@ export function ToolbarSnippetName() {
   }
 
   return (
-    <Box display={'flex'} alignItems={'center'}>
-      <Show
-        when={!readOnly()}
-        fallback={<Text size={'sm'}>{value() ?? 'Untitled'}</Text>}
-      >
+    <SuspenseEditorItem
+      fallback={<SkeletonLine width={'120px'} height={'22px'} />}
+    >
+      <Box display={'flex'} alignItems={'center'} class={styles.toolbarSnippet}>
         <Show
-          fallback={
-            <HStack spacing={'2'} alignItems={'center'} lineHeight={'normal'}>
-              <LoadingCircle
-                visibility={remoteSync() ? 'visible' : 'hidden'}
-                size={'sm'}
-              />
-              <Text size={'sm'} onClick={toggleEdit}>
-                {value() ?? 'Untitled'}
-              </Text>
-              <PencilAlt size={'sm'} />
-            </HStack>
-          }
-          when={editing()}
+          when={!readOnly()}
+          fallback={<Text size={'sm'}>{value() ?? 'Untitled'}</Text>}
         >
-          <div
-            use:clickOutside={() => {
-              setEditing(false);
-              updateSnippetName(value());
-            }}
+          <Show
+            fallback={
+              <HStack spacing={'2'} alignItems={'center'} lineHeight={'normal'}>
+                <LoadingCircle
+                  visibility={remoteSync() ? 'visible' : 'hidden'}
+                  size={'sm'}
+                />
+                <Text size={'sm'} onClick={toggleEdit}>
+                  {value() ?? 'Untitled'}
+                </Text>
+                <PencilAlt size={'sm'} />
+              </HStack>
+            }
+            when={editing()}
           >
-            {() => {
-              let ref: HTMLInputElement | undefined;
-              onMount(() => {
-                ref?.focus();
-                ref?.select();
-                useHotkey(ref!, {
-                  Enter: () => {
-                    setEditing(false);
-                    updateSnippetName(value());
-                  },
-                  Escape: () => {
-                    console.log('esc click');
-                    setEditing(false);
-                    setValue(value());
-                  },
+            <div
+              use:clickOutside={() => {
+                setEditing(false);
+                updateSnippetName(value());
+              }}
+            >
+              {() => {
+                let ref: HTMLInputElement | undefined;
+                onMount(() => {
+                  ref?.focus();
+                  ref?.select();
+                  useHotkey(ref!, {
+                    Enter: () => {
+                      setEditing(false);
+                      updateSnippetName(value());
+                    },
+                    Escape: () => {
+                      console.log('esc click');
+                      setEditing(false);
+                      setValue(value());
+                    },
+                  });
                 });
-              });
 
-              return (
-                <FlexField size={'md'}>
-                  <TextField
-                    inline={true}
-                    ref={ref}
-                    size={'sm'}
-                    type={'text'}
-                    autofocus={true}
-                    value={value()}
-                    onChange={value => setValue(value)}
-                    style={{
-                      'text-align': 'center',
-                    }}
-                  />
-                </FlexField>
-              );
-            }}
-          </div>
+                return (
+                  <FlexField size={'md'}>
+                    <TextField
+                      inline={true}
+                      ref={ref}
+                      size={'sm'}
+                      type={'text'}
+                      autofocus={true}
+                      value={value()}
+                      onChange={value => setValue(value)}
+                      style={{
+                        'text-align': 'center',
+                      }}
+                    />
+                  </FlexField>
+                );
+              }}
+            </div>
+          </Show>
         </Show>
-      </Show>
-    </Box>
+      </Box>
+    </SuspenseEditorItem>
   );
 }
