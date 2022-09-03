@@ -274,6 +274,7 @@ importers:
 
   packages/dom-export:
     specifiers:
+      '@solid-primitives/platform': ^0.0.100
       '@types/node': 17.0.40
       lint-staged: ^13.0.0
       prettier: ^2.6.2
@@ -282,6 +283,8 @@ importers:
       typescript: ^4.7.3
       vite: ^2.9.9
       vite-plugin-dts: ^1.2.0
+    dependencies:
+      '@solid-primitives/platform': 0.0.100
     devDependencies:
       '@types/node': 17.0.40
       lint-staged: 13.0.0
@@ -347,6 +350,9 @@ importers:
       vite: 2.9.12
       vite-plugin-dts: 1.1.1_vite@2.9.12
       vite-plugin-solid: 2.2.6
+
+  packages/prisma-models/generated/client:
+    specifiers: {}
 
   packages/ui:
     specifiers:
@@ -3179,6 +3185,12 @@ packages:
       '@solid-primitives/utils': 1.5.2_solid-js@1.4.6
     transitivePeerDependencies:
       - solid-js
+    dev: false
+
+  /@solid-primitives/platform/0.0.100:
+    resolution: {integrity: sha512-TMGeDtjA8b7xlUQGq3QhdR8SSa49bvqhFJ0iD+iy4fsnEHr9xA5hIDyBX/ntmz70SbOVyz+z9IdXwBnqurr4bQ==}
+    peerDependencies:
+      solid-js: ^1.4.0
     dev: false
 
   /@solid-primitives/platform/0.0.100_solid-js@1.4.6:
