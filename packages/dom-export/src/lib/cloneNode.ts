@@ -2,23 +2,25 @@ import {clonePseudoElements} from './clonePseudoElements';
 import {getBlobFromURL} from './getBlobFromURL';
 import {Options} from './options';
 import {createImage, getMimeType, makeDataUrl, toArray} from './util';
+import {isIOS} from '@solid-primitives/platform';
 
-async function cloneCanvasElement(node: HTMLCanvasElement) {
-  const dataURL = node.toDataURL();
+async function cloneCanvasElement(canvas: HTMLCanvasElement) {
+  const dataURL = canvas.toDataURL();
   if (dataURL === 'data:,') {
-    return Promise.resolve(node.cloneNode(false) as HTMLCanvasElement);
+    return canvas.cloneNode(false) as HTMLCanvasElement;
   }
 
   return createImage(dataURL);
 }
 
-async function cloneVideoElement(node: HTMLVideoElement, options: Options) {
-  return Promise.resolve(node.poster)
-    .then(url => getBlobFromURL(url, options))
-    .then(data =>
-      makeDataUrl(data.blob, getMimeType(node.poster) || data.contentType),
-    )
-    .then(dataURL => createImage(dataURL));
+async function cloneVideoElement(video: HTMLVideoElement, options: Options) {
+  const poster = video.poster;
+  const metadata = await getBlobFromURL(poster, options);
+  const dataURL = makeDataUrl(
+    metadata.blob,
+    getMimeType(poster) || metadata.contentType,
+  );
+  return createImage(dataURL);
 }
 
 async function cloneSingleNode<T extends HTMLElement>(
@@ -109,6 +111,23 @@ function cloneCSSStyle<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
       `${clonedNode.getAttribute('style')};align-items:${alignItems};`,
     );
   }
+
+  // fix for perspective bug in safari
+  const perspective = source.getPropertyValue('perspective');
+  if (perspective !== 'none') {
+    clonedNode.setAttribute(
+      'style',
+      `${clonedNode.getAttribute('style')};perspective:${perspective};`,
+    );
+  }
+
+  const boxShadow = source.getPropertyValue('boxShadow');
+  if (boxShadow !== 'none' && isIOS) {
+    clonedNode.setAttribute(
+      'style',
+      `${clonedNode.getAttribute('style')};box-shadow:none!important;`,
+    );
+  }
 }
 
 function cloneInputValue<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
@@ -121,19 +140,33 @@ function cloneInputValue<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
   }
 }
 
+function cloneSelectValue<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
+  if (nativeNode instanceof HTMLSelectElement) {
+    const clonedSelect = clonedNode as any as HTMLSelectElement;
+    const selectedOption = Array.from(clonedSelect.children).find(
+      child => nativeNode.value === child.getAttribute('value'),
+    );
+
+    if (selectedOption) {
+      selectedOption.setAttribute('selected', '');
+    }
+  }
+}
+
 async function decorate<T extends HTMLElement>(
   nativeNode: T,
   clonedNode: T,
 ): Promise<T> {
   if (!(clonedNode instanceof Element)) {
-    return Promise.resolve(clonedNode);
+    return clonedNode;
   }
 
-  return Promise.resolve()
-    .then(() => cloneCSSStyle(nativeNode, clonedNode))
-    .then(() => clonePseudoElements(nativeNode, clonedNode))
-    .then(() => cloneInputValue(nativeNode, clonedNode))
-    .then(() => clonedNode);
+  cloneCSSStyle(nativeNode, clonedNode);
+  clonePseudoElements(nativeNode, clonedNode);
+  cloneInputValue(nativeNode, clonedNode);
+  cloneSelectValue(nativeNode, clonedNode);
+
+  return clonedNode;
 }
 
 export async function cloneNode<T extends HTMLElement>(
@@ -142,7 +175,7 @@ export async function cloneNode<T extends HTMLElement>(
   isRoot?: boolean,
 ): Promise<T | null> {
   if (!isRoot && options.filter && !options.filter(node)) {
-    return Promise.resolve(null);
+    return null;
   }
 
   return Promise.resolve(node)

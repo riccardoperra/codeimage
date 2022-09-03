@@ -1,5 +1,5 @@
-import {Options} from './options';
 import {getBlobFromURL} from './getBlobFromURL';
+import {Options} from './options';
 import {getMimeType, isDataUrl, makeDataUrl, resolveUrl} from './util';
 
 const URL_REGEX = /url\((['"]?)([^'"]+?)\1\)/g;
@@ -85,17 +85,13 @@ export async function embedResources(
   options: Options,
 ): Promise<string> {
   if (!shouldEmbed(cssText)) {
-    return Promise.resolve(cssText);
+    return cssText;
   }
 
   const filteredCSSText = filterPreferredFontFormat(cssText, options);
-  return Promise.resolve(filteredCSSText)
-    .then(parseURLs)
-    .then(urls =>
-      urls.reduce(
-        (deferred, url) =>
-          deferred.then(css => embed(css, url, baseUrl, options)),
-        Promise.resolve(filteredCSSText),
-      ),
-    );
+  const urls = parseURLs(filteredCSSText);
+  return urls.reduce(
+    (deferred, url) => deferred.then(css => embed(css, url, baseUrl, options)),
+    Promise.resolve(filteredCSSText),
+  );
 }

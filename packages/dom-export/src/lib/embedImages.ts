@@ -1,6 +1,6 @@
-import {Options} from './options';
-import {getBlobFromURL} from './getBlobFromURL';
 import {embedResources} from './embedResources';
+import {getBlobFromURL} from './getBlobFromURL';
+import {Options} from './options';
 import {getMimeType, isDataUrl, makeDataUrl, toArray} from './util';
 
 async function embedBackground<T extends HTMLElement>(
@@ -9,7 +9,7 @@ async function embedBackground<T extends HTMLElement>(
 ): Promise<T> {
   const background = clonedNode.style?.getPropertyValue('background');
   if (!background) {
-    return Promise.resolve(clonedNode);
+    return clonedNode;
   }
 
   return Promise.resolve(background)

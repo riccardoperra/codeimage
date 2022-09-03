@@ -26,7 +26,8 @@
   ],
   "scripts": {
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
-    "build": "vite build"
+    "build": "vite build",
+    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
   },
   "lint-staged": {
     "**/*.{js,jsx,tsx,ts,less,md,json}": [
@@ -64,5 +65,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/riccardoperra/codeimage-export.git"
+  },
+  "dependencies": {
+    "@solid-primitives/platform": "^0.0.100"
   }
 }
