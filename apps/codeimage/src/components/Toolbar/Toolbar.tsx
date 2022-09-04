@@ -1,4 +1,5 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {Box, Button, HStack} from '@codeimage/ui';
 import {Link} from '@solidjs/router';
 import {Component, Show} from 'solid-js';
@@ -17,10 +18,12 @@ export const Toolbar: Component<{
   canvasRef: HTMLElement | undefined;
 }> = props => {
   const loggedIn = () => getAuth0State().loggedIn();
+  const isRemote = () => !!getEditorSyncAdapter()?.snippetId();
+
   return (
     <div class={styles.wrapper}>
       <ToolbarSettingsButton />
-      <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={5}>
+      <Box display={'flex'} alignItems={'center'} marginLeft={5}>
         <div class={sidebarLogo}>
           <CodeImageLogo width={'140px'} />
         </div>
@@ -39,9 +42,11 @@ export const Toolbar: Component<{
         </Show>
       </Box>
 
-      <Box flexGrow={1}>
-        <ToolbarSnippetName />
-      </Box>
+      <Show when={isRemote()} keyed={false}>
+        <div class={styles.toolbarSnippetBox}>
+          <ToolbarSnippetName />
+        </div>
+      </Show>
 
       <Box class={styles.actionBox} style={{flex: 1}}>
         <HStack marginLeft={'auto'} spacing={'2'}>

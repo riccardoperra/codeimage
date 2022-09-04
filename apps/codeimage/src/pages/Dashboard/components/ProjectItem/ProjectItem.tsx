@@ -81,13 +81,13 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
     try {
       await dashboard?.deleteProject(props.item.id);
       toast.success(
-        t('dashboard.projectCloneSuccess', {name: props.item.name}),
+        t('dashboard.projectDeleteSuccess', {name: props.item.name}),
         {
           position: 'bottom-center',
         },
       );
     } catch (e) {
-      toast.error(t('dashboard.errorCreatingProject'));
+      toast.error(t('dashboard.projectDeleteError'));
       dashboard.mutateData(oldData);
     }
   }

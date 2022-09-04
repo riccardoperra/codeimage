@@ -15,12 +15,12 @@ import {
   lazy,
   ParentComponent,
   Show,
+  Suspense,
   SuspenseList,
 } from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import {CheckCircle} from '../Icons/CheckCircle';
 import {EmptyCircle} from '../Icons/EmptyCircle';
-import {SuspenseEditorItem} from '../PropertyEditor/SuspenseEditorItemt';
 import {TerminalHost} from '../Terminal/TerminalHost';
 import {ThemeBox} from './ThemeBox';
 import {ThemeBoxSkeleton} from './ThemeBoxSkeleton';
@@ -77,7 +77,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
         <For each={themeArray()}>
           {theme => {
             return (
-              <SuspenseEditorItem fallback={<ThemeBoxSkeleton />}>
+              <Suspense fallback={<ThemeBoxSkeleton />}>
                 <Show when={theme()} keyed={true}>
                   {theme => (
                     <Show when={isMatched(theme.id)}>
@@ -135,7 +135,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                     </Show>
                   )}
                 </Show>
-              </SuspenseEditorItem>
+              </Suspense>
             );
           }}
         </For>

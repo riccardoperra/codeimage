@@ -1,6 +1,6 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
-import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
+import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {lazy, Show} from 'solid-js';

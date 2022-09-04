@@ -1,4 +1,4 @@
-import {EditorSyncProvider} from '@codeimage/store/editor/createEditorInit';
+import {EditorSyncProvider} from '@codeimage/store/editor/createEditorSync';
 import {useParams} from '@solidjs/router';
 import {lazy} from 'solid-js';
 

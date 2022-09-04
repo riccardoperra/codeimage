@@ -1,4 +1,5 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
+import {createTrackObserver} from '@codeimage/atomic-state';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -6,7 +7,6 @@ import {getEditorStore} from '@codeimage/store/editor/index';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {appEnvironment} from '@core/configuration';
-import {createTrackContext} from '@core/store/trackContext';
 import {createContextProvider} from '@solid-primitives/context';
 import {useNavigate} from '@solidjs/router';
 import {
@@ -43,7 +43,7 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
   const [activeWorkspace, setActiveWorkspace] = createSignal<
     ApiTypes.GetProjectByIdApi['response'] | null
   >();
-  const [tracked, untrackCallback] = createTrackContext();
+  const [tracked, untrackCallback] = createTrackObserver();
   const authState = getAuth0State();
   const frameStore = getFrameState();
   const terminalStore = getTerminalState();
@@ -77,7 +77,7 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
       idb
         .get<ProjectEditorPersistedState>('document')
         .then(idbState => {
-          if (idbState) {
+          if (idbState && !idbState.$snippetId) {
             editorStore.actions.setFromPersistedState(idbState.editor);
             frameStore.setFromPersistedState(idbState.frame);
             terminalStore.setFromPersistedState(idbState.terminal);
@@ -263,6 +263,7 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
     loadedSnippet: loadedSnippet as Resource<ProjectResponse>,
     readOnly,
     clone,
+    snippetId,
     activeWorkspace,
     setActiveWorkspace,
     remoteSync,

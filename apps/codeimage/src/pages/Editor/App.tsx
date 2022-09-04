@@ -1,4 +1,4 @@
-import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
+import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {Box, Button, HStack, PortalHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';

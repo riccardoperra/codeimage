@@ -39,7 +39,22 @@ export const actionBox = style({
   display: 'flex',
   flexWrap: 'nowrap',
   flexDirection: 'row',
-  flex: '1',
   alignItems: 'center',
   columnGap: themeVars.spacing['3'],
+});
+
+export const toolbarSnippetBox = style({
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  left: 0,
+  height: toolbarVars.toolbarHeight,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  pointerEvents: 'none',
+});
+
+export const toolbarSnippet = style({
+  pointerEvents: 'auto',
 });

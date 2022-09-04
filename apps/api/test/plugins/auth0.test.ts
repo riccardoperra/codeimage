@@ -2,6 +2,7 @@ import {User} from '@codeimage/prisma-models';
 import fastifyEnv from '@fastify/env';
 import {Type} from '@sinclair/typebox';
 import Fastify from 'fastify';
+import fp from 'fastify-plugin';
 import * as sinon from 'sinon';
 import t from 'tap';
 import auth0 from '../../src/plugins/auth0';

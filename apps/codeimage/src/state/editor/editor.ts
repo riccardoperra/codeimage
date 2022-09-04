@@ -161,13 +161,13 @@ export function createEditorsStore() {
         const editors = (state.editors ?? [])
           .slice(0, MAX_TABS)
           .map(editor => ({
-            tabName: editor.tab.tabName,
+            tabName: editor.tabName,
             languageId: editor.languageId,
             id: editor.id,
             code: editor.code,
           }));
-        setState(state => ({
-          options: {...state.options, ...state.options},
+        setState(prevState => ({
+          options: {...prevState.options, ...state.options},
           activeEditorId: editors[0].id,
           editors: editors.map(editor => {
             return {

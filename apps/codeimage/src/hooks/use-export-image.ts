@@ -225,7 +225,6 @@ export async function exportImage(
       return r as string | Blob;
     })
     .catch(e => {
-      console.log('e', e);
       destroy();
       throw e;
     });

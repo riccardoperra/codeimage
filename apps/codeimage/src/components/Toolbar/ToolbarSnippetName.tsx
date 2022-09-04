@@ -1,5 +1,5 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorInit';
+import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {
   Box,
   FlexField,
@@ -91,7 +91,6 @@ export function ToolbarSnippetName() {
                       updateSnippetName(value());
                     },
                     Escape: () => {
-                      console.log('esc click');
                       setEditing(false);
                       setValue(value());
                     },
