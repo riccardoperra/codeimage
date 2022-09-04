@@ -464,6 +464,7 @@ importers:
   packages/ui:
     specifiers:
       '@codeimage/locale': workspace:*
+      '@codeimage/vanilla-extract': workspace:*
       '@floating-ui/core': ^1.0.1
       '@floating-ui/dom': ^1.0.1
       '@motionone/solid': ^10.14.1
@@ -505,6 +506,7 @@ importers:
       vite-plugin-solid: ^2.3.0
     dependencies:
       '@codeimage/locale': link:../locale
+      '@codeimage/vanilla-extract': link:../vanilla-extract
       '@floating-ui/core': 1.0.1
       '@floating-ui/dom': 1.0.1
       '@motionone/solid': 10.14.1_solid-js@1.5.2

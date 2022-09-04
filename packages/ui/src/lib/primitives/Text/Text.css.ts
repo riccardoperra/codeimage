@@ -1,6 +1,7 @@
 import {style, styleVariants} from '@vanilla-extract/css';
 import {mapToProperty} from '../../utils/mapToProperty';
 import {themeVars} from '../../theme';
+import * as variables from '../../theme/variables.css';
 
 export const fontWeight = styleVariants(
   themeVars.fontWeight,
@@ -13,5 +14,5 @@ export const fontSize = styleVariants(
 );
 
 export const baseText = style({
-  fontFamily: 'inherit',
+  fontSize: variables.fontSize,
 });

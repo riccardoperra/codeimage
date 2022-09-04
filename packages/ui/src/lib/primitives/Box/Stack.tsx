@@ -24,11 +24,11 @@ export const VStack = (props: StackProps) => {
 export const HStack = (props: StackProps) => {
   return (
     <Box
-      {...props}
       class={styles.hStack}
       style={assignInlineVars({
         [styles.stackThemeVars.spacing]: themeVars.spacing[props.spacing],
       })}
+      {...props}
     >
       {props.children}
     </Box>

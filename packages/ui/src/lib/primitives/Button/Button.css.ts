@@ -1,41 +1,43 @@
-import {createVar, style} from '@vanilla-extract/css';
-import {backgroundColorVar, colorVar} from '../../theme/variables.css';
+import {createVar, fallbackVar, style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {themeVars} from '../../theme';
+import * as variables from '../../theme/variables.css';
 
 export const buttonHeight = createVar();
 
-export const button = style([
-  {
-    position: 'relative',
-    display: 'inline-flex',
-    overflow: 'hidden',
-    height: buttonHeight,
-    padding: `0 ${themeVars.spacing['3']}`,
-    borderRadius: themeVars.borderRadius.lg,
-    fontSize: themeVars.fontSize.sm,
-    fontWeight: themeVars.fontWeight.medium,
-    lineHeight: 1,
-    fontFamily: 'inherit',
-    outline: 'none',
-    placeContent: 'center',
-    placeItems: 'center',
-    transition: 'opacity .2s, background-color .2s, box-shadow .2s',
-    backgroundColor: backgroundColorVar,
-    color: colorVar,
-    userSelect: 'none',
-    textDecoration: 'none',
+export const button = style({
+  position: 'relative',
+  display: 'inline-flex',
+  overflow: 'hidden',
+  height: buttonHeight,
+  padding: `0 ${themeVars.spacing['3']}`,
+  borderRadius: themeVars.borderRadius.lg,
+  fontSize: variables.fontSize,
+  fontWeight: themeVars.fontWeight.medium,
+  lineHeight: 1,
+  fontFamily: 'inherit',
+  outline: 'none',
+  placeContent: 'center',
+  placeItems: 'center',
+  transition: 'opacity .2s, background-color .2s, box-shadow .2s',
+  backgroundColor: variables.backgroundColorVar,
+  color: fallbackVar(variables.colorVar, themeVars.dynamicColors.baseText),
+  userSelect: 'none',
+  textDecoration: 'none',
 
-    ':disabled': {
-      cursor: 'default',
-      opacity: 0.5,
-    },
-
-    ':focus': {
-      boxShadow: themeVars.boxShadow.outline,
-    },
+  vars: {
+    [variables.fontSize]: themeVars.fontSize.sm,
   },
-]);
+
+  ':disabled': {
+    cursor: 'default',
+    opacity: 0.5,
+  },
+
+  ':focus': {
+    boxShadow: themeVars.boxShadow.outline,
+  },
+});
 
 export const buttonIcon = style({
   marginRight: themeVars.spacing['2'],
@@ -64,29 +66,30 @@ export const buttonVariant = recipe({
     // Button type
     variant: {
       solid: {
-        backgroundColor: backgroundColorVar,
+        backgroundColor: variables.backgroundColorVar,
         border: 'none',
       },
       outline: {
         backgroundColor: 'transparent',
-        color: backgroundColorVar,
+        color: variables.backgroundColorVar,
         borderWidth: '1px',
         borderStyle: 'solid',
         borderColor: 'currentColor',
 
         ':hover': {
-          backgroundColor: backgroundColorVar,
-          color: colorVar,
+          backgroundColor: variables.backgroundColorVar,
+          color: variables.colorVar,
+          borderColor: variables.backgroundColorVar,
         },
       },
       link: {
         border: 'none',
         backgroundColor: 'transparent',
-        color: colorVar,
+        color: variables.colorVar,
 
         selectors: {
           '&:not(:disabled):hover': {
-            background: backgroundColorVar,
+            background: variables.backgroundColorVar,
           },
         },
       },
@@ -95,14 +98,15 @@ export const buttonVariant = recipe({
     theme: {
       primary: {
         vars: {
-          [backgroundColorVar]:
+          [variables.backgroundColorVar]:
             themeVars.dynamicColors.button.primary.backgroundColor,
-          [colorVar]: themeVars.dynamicColors.button.primary.textColor,
+          [variables.colorVar]:
+            themeVars.dynamicColors.button.primary.textColor,
         },
         selectors: {
           '&:not(:disabled):hover': {
             vars: {
-              [backgroundColorVar]:
+              [variables.backgroundColorVar]:
                 themeVars.dynamicColors.button.primary.hoverColor,
             },
           },
@@ -110,14 +114,15 @@ export const buttonVariant = recipe({
       },
       primaryAlt: {
         vars: {
-          [backgroundColorVar]:
+          [variables.backgroundColorVar]:
             themeVars.dynamicColors.button.primaryAlt.backgroundColor,
-          [colorVar]: themeVars.dynamicColors.button.primaryAlt.textColor,
+          [variables.colorVar]:
+            themeVars.dynamicColors.button.primaryAlt.textColor,
         },
         selectors: {
           '&:not(:disabled):hover': {
             vars: {
-              [backgroundColorVar]:
+              [variables.backgroundColorVar]:
                 themeVars.dynamicColors.button.primaryAlt.hoverColor,
             },
           },
@@ -125,14 +130,14 @@ export const buttonVariant = recipe({
       },
       secondary: {
         vars: {
-          [backgroundColorVar]:
+          [variables.backgroundColorVar]:
             themeVars.dynamicColors.button.base.backgroundColor,
-          [colorVar]: themeVars.dynamicColors.button.base.textColor,
+          [variables.colorVar]: themeVars.dynamicColors.button.base.textColor,
         },
         selectors: {
           '&:hover:not(:disabled)': {
             vars: {
-              [backgroundColorVar]:
+              [variables.backgroundColorVar]:
                 themeVars.dynamicColors.button.base.hoverColor,
             },
           },
@@ -140,14 +145,14 @@ export const buttonVariant = recipe({
       },
       danger: {
         vars: {
-          [backgroundColorVar]:
+          [variables.backgroundColorVar]:
             themeVars.dynamicColors.button.danger.backgroundColor,
-          [colorVar]: themeVars.dynamicColors.button.danger.textColor,
+          [variables.colorVar]: themeVars.dynamicColors.button.danger.textColor,
         },
         selectors: {
           '&:not(:disabled):hover': {
             vars: {
-              [backgroundColorVar]:
+              [variables.backgroundColorVar]:
                 themeVars.dynamicColors.button.danger.hoverColor,
             },
           },
@@ -156,37 +161,43 @@ export const buttonVariant = recipe({
     },
 
     size: {
+      lg: {
+        vars: {
+          [buttonHeight]: '48px',
+          [variables.fontSize]: themeVars.fontSize.lg,
+        },
+        minWidth: '72px',
+      },
       md: {
         vars: {
           [buttonHeight]: '42px',
+          [variables.fontSize]: themeVars.fontSize.base,
         },
-        minWidth: '72px',
-        fontSize: themeVars.fontSize.base,
       },
       sm: {
         vars: {
           [buttonHeight]: '36px',
+          [variables.fontSize]: themeVars.fontSize.sm,
         },
-        fontSize: themeVars.fontSize.sm,
       },
       xs: {
         vars: {
           [buttonHeight]: '30px',
+          [variables.fontSize]: themeVars.fontSize.xs,
         },
-        fontSize: themeVars.fontSize.xs,
         padding: `0 ${themeVars.spacing['2']}`,
       },
       xxs: {
         vars: {
           [buttonHeight]: '24px',
+          [variables.fontSize]: themeVars.fontSize.xs,
         },
-        fontSize: themeVars.fontSize.xs,
         padding: `0 ${themeVars.spacing['2']}`,
       },
     },
   },
   defaultVariants: {
-    variant: 'outline',
+    variant: 'solid',
     theme: 'primary',
     size: 'md',
   },

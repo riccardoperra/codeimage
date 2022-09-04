@@ -3,7 +3,7 @@ import {
   DynamicProps,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {createMemo, PropsWithChildren} from 'solid-js';
+import {PropsWithChildren} from 'solid-js';
 import {omitProps} from 'solid-use';
 import {styled} from '../../utils';
 import {useText, UseTextProps} from '../Text';
@@ -26,19 +26,17 @@ export function TextField(props: PropsWithChildren<TextFieldProps>) {
     }
   }
 
-  const classes = createMemo(() =>
-    clsx(
-      useText({size: props.size}),
-      textField({inline: props.inline ?? false}),
-      props.class,
-    ),
-  );
+  const textClasses = useText(props);
 
   return (
     <styled.input
       value={props.value}
       type={props.type}
-      class={classes()}
+      class={clsx(
+        textClasses(),
+        textField({inline: props.inline ?? false}),
+        props.class,
+      )}
       onInput={onChange}
       onChange={onChange}
       {...omitProps(props, ['class', 'type', 'value', 'onChange'])}

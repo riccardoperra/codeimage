@@ -17,6 +17,7 @@
     }
   },
   "scripts": {
+    "dev": "vite serve ./dev --host",
     "build": "rollup -c",
     "build:vite": "vite build",
     "build:watch": "vite build --watch",
@@ -46,6 +47,7 @@
   },
   "dependencies": {
     "@codeimage/locale": "workspace:*",
+    "@codeimage/vanilla-extract": "workspace:*",
     "@floating-ui/core": "^1.0.1",
     "@floating-ui/dom": "^1.0.1",
     "@motionone/solid": "^10.14.1",
