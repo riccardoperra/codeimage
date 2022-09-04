@@ -6,5 +6,6 @@ export const iconButton = style({
   height: btnSize,
   padding: 0,
   textAlign: 'center',
-  minWidth: 'auto',
+  minWidth: btnSize,
+  maxWidth: btnSize,
 });

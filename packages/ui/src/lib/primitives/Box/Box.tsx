@@ -1,10 +1,10 @@
 import clsx from 'clsx';
-import {
-  type DynamicProps,
-  type ValidConstructor,
-  type WithRef,
+import type {
+  DynamicProps,
+  ValidConstructor,
+  WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {type JSXElement, type PropsWithChildren} from 'solid-js';
+import type {JSXElement, PropsWithChildren} from 'solid-js';
 import {omitProps, pickProps} from 'solid-use';
 import {sprinkles, Sprinkles} from '../../theme';
 import {styled} from '../../utils';

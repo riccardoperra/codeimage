@@ -1,9 +1,11 @@
+import {fallbackVar} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
+import * as variables from '../../theme/variables.css';
 
 export const svgIcon = recipe({
   base: {
-    width: '20px',
-    height: '20px',
+    width: fallbackVar(variables.fontSize, '20px'),
+    height: fallbackVar(variables.fontSize, '20px'),
   },
 
   variants: {

@@ -1,4 +1,4 @@
-import {asyncScheduler, filter, MonoTypeOperatorFunction, pipe} from 'rxjs';
+import {asyncScheduler, filter, MonoTypeOperatorFunction} from 'rxjs';
 import {Accessor, untrack} from 'solid-js';
 
 export function createTrackObserver(): [

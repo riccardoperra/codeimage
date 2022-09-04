@@ -1,8 +1,8 @@
 import {createGlobalTheme, globalStyle} from '@vanilla-extract/css';
-import {backgroundColorVar} from './variables.css';
 import {colors} from './colors';
 import {spacing} from './spacing';
 import {themeColors} from './theme.css';
+import {backgroundColorVar} from './variables.css';
 
 export const root = createGlobalTheme(':root', {
   screens: {

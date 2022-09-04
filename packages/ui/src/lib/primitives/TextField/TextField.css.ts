@@ -1,6 +1,7 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {themeVars} from '../../theme';
+import * as variables from '../../theme/variables.css';
 import {inputHeight} from '../Field/FlexField.css';
 
 export const [textFieldTheme, textFieldVars] = createTheme({
@@ -18,6 +19,7 @@ export const baseField = style([
     backgroundColor: textFieldVars.background,
     borderRadius: themeVars.borderRadius.md,
     width: '100%',
+    fontSize: variables.fontSize,
     height: textFieldVars.inputHeight,
     color: 'currentcolor',
     ':focus': {

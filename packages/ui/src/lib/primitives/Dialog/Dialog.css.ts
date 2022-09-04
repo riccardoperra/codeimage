@@ -1,5 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {recipe, type RecipeVariants} from '@vanilla-extract/recipes';
+import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {adaptiveFullScreenHeight, themeVars} from '../../theme';
 import * as textStyles from '../Text/Text.css';
 

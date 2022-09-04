@@ -1,1 +1,2 @@
-export {useFloating, type UseFloatingOptions} from './useFloating';
+export {useFloating} from './useFloating';
+export type {UseFloatingOptions} from './useFloating';
