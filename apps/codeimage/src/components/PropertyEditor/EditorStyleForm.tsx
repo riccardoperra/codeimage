@@ -2,7 +2,7 @@ import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
-import {SegmentedField, Select, Text} from '@codeimage/ui';
+import {FlexField, SegmentedField, Select, Text} from '@codeimage/ui';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {useModality} from '@core/hooks/isMobile';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';

@@ -3,6 +3,7 @@ import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {uiStore} from '@codeimage/store/ui';
 import {
+  backgroundColorVar,
   Box,
   createStandaloneDialog,
   DropdownMenuV2,
@@ -15,9 +16,10 @@ import {
 import {highlight as _highlight} from '@core/directives/highlight';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {Item} from '@solid-aria/collection';
+import {Link, useNavigate} from '@solidjs/router';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
-import {Link, useNavigate} from '@solidjs/router';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {For, Show, VoidProps} from 'solid-js';
 import {DotHorizontalIcon} from '../../../../components/Icons/DotVertical';
 import {AppLocaleEntries} from '../../../../i18n';
@@ -164,12 +166,10 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
               <Show when={language}>
                 <HStack spacing={'2'}>
                   <div
-                    style={{
-                      'border-radius': '50%',
-                      'background-color': language.color,
-                      height: '12px',
-                      width: '12px',
-                    }}
+                    class={styles.languageBadge}
+                    style={assignInlineVars({
+                      [backgroundColorVar]: language.color,
+                    })}
                   />
                   <Text size={'xs'}>{language.label}</Text>
                 </HStack>

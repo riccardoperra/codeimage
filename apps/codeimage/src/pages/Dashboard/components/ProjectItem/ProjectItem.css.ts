@@ -1,4 +1,4 @@
-import {themeVars} from '@codeimage/ui';
+import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 import {darkGrayScale} from '../../../../theme/dark-theme.css';
 
@@ -50,4 +50,11 @@ export const itemTitle = style({
   vars: {
     ['--highlight-color']: 'rgb(112, 182, 246, 0.25)',
   },
+});
+
+export const languageBadge = style({
+  backgroundColor: backgroundColorVar,
+  borderRadius: themeVars.borderRadius.lg,
+  height: '12px',
+  width: '12px',
 });

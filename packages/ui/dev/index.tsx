@@ -1,11 +1,12 @@
 import {render} from 'solid-js/web';
 import {Box, CodeImageThemeProvider} from '../src';
-import {ButtonDemo} from './demo/Button';
-import './reset.scss';
 import './dark-theme.css';
-import './global.css';
+import {ButtonDemo} from './demo/Button';
 import {SegmentedFieldDemo} from './demo/SegmentedControl';
+import {SelectDemo} from './demo/Select';
 import {TextFieldDemo} from './demo/TextField';
+import './global.css';
+import './reset.scss';
 
 function App() {
   return (
@@ -19,6 +20,10 @@ function App() {
 
         <Box marginTop={'12'}>
           <SegmentedFieldDemo />
+        </Box>
+
+        <Box marginTop={'12'}>
+          <SelectDemo />
         </Box>
       </Box>
     </CodeImageThemeProvider>

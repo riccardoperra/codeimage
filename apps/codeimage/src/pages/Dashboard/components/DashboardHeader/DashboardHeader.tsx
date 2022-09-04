@@ -18,7 +18,7 @@ export function DashboardHeader() {
           </div>
         </Box>
 
-        <Box class={actionBox} style={{flex: 1}}>
+        <Box class={actionBox} flexGroe={1}>
           <HStack spacing={'2'} marginLeft={'auto'}>
             <UserBadge />
           </HStack>

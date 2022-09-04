@@ -48,7 +48,7 @@ export const Toolbar: Component<{
         </div>
       </Show>
 
-      <Box class={styles.actionBox} style={{flex: 1}}>
+      <Box class={styles.actionBox} flexGrow={1}>
         <HStack marginLeft={'auto'} spacing={'2'}>
           <ShareButton showLabel={false} />
 

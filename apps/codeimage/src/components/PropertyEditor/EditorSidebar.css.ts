@@ -1,4 +1,4 @@
-import {themeVars} from '@codeimage/ui';
+import {fontSize, themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
 import {recipe} from '@vanilla-extract/recipes';
 
@@ -62,6 +62,9 @@ export const panelRowContent = recipe({
     width: '100%',
     height: '100%',
     flex: '1 0 0',
+    vars: {
+      [fontSize]: themeVars.fontSize.xs,
+    },
   },
   variants: {
     twoColumn: {

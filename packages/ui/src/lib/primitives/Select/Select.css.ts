@@ -1,9 +1,9 @@
-import {style} from '@vanilla-extract/css';
+import {fallbackVar, style} from '@vanilla-extract/css';
 import * as textFieldStyles from '../TextField/TextField.css';
 import * as textStyles from '../Text/Text.css';
 import * as boxStyles from '../Box/Box.css';
 import {recipe} from '@vanilla-extract/recipes';
-import {themeVars} from '../../theme';
+import {fontSize, themeVars} from '../../theme';
 
 export const wrapper = style({
   width: '100%',
@@ -82,6 +82,7 @@ export const selected = style({
   textOverflow: 'ellipsis',
   display: 'block',
   fontWeight: themeVars.fontWeight.medium,
+  fontSize: fallbackVar(fontSize, themeVars.fontSize.sm),
 });
 
 export const selectorIconWrapper = style({

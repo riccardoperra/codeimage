@@ -84,7 +84,7 @@ export function App() {
                     <ClipboardIcon />
                     <Box marginLeft={1}>Copy</Box>
                   </Button>
-                  <div style={{flex: 1}} />
+                  <Box flexGrow={1} />
                   <ShareButton showLabel={true} />
                   <ExportInNewTabButton canvasRef={frameRef()} />
                 </HStack>

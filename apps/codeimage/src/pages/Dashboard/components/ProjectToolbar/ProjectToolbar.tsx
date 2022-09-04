@@ -14,7 +14,7 @@ export function ProjectToolbar() {
     <>
       <Box display={'flex'} marginBottom={2}>
         <h1 class={styles.title}>{t('dashboard.myProjects')}</h1>
-        <div style={{flex: 1}} />
+        <Box flexGrow={1} />
         <Show when={!dashboard.data.isEmpty()}>
           <CreateNewProjectButton />
         </Show>
