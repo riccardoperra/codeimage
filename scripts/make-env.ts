@@ -72,6 +72,7 @@ async function buildApiEnv() {
     GRANT_TYPE_AUTH0: 'client_credentials',
     MOCK_AUTH: true,
     MOCK_AUTH_EMAIL: 'dev@example.it',
+    ALLOWED_ORIGINS: '*',
   };
 
   if (!runOnCodeSandbox) {
@@ -141,6 +142,7 @@ async function buildApiTestEnv() {
     GRANT_TYPE_AUTH0: 'client_credentials',
     MOCK_AUTH: false,
     MOCK_AUTH_EMAIL: 'dev@example.it',
+    ALLOWED_ORIGINS: '*',
   };
 
   if (!runOnCodeSandbox) {

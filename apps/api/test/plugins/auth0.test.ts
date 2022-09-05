@@ -36,6 +36,7 @@ async function build(t: Tap.Test, options: AppOptions = {mockAuth: false}) {
           CLIENT_SECRET_AUTH: Type.String(),
           DOMAIN_AUTH0: Type.String(),
           AUDIENCE_AUTH0: Type.String(),
+          ALLOWED_ORIGINS: Type.String(),
         }),
       });
       await app.register(sensible);
