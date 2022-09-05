@@ -296,6 +296,7 @@ jobs:
       GRANT_TYPE_AUTH0: client_credentials
       MOCK_AUTH: false
       MOCK_AUTH_EMAIL: dev@example.it
+      ALLOWED_ORIGINS: *
 
 
     steps:
