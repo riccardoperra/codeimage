@@ -35,10 +35,7 @@ import './theme/light-theme.css';
 
 const i18n = createI18nContext(locale);
 
-console.log(import.meta.env.VITE_ENABLE_MSW);
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-if (import.meta.env.VITE_ENABLE_MSW == 'true') {
+if (import.meta.env.VITE_ENABLE_MSW === true) {
   import('./mocks/browser').then(({worker}) => worker.start());
 }
 
