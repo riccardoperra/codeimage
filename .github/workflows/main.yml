@@ -4,8 +4,8 @@ on:
   pull_request:
 
 env:
-  IS_MAIN_BRANCH: ${{ github.ref == 'refs/heads/main' }}
-  IS_NEXT_BRANCH: ${{ github.ref == 'refs/heads/next' }}
+  IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
+  IS_NEXT_BRANCH: ${{ github.head_ref == 'next' }}
 
 jobs:
   install:
@@ -195,6 +195,7 @@ jobs:
           echo '{"version": 3, "routes": [{ "handle": "filesystem" }, {"check": true, "src": "/(.*)", "dest": "/"}]}' > .vercel/output/config.json
           mv dist/** .vercel/output/static
       - uses: amondnet/vercel-action@v19
+        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -214,6 +215,7 @@ jobs:
           echo '{"version": 3, "routes": [{ "handle": "filesystem" }, {"check": true, "src": "/(.*)", "dest": "/"}]}' > .vercel/output/config.json
           mv dist/** .vercel/output/static
       - uses: amondnet/vercel-action@v19
+        if: ${{ env.IS_NEXT_BRANCH == 'true' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -329,7 +331,7 @@ jobs:
 
   deploy-next:
     # Next branch only
-    if: ${{ github.ref == 'next' }}
+    if: ${{ github.head_ref  == 'next' }}
     environment: Next
     name: Deploy next
     needs: [
