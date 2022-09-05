@@ -1,5 +1,4 @@
 // Read the .env file.
-import fastifyCors from '@fastify/cors';
 // Require library to exit fastify process, gracefully (if possible)
 import * as closeWithGrace from 'close-with-grace';
 import * as dotenv from 'dotenv';
@@ -11,11 +10,6 @@ dotenv.config();
 // Instantiate Fastify with some config
 const app = Fastify({
   logger: true,
-});
-
-app.register(fastifyCors, {
-  // TODO: fix
-  origin: '*',
 });
 // Register your application as a normal plugin.
 app.register(import('./app'));

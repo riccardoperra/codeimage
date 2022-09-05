@@ -17,6 +17,7 @@ declare module 'fastify' {
       AUDIENCE_AUTH0?: string;
       CLIENT_SECRET_AUTH?: string;
       GRANT_TYPE_AUTH0?: string;
+      ALLOWED_ORIGINS?: string;
     };
   }
 }
@@ -43,6 +44,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
       AUTH0_CLIENT_CLAIMS: Type.RegEx(/^https?:/),
       AUDIENCE_AUTH0: Type.RegEx(/^https?:/),
       GRANT_TYPE_AUTH0: Type.String(),
+      ALLOWED_ORIGINS: Type.String(),
     }),
   });
 
