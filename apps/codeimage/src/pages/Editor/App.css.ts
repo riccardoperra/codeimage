@@ -34,3 +34,10 @@ export const canvasToolbar = style({
   paddingLeft: '1rem',
   paddingRight: '1rem',
 });
+
+export const mobileActionToolbar = style({
+  backdropFilter: 'blur(20px) saturate(180%)',
+  position: 'absolute',
+  width: '100%',
+  zIndex: themeVars.zIndex['10'],
+});

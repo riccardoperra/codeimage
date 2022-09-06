@@ -1,22 +1,24 @@
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {Box, Button, HStack, PortalHost} from '@codeimage/ui';
+import {Box, HStack, PortalHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, lazy, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
-import {ClipboardIcon} from '../../components/Icons/Clipboard';
 import {KeyboardShortcuts} from '../../components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
 import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItemt';
 import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
 import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
 import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
+import {ExportButton} from '../../components/Toolbar/ExportButton';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
+import {toolbarVars} from '../../components/Toolbar/Toolbar.css';
 import * as styles from './App.css';
 import {EditorReadOnlyBanner} from './components/EditorReadOnlyBanner';
 
@@ -34,7 +36,7 @@ export function App() {
   const {readOnly, clone} = getEditorSyncAdapter()!;
 
   return (
-    <>
+    <div>
       <Toolbar canvasRef={frameRef()} />
       <div class={styles.wrapper}>
         <Show when={modality === 'full' && !readOnly()}>
@@ -62,31 +64,26 @@ export function App() {
               <EditorReadOnlyBanner onClone={clone} />
             </Show>
 
-            <Show when={!readOnly()}>
+            <Show when={!readOnly() && modality === 'full'}>
               <Box paddingLeft={4} paddingTop={3}>
                 <HStack spacing={'2'}>
-                  <Show when={modality === 'full'}>
-                    <KeyboardShortcuts />
-                  </Show>
+                  <KeyboardShortcuts />
                 </HStack>
               </Box>
             </Show>
 
             <Show when={modality === 'mobile'}>
-              <Box paddingLeft={4} paddingTop={3} paddingRight={4}>
-                <HStack spacing={'2'}>
-                  <Button
-                    size={'xs'}
-                    variant={'solid'}
-                    theme={'secondary'}
-                    style={{width: 'auto', height: '30px'}}
-                  >
-                    <ClipboardIcon />
-                    <Box marginLeft={1}>Copy</Box>
-                  </Button>
-                  <Box flexGrow={1} />
-                  <ShareButton showLabel={true} />
+              <Box
+                class={styles.mobileActionToolbar}
+                paddingLeft={4}
+                paddingTop={3}
+                paddingBottom={3}
+                paddingRight={4}
+              >
+                <HStack spacing={'2'} justifyContent={'flexEnd'}>
+                  <ShareButton showLabel={false} />
                   <ExportInNewTabButton canvasRef={frameRef()} />
+                  <ExportButton canvasRef={frameRef()} />
                 </HStack>
               </Box>
             </Show>
@@ -112,7 +109,7 @@ export function App() {
           </Show>
         </Show>
       </div>
-    </>
+    </div>
   );
 }
 

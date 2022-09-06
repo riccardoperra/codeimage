@@ -1,4 +1,4 @@
-import {themeVars} from '@codeimage/ui';
+import {backgroundColorVar, colorVar, themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
 import {scaffoldVars} from '../Scaffold/Scaffold.css';
 
@@ -57,4 +57,17 @@ export const toolbarSnippetBox = style({
 
 export const toolbarSnippet = style({
   pointerEvents: 'auto',
+});
+
+export const mobileToolbarSnippet = style({
+  vars: {
+    [toolbarVars.toolbarHeight]: '32px',
+  },
+  height: toolbarVars.toolbarHeight,
+  width: '100%',
+  position: 'relative',
+  background: backgroundColorVar,
+  color: colorVar,
+  display: 'flex',
+  alignItems: 'center',
 });
