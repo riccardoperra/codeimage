@@ -1,3 +1,4 @@
+import {getLastPage} from '@core/modules/pagination';
 import {
   createEffect,
   ErrorBoundary,
@@ -19,7 +20,7 @@ export function ProjectList() {
   const dashboard = getDashboardState()!;
 
   const listIsEmpty = () => {
-    return !dashboard.data.error && dashboard.filteredData().length === 0;
+    return !dashboard.data.error && dashboard.filteredData()?.length === 0;
   };
 
   const reloadList = (err: unknown, reset: () => void) => {
@@ -32,7 +33,7 @@ export function ProjectList() {
     const list = Array.from({length: count || 5});
     return <Index each={list}>{() => <ProjectItemSkeleton />}</Index>;
   };
-  createEffect(() => console.log(dashboard.page(), dashboard.lastPage()));
+
   return (
     <ErrorBoundary
       fallback={(err, reset) => (
@@ -51,14 +52,14 @@ export function ProjectList() {
           fallback={() => <ProjectEmptyListMessage />}
         >
           <ul class={styles.gridList}>
-            <For each={dashboard.filteredData().splice(0, 20)}>
+            <For each={dashboard.pagedData()}>
               {item => <ProjectItem item={item} />}
             </For>
           </ul>
           <Pagination
             value={dashboard.page()}
             onChange={dashboard.setPage}
-            maxValue={dashboard.lastPage()}
+            maxValue={getLastPage(dashboard.data, dashboard.perPage)}
           />
         </Show>
       </Suspense>
