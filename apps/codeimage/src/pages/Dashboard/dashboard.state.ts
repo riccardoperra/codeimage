@@ -7,7 +7,7 @@ import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {appEnvironment} from '@core/configuration';
 import {createPagedData} from '@core/modules/pagination';
 import {createContextProvider} from '@solid-primitives/context';
-import {createResource, createSignal} from 'solid-js';
+import {createResource, createSignal, createEffect} from 'solid-js';
 import {API} from '../../data-access/api';
 function makeDashboardState(authState = getAuth0State()) {
   const [data, {mutate, refetch}] = createResource(fetchWorkspaceContent, {
@@ -19,7 +19,7 @@ function makeDashboardState(authState = getAuth0State()) {
   const filteredData = () => {
     const searchValue = search();
     if (!data()) return [];
-    if (!searchValue || searchValue.length < 2)
+    if (!searchValue || searchValue.length > 2)
       return (
         data().filter(item =>
           item.name.toLowerCase().includes(searchValue.toLowerCase()),
@@ -27,10 +27,15 @@ function makeDashboardState(authState = getAuth0State()) {
       );
     return [];
   };
-  const [pagedData, {page, setPage, perPage}] = createPagedData(() =>
+
+  const [pagedData, {page, setPage, pageSize}] = createPagedData(() =>
     filteredData(),
   );
 
+  createEffect(() => {
+    const searchValue = search();
+    if (!searchValue || searchValue.length > 2) setPage(1);
+  });
   async function fetchWorkspaceContent(): Promise<
     ApiTypes.GetProjectByIdApi['response'][]
   > {
@@ -141,7 +146,7 @@ function makeDashboardState(authState = getAuth0State()) {
     pagedData,
     page,
     setPage,
-    perPage,
+    pageSize,
   };
 }
 

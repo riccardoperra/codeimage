@@ -1,17 +1,26 @@
-import {Accessor, createSignal, Setter} from 'solid-js';
+import {Accessor, createSignal, Setter, createEffect} from 'solid-js';
 
 export const createPagedData = <T>(
   data: Accessor<T[] | undefined>,
 ): [
   Accessor<T[]>,
-  {page: Accessor<number>; setPage: Setter<number>; perPage: number},
+  {page: Accessor<number>; setPage: Setter<number>; pageSize: number},
 ] => {
   const [page, setPage] = createSignal(1),
-    perPage = 9;
-
+    pageSize = 9;
+  createEffect(() =>
+    console.log('page', {
+      start: (page() - 1) * pageSize,
+      end: (page() - 1) * pageSize + pageSize,
+    }),
+  );
   const pagedData = () => {
-    return data()?.slice(page() * perPage, page() * perPage + perPage) ?? [];
+    const start = (page() - 1) * pageSize;
+    const end = start + pageSize;
+    return data()?.slice(start, end) ?? [];
   };
 
-  return [pagedData, {page, setPage, perPage}];
+  return [pagedData, {page, setPage, pageSize}];
 };
+
+// pageItems = pageItems.slice(this.pageNumber * this.pageSize, (this.pageNumber + 1) * this.pageSize);
