@@ -7,15 +7,7 @@ import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Router, useRoutes} from '@solidjs/router';
-import {
-  Component,
-  createEffect,
-  lazy,
-  on,
-  onMount,
-  Show,
-  Suspense,
-} from 'solid-js';
+import {Component, createEffect, lazy, on, onMount, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
@@ -56,7 +48,7 @@ const Editor = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
 const NotFoundPage = lazyWithNoLauncher(
   () => import('./pages/NotFound/NotFoundPage'),
 );
-
+const Example = lazyWithNoLauncher(() => import('./pages/example'));
 export function Bootstrap() {
   getRootEditorStore();
   const [, {locale}] = useI18n();
@@ -66,14 +58,7 @@ export function Bootstrap() {
   const Routes = useRoutes([
     {
       path: '',
-      component: () => {
-        const state = getAuth0State();
-        return (
-          <Show fallback={() => <Editor />} when={state.loggedIn()}>
-            <Dashboard />
-          </Show>
-        );
-      },
+      component: Example,
     },
     {
       path: ':snippetId',

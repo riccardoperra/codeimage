@@ -1,21 +1,17 @@
 import {IconButton} from '@codeimage/ui';
-import {ParentProps} from 'solid-js';
+import {createEffect, ParentProps} from 'solid-js';
+import {buttonPaginationProps} from './buttons';
 
-const Page = (
-  props: ParentProps<{
-    onChange: (value: number) => void;
-    value: number | string;
-    active: boolean;
-    rigenerate: boolean;
-  }>,
-) => {
+const Page = (props: ParentProps<buttonPaginationProps>) => {
+  createEffect(() =>
+    console.log('Page', {valore: props.value, selected: props.selected}),
+  );
   return (
     <IconButton
       style={{
-        border: props.active ? '1px solid gray' : '',
+        border: props.selected ? '1px solid gray' : '',
       }}
-      onClick={() => props.onChange(props.value as number)}
-      disabled={props.value === '...'}
+      onClick={() => props.onClick(props.value as number)}
     >
       {props.value}
     </IconButton>
