@@ -22,5 +22,3 @@ export const createPagedData = <T>(
 
   return [pagedData, {page, setPage, pageSize}];
 };
-
-// pageItems = pageItems.slice(this.pageNumber * this.pageSize, (this.pageNumber + 1) * this.pageSize);

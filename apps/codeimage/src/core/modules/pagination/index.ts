@@ -1,3 +1,3 @@
-export {getNPages as getnPage} from './getnPage';
+export {arrayFomRange} from './arrayFromRange';
 export {getLastPage} from './getLastPage';
 export {createPagedData} from './createPagedData';

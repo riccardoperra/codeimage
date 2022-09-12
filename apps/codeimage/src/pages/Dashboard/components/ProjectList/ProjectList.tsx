@@ -57,9 +57,9 @@ export function ProjectList() {
             </For>
           </ul>
           <Pagination
-            value={dashboard.page()}
+            pageNumber={dashboard.page()}
             onChange={dashboard.setPage}
-            maxValue={getLastPage(dashboard.filteredData, dashboard.pageSize)}
+            pageSize={getLastPage(dashboard.filteredData, dashboard.pageSize)}
           />
         </Show>
       </Suspense>

@@ -1,25 +1,20 @@
-import {arrayFomRange} from '@core/modules/pagination/getnPage';
-import {Accessor, indexArray, mapArray, Setter} from 'solid-js';
-export const usePaginationButtons = (
-  maxValue: Accessor<number>,
+import {arrayFomRange} from '@core/modules/pagination/arrayFromRange';
+import {Accessor, mapArray, Setter} from 'solid-js';
+export const createPaginationButtons = (
+  lastPage: Accessor<number>,
   selectedPage: Accessor<number>,
   onChange: Setter<number>,
   disabled: boolean,
 ) => {
-  // const count = 1;
   const boundaryCount = 1;
   const siblingCount = 1;
-  // const buttonsQuantity = siblingCount * 2 + boundaryCount * 2 + 1 + 2;
-
-  // const startPages = range(1, Math.min(boundaryCount, count));
-  // const endPages = range(Math.max(count - boundaryCount + 1, boundaryCount + 1), count);
 
   const startPages = () =>
     arrayFomRange(1, Math.min(boundaryCount, selectedPage()));
   const endPages = () =>
     arrayFomRange(
-      Math.max(maxValue() - boundaryCount + 1, boundaryCount + 1),
-      maxValue(),
+      Math.max(lastPage() - boundaryCount + 1, boundaryCount + 1),
+      lastPage(),
     );
 
   const siblingsStart = () =>
@@ -28,7 +23,7 @@ export const usePaginationButtons = (
         // Natural start
         selectedPage() - siblingCount,
         // Lower boundary when page is high
-        maxValue() - boundaryCount - siblingCount * 2 - 1,
+        lastPage() - boundaryCount - siblingCount * 2 - 1,
       ),
       // Greater than startPages
       boundaryCount + 2,
@@ -43,22 +38,8 @@ export const usePaginationButtons = (
         boundaryCount + siblingCount * 2 + 2,
       ),
       // Less than endPages
-      endPages().length > 0 ? endPages()[0] - 2 : maxValue() - 1,
+      endPages().length > 0 ? endPages()[0] - 2 : lastPage() - 1,
     );
-
-  // const buttons = arrayFomRange(1, buttonsQuantity);
-  // const itemList = () => [...startPages, '...', maxValue()];
-  // console.log('buttons', {
-  //   siblingsStart(),
-  //   siblingsEnd,
-  //   startPages,
-  //   endPages,
-  //   length: endPages.length,
-  //   buttons,
-  //   itemList,
-  //   selectedPage: selectedPage(),
-  // });
-  // mapArray
   const itemList = () => [
     ...startPages(),
 
@@ -66,7 +47,7 @@ export const usePaginationButtons = (
     // eslint-disable-next-line no-nested-ternary
     ...(siblingsStart() > boundaryCount + 2
       ? ['start-ellipsis']
-      : boundaryCount + 1 < maxValue() - boundaryCount
+      : boundaryCount + 1 < lastPage() - boundaryCount
       ? [boundaryCount + 1]
       : []),
 
@@ -75,10 +56,10 @@ export const usePaginationButtons = (
 
     // End ellipsis
     // eslint-disable-next-line no-nested-ternary
-    ...(siblingsEnd() < maxValue() - boundaryCount - 1
+    ...(siblingsEnd() < lastPage() - boundaryCount - 1
       ? ['end-ellipsis']
-      : maxValue() - boundaryCount > boundaryCount
-      ? [maxValue() - boundaryCount]
+      : lastPage() - boundaryCount > boundaryCount
+      ? [lastPage() - boundaryCount]
       : []),
 
     ...endPages(),
@@ -107,6 +88,7 @@ export const usePaginationButtons = (
   });
   return items;
 };
+
 export type buttonPaginationProps = {
   onClick?: Setter<number | string>;
   value: number | string;

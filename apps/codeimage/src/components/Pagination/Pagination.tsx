@@ -1,38 +1,28 @@
 import {Box, IconButton} from '@codeimage/ui';
-import {createEffect, For, mergeProps, ParentProps, Setter} from 'solid-js';
-import {usePaginationButtons} from './buttons';
+import {For, mergeProps, ParentProps, Setter} from 'solid-js';
+import {createPaginationButtons} from './buttons';
 import Page from './page';
 
 export interface PaginationProps {
-  /**
-   * The current value (controlled).
-   */
-  value?: number;
+  pageNumber?: number;
   /**
    * Handler that is called when the value changes.
    */
   onChange: Setter<number>;
-  maxValue?: number;
+  pageSize?: number;
 }
 
 const Pagination = (props: ParentProps<PaginationProps>) => {
   const merged = mergeProps(
-    {value: 1, maxValue: 1} as Required<PaginationProps>,
+    {pageNumber: 1, pageSize: 1} as Required<PaginationProps>,
     props,
   );
-  // createEffect(() =>
-  //   console.log('Props Pagination', {
-  //     value: merged.value,
-  //     max: merged.maxValue,
-  //   }),
-  // );
-  const itemButtons = usePaginationButtons(
-    () => merged.maxValue,
-    () => merged.value,
+  const itemButtons = createPaginationButtons(
+    () => merged.pageSize,
+    () => merged.pageNumber,
     page => props.onChange(page),
     false,
   );
-  // console.log('buttons ITEMS', itemButtons);
   return (
     <Box display={'flex'} flexDirection="column" style={{color: 'white'}}>
       <Box display={'flex'} gap={2}>
