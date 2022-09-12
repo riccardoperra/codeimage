@@ -97,6 +97,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         variant={'solid'}
         theme={'primary'}
         loading={data.loading}
+        size={modality === 'full' ? 'sm' : 'xs'}
         leftIcon={() => <DownloadIcon />}
       >
         {label()}

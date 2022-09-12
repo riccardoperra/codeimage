@@ -19,7 +19,6 @@ export function CreateNewProjectButton() {
       if (!result) return;
       toast.success(t('dashboard.projectCreateSuccess'), {
         position: 'bottom-center',
-        duration: 100000,
       });
       navigate(`/${result.id}`);
     } catch (e) {

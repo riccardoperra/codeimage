@@ -9,8 +9,8 @@ export const adaptiveFullScreenHeight = style({
 
       '@supports': {
         // ios 15+
-        '(height: 100svh)': {
-          height: '100svh',
+        '(height: 100dvh)': {
+          height: '100dvh',
         },
       },
 

@@ -2,20 +2,12 @@ import {style} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
 import {scaffoldVars} from '../Scaffold/Scaffold.css';
 
-export const floatingWrapper = style({
-  position: 'fixed',
-  bottom: 0,
-  padding: '12px',
-  width: '100vw',
-});
 export const wrapper = style({
-  borderRadius: '16px',
   height: `calc(${scaffoldVars.toolbarHeight} + env(safe-area-inset-bottom, 20px))`,
   overflow: 'hidden',
   width: '100%',
   borderTop: `1px solid ${themeVars.dynamicColors.divider}`,
   backgroundColor: themeVars.dynamicColors.bottomBar.backgroundColor,
-  backdropFilter: 'blur(20px) saturate(180%)',
   color: themeVars.dynamicColors.bottomBar.textColor,
   display: 'grid',
   alignItems: 'center',

@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Button, toast} from '@codeimage/ui';
+import {useModality} from '@core/hooks/isMobile';
 import {Component, createEffect, untrack} from 'solid-js';
 import {
   ExportExtension,
@@ -15,6 +16,7 @@ interface ExportButtonProps {
 }
 
 export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
+  const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
 
   const [data, notify] = useExportImage();
@@ -66,7 +68,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
       loading={data.loading}
       leftIcon={() => <ExternalLinkIcon />}
       onClick={() => openInTab()}
-      size={'sm'}
+      size={modality === 'full' ? 'sm' : 'xs'}
     >
       {label()}
     </Button>

@@ -74,8 +74,12 @@ export function ToolbarSnippetName() {
             }
             when={editing()}
           >
-            <div
+            <form
               use:clickOutside={() => {
+                setEditing(false);
+                updateSnippetName(value());
+              }}
+              onSubmit={() => {
                 setEditing(false);
                 updateSnippetName(value());
               }}
@@ -114,7 +118,7 @@ export function ToolbarSnippetName() {
                   </FlexField>
                 );
               }}
-            </div>
+            </form>
           </Show>
         </Show>
       </Box>

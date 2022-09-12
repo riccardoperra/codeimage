@@ -20,7 +20,6 @@ import {ToolbarSnippetName} from './ToolbarSnippetName';
 
 interface ToolbarProps {
   canvasRef: HTMLElement | undefined;
-  ref?: Ref<HTMLDivElement>;
 }
 
 export function Toolbar(props: VoidProps<ToolbarProps>) {
@@ -46,7 +45,7 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
   }
 
   return (
-    <div ref={props.ref}>
+    <div class={styles.toolbar}>
       <div class={styles.wrapper}>
         <ToolbarSettingsButton />
         <Box display={'flex'} alignItems={'center'} marginLeft={5}>

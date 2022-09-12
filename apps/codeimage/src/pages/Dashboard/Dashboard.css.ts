@@ -42,6 +42,9 @@ export const main = style({
     [`(min-width: 1280px)`]: {
       width: '1280px',
     },
+    'screen and (max-width: 768px)': {
+      marginTop: themeVars.spacing['4'],
+    },
   },
 });
 

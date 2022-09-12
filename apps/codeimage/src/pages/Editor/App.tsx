@@ -1,6 +1,12 @@
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {Box, HStack, PortalHost} from '@codeimage/ui';
+import {
+  adaptiveFullScreenHeight,
+  Box,
+  dynamicFullHeight,
+  HStack,
+  PortalHost,
+} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, lazy, Show, Suspense} from 'solid-js';
@@ -18,7 +24,6 @@ import {ExportButton} from '../../components/Toolbar/ExportButton';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
-import {toolbarVars} from '../../components/Toolbar/Toolbar.css';
 import * as styles from './App.css';
 import {EditorReadOnlyBanner} from './components/EditorReadOnlyBanner';
 
@@ -36,7 +41,11 @@ export function App() {
   const {readOnly, clone} = getEditorSyncAdapter()!;
 
   return (
-    <div>
+    <Box
+      display={'flex'}
+      flexDirection={'column'}
+      class={adaptiveFullScreenHeight}
+    >
       <Toolbar canvasRef={frameRef()} />
       <div class={styles.wrapper}>
         <Show when={modality === 'full' && !readOnly()}>
@@ -73,13 +82,7 @@ export function App() {
             </Show>
 
             <Show when={modality === 'mobile'}>
-              <Box
-                class={styles.mobileActionToolbar}
-                paddingLeft={4}
-                paddingTop={3}
-                paddingBottom={3}
-                paddingRight={4}
-              >
+              <Box class={styles.mobileActionToolbar}>
                 <HStack spacing={'2'} justifyContent={'flexEnd'}>
                   <ShareButton showLabel={false} />
                   <ExportInNewTabButton canvasRef={frameRef()} />
@@ -94,7 +97,9 @@ export function App() {
               </Suspense>
             </FrameHandler>
 
-            <Footer />
+            <Show when={modality === 'full'} keyed={false}>
+              <Footer />
+            </Show>
           </SuspenseEditorItem>
         </Canvas>
 
@@ -109,7 +114,7 @@ export function App() {
           </Show>
         </Show>
       </div>
-    </div>
+    </Box>
   );
 }
 

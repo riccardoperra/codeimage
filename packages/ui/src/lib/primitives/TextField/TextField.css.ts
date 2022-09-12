@@ -50,6 +50,7 @@ export const textField = recipe({
         borderBottom: `2px solid ${textFieldVars.background}`,
         borderRadius: 0,
         paddingLeft: 0,
+        paddingRight: 0,
       },
     },
     withLeftIcon: {

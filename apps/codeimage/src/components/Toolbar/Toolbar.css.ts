@@ -7,6 +7,10 @@ export const [toolbarTheme, toolbarVars] = createTheme({
   toolbarHeight: scaffoldVars.toolbarHeight,
 });
 
+export const toolbar = style({
+  zIndex: themeVars.zIndex['10'],
+});
+
 export const wrapper = style([
   toolbarTheme,
   {

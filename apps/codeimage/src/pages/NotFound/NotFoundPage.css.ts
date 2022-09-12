@@ -1,4 +1,8 @@
-import {adaptiveFullScreenHeight, themeVars} from '@codeimage/ui';
+import {
+  adaptiveFullScreenHeight,
+  dynamicFullHeight,
+  themeVars,
+} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 
 export const wrapper = style([
