@@ -94,7 +94,7 @@ createGlobalTheme('[data-codeimage-theme="dark"]', themeColors, {
   },
 
   bottomBar: {
-    backgroundColor: `${darkGrayScale.gray5}90`,
+    backgroundColor: darkGrayScale.gray5,
     textColor: darkGrayScale.gray11,
   },
 
