@@ -1,10 +1,11 @@
 import {style} from '@vanilla-extract/css';
 import {themeVars} from '../../theme';
 import * as buttonStyles from '../Button/Button.css';
+import {ButtonSizes} from '../Button/Button.css';
 
 export const menuItem = style([
   buttonStyles.button,
-  buttonStyles.buttonVariant({size: 'sm'}),
+  buttonStyles.buttonVariant({size: ButtonSizes.md}),
   {
     textAlign: 'left',
     justifyContent: 'flex-start',

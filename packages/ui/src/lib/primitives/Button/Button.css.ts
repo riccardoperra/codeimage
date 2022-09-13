@@ -209,7 +209,7 @@ export const buttonVariant = recipe({
   defaultVariants: {
     variant: 'solid',
     theme: 'primary',
-    size: 'md',
+    size: ButtonSizes.md,
   },
 });
 

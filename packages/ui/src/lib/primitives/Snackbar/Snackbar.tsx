@@ -4,6 +4,7 @@ import {createSignal, JSX, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {Box} from '../Box';
 import {Button} from '../Button';
+import {ButtonSizes} from '../Button/Button.css';
 import {SvgIcon} from '../Icon';
 import {Text} from '../Text';
 import {FadeInOutWithScaleTransition} from '../Transition';
@@ -41,7 +42,7 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
             <Box marginLeft={'4'}>
               <Button
                 type={'button'}
-                size={'xs'}
+                size={ButtonSizes.xs}
                 pill
                 variant={'solid'}
                 theme={'secondary'}
