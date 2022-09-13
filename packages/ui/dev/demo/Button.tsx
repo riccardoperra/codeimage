@@ -9,8 +9,15 @@ import {
   Text,
   VStack,
 } from '../../src';
+import {ButtonSizes} from '../../src/lib/primitives/Button/Button.css';
 
-const sizes = ['xxs', 'xs', 'sm', 'md', 'lg'] as const;
+const sizes = [
+  ButtonSizes.xxs,
+  ButtonSizes.xs,
+  ButtonSizes.sm,
+  ButtonSizes.md,
+  ButtonSizes.lg,
+] as const;
 const themes = ['primary', 'primaryAlt', 'secondary', 'danger'] as const;
 const variants = ['solid', 'outline', 'link'] as const;
 

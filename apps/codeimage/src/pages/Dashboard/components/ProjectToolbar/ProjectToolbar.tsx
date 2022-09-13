@@ -19,7 +19,7 @@ export function ProjectToolbar() {
           <CreateNewProjectButton />
         </Show>
       </Box>
-      <Box marginBottom={6}>
+      <div class={styles.container}>
         <Show when={!dashboard.data.isEmpty()}>
           <FlexField size={'lg'}>
             <TextField
@@ -31,7 +31,7 @@ export function ProjectToolbar() {
             ></TextField>
           </FlexField>
         </Show>
-      </Box>
+      </div>
     </>
   );
 }

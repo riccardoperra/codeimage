@@ -1,18 +1,13 @@
-import {
-  adaptiveFullScreenHeight,
-  backgroundColorVar,
-  themeVars,
-} from '@codeimage/ui';
+import {adaptiveFullScreenHeight, themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
-import {scaffoldVars} from '../../components/Scaffold/Scaffold.css';
 
 export const wrapper = style([
-  adaptiveFullScreenHeight,
   {
     width: '100vw',
     position: 'relative',
     display: 'flex',
-    height: `calc(100vh - ${scaffoldVars.toolbarHeight})`,
+    height: '100%',
+    minHeight: 0,
 
     '@media': {
       'screen and (max-width: 768px)': {
@@ -22,15 +17,14 @@ export const wrapper = style([
   },
 ]);
 
-export const canvasToolbar = style({
-  height: '42px',
-  backgroundColor: backgroundColorVar,
-  color: themeVars.dynamicColors.baseText,
+export const mobileActionToolbar = style({
+  backdropFilter: 'blur(20px) saturate(180%)',
+  '-webkitBackdropFilter': 'blur(20px) saturate(180%)',
+  position: 'absolute',
+  paddingTop: themeVars.spacing['2'],
+  paddingBottom: themeVars.spacing['2'],
+  paddingLeft: themeVars.spacing['4'],
+  paddingRight: themeVars.spacing['4'],
   width: '100%',
-  borderRadius: '0',
-  boxShadow: themeVars.boxShadow.md,
-  display: 'flex',
-  alignItems: 'center',
-  paddingLeft: '1rem',
-  paddingRight: '1rem',
+  zIndex: 5,
 });

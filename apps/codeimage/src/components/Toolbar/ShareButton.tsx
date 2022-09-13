@@ -1,7 +1,8 @@
 import {useI18n} from '@codeimage/locale';
 import {Button, IconButton, SvgIcon} from '@codeimage/ui';
-import {Component, createMemo, mergeProps, onMount, Show} from 'solid-js';
-import {useWebshare} from '../../core/hooks/use-webshare';
+import {useModality} from '@core/hooks/isMobile';
+import {useWebshare} from '@core/hooks/use-webshare';
+import {Component, createMemo, onMount, Show} from 'solid-js';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {AppLocaleEntries} from '../../i18n';
 import {ShareIcon} from '../Icons/ShareIcon';
@@ -11,8 +12,7 @@ interface ShareButtonProps {
 }
 
 export const ShareButton: Component<ShareButtonProps> = props => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const computedProps = mergeProps({showLabel: false, props});
+  const modality = useModality();
   const [support, shareable, share] = useWebshare();
   const canShare = createMemo(() => support() && shareable(getData()));
   const [t] = useI18n<AppLocaleEntries>();
@@ -47,7 +47,12 @@ export const ShareButton: Component<ShareButtonProps> = props => {
     <Show when={canShare()}>
       <Show
         fallback={() => (
-          <IconButton variant={'solid'} theme={'secondary'} onClick={onShare}>
+          <IconButton
+            size={modality === 'full' ? 'sm' : 'xs'}
+            variant={'solid'}
+            theme={'secondary'}
+            onClick={onShare}
+          >
             <ShareIcon size={'sm'} />
           </IconButton>
         )}
@@ -58,6 +63,7 @@ export const ShareButton: Component<ShareButtonProps> = props => {
           variant={'solid'}
           theme={'secondary'}
           onClick={onShare}
+          size={modality === 'full' ? 'sm' : 'xs'}
           leftIcon={() => (
             <SvgIcon viewBox="0 0 20 20" fill="currentColor">
               <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />

@@ -8,7 +8,8 @@ import * as styles from './IconButton.css';
 export function IconButton<T extends ValidConstructor = 'button'>(
   props: ParentProps<ButtonProps<T>>,
 ) {
-  const classes = () => clsx(styles.iconButton, props.class);
+  const classes = () =>
+    clsx(styles.iconButton({size: props.size}), props.class);
 
   return (
     <Button {...omitProps(props, ['class', 'children'])} class={classes()}>

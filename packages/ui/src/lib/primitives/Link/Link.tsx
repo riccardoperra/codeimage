@@ -2,7 +2,7 @@ import {JSX} from 'solid-js';
 import * as styles from './Link.css';
 import clsx from 'clsx';
 import {omitProps} from 'solid-use';
-import {Text, TextProps} from '../Text';
+import {Text, TextProps} from '../Text/Text';
 
 interface LinkProps extends TextProps<'a'> {
   underline?: boolean;

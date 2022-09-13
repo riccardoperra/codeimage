@@ -1,10 +1,14 @@
-import {themeVars} from '@codeimage/ui';
+import {backgroundColorVar, colorVar, themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
 import {scaffoldVars} from '../Scaffold/Scaffold.css';
 
 export const [toolbarTheme, toolbarVars] = createTheme({
   backgroundColor: themeVars.backgroundColor.white,
   toolbarHeight: scaffoldVars.toolbarHeight,
+});
+
+export const toolbar = style({
+  zIndex: themeVars.zIndex['10'],
 });
 
 export const wrapper = style([
@@ -57,4 +61,26 @@ export const toolbarSnippetBox = style({
 
 export const toolbarSnippet = style({
   pointerEvents: 'auto',
+});
+
+export const toolbarSnippetName = style({
+  transition: `background-color 225ms ease-in-out`,
+  padding: `${themeVars.spacing['1']} ${themeVars.spacing['3']}`,
+  borderRadius: themeVars.borderRadius.lg,
+  ':hover': {
+    backgroundColor: themeVars.dynamicColors.input.accentColor,
+  },
+});
+
+export const mobileToolbarSnippet = style({
+  vars: {
+    [toolbarVars.toolbarHeight]: '32px',
+  },
+  height: toolbarVars.toolbarHeight,
+  width: '100%',
+  position: 'relative',
+  background: backgroundColorVar,
+  color: colorVar,
+  display: 'flex',
+  alignItems: 'center',
 });

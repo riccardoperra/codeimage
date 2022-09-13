@@ -1,5 +1,7 @@
 import {Box, Button, SvgIcon, SvgIconProps} from '@codeimage/ui';
+import {useModality} from '@core/hooks/isMobile';
 import {ButtonProps} from 'solid-headless';
+import {Show} from 'solid-js';
 import * as styles from './GithubLoginButton.css';
 
 function GithubIcon(props: SvgIconProps) {
@@ -13,11 +15,14 @@ function GithubIcon(props: SvgIconProps) {
 export function GithubLoginButton(
   buttonProps: Omit<ButtonProps<'a'>, 'as' | 'class'>,
 ) {
+  const modality = useModality();
   return (
     <Button as={'a'} class={styles.button} {...buttonProps}>
       <GithubIcon size={'md'}></GithubIcon>
       <Box as={'span'} marginLeft={2}>
-        Sign in with Github
+        <Show fallback={'Sign in'} when={modality === 'full'} keyed={true}>
+          Sign in with Github
+        </Show>
       </Box>
     </Button>
   );

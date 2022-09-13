@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+import {omitProps} from 'solid-use';
 import {Box, BoxProps} from './Box';
 import * as styles from './Stack.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -24,11 +26,11 @@ export const VStack = (props: StackProps) => {
 export const HStack = (props: StackProps) => {
   return (
     <Box
-      class={styles.hStack}
+      {...omitProps(props, ['class', 'style'])}
+      class={clsx(styles.hStack, props.class)}
       style={assignInlineVars({
         [styles.stackThemeVars.spacing]: themeVars.spacing[props.spacing],
       })}
-      {...props}
     >
       {props.children}
     </Box>
