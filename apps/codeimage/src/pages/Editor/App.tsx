@@ -1,14 +1,7 @@
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {
-  adaptiveFullScreenHeight,
-  Box,
-  dynamicFullHeight,
-  HStack,
-  PortalHost,
-} from '@codeimage/ui';
+import {adaptiveFullScreenHeight, Box, HStack, PortalHost} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, lazy, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';

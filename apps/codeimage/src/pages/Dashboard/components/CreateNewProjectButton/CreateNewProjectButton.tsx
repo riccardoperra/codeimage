@@ -1,8 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {Box, Button, Loading, toast} from '@codeimage/ui';
+import {Button, toast} from '@codeimage/ui';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {useNavigate} from '@solidjs/router';
-import {Show} from 'solid-js';
 import {PlusIcon} from '../../../../components/Icons/PlusIcon';
 import {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';

@@ -6,7 +6,7 @@ import {backgroundColorVar, Box, Button, colorVar, HStack} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
 import {Link} from '@solidjs/router';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createMemo, Ref, Show, VoidProps} from 'solid-js';
+import {createMemo, Show, VoidProps} from 'solid-js';
 import {CodeImageLogo} from '../Icons/CodeImageLogo';
 import {CollectionIcon} from '../Icons/Collection';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
@@ -33,7 +33,7 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
     () =>
       themes().find(
         theme => theme()?.id === editor.state.options.themeId,
-      )?.() ?? themes()[0]?.()!,
+      )?.() ?? themes()[0]()!,
   );
 
   function SnippetNameBox() {

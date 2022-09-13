@@ -4,7 +4,6 @@ import {Show} from 'solid-js';
 import {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
 import {CreateNewProjectButton} from '../CreateNewProjectButton/CreateNewProjectButton';
-import {container} from './ProjectToolbar.css';
 import * as styles from './ProjectToolbar.css';
 
 export function ProjectToolbar() {
