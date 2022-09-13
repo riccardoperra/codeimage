@@ -5,6 +5,14 @@ import * as variables from '../../theme/variables.css';
 
 export const buttonHeight = createVar();
 
+export const enum ButtonSizes {
+  xxs = 'xxs',
+  xs = 'xs',
+  sm = 'sm',
+  md = 'md',
+  lg = 'lg',
+}
+
 export const button = style({
   position: 'relative',
   display: 'inline-flex',
@@ -41,6 +49,8 @@ export const button = style({
 
 export const buttonIcon = style({
   marginRight: themeVars.spacing['2'],
+  width: `calc(${variables.fontSize} + 0.25rem)`,
+  height: `calc(${variables.fontSize} + 0.25rem)`,
 });
 
 export const buttonVariant = recipe({
@@ -161,33 +171,33 @@ export const buttonVariant = recipe({
     },
 
     size: {
-      lg: {
+      [ButtonSizes.lg]: {
         vars: {
           [buttonHeight]: '48px',
           [variables.fontSize]: themeVars.fontSize.lg,
         },
         minWidth: '72px',
       },
-      md: {
+      [ButtonSizes.md]: {
         vars: {
           [buttonHeight]: '42px',
           [variables.fontSize]: themeVars.fontSize.base,
         },
       },
-      sm: {
+      [ButtonSizes.sm]: {
         vars: {
           [buttonHeight]: '36px',
           [variables.fontSize]: themeVars.fontSize.sm,
         },
       },
-      xs: {
+      [ButtonSizes.xs]: {
         vars: {
           [buttonHeight]: '30px',
           [variables.fontSize]: themeVars.fontSize.xs,
         },
         padding: `0 ${themeVars.spacing['2']}`,
       },
-      xxs: {
+      [ButtonSizes.xxs]: {
         vars: {
           [buttonHeight]: '24px',
           [variables.fontSize]: themeVars.fontSize.xs,

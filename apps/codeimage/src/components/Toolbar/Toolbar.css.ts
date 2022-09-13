@@ -63,6 +63,15 @@ export const toolbarSnippet = style({
   pointerEvents: 'auto',
 });
 
+export const toolbarSnippetName = style({
+  transition: `background-color 225ms ease-in-out`,
+  padding: `${themeVars.spacing['1']} ${themeVars.spacing['3']}`,
+  borderRadius: themeVars.borderRadius.lg,
+  ':hover': {
+    backgroundColor: themeVars.dynamicColors.input.accentColor,
+  },
+});
+
 export const mobileToolbarSnippet = style({
   vars: {
     [toolbarVars.toolbarHeight]: '32px',

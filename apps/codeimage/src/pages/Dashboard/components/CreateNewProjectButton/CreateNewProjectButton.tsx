@@ -27,13 +27,14 @@ export function CreateNewProjectButton() {
   }
 
   return (
-    <Button theme="primary" variant="solid" onClick={() => notify()}>
-      <Show when={data.loading} fallback={<PlusIcon size={'sm'} />}>
-        <Loading size={'sm'} />
-      </Show>
-      <Box as={'span'} marginLeft={2}>
-        {t('dashboard.new')}
-      </Box>
+    <Button
+      loading={data.loading}
+      leftIcon={<PlusIcon />}
+      theme="primary"
+      variant="solid"
+      onClick={() => notify()}
+    >
+      {t('dashboard.new')}
     </Button>
   );
 }

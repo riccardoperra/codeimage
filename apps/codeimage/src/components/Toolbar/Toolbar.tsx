@@ -59,15 +59,15 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
                 href={'/dashboard'}
                 variant={'link'}
                 theme={'secondary'}
+                leftIcon={<CollectionIcon />}
               >
-                <CollectionIcon />
-                <Box marginLeft={2}>Dashboard</Box>
+                Dashboard
               </Button>
             </Box>
           </Show>
         </Box>
 
-        <Show when={modality === 'full'} keyed={false}>
+        <Show when={modality === 'full' && isRemote()} keyed={false}>
           <SnippetNameBox />
         </Show>
 

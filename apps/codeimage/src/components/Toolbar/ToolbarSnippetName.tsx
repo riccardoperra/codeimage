@@ -50,6 +50,11 @@ export function ToolbarSnippetName() {
     }
   }
 
+  function submit() {
+    setEditing(false);
+    updateSnippetName(value());
+  }
+
   return (
     <SuspenseEditorItem
       fallback={<SkeletonLine width={'120px'} height={'22px'} />}
@@ -61,11 +66,16 @@ export function ToolbarSnippetName() {
         >
           <Show
             fallback={
-              <HStack spacing={'2'} alignItems={'center'} lineHeight={'normal'}>
-                <LoadingCircle
-                  visibility={remoteSync() ? 'visible' : 'hidden'}
-                  size={'sm'}
-                />
+              <HStack
+                spacing={'2'}
+                alignItems={'center'}
+                lineHeight={'normal'}
+                class={styles.toolbarSnippetName}
+              >
+                <Show when={remoteSync()}>
+                  <LoadingCircle size={'sm'} />
+                </Show>
+
                 <Text size={'sm'} onClick={toggleEdit}>
                   {value() ?? 'Untitled'}
                 </Text>
@@ -74,16 +84,7 @@ export function ToolbarSnippetName() {
             }
             when={editing()}
           >
-            <form
-              use:clickOutside={() => {
-                setEditing(false);
-                updateSnippetName(value());
-              }}
-              onSubmit={() => {
-                setEditing(false);
-                updateSnippetName(value());
-              }}
-            >
+            <form use:clickOutside={submit} onSubmit={submit}>
               {() => {
                 let ref: HTMLInputElement | undefined;
                 onMount(() => {
