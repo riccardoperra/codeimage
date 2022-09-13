@@ -19,7 +19,7 @@ export const wrapper = style([
 
 export const mobileActionToolbar = style({
   backdropFilter: 'blur(20px) saturate(180%)',
-  '-webkitBackdropFilter': 'blur(20px) saturate(180%)',
+  ['webkitBackdropFilter' as string]: 'blur(20px) saturate(180%)',
   position: 'absolute',
   paddingTop: themeVars.spacing['2'],
   paddingBottom: themeVars.spacing['2'],
