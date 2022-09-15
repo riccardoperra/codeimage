@@ -56,6 +56,7 @@ export function ProjectList() {
               {item => <ProjectItem item={item} />}
             </For>
           </ul>
+          <pre>selected Page: {dashboard.page()}</pre>
           <Pagination
             pageNumber={dashboard.page()}
             onChange={dashboard.setPage}

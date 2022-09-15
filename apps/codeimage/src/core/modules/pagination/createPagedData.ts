@@ -1,24 +1,23 @@
-import {Accessor, createSignal, Setter, createEffect} from 'solid-js';
+import {Accessor, createSignal, Setter} from 'solid-js';
+interface CreatePaginatedProps<T> {
+  data: Accessor<T[] | undefined>;
+  options: {pageSize: number; pageSelected: number};
+}
 
-export const createPagedData = <T>(
-  data: Accessor<T[] | undefined>,
-): [
+export const createPagedData = <T>({
+  data,
+  options,
+}: CreatePaginatedProps<T>): [
   Accessor<T[]>,
-  {page: Accessor<number>; setPage: Setter<number>; pageSize: number},
+  {page: Accessor<number>; setPage: Setter<number>},
 ] => {
-  const [page, setPage] = createSignal(1),
-    pageSize = 9;
-  createEffect(() =>
-    console.log('page', {
-      start: (page() - 1) * pageSize,
-      end: (page() - 1) * pageSize + pageSize,
-    }),
-  );
+  console.log('pageSelected', options.pageSelected);
+  const [page, setPage] = createSignal(options.pageSelected);
   const pagedData = () => {
-    const start = (page() - 1) * pageSize;
-    const end = start + pageSize;
+    const start = (page() - 1) * options.pageSize;
+    const end = start + options.pageSize;
     return data()?.slice(start, end) ?? [];
   };
 
-  return [pagedData, {page, setPage, pageSize}];
+  return [pagedData, {page, setPage}];
 };

@@ -1,5 +1,17 @@
 import {arrayFomRange} from '@core/modules/pagination/arrayFromRange';
 import {Accessor, mapArray, Setter} from 'solid-js';
+
+/**
+ *  This hook allow us to create a list of props to render buttons of our pagination component
+ * @param lastPage callback that return number of the lastPage of paginations Button
+ * @param selectedPage callback that return number of the pageSelected
+ * @param onChange callback that allow change page
+ * @param disabled boolean that
+ * @returns the list of the props buttons
+ *
+ *
+ * @examples
+ */
 export const createPaginationButtons = (
   lastPage: Accessor<number>,
   selectedPage: Accessor<number>,

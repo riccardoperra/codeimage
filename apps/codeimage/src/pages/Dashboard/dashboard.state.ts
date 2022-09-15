@@ -27,10 +27,12 @@ function makeDashboardState(authState = getAuth0State()) {
       );
     return [];
   };
-
-  const [pagedData, {page, setPage, pageSize}] = createPagedData(() =>
-    filteredData(),
-  );
+  const pageSize = 9;
+  const filteredDataAccessor = () => filteredData();
+  const [pagedData, {page, setPage}] = createPagedData({
+    data: filteredDataAccessor,
+    options: {pageSize, pageSelected: 5},
+  });
 
   createEffect(() => {
     const searchValue = search();
