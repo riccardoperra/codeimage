@@ -4,8 +4,8 @@ import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
+import {createPagedData} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
-import {createPagedData} from '@core/modules/pagination';
 import {createContextProvider} from '@solid-primitives/context';
 import {createResource, createSignal, createEffect} from 'solid-js';
 import {API} from '../../data-access/api';
@@ -25,7 +25,7 @@ function makeDashboardState(authState = getAuth0State()) {
           item.name.toLowerCase().includes(searchValue.toLowerCase()),
         ) ?? []
       );
-    return [];
+    return data();
   };
   const [pagedData, {page, setPage}] = createPagedData(() => filteredData(), {
     pageSize,

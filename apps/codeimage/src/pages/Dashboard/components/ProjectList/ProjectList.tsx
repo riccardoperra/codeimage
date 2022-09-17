@@ -1,6 +1,5 @@
-import {getLastPage} from '@core/modules/pagination';
+import {getLastPage, Pagination} from '@codeimage/ui';
 import {ErrorBoundary, For, Index, Show, Suspense, untrack} from 'solid-js';
-import Pagination from '../../../../components/Pagination/Pagination';
 import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';
 import {ProjectItemSkeleton} from '../ProjectItemSkeleton/ProjectItemSkeleton';
