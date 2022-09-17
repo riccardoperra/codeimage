@@ -59,24 +59,19 @@ export const Pagination = (props: ParentProps<PaginationProps>) => {
     false,
   );
 
+  const isPrevDisabled = () => merged.pageNumber === 1;
+  const isNextDisabled = () => merged.pageNumber === merged.lastPage;
+
   const handlerNextChange = () => merged.onChange(prev => prev + 1);
   const handlerPrevChange = () => merged.onChange(prev => prev - 1);
 
   return (
     <div class={styles.pagination}>
-      <IconButton
-        onClick={handlerPrevChange}
-        pill
-        disabled={merged.pageNumber === 1}
-      >
+      <IconButton pill disabled={isPrevDisabled()} onClick={handlerPrevChange}>
         <PrevIcon />
       </IconButton>
       <For each={itemButtons()}>{page => <PageItem {...page} />}</For>
-      <IconButton
-        onClick={handlerNextChange}
-        pill
-        disabled={merged.pageNumber === merged.lastPage}
-      >
+      <IconButton pill disabled={isNextDisabled()} onClick={handlerNextChange}>
         <NextIcon />
       </IconButton>
     </div>
