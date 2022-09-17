@@ -130,7 +130,8 @@ async function buildApiTestEnv() {
     return;
   }
 
-  const defaultDatabase = 'postgresql://prisma:prisma@localhost:5433/tests';
+  const defaultDatabase =
+    'postgresql://postgres:postgres@localhost:5433/codeimage_test';
 
   const env = {
     DATABASE_URL: defaultDatabase,
