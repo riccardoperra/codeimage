@@ -1,3 +1,4 @@
+import {getLastPage, Pagination} from '@codeimage/ui';
 import {ErrorBoundary, For, Index, Show, Suspense, untrack} from 'solid-js';
 import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';
@@ -10,7 +11,7 @@ export function ProjectList() {
   const dashboard = getDashboardState()!;
 
   const listIsEmpty = () => {
-    return !dashboard.data.error && dashboard.filteredData().length === 0;
+    return !dashboard.data.error && dashboard.filteredData()?.length === 0;
   };
 
   const reloadList = (err: unknown, reset: () => void) => {
@@ -23,7 +24,8 @@ export function ProjectList() {
     const list = Array.from({length: count || 5});
     return <Index each={list}>{() => <ProjectItemSkeleton />}</Index>;
   };
-
+  const lastPage = () =>
+    getLastPage(dashboard.filteredData, () => dashboard.pageSize);
   return (
     <ErrorBoundary
       fallback={(err, reset) => (
@@ -42,10 +44,17 @@ export function ProjectList() {
           fallback={() => <ProjectEmptyListMessage />}
         >
           <ul class={styles.gridList}>
-            <For each={dashboard.filteredData().splice(0, 20)}>
+            <For each={dashboard.pagedData()}>
               {item => <ProjectItem item={item} />}
             </For>
           </ul>
+          <Show when={lastPage() !== 1}>
+            <Pagination
+              pageNumber={dashboard.page()}
+              onChange={dashboard.setPage}
+              lastPage={lastPage()}
+            />
+          </Show>
         </Show>
       </Suspense>
     </ErrorBoundary>

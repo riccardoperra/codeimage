@@ -4,27 +4,38 @@ import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
+import {createPagedData} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
-import {createResource, createSignal} from 'solid-js';
+import {createResource, createSignal, createEffect} from 'solid-js';
 import {API} from '../../data-access/api';
-
 function makeDashboardState(authState = getAuth0State()) {
   const [data, {mutate, refetch}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
   });
 
   const [search, setSearch] = createSignal('');
-
+  const pageSize = 9;
   const filteredData = () => {
     const searchValue = search();
     if (!data()) return [];
-    if (!searchValue || searchValue.length < 2) return data();
-    return data().filter(item =>
-      item.name.toLowerCase().includes(searchValue.toLowerCase()),
-    );
+    if (!searchValue || searchValue.length > 2)
+      return (
+        data().filter(item =>
+          item.name.toLowerCase().includes(searchValue.toLowerCase()),
+        ) ?? []
+      );
+    return data();
   };
+  const [pagedData, {page, setPage}] = createPagedData(() => filteredData(), {
+    pageSize,
+    pageSelected: 1,
+  });
 
+  createEffect(() => {
+    const searchValue = search();
+    if (searchValue.length > 2) setPage(1);
+  });
   async function fetchWorkspaceContent(): Promise<
     ApiTypes.GetProjectByIdApi['response'][]
   > {
@@ -32,7 +43,6 @@ function makeDashboardState(authState = getAuth0State()) {
     if (!userId) return [];
     return API.project.getWorkspaceContent();
   }
-
   async function createNewProject() {
     const theme = await getThemeStore().getThemeDef('vsCodeDarkTheme')?.load();
 
@@ -133,6 +143,10 @@ function makeDashboardState(authState = getAuth0State()) {
     deleteProject,
     updateSnippetName,
     cloneProject,
+    pagedData,
+    page,
+    setPage,
+    pageSize,
   };
 }
 
