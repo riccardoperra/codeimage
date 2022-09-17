@@ -1,8 +1,10 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {DragDropSensorsWithBoundary, DragEventParam} from '@core/modules/dnd';
+import {ConstrainDragAxis} from '@core/modules/dnd/ConstrainDragAxis';
 import {
   closestCorners,
   DragDropProvider,
+  DragDropSensors,
   SortableProvider,
 } from '@thisbeyond/solid-dnd';
 import {
@@ -70,16 +72,12 @@ export function TerminalWindowTabList(
           data-accent-visible={props.accent}
         >
           <div class={styles.tabListWrapper} ref={wrapperRef}>
-            {/* @ts-expect-error: TODO: Should update library types */}
             <DragDropProvider
               onDragEnd={handleDragEnd}
               collisionDetector={closestCorners}
             >
-              <DragDropSensorsWithBoundary
-                boundaryPadding={{left: 8, right: 8, top: 0, bottom: 0}}
-                boundary={() => wrapperRef}
-              />
-              {/* @ts-expect-error: TODO: Should update library types */}
+              <DragDropSensors />
+              <ConstrainDragAxis />
               <SortableProvider ids={sortableIds()}>
                 <For each={state.editors}>
                   {(editor, index) => {

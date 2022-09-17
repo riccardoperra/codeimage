@@ -9,7 +9,7 @@ import {FrameHandler} from '../../components/Frame/FrameHandler';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {KeyboardShortcuts} from '../../components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
-import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItemt';
+import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItem';
 import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
 import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
 import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';

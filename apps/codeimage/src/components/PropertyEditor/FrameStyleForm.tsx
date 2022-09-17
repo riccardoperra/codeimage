@@ -8,7 +8,7 @@ import {AppLocaleEntries} from '../../i18n';
 import {CustomColorPicker} from './controls/CustomColorPicker';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {SuspenseEditorItem} from './SuspenseEditorItemt';
+import {SuspenseEditorItem} from './SuspenseEditorItem';
 
 export const FrameStyleForm: ParentComponent = () => {
   const [t] = useI18n<AppLocaleEntries>();

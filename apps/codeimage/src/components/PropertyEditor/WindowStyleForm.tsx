@@ -11,7 +11,7 @@ import {TerminalControlField} from '../TerminalControlField/TerminalControlField
 import {TerminalControlSkeleton} from '../TerminalControlField/TerminalControlFieldSkeleton';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {SuspenseEditorItem} from './SuspenseEditorItemt';
+import {SuspenseEditorItem} from './SuspenseEditorItem';
 
 export const WindowStyleForm: ParentComponent = () => {
   const terminal = getTerminalState();

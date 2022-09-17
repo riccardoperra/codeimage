@@ -76,35 +76,6 @@ export function FrameHandler(
         }
         ref={setHandlerRef}
       >
-        {/*<div class={canvasToolbar}>*/}
-        {/*  <HStack spacing={'2'}>*/}
-        {/*    <Button*/}
-        {/*      size={'xs'}*/}
-        {/*      variant={'solid'}*/}
-        {/*      theme={'secondary'}*/}
-        {/*      style={{width: 'auto', height: '30px'}}*/}
-        {/*    >*/}
-        {/*      <ClipboardIcon />*/}
-        {/*      <Box marginLeft={1}>Copy</Box>*/}
-        {/*    </Button>*/}
-
-        {/*    <Button*/}
-        {/*      size={'xs'}*/}
-        {/*      variant={'solid'}*/}
-        {/*      theme={'secondary'}*/}
-        {/*      style={{width: 'auto', height: '30px'}}*/}
-        {/*    >*/}
-        {/*      <ColorSwatchIcon />*/}
-        {/*      <Box marginLeft={1}>Format code</Box>*/}
-        {/*    </Button>*/}
-        {/*  </HStack>*/}
-        {/*  <div style={{flex: 1}} />*/}
-        {/*  <HStack spacing={'2'}>*/}
-        {/*    <ShareButton showLabel={true} />*/}
-        {/*    <ExportInNewTabButton />*/}
-        {/*  </HStack>*/}
-        {/*</div>*/}
-
         <div
           class={styles.content}
           ref={createRef<'div'>(props, e => {

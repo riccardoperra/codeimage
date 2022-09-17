@@ -10,7 +10,7 @@ import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {SuspenseEditorItem} from './SuspenseEditorItemt';
+import {SuspenseEditorItem} from './SuspenseEditorItem';
 
 export const EditorStyleForm: ParentComponent = () => {
   const languages = SUPPORTED_LANGUAGES;
