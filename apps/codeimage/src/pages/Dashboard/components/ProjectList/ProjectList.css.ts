@@ -41,11 +41,11 @@ export const fallbackContainer = style({
   selectors: {
     ...withThemeMode({
       light: {
-        backgroundColor: darkGrayScale.gray3,
+        backgroundColor: themeVars.backgroundColor.gray['200'],
         color: themeVars.dynamicColors.descriptionTextColor,
       },
       dark: {
-        backgroundColor: themeVars.backgroundColor.gray['200'],
+        backgroundColor: darkGrayScale.gray3,
         color: themeVars.dynamicColors.descriptionTextColor,
       },
     }),
