@@ -15,7 +15,7 @@ function makeDashboardState(authState = getAuth0State()) {
   });
 
   const [search, setSearch] = createSignal('');
-
+  const [pageSize] = createSignal(9);
   const filteredData = () => {
     const searchValue = search();
     if (!data()) return [];
@@ -27,16 +27,14 @@ function makeDashboardState(authState = getAuth0State()) {
       );
     return [];
   };
-  const pageSize = 9;
-  const filteredDataAccessor = () => filteredData();
-  const [pagedData, {page, setPage}] = createPagedData({
-    data: filteredDataAccessor,
-    options: {pageSize, pageSelected: 5},
+  const [pagedData, {page, setPage}] = createPagedData(() => filteredData(), {
+    pageSize,
+    pageSelected: 1,
   });
 
   createEffect(() => {
     const searchValue = search();
-    if (!searchValue || searchValue.length > 2) setPage(1);
+    if (searchValue.length > 2) setPage(1);
   });
   async function fetchWorkspaceContent(): Promise<
     ApiTypes.GetProjectByIdApi['response'][]

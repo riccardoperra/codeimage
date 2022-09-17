@@ -13,7 +13,7 @@ export default function Example() {
       }}
     >
       <h1 style={{color: 'white'}}>Selected Page: {page()}</h1>
-      <Pagination pageNumber={page()} pageSize={50} onChange={setPage} />
+      <Pagination pageNumber={page()} lastPage={50} onChange={setPage} />
     </div>
   );
 }

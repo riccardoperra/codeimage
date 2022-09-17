@@ -1,13 +1,5 @@
 import {getLastPage} from '@core/modules/pagination';
-import {
-  createEffect,
-  ErrorBoundary,
-  For,
-  Index,
-  Show,
-  Suspense,
-  untrack,
-} from 'solid-js';
+import {ErrorBoundary, For, Index, Show, Suspense, untrack} from 'solid-js';
 import Pagination from '../../../../components/Pagination/Pagination';
 import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';
@@ -33,7 +25,8 @@ export function ProjectList() {
     const list = Array.from({length: count || 5});
     return <Index each={list}>{() => <ProjectItemSkeleton />}</Index>;
   };
-
+  const lastPage = () =>
+    getLastPage(dashboard.filteredData, dashboard.pageSize);
   return (
     <ErrorBoundary
       fallback={(err, reset) => (
@@ -56,11 +49,10 @@ export function ProjectList() {
               {item => <ProjectItem item={item} />}
             </For>
           </ul>
-          <pre>selected Page: {dashboard.page()}</pre>
           <Pagination
             pageNumber={dashboard.page()}
             onChange={dashboard.setPage}
-            pageSize={getLastPage(dashboard.filteredData, dashboard.pageSize)}
+            lastPage={lastPage()}
           />
         </Show>
       </Suspense>
