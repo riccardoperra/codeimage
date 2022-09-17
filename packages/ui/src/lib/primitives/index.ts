@@ -69,3 +69,6 @@ export {RadioField, RadioGroupField} from './Radio';
 
 export {Badge} from './Badge';
 export type {BadgeProps} from './Badge';
+
+export {Pagination} from './Pagination';
+export type {PaginationProps} from './Pagination';
