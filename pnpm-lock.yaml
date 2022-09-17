@@ -63,59 +63,59 @@ importers:
   apps/api:
     specifiers:
       '@codeimage/prisma-models': workspace:*
-      '@fastify/autoload': ^5.2.0
+      '@fastify/autoload': ^5.4.0
       '@fastify/cors': ^8.1.0
       '@fastify/env': ^4.1.0
       '@fastify/jwt': ^6.3.2
-      '@fastify/sensible': ^5.1.0
-      '@fastify/swagger': ^7.4.1
+      '@fastify/sensible': ^5.1.1
+      '@fastify/swagger': ^7.5.1
       '@fastify/type-provider-typebox': ^2.3.0
-      '@prisma/client': ^4.2.1
-      '@sinclair/typebox': ^0.24.28
-      '@types/node': ^18.7.13
+      '@prisma/client': ^4.3.1
+      '@sinclair/typebox': ^0.24.42
+      '@types/node': ^18.7.18
       '@types/sinon': ^10.0.13
       '@types/tap': ^15.0.7
       close-with-grace: ^1.1.0
-      concurrently: ^7.3.0
-      dotenv: ^16.0.1
+      concurrently: ^7.4.0
+      dotenv: ^16.0.2
       dotenv-cli: ^6.0.0
-      fastify: ^4.5.3
-      fastify-auth0-verify: ^0.8.0
-      fastify-cli: ^5.3.0
-      fastify-healthcheck: ^4.1.0
-      fastify-plugin: ^4.2.0
+      fastify: ^4.6.0
+      fastify-auth0-verify: ^0.8.2
+      fastify-cli: ^5.4.1
+      fastify-healthcheck: ^4.2.0
+      fastify-plugin: ^4.2.1
       fastify-tsconfig: ^1.0.1
       fluent-json-schema: ^3.1.0
-      prisma: ^4.2.1
+      prisma: ^4.3.1
       sinon: ^14.0.0
       tap: ^16.3.0
       typescript: ^4.8.2
     dependencies:
       '@codeimage/prisma-models': link:../../packages/prisma-models
-      '@fastify/autoload': 5.2.0
+      '@fastify/autoload': 5.4.0
       '@fastify/cors': 8.1.0
       '@fastify/env': 4.1.0
       '@fastify/jwt': 6.3.2
-      '@fastify/sensible': 5.1.0
-      '@fastify/swagger': 7.4.1
-      '@fastify/type-provider-typebox': 2.3.0_i2pubaxdla3rgrtnyo6bh37uzi
-      '@prisma/client': 4.2.1_prisma@4.2.1
-      '@sinclair/typebox': 0.24.28
+      '@fastify/sensible': 5.1.1
+      '@fastify/swagger': 7.5.1
+      '@fastify/type-provider-typebox': 2.3.0_obiqnzpy2d7lu22lilmro4orla
+      '@prisma/client': 4.3.1_prisma@4.3.1
+      '@sinclair/typebox': 0.24.42
       close-with-grace: 1.1.0
-      dotenv: 16.0.1
+      dotenv: 16.0.2
       dotenv-cli: 6.0.0
-      fastify: 4.5.3
-      fastify-auth0-verify: 0.8.0
-      fastify-cli: 5.3.0
-      fastify-healthcheck: 4.1.0
-      fastify-plugin: 4.2.0
+      fastify: 4.6.0
+      fastify-auth0-verify: 0.8.2
+      fastify-cli: 5.4.1
+      fastify-healthcheck: 4.2.0
+      fastify-plugin: 4.2.1
       fluent-json-schema: 3.1.0
-      prisma: 4.2.1
+      prisma: 4.3.1
     devDependencies:
-      '@types/node': 18.7.13
+      '@types/node': 18.7.18
       '@types/sinon': 10.0.13
       '@types/tap': 15.0.7
-      concurrently: 7.3.0
+      concurrently: 7.4.0
       fastify-tsconfig: 1.0.1
       sinon: 14.0.0
       tap: 16.3.0_typescript@4.8.2
@@ -2694,23 +2694,23 @@ packages:
       fast-uri: 2.1.0
     dev: false
 
-  /@fastify/autoload/5.2.0:
-    resolution: {integrity: sha512-qpLVPQM+JCiGvRdybGRz8dty3HRJtKgYRCagslyAiVecN+g/xHvB0gR8I1PiOvek2NQFIs3WPDxz2nLBoXqB2A==}
+  /@fastify/autoload/5.4.0:
+    resolution: {integrity: sha512-aUct8AERleLb6ZVqIFW3qdwJA2/ILVDTQyCr0qD909RMP4axcmIhJmV9iDAzDqpUDipZ29I+Hp43+PiJsk3oWw==}
     dependencies:
       pkg-up: 3.1.0
     dev: false
 
-  /@fastify/cookie/7.4.0:
-    resolution: {integrity: sha512-82MUHsZJY/Wl+rG2E+bnYxSifOtNRChm2M+8xnZHnKtYmyNfLvy/37ElCtqD3KzUyTycR+GE7v7uiDD/tY4TkA==}
+  /@fastify/cookie/8.1.0:
+    resolution: {integrity: sha512-+BxpyK4KLAjDpXdWxOjl8yaKtAoqYZR+CE9+cNtdMDoACb8hcpGx9npkrdINl62EpCu06oIPluq8A4NUsi78ZA==}
     dependencies:
       cookie: 0.5.0
-      fastify-plugin: 4.2.0
+      fastify-plugin: 4.2.1
     dev: false
 
   /@fastify/cors/8.1.0:
     resolution: {integrity: sha512-1OmjwyxQZ8GePxa5t1Rpsn2qS56+1ouKMvZufpgJWhXtoCeM/ffA+PsNW8pyslPr4W0E27gVoFqtvHwhXW1U2w==}
     dependencies:
-      fastify-plugin: 4.2.0
+      fastify-plugin: 4.2.1
       mnemonist: 0.39.2
     dev: false
 
@@ -2722,11 +2722,7 @@ packages:
     resolution: {integrity: sha512-9l+JTUiFWSwb9dGSeR46aDWBjrAg8lJeqMjbotG5/8Ho90+qzRbt8kdSnVhLm5k6HcqXcBaBAT/6cImRhRq0VQ==}
     dependencies:
       env-schema: 5.0.0
-      fastify-plugin: 4.2.0
-    dev: false
-
-  /@fastify/error/2.0.0:
-    resolution: {integrity: sha512-wI3fpfDT0t7p8E6dA2eTECzzOd+bZsZCJ2Hcv+Onn2b7ZwK3RwD27uW2QDaMtQhAfWQQP+WNK7nKf0twLsBf9w==}
+      fastify-plugin: 4.2.1
     dev: false
 
   /@fastify/error/3.0.0:
@@ -2745,15 +2741,15 @@ packages:
       '@fastify/error': 3.0.0
       '@lukeed/ms': 2.0.0
       fast-jwt: 1.7.0
-      fastify-plugin: 4.2.0
+      fastify-plugin: 4.2.1
       steed: 1.1.3
     dev: false
 
-  /@fastify/sensible/5.1.0:
-    resolution: {integrity: sha512-ZLuYDpBZecCsr5ZlTKtcyA1dg9ExiEHdTxarYMaBnCJzPBUvTNoDMypMCC6XcC1VS7idMmKjlGmHfmMAaz761Q==}
+  /@fastify/sensible/5.1.1:
+    resolution: {integrity: sha512-zMn3MDb++nTdnQVHMtKPvEsx+gOf213HDYD8iWPnketvtUUcbuHTloYFleXZ0YWR9XCgJdN0RRE3smqzl4Q2gg==}
     dependencies:
       fast-deep-equal: 3.1.3
-      fastify-plugin: 3.0.1
+      fastify-plugin: 4.2.1
       forwarded: 0.2.0
       http-errors: 2.0.0
       ms: 2.1.3
@@ -2766,7 +2762,7 @@ packages:
     dependencies:
       '@fastify/accept-negotiator': 1.0.0
       content-disposition: 0.5.4
-      fastify-plugin: 4.2.0
+      fastify-plugin: 4.2.1
       glob: 8.0.3
       p-limit: 3.1.0
       readable-stream: 4.1.0
@@ -2775,34 +2771,34 @@ packages:
       - supports-color
     dev: false
 
-  /@fastify/swagger/7.4.1:
-    resolution: {integrity: sha512-SN3sjz4dsb6jyochD6RNXG1GYBmt45YCIiQW3YjXF1Q8hP4aYQ7pVcRH2prcm12G6MJ4fGq58ywqh3prrO/Ocg==}
+  /@fastify/swagger/7.5.1:
+    resolution: {integrity: sha512-940WBMPF2ocYZrgLGvVFkggeLxq4A4h/0PEkwsSFDIFGk0YyLS1IxhjwifNsltUVi6HVL5y7TDHqX4Rgt8/GsQ==}
     dependencies:
       '@fastify/static': 6.4.1
-      fastify-plugin: 3.0.1
-      js-yaml: 4.1.0
+      fastify-plugin: 4.2.1
       json-schema-resolver: 1.3.0
-      openapi-types: 11.1.0
+      openapi-types: 12.0.2
       rfdc: 1.3.0
+      yaml: 2.1.1
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@fastify/type-provider-typebox/2.3.0_i2pubaxdla3rgrtnyo6bh37uzi:
+  /@fastify/type-provider-typebox/2.3.0_obiqnzpy2d7lu22lilmro4orla:
     resolution: {integrity: sha512-arEH1FL6CNTgctoVw++jNPJN9DdzUe7rJlb3XJyw7rAGiT2m402P4GMFVhtDqndQzEJN37UJXVYbCR9D0AahgQ==}
     peerDependencies:
       '@sinclair/typebox': ^0.24.1
       fastify: ^4.0.0
     dependencies:
-      '@sinclair/typebox': 0.24.28
-      fastify: 4.5.3
+      '@sinclair/typebox': 0.24.42
+      fastify: 4.6.0
     dev: false
 
-  /@fastify/under-pressure/7.0.0:
-    resolution: {integrity: sha512-UhdC9+wEJRmLnbSYyINOcykiJDgPwflSxGz5Vw91192D25MmddbwM4+nCnG9JX2ZzMDJ57b0aQjYJj+asfqYMg==}
+  /@fastify/under-pressure/8.1.0:
+    resolution: {integrity: sha512-2Nm0UyVxTdssvNTbYVZFSH4C2LwgQcphOxgX6hIQce8jH1sm1gx/wusDBr6+0lyzwE06V537kwA7JeAvysK3xw==}
     dependencies:
-      '@fastify/error': 2.0.0
-      fastify-plugin: 3.0.1
+      '@fastify/error': 3.0.0
+      fastify-plugin: 4.2.1
     dev: false
 
   /@floating-ui/core/1.0.1:
@@ -3589,8 +3585,8 @@ packages:
     resolution: {integrity: sha512-ZHHfwB0z0z6nDJp263gyGIClYDy+rl0nwqyi4qhcv3Cxhkmtf+If2KVjr6FQqBBFfi1wQwUzaax2FBvfEMFBnw==}
     dev: false
 
-  /@prisma/client/4.2.1_prisma@4.2.1:
-    resolution: {integrity: sha512-PZBkY60+k5oix+e6IUfl3ub8TbRLNsPLdfWrdy2eh80WcHTaT+/UfvXf/B7gXedH7FRtbPFHZXk1hZenJiJZFQ==}
+  /@prisma/client/4.3.1_prisma@4.3.1:
+    resolution: {integrity: sha512-FA0/d1VMJNWqzU7WVWTNWJ+lGOLR9JUBnF73GdIPAEVo/6dWk4gHx0EmgeU+SMv4MZoxgOeTBJF2azhg7x0hMw==}
     engines: {node: '>=14.17'}
     requiresBuild: true
     peerDependencies:
@@ -3599,16 +3595,16 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826
-      prisma: 4.2.1
+      '@prisma/engines-version': 4.3.0-32.c875e43600dfe042452e0b868f7a48b817b9640b
+      prisma: 4.3.1
     dev: false
 
-  /@prisma/engines-version/4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826:
-    resolution: {integrity: sha512-tktkqdiwqE4QhmE088boPt+FwPj1Jub/zk+5F6sEfcRHzO5yz9jyMD5HFVtiwxZPLx/8Xg9ElnuTi8E5lWVQFQ==}
+  /@prisma/engines-version/4.3.0-32.c875e43600dfe042452e0b868f7a48b817b9640b:
+    resolution: {integrity: sha512-8yWpXkQRmiSfsi2Wb/ZS5D3RFbeu/btL9Pm/gdF4phB0Lo5KGsDFMxFMgaD64mwED2nHc8ZaEJg/+4Jymb9Znw==}
     dev: false
 
-  /@prisma/engines/4.2.1:
-    resolution: {integrity: sha512-0KqBwREUOjBiHwITsQzw2DWfLHjntvbqzGRawj4sBMnIiL5CXwyDUKeHOwXzKMtNr1rEjxEsypM14g0CzLRK3g==}
+  /@prisma/engines/4.3.1:
+    resolution: {integrity: sha512-4JF/uMaEDAPdcdZNOrnzE3BvrbGpjgV0FcPT3EVoi6I86fWkloqqxBt+KcK/+fIRR0Pxj66uGR9wVH8U1Y13JA==}
     requiresBuild: true
     dev: false
 
@@ -3786,8 +3782,8 @@ packages:
       string-argv: 0.3.1
     dev: true
 
-  /@sinclair/typebox/0.24.28:
-    resolution: {integrity: sha512-dgJd3HLOkLmz4Bw50eZx/zJwtBq65nms3N9VBYu5LTjJ883oBFkTyXRlCB/ZGGwqYpJJHA5zW2Ibhl5ngITfow==}
+  /@sinclair/typebox/0.24.42:
+    resolution: {integrity: sha512-d+2AtrHGyWek2u2ITF0lHRIv6Tt7X0dEHW+0rP+5aDCEjC3fiN2RBjrLD0yU0at52BcZbRGxLbAtXiR0hFCjYw==}
     dev: false
 
   /@sinonjs/commons/1.8.3:
@@ -4275,6 +4271,10 @@ packages:
     resolution: {integrity: sha512-46yIhxSe5xEaJZXWdIBP7GU4HDTG8/eo0qd9atdiL+lFpA03y8KS+lkTN834TWJj5767GbWv4n/P6efyTFt1Dw==}
     dev: true
 
+  /@types/node/18.7.18:
+    resolution: {integrity: sha512-m+6nTEOadJZuTPkKR/SYK3A2d7FZrgElol9UP1Kae90VVU4a6mxnPuLiIW1m4Cq4gZ/nWb9GrdVXJCoCazDAbg==}
+    dev: true
+
   /@types/node/18.7.8:
     resolution: {integrity: sha512-/YP55EMK2341JkODUb8DM9O0x1SIz2aBvyF33Uf1c76St3VpsMXEIW0nxuKkq/5cxnbz0RD9cfwNZHEAZQD3ag==}
     dev: true
@@ -4306,7 +4306,7 @@ packages:
   /@types/set-cookie-parser/2.4.2:
     resolution: {integrity: sha512-fBZgytwhYAUkj/jC/FAV4RQ5EerRup1YQsXQCh8rZfiHkc4UahC192oH0smGwsXol3cL3A5oETuAHeQHmhXM4w==}
     dependencies:
-      '@types/node': 18.7.13
+      '@types/node': 18.7.18
     dev: true
 
   /@types/sinon/10.0.13:
@@ -4328,7 +4328,7 @@ packages:
   /@types/tap/15.0.7:
     resolution: {integrity: sha512-TTMajw4gxQfFgYbhXhy/Tb2OiNcwS+4oP/9yp1/GdU0pFJo3wtnkYhRgmQy39ksh+rnoa0VrPHJ4Tuv2cLNQ5A==}
     dependencies:
-      '@types/node': 18.7.13
+      '@types/node': 18.7.18
     dev: true
 
   /@types/trusted-types/2.0.2:
@@ -4750,6 +4750,7 @@ packages:
 
   /argparse/2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
+    dev: true
 
   /array-flatten/1.1.1:
     resolution: {integrity: sha1-ml9pkFGx5wczKPKgCJaLZOopVdI=}
@@ -5356,8 +5357,8 @@ packages:
     resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
     dev: true
 
-  /concurrently/7.3.0:
-    resolution: {integrity: sha512-IiDwm+8DOcFEInca494A8V402tNTQlJaYq78RF2rijOrKEk/AOHTxhN4U1cp7GYKYX5Q6Ymh1dLTBlzIMN0ikA==}
+  /concurrently/7.4.0:
+    resolution: {integrity: sha512-M6AfrueDt/GEna/Vg9BqQ+93yuvzkSKmoTixnwEJkH0LlcGrRC2eCmjeG1tLLHIYfpYJABokqSGyMcXjm96AFA==}
     engines: {node: ^12.20.0 || ^14.13.0 || >=16.0.0}
     hasBin: true
     dependencies:
@@ -5716,7 +5717,7 @@ packages:
     hasBin: true
     dependencies:
       cross-spawn: 7.0.3
-      dotenv: 16.0.1
+      dotenv: 16.0.2
       dotenv-expand: 8.0.3
       minimist: 1.2.6
     dev: false
@@ -5726,8 +5727,8 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
-  /dotenv/16.0.1:
-    resolution: {integrity: sha512-1K6hR6wtk2FviQ4kEiSjFiH5rpzEVi8WW0x96aztHVMhEspNpc4DVOUTEHtEva5VThQ8IaBX1Pe4gSzpVVUsKQ==}
+  /dotenv/16.0.2:
+    resolution: {integrity: sha512-JvpYKUmzQhYoIFgK2MOnF3bciIZoItIIoryihy0rIA+H4Jy0FmgyKYAHCTN98P5ybGSJcIFbh6QKeJdtZd1qhA==}
     engines: {node: '>=12'}
     dev: false
 
@@ -5792,7 +5793,7 @@ packages:
     resolution: {integrity: sha512-91u95Nlny+LmjF3Mk96j8k6k+GOXcFEdMUv3bWQjtM2l+KTAdW6qITiv8kHYO8vCaCScXpJTDyd1AFnCQTnYaQ==}
     dependencies:
       ajv: 8.11.0
-      dotenv: 16.0.1
+      dotenv: 16.0.2
       dotenv-expand: 8.0.3
     dev: false
 
@@ -6620,13 +6621,13 @@ packages:
       reusify: 1.0.4
     dev: false
 
-  /fastify-auth0-verify/0.8.0:
-    resolution: {integrity: sha512-fMzEMrdGzjP99lVn3l9SMGgbVCXtsTuQ1INbAKKtOpO05kHm5xRyyeuW2Vg9xgrZ5ombvyPgKT3j0o3XMuUoGg==}
+  /fastify-auth0-verify/0.8.2:
+    resolution: {integrity: sha512-Ae4C5lEp3fLNoyWh6IV0SjkhJeBSx6EfctkStSzzQ4eTS4PUuH/9fmsIaefy2VEcPJ0jWl15E7UH9BLJPRcnPw==}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@fastify/cookie': 7.4.0
+      '@fastify/cookie': 8.1.0
       '@fastify/jwt': 6.3.2
-      fastify-plugin: 3.0.1
+      fastify-plugin: 4.2.1
       http-errors: 2.0.0
       node-cache: 5.1.2
       node-fetch: 2.6.7
@@ -6634,16 +6635,16 @@ packages:
       - encoding
     dev: false
 
-  /fastify-cli/5.3.0:
-    resolution: {integrity: sha512-/aGXUgmNwfPeqGI6/32ZQWnaHeebsstVzDCUzJeaLLwauNspN2HC9GCuLGRa+uuMeS46d/n8s3jgGyy2OYD5+Q==}
+  /fastify-cli/5.4.1:
+    resolution: {integrity: sha512-yEgpZZmDgkHak4bl/0Ftsh+QlaTr2MlH1qg/8jkcHghsaSbs4+WTo5V4EB1M6wKnkfYCVr7RAsAovnJMUN+sIg==}
     hasBin: true
     dependencies:
       chalk: 4.1.2
       chokidar: 3.5.3
       close-with-grace: 1.1.0
       commist: 3.0.0
-      dotenv: 16.0.1
-      fastify: 4.5.3
+      dotenv: 16.0.2
+      fastify: 4.6.0
       generify: 4.2.0
       help-me: 4.0.1
       is-docker: 2.2.1
@@ -6657,19 +6658,15 @@ packages:
       - supports-color
     dev: false
 
-  /fastify-healthcheck/4.1.0:
-    resolution: {integrity: sha512-Nj8cmHRZljJChvXNmXKFGVf+A3dOPZhyEFwNX0sOAUlwwVmFev6rUbrxsU8rgHQfxoPzjK0Q0nUyw5oG5JA5ow==}
+  /fastify-healthcheck/4.2.0:
+    resolution: {integrity: sha512-nw5kkU7SdglTffaeo1UtWpRF0faKyp4ecbNddVGqHVgAnOuvhLM1vhBmFTrBG8CtdDv0UMEf6V4+ysfFjlQTEA==}
     engines: {node: '>=14.15.0'}
     dependencies:
-      '@fastify/under-pressure': 7.0.0
+      '@fastify/under-pressure': 8.1.0
     dev: false
 
-  /fastify-plugin/3.0.1:
-    resolution: {integrity: sha512-qKcDXmuZadJqdTm6vlCqioEbyewF60b/0LOFCcYN1B6BIZGlYJumWWOYs70SFYLDAH4YqdE1cxH/RKMG7rFxgA==}
-    dev: false
-
-  /fastify-plugin/4.2.0:
-    resolution: {integrity: sha512-hovKzEXZc2YgeuXn41/2EA/IaIOdRu1pB9WKgnzDBj3lhKSdDCEsckHa7I6LiT/LhflvAQX7ZY8IQ6eBX0htTg==}
+  /fastify-plugin/4.2.1:
+    resolution: {integrity: sha512-dlGKiwLzRBKkEf5J5ho0uAD/Jdv8GQVUbriB3tAX3ehRUXE4gTV3lRd5inEg9li1aLzb0EGj8y2K4/8g1TN06g==}
     dev: false
 
   /fastify-tsconfig/1.0.1:
@@ -6677,8 +6674,8 @@ packages:
     engines: {node: '>=10.4.0'}
     dev: true
 
-  /fastify/4.5.3:
-    resolution: {integrity: sha512-Q8Zvkmg7GnioMCDX1jT2Q7iRqjywlnDZ1735D2Ipf7ashCM/3/bqPKv2Jo1ZF2iDExct2eP1C/tdhcj0GG/OuQ==}
+  /fastify/4.6.0:
+    resolution: {integrity: sha512-EgWUvcJNvsql1R4g5/ce866BYk8SgJKjGh6AI0e9BR+NidP7hqX1ObiwHEVbkR15A9XwMtkKd3TE/tFZCjsqnA==}
     dependencies:
       '@fastify/ajv-compiler': 3.1.2
       '@fastify/error': 3.0.0
@@ -7727,6 +7724,7 @@ packages:
     hasBin: true
     dependencies:
       argparse: 2.0.1
+    dev: true
 
   /jsesc/0.5.0:
     resolution: {integrity: sha512-uZz5UnB7u4T9LvwmFqXii7pZSouaRPorGs5who1Ip7VO0wxanFvBL7GkM6dTHlgX+jhBApRetaWpnDabOeTcnA==}
@@ -8608,8 +8606,8 @@ packages:
       mimic-fn: 4.0.0
     dev: true
 
-  /openapi-types/11.1.0:
-    resolution: {integrity: sha512-ZW+Jf12flFF6DXSij8DGL3svDA4RtSyHXjC/xB/JAh18gg3uVfVIFLvCfScUMowrpvlkxsMMbErakbth2g3/iQ==}
+  /openapi-types/12.0.2:
+    resolution: {integrity: sha512-GuTo7FyZjOIWVhIhQSWJVaws6A82sWIGyQogxxYBYKZ0NBdyP2CYSIgOwFfSB+UVoPExk/YzFpyYitHS8KVZtA==}
     dev: false
 
   /opener/1.5.2:
@@ -9032,13 +9030,13 @@ packages:
     resolution: {integrity: sha512-dKp+C4iXWK4vVYZmYSd0KBH5F/h1HoZRsbJ82AVKRO3PEo8L4lBS/vLwhVtpwwuYcoIsVY+1JYKR268yn480uQ==}
     dev: true
 
-  /prisma/4.2.1:
-    resolution: {integrity: sha512-HuYqnTDgH8atjPGtYmY0Ql9XrrJnfW7daG1PtAJRW0E6gJxc50lY3vrIDn0yjMR3TvRlypjTcspQX8DT+xD4Sg==}
+  /prisma/4.3.1:
+    resolution: {integrity: sha512-90xo06wtqil76Xsi3mNpc4Js3SdDRR5g4qb9h+4VWY4Y8iImJY6xc3PX+C9xxTSt1lr0Q89A0MLkJjd8ax6KiQ==}
     engines: {node: '>=14.17'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.2.1
+      '@prisma/engines': 4.3.1
     dev: false
 
   /process-nextick-args/2.0.1:
