@@ -20,7 +20,7 @@ export const darkGrayScale = {
 createGlobalTheme('[data-codeimage-theme="dark"]', themeColors, {
   primary: themeVars.backgroundColor.blue['400'],
   background: darkGrayScale.gray2,
-  baseText: themeVars.textColor.gray['800'],
+  baseText: darkGrayScale.gray12,
   descriptionTextColor: '#999999',
   secondary: themeVars.backgroundColor.gray['200'],
   divider: '#252525',
@@ -58,6 +58,12 @@ createGlobalTheme('[data-codeimage-theme="dark"]', themeColors, {
       hoverColor: themeVars.backgroundColor.blue['600'],
       textColor: themeVars.backgroundColor.white,
     },
+    danger: {
+      backgroundColor: themeVars.backgroundColor.red['500'],
+      activeColor: themeVars.backgroundColor.red['700'],
+      hoverColor: themeVars.backgroundColor.red['600'],
+      textColor: themeVars.backgroundColor.white,
+    },
   },
 
   listBox: {
@@ -83,7 +89,7 @@ createGlobalTheme('[data-codeimage-theme="dark"]', themeColors, {
   },
 
   snackbar: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: darkGrayScale.gray5,
     textColor: themeVars.backgroundColor.white,
   },
 

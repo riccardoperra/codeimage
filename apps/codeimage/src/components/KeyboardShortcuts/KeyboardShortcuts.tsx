@@ -1,19 +1,17 @@
 import {useI18n} from '@codeimage/locale';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {updateTheme} from '@codeimage/store/effects/onThemeChange';
-import * as frame from '@codeimage/store/frame';
-import * as terminal from '@codeimage/store/terminal';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import * as ui from '@codeimage/store/ui';
 import {
   Button,
   FadeInOutTransition,
-  HStack,
   PopoverPanel,
   PortalHostContext,
   useFloating,
 } from '@codeimage/ui';
 import {offset} from '@floating-ui/dom';
-import {dispatch} from '@ngneat/effects';
 import {Popover, PopoverButton} from 'solid-headless';
 import {createMemo, createSignal, For, JSXElement} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
@@ -32,6 +30,8 @@ export function KeyboardShortcuts(): JSXElement {
   const [t] = useI18n<AppLocaleEntries>();
   const [show, setShow] = createSignal(false);
   const editor = getRootEditorStore();
+  const frame = getFrameState();
+  const terminal = getTerminalState();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [
     {label: t('shortcut.focusCodeEditor'), key: ['F']},
@@ -57,7 +57,8 @@ export function KeyboardShortcuts(): JSXElement {
   });
 
   const filterHotKey = () =>
-    editor.options.focused || document.activeElement?.nodeName === 'INPUT';
+    editor.state.options.focused ||
+    document.activeElement?.nodeName === 'INPUT';
 
   useHotkey(document.body, {
     F: event => {
@@ -66,7 +67,7 @@ export function KeyboardShortcuts(): JSXElement {
       editor.actions.setFocused(true);
     },
     Escape: () => {
-      if (editor.options.focused) {
+      if (editor.state.options.focused) {
         if (!document.activeElement) return;
         (document.activeElement as HTMLElement).blur();
       } else {
@@ -97,7 +98,7 @@ export function KeyboardShortcuts(): JSXElement {
       if (filterHotKey()) return;
       const index = Math.floor(Math.random() * themes.length);
       const theme = themes[index];
-      dispatch(updateTheme({theme}));
+      dispatchUpdateTheme({theme});
     },
     // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
     'Shift+?': () => {
@@ -115,12 +116,11 @@ export function KeyboardShortcuts(): JSXElement {
           theme={'secondary'}
           type={'button'}
           variant={'solid'}
+          size={'xs'}
+          leftIcon={<HintIcon size={'sm'} />}
           onClick={() => setShow(true)}
         >
-          <HStack spacing={'2'}>
-            <HintIcon />
-            {label()}
-          </HStack>
+          {label()}
         </PopoverButton>
 
         <FadeInOutTransition show={show()}>

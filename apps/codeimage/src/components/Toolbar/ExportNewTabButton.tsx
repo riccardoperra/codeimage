@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, useSnackbarStore} from '@codeimage/ui';
-import {Component, createEffect} from 'solid-js';
+import {Button, toast} from '@codeimage/ui';
+import {useModality} from '@core/hooks/isMobile';
+import {Component, createEffect, untrack} from 'solid-js';
 import {
   ExportExtension,
   ExportMode,
@@ -15,7 +16,7 @@ interface ExportButtonProps {
 }
 
 export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
-  const snackbarStore = useSnackbarStore();
+  const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
 
   const [data, notify] = useExportImage();
@@ -39,12 +40,16 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
 
   createEffect(() => {
     if (data.error) {
-      snackbarStore.create({
-        closeable: true,
-        message: () => {
-          const [t] = useI18n<AppLocaleEntries>();
-          return <>{t('export.genericSaveError')}</>;
-        },
+      untrack(() => {
+        toast.error(
+          () => {
+            const [t] = useI18n<AppLocaleEntries>();
+            return <>{t('export.genericSaveError')}</>;
+          },
+          {
+            position: 'bottom-center',
+          },
+        );
       });
     }
   });
@@ -63,6 +68,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
       loading={data.loading}
       leftIcon={() => <ExternalLinkIcon />}
       onClick={() => openInTab()}
+      size={modality === 'full' ? 'sm' : 'xs'}
     >
       {label()}
     </Button>

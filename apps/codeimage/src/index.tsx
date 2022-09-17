@@ -1,54 +1,112 @@
-import {createI18nContext, I18nContext} from '@codeimage/locale';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {uiStore} from '@codeimage/store/ui';
-import {backgroundColorVar, CodeImageThemeProvider} from '@codeimage/ui';
+import {
+  backgroundColorVar,
+  CodeImageThemeProvider,
+  SnackbarHost,
+  ThemeProviderProps,
+} from '@codeimage/ui';
 import {enableUmami} from '@core/constants/umami';
-import {enableElfProdMode} from '@ngneat/elf';
-import {devTools} from '@ngneat/elf-devtools';
 import {OverlayProvider} from '@solid-aria/overlays';
+import {Router, useRoutes} from '@solidjs/router';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import {Router, useRoutes} from 'solid-app-router';
-import {createEffect, lazy, on, onMount, Suspense} from 'solid-js';
+import {
+  Component,
+  createEffect,
+  lazy,
+  on,
+  onMount,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
-import './theme/dark-theme.css';
+import {EditorPageSkeleton} from './pages/Editor/components/EditorSkeleton';
 import {darkGrayScale} from './theme/dark-theme.css';
+import './theme/dark-theme.css';
+import './theme/global.css';
 import './theme/light-theme.css';
-
-if (import.meta.env.DEV) {
-  devTools();
-}
-
-if (import.meta.env.PROD) {
-  enableElfProdMode();
-}
 
 const i18n = createI18nContext(locale);
 
-const theme: Parameters<typeof CodeImageThemeProvider>[0]['theme'] = {
+if (import.meta.env.VITE_ENABLE_MSW === true) {
+  import('./mocks/browser').then(({worker}) => worker.start());
+}
+
+function lazyWithNoLauncher(cp: () => Promise<{default: Component<any>}>) {
+  return lazy(() => {
+    queueMicrotask(() => {
+      document.querySelector('#launcher')?.remove();
+    });
+    return cp();
+  });
+}
+
+const tokens: ThemeProviderProps['tokens'] = {
   text: {
     weight: 'medium',
   },
 };
 
+const Dashboard = lazyWithNoLauncher(
+  () => import('./pages/Dashboard/Dashboard'),
+);
+
+const Editor = () => {
+  const Page = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
+  getThemeStore().loadThemes();
+  return (
+    <Suspense fallback={<EditorPageSkeleton />}>
+      <Page />
+    </Suspense>
+  );
+};
+
+const NotFoundPage = lazyWithNoLauncher(
+  () => import('./pages/NotFound/NotFoundPage'),
+);
+
 export function Bootstrap() {
   getRootEditorStore();
+  const [, {locale}] = useI18n();
+  createEffect(on(() => uiStore.locale, locale));
   const mode = () => uiStore.themeMode;
 
   const Routes = useRoutes([
     {
       path: '',
-      component: lazy(() => {
-        setTimeout(() => getThemeStore().loadThemes());
-        return import('./App').then(component => {
-          document.querySelector('#launcher')?.remove();
-          return component;
-        });
-      }),
+      component: () => {
+        const state = getAuth0State();
+        return (
+          <Show fallback={<Editor />} when={state.loggedIn()}>
+            <Dashboard />
+          </Show>
+        );
+      },
+    },
+    {
+      path: ':snippetId',
+      component: Editor,
+    },
+    {
+      path: '404',
+      component: NotFoundPage,
+    },
+    {
+      path: 'dashboard',
+      data: ({navigate}) => navigate('/'),
+      component: Dashboard,
+    },
+    {
+      path: '/*all',
+      data: ({navigate}) => navigate('/404'),
+      component: NotFoundPage,
     },
   ]);
 
@@ -73,7 +131,6 @@ export function Bootstrap() {
       if (scheme) {
         const color = theme === 'dark' ? darkGrayScale.gray1 : '#FFFFFF';
         scheme.setAttribute('content', color);
-        document.body.setAttribute('data-codeimage-theme', theme);
         setElementVars(document.body, {
           [backgroundColorVar]: color,
         });
@@ -82,21 +139,31 @@ export function Bootstrap() {
   );
 
   return (
-    <Scaffold>
-      <OverlayProvider>
-        <Router>
-          <I18nContext.Provider value={i18n}>
-            <CodeImageThemeProvider theme={theme}>
-              <Suspense>
-                <Routes />
-              </Suspense>
-            </CodeImageThemeProvider>
-          </I18nContext.Provider>
-        </Router>
-      </OverlayProvider>
-      <SidebarPopoverHost />
-    </Scaffold>
+    <OverlayProvider>
+      <Scaffold>
+        <CodeImageThemeProvider tokens={tokens} theme={uiStore.themeMode}>
+          <SnackbarHost />
+          <Router>
+            <Suspense>
+              <Routes />
+            </Suspense>
+          </Router>
+        </CodeImageThemeProvider>
+        <SidebarPopoverHost />
+      </Scaffold>
+    </OverlayProvider>
   );
 }
 
-render(() => <Bootstrap />, document.getElementById('root') as HTMLElement);
+getAuth0State()
+  .initLogin()
+  .then(() => {
+    render(
+      () => (
+        <I18nContext.Provider value={i18n}>
+          <Bootstrap />
+        </I18nContext.Provider>
+      ),
+      document.getElementById('root') as HTMLElement,
+    );
+  });

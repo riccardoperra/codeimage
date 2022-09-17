@@ -15,7 +15,7 @@ import {
   SegmentedField,
   SegmentedFieldItem,
   TextField,
-  useSnackbarStore,
+  toast,
   VStack,
 } from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
@@ -25,7 +25,14 @@ import {
   createOverlayTriggerState,
   OverlayContainer,
 } from '@solid-aria/overlays';
-import {Component, createEffect, createSignal, onMount, Show} from 'solid-js';
+import {
+  Component,
+  createEffect,
+  createSignal,
+  onMount,
+  Show,
+  untrack,
+} from 'solid-js';
 import {
   ExportExtension,
   ExportMode,
@@ -43,7 +50,6 @@ interface ExportButtonProps {
 
 export const ExportButton: Component<ExportButtonProps> = props => {
   let openButtonRef: HTMLButtonElement | undefined;
-  const snackbarStore = useSnackbarStore();
   const [t] = useI18n<AppLocaleEntries>();
   const modality = useModality();
   const overlayState = createOverlayTriggerState({});
@@ -62,12 +68,16 @@ export const ExportButton: Component<ExportButtonProps> = props => {
 
   createEffect(() => {
     if (data.error) {
-      snackbarStore.create({
-        closeable: true,
-        message: () => {
-          const [t] = useI18n<AppLocaleEntries>();
-          return <>{t('export.genericSaveError')}</>;
-        },
+      untrack(() => {
+        toast.error(
+          () => {
+            const [t] = useI18n<AppLocaleEntries>();
+            return <>{t('export.genericSaveError')}</>;
+          },
+          {
+            position: 'bottom-center',
+          },
+        );
       });
     }
   });
@@ -87,6 +97,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         variant={'solid'}
         theme={'primary'}
         loading={data.loading}
+        size={modality === 'full' ? 'sm' : 'xs'}
         leftIcon={() => <DownloadIcon />}
       >
         {label()}

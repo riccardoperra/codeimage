@@ -10,6 +10,7 @@ export interface LanguageIconDefinition {
 export interface LanguageDefinition {
   readonly id: string;
   readonly label: string;
+  readonly color: string;
   readonly plugin: () => Promise<Extension>;
   readonly icons: LanguageIconDefinition[];
 }

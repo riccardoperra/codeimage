@@ -1,15 +1,13 @@
 import {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {updateTheme} from '@codeimage/store/effects/onThemeChange';
-import {terminal$} from '@codeimage/store/terminal';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
 import {Box, FlexField, TextField} from '@codeimage/ui';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
-import {fromObservableObject} from '@core/hooks/from-observable-object';
 import {useModality} from '@core/hooks/isMobile';
-import {dispatch} from '@ngneat/effects';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   createSelector,
@@ -34,17 +32,17 @@ const CustomEditorPreview = lazy(() => {
 });
 
 export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
-  const terminal = fromObservableObject(terminal$);
-  const {options} = getRootEditorStore();
+  const terminal = getTerminalState();
+  const editor = getRootEditorStore();
   const modality = useModality();
   const {themeArray, themeLoading} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
   const [filteredThemes, search, setSearch, isMatched] =
     useFilteredThemes(themeArray);
-  const isSelected = createSelector(() => options.themeId);
+  const isSelected = createSelector(() => editor.state.options.themeId);
 
   const onSelectTheme = (theme: CustomTheme) => {
-    dispatch(updateTheme({theme}));
+    dispatchUpdateTheme({theme});
     umami.trackEvent(theme.id, `theme-change`);
   };
   const exampleCode =
@@ -80,7 +78,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
           {theme => {
             return (
               <Suspense fallback={<ThemeBoxSkeleton />}>
-                <Show when={theme()}>
+                <Show when={theme()} keyed={true}>
                   {theme => (
                     <Show when={isMatched(theme.id)}>
                       <div>
@@ -91,25 +89,25 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                         >
                           <TerminalHost
                             themeClass={styles.themeBoxTerminalHost}
-                            tabName={'Untitled'}
                             textColor={theme.properties.terminal.text}
                             background={theme.properties.terminal.main}
-                            darkMode={theme.properties.darkMode}
                             accentVisible={false}
                             shadow={/*@once*/ TERMINAL_SHADOWS.bottom}
                             showTab={false}
                             readonlyTab={true}
                             showHeader={false}
                             showWatermark={false}
-                            showGlassReflection={terminal.showGlassReflection}
+                            showGlassReflection={
+                              terminal.state.showGlassReflection
+                            }
                             opacity={100}
                             themeId={theme.id}
-                            alternativeTheme={terminal.alternativeTheme}
+                            alternativeTheme={terminal.state.alternativeTheme}
                           >
                             <CustomEditorPreview
                               themeId={theme.id}
-                              languageId={/*@once*/ 'typescript'}
-                              code={/*@once*/ exampleCode}
+                              languageId={'typescript'}
+                              code={exampleCode}
                             />
                           </TerminalHost>
                         </ThemeBox>
@@ -124,7 +122,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                             fallback={
                               <EmptyCircle
                                 cursor={'pointer'}
-                                onClick={() => dispatch(updateTheme({theme}))}
+                                onClick={() => dispatchUpdateTheme({theme})}
                                 size={'md'}
                                 opacity={0.35}
                               />

@@ -1,5 +1,7 @@
 import {createTheme, style} from '@vanilla-extract/css';
+import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {themeVars} from '../../theme';
+import * as variables from '../../theme/variables.css';
 import {inputHeight} from '../Field/FlexField.css';
 
 export const [textFieldTheme, textFieldVars] = createTheme({
@@ -17,6 +19,7 @@ export const baseField = style([
     backgroundColor: textFieldVars.background,
     borderRadius: themeVars.borderRadius.md,
     width: '100%',
+    fontSize: variables.fontSize,
     height: textFieldVars.inputHeight,
     color: 'currentcolor',
     ':focus': {
@@ -29,12 +32,33 @@ export const baseField = style([
   },
 ]);
 
-export const textField = style([
-  baseField,
-  {
-    paddingRight: themeVars.spacing['3'],
-    paddingTop: 0,
-    paddingBottom: themeVars.spacing.px,
-    paddingLeft: themeVars.spacing['3'],
+export const textField = recipe({
+  base: [
+    baseField,
+    {
+      paddingRight: themeVars.spacing['3'],
+      paddingTop: 0,
+      paddingBottom: themeVars.spacing.px,
+      paddingLeft: themeVars.spacing['3'],
+    },
+  ],
+  variants: {
+    inline: {
+      true: {
+        backgroundColor: 'transparent',
+        border: 'none',
+        borderBottom: `2px solid ${textFieldVars.background}`,
+        borderRadius: 0,
+        paddingLeft: 0,
+        paddingRight: 0,
+      },
+    },
+    withLeftIcon: {
+      true: {
+        paddingLeft: themeVars.spacing['6'],
+      },
+    },
   },
-]);
+});
+
+export type TextFieldProps = RecipeVariants<typeof textField>;

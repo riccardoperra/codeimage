@@ -1,0 +1,64 @@
+{
+  "name": "@codeimage/api",
+  "version": "0.0.1",
+  "description": "CodeImage api rest server",
+  "main": "app.ts",
+  "directories": {
+    "test": "test"
+  },
+  "exports": {
+    "./api-types": {
+      "types": "./index.d.ts"
+    }
+  },
+  "scripts": {
+    "test": "dotenv -e .env.test -- tap --ts --reporter=specy './test/**/*.test.ts' --before=test/before-test.ts",
+    "start": "npm run build:ts && fastify start -l info dist/app.js",
+    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
+    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
+    "build:ts": "tsc",
+    "watch:ts": "tsc -w",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:test": "dotenv -e .env.test -- pnpm exec prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:migrate:deploy-test": "dotenv -e .env.test -- pnpm exec prisma migrate deploy",
+    "prisma:generate": "prisma generate dev && pnpm --filter=@codeimage/prisma-models build",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"blue.bold,cyan.bold\" \"npm:dev:start\"",
+    "dev:start": "tsx watch node_modules/fastify-cli/cli.js start --ignore-watch=.ts$ -w -l info -P src/app.ts"
+  },
+  "keywords": [],
+  "author": "Riccardo Perra",
+  "license": "ISC",
+  "dependencies": {
+    "@codeimage/prisma-models": "workspace:*",
+    "@fastify/autoload": "^5.4.0",
+    "@fastify/cors": "^8.1.0",
+    "@fastify/env": "^4.1.0",
+    "@fastify/jwt": "^6.3.2",
+    "@fastify/sensible": "^5.1.1",
+    "@fastify/swagger": "^7.5.1",
+    "@fastify/type-provider-typebox": "^2.3.0",
+    "@prisma/client": "^4.3.1",
+    "@sinclair/typebox": "^0.24.42",
+    "close-with-grace": "^1.1.0",
+    "dotenv": "^16.0.2",
+    "dotenv-cli": "^6.0.0",
+    "fastify": "^4.6.0",
+    "fastify-auth0-verify": "^0.8.2",
+    "fastify-cli": "^5.4.1",
+    "fastify-healthcheck": "^4.2.0",
+    "fastify-plugin": "^4.2.1",
+    "fluent-json-schema": "^3.1.0",
+    "prisma": "^4.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.18",
+    "@types/sinon": "^10.0.13",
+    "@types/tap": "^15.0.7",
+    "concurrently": "^7.4.0",
+    "fastify-tsconfig": "^1.0.1",
+    "sinon": "^14.0.0",
+    "tap": "^16.3.0",
+    "typescript": "^4.8.2"
+  }
+}

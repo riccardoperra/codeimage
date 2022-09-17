@@ -1,6 +1,8 @@
+import {useI18n} from '@codeimage/locale';
 import {Box, Button, FadeInOutTransition} from '@codeimage/ui';
 import {createSignal, ParentComponent, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
+import {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {CodeIcon} from '../Icons/Code';
 import {ColorSwatchIcon} from '../Icons/ColorSwatch';
@@ -10,10 +12,6 @@ import {EditorStyleForm} from '../PropertyEditor/EditorStyleForm';
 import {FrameStyleForm} from '../PropertyEditor/FrameStyleForm';
 import {WindowStyleForm} from '../PropertyEditor/WindowStyleForm';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
-
-import {useI18n} from '@codeimage/locale';
-import {AppLocaleEntries} from '../../i18n';
-
 import * as styles from './BottomBar.css';
 
 type Mode = 'themes' | 'style' | 'editor';
@@ -30,6 +28,7 @@ export const BottomBar: ParentComponent<BottomBarProps> = props => {
       <Button
         class={styles.button}
         variant={'link'}
+        theme={'secondary'}
         onClick={() => setMode('themes')}
       >
         <ColorSwatchIcon />
@@ -39,6 +38,7 @@ export const BottomBar: ParentComponent<BottomBarProps> = props => {
       <Button
         class={styles.button}
         variant={'link'}
+        theme={'secondary'}
         onClick={() => setMode('style')}
       >
         <SparklesIcon />
@@ -48,6 +48,7 @@ export const BottomBar: ParentComponent<BottomBarProps> = props => {
       <Button
         class={styles.button}
         variant={'link'}
+        theme={'secondary'}
         onClick={() => setMode('editor')}
       >
         <CodeIcon />

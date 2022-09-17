@@ -43,7 +43,7 @@ export const FloatingPortal = (
   const portalNode = createFloatingPortalNode({id: props.id});
 
   return (
-    <Show when={portalNode()}>
+    <Show when={portalNode()} keyed>
       {node => <Portal mount={node}>{props.children}</Portal>}
     </Show>
   );

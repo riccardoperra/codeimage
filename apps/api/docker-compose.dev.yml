@@ -1,0 +1,28 @@
+# docker-compose -f docker-compose.dev.yml -p codeimage up -d
+
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=codeimage
+  test_db:
+    image: postgres:13-alpine
+    restart: always
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: codeimage_test
+
+volumes:
+  postgres_data: null

@@ -1,34 +1,19 @@
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
-import {updateFrameStore} from '@codeimage/store/frame';
-import {updateTerminalStore} from '@codeimage/store/terminal';
 import {CustomTheme} from '@codeimage/highlight';
-import {createAction, createEffect, ofType, props} from '@ngneat/effects';
-import {setProps} from '@ngneat/elf';
-import {tap} from 'rxjs';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {batch} from 'solid-js';
 
-export const updateTheme = createAction(
-  '[CodeImage] Update Theme',
-  props<{theme: CustomTheme}>(),
-);
+export type DispatchUpdateThemeParams = {theme: CustomTheme};
 
-export const onThemeChange$ = createEffect(actions =>
-  actions.pipe(
-    ofType(updateTheme),
-    tap(({theme}) => {
-      updateFrameStore(
-        setProps({background: theme.properties.previewBackground}),
-      );
-
-      updateTerminalStore(
-        setProps({
-          background: theme.properties.terminal.main,
-          textColor: theme.properties.terminal.text,
-          darkMode: theme.properties.darkMode,
-        }),
-      );
-
-      const editor = getRootEditorStore();
-      editor.actions.setThemeId(theme.id);
-    }),
-  ),
-);
+export function dispatchUpdateTheme({theme}: DispatchUpdateThemeParams): void {
+  const frame = getFrameState();
+  const terminal = getTerminalState();
+  const editor = getRootEditorStore();
+  batch(() => {
+    frame.setBackground(theme.properties.previewBackground);
+    terminal.setState('background', theme.properties.terminal.main);
+    terminal.setState('textColor', theme.properties.terminal.text);
+    editor.actions.setThemeId(theme.id);
+  });
+}

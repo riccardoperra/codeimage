@@ -1,6 +1,6 @@
 import {Box} from '@codeimage/ui';
-import {ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
+import {ParentComponent, Show} from 'solid-js';
 import {TerminalWindowTabList} from '../Tabs/TerminalWindowTabList';
 import * as baseStyles from '../terminal.css';
 import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
@@ -14,13 +14,10 @@ export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
   return (
     <TerminalHost {...props} themeClass={styles.theme}>
       <Show when={props.showHeader}>
-        <div
-          class={baseStyles.header}
-          data-theme-mode={props.darkMode ? 'dark' : 'light'}
-          data-accent-visible={showTab()}
-        >
+        <div class={baseStyles.header} data-accent-visible={showTab()}>
           <Show when={props.showTab}>
             <TerminalWindowTabList
+              readOnly={props.readonlyTab}
               accent={props.accentVisible && !props.alternativeTheme}
             />
           </Show>

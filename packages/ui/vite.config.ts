@@ -13,6 +13,7 @@ const externals = [
 
 export function removeSideEffects(): Plugin {
   return {
+    name: 'fix-treeshaking',
     transform() {
       return {
         moduleSideEffects: 'no-treeshake',
@@ -27,16 +28,17 @@ export default defineConfig({
     dts({
       skipDiagnostics: false,
       logDiagnostics: true,
+      outputDir: './dist/types',
     }),
     // TODO: check possible issues --> why solid-js and @vanilla-extract/dynamic are imported in some files?
     removeSideEffects(),
   ],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(__dirname, 'src/index.tsx'),
       name: '@codeimage/ui',
       fileName: 'ui',
-      formats: ['es'],
+      formats: ['es', 'cjs'],
     },
     target: 'esnext',
     rollupOptions: {
@@ -44,7 +46,6 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         preserveModules: true,
-        format: 'es',
       },
     },
   },

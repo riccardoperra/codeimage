@@ -1,5 +1,5 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {recipe, type RecipeVariants} from '@vanilla-extract/recipes';
+import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {adaptiveFullScreenHeight, themeVars} from '../../theme';
 import * as textStyles from '../Text/Text.css';
 
@@ -118,6 +118,13 @@ export const panel = recipe({
 
   variants: {
     size: {
+      xs: {
+        '@media': {
+          'screen and (min-width: 768px)': {
+            width: '24rem',
+          },
+        },
+      },
       sm: {
         '@media': {
           'screen and (min-width: 768px)': {

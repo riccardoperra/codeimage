@@ -2,15 +2,15 @@
   "name": "@codeimage/dom-export",
   "version": "1.10.1",
   "description": "Generates an image from a DOM node using HTML5 canvas and SVG.",
-  "main": "./dist/dom-export.es.js",
-  "module": "./dist/dom-export.es.js",
+  "main": "./dist/dom-export.mjs",
+  "module": "./dist/dom-export.mjs",
   "types": "./dist/public-api.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
-      "default": "./dist/dom-export.es.js",
+      "default": "./dist/dom-export.mjs",
       "types": "./dist/public-api.d.ts"
     }
   },
@@ -53,14 +53,14 @@
     }
   ],
   "devDependencies": {
-    "@types/node": "17.0.40",
-    "lint-staged": "^13.0.0",
-    "prettier": "^2.6.2",
+    "@types/node": "^18.7.13",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
     "tslib": "^2.4.0",
-    "typescript": "^4.7.3",
-    "vite": "^2.9.9",
-    "vite-plugin-dts": "^1.2.0"
+    "typescript": "^4.8.2",
+    "vite": "^3.0.9",
+    "vite-plugin-dts": "^1.4.1"
   },
   "repository": {
     "type": "git",

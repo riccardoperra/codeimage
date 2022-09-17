@@ -1,60 +1,59 @@
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
-import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
+import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
+// import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-const pwaOptions: Partial<VitePWAOptions> = {
-  base: '/',
-  manifest: {
-    name: 'Codeimage',
-    orientation: 'portrait',
-    dir: 'ltr',
-    short_name: 'Codeimage',
-    start_url: '.',
-    display: 'standalone',
-    background_color: '#1a1a1a',
-    description: 'Create elegant screenshots of your source code.',
-    theme_color: '#1a1a1a',
-    icons: [
-      {
-        src: '/pwa/manifest-icon-192.maskable.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'any',
-      },
-      {
-        src: '/pwa/manifest-icon-192.maskable.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-      {
-        src: '/pwa/manifest-icon-512.maskable.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'any',
-      },
-      {
-        src: '/pwa/manifest-icon-512.maskable.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-    ],
-  },
-  srcDir: 'src',
-  filename: 'sw.ts',
-  strategies: 'injectManifest',
-  registerType: 'autoUpdate',
-};
+// const pwaOptions: Partial<VitePWAOptions> = {
+//   base: '/',
+//   manifest: {
+//     name: 'Codeimage',
+//     orientation: 'portrait',
+//     dir: 'ltr',
+//     short_name: 'Codeimage',
+//     start_url: '.',
+//     display: 'standalone',
+//     background_color: '#1a1a1a',
+//     description: 'Create elegant screenshots of your source code.',
+//     theme_color: '#1a1a1a',
+//     icons: [
+//       {
+//         src: '/pwa/manifest-icon-192.maskable.png',
+//         sizes: '192x192',
+//         type: 'image/png',
+//         purpose: 'any',
+//       },
+//       {
+//         src: '/pwa/manifest-icon-192.maskable.png',
+//         sizes: '192x192',
+//         type: 'image/png',
+//         purpose: 'maskable',
+//       },
+//       {
+//         src: '/pwa/manifest-icon-512.maskable.png',
+//         sizes: '512x512',
+//         type: 'image/png',
+//         purpose: 'any',
+//       },
+//       {
+//         src: '/pwa/manifest-icon-512.maskable.png',
+//         sizes: '512x512',
+//         type: 'image/png',
+//         purpose: 'maskable',
+//       },
+//     ],
+//   },
+//   srcDir: 'src',
+//   filename: 'sw.ts',
+//   strategies: 'injectManifest',
+//   registerType: 'autoUpdate',
+// };
 
 export default defineConfig(({mode}) => ({
-  clearScreen: true,
   plugins: [
-    solidPlugin(),
     vanillaExtractPlugin(),
-    VitePWA(pwaOptions),
+    solidPlugin(),
+    // VitePWA(pwaOptions),
     tsconfigPaths(),
     {
       name: 'html-inject-umami',
@@ -72,6 +71,26 @@ export default defineConfig(({mode}) => ({
         );
       },
     },
+    {
+      name: 'parse-environment-variables',
+
+      configResolved(resolvedConfig) {
+        const config = resolvedConfig as Omit<typeof resolvedConfig, 'env'> & {
+          env: typeof resolvedConfig['env'];
+        };
+        const env = config.env;
+        config.env = Object.keys(env).reduce((acc, key) => {
+          let parsed = config.env[key];
+          try {
+            parsed = JSON.parse(config.env[key]);
+          } catch {}
+          return {
+            ...acc,
+            [key]: parsed,
+          };
+        }, {});
+      },
+    },
   ],
   server: {
     strictPort: true,
@@ -79,9 +98,15 @@ export default defineConfig(({mode}) => ({
     watch: {
       usePolling: true,
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
-    brotliSize: true,
     sourcemap: false,
     minify: true,
     polyfillModulePreload: false,

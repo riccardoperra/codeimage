@@ -15,6 +15,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'javascript',
     label: 'Javascript',
+    color: '#f1e05a',
     plugin: () =>
       import('@codemirror/lang-javascript').then(({javascript}) =>
         javascript({jsx: true}),
@@ -87,6 +88,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'typescript',
     label: 'Typescript',
+    color: '#3178c6',
     plugin: () =>
       import('@codemirror/lang-javascript').then(({javascript}) =>
         javascript({jsx: true, typescript: true}),
@@ -200,6 +202,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'java',
     label: 'Java',
+    color: '#b07219',
     plugin: () => import('@codemirror/lang-java').then(({java}) => java()),
     icons: [
       {
@@ -213,6 +216,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'kotlin',
     label: 'Kotlin',
+    color: '#A97BFF',
     plugin: () =>
       Promise.all([
         importLegacy(),
@@ -230,6 +234,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'css',
     label: 'Css',
+    color: '#563d7c',
     plugin: () => import('@codemirror/lang-css').then(({css}) => css()),
     icons: [
       {
@@ -261,6 +266,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'html',
     label: 'Html',
+    color: '#e34c26',
     plugin: () =>
       import('@codemirror/lang-html').then(({html}) =>
         html({matchClosingTags: true, autoCloseTags: true}),
@@ -277,6 +283,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'php',
     label: 'PHP',
+    color: '#4F5D95',
     plugin: () => import('@codemirror/lang-php').then(({php}) => php()),
     icons: [
       {
@@ -290,6 +297,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'python',
     label: 'Python',
+    color: '#3572A5',
     plugin: () =>
       import('@codemirror/lang-python').then(({python}) => python()),
     icons: [
@@ -304,6 +312,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'markdown',
     label: 'Markdown',
+    color: '#083fa1',
     plugin: () =>
       import('@codemirror/lang-markdown').then(({markdown}) => markdown()),
     icons: [
@@ -318,6 +327,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'rust',
     label: 'Rust',
+    color: '#dea584',
     plugin: () => import('@codemirror/lang-rust').then(({rust}) => rust()),
     icons: [
       {
@@ -331,6 +341,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'cpp',
     label: 'C++',
+    color: '#f34b7d',
     plugin: () => import('@codemirror/lang-cpp').then(({cpp}) => cpp()),
     icons: [
       {
@@ -344,6 +355,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'xml',
     label: 'XML',
+    color: '#0060ac',
     plugin: () => import('@codemirror/lang-xml').then(({xml}) => xml()),
     icons: [
       {
@@ -357,6 +369,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'json',
     label: 'JSON',
+    color: '#292929',
     plugin: () => import('@codemirror/lang-json').then(({json}) => json()),
     icons: [
       {
@@ -370,6 +383,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   {
     id: 'sql',
     label: 'SQL',
+    color: '#e38c00',
     plugin: () => import('@codemirror/lang-sql').then(({sql}) => sql()),
     icons: [
       {

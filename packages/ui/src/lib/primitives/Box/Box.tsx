@@ -1,10 +1,10 @@
 import clsx from 'clsx';
-import {
-  type DynamicProps,
-  type ValidConstructor,
-  type WithRef,
+import type {
+  DynamicProps,
+  ValidConstructor,
+  WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {type JSXElement, type PropsWithChildren} from 'solid-js';
+import type {JSXElement, PropsWithChildren} from 'solid-js';
 import {omitProps, pickProps} from 'solid-use';
 import {sprinkles, Sprinkles} from '../../theme';
 import {styled} from '../../utils';
@@ -23,9 +23,9 @@ export function Box<T extends ValidConstructor = 'div'>(
 ): JSXElement {
   return (
     <styled.div
+      {...omitProps(props, ['as', 'ref'])}
       as={props.as ?? 'div'}
       ref={props.ref}
-      {...omitProps(props, ['as', 'ref'])}
       class={clsx(
         boxBase,
         props.class,

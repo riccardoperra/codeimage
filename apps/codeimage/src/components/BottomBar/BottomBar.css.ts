@@ -4,8 +4,8 @@ import {scaffoldVars} from '../Scaffold/Scaffold.css';
 
 export const wrapper = style({
   height: `calc(${scaffoldVars.toolbarHeight} + env(safe-area-inset-bottom, 20px))`,
-  width: '100vw',
   overflow: 'hidden',
+  width: '100%',
   borderTop: `1px solid ${themeVars.dynamicColors.divider}`,
   backgroundColor: themeVars.dynamicColors.bottomBar.backgroundColor,
   color: themeVars.dynamicColors.bottomBar.textColor,

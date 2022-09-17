@@ -1,0 +1,47 @@
+{
+  "name": "@codeimage/atomic-state",
+  "version": "0.1.0",
+  "source": "src/index.tsx",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "solid": "./dist/source/index.jsx",
+      "import": "./dist/esm/index.js",
+      "browser": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "node": "./dist/cjs/index.js"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "pre-commit": "lint-staged --relative",
+    "pre-commit-prettier": "prettier --write",
+    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
+    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "clean": "rimraf dist",
+    "build-esm": "tsc -p tsconfig.esm.json",
+    "build-dts": "tsc -p tsconfig.dts.json",
+    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
+    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
+    "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
+  },
+  "peerDependencies": {
+    "rxjs": "^7.5.6",
+    "solid-js": "^1.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.13",
+    "rollup": "^2.78.1",
+    "rollup-preset-solid": "^1.4.0",
+    "rxjs": "^7.5.6",
+    "solid-js": "^1.5.2",
+    "vite": "^3.0.9",
+    "vite-plugin-dts": "^1.4.1",
+    "vite-plugin-solid": "^2.3.0"
+  }
+}

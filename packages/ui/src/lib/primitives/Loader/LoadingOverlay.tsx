@@ -1,4 +1,5 @@
 import {JSXElement, Show} from 'solid-js';
+import {omitProps} from 'solid-use';
 import {styled} from '../../utils';
 import {LoaderProps, Loading} from './Loading';
 import {overlay} from './LoadingOverlay.css';
@@ -8,13 +9,11 @@ interface LoadingOverlayProps extends LoaderProps {
 }
 
 export function LoadingOverlay(props: LoadingOverlayProps): JSXElement {
+  const loadingProps = omitProps(props, ['overlay']);
   return (
-    <Show
-      when={props.overlay}
-      fallback={<Loading width={props.width} height={props.height} />}
-    >
+    <Show when={props.overlay} fallback={<Loading {...loadingProps} />}>
       <styled.div class={overlay}>
-        <Loading width={props.width} height={props.height} />
+        <Loading {...loadingProps} />
       </styled.div>
     </Show>
   );

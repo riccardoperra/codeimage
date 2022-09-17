@@ -33,7 +33,7 @@ function SelectorIcon(props: JSX.IntrinsicElements['svg']): JSX.Element {
   );
 }
 
-interface SelectOptions<T> {
+export interface SelectOptions<T> {
   label: string;
   value: T;
 }

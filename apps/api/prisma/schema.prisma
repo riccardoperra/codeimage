@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../../../packages/prisma-models/generated/client"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  email     String    @unique
+  projects  Project[]
+}
+
+model Project {
+  id              String               @id @default(uuid())
+  name            String
+  frame           SnippetFrame         @relation(fields: [frameId], references: [id])
+  frameId         String               @unique
+  terminal        SnippetTerminal      @relation(fields: [terminalId], references: [id])
+  terminalId      String               @unique
+  editorOptions   SnippetEditorOptions @relation(fields: [editorOptionsId], references: [id])
+  editorOptionsId String               @unique
+  editorTabs      SnippetEditorTab[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  owner           User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId         String
+
+  @@unique([id, ownerId])
+  @@index([name, ownerId])
+}
+
+model SnippetFrame {
+  id         String   @id @default(uuid())
+  project    Project?
+  background String?
+  padding    Int      @default(32)
+  radius     Int?
+  visible    Boolean  @default(true)
+  opacity    Float    @default(100)
+}
+
+model SnippetTerminal {
+  id                  String   @id @default(uuid())
+  project             Project?
+  showHeader          Boolean  @default(true)
+  type                String
+  accentVisible       Boolean  @default(false)
+  shadow              String?
+  background          String?
+  textColor           String?
+  showWatermark       Boolean  @default(true)
+  showGlassReflection Boolean  @default(false)
+  opacity             Float    @default(100)
+  alternativeTheme    Boolean  @default(false)
+}
+
+model SnippetEditorOptions {
+  id              String   @id @default(uuid())
+  project         Project?
+  fontId          String
+  fontWeight      Int      @default(400)
+  showLineNumbers Boolean  @default(false)
+  themeId         String
+}
+
+model SnippetEditorTab {
+  id         String  @id @default(uuid())
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId  String
+  code       String  @default("")
+  languageId String
+  tabName    String  @default("")
+
+  @@unique([id, projectId])
+}

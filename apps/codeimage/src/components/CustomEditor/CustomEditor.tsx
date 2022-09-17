@@ -1,6 +1,6 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {getActiveEditorStore} from '@codeimage/store/editor/createActiveEditor';
-import {getRootEditorStore} from '@codeimage/store/editor/createEditors';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {
   autocompletion,
@@ -31,8 +31,18 @@ import {
   createCodeMirror,
   createEditorControlledValue,
   createEditorFocus,
+  createEditorReadonly,
 } from 'solid-codemirror';
-import {createEffect, createMemo, createResource, on, onMount} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  getOwner,
+  on,
+  onMount,
+  runWithOwner,
+  VoidProps,
+} from 'solid-js';
 
 interface CustomFontExtensionOptions {
   fontName: string;
@@ -60,14 +70,19 @@ const EDITOR_BASE_SETUP: Extension = [
   ]),
 ];
 
-export default function CustomEditor() {
+interface CustomEditorProps {
+  readOnly: boolean;
+}
+
+export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   let editorEl!: HTMLDivElement;
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
+  const owner = getOwner();
 
   const {
-    options: editorOptions,
+    state: editorState,
     actions: {setFocused},
   } = getRootEditorStore();
   const {editor, setCode} = getActiveEditorStore();
@@ -90,7 +105,7 @@ export default function CustomEditor() {
 
   const themeConfiguration = createMemo(
     () =>
-      themes().find(theme => theme()?.id === editorOptions.themeId)?.() ??
+      themes().find(theme => theme()?.id === editorState.options.themeId)?.() ??
       themes()[0](),
   );
 
@@ -146,16 +161,17 @@ export default function CustomEditor() {
   const customFontExtension = () =>
     createCustomFontExtension({
       fontName:
-        fonts.find(({id}) => editorOptions.fontId === id)?.name ||
+        fonts.find(({id}) => editorState.options.fontId === id)?.name ||
         fonts[0].name,
-      fontWeight: editorOptions.fontWeight,
+      fontWeight: editorState.options.fontWeight,
     });
 
   onMount(() => {
     setRef(editorEl);
-    import('./fix-cm-aria-roles-lighthouse').then(m =>
-      m.fixCodeMirrorAriaRole(() => editorEl),
-    );
+    import('./fix-cm-aria-roles-lighthouse').then(m => {
+      if (!owner) return;
+      runWithOwner(owner, () => m.fixCodeMirrorAriaRole(() => editorEl));
+    });
   });
 
   const {setFocused: editorSetFocused} = createEditorFocus(
@@ -164,10 +180,13 @@ export default function CustomEditor() {
   );
 
   createEditorControlledValue(editorView, () => editor()?.code ?? '');
+  createEditorReadonly(editorView, () => props.readOnly);
   createExtension(EditorView.lineWrapping);
   createExtension(customFontExtension);
   createExtension(currentLanguage);
-  createExtension(() => (editorOptions.showLineNumbers ? lineNumbers() : []));
+  createExtension(() =>
+    editorState.options.showLineNumbers ? lineNumbers() : [],
+  );
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
   createExtension(EDITOR_BASE_SETUP);
@@ -177,7 +196,7 @@ export default function CustomEditor() {
       if (view) {
         createEffect(
           on(
-            () => editorOptions.focused,
+            () => editorState.options.focused,
             isFocused => {
               if (view && !view.hasFocus && isFocused) {
                 editorSetFocused(true);

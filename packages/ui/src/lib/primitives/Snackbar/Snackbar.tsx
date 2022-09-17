@@ -1,18 +1,17 @@
 import clsx from 'clsx';
-import {createSignal, JSX, Show} from 'solid-js';
 import {Toast} from 'solid-headless';
-import {SnackbarData} from './SnackbarHost';
-import * as styles from './Snackbar.css';
+import {createSignal, JSX, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {FadeInOutWithScaleTransition} from '../Transition';
 import {Box} from '../Box';
-import {Text} from '../Text';
 import {Button} from '../Button';
+import {ButtonSizes} from '../Button/Button.css';
 import {SvgIcon} from '../Icon';
-import {useSnackbarStore} from './snackbar.store';
+import {Text} from '../Text';
+import {FadeInOutWithScaleTransition} from '../Transition';
+import * as styles from './Snackbar.css';
+import {SnackbarData, toast} from './SnackbarHost';
 
 export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
-  const store = useSnackbarStore();
   const [isOpen, setIsOpen] = createSignal(true);
 
   function dismiss() {
@@ -22,7 +21,7 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
   return (
     <FadeInOutWithScaleTransition
       show={isOpen()}
-      afterLeave={() => store.remove(props.id)}
+      afterLeave={() => toast.remove(props.id)}
     >
       <Box as={props.wrapper ?? 'div'}>
         <Toast class={clsx(styles.snackbar)}>
@@ -43,7 +42,7 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
             <Box marginLeft={'4'}>
               <Button
                 type={'button'}
-                size={'xs'}
+                size={ButtonSizes.xs}
                 pill
                 variant={'solid'}
                 theme={'secondary'}

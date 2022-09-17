@@ -1,5 +1,4 @@
 import {createTheme, style} from '@vanilla-extract/css';
-import {sprinkles} from '../../theme';
 
 export const [stackTheme, stackThemeVars] = createTheme({
   spacing: '0px',
@@ -7,7 +6,10 @@ export const [stackTheme, stackThemeVars] = createTheme({
 
 export const stack = style([
   stackTheme,
-  sprinkles({display: 'flex', flexWrap: 'nowrap'}),
+  {
+    display: 'flex',
+    // flexWrap: 'nowrap',
+  },
 ]);
 
 export const hStack = style([

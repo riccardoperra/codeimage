@@ -78,6 +78,7 @@ export const tab = recipe({
         '&[data-active-drag=true]': {
           zIndex: 21,
           backdropFilter: 'blur(20px) saturate(180%)',
+          ['webkitBackdropFilter' as string]: 'blur(20px) saturate(180%)',
         },
         '[data-theme-mode=dark] &': {
           vars: {

@@ -1,6 +1,5 @@
-import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
-import {header} from '../terminal.css';
+import {createTheme, style} from '@vanilla-extract/css';
 
 export const [theme, vars] = createTheme({
   iconFill: themeVars.backgroundColor.black,
@@ -18,12 +17,12 @@ export const headerIconRow = style({
   columnGap: themeVars.spacing['5'],
 
   selectors: {
-    [`${header}[data-theme-mode=light] &`]: {
+    [`[data-theme-mode=light] &`]: {
       vars: {
         [vars.iconFill]: themeVars.backgroundColor.black,
       },
     },
-    [`${header}[data-theme-mode=dark] &`]: {
+    [`[data-theme-mode=dark] &`]: {
       vars: {
         [vars.iconFill]: themeVars.backgroundColor.white,
       },

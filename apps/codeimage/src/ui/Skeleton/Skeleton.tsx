@@ -1,5 +1,6 @@
+import {Box} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {VoidProps} from 'solid-js';
+import {ParentProps, VoidProps} from 'solid-js';
 import * as styles from './Skeleton.css';
 
 interface SkeletonLineProps {
@@ -18,5 +19,13 @@ export function SkeletonLine(props: VoidProps<SkeletonLineProps>) {
       })}
       class={styles.skeletonLine}
     />
+  );
+}
+
+export function SkeletonVCenter(props: ParentProps) {
+  return (
+    <Box height={'100%'} display={'flex'} alignItems={'center'} flexGrow={1}>
+      {props.children}
+    </Box>
   );
 }

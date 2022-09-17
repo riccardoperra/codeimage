@@ -2,14 +2,8 @@ import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 
 export function PlusIcon(props: SvgIconProps) {
   return (
-    <SvgIcon
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2"
-      {...props}
-    >
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+    <SvgIcon viewBox="0 0 20 20" fill="currentColor" {...props}>
+      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
     </SvgIcon>
   );
 }

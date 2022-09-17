@@ -1,22 +1,21 @@
 import {
+  Accessor,
   createResource,
   createSignal,
-  from,
   mergeProps,
   Resource,
 } from 'solid-js';
-import {Observable, Subject} from 'rxjs';
 import {ResourceActions} from 'solid-js/types/reactive/signal';
 
 interface AsyncResourceActions<T, R> extends ResourceActions<R | undefined> {
-  notify: (value: T) => void;
+  notify: (value?: T) => void;
 }
 
-export function useAsyncAction<T, R>(
+export function createAsyncAction<T, R>(
   fetcher: (ref: T) => Promise<R>,
-  notifier?: Subject<T>,
+  notifier?: Accessor<T>,
 ): [Resource<R | undefined>, AsyncResourceActions<T, R | undefined>] {
-  const [internalNotifier, setNotifier] = createSignal<T | undefined>(
+  const [internalNotifier, setNotifier] = createSignal<T | symbol | undefined>(
     undefined,
     {
       equals: false,
@@ -24,13 +23,12 @@ export function useAsyncAction<T, R>(
   );
 
   const [resource, _resourceActions] = createResource(
-    (notifier instanceof Observable ? from(notifier) : notifier) ||
-      internalNotifier,
-    fetcher,
+    notifier || internalNotifier,
+    async args => fetcher(args as T),
   );
 
-  const notify = (value: T) => {
-    return setNotifier(() => value);
+  const notify = (value?: T) => {
+    return setNotifier(() => value ?? Symbol());
   };
 
   const resourceActions = mergeProps(

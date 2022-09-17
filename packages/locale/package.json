@@ -1,12 +1,12 @@
 {
   "name": "@codeimage/locale",
   "version": "0.6.1",
-  "module": "./dist/locale.es.js",
+  "module": "./dist/locale.mjs",
   "source": "./src/public-api.ts",
   "types": "./dist/public-api.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/locale.es.js",
+      "import": "./dist/locale.mjs",
       "types": "./dist/public-api.d.ts"
     }
   },
@@ -22,20 +22,21 @@
     "build-esm": "tsc -p tsconfig.esm.json",
     "build-dts": "tsc -p tsconfig.dts.json",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
+    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
     "@solid-primitives/i18n": "^1.1.0",
-    "solid-js": "^1.4.6"
+    "solid-js": "^1.5.2"
   },
   "peerDependencies": {
-    "solid-js": "^1.4.6"
+    "solid-js": "^1.5.2"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
-    "typescript": "^4.7.3",
-    "vite": "^2.9.12",
-    "vite-plugin-dts": "^1.1.1",
-    "vite-plugin-solid": "^2.2.6"
+    "typescript": "^4.8.2",
+    "vite": "^3.0.9",
+    "vite-plugin-dts": "^1.4.1",
+    "vite-plugin-solid": "^2.3.0"
   }
 }

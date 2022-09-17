@@ -1,19 +1,19 @@
 import * as styles from './SegmentedField.css';
-import {createMemo, For, JSX} from 'solid-js';
+import {createMemo, For, JSX, JSXElement} from 'solid-js';
 import clsx from 'clsx';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {useText, UseTextProps} from '../Text';
 import {Box} from '../Box';
 
 export interface SegmentedFieldItem<T> {
-  label: string;
+  label: string | JSXElement;
   value: T;
 }
 
 interface SegmentedFieldProps<T> {
-  value: T;
-  onChange: (value: T) => void;
   items: readonly SegmentedFieldItem<T>[];
+  value: T;
+  onChange?: (value: T) => void;
   size?: UseTextProps['size'];
   id?: string;
 }
@@ -29,7 +29,7 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
     () => `calc(${segmentWidth()} * ${activeIndex()})`,
   );
 
-  const segmentStyle = createMemo(() => useText({size: props.size ?? 'sm'}));
+  const segmentedTextStyle = useText(props);
 
   return (
     <Box class={clsx(styles.wrapper)} id={props.id}>
@@ -46,9 +46,9 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
           {(item, index) => (
             // TODO: div broke build
             <Box
-              class={clsx(styles.segment, segmentStyle())}
+              class={clsx(styles.segment, segmentedTextStyle())}
               data-active={index() === activeIndex()}
-              onClick={() => props.onChange(item.value)}
+              onClick={() => props.onChange?.(item.value)}
             >
               {item.label}
             </Box>
