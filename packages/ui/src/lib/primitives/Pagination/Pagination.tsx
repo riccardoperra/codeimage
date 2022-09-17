@@ -22,14 +22,19 @@ export const Pagination = (props: ParentProps<PaginationProps>) => {
     false,
   );
 
-  const handleChange = (direction: 'next' | 'prev') => () =>
-    merged.onChange(prev => (direction === 'next' ? prev + 1 : prev - 1));
+  const handlerNextChange = () => {
+    merged.onChange(prev => prev + 1);
+  };
+
+  const handlerPrevChange = () => {
+    merged.onChange(prev => prev - 1);
+  };
 
   return (
     <Box display="flex" flexDirection="column" placeItems="center">
       <Box display="flex" gap="2">
         <IconButton
-          onClick={handleChange('prev')}
+          onClick={handlerNextChange}
           pill
           disabled={merged.pageNumber === 1}
         >
@@ -37,7 +42,7 @@ export const Pagination = (props: ParentProps<PaginationProps>) => {
         </IconButton>
         <For each={itemButtons()}>{page => <Page {...page} />}</For>
         <IconButton
-          onclick={handleChange('next')}
+          onclick={handlerPrevChange}
           pill
           disabled={merged.pageNumber === merged.lastPage}
         >
