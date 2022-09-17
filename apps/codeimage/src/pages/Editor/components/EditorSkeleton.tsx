@@ -14,39 +14,7 @@ export function EditorPageSkeleton() {
     >
       <div class={toolbarStyles.wrapper} />
       <div class={styles.wrapper}>
-        <Sidebar position={'left'}>
-          {/*<EditorForm>*/}
-          {/*  <Box marginTop={6}>*/}
-          {/*    <>*/}
-          {/*      <SkeletonLine width={'33%'} height={'40px'} />*/}
-          {/*      <SkeletonDivider height={'16px'} />*/}
-          {/*      <SkeletonLine width={'100%'} height={'100px'} />*/}
-          {/*      <SkeletonDivider height={'16px'} />*/}
-          {/*      <SkeletonLine width={'100%'} height={'100px'} />*/}
-          {/*      <SkeletonDivider height={'16px'} />*/}
-          {/*      <SkeletonLine width={'100%'} height={'40px'} />*/}
-          {/*      <SkeletonDivider height={'32px'} />*/}
-          {/*    </>*/}
-          {/*    <>*/}
-          {/*      <SkeletonLine width={'33%'} height={'40px'} />*/}
-          {/*      <SkeletonDivider height={'16px'} />*/}
-          {/*      <SkeletonDivider height={'16px'} />*/}
-          {/*      <SkeletonLine width={'100%'} height={'100px'} />*/}
-          {/*      <SkeletonDivider height={'16px'} />*/}
-          {/*      <SkeletonLine width={'100%'} height={'40px'} />*/}
-          {/*      <SkeletonDivider height={'32px'} />*/}
-          {/*    </>*/}
-          {/*    <>*/}
-          {/*      <SkeletonLine width={'33%'} height={'40px'} />*/}
-          {/*      <SkeletonDivider height={'16px'} />*/}
-          {/*      <SkeletonLine width={'100%'} height={'100px'} />*/}
-          {/*      <SkeletonDivider height={'16px'} />*/}
-          {/*      <SkeletonLine width={'100%'} height={'100px'} />*/}
-          {/*      <SkeletonDivider height={'16px'} />*/}
-          {/*    </>*/}
-          {/*  </Box>*/}
-          {/*</EditorForm>*/}
-        </Sidebar>
+        <Sidebar position={'left'} />
 
         <Canvas>
           <Box
@@ -59,13 +27,7 @@ export function EditorPageSkeleton() {
           </Box>
         </Canvas>
 
-        <Sidebar position={'right'}>
-          {/*<Box class={themeSwitcher.grid({orientation: 'vertical'})}>*/}
-          {/*  <For each={new Array(8).fill(undefined)}>*/}
-          {/*    {() => <ThemeBoxSkeleton />}*/}
-          {/*  </For>*/}
-          {/*</Box>*/}
-        </Sidebar>
+        <Sidebar position={'right'} />
       </div>
     </Box>
   );

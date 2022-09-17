@@ -29,8 +29,3 @@ t.test('/v1/project -> 200', async t => {
   t.same(body[0].ownerId, userId);
   t.same(response.statusCode, 200);
 });
-
-// t.teardown(async () => {
-//   await userSeed.clean();
-//   await projectSeed.clean();
-// });
