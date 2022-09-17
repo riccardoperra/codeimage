@@ -1,4 +1,4 @@
-import {themeVars} from '@codeimage/ui';
+import {themeVars, withThemeMode} from '@codeimage/ui';
 import {withSkeletonItem} from '@ui/Skeleton/Skeleton.css';
 import {style} from '@vanilla-extract/css';
 import {darkGrayScale} from '../../theme/dark-theme.css';
@@ -15,12 +15,14 @@ export const wrapper = style([
     boxSizing: 'border-box',
     userSelect: 'none',
     selectors: {
-      '[data-codeimage-theme=light] &': {
-        backgroundColor: themeVars.backgroundColor.gray['100'],
-      },
-      '[data-codeimage-theme=dark] &': {
-        backgroundColor: darkGrayScale.gray3,
-      },
+      ...withThemeMode({
+        light: {
+          backgroundColor: themeVars.backgroundColor.gray['100'],
+        },
+        dark: {
+          backgroundColor: darkGrayScale.gray3,
+        },
+      }),
     },
   },
 ]);
@@ -30,12 +32,14 @@ export const terminal = {
     terminalStyle.terminalTheme,
     {
       selectors: {
-        '[data-codeimage-theme=light] &': {
-          backgroundColor: themeVars.backgroundColor.gray['200'],
-        },
-        '[data-codeimage-theme=dark] &': {
-          background: darkGrayScale.gray2,
-        },
+        ...withThemeMode({
+          light: {
+            backgroundColor: themeVars.backgroundColor.gray['200'],
+          },
+          dark: {
+            backgroundColor: darkGrayScale.gray2,
+          },
+        }),
       },
     },
   ]),
@@ -44,12 +48,14 @@ export const terminal = {
     {
       height: terminalStyle.terminalVars.headerHeight,
       selectors: {
-        '[data-codeimage-theme=light] &': {
-          backgroundColor: themeVars.backgroundColor.gray['400'],
-        },
-        '[data-codeimage-theme=dark] &': {
-          background: darkGrayScale.gray6,
-        },
+        ...withThemeMode({
+          light: {
+            backgroundColor: themeVars.backgroundColor.gray['400'],
+          },
+          dark: {
+            backgroundColor: darkGrayScale.gray6,
+          },
+        }),
       },
     },
   ]),

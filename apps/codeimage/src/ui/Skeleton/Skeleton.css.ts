@@ -1,4 +1,4 @@
-import {themeVars} from '@codeimage/ui';
+import {themeVars, withThemeMode} from '@codeimage/ui';
 import {createTheme, fallbackVar, keyframes, style} from '@vanilla-extract/css';
 import {darkGrayScale} from '../../theme/dark-theme.css';
 
@@ -26,20 +26,22 @@ export const withSkeletonItem = style([
     position: 'relative',
 
     selectors: {
-      '[data-codeimage-theme=light] &': {
-        vars: {
-          [skeletonVars.startBackground]: themeVars.backgroundColor.gray['300'],
-          [skeletonVars.midBackground]: themeVars.backgroundColor.gray['400'],
+      ...withThemeMode({
+        light: {
+          vars: {
+            [skeletonVars.startBackground]:
+              themeVars.backgroundColor.gray['300'],
+            [skeletonVars.midBackground]: themeVars.backgroundColor.gray['400'],
+          },
         },
-      },
-      '[data-codeimage-theme=dark] &': {
-        vars: {
-          [skeletonVars.startBackground]: darkGrayScale.gray4,
-          [skeletonVars.midBackground]: darkGrayScale.gray6,
+        dark: {
+          vars: {
+            [skeletonVars.startBackground]: darkGrayScale.gray4,
+            [skeletonVars.midBackground]: darkGrayScale.gray6,
+          },
         },
-      },
+      }),
     },
-
     ':before': {
       position: 'absolute',
       content: '',

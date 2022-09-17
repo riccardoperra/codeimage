@@ -1,24 +1,32 @@
-import {backgroundColorVar, themeVars} from '@codeimage/ui';
+import {backgroundColorVar, themeVars, withThemeMode} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 import {darkGrayScale} from '../../../../theme/dark-theme.css';
 
-export const item = style({
-  backgroundColor: themeVars.dynamicColors.input.backgroundColor,
-  width: '100%',
-  borderRadius: themeVars.borderRadius.md,
-  padding: '24px',
-  paddingBottom: '12px',
-  height: '128px',
-  boxShadow: themeVars.boxShadow.md,
-  color: themeVars.dynamicColors.baseText,
-  transition: 'background-color 0.2s ease-in-out',
-  position: 'relative',
-  display: 'inline-flex',
-  flexDirection: 'column',
-  ':hover': {
-    backgroundColor: darkGrayScale.gray2,
+export const item = style([
+  {
+    backgroundColor: themeVars.dynamicColors.input.backgroundColor,
+    width: '100%',
+    borderRadius: themeVars.borderRadius.md,
+    padding: '24px',
+    paddingBottom: '12px',
+    height: '128px',
+    boxShadow: themeVars.boxShadow.md,
+    color: themeVars.dynamicColors.baseText,
+    transition: 'background-color 0.2s ease-in-out',
+    position: 'relative',
+    display: 'inline-flex',
+    flexDirection: 'column',
+    selectors: {
+      ...withThemeMode(
+        {
+          dark: {backgroundColor: darkGrayScale.gray2},
+          light: {backgroundColor: darkGrayScale.gray10},
+        },
+        '&:hover',
+      ),
+    },
   },
-});
+]);
 
 export const projectInfo = style({
   fontWeight: 300,
