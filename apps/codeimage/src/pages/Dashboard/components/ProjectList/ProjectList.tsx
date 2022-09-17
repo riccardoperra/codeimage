@@ -25,7 +25,7 @@ export function ProjectList() {
     return <Index each={list}>{() => <ProjectItemSkeleton />}</Index>;
   };
   const lastPage = () =>
-    getLastPage(dashboard.filteredData, dashboard.pageSize);
+    getLastPage(dashboard.filteredData, () => dashboard.pageSize);
   return (
     <ErrorBoundary
       fallback={(err, reset) => (
