@@ -1,7 +1,5 @@
-import {SchemaOptions, TSchema, Type} from '@sinclair/typebox';
-
-const Nullable = <T extends TSchema>(type: T, options?: SchemaOptions) =>
-  Type.Union([type, Type.Null()], options);
+import {Type} from '@sinclair/typebox';
+import {Nullable} from '../../../common/typebox/nullable';
 
 export const BaseProjectResponseSchema = Type.Object(
   {

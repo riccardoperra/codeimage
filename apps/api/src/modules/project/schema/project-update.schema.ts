@@ -1,7 +1,5 @@
-import {Static, TSchema, Type} from '@sinclair/typebox';
-
-const Nullable = <T extends TSchema>(type: T) =>
-  Type.Union([type, Type.Null()]);
+import {Static, Type} from '@sinclair/typebox';
+import {Nullable} from '../../../common/typebox/nullable';
 
 export const SnippetFrameUpdateRequestSchema = Type.Object(
   {
