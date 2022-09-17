@@ -15,7 +15,7 @@ function makeDashboardState(authState = getAuth0State()) {
   });
 
   const [search, setSearch] = createSignal('');
-  const [pageSize] = createSignal(9);
+  const pageSize = 9;
   const filteredData = () => {
     const searchValue = search();
     if (!data()) return [];
