@@ -1,5 +1,5 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {DragDropSensorsWithBoundary, DragEventParam} from '@core/modules/dnd';
+import {DragEventParam} from '@core/modules/dnd';
 import {ConstrainDragAxis} from '@core/modules/dnd/ConstrainDragAxis';
 import {
   closestCorners,
