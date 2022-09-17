@@ -1,4 +1,4 @@
-import {themeVars} from '@codeimage/ui';
+import {themeVars, withThemeMode} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 import {darkGrayScale} from '../../../../theme/dark-theme.css';
 
@@ -39,14 +39,16 @@ export const fallbackContainer = style({
   textAlign: 'center',
   borderRadius: themeVars.borderRadius.lg,
   selectors: {
-    '[data-codeimage-theme=dark] &': {
-      backgroundColor: darkGrayScale.gray3,
-      color: themeVars.dynamicColors.descriptionTextColor,
-    },
-    '[data-codeimage-theme=light] &': {
-      backgroundColor: themeVars.backgroundColor.gray['200'],
-      color: themeVars.dynamicColors.descriptionTextColor,
-    },
+    ...withThemeMode({
+      light: {
+        backgroundColor: darkGrayScale.gray3,
+        color: themeVars.dynamicColors.descriptionTextColor,
+      },
+      dark: {
+        backgroundColor: themeVars.backgroundColor.gray['200'],
+        color: themeVars.dynamicColors.descriptionTextColor,
+      },
+    }),
   },
 });
 

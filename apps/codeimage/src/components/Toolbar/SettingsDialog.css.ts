@@ -7,9 +7,9 @@ export const dialogLeftPanel = style({
   display: 'flex',
   flexDirection: 'column',
   gap: themeVars.spacing['3'],
+  marginRight: themeVars.spacing['12'],
 });
 
 export const dialogContent = style({
   flex: 1,
-  marginLeft: themeVars.spacing['12'],
 });

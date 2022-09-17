@@ -7,8 +7,8 @@ import {
   backgroundColorVar,
   CodeImageThemeProvider,
   SnackbarHost,
+  ThemeProviderProps,
 } from '@codeimage/ui';
-import {ThemeProviderProps} from '@codeimage/ui/src';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';

@@ -37,15 +37,15 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
     <Dialog size={'lg'} isOpen title={'Settings'} {...props}>
       <DialogPanelContent>
         <Box display={'flex'}>
-          <div class={styles.dialogLeftPanel}>
-            <span onClick={() => setPage('general')}>General</span>
-            <span onClick={() => setPage('account')}>Account</span>
-          </div>
+          {/*<div class={styles.dialogLeftPanel}>*/}
+          {/*  <span onClick={() => setPage('general')}>General</span>*/}
+          {/*  <span onClick={() => setPage('account')}>Account</span>*/}
+          {/*</div>*/}
           <div class={styles.dialogContent}>
             <Switch>
               <Match when={page() === 'general'}>
                 <VStack spacing={'8'} flexGrow={1}>
-                  <FlexField>
+                  <FlexField size={'xl'}>
                     <FieldLabel size={'sm'} for={'theme'}>
                       Theme
                     </FieldLabel>
