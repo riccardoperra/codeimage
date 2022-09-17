@@ -17,10 +17,19 @@ export const item = style([
     display: 'inline-flex',
     flexDirection: 'column',
     selectors: {
+      ...withThemeMode({
+        dark: {backgroundColor: themeVars.dynamicColors.input.backgroundColor},
+        light: {
+          backgroundColor: themeVars.backgroundColor.white,
+          border: `1px solid ${themeVars.borderColor.default}`,
+          boxShadow: themeVars.boxShadow.default,
+        },
+      }),
+
       ...withThemeMode(
         {
           dark: {backgroundColor: darkGrayScale.gray2},
-          light: {backgroundColor: darkGrayScale.gray10},
+          light: {backgroundColor: darkGrayScale.gray12},
         },
         '&:hover',
       ),

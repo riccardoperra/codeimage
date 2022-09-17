@@ -7,8 +7,9 @@ import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {createPagedData} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
-import {createResource, createSignal, createEffect} from 'solid-js';
+import {createEffect, createResource, createSignal} from 'solid-js';
 import {API} from '../../data-access/api';
+
 function makeDashboardState(authState = getAuth0State()) {
   const [data, {mutate, refetch}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
@@ -27,15 +28,17 @@ function makeDashboardState(authState = getAuth0State()) {
       );
     return data();
   };
-  const [pagedData, {page, setPage}] = createPagedData(() => filteredData(), {
+
+  const [pagedData, paginationState] = createPagedData(filteredData, {
     pageSize,
     pageSelected: 1,
   });
 
   createEffect(() => {
     const searchValue = search();
-    if (searchValue.length > 2) setPage(1);
+    if (searchValue.length > 2) paginationState.setPage(1);
   });
+
   async function fetchWorkspaceContent(): Promise<
     ApiTypes.GetProjectByIdApi['response'][]
   > {
@@ -43,6 +46,7 @@ function makeDashboardState(authState = getAuth0State()) {
     if (!userId) return [];
     return API.project.getWorkspaceContent();
   }
+
   async function createNewProject() {
     const theme = await getThemeStore().getThemeDef('vsCodeDarkTheme')?.load();
 
@@ -144,9 +148,14 @@ function makeDashboardState(authState = getAuth0State()) {
     updateSnippetName,
     cloneProject,
     pagedData,
-    page,
-    setPage,
-    pageSize,
+    paginationState: Object.assign(paginationState, {
+      get pageSize() {
+        return pageSize;
+      },
+      get hasOnePage() {
+        return pagedData().length <= pageSize;
+      },
+    }),
   };
 }
 
