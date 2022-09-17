@@ -49,11 +49,13 @@ export function ProjectList() {
               {item => <ProjectItem item={item} />}
             </For>
           </ul>
-          <Pagination
-            pageNumber={dashboard.page()}
-            onChange={dashboard.setPage}
-            lastPage={lastPage()}
-          />
+          <Show when={lastPage() !== 1}>
+            <Pagination
+              pageNumber={dashboard.page()}
+              onChange={dashboard.setPage}
+              lastPage={lastPage()}
+            />
+          </Show>
         </Show>
       </Suspense>
     </ErrorBoundary>
