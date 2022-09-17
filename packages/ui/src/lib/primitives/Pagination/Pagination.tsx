@@ -1,7 +1,7 @@
 import {For, mergeProps, ParentProps, Setter} from 'solid-js';
 import {SvgIcon, SvgIconProps} from '../Icon';
 import {IconButton} from '../IconButton';
-import {createPaginationButtons} from './buttons';
+import {createPaginationButtons} from './createPaginationButtons';
 import PageItem from './PageItem';
 import * as styles from './Pagination.css';
 
@@ -52,6 +52,7 @@ export const Pagination = (props: ParentProps<PaginationProps>) => {
     {pageNumber: 1, lastPage: 1} as Required<PaginationProps>,
     props,
   );
+
   const itemButtons = createPaginationButtons(
     () => merged.lastPage,
     () => merged.pageNumber,
@@ -70,7 +71,9 @@ export const Pagination = (props: ParentProps<PaginationProps>) => {
       <IconButton pill disabled={isPrevDisabled()} onClick={handlerPrevChange}>
         <PrevIcon />
       </IconButton>
-      <For each={itemButtons()}>{page => <PageItem {...page} />}</For>
+      <For each={itemButtons()}>
+        {pageItemProps => <PageItem {...pageItemProps} />}
+      </For>
       <IconButton pill disabled={isNextDisabled()} onClick={handlerNextChange}>
         <NextIcon />
       </IconButton>

@@ -1,3 +1,10 @@
+/**
+ * Portions of this file are based on code from @material-ui/react.
+ * MIT Licensed, Copyright (c) 2014 Call-Em-All.
+ *
+ * Credits to the Material UI team:
+ * https://github.com/mui/material-ui/blob/master/packages/mui-material/src/usePagination/usePagination.js
+ */
 import {Accessor, mapArray, Setter} from 'solid-js';
 import {arrayFomRange} from '../../hooks';
 
@@ -101,7 +108,7 @@ export const createPaginationButtons = (
   return items;
 };
 
-export type buttonPaginationProps = {
+export type ButtonPaginationProps = {
   onClick?: Setter<number | string>;
   value: number | string;
   selected: boolean;

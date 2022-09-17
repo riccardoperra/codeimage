@@ -1,9 +1,9 @@
 import {ParentProps} from 'solid-js';
 import {IconButton} from '../IconButton';
-import {buttonPaginationProps} from './buttons';
+import {ButtonPaginationProps} from './createPaginationButtons';
 import * as styles from './PageItem.css';
 
-const PageItem = (props: ParentProps<buttonPaginationProps>) => {
+const PageItem = (props: ParentProps<ButtonPaginationProps>) => {
   return (
     <IconButton
       theme={props.selected ? 'primary' : 'secondary'}
