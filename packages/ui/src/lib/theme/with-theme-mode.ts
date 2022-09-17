@@ -1,6 +1,6 @@
 import {StyleRule} from '@vanilla-extract/css';
 
-type Selectors = StyleRule['selectors'];
+type Selectors = StyleRule['selectors'] & Record<string, string>;
 
 export type TypedThemeMode = Record<string, any>;
 

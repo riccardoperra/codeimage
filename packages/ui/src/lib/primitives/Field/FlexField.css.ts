@@ -39,9 +39,6 @@ export const wrapper = recipe({
       },
     },
   },
-  defaultVariants: {
-    size: 'md',
-  },
 });
 
 export type FlexFieldVariants = RecipeVariants<typeof wrapper>;

@@ -26,7 +26,7 @@ import {AppLocaleEntries} from '../../i18n';
 import * as styles from './SettingsDialog.css';
 
 export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
-  const [page, setPage] = createSignal<'general' | 'account'>('general');
+  const [page] = createSignal<'general' | 'account'>('general');
   const {user, loggedIn} = getAuth0State();
   const ui = uiStore;
   const {locales} = appEnvironment;
@@ -45,7 +45,7 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
             <Switch>
               <Match when={page() === 'general'}>
                 <VStack spacing={'8'} flexGrow={1}>
-                  <FlexField size={'xl'}>
+                  <FlexField>
                     <FieldLabel size={'sm'} for={'theme'}>
                       Theme
                     </FieldLabel>
