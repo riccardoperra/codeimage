@@ -18,6 +18,22 @@ export const ProjectGetByIdResponseSchema = Type.Intersect([
   }),
 ]);
 
-export type ProjectGetByIdResponse = Static<
+export const PartialProjectGetByIdResponseSchema = Type.Intersect([
+  BaseProjectResponseSchema,
+  Type.Object({
+    editorTabs: Type.Array(
+      Type.Object({
+        languageId: Type.String(),
+        tabName: Type.String(),
+      }),
+    ),
+  }),
+]);
+
+export type ProjectCompleteResponse = Static<
   typeof ProjectGetByIdResponseSchema
+>;
+
+export type ProjectGetByIdResponse = Static<
+  typeof PartialProjectGetByIdResponseSchema
 >;

@@ -12,3 +12,7 @@ export type ProjectGetByIdResponse = Project & {
   frame: SnippetFrame;
   editorTabs: SnippetEditorTab[];
 };
+
+export type PartialProjectGetByIdResponse = Project & {
+  editorTabs: Pick<SnippetEditorTab, 'tabName' | 'languageId'>[];
+};

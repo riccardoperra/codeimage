@@ -1,5 +1,6 @@
 import {PrismaClient, Project} from '@codeimage/prisma-models';
 import {
+  PartialProjectGetByIdResponse,
   ProjectCreateRequest,
   ProjectCreateResponse,
   ProjectGetByIdResponse,
@@ -25,7 +26,9 @@ export function makePrismaProjectRepository(
     });
   }
 
-  function findAllByUserId(ownerId: string): Promise<Project[]> {
+  function findAllByUserId(
+    ownerId: string,
+  ): Promise<PartialProjectGetByIdResponse[]> {
     return client.project.findMany({
       where: {
         ownerId,
@@ -34,10 +37,15 @@ export function makePrismaProjectRepository(
         updatedAt: 'desc',
       },
       include: {
-        editorOptions: true,
-        terminal: true,
-        editorTabs: true,
-        frame: true,
+        editorOptions: false,
+        terminal: false,
+        editorTabs: {
+          select: {
+            languageId: true,
+            tabName: true,
+          },
+        },
+        frame: false,
       },
     });
   }

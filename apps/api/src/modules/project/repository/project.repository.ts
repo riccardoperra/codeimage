@@ -1,6 +1,6 @@
 import {Project} from '@codeimage/prisma-models';
 import type * as DomainModel from '../domain';
-import {ProjectGetByIdResponse} from '../domain';
+import {PartialProjectGetByIdResponse, ProjectGetByIdResponse} from '../domain';
 
 export interface ProjectRepository {
   findById(id: string): Promise<ProjectGetByIdResponse | null>;
@@ -20,5 +20,5 @@ export interface ProjectRepository {
 
   deleteProject(id: string, userId: string): Promise<Project>;
 
-  findAllByUserId(userId: string): Promise<Project[]>;
+  findAllByUserId(userId: string): Promise<PartialProjectGetByIdResponse[]>;
 }

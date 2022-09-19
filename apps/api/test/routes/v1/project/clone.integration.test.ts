@@ -20,7 +20,7 @@ t.before(async () => {
 t.test('/v1/project/:id/clone -> 200', async t => {
   const fastify = await build(t);
   const projectId = t.context.existingProject.id;
-  const spy = sinon.spy(fastify.projectService, 'findById');
+  const spy = sinon.spy(fastify.projectRepository, 'findById');
   const createSpy = sinon.spy(fastify.projectService, 'createNewProject');
 
   const response = await fastify.inject({
@@ -33,7 +33,7 @@ t.test('/v1/project/:id/clone -> 200', async t => {
 
   const body = response.json<ProjectCreateResponse>();
 
-  t.ok(spy.withArgs(t.context.user, projectId).calledOnce);
+  t.ok(spy.withArgs(projectId).calledOnce);
   t.ok(createSpy.calledOnce);
   t.same(response.statusCode, 200);
   t.notSame(body.id, projectId);
@@ -44,7 +44,7 @@ t.test('/v1/project/:id -> 404 -> when project by id not exists', async t => {
   const fastify = await build(t);
   const userId = t.context.user.id;
   const projectId = 'badId';
-  const spy = sinon.spy(fastify.projectService, 'findById');
+  const spy = sinon.spy(fastify.projectRepository, 'findById');
 
   const response = await fastify.inject({
     url: `/api/v1/project/${projectId}/clone`,
@@ -55,9 +55,9 @@ t.test('/v1/project/:id -> 404 -> when project by id not exists', async t => {
     },
   });
 
-  const body = JSON.parse(response.body);
+  const body = response.json();
 
-  t.ok(spy.withArgs(t.context.user, projectId).calledOnce);
+  t.ok(spy.withArgs(projectId).calledOnce);
   t.same(response.statusCode, 404);
   t.same(
     body.message,

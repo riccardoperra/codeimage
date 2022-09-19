@@ -3,10 +3,10 @@ import {Nullable} from '../../../common/typebox/nullable';
 
 export const BaseProjectResponseSchema = Type.Object(
   {
-    id: Type.String(),
+    id: Type.String({format: 'uuid'}),
     name: Type.String(),
-    createdAt: Type.String({format: 'date-time'}),
-    updatedAt: Type.String({format: 'date-time'}),
+    createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
+    updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     ownerId: Type.String({format: 'uuid'}),
   },
   {

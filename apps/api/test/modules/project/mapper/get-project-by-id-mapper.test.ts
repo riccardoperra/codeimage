@@ -1,6 +1,6 @@
 import t from 'tap';
+import {createCompleteProjectGetByIdResponseMapper} from '../../../../src/modules/project/mapper/get-project-by-id-mapper';
 import * as SchemaModel from '../../../../src/modules/project/schema';
-import {createProjectGetByIdResponseMapper} from '../../../../src/modules/project/mapper/get-project-by-id-mapper';
 
 t.test(
   'should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse',
@@ -8,7 +8,7 @@ t.test(
     const date1 = new Date();
     const date2 = new Date();
 
-    const result = createProjectGetByIdResponseMapper({
+    const result = createCompleteProjectGetByIdResponseMapper({
       id: '1',
       ownerId: 'userId1',
       updatedAt: date1,
@@ -84,6 +84,6 @@ t.test(
         themeId: 'themeId',
         fontWeight: 400,
       },
-    } as SchemaModel.ProjectGetByIdResponse);
+    } as SchemaModel.ProjectCompleteResponse);
   },
 );

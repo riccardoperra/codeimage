@@ -1,5 +1,5 @@
 import {Type} from '@sinclair/typebox';
-import {FastifyPluginAsync, FastifySchema} from 'fastify';
+import {FastifyPluginAsync} from 'fastify';
 import {GetApiTypes} from '../../../common/types/extract-api-types';
 import {ProjectDeleteResponseSchema} from '../../../modules/project/schema';
 
@@ -8,6 +8,7 @@ const schema = {
   params: Type.Object({
     id: Type.String(),
   }),
+  description: 'Delete an existing CodeImage project',
   response: {
     200: ProjectDeleteResponseSchema,
   },
@@ -16,16 +17,6 @@ const schema = {
 export type DeleteProjectApi = GetApiTypes<typeof schema>;
 
 const deleteRoute: FastifyPluginAsync = async fastify => {
-  const schema: FastifySchema = {
-    tags: ['Project'],
-    params: Type.Object({
-      id: Type.String(),
-    }),
-    response: {
-      200: ProjectDeleteResponseSchema,
-    },
-  };
-
   fastify.delete<{
     Params: {id: string};
   }>(
