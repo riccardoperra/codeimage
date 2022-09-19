@@ -1,9 +1,9 @@
 import * as DomainModel from '../domain';
-import {ProjectGetByIdResponse} from '../schema';
+import {ProjectCompleteResponse} from '../schema/project-get-by-id.schema';
 
-export function createProjectGetByIdResponseMapper(
+export function createCompleteProjectGetByIdResponseMapper(
   data: DomainModel.ProjectGetByIdResponse,
-): ProjectGetByIdResponse {
+): ProjectCompleteResponse {
   return {
     id: data.id,
     ownerId: data.ownerId,

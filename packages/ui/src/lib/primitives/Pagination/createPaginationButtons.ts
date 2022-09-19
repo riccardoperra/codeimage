@@ -5,8 +5,8 @@
  * Credits to the Material UI team:
  * https://github.com/mui/material-ui/blob/master/packages/mui-material/src/usePagination/usePagination.js
  */
-import {Accessor, mapArray, Setter} from 'solid-js';
-import {arrayFomRange} from '../../hooks';
+import {Accessor, mapArray, type Setter} from 'solid-js';
+import {arrayFomRange} from '../../hooks/arrayFromRange';
 
 /**
  *  This hook allow us to create a list of props to render buttons of our pagination component
@@ -83,6 +83,7 @@ export const createPaginationButtons = (
 
     ...endPages(),
   ];
+
   const items = mapArray(itemList, item => {
     return typeof item === 'number'
       ? {
@@ -105,6 +106,7 @@ export const createPaginationButtons = (
           },
         };
   });
+
   return items;
 };
 

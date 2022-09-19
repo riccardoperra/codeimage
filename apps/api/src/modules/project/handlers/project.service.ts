@@ -1,7 +1,7 @@
 import {Project, User} from '@codeimage/prisma-models';
 import {HttpError, HttpErrors} from '@fastify/sensible/lib/httpError';
 import {createProjectRequestMapper} from '../mapper/create-project-mapper';
-import {createProjectGetByIdResponseMapper} from '../mapper/get-project-by-id-mapper';
+import {createCompleteProjectGetByIdResponseMapper} from '../mapper/get-project-by-id-mapper';
 import {ProjectRepository} from '../repository';
 import {
   ProjectCreateRequest,
@@ -10,11 +10,12 @@ import {
   ProjectUpdateRequest,
   ProjectUpdateResponse,
 } from '../schema';
+import {ProjectCompleteResponse} from '../schema/project-get-by-id.schema';
 
 export interface ProjectService {
-  findById(user: User | null, id: string): Promise<ProjectGetByIdResponse>;
+  findById(user: User | null, id: string): Promise<ProjectCompleteResponse>;
 
-  findAllByUserId(userId: string): Promise<Project[]>;
+  findAllByUserId(userId: string): Promise<ProjectGetByIdResponse[]>;
 
   createNewProject(
     userId: string,
@@ -48,7 +49,7 @@ export function makeProjectService(
     async findById(
       user: User | null,
       id: string,
-    ): Promise<ProjectGetByIdResponse> {
+    ): Promise<ProjectCompleteResponse> {
       const project = await repository.findById(id);
 
       if (!project) {
@@ -57,12 +58,12 @@ export function makeProjectService(
 
       const isOwner = !!user && user.id === project.ownerId;
 
-      const mappedProject = createProjectGetByIdResponseMapper(project);
+      const mappedProject = createCompleteProjectGetByIdResponseMapper(project);
       mappedProject.isOwner = isOwner;
 
       return mappedProject;
     },
-    async findAllByUserId(userId: string): Promise<Project[]> {
+    async findAllByUserId(userId: string): Promise<ProjectGetByIdResponse[]> {
       return repository.findAllByUserId(userId);
     },
     async createNewProject(
@@ -86,7 +87,10 @@ export function makeProjectService(
       newName: string | null,
     ): Promise<ProjectCreateResponse> {
       try {
-        const project = await this.findById(user, projectId);
+        const project = await repository.findById(projectId);
+        if (!project) {
+          throw {name: 'NotFoundError'} as HttpError;
+        }
         return this.createNewProject(user.id, {
           name: newName ?? project.name,
           frame: project.frame,

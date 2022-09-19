@@ -16,7 +16,10 @@ export {
   ProjectDeleteResponseSchema,
   ProjectDeleteResponse,
 } from './project-delete.schema';
+
 export {
   ProjectGetByIdResponseSchema,
+  PartialProjectGetByIdResponseSchema,
   ProjectGetByIdResponse,
+  ProjectCompleteResponse,
 } from './project-get-by-id.schema';

@@ -1,6 +1,6 @@
-import {Project} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
 import t from 'tap';
+import {ProjectGetByIdResponse} from '../../../../src/modules/project/schema';
 
 import {build} from '../../../helper';
 import {projectSeed, userSeed} from '../../../helpers/seed';
@@ -22,7 +22,7 @@ t.test('/v1/project -> 200', async t => {
     method: 'GET',
   });
 
-  const body = JSON.parse(response.body) as Project[];
+  const body = response.json<ProjectGetByIdResponse[]>();
 
   t.ok(spy.withArgs(userId).calledOnce);
   t.ok(body.find(el => el.id === t.context.project1.id));
