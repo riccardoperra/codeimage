@@ -328,7 +328,7 @@ jobs:
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Test
-        run: pnpm --filter=@codeimage/api test
+        run: pnpm --filter=@codeimage/api test:ci
 
   deploy-next:
     # Next branch only
