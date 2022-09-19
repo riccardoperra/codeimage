@@ -139,19 +139,19 @@ export function Bootstrap() {
   );
 
   return (
-    <OverlayProvider>
-      <Scaffold>
-        <CodeImageThemeProvider tokens={tokens} theme={uiStore.themeMode}>
+    <Scaffold>
+      <CodeImageThemeProvider tokens={tokens} theme={uiStore.themeMode}>
+        <OverlayProvider>
           <SnackbarHost />
           <Router>
             <Suspense>
               <Routes />
             </Suspense>
           </Router>
-        </CodeImageThemeProvider>
-        <SidebarPopoverHost />
-      </Scaffold>
-    </OverlayProvider>
+        </OverlayProvider>
+      </CodeImageThemeProvider>
+      <SidebarPopoverHost />
+    </Scaffold>
   );
 }
 

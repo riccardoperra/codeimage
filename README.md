@@ -10,34 +10,26 @@
 [![Built with Vanilla Extract](https://img.shields.io/badge/Built%20with-Vanilla%20Extract-ff69b4)](https://github.com/seek-oss/vanilla-extract)
 [![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)](https://lgtm.com/projects/g/riccardoperra/codeimage/alerts/?mode=list)
 ![License](https://img.shields.io/github/license/riccardoperra/codeimage)
-
-![CodeImage showcase](https://i.imgur.com/9mrRo7n.gif)
+![CodeImage showcase](./showcase_1.png)
 
 ## Introduction
 
 [CodeImage](https://codeimage.dev) is the newest tool to help developers to create beautiful screenshots of their code, providing several
 features to speed up the process to post in social media.
 
-## 🚀 Features
-✅ Customizable terminal window, editor and frame style \
-✅ 15+ custom themes for code editor \
-✅ Highlighting support for 10+ programming languages \
-✅ Tab name with customizable icons \
-✅ [Web share api](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share) support \
-✅ Keyboard shortcuts support \
-✅ Mobile view support \
-✅ Multi-language support \
-✅ Light and dark mode support
-
 ## 💻 Run locally
 
 **CodeImage** use a monorepo structure with pnpm. It's currently subdivided in these packages:
-- [@codeimage/app](./apps/codeimage): front-end application
-- [@codeimage/config](./packages/config): Base configuration and interfaces for CodeImage
-- [@codeimage/dom-export](./packages/dom-export): html-to-image fork which includes several fix for image export
-- [@codeimage/highlight](./packages/highlight): Editor themes and highlighting
-- [@codeimage/locale](./packages/locale): Wrapper of @solid-primitives/i18n which includes strict typing for i18n
-- [@codeimage/ui](./packages/ui): UI kit of CodeImage front-end application
+- [@codeimage/app](./apps/codeimage): contains the source code for the [codeimage.dev](https://codeimage.dev) website.
+- [@codeimage/api](./apps/api): contains the source code for [codeimage.dev](https://codeimage.dev) backend.
+- [@codeimage/config](./packages/config): contains the base configurations and interfaces for CodeImage front-end application
+- [@codeimage/dom-export](./packages/dom-export): contains the [html-to-image](https://github.com/bubkoo/html-to-image) fork which includes several fix for image export
+- [@codeimage/highlight](./packages/highlight): contains the editor and highlighting themes available on CodeImage application
+- [@codeimage/locale](./packages/locale): contains a wrapper of @solid-primitives/i18n which includes strict typing for i18n
+- [@codeimage/ui](./packages/ui): contains the source code of the UI kit of CodeImage front-end application
+- [@codeimage/vanilla-extract](./packages/vanilla-extract): contain the [Vanilla Extract](https://github.com/seek-oss/vanilla-extract) plugin fork which includes SolidJS and PNPM fixes to work under monorepo.
+- [@codeimage/prisma-models](./packages/prisma-models): contains the Prisma ORM backend models shared across front-end and back-end application.
+- [@codeimage/atomic-state](./packages/atomic-state): contain the source code of a small state manager which includes some utilities helper for RxJS and solid-js/store
 
 To run the project locally, you must have in your local machine pnpm >= 7 and node >= 16.x;
 
