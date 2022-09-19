@@ -13,7 +13,7 @@
   },
   "scripts": {
     "test": "dotenv -e .env.test -- tap --ts --reporter=terse './test/**/*.test.ts' --before=test/before-test.ts",
-    "test:ci": "dotenv -e .env.test -- tap --ts --no-check-coverage './test/**/*.test.ts' --before=test/before-test.ts",
+    "test:ci": "dotenv -e .env.test -- tap --no-check-coverage --ts './test/**/*.test.ts' --before=test/before-test.ts",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
