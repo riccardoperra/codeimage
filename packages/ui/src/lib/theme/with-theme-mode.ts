@@ -1,6 +1,4 @@
-import {StyleRule} from '@vanilla-extract/css';
-
-type Selectors = StyleRule['selectors'] & Record<string, string>;
+import {type StyleWithSelectors} from '@vanilla-extract/css/dist/declarations/src/types';
 
 type ThemeModeAttr<
   T extends string,
@@ -10,26 +8,22 @@ type ThemeModeAttr<
   : `[data-codeimage-theme=${T}] ${NS}`;
 
 export type TypedThemeMode<
-  T extends Record<string, Selectors>,
+  T extends NonNullable<StyleWithSelectors['selectors']>,
   NS extends string = never,
 > = {
   [K in keyof T & string as ThemeModeAttr<K, NS>]: T[K];
 };
 
 export function withThemeMode<
-  T extends Record<string, Selectors>,
+  T extends NonNullable<StyleWithSelectors['selectors']>,
   NS extends string = never,
->(
-  themes: Record<string, Selectors>,
-  nestedSelector?: NS,
-): TypedThemeMode<T, NS> {
+>(themes: T, nestedSelector?: NS): TypedThemeMode<T, NS> {
   const suffix = nestedSelector ? `${nestedSelector}` : '&';
 
-  return Object.entries(themes).reduce<Record<string, Selectors>>(
-    (acc, [themeKey, themeValue]) => {
-      acc[`[data-codeimage-theme=${themeKey}] ${suffix}`] = themeValue;
-      return acc;
-    },
-    {},
-  ) as TypedThemeMode<T, NS>;
+  return Object.entries(themes).reduce<
+    NonNullable<StyleWithSelectors['selectors']>
+  >((acc, [themeKey, themeValue]) => {
+    acc[`[data-codeimage-theme=${themeKey}] ${suffix}`] = themeValue;
+    return acc;
+  }, {}) as TypedThemeMode<T, NS>;
 }

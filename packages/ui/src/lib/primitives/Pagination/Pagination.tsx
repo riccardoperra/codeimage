@@ -1,4 +1,4 @@
-import {For, mergeProps, ParentProps, Setter} from 'solid-js';
+import {For, mergeProps, ParentProps, type Setter} from 'solid-js';
 import {SvgIcon, SvgIconProps} from '../Icon';
 import {IconButton} from '../IconButton';
 import {createPaginationButtons} from './createPaginationButtons';
