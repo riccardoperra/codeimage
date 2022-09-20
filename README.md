@@ -14,64 +14,60 @@
 
 ## Introduction
 
-[CodeImage](https://codeimage.dev) is the newest tool to help developers to create beautiful screenshots of their code, providing several
+[CodeImage](https://codeimage.dev) is the newest tool to help developers to create beautiful screenshots of their code,
+providing several
 features to speed up the process to post in social media.
 
-## 💻 Run locally
-
-**CodeImage** use a monorepo structure with pnpm. It's currently subdivided in these packages:
-- [@codeimage/app](./apps/codeimage): contains the source code for the [codeimage.dev](https://codeimage.dev) website.
-- [@codeimage/api](./apps/api): contains the source code for [codeimage.dev](https://codeimage.dev) backend.
-- [@codeimage/config](./packages/config): contains the base configurations and interfaces for CodeImage front-end application
-- [@codeimage/dom-export](./packages/dom-export): contains the [html-to-image](https://github.com/bubkoo/html-to-image) fork which includes several fix for image export
-- [@codeimage/highlight](./packages/highlight): contains the editor and highlighting themes available on CodeImage application
-- [@codeimage/locale](./packages/locale): contains a wrapper of @solid-primitives/i18n which includes strict typing for i18n
-- [@codeimage/ui](./packages/ui): contains the source code of the UI kit of CodeImage front-end application
-- [@codeimage/vanilla-extract](./packages/vanilla-extract): contain the [Vanilla Extract](https://github.com/seek-oss/vanilla-extract) plugin fork which includes SolidJS and PNPM fixes to work under monorepo.
-- [@codeimage/prisma-models](./packages/prisma-models): contains the Prisma ORM backend models shared across front-end and back-end application.
-- [@codeimage/atomic-state](./packages/atomic-state): contain the source code of a small state manager which includes some utilities helper for RxJS and solid-js/store
-
-To run the project locally, you must have in your local machine pnpm >= 7 and node >= 16.x;
-
-1. Install dependencies
-
-```bash
-$ pnpm install
-```
-
-2. Build core libraries
-
-```bash
-$ pnpm libs:build
-```
-
-3. Run @codeimage/app
-
-```bash
-$ pnpm dev
-```
 
 ## 🤖 Tech stack
 
-CodeImage front-end app is entirely built with [SolidJS](https://github.com/solidjs/solid), and currently relies on these technologies:
+CodeImage architecture consist of a PNPM monorepo, currently subdivided in `packages` and `apps`.
 
-- [CodeMirror6](https://codemirror.net/6/): Code Editor
-- [vanilla-extract](https://github.com/seek-oss/vanilla-extract): Design system and app theme
-- [HeroIcons](https://heroicons.com/): App icons
-- [solid-aria](https://github.com/solidjs-community/solid-aria): High-quality primitives that help to build accessible user interfaces
-- [@ngneat/elf](https://github.com/ngneat/elf) + [RxJS](https://github.com/ReactiveX/rxjs): Reactive state management
+![Dependency Graph](./docs/dependency_graph.png#gh-light-mode-only)
+![Dependency Graph](./docs/dependency_graph_dark.png#gh-dark-mode-only)
 
-#### Other libraries:
+### Apps
 
+#### [@codeimage/app](./apps/codeimage)
+
+The front-end application, entirely built with SolidJS.
+
+It currently also relies on these libraries:
+
+- [vanilla-extract](https://github.com/seek-oss/vanilla-extract): Zero-runtime Stylesheets-in-TypeScript.
+- [CodeMirror6](https://codemirror.net/6/): Extensible code editor
+- [solid-aria](https://github.com/solidjs-community/solid-aria): High-quality primitives that help to build accessible
+  user interfaces
 - [solid-primitives](https://github.com/solidjs-community/solid-primitives): SolidJS primitives library
-- [solid-use](https://github.com/LXSMNSYC/solid-use): Collection of solid-js utilities
-- [material-icon-theme](https://github.com/PKief/vscode-material-icon-theme): Icons for custom terminal tabs
-- [floating-ui](https://github.com/floating-ui/floating-ui/): Utilities for positioning floating elements
-- [Lion](https://github.com/ing-bank/lion): White label web components in Lit (used for custom combobox)
+
+#### [@codeimage/api](./apps/api)
+
+The REST API layer built with [Fastify](https://github.com/fastify/fastify),
+[Prisma ORM](https://github.com/prisma/prisma) and [Auth0](https://auth0.com/).
+
+### Packages
+
+- [@codeimage/ui](./packages/ui): contains the source code of the UI kit of CodeImage front-end application
+- [@codeimage/config](./packages/config): contains the base configurations and interfaces for CodeImage
+- [@codeimage/highlight](./packages/highlight): contains the custom editor and highlighting themes for CodeMirror
+
+
+- [@codeimage/dom-export](./packages/dom-export): contains the [html-to-image](https://github.com/bubkoo/html-to-image)
+  fork which includes several fix for image export
+- [@codeimage/locale](./packages/locale): contains a wrapper
+  of [@solid-primitives/i18n](https://github.com/solidjs-community/solid-primitives/tree/main/packages/i18n) which
+  includes strict typing for i18n
+- [@codeimage/vanilla-extract](./packages/vanilla-extract): contain
+  the [Vanilla Extract](https://github.com/seek-oss/vanilla-extract) plugin fork which includes SolidJS and PNPM fixes
+  to work under monorepo.
+- [@codeimage/prisma-models](./packages/prisma-models): contains the Prisma ORM backend models shared across front-end
+  and back-end application.
+- [@codeimage/atomic-state](./packages/atomic-state): contain the source code of a small state manager which includes
+  some utilities helper for RxJS and solid-js/store
 
 ## 🌏 Contributions
 
-> :warning: **Read this before opening any PR!**
+> **Warning** **Read this before opening any PR!**
 
 When contributing, it's better to first discuss the change you wish to make via issue or discussion, or any other method
 with the owners of this repository before making a change.
@@ -88,7 +84,6 @@ See the [CONTRIBUTING.md](/CONTRIBUTING.md) guide for more details.
 <p align="left">
   CodeImage is the winner of <a href="https://hack.solidjs.com">SolidHack 2022</a> for the Best Application category!
 </p>
-
 
 ## License
 
