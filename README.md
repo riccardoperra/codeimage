@@ -23,8 +23,7 @@ features to speed up the process to post in social media.
 
 CodeImage architecture consist of a PNPM monorepo, currently subdivided in `packages` and `apps`.
 
-![Dependency Graph](./docs/dependency_graph.png#gh-light-mode-only)
-![Dependency Graph](./docs/dependency_graph_dark.png#gh-dark-mode-only)
+![Dependency Graph](./docs/dependency_graph.png)
 
 ### Apps
 
