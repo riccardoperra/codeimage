@@ -32,7 +32,7 @@
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.3.3",
     "@types/node": "18.7.8",
-    "@vanilla-extract/integration": "^5.0.0",
+    "@vanilla-extract/integration": "^6.0.0",
     "outdent": "^0.8.0",
     "postcss": "^8.4.16",
     "postcss-load-config": "^4.0.1",
@@ -40,7 +40,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "@vanilla-extract/integration": "5.0.0",
+    "@vanilla-extract/integration": "^6.0.0",
     "outdent": "0.8.0",
     "postcss": "^8.4.16",
     "postcss-load-config": "^4.0.1",

@@ -7,13 +7,13 @@
  */
 
 import {
-  addFileScope,
   compile,
   CompileOptions,
   cssFileFilter,
   getPackageInfo,
   IdentifierOption,
   processVanillaFile,
+  transform,
 } from '@vanilla-extract/integration';
 import outdent from 'outdent';
 import path from 'path';
@@ -24,6 +24,9 @@ import {PostCSSConfigResult, resolvePostcssConfig} from './postcss';
 
 const styleUpdateEvent = (fileId: string) =>
   `vanilla-extract-style-update:${fileId}`;
+
+const virtualExtCss = '.vanilla.css';
+const virtualExtJs = '.vanilla.js';
 
 interface Options {
   identifiers?: IdentifierOption;
@@ -48,7 +51,8 @@ export function vanillaExtractPlugin({
     esbuildOptions.external = ['solid-js/web'];
   }
 
-  let virtualExt: string;
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  let forceEmitCssInSsrBuild: boolean = !!process.env.VITE_RSC_BUILD;
   let packageName: string;
 
   // Fixes virtual file while importing from other packages in pnpm monorepo
@@ -89,11 +93,17 @@ export function vanillaExtractPlugin({
         postCssConfig = await resolvePostcssConfig(config);
       }
 
-      virtualExt = `.vanilla.${config.command === 'serve' ? 'js' : 'css'}`;
+      if (
+        config.plugins.some(plugin =>
+          ['astro:build', 'solid-start-server'].includes(plugin.name),
+        )
+      ) {
+        forceEmitCssInSsrBuild = true;
+      }
     },
     resolveId(source) {
       const [validId, query] = source.split('?');
-      if (!validId.endsWith(virtualExt)) {
+      if (!validId.endsWith(virtualExtCss) && !validId.endsWith(virtualExtJs)) {
         return;
       }
 
@@ -120,19 +130,23 @@ export function vanillaExtractPlugin({
 
       const css = cssMap.get(validId);
 
-      if (!server || server.config.isProduction) {
+      if (typeof css !== 'string') {
+        return;
+      }
+
+      if (validId.endsWith(virtualExtCss)) {
         return css;
       }
 
       return outdent`
         import { injectStyles } from '@vanilla-extract/css/injectStyles';
         const inject = (css) => injectStyles({
-          fileScope: ${JSON.stringify({filePath: id})},
+          fileScope: ${JSON.stringify({filePath: validId})},
           css
         });
         inject(${JSON.stringify(css)});
         if (import.meta.hot) {
-          import.meta.hot.on('${styleUpdateEvent(id)}', (css) => {
+          import.meta.hot.on('${styleUpdateEvent(validId)}', (css) => {
             inject(css);
           });
         }
@@ -145,6 +159,9 @@ export function vanillaExtractPlugin({
         return null;
       }
 
+      const identOption =
+        identifiers ?? (config.mode === 'production' ? 'short' : 'debug');
+
       let ssr: boolean | undefined;
 
       if (typeof ssrParam === 'boolean') {
@@ -153,12 +170,13 @@ export function vanillaExtractPlugin({
         ssr = ssrParam?.ssr;
       }
 
-      if (ssr && !process.env.VITE_RSC_BUILD) {
-        return addFileScope({
+      if (ssr && !forceEmitCssInSsrBuild) {
+        return transform({
           source: code,
           filePath: normalizePath(validId),
           rootPath: config.root,
           packageName,
+          identOption,
         });
       }
 
@@ -166,6 +184,7 @@ export function vanillaExtractPlugin({
         filePath: validId,
         cwd: config.root,
         esbuildOptions,
+        identOption,
       });
 
       for (const file of watchFiles) {
@@ -182,7 +201,11 @@ export function vanillaExtractPlugin({
         identOption:
           identifiers ?? (config.mode === 'production' ? 'short' : 'debug'),
         serializeVirtualCssPath: async ({fileScope, source}) => {
-          const rootRelativeId = `${fileScope.filePath}${virtualExt}`;
+          const rootRelativeId = `${fileScope.filePath}${
+            config.command === 'build' || (ssr && forceEmitCssInSsrBuild)
+              ? virtualExtCss
+              : virtualExtJs
+          }`;
           const absoluteId = getAbsoluteVirtualFileId(rootRelativeId);
 
           let cssSource = source;
