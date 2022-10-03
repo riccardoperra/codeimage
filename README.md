@@ -71,7 +71,7 @@ The REST API layer built with [Fastify](https://github.com/fastify/fastify),
 When contributing, it's better to first discuss the change you wish to make via issue or discussion, or any other method
 with the owners of this repository before making a change.
 
-See the [CONTRIBUTING.md](/CONTRIBUTING.md) guide for more details.
+See the [CONTRIBUTING.md](./CONTRIBUTING.md) guide for more details.
 
 
 ---
