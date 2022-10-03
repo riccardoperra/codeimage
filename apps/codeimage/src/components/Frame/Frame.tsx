@@ -4,6 +4,7 @@ import {ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
+import {wrapper} from './Frame.css';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;
@@ -30,7 +31,7 @@ export const Frame: ParentComponent<{
   const modality = useModality();
 
   return (
-    <Box position={'relative'}>
+    <Box position={'relative'} class={styles.wrapper}>
       <div
         ref={setRef}
         class={styles.container}

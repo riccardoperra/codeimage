@@ -1,5 +1,10 @@
 import {style} from '@vanilla-extract/css';
-import {textStyles, themeVars} from '@codeimage/ui';
+import {
+  backgroundColorVar,
+  textStyles,
+  themeVars,
+  withThemeMode,
+} from '@codeimage/ui';
 
 export const list = style({
   display: 'grid',
@@ -38,8 +43,18 @@ export const key = style([
     height: '24px',
     padding: '4px 8px',
     borderRadius: themeVars.borderRadius.md,
-    backgroundColor: themeVars.dynamicColors.shortcutKeyBackgroundColor,
+    backgroundColor: backgroundColorVar,
     color: themeVars.dynamicColors.button.base.textColor,
     fontFamily: 'inherit',
+    selectors: {
+      ...withThemeMode({
+        light: {
+          [backgroundColorVar]: '#f3f3f3',
+        },
+        dark: {
+          [backgroundColorVar]: '#555555',
+        },
+      }),
+    },
   },
 ]);

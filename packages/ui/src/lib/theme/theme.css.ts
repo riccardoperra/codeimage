@@ -80,10 +80,4 @@ export const themeColors = createThemeContract({
     backgroundColor: null,
     textColor: null,
   },
-
-  resizeLineBackgroundColor: null,
-  resizeLineBadgeBackgroundColor: null,
-  emptySquareBackgroundColor: null,
-  frameDragControlBackgroundColor: null,
-  shortcutKeyBackgroundColor: null,
 } as const);

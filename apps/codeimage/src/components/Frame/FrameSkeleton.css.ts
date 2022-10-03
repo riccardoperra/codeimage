@@ -1,7 +1,6 @@
-import {themeVars, withThemeMode} from '@codeimage/ui';
+import {darkGrayScale, themeVars, withThemeMode} from '@codeimage/ui';
 import {withSkeletonItem} from '@ui/Skeleton/Skeleton.css';
 import {style} from '@vanilla-extract/css';
-import {darkGrayScale} from '../../theme/dark-theme.css';
 import * as terminalStyle from '../Terminal/terminal.css';
 
 export const wrapper = style([

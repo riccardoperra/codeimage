@@ -1,4 +1,4 @@
-import {type StyleWithSelectors} from '@vanilla-extract/css/dist/declarations/src/types';
+import type {StyleWithSelectors} from '@vanilla-extract/css/dist/declarations/src/types';
 
 type ThemeModeAttr<
   T extends string,

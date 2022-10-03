@@ -1,8 +1,8 @@
-import {themeColors, themeVars} from '@codeimage/ui';
-import {createGlobalTheme} from '@vanilla-extract/css';
+import {themeVars} from '../theme/global2.css';
+import {createGlobalCodeImageTheme} from '../tokens/createCodeImageTheme';
 import {darkGrayScale} from './dark-theme.css';
 
-createGlobalTheme('[data-codeimage-theme="light"]', themeColors, {
+createGlobalCodeImageTheme('light', {
   primary: themeVars.backgroundColor.blue['500'],
   background: themeVars.backgroundColor.gray['100'],
   baseText: themeVars.textColor.gray['700'],
@@ -82,9 +82,4 @@ createGlobalTheme('[data-codeimage-theme="light"]', themeColors, {
     backgroundColor: themeVars.backgroundColor.white,
     textColor: themeVars.textColor.gray['700'],
   },
-  resizeLineBackgroundColor: themeVars.backgroundColor.gray['600'],
-  resizeLineBadgeBackgroundColor: themeVars.backgroundColor.gray['700'],
-  emptySquareBackgroundColor: themeVars.backgroundColor.gray['300'],
-  frameDragControlBackgroundColor: themeVars.backgroundColor.gray['800'],
-  shortcutKeyBackgroundColor: '#f3f3f3',
 });
