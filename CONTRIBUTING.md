@@ -91,7 +91,16 @@ You can access the API backend server through `http://localhost:3000`
 
 ## Run on Codesandbox Projects
 
-// WIP
+You will be able to access the Project repository through this link:
+
+https://codesandbox.io/p/github/riccardoperra/codeimage
+
+![img.png](docs/codesandbox_fork.png)
+*Preview of CodeSandbox projects with Fork action*
+
+[You don't know CodeSandbox Projects?](https://codesandbox.io/post/announcing-codesandbox-projects)
+
+[CodeSandbox Docs](https://codesandbox.io/docs/projects/learn/introduction/overview)
 
 ### Pull Request Process
 
