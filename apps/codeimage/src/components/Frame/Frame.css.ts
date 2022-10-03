@@ -1,4 +1,4 @@
-import {backgroundColorVar, themeVars} from '@codeimage/ui';
+import {backgroundColorVar, themeVars, withThemeMode} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
 
 export const [frame, frameVars] = createTheme({
@@ -12,12 +12,39 @@ export const [frame, frameVars] = createTheme({
   minHeight: '150px',
   maxWidth: '1400px',
   controlHandleSize: '24px',
-  controlHandleColor: themeVars.dynamicColors.frameDragControlBackgroundColor,
+  controlHandleColor: '',
+  resizeLineBadgeBackgroundColor: '',
+  resizeLineBackgroundColor: '',
   controlOffset: '0px',
 });
 
-export const container = style([
+export const wrapper = style([
   frame,
+  {
+    selectors: {
+      ...withThemeMode({
+        dark: {
+          vars: {
+            [frameVars.resizeLineBadgeBackgroundColor]: '#161515',
+            [frameVars.resizeLineBackgroundColor]: 'hsla(0,0%,100%,.25)',
+            [frameVars.controlHandleColor]: '#EEEEEE',
+          },
+        },
+        light: {
+          vars: {
+            [frameVars.resizeLineBackgroundColor]:
+              themeVars.backgroundColor.black,
+            [frameVars.resizeLineBadgeBackgroundColor]:
+              themeVars.backgroundColor.black,
+            [frameVars.controlHandleColor]: themeVars.backgroundColor.black,
+          },
+        },
+      }),
+    },
+  },
+]);
+
+export const container = style([
   {
     width: frameVars.width,
     maxWidth: frameVars.maxWidth,
@@ -101,8 +128,8 @@ export const resizeLine = style({
   bottom: -25,
   width: '100%',
   height: '15px',
-  borderLeft: `1px solid ${themeVars.dynamicColors.resizeLineBackgroundColor}`,
-  borderRight: `1px solid ${themeVars.dynamicColors.resizeLineBackgroundColor}`,
+  borderLeft: `1px solid ${frameVars.resizeLineBackgroundColor}`,
+  borderRight: `1px solid ${frameVars.resizeLineBackgroundColor}`,
   display: 'flex',
 });
 
@@ -112,7 +139,7 @@ export const resizeBadge = style([
     padding: '0 1em',
     display: 'inline-block',
     fontSize: '12px',
-    backgroundColor: themeVars.dynamicColors.resizeLineBadgeBackgroundColor,
+    backgroundColor: frameVars.resizeLineBadgeBackgroundColor,
     color: 'white',
     alignItems: 'center',
     margin: 'auto',
@@ -122,7 +149,7 @@ export const resizeBadge = style([
 
 export const resizeLineDivider = style({
   position: 'absolute',
-  borderColor: themeVars.dynamicColors.resizeLineBackgroundColor,
+  borderColor: frameVars.resizeLineBackgroundColor,
   left: 0,
   top: '50%',
   width: '100%',

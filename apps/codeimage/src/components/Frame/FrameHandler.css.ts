@@ -1,8 +1,9 @@
-import {themeVars} from '@codeimage/ui';
+import {themeVars, withThemeMode} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
 
 export const [frameHandler, frameHandlerVars] = createTheme({
   scale: '1',
+  emptySquareBackgroundColor: '',
 });
 
 export const wrapper = style({
@@ -14,6 +15,21 @@ export const wrapper = style({
   flex: '1',
   alignItems: 'center',
   justifyContent: 'center',
+  selectors: {
+    ...withThemeMode({
+      dark: {
+        vars: {
+          [frameHandlerVars.emptySquareBackgroundColor]: '#252525',
+        },
+      },
+      light: {
+        vars: {
+          [frameHandlerVars.emptySquareBackgroundColor]:
+            themeVars.backgroundColor.gray['300'],
+        },
+      },
+    }),
+  },
 });
 
 export const handler = style([
@@ -37,10 +53,10 @@ export const content = style({
 
 export const squaredBackgroundOverlay = style({
   backgroundImage: `
-    linear-gradient(45deg,  ${themeVars.dynamicColors.emptySquareBackgroundColor} 25%,transparent 0),
-    linear-gradient(-45deg, ${themeVars.dynamicColors.emptySquareBackgroundColor} 25%,transparent 0),
-    linear-gradient(45deg,transparent 75%, ${themeVars.dynamicColors.emptySquareBackgroundColor} 0),
-    linear-gradient(-45deg,transparent 75%, ${themeVars.dynamicColors.emptySquareBackgroundColor} 0)
+    linear-gradient(45deg,  ${frameHandlerVars.emptySquareBackgroundColor} 25%,transparent 0),
+    linear-gradient(-45deg, ${frameHandlerVars.emptySquareBackgroundColor} 25%,transparent 0),
+    linear-gradient(45deg,transparent 75%, ${frameHandlerVars.emptySquareBackgroundColor} 0),
+    linear-gradient(-45deg,transparent 75%, ${frameHandlerVars.emptySquareBackgroundColor} 0)
   `,
   backgroundSize: '20px 20px',
   backgroundPosition: '0 0,0 10px, 10px -10px, -10px 0',

@@ -5,7 +5,7 @@
  * Credits to the Material UI team:
  * https://github.com/mui/material-ui/blob/master/packages/mui-material/src/usePagination/usePagination.js
  */
-import {Accessor, mapArray, type Setter} from 'solid-js';
+import {Accessor, mapArray, Setter} from 'solid-js';
 import {arrayFomRange} from '../../hooks/arrayFromRange';
 
 /**

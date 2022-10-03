@@ -97,10 +97,4 @@ createGlobalTheme('[data-codeimage-theme="dark"]', themeColors, {
     backgroundColor: darkGrayScale.gray5,
     textColor: darkGrayScale.gray11,
   },
-
-  resizeLineBackgroundColor: 'hsla(0,0%,100%,.25)',
-  resizeLineBadgeBackgroundColor: '#161515',
-  emptySquareBackgroundColor: '#252525',
-  frameDragControlBackgroundColor: `#EEEEEE`,
-  shortcutKeyBackgroundColor: '#555555',
 });

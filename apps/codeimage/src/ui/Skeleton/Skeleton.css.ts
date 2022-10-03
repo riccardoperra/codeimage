@@ -1,6 +1,5 @@
-import {themeVars, withThemeMode} from '@codeimage/ui';
+import {darkGrayScale, themeVars, withThemeMode} from '@codeimage/ui';
 import {createTheme, fallbackVar, keyframes, style} from '@vanilla-extract/css';
-import {darkGrayScale} from '../../theme/dark-theme.css';
 
 export const [skeletonTheme, skeletonVars] = createTheme({
   startBackground: '#000',

@@ -6,6 +6,7 @@ import {uiStore} from '@codeimage/store/ui';
 import {
   backgroundColorVar,
   CodeImageThemeProvider,
+  darkGrayScale,
   SnackbarHost,
   ThemeProviderProps,
 } from '@codeimage/ui';
@@ -28,10 +29,7 @@ import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
 import {EditorPageSkeleton} from './pages/Editor/components/EditorSkeleton';
-import {darkGrayScale} from './theme/dark-theme.css';
-import './theme/dark-theme.css';
 import './theme/global.css';
-import './theme/light-theme.css';
 
 const i18n = createI18nContext(locale);
 
