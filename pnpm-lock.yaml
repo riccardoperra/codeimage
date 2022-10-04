@@ -420,6 +420,7 @@ importers:
       rollup-plugin-dts: ^4.2.2
       solid-codemirror: ^2.0.2
       solid-js: ^1.5.2
+      ts-morph: 16.0.0
       typescript: ^4.8.4
       vite: ^3.1.4
       vite-plugin-dts: ^1.2.0
@@ -446,6 +447,7 @@ importers:
       rollup-plugin-dts: 4.2.2_gmqy3ybotxdm4nbudwrtswpjbi
       solid-codemirror: 2.0.2
       solid-js: 1.5.2
+      ts-morph: 16.0.0
       typescript: 4.8.4
       vite: 3.1.4
       vite-plugin-dts: 1.2.0_vite@3.1.4
@@ -4171,6 +4173,15 @@ packages:
       path-browserify: 1.0.1
     dev: true
 
+  /@ts-morph/common/0.17.0:
+    resolution: {integrity: sha512-RMSSvSfs9kb0VzkvQ2NWobwnj7TxCA9vI/IjR9bDHqgAyVbu2T0DN4wiKVqomyDWqO7dPr/tErSfq7urQ1Q37g==}
+    dependencies:
+      fast-glob: 3.2.11
+      minimatch: 5.1.0
+      mkdirp: 1.0.4
+      path-browserify: 1.0.1
+    dev: true
+
   /@tsconfig/node10/1.0.8:
     resolution: {integrity: sha512-6XFfSQmMgq0CFLY1MslA/CPUfhIL919M1rMsa5lP2P097N2Wd1sSX0tx1u4olM16fLNhtHZpRhedZJphNJqmZg==}
     dev: true
@@ -5236,6 +5247,10 @@ packages:
     resolution: {integrity: sha512-GEqWvEWWsOvER+g9keO4ohFoD3ymwyCnqY3hoTr7GZipYFwEhMHJw+TtV0rfgRhNImM6QWZGO2XYjlJVyYT62w==}
     dependencies:
       tslib: 2.3.1
+    dev: true
+
+  /code-block-writer/11.0.3:
+    resolution: {integrity: sha512-NiujjUFB4SwScJq2bwbYUtXbZhBSlY6vYzm++3Q6oC+U+injTqfPYFK8wS9COOmb2lueqp0ZRB4nK1VYeHgNyw==}
     dev: true
 
   /color-convert/1.9.3:
@@ -10466,6 +10481,13 @@ packages:
     dependencies:
       '@ts-morph/common': 0.13.0
       code-block-writer: 11.0.0
+    dev: true
+
+  /ts-morph/16.0.0:
+    resolution: {integrity: sha512-jGNF0GVpFj0orFw55LTsQxVYEUOCWBAbR5Ls7fTYE5pQsbW18ssTb/6UXx/GYAEjS+DQTp8VoTw0vqYMiaaQuw==}
+    dependencies:
+      '@ts-morph/common': 0.17.0
+      code-block-writer: 11.0.3
     dev: true
 
   /ts-node/10.8.1_un2qenkef6yplsjma67iy3dg3i:

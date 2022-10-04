@@ -32,12 +32,12 @@
     "@lezer/highlight": "^1.0.0"
   },
   "devDependencies": {
-    "@types/prettier": "^2.7.1",
     "@codeimage/ui": "workspace:*",
     "@codeimage/vanilla-extract": "workspace:*",
     "@codemirror/lang-javascript": "^6.1.0",
     "@rollup/plugin-typescript": "^8.4.0",
     "@types/node": "^18.7.13",
+    "@types/prettier": "^2.7.1",
     "@vanilla-extract/css": "^1.9.1",
     "chalk": "4.1.2",
     "enquirer": "2.3.6",
@@ -46,6 +46,7 @@
     "rollup-plugin-dts": "^4.2.2",
     "solid-codemirror": "^2.0.2",
     "solid-js": "^1.5.2",
+    "ts-morph": "16.0.0",
     "typescript": "^4.8.4",
     "vite": "^3.1.4",
     "vite-plugin-dts": "^1.2.0",
