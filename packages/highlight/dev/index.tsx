@@ -12,7 +12,7 @@ import {createEffect, on} from 'solid-js';
 import {render} from 'solid-js/web';
 import Editor from './Editor/Editor';
 import './global.css';
-import {container} from './index.css';
+import {container, editorContainer} from './index.css';
 import {PREVIEW_CODE} from './Editor/preview';
 import './reset.scss';
 import {AVAILABLE_THEMES} from './Editor/themes';
@@ -34,21 +34,20 @@ function App() {
   return (
     <CodeImageThemeProvider tokens={{}} theme={appTheme()}>
       <Box class={container}>
-        <VStack spacing={'2'}>
-          <FlexField size={'lg'}>
-            <FieldLabel>Theme</FieldLabel>
-            <Select
-              value={theme().id}
-              items={AVAILABLE_THEMES.map(theme => ({
-                label: theme.properties.label,
-                value: theme.id as string,
-              }))}
-              onSelectChange={themeId => setThemeId(themeId as string)}
-            />
-          </FlexField>
-
+        <FlexField size={'lg'}>
+          <FieldLabel>Theme</FieldLabel>
+          <Select
+            value={theme().id}
+            items={AVAILABLE_THEMES.map(theme => ({
+              label: theme.properties.label,
+              value: theme.id as string,
+            }))}
+            onSelectChange={themeId => setThemeId(themeId as string)}
+          />
+        </FlexField>
+        <Box class={editorContainer}>
           <Editor theme={theme()} code={PREVIEW_CODE} />
-        </VStack>
+        </Box>
       </Box>
     </CodeImageThemeProvider>
   );

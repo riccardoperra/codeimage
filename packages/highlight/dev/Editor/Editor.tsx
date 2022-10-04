@@ -1,4 +1,4 @@
-import {backgroundColorVar, colorVar} from '@codeimage/ui';
+import {backgroundColorVar, Box, colorVar} from '@codeimage/ui';
 import {javascript} from '@codemirror/lang-javascript';
 import {Extension} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
@@ -60,7 +60,7 @@ export default function Editor(props: VoidProps<CustomEditorPreviewProps>) {
   createEffect(on(extensions, extensions => reconfigure(extensions)));
 
   return (
-    <div
+    <Box
       class={editor}
       style={assignInlineVars({
         [backgroundColorVar]: props.theme.properties.terminal.main,
@@ -75,6 +75,6 @@ export default function Editor(props: VoidProps<CustomEditorPreviewProps>) {
           });
         }}
       />
-    </div>
+    </Box>
   );
 }

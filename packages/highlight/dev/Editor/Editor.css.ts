@@ -7,4 +7,5 @@ export const editor = style({
   color: colorVar,
   padding: themeVars.spacing['4'],
   borderRadius: themeVars.borderRadius.lg,
+  overflowY: 'auto',
 });

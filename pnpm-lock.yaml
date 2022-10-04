@@ -413,6 +413,7 @@ importers:
       '@types/node': ^18.7.13
       '@types/prettier': ^2.7.1
       '@vanilla-extract/css': ^1.9.1
+      '@vanilla-extract/dynamic': ^2.0.2
       chalk: 4.1.2
       enquirer: 2.3.6
       rimraf: ^3.0.2
@@ -440,6 +441,7 @@ importers:
       '@types/node': 18.7.13
       '@types/prettier': 2.7.1
       '@vanilla-extract/css': 1.9.1
+      '@vanilla-extract/dynamic': 2.0.2
       chalk: 4.1.2
       enquirer: 2.3.6
       rimraf: 3.0.2
@@ -4491,7 +4493,6 @@ packages:
     resolution: {integrity: sha512-U4nKaEQ8Kuz+exXEr51DUpyaOuzo24/S/k1YbDPQR06cYcNjQqvwFRnwWtZ+9ImocqM1wTKtzrdUgSTtLGIwAg==}
     dependencies:
       '@vanilla-extract/private': 1.0.3
-    dev: false
 
   /@vanilla-extract/integration/6.0.0:
     resolution: {integrity: sha512-uBz4QAhKYswyhN3LYd4duuN3uq7WT1jKckd0sP2+Y8gL+6UXdhN9QOUvNBfvofkrYYWqS8efH4hnsGyyWW8f+w==}
