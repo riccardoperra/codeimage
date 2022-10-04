@@ -18,7 +18,6 @@ export const listBox = style([
   textStyles.fontSize.xs,
   {
     width: '100%',
-    height: '100%',
     textAlign: 'left',
     paddingLeft: themeVars.spacing['2'],
   },

@@ -4,6 +4,7 @@
   "module": "./dist/index.js",
   "types": "./dist/public-api.d.ts",
   "scripts": {
+    "dev": "vite serve ./dev --host",
     "build": "rollup -c",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
@@ -14,8 +15,7 @@
     "build-esm": "tsc -p tsconfig.esm.json",
     "build-dts": "tsc -p tsconfig.dts.json",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
-    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
-    "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
+    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
   },
   "dependencies": {
     "@codemirror/language": "^6.2.1",
@@ -32,16 +32,24 @@
     "@lezer/highlight": "^1.0.0"
   },
   "devDependencies": {
+    "@types/prettier": "^2.7.1",
+    "@codeimage/ui": "workspace:*",
+    "@codeimage/vanilla-extract": "workspace:*",
+    "@codemirror/lang-javascript": "^6.1.0",
     "@rollup/plugin-typescript": "^8.4.0",
     "@types/node": "^18.7.13",
+    "@vanilla-extract/css": "^1.9.1",
     "chalk": "4.1.2",
     "enquirer": "2.3.6",
     "rimraf": "^3.0.2",
     "rollup": "^2.75.6",
     "rollup-plugin-dts": "^4.2.2",
+    "solid-codemirror": "^2.0.2",
+    "solid-js": "^1.5.2",
     "typescript": "^4.8.4",
-    "vite": "^2.9.12",
-    "vite-plugin-dts": "^1.2.0"
+    "vite": "^3.1.4",
+    "vite-plugin-dts": "^1.2.0",
+    "vite-plugin-solid": "^2.3.9"
   },
   "exports": {
     ".": {
