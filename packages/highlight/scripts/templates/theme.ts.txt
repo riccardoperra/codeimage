@@ -1,7 +1,0 @@
-import {defineEditorTheme} from '../../core';
-
-export const palette = {};
-
-export const %%THEME_NAME%% = [
-  defineEditorTheme()
-]
