@@ -73,7 +73,7 @@ with the owners of this repository before making a change.
 
 See the [CONTRIBUTING.md](./CONTRIBUTING.md) guide for more details.
 
-
+[![Open in Codesandbox](https://img.shields.io/badge/-Open%20in%20CodeSandbox-%230088ff?style=for-the-badge)](https://codesandbox.io/p/github/riccardoperra/codeimage)
 ---
 
 
