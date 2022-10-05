@@ -93,10 +93,11 @@ You can access the API backend server through `http://localhost:3000`
 
 You will be able to access the Project repository through this link:
 
+[![Open in Codesandbox](https://img.shields.io/badge/-Open%20in%20CodeSandbox-%230088ff?style=for-the-badge)](https://codesandbox.io/p/github/riccardoperra/codeimage)
+
 https://codesandbox.io/p/github/riccardoperra/codeimage
 
 ![img.png](docs/codesandbox_fork.png)
-*Preview of CodeSandbox projects with Fork action*
 
 [You don't know CodeSandbox Projects?](https://codesandbox.io/post/announcing-codesandbox-projects)
 
