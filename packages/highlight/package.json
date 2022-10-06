@@ -137,6 +137,10 @@
     "./poimandres": {
       "import": "./dist/lib/themes/poimandres/index.js",
       "types": "./dist/lib/themes/poimandres/index.d.ts"
+    },
+    "./panda": {
+      "import": "./dist/lib/themes/panda/index.js",
+      "types": "./dist/lib/themes/panda/index.d.ts"
     }
   },
   "typesVersions": {
@@ -200,6 +204,9 @@
       ],
       "themes": [
         "./dist/lib/themes/index.d.ts"
+      ],
+      "panda": [
+        "./dist/lib/themes/panda/index.d.ts"
       ]
     }
   }
