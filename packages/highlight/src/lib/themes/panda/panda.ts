@@ -1,3 +1,5 @@
+import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
+import {tags} from '@lezer/highlight';
 import {defineEditorTheme} from '../../core';
 
 export const palette = {
@@ -8,16 +10,23 @@ export const palette = {
   orange: '#FFB86C',
   strings: '#19F9D8',
   property: '#E6E6E6',
-  keywords: '#FFB86C',
   comments: '#676B79',
   className: '#E6E6E6',
   function: '#6FC1FF',
   brackets: '#E6E6E6',
-  module: '#FF75B5',
+  accent: '#FF75B5',
   self: '#FF9AC1',
 };
 
 export const panda = [
+  syntaxHighlighting(
+    HighlightStyle.define([
+      {
+        tag: tags.controlKeyword,
+        color: palette.accent,
+      },
+    ]),
+  ),
   defineEditorTheme({
     highlight: {
       base: palette.text,
@@ -35,7 +44,7 @@ export const panda = [
       function: palette.function,
       brackets: palette.brackets,
       boolean: palette.orange,
-      moduleKeyword: palette.module,
+      moduleKeyword: palette.accent,
       operators: palette.punctuation,
       self: palette.self,
       typeName: palette.punctuation,
