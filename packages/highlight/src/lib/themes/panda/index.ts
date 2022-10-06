@@ -7,7 +7,7 @@ export const pandaTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Panda',
-    previewBackground: ``,
+    previewBackground: `#1a1a1a`,
     terminal: {
       main: palette.background,
       text: palette.text,
