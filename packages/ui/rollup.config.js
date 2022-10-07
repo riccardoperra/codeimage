@@ -29,7 +29,12 @@ function buildOutput(format) {
 
 /** @type {import('rollup').RollupOptions} */
 const solidConfig = withSolid({
-  input: 'src/index.tsx',
+  // TODO: refactor withSolid
+  input: {
+    index: 'src/index.tsx',
+    'lightTheme.css': './src/lib/themes/light-theme.css.ts',
+    'darkTheme.css': './src/lib/themes/dark-theme.css.ts',
+  },
   targets: ['esm', 'cjs'],
   external: externals,
   output: [buildOutput('esm'), buildOutput('cjs')],

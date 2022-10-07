@@ -14,6 +14,18 @@
       "require": "./dist/cjs/index.js",
       "node": "./dist/cjs/index.js",
       "solid": "./dist/source/index.jsx"
+    },
+    "./themes/dark-theme": {
+      "import": "./dist/esm/lib/themes/darkTheme.css.js",
+      "browser": "./dist/esm/lib/themes/darkTheme.css.js",
+      "require": "./dist/cjs/lib/themes/darkTheme.css.js",
+      "node": "./dist/cjs/lib/themes/darkTheme.css.js"
+    },
+    "./themes/light-theme": {
+      "import": "./dist/esm/lib/themes/lightTheme.css.js",
+      "browser": "./dist/esm/lib/themes/lightTheme.css.js",
+      "require": "./dist/cjs/lib/themes/lightTheme.css.js",
+      "node": "./dist/cjs/lib/themes/lightTheme.css.js"
     }
   },
   "scripts": {
