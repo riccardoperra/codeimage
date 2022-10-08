@@ -45,7 +45,6 @@
     "dev": "vite serve ./dev --host",
     "build": "tsx ./tools/build.ts",
     "build:dev": "vite build ./dev",
-    "build:vercel-output": "tsx scripts/makeVercelOutput.cts",
     "build:vite": "vite build",
     "build:watch": "vite build --watch",
     "pre-commit": "lint-staged --relative",

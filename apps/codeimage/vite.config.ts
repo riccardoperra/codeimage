@@ -1,8 +1,9 @@
-import {defineConfig} from 'vite';
+import {defineConfig, Plugin} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
 // import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 
 // const pwaOptions: Partial<VitePWAOptions> = {
 //   base: '/',
@@ -91,6 +92,7 @@ export default defineConfig(({mode}) => ({
         }, {});
       },
     },
+    withStaticVercelPreview() as unknown as Plugin,
   ],
   server: {
     strictPort: true,

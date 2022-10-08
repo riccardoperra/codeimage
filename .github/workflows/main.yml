@@ -184,13 +184,10 @@ jobs:
           VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
           UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
+          ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/app build
 
-      - name: Build vercel output
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
-        run: |
-          pnpm --filter=@codeimage/app build:vercel-output
       - uses: amondnet/vercel-action@v19
         if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
@@ -253,13 +250,11 @@ jobs:
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Build highlight demo
+        env:
+          ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/highlight build:dev
 
-      - name: Build vercel output
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
-        run: |
-          pnpm --filter=@codeimage/highlight build:vercel-output
       - uses: amondnet/vercel-action@v19
         if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
@@ -302,13 +297,11 @@ jobs:
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Build ui demo
+        env:
+          ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/ui build:dev
 
-      - name: Build vercel output
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
-        run: |
-          pnpm --filter=@codeimage/ui build:vercel-output
       - uses: amondnet/vercel-action@v19
         if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
@@ -479,36 +472,6 @@ jobs:
           railway up
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-  #      - name: Build and Publish to Github Packages Registry
-  #        uses: elgohr/Publish-Docker-Github-Action@master
-  #        env:
-  #          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  #        with:
-  #          name: riccardoperra/codeimage/api-next
-  #          registry: ghcr.io
-  #          username: ${{ secrets.USERNAME }}
-  #          password: ${{ secrets.GITHUB_TOKEN }}
-  #          dockerfile: Dockerfile
-  #          buildargs: DATABASE_URL
-  #          tags: latest
-  #
-  #      - name: Deploy package
-  #        uses: appleboy/ssh-action@master
-  #        env:
-  #          GITHUB_USERNAME: ${{ secrets.USERNAME }}
-  #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #        with:
-  #          host: ${{ secrets.DEPLOY_HOST }}
-  #          port: ${{ secrets.DEPLOY_PORT }}
-  #          username: ${{ secrets.DEPLOY_USER }}
-  #          key: ${{ secrets.SSH_PRIVATE_KEY  }}
-  #          envs: GITHUB_USERNAME, GITHUB_TOKEN
-  #          script: |
-  #            docker login ghcr.io -u $GITHUB_USERNAME -p $GITHUB_TOKEN
-  #            docker pull ghcr.io/riccardoperra/codeimage/api-next:latest
-  #            docker stop codeimage-api
-  #            docker system prune -f
-  #            docker run --name codeimage-api -dit -p 3000:3000 ghcr.io/riccardoperra/codeimage/api-next:latest
 
   #  deploy-prod:
   #    # Production branch only

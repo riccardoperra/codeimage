@@ -7,7 +7,6 @@
     "dev": "vite serve ./dev --host",
     "build": "rollup -c",
     "build:dev": "vite build ./dev",
-    "build:vercel-output": "tsx ./scripts/makeVercelOutput.cts",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
@@ -51,7 +50,7 @@
     "solid-js": "^1.5.2",
     "ts-morph": "16.0.0",
     "typescript": "^4.8.4",
-    "vite": "^3.1.4",
+    "vite": "^3.0.9",
     "vite-plugin-dts": "^1.2.0",
     "vite-plugin-solid": "^2.3.9"
   },
