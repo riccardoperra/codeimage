@@ -14,8 +14,8 @@ import {VStack} from '../Box';
 import {FlexField} from '../Field';
 import {SegmentedField, SegmentedFieldItem} from '../SegmentedField';
 import {TextField} from '../TextField';
-import {ColorPickerPresetItem} from './ColorPicker';
 import * as styles from './ColorPicker.css';
+import {ColorPickerPresetItem} from './ColorPickerPresetItem';
 
 enum ColorPickerSelectionMode {
   gradient = 'gradient',
