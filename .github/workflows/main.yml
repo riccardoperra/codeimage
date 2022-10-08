@@ -226,11 +226,12 @@ jobs:
 
 
   build-highlight-dev:
-    name: @codeimage/highlight dev and Preview
+    name: "@codeimage/highlight dev and Preview"
     environment: Preview
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: pnpm/action-setup@v2.2.2
@@ -274,11 +275,12 @@ jobs:
 
 
   build-ui-dev:
-    name: @codeimage/ui dev and Preview
+    name: "@codeimage/ui dev and Preview"
     environment: Preview
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: pnpm/action-setup@v2.2.2
@@ -317,7 +319,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
           vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID}} #Required
           alias-domains: | #Optional
-            codeimage-highlight-pr-{{PR_NUMBER}}.vercel.app
+            codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
 
 
   build-api:
