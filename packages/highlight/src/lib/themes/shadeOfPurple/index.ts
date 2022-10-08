@@ -7,7 +7,7 @@ export const shadeOfPurpleTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Shades Of Purple',
-    previewBackground: `#222244`,
+    previewBackground: `#8663ed`,
     terminal: {
       main: palette.foreground,
       text: palette.text,

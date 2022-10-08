@@ -82,6 +82,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.duotoneDarkTheme),
   },
   {
+    id: 'shadeOfPurple',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.shadeOfPurpleTheme),
+  },
+  {
     id: 'coldarkCold',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.coldarkColdTheme),
