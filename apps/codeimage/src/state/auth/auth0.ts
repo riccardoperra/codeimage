@@ -11,13 +11,16 @@ export function $auth0State() {
   async function initLogin() {
     auth0 = await $auth0;
     const queryParams = new URLSearchParams(window.location.search);
-    console.log(queryParams);
     if (!auth0) return;
     if (queryParams.has('code') && queryParams.has('state')) {
       const data = await auth0.handleRedirectCallback().catch(() => null);
-      console.log(data, window.location.origin, await auth0.getUser());
-      setState(await auth0.getUser());
-      // history.replaceState(data?.appState, '', window.location.);
+      const isAuthenticated = await auth0.isAuthenticated();
+      setTimeout(async () => {
+        setState(await auth0.getUser());
+      });
+      if (isAuthenticated) {
+      }
+      history.replaceState(data?.appState ?? {}, document.title, '/');
       if (data) {
         // should always be null?
       }
