@@ -1,6 +1,3 @@
-import prettier from 'prettier';
-import tsParser from 'prettier/parser-typescript';
-
 export const PREVIEW_CODE =
   'var globalVar;\n' +
   '/**\n' +

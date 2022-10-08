@@ -5,7 +5,7 @@ export const palette = {
   foreground: '#222244',
   numbers: '#f3c1ff',
   strings: '#7af8ca',
-  className :'#FFCB6B',
+  className: '#FFCB6B',
   lineNumbers: '#5b6395',
   punctuation: '#7fdaff',
   function: '#34d3fb',
@@ -15,14 +15,13 @@ export const palette = {
   base: '#ffffff',
   tag: '#9effff',
   property: '#ffdb8e',
-  selection :'#717CB450',
+  selection: '#717CB450',
   text: '#FAD000',
   white: '#FFFFFF',
   self: '#ff757f',
-  module:'#34d3fb',
+  module: '#34d3fb',
   regexp: '#a6eefb',
 };
-
 
 export const moonlight = [
   defineEditorTheme({
@@ -55,12 +54,10 @@ export const moonlight = [
       color: palette.cursor,
     },
     autocomplete: {
-      background: palette.strings,
+      background: '#212539',
       border: palette.property,
-      selectedBackground: palette.strings,
+      selectedBackground: '#34d3fb',
     },
     darkMode: true,
   }),
 ];
-
-

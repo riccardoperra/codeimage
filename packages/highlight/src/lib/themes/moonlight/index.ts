@@ -1,5 +1,5 @@
 import {createTheme} from '../../core';
-import {moonlight} from './moonlight';
+import {moonlight, palette} from './moonlight';
 
 export const moonlightTheme = createTheme({
   id: 'moonlight',
@@ -7,9 +7,9 @@ export const moonlightTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Moonlight',
-    previewBackground: ``,
+    previewBackground: `linear-gradient(135deg, #6a3cc0 0%, #240573 100%)`,
     terminal: {
-      main: '#212539',
+      main: palette.foreground,
       text: '#e4f3fa',
     },
   },

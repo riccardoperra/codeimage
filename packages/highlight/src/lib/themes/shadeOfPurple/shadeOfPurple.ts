@@ -5,7 +5,7 @@ export const palette = {
   foreground: '#222244',
   numbers: '#c42f98',
   strings: '#92FC79',
-  className :' #59e366',
+  className: ' #59e366',
   lineNumbers: '#A599E9',
   punctuation: '#E1EFFF',
   function: '#FAD000',
@@ -15,11 +15,10 @@ export const palette = {
   base: '#59e3de',
   tag: '#9effff',
   property: '#FFEE80',
-  selection :'#B362FF88',
+  selection: '#B362FF88',
   text: '#FAD000',
-  white: '#FFFFFF'
+  white: '#FFFFFF',
 };
-
 
 export const shadeOfPurple = [
   defineEditorTheme({
@@ -57,5 +56,3 @@ export const shadeOfPurple = [
     darkMode: true,
   }),
 ];
-
-
