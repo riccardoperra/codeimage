@@ -31,7 +31,9 @@ export function $auth0State() {
   }
 
   async function signOut() {
-    await auth0.logout();
+    await auth0.logout({
+      returnTo: `${window.location.protocol}//${window.location.host}`,
+    });
   }
 
   const getToken = () => {
