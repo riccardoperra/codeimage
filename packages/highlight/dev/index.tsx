@@ -16,8 +16,8 @@ import {PREVIEW_CODE} from './Editor/preview';
 import './reset.scss';
 import {AVAILABLE_THEMES} from './Editor/themes';
 import {createThemeStore} from './themeStore';
-import '@codeimage/ui/themes/light-theme';
-import '@codeimage/ui/themes/dark-theme';
+import '@codeimage/ui/themes/lightTheme';
+import '@codeimage/ui/themes/darkTheme';
 
 function App() {
   const [theme, setThemeId] = createThemeStore();

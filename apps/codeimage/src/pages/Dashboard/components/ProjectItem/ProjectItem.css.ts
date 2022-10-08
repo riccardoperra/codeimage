@@ -1,10 +1,6 @@
-import {
-  backgroundColorVar,
-  darkGrayScale,
-  themeVars,
-  withThemeMode,
-} from '@codeimage/ui';
+import {backgroundColorVar, themeVars, withThemeMode} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
+import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 
 export const item = style([
   {

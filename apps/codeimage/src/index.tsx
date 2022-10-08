@@ -6,10 +6,10 @@ import {uiStore} from '@codeimage/store/ui';
 import {
   backgroundColorVar,
   CodeImageThemeProvider,
-  darkGrayScale,
   SnackbarHost,
   ThemeProviderProps,
 } from '@codeimage/ui';
+import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';

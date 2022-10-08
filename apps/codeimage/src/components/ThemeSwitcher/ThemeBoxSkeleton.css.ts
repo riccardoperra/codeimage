@@ -1,9 +1,5 @@
-import {
-  backgroundColorVar,
-  darkGrayScale,
-  themeVars,
-  withThemeMode,
-} from '@codeimage/ui';
+import {backgroundColorVar, themeVars, withThemeMode} from '@codeimage/ui';
+import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
 import {themeBox} from './ThemeSwitcher.css';
 

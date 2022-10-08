@@ -1,4 +1,5 @@
-import {darkGrayScale, themeVars, withThemeMode} from '@codeimage/ui';
+import {themeVars, withThemeMode} from '@codeimage/ui';
+import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {createVar, style} from '@vanilla-extract/css';
 
 const gridListItemCount = createVar();

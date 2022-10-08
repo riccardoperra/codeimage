@@ -1,4 +1,5 @@
-import {darkGrayScale, themeVars, withThemeMode} from '@codeimage/ui';
+import {themeVars, withThemeMode} from '@codeimage/ui';
+import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
 
 export const banner = style({

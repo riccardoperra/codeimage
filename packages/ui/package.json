@@ -15,17 +15,30 @@
       "node": "./dist/cjs/index.js",
       "solid": "./dist/source/index.jsx"
     },
-    "./themes/dark-theme": {
+    "./themes/darkTheme": {
       "import": "./dist/esm/lib/themes/darkTheme.css.js",
       "browser": "./dist/esm/lib/themes/darkTheme.css.js",
       "require": "./dist/cjs/lib/themes/darkTheme.css.js",
       "node": "./dist/cjs/lib/themes/darkTheme.css.js"
     },
-    "./themes/light-theme": {
+    "./themes/lightTheme": {
       "import": "./dist/esm/lib/themes/lightTheme.css.js",
       "browser": "./dist/esm/lib/themes/lightTheme.css.js",
       "require": "./dist/cjs/lib/themes/lightTheme.css.js",
       "node": "./dist/cjs/lib/themes/lightTheme.css.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/types/index.d.ts"
+      ],
+      "themes/darkTheme": [
+        "./dist/types/lib/themes/dark-theme.css.d.ts"
+      ],
+      "themes/lightTheme": [
+        "./dist/types/lib/themes/light-theme.css.d.ts"
+      ]
     }
   },
   "scripts": {
