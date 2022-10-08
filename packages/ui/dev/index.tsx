@@ -1,12 +1,13 @@
 import {render} from 'solid-js/web';
 import {Box, CodeImageThemeProvider} from '../src';
-import './dark-theme.css';
 import {ButtonDemo} from './demo/Button';
 import {SegmentedFieldDemo} from './demo/SegmentedControl';
 import {SelectDemo} from './demo/Select';
 import {TextFieldDemo} from './demo/TextField';
 import './global.css';
 import './reset.scss';
+import '../src/lib/themes/dark-theme.css';
+import '../src/lib/themes/light-theme.css';
 
 function App() {
   return (
