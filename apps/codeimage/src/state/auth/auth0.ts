@@ -11,6 +11,7 @@ export function $auth0State() {
   async function initLogin() {
     auth0 = await $auth0;
     const queryParams = new URLSearchParams(window.location.search);
+    console.log(queryParams);
     if (!auth0) return;
     if (queryParams.has('code') && queryParams.has('state')) {
       const data = await auth0.handleRedirectCallback().catch(() => null);
@@ -20,7 +21,9 @@ export function $auth0State() {
         // should always be null?
       }
     } else {
+      console.log('check');
       if (await auth0.isAuthenticated()) {
+        console.log('is auth', await auth0.getUser());
         setState(await auth0.getUser());
       }
     }
