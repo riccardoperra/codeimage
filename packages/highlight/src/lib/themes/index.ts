@@ -15,5 +15,6 @@ export * from './materialVolcano';
 export * from './nightOwl';
 export * from './oneDark';
 export * from './poimandres';
+export * from './shadeOfPurple';
 export * from './synthwave84';
 export * from './vsCodeDark';

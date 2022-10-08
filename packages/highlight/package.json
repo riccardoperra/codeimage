@@ -137,6 +137,10 @@
     "./poimandres": {
       "import": "./dist/lib/themes/poimandres/index.js",
       "types": "./dist/lib/themes/poimandres/index.d.ts"
+    },
+    "./shadeOfPurple": {
+      "import": "./dist/lib/themes/shadeOfPurple/index.js",
+      "types": "./dist/lib/themes/shadeOfPurple/index.d.ts"
     }
   },
   "typesVersions": {
@@ -197,6 +201,9 @@
       ],
       "poimandres": [
         "./dist/lib/themes/poimandres/index.d.ts"
+      ],
+      "shadeOfPurple": [
+        "./dist/lib/themes/shadeOfPurple/index.d.ts"
       ],
       "themes": [
         "./dist/lib/themes/index.d.ts"
