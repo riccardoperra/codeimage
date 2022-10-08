@@ -14,6 +14,7 @@ export * from './materialPalenight';
 export * from './materialVolcano';
 export * from './nightOwl';
 export * from './oneDark';
+export * from './panda';
 export * from './poimandres';
 export * from './shadeOfPurple';
 export * from './synthwave84';

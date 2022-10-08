@@ -1,4 +1,4 @@
-import {createTheme, style} from '@vanilla-extract/css';
+import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {themeVars} from '../../theme';
 import * as variables from '../../theme/variables.css';
@@ -20,7 +20,7 @@ export const baseField = style([
     borderRadius: themeVars.borderRadius.md,
     width: '100%',
     fontSize: variables.fontSize,
-    height: textFieldVars.inputHeight,
+    height: fallbackVar(textFieldVars.inputHeight, '100%'),
     color: 'currentcolor',
     ':focus': {
       borderColor: themeVars.backgroundColor.blue['500'],

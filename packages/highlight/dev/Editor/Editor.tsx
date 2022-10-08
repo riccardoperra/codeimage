@@ -34,7 +34,7 @@ export default function Editor(props: VoidProps<CustomEditorPreviewProps>) {
         border: 'none',
       },
       '.cm-line': {
-        padding: '0 2px 0 8px',
+        padding: '0 2px 6px 16px',
       },
       '.cm-content *': {
         fontFamily: `Jetbrains Mono, monospace`,

@@ -7,6 +7,5 @@
   },
   "include": [
     "./src",
-    "./scripts/generate-theme.ts"
   ]
 }

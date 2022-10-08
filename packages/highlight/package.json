@@ -141,6 +141,10 @@
     "./shadeOfPurple": {
       "import": "./dist/lib/themes/shadeOfPurple/index.js",
       "types": "./dist/lib/themes/shadeOfPurple/index.d.ts"
+    },
+    "./panda": {
+      "import": "./dist/lib/themes/panda/index.js",
+      "types": "./dist/lib/themes/panda/index.d.ts"
     }
   },
   "typesVersions": {
@@ -207,6 +211,9 @@
       ],
       "themes": [
         "./dist/lib/themes/index.d.ts"
+      ],
+      "panda": [
+        "./dist/lib/themes/panda/index.d.ts"
       ]
     }
   }
