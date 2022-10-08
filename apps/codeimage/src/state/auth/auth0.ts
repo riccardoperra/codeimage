@@ -15,8 +15,9 @@ export function $auth0State() {
     if (!auth0) return;
     if (queryParams.has('code') && queryParams.has('state')) {
       const data = await auth0.handleRedirectCallback().catch(() => null);
+      console.log(data, window.location.origin, await auth0.getUser());
       setState(await auth0.getUser());
-      history.replaceState(data?.appState, '', window.location.origin);
+      // history.replaceState(data?.appState, '', window.location.);
       if (data) {
         // should always be null?
       }
