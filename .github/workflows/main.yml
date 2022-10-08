@@ -192,12 +192,12 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build:vercel-output
       - name: Deploy to Vercel (Preview)
-        uses: BetaHuhn/deploy-to-vercel-action@v1
+        uses: riccardoperra/deploy-to-vercel-action@v0.1.0
         if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }} # Required
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-args: '--prebuilt' #Optional
+          VERCEL_ARGS: '--prebuilt'
           PRODUCTION: false
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID}}  #Required
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID}} #Required
@@ -205,7 +205,7 @@ jobs:
             codeimage-{BRANCH}.vercel.app
           PR_PREVIEW_DOMAIN: "codeimage-pr-{PR}.vercel.app"
           CREATE_COMMENT: true
-          COMMENT_IDENTIFIER: 'app-preview-deploy'
+          WORKING_DIRECTORY: apps/codeimage
 
       - name: Build vercel output (Next)
         if: ${{ env.IS_NEXT_BRANCH == 'true' }}
