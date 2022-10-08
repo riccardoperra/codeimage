@@ -1,17 +1,10 @@
 import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
 import {defineConfig} from 'vite';
-import dts from 'vite-plugin-dts';
 import solidPlugin from 'vite-plugin-solid';
+import {withStaticVercelPreview} from '../../../scripts/vercel-output-build';
 
 export const viteConfig = defineConfig({
-  plugins: [
-    vanillaExtractPlugin(),
-    solidPlugin(),
-    dts({
-      skipDiagnostics: false,
-      logDiagnostics: true,
-    }),
-  ],
+  plugins: [vanillaExtractPlugin(), solidPlugin(), withStaticVercelPreview()],
 });
 
 export default viteConfig;

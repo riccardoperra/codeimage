@@ -2,6 +2,7 @@ name: Main
 
 on:
   pull_request:
+    types: [ opened, synchronize, reopened ]
 
 env:
   IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
@@ -79,40 +80,6 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-  typecheck-packages:
-    if: ${{ needs.install.outputs.libs-change == 'true' }}
-    name: Type-checking
-    needs: [ install ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Prisma migrate
-        run: |
-          cd apps/api
-          pnpm exec prisma generate
-          pnpm --filter=@codeimage/prisma-models build
-
-      - name: Typecheck packages
-        run: |
-          pnpm --filter='./packages/**' --recursive typecheck:ci
-
-      - name: Typecheck app
-        run: |
-          pnpm --filter='@codeimage/api' typecheck:ci
-          pnpm --filter='@codeimage/app' typecheck
-
-
   build-packages:
     name: Build packages
     needs: [ install ]
@@ -146,6 +113,40 @@ jobs:
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+  typecheck-packages:
+    if: ${{ needs.install.outputs.libs-change == 'true' }}
+    name: Type-checking
+    needs: [ install, build-packages ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Prisma migrate
+        run: |
+          cd apps/api
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
+
+      - name: Typecheck packages
+        run: |
+          pnpm --filter='./packages/**' --recursive typecheck:ci
+
+      - name: Typecheck app
+        run: |
+          pnpm --filter='@codeimage/api' typecheck:ci
+          pnpm --filter='@codeimage/app' typecheck
+
 
   build-app:
     name: Build App and Preview
@@ -183,17 +184,10 @@ jobs:
           VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
           UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
+          ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/app build
 
-      - name: Build vercel output
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
-        run: |
-          cd apps/codeimage
-          ls
-          mkdir -p .vercel/output/static
-          echo '{"version": 3, "routes": [{ "handle": "filesystem" }, {"check": true, "src": "/(.*)", "dest": "/"}]}' > .vercel/output/config.json
-          mv dist/** .vercel/output/static
       - uses: amondnet/vercel-action@v19
         if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
@@ -226,6 +220,100 @@ jobs:
           alias-domains: | #Optional
             codeimage-pr-{{PR_NUMBER}}.vercel.app
             next.codeimage.dev
+
+
+  build-highlight-dev:
+    name: "@codeimage/highlight dev and Preview"
+    environment: Preview
+    needs: [ build-packages ]
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Build highlight demo
+        env:
+          ENABLE_VERCEL_BUILD: true
+        run: |
+          pnpm --filter=@codeimage/highlight build:dev
+
+      - uses: amondnet/vercel-action@v19
+        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
+          vercel-args: '--prebuilt' #Optional
+          working-directory: packages/highlight/dev
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
+          vercel-project-id: ${{ secrets.VERCEL_HIGHLIGHT_DEV_PROJECT_ID}} #Required
+          alias-domains: | #Optional
+            codeimage-highlight-pr-{{PR_NUMBER}}.vercel.app
+
+
+
+  build-ui-dev:
+    name: "@codeimage/ui dev and Preview"
+    environment: Preview
+    needs: [ build-packages ]
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Build ui demo
+        env:
+          ENABLE_VERCEL_BUILD: true
+        run: |
+          pnpm --filter=@codeimage/ui build:dev
+
+      - uses: amondnet/vercel-action@v19
+        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
+          vercel-args: '--prebuilt' #Optional
+          working-directory: packages/ui/dev
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
+          vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID}} #Required
+          alias-domains: | #Optional
+            codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
+
 
   build-api:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
@@ -264,7 +352,6 @@ jobs:
             dist/api-bundle/**
           key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
           restore-keys: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
-
 
   be-test:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
@@ -385,36 +472,6 @@ jobs:
           railway up
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-  #      - name: Build and Publish to Github Packages Registry
-  #        uses: elgohr/Publish-Docker-Github-Action@master
-  #        env:
-  #          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  #        with:
-  #          name: riccardoperra/codeimage/api-next
-  #          registry: ghcr.io
-  #          username: ${{ secrets.USERNAME }}
-  #          password: ${{ secrets.GITHUB_TOKEN }}
-  #          dockerfile: Dockerfile
-  #          buildargs: DATABASE_URL
-  #          tags: latest
-  #
-  #      - name: Deploy package
-  #        uses: appleboy/ssh-action@master
-  #        env:
-  #          GITHUB_USERNAME: ${{ secrets.USERNAME }}
-  #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #        with:
-  #          host: ${{ secrets.DEPLOY_HOST }}
-  #          port: ${{ secrets.DEPLOY_PORT }}
-  #          username: ${{ secrets.DEPLOY_USER }}
-  #          key: ${{ secrets.SSH_PRIVATE_KEY  }}
-  #          envs: GITHUB_USERNAME, GITHUB_TOKEN
-  #          script: |
-  #            docker login ghcr.io -u $GITHUB_USERNAME -p $GITHUB_TOKEN
-  #            docker pull ghcr.io/riccardoperra/codeimage/api-next:latest
-  #            docker stop codeimage-api
-  #            docker system prune -f
-  #            docker run --name codeimage-api -dit -p 3000:3000 ghcr.io/riccardoperra/codeimage/api-next:latest
 
   #  deploy-prod:
   #    # Production branch only

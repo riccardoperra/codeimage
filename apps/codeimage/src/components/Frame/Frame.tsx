@@ -4,7 +4,6 @@ import {ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
-import {wrapper} from './Frame.css';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;

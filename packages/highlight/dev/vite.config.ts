@@ -1,16 +1,13 @@
 import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
-import {defineConfig} from 'vite';
-import dts from 'vite-plugin-dts';
+import {defineConfig, Plugin} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
+import {withStaticVercelPreview} from '../../../scripts/vercel-output-build';
 
 export const viteConfig = defineConfig({
   plugins: [
-    vanillaExtractPlugin(),
+    vanillaExtractPlugin() as unknown as Plugin,
     solidPlugin(),
-    dts({
-      skipDiagnostics: false,
-      logDiagnostics: true,
-    }),
+    withStaticVercelPreview() as unknown as Plugin,
   ],
   optimizeDeps: {
     // Add both @codemirror/state and @codemirror/view to included deps to optimize
