@@ -437,7 +437,7 @@ jobs:
   deploy-next:
     # Next branch only
     if: ${{ github.head_ref  == 'next' }}
-    environment: Next
+    environment: Production
     name: Deploy next
     needs: [
       lint,
