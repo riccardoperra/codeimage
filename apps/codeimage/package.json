@@ -8,6 +8,7 @@
     "dev": "vite --host",
     "build": "rimraf dist && vite build",
     "build-sw": "rimraf dist && cross-env BASE_URL=/ SW=true SOURCE_MAP=true RELOAD_SW=true vite build",
+    "build:vercel-output": "tsx ./scripts/makeVercelOutput.cts",
     "serve:https": "serve dist",
     "serve": "vite preview",
     "pre-commit": "lint-staged --relative",
