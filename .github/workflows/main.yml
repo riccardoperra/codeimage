@@ -150,6 +150,60 @@ jobs:
 
   build-app:
     name: Build App and Preview
+    environment: Production
+    needs: [ build-packages ]
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Build app
+        env:
+          VITE_PUBLIC_AUTH0_DOMAIN: ${{ secrets.VITE_PUBLIC_AUTH0_DOMAIN }}
+          VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
+          VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
+          UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
+          UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
+          ENABLE_VERCEL_BUILD: true
+        run: |
+          pnpm --filter=@codeimage/app build
+
+      - uses: amondnet/vercel-action@v19
+        name: Build vercel output (Next)
+        if: ${{ env.IS_NEXT_BRANCH == 'true' }}
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
+          vercel-args: '--prebuilt' #Optional
+          working-directory: apps/codeimage
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
+          alias-domains: | #Optional
+            next.codeimage.dev
+
+
+  build-app-dev:
+    name: Build App and Preview
     environment: Preview
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
@@ -207,20 +261,6 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
             codeimage-pr-{{PR_NUMBER}}.vercel.app
-
-      - uses: amondnet/vercel-action@v19
-        name: Build vercel output (Next)
-        if: ${{ env.IS_NEXT_BRANCH == 'true' }}
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-args: '--prebuilt' #Optional
-          working-directory: apps/codeimage
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
-          alias-domains: | #Optional
-            codeimage-pr-{{PR_NUMBER}}.vercel.app
-            next.codeimage.dev
 
 
   build-highlight-dev:
