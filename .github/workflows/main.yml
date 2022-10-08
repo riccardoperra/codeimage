@@ -225,14 +225,12 @@ jobs:
             next.codeimage.dev
 
 
-
   build-highlight-dev:
-    name: Build @codeimage/highlight dev and Preview
+    name: @codeimage/highlight dev and Preview
     environment: Preview
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - uses: pnpm/action-setup@v2.2.2
@@ -273,26 +271,54 @@ jobs:
           alias-domains: | #Optional
             codeimage-highlight-pr-{{PR_NUMBER}}.vercel.app
 
-      - name: Build vercel output (Next)
-        if: ${{ env.IS_NEXT_BRANCH == 'true' }}
+
+
+  build-ui-dev:
+    name: @codeimage/ui dev and Preview
+    environment: Preview
+    needs: [ build-packages ]
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Build ui demo
         run: |
-          cd apps/codeimage
-          ls
-          mkdir -p .vercel/output/static
-          echo '{"version": 3, "routes": [{ "handle": "filesystem" }, {"check": true, "src": "/(.*)", "dest": "/"}]}' > .vercel/output/config.json
-          mv dist/** .vercel/output/static
+          pnpm --filter=@codeimage/ui build:dev
+
+      - name: Build vercel output
+        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
+        run: |
+          pnpm --filter=@codeimage/ui build:vercel-output
       - uses: amondnet/vercel-action@v19
-        if: ${{ env.IS_NEXT_BRANCH == 'true' }}
+        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
           vercel-args: '--prebuilt' #Optional
-          working-directory: apps/codeimage
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
+          working-directory: packages/highlight/dev
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
+          vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID}} #Required
           alias-domains: | #Optional
-            codeimage-pr-{{PR_NUMBER}}.vercel.app
-            next.codeimage.dev
+            codeimage-highlight-pr-{{PR_NUMBER}}.vercel.app
+
 
   build-api:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
