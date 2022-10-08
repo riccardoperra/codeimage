@@ -145,6 +145,10 @@
     "./panda": {
       "import": "./dist/lib/themes/panda/index.js",
       "types": "./dist/lib/themes/panda/index.d.ts"
+    },
+    "./moonlight": {
+      "import": "./dist/lib/themes/moonlight/index.js",
+      "types": "./dist/lib/themes/moonlight/index.d.ts"
     }
   },
   "typesVersions": {
@@ -214,6 +218,9 @@
       ],
       "panda": [
         "./dist/lib/themes/panda/index.d.ts"
+      ],
+      "moonlight": [
+        "./dist/lib/themes/moonlight/index.d.ts"
       ]
     }
   }
