@@ -5,11 +5,9 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {PropsWithChildren, Show} from 'solid-js';
 import {useFloating} from '../../hooks';
 import {backgroundColorVar} from '../../theme';
-import {Box} from '../Box';
 import {Popover} from '../Popover';
 import {createPopoverPortal} from '../Popover/create-popover-portal';
 import * as styles from './ColorPicker.css';
-import {ColorPickerColorItemProps} from './ColorPicker.css';
 import {ColorPickerPopover} from './ColorPickerPopover';
 
 export interface ColorPickerProps {
@@ -98,29 +96,5 @@ export function ColorPicker(props: PropsWithChildren<ColorPickerProps>) {
         </OverlayContainer>
       </Show>
     </>
-  );
-}
-
-type ColorPickerPresetItemProps = {
-  title: string;
-  color: string;
-  onClick: (color: string) => void;
-  active: boolean;
-} & ColorPickerColorItemProps;
-
-export function ColorPickerPresetItem(
-  props: PropsWithChildren<ColorPickerPresetItemProps>,
-) {
-  return (
-    <Box
-      class={styles.colorItem({
-        active: props.active,
-      })}
-      title={props.title}
-      style={assignInlineVars({
-        [backgroundColorVar]: props.color,
-      })}
-      onClick={() => props.onClick(props.color)}
-    />
   );
 }

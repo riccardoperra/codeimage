@@ -215,7 +215,7 @@ importers:
       '@codeimage/highlight': link:../../packages/highlight
       '@codeimage/locale': link:../../packages/locale
       '@codeimage/prisma-models': link:../../packages/prisma-models
-      '@codeimage/ui': link:../../packages/ui
+      '@codeimage/ui': link:../../packages/ui/dist/source
       '@codeimage/vanilla-extract': link:../../packages/vanilla-extract
       '@codemirror/autocomplete': 6.1.0
       '@codemirror/commands': 6.1.0
@@ -434,7 +434,7 @@ importers:
       '@lezer/highlight': 1.0.0
       '@primer/primitives': 7.9.0
     devDependencies:
-      '@codeimage/ui': link:../ui
+      '@codeimage/ui': link:../ui/dist/source
       '@codeimage/vanilla-extract': link:../vanilla-extract
       '@codemirror/lang-javascript': 6.1.0
       '@rollup/plugin-typescript': 8.4.0_gmqy3ybotxdm4nbudwrtswpjbi
@@ -490,6 +490,8 @@ importers:
       '@floating-ui/core': ^1.0.1
       '@floating-ui/dom': ^1.0.1
       '@motionone/solid': ^10.14.1
+      '@rollup/plugin-babel': 6.0.0
+      '@rollup/plugin-node-resolve': 14.1.0
       '@solid-aria/button': ^0.1.3
       '@solid-aria/collection': ^0.2.0
       '@solid-aria/dialog': ^0.1.4
@@ -511,11 +513,16 @@ importers:
       '@vanilla-extract/dynamic': ^2.0.2
       '@vanilla-extract/private': ^1.0.3
       '@vanilla-extract/recipes': ^0.2.5
+      '@vanilla-extract/rollup-plugin': 1.2.0
       '@vanilla-extract/sprinkles': ^1.5.0
+      chalk: 4.1.2
       clsx: ^1.2.1
       csstype: ^3.1.0
+      merge-anything: 5.0.4
+      pretty-ms: 8.0.0
       rimraf: ^3.0.2
       rollup: ^2.78.1
+      rollup-plugin-terser: 7.0.2
       rollup-preset-solid: ^1.4.0
       solid-headless: ^0.11.1
       solid-js: ^1.5.2
@@ -559,9 +566,16 @@ importers:
       solid-toast: 0.3.4_solid-js@1.5.2
       solid-use: 0.5.0_solid-js@1.5.2
     devDependencies:
+      '@rollup/plugin-babel': 6.0.0_rollup@2.78.1
+      '@rollup/plugin-node-resolve': 14.1.0_rollup@2.78.1
       '@types/node': 18.7.13
+      '@vanilla-extract/rollup-plugin': 1.2.0_rollup@2.78.1
+      chalk: 4.1.2
+      merge-anything: 5.0.4
+      pretty-ms: 8.0.0
       rimraf: 3.0.2
       rollup: 2.78.1
+      rollup-plugin-terser: 7.0.2_rollup@2.78.1
       rollup-preset-solid: 1.4.0
       solid-js: 1.5.2
       tiny-glob: 0.2.9
@@ -569,6 +583,107 @@ importers:
       vite: 3.0.9
       vite-plugin-dts: 1.4.1_vite@3.0.9
       vite-plugin-solid: 2.3.0_solid-js@1.5.2+vite@3.0.9
+
+  packages/ui/dist/source:
+    specifiers:
+      '@codeimage/locale': workspace:*
+      '@codeimage/vanilla-extract': workspace:*
+      '@floating-ui/core': ^1.0.1
+      '@floating-ui/dom': ^1.0.1
+      '@motionone/solid': ^10.14.1
+      '@rollup/plugin-babel': 6.0.0
+      '@rollup/plugin-node-resolve': 14.1.0
+      '@solid-aria/button': ^0.1.3
+      '@solid-aria/collection': ^0.2.0
+      '@solid-aria/dialog': ^0.1.4
+      '@solid-aria/focus': ^0.1.4
+      '@solid-aria/i18n': ^0.2.0
+      '@solid-aria/interactions': ^0.1.4
+      '@solid-aria/menu': ^0.2.0
+      '@solid-aria/overlays': ^0.1.3
+      '@solid-aria/radio': ^0.1.3
+      '@solid-aria/textfield': ^0.0.1
+      '@solid-aria/tree': ^0.1.4
+      '@solid-aria/types': ^0.1.4
+      '@solid-aria/utils': ^0.2.1
+      '@solid-primitives/props': ^2.2.1
+      '@solid-primitives/refs': ^0.3.1
+      '@solid-primitives/utils': ^3.0.1
+      '@types/node': ^18.7.13
+      '@vanilla-extract/css': ^1.9.1
+      '@vanilla-extract/dynamic': ^2.0.2
+      '@vanilla-extract/private': ^1.0.3
+      '@vanilla-extract/recipes': ^0.2.5
+      '@vanilla-extract/rollup-plugin': 1.2.0
+      '@vanilla-extract/sprinkles': ^1.5.0
+      chalk: 4.1.2
+      clsx: ^1.2.1
+      csstype: ^3.1.0
+      merge-anything: 5.0.4
+      pretty-ms: 8.0.0
+      rimraf: ^3.0.2
+      rollup: ^2.78.1
+      rollup-plugin-terser: 7.0.2
+      rollup-preset-solid: ^1.4.0
+      solid-headless: ^0.11.1
+      solid-js: ^1.5.2
+      solid-toast: ^0.3.4
+      solid-use: ^0.5.0
+      tiny-glob: ^0.2.9
+      typescript: ^4.8.4
+      vite: ^3.0.9
+      vite-plugin-dts: ^1.4.1
+      vite-plugin-solid: ^2.3.0
+    dependencies:
+      '@codeimage/locale': link:../../../locale
+      '@codeimage/vanilla-extract': link:../../../vanilla-extract
+      '@floating-ui/core': 1.0.1
+      '@floating-ui/dom': 1.0.1
+      '@motionone/solid': 10.14.1_solid-js@1.5.2
+      '@solid-aria/button': 0.1.3_solid-js@1.5.2
+      '@solid-aria/collection': 0.2.0_solid-js@1.5.2
+      '@solid-aria/dialog': 0.1.4_solid-js@1.5.2
+      '@solid-aria/focus': 0.1.4_solid-js@1.5.2
+      '@solid-aria/i18n': 0.2.0_solid-js@1.5.2
+      '@solid-aria/interactions': 0.1.4_solid-js@1.5.2
+      '@solid-aria/menu': 0.2.0_solid-js@1.5.2
+      '@solid-aria/overlays': 0.1.3_solid-js@1.5.2
+      '@solid-aria/radio': 0.1.3_solid-js@1.5.2
+      '@solid-aria/textfield': 0.0.1_solid-js@1.5.2
+      '@solid-aria/tree': 0.1.4_solid-js@1.5.2
+      '@solid-aria/types': 0.1.4_solid-js@1.5.2
+      '@solid-aria/utils': 0.2.1_solid-js@1.5.2
+      '@solid-primitives/props': 2.2.1_solid-js@1.5.2
+      '@solid-primitives/refs': 0.3.1_solid-js@1.5.2
+      '@solid-primitives/utils': 3.0.1_solid-js@1.5.2
+      '@vanilla-extract/css': 1.9.1
+      '@vanilla-extract/dynamic': 2.0.2
+      '@vanilla-extract/private': 1.0.3
+      '@vanilla-extract/recipes': 0.2.5_@vanilla-extract+css@1.9.1
+      '@vanilla-extract/sprinkles': 1.5.0_@vanilla-extract+css@1.9.1
+      clsx: 1.2.1
+      csstype: 3.1.0
+      solid-headless: 0.11.1_solid-js@1.5.2
+      solid-toast: 0.3.4_solid-js@1.5.2
+      solid-use: 0.5.0_solid-js@1.5.2
+    devDependencies:
+      '@rollup/plugin-babel': 6.0.0_rollup@2.78.1
+      '@rollup/plugin-node-resolve': 14.1.0_rollup@2.78.1
+      '@types/node': 18.7.18
+      '@vanilla-extract/rollup-plugin': 1.2.0_rollup@2.78.1
+      chalk: 4.1.2
+      merge-anything: 5.0.4
+      pretty-ms: 8.0.0
+      rimraf: 3.0.2
+      rollup: 2.78.1
+      rollup-plugin-terser: 7.0.2_rollup@2.78.1
+      rollup-preset-solid: 1.4.0
+      solid-js: 1.5.2
+      tiny-glob: 0.2.9
+      typescript: 4.8.4
+      vite: 3.1.4
+      vite-plugin-dts: 1.4.1_vite@3.1.4
+      vite-plugin-solid: 2.3.9_solid-js@1.5.2+vite@3.1.4
 
   packages/vanilla-extract:
     specifiers:
@@ -3631,6 +3746,24 @@ packages:
       rollup: 2.77.0
     dev: true
 
+  /@rollup/plugin-babel/6.0.0_rollup@2.78.1:
+    resolution: {integrity: sha512-qM8YIt/2fVxw5O0wUgAeglyC+qx9mg3UtCCLoSqetmQOKipmnQ/X3I0L2sjjb6BswaYpv2tun25lHViU7JPxLQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0
+      '@types/babel__core': ^7.1.9
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      '@types/babel__core':
+        optional: true
+      rollup:
+        optional: true
+    dependencies:
+      '@babel/helper-module-imports': 7.18.6
+      '@rollup/pluginutils': 4.2.1
+      rollup: 2.78.1
+    dev: true
+
   /@rollup/plugin-node-resolve/11.2.1_rollup@2.77.0:
     resolution: {integrity: sha512-yc2n43jcqVyGE2sqV5/YCmocy9ArjVAP/BeXyTtADTBBX6V0e5UMqwO8CdQ0kzjb6zu5P1qMzsScCMRvE9OlVg==}
     engines: {node: '>= 10.0.0'}
@@ -3651,6 +3784,21 @@ packages:
     engines: {node: '>= 10.0.0'}
     peerDependencies:
       rollup: ^2.42.0
+    dependencies:
+      '@rollup/pluginutils': 3.1.0_rollup@2.78.1
+      '@types/resolve': 1.17.1
+      deepmerge: 4.2.2
+      is-builtin-module: 3.1.0
+      is-module: 1.0.0
+      resolve: 1.22.1
+      rollup: 2.78.1
+    dev: true
+
+  /@rollup/plugin-node-resolve/14.1.0_rollup@2.78.1:
+    resolution: {integrity: sha512-5G2niJroNCz/1zqwXtk0t9+twOSDlG00k1Wfd7bkbbXmwg8H8dvgHdIWAun53Ps/rckfvOC7scDBjuGFg5OaWw==}
+    engines: {node: '>= 10.0.0'}
+    peerDependencies:
+      rollup: ^2.78.0
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.78.1
       '@types/resolve': 1.17.1
@@ -3739,6 +3887,14 @@ packages:
       estree-walker: 1.0.1
       picomatch: 2.3.1
       rollup: 2.78.1
+    dev: true
+
+  /@rollup/pluginutils/4.2.1:
+    resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
+    engines: {node: '>= 8.0.0'}
+    dependencies:
+      estree-walker: 2.0.2
+      picomatch: 2.3.1
     dev: true
 
   /@rushstack/node-core-library/3.45.4:
@@ -4299,7 +4455,7 @@ packages:
   /@types/resolve/1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
-      '@types/node': 18.7.13
+      '@types/node': 18.7.18
     dev: true
 
   /@types/semver/6.2.3:
@@ -4472,7 +4628,6 @@ packages:
       '@babel/core': 7.18.9
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /@vanilla-extract/css/1.9.1:
     resolution: {integrity: sha512-pu2SFiff5jRhPwvGoj8cM5l/qIyLvigOmy22ss5DGjwV5pJYezRjDLxWumi2luIwioMWvh9EozCjyfH8nq+7fQ==}
@@ -4509,7 +4664,6 @@ packages:
       outdent: 0.8.0
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /@vanilla-extract/private/1.0.3:
     resolution: {integrity: sha512-17kVyLq3ePTKOkveHxXuIJZtGYs+cSoev7BlP+Lf4916qfDhk/HBjvlYDe8egrea7LNPHKwSZJK/bzZC+Q6AwQ==}
@@ -4521,6 +4675,17 @@ packages:
     dependencies:
       '@vanilla-extract/css': 1.9.1
     dev: false
+
+  /@vanilla-extract/rollup-plugin/1.2.0_rollup@2.78.1:
+    resolution: {integrity: sha512-ighzVzMyGEmTw+3ZygTwJukjmmVNLCft4NF6VEjElUJM93u3n5Z6O18rqVNBvwGSy2zvEfoSpl9Ven3RHuJgew==}
+    peerDependencies:
+      rollup: ^2.0.0
+    dependencies:
+      '@vanilla-extract/integration': 6.0.0
+      rollup: 2.78.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
 
   /@vanilla-extract/sprinkles/1.5.0_@vanilla-extract+css@1.9.1:
     resolution: {integrity: sha512-W58f2Rzz5lLmk0jbhgStVlZl5wEiPB1Ur3fRvUaBM+MrifZ3qskmFq/CiH//fEYeG5Dh9vF1qRviMMH46cX9Nw==}
@@ -6352,7 +6517,6 @@ packages:
     resolution: {integrity: sha512-iaiZZ9vUF5wJV8ob1tl+5aJTrwDczlvGP0JoMmnpC2B0ppiMCu8n8gmy5ZTGl5bcG081XBVn+U+jP+mPFm5T5Q==}
     hasBin: true
     requiresBuild: true
-    dev: false
 
   /esbuild/0.14.49:
     resolution: {integrity: sha512-/TlVHhOaq7Yz8N1OJrjqM3Auzo5wjvHFLk+T8pIue+fhnhIMpfAzsG6PLVMbFveVxqD2WOp3QHei+52IMUNmCw==}
@@ -6627,6 +6791,10 @@ packages:
     resolution: {integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==}
     dev: true
 
+  /estree-walker/2.0.2:
+    resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
+    dev: true
+
   /esutils/2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
@@ -6641,7 +6809,6 @@ packages:
     engines: {node: '>= 0.8'}
     dependencies:
       require-like: 0.1.2
-    dev: false
 
   /event-target-shim/5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
@@ -7860,13 +8027,12 @@ packages:
 
   /javascript-stringify/2.1.0:
     resolution: {integrity: sha512-JVAfqNPTvNq3sB/VHQJAFxN/sPgKnsKrCwyRt15zwNCdrMMJDdcEOdubuy+DuJYYdm0ox1J4uzEuYKkN+9yhVg==}
-    dev: false
 
   /jest-worker/26.6.2:
     resolution: {integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 18.7.13
+      '@types/node': 18.7.18
       merge-stream: 2.0.0
       supports-color: 7.2.0
     dev: true
@@ -8368,6 +8534,14 @@ packages:
 
   /merge-anything/5.0.2:
     resolution: {integrity: sha512-POPQBWkBC0vxdgzRJ2Mkj4+2NTKbvkHo93ih+jGDhNMLzIw+rYKjO7949hOQM2X7DxMHH1uoUkwWFLIzImw7gA==}
+    engines: {node: '>=12.13'}
+    dependencies:
+      is-what: 4.1.7
+      ts-toolbelt: 9.6.0
+    dev: true
+
+  /merge-anything/5.0.4:
+    resolution: {integrity: sha512-YFsDeY5A9SLXhL21Qn15wCWewRUW6wMTxQF4SuPe9bNdr1wsjiE44Rp8FQUTCtwO0WLdlKiFzhAVE5tlf857Tg==}
     engines: {node: '>=12.13'}
     dependencies:
       is-what: 4.1.7
@@ -8932,6 +9106,11 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
+  /parse-ms/3.0.0:
+    resolution: {integrity: sha512-Tpb8Z7r7XbbtBTrM9UhpkzzaMrqA2VXMT3YChzYltwV3P3pM6t8wl7TvpMnSTosz1aQAdVib7kdoys7vYOPerw==}
+    engines: {node: '>=12'}
+    dev: true
+
   /parseurl/1.3.3:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
     engines: {node: '>= 0.8'}
@@ -9185,6 +9364,13 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       parse-ms: 2.1.0
+    dev: true
+
+  /pretty-ms/8.0.0:
+    resolution: {integrity: sha512-ASJqOugUF1bbzI35STMBUpZqdfYKlJugy6JBziGi2EE+AL5JPJGSzvpeVXojxrr0ViUYoToUjb5kjSEGf7Y83Q==}
+    engines: {node: '>=14.16'}
+    dependencies:
+      parse-ms: 3.0.0
     dev: true
 
   /printable-characters/1.0.42:
@@ -9458,7 +9644,6 @@ packages:
 
   /require-like/0.1.2:
     resolution: {integrity: sha512-oyrU88skkMtDdauHDuKVrgR+zuItqr6/c//FXzvmxRGMexSDc6hNvJInGW3LL46n+8b50RykrvwSUIIQH2LQ5A==}
-    dev: false
 
   /require-main-filename/2.0.0:
     resolution: {integrity: sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==}
@@ -9560,7 +9745,7 @@ packages:
     peerDependencies:
       rollup: ^2.0.0
     dependencies:
-      '@babel/code-frame': 7.16.7
+      '@babel/code-frame': 7.18.6
       jest-worker: 26.6.2
       rollup: 2.77.0
       serialize-javascript: 4.0.0
@@ -9572,7 +9757,7 @@ packages:
     peerDependencies:
       rollup: ^2.0.0
     dependencies:
-      '@babel/code-frame': 7.16.7
+      '@babel/code-frame': 7.18.6
       jest-worker: 26.6.2
       rollup: 2.78.1
       serialize-javascript: 4.0.0
@@ -10833,6 +11018,24 @@ packages:
       - supports-color
     dev: true
 
+  /vite-plugin-dts/1.4.1_vite@3.1.4:
+    resolution: {integrity: sha512-jo7E4ZeheD2o48oGiI3EygPbej7ZkGFHg3GVTt7Wuo6NgzThLvuzGGuduaFpnhJOGi1piDFsu6oui/wDKIIORQ==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      vite: '>=2.4.4'
+    dependencies:
+      '@microsoft/api-extractor': 7.23.0
+      '@rushstack/node-core-library': 3.45.4
+      chalk: 4.1.2
+      debug: 4.3.4
+      fast-glob: 3.2.11
+      fs-extra: 10.1.0
+      ts-morph: 14.0.0
+      vite: 3.1.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /vite-plugin-pwa/0.12.3_vite@3.0.9:
     resolution: {integrity: sha512-gmYdIVXpmBuNjzbJFPZFzxWYrX4lHqwMAlOtjmXBbxApiHjx9QPXKQPJjSpeTeosLKvVbNcKSAAhfxMda0QVNQ==}
     peerDependencies:
@@ -10876,7 +11079,7 @@ packages:
       '@babel/core': 7.18.9
       '@babel/preset-typescript': 7.18.6_@babel+core@7.18.9
       babel-preset-solid: 1.4.8_@babel+core@7.18.9
-      merge-anything: 5.0.2
+      merge-anything: 5.0.4
       solid-js: 1.5.2
       solid-refresh: 0.4.1_solid-js@1.5.2
       vite: 3.1.4
