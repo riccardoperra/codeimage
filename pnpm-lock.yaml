@@ -215,7 +215,7 @@ importers:
       '@codeimage/highlight': link:../../packages/highlight
       '@codeimage/locale': link:../../packages/locale
       '@codeimage/prisma-models': link:../../packages/prisma-models
-      '@codeimage/ui': link:../../packages/ui/dist/source
+      '@codeimage/ui': link:../../packages/ui
       '@codeimage/vanilla-extract': link:../../packages/vanilla-extract
       '@codemirror/autocomplete': 6.1.0
       '@codemirror/commands': 6.1.0
@@ -434,7 +434,7 @@ importers:
       '@lezer/highlight': 1.0.0
       '@primer/primitives': 7.9.0
     devDependencies:
-      '@codeimage/ui': link:../ui/dist/source
+      '@codeimage/ui': link:../ui
       '@codeimage/vanilla-extract': link:../vanilla-extract
       '@codemirror/lang-javascript': 6.1.0
       '@rollup/plugin-typescript': 8.4.0_gmqy3ybotxdm4nbudwrtswpjbi
@@ -11065,7 +11065,7 @@ packages:
       merge-anything: 5.0.2
       solid-js: 1.5.2
       solid-refresh: 0.4.1_solid-js@1.5.2
-      vite: 3.0.9
+      vite: 3.0.9_sass@1.52.1
     transitivePeerDependencies:
       - supports-color
     dev: true
