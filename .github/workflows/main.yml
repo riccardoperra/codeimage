@@ -1,7 +1,7 @@
 name: Main
 
 on:
-  pull_request_target:
+  pull_request:
     types: [ opened, synchronize, reopened ]
 
 env:
@@ -147,24 +147,18 @@ jobs:
           pnpm --filter='@codeimage/api' typecheck:ci
           pnpm --filter='@codeimage/app' typecheck
 
-
-  build-app:
-    name: Build App and Preview
+  build-app-dev:
+    name: Build App and Preview (Dev)
     environment: Preview
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        if: ${{ github.event_name != 'pull_request_target' }}
-        uses: actions/checkout@v2
-
       - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' }}
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: "refs/pull/${{ github.event.number }}/merge"
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -197,7 +191,6 @@ jobs:
           pnpm --filter=@codeimage/app build
 
       - uses: amondnet/vercel-action@v19
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -206,28 +199,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
-            codeimage-pr-{{PR_NUMBER}}.vercel.app
-
-      - name: Build vercel output (Next)
-        if: ${{ env.IS_NEXT_BRANCH == 'true' }}
-        run: |
-          cd apps/codeimage
-          ls
-          mkdir -p .vercel/output/static
-          echo '{"version": 3, "routes": [{ "handle": "filesystem" }, {"check": true, "src": "/(.*)", "dest": "/"}]}' > .vercel/output/config.json
-          mv dist/** .vercel/output/static
-      - uses: amondnet/vercel-action@v19
-        if: ${{ env.IS_NEXT_BRANCH == 'true' }}
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-args: '--prebuilt' #Optional
-          working-directory: apps/codeimage
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
-          alias-domains: | #Optional
-            codeimage-pr-{{PR_NUMBER}}.vercel.app
-            next.codeimage.dev
+            codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
 
 
   build-highlight-dev:
@@ -238,15 +210,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        if: ${{ github.event_name != 'pull_request_target' }}
-        uses: actions/checkout@v2
-
       - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' }}
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: "refs/pull/${{ github.event.number }}/merge"
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -272,7 +239,6 @@ jobs:
           pnpm --filter=@codeimage/highlight build:dev
 
       - uses: amondnet/vercel-action@v19
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -293,15 +259,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        if: ${{ github.event_name != 'pull_request_target' }}
-        uses: actions/checkout@v2
-
       - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' }}
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: "refs/pull/${{ github.event.number }}/merge"
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -327,7 +288,6 @@ jobs:
           pnpm --filter=@codeimage/ui build:dev
 
       - uses: amondnet/vercel-action@v19
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -367,7 +327,6 @@ jobs:
       - name: Build
         run: |
           pnpm --filter=@codeimage/api build:ts
-          pnpm prepare:api:deploy
 
       - name: Cache build
         uses: actions/cache@v3
@@ -389,6 +348,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_codeimage
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -408,7 +368,6 @@ jobs:
       MOCK_AUTH: false
       MOCK_AUTH_EMAIL: dev@example.it
       ALLOWED_ORIGINS: "*"
-
 
     steps:
       - uses: actions/checkout@v2
@@ -440,74 +399,6 @@ jobs:
 
       - name: Test
         run: pnpm --filter=@codeimage/api test:ci
-
-  deploy-next:
-    # Next branch only
-    if: ${{ github.head_ref  == 'next' }}
-    environment: Next
-    name: Deploy next
-    needs: [
-      lint,
-      build-packages,
-      build-api,
-      typecheck-packages,
-      be-test
-    ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Restore api build
-        uses: actions/cache@v3
-        with:
-          path: |
-            dist/api-bundle/**
-          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install Railway
-        run: pnpm i -g @railway/cli
-
-      - name: Run migrations
-        run: |
-          cd apps/api
-          pnpm exec prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Deploy
-        run: |
-          cd dist/api-bundle
-          rm -rf .gitignore
-          touch .gitignore
-          touch .dockerignore
-          ls -al
-          railway up
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-  #  deploy-prod:
-  #    # Production branch only
-  #    if: github.ref == 'refs/heads/main'
-  #    environment: Production
-  #    name: Deploy prod
-  #    needs: [ lint, build-app, build-api, typecheck-packages, typecheck-app, be-test ]
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - uses: actions/checkout@v2
-  #      - name: Execute tests
-  #        run: exit 0
 
 concurrency:
   group: main-${{ github.head_ref }}
