@@ -216,7 +216,7 @@ jobs:
     name: Build App and Preview (Dev)
     environment: Preview
     needs: [ build-packages ]
-    if: (${{ env.IS_NEXT_BRANCH == 'false' }} && ${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
     steps:
