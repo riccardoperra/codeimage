@@ -170,17 +170,11 @@ jobs:
         run: |
           pnpm --prefer-offline install
 
-      - name: Restore dist
-        uses: actions/cache@v3
-        with:
-          path: |
-            packages
-          key: packages-${{ github.run_id }}-${{ github.run_number }}
-
       - name: "Run prisma DB migrations"
         run: |
-          pnpm --filter=@codeimage/api exec prisma migrate deploy
-          pnpm --filter=@codeimage/api exec prisma generate
+          cd apps/api
+          pnpm exec prisma migrate deploy
+          pnpm exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Test
