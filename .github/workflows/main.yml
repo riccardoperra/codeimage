@@ -148,6 +148,7 @@ jobs:
           pnpm --filter='@codeimage/app' typecheck
 
 
+
   build-app:
     name: Build App and Deploy (Prod)
     environment: Production
@@ -212,7 +213,7 @@ jobs:
 
 
   build-app-dev:
-    name: Build App and Preview
+    name: Build App and Preview (Dev)
     environment: Preview
     needs: [ build-packages ]
     if: (${{ env.IS_NEXT_BRANCH == 'false' }} && ${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
