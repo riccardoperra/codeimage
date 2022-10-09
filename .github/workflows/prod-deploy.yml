@@ -14,8 +14,6 @@ jobs:
         node-version: [16.14.2]
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -34,8 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -44,10 +40,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
       - name: "[API] Generate Prisma Migration"
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
-          pnpm --filter=@codeimage/prisma-models
+          pnpm --filter=@codeimage/prisma-models build
 
       - name: Lint
         run: pnpm lint
@@ -58,8 +57,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -68,11 +65,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
 
       - name: "[API] Generate Prisma Migration"
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
-          pnpm --filter=@codeimage/prisma-models
+          pnpm --filter=@codeimage/prisma-models build
 
       - name: "Build packages"
         run: |
@@ -90,8 +90,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -100,11 +98,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
 
       - name: "[API] Generate Prisma Migration"
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
-          pnpm --filter=@codeimage/prisma-models
+          pnpm --filter=@codeimage/prisma-models build
 
       - name: Build
         run: |
@@ -130,6 +131,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_codeimage
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -152,8 +154,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -166,10 +166,11 @@ jobs:
         run: |
           pnpm --prefer-offline install
 
-      - name: "[API] Generate Prisma Migration"
+      - name: "Run prisma DB migrations"
         run: |
+          pnpm --filter=@codeimage/api exec prisma migrate deploy
           pnpm --filter=@codeimage/api exec prisma generate
-          pnpm --filter=@codeimage/prisma-models
+          pnpm --filter=@codeimage/prisma-models build
 
       - name: Test
         run: pnpm --filter=@codeimage/api test:ci
@@ -180,8 +181,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -190,6 +189,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
 
       - name: Restore packages
         uses: actions/cache@v3
@@ -213,14 +215,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
       - name: Restore packages
         uses: actions/cache@v3
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
 
       - name: Build @codeimage/ui/dev
         env:
@@ -244,14 +254,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
       - name: Restore packages
         uses: actions/cache@v3
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
 
       - name: Build @codeimage/highlight/dev
         env:
@@ -271,12 +289,10 @@ jobs:
   deploy-api:
     name: Build Api
     environment: Production
-    needs: [ install, lint, typecheck-packages, build-api ]
+    needs: [ install, lint, typecheck-packages, test-api, build-api ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -291,6 +307,10 @@ jobs:
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
 
       - name: Restore api build
         uses: actions/cache@v3
@@ -327,8 +347,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: 'next'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
