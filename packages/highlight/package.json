@@ -150,6 +150,10 @@
     "./moonlight": {
       "import": "./dist/lib/themes/moonlight/index.js",
       "types": "./dist/lib/themes/moonlight/index.d.ts"
+    },
+    "./monokaiPro": {
+      "import": "./dist/lib/themes/monokaiPro/index.js",
+      "types": "./dist/lib/themes/monokaiPro/index.d.ts"
     }
   },
   "typesVersions": {
@@ -222,6 +226,9 @@
       ],
       "moonlight": [
         "./dist/lib/themes/moonlight/index.d.ts"
+      ],
+      "monokaiPro": [
+        "./dist/lib/themes/monokaiPro/index.d.ts"
       ]
     }
   }

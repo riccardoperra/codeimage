@@ -12,6 +12,7 @@ export * from './materialLight';
 export * from './materialOcean';
 export * from './materialPalenight';
 export * from './materialVolcano';
+export * from './monokaiPro';
 export * from './moonlight';
 export * from './nightOwl';
 export * from './oneDark';
