@@ -350,7 +350,7 @@ jobs:
   deploy-app:
     name: Deploy @codeimage/app
     environment: Production
-    needs: [ "install", "lint", "typecheck-packages","build-packages", "deploy-api" ]
+    needs: [ install, lint, typecheck-packages, build-packages, deploy-api ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -362,6 +362,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
 
       - name: Restore packages
         uses: actions/cache@v3
@@ -382,14 +385,14 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v19
-        name: Build vercel output (Next)
+      - uses: amondnet/vercel-action@v25.1.0
+        name: Deploy
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
           vercel-args: '--prebuilt' #Optional
           working-directory: apps/codeimage
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} #Required
           alias-domains: | #Optional
             next.codeimage.dev
