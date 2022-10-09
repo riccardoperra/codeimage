@@ -1,6 +1,10 @@
 name: "Deploy (Production)"
 on:
   workflow_dispatch:
+    input:
+      deploy-backend:
+        type: boolean
+        description: Deploy backend to Railway
 
 concurrency:
   group: deploy-${{ github.head_ref }}
@@ -245,7 +249,7 @@ jobs:
           vercel-args: '--prebuilt --prod'
           working-directory: packages/ui/dev
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID}}
+          vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID }}
 
   deploy-highlight-package:
     name: Deploy @codeimage/highlight app
@@ -284,10 +288,10 @@ jobs:
           vercel-args: '--prebuilt --prod'
           working-directory: packages/highlight/dev
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID}}
+          vercel-project-id: ${{ secrets.VERCEL_HIGHLIGHT_DEV_PROJECT_ID }}
 
   deploy-api:
-    name: Build Api
+    name: Build and Deploy Api
     environment: Production
     needs: [ install, lint, typecheck-packages, test-api, build-api ]
     runs-on: ubuntu-latest
@@ -320,9 +324,11 @@ jobs:
           key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Install Railway
+        if: ${{ github.event.inputs.deploy-backend == 'true' }}
         run: pnpm i -g @railway/cli
 
-      - name: Run prod igrations
+      - name: Run prod migrations
+        if: ${{ github.event.inputs.deploy-backend == 'true' }}
         run: |
           pnpm --filter=@codeimage/api exec prisma migrate deploy
         env:
@@ -330,6 +336,7 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Railway Push to Deploy
+        if: ${{ github.event.inputs.deploy-backend == 'true' }}
         run: |
           cd dist/api-bundle
           rm -rf .gitignore
