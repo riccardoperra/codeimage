@@ -1,7 +1,7 @@
 name: "Deploy (Production)"
 on:
   workflow_dispatch:
-    input:
+    inputs:
       deploy-backend:
         type: boolean
         description: Deploy backend to Railway
