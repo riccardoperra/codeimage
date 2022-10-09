@@ -166,9 +166,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+
       - name: Install dependencies
         run: |
-          pnpm --prefer-offline install
+          pnpm install
 
       - name: "Run prisma DB migrations"
         run: |
