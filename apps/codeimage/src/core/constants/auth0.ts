@@ -12,7 +12,7 @@ function createAuth0(): Promise<Auth0Client> {
     createAuth0Client({
       domain: env.VITE_PUBLIC_AUTH0_DOMAIN,
       client_id: env.VITE_PUBLIC_AUTH0_CLIENT_ID,
-      redirect_uri: window.location.href,
+      redirect_uri: `${window.location.protocol}//${window.location.host}`,
       audience: env.VITE_PUBLIC_AUTH0_AUDIENCE,
       cacheLocation: 'localstorage',
     }),

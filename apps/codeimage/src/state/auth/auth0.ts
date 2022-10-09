@@ -14,20 +14,13 @@ export function $auth0State() {
     if (!auth0) return;
     if (queryParams.has('code') && queryParams.has('state')) {
       const data = await auth0.handleRedirectCallback().catch(() => null);
-      const isAuthenticated = await auth0.isAuthenticated();
-      setTimeout(async () => {
-        setState(await auth0.getUser());
-      });
-      if (isAuthenticated) {
-      }
-      history.replaceState(data?.appState ?? {}, document.title, '/');
+      setState(await auth0.getUser());
+      history.replaceState(data?.appState, '', window.location.origin);
       if (data) {
         // should always be null?
       }
     } else {
-      console.log('check');
       if (await auth0.isAuthenticated()) {
-        console.log('is auth', await auth0.getUser());
         setState(await auth0.getUser());
       }
     }
@@ -38,7 +31,9 @@ export function $auth0State() {
   }
 
   async function signOut() {
-    await auth0.logout();
+    await auth0.logout({
+      returnTo: `${window.location.protocol}//${window.location.host}`,
+    });
   }
 
   const getToken = () => {
