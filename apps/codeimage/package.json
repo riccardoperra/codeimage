@@ -21,7 +21,7 @@
     "@types/downloadjs": "^1.4.3",
     "cross-env": "^7.0.3",
     "https-localhost": "^4.7.1",
-    "msw": "^0.47.3",
+    "msw": "^0.47.4",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
     "sass": "^1.52.1",
