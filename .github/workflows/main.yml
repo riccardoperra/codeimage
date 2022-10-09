@@ -147,71 +147,6 @@ jobs:
           pnpm --filter='@codeimage/api' typecheck:ci
           pnpm --filter='@codeimage/app' typecheck
 
-
-
-  build-app:
-    name: Build App and Deploy (Prod)
-    environment: Production
-    needs: [ build-packages ]
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        if: ${{ github.event_name != 'pull_request_target' }}
-        uses: actions/checkout@v2
-
-      - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' }}
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Restore dist
-        uses: actions/cache@v3
-        with:
-          path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Build app
-        env:
-          VITE_PUBLIC_AUTH0_DOMAIN: ${{ secrets.VITE_PUBLIC_AUTH0_DOMAIN }}
-          VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
-          VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
-          UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
-          UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
-          ENABLE_VERCEL_BUILD: true
-        run: |
-          pnpm --filter=@codeimage/app build
-
-      - uses: amondnet/vercel-action@v19
-        name: Build vercel output (Next)
-        if: ${{ env.IS_NEXT_BRANCH == 'true' }}
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-args: '--prebuilt' #Optional
-          working-directory: apps/codeimage
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
-          alias-domains: | #Optional
-            next.codeimage.dev
-
-
   build-app-dev:
     name: Build App and Preview (Dev)
     environment: Preview
@@ -220,15 +155,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        if: ${{ github.event_name != 'pull_request_target' }}
-        uses: actions/checkout@v2
-
       - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' }}
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: "refs/pull/${{ github.event.number }}/merge"
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -261,7 +191,6 @@ jobs:
           pnpm --filter=@codeimage/app build
 
       - uses: amondnet/vercel-action@v19
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -270,7 +199,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
-            codeimage-pr-{{PR_NUMBER}}.vercel.app
+            codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
 
 
   build-highlight-dev:
@@ -281,15 +210,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        if: ${{ github.event_name != 'pull_request_target' }}
-        uses: actions/checkout@v2
-
       - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' }}
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: "refs/pull/${{ github.event.number }}/merge"
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -315,7 +239,6 @@ jobs:
           pnpm --filter=@codeimage/highlight build:dev
 
       - uses: amondnet/vercel-action@v19
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -336,15 +259,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        if: ${{ github.event_name != 'pull_request_target' }}
-        uses: actions/checkout@v2
-
       - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' }}
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: "refs/pull/${{ github.event.number }}/merge"
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -370,7 +288,6 @@ jobs:
           pnpm --filter=@codeimage/ui build:dev
 
       - uses: amondnet/vercel-action@v19
-        if: ${{ env.IS_NEXT_BRANCH == 'false' }}
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -410,7 +327,6 @@ jobs:
       - name: Build
         run: |
           pnpm --filter=@codeimage/api build:ts
-          pnpm prepare:api:deploy
 
       - name: Cache build
         uses: actions/cache@v3
@@ -452,7 +368,6 @@ jobs:
       MOCK_AUTH_EMAIL: dev@example.it
       ALLOWED_ORIGINS: "*"
 
-
     steps:
       - uses: actions/checkout@v2
       - uses: pnpm/action-setup@v2.2.2
@@ -483,74 +398,6 @@ jobs:
 
       - name: Test
         run: pnpm --filter=@codeimage/api test:ci
-
-  deploy-next:
-    # Next branch only
-    if: ${{ github.head_ref  == 'next' }}
-    environment: Production
-    name: Deploy next
-    needs: [
-      lint,
-      build-packages,
-      build-api,
-      typecheck-packages,
-      be-test
-    ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Restore api build
-        uses: actions/cache@v3
-        with:
-          path: |
-            dist/api-bundle/**
-          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install Railway
-        run: pnpm i -g @railway/cli
-
-      - name: Run migrations
-        run: |
-          cd apps/api
-          pnpm exec prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Deploy
-        run: |
-          cd dist/api-bundle
-          rm -rf .gitignore
-          touch .gitignore
-          touch .dockerignore
-          ls -al
-          railway up
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-  #  deploy-prod:
-  #    # Production branch only
-  #    if: github.ref == 'refs/heads/main'
-  #    environment: Production
-  #    name: Deploy prod
-  #    needs: [ lint, build-app, build-api, typecheck-packages, typecheck-app, be-test ]
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - uses: actions/checkout@v2
-  #      - name: Execute tests
-  #        run: exit 0
 
 concurrency:
   group: main-${{ github.head_ref }}
