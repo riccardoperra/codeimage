@@ -170,6 +170,13 @@ jobs:
         run: |
           pnpm --prefer-offline install
 
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: |
+            packages
+          key: packages-${{ github.run_id }}-${{ github.run_number }}
+
       - name: "Run prisma DB migrations"
         run: |
           pnpm --filter=@codeimage/api exec prisma migrate deploy
@@ -215,7 +222,7 @@ jobs:
   deploy-ui-package:
     name: Deploy @codeimage/ui app
     environment: Production
-    needs: [ "install", "lint", "typecheck-packages","build-packages" ]
+    needs: [ "install", "lint", "build-packages" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -246,15 +253,16 @@ jobs:
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-args: '--prebuilt --prod'
           working-directory: packages/ui/dev
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID }}
+          vercel-args: '--prebuilt --prod'
+
 
   deploy-highlight-package:
     name: Deploy @codeimage/highlight app
     environment: Production
-    needs: [ "install", "lint", "typecheck-packages","build-packages" ]
+    needs: [ "install", "lint", "build-packages" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -285,10 +293,10 @@ jobs:
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-args: '--prebuilt --prod'
           working-directory: packages/highlight/dev
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_HIGHLIGHT_DEV_PROJECT_ID }}
+          vercel-args: '--prebuilt --prod'
 
   deploy-api:
     name: Build and Deploy Api
