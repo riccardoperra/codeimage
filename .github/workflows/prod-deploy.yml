@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
       - name: Use Node.js ${{ matrix.node-version }}
@@ -36,19 +36,19 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm' 
+          cache: 'pnpm'
       - name: "[API] Generate Prisma Migration"
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
           pnpm --filter=@codeimage/prisma-models
-      
+
       - name: Lint
         run: pnpm lint
 
@@ -60,7 +60,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
       - name: Use Node.js ${{ matrix.node-version }}
@@ -92,7 +92,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
       - name: Use Node.js ${{ matrix.node-version }}
@@ -154,7 +154,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
       - name: Use Node.js ${{ matrix.node-version }}
@@ -182,7 +182,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
       - name: Use Node.js ${{ matrix.node-version }}
@@ -205,7 +205,7 @@ jobs:
         run: |
           pnpm --filter='@codeimage/api' typecheck:ci
           pnpm --filter='@codeimage/app' typecheck
-      
+
   deploy-ui-package:
     name: Deploy @codeimage/ui app
     environment: Production
@@ -215,7 +215,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
       - name: Restore packages
         uses: actions/cache@v3
         with:
@@ -246,7 +246,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
       - name: Restore packages
         uses: actions/cache@v3
         with:
@@ -277,7 +277,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
       - name: Use Node.js ${{ matrix.node-version }}
@@ -287,10 +287,10 @@ jobs:
           cache: 'pnpm'
 
       - name: Restore packages
-          uses: actions/cache@v3
-          with:
-            path: packages
-            key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Restore api build
         uses: actions/cache@v3
@@ -329,7 +329,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'next'
-      - uses: pnpm/action-setup@v2.2.2  
+      - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
       - name: Use Node.js ${{ matrix.node-version }}
