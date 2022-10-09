@@ -156,7 +156,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        if: ${{ github.event_name != 'pull_request_target' }}
+        uses: actions/checkout@v2
+
+      - name: Checkout PR
+        if: ${{ github.event_name == 'pull_request_target' }}
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -230,7 +238,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        if: ${{ github.event_name != 'pull_request_target' }}
+        uses: actions/checkout@v2
+
+      - name: Checkout PR
+        if: ${{ github.event_name == 'pull_request_target' }}
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -277,7 +293,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        if: ${{ github.event_name != 'pull_request_target' }}
+        uses: actions/checkout@v2
+
+      - name: Checkout PR
+        if: ${{ github.event_name == 'pull_request_target' }}
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
