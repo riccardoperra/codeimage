@@ -150,6 +150,10 @@
     "./moonlight": {
       "import": "./dist/lib/themes/moonlight/index.js",
       "types": "./dist/lib/themes/moonlight/index.d.ts"
+    },
+    "./vitesseDark": {
+      "import": "./dist/lib/themes/vitesseDark/index.js",
+      "types": "./dist/lib/themes/vitesseDark/index.d.ts"
     }
   },
   "typesVersions": {
@@ -222,6 +226,9 @@
       ],
       "moonlight": [
         "./dist/lib/themes/moonlight/index.d.ts"
+      ],
+      "vitesseDark": [
+        "./dist/lib/themes/vitesseDark/index.d.ts"
       ]
     }
   }
