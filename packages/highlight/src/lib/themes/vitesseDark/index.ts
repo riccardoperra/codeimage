@@ -7,7 +7,7 @@ export const vitesseDarkTheme = createTheme({
   properties: {
     darkMode: true,
     label: 'Vitesse Dark',
-    previewBackground: `#0e0e0e`,
+    previewBackground: `linear-gradient(0deg, #6394bf, #a1b567)`,
     terminal: {
       main: palette.foreground,
       text: palette.string,
