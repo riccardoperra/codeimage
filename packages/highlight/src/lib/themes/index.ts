@@ -20,4 +20,5 @@ export * from './panda';
 export * from './poimandres';
 export * from './shadeOfPurple';
 export * from './synthwave84';
+export * from './vitesseDark';
 export * from './vsCodeDark';

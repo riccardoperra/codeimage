@@ -154,6 +154,10 @@
     "./monokaiPro": {
       "import": "./dist/lib/themes/monokaiPro/index.js",
       "types": "./dist/lib/themes/monokaiPro/index.d.ts"
+    },
+    "./vitesseDark": {
+      "import": "./dist/lib/themes/vitesseDark/index.js",
+      "types": "./dist/lib/themes/vitesseDark/index.d.ts"
     }
   },
   "typesVersions": {
@@ -229,6 +233,9 @@
       ],
       "monokaiPro": [
         "./dist/lib/themes/monokaiPro/index.d.ts"
+      ],
+      "vitesseDark": [
+        "./dist/lib/themes/vitesseDark/index.d.ts"
       ]
     }
   }

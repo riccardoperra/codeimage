@@ -49,10 +49,14 @@ export const key = style([
     selectors: {
       ...withThemeMode({
         light: {
-          [backgroundColorVar]: '#f3f3f3',
+          vars: {
+            [backgroundColorVar]: '#f3f3f3',
+          },
         },
         dark: {
-          [backgroundColorVar]: '#555555',
+          vars: {
+            [backgroundColorVar]: '#555555',
+          },
         },
       }),
     },
