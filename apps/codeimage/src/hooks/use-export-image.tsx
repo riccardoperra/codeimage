@@ -11,7 +11,20 @@ import {createAsyncAction} from '@core/hooks/async-action';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {isIOS} from '@solid-primitives/platform';
 import download from 'downloadjs';
+import {html} from './parse-solid-html';
+import satori, {init} from 'satori/wasm';
 import {Resource} from 'solid-js';
+import initYoga from 'yoga-wasm-web';
+import yoga from 'yoga-wasm-web/dist/yoga.wasm?url';
+
+let getYoga;
+fetch(yoga)
+  .then(res => res.arrayBuffer())
+  .then(x => {
+    getYoga = initYoga(x);
+  });
+
+// const getYoga = initYoga(new Buffer.from(yoga));
 
 export const enum ExportMode {
   export = 'export',
@@ -183,24 +196,61 @@ export async function exportImage(
         return result;
       }
       case ExportMode.newTab: {
+        const yoga = await getYoga;
+        init(yoga);
         const link = document.createElement('a');
-        return toBlob(ref, toImageOptions)
-          .then(blob => {
-            return [blob, window.URL.createObjectURL(blob as Blob)] as [
-              Blob,
-              string,
-            ];
-          })
-          .then(([blob, url]) => {
-            if (!isIOS) {
-              link.target = '_blank';
-            }
-            link.href = url;
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            return blob as Blob;
-          });
+        await applyInline(clonedRef, true);
+
+        // const x = (
+        //   <div
+        //     style={{
+        //       display: 'flex',
+        //       width: '300px',
+        //       height: '200px',
+        //       '--test-height': '32px',
+        //       '--test-color': 'var(--test-1, --test-height)',
+        //       color: 'var(--test-color)',
+        //       height: 'var(--test-height)',
+        //     }}
+        //   >
+        //     Ciao
+        //   </div>
+        // ) as HTMLElement;
+
+        const result = html(clonedRef.outerHTML);
+        console.log(result);
+
+        const inter = await fetch('/assets/ttf/JetBrainsMono-Medium.ttf', {
+          headers: {
+            // Make sure it returns TTF.
+            'User-Agent':
+              'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; de-at) AppleWebKit/533.21.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.1',
+          },
+        }).then(res => {
+          return res!.arrayBuffer();
+        });
+
+        const svg = await satori(result, {
+          width: ref.clientWidth,
+          height: ref.clientHeight,
+          fonts: [
+            {
+              name: 'Jetbrains Mono',
+              data: inter,
+            },
+          ],
+        }).catch(e => console.log(e));
+
+        const blob = new Blob([svg], {type: 'image/svg+xml'});
+        const url = URL.createObjectURL(blob);
+        if (!isIOS) {
+          link.target = '_blank';
+        }
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        return blob as Blob;
       }
       case ExportMode.getBlob: {
         const blob = await toBlob(ref, toImageOptions);
@@ -228,4 +278,79 @@ export async function exportImage(
       destroy();
       throw e;
     });
+}
+
+function getMatchedCSSRules(element) {
+  var i,
+    len,
+    matching = [],
+    sheets = document.styleSheets;
+
+  function loopRules(rules) {
+    var i, len, rule;
+
+    for (i = 0, len = rules.length; i < len; i++) {
+      rule = rules[i];
+      if (rule instanceof CSSMediaRule) {
+        if (window.matchMedia(rule.conditionText).matches) {
+          loopRules(rule.cssRules);
+        }
+      } else if (rule instanceof CSSStyleRule) {
+        if (element.matches(rule.selectorText)) {
+          matching.push(rule);
+        }
+      }
+    }
+  }
+
+  for (i = 0, len = sheets.length; i < len; i++) {
+    loopRules(sheets[i].cssRules);
+  }
+
+  return matching;
+}
+
+function applyInline(element, recursive = true) {
+  if (!element) {
+    throw new Error('No element specified.');
+  }
+
+  const matches = matchRules(element);
+
+  // we need to preserve any pre-existing inline styles.
+  var srcRules = document.createElement(element.tagName).style;
+  srcRules.cssText = element.style.cssText;
+
+  matches.forEach(rule => {
+    for (var prop of rule.style) {
+      let val =
+        srcRules.getPropertyValue(prop) || rule.style.getPropertyValue(prop);
+      let priority = rule.style.getPropertyPriority(prop);
+
+      element.style.setProperty(prop, val, priority);
+    }
+  });
+
+  if (recursive && element.children) {
+    [...element.children].forEach(child => {
+      applyInline(child, recursive);
+    });
+  }
+}
+
+function matchRules(el, sheets) {
+  sheets = sheets || document.styleSheets;
+  var ret = [];
+
+  for (var i in sheets) {
+    if (sheets.hasOwnProperty(i)) {
+      var rules = sheets[i].rules || sheets[i].cssRules;
+      for (var r in rules) {
+        if (el.matches(rules[r].selectorText)) {
+          ret.push(rules[r]);
+        }
+      }
+    }
+  }
+  return ret;
 }

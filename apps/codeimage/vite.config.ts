@@ -1,6 +1,7 @@
 import {defineConfig, Plugin} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
+import wasm from 'vite-plugin-wasm';
 // import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
@@ -56,6 +57,7 @@ export default defineConfig(({mode}) => ({
     solidPlugin(),
     // VitePWA(pwaOptions),
     tsconfigPaths(),
+    wasm(),
     {
       name: 'html-inject-umami',
       transformIndexHtml(html) {
@@ -115,5 +117,10 @@ export default defineConfig(({mode}) => ({
     polyfillDynamicImport: false,
     cssCodeSplit: true,
     reportCompressedSize: true,
+  },
+  optimizeDeps: {
+    // Add both @codemirror/state and @codemirror/view to included deps to optimize
+    include: ['yoga-layout-prebuilt', 'satori'],
+    exclude: ['yoga-wasm-web/dist'],
   },
 }));
