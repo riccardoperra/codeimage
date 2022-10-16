@@ -50,14 +50,15 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
 
   return (
     <div
-      // @ts-expect-error Update solid-dnd
-      use:sortable
       use:exportExclude={props.exportExclude}
       class={styles.tab({
         accent: props.accentMode,
         active: props.active,
       })}
-      ref={ref}
+      ref={el => {
+        ref = el;
+        sortable(ref);
+      }}
       data-active-drag={sortable.isActiveDraggable}
       data-host-index={props.index}
       data-accent-visible={props.accentMode}
