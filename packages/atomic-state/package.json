@@ -5,6 +5,7 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
+  "type": "module",
   "files": [
     "dist"
   ],
@@ -35,13 +36,13 @@
     "solid-js": "^1.5.2"
   },
   "devDependencies": {
-    "@types/node": "^18.7.13",
-    "rollup": "^2.78.1",
+    "@types/node": "^18.11.0",
+    "rollup": "^2.79.1",
     "rollup-preset-solid": "^1.4.0",
-    "rxjs": "^7.5.6",
-    "solid-js": "^1.5.2",
-    "vite": "^3.0.9",
-    "vite-plugin-dts": "^1.4.1",
-    "vite-plugin-solid": "^2.3.0"
+    "rxjs": "^7.5.7",
+    "solid-js": "^1.5.7",
+    "vite": "^3.1.8",
+    "vite-plugin-dts": "^1.6.6",
+    "vite-plugin-solid": "^2.3.9"
   }
 }

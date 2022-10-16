@@ -28,28 +28,28 @@
   },
   "dependencies": {
     "@codeimage/highlight": "workspace:*",
-    "@codemirror/autocomplete": "^6.1.0",
-    "@codemirror/commands": "^6.1.0",
+    "@codemirror/autocomplete": "^6.3.0",
+    "@codemirror/commands": "^6.1.2",
     "@codemirror/lang-cpp": "^6.0.1",
     "@codemirror/lang-css": "^6.0.0",
-    "@codemirror/lang-html": "^6.1.0",
+    "@codemirror/lang-html": "^6.1.2",
     "@codemirror/lang-java": "^6.0.0",
-    "@codemirror/lang-javascript": "^6.0.2",
+    "@codemirror/lang-javascript": "^6.1.0",
     "@codemirror/lang-json": "^6.0.0",
-    "@codemirror/lang-markdown": "^6.0.1",
+    "@codemirror/lang-markdown": "^6.0.2",
     "@codemirror/lang-php": "^6.0.0",
-    "@codemirror/lang-python": "^6.0.1",
+    "@codemirror/lang-python": "^6.0.2",
     "@codemirror/lang-rust": "^6.0.0",
     "@codemirror/lang-sql": "^6.3.0",
     "@codemirror/lang-xml": "^6.0.0",
     "@codemirror/language": "^6.2.1",
     "@codemirror/legacy-modes": "^6.1.0",
     "@codemirror/lint": "^6.0.0",
-    "@codemirror/search": "^6.2.0",
-    "@codemirror/state": "^6.1.1",
-    "@codemirror/view": "^6.2.1",
-    "material-icon-theme": "^4.20.0",
-    "solid-js": "^1.5.2"
+    "@codemirror/search": "^6.2.1",
+    "@codemirror/state": "^6.1.2",
+    "@codemirror/view": "^6.3.1",
+    "material-icon-theme": "^4.21.0",
+    "solid-js": "^1.5.7"
   },
   "peerDependencies": {
     "@codeimage/highlight": "workspace:*",
@@ -61,8 +61,8 @@
   "devDependencies": {
     "rimraf": "^3.0.2",
     "typescript": "^4.8.4",
-    "vite": "^3.0.9",
-    "vite-plugin-dts": "^1.4.1",
-    "vite-plugin-solid": "^2.3.0"
+    "vite": "^3.1.8",
+    "vite-plugin-dts": "^1.6.6",
+    "vite-plugin-solid": "^2.3.9"
   }
 }
