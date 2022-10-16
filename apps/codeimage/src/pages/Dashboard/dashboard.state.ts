@@ -71,7 +71,7 @@ function makeDashboardState(authState = getAuth0State()) {
         },
         editors: [
           {
-            code: `from server: ${appEnvironment.defaultState.editor.code}`,
+            code: appEnvironment.defaultState.editor.code,
             languageId: appEnvironment.defaultState.editor.languageId,
             tabName: 'index.tsx',
           },

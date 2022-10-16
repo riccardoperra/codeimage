@@ -1,15 +1,16 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {createTrackObserver} from '@codeimage/atomic-state';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {toast} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
 import {useNavigate} from '@solidjs/router';
 import {
+  catchError,
   combineLatest,
   debounceTime,
   EMPTY,
@@ -30,7 +31,7 @@ import {
   Resource,
   untrack,
 } from 'solid-js';
-import {reconcile, unwrap} from 'solid-js/store';
+import {unwrap} from 'solid-js/store';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
 
@@ -43,7 +44,6 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
   const [activeWorkspace, setActiveWorkspace] = createSignal<
     ApiTypes.GetProjectByIdApi['response'] | null
   >();
-  const [tracked, untrackCallback] = createTrackObserver();
   const authState = getAuth0State();
   const frameStore = getFrameState();
   const terminalStore = getTerminalState();
@@ -155,7 +155,6 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
   function initRemoteDbSync() {
     const subscription = onChange$
       .pipe(
-        filter(tracked),
         debounceTime(150),
         filter(() => authState.loggedIn()),
         tap(() => setRemoteSync(true)),
@@ -175,63 +174,15 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
               body: dataToSave,
               params: {id: workspace.id},
             }),
+          ).pipe(
+            catchError(() => {
+              toast.error('An error occurred while saving');
+              return EMPTY;
+            }),
           );
         }),
       )
-      .subscribe(updatedSnippet => {
-        untrackCallback(() => {
-          const activeEditorIndex = editorStore.state.editors.findIndex(
-            ({id}) => id === editorStore.state.activeEditorId,
-          );
-
-          frameStore.setStore(state => ({
-            ...state,
-            visible: updatedSnippet.frame.visible,
-            opacity: updatedSnippet.frame.opacity,
-            radius: updatedSnippet.frame.radius ?? state.radius,
-            padding: updatedSnippet.frame.padding,
-            background: updatedSnippet.frame.background ?? state.background,
-          }));
-          editorStore.setState(
-            reconcile(
-              {
-                activeEditorId:
-                  updatedSnippet.editorTabs[activeEditorIndex].id ??
-                  updatedSnippet.editorTabs[0].id,
-                options: {
-                  focused: true,
-                  themeId: updatedSnippet.editorOptions.themeId,
-                  showLineNumbers: updatedSnippet.editorOptions.showLineNumbers,
-                  fontId: updatedSnippet.editorOptions.fontId,
-                  fontWeight: updatedSnippet.editorOptions.fontWeight,
-                },
-                editors: updatedSnippet.editorTabs.map(editor => ({
-                  code: editor.code,
-                  id: editor.id,
-                  tab: {
-                    tabName: editor.tabName,
-                  },
-                  languageId: editor.languageId,
-                })),
-              },
-              {merge: true},
-            ),
-          );
-          terminalStore.setState(state => ({
-            ...state,
-            type: updatedSnippet.terminal.type,
-            opacity: updatedSnippet.terminal.opacity,
-            showWatermark: updatedSnippet.terminal.showWatermark ?? false,
-            showHeader: updatedSnippet.terminal.showHeader,
-            background: updatedSnippet.terminal.background ?? state.background,
-            showGlassReflection: updatedSnippet.terminal.showGlassReflection,
-            alternativeTheme: updatedSnippet.terminal.alternativeTheme,
-            accentVisible: updatedSnippet.terminal.accentVisible,
-            textColor: updatedSnippet.terminal.textColor ?? state.textColor,
-            shadow: updatedSnippet.terminal.shadow,
-          }));
-        });
-      });
+      .subscribe();
 
     return onCleanup(() => {
       const workspace = untrack(activeWorkspace);
