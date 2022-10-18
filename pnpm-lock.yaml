@@ -526,7 +526,7 @@ importers:
       rollup: ^2.79.1
       rollup-plugin-terser: 7.0.2
       rollup-preset-solid: ^1.4.0
-      solid-headless: ^0.13.0
+      solid-headless: ^0.11.1
       solid-js: ^1.5.7
       solid-toast: ^0.3.5
       solid-use: ^0.5.0
@@ -564,7 +564,7 @@ importers:
       '@vanilla-extract/sprinkles': 1.5.0_@vanilla-extract+css@1.9.1
       clsx: 1.2.1
       csstype: 3.1.1
-      solid-headless: 0.13.0_solid-js@1.5.7
+      solid-headless: 0.11.1_solid-js@1.5.7
       solid-toast: 0.3.5_solid-js@1.5.7
       solid-use: 0.5.0_solid-js@1.5.7
     devDependencies:
@@ -11232,6 +11232,16 @@ packages:
       '@codemirror/view': 6.3.1
       solid-js: 1.5.7
 
+  /solid-headless/0.11.1_solid-js@1.5.7:
+    resolution: {integrity: sha512-8u2G0FYR8W9dAM3GTLgfRYg6mVbb2urQf4w3eC8qlcziTsig1NBbiXYvOmdtvmthsjhlJNKOmBNn7l17TT0MxQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      solid-js: ^1.2
+    dependencies:
+      solid-js: 1.5.7
+      solid-use: 0.4.3_solid-js@1.5.7
+    dev: false
+
   /solid-headless/0.13.0_solid-js@1.5.7:
     resolution: {integrity: sha512-N118iPl7W5lyug4K+4c0cwM8YR2yEVJ/3H4wq6tVijATHfXfLnB1ACFI5GGHSXlwu70PUzaGSKwcVqLlloUMyA==}
     engines: {node: '>=10'}
@@ -11262,6 +11272,15 @@ packages:
     resolution: {integrity: sha512-m4PX2ESex9nSwt9d9XTr3r+Kp3vjSoViDWj3gj6Xxgz21IKYODMKhACXurlZCztz56NQBnfX2m4es4I8JgXGQQ==}
     peerDependencies:
       solid-js: ^1.5.4
+    dependencies:
+      solid-js: 1.5.7
+    dev: false
+
+  /solid-use/0.4.3_solid-js@1.5.7:
+    resolution: {integrity: sha512-ap+PoOTIc6nOa3KbSpCX35kOs08PJZ7EPhjXMpyhJmQXa78fETaBTU0R4Ki+UDkbWGMNCEPXfD7GnsS25mYGJw==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      solid-js: ^1.2
     dependencies:
       solid-js: 1.5.7
     dev: false
