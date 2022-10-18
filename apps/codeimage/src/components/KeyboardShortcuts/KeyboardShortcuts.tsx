@@ -108,7 +108,7 @@ export function KeyboardShortcuts(): JSXElement {
   });
 
   return (
-    <Popover>
+    <Popover defaultOpen={false}>
       <>
         <PopoverButton
           ref={floating.setReference}

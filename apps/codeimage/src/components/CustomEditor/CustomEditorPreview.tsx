@@ -87,7 +87,7 @@ export default function CustomEditorPreview(
   const reconfigure = createExtension(extensions());
 
   onMount(() => {
-    setEditorRef(editorEl);
+    setEditorRef(() => editorEl);
     import('./fix-cm-aria-roles-lighthouse').then(m => {
       if (!owner) return;
       runWithOwner(owner, () => m.fixCodeMirrorAriaRole(() => editorEl));
