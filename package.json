@@ -46,6 +46,8 @@
     "build:prod": "pnpm libs:build && pnpm --filter=@codeimage/app build",
     "changeset:pr": "changeset version && tsx scripts/sync-package.ts",
     "pre-commit": "lint-staged --relative",
+    "patch-solid-exports": "cross-env APPLY_PATCH=true tsx scripts/patch-solid-exports.ts",
+    "unpatch-solid-exports": "cross-env APPLY_PATCH=false tsx scripts/patch-solid-exports.ts",
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c .eslintrc.js --fix",
     "prepare:env": "tsx ./scripts/make-env.ts",
