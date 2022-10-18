@@ -22,11 +22,11 @@ export const createFloatingPortalNode = (
   onMount(() => {
     const rootNode = document.getElementById(propsWithDefault.id);
     if (rootNode) {
-      setPortal(rootNode);
+      setPortal(() => rootNode);
     } else {
       const element = document.createElement('div');
       element.id = propsWithDefault.id;
-      setPortal(element);
+      setPortal(() => element);
     }
   });
   return portal;
