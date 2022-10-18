@@ -1,10 +1,8 @@
-// import {prismaModelJsonSchema} from '@codeimage/prisma-models';
 import fastifySwagger from '@fastify/swagger';
 import fp from 'fastify-plugin';
 
 export default fp(async fastify => {
   fastify.register(fastifySwagger, {
-    routePrefix: '/documentation',
     swagger: {
       info: {
         title: 'CodeImage swagger',
@@ -16,11 +14,5 @@ export default fp(async fastify => {
       consumes: ['application/json'],
       produces: ['application/json'],
     },
-    uiConfig: {
-      docExpansion: 'full',
-      deepLinking: false,
-    },
-    staticCSP: true,
-    exposeRoute: true,
   });
 });

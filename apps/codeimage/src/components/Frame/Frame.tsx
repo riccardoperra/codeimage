@@ -1,9 +1,9 @@
 import {Box, FadeInOutTransition} from '@codeimage/ui';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {ParentComponent, Show} from 'solid-js';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {ParentComponent, Show} from 'solid-js';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;
@@ -63,7 +63,10 @@ export const Frame: ParentComponent<{
       </div>
 
       <FadeInOutTransition show={resizing()}>
-        <Box class={styles.resizeLine} use:exportExclude={true}>
+        <Box
+          class={styles.resizeLine}
+          ref={el => exportExclude(el, () => true)}
+        >
           <Box class={styles.resizeBadge}>{roundedWidth()}</Box>
           <hr class={styles.resizeLineDivider} />
         </Box>

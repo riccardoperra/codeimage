@@ -167,7 +167,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     });
 
   onMount(() => {
-    setRef(editorEl);
+    setRef(() => editorEl);
     import('./fix-cm-aria-roles-lighthouse').then(m => {
       if (!owner) return;
       runWithOwner(owner, () => m.fixCodeMirrorAriaRole(() => editorEl));

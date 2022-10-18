@@ -23,7 +23,7 @@ export function PortalHostContext(props: PropsWithChildren) {
 
   onMount(() => {
     const el = document.querySelector('#portal-host') as HTMLElement | null;
-    setRef(el);
+    setRef(() => el);
   });
 
   return (

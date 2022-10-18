@@ -26,8 +26,8 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
-    "@solid-primitives/i18n": "^1.1.0",
-    "solid-js": "^1.5.2"
+    "@solid-primitives/i18n": "^1.1.1",
+    "solid-js": "^1.5.7"
   },
   "peerDependencies": {
     "solid-js": "^1.5.2"
@@ -35,8 +35,8 @@
   "devDependencies": {
     "rimraf": "^3.0.2",
     "typescript": "^4.8.4",
-    "vite": "^3.0.9",
-    "vite-plugin-dts": "^1.4.1",
-    "vite-plugin-solid": "^2.3.0"
+    "vite": "^3.1.8",
+    "vite-plugin-dts": "^1.6.6",
+    "vite-plugin-solid": "^2.3.9"
   }
 }

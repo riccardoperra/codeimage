@@ -53,14 +53,14 @@
     }
   ],
   "devDependencies": {
-    "@types/node": "^18.7.13",
+    "@types/node": "^18.11.0",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
     "tslib": "^2.4.0",
     "typescript": "^4.8.4",
-    "vite": "^3.0.9",
-    "vite-plugin-dts": "^1.4.1"
+    "vite": "^3.1.8",
+    "vite-plugin-dts": "^1.6.6"
   },
   "repository": {
     "type": "git",
@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@solid-primitives/platform": "^0.0.101",
-    "solid-js": "^1.5.2"
+    "solid-js": "^1.5.7"
   },
   "peerDependencies": {
     "@solid-primitives/platform": "^0.0.101",
