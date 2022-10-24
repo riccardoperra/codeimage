@@ -368,7 +368,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   },
   {
     id: 'plain-text',
-    label: 'Text',
+    label: 'Plain Text',
     color: '#e38c00',
     plugin: () => Promise.resolve([]),
     icons: [
