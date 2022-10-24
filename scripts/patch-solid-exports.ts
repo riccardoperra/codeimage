@@ -20,7 +20,7 @@ if (applyPatch) {
   console.log('Apply patch');
   file.exports = {
     '.': {
-      default: './dist/esm/index.jsx',
+      default: './dist/esm/index.js',
       solid: './dist/source/index.jsx',
     },
   };
