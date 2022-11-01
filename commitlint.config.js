@@ -16,6 +16,7 @@ module.exports = {
         'release',
         'vanilla-extract',
         'api',
+        'website',
       ],
     ],
   },

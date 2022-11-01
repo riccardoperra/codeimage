@@ -1,6 +1,7 @@
-import * as styles from './Header.css';
-import {Box, TextField, Button} from '@codeimage/ui';
+import {Box, Button} from '@codeimage/ui';
+import {A} from '@solidjs/router';
 import {CodeImageLogo} from '../CodeImageLogo/CodeImageLogo';
+import * as styles from './Header.css';
 
 export function Header() {
   return (
@@ -9,8 +10,15 @@ export function Header() {
         <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={5}>
           <CodeImageLogo width={'140px'} />
           <Box marginLeft={'auto'}>
-            <Button variant={'solid'} theme={'primary'}>
-              Start coding
+            <Button
+              as={A}
+              link={true}
+              href="https://next.codeimage.dev"
+              variant={'solid'}
+              theme={'primary'}
+              pill
+            >
+              Getting started
             </Button>
           </Box>
         </Box>

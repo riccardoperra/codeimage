@@ -9,10 +9,12 @@ export const [toolbarTheme, toolbarVars] = createTheme({
 export const header = style([
   toolbarTheme,
   {
-    padding: `0px ${themeVars.spacing['3']}`,
+    padding: `${themeVars.spacing[3]} ${themeVars.spacing['3']}`,
     display: 'flex',
+    position: 'fixed',
+    width: '100%',
     height: toolbarVars.toolbarHeight,
-    background: themeVars.dynamicColors.background,
+    zIndex: themeVars.zIndex['50'],
   },
 ]);
 
