@@ -22,7 +22,7 @@ const externals = [
   '@vanilla-extract/sprinkles/createRuntimeSprinkles',
 ];
 
-let bundleSource = false;
+const cssFileFilter = /\.css\.(js|mjs|jsx|ts|tsx)(\?used)?$/;
 
 const solidConfig = withSolid({
   input: {
@@ -30,7 +30,7 @@ const solidConfig = withSolid({
     'lightTheme.css': './src/lib/themes/light-theme.css.ts',
     'darkTheme.css': './src/lib/themes/dark-theme.css.ts',
   },
-  treeshake: 'smallest',
+  treeshake: 'recommended',
   targets: ['esm', 'cjs'],
   external: externals,
   output: [buildOutput('esm'), buildOutput('cjs')],
@@ -38,11 +38,7 @@ const solidConfig = withSolid({
     vanillaExtractPlugin(),
     {
       name: 'generate-vanilla-extract-source',
-      async writeBundle() {
-        if (bundleSource) {
-          return;
-        }
-        bundleSource = true;
+      async closeBundle() {
         const build = await rollup({
           input: {
             index: 'dist/source/index.jsx',
@@ -55,12 +51,24 @@ const solidConfig = withSolid({
             typescript({tsconfig: './tsconfig.source.json'}),
             preserveJsxImports(),
             (() => {
-              const emittedFiles = new Map();
-              const cssFileFilter = /\.css\.(js|mjs|jsx|ts|tsx)(\?used)?$/;
+              let themes: Record<string, string> = {};
               return {
                 name: 'transfer-vanilla-extract-source',
-                buildStart() {
-                  emittedFiles.clear();
+                options(options) {
+                  if (options.input) {
+                    if (typeof options.input === 'object') {
+                      themes = Object.entries(options.input).reduce(
+                        (acc, [key, value]) => {
+                          if (value.endsWith('.css.js')) {
+                            acc[key] = value;
+                          }
+                          return acc;
+                        },
+                        {} as Record<string, string>,
+                      );
+                    }
+                  }
+                  return options;
                 },
                 async renderChunk(code, info) {
                   const id = info.facadeModuleId ?? '';
@@ -70,34 +78,52 @@ const solidConfig = withSolid({
                   const index = id.indexOf('?');
                   const filePath = index === -1 ? id : id.substring(0, index);
                   const resolvedPath = filePath.split(path.sep).join('/');
-                  const builtPath = resolvedPath.replace(
+
+                  let builtPath = resolvedPath.replace(
                     '/dist/source/',
                     '/dist/esm/',
                   );
-
-                  const jsFile = builtPath.replace(/\.js$/, '.vanilla.js');
                   const cssFile = builtPath.replace(/\.js$/, '.ts.vanilla.css');
+
+                  let jsFile: string;
+                  if (info.isEntry) {
+                    const parsedFileName = path.parse(info.fileName);
+                    const parsedFacadeModuleId = path.parse(id);
+                    parsedFacadeModuleId.name = parsedFileName.name;
+                    parsedFacadeModuleId.base = `${parsedFileName.name}${parsedFileName.ext}`;
+                    jsFile = path
+                      .format(parsedFacadeModuleId)
+                      .split(path.sep)
+                      .join('/')
+                      .replace('/dist/source/', '/dist/esm/');
+                  } else {
+                    jsFile = builtPath.replace(/\.js$/, '.vanilla.js');
+                  }
 
                   try {
                     const jsCode = fs.readFileSync(jsFile, {
                       encoding: 'utf8',
                     });
-                    const cssCode = fs.readFileSync(cssFile, {
-                      encoding: 'utf8',
-                    });
-                    const cssParsedPath = path.parse(cssFile);
 
-                    const chunkPath = path.parse(info.fileName);
+                    if (fs.existsSync(cssFile)) {
+                      const cssCode = fs.readFileSync(cssFile, {
+                        encoding: 'utf8',
+                      });
+                      const cssParsedPath = path.parse(cssFile);
+                      const chunkPath = path.parse(info.fileName);
 
-                    this.emitFile({
-                      type: 'asset',
-                      source: cssCode,
-                      fileName: `${chunkPath.dir}/${cssParsedPath.name}${cssParsedPath.ext}`,
-                    });
+                      this.emitFile({
+                        type: 'asset',
+                        source: cssCode,
+                        fileName: `${chunkPath.dir}/${cssParsedPath.name}${cssParsedPath.ext}`,
+                      });
+                    }
                     return {
                       code: jsCode,
                     };
-                  } catch (e) {}
+                  } catch (e) {
+                    console.log(e);
+                  }
                 },
               };
             })(),
@@ -121,7 +147,7 @@ const solidConfig = withSolid({
       name: 'no-treeshake',
       transform() {
         return {
-          moduleSideEffects: 'no-treeshake',
+          moduleSideEffects: false,
         };
       },
     },
