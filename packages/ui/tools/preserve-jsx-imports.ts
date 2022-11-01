@@ -1,11 +1,12 @@
 import jsx from 'acorn-jsx';
 import {walk} from 'estree-walker';
-import {Plugin} from 'rollup';
 import MagicString from 'magic-string';
+import {Plugin} from 'rollup';
 
 let nextId = 0;
 
-function getJsxName(node) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getJsxName(node: any): string {
   if (node.type === 'JSXMemberExpression') {
     return `${getJsxName(node.object)}.${getJsxName(node.property)}`;
   }
@@ -19,7 +20,7 @@ export function preserveJsxImports(): Plugin {
       const acornPlugins =
         inputOptions.acornInjectPlugins ||
         (inputOptions.acornInjectPlugins = []);
-      acornPlugins.push(jsx());
+      (acornPlugins as (() => unknown)[]).push(jsx() as () => unknown);
     },
     transform(code) {
       const magicString = new MagicString(code);
@@ -63,9 +64,10 @@ export function preserveJsxImports(): Plugin {
       code = code.replace(/USED_JSX_NAMES\(([^)]*)\);/g, (_, args) => {
         // this extracts the artificial tag id from the comment and the possibly renamed variable
         // name from the variable via two capture groups
-        const usedNames = args
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const usedNames: any[] = args
           .split(',')
-          .map(arg => arg.match(/^\/\*([^*]*)\*\/(.*)$/));
+          .map((arg: string) => arg.match(/^\/\*([^*]*)\*\/(.*)$/));
 
         usedNames.slice(1).forEach(([_, tagId, updatedName]) => {
           replacements.set(tagId, updatedName);
