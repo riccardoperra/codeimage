@@ -4,7 +4,12 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "*.vanilla.css.ts.css"
+  ],
   "exports": {
     ".": {
       "solid": "./dist/source-gen/index.jsx",

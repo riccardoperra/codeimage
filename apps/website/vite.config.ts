@@ -9,7 +9,7 @@ export default defineConfig({
       esbuildOptions: {
         external: ['solid-js/web'],
         loader: {
-          '.css': 'text',
+          '.css.ts.vanilla.css': 'text',
         },
       },
     }),
