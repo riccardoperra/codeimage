@@ -54,12 +54,13 @@ export const backdrop = style({
     'conic-gradient(from 230.29deg at 51.63% 52.16%, rgb(36, 0, 255) 0deg, rgb(0, 135, 255) 67.5deg, rgb(108, 39, 157) 198.75deg, rgb(24, 38, 163) 251.25deg, rgb(54, 103, 196) 301.88deg, rgb(105, 30, 255) 360deg)',
   overflow: 'hidden',
   backgroundSize: '400% 400%',
-  width: '75%',
+  width: '60%',
   height: '100%',
   position: 'relative',
   zIndex: 0,
   margin: 'auto',
   animation: `${bgAnimation} 35s ease infinite`,
+  marginTop: '100px',
 });
 
 export const screenshot = style({

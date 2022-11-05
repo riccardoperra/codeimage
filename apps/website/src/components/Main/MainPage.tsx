@@ -1,4 +1,5 @@
-import {Box, Text} from '@codeimage/ui';
+import {Box, Button, Text} from '@codeimage/ui';
+import {HStack} from '@codeimage/ui';
 import {
   imageLeft,
   imageBox,
@@ -24,6 +25,16 @@ export function MainPage() {
           Create beautiful <div class={screenshot}>screenshots</div> <br /> of
           your source code.
         </Text>
+
+        <HStack spacing={4} marginTop={6}>
+          <Button size={'lg'} variant={'solid'} theme={'primary'}>
+            Getting started
+          </Button>
+
+          <Button size={'lg'} variant={'solid'} theme={'primaryAlt'}>
+            See more
+          </Button>
+        </HStack>
       </Box>
       <Box class={imageBox}>
         <img
