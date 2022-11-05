@@ -16,23 +16,17 @@ export function Features() {
       <div class={container}>
         <Box display={'flex'} justifyContent={'center'} marginBottom={24}>
           <Text weight={'bold'} size={'5xl'}>
-            Features
+            What's next...
           </Text>
         </Box>
 
         <div class={cardBox}>
-          <Card
-            title={'Custom editor'}
-            description={
-              'Build your source code snippets and customize their style with a great amount of configurations. '
-            }
-          />
-          <Card
-            title={'Manage your snippets'}
-            description={
-              'Keep in one single place all of your code snippets and share them with everyone'
-            }
-          />
+          {/*<Card*/}
+          {/*  title={'Manage your snippets'}*/}
+          {/*  description={*/}
+          {/*    'Keep in one single place all of your code snippets and share them with everyone'*/}
+          {/*  }*/}
+          {/*/>*/}
 
           <Card
             title={'Embeds'}

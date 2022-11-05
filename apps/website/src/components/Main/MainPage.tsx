@@ -1,7 +1,6 @@
 import {Box, Text} from '@codeimage/ui';
 import {
   imageLeft,
-  imageRight,
   imageBox,
   main,
   text,
@@ -13,7 +12,6 @@ import {
 export function MainPage() {
   return (
     <div class={main}>
-      <div class={backdrop}/>
       <Box
         display={'flex'}
         justifyContent={'center'}
@@ -23,7 +21,8 @@ export function MainPage() {
         class={textBox}
       >
         <Text weight={'bold'} size={'6xl'} class={text}>
-          Create beautiful <div class={screenshot}>screenshots</div> <br/> of your source code.
+          Create beautiful <div class={screenshot}>screenshots</div> <br /> of
+          your source code.
         </Text>
       </Box>
       <Box class={imageBox}>
@@ -33,7 +32,7 @@ export function MainPage() {
             'https://user-images.githubusercontent.com/37072694/195017193-026527f0-a7ac-4151-90a8-bdae186f7e17.png'
           }
         />
-
+        <div class={backdrop} />
       </Box>
     </div>
   );
