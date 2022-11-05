@@ -1,5 +1,5 @@
 {
-  "name": "website",
+  "name": "@codeimage/website",
   "scripts": {
     "dev": "solid-start dev",
     "build": "solid-start build",
