@@ -8,7 +8,10 @@
     "dist"
   ],
   "sideEffects": [
-    "*.vanilla.css.ts.css"
+    "*.vanilla.css.ts.css",
+    "dist/esm/lib/themes/darkTheme.css.vanilla.js",
+    "dist/esm/lib/themes/lightTheme.css.vanilla.js",
+    "**/darkTheme.css.vanilla.js"
   ],
   "exports": {
     ".": {
