@@ -298,11 +298,13 @@ importers:
     specifiers:
       '@codeimage/ui': workspace:*
       '@codeimage/vanilla-extract': workspace:*
+      '@motionone/solid': ^10.14.2
       '@solidjs/meta': ^0.28.0
       '@solidjs/router': ^0.5.0
       '@vanilla-extract/css': ^1.9.1
       '@vanilla-extract/recipes': ^0.2.5
       '@vanilla-extract/vite-plugin': 3.6.1
+      motion: 10.14.3
       solid-js: ^1.6.0
       solid-start: ^0.2.0
       solid-start-node: ^0.2.0
@@ -313,10 +315,12 @@ importers:
     dependencies:
       '@codeimage/ui': link:../../packages/ui
       '@codeimage/vanilla-extract': link:../../packages/vanilla-extract
+      '@motionone/solid': 10.14.2_solid-js@1.6.1
       '@solidjs/meta': 0.28.2_solid-js@1.6.1
       '@solidjs/router': 0.5.0_solid-js@1.6.1
       '@vanilla-extract/css': 1.9.1
       '@vanilla-extract/recipes': 0.2.5_@vanilla-extract+css@1.9.1
+      motion: 10.14.3
       solid-js: 1.6.1
       solid-start: 0.2.2_pronwpnd5fhegqthg7enyrn3im
       solid-start-vercel: 0.2.5_u7jfn5mcy5pgrtvvkcawwpzirm
@@ -3897,6 +3901,17 @@ packages:
       tslib: 2.4.0
     dev: false
 
+  /@motionone/dom/10.14.3:
+    resolution: {integrity: sha512-tese0zSBsWwxCcs9qGNyynhnQ3/n43F6XI588AUKBIfE9D5ZelzQXOzr/T0+ErsVppXJtyGHviYEnv7KHc9x7Q==}
+    dependencies:
+      '@motionone/animation': 10.14.0
+      '@motionone/generators': 10.14.0
+      '@motionone/types': 10.14.0
+      '@motionone/utils': 10.14.0
+      hey-listen: 1.0.8
+      tslib: 2.4.0
+    dev: false
+
   /@motionone/easing/10.14.0:
     resolution: {integrity: sha512-2vUBdH9uWTlRbuErhcsMmt1jvMTTqvGmn9fHq8FleFDXBlHFs5jZzHJT9iw+4kR1h6a4SZQuCf72b9ji92qNYA==}
     dependencies:
@@ -3924,6 +3939,25 @@ packages:
       tslib: 2.4.0
     dev: false
 
+  /@motionone/solid/10.14.2_solid-js@1.6.1:
+    resolution: {integrity: sha512-dz/bWsKMi2R7WJfymRB5hQfeKrSfNDRf5MgBMaRnEU9bQFrXWAidKd3KMTCBxNqugM946tCN5x6NTP4+mD9KmQ==}
+    peerDependencies:
+      solid-js: ^1.4.1
+    dependencies:
+      '@motionone/dom': 10.14.2
+      '@motionone/utils': 10.14.0
+      '@solid-primitives/props': 2.2.2_solid-js@1.6.1
+      solid-js: 1.6.1
+      tslib: 2.4.0
+    dev: false
+
+  /@motionone/svelte/10.14.3:
+    resolution: {integrity: sha512-fHyyyGJRkHsfE2IAg+6YU0BiMT/Jz5OAMpJvBZs3oGfwsgdqSms4YtLW22Ecs87e59hPZ26SqWCHad6enRfD9A==}
+    dependencies:
+      '@motionone/dom': 10.14.3
+      tslib: 2.4.0
+    dev: false
+
   /@motionone/types/10.14.0:
     resolution: {integrity: sha512-3bNWyYBHtVd27KncnJLhksMFQ5o2MSdk1cA/IZqsHtA9DnRM1SYgN01CTcJ8Iw8pCXF5Ocp34tyAjY7WRpOJJQ==}
     dev: false
@@ -3933,6 +3967,13 @@ packages:
     dependencies:
       '@motionone/types': 10.14.0
       hey-listen: 1.0.8
+      tslib: 2.4.0
+    dev: false
+
+  /@motionone/vue/10.14.3:
+    resolution: {integrity: sha512-FZ/vefJMDthnzlVQbL2I54WEvDyx720KClxWqmHZZ+wKic+i9XhNCU1qijGcvA3/1sFFp8u9fOqmejEWXSsHmw==}
+    dependencies:
+      '@motionone/dom': 10.14.3
       tslib: 2.4.0
     dev: false
 
@@ -5596,6 +5637,15 @@ packages:
       solid-js: 1.5.7
     dev: false
 
+  /@solid-primitives/props/2.2.2_solid-js@1.6.1:
+    resolution: {integrity: sha512-vjRRoi/z3S2ylIJKCs+mN07oxDmt2S9gPCbTqkEx8jYHnvzocpt34UQdglLoSklTE6jI37JhW3g/Cs8Qr/peHg==}
+    peerDependencies:
+      solid-js: ^1.3.0
+    dependencies:
+      '@solid-primitives/utils': 3.0.2_solid-js@1.6.1
+      solid-js: 1.6.1
+    dev: false
+
   /@solid-primitives/refs/0.3.2_solid-js@1.5.7:
     resolution: {integrity: sha512-5bwL25wCpnEtlz3cScj3TNHpqeVYAqCbkdmnB/+KLwOJyfNSEm1RsFzOT6SIsd0lRJeY5Of4TeRlUT/tPofAXw==}
     peerDependencies:
@@ -5641,6 +5691,14 @@ packages:
       solid-js: ^1.4.1
     dependencies:
       solid-js: 1.5.7
+    dev: false
+
+  /@solid-primitives/utils/3.0.2_solid-js@1.6.1:
+    resolution: {integrity: sha512-LCU3tVrJmyRqJ0ocG5uCEuUNqmGkcAC+cWpDEE49AuvtehkdQfv4CfqvdNJgs3eoQRQhLOrVcgd1bHFJY4lsrQ==}
+    peerDependencies:
+      solid-js: ^1.4.1
+    dependencies:
+      solid-js: 1.6.1
     dev: false
 
   /@solidjs/meta/0.28.2_solid-js@1.6.1:
@@ -10999,6 +11057,17 @@ packages:
   /modern-normalize/1.1.0:
     resolution: {integrity: sha512-2lMlY1Yc1+CUy0gw4H95uNN7vjbpoED7NNRSBHE25nWfLBdmMzFCsPshlzbxHz+gYMcBEUN8V4pU16prcdPSgA==}
     engines: {node: '>=6'}
+    dev: false
+
+  /motion/10.14.3:
+    resolution: {integrity: sha512-xBbgYho8nPiR2OZOrfJTbJpiiQl0F2PZF6H5ItAeIPJEfA/x0ZwxpFC/gbsKfUv3CFUVAoxCRkTDCJjiZ48dxw==}
+    dependencies:
+      '@motionone/animation': 10.14.0
+      '@motionone/dom': 10.14.3
+      '@motionone/svelte': 10.14.3
+      '@motionone/types': 10.14.0
+      '@motionone/utils': 10.14.0
+      '@motionone/vue': 10.14.3
     dev: false
 
   /mri/1.2.0:
