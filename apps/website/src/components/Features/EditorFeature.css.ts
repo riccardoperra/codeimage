@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {createVar, style} from '@vanilla-extract/css';
 
 export const sectionWrapper = style({
   backgroundColor: '#000',
@@ -61,6 +61,8 @@ export const editorImageSticky = style({
   alignItems: 'center',
 });
 
+export const editorImageCardShadowBg = createVar();
+
 export const editorImageCard = style({
   borderRadius: '1.5rem',
   flex: 1,
@@ -69,4 +71,39 @@ export const editorImageCard = style({
   overflow: 'hidden',
   height: '500px',
   position: 'relative',
+
+  // '::before': {
+  //   content: '',
+  //   zIndex: -1,
+  //   position: 'absolute',
+  //   top: 0,
+  //   right: 0,
+  //   bottom: 0,
+  //   left: 0,
+  //   background: editorImageCardShadowBg,
+  //   transform: 'translate3d(0px, 20px, 0) scale(0.95)',
+  //   filter: 'blur(20px)',
+  //   opacity: '0.7',
+  //   transition: 'opacity 0.3s',
+  //   borderRadius: 'inherit',
+  // },
+});
+
+export const editorImageCardBackdrop = style({
+  content: '',
+  zIndex: -1,
+  position: 'absolute',
+  right: 0,
+  bottom: 0,
+  left: 0,
+  background: editorImageCardShadowBg,
+  transform: 'translate3d(0px, -50%, 0) scale(0.85)',
+  filter: 'blur(500px) saturate(180%)',
+  opacity: '0.7',
+  transition: 'opacity 0.3s',
+  borderRadius: '1.5rem',
+  flex: 1,
+  overflow: 'hidden',
+  height: '500px',
+  top: '50%',
 });

@@ -1,11 +1,14 @@
 import {Box, Text} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {animate, scroll} from 'motion';
 import {createSignal, For, mergeProps, onMount, VoidProps} from 'solid-js';
 import {
   content,
   editorImage,
   editorImageCard,
+  editorImageCardBackdrop,
+  editorImageCardShadowBg,
   editorImageSticky,
   editorParallaxContent,
   editorSectionInfo,
@@ -133,7 +136,7 @@ export function SectionScrollableImage(
 
   const backgrounds = {
     0: 'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
-    1: 'linear-gradient(to right bottom, #d44be1, #c945d7, #be3fcd, #b43ac3, #a934b9, #b330af, #bb2ca6, #c12a9c, #d6308f, #e73c83, #f34d77, #fb5f6d)',
+    1: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
     2: 'linear-gradient(-45deg, #402662 0%, #8000FF 100%)',
   };
 
@@ -165,8 +168,16 @@ export function SectionScrollableImage(
 
   return (
     <div class={editorImageSticky}>
+      <div
+        style={assignInlineVars({
+          [editorImageCardShadowBg]: backgrounds[visibleEditorImage()],
+        })}
+        class={editorImageCardBackdrop}
+      />
       <Motion.div
-        animate={{background: backgrounds[visibleEditorImage()]}}
+        animate={{
+          background: backgrounds[visibleEditorImage()],
+        }}
         class={editorImageCard}
       >
         <For each={sections}>
