@@ -1,5 +1,4 @@
 // @refresh reload
-import {CodeImageThemeProvider} from '@codeimage/ui';
 import {Suspense} from 'solid-js';
 import {
   Body,
