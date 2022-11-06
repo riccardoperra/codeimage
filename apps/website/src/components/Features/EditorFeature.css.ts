@@ -1,10 +1,17 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 
+export const sectionCount = createVar();
+const sectionHeight = createVar();
+
 export const sectionWrapper = style({
   backgroundColor: '#000',
   position: 'relative',
   display: 'flex',
+  vars: {
+    [sectionHeight]: '60vh',
+    [sectionCount]: '3',
+  },
 });
 
 export const content = style({
@@ -25,13 +32,13 @@ export const editorSectionInfo = style({
 });
 
 export const sectionContainer = style({
-  height: 'calc(70vh * 3)',
+  height: `calc(${sectionHeight} * ${sectionCount})`,
   display: 'flex',
   width: '100%',
 });
 
 export const textParallaxBox = style({
-  height: '70vh',
+  height: `${sectionHeight}`,
   display: 'flex',
   alignItems: 'center',
 });
@@ -54,7 +61,7 @@ export const editorImage = style({
 
 export const editorImageSticky = style({
   position: 'sticky',
-  height: '70vh',
+  height: `${sectionHeight}`,
   top: 0,
   width: `55%`,
   display: 'flex',
@@ -71,22 +78,6 @@ export const editorImageCard = style({
   overflow: 'hidden',
   height: '500px',
   position: 'relative',
-
-  // '::before': {
-  //   content: '',
-  //   zIndex: -1,
-  //   position: 'absolute',
-  //   top: 0,
-  //   right: 0,
-  //   bottom: 0,
-  //   left: 0,
-  //   background: editorImageCardShadowBg,
-  //   transform: 'translate3d(0px, 20px, 0) scale(0.95)',
-  //   filter: 'blur(20px)',
-  //   opacity: '0.7',
-  //   transition: 'opacity 0.3s',
-  //   borderRadius: 'inherit',
-  // },
 });
 
 export const editorImageCardBackdrop = style({

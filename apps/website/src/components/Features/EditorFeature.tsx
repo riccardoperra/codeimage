@@ -14,9 +14,26 @@ import {
   editorSectionInfo,
   scrollContainer,
   sectionContainer,
+  sectionCount,
   sectionWrapper,
   textParallaxBox,
 } from '~/components/Features/EditorFeature.css';
+import {codeImageExampleImage} from '~/components/Features/OpenSource.css';
+
+const sections = [
+  {
+    url: 'https://user-images.githubusercontent.com/37072694/195017193-026527f0-a7ac-4151-90a8-bdae186f7e17.png',
+    customClass: editorImage,
+  },
+  {
+    url: '/themes-1.png',
+    customClass: editorImage,
+  },
+  {
+    url: '/example-codeimage.png',
+    customClass: codeImageExampleImage,
+  },
+];
 
 export function EditorFeature() {
   let ref!: HTMLDivElement;
@@ -38,7 +55,13 @@ export function EditorFeature() {
   });
 
   return (
-    <section class={sectionWrapper} ref={ref}>
+    <section
+      class={sectionWrapper}
+      ref={ref}
+      style={assignInlineVars({
+        [sectionCount]: sections.length.toString(),
+      })}
+    >
       <div class={content}>
         <SectionScrollableImage progress={progress()} />
         <div class={editorSectionInfo}>
@@ -92,14 +115,14 @@ export function EditorFeature() {
                     paddingLeft={0}
                   >
                     <Text weight={'bold'} size={'5xl'}>
-                      Third caption
+                      Style your code
                     </Text>
 
                     <Box marginTop={6}>
                       <Text size={'xl'} style={{'line-height': 1.5}}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Aliquam id lacus sem. Cras turpis velit, hendrerit at
-                        tellus vel, suscipit aliquet est.
+                        With CodeImage you can highlight your code using many
+                        languages, split them into multiple files and so much
+                        more!
                       </Text>
                     </Box>
                   </Box>
@@ -154,18 +177,6 @@ export function SectionScrollableImage(
     return index;
   }
 
-  const sections = [
-    {
-      url: 'https://user-images.githubusercontent.com/37072694/195017193-026527f0-a7ac-4151-90a8-bdae186f7e17.png',
-    },
-    {
-      url: '/themes-1.png',
-    },
-    {
-      url: 'https://user-images.githubusercontent.com/37072694/195017193-026527f0-a7ac-4151-90a8-bdae186f7e17.png',
-    },
-  ];
-
   return (
     <div class={editorImageSticky}>
       <div
@@ -187,7 +198,7 @@ export function SectionScrollableImage(
                 initial={{opacity: index() === 0 ? 1 : 0}}
                 animate={{opacity: getOpacity(index())}}
                 exit={{opacity: 0, transition: {duration: 0.8}}}
-                class={editorImage}
+                class={section.customClass}
                 src={section.url}
               />
             );

@@ -89,3 +89,11 @@ export const contributorsStickyContent = style({
   position: 'sticky',
   top: 0,
 });
+
+export const codeImageExampleImage = style([
+  editorImage,
+  {
+    width: '100%',
+    padding: 0,
+  },
+]);
