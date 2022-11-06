@@ -21,6 +21,7 @@ export const editorSectionInfo = style({
   position: 'relative',
   overflow: 'hidden',
   order: -1,
+  flex: 1,
 });
 
 export const sectionContainer = style({
@@ -48,6 +49,7 @@ export const scrollContainer = style({
 
 export const editorImage = style({
   padding: themeVars.spacing[12],
+  position: 'absolute',
 });
 
 export const editorImageSticky = style({
@@ -66,4 +68,5 @@ export const editorImageCard = style({
     'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
   overflow: 'hidden',
   height: '500px',
+  position: 'relative',
 });

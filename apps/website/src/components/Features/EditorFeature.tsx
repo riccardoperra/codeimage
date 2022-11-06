@@ -1,45 +1,43 @@
 import {Box, Text} from '@codeimage/ui';
+import {Motion} from '@motionone/solid';
 import {animate, scroll} from 'motion';
-import {onMount} from 'solid-js';
+import {createSignal, For, mergeProps, onMount, VoidProps} from 'solid-js';
 import {
-  editorSectionInfo,
+  content,
   editorImage,
   editorImageCard,
   editorImageSticky,
   editorParallaxContent,
-  sectionWrapper,
-  content,
+  editorSectionInfo,
   scrollContainer,
   sectionContainer,
+  sectionWrapper,
   textParallaxBox,
 } from '~/components/Features/EditorFeature.css';
 
 export function EditorFeature() {
   let ref!: HTMLDivElement;
+  const [progress, setProgress] = createSignal(0);
 
   onMount(() => {
     const sections = ref.querySelectorAll(`.${textParallaxBox}`);
+    const sectionContainer = ref.querySelector(`.${editorParallaxContent}`);
     sections.forEach(item => {
       scroll(animate(item, {opacity: [0, 1, 1, 0]}), {
         target: item,
         offset: ['start end', 'end end', 'start start', 'end start'],
       });
     });
+    scroll(({y}) => setProgress(y.progress), {
+      target: sectionContainer,
+      offset: ['start end', 'end end'],
+    });
   });
 
   return (
     <section class={sectionWrapper} ref={ref}>
       <div class={content}>
-        <div class={editorImageSticky}>
-          <div class={editorImageCard}>
-            <img
-              class={editorImage}
-              src={
-                'https://user-images.githubusercontent.com/37072694/195017193-026527f0-a7ac-4151-90a8-bdae186f7e17.png'
-              }
-            />
-          </div>
-        </div>
+        <SectionScrollableImage progress={progress()} />
         <div class={editorSectionInfo}>
           <div class={scrollContainer}>
             <div class={sectionContainer}>
@@ -91,13 +89,14 @@ export function EditorFeature() {
                     paddingLeft={0}
                   >
                     <Text weight={'bold'} size={'5xl'}>
-                      Third themes
+                      Third caption
                     </Text>
 
                     <Box marginTop={6}>
                       <Text size={'xl'} style={{'line-height': 1.5}}>
-                        CodeImage provide an editor with a set of defined
-                        configurations that helps you to create beautiful.
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Aliquam id lacus sem. Cras turpis velit, hendrerit at
+                        tellus vel, suscipit aliquet est.
                       </Text>
                     </Box>
                   </Box>
@@ -106,7 +105,84 @@ export function EditorFeature() {
             </div>
           </div>
         </div>
+        ;
       </div>
     </section>
+  );
+}
+
+interface SectionScrollableImageProps {
+  progress: number;
+}
+
+export function SectionScrollableImage(
+  props: VoidProps<SectionScrollableImageProps>,
+) {
+  const mergedProps = mergeProps(
+    {
+      progress: 0,
+    },
+    props,
+  );
+
+  const visibleEditorImage = () => getEditorImage(mergedProps.progress ?? 0);
+
+  function getOpacity(index: number) {
+    return visibleEditorImage() === index ? 1 : 0;
+  }
+
+  const backgrounds = {
+    0: 'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
+    1: 'linear-gradient(to right bottom, #d44be1, #c945d7, #be3fcd, #b43ac3, #a934b9, #b330af, #bb2ca6, #c12a9c, #d6308f, #e73c83, #f34d77, #fb5f6d)',
+    2: 'linear-gradient(-45deg, #402662 0%, #8000FF 100%)',
+  };
+
+  const offsets = [0, 66, 100];
+
+  function getEditorImage(duration: number) {
+    duration = Math.floor(duration * 100);
+    let index = 0;
+    for (let i = offsets.length; i--; ) {
+      if (duration >= offsets[i]) {
+        index = i;
+        break;
+      }
+    }
+    return index;
+  }
+
+  const sections = [
+    {
+      url: 'https://user-images.githubusercontent.com/37072694/195017193-026527f0-a7ac-4151-90a8-bdae186f7e17.png',
+    },
+    {
+      url: '/themes-1.png',
+    },
+    {
+      url: 'https://user-images.githubusercontent.com/37072694/195017193-026527f0-a7ac-4151-90a8-bdae186f7e17.png',
+    },
+  ];
+
+  return (
+    <div class={editorImageSticky}>
+      <Motion.div
+        animate={{background: backgrounds[visibleEditorImage()]}}
+        class={editorImageCard}
+      >
+        <For each={sections}>
+          {(section, index) => {
+            return (
+              <Motion.img
+                initial={{opacity: index() === 0 ? 1 : 0}}
+                animate={{opacity: getOpacity(index())}}
+                exit={{opacity: 0, transition: {duration: 0.8}}}
+                class={editorImage}
+                src={section.url}
+              />
+            );
+          }}
+        </For>
+      </Motion.div>
+    </div>
   );
 }
