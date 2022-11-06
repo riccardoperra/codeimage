@@ -340,7 +340,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
           vercel-args: '--prebuilt' #Optional
-          working-directory: packages/website
+          working-directory: apps/website
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
           vercel-project-id: ${{ secrets.VERCEL_WEBSITE_DEV_PROJECT_ID}} #Required
           alias-domains: | #Optional
