@@ -48,15 +48,38 @@ export function OpenSource() {
 
   onMount(() => {
     const logo = document.querySelector(`.${githubLogo}`);
+    const contributorsContentEl = document.querySelector(
+      `.${contributorsContent}`,
+    );
     scroll(
       animate(logo, {
-        transform: [`scale(1)`, `scale(100) translateY(50px)`],
+        transform: [`scale(1)`, `scale(100) translateY(100px) rotate(15deg)`],
         backgroundColor: ['#000', `#111111`],
         opacity: [1, 0, 0],
       }),
       {
         target: logo,
         offset: ['start', '25%', '50%', 'end'],
+      },
+    );
+
+    scroll(
+      animate(contributorsContentEl, {
+        transform: [
+          'scale(0.75)',
+          'scale(1) translateY(-50px)',
+          'scale(1) translateY(0)',
+        ],
+        filter: [
+          'blur(30px) saturate(180%)',
+          'blur(0px) saturate(100%)',
+          'blur(0px) saturate(100%)',
+          'blur(0px) saturate(100%)',
+        ],
+      }),
+      {
+        target: logo,
+        offset: ['start', '25%', 'end end'],
       },
     );
   });
