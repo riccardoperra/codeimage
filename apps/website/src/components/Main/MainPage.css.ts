@@ -1,5 +1,4 @@
 import {themeVars} from '@codeimage/ui';
-import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {keyframes, style} from '@vanilla-extract/css';
 
 export const main = style({
@@ -26,14 +25,6 @@ export const text = style({
   textAlign: 'center',
 });
 
-export const imageLeft = style({
-  transform: 'translate(-50%, 0px)',
-  position: 'absolute',
-  width: '75%',
-  left: '50%',
-  zIndex: 1,
-});
-
 export const bgAnimation = keyframes({
   '0%': {
     backgroundPosition: '0% 50%',
@@ -44,6 +35,32 @@ export const bgAnimation = keyframes({
   '100%': {
     backgroundPosition: '0% 50%',
   },
+});
+
+export const backdropTransform = keyframes({
+  '0%': {
+    transform: 'translateY(80%)',
+    opacity: 1,
+  },
+  '70%': {
+    filter: 'blur(400px)',
+  },
+  '85%': {
+    transform: 'translateY(0)',
+  },
+  '100%': {
+    transform: 'translateY(0)',
+    filter: 'blur(160px)',
+    opacity: 0.5,
+  },
+});
+
+export const imageLeft = style({
+  transform: 'translate(-50%, 0px)',
+  position: 'absolute',
+  width: '75%',
+  left: '50%',
+  zIndex: 1,
 });
 
 export const backdrop = style({
@@ -59,7 +76,7 @@ export const backdrop = style({
   position: 'relative',
   zIndex: 0,
   margin: 'auto',
-  animation: `${bgAnimation} 35s ease infinite`,
+  animation: `${bgAnimation} 7s ease infinite, ${backdropTransform} 6s ease-in-out 1`,
   marginTop: '100px',
 });
 
