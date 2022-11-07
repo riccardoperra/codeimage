@@ -43,10 +43,21 @@ export function EditorFeature() {
     const sections = ref.querySelectorAll(`.${textParallaxBox}`);
     const sectionContainer = ref.querySelector(`.${editorParallaxContent}`);
     sections.forEach(item => {
-      scroll(animate(item, {opacity: [0, 1, 1, 0]}), {
-        target: item,
-        offset: ['start end', 'end end', 'start start', 'end start'],
-      });
+      scroll(
+        animate(item, {
+          opacity: [0, 1, 1, 0],
+          transform: [
+            'translateY(0) scale(1)',
+            'translateY(0) scale(1)',
+            'translateY(0) scale(1)',
+            'translateY(-50%) scale(0.4)',
+          ],
+        }),
+        {
+          target: item,
+          offset: ['start end', 'end end', 'start start', 'end start'],
+        },
+      );
     });
     scroll(({y}) => setProgress(y.progress), {
       target: sectionContainer,

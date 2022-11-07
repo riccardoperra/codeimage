@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {createVar, style} from '@vanilla-extract/css';
+import {createVar, keyframes, style} from '@vanilla-extract/css';
 
 export const sectionCount = createVar();
 const sectionHeight = createVar();
@@ -9,7 +9,7 @@ export const sectionWrapper = style({
   position: 'relative',
   display: 'flex',
   vars: {
-    [sectionHeight]: '60vh',
+    [sectionHeight]: '100vh',
     [sectionCount]: '3',
   },
 });
@@ -80,6 +80,18 @@ export const editorImageCard = style({
   position: 'relative',
 });
 
+const editorImageCardBackdropFloating = keyframes({
+  '0%': {
+    filter: 'blur(500px) saturate(180%)',
+  },
+  '50%': {
+    filter: 'blur(350px) saturate(180%)',
+  },
+  '100%': {
+    filter: 'blur(500px) saturate(180%)',
+  },
+});
+
 export const editorImageCardBackdrop = style({
   content: '',
   zIndex: -1,
@@ -97,4 +109,5 @@ export const editorImageCardBackdrop = style({
   overflow: 'hidden',
   height: '500px',
   top: '50%',
+  animation: `${editorImageCardBackdropFloating} 6s ease-in-out infinite`,
 });

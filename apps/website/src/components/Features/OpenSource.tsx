@@ -64,19 +64,27 @@ export function OpenSource() {
     );
 
     scroll(
-      animate(contributorsContentEl, {
-        transform: [
-          'scale(0.75)',
-          'scale(1) translateY(-50px)',
-          'scale(1) translateY(0)',
-        ],
-        filter: [
-          'blur(30px) saturate(180%)',
-          'blur(0px) saturate(100%)',
-          'blur(0px) saturate(100%)',
-          'blur(0px) saturate(100%)',
-        ],
-      }),
+      animate(
+        contributorsContentEl,
+        {
+          transform: [
+            'scale(0.75)',
+            'scale(1) translateY(-50px)',
+            'scale(1) translateY(0)',
+          ],
+          filter: [
+            'blur(30px) saturate(180%)',
+            'blur(0px) saturate(100%)',
+            'blur(0px) saturate(100%)',
+            'blur(0px) saturate(100%)',
+          ],
+        },
+        {
+          transform: {
+            allowWebkitAcceleration: true,
+          },
+        },
+      ),
       {
         target: logo,
         offset: ['start', '25%', 'end end'],
