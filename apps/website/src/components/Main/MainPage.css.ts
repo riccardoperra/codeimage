@@ -7,9 +7,10 @@ export const main = style({
   margin: 'auto',
   flexDirection: 'column',
   overflow: 'hidden',
-  height: '80vh',
+  height: '100%',
   width: '100%',
-  background: '#090909',
+  minHeight: '100%',
+  background: 'linear-gradient(179deg, #090909 0%, #000000 95%)',
   position: 'relative',
 });
 
@@ -18,6 +19,8 @@ export const content = style({
   margin: 'auto',
   // marginTop: headerStyles.toolbarVars.toolbarHeight,
   marginTop: '56px',
+
+  paddingTop: themeVars.spacing[24],
 
   '@media': {
     [`(min-width: 1280px)`]: {
@@ -32,19 +35,30 @@ export const content = style({
 
 export const imageBox = style({
   position: 'relative',
-  flex: 1,
   display: 'flex',
+  flex: '0 0 auto',
   margin: 'auto',
-  width: '960px',
+  width: '1440px',
+  marginTop: themeVars.spacing[24],
+  borderRadius: '42px',
+  overflow: 'hidden',
+  background:
+    'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
 });
 
 export const textBox = style({
   flex: 1,
+  width: '100%',
+  display: 'flex',
+  alignItems: 'flex-start',
 });
 
 export const text = style({
   width: '100%',
-  textAlign: 'center',
+  maxWidth: '860px',
+  textAlign: 'left',
+  fontSize: '96px',
+  lineHeight: '100%',
 });
 
 export const bgAnimation = keyframes({
@@ -78,13 +92,9 @@ export const backdropTransform = keyframes({
 });
 
 export const imageLeft = style({
-  transform: 'translate(-50%, 0px)',
-  position: 'absolute',
   width: '100%',
-  left: '50%',
   zIndex: 1,
-  borderRadius: themeVars.borderRadius.xl,
-  boxShadow: themeVars.boxShadow['2xl'],
+  borderRadius: '42px',
   overflow: 'hidden',
 });
 
@@ -98,7 +108,7 @@ export const backdrop = style({
   backgroundSize: '400% 400%',
   width: '60%',
   height: '100%',
-  position: 'relative',
+  position: 'absolute',
   zIndex: 0,
   margin: 'auto',
   animation: `${bgAnimation} 7s ease infinite, ${backdropTransform} 6s ease-in-out 1`,
@@ -106,14 +116,16 @@ export const backdrop = style({
 });
 
 export const screenshot = style({
-  display: 'inline-block',
-  position: 'relative',
-  '::before': {
-    content: '',
-    width: '100%',
-    height: 'px',
-    bottom: 0,
-    position: 'absolute',
-    backgroundColor: themeVars.backgroundColor.blue[600],
-  },
+  color: themeVars.backgroundColor.blue[400],
+});
+
+export const giantButton = style({
+  height: '64px',
+  borderRadius: '16px',
+  paddingTop: 0,
+  paddingBottom: 0,
+  paddingLeft: themeVars.spacing['6'],
+  paddingRight: themeVars.spacing['6'],
+  fontWeight: themeVars.fontWeight.medium,
+  fontSize: themeVars.fontSize.xl,
 });

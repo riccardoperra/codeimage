@@ -17,31 +17,35 @@ export function MainPage() {
           flexDirection={'column'}
           class={styles.textBox}
         >
-          <Text weight={'bold'} size={'6xl'} class={styles.text}>
-            Beautiful <div class={styles.screenshot}>screenshots</div>
-            <br />
-            of your source code.
+          <Text weight={'bold'} class={styles.text}>
+            A tool for <br /> <span class={styles.screenshot}>beautify</span>{' '}
+            your <span class={styles.screenshot}>code</span> screenshots
           </Text>
 
-          <HStack spacing={4} marginTop={6}>
-            <Button size={'lg'} variant={'solid'} theme={'primary'}>
+          <HStack spacing={'4'} marginTop={12}>
+            <Button
+              size={'lg'}
+              variant={'solid'}
+              theme={'primary'}
+              class={styles.giantButton}
+            >
               Getting started
             </Button>
 
-            <Button size={'lg'} variant={'solid'} theme={'primaryAlt'}>
+            <Button
+              size={'lg'}
+              variant={'solid'}
+              theme={'primaryAlt'}
+              class={styles.giantButton}
+            >
               See more
             </Button>
           </HStack>
         </Box>
       </div>
       <div class={styles.imageBox}>
-        <img
-          class={styles.imageLeft}
-          src={
-            'https://user-images.githubusercontent.com/37072694/175815293-b3a55a21-972f-410f-937d-8d3a1229869e.png'
-          }
-        />
-        <div class={styles.backdrop} />
+        <img class={styles.imageLeft} src={'/codeimage_10.png'} />
+        {/*<div class={styles.backdrop} />*/}
       </div>
     </div>
   );
