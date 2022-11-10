@@ -1,19 +1,41 @@
 import {themeVars} from '@codeimage/ui';
 import {keyframes, style} from '@vanilla-extract/css';
+// import * as headerStyles from '../Header/Header.css';
 
 export const main = style({
   display: 'flex',
   margin: 'auto',
   flexDirection: 'column',
   overflow: 'hidden',
-  height: '100vh',
+  height: '80vh',
   width: '100%',
   background: '#090909',
+  position: 'relative',
+});
+
+export const content = style({
+  width: '100%',
+  margin: 'auto',
+  // marginTop: headerStyles.toolbarVars.toolbarHeight,
+  marginTop: '56px',
+
+  '@media': {
+    [`(min-width: 1280px)`]: {
+      width: '1280px',
+    },
+  },
+
+  display: 'flex',
+  alignItems: 'center',
+  flex: 1,
 });
 
 export const imageBox = style({
   position: 'relative',
   flex: 1,
+  display: 'flex',
+  margin: 'auto',
+  width: '960px',
 });
 
 export const textBox = style({
@@ -21,7 +43,7 @@ export const textBox = style({
 });
 
 export const text = style({
-  width: '50%',
+  width: '100%',
   textAlign: 'center',
 });
 
@@ -58,9 +80,12 @@ export const backdropTransform = keyframes({
 export const imageLeft = style({
   transform: 'translate(-50%, 0px)',
   position: 'absolute',
-  width: '75%',
+  width: '100%',
   left: '50%',
   zIndex: 1,
+  borderRadius: themeVars.borderRadius.xl,
+  boxShadow: themeVars.boxShadow['2xl'],
+  overflow: 'hidden',
 });
 
 export const backdrop = style({

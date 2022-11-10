@@ -142,7 +142,6 @@ export function EditorFeature() {
             </div>
           </div>
         </div>
-        ;
       </div>
     </section>
   );
@@ -174,7 +173,7 @@ export function SectionScrollableImage(
     2: 'linear-gradient(-45deg, #402662 0%, #8000FF 100%)',
   };
 
-  const offsets = [0, 66, 100];
+  const offsets = [0, 60, 90];
 
   function getEditorImage(duration: number) {
     duration = Math.floor(duration * 100);
