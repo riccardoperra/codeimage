@@ -27,12 +27,18 @@ export function $auth0State() {
   }
 
   async function login() {
-    auth0.loginWithRedirect({connection: 'github'});
+    auth0.loginWithRedirect({
+      authorizationParams: {
+        connection: 'github',
+      },
+    });
   }
 
   async function signOut() {
     await auth0.logout({
-      returnTo: `${window.location.protocol}//${window.location.host}`,
+      logoutParams: {
+        returnTo: `${window.location.protocol}//${window.location.host}`,
+      },
     });
   }
 
