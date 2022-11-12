@@ -1,5 +1,24 @@
 # @codeimage/app
 
+## 1.0.0
+
+### Major Changes
+
+- [#327](https://github.com/riccardoperra/codeimage/pull/327) [`3b0f791`](https://github.com/riccardoperra/codeimage/commit/3b0f791b420450d4276c9cf56e8448446c8c0774) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Projects, backend integration
+
+### Patch Changes
+
+- [#327](https://github.com/riccardoperra/codeimage/pull/327) [`f20624fe`](https://github.com/riccardoperra/codeimage/commit/f20624fe0714fe2b56659df7b8c91f6a51c7187b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add icon button
+
+- [#327](https://github.com/riccardoperra/codeimage/pull/327) [`2580cd60`](https://github.com/riccardoperra/codeimage/commit/2580cd606b1bf76880289e96537bc9c41658a2a9) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add read-only editor and clone action
+
+- Updated dependencies [[`15e6f54`](https://github.com/riccardoperra/codeimage/commit/15e6f541210f41b30bb865658a8b0cbc983b2138), [`66f2be82`](https://github.com/riccardoperra/codeimage/commit/66f2be829972a68c2ed115433451e049c4885ccc), [`4f95ff1`](https://github.com/riccardoperra/codeimage/commit/4f95ff171db0bb23b6f7d1ad48745f6b16d8889d), [`30191c4`](https://github.com/riccardoperra/codeimage/commit/30191c4e982e6a241a98a435a0c07579d2c683e2), [`f20624fe`](https://github.com/riccardoperra/codeimage/commit/f20624fe0714fe2b56659df7b8c91f6a51c7187b), [`5c12f011`](https://github.com/riccardoperra/codeimage/commit/5c12f0111adf64900098ecf5e17b0896d1d3a8aa), [`83ed47f2`](https://github.com/riccardoperra/codeimage/commit/83ed47f2a5b1442816a4b6a0543e93a88f065053), [`f726e577`](https://github.com/riccardoperra/codeimage/commit/f726e57737a2af16577885cbb9c58e9fc6c1bcf8), [`6a976a6`](https://github.com/riccardoperra/codeimage/commit/6a976a6ecd3725ca6190ecea1ae1513c4c61b6a6), [`2580cd60`](https://github.com/riccardoperra/codeimage/commit/2580cd606b1bf76880289e96537bc9c41658a2a9), [`5f2b70bb`](https://github.com/riccardoperra/codeimage/commit/5f2b70bbcf1eda4486705b98304d289f5eaec142), [`cea84890`](https://github.com/riccardoperra/codeimage/commit/cea84890f406f1fc8d5bf51e1f48d1148270c829)]:
+  - @codeimage/highlight@0.10.3
+  - @codeimage/vanilla-extract@0.1.1
+  - @codeimage/ui@0.10.0
+  - @codeimage/api@0.1.0
+  - @codeimage/config@8.0.3
+
 ## 0.21.4
 
 ### Patch Changes
