@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 8.0.4
+
+### Patch Changes
+
+- [#394](https://github.com/riccardoperra/codeimage/pull/394) [`c6f16a1`](https://github.com/riccardoperra/codeimage/commit/c6f16a132d2358cc3c852e566b77c71b42644bd2) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add ruby syntax highlighting
+
 ## 8.0.3
 
 ### Patch Changes
