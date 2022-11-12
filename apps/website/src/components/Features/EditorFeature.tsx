@@ -46,22 +46,15 @@ export function EditorFeature() {
       scroll(
         animate(item, {
           opacity: [0, 1, 1, 0],
-          transform: [
-            'translateY(0) scale(1)',
-            'translateY(0) scale(1)',
-            'translateY(0) scale(1)',
-            'translateY(-50%) scale(0.4)',
-          ],
         }),
         {
           target: item,
-          offset: ['start end', 'end end', 'start start', 'end start'],
         },
       );
     });
     scroll(({y}) => setProgress(y.progress), {
       target: sectionContainer,
-      offset: ['start end', 'end end'],
+      offset: ['start', 'start end', 'end end', '100%'],
     });
   });
 
@@ -80,8 +73,8 @@ export function EditorFeature() {
             <div class={sectionContainer}>
               <Box display={'flex'} class={editorParallaxContent}>
                 <div class={textParallaxBox}>
-                  <Box marginTop={24} marginBottom={24} paddingLeft={0}>
-                    <Text weight={'bold'} size={'5xl'}>
+                  <Box paddingLeft={0}>
+                    <Text weight={'bold'} size={'4xl'}>
                       Custom editor
                     </Text>
 
@@ -96,13 +89,8 @@ export function EditorFeature() {
                   </Box>
                 </div>
                 <Box class={textParallaxBox}>
-                  <Box
-                    marginTop={24}
-                    marginBottom={24}
-                    paddingRight={24}
-                    paddingLeft={0}
-                  >
-                    <Text weight={'bold'} size={'5xl'}>
+                  <Box paddingRight={24} paddingLeft={0}>
+                    <Text weight={'bold'} size={'4xl'}>
                       Built-in themes
                     </Text>
 
@@ -119,13 +107,8 @@ export function EditorFeature() {
                   </Box>
                 </Box>
                 <Box class={textParallaxBox}>
-                  <Box
-                    marginTop={24}
-                    marginBottom={24}
-                    paddingRight={24}
-                    paddingLeft={0}
-                  >
-                    <Text weight={'bold'} size={'5xl'}>
+                  <Box paddingRight={24} paddingLeft={0}>
+                    <Text weight={'bold'} size={'4xl'}>
                       Style your code
                     </Text>
 
@@ -173,10 +156,11 @@ export function SectionScrollableImage(
     2: 'linear-gradient(-45deg, #402662 0%, #8000FF 100%)',
   };
 
-  const offsets = [0, 60, 90];
+  const offsets = [0, 65, 80];
 
   function getEditorImage(duration: number) {
     duration = Math.floor(duration * 100);
+    console.log(duration);
     let index = 0;
     for (let i = offsets.length; i--; ) {
       if (duration >= offsets[i]) {

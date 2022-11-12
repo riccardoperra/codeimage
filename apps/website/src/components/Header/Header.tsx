@@ -1,6 +1,6 @@
 import {Box, Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
-import {CodeImageLogo} from '../CodeImageLogo/CodeImageLogo';
+import {CodeImageLogo2} from '~/components/CodeImageLogo/CodeImageLogo2';
 import * as styles from './Header.css';
 
 export function Header() {
@@ -8,7 +8,7 @@ export function Header() {
     <div class={styles.header}>
       <div class={styles.headerContent}>
         <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={5}>
-          <CodeImageLogo width={'140px'} />
+          <CodeImageLogo2 width={'140px'} />
           <Box marginLeft={'auto'}>
             <Button
               as={A}

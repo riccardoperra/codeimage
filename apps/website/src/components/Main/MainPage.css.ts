@@ -15,7 +15,7 @@ export const main = style({
 });
 
 export const content = style({
-  width: '100%',
+  width: '80%',
   margin: 'auto',
   // marginTop: headerStyles.toolbarVars.toolbarHeight,
   marginTop: '56px',
@@ -38,12 +38,18 @@ export const imageBox = style({
   display: 'flex',
   flex: '0 0 auto',
   margin: 'auto',
-  width: '1440px',
+  width: '100%',
   marginTop: themeVars.spacing[24],
-  borderRadius: '42px',
+  borderRadius: '12px',
   overflow: 'hidden',
   background:
     'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
+  '@media': {
+    '(min-width: 920px)': {
+      width: '1400px',
+      borderRadius: '42px',
+    },
+  },
 });
 
 export const textBox = style({
@@ -57,8 +63,13 @@ export const text = style({
   width: '100%',
   maxWidth: '860px',
   textAlign: 'left',
-  fontSize: '96px',
+  fontSize: '44px',
   lineHeight: '100%',
+  '@media': {
+    '(min-width: 960px)': {
+      fontSize: '96px',
+    },
+  },
 });
 
 export const bgAnimation = keyframes({
@@ -92,10 +103,9 @@ export const backdropTransform = keyframes({
 });
 
 export const imageLeft = style({
-  width: '100%',
   zIndex: 1,
-  borderRadius: '42px',
   overflow: 'hidden',
+  width: '100%',
 });
 
 export const backdrop = style({

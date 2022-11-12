@@ -4,6 +4,7 @@ import {Motion} from '@motionone/solid';
 import {animate, inView} from 'motion';
 import {onMount} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
+import mainImage from './codeImage_10.png';
 
 export function MainPage() {
   return (
@@ -44,7 +45,7 @@ export function MainPage() {
         </Box>
       </div>
       <div class={styles.imageBox}>
-        <img class={styles.imageLeft} src={'/codeimage_10.png'} />
+        <img class={styles.imageLeft} src={mainImage} />
         {/*<div class={styles.backdrop} />*/}
       </div>
     </div>

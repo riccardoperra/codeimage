@@ -19,11 +19,13 @@ export const content = style({
   position: 'relative',
   display: 'flex',
   margin: 'auto',
+  padding: '400px 100px 100px',
 });
 
 export const editorSectionInfo = style({
   marginLeft: 'auto',
   marginRight: 'auto',
+  padding: '40px 0px 200px',
   paddingRight: themeVars.spacing[24],
   position: 'relative',
   overflow: 'hidden',
@@ -32,13 +34,12 @@ export const editorSectionInfo = style({
 });
 
 export const sectionContainer = style({
-  height: `calc(${sectionHeight} * ${sectionCount})`,
+  height: `100%`,
   display: 'flex',
   width: '100%',
 });
 
 export const textParallaxBox = style({
-  height: `${sectionHeight}`,
   display: 'flex',
   alignItems: 'center',
 });
@@ -46,6 +47,7 @@ export const textParallaxBox = style({
 export const editorParallaxContent = style({
   display: 'flex',
   flexDirection: 'column',
+  rowGap: '400px',
 });
 
 export const scrollContainer = style({
@@ -61,11 +63,17 @@ export const editorImage = style({
 
 export const editorImageSticky = style({
   position: 'sticky',
-  height: `${sectionHeight}`,
-  top: 0,
+  // height: `${sectionHeight}`,
+  // top: 0,
   width: `55%`,
   display: 'flex',
   alignItems: 'center',
+  willChange: 'transform',
+  zIndex: '1',
+  height: '500px',
+  left: '0px',
+  top: '200px',
+  filter: 'saturate(1.2)',
 });
 
 export const editorImageCardShadowBg = createVar();
