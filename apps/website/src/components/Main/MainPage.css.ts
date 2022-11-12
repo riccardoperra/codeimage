@@ -1,6 +1,8 @@
 import {themeVars} from '@codeimage/ui';
-import {keyframes, style} from '@vanilla-extract/css';
+import {createVar, keyframes, style} from '@vanilla-extract/css';
 // import * as headerStyles from '../Header/Header.css';
+
+export const progressOpacityEditor = createVar();
 
 export const main = style({
   display: 'flex',
@@ -33,6 +35,32 @@ export const content = style({
   flex: 1,
 });
 
+export const editorGradientAnimation = keyframes({
+  '0%': {
+    background:
+      'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
+  },
+  '50%': {
+    background:
+      'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
+  },
+  '100%': {
+    background: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
+  },
+});
+
+export const bgAnimation = keyframes({
+  '0%': {
+    opacity: '0',
+  },
+  '50%': {
+    opacity: '1',
+  },
+  '100%': {
+    opacity: '0',
+  },
+});
+
 export const imageBox = style({
   position: 'relative',
   display: 'flex',
@@ -42,14 +70,32 @@ export const imageBox = style({
   marginTop: themeVars.spacing[24],
   borderRadius: '12px',
   overflow: 'hidden',
-  background:
-    'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
+  background: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
   '@media': {
     '(min-width: 920px)': {
       width: '1400px',
       borderRadius: '42px',
     },
   },
+  '::before': {
+    position: 'absolute',
+    content: '""',
+    top: '0',
+    right: '0',
+    bottom: '0',
+    left: '0',
+    backgroundImage:
+      'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
+    zIndex: '-1',
+    opacity: progressOpacityEditor,
+  },
+});
+
+export const imagePerspectiveBox = style({
+  overflow: 'visible',
+  position: 'relative',
+  perspective: '1000px',
+  paddingBottom: '64px',
 });
 
 export const textBox = style({
@@ -72,18 +118,6 @@ export const text = style({
   },
 });
 
-export const bgAnimation = keyframes({
-  '0%': {
-    backgroundPosition: '0% 50%',
-  },
-  '50%': {
-    backgroundPosition: '100% 50%',
-  },
-  '100%': {
-    backgroundPosition: '0% 50%',
-  },
-});
-
 export const backdropTransform = keyframes({
   '0%': {
     transform: 'translateY(80%)',
@@ -103,9 +137,8 @@ export const backdropTransform = keyframes({
 });
 
 export const imageLeft = style({
-  zIndex: 1,
-  overflow: 'hidden',
   width: '100%',
+  height: '100%',
 });
 
 export const backdrop = style({

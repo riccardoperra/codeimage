@@ -34,11 +34,6 @@ async function getContributors(): Promise<
     contributions: number;
   }[]
 > {
-  // const url =
-  //   'https://api.github.com/repos/riccardoperra/codeimage/contributors';
-  // return fetch(url)
-  //   .then(res => res.json())
-  //   .catch(() => contributors);
   const contributorsList = await Promise.resolve(contributors as Contributor[]);
   return contributorsList.filter(contributor => contributor.type !== 'Bot');
 }
