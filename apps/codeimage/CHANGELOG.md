@@ -1,5 +1,14 @@
 # @codeimage/app
 
+## 1.0.2
+
+### Patch Changes
+
+- [#396](https://github.com/riccardoperra/codeimage/pull/396) [`c4b24b1`](https://github.com/riccardoperra/codeimage/commit/c4b24b1556c72cf98602c109d0230cbb5989509e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update auth0 to 2.0.0
+
+- Updated dependencies [[`c6f16a1`](https://github.com/riccardoperra/codeimage/commit/c6f16a132d2358cc3c852e566b77c71b42644bd2)]:
+  - @codeimage/config@8.0.4
+
 ## 1.0.1
 
 ### Patch Changes
