@@ -1,5 +1,26 @@
 # @codeimage/ui
 
+## 0.10.0
+
+### Minor Changes
+
+- [#327](https://github.com/riccardoperra/codeimage/pull/327) [`5c12f011`](https://github.com/riccardoperra/codeimage/commit/5c12f0111adf64900098ecf5e17b0896d1d3a8aa) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(ui): add TextField inline style
+
+- [#353](https://github.com/riccardoperra/codeimage/pull/353) [`83ed47f2`](https://github.com/riccardoperra/codeimage/commit/83ed47f2a5b1442816a4b6a0543e93a88f065053) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add text dynamic variants by scope
+
+- [#327](https://github.com/riccardoperra/codeimage/pull/327) [`f726e577`](https://github.com/riccardoperra/codeimage/commit/f726e57737a2af16577885cbb9c58e9fc6c1bcf8) Thanks [@riccardoperra](https://github.com/riccardoperra)! - refactor snackbar with solid-toast
+
+- [#327](https://github.com/riccardoperra/codeimage/pull/327) [`5f2b70bb`](https://github.com/riccardoperra/codeimage/commit/5f2b70bbcf1eda4486705b98304d289f5eaec142) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(ui): add Badge component
+
+- [#327](https://github.com/riccardoperra/codeimage/pull/327) [`cea84890`](https://github.com/riccardoperra/codeimage/commit/cea84890f406f1fc8d5bf51e1f48d1148270c829) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(ui): add radio field
+
+### Patch Changes
+
+- [#327](https://github.com/riccardoperra/codeimage/pull/327) [`f20624fe`](https://github.com/riccardoperra/codeimage/commit/f20624fe0714fe2b56659df7b8c91f6a51c7187b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add icon button
+
+- Updated dependencies [[`66f2be82`](https://github.com/riccardoperra/codeimage/commit/66f2be829972a68c2ed115433451e049c4885ccc), [`30191c4`](https://github.com/riccardoperra/codeimage/commit/30191c4e982e6a241a98a435a0c07579d2c683e2)]:
+  - @codeimage/vanilla-extract@0.1.1
+
 ## 0.9.0
 
 ### Minor Changes

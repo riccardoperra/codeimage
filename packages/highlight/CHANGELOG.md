@@ -1,5 +1,15 @@
 # @codeimage/highlight
 
+## 0.10.3
+
+### Patch Changes
+
+- [#372](https://github.com/riccardoperra/codeimage/pull/372) [`15e6f54`](https://github.com/riccardoperra/codeimage/commit/15e6f541210f41b30bb865658a8b0cbc983b2138) Thanks [@SIMRAN88](https://github.com/SIMRAN88)! - feat: add moonlight theme
+
+- [#370](https://github.com/riccardoperra/codeimage/pull/370) [`4f95ff1`](https://github.com/riccardoperra/codeimage/commit/4f95ff171db0bb23b6f7d1ad48745f6b16d8889d) Thanks [@SIMRAN88](https://github.com/SIMRAN88)! - feat: shades of purple theme
+
+- [#367](https://github.com/riccardoperra/codeimage/pull/367) [`6a976a6`](https://github.com/riccardoperra/codeimage/commit/6a976a6ecd3725ca6190ecea1ae1513c4c61b6a6) Thanks [@TGlide](https://github.com/TGlide)! - feat(highlight): panda theme
+
 ## 0.10.2
 
 ### Patch Changes
