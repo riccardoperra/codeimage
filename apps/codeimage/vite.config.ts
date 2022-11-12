@@ -68,7 +68,7 @@ export default defineConfig(({mode}) => ({
         // TODO: Find a better solution to handle query params
         return html.replace(
           '<!-- %UMAMI% -->',
-          `<script async defer data-auto-track='false' data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`,
+          `<script async defer data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`,
         );
       },
     },

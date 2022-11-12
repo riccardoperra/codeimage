@@ -108,20 +108,7 @@ export function Bootstrap() {
     },
   ]);
 
-  onMount(() => {
-    enableUmami();
-
-    function trackView() {
-      if (document.readyState === 'complete') {
-        const currentUrl = `${location.pathname}${location.search}`;
-        const currentReferrer = document.referrer ?? currentUrl;
-        umami.trackView(currentUrl, currentReferrer);
-      }
-    }
-
-    // TODO: auto-track must be fixed when app is multi-page
-    document.addEventListener('readystatechange', trackView, true);
-  });
+  onMount(() => enableUmami());
 
   createEffect(
     on(mode, theme => {
