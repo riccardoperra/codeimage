@@ -367,6 +367,24 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     ],
   },
   {
+    id: 'ruby',
+    label: 'Ruby',
+    color: '#701516',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/ruby'),
+      ]).then(([cb, m]) => cb(m.ruby)),
+    icons: [
+      {
+        name: 'ruby',
+        extension: '.rb',
+        content: () => import('material-icon-theme/icons/ruby.svg?raw'),
+        matcher: /^.*\.(rb)$/,
+      },
+    ],
+  },
+  {
     id: 'plain-text',
     label: 'Plain Text',
     color: '#e38c00',
