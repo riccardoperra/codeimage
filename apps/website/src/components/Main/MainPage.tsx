@@ -69,7 +69,6 @@ export function MainPage() {
       >
         <div class={styles.imageBox}>
           <img class={styles.imageLeft} src={mainImage} />
-          {/*<div class={styles.backdrop} />*/}
         </div>
       </div>
     </div>

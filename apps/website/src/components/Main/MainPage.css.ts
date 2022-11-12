@@ -1,6 +1,5 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, keyframes, style} from '@vanilla-extract/css';
-// import * as headerStyles from '../Header/Header.css';
 
 export const progressOpacityEditor = createVar();
 
@@ -19,7 +18,6 @@ export const main = style({
 export const content = style({
   width: '80%',
   margin: 'auto',
-  // marginTop: headerStyles.toolbarVars.toolbarHeight,
   marginTop: '56px',
 
   paddingTop: themeVars.spacing[24],
@@ -33,20 +31,6 @@ export const content = style({
   display: 'flex',
   alignItems: 'center',
   flex: 1,
-});
-
-export const editorGradientAnimation = keyframes({
-  '0%': {
-    background:
-      'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
-  },
-  '50%': {
-    background:
-      'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
-  },
-  '100%': {
-    background: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
-  },
 });
 
 export const bgAnimation = keyframes({
@@ -139,6 +123,7 @@ export const backdropTransform = keyframes({
 export const imageLeft = style({
   width: '100%',
   height: '100%',
+  zIndex: 1,
 });
 
 export const backdrop = style({
@@ -159,7 +144,7 @@ export const backdrop = style({
 });
 
 export const screenshot = style({
-  color: themeVars.backgroundColor.blue[400],
+  color: themeVars.backgroundColor.blue[500],
 });
 
 export const giantButton = style({
