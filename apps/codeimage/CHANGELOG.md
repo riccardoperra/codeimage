@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.0.1
+
+### Patch Changes
+
+- [`90c095c`](https://github.com/riccardoperra/codeimage/commit/90c095c023f6b59ad9310a60ff78be0f74b91dff) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix @codeimage/ui light theme injection
+
 ## 1.0.0
 
 ### Major Changes
