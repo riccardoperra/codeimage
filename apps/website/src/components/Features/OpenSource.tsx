@@ -47,11 +47,17 @@ export function OpenSource() {
       `.${contributorsContent}`,
     );
     scroll(
-      animate(logo, {
-        transform: [`scale(1)`, `scale(100) translateY(100px) rotate(15deg)`],
-        backgroundColor: ['#000', `#111111`],
-        opacity: [1, 0, 0],
-      }),
+      animate(
+        logo,
+        {
+          transform: [`scale(1)`, `scale(100) translateY(100px) rotate(15deg)`],
+          backgroundColor: ['#000', `#111111`],
+          opacity: [1, 0, 0],
+        },
+        {
+          allowWebkitAcceleration: true,
+        },
+      ),
       {
         target: logo,
         offset: ['start', '25%', '50%', 'end'],

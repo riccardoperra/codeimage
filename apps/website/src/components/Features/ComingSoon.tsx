@@ -78,7 +78,8 @@ export function ComingSoon() {
                 <Box marginTop={8}>
                   <Text size={'2xl'}>
                     <span>
-                      Create your own custom theme and share it with everyone
+                      Create your own custom theme for CodeImage and CodeMirror,
+                      then share it to everyone.
                     </span>
                   </Text>
                 </Box>

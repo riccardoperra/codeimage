@@ -1,4 +1,4 @@
-import {Box, Text} from '@codeimage/ui';
+import {Box, Button, HStack, Text} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {animate, scroll} from 'motion';
@@ -8,6 +8,7 @@ import {
   editorImage,
   editorImageCard,
   editorImageCardBackdrop,
+  editorImageCardContainer,
   editorImageCardShadowBg,
   editorImageSticky,
   editorParallaxContent,
@@ -19,6 +20,7 @@ import {
   textParallaxBox,
 } from '~/components/Features/EditorFeature.css';
 import {codeImageExampleImage} from '~/components/Features/OpenSource.css';
+import * as styles from './EditorFeature.css';
 
 const sections = [
   {
@@ -37,7 +39,31 @@ const sections = [
 
 export function EditorFeature() {
   let ref!: HTMLDivElement;
+  // const {ref: editorRef} = createCodeMirror({
+  //   value:
+  //     '  onMount(() => {\n' +
+  //     '    const sections = ref.querySelectorAll(`.${textParallaxBox}`);\n' +
+  //     '    const sectionContainer = ref.querySelector(`.${editorParallaxContent}`);\n' +
+  //     '    sections.forEach(item => {\n' +
+  //     '      scroll(\n' +
+  //     '        animate(item, {\n' +
+  //     '          opacity: [0, 1, 1, 0],\n' +
+  //     '        }),\n' +
+  //     '        {\n' +
+  //     '          target: item,\n' +
+  //     '        },\n' +
+  //     '      );\n' +
+  //     '    });\n' +
+  //     '    scroll(({y}) => setProgress(y.progress), {\n' +
+  //     '      target: sectionContainer,\n' +
+  //     "      offset: ['start', 'start end', 'end end', '100%'],\n" +
+  //     '    });\n' +
+  //     '  });',
+  // });
+
   const [progress, setProgress] = createSignal(0);
+
+  let editorRef: HTMLDivElement;
 
   onMount(() => {
     const sections = ref.querySelectorAll(`.${textParallaxBox}`);
@@ -78,6 +104,8 @@ export function EditorFeature() {
                       Custom editor
                     </Text>
 
+                    <div ref={editorRef} />
+
                     <Box marginTop={6}>
                       <Text size={'xl'} style={{'line-height': 1.5}}>
                         CodeImage provide an editor with a set of defined
@@ -91,13 +119,17 @@ export function EditorFeature() {
                 <Box class={textParallaxBox}>
                   <Box paddingRight={24} paddingLeft={0}>
                     <Text weight={'bold'} size={'4xl'}>
-                      Built-in themes
+                      Style your code
                     </Text>
 
                     <Box marginTop={6}>
                       <Text size={'xl'} style={{'line-height': 1.5}}>
                         CodeImage provide a rich choice of known and custom
                         themes.
+                        <p>
+                          You can highlight your code using many languages,
+                          split them into multiple files and so much more!
+                        </p>
                         <p>
                           Do you think some themes are missing? Just fill an
                           issue on Github 😊
@@ -109,14 +141,12 @@ export function EditorFeature() {
                 <Box class={textParallaxBox}>
                   <Box paddingRight={24} paddingLeft={0}>
                     <Text weight={'bold'} size={'4xl'}>
-                      Style your code
+                      Share to everyone
                     </Text>
 
                     <Box marginTop={6}>
                       <Text size={'xl'} style={{'line-height': 1.5}}>
-                        With CodeImage you can highlight your code using many
-                        languages, split them into multiple files and so much
-                        more!
+                        Once ready, you can share your snippet everywhere.
                       </Text>
                     </Box>
                   </Box>
@@ -178,26 +208,28 @@ export function SectionScrollableImage(
         })}
         class={editorImageCardBackdrop}
       />
-      <Motion.div
-        animate={{
-          background: backgrounds[visibleEditorImage()],
-        }}
-        class={editorImageCard}
-      >
-        <For each={sections}>
-          {(section, index) => {
-            return (
-              <Motion.img
-                initial={{opacity: index() === 0 ? 1 : 0}}
-                animate={{opacity: getOpacity(index())}}
-                exit={{opacity: 0, transition: {duration: 0.8}}}
-                class={section.customClass}
-                src={section.url}
-              />
-            );
+      <div class={editorImageCardContainer}>
+        <Motion.div
+          animate={{
+            background: backgrounds[visibleEditorImage()],
           }}
-        </For>
-      </Motion.div>
+          class={editorImageCard}
+        >
+          <For each={sections}>
+            {(section, index) => {
+              return (
+                <Motion.img
+                  initial={{opacity: index() === 0 ? 1 : 0}}
+                  animate={{opacity: getOpacity(index())}}
+                  exit={{opacity: 0, transition: {duration: 0.8}}}
+                  class={section.customClass}
+                  src={section.url}
+                />
+              );
+            }}
+          </For>
+        </Motion.div>
+      </div>
     </div>
   );
 }

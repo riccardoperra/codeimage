@@ -1,13 +1,13 @@
 import {themeVars} from '@codeimage/ui';
-import {createVar, keyframes, style} from '@vanilla-extract/css';
+import {createVar, style} from '@vanilla-extract/css';
 
 export const sectionCount = createVar();
 const sectionHeight = createVar();
 
 export const sectionWrapper = style({
   backgroundColor: '#000',
+  height: '400vh',
   position: 'relative',
-  display: 'flex',
   vars: {
     [sectionHeight]: '100vh',
     [sectionCount]: '3',
@@ -16,13 +16,13 @@ export const sectionWrapper = style({
 
 export const content = style({
   maxWidth: '80rem',
-  height: '200vh',
   position: 'relative',
-  display: 'flex',
-  margin: 'auto',
+  marginLeft: 'auto',
+  marginRight: 'auto',
   '@media': {
     '(min-width: 1024px)': {
-      padding: '400px 100px 100px',
+      padding: '100px 100px 100px',
+      paddingBottom: 0,
       height: 'auto',
     },
   },
@@ -31,12 +31,9 @@ export const content = style({
 export const editorSectionInfo = style({
   marginLeft: 'auto',
   marginRight: 'auto',
-  padding: '40px 0px 200px',
-  paddingRight: themeVars.spacing[24],
   position: 'relative',
   overflow: 'hidden',
   order: -1,
-  flex: 1,
 });
 
 export const sectionContainer = style({
@@ -48,12 +45,23 @@ export const sectionContainer = style({
 export const textParallaxBox = style({
   display: 'flex',
   alignItems: 'center',
+  border: `1px solid rgb(24 24 27)`,
+  backgroundColor: 'rgb(39 39 42 / 0.25)',
+  placeContent: 'center flex-start',
+  flexFlow: 'row nowrap',
+  gap: '96px',
+  overflow: 'visible',
+  flex: 1,
+  position: 'relative',
+  flexDirection: 'column',
+  padding: '24px',
+  borderRadius: '24px',
 });
 
 export const editorParallaxContent = style({
   display: 'flex',
-  flexDirection: 'column',
-  rowGap: '400px',
+  flexDirection: 'row',
+  columnGap: '24px',
 });
 
 export const scrollContainer = style({
@@ -69,20 +77,23 @@ export const editorImage = style({
 
 export const editorImageSticky = style({
   position: 'sticky',
-  width: `55%`,
+  width: `100%`,
   display: 'flex',
   alignItems: 'center',
   willChange: 'transform',
+  flexDirection: 'column',
   zIndex: '1',
   left: '0px',
+  gap: '24px',
   filter: 'saturate(1.2)',
-  height: '300px',
-  bottom: 0,
+  height: '100vh',
+  top: '100px',
+  maxWidth: '80rem',
+  marginLeft: 'auto',
+  marginRight: 'auto',
   '@media': {
     '(min-width: 1024px)': {
-      top: '50%',
-      transform: 'translateY(-50%)',
-      height: '500px',
+      height: '100vh',
     },
   },
 });
@@ -95,26 +106,17 @@ export const editorImageCard = style({
   background:
     'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
   overflow: 'hidden',
-  height: '500px',
+  height: '100%',
   position: 'relative',
 });
 
 export const editorImageCardContainer = style({
-  height: '500px',
+  maxHeight: '75vh',
+  height: '100%',
+  width: '100%',
   position: 'relative',
   flex: 1,
-});
-
-const editorImageCardBackdropFloating = keyframes({
-  '0%': {
-    filter: 'blur(500px) saturate(180%)',
-  },
-  '50%': {
-    filter: 'blur(350px) saturate(180%)',
-  },
-  '100%': {
-    filter: 'blur(500px) saturate(180%)',
-  },
+  display: 'flex',
 });
 
 export const editorImageCardBackdrop = style({
@@ -134,32 +136,19 @@ export const editorImageCardBackdrop = style({
   overflow: 'hidden',
   height: '500px',
   top: '50%',
-  animation: `${editorImageCardBackdropFloating} 6s ease-in-out infinite`,
 });
 
 ///////////////////
 
-export const fakeDropdown = style({
+export const editorBox = style({
+  width: '600px',
+  height: 'auto',
   position: 'absolute',
-  width: '100%',
-  height: '52px',
-  boxShadow: themeVars.boxShadow.xl,
-  backgroundColor: `#1a1a1a50`,
-  overflow: 'hidden',
+  left: '50%',
+  top: '50%',
+  padding: themeVars.spacing[12],
+  backgroundColor: '#00000085',
   borderRadius: themeVars.borderRadius.lg,
-  zIndex: themeVars.zIndex['40'],
-  rowGap: themeVars.spacing['1'],
-  paddingLeft: themeVars.spacing['2'],
-  paddingRight: themeVars.spacing['2'],
-  display: 'flex',
-  alignItems: 'center',
-  left: '-15px',
-  backdropFilter: 'blur(30px)',
-  bottom: 0,
-});
-
-export const fakeGradient = style({
-  borderRadius: themeVars.borderRadius.xl,
-  width: '32px',
-  height: '32px',
+  fontSize: '15px',
+  transform: 'translate(-50%, -50%)',
 });

@@ -23,6 +23,13 @@ export const container = style({
 export const twoSections = style({
   display: 'flex',
   gap: themeVars.spacing['8'],
+  flexDirection: 'column',
+
+  '@media': {
+    'screen and (min-width: 768px)': {
+      flexDirection: 'row',
+    },
+  },
 });
 
 export const halfCard = style({
@@ -60,7 +67,7 @@ export const card = style({
   gap: '96px',
   overflow: 'visible',
   position: 'relative',
-  flexDirection: 'column',
+  flexDirection: 'column-reverse',
   padding: '24px',
   borderRadius: '48px',
 
