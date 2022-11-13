@@ -1,11 +1,10 @@
 import {themeVars} from '@codeimage/ui';
-import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
 
 export const main = style({
   backgroundColor: '#000',
   paddingTop: themeVars.spacing[64],
-  paddingBottom: themeVars.spacing[24],
+  paddingBottom: themeVars.spacing[8],
   paddingLeft: themeVars.spacing[2],
   paddingRight: themeVars.spacing[2],
 
@@ -23,7 +22,8 @@ export const container = style({
 });
 
 export const card = style({
-  background: darkGrayScale.gray1,
+  border: `1px solid rgb(24 24 27)`,
+  backgroundColor: 'rgb(39 39 42 / 0.25)',
   placeContent: 'center flex-start',
   alignItems: 'center',
   display: 'flex',

@@ -1,3 +1,4 @@
+import {ComingSoon} from '~/components/Features/ComingSoon';
 import {EditorFeature} from '~/components/Features/EditorFeature';
 import {Features} from '~/components/Features/Features';
 import {OpenSource} from '~/components/Features/OpenSource';
@@ -13,6 +14,7 @@ export default function Home() {
       <MainPage />
       <EditorFeature />
       <Projects />
+      <ComingSoon />
       <OpenSource />
       <Features />
       <Footer />
