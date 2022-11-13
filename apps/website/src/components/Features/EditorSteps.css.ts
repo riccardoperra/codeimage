@@ -1,4 +1,5 @@
 import {themeVars} from '@codeimage/ui';
+import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {createVar, style} from '@vanilla-extract/css';
 
 export const sectionCount = createVar();
@@ -6,7 +7,12 @@ const sectionHeight = createVar();
 
 export const sectionWrapper = style({
   backgroundColor: '#000',
-  height: '400vh',
+  height: '100%',
+  '@media': {
+    '(min-width: 748px)': {
+      height: '300vh',
+    },
+  },
   position: 'relative',
   vars: {
     [sectionHeight]: '100vh',
@@ -59,9 +65,16 @@ export const textParallaxBox = style({
 });
 
 export const editorParallaxContent = style({
-  display: 'flex',
+  display: 'grid',
+  gridTemplateRows: '1fr 1fr 1fr',
   flexDirection: 'row',
-  columnGap: '24px',
+  gap: '24px',
+  '@media': {
+    '(min-width: 748px)': {
+      gridTemplateColumns: 'repeat(3, minmax(220px, 1fr))',
+      gridTemplateRows: '1fr',
+    },
+  },
 });
 
 export const scrollContainer = style({
@@ -111,7 +124,7 @@ export const editorImageCard = style({
 });
 
 export const editorImageCardContainer = style({
-  maxHeight: '75vh',
+  maxHeight: '60vh',
   height: '100%',
   width: '100%',
   position: 'relative',
@@ -143,12 +156,36 @@ export const editorImageCardBackdrop = style({
 export const editorBox = style({
   width: '600px',
   height: 'auto',
-  position: 'absolute',
-  left: '50%',
-  top: '50%',
-  padding: themeVars.spacing[12],
+  padding: themeVars.spacing[6],
   backgroundColor: '#00000085',
   borderRadius: themeVars.borderRadius.lg,
   fontSize: '15px',
+});
+
+export const twitterCard = style({
+  padding: themeVars.spacing[12],
+  paddingTop: themeVars.spacing[6],
+  borderRadius: '8px',
+  backgroundColor: darkGrayScale.gray2,
+  height: 'auto',
+  position: 'absolute',
+  left: '50%',
+  top: '50%',
   transform: 'translate(-50%, -50%)',
+});
+
+export const twitterTitle = style({
+  color: 'white',
+  display: 'flex',
+  alignItems: 'center',
+
+  gap: themeVars.spacing[4],
+});
+
+export const twitterBadge = style({
+  width: '36px',
+  height: '36px',
+  position: 'relative',
+  borderRadius: themeVars.borderRadius.lg,
+  overflow: 'hidden',
 });
