@@ -160,7 +160,6 @@ export function SectionScrollableImage(
 
   function getEditorImage(duration: number) {
     duration = Math.floor(duration * 100);
-    console.log(duration);
     let index = 0;
     for (let i = offsets.length; i--; ) {
       if (duration >= offsets[i]) {
