@@ -65,7 +65,6 @@ export function Projects() {
             <div class={styles.imageWrapper}>
               <img class={styles.image} src={'/projects-showcase.png'} />
             </div>
-            <img src={'/example-codeimage.png'} />
           </div>
         </div>
       </div>

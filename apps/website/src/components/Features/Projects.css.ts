@@ -6,6 +6,15 @@ export const main = style({
   backgroundColor: '#000',
   paddingTop: themeVars.spacing[64],
   paddingBottom: themeVars.spacing[24],
+  paddingLeft: themeVars.spacing[2],
+  paddingRight: themeVars.spacing[2],
+
+  '@media': {
+    '(min-width: 748px)': {
+      paddingLeft: themeVars.spacing[0],
+      paddingRight: themeVars.spacing[0],
+    },
+  },
 });
 
 export const container = style({
@@ -15,32 +24,41 @@ export const container = style({
 
 export const card = style({
   background: darkGrayScale.gray1,
-  borderRadius: '96px',
   placeContent: 'center flex-start',
   alignItems: 'center',
   display: 'flex',
   flexFlow: 'row nowrap',
   gap: '96px',
-  height: 'min-content',
   overflow: 'visible',
-  padding: '48px',
   position: 'relative',
-  width: '1312px',
+  flexDirection: 'column',
+  padding: '24px',
+  borderRadius: '48px',
+
+  '@media': {
+    '(min-width: 748px)': {
+      flexDirection: 'row',
+      borderRadius: '96px',
+      padding: '48px',
+    },
+  },
 });
 
 export const content = style({
   placeContent: 'center',
   alignItems: 'center',
   display: 'flex',
-  flex: '1 0 0px',
   flexFlow: 'column nowrap',
   gap: '48px',
-  height: 'min-content',
   overflow: 'hidden',
   padding: '0px',
   position: 'relative',
-  width: '1px',
   textAlign: 'center',
+  flex: 1,
+
+  // '(min-width: 748px)': {
+  //   flexDirection: 'column',
+  // },
 });
 
 export const storageBadge = style({
@@ -53,14 +71,22 @@ export const storageBadge = style({
 
 export const imageSection = style({
   flex: '0 0 auto',
-  height: '484px',
   overflow: 'hidden',
   position: 'relative',
-  width: '704px',
   willChange: 'transform',
   background: themeVars.backgroundColor.green['500'],
-  borderRadius: '64px',
+  borderRadius: '48px',
   opacity: 1,
+  height: '300px',
+  width: '100%',
+
+  '@media': {
+    '(min-width: 768px)': {
+      height: '484px',
+      borderRadius: '64px',
+      flex: 1,
+    },
+  },
 });
 
 export const imageWrapper = style({
