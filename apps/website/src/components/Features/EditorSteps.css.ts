@@ -156,7 +156,7 @@ export const editorImageCardBackdrop = style({
 ///////////////////
 
 export const editorBox = style({
-  width: '600px',
+  width: '500px',
   height: 'auto',
   padding: themeVars.spacing[6],
   backgroundColor: 'rgba(0,0,0,.7)',
@@ -167,8 +167,16 @@ export const editorBox = style({
 export const twitterCard = style({
   padding: themeVars.spacing[12],
   paddingTop: themeVars.spacing[6],
+  width: '624px',
+  height: '540px',
   borderRadius: '8px',
-  backgroundColor: darkGrayScale.gray2,
+  position: 'absolute',
+  left: '50%',
+  top: '50%',
+  transform: 'translate(-50%, -50%)',
+});
+
+export const snippetBox = style({
   height: 'auto',
   position: 'absolute',
   left: '50%',
@@ -249,3 +257,36 @@ export const header = style({
     },
   },
 });
+
+export const progressBar = {
+  circularProgressBox: style({
+    position: 'absolute',
+    left: '16px',
+    top: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '75px',
+    width: '75px',
+  }),
+  progressText: style({
+    color: '#fff',
+    fontWeight: 'bold',
+  }),
+  circle: style({
+    strokeDashoffset: 0,
+    strokeWidth: '10%',
+    fill: 'none',
+  }),
+  circularProgress: style({
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  }),
+  bg: style({
+    stroke: 'rgba(255, 255, 255, 1)',
+  }),
+  progress: style({
+    strokeDasharray: '0, 1',
+  }),
+};

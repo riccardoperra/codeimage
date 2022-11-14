@@ -15,7 +15,7 @@ import {EditorState, StateEffect} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
 import {Motion, Presence} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {scroll} from 'motion';
+import {animate, scroll, spring} from 'motion';
 import {
   createEffect,
   createMemo,
@@ -111,7 +111,15 @@ export function EditorSteps() {
     //       target: item,
     //     },
     //   );
-    // });
+    // })
+    scroll(
+      animate(`.${styles.progressBar.circularProgress}`, {
+        strokeDasharray: ['0,1', '1,1'],
+      }),
+      {
+        target: ref,
+      },
+    );
     scroll(
       ({y}) => {
         console.log(y.progress * 100);
@@ -253,13 +261,59 @@ export function SectionScrollableImage(
         class={`${editorImageCardContainer} ${scaffoldTheme}`}
         style={{
           background: backgrounds[getEditorImage(props.progress)],
+          overflow: 'hidden',
         }}
       >
+        <Motion.div
+          animate={{
+            transform: `translateY(${props.progress > 95 ? '660px' : '0%'})`,
+          }}
+          class={styles.progressBar.circularProgressBox}
+        >
+          <Motion.span
+            animate={{
+              opacity: props.progress > 0 ? 1 : 0,
+            }}
+            class={styles.progressBar.progressText}
+          >
+            {Math.floor(props.progress)}
+          </Motion.span>
+          <svg
+            width="75"
+            height="75"
+            viewBox="0 0 100 100"
+            class={styles.progressBar.circularProgress}
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r="30"
+              pathLength="1"
+              class={`${styles.progressBar.circle} ${styles.progressBar.bg}`}
+            />
+            <circle
+              cx="50"
+              cy="50"
+              r="30"
+              pathLength="1"
+              class={`${styles.progressBar.circle} ${styles.progressBar.progress}`}
+            />
+          </svg>
+        </Motion.div>
+
         <Motion.div
           class={styles.twitterCard}
           animate={{
             backgroundColor:
-              props.progress >= 66 ? darkGrayScale.gray2 : 'transparent',
+              props.progress >= 66 ? darkGrayScale.gray2 : darkGrayScale.gray2,
+            transform: `translate(-50%, ${
+              props.progress >= 70 ? '-50%' : '50%'
+            }) scale(${props.progress >= 66 ? 1 : 0})`,
+            transition: {
+              transform: {
+                easing: spring({velocity: 500}),
+              },
+            },
           }}
         >
           <Presence>
@@ -296,58 +350,92 @@ export function SectionScrollableImage(
               </Box>
             </Show>
           </Presence>
+        </Motion.div>
 
+        <Motion.div
+          animate={{
+            transform: `translate(-50%, ${
+              props.progress >= 66 ? '-40%' : '-50%'
+            })`,
+          }}
+          class={styles.snippetBox}
+        >
           <Motion.div
-            data-theme-mode={'dark'}
-            class={styles.theme}
-            style={{
-              'background-color': synthwave84Theme.properties.terminal.main,
-              'border-radius': '22px',
-              overflow: 'hidden',
-            }}
             animate={{
-              boxShadow:
-                props.progress >= 33 ? themeVars.boxShadow['2xl'] : undefined,
+              padding: props.progress >= 66 ? '32px' : 0,
+              borderRadius: themeVars.borderRadius.xl,
+              background: props.progress >= 66 ? backgrounds[1] : 'transparent',
+              transition: {
+                padding: {
+                  easing: spring({velocity: 500}),
+                },
+              },
             }}
           >
-            <FadeInOutTransition show={props.progress >= 33}>
-              <TerminalGlassReflection />
-            </FadeInOutTransition>
+            <Motion.div
+              data-theme-mode={'dark'}
+              class={styles.theme}
+              style={{
+                'background-color': synthwave84Theme.properties.terminal.main,
+                'border-radius': '22px',
+                overflow: 'hidden',
+              }}
+              animate={{
+                boxShadow:
+                  props.progress >= 40
+                    ? 'rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px'
+                    : undefined,
+              }}
+            >
+              <FadeInOutTransition show={props.progress >= 45}>
+                <TerminalGlassReflection />
+              </FadeInOutTransition>
 
-            <Presence>
-              <Show when={props.progress >= 45}>
-                <div class={styles.header} data-accent-visible={true}>
-                  <div class={styles.headerIconRow}>
-                    <div
-                      class={styles.headerIconRowCircle}
-                      style={assignInlineVars({
-                        [backgroundColorVar]: styles.vars.controls.red,
-                      })}
-                    />
-                    <div
-                      class={styles.headerIconRowCircle}
-                      style={assignInlineVars({
-                        [backgroundColorVar]: styles.vars.controls.yellow,
-                      })}
-                    />
-                    <div
-                      class={styles.headerIconRowCircle}
-                      style={assignInlineVars({
-                        [backgroundColorVar]: styles.vars.controls.green,
-                      })}
-                    />
-                  </div>
+              <Presence>
+                <Motion.div
+                  animate={{
+                    height: props.progress >= 33 ? '56px' : '0',
+                    overflow: 'hidden',
+                    transition: {
+                      height: {
+                        easing: spring({velocity: 150}),
+                      },
+                    },
+                  }}
+                >
+                  <div class={styles.header} data-accent-visible={true}>
+                    <div class={styles.headerIconRow}>
+                      <div
+                        class={styles.headerIconRowCircle}
+                        style={assignInlineVars({
+                          [backgroundColorVar]: styles.vars.controls.red,
+                        })}
+                      />
+                      <div
+                        class={styles.headerIconRowCircle}
+                        style={assignInlineVars({
+                          [backgroundColorVar]: styles.vars.controls.yellow,
+                        })}
+                      />
+                      <div
+                        class={styles.headerIconRowCircle}
+                        style={assignInlineVars({
+                          [backgroundColorVar]: styles.vars.controls.green,
+                        })}
+                      />
+                    </div>
 
-                  {/* <Show when={props.showTab}>
+                    {/* <Show when={props.showTab}>
                     <TerminalWindowTabList
                       readOnly={props.readonlyTab}
                       accent={props.accentVisible && !props.alternativeTheme}
                     />
                   </Show> */}
-                </div>
-              </Show>
-            </Presence>
-            <CodeBox />
+                  </div>
+                </Motion.div>
+              </Presence>
+              <CodeBox />
+            </Motion.div>
           </Motion.div>
         </Motion.div>
       </div>
@@ -383,7 +471,7 @@ function CodeBox() {
       },
       {
         target: document.querySelector(`.${sectionWrapper}`),
-        offset: ['-30%', '50% end'],
+        offset: ['-10%', '50% end'],
       },
     );
   });
@@ -427,7 +515,7 @@ function CodeEditor(props: {code: string}) {
             javascript({jsx: true, typescript: true}),
             synthwave84Theme.editorTheme,
             EditorView.theme({
-              '&': {
+              '.cm-content': {
                 fontFamily: 'Jetbrains Mono',
               },
             }),
