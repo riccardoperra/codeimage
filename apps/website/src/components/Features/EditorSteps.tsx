@@ -1,4 +1,4 @@
-import {githubDarkTheme} from '@codeimage/highlight/githubDark';
+import {synthwave84Theme} from '@codeimage/highlight/synthwave84';
 import {
   Badge,
   Box,
@@ -7,6 +7,8 @@ import {
   Text,
   themeVars,
 } from '@codeimage/ui';
+import {backgroundColorVar} from '@codeimage/ui';
+import {FadeInOutTransition} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {javascript} from '@codemirror/lang-javascript';
 import {EditorState, StateEffect} from '@codemirror/state';
@@ -46,6 +48,7 @@ import {
 } from '~/components/Features/OpenSource.css';
 import {scaffoldTheme} from '~/components/Features/Sidebar/PropertyEditor/SidebarPopoverHost.css';
 import * as styles from './EditorSteps.css';
+import {TerminalGlassReflection} from './Sidebar/GlassReflection/TerminalGlassReflection';
 
 const sections = [
   {
@@ -294,7 +297,56 @@ export function SectionScrollableImage(
             </Show>
           </Presence>
 
-          <Motion.div>
+          <Motion.div
+            data-theme-mode={'dark'}
+            class={styles.theme}
+            style={{
+              'background-color': synthwave84Theme.properties.terminal.main,
+              'border-radius': '22px',
+              overflow: 'hidden',
+            }}
+            animate={{
+              boxShadow:
+                props.progress >= 33 ? themeVars.boxShadow['2xl'] : undefined,
+            }}
+          >
+            <FadeInOutTransition show={props.progress >= 33}>
+              <TerminalGlassReflection />
+            </FadeInOutTransition>
+
+            <Presence>
+              <Show when={props.progress >= 45}>
+                <div class={styles.header} data-accent-visible={true}>
+                  <div class={styles.headerIconRow}>
+                    <div
+                      class={styles.headerIconRowCircle}
+                      style={assignInlineVars({
+                        [backgroundColorVar]: styles.vars.controls.red,
+                      })}
+                    />
+                    <div
+                      class={styles.headerIconRowCircle}
+                      style={assignInlineVars({
+                        [backgroundColorVar]: styles.vars.controls.yellow,
+                      })}
+                    />
+                    <div
+                      class={styles.headerIconRowCircle}
+                      style={assignInlineVars({
+                        [backgroundColorVar]: styles.vars.controls.green,
+                      })}
+                    />
+                  </div>
+
+                  {/* <Show when={props.showTab}>
+                    <TerminalWindowTabList
+                      readOnly={props.readonlyTab}
+                      accent={props.accentVisible && !props.alternativeTheme}
+                    />
+                  </Show> */}
+                </div>
+              </Show>
+            </Presence>
             <CodeBox />
           </Motion.div>
         </Motion.div>
@@ -331,7 +383,7 @@ function CodeBox() {
       },
       {
         target: document.querySelector(`.${sectionWrapper}`),
-        offset: ['0%', '50% end'],
+        offset: ['-30%', '50% end'],
       },
     );
   });
@@ -373,7 +425,7 @@ function CodeEditor(props: {code: string}) {
         editorView.dispatch({
           effects: StateEffect.reconfigure.of([
             javascript({jsx: true, typescript: true}),
-            githubDarkTheme.editorTheme,
+            synthwave84Theme.editorTheme,
             EditorView.theme({
               '&': {
                 fontFamily: 'Jetbrains Mono',

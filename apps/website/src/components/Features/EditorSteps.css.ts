@@ -1,6 +1,7 @@
 import {themeVars} from '@codeimage/ui';
+import {backgroundColorVar} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
-import {createVar, style} from '@vanilla-extract/css';
+import {createTheme, createVar, fallbackVar, style} from '@vanilla-extract/css';
 
 export const sectionCount = createVar();
 const sectionHeight = createVar();
@@ -189,4 +190,62 @@ export const twitterBadge = style({
   position: 'relative',
   borderRadius: themeVars.borderRadius.lg,
   overflow: 'hidden',
+});
+
+export const [theme, vars] = createTheme({
+  controls: {
+    red: '#ff5f57',
+    yellow: '#febc2e',
+    green: '#28c840',
+  },
+});
+
+export const headerIconRow = style({
+  height: '56px',
+  alignItems: 'center',
+  display: 'flex',
+  paddingLeft: themeVars.spacing['4'],
+  columnGap: themeVars.spacing['2'],
+});
+
+export const headerIconRowCircle = style({
+  selectors: {
+    [`${headerIconRow} &`]: {
+      width: '15px',
+      height: '15px',
+      margin: 'auto 0',
+      borderRadius: themeVars.borderRadius.full,
+      backgroundColor: fallbackVar(
+        backgroundColorVar,
+        themeVars.backgroundColor.gray['500'],
+      ),
+    },
+  },
+});
+
+export const terminalVars = {
+  headerBackgroundColor: createVar(),
+};
+
+export const header = style({
+  display: 'flex',
+  alignItems: 'center',
+  position: 'relative',
+  height: '56px',
+  transition: 'background-color .2s ease-in-out',
+
+  selectors: {
+    '[data-theme-mode=light] &[data-accent-visible=true]': {
+      backgroundColor: fallbackVar(
+        terminalVars.headerBackgroundColor,
+        `rgba(0, 0, 0, .06)`,
+      ),
+    },
+    '[data-theme-mode=dark] &[data-accent-visible=true]': {
+      backgroundColor: fallbackVar(
+        terminalVars.headerBackgroundColor,
+        `rgba(255, 255, 255, .06)`,
+      ),
+    },
+  },
 });
