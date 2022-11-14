@@ -153,7 +153,7 @@ export function SectionScrollableImage(
 
   const backgrounds = {
     0: 'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
-    1: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
+    1: 'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
     2: 'linear-gradient(-45deg, #402662 0%, #8000FF 100%)',
   };
 

@@ -130,6 +130,7 @@ export const editorImageCardContainer = style({
   position: 'relative',
   flex: 1,
   display: 'flex',
+  borderRadius: themeVars.borderRadius.xl,
 });
 
 export const editorImageCardBackdrop = style({
@@ -157,7 +158,7 @@ export const editorBox = style({
   width: '600px',
   height: 'auto',
   padding: themeVars.spacing[6],
-  backgroundColor: '#00000085',
+  backgroundColor: 'rgba(0,0,0,.7)',
   borderRadius: themeVars.borderRadius.lg,
   fontSize: '15px',
 });
