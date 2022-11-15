@@ -3,7 +3,7 @@ import {createVar, style} from '@vanilla-extract/css';
 
 export const sectionWrapper = style({
   backgroundColor: '#000',
-  height: '100%',
+  height: '200vh',
   '@media': {
     '(min-width: 748px)': {
       height: '300vh',

@@ -3,7 +3,7 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, onMount} from 'solid-js';
 import * as styles from './EditorSteps.css';
 import {scroll} from 'motion';
-import {StepCardScene} from './StepCardScene/StepCardScene';
+import {StepCardArea} from './StepCardScene/StepCardScene';
 import {injectEditorScene} from './scene';
 import {EditorScene} from './EditorScene/EditorScene';
 
@@ -20,7 +20,7 @@ export function EditorSteps() {
   const backdropBackground = () => backgrounds[scene.currentStep];
 
   onMount(() => {
-    scroll(({y}) => scene.setProgress(y.progress * 100), {
+    scroll(({y}) => scene.setProgress(Math.floor(y.progress * 100)), {
       target: ref,
     });
   });
@@ -40,7 +40,7 @@ export function EditorSteps() {
           })}
           class={styles.backdrop}
         />
-        <StepCardScene animationProgress={scene.progress()} />
+        <StepCardArea animationProgress={scene.progress()} />
         <EditorScene animationProgress={scene.progress()} />
       </div>
     </section>

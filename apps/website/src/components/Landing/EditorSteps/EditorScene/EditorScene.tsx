@@ -5,7 +5,14 @@ import {style} from '@vanilla-extract/css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSign} from 'crypto';
 import {spring} from 'motion';
-import {createSignal, onMount} from 'solid-js';
+import {
+  createEffect,
+  createSignal,
+  onMount,
+  on,
+  createMemo,
+  onCleanup,
+} from 'solid-js';
 import {CodeEditor} from '../CodeEditor/CodeEditor';
 import {injectEditorScene} from '../scene';
 import * as styles from './EditorScene.css';
@@ -20,10 +27,39 @@ interface EditorSceneProps {
   animationProgress: number;
 }
 
+export function getScaleByRatio(
+  parent: {width: number; height: number},
+  child: {width: number; height: number},
+  offset = 1,
+): number {
+  if (!parent || !child) {
+    return 1;
+  }
+
+  if (child.width > parent.width && child.height > parent.height) {
+    const hRatio = parent.width / child.width;
+    const vRatio = parent.height / child.height;
+    return Math.min(hRatio, vRatio) / offset;
+  } else {
+    if (child.height > parent.height) {
+      return parent.height / child.height / offset;
+    }
+
+    if (child.width > parent.width) {
+      return parent.width / child.width / offset;
+    }
+  }
+  return 1;
+}
+
 export function EditorScene(props: EditorSceneProps) {
+  const [containerRef, setContainerRef] = createSignal<HTMLDivElement>();
   const scene = injectEditorScene();
   const [codeAnimationProgress, setCodeAnimationProgress] =
     createSignal<number>();
+
+  const [containerHeight, setContainerHeight] = createSignal();
+  const [scale, setScale] = createSignal<number>(1);
 
   const codeExample =
     'function Counter() {\n' +
@@ -66,9 +102,41 @@ export function EditorScene(props: EditorSceneProps) {
   const centeredWrapperTransform = () =>
     props.animationProgress >= 66 ? '-40%' : '-50%';
 
+  function calculateScale(el: HTMLElement) {
+    if (!el) {
+      return 1;
+    }
+    const scale = getScaleByRatio(
+      {width: el.clientWidth, height: el.clientHeight},
+      {width: 624, height: 612},
+      1.1,
+    );
+    return scale;
+  }
+
+  onMount(() => {
+    const el = containerRef();
+    const observer = new ResizeObserver(entries => {
+      setContainerHeight(entries[0].target.clientHeight);
+    });
+    observer.observe(el);
+
+    if (!el) {
+      return 1;
+    }
+    setScale(calculateScale(el));
+    createEffect(
+      on(containerHeight, () => {
+        setScale(calculateScale(el));
+      }),
+    );
+    onCleanup(() => observer.unobserve(el));
+  });
+
   return (
     <div
       class={styles.container}
+      ref={setContainerRef}
       style={assignInlineVars({
         [backgroundColorVar]: backgrounds[scene.currentStep],
       })}
@@ -85,66 +153,73 @@ export function EditorScene(props: EditorSceneProps) {
         <CircularProgress progress={props.animationProgress} />
       </Motion.div>
 
-      <TwitterCard visible={props.animationProgress > 66} />
-
-      <Motion.div
-        animate={{
-          transform: `translate(-50%, ${centeredWrapperTransform()})`,
-        }}
-        class={styles2.centeredWrapper}
+      <div
+        class={styles.fixScaleContainer}
+        style={assignInlineVars({
+          [styles.editorContainerScale]: String(scale()),
+        })}
       >
+        <TwitterCard visible={props.animationProgress > 66} />
+
         <Motion.div
-          class={`${styles2.snippetTheme} ${styles2.canvas}`}
           animate={{
-            padding: props.animationProgress >= 66 ? '32px' : 0,
-            background:
-              props.animationProgress >= 66 ? backgrounds[1] : 'transparent',
-            transition: {
-              padding: {
-                easing: spring({velocity: 500}),
-              },
-            },
+            transform: `translate(-50%, ${centeredWrapperTransform()})`,
           }}
+          class={styles2.centeredWrapper}
         >
           <Motion.div
-            data-theme-mode={'dark'}
-            class={styles2.canvasContent}
-            style={{
-              'background-color': synthwave84Theme.properties.terminal.main,
-            }}
+            class={`${styles2.snippetTheme} ${styles2.canvas}`}
             animate={{
-              boxShadow:
-                props.animationProgress >= 40
-                  ? styles2.snippetThemeVars.contentShadow
-                  : undefined,
+              padding: props.animationProgress >= 66 ? '32px' : 0,
+              background:
+                props.animationProgress >= 66 ? backgrounds[1] : 'transparent',
+              transition: {
+                padding: {
+                  easing: spring({velocity: 500}),
+                },
+              },
             }}
           >
-            <FadeInOutTransition show={props.animationProgress >= 45}>
-              <TerminalGlassReflection />
-            </FadeInOutTransition>
-
             <Motion.div
+              data-theme-mode={'dark'}
+              class={styles2.canvasContent}
+              style={{
+                'background-color': synthwave84Theme.properties.terminal.main,
+              }}
               animate={{
-                height: props.animationProgress >= 33 ? '56px' : '0',
-                overflow: 'hidden',
-                transition: {
-                  height: {
-                    easing: spring({velocity: 150}),
-                  },
-                },
+                boxShadow:
+                  props.animationProgress >= 40
+                    ? styles2.snippetThemeVars.contentShadow
+                    : undefined,
               }}
             >
-              <div class={styles2.snippetHeader} data-accent-visible={true}>
-                <SnippetControls />
+              <FadeInOutTransition show={props.animationProgress >= 45}>
+                <TerminalGlassReflection />
+              </FadeInOutTransition>
+
+              <Motion.div
+                animate={{
+                  height: props.animationProgress >= 33 ? '56px' : '0px',
+                  overflow: 'hidden',
+                  transition: {
+                    height: {
+                      easing: spring({velocity: 150}),
+                    },
+                  },
+                }}
+              >
+                <div class={styles2.snippetHeader} data-accent-visible={true}>
+                  <SnippetControls />
+                </div>
+              </Motion.div>
+
+              <div class={styles2.snippet}>
+                <CodeEditor code={visibleCode()} />
               </div>
             </Motion.div>
-
-            <div class={styles2.snippet}>
-              <CodeEditor code={visibleCode()} />
-            </div>
           </Motion.div>
         </Motion.div>
-      </Motion.div>
+      </div>
     </div>
   );
 }

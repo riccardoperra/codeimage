@@ -1,5 +1,5 @@
 import {backgroundColorVar, themeVars} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {createVar, style} from '@vanilla-extract/css';
 
 export const container = style([
   {
@@ -24,4 +24,13 @@ export const circularProgressBox = style({
   justifyContent: 'center',
   height: '75px',
   width: '75px',
+});
+
+export const editorContainerScale = createVar();
+
+export const fixScaleContainer = style({
+  position: 'absolute',
+  left: '50%',
+  top: '50%',
+  transform: `translate(-50%, -50%) scale(${editorContainerScale})`,
 });

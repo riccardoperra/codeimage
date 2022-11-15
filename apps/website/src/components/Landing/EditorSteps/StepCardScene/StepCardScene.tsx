@@ -5,7 +5,7 @@ interface StepCardAreaProps {
   animationProgress: number;
 }
 
-export function StepCardScene(props: StepCardAreaProps) {
+export function StepCardArea(props: StepCardAreaProps) {
   return (
     <div class={styles.container}>
       <div class={styles.flexibleContent}>
