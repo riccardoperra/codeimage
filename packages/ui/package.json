@@ -7,6 +7,7 @@
   "files": [
     "dist"
   ],
+  "source": "./src/index.tsx",
   "sideEffects": [
     "*.vanilla.css.ts.css",
     "dist/esm/lib/themes/darkTheme.css.vanilla.js",
