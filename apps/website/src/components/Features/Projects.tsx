@@ -63,7 +63,11 @@ export function Projects() {
           </div>
           <div class={styles.imageSection}>
             <div class={styles.imageWrapper}>
-              <img class={styles.image} src={'/projects-showcase.png'} />
+              <img
+                class={styles.image}
+                loading={'lazy'}
+                src={'/projects-showcase.png'}
+              />
             </div>
           </div>
         </div>

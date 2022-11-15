@@ -142,7 +142,11 @@ export function OpenSource() {
                 return (
                   <Box class={contributorContainer}>
                     <Badge size={'md'} theme={userBadge} variant={'rounded'}>
-                      <img class={badgePicture} src={contributor.avatar_url} />
+                      <img
+                        class={badgePicture}
+                        loading={'lazy'}
+                        src={contributor.avatar_url}
+                      />
                     </Badge>
                     <Text size={'xl'} class={contributorName}>
                       {contributor.login}

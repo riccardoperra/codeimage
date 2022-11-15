@@ -68,7 +68,7 @@ export function MainPage() {
         })}
       >
         <div class={styles.imageBox}>
-          <img class={styles.imageLeft} src={mainImage} />
+          <img class={styles.imageLeft} loading={'lazy'} src={mainImage} />
         </div>
       </div>
     </div>
