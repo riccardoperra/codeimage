@@ -8,7 +8,7 @@ const enableSsr = !process.env.ENABLE_VERCEL_BUILD;
 
 export default defineConfig({
   plugins: [
-    solid({ssr: false, adapter: ssg()}),
+    solid({adapter: ssg(), prerenderRoutes: ['index']}),
     vanillaExtractPlugin({
       esbuildOptions: {
         external: ['solid-js/web'],
@@ -17,6 +17,5 @@ export default defineConfig({
         },
       },
     }),
-    withStaticVercelPreview() as unknown as Plugin,
   ],
 });

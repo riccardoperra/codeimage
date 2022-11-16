@@ -2,7 +2,7 @@
   "name": "@codeimage/website",
   "scripts": {
     "dev": "solid-start dev",
-    "build": "solid-start build",
+    "build": "solid-start build && tsx ./vercel-build-output.ts",
     "start": "solid-start start"
   },
   "type": "module",
