@@ -32,6 +32,6 @@ writeFileSync(join(outputDir, 'config.json'), JSON.stringify(configuration), {
   encoding: 'utf-8',
 });
 
-const distFolder = resolve(join(process.cwd(), 'dist'));
+const distFolder = resolve(join(process.cwd(), 'dist/public'));
 cpSync(distFolder, join(outputDir, 'static'), {recursive: true});
 console.log(chalk.green('Vercel output generated successfully.'));
