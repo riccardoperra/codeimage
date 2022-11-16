@@ -3,7 +3,6 @@ import {style} from '@vanilla-extract/css';
 
 export const main = style({
   backgroundColor: '#000',
-  paddingTop: themeVars.spacing[64],
   paddingBottom: themeVars.spacing[8],
   paddingLeft: themeVars.spacing[2],
   paddingRight: themeVars.spacing[2],

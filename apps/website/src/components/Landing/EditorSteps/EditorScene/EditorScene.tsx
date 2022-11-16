@@ -94,7 +94,7 @@ export function EditorScene(props: EditorSceneProps) {
       },
       {
         target: ref,
-        offset: ['-10%', '50% end'],
+        offset: ['0%', '50% end'],
       },
     );
   });

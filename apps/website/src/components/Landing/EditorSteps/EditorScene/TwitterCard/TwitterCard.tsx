@@ -29,7 +29,7 @@ export function TwitterCard(props: TwitterCardProps) {
   const transform = () =>
     props.visible
       ? `translate(-50%, -50%) scale(1)`
-      : `translate(-50%, -50%) scale(0)`;
+      : `translate(-50%, 50%) scale(0)`;
 
   // >66
 
@@ -39,7 +39,9 @@ export function TwitterCard(props: TwitterCardProps) {
       animate={{
         transform: transform(),
         transition: {
-          easing: spring({velocity: 500}),
+          transform: {
+            easing: spring({velocity: 500}),
+          },
         },
       }}
     >

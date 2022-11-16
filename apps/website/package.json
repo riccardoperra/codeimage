@@ -31,6 +31,7 @@
     "solid-codemirror": "^2.0.2",
     "solid-js": "^1.6.0",
     "solid-start": "^0.2.0",
+    "solid-start-static": "0.2.5",
     "solid-start-vercel": "^0.2.5",
     "undici": "^5.11.0"
   },
