@@ -1,8 +1,7 @@
-import {ComingSoon} from '~/components/Features/ComingSoon';
+import {ComingSoon} from '~/components/Landing/ComingSoon/ComingSoon';
 import {EditorSteps} from '~/components/Landing/EditorSteps/EditorSteps';
-
-import {OpenSource} from '~/components/Features/OpenSource';
-import {Projects} from '~/components/Features/Projects';
+import {OpenSource} from '~/components/Landing/OpenSource/OpenSource';
+import {Projects} from '~/components/Landing/Projects/Projects';
 import {Footer} from '~/components/Footer/Footer';
 import {Header} from '~/components/Header/Header';
 import {MainPage} from '~/components/Main/MainPage';

@@ -12,7 +12,7 @@ import {
   githubLogo,
   main,
   userBadge,
-} from '~/components/Features/OpenSource.css';
+} from './OpenSource.css';
 import contributors from './contributors.json';
 
 interface Contributor {
