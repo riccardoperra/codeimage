@@ -1,19 +1,19 @@
 import {synthwave84Theme} from '@codeimage/highlight/synthwave84';
 import {backgroundColorVar, FadeInOutTransition} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
-import {style} from '@vanilla-extract/css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createSign} from 'crypto';
 import {spring} from 'motion';
 import {
   createEffect,
   createSignal,
   onMount,
   on,
-  createMemo,
   onCleanup,
+  createRoot,
+  Suspense,
+  lazy,
+  Show,
 } from 'solid-js';
-import {CodeEditor} from '../CodeEditor/CodeEditor';
 import {injectEditorScene} from '../scene';
 import * as styles from './EditorScene.css';
 import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
@@ -114,16 +114,18 @@ export function EditorScene(props: EditorSceneProps) {
     return scale;
   }
 
+  const LazyEditor = lazy(() =>
+    import('../CodeEditor/CodeEditor').then(res => ({default: res.CodeEditor})),
+  );
+
+  const [mountEditor, setMountEditor] = createSignal(false);
+
   onMount(() => {
     const el = containerRef();
     const observer = new ResizeObserver(entries => {
       setContainerHeight(entries[0].target.clientHeight);
     });
     observer.observe(el);
-
-    if (!el) {
-      return 1;
-    }
     setScale(calculateScale(el));
     createEffect(
       on(containerHeight, () => {
@@ -131,6 +133,17 @@ export function EditorScene(props: EditorSceneProps) {
       }),
     );
     onCleanup(() => observer.unobserve(el));
+  });
+
+  createRoot(dispose => {
+    createEffect(
+      on(scene.inView, inView => {
+        if (inView) {
+          setMountEditor(true);
+          dispose();
+        }
+      }),
+    );
   });
 
   return (
@@ -214,7 +227,11 @@ export function EditorScene(props: EditorSceneProps) {
               </Motion.div>
 
               <div class={styles2.snippet}>
-                <CodeEditor code={visibleCode()} />
+                <Suspense>
+                  <Show when={mountEditor()}>
+                    <LazyEditor code={visibleCode()} />
+                  </Show>
+                </Suspense>
               </div>
             </Motion.div>
           </Motion.div>
