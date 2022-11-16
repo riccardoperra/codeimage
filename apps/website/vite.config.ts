@@ -8,7 +8,7 @@ const enableSsr = !process.env.ENABLE_VERCEL_BUILD;
 
 export default defineConfig({
   plugins: [
-    solid({ssr: enableSsr, adapter: ssg()}),
+    solid({ssr: false, adapter: ssg()}),
     vanillaExtractPlugin({
       esbuildOptions: {
         external: ['solid-js/web'],
