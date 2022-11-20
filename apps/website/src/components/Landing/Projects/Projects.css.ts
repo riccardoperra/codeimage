@@ -1,47 +1,52 @@
 import {themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
+import {responsiveStyle} from '~/core/responsive';
 
-export const main = style({
-  backgroundColor: '#000',
-  paddingBottom: themeVars.spacing[8],
-  paddingLeft: themeVars.spacing[2],
-  paddingRight: themeVars.spacing[2],
-
-  '@media': {
-    '(min-width: 748px)': {
+export const main = style([
+  {
+    backgroundColor: '#000',
+    paddingBottom: themeVars.spacing[8],
+  },
+  responsiveStyle({
+    mobile: {
+      paddingLeft: themeVars.spacing[4],
+      paddingRight: themeVars.spacing[4],
+    },
+    desktop: {
       paddingLeft: themeVars.spacing[0],
       paddingRight: themeVars.spacing[0],
     },
-  },
-});
+  }),
+]);
 
 export const container = style({
   maxWidth: '80rem',
   margin: 'auto',
 });
 
-export const card = style({
-  border: `1px solid rgb(24 24 27)`,
-  backgroundColor: 'rgb(39 39 42 / 0.25)',
-  placeContent: 'center flex-start',
-  alignItems: 'center',
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  gap: '96px',
-  overflow: 'visible',
-  position: 'relative',
-  flexDirection: 'column',
-  padding: '24px',
-  borderRadius: '48px',
-
-  '@media': {
-    '(min-width: 748px)': {
+export const card = style([
+  {
+    border: `1px solid rgb(24 24 27)`,
+    backgroundColor: 'rgb(39 39 42 / 0.25)',
+    placeContent: 'center flex-start',
+    alignItems: 'center',
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    gap: '96px',
+    overflow: 'visible',
+    position: 'relative',
+    flexDirection: 'column',
+    padding: '24px',
+    borderRadius: '48px',
+  },
+  responsiveStyle({
+    desktop: {
       flexDirection: 'row',
       borderRadius: '96px',
       padding: '48px',
     },
-  },
-});
+  }),
+]);
 
 export const content = style({
   placeContent: 'center',
@@ -54,10 +59,6 @@ export const content = style({
   position: 'relative',
   textAlign: 'center',
   flex: 1,
-
-  // '(min-width: 748px)': {
-  //   flexDirection: 'column',
-  // },
 });
 
 export const storageBadge = style({
@@ -68,31 +69,32 @@ export const storageBadge = style({
   borderRadius: '24px',
 });
 
-export const imageSection = style({
-  flex: '0 0 auto',
-  overflow: 'hidden',
-  position: 'relative',
-  willChange: 'transform',
-  background: themeVars.backgroundColor.green['500'],
-  borderRadius: '48px',
-  opacity: 1,
-  height: '300px',
-  width: '100%',
-
-  '@media': {
-    '(min-width: 768px)': {
+export const imageSection = style([
+  {
+    flex: '0 0 auto',
+    overflow: 'hidden',
+    position: 'relative',
+    willChange: 'transform',
+    background: themeVars.backgroundColor.green['500'],
+    borderRadius: '48px',
+    opacity: 1,
+    height: '300px',
+    width: '100%',
+  },
+  responsiveStyle({
+    desktop: {
       height: '484px',
       borderRadius: '64px',
       flex: 1,
     },
-  },
-});
+  }),
+]);
 
 export const imageWrapper = style({
   aspectRatio: '2 / 1',
   flex: '0 0 auto',
   borderRadius: '32px',
-  height: 'var(--framer-aspect-ratio-supported, 568px)',
+  height: '568px',
   left: '48px',
   overflow: 'visible',
   position: 'absolute',

@@ -1,85 +1,90 @@
 import {themeVars} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
+import {responsiveStyle} from '~/core/responsive';
 
-export const main = style({
-  backgroundColor: '#000',
-  paddingLeft: themeVars.spacing[2],
-  paddingRight: themeVars.spacing[2],
-
-  '@media': {
-    '(min-width: 748px)': {
+export const main = style([
+  {
+    backgroundColor: '#000',
+    paddingLeft: themeVars.spacing[4],
+    paddingRight: themeVars.spacing[4],
+  },
+  responsiveStyle({
+    desktop: {
       paddingLeft: themeVars.spacing[0],
       paddingRight: themeVars.spacing[0],
     },
-  },
-});
+  }),
+]);
 
 export const container = style({
   maxWidth: '80rem',
   margin: 'auto',
 });
 
-export const twoSections = style({
-  display: 'flex',
-  gap: themeVars.spacing['8'],
-  flexDirection: 'column',
-
-  '@media': {
-    'screen and (min-width: 768px)': {
+export const twoSections = style([
+  {
+    display: 'flex',
+    gap: themeVars.spacing['8'],
+    flexDirection: 'column',
+  },
+  responsiveStyle({
+    desktop: {
       flexDirection: 'row',
     },
+  }),
+]);
+
+export const halfCard = style([
+  {
+    border: `1px solid rgb(24 24 27)`,
+    backgroundColor: 'rgb(39 39 42 / 0.25)',
+    placeContent: 'center flex-start',
+    alignItems: 'center',
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    gap: '96px',
+    overflow: 'visible',
+    position: 'relative',
+    flexDirection: 'column',
+    padding: '24px',
+    borderRadius: '24px',
+    flex: 1,
   },
-});
-
-export const halfCard = style({
-  border: `1px solid rgb(24 24 27)`,
-  backgroundColor: 'rgb(39 39 42 / 0.25)',
-  placeContent: 'center flex-start',
-  alignItems: 'center',
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  gap: '96px',
-  overflow: 'visible',
-  position: 'relative',
-  flexDirection: 'column',
-  padding: '24px',
-  borderRadius: '24px',
-  flex: 1,
-
-  '@media': {
-    '(min-width: 748px)': {
+  responsiveStyle({
+    desktop: {
       flexDirection: 'row',
       borderRadius: '48px',
       padding: '48px',
       paddingTop: themeVars.spacing[24],
       paddingBottom: themeVars.spacing[24],
     },
+  }),
+]);
+
+export const card = style([
+  {
+    border: `1px solid rgb(24 24 27)`,
+    backgroundColor: 'rgb(39 39 42 / 0.25)',
+    placeContent: 'center flex-start',
+    alignItems: 'center',
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    gap: '96px',
+    overflow: 'visible',
+    position: 'relative',
+    flexDirection: 'column-reverse',
+    padding: '24px',
+    borderRadius: '24px',
   },
-});
-
-export const card = style({
-  border: `1px solid rgb(24 24 27)`,
-  backgroundColor: 'rgb(39 39 42 / 0.25)',
-  placeContent: 'center flex-start',
-  alignItems: 'center',
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  gap: '96px',
-  overflow: 'visible',
-  position: 'relative',
-  flexDirection: 'column-reverse',
-  padding: '24px',
-  borderRadius: '48px',
-
-  '@media': {
-    '(min-width: 748px)': {
+  responsiveStyle({
+    desktop: {
       flexDirection: 'row',
       borderRadius: '96px',
       padding: '48px',
     },
-  },
-});
+  }),
+]);
 
 export const content = style({
   placeContent: 'center',
@@ -92,10 +97,6 @@ export const content = style({
   position: 'relative',
   textAlign: 'center',
   flex: 1,
-
-  // '(min-width: 748px)': {
-  //   flexDirection: 'column',
-  // },
 });
 
 export const badge = style({
@@ -133,25 +134,26 @@ export const storageBadge = style([
   },
 ]);
 
-export const imageSection = style({
-  flex: '0 0 auto',
-  overflow: 'hidden',
-  position: 'relative',
-  willChange: 'transform',
-  background: themeVars.backgroundColor.purple['500'],
-  borderRadius: '48px',
-  opacity: 1,
-  height: '300px',
-  width: '100%',
-
-  '@media': {
-    '(min-width: 768px)': {
+export const imageSection = style([
+  {
+    flex: '0 0 auto',
+    overflow: 'hidden',
+    position: 'relative',
+    willChange: 'transform',
+    background: themeVars.backgroundColor.purple['500'],
+    borderRadius: '48px',
+    opacity: 1,
+    height: '300px',
+    width: '100%',
+  },
+  responsiveStyle({
+    desktop: {
       height: '484px',
       borderRadius: '64px',
       flex: 1,
     },
-  },
-});
+  }),
+]);
 
 export const imageWrapper = style({
   aspectRatio: '2 / 1',

@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {createVar, keyframes, style} from '@vanilla-extract/css';
+import {createVar, fallbackVar, keyframes, style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
 
 export const progressOpacityEditor = createVar();
@@ -85,7 +85,7 @@ export const imageBox = style([
     borderRadius: '12px',
     overflow: 'hidden',
     background: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
-    transform: `rotateX(15deg) rotateY(-10deg)`,
+    transform: `unset`,
     '::before': {
       position: 'absolute',
       content: '""',
@@ -96,14 +96,19 @@ export const imageBox = style([
       backgroundImage:
         'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
       zIndex: '-1',
-      opacity: progressOpacityEditor,
+      opacity: fallbackVar(progressOpacityEditor, '0'),
     },
   },
   responsiveStyle({
+    mobile: {
+      marginTop: themeVars.spacing[8],
+    },
     desktop: {
+      marginTop: 0,
       width: '60%',
       maxWidth: '1280px',
       borderRadius: '42px',
+      transform: `rotateX(15deg) rotateY(-10deg)`,
     },
   }),
 ]);
@@ -185,8 +190,7 @@ export const imageLeft = style([
     zIndex: 1,
     width: '100%',
     height: '100%',
-    objectFit: 'contain',
-    // aspectRatio: '8/5',
+    objectFit: 'cover',
   },
   responsiveStyle({
     mobile: {

@@ -1,31 +1,40 @@
 import {Box, Button, HStack, Text} from '@codeimage/ui';
+import {Motion} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {animate, scroll, ScrollOffset} from 'motion';
-import {createSignal, onMount} from 'solid-js';
+import {createEffect, createSignal, onMount} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
+import {isMobile} from '@solid-primitives/platform';
+
+function getCssVar(str: string) {
+  return /(--)[^\,\:\)]+/.exec(str)?.[0];
+}
 
 export function MainPage() {
   let section: HTMLElement;
   let image: HTMLImageElement;
+  let imageBox: HTMLElement;
 
   const [progress, setProgress] = createSignal(0);
 
   onMount(() => {
-    scroll(
-      animate(image, {
-        transform: [
-          'rotateX(15deg) rotateY(-10deg)',
-          'rotateX(0deg) rotateY(0deg) translateX(0px)',
-        ],
-      }),
-      {
-        target: section,
-        offset: ['0%', '70%'],
-      },
-    );
+    if (!isMobile) {
+      scroll(
+        animate(image, {
+          transform: [
+            'rotateX(15deg) rotateY(-10deg)',
+            'rotateX(0deg) rotateY(0deg) translateX(0px)',
+          ],
+        }),
+        {
+          target: section,
+          offset: ['0%', '70%'],
+        },
+      );
 
-    scroll(({y}) => setProgress(1 - y.progress), {target: image});
+      scroll(({y}) => setProgress(1 - y.progress), {target: image});
+    }
   });
 
   return (
@@ -55,12 +64,7 @@ export function MainPage() {
           </HStack>
         </Box>
       </div>
-      <div
-        class={styles.imagePerspectiveBox}
-        style={assignInlineVars({
-          [styles.progressOpacityEditor]: `${progress()}`,
-        })}
-      >
+      <div class={styles.imagePerspectiveBox}>
         <div class={styles.imageBox} ref={image}>
           <picture>
             <source

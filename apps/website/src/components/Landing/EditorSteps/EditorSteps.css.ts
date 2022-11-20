@@ -1,16 +1,31 @@
-import {backgroundColorVar} from '@codeimage/ui';
+import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
+import {responsiveStyle} from '~/core/responsive';
 
-export const sectionWrapper = style({
-  backgroundColor: '#000',
-  height: '200vh',
-  '@media': {
-    '(min-width: 748px)': {
+export const sectionWrapper = style([
+  {
+    backgroundColor: '#000',
+    height: '200vh',
+    '@media': {
+      '(min-width: 748px)': {
+        height: '300vh',
+      },
+    },
+    position: 'relative',
+  },
+  responsiveStyle({
+    mobile: {
+      paddingLeft: themeVars.spacing[4],
+      paddingRight: themeVars.spacing[4],
+    },
+    tablet: {
       height: '300vh',
     },
-  },
-  position: 'relative',
-});
+    desktop: {
+      padding: 0,
+    },
+  }),
+]);
 
 export const backdrop = style({
   content: '',
