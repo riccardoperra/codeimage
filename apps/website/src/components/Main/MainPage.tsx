@@ -83,7 +83,7 @@ export function MainPage() {
             />
             <source
               type="image/webp"
-              srcset={'//landing/codeimage_preview_desktop.webp'}
+              srcset={'/landing/codeimage_preview_desktop.webp'}
               media={`(min-width: ${breakpoints.tablet}px)`}
             />
             <img
