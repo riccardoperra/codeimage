@@ -1,5 +1,5 @@
 // @refresh reload
-import {onMount, Suspense} from 'solid-js';
+import {sSuspense} from 'solid-js';
 import {
   Body,
   ErrorBoundary,
