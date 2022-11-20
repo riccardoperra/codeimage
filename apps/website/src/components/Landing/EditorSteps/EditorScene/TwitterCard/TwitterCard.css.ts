@@ -6,7 +6,7 @@ export const card = style({
   padding: themeVars.spacing[12],
   paddingTop: themeVars.spacing[6],
   width: '624px',
-  height: '512px',
+  height: '584px',
   borderRadius: '16px',
   position: 'absolute',
   left: '50%',
