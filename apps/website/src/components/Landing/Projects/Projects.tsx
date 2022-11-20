@@ -63,12 +63,15 @@ export function Projects() {
           </div>
           <div class={styles.imageSection}>
             <div class={styles.imageWrapper}>
-              <img
-                class={styles.image}
-                loading={'lazy'}
-                alt={'Project showcase preview'}
-                src={'/projects-showcase.png'}
-              />
+              <picture>
+                <source type="image/webp" srcset={'/projects-showcase.webp'} />
+                <img
+                  class={styles.image}
+                  loading={'lazy'}
+                  alt={'Project showcase preview'}
+                  src={'/projects-showcase.png'}
+                />
+              </picture>
             </div>
           </div>
         </div>

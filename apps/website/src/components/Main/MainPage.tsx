@@ -4,10 +4,6 @@ import {animate, scroll, ScrollOffset} from 'motion';
 import {createSignal, onMount} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
-import mainImageLite from './codeimage_preview_lite.png';
-import mainImageMobileWebp from './codeimage_preview_mobile_ultra.webp';
-import mainImageMobileX2Webp from './codeimage_preview_mobile.webp';
-import mainImageDesktopWebp from './codeimage_preview_desktop.webp';
 
 export function MainPage() {
   let image: HTMLImageElement;
@@ -77,27 +73,52 @@ export function MainPage() {
           <picture class={styles.imageLeft}>
             <source
               type="image/webp"
-              srcset={mainImageMobileWebp}
+              srcset={'/landing/codeimage_preview_mobile_ultra.webp'}
               media={`(max-width: ${breakpoints.tablet}px)`}
             />
             <source
               type="image/webp"
-              srcset={mainImageMobileX2Webp}
+              srcset={'/landing/codeimage_preview_mobile.webp'}
               media={`(max-width: ${breakpoints.tablet}px)`}
             />
             <source
               type="image/webp"
-              srcset={mainImageDesktopWebp}
+              srcset={'/landing/codeimage_preview_mobile_ultra.webp'}
               media={`(min-width: ${breakpoints.tablet}px)`}
             />
             <img
               class={styles.imageLeft}
-              src={mainImageLite}
+              src={'/landing/codeimage_preview_lite.png'}
               alt={'Preview of CodeImage snippet'}
             />
           </picture>
         </div>
       </div>
     </div>
+  );
+}
+
+export function MainPageImagePreloading() {
+  return (
+    <>
+      <link
+        rel="preload"
+        href="/landing/codeimage_preview_mobile_ultra.webp"
+        as="image"
+        media={`(max-width: ${breakpoints.tablet}px)`}
+      />
+      <link
+        rel="preload"
+        href={'/landing/codeimage_preview_mobile.webp'}
+        as="image"
+        media={`(min-width: ${breakpoints.mobile}) and (max-width: ${breakpoints.tablet}px)`}
+      />
+      <link
+        rel="preload"
+        href={'/landing/codeimage_preview_mobile_ultra.webp'}
+        as="image"
+        media={`(min-width: ${breakpoints.tablet}px)`}
+      />
+    </>
   );
 }

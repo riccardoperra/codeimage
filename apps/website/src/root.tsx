@@ -13,6 +13,7 @@ import {
 } from 'solid-start';
 import './root.css';
 import '@codeimage/ui/themes/darkTheme';
+import {MainPageImagePreloading} from './components/Main/MainPage';
 
 export default function Root() {
   return (
@@ -30,6 +31,7 @@ export default function Root() {
           }}
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
         />
+        <MainPageImagePreloading />
       </Head>
       <Body>
         <Suspense>
