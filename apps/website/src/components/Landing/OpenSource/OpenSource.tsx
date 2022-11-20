@@ -144,7 +144,7 @@ export function OpenSource() {
                     <Badge size={'md'} theme={userBadge} variant={'rounded'}>
                       <img
                         class={badgePicture}
-                        loading={'lazy'}
+                        loading="lazy"
                         src={contributor.avatar_url}
                       />
                     </Badge>

@@ -49,7 +49,11 @@ export function TwitterCard(props: TwitterCardProps) {
         <Box marginBottom={2}>
           <Box class={styles.title} marginBottom={4}>
             <Badge size={'md'} theme={styles.badge} variant={'rounded'}>
-              <img class={styles.badgePicture} src={badgePictureUrl} />
+              <img
+                loading="lazy"
+                class={styles.badgePicture}
+                src={badgePictureUrl}
+              />
             </Badge>
             <Box display={'flex'} flexDirection={'column'}>
               <Text size={'lg'} weight={'bold'}>

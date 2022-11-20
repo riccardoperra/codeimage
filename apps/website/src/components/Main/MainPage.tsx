@@ -3,7 +3,10 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {animate, scroll, ScrollOffset} from 'motion';
 import {createSignal, onMount} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
-import mainImage from './codeimage_preview.png';
+import {breakpoints} from '~/core/breakpoints';
+import mainImageLite from './codeimage_preview_lite.png';
+import mainImageMobileWebp from './codeimage_preview_mobile.webp';
+import mainImageDesktopWebp from './codeimage_preview_desktop.webp';
 
 export function MainPage() {
   let image: HTMLImageElement;
@@ -70,7 +73,23 @@ export function MainPage() {
         })}
       >
         <div class={styles.imageBox} ref={image}>
-          <img class={styles.imageLeft} src={mainImage} />
+          <picture class={styles.imageLeft}>
+            <source
+              type="image/webp"
+              srcset={mainImageMobileWebp}
+              media={`(max-width: ${breakpoints.tablet}px)`}
+            />
+            <source
+              type="image/webp"
+              srcset={mainImageDesktopWebp}
+              media={`(min-width: ${breakpoints.tablet}px)`}
+            />
+            <img
+              class={styles.imageLeft}
+              src={mainImageLite}
+              alt={'Preview of CodeImage snippet'}
+            />
+          </picture>
         </div>
       </div>
     </div>
