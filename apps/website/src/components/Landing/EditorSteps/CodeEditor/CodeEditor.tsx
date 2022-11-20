@@ -1,5 +1,4 @@
-import {EditorView} from '@codemirror/view';
-import {createSignal, onMount} from 'solid-js';
+import {onMount} from 'solid-js';
 
 interface CodeEditorProps {
   code: string;

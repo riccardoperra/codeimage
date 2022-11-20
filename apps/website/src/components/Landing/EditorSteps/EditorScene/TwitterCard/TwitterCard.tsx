@@ -50,6 +50,7 @@ export function TwitterCard(props: TwitterCardProps) {
           <Box class={styles.title} marginBottom={4}>
             <Badge size={'md'} theme={styles.badge} variant={'rounded'}>
               <img
+                alt="Profile picture"
                 loading="lazy"
                 class={styles.badgePicture}
                 src={badgePictureUrl}

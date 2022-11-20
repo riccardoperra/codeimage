@@ -311,6 +311,7 @@ importers:
       '@vanilla-extract/recipes': ^0.2.5
       '@vanilla-extract/vite-plugin': 3.6.1
       motion: 10.14.3
+      rollup-plugin-visualizer: 5.8.3
       solid-codemirror: 2.2.1
       solid-js: ^1.6.0
       solid-start: ^0.2.0
@@ -335,6 +336,7 @@ importers:
       '@vanilla-extract/dynamic': 2.0.2
       '@vanilla-extract/recipes': 0.2.5_@vanilla-extract+css@1.9.1
       motion: 10.14.3
+      rollup-plugin-visualizer: 5.8.3
       solid-codemirror: 2.2.1_ltlj4zuvzutosfoydwaoz4urve
       solid-js: 1.6.1
       solid-start: 0.2.2_pronwpnd5fhegqthg7enyrn3im
@@ -3013,6 +3015,17 @@ packages:
       human-id: 1.0.2
       prettier: 2.7.1
 
+  /@codemirror/autocomplete/6.3.0_mas7qc6nw573zzd4ko43gcp2uy:
+    resolution: {integrity: sha512-4jEvh3AjJZTDKazd10J6ZsCIqaYxDMCeua5ouQxY8hlFIml+nr7le0SgBhT3SIytFBmdzPK3AUhXGuW3T79nVg==}
+    peerDependencies:
+      '@codemirror/state': ^6.0.0
+      '@codemirror/view': ^6.0.0
+    dependencies:
+      '@codemirror/language': 6.2.1
+      '@codemirror/state': 6.1.2
+      '@codemirror/view': 6.3.1
+      '@lezer/common': 1.0.1
+
   /@codemirror/autocomplete/6.3.0_wexih7u53rronqz75khnd5p7z4:
     resolution: {integrity: sha512-4jEvh3AjJZTDKazd10J6ZsCIqaYxDMCeua5ouQxY8hlFIml+nr7le0SgBhT3SIytFBmdzPK3AUhXGuW3T79nVg==}
     peerDependencies:
@@ -3024,6 +3037,7 @@ packages:
       '@codemirror/state': 6.1.2
       '@codemirror/view': 6.3.1
       '@lezer/common': 1.0.1
+    dev: false
 
   /@codemirror/commands/6.1.2:
     resolution: {integrity: sha512-sO3jdX1s0pam6lIdeSJLMN3DQ6mPEbM4yLvyKkdqtmd/UDwhXA5+AwFJ89rRXm6vTeOXBsE5cAmlos/t7MJdgg==}
@@ -3075,7 +3089,7 @@ packages:
   /@codemirror/lang-javascript/6.1.0:
     resolution: {integrity: sha512-wAWEY1Wdis2cKDy9A5q/rUmzLHFbZgoupJBcGaeMMsDPi68Rm90NsmzAEODE5kW8mYdRKFhQ157WJghOZ3yYdg==}
     dependencies:
-      '@codemirror/autocomplete': 6.3.0_wexih7u53rronqz75khnd5p7z4
+      '@codemirror/autocomplete': 6.3.0_mas7qc6nw573zzd4ko43gcp2uy
       '@codemirror/language': 6.2.1
       '@codemirror/lint': 6.0.0
       '@codemirror/state': 6.1.2
@@ -12528,6 +12542,21 @@ packages:
       serialize-javascript: 4.0.0
       terser: 5.15.1
     dev: true
+
+  /rollup-plugin-visualizer/5.8.3:
+    resolution: {integrity: sha512-QGJk4Bqe4AOat5AjipOh8esZH1nck5X2KFpf4VytUdSUuuuSwvIQZjMGgjcxe/zXexltqaXp5Vx1V3LmnQH15Q==}
+    engines: {node: '>=14'}
+    hasBin: true
+    peerDependencies:
+      rollup: 2.x || 3.x
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      open: 8.4.0
+      source-map: 0.7.4
+      yargs: 17.6.0
+    dev: false
 
   /rollup-plugin-visualizer/5.8.3_rollup@2.79.1:
     resolution: {integrity: sha512-QGJk4Bqe4AOat5AjipOh8esZH1nck5X2KFpf4VytUdSUuuuSwvIQZjMGgjcxe/zXexltqaXp5Vx1V3LmnQH15Q==}

@@ -145,6 +145,7 @@ export function OpenSource() {
                       <img
                         class={badgePicture}
                         loading="lazy"
+                        alt={`${contributor.login} Github profile picture`}
                         src={contributor.avatar_url}
                       />
                     </Badge>

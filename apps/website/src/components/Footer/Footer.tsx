@@ -12,25 +12,28 @@ export function Footer() {
           <HStack spacing={'8'}>
             <Link
               class={styles.link}
+              underline={true}
               as={A}
               href={'https://github.com/riccardoperra/codeimage'}
-            >
-              Github
-            </Link>
+              title="Github repository"
+              children={'Github'}
+            />
             <Link
               class={styles.link}
+              underline={true}
               as={A}
               href={'https://github.com/riccardoperra/codeimage/issues'}
-            >
-              Issues & Feedback
-            </Link>
+              title="Issues"
+              children={'Issues & Feedback'}
+            />
             <Link
               class={styles.link}
+              underline={true}
               as={A}
               href={'https://github.com/riccardoperra/codeimage/releases'}
-            >
-              Issues & Feedback
-            </Link>
+              title="Releases"
+              children={'Releases'}
+            />
           </HStack>
         </div>
       </div>

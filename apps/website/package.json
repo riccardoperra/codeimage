@@ -28,6 +28,7 @@
     "@vanilla-extract/dynamic": "^2.0.2",
     "@vanilla-extract/recipes": "^0.2.5",
     "motion": "10.14.3",
+    "rollup-plugin-visualizer": "5.8.3",
     "solid-codemirror": "2.2.1",
     "solid-js": "^1.6.0",
     "solid-start": "^0.2.0",
