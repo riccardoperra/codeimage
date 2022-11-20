@@ -6,6 +6,7 @@ import {
   FileRoutes,
   Head,
   Html,
+  Link,
   Meta,
   Routes,
   Scripts,
@@ -22,9 +23,18 @@ export default function Root() {
         <Title>CodeImage</Title>
         <Meta charset="utf-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
+        <Meta name="title" content="CodeImage" />
+        <Meta
+          name="description"
+          content="CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code"
+        />
+        <Link rel="preconnect" href="https://fonts.googleapis.com" />
+        <Link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
+        <Link
           rel="stylesheet"
           media="print"
           data-defer-font="codemirror"
