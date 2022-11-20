@@ -5,7 +5,8 @@ import {createSignal, onMount} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
 import mainImageLite from './codeimage_preview_lite.png';
-import mainImageMobileWebp from './codeimage_preview_mobile.webp';
+import mainImageMobileWebp from './codeimage_preview_mobile_ultra.webp';
+import mainImageMobileX2Webp from './codeimage_preview_mobile.webp';
 import mainImageDesktopWebp from './codeimage_preview_desktop.webp';
 
 export function MainPage() {
@@ -77,6 +78,11 @@ export function MainPage() {
             <source
               type="image/webp"
               srcset={mainImageMobileWebp}
+              media={`(max-width: ${breakpoints.tablet}px)`}
+            />
+            <source
+              type="image/webp"
+              srcset={mainImageMobileX2Webp}
               media={`(max-width: ${breakpoints.tablet}px)`}
             />
             <source

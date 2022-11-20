@@ -4,7 +4,7 @@ interface CodeEditorProps {
   code: string;
 }
 
-export function CodeEditor(props: {code: string}) {
+export function CodeEditor(props: CodeEditorProps) {
   let ref: HTMLDivElement;
 
   onMount(() => {

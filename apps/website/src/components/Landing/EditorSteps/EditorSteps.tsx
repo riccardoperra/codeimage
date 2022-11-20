@@ -20,9 +20,13 @@ export function EditorSteps() {
   const backdropBackground = () => backgrounds[scene.currentStep];
 
   onMount(() => {
-    const intersection = new IntersectionObserver(entry => {
-      scene.setInView(entry[0].isIntersecting);
-    });
+    const intersection = new IntersectionObserver(
+      entry => {
+        console.log(entry[0].isIntersecting);
+        scene.setInView(entry[0].isIntersecting);
+      },
+      {threshold: 0.15},
+    );
     intersection.observe(ref);
 
     scroll(({y}) => scene.setProgress(Math.floor(y.progress * 100)), {

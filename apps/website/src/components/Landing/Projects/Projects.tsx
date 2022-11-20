@@ -66,6 +66,7 @@ export function Projects() {
               <img
                 class={styles.image}
                 loading={'lazy'}
+                alt={'Project showcase preview'}
                 src={'/projects-showcase.png'}
               />
             </div>

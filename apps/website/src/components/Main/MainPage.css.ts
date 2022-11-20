@@ -8,7 +8,7 @@ const dotColor = createVar();
 
 export const main = style({
   vars: {
-    [dotColor]: '#dddddd50',
+    [dotColor]: '#dddddd40',
   },
   display: 'flex',
   margin: 'auto',
@@ -17,9 +17,9 @@ export const main = style({
   height: '100%',
   width: '100%',
   minHeight: '100%',
-  backgroundImage: `radial-gradient(${dotColor} 1.5px, transparent 1.5px),radial-gradient(${dotColor} 1.5px, transparent 1.5px)`,
-  backgroundSize: 'calc(20 * 1.5px) calc(20 * 1.5px)',
-  backgroundPosition: '0 0,calc(10 * 1.5px) calc(10 * 1.5px)',
+  backgroundImage: `radial-gradient(${dotColor} 1px, transparent 1px),radial-gradient(${dotColor} 1px, transparent 1px)`,
+  backgroundSize: 'calc(20 * 1px) calc(20 * 1px)',
+  backgroundPosition: '0 0,calc(10 * 1px) calc(10 * 1px)',
   position: 'relative',
 
   '::before': {

@@ -1,5 +1,4 @@
-import {synthwave84Theme} from '@codeimage/highlight/synthwave84';
-import {backgroundColorVar, FadeInOutTransition} from '@codeimage/ui';
+import {backgroundColorVar} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {spring} from 'motion';
@@ -116,7 +115,9 @@ export function EditorScene(props: EditorSceneProps) {
   }
 
   const LazyEditor = lazy(() =>
-    import('../CodeEditor/CodeEditor').then(res => ({default: res.CodeEditor})),
+    Promise.all([import('../CodeEditor/CodeEditor')]).then(([m]) => ({
+      default: m.CodeEditor,
+    })),
   );
 
   const [mountEditor, setMountEditor] = createSignal(false);
@@ -198,7 +199,8 @@ export function EditorScene(props: EditorSceneProps) {
               data-theme-mode={'dark'}
               class={styles2.canvasContent}
               style={{
-                'background-color': synthwave84Theme.properties.terminal.main,
+                // Synthwave background color -> We posticipate the bundle fetching
+                'background-color': '#261f3e',
               }}
               animate={{
                 boxShadow:
@@ -207,9 +209,11 @@ export function EditorScene(props: EditorSceneProps) {
                     : undefined,
               }}
             >
-              <FadeInOutTransition show={props.animationProgress >= 45}>
+              <Motion.div
+                animate={{opacity: props.animationProgress >= 45 ? 1 : 0}}
+              >
                 <TerminalGlassReflection />
-              </FadeInOutTransition>
+              </Motion.div>
 
               <Motion.div
                 animate={{
@@ -228,7 +232,7 @@ export function EditorScene(props: EditorSceneProps) {
               </Motion.div>
 
               <div class={styles2.snippet}>
-                <Suspense>
+                <Suspense fallback={<></>}>
                   <Show when={mountEditor()}>
                     <LazyEditor code={visibleCode()} />
                   </Show>
