@@ -1,5 +1,6 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, keyframes, style} from '@vanilla-extract/css';
+import {responsiveStyle} from '~/core/responsive';
 
 export const progressOpacityEditor = createVar();
 
@@ -32,24 +33,32 @@ export const main = style({
   },
 });
 
-export const content = style({
-  width: '80%',
-  margin: 'auto',
-  marginTop: '56px',
-  zIndex: 1,
+export const content = style([
+  {
+    width: '80%',
+    marginTop: '56px',
+    zIndex: 1,
 
-  paddingTop: themeVars.spacing[24],
+    paddingTop: themeVars.spacing[24],
+    paddingLeft: themeVars.spacing[4],
+    paddingRight: themeVars.spacing[4],
 
-  '@media': {
-    [`(min-width: 1280px)`]: {
-      width: '1280px',
-    },
+    display: 'flex',
+    alignItems: 'center',
+    flex: 1,
   },
-
-  display: 'flex',
-  alignItems: 'center',
-  flex: 1,
-});
+  responsiveStyle({
+    mobile: {
+      paddingTop: themeVars.spacing[12],
+    },
+    desktop: {
+      width: '1280px',
+      paddingTop: themeVars.spacing[24],
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    },
+  }),
+]);
 
 export const bgAnimation = keyframes({
   '0%': {
@@ -95,32 +104,59 @@ export const imageBox = style({
   },
 });
 
-export const imagePerspectiveBox = style({
-  overflow: 'visible',
-  position: 'relative',
-  perspective: '1000px',
-  paddingBottom: '200px',
-});
+export const imagePerspectiveBox = style([
+  {
+    overflow: 'visible',
+    position: 'relative',
+    perspective: '1000px',
+    paddingLeft: themeVars.spacing[4],
+    paddingRight: themeVars.spacing[4],
+  },
+  responsiveStyle({
+    mobile: {
+      paddingBottom: themeVars.spacing[12],
+    },
+    desktop: {
+      paddingBottom: '200px',
+    },
+  }),
+]);
 
-export const textBox = style({
-  flex: 1,
-  width: '100%',
-  display: 'flex',
-  alignItems: 'flex-start',
-});
+export const textBox = style([
+  {
+    flex: 1,
+    width: '100%',
+    display: 'flex',
+    alignItems: 'flex-start',
+  },
+  responsiveStyle({
+    mobile: {
+      marginTop: 0,
+      paddingTop: 0,
+    },
+  }),
+]);
 
-export const text = style({
-  width: '100%',
-  maxWidth: '860px',
-  textAlign: 'left',
-  fontSize: '44px',
-  lineHeight: '100%',
-  '@media': {
-    '(min-width: 960px)': {
+export const text = style([
+  {
+    width: '100%',
+    maxWidth: '860px',
+    textAlign: 'left',
+    fontSize: '44px',
+    lineHeight: '100%',
+  },
+  responsiveStyle({
+    mobile: {
+      fontSize: '44px',
+    },
+    tablet: {
+      fontSize: '64px',
+    },
+    desktop: {
       fontSize: '84px',
     },
-  },
-});
+  }),
+]);
 
 export const backdropTransform = keyframes({
   '0%': {
@@ -181,3 +217,14 @@ export const giantButton = style({
     },
   },
 });
+
+export const ctaContainer = style(
+  responsiveStyle({
+    mobile: {
+      marginTop: themeVars.spacing[4],
+    },
+    desktop: {
+      marginTop: themeVars.spacing[12],
+    },
+  }),
+);

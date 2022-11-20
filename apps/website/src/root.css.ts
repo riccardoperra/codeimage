@@ -23,6 +23,10 @@ globalStyle('html, body', {
   padding: 0,
 });
 
+globalStyle('*', {
+  boxSizing: 'border-box',
+});
+
 // globalStyle('html, body', {
 //   fontFamily: 'Albert Sans, sans-serif',
 //   backgroundColor: darkGrayScale.gray1,

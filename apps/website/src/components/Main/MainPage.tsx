@@ -14,7 +14,7 @@ export function MainPage() {
     scroll(
       animate(image, {
         transform: [
-          'rotateX(15deg) rotateY(-10deg) translateX(-100px)',
+          'rotateX(15deg) rotateY(-10deg)',
           'rotateX(0deg) rotateY(0deg) translateX(0px)',
         ],
       }),
@@ -33,7 +33,6 @@ export function MainPage() {
         <Box
           display={'flex'}
           justifyContent={'center'}
-          marginTop={12}
           alignItems={'center'}
           flexDirection={'column'}
           class={styles.textBox}
@@ -43,7 +42,7 @@ export function MainPage() {
             your <span class={styles.screenshot}>code</span> screenshots
           </Text>
 
-          <HStack spacing={'4'} marginTop={12}>
+          <HStack spacing={'4'} class={styles.ctaContainer}>
             <Button
               size={'lg'}
               variant={'solid'}
