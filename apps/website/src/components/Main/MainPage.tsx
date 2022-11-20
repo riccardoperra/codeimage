@@ -1,27 +1,30 @@
 import {Box, Button, HStack, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {animate, scroll} from 'motion';
+import {animate, scroll, ScrollOffset} from 'motion';
 import {createSignal, onMount} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
-import mainImage from './codeimage_preview_2.png';
+import mainImage from './codeimage_preview.png';
 
 export function MainPage() {
+  let image: HTMLImageElement;
+
   const [progress, setProgress] = createSignal(100);
+
   onMount(() => {
-    const imageBox = document.querySelector(`.${styles.imageBox}`);
     scroll(
-      animate(`.${styles.imageBox}`, {
+      animate(image, {
         transform: [
-          'rotateX(0deg) rotateY(0deg)',
-          'rotateX(15deg) rotateY(-10deg)',
+          'rotateX(15deg) rotateY(-10deg) translateX(-100px)',
+          'rotateX(0deg) rotateY(0deg) translateX(0px)',
         ],
       }),
       {
-        target: document.querySelector(`.${styles.imageBox}`),
+        target: image,
+        offset: [...ScrollOffset.Enter, ...ScrollOffset.Exit],
       },
     );
 
-    scroll(({y}) => setProgress(1 - y.progress), {target: imageBox});
+    scroll(({y}) => setProgress(1 - y.progress), {target: image});
   });
 
   return (
@@ -67,8 +70,8 @@ export function MainPage() {
           [styles.progressOpacityEditor]: `${progress()}`,
         })}
       >
-        <div class={styles.imageBox}>
-          <img class={styles.imageLeft} loading={'lazy'} src={mainImage} />
+        <div class={styles.imageBox} ref={image}>
+          <img class={styles.imageLeft} src={mainImage} />
         </div>
       </div>
     </div>

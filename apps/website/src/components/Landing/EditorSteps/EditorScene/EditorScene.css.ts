@@ -34,3 +34,16 @@ export const fixScaleContainer = style({
   top: '50%',
   transform: `translate(-50%, -50%) scale(${editorContainerScale})`,
 });
+
+export const scrollDownContainer = style({
+  position: 'absolute',
+  bottom: '12px',
+  left: '50%',
+  margin: '0 auto',
+  transform: `translateX(-50%)`,
+});
+
+export const scrollDownText = style({
+  fontSize: '14px',
+  marginTop: '8px',
+});

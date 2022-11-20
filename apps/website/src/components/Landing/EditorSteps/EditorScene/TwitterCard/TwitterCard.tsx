@@ -46,7 +46,7 @@ export function TwitterCard(props: TwitterCardProps) {
       }}
     >
       <Presence>
-        <Box marginBottom={4}>
+        <Box marginBottom={2}>
           <Box class={styles.title} marginBottom={4}>
             <Badge size={'md'} theme={styles.badge} variant={'rounded'}>
               <img class={styles.badgePicture} src={badgePictureUrl} />
@@ -55,14 +55,14 @@ export function TwitterCard(props: TwitterCardProps) {
               <Text size={'lg'} weight={'bold'}>
                 CodeImage
               </Text>
-              <Text size={'sm'}>@codeimage/app</Text>
+              <Text size={'sm'}>@codeimageapp</Text>
             </Box>
             <Box marginLeft={'auto'}>
               <TwitterLogo />
             </Box>
           </Box>
           <Box>
-            <Text>Do you know that SolidJS doesn't have virtual dom?</Text>
+            <Text>Do you know that SolidJS doesn't use Virtual Dom?</Text>
           </Box>
         </Box>
       </Presence>

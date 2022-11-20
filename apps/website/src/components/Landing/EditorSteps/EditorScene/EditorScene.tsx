@@ -22,6 +22,7 @@ import {scroll} from 'motion';
 import {SnippetControls} from './SnippetControls/SnippetControls';
 import {TwitterCard} from './TwitterCard/TwitterCard';
 import {CircularProgress} from './CircularProgress/CircularProgress';
+import {ScrollDownMouse} from './ScrollDownMouse/ScrollDownMouse';
 
 interface EditorSceneProps {
   animationProgress: number;
@@ -94,7 +95,7 @@ export function EditorScene(props: EditorSceneProps) {
       },
       {
         target: ref,
-        offset: ['0%', '50% end'],
+        offset: ['-25%', '50% end'],
       },
     );
   });
@@ -237,6 +238,13 @@ export function EditorScene(props: EditorSceneProps) {
           </Motion.div>
         </Motion.div>
       </div>
+      <Motion.div
+        animate={{opacity: props.animationProgress > 55 ? 0 : 1}}
+        class={styles.scrollDownContainer}
+      >
+        <ScrollDownMouse />
+        <div class={styles.scrollDownText}>Keep scrolling to continue</div>
+      </Motion.div>
     </div>
   );
 }

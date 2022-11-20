@@ -3,7 +3,12 @@ import {createVar, keyframes, style} from '@vanilla-extract/css';
 
 export const progressOpacityEditor = createVar();
 
+const dotColor = createVar();
+
 export const main = style({
+  vars: {
+    [dotColor]: '#dddddd50',
+  },
   display: 'flex',
   margin: 'auto',
   flexDirection: 'column',
@@ -11,14 +16,27 @@ export const main = style({
   height: '100%',
   width: '100%',
   minHeight: '100%',
-  background: 'linear-gradient(179deg, #090909 0%, #000000 95%)',
+  backgroundImage: `radial-gradient(${dotColor} 1.5px, transparent 1.5px),radial-gradient(${dotColor} 1.5px, transparent 1.5px)`,
+  backgroundSize: 'calc(20 * 1.5px) calc(20 * 1.5px)',
+  backgroundPosition: '0 0,calc(10 * 1.5px) calc(10 * 1.5px)',
   position: 'relative',
+
+  '::before': {
+    content: '""',
+    background: 'linear-gradient(179deg, #09090900 0%, #000000 100%)',
+    position: 'absolute',
+    bottom: '0',
+    height: '100%',
+    width: '100%',
+    zIndex: '0',
+  },
 });
 
 export const content = style({
   width: '80%',
   margin: 'auto',
   marginTop: '56px',
+  zIndex: 1,
 
   paddingTop: themeVars.spacing[24],
 
@@ -51,13 +69,15 @@ export const imageBox = style({
   flex: '0 0 auto',
   margin: 'auto',
   width: '100%',
-  marginTop: themeVars.spacing[24],
+  marginTop: themeVars.spacing[8],
   borderRadius: '12px',
   overflow: 'hidden',
   background: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
+  transform: `rotateX(15deg) rotateY(-10deg)`,
   '@media': {
     '(min-width: 920px)': {
-      width: '1400px',
+      width: '90%',
+      maxWidth: '1280px',
       borderRadius: '42px',
     },
   },
@@ -79,7 +99,7 @@ export const imagePerspectiveBox = style({
   overflow: 'visible',
   position: 'relative',
   perspective: '1000px',
-  paddingBottom: '64px',
+  paddingBottom: '200px',
 });
 
 export const textBox = style({
@@ -97,7 +117,7 @@ export const text = style({
   lineHeight: '100%',
   '@media': {
     '(min-width: 960px)': {
-      fontSize: '96px',
+      fontSize: '84px',
     },
   },
 });
@@ -148,12 +168,16 @@ export const screenshot = style({
 });
 
 export const giantButton = style({
-  height: '64px',
-  borderRadius: '16px',
-  paddingTop: 0,
-  paddingBottom: 0,
-  paddingLeft: themeVars.spacing['6'],
-  paddingRight: themeVars.spacing['6'],
-  fontWeight: themeVars.fontWeight.medium,
-  fontSize: themeVars.fontSize.xl,
+  '@media': {
+    '(min-width: 960px)': {
+      height: '64px',
+      borderRadius: '16px',
+      paddingTop: 0,
+      paddingBottom: 0,
+      paddingLeft: themeVars.spacing['6'],
+      paddingRight: themeVars.spacing['6'],
+      fontWeight: themeVars.fontWeight.medium,
+      fontSize: themeVars.fontSize.xl,
+    },
+  },
 });

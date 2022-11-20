@@ -187,7 +187,7 @@ export function ComingSoon() {
             </div>
             <div class={styles.content}>
               <Badge theme={styles.metricsBadge}>
-                <ChartPie />
+                <ChartPie width={26} height={26} />
               </Badge>
               <Box>
                 <Text size={'5xl'} weight={'bold'}>

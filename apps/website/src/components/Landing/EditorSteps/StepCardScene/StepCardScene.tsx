@@ -18,9 +18,8 @@ export function StepCardArea(props: StepCardAreaProps) {
               title={'Add your code'}
               description={
                 <>
-                  Insert your code in the editor that helps you to create
-                  beautiful snippets of your source code in{' '}
-                  <strong>seconds</strong>
+                  Once you've got all of your code into CodeImage, you can
+                  customize your snippet.
                 </>
               }
             />
@@ -31,7 +30,10 @@ export function StepCardArea(props: StepCardAreaProps) {
               }
               title={'Beautify it'}
               description={
-                <>CodeImage provide a rich choice of known and custom themes.</>
+                <>
+                  Customize your snippet by changing syntax theme, colors,
+                  window theme and more...
+                </>
               }
             />
 
@@ -39,7 +41,9 @@ export function StepCardArea(props: StepCardAreaProps) {
               active={props.animationProgress >= 66}
               title={'Share to everyone'}
               description={
-                <>Once ready, you can share your snippet everywhere.</>
+                <>
+                  Once ready, you can share and embed your snippet everywhere.
+                </>
               }
             />
           </div>

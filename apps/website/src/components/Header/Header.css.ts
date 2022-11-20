@@ -1,22 +1,35 @@
 import {themeVars} from '@codeimage/ui';
-import {createTheme, style} from '@vanilla-extract/css';
+import {createTheme, createVar, style} from '@vanilla-extract/css';
 
 export const [toolbarTheme, toolbarVars] = createTheme({
   backgroundColor: themeVars.backgroundColor.white,
   toolbarHeight: '56px',
 });
 
+const headerBorderColor = createVar();
+
 export const header = style([
   toolbarTheme,
   {
-    padding: `${themeVars.spacing[0]} ${themeVars.spacing['3']}`,
+    vars: {
+      [headerBorderColor]: 'rgba(0,0,0,0)',
+    },
     display: 'flex',
     position: 'fixed',
     width: '100%',
     height: toolbarVars.toolbarHeight,
     zIndex: themeVars.zIndex['50'],
-    backdropFilter: 'saturate(180%) blur(20px)',
-    borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+    borderBottom: `1px solid ${headerBorderColor}`,
+    transition: 'border-color 250ms ease-in-out',
+    selectors: {
+      '&[data-scrolled=true]': {
+        backdropFilter: 'saturate(180%) blur(20px)',
+        vars: {
+          [headerBorderColor]: themeVars.dynamicColors.divider,
+        },
+        borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+      },
+    },
   },
 ]);
 

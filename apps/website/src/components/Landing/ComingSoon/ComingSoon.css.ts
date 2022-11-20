@@ -45,6 +45,7 @@ export const halfCard = style({
   flexDirection: 'column',
   padding: '24px',
   borderRadius: '24px',
+  flex: 1,
 
   '@media': {
     '(min-width: 748px)': {
