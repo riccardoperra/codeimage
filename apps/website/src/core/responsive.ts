@@ -23,6 +23,8 @@ const mediaQuery = {
   tablet: makeMediaQuery('tablet'),
   desktop: makeMediaQuery('desktop'),
   wide: makeMediaQuery('wide'),
+  wideLg: makeMediaQuery('wideLg'),
+  wideXl: makeMediaQuery('wideXl'),
 };
 
 interface ResponsiveStyle {
@@ -30,6 +32,8 @@ interface ResponsiveStyle {
   tablet?: CSSProps;
   desktop?: CSSProps;
   wide?: CSSProps;
+  wideLg?: CSSProps;
+  wideXl?: CSSProps;
 }
 
 export const responsiveStyle = ({
@@ -37,6 +41,8 @@ export const responsiveStyle = ({
   tablet,
   desktop,
   wide,
+  wideLg,
+  wideXl,
 }: ResponsiveStyle): StyleRule => ({
   ...omit(mobile as StyleRule, ['@media']),
   ...(tablet || desktop || wide
@@ -45,6 +51,8 @@ export const responsiveStyle = ({
           ...mediaQuery.tablet(tablet ?? {}),
           ...mediaQuery.desktop(desktop ?? {}),
           ...mediaQuery.wide(wide ?? {}),
+          ...mediaQuery.wideLg(wideLg ?? {}),
+          ...mediaQuery.wideXl(wideXl ?? {}),
         },
       }
     : {}),

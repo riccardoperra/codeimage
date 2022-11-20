@@ -8,7 +8,7 @@ const dotColor = createVar();
 
 export const main = style({
   vars: {
-    [dotColor]: '#dddddd40',
+    [dotColor]: '#dddddd15',
   },
   display: 'flex',
   margin: 'auto',
@@ -17,14 +17,16 @@ export const main = style({
   height: '100%',
   width: '100%',
   minHeight: '100%',
-  backgroundImage: `radial-gradient(${dotColor} 1px, transparent 1px),radial-gradient(${dotColor} 1px, transparent 1px)`,
-  backgroundSize: 'calc(20 * 1px) calc(20 * 1px)',
-  backgroundPosition: '0 0,calc(10 * 1px) calc(10 * 1px)',
+  // backgroundImage: `radial-gradient(${dotColor} 1px, transparent 1px),radial-gradient(${dotColor} 1px, transparent 1px)`,
+  // backgroundSize: 'calc(20 * 1px) calc(20 * 1px)',
+  // backgroundPosition: '0 0,calc(10 * 1px) calc(10 * 1px)',
+  backgroundImage: `linear-gradient(${dotColor} 1px, transparent 1px), linear-gradient(to right, ${dotColor} 1px, transparent 1px)`,
+  backgroundSize: '25px 25px',
   position: 'relative',
 
   '::before': {
     content: '""',
-    background: 'linear-gradient(179deg, #09090900 0%, #000000 100%)',
+    background: 'linear-gradient(179deg, #09090900 0%, #000000 70%)',
     position: 'absolute',
     bottom: '0',
     height: '100%',
@@ -72,37 +74,39 @@ export const bgAnimation = keyframes({
   },
 });
 
-export const imageBox = style({
-  position: 'relative',
-  display: 'flex',
-  flex: '0 0 auto',
-  margin: 'auto',
-  width: '100%',
-  marginTop: themeVars.spacing[8],
-  borderRadius: '12px',
-  overflow: 'hidden',
-  background: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
-  transform: `rotateX(15deg) rotateY(-10deg)`,
-  '@media': {
-    '(min-width: 920px)': {
-      width: '90%',
+export const imageBox = style([
+  {
+    position: 'relative',
+    display: 'flex',
+    flex: '0 0 auto',
+    margin: 'auto',
+    width: '100%',
+    marginTop: 0,
+    borderRadius: '12px',
+    overflow: 'hidden',
+    background: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
+    transform: `rotateX(15deg) rotateY(-10deg)`,
+    '::before': {
+      position: 'absolute',
+      content: '""',
+      top: '0',
+      right: '0',
+      bottom: '0',
+      left: '0',
+      backgroundImage:
+        'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
+      zIndex: '-1',
+      opacity: progressOpacityEditor,
+    },
+  },
+  responsiveStyle({
+    desktop: {
+      width: '60%',
       maxWidth: '1280px',
       borderRadius: '42px',
     },
-  },
-  '::before': {
-    position: 'absolute',
-    content: '""',
-    top: '0',
-    right: '0',
-    bottom: '0',
-    left: '0',
-    backgroundImage:
-      'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
-    zIndex: '-1',
-    opacity: progressOpacityEditor,
-  },
-});
+  }),
+]);
 
 export const imagePerspectiveBox = style([
   {
@@ -176,11 +180,26 @@ export const backdropTransform = keyframes({
   },
 });
 
-export const imageLeft = style({
-  width: '100%',
-  height: '100%',
-  zIndex: 1,
-});
+export const imageLeft = style([
+  {
+    zIndex: 1,
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+    // aspectRatio: '8/5',
+  },
+  responsiveStyle({
+    mobile: {
+      minHeight: '240px',
+    },
+    tablet: {
+      minHeight: '450px',
+    },
+    desktop: {
+      minHeight: '550px',
+    },
+  }),
+]);
 
 export const backdrop = style({
   filter: 'blur(160px)',

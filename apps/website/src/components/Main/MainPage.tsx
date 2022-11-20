@@ -6,9 +6,10 @@ import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
 
 export function MainPage() {
+  let section: HTMLElement;
   let image: HTMLImageElement;
 
-  const [progress, setProgress] = createSignal(100);
+  const [progress, setProgress] = createSignal(0);
 
   onMount(() => {
     scroll(
@@ -19,8 +20,8 @@ export function MainPage() {
         ],
       }),
       {
-        target: image,
-        offset: [...ScrollOffset.Enter, ...ScrollOffset.Exit],
+        target: section,
+        offset: ['0%', '70%'],
       },
     );
 
@@ -28,7 +29,7 @@ export function MainPage() {
   });
 
   return (
-    <div class={styles.main}>
+    <section class={styles.main} ref={section}>
       <div class={styles.content}>
         <Box
           display={'flex'}
@@ -51,15 +52,6 @@ export function MainPage() {
             >
               Getting started
             </Button>
-
-            <Button
-              size={'lg'}
-              variant={'solid'}
-              theme={'primaryAlt'}
-              class={styles.giantButton}
-            >
-              See more
-            </Button>
           </HStack>
         </Box>
       </div>
@@ -70,7 +62,7 @@ export function MainPage() {
         })}
       >
         <div class={styles.imageBox} ref={image}>
-          <picture class={styles.imageLeft}>
+          <picture>
             <source
               type="image/webp"
               srcset={'/landing/codeimage_preview_mobile_ultra.webp'}
@@ -94,7 +86,7 @@ export function MainPage() {
           </picture>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
