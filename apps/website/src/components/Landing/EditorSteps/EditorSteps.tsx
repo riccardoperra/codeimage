@@ -1,6 +1,6 @@
 import {backgroundColorVar} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createSignal, onMount} from 'solid-js';
+import {onMount} from 'solid-js';
 import * as styles from './EditorSteps.css';
 import {scroll} from 'motion';
 import {StepCardArea} from './StepCardScene/StepCardScene';

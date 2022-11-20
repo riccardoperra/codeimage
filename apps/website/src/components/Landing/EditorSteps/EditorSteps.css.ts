@@ -1,5 +1,5 @@
 import {backgroundColorVar} from '@codeimage/ui';
-import {createVar, style} from '@vanilla-extract/css';
+import {style} from '@vanilla-extract/css';
 
 export const sectionWrapper = style({
   backgroundColor: '#000',

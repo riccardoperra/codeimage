@@ -1,95 +1,51 @@
-import {synthwave84Theme} from '@codeimage/highlight/synthwave84';
-import {javascript} from '@codemirror/lang-javascript';
-import {EditorState, StateEffect} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  on,
-  onCleanup,
-  onMount,
-} from 'solid-js';
+import {createSignal, onMount} from 'solid-js';
 
 interface CodeEditorProps {
   code: string;
 }
 
 export function CodeEditor(props: {code: string}) {
-  const [ref, setRef] = createSignal<HTMLElement>();
-  const [editorView, setEditorView] = createSignal<EditorView>();
+  let ref: HTMLDivElement;
 
-  createEffect(
-    on(ref, ref => {
-      const state = EditorState.create({doc: props?.code ?? ''});
-      const currentView = new EditorView({
-        state,
-        parent: ref,
+  onMount(() => {
+    Promise.all([
+      import('solid-codemirror'),
+      import('@codemirror/view'),
+      import('@codemirror/state'),
+    ]).then(([cm, view]) => {
+      const {ref: setInternalRef, editorView} = cm.createCodeMirror({
+        value: props.code,
       });
+      setInternalRef(() => ref);
+      cm.createEditorControlledValue(editorView, () => props.code);
 
-      onMount(() => setEditorView(currentView));
-
-      onCleanup(() => {
-        setEditorView(undefined);
-        editorView()?.destroy();
-      });
-    }),
-  );
-
-  createEffect(
-    on(
-      editorView,
-      editorView => {
-        const localValue = editorView?.state.doc.toString();
-
-        editorView.dispatch({
-          effects: StateEffect.reconfigure.of([
+      cm.createLazyCompartmentExtension(
+        () =>
+          import('@codemirror/lang-javascript').then(({javascript}) =>
             javascript({jsx: true, typescript: true}),
-            synthwave84Theme.editorTheme,
-            EditorView.theme({
-              '.cm-content': {
-                fontFamily: 'Jetbrains Mono',
-              },
-            }),
-          ]),
-        });
+          ),
+        editorView,
+      );
 
-        if (localValue !== props?.code && !!editorView) {
-          editorView.dispatch({
-            changes: {
-              from: 0,
-              to: localValue?.length,
-              insert: props?.code ?? '',
-            },
-          });
-        }
-      },
-      {defer: true},
-    ),
-  );
+      cm.createLazyCompartmentExtension(
+        () =>
+          import('@codeimage/highlight/synthwave84').then(
+            m => m.synthwave84Theme.editorTheme,
+          ),
+        editorView,
+      );
 
-  const memoizedCode = createMemo(() => props.code);
+      cm.createCompartmentExtension(
+        view.EditorView.theme({
+          '.cm-content': {
+            fontFamily: 'Jetbrains Mono',
+          },
+        }),
+        editorView,
+      );
+    });
+  });
 
-  createEffect(
-    on(editorView, view => {
-      if (view) {
-        createEffect(
-          on(memoizedCode, code => {
-            const localValue = view?.state.doc.toString();
-            if (localValue !== code) {
-              view.dispatch({
-                changes: {
-                  from: 0,
-                  to: localValue?.length,
-                  insert: code ?? '',
-                },
-              });
-            }
-          }),
-        );
-      }
-    }),
-  );
-
-  return <div ref={setRef}></div>;
+  return <div ref={ref}></div>;
 }
