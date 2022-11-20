@@ -1,5 +1,5 @@
 import {readFileSync, writeFileSync} from 'node:fs';
-import {relative, join} from 'node:path';
+import {join} from 'node:path';
 import {parse} from 'node-html-parser';
 
 import manifest from './dist/public/manifest.json';
@@ -12,28 +12,27 @@ const htmlSource = readFileSync(join('./dist/public/index.html'), {
   encoding: 'utf-8',
 });
 
-const document = parse(htmlSource);
-
 let style = '';
+let patchedSource = htmlSource;
 
 cssEntries.forEach(entry => {
-  const stylesheets = document.querySelectorAll(`link[rel="stylesheet"]`);
-  stylesheets.forEach(stylesheet => {
-    const href = stylesheet.getAttribute('href');
-    if (href === `/${entry}`) {
-      console.log('reading source');
-      const source = readFileSync(join('./dist/public', entry), {
-        encoding: 'utf-8',
-      });
-
-      style += source;
-
-      stylesheet.remove();
-    }
+  const source = readFileSync(join('./dist/public', entry), {
+    encoding: 'utf-8',
   });
+
+  style += source;
+
+  writeFileSync(join('./dist/public', entry), '');
+
+  patchedSource = patchedSource.replace(
+    `<link rel="stylesheet" href="/${entry}">`,
+    `<link rel="stylesheet" href="/${entry}" media="print">`,
+  );
 });
 
-const styleTag = parse(`<style>${style}</style>`);
-document.querySelector('head').appendChild(styleTag);
+patchedSource = patchedSource.replace(
+  '<style id="css-critical-style"></style>',
+  `<style id="css-critical-style">${style}</style>`,
+);
 
-writeFileSync(htmlSourcePath, document.toString());
+writeFileSync(htmlSourcePath, patchedSource);

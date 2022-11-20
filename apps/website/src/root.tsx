@@ -1,5 +1,5 @@
 // @refresh reload
-import {sSuspense} from 'solid-js';
+import {Suspense} from 'solid-js';
 import {
   Body,
   ErrorBoundary,
@@ -15,8 +15,11 @@ import {
 import './root.css';
 import '@codeimage/ui/themes/darkTheme';
 import {MainPageImagePreloading} from './components/Main/MainPage';
+import {useAssets} from 'solid-js/web';
 
 export default function Root() {
+  useAssets(() => <style id="css-critical-style" />);
+
   return (
     <Html lang="en" data-codeimage-theme="dark">
       <Head>
