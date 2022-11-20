@@ -83,7 +83,7 @@ export function MainPage() {
             />
             <source
               type="image/webp"
-              srcset={'/landing/codeimage_preview_mobile_ultra.webp'}
+              srcset={'//landing/codeimage_preview_desktop.webp'}
               media={`(min-width: ${breakpoints.tablet}px)`}
             />
             <img
@@ -115,7 +115,7 @@ export function MainPageImagePreloading() {
       />
       <link
         rel="preload"
-        href={'/landing/codeimage_preview_mobile_ultra.webp'}
+        href={'/landing/codeimage_preview_desktop.webp'}
         as="image"
         media={`(min-width: ${breakpoints.tablet}px)`}
       />
