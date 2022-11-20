@@ -2,7 +2,7 @@ import {Box, Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import {scroll} from 'motion';
 import {createMemo, createSignal, onMount} from 'solid-js';
-import {untrack} from 'solid-js/web';
+import {untrack} from 'solid-js';
 import {CodeImageLogo2} from '~/components/CodeImageLogo/CodeImageLogo2';
 import * as styles from './Header.css';
 
