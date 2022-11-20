@@ -190,7 +190,7 @@ export const imageLeft = style([
     zIndex: 1,
     width: '100%',
     height: '100%',
-    objectFit: 'cover',
+    objectFit: 'contain',
   },
   responsiveStyle({
     mobile: {

@@ -1,5 +1,5 @@
 // @refresh reload
-import {Suspense} from 'solid-js';
+import {onMount, Suspense} from 'solid-js';
 import {
   Body,
   ErrorBoundary,
@@ -22,13 +22,12 @@ export default function Root() {
         <Title>CodeImage</Title>
         <Meta charset="utf-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
           rel="stylesheet"
           media="print"
-          onLoad={function () {
-            this.onload = null;
-            this.removeAttribute('media');
-          }}
+          data-defer-font="codemirror"
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
         />
         <MainPageImagePreloading />
