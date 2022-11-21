@@ -20,8 +20,10 @@ export const main = style({
   // backgroundImage: `radial-gradient(${dotColor} 1px, transparent 1px),radial-gradient(${dotColor} 1px, transparent 1px)`,
   // backgroundSize: 'calc(20 * 1px) calc(20 * 1px)',
   // backgroundPosition: '0 0,calc(10 * 1px) calc(10 * 1px)',
-  backgroundImage: `linear-gradient(${dotColor} 1px, transparent 1px), linear-gradient(to right, ${dotColor} 1px, transparent 1px)`,
-  backgroundSize: '25px 25px',
+  backgroundImage: `radial-gradient(${dotColor} 1px, transparent 1px)`,
+  backgroundSize: 'calc(10 * 1px) calc(10 * 1px)',
+  // backgroundImage: `linear-gradient(${dotColor} 1px, transparent 1px), linear-gradient(to right, ${dotColor} 1px, transparent 1px)`,
+  // backgroundSize: '25px 25px',
   position: 'relative',
 
   '::before': {
@@ -171,7 +173,7 @@ export const mobileDescription = style(
   responsiveStyle({
     mobile: {
       fontSize: '24px',
-      color: themeVars.dynamicColors.textDescription,
+      color: themeVars.dynamicColors.baseText,
       marginTop: themeVars.spacing[4],
       marginBottom: themeVars.spacing[8],
       fontWeight: '500',
@@ -260,7 +262,8 @@ export const ctaContainer = style(
   responsiveStyle({
     mobile: {
       marginTop: themeVars.spacing[4],
-      flexDirection: 'column',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
       gap: themeVars.spacing[4],
     },
     tablet: {

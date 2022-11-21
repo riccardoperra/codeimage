@@ -2,19 +2,51 @@ import {Box, Button, HStack, Text} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {animate, scroll, ScrollOffset} from 'motion';
-import {createEffect, createSignal, onMount} from 'solid-js';
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  JSX,
+  onMount,
+} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
 import {isMobile} from '@solid-primitives/platform';
+import {GithubButton} from '../GithubButton/GithubButton';
 
 function getCssVar(str: string) {
   return /(--)[^\,\:\)]+/.exec(str)?.[0];
 }
 
+function getRepoInfo() {
+  return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
+    .then(res => res.json())
+    .then(res => res.repo);
+}
+
+const repoInfoData = {
+  repo: {
+    id: 454158645,
+    name: 'codeimage',
+    repo: 'riccardoperra/codeimage',
+    description:
+      'Create elegant screenshots of your source code. Built with SolidJS',
+    createdAt: '2022-01-31T20:25:57Z',
+    updatedAt: '2022-11-13T15:09:39Z',
+    pushedAt: '2022-11-21T20:24:44Z',
+    stars: 185,
+    watchers: 185,
+    forks: 13,
+  },
+};
+
 export function MainPage() {
   let section: HTMLElement;
   let image: HTMLImageElement;
-  let imageBox: HTMLElement;
+
+  const [repoInfo] = createResource(getRepoInfo, {
+    initialValue: repoInfoData,
+  });
 
   const [progress, setProgress] = createSignal(0);
 
@@ -67,6 +99,14 @@ export function MainPage() {
               >
                 Getting started
               </Button>
+
+              <GithubButton
+                size={'lg'}
+                variant={'solid'}
+                theme={'secondary'}
+                class={styles.giantButton}
+                stars={repoInfo().stars}
+              />
             </HStack>
           </div>
         </Box>
