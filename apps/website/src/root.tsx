@@ -44,6 +44,34 @@ export default function Root() {
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
         />
         <MainPageImagePreloading />
+        <Link
+          rel="preload"
+          href="/fonts/Mona-Sans-Bold.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+        <Link
+          rel="preload"
+          href="/fonts/Mona-Sans-Medium.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+        <Link
+          rel="preload"
+          href="/fonts/Mona-Sans-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+        <Link
+          rel="preload"
+          href="/fonts/Mona-Sans-SemiBold.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
       </Head>
       <Body>
         <Suspense>
