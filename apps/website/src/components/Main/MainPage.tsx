@@ -52,22 +52,23 @@ export function MainPage() {
               A tool for <br /> <span class={styles.screenshot}>beautify</span>{' '}
               your <span class={styles.screenshot}>code</span> screenshots
             </Text>
+
+            <Text as={'p'} class={styles.mobileDescription}>
+              Instantly manage your snippets, beautify and share them to
+              everyone
+            </Text>
+
+            <HStack spacing={'4'} class={styles.ctaContainer}>
+              <Button
+                size={'lg'}
+                variant={'solid'}
+                theme={'primary'}
+                class={styles.giantButton}
+              >
+                Getting started
+              </Button>
+            </HStack>
           </div>
-
-          <Text as={'p'} class={styles.mobileDescription}>
-            Instantly manage your snippets, beautify and share them to everyone
-          </Text>
-
-          <HStack spacing={'4'} class={styles.ctaContainer}>
-            <Button
-              size={'lg'}
-              variant={'solid'}
-              theme={'primary'}
-              class={styles.giantButton}
-            >
-              Getting started
-            </Button>
-          </HStack>
         </Box>
       </div>
       <div class={styles.imagePerspectiveBox}>
