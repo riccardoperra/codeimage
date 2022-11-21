@@ -27,7 +27,7 @@ export const header = style([
         vars: {
           [headerBorderColor]: themeVars.dynamicColors.divider,
         },
-        borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
+        borderColor: themeVars.dynamicColors.divider,
       },
     },
   },

@@ -13,10 +13,8 @@ import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
 import {isMobile} from '@solid-primitives/platform';
 import {GithubButton} from '../GithubButton/GithubButton';
-
-function getCssVar(str: string) {
-  return /(--)[^\,\:\)]+/.exec(str)?.[0];
-}
+import {useRouteData} from 'solid-start';
+import {routeData as RouteData} from '~/routes/index';
 
 function getRepoInfo() {
   return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
@@ -24,31 +22,18 @@ function getRepoInfo() {
     .then(res => res.repo);
 }
 
-const repoInfoData = {
-  repo: {
-    id: 454158645,
-    name: 'codeimage',
-    repo: 'riccardoperra/codeimage',
-    description:
-      'Create elegant screenshots of your source code. Built with SolidJS',
-    createdAt: '2022-01-31T20:25:57Z',
-    updatedAt: '2022-11-13T15:09:39Z',
-    pushedAt: '2022-11-21T20:24:44Z',
-    stars: 185,
-    watchers: 185,
-    forks: 13,
-  },
-};
-
 export function MainPage() {
   let section: HTMLElement;
   let image: HTMLImageElement;
+  const routeData = useRouteData<typeof RouteData>();
+  const [loading, setLoading] = createSignal(true);
+  const [repo, setRepo] = createSignal<any>(routeData.repoInfo || {stars: 0});
 
-  const [repoInfo] = createResource(getRepoInfo, {
-    initialValue: repoInfoData,
-  });
-
-  const [progress, setProgress] = createSignal(0);
+  onMount(() =>
+    getRepoInfo()
+      .then(response => setRepo(response))
+      .finally(() => setLoading(false)),
+  );
 
   onMount(() => {
     if (!isMobile) {
@@ -64,8 +49,6 @@ export function MainPage() {
           offset: ['0%', '70%'],
         },
       );
-
-      scroll(({y}) => setProgress(1 - y.progress), {target: image});
     }
   });
 
@@ -105,7 +88,8 @@ export function MainPage() {
                 variant={'solid'}
                 theme={'secondary'}
                 class={styles.giantButton}
-                stars={repoInfo().stars}
+                loading={loading()}
+                stars={repo().stars}
               />
             </HStack>
           </div>

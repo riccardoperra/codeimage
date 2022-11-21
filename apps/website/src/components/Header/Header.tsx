@@ -24,7 +24,7 @@ export function Header() {
   const dataScrolled = createMemo(() => scrolled());
 
   return (
-    <div class={styles.header} data-scrolled={dataScrolled()}>
+    <div class={styles.header} data-scrolled={dataScrolled() ?? false}>
       <div class={styles.headerContent}>
         <Box
           display={'flex'}
@@ -43,7 +43,7 @@ export function Header() {
               theme={'primary'}
               pill
               style={{
-                'background-color': '#005994',
+                'background-color': '#0072D6',
               }}
             >
               Getting started

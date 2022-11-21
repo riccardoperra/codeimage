@@ -1,5 +1,5 @@
-import {Button} from '@codeimage/ui';
-import {JSX} from 'solid-js';
+import {Button, Loading, LoadingCircle} from '@codeimage/ui';
+import {JSX, Show} from 'solid-js';
 import * as styles from './GithubButton.css';
 
 type GithubButtonProps = Parameters<typeof Button>[0] & {
@@ -55,7 +55,9 @@ export function GithubButton(props: GithubButtonProps) {
         aria-label={`${props.stars} stargazers on GitHub`}
         href={'https://github.com/riccardoperra/codeimage/stargazers'}
       >
-        <span class={styles.text}>{props.stars}</span>
+        <Show fallback={<LoadingCircle />} when={!props.loading}>
+          <span class={styles.text}>{props.stars}</span>
+        </Show>
       </a>
     </Button>
   );
