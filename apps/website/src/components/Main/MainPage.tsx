@@ -47,9 +47,15 @@ export function MainPage() {
           flexDirection={'column'}
           class={styles.textBox}
         >
-          <Text weight={'bold'} class={styles.text}>
-            A tool for <br /> <span class={styles.screenshot}>beautify</span>{' '}
-            your <span class={styles.screenshot}>code</span> screenshots
+          <div>
+            <Text weight={'bold'} class={styles.text}>
+              A tool for <br /> <span class={styles.screenshot}>beautify</span>{' '}
+              your <span class={styles.screenshot}>code</span> screenshots
+            </Text>
+          </div>
+
+          <Text as={'p'} class={styles.mobileDescription}>
+            Instantly manage your snippets, beautify and share them to everyone
           </Text>
 
           <HStack spacing={'4'} class={styles.ctaContainer}>
@@ -84,6 +90,8 @@ export function MainPage() {
             />
             <img
               class={styles.imageLeft}
+              loading={'lazy'}
+              decoding={'async'}
               src={'/landing/codeimage_preview_lite.png'}
               alt={'Preview of CodeImage snippet'}
             />

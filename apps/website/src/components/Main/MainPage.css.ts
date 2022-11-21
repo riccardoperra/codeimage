@@ -156,7 +156,7 @@ export const text = style([
   },
   responsiveStyle({
     mobile: {
-      fontSize: '44px',
+      fontSize: '52px',
     },
     tablet: {
       fontSize: '64px',
@@ -166,6 +166,21 @@ export const text = style([
     },
   }),
 ]);
+
+export const mobileDescription = style(
+  responsiveStyle({
+    mobile: {
+      fontSize: '24px',
+      color: themeVars.dynamicColors.textDescription,
+      marginTop: themeVars.spacing[4],
+      marginBottom: themeVars.spacing[8],
+      fontWeight: '500',
+    },
+    tablet: {
+      display: 'none',
+    },
+  }),
+);
 
 export const backdropTransform = keyframes({
   '0%': {
@@ -245,6 +260,11 @@ export const ctaContainer = style(
   responsiveStyle({
     mobile: {
       marginTop: themeVars.spacing[4],
+      flexDirection: 'column',
+      gap: themeVars.spacing[4],
+    },
+    tablet: {
+      flexDirection: 'row',
     },
     desktop: {
       marginTop: themeVars.spacing[12],

@@ -4,7 +4,10 @@ import {parse} from 'node-html-parser';
 
 import manifest from './dist/public/manifest.json';
 
-const cssEntries = manifest['src/entry-client.tsx'].css;
+const cssEntries = [
+  ...manifest['src/entry-client.tsx'].css,
+  ...manifest['src/routes/index.tsx'].css,
+];
 
 const htmlSourcePath = join('./dist/public/index.html');
 
