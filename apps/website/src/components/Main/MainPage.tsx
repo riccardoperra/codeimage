@@ -63,14 +63,14 @@ export function MainPage() {
           class={styles.textBox}
         >
           <div>
-            <Text weight={'bold'} class={styles.text}>
+            <Text as={'h1'} weight={'bold'} class={styles.heading}>
               A tool for <br /> <span class={styles.screenshot}>beautify</span>{' '}
               your <span class={styles.screenshot}>code</span> screenshots
             </Text>
 
             <Text as={'p'} class={styles.mobileDescription}>
-              Instantly manage your snippets, beautify and share them to
-              everyone
+              Instantly manage your code snippets, make them beautiful and share
+              them to everyone
             </Text>
 
             <HStack spacing={'4'} class={styles.ctaContainer}>

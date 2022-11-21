@@ -34,7 +34,6 @@ export const main = style({
 
 export const content = style([
   {
-    width: '80%',
     marginTop: '56px',
     zIndex: 1,
 
@@ -143,13 +142,14 @@ export const textBox = style([
   }),
 ]);
 
-export const text = style([
+export const heading = style([
   {
-    width: '100%',
     maxWidth: '860px',
     textAlign: 'left',
     fontSize: '44px',
     lineHeight: '100%',
+    width: '80%',
+    margin: 0,
   },
   responsiveStyle({
     mobile: {
@@ -257,9 +257,10 @@ export const ctaContainer = style(
   responsiveStyle({
     mobile: {
       marginTop: themeVars.spacing[4],
-      flexDirection: 'row',
+      flexDirection: 'column',
       flexWrap: 'wrap',
       gap: themeVars.spacing[4],
+      alignItems: 'flex-start',
     },
     tablet: {
       flexDirection: 'row',
