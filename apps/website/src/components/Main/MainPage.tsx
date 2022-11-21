@@ -90,8 +90,6 @@ export function MainPage() {
             />
             <img
               class={styles.imageLeft}
-              loading={'lazy'}
-              decoding={'async'}
               src={'/landing/codeimage_preview_lite.png'}
               alt={'Preview of CodeImage snippet'}
             />
