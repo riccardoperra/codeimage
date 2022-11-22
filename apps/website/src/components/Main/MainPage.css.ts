@@ -34,7 +34,7 @@ export const main = style({
 
 export const content = style([
   {
-    marginTop: '56px',
+    marginTop: '32px',
     zIndex: 1,
 
     paddingTop: themeVars.spacing[24],
@@ -174,7 +174,7 @@ export const mobileDescription = style(
       fontSize: '24px',
       color: themeVars.dynamicColors.baseText,
       marginTop: themeVars.spacing[4],
-      marginBottom: themeVars.spacing[8],
+      marginBottom: themeVars.spacing[4],
       fontWeight: '500',
       lineHeight: 1.25,
     },
