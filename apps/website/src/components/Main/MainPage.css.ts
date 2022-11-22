@@ -136,7 +136,7 @@ export const textBox = style([
   },
   responsiveStyle({
     mobile: {
-      marginTop: themeVars.spacing[2],
+      marginTop: 0,
       paddingTop: 0,
     },
   }),
