@@ -17,8 +17,8 @@ export const main = style({
   height: '100%',
   width: '100%',
   minHeight: '100%',
-  backgroundImage: `radial-gradient(${dotColor} 1px, transparent 1px),radial-gradient(${dotColor} 1px, transparent 1px)`,
-  backgroundSize: 'calc(20 * 1px) calc(20 * 1px)',
+  // backgroundImage: `radial-gradient(${dotColor} 1px, transparent 1px),radial-gradient(${dotColor} 1px, transparent 1px)`,
+  // backgroundSize: 'calc(20 * 1px) calc(20 * 1px)',
   position: 'relative',
 
   '::before': {
@@ -136,7 +136,7 @@ export const textBox = style([
   },
   responsiveStyle({
     mobile: {
-      marginTop: 0,
+      marginTop: themeVars.spacing[6],
       paddingTop: 0,
     },
   }),
@@ -157,6 +157,7 @@ export const heading = style([
     },
     tablet: {
       fontSize: '64px',
+      width: '100%',
     },
     desktop: {
       fontSize: '84px',
@@ -172,6 +173,7 @@ export const mobileDescription = style(
       marginTop: themeVars.spacing[4],
       marginBottom: themeVars.spacing[8],
       fontWeight: '500',
+      lineHeight: 1.25,
     },
     tablet: {
       display: 'none',
@@ -238,9 +240,9 @@ export const screenshot = style({
   color: themeVars.backgroundColor.blue[500],
 });
 
-export const giantButton = style({
-  '@media': {
-    '(min-width: 960px)': {
+export const giantButton = style(
+  responsiveStyle({
+    desktop: {
       height: '64px',
       borderRadius: '16px',
       paddingTop: 0,
@@ -250,8 +252,8 @@ export const giantButton = style({
       fontWeight: themeVars.fontWeight.medium,
       fontSize: themeVars.fontSize.xl,
     },
-  },
-});
+  }),
+);
 
 export const ctaContainer = style(
   responsiveStyle({

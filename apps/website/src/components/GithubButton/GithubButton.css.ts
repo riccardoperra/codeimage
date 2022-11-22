@@ -26,7 +26,6 @@ export const btn = style([
   {
     position: 'relative',
     display: 'inline-flex',
-    height: '14px',
     fontWeight: '600',
     verticalAlign: 'bottom',
     cursor: 'pointer',

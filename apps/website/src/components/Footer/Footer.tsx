@@ -1,4 +1,4 @@
-import {Box, HStack, Link} from '@codeimage/ui';
+import {Text, HStack, Link} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import * as styles from '~/components/Footer/Footer.css';
 
@@ -7,7 +7,9 @@ export function Footer() {
     <footer class={styles.footer}>
       <div class={styles.content}>
         <div class={styles.grid}>
-          <h3>© 2022 Riccardo Perra</h3>
+          <Text as={'span'} weight={'semibold'} size={'lg'}>
+            © 2022 Riccardo Perra
+          </Text>
 
           <HStack spacing={'8'}>
             <Link

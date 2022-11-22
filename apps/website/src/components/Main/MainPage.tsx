@@ -3,6 +3,7 @@ import {Motion} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {animate, scroll, ScrollOffset} from 'motion';
 import {
+  createDeferred,
   createEffect,
   createResource,
   createSignal,
@@ -29,7 +30,7 @@ export function MainPage() {
   const [loading, setLoading] = createSignal(true);
   const [repo, setRepo] = createSignal<any>(routeData.repoInfo || {stars: 0});
 
-  onMount(() =>
+  createDeferred(() =>
     getRepoInfo()
       .then(response => setRepo(response))
       .finally(() => setLoading(false)),
@@ -63,36 +64,36 @@ export function MainPage() {
           class={styles.textBox}
         >
           <div>
-            <Text weight={'bold'} class={styles.heading}>
+            <Text as={'h1'} weight={'bold'} class={styles.heading}>
               A tool for <br /> <span class={styles.screenshot}>beautify</span>{' '}
               your <span class={styles.screenshot}>code</span> screenshots
             </Text>
 
-            <Text as={'p'} class={styles.mobileDescription}>
-              Instantly manage your code snippets, make them beautiful and share
-              them to everyone
+            <Text as={'h2'} class={styles.mobileDescription}>
+              Instantly manage your code snippets, make them beautiful to read
+              and share them to everyone.
             </Text>
-
-            <HStack spacing={'4'} class={styles.ctaContainer}>
-              <Button
-                size={'lg'}
-                variant={'solid'}
-                theme={'primary'}
-                class={styles.giantButton}
-              >
-                Getting started
-              </Button>
-
-              <GithubButton
-                size={'lg'}
-                variant={'solid'}
-                theme={'secondary'}
-                class={styles.giantButton}
-                loading={loading()}
-                stars={repo().stars}
-              />
-            </HStack>
           </div>
+
+          <HStack spacing={'4'} class={styles.ctaContainer}>
+            <Button
+              size={'lg'}
+              variant={'solid'}
+              theme={'primary'}
+              class={styles.giantButton}
+            >
+              Getting started
+            </Button>
+
+            <GithubButton
+              size={'lg'}
+              variant={'solid'}
+              theme={'secondary'}
+              class={styles.giantButton}
+              loading={loading()}
+              stars={repo().stars}
+            />
+          </HStack>
         </Box>
       </div>
       <div class={styles.imagePerspectiveBox}>

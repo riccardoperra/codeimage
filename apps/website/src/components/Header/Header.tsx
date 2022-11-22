@@ -42,9 +42,6 @@ export function Header() {
               variant={'solid'}
               theme={'primary'}
               pill
-              style={{
-                'background-color': '#0072D6',
-              }}
             >
               Getting started
             </Button>
