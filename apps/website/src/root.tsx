@@ -10,12 +10,54 @@ import {
   Meta,
   Routes,
   Scripts,
+  Style,
   Title,
 } from 'solid-start';
 import '@codeimage/ui/themes/darkTheme';
 import './root.css';
 import {MainPageImagePreloading} from './components/Main/MainPage';
 import {useAssets} from 'solid-js/web';
+
+function RootCriticalStyle() {
+  return (
+    <Style>
+      {`
+      @font-face {
+        src: url('/fonts/Mona-Sans-Regular.woff2') format('woff2 supports variations'), url('/fonts/Mona-Sans-Regular.woff2') format('woff2-variations');
+        font-weight: 400;
+        font-style: normal;
+        font-stretch: 75% 125%;
+        font-display: swap;
+        font-family: Mona Sans;
+      }
+      @font-face {
+        src: url('/fonts/Mona-Sans-Medium.woff2') format('woff2 supports variations'), url('/fonts/Mona-Sans-Medium.woff2') format('woff2-variations');
+        font-weight: 500;
+        font-style: normal;
+        font-stretch: 75% 125%;
+        font-display: swap;
+        font-family: Mona Sans;
+      }
+      @font-face {
+        src: url('/fonts/Mona-Sans-SemiBold.woff2') format('woff2 supports variations'), url('/fonts/Mona-Sans-SemiBold.woff2') format('woff2-variations');
+        font-weight: 600;
+        font-style: normal;
+        font-stretch: 75% 125%;
+        font-display: swap;
+        font-family: Mona Sans;
+      }
+      @font-face {
+        src: url('/fonts/Mona-Sans-Bold.woff2') format('woff2 supports variations'), url('/fonts/Mona-Sans-Bold.woff2') format('woff2-variations');
+        font-weight: 700;
+        font-style: normal;
+        font-stretch: 75% 125%;
+        font-display: swap;
+        font-family: Mona Sans;
+      }
+    `}
+    </Style>
+  );
+}
 
 export default function Root() {
   useAssets(() => <style id="css-critical-style" />);
@@ -43,34 +85,36 @@ export default function Root() {
           data-defer-font="codemirror"
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
         />
+        <RootCriticalStyle />
         <MainPageImagePreloading />
+
         <Link
           rel="preload"
           href="/fonts/Mona-Sans-Bold.woff2"
           as="font"
           type="font/woff2"
-          crossorigin
+          crossorigin=""
         />
         <Link
           rel="preload"
           href="/fonts/Mona-Sans-Medium.woff2"
           as="font"
           type="font/woff2"
-          crossorigin
+          crossorigin=""
         />
         <Link
           rel="preload"
           href="/fonts/Mona-Sans-Regular.woff2"
           as="font"
           type="font/woff2"
-          crossorigin
+          crossorigin=""
         />
         <Link
           rel="preload"
           href="/fonts/Mona-Sans-SemiBold.woff2"
           as="font"
           type="font/woff2"
-          crossorigin
+          crossorigin=""
         />
       </Head>
       <Body>

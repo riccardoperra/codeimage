@@ -2,7 +2,7 @@ import {Box, Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import {createMemo, createSignal, onMount} from 'solid-js';
 import {untrack} from 'solid-js';
-import {CodeImageLogo2} from '~/components/CodeImageLogo/CodeImageLogo2';
+import {CodeImageLogo} from '~/components/CodeImageLogo/CodeImageLogo';
 import * as styles from './Header.css';
 
 export function Header() {
@@ -33,12 +33,12 @@ export function Header() {
           marginLeft={5}
           marginRight={5}
         >
-          <CodeImageLogo2 width={'140px'} height={'29pxs'} />
+          <CodeImageLogo width={'140px'} height={'29pxs'} />
           <Box marginLeft={'auto'}>
             <Button
               as={A}
               link={true}
-              href="https://next.codeimage.dev"
+              href="https://codeimage.dev"
               variant={'solid'}
               theme={'primary'}
               pill
