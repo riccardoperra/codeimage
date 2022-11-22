@@ -63,7 +63,7 @@ export function MainPage() {
           flexDirection={'column'}
           class={styles.textBox}
         >
-          <div>
+          <div class={styles.heroContainer}>
             <Text as={'h1'} weight={'bold'} class={styles.heading}>
               A tool for <br /> <span class={styles.screenshot}>beautify</span>{' '}
               your <span class={styles.screenshot}>code</span> screenshots

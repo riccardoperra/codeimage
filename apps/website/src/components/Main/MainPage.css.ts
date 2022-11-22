@@ -136,11 +136,15 @@ export const textBox = style([
   },
   responsiveStyle({
     mobile: {
-      marginTop: themeVars.spacing[6],
+      marginTop: themeVars.spacing[2],
       paddingTop: 0,
     },
   }),
 ]);
+
+export const heroContainer = style({
+  width: '90%',
+});
 
 export const heading = style([
   {
@@ -148,8 +152,8 @@ export const heading = style([
     textAlign: 'left',
     fontSize: '44px',
     lineHeight: '100%',
-    width: '80%',
     margin: 0,
+    display: 'inline-block',
   },
   responsiveStyle({
     mobile: {
@@ -174,6 +178,7 @@ export const mobileDescription = style(
       marginBottom: themeVars.spacing[8],
       fontWeight: '500',
       lineHeight: 1.25,
+      display: 'inline-block',
     },
     tablet: {
       display: 'none',
