@@ -7,6 +7,10 @@ import manifest from './dist/public/manifest.json';
 const cssEntries = [
   ...manifest['src/entry-client.tsx'].css,
   ...manifest['src/routes/index.tsx'].css,
+  ...manifest['src/components/Landing/ComingSoon/ComingSoon.tsx'].css,
+  ...manifest['src/components/Landing/EditorSteps/EditorSteps.tsx'].css,
+  ...manifest['src/components/Landing/OpenSource/OpenSource.tsx'].css,
+  ...manifest['src/components/Landing/Projects/Projects.tsx'].css,
 ];
 
 const htmlSourcePath = join('./dist/public/index.html');
