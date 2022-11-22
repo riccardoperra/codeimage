@@ -27,7 +27,6 @@ function RootCriticalStyle() {
         font-weight: 400;
         font-style: normal;
         font-stretch: 75% 125%;
-        font-display: swap;
         font-family: Mona Sans;
       }
       @font-face {
@@ -35,7 +34,6 @@ function RootCriticalStyle() {
         font-weight: 500;
         font-style: normal;
         font-stretch: 75% 125%;
-        font-display: swap;
         font-family: Mona Sans;
       }
       @font-face {
@@ -43,7 +41,6 @@ function RootCriticalStyle() {
         font-weight: 600;
         font-style: normal;
         font-stretch: 75% 125%;
-        font-display: swap;
         font-family: Mona Sans;
       }
       @font-face {
@@ -51,7 +48,6 @@ function RootCriticalStyle() {
         font-weight: 700;
         font-style: normal;
         font-stretch: 75% 125%;
-        font-display: swap;
         font-family: Mona Sans;
       }
     `}
