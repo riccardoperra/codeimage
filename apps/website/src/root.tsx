@@ -52,6 +52,7 @@ function RootCriticalStyle() {
         font-style: normal;
         font-stretch: 75% 125%;
         font-family: Mona Sans;
+        font-display: swap;
       }
     `}
     </Style>
