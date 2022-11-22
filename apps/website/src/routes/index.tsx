@@ -1,11 +1,8 @@
-import {ComingSoon} from '~/components/Landing/ComingSoon/ComingSoon';
-import {EditorSteps} from '~/components/Landing/EditorSteps/EditorSteps';
-import {OpenSource} from '~/components/Landing/OpenSource/OpenSource';
-import {Projects} from '~/components/Landing/Projects/Projects';
+import {createResource} from 'solid-js';
 import {Footer} from '~/components/Footer/Footer';
 import {Header} from '~/components/Header/Header';
 import {MainPage} from '~/components/Main/MainPage';
-import {createResource} from 'solid-js';
+import {hydrateOnViewport} from '~/core/hydrateOnViewport';
 
 function getRepoInfo() {
   return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
@@ -19,6 +16,28 @@ export function routeData() {
     repoInfo: data(),
   };
 }
+
+const Projects = hydrateOnViewport(() =>
+  import('../components/Landing/Projects/Projects').then(m => ({
+    default: m.Projects,
+  })),
+);
+
+const EditorSteps = hydrateOnViewport(() =>
+  import('../components/Landing/EditorSteps/EditorSteps').then(m => ({
+    default: m.EditorSteps,
+  })),
+);
+
+const ComingSoon = hydrateOnViewport(
+  () => import('../components/Landing/ComingSoon/ComingSoon'),
+);
+
+const OpenSource = hydrateOnViewport(() =>
+  import('../components/Landing/OpenSource/OpenSource').then(m => ({
+    default: m.OpenSource,
+  })),
+);
 
 export default function Home() {
   return (

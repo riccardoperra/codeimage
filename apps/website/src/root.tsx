@@ -1,5 +1,5 @@
 // @refresh reload
-import { Suspense } from 'solid-js';
+import {Suspense} from 'solid-js';
 import {
   Body,
   ErrorBoundary,
@@ -15,8 +15,8 @@ import {
 } from 'solid-start';
 import '@codeimage/ui/themes/darkTheme';
 import './root.css';
-import { MainPageImagePreloading } from './components/Main/MainPage';
-import { useAssets } from 'solid-js/web';
+import {MainPageImagePreloading} from './components/Main/MainPage';
+import {useAssets} from 'solid-js/web';
 
 function RootCriticalStyle() {
   return (
@@ -61,6 +61,7 @@ function RootCriticalStyle() {
 
 export default function Root() {
   useAssets(() => <style id="css-critical-style" />);
+
 
   return (
     <Html lang="en" data-codeimage-theme="dark">

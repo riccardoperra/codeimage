@@ -45,7 +45,7 @@ function DocumentText(props: SvgIconProps) {
   );
 }
 
-export function ComingSoon() {
+export default function ComingSoon() {
   let cardRef: HTMLDivElement;
   let themeBuilderRef: HTMLDivElement;
   let embedsRef: HTMLDivElement;
