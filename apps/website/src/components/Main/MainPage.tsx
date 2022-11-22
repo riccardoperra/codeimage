@@ -1,7 +1,7 @@
-import {Box, Button, HStack, Text} from '@codeimage/ui';
-import {Motion} from '@motionone/solid';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {animate, scroll, ScrollOffset} from 'motion';
+import { Box, Button, HStack, Text } from '@codeimage/ui';
+import { Motion } from '@motionone/solid';
+import { assignInlineVars } from '@vanilla-extract/dynamic';
+import { animate, scroll, ScrollOffset } from 'motion';
 import {
   createDeferred,
   createEffect,
@@ -11,11 +11,11 @@ import {
   onMount,
 } from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
-import {breakpoints} from '~/core/breakpoints';
-import {isMobile} from '@solid-primitives/platform';
-import {GithubButton} from '../GithubButton/GithubButton';
-import {useRouteData} from 'solid-start';
-import {routeData as RouteData} from '~/routes/index';
+import { breakpoints } from '~/core/breakpoints';
+import { isMobile } from '@solid-primitives/platform';
+import { GithubButton } from '../GithubButton/GithubButton';
+import { useRouteData } from 'solid-start';
+import { routeData as RouteData } from '~/routes/index';
 
 function getRepoInfo() {
   return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
@@ -28,7 +28,7 @@ export function MainPage() {
   let image: HTMLImageElement;
   const routeData = useRouteData<typeof RouteData>();
   const [loading, setLoading] = createSignal(true);
-  const [repo, setRepo] = createSignal<any>(routeData.repoInfo || {stars: 0});
+  const [repo, setRepo] = createSignal<any>(routeData.repoInfo || { stars: 0 });
 
   createDeferred(() =>
     getRepoInfo()
@@ -129,12 +129,6 @@ export function MainPage() {
 export function MainPageImagePreloading() {
   return (
     <>
-      <link
-        rel="preload"
-        href="/landing/codeimage_preview_mobile_ultra.webp"
-        as="image"
-        media={`(max-width: ${breakpoints.tablet}px)`}
-      />
       <link
         rel="preload"
         href={'/landing/codeimage_preview_mobile.webp'}
