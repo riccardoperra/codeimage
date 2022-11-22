@@ -28,6 +28,7 @@ function RootCriticalStyle() {
         font-style: normal;
         font-stretch: 75% 125%;
         font-family: Mona Sans;
+        font-display: "swap";
       }
       @font-face {
         src: url('/fonts/Mona-Sans-Medium.woff2') format('woff2 supports variations'), url('/fonts/Mona-Sans-Medium.woff2') format('woff2-variations');
@@ -35,6 +36,7 @@ function RootCriticalStyle() {
         font-style: normal;
         font-stretch: 75% 125%;
         font-family: Mona Sans;
+        font-display: "swap";
       }
       @font-face {
         src: url('/fonts/Mona-Sans-SemiBold.woff2') format('woff2 supports variations'), url('/fonts/Mona-Sans-SemiBold.woff2') format('woff2-variations');
@@ -42,6 +44,7 @@ function RootCriticalStyle() {
         font-style: normal;
         font-stretch: 75% 125%;
         font-family: Mona Sans;
+        font-display: "swap";
       }
       @font-face {
         src: url('/fonts/Mona-Sans-Bold.woff2') format('woff2 supports variations'), url('/fonts/Mona-Sans-Bold.woff2') format('woff2-variations');

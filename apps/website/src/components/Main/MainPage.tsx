@@ -64,7 +64,7 @@ export function MainPage() {
           class={styles.textBox}
         >
           <div class={styles.heroContainer}>
-            <Text weight={'bold'} class={styles.heading}>
+            <Text as={'h1'} weight={'bold'} class={styles.heading}>
               A tool for <br /> <span class={styles.screenshot}>beautify</span>{' '}
               your <span class={styles.screenshot}>code</span> screenshots
             </Text>
