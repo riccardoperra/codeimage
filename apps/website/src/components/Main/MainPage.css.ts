@@ -153,7 +153,6 @@ export const heading = style([
     fontSize: '44px',
     lineHeight: '100%',
     margin: 0,
-    display: 'inline-block',
   },
   responsiveStyle({
     mobile: {
@@ -178,7 +177,6 @@ export const mobileDescription = style(
       marginBottom: themeVars.spacing[8],
       fontWeight: '500',
       lineHeight: 1.25,
-      display: 'inline-block',
     },
     tablet: {
       display: 'none',
