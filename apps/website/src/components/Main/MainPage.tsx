@@ -107,12 +107,12 @@ export function MainPage() {
             <source
               type="image/webp"
               srcset={'/landing/codeimage_preview_mobile.webp'}
-              media={`(max-width: ${breakpoints.tablet}px)`}
+              media={`(min-width: ${breakpoints.tablet}px)`}
             />
             <source
               type="image/webp"
               srcset={'/landing/codeimage_preview_desktop.webp'}
-              media={`(min-width: ${breakpoints.tablet}px)`}
+              media={`(min-width: ${breakpoints.desktop}px)`}
             />
             <img
               class={styles.imageLeft}
@@ -139,13 +139,13 @@ export function MainPageImagePreloading() {
         rel="preload"
         href={'/landing/codeimage_preview_mobile.webp'}
         as="image"
-        media={`(min-width: ${breakpoints.mobile}) and (max-width: ${breakpoints.tablet}px)`}
+        media={`(min-width: ${breakpoints.tablet}px)`}
       />
       <link
         rel="preload"
         href={'/landing/codeimage_preview_desktop.webp'}
         as="image"
-        media={`(min-width: ${breakpoints.tablet}px)`}
+        media={`(min-width: ${breakpoints.desktop}px)`}
       />
     </>
   );
