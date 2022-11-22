@@ -64,12 +64,12 @@ export function MainPage() {
           class={styles.textBox}
         >
           <div class={styles.heroContainer}>
-            <Text as={'h1'} weight={'bold'} class={styles.heading}>
+            <Text as={'p'} weight={'bold'} class={styles.heading}>
               A tool for <br /> <span class={styles.screenshot}>beautify</span>{' '}
               your <span class={styles.screenshot}>code</span> screenshots
             </Text>
 
-            <Text as={'h2'} class={styles.mobileDescription}>
+            <Text as={'p'} class={styles.mobileDescription}>
               Instantly manage your code snippets, make them beautiful to read
               and share them to everyone.
             </Text>

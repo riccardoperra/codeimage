@@ -33,7 +33,7 @@ export function Header() {
           marginLeft={5}
           marginRight={5}
         >
-          <CodeImageLogo width={'140px'} height={'29pxs'} />
+          <CodeImageLogo width={'140px'} height={'29px'} />
           <Box marginLeft={'auto'}>
             <Button
               as={A}
