@@ -1,7 +1,5 @@
-import {createSignal, lazy, onMount, Show, Suspense} from 'solid-js';
-import {isServer} from 'solid-js/web';
-import {Hydration, NoHydration} from 'solid-js/web';
-import {unstable_island} from 'solid-start';
+import {children, createSignal, lazy, onMount, Show, Suspense} from 'solid-js';
+import {getHydrationKey, NoHydration} from 'solid-js/web';
 
 export function hydrateOnViewport<T extends () => any>(
   Comp:
@@ -23,15 +21,8 @@ export function hydrateOnViewport<T extends () => any>(
     );
   }
 
-  if (isServer) {
-    return () => (
-      <div>
-        <NoHydratedComponent />
-      </div>
-    );
-  }
-
   return () => {
+    const hk = getHydrationKey();
     onMount(() => {
       const io = new IntersectionObserver(cb => {
         if (cb[0].isIntersecting) {
@@ -42,9 +33,21 @@ export function hydrateOnViewport<T extends () => any>(
       io.observe(el);
     });
 
+    if (!globalThis.window) {
+      return (
+        <div data-hk={hk}>
+          <NoHydratedComponent />
+        </div>
+      );
+    }
+
     return (
-      <div ref={el}>
-        {isServer || !load() ? <NoHydratedComponent /> : <LazyComponent />}
+      <div data-hk={hk} ref={el}>
+        <Suspense>
+          <Show when={load()} fallback={<NoHydratedComponent />}>
+            <LazyComponent />
+          </Show>
+        </Suspense>
       </div>
     ) as unknown as T;
   };

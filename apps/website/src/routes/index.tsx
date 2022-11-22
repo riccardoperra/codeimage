@@ -44,7 +44,7 @@ export default function Home() {
     <main>
       <Header />
       <MainPage />
-      <EditorSteps />
+      {/* <EditorSteps /> */}
       <Projects />
       <ComingSoon />
       <OpenSource />
