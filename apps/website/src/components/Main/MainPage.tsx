@@ -14,7 +14,7 @@ function getRepoInfo() {
     .then(res => res.repo);
 }
 
-export function MainPage() {
+export default function MainPage() {
   let section: HTMLElement;
   let image: HTMLImageElement;
   const routeData = useRouteData<typeof RouteData>();

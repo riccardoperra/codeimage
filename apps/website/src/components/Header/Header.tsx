@@ -5,7 +5,7 @@ import {untrack} from 'solid-js';
 import {CodeImageLogo} from '~/components/CodeImageLogo/CodeImageLogo';
 import * as styles from './Header.css';
 
-export function Header() {
+export default function Header() {
   const [scrolled, setScrolled] = createSignal(false);
   onMount(() => {
     const isScrolled = () => window.scrollY > 150;
