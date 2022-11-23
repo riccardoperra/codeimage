@@ -18,12 +18,12 @@ export function routeData() {
 
 const EditorSteps = hydrateOnViewport(
   () => import('../components/Landing/EditorSteps/EditorSteps'),
-  'idle',
+  'visible',
 );
 
 const Projects = hydrateOnViewport(
   () => import('../components/Landing/Projects/Projects'),
-  'idle',
+  'visible',
 );
 
 const ComingSoon = hydrateOnViewport(
