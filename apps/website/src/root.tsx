@@ -15,6 +15,7 @@ import {
   Style,
   Title,
 } from 'solid-start';
+import {MainPageImagePreloading} from './components/Main/MainPage';
 import './root.css';
 
 function RootCriticalStyle() {
@@ -85,6 +86,7 @@ export default function Root() {
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
         />
         <RootCriticalStyle />
+        <MainPageImagePreloading />
 
         <Link
           rel="preload"

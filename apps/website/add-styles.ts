@@ -20,11 +20,15 @@ cssEntries.forEach(entry => {
   });
 
   style += source;
+  patchedSource = patchedSource.replace(
+    `</head>`,
+    `<link rel='stylesheet' href='/${entry}'>`,
+  );
 });
 
-patchedSource = patchedSource.replace(
-  '<style id="css-critical-style"></style>',
-  `<style id="css-critical-style">${style}</style>`,
-);
+// patchedSource = patchedSource.replace(
+//   '<style id="css-critical-style"></style>',
+//   `<style id='css-critical-style'>${style}</style>`,
+// );
 
 writeFileSync(htmlSourcePath, patchedSource);

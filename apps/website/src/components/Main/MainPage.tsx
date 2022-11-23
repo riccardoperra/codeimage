@@ -1,13 +1,12 @@
 import {Box, Button, HStack} from '@codeimage/ui';
+import {isMobile} from '@solid-primitives/platform';
 import {animate, scroll} from 'motion';
 import {createDeferred, createSignal, onMount} from 'solid-js';
-import {useAssets} from 'solid-js/web';
+import {useRouteData} from 'solid-start';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
-import {isMobile} from '@solid-primitives/platform';
-import {GithubButton} from '../GithubButton/GithubButton';
-import {useRouteData} from 'solid-start';
 import {routeData as RouteData} from '~/routes/index';
+import {GithubButton} from '../GithubButton/GithubButton';
 import {Header} from '../Header/Header';
 
 function getRepoInfo() {
@@ -22,8 +21,6 @@ export default function MainPage() {
   const routeData = useRouteData<typeof RouteData>();
   const [loading, setLoading] = createSignal(true);
   const [repo, setRepo] = createSignal<any>(routeData.repoInfo || {stars: 0});
-
-  useAssets(() => <MainPageImagePreloading />);
 
   createDeferred(() =>
     getRepoInfo()
