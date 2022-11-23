@@ -1,6 +1,4 @@
 import {createResource} from 'solid-js';
-import {Header} from '~/components/Header/Header';
-import {MainPage} from '~/components/Main/MainPage';
 import {hydrateOnViewport} from '~/core/hydrateOnViewport';
 
 function getRepoInfo() {
@@ -15,6 +13,16 @@ export function routeData() {
     repoInfo: data(),
   };
 }
+
+const MainPage = hydrateOnViewport(
+  () => import('../components/Main/MainPage').then(m => ({default: m.Mainpage}),
+  'load',
+);
+  
+const Header = hydrateOnViewport(
+  () => import('../components/Header/Header').then(m => ({default: m.Header}),
+  'idle',
+);
 
 const EditorSteps = hydrateOnViewport(
   () => import('../components/Landing/EditorSteps/EditorSteps'),
