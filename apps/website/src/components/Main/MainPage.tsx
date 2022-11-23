@@ -28,23 +28,6 @@ export default function MainPage() {
       .finally(() => setLoading(false)),
   );
 
-  onMount(() => {
-    if (!isMobile) {
-      scroll(
-        animate(image, {
-          transform: [
-            'rotateX(15deg) rotateY(-10deg)',
-            'rotateX(0deg) rotateY(0deg) translateX(0px)',
-          ],
-        }),
-        {
-          target: section,
-          offset: ['0%', '70%'],
-        },
-      );
-    }
-  });
-
   return (
     <>
       <Header />
@@ -71,12 +54,7 @@ export default function MainPage() {
             </div>
 
             <HStack spacing={'4'} class={styles.ctaContainer}>
-              <Button
-                size={'lg'}
-                variant={'solid'}
-                theme={'primary'}
-                class={styles.giantButton}
-              >
+              <Button size={'lg'} variant={'solid'} theme={'primary'}>
                 Getting started
               </Button>
 
@@ -84,37 +62,38 @@ export default function MainPage() {
                 size={'lg'}
                 variant={'solid'}
                 theme={'secondary'}
-                class={styles.giantButton}
                 loading={loading()}
                 stars={repo().stars}
               />
             </HStack>
           </Box>
-        </div>
-        <div class={styles.imagePerspectiveBox}>
-          <div class={styles.imageBox} ref={image}>
-            <picture>
-              <source
-                type="image/webp"
-                srcset={'/landing/codeimage_preview_mobile_ultra.webp'}
-                media={`(max-width: ${breakpoints.tablet}px)`}
-              />
-              <source
-                type="image/webp"
-                srcset={'/landing/codeimage_preview_mobile.webp'}
-                media={`(min-width: ${breakpoints.tablet}px)`}
-              />
-              <source
-                type="image/webp"
-                srcset={'/landing/codeimage_preview_desktop.webp'}
-                media={`(min-width: ${breakpoints.desktop}px)`}
-              />
-              <img
-                class={styles.imageLeft}
-                src={'/landing/codeimage_preview_lite.png'}
-                alt={'Preview of CodeImage snippet'}
-              />
-            </picture>
+          <div class={styles.imagePerspectiveBox}>
+            <div class={styles.imageSection}>
+              <div class={styles.imageBox} ref={image}>
+                <picture>
+                  <source
+                    type="image/webp"
+                    srcset={'/landing/codeimage_preview_mobile_ultra.webp'}
+                    media={`(max-width: ${breakpoints.tablet}px)`}
+                  />
+                  <source
+                    type="image/webp"
+                    srcset={'/landing/codeimage_preview_mobile.webp'}
+                    media={`(min-width: ${breakpoints.tablet}px)`}
+                  />
+                  <source
+                    type="image/webp"
+                    srcset={'/landing/codeimage_preview_desktop.webp'}
+                    media={`(min-width: ${breakpoints.desktop}px)`}
+                  />
+                  <img
+                    class={styles.imageLeft}
+                    src={'/landing/codeimage_preview_lite.png'}
+                    alt={'Preview of CodeImage snippet'}
+                  />
+                </picture>
+              </div>
+            </div>
           </div>
         </div>
       </section>

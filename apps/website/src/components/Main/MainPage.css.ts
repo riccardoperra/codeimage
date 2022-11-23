@@ -10,7 +10,6 @@ export const main = style({
   vars: {
     [dotColor]: '#dddddd10',
   },
-  display: 'flex',
   margin: 'auto',
   flexDirection: 'column',
   overflow: 'hidden',
@@ -38,12 +37,13 @@ export const content = style([
     zIndex: 1,
 
     paddingTop: themeVars.spacing[24],
+    paddingBottom: themeVars.spacing[24],
     paddingLeft: themeVars.spacing[4],
     paddingRight: themeVars.spacing[4],
 
-    display: 'flex',
-    alignItems: 'center',
     flex: 1,
+    display: 'grid',
+    gridTemplateColumns: 'repeat(1,minmax(0,1fr))',
   },
   responsiveStyle({
     mobile: {
@@ -70,69 +70,71 @@ export const bgAnimation = keyframes({
   },
 });
 
+export const imageSection = style(
+  responsiveStyle({
+    mobile: {
+      marginTop: themeVars.spacing[8],
+
+      backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)',
+      backgroundSize: 'calc(10 * 1px) calc(10 * 1px)',
+      color: '#0077FF75',
+    },
+    desktop: {
+      width: '55%',
+      maxWidth: '1280px',
+      borderRadius: '24px',
+    },
+  }),
+);
+
 export const imageBox = style([
   {
     position: 'relative',
     display: 'flex',
     flex: '0 0 auto',
-    margin: 'auto',
     width: '100%',
     marginTop: 0,
     borderRadius: '12px',
     overflow: 'hidden',
-    background: 'linear-gradient(135deg, #FF0076 0%, #590FB7 100%)',
-    transform: `unset`,
-    '::before': {
-      position: 'absolute',
-      content: '""',
-      top: '0',
-      right: '0',
-      bottom: '0',
-      left: '0',
-      backgroundImage:
-        'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
-      zIndex: '-1',
-      opacity: fallbackVar(progressOpacityEditor, '0'),
-    },
+    background:
+      'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
+    transform: 'translate(40px, -40px)',
   },
   responsiveStyle({
-    mobile: {
-      marginTop: themeVars.spacing[8],
-    },
     desktop: {
-      marginTop: 0,
-      width: '60%',
-      maxWidth: '1280px',
       borderRadius: '42px',
-      transform: `rotateX(15deg) rotateY(-10deg)`,
     },
   }),
 ]);
 
 export const imagePerspectiveBox = style([
   {
-    overflow: 'visible',
     position: 'relative',
-    perspective: '1000px',
-    paddingLeft: themeVars.spacing[4],
-    paddingRight: themeVars.spacing[4],
+    display: 'flex',
+    gridColumnStart: 1,
+    justifyContent: 'flex-end',
   },
   responsiveStyle({
     mobile: {
+      gridRowStart: 2,
       paddingBottom: themeVars.spacing[12],
     },
     desktop: {
-      paddingBottom: '200px',
+      gridRowStart: 1,
+      paddingBottom: 0,
+      marginTop: '240px',
     },
   }),
 ]);
 
 export const textBox = style([
   {
-    flex: 1,
-    width: '100%',
+    gridRowStart: 1,
+    gridColumnStart: 1,
     display: 'flex',
     alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    zIndex: 1,
   },
   responsiveStyle({
     mobile: {
@@ -163,7 +165,8 @@ export const heading = style([
       width: '100%',
     },
     desktop: {
-      fontSize: '84px',
+      fontSize: '4.5rem',
+      maxWidth: '44rem',
     },
   }),
 ]);
@@ -179,7 +182,7 @@ export const mobileDescription = style(
       lineHeight: 1.25,
     },
     tablet: {
-      display: 'none',
+      maxWidth: '32rem',
     },
   }),
 );
@@ -216,9 +219,6 @@ export const imageLeft = style([
     tablet: {
       minHeight: '450px',
     },
-    desktop: {
-      minHeight: '550px',
-    },
   }),
 ]);
 
@@ -243,20 +243,20 @@ export const screenshot = style({
   color: themeVars.backgroundColor.blue[500],
 });
 
-export const giantButton = style(
-  responsiveStyle({
-    desktop: {
-      height: '64px',
-      borderRadius: '16px',
-      paddingTop: 0,
-      paddingBottom: 0,
-      paddingLeft: themeVars.spacing['6'],
-      paddingRight: themeVars.spacing['6'],
-      fontWeight: themeVars.fontWeight.medium,
-      fontSize: themeVars.fontSize.xl,
-    },
-  }),
-);
+// export const giantButton = style(
+//   responsiveStyle({
+//     desktop: {
+//       height: '64px',
+//       borderRadius: '16px',
+//       paddingTop: 0,
+//       paddingBottom: 0,
+//       paddingLeft: themeVars.spacing['6'],
+//       paddingRight: themeVars.spacing['6'],
+//       fontWeight: themeVars.fontWeight.medium,
+//       fontSize: themeVars.fontSize.xl,
+//     },
+//   }),
+// );
 
 export const ctaContainer = style(
   responsiveStyle({

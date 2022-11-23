@@ -53,15 +53,15 @@ export const btn = style([
       },
     },
   },
-  responsiveStyle({
-    desktop: {
-      height: '64px',
-      borderRadius: '16px',
-      paddingLeft: themeVars.spacing['6'],
-      paddingRight: themeVars.spacing['6'],
-      fontSize: '24px',
-    },
-  }),
+  // responsiveStyle({
+  //   desktop: {
+  //     height: '64px',
+  //     borderRadius: '16px',
+  //     paddingLeft: themeVars.spacing['6'],
+  //     paddingRight: themeVars.spacing['6'],
+  //     fontSize: '24px',
+  //   },
+  // }),
 ]);
 
 export const content = style([
