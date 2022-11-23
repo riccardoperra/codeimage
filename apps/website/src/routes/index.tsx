@@ -1,4 +1,4 @@
-import { createResource } from 'solid-js';
+import { createResource, lazy } from 'solid-js';
 import { hydrateOnViewport } from '~/core/hydrateOnViewport';
 
 function getRepoInfo() {
@@ -14,9 +14,8 @@ export function routeData() {
   };
 }
 
-const MainPage = hydrateOnViewport(
+const MainPage = lazy(
   () => import('../components/Main/MainPage'),
-  'idle',
 );
 
 const Header = hydrateOnViewport(
