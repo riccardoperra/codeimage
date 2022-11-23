@@ -16,7 +16,7 @@ export function routeData() {
 
 const MainPage = hydrateOnViewport(
   () => import('../components/Main/MainPage'),
-  'load',
+  'idle',
 );
 
 const Header = hydrateOnViewport(
