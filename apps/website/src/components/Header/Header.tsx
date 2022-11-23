@@ -1,8 +1,7 @@
-import { Box, Button } from '@codeimage/ui';
-import { A } from '@solidjs/router';
-import { createMemo, createSignal, onMount } from 'solid-js';
-import { untrack } from 'solid-js';
-import { CodeImageLogo } from '~/components/CodeImageLogo/CodeImageLogo';
+import {Box, Button} from '@codeimage/ui';
+import {A} from '@solidjs/router';
+import {createMemo, createSignal, onMount, untrack} from 'solid-js';
+import {CodeImageLogo} from '~/components/CodeImageLogo/CodeImageLogo';
 import * as styles from './Header.css';
 
 export function Header() {
@@ -17,7 +16,7 @@ export function Header() {
         if (untrack(scrolled) === $scrolled) return;
         setScrolled($scrolled);
       },
-      { passive: true },
+      {passive: true},
     );
   });
 

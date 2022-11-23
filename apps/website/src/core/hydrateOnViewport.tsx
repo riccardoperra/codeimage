@@ -45,15 +45,14 @@ export function hydrateOnViewport<T extends () => any>(
     setLoad(true);
   }
 
-  const strategy = {
-    visible: onVisible,
-    load: onVisible,
-    idle: onIdle,
-  };
-
   return () => {
     const hk = getHydrationKey();
     onMount(() => {
+      const strategy = {
+        visible: onVisible,
+        load: onLoad,
+        idle: onIdle,
+      };
       strategy[type]();
     });
 
@@ -76,5 +75,3 @@ export function hydrateOnViewport<T extends () => any>(
     ) as unknown as T;
   };
 }
-
-export function hydrateOnIdle() {}

@@ -1,17 +1,20 @@
 import {readFileSync, writeFileSync} from 'node:fs';
 import {join} from 'node:path';
-import {parse} from 'node-html-parser';
 
 import manifest from './dist/public/manifest.json';
 
 const cssEntries = [
-  ...manifest['src/entry-client.tsx'].css,
-  ...manifest['src/routes/index.tsx'].css,
-  ...manifest['src/components/Landing/ComingSoon/ComingSoon.tsx'].css,
-  ...manifest['src/components/Landing/EditorSteps/EditorSteps.tsx'].css,
-  ...manifest['src/components/Landing/OpenSource/OpenSource.tsx'].css,
-  ...manifest['src/components/Landing/Projects/Projects.tsx'].css,
+  ...Object.entries(manifest)
+    .reduce((acc, [k, v]) => {
+      if (k.endsWith('.css')) {
+        return [...acc, [k, v.file]];
+      }
+      return acc;
+    }, [])
+    .sort(a => (a[0].startsWith('src/') ? 1 : -1))
+    .map(a => a[1]),
 ];
+console.log(cssEntries);
 
 const htmlSourcePath = join('./dist/public/index.html');
 
@@ -32,14 +35,14 @@ cssEntries.forEach(entry => {
   writeFileSync(join('./dist/public', entry), '');
 
   patchedSource = patchedSource.replace(
-    `<link rel="stylesheet" href="/${entry}">`,
-    `<link rel="stylesheet" href="/${entry}" media="print">`,
+    `<link rel='stylesheet' href='/${entry}'>`,
+    `<link rel='stylesheet' href='/${entry}' media='print'>`,
   );
 });
 
 patchedSource = patchedSource.replace(
   '<style id="css-critical-style"></style>',
-  `<style id="css-critical-style">${style}</style>`,
+  `<style id='css-critical-style'>${style}</style>`,
 );
 
 writeFileSync(htmlSourcePath, patchedSource);

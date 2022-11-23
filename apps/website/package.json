@@ -1,8 +1,8 @@
 {
   "name": "@codeimage/website",
   "scripts": {
-    "dev": "solid-start dev -- --force",
-    "build": "solid-start build && tsx ./add-styles.ts && tsx ./vercel-build-output.ts",
+    "dev": "solid-start dev",
+    "build": "solid-start build && tsx ./extract-static-css.ts && tsx ./vercel-build-output.ts",
     "start": "solid-start start"
   },
   "type": "module",

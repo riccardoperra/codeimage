@@ -1,7 +1,5 @@
-import { createResource, lazy } from 'solid-js';
-import { hydrateOnViewport } from '~/core/hydrateOnViewport';
-import { Header } from '~/components/Header/Header';
-import { MainPage } from '~/components/Main/MainPage';
+import {createResource} from 'solid-js';
+import {hydrateOnViewport} from '~/core/hydrateOnViewport';
 
 function getRepoInfo() {
   return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
@@ -15,6 +13,11 @@ export function routeData() {
     repoInfo: data(),
   };
 }
+
+const MainPage = hydrateOnViewport(
+  () => import('../components/Main/MainPage'),
+  'idle',
+);
 
 const EditorSteps = hydrateOnViewport(
   () => import('../components/Landing/EditorSteps/EditorSteps'),
@@ -44,7 +47,6 @@ const Footer = hydrateOnViewport(
 export default function Home() {
   return (
     <main>
-      <Header />
       <MainPage />
       <EditorSteps />
       <Projects />

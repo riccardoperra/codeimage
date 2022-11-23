@@ -7,7 +7,7 @@ const enableSsr = !process.env.ENABLE_VERCEL_BUILD;
 
 export default defineConfig({
   build: {
-    cssCodeSplit: false,
+    cssCodeSplit: true,
   },
   plugins: [
     solid({adapter: ssg(), prerenderRoutes: ['/']}),
