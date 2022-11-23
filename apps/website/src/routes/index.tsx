@@ -1,6 +1,6 @@
 import { createResource, lazy } from 'solid-js';
 import { hydrateOnViewport } from '~/core/hydrateOnViewport';
-import { MainPage } from '../components/Main/MainPage';
+import MainPage from '../components/Main/MainPage';
 
 function getRepoInfo() {
   return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
