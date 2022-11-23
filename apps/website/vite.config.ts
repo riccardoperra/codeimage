@@ -1,4 +1,4 @@
-import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
+import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import ssg from 'solid-start-static';
 import solid from 'solid-start/vite';
 import {defineConfig} from 'vite';
@@ -13,7 +13,7 @@ export default defineConfig({
     solid({adapter: ssg(), prerenderRoutes: ['/']}),
     vanillaExtractPlugin({
       esbuildOptions: {
-        external: ['solid-js/web', 'solid-js', 'solid-js/server'],
+        external: ['solid-js/web'],
         loader: {
           '.css.ts.vanilla.css': 'text',
         },
