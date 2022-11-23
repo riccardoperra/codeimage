@@ -15,12 +15,12 @@ export function routeData() {
 }
 
 const MainPage = hydrateOnViewport(
-  () => import('../components/Main/MainPage').then(m => ({default: m.MainPage}),
+  () => import('../components/Main/MainPage').then(m => ({default: m.MainPage})),
   'load',
 );
   
 const Header = hydrateOnViewport(
-  () => import('../components/Header/Header').then(m => ({default: m.Header}),
+  () => import('../components/Header/Header').then(m => ({default: m.Header})),
   'idle',
 );
 
