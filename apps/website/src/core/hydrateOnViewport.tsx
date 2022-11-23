@@ -7,6 +7,7 @@ export function hydrateOnViewport<T extends () => any>(
     | (() => Promise<{
         default: T;
       }>),
+  type: 'visible' | 'idle' | 'load',
 ): any {
   let el: HTMLDivElement;
   const [load, setLoad] = createSignal(false);
@@ -21,16 +22,39 @@ export function hydrateOnViewport<T extends () => any>(
     );
   }
 
+  function onIdle() {
+    const cb = () => setLoad(true);
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(cb);
+    } else {
+      setTimeout(cb, 200);
+    }
+  }
+
+  function onVisible() {
+    const io = new IntersectionObserver(cb => {
+      if (cb[0].isIntersecting) {
+        setLoad(true);
+        io.disconnect();
+      }
+    });
+    io.observe(el);
+  }
+
+  function onLoad() {
+    setLoad(true);
+  }
+
+  const strategy = {
+    visible: onVisible,
+    load: onVisible,
+    idle: onIdle,
+  };
+
   return () => {
     const hk = getHydrationKey();
     onMount(() => {
-      const io = new IntersectionObserver(cb => {
-        if (cb[0].isIntersecting) {
-          setLoad(true);
-          io.disconnect();
-        }
-      });
-      io.observe(el);
+      strategy[type]();
     });
 
     if (!globalThis.window) {
@@ -52,3 +76,5 @@ export function hydrateOnViewport<T extends () => any>(
     ) as unknown as T;
   };
 }
+
+export function hydrateOnIdle() {}

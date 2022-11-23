@@ -2,7 +2,7 @@ import {Text, HStack, Link} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import * as styles from '~/components/Footer/Footer.css';
 
-export function Footer() {
+export default function Footer() {
   return (
     <footer class={styles.footer}>
       <div class={styles.content}>

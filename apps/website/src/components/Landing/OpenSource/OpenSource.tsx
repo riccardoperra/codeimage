@@ -38,7 +38,7 @@ async function getContributors(): Promise<
   return contributorsList.filter(contributor => contributor.type !== 'Bot');
 }
 
-export function OpenSource() {
+export default function OpenSource() {
   const [data] = createResource(getContributors);
 
   onMount(() => {

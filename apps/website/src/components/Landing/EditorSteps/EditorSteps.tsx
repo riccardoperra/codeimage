@@ -7,7 +7,7 @@ import {StepCardArea} from './StepCardScene/StepCardScene';
 import {injectEditorScene} from './scene';
 import {EditorScene} from './EditorScene/EditorScene';
 
-export function EditorSteps() {
+export default function EditorSteps() {
   const scene = injectEditorScene();
   let ref: HTMLElement;
 

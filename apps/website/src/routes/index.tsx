@@ -1,5 +1,4 @@
 import {createResource} from 'solid-js';
-import {Footer} from '~/components/Footer/Footer';
 import {Header} from '~/components/Header/Header';
 import {MainPage} from '~/components/Main/MainPage';
 import {hydrateOnViewport} from '~/core/hydrateOnViewport';
@@ -17,26 +16,29 @@ export function routeData() {
   };
 }
 
-const Projects = hydrateOnViewport(() =>
-  import('../components/Landing/Projects/Projects').then(m => ({
-    default: m.Projects,
-  })),
+const EditorSteps = hydrateOnViewport(
+  () => import('../components/Landing/EditorSteps/EditorSteps'),
+  'idle',
 );
 
-const EditorSteps = hydrateOnViewport(() =>
-  import('../components/Landing/EditorSteps/EditorSteps').then(m => ({
-    default: m.EditorSteps,
-  })),
+const Projects = hydrateOnViewport(
+  () => import('../components/Landing/Projects/Projects'),
+  'idle',
 );
 
 const ComingSoon = hydrateOnViewport(
   () => import('../components/Landing/ComingSoon/ComingSoon'),
+  'visible',
 );
 
-const OpenSource = hydrateOnViewport(() =>
-  import('../components/Landing/OpenSource/OpenSource').then(m => ({
-    default: m.OpenSource,
-  })),
+const OpenSource = hydrateOnViewport(
+  () => import('../components/Landing/OpenSource/OpenSource'),
+  'visible',
+);
+
+const Footer = hydrateOnViewport(
+  () => import('../components/Footer/Footer'),
+  'visible',
 );
 
 export default function Home() {
@@ -44,7 +46,7 @@ export default function Home() {
     <main>
       <Header />
       <MainPage />
-      {/* <EditorSteps /> */}
+      <EditorSteps />
       <Projects />
       <ComingSoon />
       <OpenSource />

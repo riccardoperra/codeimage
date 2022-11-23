@@ -1,7 +1,7 @@
-import { Badge, Box, Button, SvgIcon, SvgIconProps, Text } from '@codeimage/ui';
-import { A } from '@solidjs/router';
-import { animate, scroll } from 'motion';
-import { JSX, onMount } from 'solid-js';
+import {Badge, Box, Button, SvgIcon, SvgIconProps, Text} from '@codeimage/ui';
+import {A} from '@solidjs/router';
+import {animate, scroll} from 'motion';
+import {JSX, onMount} from 'solid-js';
 import * as styles from './Projects.css';
 
 function StorageBox(props: JSX.IntrinsicElements['svg']) {
@@ -17,11 +17,11 @@ function StorageBox(props: JSX.IntrinsicElements['svg']) {
   );
 }
 
-export function Projects() {
+export default function Projects() {
   let cardRef: HTMLDivElement;
 
   onMount(() => {
-    scroll(animate(cardRef, { opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1] }), {
+    scroll(animate(cardRef, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
       target: cardRef,
       offset: ['start end', 'end end', 'start start', 'end start'],
     });
