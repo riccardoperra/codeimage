@@ -98,14 +98,21 @@ export const imageBox = style([
     overflow: 'hidden',
     background:
       'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
-    transform: 'translate(40px, -40px)',
   },
   responsiveStyle({
     desktop: {
       borderRadius: '42px',
+      transform: 'translate(40px, -40px)',
     },
   }),
 ]);
+
+// export const imagePattern = style({
+//   backgroundColor: 'transparent',
+//   backgroundImage: 'radial-gradient(transparent 1px,var(--background) 1px)',
+//   backgroundSize: '5px 5px',
+//   inset: '15px -15px -15px 15px',
+// });
 
 export const imagePerspectiveBox = style([
   {
