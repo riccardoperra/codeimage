@@ -188,6 +188,7 @@ export const rightCardAnalytics = style({
 export const analyticsCard = style({
   width: '224px',
   height: '140px',
+  boxSizing: 'content-box',
   background: themeVars.backgroundColor.purple['200'],
   padding: '24px',
   borderRadius: '32px',
