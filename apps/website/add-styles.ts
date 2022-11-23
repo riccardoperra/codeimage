@@ -15,8 +15,16 @@ let style = '';
 let patchedSource = htmlSource;
 
 cssEntries.forEach(entry => {
-  const script = `<link rel="stylesheet" href="/${entry}">`;
-  patchedSource = patchedSource.replace(`</head>`, `${script}</head>`);
+  const source = readFileSync(join('./dist/public', entry), {
+    encoding: 'utf-8',
+  });
+
+  style += source;
 });
+
+patchedSource = patchedSource.replace(
+  '<style id="css-critical-style"></style>',
+  `<style id="css-critical-style">${style}</style>`,
+);
 
 writeFileSync(htmlSourcePath, patchedSource);
