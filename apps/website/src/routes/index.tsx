@@ -15,7 +15,7 @@ export function routeData() {
 }
 
 const MainPage = hydrateOnViewport(
-  () => import('../components/Main/MainPage').then(m => ({default: m.Mainpage}),
+  () => import('../components/Main/MainPage').then(m => ({default: m.MainPage}),
   'load',
 );
   
