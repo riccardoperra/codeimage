@@ -1,12 +1,12 @@
-import {Box, Button, HStack, Text} from '@codeimage/ui';
-import {animate, scroll} from 'motion';
-import {createDeferred, createSignal, onMount} from 'solid-js';
+import { Box, Button, HStack, Text } from '@codeimage/ui';
+import { animate, scroll } from 'motion';
+import { createDeferred, createSignal, onMount } from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
-import {breakpoints} from '~/core/breakpoints';
-import {isMobile} from '@solid-primitives/platform';
-import {GithubButton} from '../GithubButton/GithubButton';
-import {useRouteData} from 'solid-start';
-import {routeData as RouteData} from '~/routes/index';
+import { breakpoints } from '~/core/breakpoints';
+import { isMobile } from '@solid-primitives/platform';
+import { GithubButton } from '../GithubButton/GithubButton';
+import { useRouteData } from 'solid-start';
+import { routeData as RouteData } from '~/routes/index';
 
 function getRepoInfo() {
   return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
@@ -14,12 +14,12 @@ function getRepoInfo() {
     .then(res => res.repo);
 }
 
-export default function MainPage() {
+export function MainPage() {
   let section: HTMLElement;
   let image: HTMLImageElement;
   const routeData = useRouteData<typeof RouteData>();
   const [loading, setLoading] = createSignal(true);
-  const [repo, setRepo] = createSignal<any>(routeData.repoInfo || {stars: 0});
+  const [repo, setRepo] = createSignal<any>(routeData.repoInfo || { stars: 0 });
 
   createDeferred(() =>
     getRepoInfo()
