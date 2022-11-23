@@ -15,7 +15,7 @@ import {
 } from 'solid-start';
 import '@codeimage/ui/themes/darkTheme';
 import './root.css';
-import {MainPageImagePreloading} from './components/Main/MainPage';
+import {MainPageImagePreloading} from './components/Main/MainPagePreloading';
 import {useAssets} from 'solid-js/web';
 
 function RootCriticalStyle() {
