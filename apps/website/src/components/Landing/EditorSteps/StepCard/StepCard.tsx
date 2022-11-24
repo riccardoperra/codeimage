@@ -7,10 +7,12 @@ interface StepCard {
   active: boolean;
   title: JSXElement | string;
   description: JSXElement | string;
+
+  opacityOnDisabled: number;
 }
 
 export function StepCard(props: VoidProps<StepCard>) {
-  const opacity = () => (props.active ? 1 : '0.25');
+  const opacity = () => (props.active ? 1 : props.opacityOnDisabled);
 
   return (
     <Motion.div

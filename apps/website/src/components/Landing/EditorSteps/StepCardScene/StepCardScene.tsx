@@ -1,3 +1,4 @@
+import {isMobile} from '@solid-primitives/platform';
 import {StepCard} from '../StepCard/StepCard';
 import * as styles from './StepCardScene.css';
 
@@ -6,12 +7,14 @@ interface StepCardAreaProps {
 }
 
 export function StepCardArea(props: StepCardAreaProps) {
+  const opacityOnDisabled = () => (isMobile ? 0 : 0.25);
   return (
     <div class={styles.container}>
       <div class={styles.flexibleContent}>
         <div class={styles.innerContent}>
           <div class={styles.grid}>
             <StepCard
+              opacityOnDisabled={opacityOnDisabled()}
               active={
                 props.animationProgress >= 0 && props.animationProgress < 33
               }
@@ -25,6 +28,7 @@ export function StepCardArea(props: StepCardAreaProps) {
             />
 
             <StepCard
+              opacityOnDisabled={opacityOnDisabled()}
               active={
                 props.animationProgress >= 33 && props.animationProgress < 66
               }
@@ -38,6 +42,7 @@ export function StepCardArea(props: StepCardAreaProps) {
             />
 
             <StepCard
+              opacityOnDisabled={opacityOnDisabled()}
               active={props.animationProgress >= 66}
               title={'Share to everyone'}
               description={

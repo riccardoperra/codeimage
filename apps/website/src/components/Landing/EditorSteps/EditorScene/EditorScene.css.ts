@@ -1,19 +1,28 @@
 import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
+import {responsiveStyle} from '~/core/responsive';
 
-export const container = style([
-  {
-    maxHeight: '60vh',
-    height: '100%',
-    width: '100%',
-    position: 'relative',
-    flex: 1,
-    display: 'flex',
-    borderRadius: themeVars.borderRadius.xl,
-    background: backgroundColorVar,
-    overflow: 'hidden',
-  },
-]);
+export const container = style(
+  responsiveStyle({
+    mobile: {
+      position: 'fixed',
+      bottom: 0,
+      maxHeight: '60vh',
+      height: '100%',
+      width: '100%',
+      flex: 1,
+      display: 'flex',
+      borderRadius: themeVars.borderRadius.xl,
+      background: backgroundColorVar,
+      overflow: 'hidden',
+    },
+    tablet: {
+      bottom: 'unset',
+      position: 'relative',
+      maxHeight: '60vh',
+    },
+  }),
+);
 
 export const circularProgressBox = style({
   position: 'absolute',

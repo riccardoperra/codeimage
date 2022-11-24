@@ -5,18 +5,13 @@ import {responsiveStyle} from '~/core/responsive';
 export const sectionWrapper = style([
   {
     backgroundColor: '#000',
-    height: '200vh',
-    '@media': {
-      '(min-width: 748px)': {
-        height: '300vh',
-      },
-    },
     position: 'relative',
   },
   responsiveStyle({
     mobile: {
       paddingLeft: themeVars.spacing[4],
       paddingRight: themeVars.spacing[4],
+      height: '200vh',
     },
     tablet: {
       height: '300vh',

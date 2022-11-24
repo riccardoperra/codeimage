@@ -1,4 +1,5 @@
-import {style} from '@vanilla-extract/css';
+import {globalStyle, style} from '@vanilla-extract/css';
+import {responsiveStyle} from '~/core/responsive';
 
 export const container = style({
   marginLeft: 'auto',
@@ -20,15 +21,30 @@ export const innerContent = style({
   width: '100%',
 });
 
-export const grid = style({
-  display: 'grid',
-  gridTemplateRows: '1fr 1fr 1fr',
-  flexDirection: 'row',
-  gap: '24px',
-  '@media': {
-    '(min-width: 748px)': {
+export const grid = style(
+  responsiveStyle({
+    mobile: {
+      display: 'grid',
+      gridTemplateRows: '1fr 1fr 1fr',
+      flexDirection: 'row',
+      gap: '24px',
+    },
+    tablet: {
       gridTemplateColumns: 'repeat(3, minmax(220px, 1fr))',
       gridTemplateRows: '1fr',
     },
-  },
-});
+  }),
+);
+
+globalStyle(
+  `${grid} > *`,
+  responsiveStyle({
+    mobile: {
+      gridRowStart: 1,
+      gridColumnStart: 1,
+    },
+    desktop: {
+      gridColumnStart: 'unset',
+    },
+  }),
+);
