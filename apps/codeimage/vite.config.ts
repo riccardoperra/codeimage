@@ -52,7 +52,14 @@ import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 
 export default defineConfig(({mode}) => ({
   plugins: [
-    vanillaExtractPlugin(),
+    vanillaExtractPlugin({
+      esbuildOptions: {
+        external: ['solid-js/web'],
+        loader: {
+          '.css.ts.vanilla.css': 'text',
+        },
+      },
+    }),
     solidPlugin(),
     // VitePWA(pwaOptions),
     tsconfigPaths(),
