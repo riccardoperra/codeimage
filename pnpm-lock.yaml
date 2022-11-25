@@ -125,7 +125,7 @@ importers:
 
   apps/codeimage:
     specifiers:
-      '@auth0/auth0-spa-js': 1.22.5
+      '@auth0/auth0-spa-js': ^2.0.0
       '@codeimage/api': workspace:*
       '@codeimage/atomic-state': workspace:*
       '@codeimage/config': workspace:*
@@ -209,7 +209,7 @@ importers:
       workbox-strategies: ^6.5.4
       workbox-window: ^6.5.4
     dependencies:
-      '@auth0/auth0-spa-js': 1.22.5
+      '@auth0/auth0-spa-js': 2.0.0
       '@codeimage/api': link:../api
       '@codeimage/atomic-state': link:../../packages/atomic-state
       '@codeimage/config': link:../../packages/config
@@ -682,16 +682,8 @@ packages:
       grapheme-splitter: 1.0.4
     dev: true
 
-  /@auth0/auth0-spa-js/1.22.5:
-    resolution: {integrity: sha512-6gaQcd+Eb8ZBcdQkrrm9undM7dY/rPvVdQN8s7rxxrviUCs7OopEygsfSkHf67IP4HtlCiE8dSW5/AipRUOw/A==}
-    dependencies:
-      abortcontroller-polyfill: 1.7.5
-      browser-tabs-lock: 1.2.15
-      core-js: 3.25.5
-      es-cookie: 1.3.2
-      fast-text-encoding: 1.0.6
-      promise-polyfill: 8.2.3
-      unfetch: 4.2.0
+  /@auth0/auth0-spa-js/2.0.0:
+    resolution: {integrity: sha512-qHArgvA+ltI37g1vo3q7XtWxhMNAyL0LrnwCKCHQ1uzMWnxhdyxi2w9/BXfp1c+2L1Zc+DDh3XhpbYVXNhvadg==}
     dev: false
 
   /@babel/code-frame/7.18.6:
@@ -6392,10 +6384,6 @@ packages:
       event-target-shim: 5.0.1
     dev: false
 
-  /abortcontroller-polyfill/1.7.5:
-    resolution: {integrity: sha512-JMJ5soJWP18htbbxJjG7bG6yuI6pRhgJ0scHHTfkUjf6wjP912xZWvM+A4sJK3gqd9E8fcPbDnOefbA9Th/FIQ==}
-    dev: false
-
   /abstract-logging/2.0.1:
     resolution: {integrity: sha512-2BjRTZxTPvheOvGbBslFSYOUkr+SjPtOnrLP33f+VIWLzezQpZcqVg7ja3L4dBXmzzgwT+a029jRx5PCi3JuiA==}
     dev: false
@@ -6917,13 +6905,6 @@ packages:
     resolution: {integrity: sha512-ex5W9DoOQ/LUEU3PMdLs9ua/CYZl1678NUkKOdUSi8Aw5F1idieaiRURCBFJCwVcrD1J8Iy3vfWSloaMwO2qFg==}
     dependencies:
       wcwidth: 1.0.1
-
-  /browser-tabs-lock/1.2.15:
-    resolution: {integrity: sha512-J8K9vdivK0Di+b8SBdE7EZxDr88TnATing7XoLw6+nFkXMQ6sVBh92K3NQvZlZU91AIkFRi0w3sztk5Z+vsswA==}
-    requiresBuild: true
-    dependencies:
-      lodash: 4.17.21
-    dev: false
 
   /browserify-zlib/0.1.4:
     resolution: {integrity: sha512-19OEpq7vWgsH6WkvkBJQDFvJS1uPcbFOQ4v9CU839dO+ZZXUZO6XpE6hNCqvlIIj+4fZvRiJ6DsAQ382GwiyTQ==}
@@ -7480,11 +7461,6 @@ packages:
     dependencies:
       browserslist: 4.21.4
 
-  /core-js/3.25.5:
-    resolution: {integrity: sha512-nbm6eZSjm+ZuBQxCUPQKQCoUEfFOXjUZ8dTTyikyKaWrTYmAVbykQfwsKE5dBK88u3QCkCrzsx/PPlKfhsvgpw==}
-    requiresBuild: true
-    dev: false
-
   /core-util-is/1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
     dev: true
@@ -7945,10 +7921,6 @@ packages:
       string.prototype.trimend: 1.0.5
       string.prototype.trimstart: 1.0.5
       unbox-primitive: 1.0.2
-
-  /es-cookie/1.3.2:
-    resolution: {integrity: sha512-UTlYYhXGLOy05P/vKVT2Ui7WtC7NiRzGtJyAKKn32g5Gvcjn7KAClLPWlipCtxIus934dFg9o9jXiBL0nP+t9Q==}
-    dev: false
 
   /es-module-lexer/1.1.0:
     resolution: {integrity: sha512-fJg+1tiyEeS8figV+fPcPpm8WqJEflG3yPU0NOm5xMvrNkuiy7HzX/Ljng4Y0hAoiw4/3hQTCFYw+ub8+a2pRA==}
@@ -8947,10 +8919,6 @@ packages:
 
   /fast-safe-stringify/2.1.1:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
-
-  /fast-text-encoding/1.0.6:
-    resolution: {integrity: sha512-VhXlQgj9ioXCqGstD37E/HBeqEGV/qOD/kmbVG8h5xKBYvM1L3lR1Zn4555cQ8GkYbJa8aJSipLPndE1k6zK2w==}
-    dev: false
 
   /fast-uri/2.1.0:
     resolution: {integrity: sha512-qKRta6N7BWEFVlyonVY/V+BMLgFqktCUV0QjT259ekAIlbVrMaFnFLxJ4s/JPl4tou56S1BzPufI60bLe29fHA==}
@@ -12013,10 +11981,6 @@ packages:
         optional: true
     dev: true
 
-  /promise-polyfill/8.2.3:
-    resolution: {integrity: sha512-Og0+jCRQetV84U8wVjMNccfGCnMQ9mGs9Hv78QFe+pSDD3gWTpz0y+1QCuxy5d/vBFuZ3iwP2eycAkvqIMPmWg==}
-    dev: false
-
   /promise-retry/2.0.1:
     resolution: {integrity: sha512-y+WKFlBR8BGXnsNlIHFGPZmyDf3DFMoLhaflAnyZgV6rG6xu+JwesTo2Q9R6XwYmtmwAFCkAk3e35jEdoeh/3g==}
     engines: {node: '>=10'}
@@ -13826,10 +13790,6 @@ packages:
     engines: {node: '>=12.18'}
     dependencies:
       busboy: 1.6.0
-
-  /unfetch/4.2.0:
-    resolution: {integrity: sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA==}
-    dev: false
 
   /unicode-canonical-property-names-ecmascript/2.0.0:
     resolution: {integrity: sha512-yY5PpDlfVIU5+y/BSCxAJRBIS1Zc2dDG3Ujq+sR0U+JjUevW2JhocOF+soROYDSaAezOzOKuyyixhD6mBknSmQ==}

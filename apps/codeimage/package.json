@@ -1,7 +1,7 @@
 {
   "name": "@codeimage/app",
   "private": true,
-  "version": "0.21.4",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
     "start": "vite",
@@ -34,7 +34,7 @@
     "workbox-window": "^6.5.4"
   },
   "dependencies": {
-    "@auth0/auth0-spa-js": "1.22.5",
+    "@auth0/auth0-spa-js": "^2.0.0",
     "@codeimage/api": "workspace:*",
     "@codeimage/atomic-state": "workspace:*",
     "@codeimage/config": "workspace:*",
