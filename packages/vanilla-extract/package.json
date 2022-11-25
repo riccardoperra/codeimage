@@ -1,6 +1,6 @@
 {
   "name": "@codeimage/vanilla-extract",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vanilla extract customizations for @codeimage styles",
   "main": "./dist/index.cjs",
   "types": "./dist/types/index.d.ts",

@@ -125,16 +125,16 @@ importers:
 
   apps/codeimage:
     specifiers:
-      '@auth0/auth0-spa-js': 1.22.5
-      '@codeimage/api': workspace:0.0.1
-      '@codeimage/atomic-state': workspace:0.1.0
-      '@codeimage/config': workspace:8.0.2
-      '@codeimage/dom-export': workspace:1.10.1
-      '@codeimage/highlight': workspace:0.10.2
-      '@codeimage/locale': workspace:0.6.1
-      '@codeimage/prisma-models': workspace:0.0.1
-      '@codeimage/ui': workspace:0.9.0
-      '@codeimage/vanilla-extract': workspace:0.1.0
+      '@auth0/auth0-spa-js': ^2.0.0
+      '@codeimage/api': workspace:*
+      '@codeimage/atomic-state': workspace:*
+      '@codeimage/config': workspace:*
+      '@codeimage/dom-export': workspace:*
+      '@codeimage/highlight': workspace:*
+      '@codeimage/locale': workspace:*
+      '@codeimage/prisma-models': workspace:*
+      '@codeimage/ui': workspace:*
+      '@codeimage/vanilla-extract': workspace:*
       '@codemirror/autocomplete': ^6.3.0
       '@codemirror/commands': ^6.1.2
       '@codemirror/lang-cpp': ^6.0.1
@@ -209,7 +209,7 @@ importers:
       workbox-strategies: ^6.5.4
       workbox-window: ^6.5.4
     dependencies:
-      '@auth0/auth0-spa-js': 1.22.5
+      '@auth0/auth0-spa-js': 2.0.0
       '@codeimage/api': link:../api
       '@codeimage/atomic-state': link:../../packages/atomic-state
       '@codeimage/config': link:../../packages/config
@@ -219,10 +219,10 @@ importers:
       '@codeimage/prisma-models': link:../../packages/prisma-models
       '@codeimage/ui': link:../../packages/ui
       '@codeimage/vanilla-extract': link:../../packages/vanilla-extract
-      '@codemirror/autocomplete': 6.3.0_wexih7u53rronqz75khnd5p7z4
+      '@codemirror/autocomplete': 6.3.0
       '@codemirror/commands': 6.1.2
       '@codemirror/lang-cpp': 6.0.1
-      '@codemirror/lang-css': 6.0.0_@codemirror+view@6.3.1
+      '@codemirror/lang-css': 6.0.0
       '@codemirror/lang-html': 6.1.2
       '@codemirror/lang-java': 6.0.0
       '@codemirror/lang-javascript': 6.1.0
@@ -231,7 +231,7 @@ importers:
       '@codemirror/lang-php': 6.0.0
       '@codemirror/lang-python': 6.0.2
       '@codemirror/lang-rust': 6.0.0
-      '@codemirror/lang-sql': 6.3.0_@codemirror+view@6.3.1
+      '@codemirror/lang-sql': 6.3.0
       '@codemirror/language': 6.2.1
       '@codemirror/lint': 6.0.0
       '@codemirror/search': 6.2.1
@@ -269,7 +269,7 @@ importers:
       modern-normalize: 1.1.0
       polished: 4.2.2
       rxjs: 7.5.7
-      solid-codemirror: 2.0.2_7mwqhbfiwzhqjnttvch7dt6rdq
+      solid-codemirror: 2.0.2
       solid-headless: 0.13.0_solid-js@1.5.7
       solid-js: 1.5.7
       solid-use: 0.5.0_solid-js@1.5.7
@@ -288,7 +288,7 @@ importers:
       sass: 1.55.0
       typescript: 4.8.4
       vite: 3.1.8_sass@1.55.0
-      vite-plugin-pwa: 0.13.1_a24bsgtcozgewh66gr7y47mcdm
+      vite-plugin-pwa: 0.13.1_vite@3.1.8
       vite-plugin-solid: 2.3.9_solid-js@1.5.7+vite@3.1.8
       vite-tsconfig-paths: 3.5.1_vite@3.1.8
       workbox-core: 6.5.4
@@ -296,7 +296,7 @@ importers:
 
   apps/website:
     specifiers:
-      '@codeimage/highlight': workspace:0.10.2
+      '@codeimage/highlight': workspace:*
       '@codeimage/ui': workspace:*
       '@codeimage/vanilla-extract': workspace:*
       '@codemirror/lang-javascript': ^6.1.0
@@ -338,7 +338,7 @@ importers:
       '@vanilla-extract/recipes': 0.2.5_@vanilla-extract+css@1.9.1
       motion: 10.14.3
       rollup-plugin-visualizer: 5.8.3
-      solid-codemirror: 2.2.1_ltlj4zuvzutosfoydwaoz4urve
+      solid-codemirror: 2.2.1
       solid-js: 1.6.1
       solid-start: 0.2.5_pronwpnd5fhegqthg7enyrn3im
       solid-start-static: 0.2.5_pjsxqh26gfotorw22omsamngkm
@@ -403,10 +403,10 @@ importers:
       vite-plugin-solid: ^2.3.9
     dependencies:
       '@codeimage/highlight': link:../highlight
-      '@codemirror/autocomplete': 6.3.0_wexih7u53rronqz75khnd5p7z4
+      '@codemirror/autocomplete': 6.3.0
       '@codemirror/commands': 6.1.2
       '@codemirror/lang-cpp': 6.0.1
-      '@codemirror/lang-css': 6.0.0_@codemirror+view@6.3.1
+      '@codemirror/lang-css': 6.0.0
       '@codemirror/lang-html': 6.1.2
       '@codemirror/lang-java': 6.0.0
       '@codemirror/lang-javascript': 6.1.0
@@ -415,8 +415,8 @@ importers:
       '@codemirror/lang-php': 6.0.0
       '@codemirror/lang-python': 6.0.2
       '@codemirror/lang-rust': 6.0.0
-      '@codemirror/lang-sql': 6.3.0_@codemirror+view@6.3.1
-      '@codemirror/lang-xml': 6.0.0_@codemirror+view@6.3.1
+      '@codemirror/lang-sql': 6.3.0
+      '@codemirror/lang-xml': 6.0.0
       '@codemirror/language': 6.2.1
       '@codemirror/legacy-modes': 6.1.0
       '@codemirror/lint': 6.0.0
@@ -506,7 +506,7 @@ importers:
       rimraf: 3.0.2
       rollup: 2.79.1
       rollup-plugin-dts: 5.0.0_gypgyaqhine6mwjfvh7icfhviq
-      solid-codemirror: 2.0.2_7mwqhbfiwzhqjnttvch7dt6rdq
+      solid-codemirror: 2.0.2
       solid-js: 1.5.7
       ts-morph: 16.0.0
       typescript: 4.8.4
@@ -538,6 +538,9 @@ importers:
       typescript: ^4.8.4
     devDependencies:
       typescript: 4.8.4
+
+  packages/prisma-models/generated/client:
+    specifiers: {}
 
   packages/ui:
     specifiers:
@@ -708,16 +711,8 @@ packages:
       grapheme-splitter: 1.0.4
     dev: true
 
-  /@auth0/auth0-spa-js/1.22.5:
-    resolution: {integrity: sha512-6gaQcd+Eb8ZBcdQkrrm9undM7dY/rPvVdQN8s7rxxrviUCs7OopEygsfSkHf67IP4HtlCiE8dSW5/AipRUOw/A==}
-    dependencies:
-      abortcontroller-polyfill: 1.7.5
-      browser-tabs-lock: 1.2.15
-      core-js: 3.25.5
-      es-cookie: 1.3.2
-      fast-text-encoding: 1.0.6
-      promise-polyfill: 8.2.3
-      unfetch: 4.2.0
+  /@auth0/auth0-spa-js/2.0.0:
+    resolution: {integrity: sha512-qHArgvA+ltI37g1vo3q7XtWxhMNAyL0LrnwCKCHQ1uzMWnxhdyxi2w9/BXfp1c+2L1Zc+DDh3XhpbYVXNhvadg==}
     dev: false
 
   /@babel/code-frame/7.18.6:
@@ -3017,12 +3012,8 @@ packages:
       human-id: 1.0.2
       prettier: 2.7.1
 
-  /@codemirror/autocomplete/6.3.0_wexih7u53rronqz75khnd5p7z4:
+  /@codemirror/autocomplete/6.3.0:
     resolution: {integrity: sha512-4jEvh3AjJZTDKazd10J6ZsCIqaYxDMCeua5ouQxY8hlFIml+nr7le0SgBhT3SIytFBmdzPK3AUhXGuW3T79nVg==}
-    peerDependencies:
-      '@codemirror/language': ^6.0.0
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
     dependencies:
       '@codemirror/language': 6.2.1
       '@codemirror/state': 6.1.2
@@ -3045,22 +3036,20 @@ packages:
       '@lezer/cpp': 1.0.0
     dev: false
 
-  /@codemirror/lang-css/6.0.0_@codemirror+view@6.3.1:
+  /@codemirror/lang-css/6.0.0:
     resolution: {integrity: sha512-jBqc+BTuwhNOTlrimFghLlSrN6iFuE44HULKWoR4qKYObhOIl9Lci1iYj6zMIte1XTQmZguNvjXMyr43LUKwSw==}
     dependencies:
-      '@codemirror/autocomplete': 6.3.0_wexih7u53rronqz75khnd5p7z4
+      '@codemirror/autocomplete': 6.3.0
       '@codemirror/language': 6.2.1
       '@codemirror/state': 6.1.2
       '@lezer/css': 1.0.1
-    transitivePeerDependencies:
-      - '@codemirror/view'
     dev: false
 
   /@codemirror/lang-html/6.1.2:
     resolution: {integrity: sha512-e8JAUWyOo7N26tmek+WK0+Zg+pZRe+dQi8TZq0OOVVygpLV+mNAT2n5b5JhknY+TVZIVGLjuhdsoizw1SDFfPg==}
     dependencies:
-      '@codemirror/autocomplete': 6.3.0_wexih7u53rronqz75khnd5p7z4
-      '@codemirror/lang-css': 6.0.0_@codemirror+view@6.3.1
+      '@codemirror/autocomplete': 6.3.0
+      '@codemirror/lang-css': 6.0.0
       '@codemirror/lang-javascript': 6.1.0
       '@codemirror/language': 6.2.1
       '@codemirror/state': 6.1.2
@@ -3079,7 +3068,7 @@ packages:
   /@codemirror/lang-javascript/6.1.0:
     resolution: {integrity: sha512-wAWEY1Wdis2cKDy9A5q/rUmzLHFbZgoupJBcGaeMMsDPi68Rm90NsmzAEODE5kW8mYdRKFhQ157WJghOZ3yYdg==}
     dependencies:
-      '@codemirror/autocomplete': 6.3.0_wexih7u53rronqz75khnd5p7z4
+      '@codemirror/autocomplete': 6.3.0
       '@codemirror/language': 6.2.1
       '@codemirror/lint': 6.0.0
       '@codemirror/state': 6.1.2
@@ -3129,28 +3118,24 @@ packages:
       '@lezer/rust': 1.0.0
     dev: false
 
-  /@codemirror/lang-sql/6.3.0_@codemirror+view@6.3.1:
+  /@codemirror/lang-sql/6.3.0:
     resolution: {integrity: sha512-+4vyqZMmvseeORW44RMYF3rDGhQG9f7GOXZitrIqSrUHI33DgIudK2qTcaf9TfCuJdOxPEp4xEGvm0H+FBAhVw==}
     dependencies:
-      '@codemirror/autocomplete': 6.3.0_wexih7u53rronqz75khnd5p7z4
+      '@codemirror/autocomplete': 6.3.0
       '@codemirror/language': 6.2.1
       '@codemirror/state': 6.1.2
       '@lezer/highlight': 1.1.1
       '@lezer/lr': 1.2.3
-    transitivePeerDependencies:
-      - '@codemirror/view'
     dev: false
 
-  /@codemirror/lang-xml/6.0.0_@codemirror+view@6.3.1:
+  /@codemirror/lang-xml/6.0.0:
     resolution: {integrity: sha512-M/HLWxIiP956xGjtrxkeHkCmDGVQGKu782x8pOH5CLJIMkWtiB1DWfDoDHqpFjdEE9dkfcqPWvYfVi6GbhuXEg==}
     dependencies:
-      '@codemirror/autocomplete': 6.3.0_wexih7u53rronqz75khnd5p7z4
+      '@codemirror/autocomplete': 6.3.0
       '@codemirror/language': 6.2.1
       '@codemirror/state': 6.1.2
       '@lezer/common': 1.0.1
       '@lezer/xml': 1.0.0
-    transitivePeerDependencies:
-      - '@codemirror/view'
     dev: false
 
   /@codemirror/language/6.2.1:
@@ -3187,6 +3172,10 @@ packages:
   /@codemirror/state/6.1.2:
     resolution: {integrity: sha512-Mxff85Hp5va+zuj+H748KbubXjrinX/k28lj43H14T2D0+4kuvEFIEIO7hCEcvBT8ubZyIelt9yGOjj2MWOEQA==}
 
+  /@codemirror/state/6.1.4:
+    resolution: {integrity: sha512-g+3OJuRylV5qsXuuhrc6Cvs1NQluNioepYMM2fhnpYkNk7NgX+j0AFuevKSVKzTDmDyt9+Puju+zPdHNECzCNQ==}
+    dev: false
+
   /@codemirror/theme-one-dark/6.1.0:
     resolution: {integrity: sha512-AiTHtFRu8+vWT9wWUWDM+cog6ZwgivJogB1Tm/g40NIpLwph7AnmxrSzWfvJN5fBVufsuwBxecQCNmdcR5D7Aw==}
     dependencies:
@@ -3202,6 +3191,14 @@ packages:
       '@codemirror/state': 6.1.2
       style-mod: 4.0.0
       w3c-keyname: 2.2.6
+
+  /@codemirror/view/6.6.0:
+    resolution: {integrity: sha512-40VaFVZI3rkyjO5GHFAbNwaW+YgZexjKyx5gxLU2DvfuXAEZX0kW0apOXb0SBRLnKIQJ+U/n2nPfxgBVFHERrg==}
+    dependencies:
+      '@codemirror/state': 6.1.4
+      style-mod: 4.0.0
+      w3c-keyname: 2.2.6
+    dev: false
 
   /@commitlint/cli/17.1.2:
     resolution: {integrity: sha512-h/4Hlka3bvCLbnxf0Er2ri5A44VMlbMSkdTRp8Adv2tRiklSTRIoPGs7OEXDv3EoDs2AAzILiPookgM4Gi7LOw==}
@@ -6472,10 +6469,6 @@ packages:
       event-target-shim: 5.0.1
     dev: false
 
-  /abortcontroller-polyfill/1.7.5:
-    resolution: {integrity: sha512-JMJ5soJWP18htbbxJjG7bG6yuI6pRhgJ0scHHTfkUjf6wjP912xZWvM+A4sJK3gqd9E8fcPbDnOefbA9Th/FIQ==}
-    dev: false
-
   /abstract-logging/2.0.1:
     resolution: {integrity: sha512-2BjRTZxTPvheOvGbBslFSYOUkr+SjPtOnrLP33f+VIWLzezQpZcqVg7ja3L4dBXmzzgwT+a029jRx5PCi3JuiA==}
     dev: false
@@ -7000,13 +6993,6 @@ packages:
     resolution: {integrity: sha512-ex5W9DoOQ/LUEU3PMdLs9ua/CYZl1678NUkKOdUSi8Aw5F1idieaiRURCBFJCwVcrD1J8Iy3vfWSloaMwO2qFg==}
     dependencies:
       wcwidth: 1.0.1
-
-  /browser-tabs-lock/1.2.15:
-    resolution: {integrity: sha512-J8K9vdivK0Di+b8SBdE7EZxDr88TnATing7XoLw6+nFkXMQ6sVBh92K3NQvZlZU91AIkFRi0w3sztk5Z+vsswA==}
-    requiresBuild: true
-    dependencies:
-      lodash: 4.17.21
-    dev: false
 
   /browserify-zlib/0.1.4:
     resolution: {integrity: sha512-19OEpq7vWgsH6WkvkBJQDFvJS1uPcbFOQ4v9CU839dO+ZZXUZO6XpE6hNCqvlIIj+4fZvRiJ6DsAQ382GwiyTQ==}
@@ -7536,8 +7522,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
-      JSONStream: 1.3.5
       is-text-path: 1.0.1
+      JSONStream: 1.3.5
       lodash: 4.17.21
       meow: 8.1.2
       split2: 3.2.2
@@ -7564,11 +7550,6 @@ packages:
     resolution: {integrity: sha512-ovcyhs2DEBUIE0MGEKHP4olCUW/XYte3Vroyxuh38rD1wAO4dHohsovUC4eAOuzFxE6b+RXvBU3UZ9o0YhUTkA==}
     dependencies:
       browserslist: 4.21.4
-
-  /core-js/3.25.5:
-    resolution: {integrity: sha512-nbm6eZSjm+ZuBQxCUPQKQCoUEfFOXjUZ8dTTyikyKaWrTYmAVbykQfwsKE5dBK88u3QCkCrzsx/PPlKfhsvgpw==}
-    requiresBuild: true
-    dev: false
 
   /core-util-is/1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
@@ -8077,10 +8058,6 @@ packages:
       string.prototype.trimend: 1.0.5
       string.prototype.trimstart: 1.0.5
       unbox-primitive: 1.0.2
-
-  /es-cookie/1.3.2:
-    resolution: {integrity: sha512-UTlYYhXGLOy05P/vKVT2Ui7WtC7NiRzGtJyAKKn32g5Gvcjn7KAClLPWlipCtxIus934dFg9o9jXiBL0nP+t9Q==}
-    dev: false
 
   /es-module-lexer/1.1.0:
     resolution: {integrity: sha512-fJg+1tiyEeS8figV+fPcPpm8WqJEflG3yPU0NOm5xMvrNkuiy7HzX/Ljng4Y0hAoiw4/3hQTCFYw+ub8+a2pRA==}
@@ -9078,10 +9055,6 @@ packages:
 
   /fast-safe-stringify/2.1.1:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
-
-  /fast-text-encoding/1.0.6:
-    resolution: {integrity: sha512-VhXlQgj9ioXCqGstD37E/HBeqEGV/qOD/kmbVG8h5xKBYvM1L3lR1Zn4555cQ8GkYbJa8aJSipLPndE1k6zK2w==}
-    dev: false
 
   /fast-uri/2.1.0:
     resolution: {integrity: sha512-qKRta6N7BWEFVlyonVY/V+BMLgFqktCUV0QjT259ekAIlbVrMaFnFLxJ4s/JPl4tou56S1BzPufI60bLe29fHA==}
@@ -11624,7 +11597,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       bl: 4.1.0
-      chalk: 4.1.1
+      chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-spinners: 2.7.0
       is-interactive: 1.0.0
@@ -12175,10 +12148,6 @@ packages:
       bluebird:
         optional: true
     dev: true
-
-  /promise-polyfill/8.2.3:
-    resolution: {integrity: sha512-Og0+jCRQetV84U8wVjMNccfGCnMQ9mGs9Hv78QFe+pSDD3gWTpz0y+1QCuxy5d/vBFuZ3iwP2eycAkvqIMPmWg==}
-    dev: false
 
   /promise-retry/2.0.1:
     resolution: {integrity: sha512-y+WKFlBR8BGXnsNlIHFGPZmyDf3DFMoLhaflAnyZgV6rG6xu+JwesTo2Q9R6XwYmtmwAFCkAk3e35jEdoeh/3g==}
@@ -13011,30 +12980,22 @@ packages:
       smart-buffer: 4.2.0
     dev: true
 
-  /solid-codemirror/2.0.2_7mwqhbfiwzhqjnttvch7dt6rdq:
+  /solid-codemirror/2.0.2:
     resolution: {integrity: sha512-CZcLdyqwYP3lG49HwFGezjw8mlqEYJFQYHyVE7L6jKxCPU5BlNV15ZeaqxEgGl70z1JS7FKpRWE9X9l5ccHLKQ==}
     engines: {node: '>=14'}
-    peerDependencies:
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      solid-js: ^1.4.2
     dependencies:
       '@changesets/cli': 2.25.0
       '@codemirror/state': 6.1.2
       '@codemirror/view': 6.3.1
-      solid-js: 1.5.7
+      solid-js: 1.6.1
 
-  /solid-codemirror/2.2.1_ltlj4zuvzutosfoydwaoz4urve:
+  /solid-codemirror/2.2.1:
     resolution: {integrity: sha512-uZhr+uwdyjJEKa/jLlGOLrw+36BOFRrE4CtsTWpazky2sy1VMiuFYMlrMYzITqGdrLJfYnb79eTDHpoUDRXxSg==}
     engines: {node: '>=14'}
-    peerDependencies:
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      solid-js: ^1.6.0
     dependencies:
       '@changesets/cli': 2.25.0
       '@codemirror/state': 6.1.2
-      '@codemirror/view': 6.3.1
+      '@codemirror/view': 6.6.0
       solid-js: 1.6.1
     dev: false
 
@@ -14076,10 +14037,6 @@ packages:
     dependencies:
       busboy: 1.6.0
 
-  /unfetch/4.2.0:
-    resolution: {integrity: sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA==}
-    dev: false
-
   /unicode-canonical-property-names-ecmascript/2.0.0:
     resolution: {integrity: sha512-yY5PpDlfVIU5+y/BSCxAJRBIS1Zc2dDG3Ujq+sR0U+JjUevW2JhocOF+soROYDSaAezOzOKuyyixhD6mBknSmQ==}
     engines: {node: '>=4'}
@@ -14245,11 +14202,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /vite-plugin-pwa/0.13.1_a24bsgtcozgewh66gr7y47mcdm:
+  /vite-plugin-pwa/0.13.1_vite@3.1.8:
     resolution: {integrity: sha512-NR3dIa+o2hzlzo4lF4Gu0cYvoMjSw2DdRc6Epw1yjmCqWaGuN86WK9JqZie4arNlE1ZuWT3CLiMdiX5wcmmUmg==}
     peerDependencies:
       vite: ^3.1.0
-      workbox-window: ^6.5.4
     dependencies:
       debug: 4.3.4
       fast-glob: 3.2.12
@@ -14291,7 +14247,7 @@ packages:
       merge-anything: 5.0.4
       solid-js: 1.5.7
       solid-refresh: 0.4.1_solid-js@1.5.7
-      vite: 3.1.8_sass@1.55.0
+      vite: 3.1.8
     transitivePeerDependencies:
       - supports-color
     dev: true
