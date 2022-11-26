@@ -60,7 +60,7 @@ export default function OpenSource() {
       ),
       {
         target: logo,
-        offset: ['start', '25%', '50%', 'end'],
+        offset: ['start', '25%', '50%'],
       },
     );
 
@@ -68,11 +68,7 @@ export default function OpenSource() {
       animate(
         contributorsContentEl,
         {
-          transform: [
-            'scale(0.75)',
-            'scale(1) translateY(-50px)',
-            'scale(1) translateY(0)',
-          ],
+          transform: ['scale(0.75)', 'scale(1)', 'scale(1)'],
           filter: [
             'blur(30px) saturate(180%)',
             'blur(0px) saturate(100%)',

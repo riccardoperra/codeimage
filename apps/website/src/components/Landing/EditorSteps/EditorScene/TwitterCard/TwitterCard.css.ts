@@ -21,6 +21,7 @@ export const title = style({
   alignItems: 'center',
 
   gap: themeVars.spacing[4],
+  marginBottom: themeVars.spacing[4],
 });
 
 export const badge = style({

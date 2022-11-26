@@ -38,6 +38,7 @@ export function TwitterCard(props: TwitterCardProps) {
       class={styles.card}
       animate={{
         transform: transform(),
+        opacity: props.visible ? 1 : 0,
         transition: {
           transform: {
             easing: spring({velocity: 500}),
@@ -47,7 +48,7 @@ export function TwitterCard(props: TwitterCardProps) {
     >
       <Presence>
         <Box marginBottom={2}>
-          <Box class={styles.title} marginBottom={4}>
+          <div class={styles.title}>
             <Badge size={'md'} theme={styles.badge} variant={'rounded'}>
               <img
                 alt="Profile picture"
@@ -65,10 +66,10 @@ export function TwitterCard(props: TwitterCardProps) {
             <Box marginLeft={'auto'}>
               <TwitterLogo />
             </Box>
-          </Box>
-          <Box>
+          </div>
+          <div>
             <Text>Do you know that SolidJS doesn't use Virtual Dom?</Text>
-          </Box>
+          </div>
         </Box>
       </Presence>
     </Motion.div>
