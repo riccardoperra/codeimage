@@ -98,7 +98,7 @@ export default function Root() {
         crossorigin=""
       />
       <FontDefinitions />
-      <link rel="stylesheet" href="/assets/why-this-break-lcp.css" />
+      <link rel="preload" as="style" href="/assets/why-this-break-lcp.css" />
       <style id="css-critical-style" />
       <MainPageImagePreloading />
     </>
