@@ -31,13 +31,6 @@ cssEntries.forEach(entry => {
   });
 
   style += source;
-
-  writeFileSync(join('./dist/public', entry), '');
-
-  patchedSource = patchedSource.replace(
-    `<link rel='stylesheet' href='/${entry}'>`,
-    `<link rel='stylesheet' href='/${entry}' media='print'>`,
-  );
 });
 
 patchedSource = patchedSource.replace(
@@ -46,3 +39,4 @@ patchedSource = patchedSource.replace(
 );
 
 writeFileSync(htmlSourcePath, patchedSource);
+writeFileSync('./dist/public/assets/why-this-break-lcp.css', '');

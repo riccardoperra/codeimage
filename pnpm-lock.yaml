@@ -319,6 +319,7 @@ importers:
       '@vanilla-extract/vite-plugin': 3.6.1
       motion: 10.14.3
       node-html-parser: 6.1.4
+      rollup: ^2.79.1
       rollup-plugin-visualizer: 5.8.3
       solid-codemirror: 2.2.1
       solid-js: ^1.6.0
@@ -346,7 +347,7 @@ importers:
       '@vanilla-extract/dynamic': 2.0.2
       '@vanilla-extract/recipes': 0.2.5_@vanilla-extract+css@1.9.1
       motion: 10.14.3
-      rollup-plugin-visualizer: 5.8.3
+      rollup-plugin-visualizer: 5.8.3_rollup@2.79.1
       solid-codemirror: 2.2.1_6d3ox5xxj7fft5yuudu7jexh3q
       solid-js: 1.6.1
       solid-start: 0.2.5_pronwpnd5fhegqthg7enyrn3im
@@ -356,6 +357,7 @@ importers:
     devDependencies:
       '@vanilla-extract/vite-plugin': 3.6.1_vite@3.1.8
       node-html-parser: 6.1.4
+      rollup: 2.79.1
       solid-start-node: 0.2.2_pjsxqh26gfotorw22omsamngkm
       typescript: 4.8.4
       vite: 3.1.8
@@ -12669,21 +12671,6 @@ packages:
       serialize-javascript: 4.0.0
       terser: 5.15.1
     dev: true
-
-  /rollup-plugin-visualizer/5.8.3:
-    resolution: {integrity: sha512-QGJk4Bqe4AOat5AjipOh8esZH1nck5X2KFpf4VytUdSUuuuSwvIQZjMGgjcxe/zXexltqaXp5Vx1V3LmnQH15Q==}
-    engines: {node: '>=14'}
-    hasBin: true
-    peerDependencies:
-      rollup: 2.x || 3.x
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-    dependencies:
-      open: 8.4.0
-      source-map: 0.7.4
-      yargs: 17.6.0
-    dev: false
 
   /rollup-plugin-visualizer/5.8.3_rollup@2.79.1:
     resolution: {integrity: sha512-QGJk4Bqe4AOat5AjipOh8esZH1nck5X2KFpf4VytUdSUuuuSwvIQZjMGgjcxe/zXexltqaXp5Vx1V3LmnQH15Q==}
