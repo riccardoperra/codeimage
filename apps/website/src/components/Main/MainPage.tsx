@@ -1,7 +1,5 @@
-import {Box, Button, HStack} from '@codeimage/ui';
-import {isMobile} from '@solid-primitives/platform';
-import {animate, scroll} from 'motion';
-import {createDeferred, createSignal, onMount} from 'solid-js';
+import {Button} from '@codeimage/ui';
+import {createDeferred, createSignal} from 'solid-js';
 import {useRouteData} from 'solid-start';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
@@ -16,8 +14,7 @@ function getRepoInfo() {
 }
 
 export default function MainPage() {
-  let section: HTMLElement;
-  let image: HTMLImageElement;
+  let imageBox: HTMLDivElement;
   const routeData = useRouteData<typeof RouteData>();
   const [loading, setLoading] = createSignal(true);
   const [repo, setRepo] = createSignal<any>(routeData.repoInfo || {stars: 0});
@@ -31,15 +28,9 @@ export default function MainPage() {
   return (
     <>
       <Header />
-      <section class={styles.main} ref={section}>
+      <section class={styles.main}>
         <div class={styles.content}>
-          <Box
-            display={'flex'}
-            justifyContent={'center'}
-            alignItems={'center'}
-            flexDirection={'column'}
-            class={styles.textBox}
-          >
+          <div class={styles.textBox}>
             <div class={styles.heroContainer}>
               <h1 class={styles.heading}>
                 A tool for <br />{' '}
@@ -53,7 +44,7 @@ export default function MainPage() {
               </p>
             </div>
 
-            <HStack spacing={'4'} class={styles.ctaContainer}>
+            <div class={styles.ctaContainer}>
               <Button size={'lg'} variant={'solid'} theme={'primary'}>
                 Getting started
               </Button>
@@ -65,11 +56,11 @@ export default function MainPage() {
                 loading={loading()}
                 stars={repo().stars}
               />
-            </HStack>
-          </Box>
-          <div class={styles.imagePerspectiveBox}>
+            </div>
+          </div>
+          <div class={styles.imagePerspectiveBox} ref={imageBox}>
             <div class={styles.imageSection}>
-              <div class={styles.imageBox} ref={image}>
+              <div class={styles.imageBox}>
                 <picture>
                   <source
                     type="image/webp"
@@ -88,6 +79,7 @@ export default function MainPage() {
                   />
                   <img
                     class={styles.imageLeft}
+                    loading={'lazy'}
                     src={'/landing/codeimage_preview_lite.png'}
                     alt={'Preview of CodeImage snippet'}
                   />
@@ -104,12 +96,6 @@ export default function MainPage() {
 export function MainPageImagePreloading() {
   return (
     <>
-      <link
-        rel="prefetch"
-        href={'/landing/codeimage_preview_mobile_ultra.webp'}
-        as="image"
-        media={`(max-width: ${breakpoints.tablet}px)`}
-      />
       <link
         rel="preload"
         href={'/landing/codeimage_preview_mobile.webp'}

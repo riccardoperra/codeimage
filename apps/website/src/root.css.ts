@@ -1,15 +1,12 @@
 import {themeColors, themeVars} from '@codeimage/ui';
 import '@codeimage/ui/themes/darkTheme';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
-import {
-  createGlobalTheme,
-  globalFontFace,
-  globalStyle,
-} from '@vanilla-extract/css';
+import {globalStyle} from '@vanilla-extract/css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 
 globalStyle('html, body', {
-  fontFamily: 'Mona Sans, sans-serif',
+  fontFamily:
+    'Mona Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
   backgroundColor: darkGrayScale.gray1,
   color: themeVars.dynamicColors.baseText,
   margin: 0,

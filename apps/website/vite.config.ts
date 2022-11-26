@@ -3,8 +3,6 @@ import ssg from 'solid-start-static';
 import solid from 'solid-start/vite';
 import {defineConfig} from 'vite';
 
-const enableSsr = !process.env.ENABLE_VERCEL_BUILD;
-
 export default defineConfig({
   build: {
     cssCodeSplit: true,

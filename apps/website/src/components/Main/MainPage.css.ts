@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {createVar, fallbackVar, keyframes, style} from '@vanilla-extract/css';
+import {createVar, keyframes, style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
 
 export const progressOpacityEditor = createVar();
@@ -141,6 +141,7 @@ export const textBox = style([
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
+    flexDirection: 'column',
     zIndex: 1,
   },
   responsiveStyle({
@@ -268,6 +269,7 @@ export const screenshot = style({
 export const ctaContainer = style(
   responsiveStyle({
     mobile: {
+      display: 'flex',
       marginTop: themeVars.spacing[4],
       flexDirection: 'column',
       flexWrap: 'wrap',

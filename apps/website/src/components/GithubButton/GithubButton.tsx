@@ -1,4 +1,4 @@
-import {Button, Loading, LoadingCircle} from '@codeimage/ui';
+import {Button, LoadingCircle} from '@codeimage/ui';
 import {JSX, Show} from 'solid-js';
 import * as styles from './GithubButton.css';
 

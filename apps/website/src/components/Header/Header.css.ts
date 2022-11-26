@@ -44,3 +44,15 @@ export const headerContent = style({
     },
   },
 });
+
+export const headerContentInner = style({
+  display: 'flex',
+  alignItems: 'center',
+  flexGrow: 1,
+  marginLeft: themeVars.spacing['5'],
+  marginRight: themeVars.spacing['5'],
+});
+
+export const headerActions = style({
+  marginLeft: 'auto',
+});

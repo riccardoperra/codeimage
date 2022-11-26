@@ -1,5 +1,6 @@
 // @refresh reload
 import '@codeimage/ui/themes/darkTheme';
+import '@vanilla-extract/recipes';
 import {Suspense} from 'solid-js';
 import {useAssets} from 'solid-js/web';
 import {
@@ -12,15 +13,14 @@ import {
   Meta,
   Routes,
   Scripts,
-  Style,
   Title,
 } from 'solid-start';
 import {MainPageImagePreloading} from './components/Main/MainPage';
 import './root.css';
 
-function RootCriticalStyle() {
+function FontDefinitions() {
   return (
-    <Style>
+    <style>
       {`
       @font-face {
         src: url('/fonts/Mona-Sans-Regular.woff2') format('woff2 supports variations'), url('/fonts/Mona-Sans-Regular.woff2') format('woff2-variations');
@@ -55,11 +55,54 @@ function RootCriticalStyle() {
         font-display: swap;
       }
     `}
-    </Style>
+    </style>
   );
 }
 
 export default function Root() {
+  useAssets(() => (
+    <>
+      <Link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+      <link
+        rel="stylesheet"
+        media="print"
+        data-defer-font="codemirror"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+      />
+      <link
+        rel="preload"
+        href="/fonts/Mona-Sans-Bold.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin=""
+      />
+      <link
+        rel="preload"
+        href="/fonts/Mona-Sans-Medium.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin=""
+      />
+      <link
+        rel="preload"
+        href="/fonts/Mona-Sans-Regular.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin=""
+      />
+      <link
+        rel="preload"
+        href="/fonts/Mona-Sans-SemiBold.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin=""
+      />
+      <FontDefinitions />
+      <style id="css-critical-style" />
+      <MainPageImagePreloading />
+    </>
+  ));
   useAssets(() => <style id="css-critical-style" />);
 
   return (
@@ -72,49 +115,6 @@ export default function Root() {
         <Meta
           name="description"
           content="CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code"
-        />
-        <Link rel="preconnect" href="https://fonts.googleapis.com" />
-        <Link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin=""
-        />
-        <Link
-          rel="stylesheet"
-          media="print"
-          data-defer-font="codemirror"
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
-        />
-        <RootCriticalStyle />
-        <MainPageImagePreloading />
-
-        <Link
-          rel="preload"
-          href="/fonts/Mona-Sans-Bold.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin=""
-        />
-        <Link
-          rel="preload"
-          href="/fonts/Mona-Sans-Medium.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin=""
-        />
-        <Link
-          rel="preload"
-          href="/fonts/Mona-Sans-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin=""
-        />
-        <Link
-          rel="preload"
-          href="/fonts/Mona-Sans-SemiBold.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin=""
         />
       </Head>
       <Body>

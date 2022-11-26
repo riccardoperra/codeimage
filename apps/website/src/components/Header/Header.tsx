@@ -1,4 +1,4 @@
-import {Box, Button} from '@codeimage/ui';
+import {Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import {createMemo, createSignal, onMount, untrack} from 'solid-js';
 import {CodeImageLogo} from '~/components/CodeImageLogo/CodeImageLogo';
@@ -25,27 +25,21 @@ export function Header() {
   return (
     <div class={styles.header} data-scrolled={dataScrolled() ?? false}>
       <div class={styles.headerContent}>
-        <Box
-          display={'flex'}
-          alignItems={'center'}
-          flexGrow={1}
-          marginLeft={5}
-          marginRight={5}
-        >
+        <div class={styles.headerContentInner}>
           <CodeImageLogo width={'140px'} height={'29px'} />
-          <Box marginLeft={'auto'}>
+          <div class={styles.headerActions}>
             <Button
               as={A}
               link={true}
               href="https://codeimage.dev"
-              variant={'solid'}
-              theme={'primary'}
+              variant="solid"
+              theme="primary"
               pill
             >
               Getting started
             </Button>
-          </Box>
-        </Box>
+          </div>
+        </div>
       </div>
     </div>
   );
