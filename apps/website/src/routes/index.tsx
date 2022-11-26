@@ -17,7 +17,7 @@ export function routeData() {
 
 const EditorSteps = hydrateOnViewport(
   () => import('../components/Landing/EditorSteps/EditorSteps'),
-  'visible',
+  'idle',
 );
 
 const Projects = hydrateOnViewport(

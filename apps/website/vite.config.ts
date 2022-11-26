@@ -22,7 +22,6 @@ export default defineConfig({
     include: [
       '@codemirror/state',
       '@codemirror/view',
-      '@codeimage/highlight',
       '@codemirror/lang-javascript',
     ],
   },

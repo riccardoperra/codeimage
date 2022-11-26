@@ -4,57 +4,6 @@
   "module": "./dist/index.js",
   "types": "./dist/public-api.d.ts",
   "type": "module",
-  "scripts": {
-    "dev": "vite serve ./dev --host",
-    "build": "rollup -c",
-    "build:dev": "vite build ./dev",
-    "pre-commit": "lint-staged --relative",
-    "pre-commit-prettier": "prettier --write",
-    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
-    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
-    "generate:theme": "tsx scripts/generate-theme.ts",
-    "clean": "rimraf dist",
-    "build-esm": "tsc -p tsconfig.esm.json",
-    "build-dts": "tsc -p tsconfig.dts.json",
-    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
-    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
-  },
-  "dependencies": {
-    "@codemirror/language": "^6.2.1",
-    "@codemirror/state": "^6.1.2",
-    "@codemirror/theme-one-dark": "^6.1.0",
-    "@codemirror/view": "^6.3.1",
-    "@lezer/highlight": "^1.1.1",
-    "@primer/primitives": "^7.9.0"
-  },
-  "peerDependencies": {
-    "@codemirror/language": "^6.2.1",
-    "@codemirror/state": "^6.1.2",
-    "@codemirror/view": "^6.3.1",
-    "@lezer/highlight": "^1.1.1"
-  },
-  "devDependencies": {
-    "@codeimage/ui": "workspace:*",
-    "@codeimage/vanilla-extract": "workspace:*",
-    "@codemirror/lang-javascript": "^6.1.0",
-    "@rollup/plugin-typescript": "^9.0.1",
-    "@types/node": "^18.11.0",
-    "@types/prettier": "^2.7.1",
-    "@vanilla-extract/css": "^1.9.1",
-    "@vanilla-extract/dynamic": "^2.0.2",
-    "chalk": "5.1.2",
-    "enquirer": "2.3.6",
-    "rimraf": "^3.0.2",
-    "rollup": "^2.79.1",
-    "rollup-plugin-dts": "^5.0.0",
-    "solid-codemirror": "^2.0.2",
-    "solid-js": "^1.5.7",
-    "ts-morph": "16.0.0",
-    "typescript": "^4.8.4",
-    "vite": "^3.1.8",
-    "vite-plugin-dts": "^1.6.6",
-    "vite-plugin-solid": "^2.3.9"
-  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -232,5 +181,56 @@
         "./dist/lib/themes/vitesseDark/index.d.ts"
       ]
     }
+  },
+  "scripts": {
+    "dev": "vite serve ./dev --host",
+    "build": "rollup -c",
+    "build:dev": "vite build ./dev",
+    "pre-commit": "lint-staged --relative",
+    "pre-commit-prettier": "prettier --write",
+    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
+    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "generate:theme": "tsx scripts/generate-theme.ts",
+    "clean": "rimraf dist",
+    "build-esm": "tsc -p tsconfig.esm.json",
+    "build-dts": "tsc -p tsconfig.dts.json",
+    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
+    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
+  },
+  "dependencies": {
+    "@codemirror/language": "^6.2.1",
+    "@codemirror/state": "^6.1.2",
+    "@codemirror/theme-one-dark": "^6.1.0",
+    "@codemirror/view": "^6.3.1",
+    "@lezer/highlight": "^1.1.1",
+    "@primer/primitives": "^7.9.0"
+  },
+  "peerDependencies": {
+    "@codemirror/language": "^6.2.1",
+    "@codemirror/state": "^6.1.2",
+    "@codemirror/view": "^6.3.1",
+    "@lezer/highlight": "^1.1.1"
+  },
+  "devDependencies": {
+    "@codeimage/ui": "workspace:*",
+    "@codeimage/vanilla-extract": "workspace:*",
+    "@codemirror/lang-javascript": "^6.1.0",
+    "@rollup/plugin-typescript": "^9.0.1",
+    "@types/node": "^18.11.0",
+    "@types/prettier": "^2.7.1",
+    "@vanilla-extract/css": "^1.9.1",
+    "@vanilla-extract/dynamic": "^2.0.2",
+    "chalk": "5.1.2",
+    "enquirer": "2.3.6",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.79.1",
+    "rollup-plugin-dts": "^5.0.0",
+    "solid-codemirror": "^2.0.2",
+    "solid-js": "^1.5.7",
+    "ts-morph": "16.0.0",
+    "typescript": "^4.8.4",
+    "vite": "^3.1.8",
+    "vite-plugin-dts": "^1.6.6",
+    "vite-plugin-solid": "^2.3.9"
   }
 }

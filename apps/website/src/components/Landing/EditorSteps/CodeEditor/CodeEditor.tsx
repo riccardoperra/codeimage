@@ -1,10 +1,4 @@
-import {
-  createEffect,
-  createResource,
-  createSignal,
-  on,
-  onMount,
-} from 'solid-js';
+import {createEffect, createResource, on, onMount} from 'solid-js';
 
 interface CodeEditorProps {
   code: string;
@@ -12,41 +6,42 @@ interface CodeEditorProps {
 
 export function CodeEditor(props: CodeEditorProps) {
   let ref: HTMLDivElement;
-  const [remoteCm] = createResource(() =>
-    Promise.all([import('solid-codemirror'), import('@codemirror/view')]),
-  );
+  const [remoteCm] = createResource(() => import('./editor-core'));
 
   createEffect(
     on(
       remoteCm,
       cmModules => {
         if (!cmModules) return;
-        console.log('data');
-        const [cm, view] = cmModules;
+        const {
+          EditorView,
+          createCompartmentExtension,
+          createCodeMirror,
+          createEditorControlledValue,
+          createEditorReadonly,
+          createLazyCompartmentExtension,
+          theme,
+        } = cmModules;
 
-        const {ref: setInternalRef, editorView} = cm.createCodeMirror({
+        const {ref: setInternalRef, editorView} = createCodeMirror({
           value: props.code,
         });
 
         setInternalRef(() => ref);
-        cm.createEditorControlledValue(editorView, () => props.code);
-        cm.createCompartmentExtension(
-          () =>
-            view.EditorView.theme({
+        createEditorControlledValue(editorView, () => props.code);
+        createEditorReadonly(editorView, () => true);
+        createCompartmentExtension(
+          () => [
+            EditorView.theme({
               '.cm-content': {
                 fontFamily: 'Jetbrains Mono',
               },
             }),
+            theme,
+          ],
           editorView,
         );
-        cm.createLazyCompartmentExtension(
-          () =>
-            import('@codeimage/highlight/synthwave84').then(
-              m => m.synthwave84Theme.editorTheme,
-            ),
-          editorView,
-        );
-        cm.createLazyCompartmentExtension(
+        createLazyCompartmentExtension(
           () => import('./lang-javascript-plugin').then(m => m.jsxLanguage),
           editorView,
         );
@@ -59,36 +54,6 @@ export function CodeEditor(props: CodeEditorProps) {
     document
       .querySelector('[data-defer-font=codemirror]')
       ?.removeAttribute('media');
-
-    // Promise.all([
-    //   import('@codemirror/state'),
-    //   import('@codemirror/view'),
-    //   import('solid-codemirror'),
-    // ]).then(([, view, cm]) => {
-    //   const {ref: setInternalRef, editorView} = cm.createCodeMirror({
-    //     value: props.code,
-    //   });
-    //   setInternalRef(() => ref);
-    //   cm.createEditorControlledValue(editorView, () => props.code);
-    //   cm.createCompartmentExtension(
-    //     () =>
-    //       view.EditorView.theme({
-    //         '.cm-content': {
-    //           fontFamily: 'Jetbrains Mono',
-    //         },
-    //       }),
-    //     editorView,
-    //   );
-    //   // cm.createLazyCompartmentExtension(
-    //   //   () =>
-    //   //     Promise.all([
-    //   //       import('@codemirror/lang-javascript').then(m => m.javascript()),
-    //   //       import('@codeimage/highlight/synthwave84').then(
-    //   //         m => m.synthwave84Theme.editorTheme,
-    //   //       ),
-    //   //     ]),
-    //   //   editorView,
-    //   // );
   });
 
   return <div ref={ref}></div>;

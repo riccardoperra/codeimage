@@ -11,8 +11,9 @@ export const card = style({
   position: 'absolute',
   left: '50%',
   top: '50%',
-  transform: 'translate(-50%, -50%)',
+  transform: 'scale(0) translate(-50%, -50%)',
   backgroundColor: darkGrayScale.gray2,
+  opacity: 0,
 });
 
 export const title = style({
