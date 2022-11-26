@@ -22,7 +22,7 @@ export default function EditorSteps() {
   onMount(() => {
     const intersection = new IntersectionObserver(
       entry => {
-        console.log(entry[0].isIntersecting);
+        console.log(entry[0].time);
         scene.setInView(entry[0].isIntersecting);
       },
       {threshold: 0.15},

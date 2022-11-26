@@ -19,10 +19,6 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
-    exclude: [
-      '@codemirror/state',
-      '@codemirror/view',
-      '@codemirror/lang-javascript',
-    ],
+    include: ['@codemirror/state', '@codemirror/view'],
   },
 });
