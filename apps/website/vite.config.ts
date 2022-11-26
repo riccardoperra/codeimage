@@ -19,6 +19,11 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
-    include: ['@codemirror/state', '@codemirror/view'],
+    include: [
+      '@codemirror/state',
+      '@codemirror/view',
+      '@codeimage/highlight',
+      '@codemirror/lang-javascript',
+    ],
   },
 });
