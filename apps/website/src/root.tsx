@@ -9,7 +9,6 @@ import {
   FileRoutes,
   Head,
   Html,
-  Link,
   Meta,
   Routes,
   Scripts,
@@ -62,7 +61,7 @@ function FontDefinitions() {
 export default function Root() {
   useAssets(() => (
     <>
-      <Link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link
         rel="stylesheet"

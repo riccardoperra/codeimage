@@ -1,0 +1,105 @@
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+index 0000000000000000000000000000000000000000..ea7ed093e5564eb3ab03d9c85fe231c9fc7b5b92
+--- /dev/null
++++ b/.idea/.gitignore
+@@ -0,0 +1,5 @@
++# Default ignored files
++/shelf/
++/workspace.xml
++# Editor-based HTTP Client requests
++/httpRequests/
+diff --git a/.idea/01d3a2dba0b1d1f94a243bd36d18c62d.iml b/.idea/01d3a2dba0b1d1f94a243bd36d18c62d.iml
+new file mode 100644
+index 0000000000000000000000000000000000000000..ff88395d5124703c202ca259a23fef1cd256a870
+--- /dev/null
++++ b/.idea/01d3a2dba0b1d1f94a243bd36d18c62d.iml
+@@ -0,0 +1,12 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="WEB_MODULE" version="4">
++  <component name="NewModuleRootManager">
++    <content url="file://$MODULE_DIR$">
++      <excludeFolder url="file://$MODULE_DIR$/temp" />
++      <excludeFolder url="file://$MODULE_DIR$/.tmp" />
++      <excludeFolder url="file://$MODULE_DIR$/tmp" />
++    </content>
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..70dcad89b366126710637e2ce9987e07f0c12195
+--- /dev/null
++++ b/.idea/modules.xml
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/.idea/01d3a2dba0b1d1f94a243bd36d18c62d.iml" filepath="$PROJECT_DIR$/.idea/01d3a2dba0b1d1f94a243bd36d18c62d.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..d12cdb6216fe459907e009f2765a9d72b3860f58
+--- /dev/null
++++ b/.idea/workspace.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectViewState">
++    <option name="hideEmptyMiddlePackages" value="true" />
++    <option name="showLibraryContents" value="true" />
++  </component>
++</project>
+\ No newline at end of file
+diff --git a/dist/vanilla-extract-integration.cjs.dev.js b/dist/vanilla-extract-integration.cjs.dev.js
+index 6048f011f091fe2a9f88886e8a1a839c1fcad39f..58d82a45b7d67df4bf17335584ca27da5be34cd3 100644
+--- a/dist/vanilla-extract-integration.cjs.dev.js
++++ b/dist/vanilla-extract-integration.cjs.dev.js
+@@ -400,6 +400,18 @@ const vanillaExtractTransformPlugin = ({
+ 
+   setup(build) {
+     const packageInfo = getPackageInfo(build.initialOptions.absWorkingDir);
++
++    build.onLoad({
++      filter: /.vanilla.css.ts$/
++    }, async ({path: path$1}) => {
++      const css = await fs.promises.readFile(path$1, 'utf-8');
++      return {
++        contents: css,
++        loader: 'text',
++        resolveDir: path.dirname(path$1)
++      }
++    });
++
+     build.onLoad({
+       filter: cssFileFilter
+     }, async ({
+diff --git a/dist/vanilla-extract-integration.cjs.prod.js b/dist/vanilla-extract-integration.cjs.prod.js
+index 082e846c8a9f90adfa0a03b816867b9e8d2b59ed..afb7332bd09f68309dbf7188e880af65a738ab17 100644
+--- a/dist/vanilla-extract-integration.cjs.prod.js
++++ b/dist/vanilla-extract-integration.cjs.prod.js
+@@ -400,6 +400,18 @@ const vanillaExtractTransformPlugin = ({
+ 
+   setup(build) {
+     const packageInfo = getPackageInfo(build.initialOptions.absWorkingDir);
++
++    build.onLoad({
++      filter: /.vanilla.css.ts$/
++    }, async ({path: path$1}) => {
++      const css = await fs.promises.readFile(path$1, 'utf-8');
++      return {
++        contents: css,
++        loader: 'text',
++        resolveDir: path.dirname(path$1)
++      }
++    });
++
+     build.onLoad({
+       filter: cssFileFilter
+     }, async ({
