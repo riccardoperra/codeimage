@@ -1,8 +1,9 @@
+import {javascriptLanguage, jsxLanguage} from '@codemirror/lang-javascript';
 import {EditorView} from '@codemirror/view';
 import {
   createCodeMirror,
   createEditorControlledValue,
-  createLazyCompartmentExtension,
+  createEditorReadonly,
 } from 'solid-codemirror';
 import {onMount} from 'solid-js';
 
@@ -12,38 +13,37 @@ interface CodeEditorProps {
 
 export function CodeEditor(props: CodeEditorProps) {
   let ref: HTMLDivElement;
+  const {
+    ref: setInternalRef,
+    editorView,
+    createExtension,
+  } = createCodeMirror({
+    value: props.code,
+  });
 
   onMount(() => {
     document
       .querySelector('[data-defer-font=codemirror]')
       ?.removeAttribute('media');
 
-    const {ref: setInternalRef, editorView} = createCodeMirror({
-      value: props.code,
-    });
     setInternalRef(() => ref);
 
+    createExtension([jsxLanguage, javascriptLanguage]);
+    createExtension(
+      EditorView.theme({
+        '.cm-content': {
+          fontFamily: 'Jetbrains Mono',
+        },
+      }),
+    );
     createEditorControlledValue(editorView, () => props.code);
 
-    createLazyCompartmentExtension(
-      () =>
-        Promise.all([
-          Promise.resolve(
-            EditorView.theme({
-              '.cm-content': {
-                fontFamily: 'Jetbrains Mono',
-              },
-            }),
-          ),
-          import('@codemirror/lang-javascript').then(({javascript}) =>
-            javascript({jsx: true, typescript: true}),
-          ),
-          import('@codeimage/highlight/synthwave84').then(
-            m => m.synthwave84Theme.editorTheme,
-          ),
-        ]),
-      editorView,
-    );
+    const reconfigureTheme = createExtension([]);
+    import('@codeimage/highlight/synthwave84')
+      .then(m => m.synthwave84Theme.editorTheme)
+      .then(mod => reconfigureTheme(mod));
+
+    createEditorReadonly(editorView, () => true);
   });
 
   return <div ref={ref}></div>;
