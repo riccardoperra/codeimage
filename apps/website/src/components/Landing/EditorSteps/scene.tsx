@@ -1,4 +1,4 @@
-import {createRoot, createSignal} from 'solid-js';
+import {createMemo, createRoot, createSignal} from 'solid-js';
 
 export function createEditorScene() {
   const [progress, setProgress] = createSignal(0);
@@ -22,7 +22,7 @@ export function createEditorScene() {
   return {
     ref,
     setRef,
-    progress,
+    progress: createMemo(() => progress()),
     setProgress,
     inView,
     setInView,

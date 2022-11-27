@@ -3,16 +3,17 @@ import {Motion} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {scroll, spring} from 'motion';
 import {
+  children,
   createEffect,
   createRoot,
   createSignal,
-  lazy,
   on,
   onCleanup,
   onMount,
-  Show,
   Suspense,
 } from 'solid-js';
+import {CodeEditor} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditor';
+import {DynamicBackgroundExpansion} from '~/components/Landing/EditorSteps/EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
 import {injectEditorScene} from '../scene';
 import {CircularProgress} from './CircularProgress/CircularProgress';
 import * as styles from './EditorScene.css';
@@ -113,16 +114,17 @@ export function EditorScene(props: EditorSceneProps) {
     return scale;
   }
 
-  const LazyEditor = lazy(() =>
-    Promise.all([import('../CodeEditor/CodeEditor')]).then(([m]) => ({
-      default: m.CodeEditor,
-    })),
-  );
-
   const [mountEditor, setMountEditor] = createSignal(false);
 
   onMount(() => {
     const el = containerRef();
+    const linkFont = children(() => (
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+      />
+    ));
+    document.head.appendChild(linkFont() as Node);
     const observer = new ResizeObserver(entries => {
       setContainerHeight(entries[0].target.clientHeight);
     });
@@ -155,21 +157,7 @@ export function EditorScene(props: EditorSceneProps) {
         [backgroundColorVar]: backgrounds[0],
       })}
     >
-      <Motion.div
-        animate={{
-          opacity: props.animationProgress > 5 ? 1 : 0,
-        }}
-      >
-        <div
-          class={styles.backgroundSecondStep}
-          data-activate={scene.currentStep >= 1}
-        />
-        <Motion.div
-          animate={{opacity: scene.currentStep < 1 ? 0 : 1}}
-          class={styles.backgroundThirdStep}
-          data-activate={scene.currentStep >= 2}
-        ></Motion.div>
-      </Motion.div>
+      <DynamicBackgroundExpansion />
 
       <Motion.div
         animate={{
@@ -247,10 +235,23 @@ export function EditorScene(props: EditorSceneProps) {
               </Motion.div>
 
               <div class={styles2.snippet}>
-                <Suspense fallback={<></>}>
-                  <Show when={mountEditor()}>
-                    <LazyEditor code={visibleCode()} />
-                  </Show>
+                <Suspense
+                  fallback={
+                    <pre
+                      style={{
+                        'font-family': 'Jetbrains Mono, monospace',
+                        'background-color': 'unset',
+                        color: 'white',
+                        width: '100%',
+                        height: '100%',
+                        overflow: 'hidden',
+                        margin: 0,
+                      }}
+                      innerText={visibleCode()}
+                    />
+                  }
+                >
+                  <CodeEditor code={visibleCode()} />
                 </Suspense>
               </div>
             </Motion.div>

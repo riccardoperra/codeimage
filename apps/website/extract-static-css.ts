@@ -11,10 +11,8 @@ const cssEntries = [
       }
       return acc;
     }, [])
-    .sort(a => (a[0].startsWith('src/') ? 1 : -1))
-    .map(a => a[1]),
+    .sort(a => (a[0].startsWith('src/') ? 1 : -1)),
 ];
-console.log(cssEntries);
 
 const htmlSourcePath = join('./dist/public/index.html');
 
@@ -22,21 +20,38 @@ const htmlSource = readFileSync(join('./dist/public/index.html'), {
   encoding: 'utf-8',
 });
 
-let style = '';
+let criticalStyle = '';
 let patchedSource = htmlSource;
+let criticalStylePath = '';
 
-cssEntries.forEach(entry => {
+cssEntries.forEach(([key, entry]) => {
   const source = readFileSync(join('./dist/public', entry), {
     encoding: 'utf-8',
   });
 
-  style += source;
+  criticalStyle += source;
+
+  if (key === 'src/entry-client.css') {
+    criticalStylePath = entry;
+  }
+  // else if (!key.startsWith('src')) {
+  //   criticalStyle += source;
+  // } else {
+  //   criticalStyle += source;
+  // }
 });
 
+// patchedSource = patchedSource.replace(
+//   '<style id="css-critical-style"></style>',
+//   `<style id='css-critical-style'>${style}</style>`,
+// );
+
 patchedSource = patchedSource.replace(
-  '<style id="css-critical-style"></style>',
-  `<style id='css-critical-style'>${style}</style>`,
+  `</head>`,
+  `<link rel='preload stylesheet' as='style' href='/${criticalStylePath}'></head>`,
 );
 
+writeFileSync(`./dist/public/${criticalStylePath}`, criticalStyle, {
+  encoding: 'utf-8',
+});
 writeFileSync(htmlSourcePath, patchedSource);
-writeFileSync('./dist/public/assets/why-this-break-lcp.css', '');

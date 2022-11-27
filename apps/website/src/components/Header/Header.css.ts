@@ -24,6 +24,8 @@ export const header = style([
     selectors: {
       '&[data-scrolled=true]': {
         backdropFilter: 'saturate(180%) blur(20px)',
+        // @ts-expect-error: Why not working
+        '-webkitBackdropFilter': 'saturate(180%) blur(20px)',
         vars: {
           [headerBorderColor]: themeVars.dynamicColors.divider,
         },

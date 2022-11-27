@@ -7,7 +7,7 @@ interface StepCardAreaProps {
 }
 
 export function StepCardArea(props: StepCardAreaProps) {
-  const opacityOnDisabled = () => (isMobile ? 0 : 0.25);
+  const opacityOnDisabled = () => (isMobile ? 0 : 0.5);
   return (
     <div class={styles.container}>
       <div class={styles.flexibleContent}>
@@ -25,6 +25,7 @@ export function StepCardArea(props: StepCardAreaProps) {
                   customize your snippet.
                 </>
               }
+              activeColor={'rgb(9, 171, 241)'}
             />
 
             <StepCard
@@ -39,6 +40,7 @@ export function StepCardArea(props: StepCardAreaProps) {
                   window theme and more...
                 </>
               }
+              activeColor={'#d554f7'}
             />
 
             <StepCard
@@ -50,6 +52,7 @@ export function StepCardArea(props: StepCardAreaProps) {
                   Once ready, you can share and embed your snippet everywhere.
                 </>
               }
+              activeColor={'#8000FF'}
             />
           </div>
         </div>

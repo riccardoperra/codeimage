@@ -1,11 +1,4 @@
-import {
-  children,
-  createEffect,
-  createResource,
-  on,
-  onMount,
-  Show,
-} from 'solid-js';
+import {createEffect, createResource, on, Suspense} from 'solid-js';
 
 interface CodeEditorProps {
   code: string;
@@ -57,33 +50,30 @@ export function CodeEditor(props: CodeEditorProps) {
     ),
   );
 
-  onMount(() => {
-    const el = children(() => (
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
-      />
-    ));
-    document.head.appendChild(el() as Node);
-  });
-
   return (
-    <>
+    <Suspense
+      fallback={
+        <pre
+          style={{
+            'font-family': 'Jetbrains Mono, monospace',
+            'background-color': 'unset',
+            color: 'white',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+            margin: 0,
+          }}
+          innerText={props.code}
+        />
+      }
+    >
       <div
         ref={ref}
+        data-load={!!remoteCm()}
         style={{
           'font-family': 'Jetbrains Mono, monospace',
         }}
       />
-      <Show when={remoteCm.loading}>
-        <div
-          style={{
-            'font-family': 'Jetbrains Mono, monospace',
-          }}
-        >
-          {props.code}
-        </div>
-      </Show>
-    </>
+    </Suspense>
   );
 }

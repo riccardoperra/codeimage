@@ -1,5 +1,6 @@
-import {Motion} from '@motionone/solid';
 import {Box, Text} from '@codeimage/ui';
+import {Motion} from '@motionone/solid';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {JSXElement, VoidProps} from 'solid-js';
 import * as styles from './StepCard.css';
 
@@ -9,6 +10,8 @@ interface StepCard {
   description: JSXElement | string;
 
   opacityOnDisabled: number;
+
+  activeColor: string;
 }
 
 export function StepCard(props: VoidProps<StepCard>) {
@@ -16,11 +19,14 @@ export function StepCard(props: VoidProps<StepCard>) {
 
   return (
     <Motion.div
+      data-active={props.active}
       class={styles.container}
       animate={{
-        // opacity: props.progress >= 0 && props.progress < 33 ? 1 : 0.25,
         opacity: opacity(),
       }}
+      style={assignInlineVars({
+        [styles.activeColorVar]: props.activeColor,
+      })}
     >
       <div>
         <Text weight={'bold'} size={'2xl'}>
