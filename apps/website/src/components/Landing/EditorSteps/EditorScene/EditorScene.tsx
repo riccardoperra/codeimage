@@ -1,27 +1,26 @@
 import {backgroundColorVar} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {spring} from 'motion';
+import {scroll, spring} from 'motion';
 import {
   createEffect,
+  createRoot,
   createSignal,
-  onMount,
+  lazy,
   on,
   onCleanup,
-  createRoot,
-  Suspense,
-  lazy,
+  onMount,
   Show,
+  Suspense,
 } from 'solid-js';
 import {injectEditorScene} from '../scene';
+import {CircularProgress} from './CircularProgress/CircularProgress';
 import * as styles from './EditorScene.css';
 import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
+import {ScrollDownMouse} from './ScrollDownMouse/ScrollDownMouse';
 import * as styles2 from './Snippet.css';
-import {scroll} from 'motion';
 import {SnippetControls} from './SnippetControls/SnippetControls';
 import {TwitterCard} from './TwitterCard/TwitterCard';
-import {CircularProgress} from './CircularProgress/CircularProgress';
-import {ScrollDownMouse} from './ScrollDownMouse/ScrollDownMouse';
 
 interface EditorSceneProps {
   animationProgress: number;
@@ -153,9 +152,25 @@ export function EditorScene(props: EditorSceneProps) {
       class={styles.container}
       ref={setContainerRef}
       style={assignInlineVars({
-        [backgroundColorVar]: backgrounds[scene.currentStep],
+        [backgroundColorVar]: backgrounds[0],
       })}
     >
+      <Motion.div
+        animate={{
+          opacity: props.animationProgress > 5 ? 1 : 0,
+        }}
+      >
+        <div
+          class={styles.backgroundSecondStep}
+          data-activate={scene.currentStep >= 1}
+        />
+        <Motion.div
+          animate={{opacity: scene.currentStep < 1 ? 0 : 1}}
+          class={styles.backgroundThirdStep}
+          data-activate={scene.currentStep >= 2}
+        ></Motion.div>
+      </Motion.div>
+
       <Motion.div
         animate={{
           top:
