@@ -36,12 +36,17 @@ export function TwitterCard(props: TwitterCardProps) {
   return (
     <Motion.div
       class={styles.card}
+      initial={{
+        transform: 'translate(-50%, 50%) scale(0)',
+        opacity: 0,
+      }}
       animate={{
         transform: transform(),
         opacity: props.visible ? 1 : 0,
         transition: {
           transform: {
             easing: spring({velocity: 500}),
+            allowWebkitAcceleration: true,
           },
         },
       }}

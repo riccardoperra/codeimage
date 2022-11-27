@@ -1,5 +1,6 @@
 import {backgroundColorVar} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
+import {isMobile} from '@solid-primitives/platform';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {scroll, spring} from 'motion';
 import {
@@ -7,12 +8,13 @@ import {
   createEffect,
   createRoot,
   createSignal,
+  lazy,
   on,
   onCleanup,
   onMount,
+  Show,
   Suspense,
 } from 'solid-js';
-import {CodeEditor} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditor';
 import {DynamicBackgroundExpansion} from '~/components/Landing/EditorSteps/EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
 import {injectEditorScene} from '../scene';
 import {CircularProgress} from './CircularProgress/CircularProgress';
@@ -51,6 +53,10 @@ export function getScaleByRatio(
   }
   return 1;
 }
+
+const LazyEditor = lazy(() =>
+  import('../CodeEditor/CodeEditor').then(m => ({default: m.CodeEditor})),
+);
 
 export function EditorScene(props: EditorSceneProps) {
   const [containerRef, setContainerRef] = createSignal<HTMLDivElement>();
@@ -159,17 +165,19 @@ export function EditorScene(props: EditorSceneProps) {
     >
       <DynamicBackgroundExpansion />
 
-      <Motion.div
-        animate={{
-          top:
-            props.animationProgress > 90
-              ? 'calc(100% - calc(16px + 72px))'
-              : '16px',
-        }}
-        class={styles.circularProgressBox}
-      >
-        <CircularProgress progress={props.animationProgress} />
-      </Motion.div>
+      <Show when={!isMobile}>
+        <Motion.div
+          animate={{
+            top:
+              props.animationProgress > 90
+                ? 'calc(100% - calc(16px + 72px))'
+                : '16px',
+          }}
+          class={styles.circularProgressBox}
+        >
+          <CircularProgress progress={props.animationProgress} />
+        </Motion.div>
+      </Show>
 
       <div
         class={styles.fixScaleContainer}
@@ -195,6 +203,7 @@ export function EditorScene(props: EditorSceneProps) {
                 padding: {
                   easing: spring({velocity: 500}),
                 },
+                allowWebkitAcceleration: true,
               },
             }}
           >
@@ -226,6 +235,7 @@ export function EditorScene(props: EditorSceneProps) {
                     height: {
                       easing: spring({velocity: 150}),
                     },
+                    allowWebkitAcceleration: true,
                   },
                 }}
               >
@@ -251,7 +261,25 @@ export function EditorScene(props: EditorSceneProps) {
                     />
                   }
                 >
-                  <CodeEditor code={visibleCode()} />
+                  <Show
+                    when={mountEditor()}
+                    fallback={
+                      <pre
+                        style={{
+                          'font-family': 'Jetbrains Mono, monospace',
+                          'background-color': 'unset',
+                          color: 'white',
+                          width: '100%',
+                          height: '100%',
+                          overflow: 'hidden',
+                          margin: 0,
+                        }}
+                        innerText={visibleCode()}
+                      />
+                    }
+                  >
+                    <LazyEditor code={visibleCode()} />
+                  </Show>
                 </Suspense>
               </div>
             </Motion.div>

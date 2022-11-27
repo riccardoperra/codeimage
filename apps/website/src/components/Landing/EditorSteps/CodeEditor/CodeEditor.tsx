@@ -21,6 +21,7 @@ export function CodeEditor(props: CodeEditorProps) {
           createEditorReadonly,
           createLazyCompartmentExtension,
           theme,
+          fixCodeMirrorAriaRole,
         } = cmModules;
 
         const {ref: setInternalRef, editorView} = createCodeMirror({
@@ -28,6 +29,7 @@ export function CodeEditor(props: CodeEditorProps) {
         });
 
         setInternalRef(() => ref);
+        fixCodeMirrorAriaRole(() => ref);
         createEditorControlledValue(editorView, () => props.code);
         createEditorReadonly(editorView, () => true);
         createCompartmentExtension(

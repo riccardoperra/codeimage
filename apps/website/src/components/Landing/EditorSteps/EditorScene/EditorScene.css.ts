@@ -5,8 +5,7 @@ import {responsiveStyle} from '~/core/responsive';
 export const container = style(
   responsiveStyle({
     mobile: {
-      position: 'fixed',
-      bottom: 0,
+      position: 'sticky',
       maxHeight: '60vh',
       height: '100%',
       width: '100%',
@@ -56,39 +55,3 @@ export const scrollDownText = style({
   fontSize: '14px',
   marginTop: '8px',
 });
-
-export const bgFullAnimation = style({
-  position: 'absolute',
-  left: '16px',
-  top: '16px',
-  width: '45px',
-  height: '45px',
-  opacity: 1,
-  margin: '16px',
-  borderRadius: '50%',
-  transform: 'translate(0, 0) scale(1)',
-  transition: 'transform 600ms ease, width 450ms ease, height 450ms ease',
-  selectors: {
-    '&[data-activate=true]': {
-      opacity: 1,
-      transform: 'translate(0) scale(2)',
-      width: '1280px',
-      height: '1280px',
-    },
-  },
-});
-
-export const backgroundSecondStep = style([
-  bgFullAnimation,
-  {
-    background:
-      'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
-  },
-]);
-
-export const backgroundThirdStep = style([
-  bgFullAnimation,
-  {
-    background: 'linear-gradient(-45deg, #402662 0%, #8000FF 100%)',
-  },
-]);

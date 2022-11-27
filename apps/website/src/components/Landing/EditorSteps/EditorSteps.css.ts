@@ -41,25 +41,34 @@ export const backdrop = style({
   top: '50%',
 });
 
-export const stickyContent = style({
-  position: 'sticky',
-  width: `100%`,
-  display: 'flex',
-  alignItems: 'center',
-  willChange: 'transform',
-  flexDirection: 'column',
-  zIndex: '1',
-  left: '0px',
-  gap: '24px',
-  filter: 'saturate(1.2)',
-  height: '100vh',
-  top: '100px',
-  maxWidth: '80rem',
-  marginLeft: 'auto',
-  marginRight: 'auto',
-  '@media': {
-    '(min-width: 1024px)': {
-      height: '100vh',
+export const stickyContent = style([
+  {
+    position: 'sticky',
+    width: `100%`,
+    display: 'flex',
+    alignItems: 'center',
+    willChange: 'transform',
+    flexDirection: 'column',
+    zIndex: '1',
+    left: '0px',
+    gap: '24px',
+    filter: 'saturate(1.2)',
+    height: '100vh',
+    maxWidth: '80rem',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    '@supports': {
+      '(height: 100svh)': {
+        height: '100svh',
+      },
     },
   },
-});
+  responsiveStyle({
+    mobile: {
+      top: '64px',
+    },
+    tablet: {
+      top: '100px',
+    },
+  }),
+]);

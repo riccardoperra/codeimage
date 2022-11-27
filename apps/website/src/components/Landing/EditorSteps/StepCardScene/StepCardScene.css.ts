@@ -25,7 +25,7 @@ export const grid = style(
   responsiveStyle({
     mobile: {
       display: 'grid',
-      gridTemplateRows: '1fr 1fr 1fr',
+      gridTemplateRows: '1fr',
       flexDirection: 'row',
       gap: '24px',
     },
