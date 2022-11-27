@@ -1,6 +1,7 @@
 // @refresh reload
 import '@codeimage/ui/themes/darkTheme';
 import '@vanilla-extract/recipes';
+import '@vanilla-extract/dynamic';
 import {Suspense} from 'solid-js';
 import {useAssets} from 'solid-js/web';
 import {
@@ -64,12 +65,6 @@ export default function Root() {
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       <link
-        rel="stylesheet"
-        media="print"
-        data-defer-font="codemirror"
-        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
-      />
-      <link
         rel="preload"
         href="/fonts/Mona-Sans-Bold.woff2"
         as="font"
@@ -98,8 +93,7 @@ export default function Root() {
         crossorigin=""
       />
       <FontDefinitions />
-      <link rel="stylesheet" href="/assets/why-this-break-lcp.css" />
-      <style id="css-critical-style" />
+      {/*<link rel="stylesheet" href="/assets/why-this-break-lcp.css" />*/}
       <MainPageImagePreloading />
     </>
   ));

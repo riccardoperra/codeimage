@@ -1,7 +1,7 @@
 import {Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import {createMemo, createSignal, onMount, untrack} from 'solid-js';
-import {CodeImageLogo} from '~/components/CodeImageLogo/CodeImageLogo';
+import {CodeImageLogo2} from '~/components/CodeImageLogo/CodeImageLogo2';
 import * as styles from './Header.css';
 
 export function Header() {
@@ -26,7 +26,9 @@ export function Header() {
     <div class={styles.header} data-scrolled={dataScrolled() ?? false}>
       <div class={styles.headerContent}>
         <div class={styles.headerContentInner}>
-          <CodeImageLogo width={'140px'} height={'29px'} />
+          <div>
+            <CodeImageLogo2 width={'140px'} height={'29px'} />
+          </div>
           <div class={styles.headerActions}>
             <Button
               as={A}

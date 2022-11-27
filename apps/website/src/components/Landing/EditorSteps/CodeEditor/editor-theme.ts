@@ -71,15 +71,4 @@ export const highlightStyle: HighlightStyle = HighlightStyle.define([
   },
 ]);
 
-export const colors = EditorView.theme(
-  {
-    '.cm-content': {
-      fontFamily: 'JetBrains Mono, Inter, monospace',
-    },
-  },
-  {
-    dark: true,
-  },
-);
-
-export const theme: Extension[] = [colors, syntaxHighlighting(highlightStyle)];
+export const theme: Extension[] = [syntaxHighlighting(highlightStyle)];

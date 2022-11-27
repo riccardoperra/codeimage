@@ -1,4 +1,11 @@
-import {createEffect, createResource, on, onMount} from 'solid-js';
+import {
+  children,
+  createEffect,
+  createResource,
+  on,
+  onMount,
+  Show,
+} from 'solid-js';
 
 interface CodeEditorProps {
   code: string;
@@ -34,7 +41,7 @@ export function CodeEditor(props: CodeEditorProps) {
           () => [
             EditorView.theme({
               '.cm-content': {
-                fontFamily: 'Jetbrains Mono',
+                fontFamily: 'Jetbrains Mono, monospace',
               },
             }),
             theme,
@@ -51,10 +58,32 @@ export function CodeEditor(props: CodeEditorProps) {
   );
 
   onMount(() => {
-    document
-      .querySelector('[data-defer-font=codemirror]')
-      ?.removeAttribute('media');
+    const el = children(() => (
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+      />
+    ));
+    document.head.appendChild(el() as Node);
   });
 
-  return <div ref={ref}></div>;
+  return (
+    <>
+      <div
+        ref={ref}
+        style={{
+          'font-family': 'Jetbrains Mono, monospace',
+        }}
+      />
+      <Show when={remoteCm.loading}>
+        <div
+          style={{
+            'font-family': 'Jetbrains Mono, monospace',
+          }}
+        >
+          {props.code}
+        </div>
+      </Show>
+    </>
+  );
 }
