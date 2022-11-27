@@ -67,6 +67,9 @@ export function EditorScene(props: EditorSceneProps) {
   const [containerHeight, setContainerHeight] = createSignal();
   const [scale, setScale] = createSignal<number>(1);
 
+  const enabledCircleExpansionGradient = () =>
+    scene.enableCircleExpansionGradient();
+
   const codeExample =
     'function Counter() {\n' +
     '  const [count, setCount] = createSignal(0);\n' +
@@ -160,12 +163,14 @@ export function EditorScene(props: EditorSceneProps) {
       class={styles.container}
       ref={setContainerRef}
       style={assignInlineVars({
-        [backgroundColorVar]: backgrounds[0],
+        [backgroundColorVar]: enabledCircleExpansionGradient()
+          ? backgrounds[0]
+          : backgrounds[scene.currentStep],
       })}
     >
       <DynamicBackgroundExpansion />
 
-      <Show when={!isMobile}>
+      <Show when={enabledCircleExpansionGradient()}>
         <Motion.div
           animate={{
             top:

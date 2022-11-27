@@ -1,4 +1,7 @@
 import {isMobile} from '@solid-primitives/platform';
+import {createEffect, createMemo} from 'solid-js';
+import {injectEditorScene} from '~/components/Landing/EditorSteps/scene';
+import {injectBreakpoints} from '~/core/breakpoints';
 import {StepCard} from '../StepCard/StepCard';
 import * as styles from './StepCardScene.css';
 
@@ -7,17 +10,24 @@ interface StepCardAreaProps {
 }
 
 export function StepCardArea(props: StepCardAreaProps) {
-  const opacityOnDisabled = () => (isMobile ? 0 : 0.5);
+  const bp = injectBreakpoints();
+  const scene = injectEditorScene();
+  const opacityOnDisabled = () => (isMobile || bp.isXs() ? 0 : 0.5);
+
+  const progress = createMemo(() => scene.progress());
+
+  const showFirstStep = () => progress() >= 0 && progress() < 33;
+  const showSecondStep = () => progress() >= 33 && progress() < 66;
+  const showThirdStep = () => progress() >= 66;
+  createEffect(() => console.log('show progress', progress()));
+
   return (
     <div class={styles.container}>
       <div class={styles.flexibleContent}>
         <div class={styles.innerContent}>
           <div class={styles.grid}>
             <StepCard
-              opacityOnDisabled={opacityOnDisabled()}
-              active={
-                props.animationProgress >= 0 && props.animationProgress < 33
-              }
+              active={showFirstStep()}
               title={'Add your code'}
               description={
                 <>
@@ -29,10 +39,7 @@ export function StepCardArea(props: StepCardAreaProps) {
             />
 
             <StepCard
-              opacityOnDisabled={opacityOnDisabled()}
-              active={
-                props.animationProgress >= 33 && props.animationProgress < 66
-              }
+              active={showSecondStep()}
               title={'Beautify it'}
               description={
                 <>
@@ -44,8 +51,7 @@ export function StepCardArea(props: StepCardAreaProps) {
             />
 
             <StepCard
-              opacityOnDisabled={opacityOnDisabled()}
-              active={props.animationProgress >= 66}
+              active={showThirdStep()}
               title={'Share to everyone'}
               description={
                 <>

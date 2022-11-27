@@ -1,5 +1,5 @@
 import {Badge, Box, Text} from '@codeimage/ui';
-import {Motion, Presence} from '@motionone/solid';
+import {Motion} from '@motionone/solid';
 import {spring} from 'motion';
 import * as styles from './TwitterCard.css';
 
@@ -39,8 +39,10 @@ export function TwitterCard(props: TwitterCardProps) {
       initial={{
         transform: 'translate(-50%, 50%) scale(0)',
         opacity: 0,
+        display: 'none',
       }}
       animate={{
+        display: 'block',
         transform: transform(),
         opacity: props.visible ? 1 : 0,
         transition: {
@@ -48,35 +50,36 @@ export function TwitterCard(props: TwitterCardProps) {
             easing: spring({velocity: 500}),
             allowWebkitAcceleration: true,
           },
+          opacity: {
+            easing: 'ease-in',
+          },
         },
       }}
     >
-      <Presence>
-        <Box marginBottom={2}>
-          <div class={styles.title}>
-            <Badge size={'md'} theme={styles.badge} variant={'rounded'}>
-              <img
-                alt="Profile picture"
-                loading="lazy"
-                class={styles.badgePicture}
-                src={badgePictureUrl}
-              />
-            </Badge>
-            <Box display={'flex'} flexDirection={'column'}>
-              <Text size={'lg'} weight={'bold'}>
-                CodeImage
-              </Text>
-              <Text size={'sm'}>@codeimageapp</Text>
-            </Box>
-            <Box marginLeft={'auto'}>
-              <TwitterLogo />
-            </Box>
-          </div>
-          <div>
-            <Text>Do you know that SolidJS doesn't use Virtual Dom?</Text>
-          </div>
-        </Box>
-      </Presence>
+      <Box marginBottom={2}>
+        <div class={styles.title}>
+          <Badge size={'md'} theme={styles.badge} variant={'rounded'}>
+            <img
+              alt="Profile picture"
+              loading="lazy"
+              class={styles.badgePicture}
+              src={badgePictureUrl}
+            />
+          </Badge>
+          <Box display={'flex'} flexDirection={'column'}>
+            <Text size={'lg'} weight={'bold'}>
+              CodeImage
+            </Text>
+            <Text size={'sm'}>@codeimageapp</Text>
+          </Box>
+          <Box marginLeft={'auto'}>
+            <TwitterLogo />
+          </Box>
+        </div>
+        <div>
+          <span>Do you know that SolidJS doesn't use Virtual Dom?</span>
+        </div>
+      </Box>
     </Motion.div>
   );
 }

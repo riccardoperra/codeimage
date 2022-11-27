@@ -1,8 +1,10 @@
 import {createMemo, createRoot, createSignal} from 'solid-js';
+import {injectBreakpoints} from '~/core/breakpoints';
 
 export function createEditorScene() {
   const [progress, setProgress] = createSignal(0);
   const [inView, setInView] = createSignal(false);
+  const breakpoints = injectBreakpoints();
 
   const [ref, setRef] = createSignal<HTMLElement>();
   const stepsOffset = [0, 33, 66];
@@ -19,6 +21,8 @@ export function createEditorScene() {
     return index;
   }
 
+  const enableCircleExpansionGradient = () => !breakpoints.isXs();
+
   return {
     ref,
     setRef,
@@ -26,6 +30,7 @@ export function createEditorScene() {
     setProgress,
     inView,
     setInView,
+    enableCircleExpansionGradient,
     get currentStep() {
       return getStep(progress());
     },

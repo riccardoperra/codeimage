@@ -43,7 +43,7 @@ cssEntries.forEach(([key, entry]) => {
 
 // patchedSource = patchedSource.replace(
 //   '<style id="css-critical-style"></style>',
-//   `<style id='css-critical-style'>${style}</style>`,
+//   `<style id="css-critical-style">${criticalStyle}</style>`,
 // );
 
 patchedSource = patchedSource.replace(

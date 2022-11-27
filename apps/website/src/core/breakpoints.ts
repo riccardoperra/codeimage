@@ -1,3 +1,5 @@
+import {createBreakpoints, createMediaQuery} from '@solid-primitives/media';
+
 export const breakpointNames = ['mobile', 'tablet', 'desktop', 'wide'] as const;
 
 export const breakpoints = {
@@ -10,3 +12,19 @@ export const breakpoints = {
 } as const;
 
 export type Breakpoint = keyof typeof breakpoints;
+
+const breakpointsPx = {
+  tablet: `${breakpoints.tablet}px`,
+  desktop: `${breakpoints.tablet}px`,
+  wide: `${breakpoints.wide}px`,
+};
+
+const matchBreakpoints = createBreakpoints(breakpointsPx);
+const isXs = createMediaQuery(`(max-width: ${breakpointsPx.tablet})`);
+
+export function injectBreakpoints() {
+  return {
+    matches: matchBreakpoints,
+    isXs,
+  };
+}

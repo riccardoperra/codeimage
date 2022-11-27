@@ -1,29 +1,49 @@
 import {createVar, style} from '@vanilla-extract/css';
+import {responsiveStyle} from '~/core/responsive';
 
 export const activeColorVar = createVar();
+export const disabledOpacity = createVar();
 
-export const container = style({
-  margin: '4px',
-  display: 'flex',
-  alignItems: 'center',
-  border: `1px solid rgb(24 24 27)`,
-  backgroundColor: 'rgb(39 39 42 / 0.15)',
-  placeContent: 'center flex-start',
-  flexFlow: 'row nowrap',
-  gap: '96px',
-  overflow: 'visible',
-  flex: 1,
-  position: 'relative',
-  flexDirection: 'column',
-  padding: '24px',
-  borderRadius: '24px',
-  opacity: 1,
-  mixBlendMode: 'hue',
-  transition: 'box-shadow .2s cubic-bezier(.4,0,.2,1)',
-  userSelect: 'none',
-  selectors: {
-    '&[data-active=true]': {
-      boxShadow: `rgb(255,255,255) 0px 0px 0px 0px, ${activeColorVar} 0px 0px 0px 3px, rgba(0,0,0,0) 0px 0px 0px 0px`,
+export const container = style([
+  {
+    margin: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    border: `1px solid rgb(24 24 27)`,
+    backgroundColor: 'rgb(39 39 42 / 0.25)',
+    placeContent: 'center flex-start',
+    flexFlow: 'row nowrap',
+    color: '#fff',
+    gap: '96px',
+    overflow: 'visible',
+    flex: 1,
+    position: 'relative',
+    flexDirection: 'column',
+    padding: '24px',
+    borderRadius: '24px',
+    transition: 'box-shadow .2s cubic-bezier(.4,0,.2,1)',
+    userSelect: 'none',
+    opacity: 0,
+    selectors: {
+      '&[data-active=true]': {
+        opacity: 1,
+        boxShadow: `rgb(255,255,255) 0px 0px 0px 0px, ${activeColorVar} 0px 0px 0px 3px, rgba(0,0,0,0) 0px 0px 0px 0px`,
+      },
+      '&[data-active=false]': {
+        opacity: disabledOpacity,
+      },
     },
   },
-});
+  responsiveStyle({
+    mobile: {
+      vars: {
+        [disabledOpacity]: '0',
+      },
+    },
+    tablet: {
+      vars: {
+        [disabledOpacity]: '0.5',
+      },
+    },
+  }),
+]);

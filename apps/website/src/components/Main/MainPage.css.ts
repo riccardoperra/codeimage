@@ -87,6 +87,18 @@ export const imageSection = style(
   }),
 );
 
+const float = keyframes({
+  '0%': {
+    transform: 'translateY(-20px)',
+  },
+  '50%': {
+    transform: 'translateY(0px)',
+  },
+  '100%': {
+    transform: 'translateY(-20px)',
+  },
+});
+
 export const imageBox = style([
   {
     position: 'relative',
@@ -120,6 +132,7 @@ export const imagePerspectiveBox = style([
     display: 'flex',
     gridColumnStart: 1,
     justifyContent: 'flex-end',
+    animation: `${float} 6s ease-in-out infinite`,
   },
   responsiveStyle({
     mobile: {
@@ -250,21 +263,6 @@ export const backdrop = style({
 export const screenshot = style({
   color: themeVars.backgroundColor.blue[500],
 });
-
-// export const giantButton = style(
-//   responsiveStyle({
-//     desktop: {
-//       height: '64px',
-//       borderRadius: '16px',
-//       paddingTop: 0,
-//       paddingBottom: 0,
-//       paddingLeft: themeVars.spacing['6'],
-//       paddingRight: themeVars.spacing['6'],
-//       fontWeight: themeVars.fontWeight.medium,
-//       fontSize: themeVars.fontSize.xl,
-//     },
-//   }),
-// );
 
 export const ctaContainer = style(
   responsiveStyle({
