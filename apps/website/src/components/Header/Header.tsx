@@ -27,7 +27,7 @@ export function Header() {
       <div class={styles.headerContent}>
         <div class={styles.headerContentInner}>
           <div>
-            <CodeImageLogo2 width={'140px'} height={'29px'} />
+            <CodeImageLogo2 width={'140px'} />
           </div>
           <div class={styles.headerActions}>
             <Button
