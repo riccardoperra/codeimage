@@ -8,6 +8,7 @@ export const main = style([
     backgroundColor: '#000',
     paddingLeft: themeVars.spacing[4],
     paddingRight: themeVars.spacing[4],
+    paddingBottom: themeVars.spacing[24],
   },
   responsiveStyle({
     desktop: {

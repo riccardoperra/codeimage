@@ -5,8 +5,6 @@ import {style} from '@vanilla-extract/css';
 export const main = style({
   backgroundColor: darkGrayScale.gray1,
   overflow: 'hidden',
-  // paddingTop: themeVars.spacing[24],
-  // paddingBottom: themeVars.spacing[24],
 });
 
 export const editorImage = style({
@@ -66,28 +64,21 @@ export const contributionsText = style({
 
 export const githubLogo = style({
   width: '100%',
-  height: '100vh',
-  position: 'sticky',
-  top: 0,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: '#000',
   zIndex: 10,
 });
 
 export const contributorsContent = style({
   maxWidth: '80rem',
   margin: 'auto',
-  marginTop: '-25%',
 });
 
 export const contributorsStickyContent = style({
   paddingTop: themeVars.spacing[24],
   paddingBottom: themeVars.spacing[24],
   width: '100%',
-  position: 'sticky',
-  top: 0,
 });
 
 export const codeImageExampleImage = style([
