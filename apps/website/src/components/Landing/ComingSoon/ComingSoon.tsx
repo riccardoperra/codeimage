@@ -1,6 +1,7 @@
 import {Badge, Box, SvgIcon, SvgIconProps, Text} from '@codeimage/ui';
 import {animate, scroll} from 'motion';
 import {onMount} from 'solid-js';
+import {injectBreakpoints} from '~/core/breakpoints';
 import * as styles from './ComingSoon.css';
 
 function PaintBrush(props: SvgIconProps) {
@@ -49,14 +50,31 @@ export default function ComingSoon() {
   let cardRef: HTMLDivElement;
   let themeBuilderRef: HTMLDivElement;
   let embedsRef: HTMLDivElement;
+  const bp = injectBreakpoints();
 
   onMount(() => {
-    [cardRef, themeBuilderRef, embedsRef].forEach(ref => {
-      scroll(animate(ref, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
-        target: ref,
-        offset: ['start end', 'end end', 'start start', 'end start'],
+    if (bp.isXs()) {
+      [cardRef, themeBuilderRef, embedsRef].forEach(ref => {
+        scroll(
+          animate(
+            ref,
+            {opacity: [0, 1, 1, 0]},
+            {opacity: {easing: [0.16, 1, 0.3, 1]}},
+          ),
+          {
+            target: ref,
+            offset: ['start end', 'end end', 'start start', 'end start'],
+          },
+        );
       });
-    });
+    } else {
+      [cardRef, themeBuilderRef, embedsRef].forEach(ref => {
+        scroll(animate(ref, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
+          target: ref,
+          offset: ['start end', 'end end', 'start start', 'end start'],
+        });
+      });
+    }
   });
 
   return (
