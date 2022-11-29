@@ -41,6 +41,11 @@ const Footer = hydrateOnViewport(
   'visible',
 );
 
+const Showcase = hydrateOnViewport(
+  () => import('../components/Landing/Showcase/Showcase'),
+  'visible',
+);
+
 export default function Home() {
   return (
     <main>

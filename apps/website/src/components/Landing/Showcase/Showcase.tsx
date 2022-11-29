@@ -1,20 +1,12 @@
 import {CustomTheme} from '@codeimage/highlight';
 import {backgroundColorVar, Box, Button, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  For,
-  on,
-  Show,
-  Suspense,
-} from 'solid-js';
+import {createMemo, createResource, For, on, Show, Suspense} from 'solid-js';
 import {injectBreakpoints} from '~/core/breakpoints';
 import {CodeEditor} from '../EditorSteps/CodeEditor/CodeEditor';
 import * as styles from './Showcase.css';
 
-export function Showcase() {
+export default function Showcase() {
   const code =
     '// Just a code example \n' +
     'export function Preview() {\n' +
