@@ -1,7 +1,18 @@
 import {CustomTheme} from '@codeimage/highlight';
 import {backgroundColorVar, Box, Button, Text} from '@codeimage/ui';
+import {Motion} from '@motionone/solid';
+import {inView, spring} from 'motion';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createMemo, createResource, For, on, Show, Suspense} from 'solid-js';
+import {
+  createMemo,
+  createResource,
+  createSignal,
+  For,
+  on,
+  onMount,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {injectBreakpoints} from '~/core/breakpoints';
 import {CodeEditor} from '../EditorSteps/CodeEditor/CodeEditor';
 import * as styles from './Showcase.css';
@@ -43,8 +54,8 @@ export default function Showcase() {
     },
     {
       code,
-      theme: import('@codeimage/highlight/githubLight').then(t => {
-        return t.githubLightTheme;
+      theme: import('@codeimage/highlight/nightOwl').then(t => {
+        return t.nightOwlTheme;
       }),
     },
   ];
@@ -61,25 +72,68 @@ export default function Showcase() {
     return blocks.slice(0, maxElements());
   });
 
+  let contentEl: HTMLDivElement;
+  const [isInView, setIsInView] = createSignal(false);
+
+  onMount(() => {
+    inView(
+      contentEl,
+      () => {
+        setIsInView(true);
+        return () => {
+          return setIsInView(false);
+        };
+      },
+      {amount: 0.5},
+    );
+  });
+
   return (
     <div class={styles.container}>
-      <div class={styles.content}>
-        <Box
-          display={'flex'}
-          justifyContent={'center'}
-          flexDirection={'column'}
-          alignItems={'center'}
+      <div ref={contentEl} class={styles.content} data-in-view={isInView()}>
+        <Motion.div
+          animate={{
+            opacity: isInView() ? 1 : 0,
+            transition: {
+              opacity: {easing: [0.16, 1, 0.3, 1]},
+            },
+          }}
         >
-          <h1 class={styles.heading}>Start now to beautify your snippets</h1>
-          <p class={styles.description}>
-            with 20+ custom themes and much more...
-          </p>
-        </Box>
+          <Box
+            display={'flex'}
+            justifyContent={'center'}
+            flexDirection={'column'}
+            alignItems={'center'}
+          >
+            <h1 class={styles.heading}>Start now to beautify your snippets</h1>
+            <p class={styles.description}>
+              with 20+ custom themes and much more...
+            </p>
+          </Box>
+        </Motion.div>
 
         <div class={styles.grid}>
           <For each={filteredBlocks()}>
-            {block => (
-              <PreviewCodeEditor code={block.code} customTheme={block.theme} />
+            {(block, index) => (
+              <Motion.div
+                animate={{
+                  opacity: isInView() ? 1 : 0.5,
+                  scale: isInView() ? 1 : 0.7,
+                  transform: isInView()
+                    ? `transformY(0px)`
+                    : `transformY(20px)`,
+                  transition: {
+                    duration: 1,
+                    easing: [0.16, 1, 0.3, 1],
+                  },
+                }}
+                style={{'z-index': index()}}
+              >
+                <PreviewCodeEditor
+                  code={block.code}
+                  customTheme={block.theme}
+                />
+              </Motion.div>
             )}
           </For>
         </div>
