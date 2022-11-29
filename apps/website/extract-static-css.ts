@@ -22,12 +22,15 @@ const htmlSource = readFileSync(join('./dist/public/index.html'), {
 
 let criticalStyle = '';
 let patchedSource = htmlSource;
-let criticalStylePath = 'src/entry-client.css';
+let criticalStylePath = '';
 
 cssEntries.forEach(([key, entry]) => {
   const source = readFileSync(join('./dist/public', entry), {
     encoding: 'utf-8',
   });
+  if (key === 'src/entry-client.css') {
+    criticalStylePath = entry.file;
+  }
   criticalStyle += source;
 });
 
