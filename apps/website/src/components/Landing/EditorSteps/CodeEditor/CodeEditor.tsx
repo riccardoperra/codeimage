@@ -41,10 +41,23 @@ export function CodeEditor(props: CodeEditorProps) {
                 fontFamily: 'Jetbrains Mono, monospace',
               },
             }),
-            !props.customTheme ? theme : [],
           ],
           editorView,
         );
+
+        const reconfigureTheme = createCompartmentExtension(
+          () => [],
+          editorView,
+        );
+        createEffect(() => {
+          if (props.customTheme) {
+            props.customTheme
+              .then(ext => reconfigureTheme(ext))
+              .catch(() => null);
+          } else {
+            reconfigureTheme(theme);
+          }
+        });
 
         if (props.customTheme) {
           createLazyCompartmentExtension(() => props.customTheme, editorView);
