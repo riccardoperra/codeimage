@@ -17,6 +17,7 @@ export default defineConfig({
       '@codemirror/state',
       '@codemirror/view',
       '@codemirror/lang-javascript',
+      '@codeimage/highlight',
     ],
   },
 });
