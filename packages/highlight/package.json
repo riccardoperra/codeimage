@@ -2,11 +2,16 @@
   "name": "@codeimage/highlight",
   "version": "0.10.3",
   "module": "./dist/index.js",
+  "main": "./dist/index.js",
   "types": "./dist/public-api.d.ts",
   "type": "module",
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "main": "./dist/index.js",
+      "node": "./dist/index.js",
+      "require": "./dist/index.js",
+      "browser": "./dist/index.js",
       "types": "./dist/public-api.d.ts"
     },
     "./themes": {
