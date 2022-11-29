@@ -1,9 +1,10 @@
 import {themeVars} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
+import {responsiveStyle} from '~/core/responsive';
 
 export const main = style({
-  backgroundColor: darkGrayScale.gray1,
+  backgroundColor: darkGrayScale.gray2,
   overflow: 'hidden',
 });
 
@@ -88,3 +89,32 @@ export const codeImageExampleImage = style([
     padding: 0,
   },
 ]);
+
+export const heading = style(
+  responsiveStyle({
+    mobile: {
+      fontSize: themeVars.fontSize['4xl'],
+      textAlign: 'center',
+      marginBottom: 0,
+      padding: themeVars.spacing[4],
+    },
+    desktop: {
+      fontSize: themeVars.fontSize['6xl'],
+    },
+  }),
+);
+
+export const description = style(
+  responsiveStyle({
+    mobile: {
+      fontSize: themeVars.fontSize['2xl'],
+      textAlign: 'center',
+      margin: 0,
+      marginBottom: themeVars.spacing[8],
+      padding: themeVars.spacing[4],
+    },
+    desktop: {
+      fontSize: themeVars.fontSize['3xl'],
+    },
+  }),
+);

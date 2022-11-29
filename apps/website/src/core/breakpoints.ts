@@ -15,16 +15,20 @@ export type Breakpoint = keyof typeof breakpoints;
 
 const breakpointsPx = {
   tablet: `${breakpoints.tablet}px`,
-  desktop: `${breakpoints.tablet}px`,
+  desktop: `${breakpoints.desktop}px`,
   wide: `${breakpoints.wide}px`,
 };
 
 const matchBreakpoints = createBreakpoints(breakpointsPx);
 const isXs = createMediaQuery(`(max-width: ${breakpointsPx.tablet})`);
+const isTablet = createMediaQuery(
+  `(max-width: ${breakpointsPx.desktop}) and (min-width: ${breakpointsPx.tablet})`,
+);
 
 export function injectBreakpoints() {
   return {
     matches: matchBreakpoints,
     isXs,
+    isTablet,
   };
 }

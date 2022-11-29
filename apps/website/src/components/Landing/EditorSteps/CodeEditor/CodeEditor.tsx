@@ -1,7 +1,9 @@
+import {type Extension} from '@codemirror/state';
 import {createEffect, createResource, on, Suspense} from 'solid-js';
 
 interface CodeEditorProps {
   code: string;
+  customTheme?: Promise<Extension>;
 }
 
 export function CodeEditor(props: CodeEditorProps) {
@@ -39,10 +41,15 @@ export function CodeEditor(props: CodeEditorProps) {
                 fontFamily: 'Jetbrains Mono, monospace',
               },
             }),
-            theme,
+            !props.customTheme ? theme : [],
           ],
           editorView,
         );
+
+        if (props.customTheme) {
+          createLazyCompartmentExtension(() => props.customTheme, editorView);
+        }
+
         createLazyCompartmentExtension(
           () => import('./lang-javascript-plugin').then(m => m.jsxLanguage),
           editorView,

@@ -1,18 +1,7 @@
 import {Badge, Box, Link, Text} from '@codeimage/ui';
 import {animate, scroll} from 'motion';
 import {createResource, For, onMount} from 'solid-js';
-import {
-  badgePicture,
-  contributionsText,
-  contributorContainer,
-  contributorName,
-  contributorsContent,
-  contributorsGrid,
-  contributorsStickyContent,
-  githubLogo,
-  main,
-  userBadge,
-} from './OpenSource.css';
+import * as styles from './OpenSource.css';
 import contributors from './contributors.json';
 import {A} from '@solidjs/router';
 
@@ -42,59 +31,11 @@ async function getContributors(): Promise<
 export default function OpenSource() {
   const [data] = createResource(getContributors);
 
-  onMount(() => {
-    const logo = document.querySelector(`.${githubLogo}`);
-    const contributorsContentEl = document.querySelector(
-      `.${contributorsContent}`,
-    );
-    // scroll(
-    //   animate(
-    //     logo,
-    //     {
-    //       transform: [`scale(1)`, `scale(100) translateY(100px) rotate(15deg)`],
-    //       backgroundColor: ['#000', `#111111`],
-    //       opacity: [1, 0, 0],
-    //     },
-    //     {
-    //       allowWebkitAcceleration: true,
-    //     },
-    //   ),
-    //   {
-    //     target: logo,
-    //     offset: ['start', '25%', '50%'],
-    //   },
-    // );
-
-    // scroll(
-    //   animate(
-    //     contributorsContentEl,
-    //     {
-    //       transform: ['scale(0.75)', 'scale(1)', 'scale(1)'],
-    //       filter: [
-    //         'blur(30px) saturate(180%)',
-    //         'blur(0px) saturate(100%)',
-    //         'blur(0px) saturate(100%)',
-    //         'blur(0px) saturate(100%)',
-    //       ],
-    //     },
-    //     {
-    //       transform: {
-    //         allowWebkitAcceleration: true,
-    //       },
-    //     },
-    //   ),
-    //   {
-    //     target: logo,
-    //     offset: ['start', '25%', 'end end'],
-    //   },
-    // );
-  });
-
   return (
-    <div class={main}>
-      <Box class={contributorsContent}>
-        <Box class={contributorsStickyContent}>
-          <div class={githubLogo}>
+    <div class={styles.main}>
+      <Box class={styles.contributorsContent}>
+        <Box class={styles.contributorsStickyContent}>
+          <div class={styles.githubLogo}>
             <svg
               width={128}
               height={128}
@@ -114,7 +55,7 @@ export default function OpenSource() {
 
           <Box paddingBottom={24} marginTop={24}>
             <Box display={'flex'} justifyContent={'center'}>
-              <Text weight={'bold'} size={'5xl'}>
+              <Text weight={'bold'} size={'5xl'} class={styles.heading}>
                 Open Source
               </Text>
             </Box>
@@ -125,7 +66,11 @@ export default function OpenSource() {
               justifyContent={'center'}
               textAlign={'center'}
             >
-              <Text size={'3xl'} style={{'line-height': 1.5}}>
+              <Text
+                size={'3xl'}
+                style={{'line-height': 1.5}}
+                class={styles.description}
+              >
                 All the source code of the application is available on Github.{' '}
                 <br />
                 We thank all our{' '}
