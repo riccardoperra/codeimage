@@ -1,5 +1,4 @@
 import {createResource} from 'solid-js';
-import {Showcase} from '~/components/Landing/Showcase/Showcase';
 import MainPage from '~/components/Main/MainPage';
 import {hydrateOnViewport} from '~/core/hydrateOnViewport';
 
