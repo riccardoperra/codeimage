@@ -70,4 +70,4 @@ export const highlightStyle: HighlightStyle = HighlightStyle.define([
   },
 ]);
 
-export const theme: Extension[] = [syntaxHighlighting(highlightStyle)];
+export const theme: Extension = syntaxHighlighting(highlightStyle);

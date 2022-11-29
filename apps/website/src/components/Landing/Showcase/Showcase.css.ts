@@ -33,24 +33,30 @@ export const grid = style({
   gap: '24px',
 });
 
-export const backdrop = style({
-  content: '',
-  zIndex: -1,
-  position: 'absolute',
-  right: 0,
-  bottom: 0,
-  left: 0,
-  background: backgroundColorVar,
-  transform: 'translate3d(0px, -50%, 0) scale(0.90)',
-  filter: 'blur(500px) saturate(300%)',
-  opacity: '0.7',
-  transition: 'opacity 0.3s',
-  borderRadius: '1.5rem',
-  flex: 1,
-  overflow: 'hidden',
-  height: '500px',
-  top: '50%',
-});
+export const backdrop = style([
+  {
+    content: '',
+    zIndex: 0,
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    left: 0,
+    background: backgroundColorVar,
+    transform: 'translate3d(0px, -50%, 0) scale(0.90)',
+    filter: 'blur(200px) saturate(300%)',
+    opacity: '0.5',
+    transition: 'opacity 0.3s',
+    borderRadius: '1.5rem',
+    flex: 1,
+    overflow: 'hidden',
+    height: '500px',
+    top: '50%',
+  },
+  responsiveStyle({
+    mobile: {display: 'none'},
+    tablet: {display: 'block'},
+  }),
+]);
 
 export const codeContainerBg = createVar();
 export const codeBlockBg = createVar();
@@ -60,6 +66,7 @@ export const codeContainer = style({
   background: codeContainerBg,
   padding: themeVars.spacing[8],
   position: 'relative',
+  zIndex: 5,
 });
 
 export const codeBlock = style({

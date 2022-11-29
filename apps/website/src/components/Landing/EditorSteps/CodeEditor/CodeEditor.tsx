@@ -45,19 +45,25 @@ export function CodeEditor(props: CodeEditorProps) {
           editorView,
         );
 
+        let initialTheme = !props.customTheme ? theme : undefined;
         const reconfigureTheme = createCompartmentExtension(
-          () => [],
+          () => initialTheme,
           editorView,
         );
-        createEffect(() => {
-          if (props.customTheme) {
-            props.customTheme
-              .then(ext => reconfigureTheme(ext))
-              .catch(() => null);
-          } else {
-            reconfigureTheme(theme);
-          }
-        });
+        createEffect(
+          on(
+            () => props.customTheme,
+            customTheme => {
+              if (customTheme) {
+                props.customTheme
+                  .then(ext => reconfigureTheme(ext))
+                  .catch(() => null);
+              } else {
+                reconfigureTheme(theme);
+              }
+            },
+          ),
+        );
 
         if (props.customTheme) {
           createLazyCompartmentExtension(() => props.customTheme, editorView);
