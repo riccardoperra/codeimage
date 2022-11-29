@@ -28,8 +28,9 @@ cssEntries.forEach(([key, entry]) => {
   const source = readFileSync(join('./dist/public', entry), {
     encoding: 'utf-8',
   });
+  console.log(key);
   if (key === 'src/entry-client.css') {
-    criticalStylePath = entry.file;
+    criticalStylePath = entry;
   }
   criticalStyle += source;
 });
@@ -39,6 +40,7 @@ patchedSource = patchedSource.replace(
   `<link rel='preload stylesheet' as='style' href='/${criticalStylePath}'></head>`,
 );
 
+console.log(criticalStylePath);
 writeFileSync(`./dist/public/${criticalStylePath}`, criticalStyle, {
   encoding: 'utf-8',
 });
