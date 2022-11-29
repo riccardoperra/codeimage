@@ -1,4 +1,4 @@
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
+import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
 import ssg from 'solid-start-static';
 import solid from 'solid-start/vite';
 import {defineConfig, Plugin} from 'vite';
@@ -9,14 +9,7 @@ export default defineConfig({
   },
   plugins: [
     solid({adapter: ssg(), prerenderRoutes: ['/']}),
-    vanillaExtractPlugin({
-      esbuildOptions: {
-        external: ['solid-js/web'],
-        loader: {
-          '.css.ts.vanilla.css': 'text',
-        },
-      },
-    }),
+    vanillaExtractPlugin(),
     mergeCssPlugin(),
   ],
   optimizeDeps: {
@@ -34,7 +27,8 @@ function mergeCssPlugin(): Plugin {
     enforce: 'post',
     renderChunk(code, options) {
       // I need to remove every css chunk in order to put the styles into the <style id="css-critical-style"> tag.
-      // Vite cssSplitCss is broken since files are imported in the wrong order
+      // Vite cssSplitCss is broken since files are imported in the wrong order.
+      // The next step is to call the extract-static-css script
       if (options['viteMetadata']) {
         const importedCss = options['viteMetadata']['importedCss'] as
           | Set<string>

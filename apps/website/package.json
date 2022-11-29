@@ -2,7 +2,7 @@
   "name": "@codeimage/website",
   "scripts": {
     "dev": "solid-start dev",
-    "build": "solid-start build && tsx extract-static-css.ts && tsx ./vercel-build-output.ts",
+    "build": "solid-start build",
     "start": "solid-start start"
   },
   "type": "module",
@@ -36,9 +36,8 @@
     "rollup-plugin-visualizer": "5.8.3",
     "solid-codemirror": "2.2.1",
     "solid-js": "^1.6.0",
-    "solid-start": "^0.2.5",
-    "solid-start-static": "^0.2.5",
-    "solid-start-vercel": "^0.2.5",
+    "solid-start": "^0.2.6",
+    "solid-start-static": "^0.2.6",
     "undici": "^5.11.0"
   },
   "engines": {

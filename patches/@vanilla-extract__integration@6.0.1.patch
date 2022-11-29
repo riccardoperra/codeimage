@@ -8,7 +8,7 @@ index 6048f011f091fe2a9f88886e8a1a839c1fcad39f..3e69d44e83ab53602987f591d00ac3f4
      const packageInfo = getPackageInfo(build.initialOptions.absWorkingDir);
 +
 +    build.onLoad(
-+      {filter: /.vanilla.css.ts$/}, 
++      {filter: /.css.ts.vanilla.css$/}, 
 +      async ({path: path$1}) => {
 +      const css = await fs.promises.readFile(path$1, 'utf-8');
 +      return {
@@ -31,7 +31,7 @@ index 082e846c8a9f90adfa0a03b816867b9e8d2b59ed..33354cc332873ee225d29caaf3ef1659
      const packageInfo = getPackageInfo(build.initialOptions.absWorkingDir);
 +
 +    build.onLoad(
-+      {filter: /.vanilla.css.ts$/}, 
++      {filter: /.css.ts.vanilla.css$/}, 
 +      async ({path: path$1}) => {
 +      const css = await fs.promises.readFile(path$1, 'utf-8');
 +      return {
