@@ -53,21 +53,7 @@ export default function ComingSoon() {
   const bp = injectBreakpoints();
 
   onMount(() => {
-    if (bp.isXs()) {
-      [cardRef, themeBuilderRef, embedsRef].forEach(ref => {
-        scroll(
-          animate(
-            ref,
-            {opacity: [0, 1, 1, 0]},
-            {opacity: {easing: [0.16, 1, 0.3, 1]}},
-          ),
-          {
-            target: ref,
-            offset: ['start end', 'end end', 'start start', 'end start'],
-          },
-        );
-      });
-    } else {
+    if (!bp.isXs()) {
       [cardRef, themeBuilderRef, embedsRef].forEach(ref => {
         scroll(animate(ref, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
           target: ref,

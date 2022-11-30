@@ -9,8 +9,8 @@ export const main = style([
   },
   responsiveStyle({
     mobile: {
-      paddingLeft: themeVars.spacing[4],
-      paddingRight: themeVars.spacing[4],
+      paddingLeft: themeVars.spacing[6],
+      paddingRight: themeVars.spacing[6],
     },
     desktop: {
       paddingLeft: themeVars.spacing[0],
@@ -37,9 +37,11 @@ export const card = style([
     position: 'relative',
     flexDirection: 'column',
     padding: '24px',
-    borderRadius: '48px',
   },
   responsiveStyle({
+    mobile: {
+      borderRadius: '32px',
+    },
     desktop: {
       flexDirection: 'row',
       borderRadius: '96px',

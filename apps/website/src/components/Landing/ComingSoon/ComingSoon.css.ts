@@ -6,8 +6,8 @@ import {responsiveStyle} from '~/core/responsive';
 export const main = style([
   {
     backgroundColor: '#000',
-    paddingLeft: themeVars.spacing[4],
-    paddingRight: themeVars.spacing[4],
+    paddingLeft: themeVars.spacing[6],
+    paddingRight: themeVars.spacing[6],
     paddingBottom: themeVars.spacing[24],
   },
   responsiveStyle({
@@ -53,9 +53,12 @@ export const halfCard = style([
     flex: 1,
   },
   responsiveStyle({
+    mobile: {
+      borderRadius: '32px',
+    },
     desktop: {
       flexDirection: 'row',
-      borderRadius: '48px',
+      borderRadius: '96px',
       padding: '48px',
       paddingTop: themeVars.spacing[24],
       paddingBottom: themeVars.spacing[24],
@@ -76,9 +79,11 @@ export const card = style([
     position: 'relative',
     flexDirection: 'column-reverse',
     padding: '24px',
-    borderRadius: '24px',
   },
   responsiveStyle({
+    mobile: {
+      borderRadius: '32px',
+    },
     desktop: {
       flexDirection: 'row',
       borderRadius: '96px',

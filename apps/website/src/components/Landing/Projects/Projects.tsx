@@ -23,29 +23,12 @@ export default function Projects() {
   const bp = injectBreakpoints();
 
   onMount(() => {
-    onMount(() => {
-      if (bp.isXs()) {
-        scroll(
-          animate(
-            cardRef,
-            {opacity: [0, 1, 1, 0]},
-            {opacity: {easing: [0.16, 1, 0.3, 1]}},
-          ),
-          {
-            target: cardRef,
-            offset: ['start end', 'end end', 'start start', 'end start'],
-          },
-        );
-      } else {
-        scroll(
-          animate(cardRef, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}),
-          {
-            target: cardRef,
-            offset: ['start end', 'end end', 'start start', 'end start'],
-          },
-        );
-      }
-    });
+    if (!bp.isXs()) {
+      scroll(animate(cardRef, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
+        target: cardRef,
+        offset: ['start end', 'end end', 'start start', 'end start'],
+      });
+    }
   });
 
   return (
@@ -71,16 +54,6 @@ export default function Projects() {
                 </Text>
               </Box>
             </Box>
-
-            <Button
-              as={A}
-              href={'https://codeimage.dev/dashboard'}
-              size={'lg'}
-              theme={'primaryAlt'}
-              variant={'solid'}
-            >
-              Getting started
-            </Button>
           </div>
           <div class={styles.imageSection}>
             <div class={styles.imageWrapper}>

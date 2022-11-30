@@ -37,7 +37,7 @@ export default function OpenSource() {
             </svg>
           </div>
 
-          <Box paddingBottom={24} marginTop={24}>
+          <Box marginTop={24}>
             <Box display={'flex'}>
               <Text weight={'bold'} size={'5xl'} class={styles.heading}>
                 Open Source
@@ -64,7 +64,7 @@ export default function OpenSource() {
               </Text>
             </Box>
 
-            <Box paddingLeft={4}>
+            <Box>
               <object data={contributors()} title="Contributors" />
             </Box>
 
@@ -76,7 +76,7 @@ export default function OpenSource() {
               >
                 Contributors can help fix bugs and implement new features in
                 CodeImage.
-                <Box as={'span'} marginLeft={2}>
+                <Box as={'div'}>
                   <Link
                     as={A}
                     underline={true}

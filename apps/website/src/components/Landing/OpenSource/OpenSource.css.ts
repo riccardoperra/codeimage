@@ -68,7 +68,6 @@ export const githubLogo = style({
   display: 'flex',
   alignItems: 'center',
   zIndex: 10,
-  paddingLeft: themeVars.spacing[4],
 });
 
 export const contributorsContent = style({
@@ -76,11 +75,22 @@ export const contributorsContent = style({
   margin: 'auto',
 });
 
-export const contributorsStickyContent = style({
-  paddingTop: themeVars.spacing[24],
-  paddingBottom: themeVars.spacing[24],
-  width: '100%',
-});
+export const contributorsStickyContent = style(
+  responsiveStyle({
+    mobile: {
+      width: '100%',
+      paddingTop: themeVars.spacing[12],
+      paddingBottom: themeVars.spacing[12],
+      paddingLeft: themeVars.spacing[6],
+      paddingRight: themeVars.spacing[6],
+    },
+    tablet: {
+      padding: 0,
+      paddingTop: themeVars.spacing[24],
+      paddingBottom: themeVars.spacing[24],
+    },
+  }),
+);
 
 export const codeImageExampleImage = style([
   editorImage,
@@ -96,7 +106,6 @@ export const heading = style(
       fontSize: themeVars.fontSize['4xl'],
       textAlign: 'center',
       marginBottom: 0,
-      padding: themeVars.spacing[4],
     },
     desktop: {
       fontSize: themeVars.fontSize['6xl'],
@@ -110,7 +119,6 @@ export const description = style(
       fontSize: themeVars.fontSize['2xl'],
       margin: 0,
       marginBottom: themeVars.spacing[8],
-      paddingLeft: themeVars.spacing[4],
     },
     desktop: {
       fontSize: themeVars.fontSize['3xl'],

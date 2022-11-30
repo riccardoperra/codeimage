@@ -133,7 +133,7 @@ export default function Showcase() {
               >
                 <PreviewCodeEditor
                   code={block.code}
-                  alternativePreviewBackground={block.alternativeBackground }
+                  alternativePreviewBackground={block.alternativeBackground}
                   customTheme={block.theme}
                 />
               </Motion.div>

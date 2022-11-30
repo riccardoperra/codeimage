@@ -5,16 +5,24 @@ import {responsiveStyle} from '~/core/responsive';
 
 export const container = style([
   {
-    paddingTop: themeVars.spacing[24],
-    paddingBottom: themeVars.spacing[24],
     background: darkGrayScale.gray1,
   },
+  responsiveStyle({
+    mobile: {
+      paddingTop: themeVars.spacing[12],
+      paddingBottom: themeVars.spacing[12],
+    },
+    tablet: {
+      paddingTop: themeVars.spacing[24],
+      paddingBottom: themeVars.spacing[24],
+    },
+  }),
 ]);
 
 export const content = style([
   responsiveStyle({
     mobile: {
-      paddingTop: themeVars.spacing[12],
+      paddingTop: themeVars.spacing[0],
     },
     desktop: {
       width: '1280px',
@@ -58,10 +66,6 @@ export const backdrop = style([
       },
     },
   },
-  responsiveStyle({
-    mobile: {display: 'none'},
-    tablet: {display: 'block'},
-  }),
 ]);
 
 export const codeContainerBg = createVar();
