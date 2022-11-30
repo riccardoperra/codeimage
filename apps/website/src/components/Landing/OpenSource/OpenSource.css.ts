@@ -67,8 +67,8 @@ export const githubLogo = style({
   width: '100%',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
   zIndex: 10,
+  paddingLeft: themeVars.spacing[4],
 });
 
 export const contributorsContent = style({
@@ -108,13 +108,13 @@ export const description = style(
   responsiveStyle({
     mobile: {
       fontSize: themeVars.fontSize['2xl'],
-      textAlign: 'center',
       margin: 0,
       marginBottom: themeVars.spacing[8],
-      padding: themeVars.spacing[4],
+      paddingLeft: themeVars.spacing[4],
     },
     desktop: {
       fontSize: themeVars.fontSize['3xl'],
+      padding: themeVars.spacing[4],
     },
   }),
 );

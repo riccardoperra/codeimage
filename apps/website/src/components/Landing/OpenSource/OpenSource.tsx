@@ -1,40 +1,24 @@
-import {Badge, Box, Link, Text} from '@codeimage/ui';
-import {animate, scroll} from 'motion';
-import {createResource, For, onMount} from 'solid-js';
+import {Box, Link, Text} from '@codeimage/ui';
 import * as styles from './OpenSource.css';
-import contributors from './contributors.json';
 import {A} from '@solidjs/router';
-
-interface Contributor {
-  login: string;
-  id: number;
-  avatar_url: string;
-  html_url: string;
-  type: 'User' | 'Bot';
-  contributions: number;
-}
-
-async function getContributors(): Promise<
-  {
-    login: string;
-    id: number;
-    avatar_url: string;
-    html_url: string;
-    type: 'User' | 'Bot';
-    contributions: number;
-  }[]
-> {
-  const contributorsList = await Promise.resolve(contributors as Contributor[]);
-  return contributorsList.filter(contributor => contributor.type !== 'Bot');
-}
+import {injectBreakpoints} from '~/core/breakpoints';
 
 export default function OpenSource() {
-  const [data] = createResource(getContributors);
+  const bp = injectBreakpoints();
+  const contributors = () => {
+    const isXs = bp.isXs();
+    const isTablet = bp.isTablet();
+    if (isXs)
+      return `https://opencollective.com/codeimage/contributors.svg?width=300&limit=27&avatarHeight=40&button=false`;
+    if (isTablet)
+      return `https://opencollective.com/codeimage/contributors.svg?width=680&limit=48&avatarHeight=64&button=false`;
+    return 'https://opencollective.com/codeimage/contributors.svg?width=1024&avatarHeight=56&limit=72&button=false';
+  };
 
   return (
     <div class={styles.main}>
-      <Box class={styles.contributorsContent}>
-        <Box class={styles.contributorsStickyContent}>
+      <div class={styles.contributorsContent}>
+        <div class={styles.contributorsStickyContent}>
           <div class={styles.githubLogo}>
             <svg
               width={128}
@@ -54,25 +38,20 @@ export default function OpenSource() {
           </div>
 
           <Box paddingBottom={24} marginTop={24}>
-            <Box display={'flex'} justifyContent={'center'}>
+            <Box display={'flex'}>
               <Text weight={'bold'} size={'5xl'} class={styles.heading}>
                 Open Source
               </Text>
             </Box>
 
-            <Box
-              marginTop={6}
-              display={'flex'}
-              justifyContent={'center'}
-              textAlign={'center'}
-            >
+            <Box marginTop={6} display={'flex'}>
               <Text
                 size={'3xl'}
                 style={{'line-height': 1.5}}
                 class={styles.description}
               >
-                All the source code of the application is available on Github.{' '}
-                <br />
+                CodeImage is an open source project, which is available on
+                Github. <br />
                 We thank all our{' '}
                 <Link
                   as={A}
@@ -84,9 +63,33 @@ export default function OpenSource() {
                 &nbsp; and supporters to make CodeImage better every day.
               </Text>
             </Box>
+
+            <Box paddingLeft={4}>
+              <object data={contributors()} title="Contributors" />
+            </Box>
+
+            <Box marginTop={12} display={'flex'}>
+              <Text
+                size={'3xl'}
+                style={{'line-height': 1.5}}
+                class={styles.description}
+              >
+                Contributors can help fix bugs and implement new features in
+                CodeImage.
+                <Box as={'span'} marginLeft={2}>
+                  <Link
+                    as={A}
+                    underline={true}
+                    href="https://github.com/riccardoperra/codeimage"
+                  >
+                    Become a contributor
+                  </Link>
+                </Box>
+              </Text>
+            </Box>
           </Box>
-        </Box>
-      </Box>
+        </div>
+      </div>
     </div>
   );
 }
