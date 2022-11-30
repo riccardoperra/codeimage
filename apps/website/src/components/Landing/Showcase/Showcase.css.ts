@@ -3,6 +3,8 @@ import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {createVar, style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
 
+const textAlignFlex = createVar();
+
 export const container = style([
   {
     background: darkGrayScale.gray1,
@@ -33,14 +35,28 @@ export const content = style([
   }),
 ]);
 
-export const grid = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexWrap: 'wrap',
-  gap: '24px',
-  marginTop: themeVars.spacing[8],
-});
+export const grid = style([
+  responsiveStyle({
+    mobile: {
+      vars: {
+        [textAlignFlex]: 'flex-start',
+      },
+    },
+    tablet: {
+      vars: {
+        [textAlignFlex]: 'center',
+      },
+    },
+  }),
+  {
+    display: 'flex',
+    alignItems: textAlignFlex,
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: '24px',
+    marginTop: themeVars.spacing[8],
+  },
+]);
 
 export const backdrop = style([
   {

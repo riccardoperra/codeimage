@@ -1,7 +1,7 @@
 import {Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import {createMemo, createSignal, onCleanup, onMount, untrack} from 'solid-js';
-import {CodeImageLogo2} from '~/components/CodeImageLogo/CodeImageLogo2';
+import {CodeImageLogoSvgRemote} from '~/components/CodeImageLogo/CodeImageLogo';
 import * as styles from './Header.css';
 import {content} from '../Main/MainPage.css';
 
@@ -26,7 +26,7 @@ export function Header() {
       <div class={styles.headerContent}>
         <div class={styles.headerContentInner}>
           <div>
-            <CodeImageLogo2 width={'140px'} />
+            <CodeImageLogoSvgRemote height={32} width={164} />
           </div>
           <div class={styles.headerActions}>
             <Button
