@@ -1,8 +1,11 @@
 {
   "ci": {
     "collect": {
+      "url": [
+        "http://localhost/"
+      ],
       "staticDistDir": "dist/public",
-      "numberOfRuns": 5
+      "numberOfRuns": 2
     },
     "upload": {
       "target": "temporary-public-storage"
