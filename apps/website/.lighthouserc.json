@@ -5,7 +5,7 @@
         "http://localhost/"
       ],
       "staticDistDir": "dist/public",
-      "numberOfRuns": 2
+      "numberOfRuns": 3
     },
     "upload": {
       "target": "temporary-public-storage"
