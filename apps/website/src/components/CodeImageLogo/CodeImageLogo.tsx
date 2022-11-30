@@ -1,6 +1,6 @@
 import {JSX} from 'solid-js';
 import {useAssets} from 'solid-js/web';
-import logo from './codeimage-logo-blue-low-v1.png';
+import logo from './codeimage-logo-blue-xxxs.webp';
 
 export const CodeImageLogoSvgRemote = (props: JSX.IntrinsicElements['img']) => {
   useAssets(() => <link rel="preload" as="image" href={logo} />);
