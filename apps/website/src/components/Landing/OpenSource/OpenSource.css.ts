@@ -126,3 +126,12 @@ export const description = style(
     },
   }),
 );
+
+export const contributorsObject = style({
+  visibility: 'hidden',
+  selectors: {
+    '[data-visible=true]': {
+      visibility: 'visible',
+    },
+  },
+});

@@ -16,8 +16,6 @@ export const main = style({
   height: '100%',
   width: '100%',
   minHeight: '100%',
-  // backgroundImage: `radial-gradient(${dotColor} 1px, transparent 1px),radial-gradient(${dotColor} 1px, transparent 1px)`,
-  // backgroundSize: 'calc(20 * 1px) calc(20 * 1px)',
   position: 'relative',
 
   '::before': {

@@ -25,7 +25,7 @@ export function Header() {
     <div class={styles.header} data-scrolled={dataScrolled() ?? false}>
       <div class={styles.headerContent}>
         <div class={styles.headerContentInner}>
-          <div>
+          <div style={{display: 'flex'}}>
             <CodeImageLogoSvgRemote height={32} width={164} />
           </div>
           <div class={styles.headerActions}>

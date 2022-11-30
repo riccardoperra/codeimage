@@ -2,9 +2,13 @@ import {Box, Link, Text} from '@codeimage/ui';
 import * as styles from './OpenSource.css';
 import {A} from '@solidjs/router';
 import {injectBreakpoints} from '~/core/breakpoints';
+import {createRoot, createSignal, onMount} from 'solid-js';
+import {inView} from 'motion';
 
 export default function OpenSource() {
+  let section: HTMLDivElement;
   const bp = injectBreakpoints();
+
   const contributors = () => {
     const isXs = bp.isXs();
     const isTablet = bp.isTablet();
@@ -15,8 +19,18 @@ export default function OpenSource() {
     return 'https://opencollective.com/codeimage/contributors.svg?width=1024&avatarHeight=56&limit=72&button=false';
   };
 
+  const [view, setView] = createSignal(false);
+  onMount(() => {
+    const disposeInView = inView(section, _ => {
+      if (_.isIntersecting) {
+        setView(_.isIntersecting);
+        disposeInView();
+      }
+    });
+  });
+
   return (
-    <div class={styles.main}>
+    <div class={styles.main} ref={section}>
       <div class={styles.contributorsContent}>
         <div class={styles.contributorsStickyContent}>
           <div class={styles.githubLogo}>
@@ -64,9 +78,9 @@ export default function OpenSource() {
               </Text>
             </Box>
 
-            <Box>
+            <div class={styles.contributorsObject} data-visible={view()}>
               <object data={contributors()} title="Contributors" />
-            </Box>
+            </div>
 
             <Box marginTop={12} display={'flex'}>
               <Text

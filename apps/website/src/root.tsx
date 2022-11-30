@@ -1,7 +1,5 @@
 // @refresh reload
 import '@codeimage/ui/themes/darkTheme';
-import '@vanilla-extract/recipes';
-import '@vanilla-extract/dynamic';
 import {Suspense} from 'solid-js';
 import {useAssets} from 'solid-js/web';
 import {
@@ -93,8 +91,6 @@ export default function Root() {
         crossorigin=""
       />
       <FontDefinitions />
-      {/*<link rel="preload" as="style" href="/assets/why-this-break-lcp.css" />*/}
-      <style id="css-critical-style" />
       <MainPageImagePreloading />
     </>
   ));

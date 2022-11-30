@@ -79,7 +79,7 @@ export default function MainPage() {
                   />
                   <img
                     class={styles.imageLeft}
-                    loading={'eager'}
+                    loading={'lazy'}
                     src={'/landing/codeimage_preview_lite.png'}
                     alt={'Preview of CodeImage snippet'}
                   />
