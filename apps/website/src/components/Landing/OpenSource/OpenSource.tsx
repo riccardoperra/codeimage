@@ -2,7 +2,7 @@ import {Box, Link, Text} from '@codeimage/ui';
 import * as styles from './OpenSource.css';
 import {A} from '@solidjs/router';
 import {injectBreakpoints} from '~/core/breakpoints';
-import {createRoot, createSignal, onMount} from 'solid-js';
+import {createSignal, onMount} from 'solid-js';
 import {inView} from 'motion';
 
 export default function OpenSource() {
