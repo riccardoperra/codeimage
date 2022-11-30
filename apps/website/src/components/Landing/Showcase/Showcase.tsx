@@ -30,14 +30,14 @@ export default function Showcase() {
   const blocks = [
     {
       code,
-      theme: import('@codeimage/highlight/vsCodeDark').then(t => {
-        return t.vsCodeDarkTheme;
+      theme: import('@codeimage/highlight/dracula').then(t => {
+        return t.draculaTheme;
       }),
     },
     {
       code,
-      theme: import('@codeimage/highlight/dracula').then(t => {
-        return t.draculaTheme;
+      theme: import('@codeimage/highlight/materialVolcano').then(t => {
+        return t.materialVolcanoTheme;
       }),
     },
     {
@@ -51,6 +51,8 @@ export default function Showcase() {
       theme: import('@codeimage/highlight/vitesseDark').then(t => {
         return t.vitesseDarkTheme;
       }),
+      alternativeBackground:
+        'linear-gradient(to right bottom, #2be7b5, #1edea2, #16d58f, #13cb7c, #16c268, #0db866, #04ae64, #00a462, #00976c, #008971, #007b72, #006d6d)',
     },
     {
       code,
@@ -127,10 +129,11 @@ export default function Showcase() {
                     easing: [0.16, 1, 0.3, 1],
                   },
                 }}
-                style={{'z-index': index()}}
+                style={{'z-index': '10'}}
               >
                 <PreviewCodeEditor
                   code={block.code}
+                  alternativePreviewBackground={block.alternativeBackground }
                   customTheme={block.theme}
                 />
               </Motion.div>
@@ -153,6 +156,7 @@ export default function Showcase() {
 interface PreviewCodeEditorProps {
   customTheme: Promise<CustomTheme>;
   code: string;
+  alternativePreviewBackground?: string;
 }
 export function PreviewCodeEditor(props: PreviewCodeEditorProps) {
   const [customTheme] = createResource(() => props.customTheme, {
@@ -161,32 +165,35 @@ export function PreviewCodeEditor(props: PreviewCodeEditorProps) {
 
   return (
     <Suspense fallback={<></>}>
-      <Show when={customTheme()}>
-        <div
-          class={styles.codeContainer}
-          style={assignInlineVars({
-            [styles.codeContainerBg]:
-              customTheme()?.properties.previewBackground,
-          })}
-        >
+      <Show when={customTheme()} keyed={true}>
+        {customTheme => (
           <div
-            class={styles.codeBlock}
+            class={styles.codeContainer}
             style={assignInlineVars({
-              [styles.codeBlockBg]: customTheme()?.properties.terminal.main,
+              [styles.codeContainerBg]:
+                props.alternativePreviewBackground ||
+                customTheme.properties.previewBackground,
             })}
           >
-            <CodeEditor
-              code={props.code}
-              customTheme={Promise.resolve(customTheme()?.editorTheme)}
+            <div
+              class={styles.codeBlock}
+              style={assignInlineVars({
+                [styles.codeBlockBg]: customTheme.properties.terminal.main,
+              })}
+            >
+              <CodeEditor
+                code={props.code}
+                customTheme={Promise.resolve(customTheme.editorTheme)}
+              />
+            </div>
+            <div
+              class={styles.backdrop}
+              style={assignInlineVars({
+                [backgroundColorVar]: customTheme.properties.previewBackground,
+              })}
             />
           </div>
-          <div
-            class={styles.backdrop}
-            style={assignInlineVars({
-              [backgroundColorVar]: customTheme().properties.previewBackground,
-            })}
-          />
-        </div>
+        )}
       </Show>
     </Suspense>
   );
