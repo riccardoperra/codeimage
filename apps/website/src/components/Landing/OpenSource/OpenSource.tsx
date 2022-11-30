@@ -79,7 +79,10 @@ export default function OpenSource() {
             </Box>
 
             <div class={styles.contributorsObject} data-visible={view()}>
-              <object data={contributors()} title="Contributors" />
+              <object
+                data={view() ? contributors() : undefined}
+                title="Contributors"
+              />
             </div>
 
             <Box marginTop={12} display={'flex'}>
