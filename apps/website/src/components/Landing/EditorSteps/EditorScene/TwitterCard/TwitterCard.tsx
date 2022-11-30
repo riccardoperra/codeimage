@@ -1,6 +1,7 @@
 import {Badge, Box, Text} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
 import {spring} from 'motion';
+import {createMemo} from 'solid-js';
 import * as styles from './TwitterCard.css';
 
 interface TwitterCardProps {
@@ -26,23 +27,19 @@ export function TwitterCard(props: TwitterCardProps) {
   const badgePictureUrl =
     'https://avatars.githubusercontent.com/u/37072694?v=4';
 
-  const transform = () =>
+  const transform = createMemo(() =>
     props.visible
       ? `translate(-50%, -50%) scale(1)`
-      : `translate(-50%, 50%) scale(0)`;
+      : `translate(-50%, 50%) scale(0)`,
+  );
 
   // >66
 
   return (
     <Motion.div
       class={styles.card}
-      initial={{
-        transform: 'translate(-50%, 50%) scale(0)',
-        opacity: 0,
-        display: 'none',
-      }}
+      initial={{transform: 'translate(-50%, 50%) scale(0.1)'}}
       animate={{
-        display: 'block',
         transform: transform(),
         opacity: props.visible ? 1 : 0,
         transition: {
@@ -51,35 +48,38 @@ export function TwitterCard(props: TwitterCardProps) {
             allowWebkitAcceleration: true,
           },
           opacity: {
-            easing: 'ease-in',
+            easing: 'ease-in-out',
+            duration: 0.3,
           },
         },
       }}
     >
-      <Box marginBottom={2}>
-        <div class={styles.title}>
-          <Badge size={'md'} theme={styles.badge} variant={'rounded'}>
-            <img
-              alt="Profile picture"
-              loading="lazy"
-              class={styles.badgePicture}
-              src={badgePictureUrl}
-            />
-          </Badge>
-          <Box display={'flex'} flexDirection={'column'}>
-            <Text size={'lg'} weight={'bold'}>
-              CodeImage
-            </Text>
-            <Text size={'sm'}>@codeimageapp</Text>
-          </Box>
-          <Box marginLeft={'auto'}>
-            <TwitterLogo />
-          </Box>
-        </div>
-        <div>
-          <span>Do you know that SolidJS doesn't use Virtual Dom?</span>
-        </div>
-      </Box>
+      <div data-visible={props.visible} class={styles.twitterInfo}>
+        <Box marginBottom={2}>
+          <div class={styles.title}>
+            <Badge size={'md'} theme={styles.badge} variant={'rounded'}>
+              <img
+                alt="Profile picture"
+                loading="lazy"
+                class={styles.badgePicture}
+                src={badgePictureUrl}
+              />
+            </Badge>
+            <Box display={'flex'} flexDirection={'column'}>
+              <Text size={'lg'} weight={'bold'}>
+                CodeImage
+              </Text>
+              <Text size={'sm'}>@codeimageapp</Text>
+            </Box>
+            <Box marginLeft={'auto'}>
+              <TwitterLogo />
+            </Box>
+          </div>
+          <div>
+            <span>Do you know that SolidJS doesn't use Virtual Dom?</span>
+          </div>
+        </Box>
+      </div>
     </Motion.div>
   );
 }

@@ -38,3 +38,13 @@ export const badgePicture = style({
   position: 'absolute',
   height: '100%',
 });
+
+export const twitterInfo = style({
+  opacity: 0,
+  transition: 'opacity 300ms ease-in-out',
+  selectors: {
+    '&[data-visible=true]': {
+      opacity: 1,
+    },
+  },
+});
