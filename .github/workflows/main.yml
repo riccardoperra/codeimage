@@ -377,7 +377,8 @@ jobs:
 
       - name: run Lighthouse CI
         run: |
-          lhci autorun
+          cd apps/website
+          pnpm lighthouse
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
