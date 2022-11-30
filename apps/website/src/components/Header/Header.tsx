@@ -1,23 +1,22 @@
 import {Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
-import {createMemo, createSignal, onMount, untrack} from 'solid-js';
+import {createMemo, createSignal, onCleanup, onMount, untrack} from 'solid-js';
 import {CodeImageLogo2} from '~/components/CodeImageLogo/CodeImageLogo2';
 import * as styles from './Header.css';
+import {content} from '../Main/MainPage.css';
 
 export function Header() {
   const [scrolled, setScrolled] = createSignal(false);
   onMount(() => {
-    const isScrolled = () => window.scrollY > 150;
-    setScrolled(isScrolled());
-    window.addEventListener(
-      'scroll',
-      () => {
-        const $scrolled = isScrolled();
-        if (untrack(scrolled) === $scrolled) return;
-        setScrolled($scrolled);
+    const observer = new IntersectionObserver(
+      entries => {
+        const entry = entries[0];
+        setScrolled(!entry.isIntersecting);
       },
-      {passive: true},
+      {threshold: 1},
     );
+    observer.observe(document.querySelector(`.${content}`));
+    onCleanup(() => observer.disconnect());
   });
 
   const dataScrolled = createMemo(() => scrolled());
