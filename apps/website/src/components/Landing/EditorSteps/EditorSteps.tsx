@@ -2,7 +2,7 @@ import {backgroundColorVar} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {onMount} from 'solid-js';
 import * as styles from './EditorSteps.css';
-import {scroll} from 'motion';
+import {inView, scroll} from 'motion';
 import {StepCardArea} from './StepCardScene/StepCardScene';
 import {injectEditorScene} from './scene';
 import {EditorScene} from './EditorScene/EditorScene';
@@ -20,12 +20,14 @@ export default function EditorSteps() {
   const backdropBackground = () => backgrounds[scene.currentStep];
 
   onMount(() => {
-    const intersection = new IntersectionObserver(
-      entry => scene.setInView(entry[0].isIntersecting),
-      {threshold: 0.15},
+    inView(
+      ref,
+      entry => {
+        scene.setInView(entry.isIntersecting);
+        return () => scene.setInView(false);
+      },
+      {amount: 0.15},
     );
-    intersection.observe(ref);
-
     scroll(({y}) => scene.setProgress(Math.floor(y.progress * 100)), {
       target: ref,
     });
@@ -41,9 +43,7 @@ export default function EditorSteps() {
     >
       <div class={styles.stickyContent}>
         <div
-          style={assignInlineVars({
-            [backgroundColorVar]: backdropBackground(),
-          })}
+          style={assignInlineVars({[backgroundColorVar]: backdropBackground()})}
           class={styles.backdrop}
         />
         <StepCardArea animationProgress={scene.progress()} />
