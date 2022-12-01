@@ -2,7 +2,7 @@ name: Main
 
 on:
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
 
 env:
   IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        node-version: [ 16.13.2 ]
+        node-version: [16.13.2]
     steps:
       - uses: actions/checkout@v2
       - uses: dorny/paths-filter@v2
@@ -82,7 +82,7 @@ jobs:
 
   build-packages:
     name: Build packages
-    needs: [ install ]
+    needs: [install]
     runs-on: ubuntu-latest
 
     steps:
@@ -117,7 +117,7 @@ jobs:
   typecheck-packages:
     if: ${{ needs.install.outputs.libs-change == 'true' }}
     name: Type-checking
-    needs: [ install, build-packages ]
+    needs: [install, build-packages]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -150,7 +150,7 @@ jobs:
   build-app-dev:
     name: Build App and Preview (Dev)
     environment: Preview
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
@@ -158,7 +158,7 @@ jobs:
       - name: Checkout PR
         uses: actions/checkout@v2
         with:
-          ref: "refs/pull/${{ github.event.number }}/merge"
+          ref: 'refs/pull/${{ github.event.number }}/merge'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -196,16 +196,15 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
           vercel-args: '--prebuilt' #Optional
           working-directory: apps/codeimage
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
             codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
 
-
   build-highlight-dev:
-    name: "@codeimage/highlight dev and Preview"
+    name: '@codeimage/highlight dev and Preview'
     environment: Preview
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
@@ -213,7 +212,7 @@ jobs:
       - name: Checkout PR
         uses: actions/checkout@v2
         with:
-          ref: "refs/pull/${{ github.event.number }}/merge"
+          ref: 'refs/pull/${{ github.event.number }}/merge'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -244,17 +243,15 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
           vercel-args: '--prebuilt' #Optional
           working-directory: packages/highlight/dev
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} #Required
           vercel-project-id: ${{ secrets.VERCEL_HIGHLIGHT_DEV_PROJECT_ID}} #Required
           alias-domains: | #Optional
             codeimage-highlight-pr-{{PR_NUMBER}}.vercel.app
 
-
-
   build-ui-dev:
-    name: "@codeimage/ui dev and Preview"
+    name: '@codeimage/ui dev and Preview'
     environment: Preview
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
@@ -262,7 +259,7 @@ jobs:
       - name: Checkout PR
         uses: actions/checkout@v2
         with:
-          ref: "refs/pull/${{ github.event.number }}/merge"
+          ref: 'refs/pull/${{ github.event.number }}/merge'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -293,16 +290,102 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
           vercel-args: '--prebuilt' #Optional
           working-directory: packages/ui/dev
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} #Required
           vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID}} #Required
           alias-domains: | #Optional
             codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
 
+  build-website-dev:
+    name: '@codeimage/website dev and Preview'
+    environment: Preview
+    needs: [build-packages]
+    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v2
+        with:
+          ref: 'refs/pull/${{ github.event.number }}/merge'
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Build website preview
+        env:
+          ENABLE_VERCEL_BUILD: true
+        run: |
+          pnpm --filter=@codeimage/website build
+
+      - uses: amondnet/vercel-action@v19
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
+          vercel-args: '--prebuilt' #Optional
+          working-directory: apps/website
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} #Required
+          vercel-project-id: ${{ secrets.VERCEL_WEBSITE_DEV_PROJECT_ID}} #Required
+          alias-domains: | #Optional
+            codeimage-website-pr-{{PR_NUMBER}}.vercel.app
+
+      - name: Cache website
+        uses: actions/cache@v3
+        with:
+          path: apps/website
+          key: apps-website-${{ github.run_id }}-${{ github.run_number }}
+
+  website-lhci:
+    name: Lighthouse
+    needs: [build-website-dev]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v2
+        with:
+          ref: 'refs/pull/${{ github.event.number }}/merge'
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore website
+        uses: actions/cache@v3
+        with:
+          path: apps/website
+          key: apps-website-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: run Lighthouse CI
+        run: |
+          cd apps/website
+          pnpm lighthouse
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
   build-api:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Build Api
-    needs: [ install, typecheck-packages, build-packages ]
+    needs: [install, typecheck-packages, build-packages]
     runs-on: ubuntu-latest
 
     steps:
@@ -339,7 +422,7 @@ jobs:
   be-test:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Api test
-    needs: [ install ]
+    needs: [install]
     runs-on: ubuntu-latest
 
     services:
@@ -367,7 +450,7 @@ jobs:
       GRANT_TYPE_AUTH0: client_credentials
       MOCK_AUTH: false
       MOCK_AUTH_EMAIL: dev@example.it
-      ALLOWED_ORIGINS: "*"
+      ALLOWED_ORIGINS: '*'
 
     steps:
       - uses: actions/checkout@v2

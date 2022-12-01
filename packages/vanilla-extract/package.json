@@ -31,8 +31,8 @@
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-typescript": "^9.0.1",
+    "@vanilla-extract/integration": "^6.0.1",
     "@types/node": "18.11.0",
-    "@vanilla-extract/integration": "^6.0.0",
     "outdent": "^0.8.0",
     "postcss": "^8.4.16",
     "postcss-load-config": "^4.0.1",
@@ -40,7 +40,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "@vanilla-extract/integration": "^6.0.0",
+    "@vanilla-extract/integration": "^6.0.1",
     "outdent": "0.8.0",
     "postcss": "^8.4.18",
     "postcss-load-config": "^4.0.1",
