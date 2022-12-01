@@ -1,5 +1,14 @@
 # @codeimage/highlight
 
+## 8.0.5
+
+### Patch Changes
+
+- [#390](https://github.com/riccardoperra/codeimage/pull/390) [`ba3389a`](https://github.com/riccardoperra/codeimage/commit/ba3389a635ba8a5dae619ca59b38b48f2cb7a768) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update dependencies
+
+- Updated dependencies [[`ba3389a`](https://github.com/riccardoperra/codeimage/commit/ba3389a635ba8a5dae619ca59b38b48f2cb7a768)]:
+  - @codeimage/highlight@0.10.4
+
 ## 8.0.4
 
 ### Patch Changes
