@@ -6,29 +6,16 @@ export const container = style({
   width: '100%',
   height: '100%',
   justifyContent: 'center',
+  position: 'relative',
 });
 
-export const progressText = style({
-  color: '#fff',
-  fontWeight: 'bold',
-});
-
-export const circle = style({
-  strokeDashoffset: 0,
-  strokeWidth: '10%',
-  fill: 'none',
-});
-
-export const circularProgress = style({
+export const progressBar = style({
   position: 'absolute',
-  left: 0,
   top: 0,
-});
-
-export const bg = style({
-  stroke: 'rgba(255, 255, 255, 1)',
-});
-
-export const progress = style({
-  strokeDasharray: '0, 1',
+  left: 0,
+  right: 0,
+  height: '10px',
+  backgroundColor: 'rgb(255, 255, 255, 1)',
+  transform: 'scaleX(0)',
+  transformOrigin: '0%',
 });

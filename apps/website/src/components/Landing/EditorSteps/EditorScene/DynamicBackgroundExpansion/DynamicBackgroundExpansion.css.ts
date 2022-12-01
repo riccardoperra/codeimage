@@ -1,3 +1,4 @@
+import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
 
@@ -8,19 +9,19 @@ export const bgFullAnimation = style({
     [animationCurve]: 'cubic-bezier(0.06, 0.6, 0.36, 1.0)',
   },
   position: 'absolute',
-  left: '16px',
-  top: '16px',
-  width: '45px',
-  height: '45px',
-  opacity: 1,
-  margin: '16px',
+  left: '50%',
+  top: '50%',
+  width: '64px',
+  height: '64px',
+  opacity: 0,
+  margin: '0',
   borderRadius: '50%',
-  transform: 'translate(0, 0) scale(1)',
-  transition: `transform 700ms ${animationCurve}, width 400ms ${animationCurve}, height 400ms ${animationCurve}`,
+  transform: 'translate(-50%, -50%) scale(1)',
+  transition: `transform 700ms ${animationCurve}, width 400ms ${animationCurve}, height 400ms ${animationCurve}, opacity 350ms ease-in-out`,
   selectors: {
     '&[data-activate=true]': {
       opacity: 1,
-      transform: 'translate(0) scale(2)',
+      transform: 'translate(-50%, -50%) scale(2)',
       width: '1280px',
       height: '1280px',
     },

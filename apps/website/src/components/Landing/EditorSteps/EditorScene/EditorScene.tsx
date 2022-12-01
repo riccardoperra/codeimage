@@ -1,8 +1,7 @@
 import {backgroundColorVar} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
-import {isMobile} from '@solid-primitives/platform';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {scroll, spring} from 'motion';
+import {animate, scroll, spring} from 'motion';
 import {
   children,
   createEffect,
@@ -60,6 +59,7 @@ const LazyEditor = lazy(() =>
 
 export function EditorScene(props: EditorSceneProps) {
   const [containerRef, setContainerRef] = createSignal<HTMLDivElement>();
+  let progressBarEl: HTMLDivElement;
   const scene = injectEditorScene();
   const [codeAnimationProgress, setCodeAnimationProgress] =
     createSignal<number>();
@@ -106,6 +106,10 @@ export function EditorScene(props: EditorSceneProps) {
         offset: ['-25%', '50% end'],
       },
     );
+    scroll(animate(progressBarEl, {scaleX: [0, 1]}), {
+      target: ref,
+      offset: ['start', '95% end'],
+    });
   });
 
   const centeredWrapperTransform = () =>
@@ -170,19 +174,12 @@ export function EditorScene(props: EditorSceneProps) {
     >
       <DynamicBackgroundExpansion />
 
-      <Show when={enabledCircleExpansionGradient()}>
-        <Motion.div
-          animate={{
-            top:
-              props.animationProgress > 90
-                ? 'calc(100% - calc(16px + 72px))'
-                : '16px',
-          }}
-          class={styles.circularProgressBox}
-        >
-          <CircularProgress progress={props.animationProgress} />
-        </Motion.div>
-      </Show>
+      <div class={styles.circularProgressBox}>
+        <CircularProgress
+          ref={progressBarEl}
+          progress={props.animationProgress}
+        />
+      </div>
 
       <div
         class={styles.fixScaleContainer}

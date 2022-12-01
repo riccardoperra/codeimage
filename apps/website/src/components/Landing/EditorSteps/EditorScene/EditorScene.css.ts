@@ -25,13 +25,12 @@ export const container = style(
 
 export const circularProgressBox = style({
   position: 'absolute',
-  left: '16px',
-  top: '16px',
+  left: 0,
+  top: 0,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '75px',
-  width: '75px',
+  width: '100%',
 });
 
 export const editorContainerScale = createVar();
