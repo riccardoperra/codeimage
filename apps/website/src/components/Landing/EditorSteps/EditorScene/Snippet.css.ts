@@ -59,4 +59,5 @@ export const snippet = style({
   backgroundColor: 'rgba(0,0,0,.7)',
   borderRadius: themeVars.borderRadius.lg,
   fontSize: '15px',
+  position: 'relative',
 });

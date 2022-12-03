@@ -1,11 +1,11 @@
 import {backgroundColorVar} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {onMount} from 'solid-js';
-import * as styles from './EditorSteps.css';
 import {inView, scroll} from 'motion';
-import {StepCardArea} from './StepCardScene/StepCardScene';
-import {injectEditorScene} from './scene';
+import {onMount} from 'solid-js';
 import {EditorScene} from './EditorScene/EditorScene';
+import * as styles from './EditorSteps.css';
+import {injectEditorScene} from './scene';
+import {StepCardArea} from './StepCardScene/StepCardScene';
 
 export default function EditorSteps() {
   const scene = injectEditorScene();

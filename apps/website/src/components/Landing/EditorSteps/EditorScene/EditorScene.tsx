@@ -1,11 +1,11 @@
 import {backgroundColorVar} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
-import {isMobile} from '@solid-primitives/platform';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {scroll, spring} from 'motion';
+import {animate, scroll, spring} from 'motion';
 import {
   children,
   createEffect,
+  createMemo,
   createRoot,
   createSignal,
   lazy,
@@ -15,6 +15,7 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
+import {CodeEditorPreviewBlock} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditorPreviewBlock';
 import {DynamicBackgroundExpansion} from '~/components/Landing/EditorSteps/EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
 import {injectEditorScene} from '../scene';
 import {CircularProgress} from './CircularProgress/CircularProgress';
@@ -60,6 +61,7 @@ const LazyEditor = lazy(() =>
 
 export function EditorScene(props: EditorSceneProps) {
   const [containerRef, setContainerRef] = createSignal<HTMLDivElement>();
+  let progressBarEl: HTMLDivElement;
   const scene = injectEditorScene();
   const [codeAnimationProgress, setCodeAnimationProgress] =
     createSignal<number>();
@@ -83,11 +85,12 @@ export function EditorScene(props: EditorSceneProps) {
     '  return <div>The count is {count()}</div>\n' +
     '}\n';
 
-  const visibleCode = () =>
+  const visibleCode = createMemo(() =>
     codeExample.substring(
       0,
       Math.ceil(codeAnimationProgress() * codeExample.length),
-    );
+    ),
+  );
 
   const backgrounds = {
     0: 'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
@@ -106,6 +109,10 @@ export function EditorScene(props: EditorSceneProps) {
         offset: ['-25%', '50% end'],
       },
     );
+    scroll(animate(progressBarEl, {scaleX: [0, 1]}), {
+      target: ref,
+      offset: ['start', '95% end'],
+    });
   });
 
   const centeredWrapperTransform = () =>
@@ -170,19 +177,12 @@ export function EditorScene(props: EditorSceneProps) {
     >
       <DynamicBackgroundExpansion />
 
-      <Show when={enabledCircleExpansionGradient()}>
-        <Motion.div
-          animate={{
-            top:
-              props.animationProgress > 90
-                ? 'calc(100% - calc(16px + 72px))'
-                : '16px',
-          }}
-          class={styles.circularProgressBox}
-        >
-          <CircularProgress progress={props.animationProgress} />
-        </Motion.div>
-      </Show>
+      <div class={styles.circularProgressBox}>
+        <CircularProgress
+          ref={progressBarEl}
+          progress={props.animationProgress}
+        />
+      </div>
 
       <div
         class={styles.fixScaleContainer}
@@ -251,37 +251,11 @@ export function EditorScene(props: EditorSceneProps) {
 
               <div class={styles2.snippet}>
                 <Suspense
-                  fallback={
-                    <pre
-                      style={{
-                        'font-family': 'Jetbrains Mono, monospace',
-                        'background-color': 'unset',
-                        color: 'white',
-                        width: '100%',
-                        height: '100%',
-                        overflow: 'hidden',
-                        margin: 0,
-                      }}
-                      innerText={visibleCode()}
-                    />
-                  }
+                  fallback={<CodeEditorPreviewBlock code={visibleCode()} />}
                 >
                   <Show
                     when={mountEditor()}
-                    fallback={
-                      <pre
-                        style={{
-                          'font-family': 'Jetbrains Mono, monospace',
-                          'background-color': 'unset',
-                          color: 'white',
-                          width: '100%',
-                          height: '100%',
-                          overflow: 'hidden',
-                          margin: 0,
-                        }}
-                        innerText={visibleCode()}
-                      />
-                    }
+                    fallback={<CodeEditorPreviewBlock code={visibleCode()} />}
                   >
                     <LazyEditor code={visibleCode()} />
                   </Show>

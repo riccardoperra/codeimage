@@ -13,6 +13,7 @@ import {
   Scripts,
   Title,
 } from 'solid-start';
+import {getUiStore} from '~/ui';
 import {MainPageImagePreloading} from './components/Main/MainPage';
 import './root.css';
 
@@ -58,6 +59,7 @@ function FontDefinitions() {
 }
 
 export default function Root() {
+  const uiStore = getUiStore();
   useAssets(() => (
     <>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -106,6 +108,10 @@ export default function Root() {
         <Meta
           name="description"
           content="CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code"
+        />
+        <Meta
+          name="theme-color"
+          content={uiStore.value.navColor ?? undefined}
         />
       </Head>
       <Body>

@@ -12,12 +12,11 @@ export function DynamicBackgroundExpansion() {
         opacity: enabledAnimation() ? (scene.progress() > 5 ? 1 : 0) : 0,
       }}
     >
-      <div
+      <Motion.div
         class={styles.backgroundSecondStep}
         data-activate={scene.currentStep >= 1}
       />
       <Motion.div
-        animate={{opacity: scene.currentStep < 1 ? 0 : 1}}
         class={styles.backgroundThirdStep}
         data-activate={scene.currentStep >= 2}
       />

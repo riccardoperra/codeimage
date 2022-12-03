@@ -22,7 +22,7 @@ export const grid = style([
   },
   responsiveStyle({
     mobile: {
-      padding: `0 ${themeVars.spacing[4]}`,
+      padding: `0 ${themeVars.spacing[6]}`,
     },
     desktop: {padding: 0},
   }),

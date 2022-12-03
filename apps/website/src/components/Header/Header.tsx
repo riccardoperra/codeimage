@@ -13,7 +13,7 @@ export function Header() {
         const entry = entries[0];
         setScrolled(!entry.isIntersecting);
       },
-      {threshold: 1},
+      {threshold: 0.1},
     );
     observer.observe(document.querySelector(`.${content}`));
     onCleanup(() => observer.disconnect());

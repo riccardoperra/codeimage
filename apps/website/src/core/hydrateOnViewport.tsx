@@ -1,14 +1,33 @@
-import {children, createSignal, lazy, onMount, Show, Suspense} from 'solid-js';
+import {
+  createSignal,
+  JSXElement,
+  lazy,
+  onMount,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {getHydrationKey, NoHydration} from 'solid-js/web';
 
-export function hydrateOnViewport<T extends () => any>(
+type LoadType = 'visible' | 'idle' | 'load';
+
+type ExtractOptionsByLoadType<TLoadType extends LoadType> = {
+  visible: IntersectionObserverInit;
+  idle: never;
+  load: never;
+}[TLoadType];
+
+export function hydrateOnViewport<
+  T extends () => any,
+  TLoadType extends LoadType,
+>(
   Comp:
     | T
     | (() => Promise<{
         default: T;
       }>),
-  type: 'visible' | 'idle' | 'load',
-): any {
+  type: TLoadType,
+  options?: ExtractOptionsByLoadType<TLoadType>,
+): () => JSXElement {
   let el: HTMLDivElement;
   const [load, setLoad] = createSignal(false);
 
@@ -31,13 +50,14 @@ export function hydrateOnViewport<T extends () => any>(
     }
   }
 
-  function onVisible() {
+  function onVisible(options?: IntersectionObserverInit) {
+    const ioOptions: IntersectionObserverInit = {...(options || {})};
     const io = new IntersectionObserver(cb => {
       if (cb[0].isIntersecting) {
         setLoad(true);
         io.disconnect();
       }
-    });
+    }, ioOptions);
     io.observe(el);
   }
 
@@ -53,7 +73,7 @@ export function hydrateOnViewport<T extends () => any>(
         load: onLoad,
         idle: onIdle,
       };
-      strategy[type]();
+      strategy[type](options);
     });
 
     if (!globalThis.window) {

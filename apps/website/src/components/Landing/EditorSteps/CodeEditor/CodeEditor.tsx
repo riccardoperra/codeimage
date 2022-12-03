@@ -1,5 +1,15 @@
+import {LoadingCircle} from '@codeimage/ui';
 import {type Extension} from '@codemirror/state';
-import {createEffect, createResource, on, Suspense} from 'solid-js';
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  on,
+  Show,
+  Suspense,
+} from 'solid-js';
+import {CodeEditorPreviewBlock} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditorPreviewBlock';
+import * as styles from './CodeEditor.css';
 
 interface CodeEditorProps {
   code: string;
@@ -9,6 +19,7 @@ interface CodeEditorProps {
 export function CodeEditor(props: CodeEditorProps) {
   let ref: HTMLDivElement;
   const [remoteCm] = createResource(() => import('./editor-core'));
+  const [loading, setLoading] = createSignal(true);
 
   createEffect(
     on(
@@ -45,7 +56,7 @@ export function CodeEditor(props: CodeEditorProps) {
           editorView,
         );
 
-        let initialTheme = !props.customTheme ? theme : undefined;
+        const initialTheme = !props.customTheme ? theme : undefined;
         const reconfigureTheme = createCompartmentExtension(
           () => initialTheme,
           editorView,
@@ -65,14 +76,26 @@ export function CodeEditor(props: CodeEditorProps) {
           ),
         );
 
+        let customThemeExt;
         if (props.customTheme) {
-          createLazyCompartmentExtension(() => props.customTheme, editorView);
+          customThemeExt = createLazyCompartmentExtension(
+            () => props.customTheme,
+            editorView,
+          );
         }
 
-        createLazyCompartmentExtension(
+        const jsExt = createLazyCompartmentExtension(
           () => import('./lang-javascript-plugin').then(m => m.jsxLanguage),
           editorView,
         );
+        createEffect(() => {
+          const customThemeLoading = customThemeExt
+            ? customThemeExt.loading
+            : false;
+          const jsLoading = jsExt.loading;
+          console.log(customThemeLoading, jsLoading);
+          setLoading(!(!jsLoading && !customThemeLoading));
+        });
       },
       {defer: true},
     ),
@@ -81,18 +104,12 @@ export function CodeEditor(props: CodeEditorProps) {
   return (
     <Suspense
       fallback={
-        <pre
-          style={{
-            'font-family': 'Jetbrains Mono, monospace',
-            'background-color': 'unset',
-            color: 'white',
-            width: '100%',
-            height: '100%',
-            overflow: 'hidden',
-            margin: 0,
-          }}
-          innerText={props.code}
-        />
+        <>
+          <CodeEditorPreviewBlock code={props.code} />
+          <div class={styles.loading}>
+            <LoadingCircle size={'sm'} />
+          </div>
+        </>
       }
     >
       <div
@@ -102,6 +119,11 @@ export function CodeEditor(props: CodeEditorProps) {
           'font-family': 'Jetbrains Mono, monospace',
         }}
       />
+      <Show when={loading()}>
+        <div class={styles.loading}>
+          <LoadingCircle size={'sm'} />
+        </div>
+      </Show>
     </Suspense>
   );
 }

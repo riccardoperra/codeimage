@@ -84,8 +84,9 @@ export const contributorsStickyContent = style(
       paddingLeft: themeVars.spacing[6],
       paddingRight: themeVars.spacing[6],
     },
-    tablet: {
-      padding: 0,
+    desktop: {
+      paddingLeft: themeVars.spacing[6],
+      paddingRight: themeVars.spacing[6],
       paddingTop: themeVars.spacing[24],
       paddingBottom: themeVars.spacing[24],
     },
@@ -123,6 +124,7 @@ export const description = style(
     desktop: {
       fontSize: themeVars.fontSize['3xl'],
       padding: themeVars.spacing[4],
+      paddingLeft: 0,
     },
   }),
 );
