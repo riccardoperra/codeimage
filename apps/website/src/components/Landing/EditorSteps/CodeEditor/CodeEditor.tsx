@@ -84,7 +84,13 @@ export function CodeEditor(props: CodeEditorProps) {
         }
 
         const jsExt = createLazyCompartmentExtension(
-          () => import('./lang-javascript-plugin').then(m => m.jsxLanguage),
+          () =>
+            import('./lang-javascript-plugin')
+              .then(m => m.jsxLanguage)
+              .then(async r => {
+                await new Promise(r => setTimeout(r, 5000));
+                return r;
+              }),
           editorView,
         );
         createEffect(() => {

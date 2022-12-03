@@ -23,25 +23,37 @@ const EditorSteps = hydrateOnViewport(
 const Projects = hydrateOnViewport(
   () => import('../components/Landing/Projects/Projects'),
   'visible',
+  {
+    rootMargin: '500px',
+  },
 );
 
 const ComingSoon = hydrateOnViewport(
   () => import('../components/Landing/ComingSoon/ComingSoon'),
   'visible',
+  {
+    rootMargin: '500px',
+  },
 );
 
 const OpenSource = hydrateOnViewport(
   () => import('../components/Landing/OpenSource/OpenSource'),
   'visible',
-);
-
-const Footer = hydrateOnViewport(
-  () => import('../components/Footer/Footer'),
-  'visible',
+  {
+    rootMargin: '500px',
+  },
 );
 
 const Showcase = hydrateOnViewport(
   () => import('../components/Landing/Showcase/Showcase'),
+  'visible',
+  {
+    rootMargin: '500px',
+  },
+);
+
+const Footer = hydrateOnViewport(
+  () => import('../components/Footer/Footer'),
   'visible',
 );
 
