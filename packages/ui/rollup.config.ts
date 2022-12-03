@@ -30,7 +30,6 @@ const solidConfig = withSolid({
     'lightTheme.css': './src/lib/themes/light-theme.css.ts',
     'darkTheme.css': './src/lib/themes/dark-theme.css.ts',
   },
-  treeshake: 'recommended',
   targets: ['esm', 'cjs'],
   external: externals,
   output: [buildOutput('esm'), buildOutput('cjs')],

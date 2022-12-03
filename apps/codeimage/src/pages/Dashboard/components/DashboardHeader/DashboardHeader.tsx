@@ -1,5 +1,5 @@
 import {Box, HStack} from '@codeimage/ui';
-import {CodeImageLogo} from '../../../../components/Icons/CodeImageLogo';
+import {CodeImageLogoV2} from '../../../../components/Icons/CodeImageLogoV2';
 import {sidebarLogo} from '../../../../components/Scaffold/Sidebar/Sidebar.css';
 import {actionBox} from '../../../../components/Toolbar/Toolbar.css';
 import {ToolbarSettingsButton} from '../../../../components/Toolbar/ToolbarSettings';
@@ -14,7 +14,7 @@ export function DashboardHeader() {
 
         <Box display={'flex'} alignItems={'center'} flexGrow={1} marginLeft={5}>
           <div class={sidebarLogo}>
-            <CodeImageLogo width={'140px'} />
+            <CodeImageLogoV2 width={'140px'} withGradient={true} />
           </div>
         </Box>
 
