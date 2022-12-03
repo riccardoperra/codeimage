@@ -53,7 +53,8 @@
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c .eslintrc.js --fix",
     "prepare:env": "tsx ./scripts/make-env.ts",
     "prepare:env:codesandbox": "RUN_ON_CODESANDBOX=true tsx ./scripts/make-env",
-    "prepare:api:deploy": "pnpm-bundle-workspace-package @codeimage/api --outDir=dist/api-bundle && rm -rf dist/api-bundle/workspace-dependencies/prisma-models/.gitignore"
+    "prepare:api:deploy": "pnpm-bundle-workspace-package @codeimage/api --outDir=dist/api-bundle && rm -rf dist/api-bundle/workspace-dependencies/prisma-models/.gitignore",
+    "notion": " npx cross-env NOTIONS_API='secret_FELYUEGTsguviSEE7bda0yteCmQNtNQivMUX0zb61h3' NOTIONS_DATABASE_ID='af5bf29632b549a0a4597b157981da09' tsx scripts/notion-client.ts"
   },
   "devDependencies": {
     "@changesets/assemble-release-plan": "^5.2.2",
@@ -65,10 +66,12 @@
     "@commitlint/cli": "17.1.2",
     "@commitlint/config-angular": "17.1.0",
     "@commitlint/config-conventional": "^17.1.0",
+    "@notionhq/client": "2.2.2",
     "@types/node": "^18.11.0",
     "@types/prettier": "^2.7.1",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
+    "@yarnpkg/core": "^4.0.0-rc.24",
     "chalk": "5.1.2",
     "cross-env": "^7.0.3",
     "enquirer": "2.3.6",
@@ -87,14 +90,5 @@
   },
   "engines": {
     "pnpm": ">=7"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@vanilla-extract/integration@6.0.1": "patches/@vanilla-extract__integration@6.0.1.patch"
-    },
-    "overrides": {
-      "@vanilla-extract/integration": "6.0.1"
-    }
-  },
-  "allowNonAppliedPatches": false
+  }
 }
