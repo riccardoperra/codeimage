@@ -3,7 +3,6 @@ import {type Extension} from '@codemirror/state';
 import {
   createEffect,
   createResource,
-  createRoot,
   createSignal,
   on,
   Show,
@@ -55,7 +54,7 @@ export function CodeEditor(props: CodeEditorProps) {
           editorView,
         );
 
-        let initialTheme = !props.customTheme ? theme : undefined;
+        const initialTheme = !props.customTheme ? theme : undefined;
         const reconfigureTheme = createCompartmentExtension(
           () => initialTheme,
           editorView,
@@ -84,13 +83,7 @@ export function CodeEditor(props: CodeEditorProps) {
         }
 
         const jsExt = createLazyCompartmentExtension(
-          () =>
-            import('./lang-javascript-plugin')
-              .then(m => m.jsxLanguage)
-              .then(async r => {
-                await new Promise(r => setTimeout(r, 5000));
-                return r;
-              }),
+          () => import('./lang-javascript-plugin').then(m => m.jsxLanguage),
           editorView,
         );
         createEffect(() => {
