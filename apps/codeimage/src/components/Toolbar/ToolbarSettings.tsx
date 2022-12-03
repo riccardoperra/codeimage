@@ -9,6 +9,7 @@ import {Item} from '@solid-aria/collection';
 import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';
 import {MenuAlt2Icon} from '../Icons/DotVertical';
+import {Releases} from './Releases';
 import {SettingsDialog} from './SettingsDialog';
 
 export function ToolbarSettingsButton() {
@@ -24,6 +25,9 @@ export function ToolbarSettingsButton() {
       case 'settings': {
         createDialog(SettingsDialog, () => ({}));
         break;
+      }
+      case 'releases': {
+        createDialog(Releases, () => ({}));
       }
     }
   };
@@ -44,6 +48,7 @@ export function ToolbarSettingsButton() {
       }
     >
       <Item key={'settings'}>Settings</Item>
+      <Item key={'releases'}>Releases</Item>
       <Show when={loggedIn()}>
         <Item key={'logout'}>Logout</Item>
       </Show>

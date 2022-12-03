@@ -1,0 +1,2641 @@
+[
+  {
+    "image": {
+      "caption": [],
+      "type": "external",
+      "external": {
+        "url": "https://user-images.githubusercontent.com/37072694/194812455-6f1582be-d940-4b92-8040-8803f2024451.png"
+      }
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "This new version of CodeImage introduces ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "This new version of CodeImage introduces ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "Projects",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Projects",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "; a dedicated space where you can save all your code snippets.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "; a dedicated space where you can save all your code snippets.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Development of these new features have been started in the middle of july with @hackpirodev, and ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Development of these new features have been started in the middle of july with @hackpirodev, and ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "finally",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "finally",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " the biggest part is done 🎊.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " the biggest part is done 🎊.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_3": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "This is why CodeImage officially pass to version ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "This is why CodeImage officially pass to version ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "1.0",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "1.0",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ".",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ".",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Projects",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Projects",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "image": {
+      "caption": [],
+      "type": "external",
+      "external": {
+        "url": "https://user-images.githubusercontent.com/37072694/195017597-9a15e15d-5a33-4fe7-aa14-9c39c191f9d6.png"
+      }
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Projects basically allows everyone to manage their snippets and save them remotely in order to access them from everywhere.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Projects basically allows everyone to manage their snippets and save them remotely in order to access them from everywhere.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "A new homepage for every user which has the authorization to use it will appear. This mean also you will be able to ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "A new homepage for every user which has the authorization to use it will appear. This mean also you will be able to ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "share publicly your snippets",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "share publicly your snippets",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ". In fact, each snippet have an ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ". In fact, each snippet have an ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "unique uuid associated",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "unique uuid associated",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " and present in the URL which will allows everyone to watch it in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " and present in the URL which will allows everyone to watch it in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "read-only modality",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "read-only modality",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ".",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ".",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Here's an example; ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Here's an example; ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://codeimage.dev/413d9f66-cc7e-41b3-bbef-1c2f737ed74a",
+            "link": {
+              "url": "https://codeimage.dev/413d9f66-cc7e-41b3-bbef-1c2f737ed74a"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://codeimage.dev/413d9f66-cc7e-41b3-bbef-1c2f737ed74a",
+          "href": "https://codeimage.dev/413d9f66-cc7e-41b3-bbef-1c2f737ed74a"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Projects will be available ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Projects will be available ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "FOR FREE",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "FOR FREE",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " only for authenticated users.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " only for authenticated users.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_3": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Authentication system",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Authentication system",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "image": {
+      "caption": [],
+      "type": "external",
+      "external": {
+        "url": "https://user-images.githubusercontent.com/37072694/196806820-7a6d6a7a-17e9-46f6-b30c-3841208d0ae4.png"
+      }
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Due to the necessity of persisting the project information on a backend server, we decided to allows these features ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Due to the necessity of persisting the project information on a backend server, we decided to allows these features ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "only for authenticated users",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "only for authenticated users",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ".",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ".",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "The authentication system integrates ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "The authentication system integrates ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "Auth0",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Auth0",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " in order to provide a easy and fast social login (Github) with in mind the possibility to choose also others social networks login method in the future.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " in order to provide a easy and fast social login (Github) with in mind the possibility to choose also others social networks login method in the future.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_3": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Save snippets remotely",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Save snippets remotely",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "CodeImage projects introduce a new service into the core application: ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "CodeImage projects introduce a new service into the core application: ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "a backend server",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "a backend server",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ". We have opt-in for ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ". We have opt-in for ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "Fastify",
+            "link": {
+              "url": "https://github.com/fastify/fastify"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Fastify",
+          "href": "https://github.com/fastify/fastify"
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " which is for us one of the best available choice in the current state of backend development.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " which is for us one of the best available choice in the current state of backend development.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Using a custom backend allows us to have 100% of control of what's inside our system. We've tried several solutions like Firebase, Supabase\netc. but we preferred moving to the stack ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Using a custom backend allows us to have 100% of control of what's inside our system. We've tried several solutions like Firebase, Supabase\netc. but we preferred moving to the stack ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "Fastify",
+            "link": {
+              "url": "https://github.com/fastify/fastify"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Fastify",
+          "href": "https://github.com/fastify/fastify"
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " - ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " - ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "Prisma",
+            "link": {
+              "url": "https://github.com/prisma/prisma"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Prisma",
+          "href": "https://github.com/prisma/prisma"
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " in order to provide also a good developer expericence, better type safety and flexibility.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " in order to provide also a good developer expericence, better type safety and flexibility.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "The backend will be currently ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "The backend will be currently ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "SELF-HOSTED",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "SELF-HOSTED",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " without gain. At the moment the goal is to provide this service for free.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " without gain. At the moment the goal is to provide this service for free.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_3": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Pipeline with super-powers",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Pipeline with super-powers",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "We've also refactored our pipeline system in order to provide better CI/CD deployments, improving timings and centralizing everything.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "We've also refactored our pipeline system in order to provide better CI/CD deployments, improving timings and centralizing everything.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "image": {
+      "caption": [],
+      "type": "external",
+      "external": {
+        "url": "https://user-images.githubusercontent.com/37072694/196805696-d3c9a53e-0b38-4ab0-8e4d-89bbf3f40465.png"
+      }
+    }
+  },
+  {
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "UI Improvements",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "UI Improvements",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "This new version introduces also new UI improvements and small changes in order to provide a better user experience.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "This new version introduces also new UI improvements and small changes in order to provide a better user experience.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "image": {
+      "caption": [],
+      "type": "external",
+      "external": {
+        "url": "https://user-images.githubusercontent.com/37072694/195017193-026527f0-a7ac-4151-90a8-bdae186f7e17.png"
+      }
+    }
+  },
+  {
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Hacktoberfest",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Hacktoberfest",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "October is known by developers to be the month of ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "October is known by developers to be the month of ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "hacktoberfest",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "hacktoberfest",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ". I would like to thank all the contributors who help us with the dedicated issues:",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ". I would like to thank all the contributors who help us with the dedicated issues:",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_3": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "@SIMRAN88",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "@SIMRAN88",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Add shade of purple theme ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Add shade of purple theme ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/issues/365",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/issues/365"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/issues/365",
+          "href": "https://github.com/riccardoperra/codeimage/issues/365"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Add Moonlight theme ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Add Moonlight theme ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/372",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/372"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/372",
+          "href": "https://github.com/riccardoperra/codeimage/pull/372"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_3": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "@TGlide",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "@TGlide",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Add Panda theme ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Add Panda theme ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/issues/366",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/issues/366"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/issues/366",
+          "href": "https://github.com/riccardoperra/codeimage/issues/366"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_3": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "@Vikki123",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "@Vikki123",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Add Vitesse dark theme ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Add Vitesse dark theme ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/issues/305",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/issues/305"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/issues/305",
+          "href": "https://github.com/riccardoperra/codeimage/issues/305"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "What's next?",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "What's next?",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Most of the expected software thought when CodeImage started ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Most of the expected software thought when CodeImage started ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "are completed",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "are completed",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ", so now the focus will be splitted in two parts:",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ", so now the focus will be splitted in two parts:",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Core development (75%)",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Core development (75%)",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "New features (25%)",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "New features (25%)",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Here some new things that are already planned and will be released soon 😄",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Here some new things that are already planned and will be released soon 😄",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "ThemeBuilder",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "ThemeBuilder",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ": creates new theme for both CodeImage or your editor and share it to the world",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ": creates new theme for both CodeImage or your editor and share it to the world",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Embeds",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Embeds",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ": embed your snippets everywhere in a SEO-friendly way.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ": embed your snippets everywhere in a SEO-friendly way.",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "codeimage-ui",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "codeimage-ui",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ": the ui kit of codeimage will be released as a standalone ui kit library for SolidJS",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ": the ui kit of codeimage will be released as a standalone ui kit library for SolidJS",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Changelog",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Changelog",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "feat(ui): text dynamic variants by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "feat(ui): text dynamic variants by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/353",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/353"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/353",
+          "href": "https://github.com/riccardoperra/codeimage/pull/353"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "feat: add experimental mobile ui by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "feat: add experimental mobile ui by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/357",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/357"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/357",
+          "href": "https://github.com/riccardoperra/codeimage/pull/357"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "feat: pagination component by @hackpirodev in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "feat: pagination component by @hackpirodev in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/356",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/356"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/356",
+          "href": "https://github.com/riccardoperra/codeimage/pull/356"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Refactor: theme mode UI by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Refactor: theme mode UI by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/358",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/358"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/358",
+          "href": "https://github.com/riccardoperra/codeimage/pull/358"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "fix: pagination cleanup by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "fix: pagination cleanup by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/359",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/359"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/359",
+          "href": "https://github.com/riccardoperra/codeimage/pull/359"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Projects by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Projects by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/327",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/327"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/327",
+          "href": "https://github.com/riccardoperra/codeimage/pull/327"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Feat: panda theme by @TGlide in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Feat: panda theme by @TGlide in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/367",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/367"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/367",
+          "href": "https://github.com/riccardoperra/codeimage/pull/367"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "feat: shades of purple theme by @SIMRAN88 in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "feat: shades of purple theme by @SIMRAN88 in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/370",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/370"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/370",
+          "href": "https://github.com/riccardoperra/codeimage/pull/370"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "feat: added moonlight theme by @SIMRAN88 in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "feat: added moonlight theme by @SIMRAN88 in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/372",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/372"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/372",
+          "href": "https://github.com/riccardoperra/codeimage/pull/372"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "feat(ui): themes splitting by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "feat(ui): themes splitting by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/371",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/371"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/371",
+          "href": "https://github.com/riccardoperra/codeimage/pull/371"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "ci: update pipeline by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "ci: update pipeline by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/373",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/373"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/373",
+          "href": "https://github.com/riccardoperra/codeimage/pull/373"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "chore: update ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "chore: update ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "README.md",
+            "link": {
+              "url": "http://readme.md/"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "README.md",
+          "href": "http://readme.md/"
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/374",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/374"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/374",
+          "href": "https://github.com/riccardoperra/codeimage/pull/374"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "fix: fix MSW load by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "fix: fix MSW load by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/376",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/376"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/376",
+          "href": "https://github.com/riccardoperra/codeimage/pull/376"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "feat: added new vitesseDark theme by @Vikki123 in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "feat: added new vitesseDark theme by @Vikki123 in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/378",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/378"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/378",
+          "href": "https://github.com/riccardoperra/codeimage/pull/378"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "fix: added vitesseDark to themeRegistry by @Vikki123 in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "fix: added vitesseDark to themeRegistry by @Vikki123 in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/379",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/379"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/379",
+          "href": "https://github.com/riccardoperra/codeimage/pull/379"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "build: update all dependencies by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "build: update all dependencies by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/383",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/383"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/383",
+          "href": "https://github.com/riccardoperra/codeimage/pull/383"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "feat: add txt extension to disable syntax highlighting by @riccardoperra in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "feat: add txt extension to disable syntax highlighting by @riccardoperra in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/386",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/386"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/386",
+          "href": "https://github.com/riccardoperra/codeimage/pull/386"
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": " (feedback by @EndBug)",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " (feedback by @EndBug)",
+          "href": null
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "New Contributors",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "New Contributors",
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "@TGlide made their first contribution in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "@TGlide made their first contribution in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/367",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/367"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/367",
+          "href": "https://github.com/riccardoperra/codeimage/pull/367"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "@SIMRAN88 made their first contribution in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "@SIMRAN88 made their first contribution in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/370",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/370"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/370",
+          "href": "https://github.com/riccardoperra/codeimage/pull/370"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "@Vikki123 made their first contribution in ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "@Vikki123 made their first contribution in ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/pull/378",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/pull/378"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/pull/378",
+          "href": "https://github.com/riccardoperra/codeimage/pull/378"
+        }
+      ],
+      "color": "default"
+    }
+  },
+  {
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": {
+            "content": "Full Changelog",
+            "link": null
+          },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Full Changelog",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": ": ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": ": ",
+          "href": null
+        },
+        {
+          "type": "text",
+          "text": {
+            "content": "https://github.com/riccardoperra/codeimage/compare/v0.21.4...v1.0.0",
+            "link": {
+              "url": "https://github.com/riccardoperra/codeimage/compare/v0.21.4...v1.0.0"
+            }
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "https://github.com/riccardoperra/codeimage/compare/v0.21.4...v1.0.0",
+          "href": "https://github.com/riccardoperra/codeimage/compare/v0.21.4...v1.0.0"
+        }
+      ],
+      "color": "default"
+    }
+  }
+]
