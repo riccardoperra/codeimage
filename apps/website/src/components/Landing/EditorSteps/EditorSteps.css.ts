@@ -14,7 +14,7 @@ export const sectionWrapper = style([
       height: '200vh',
     },
     tablet: {
-      height: '250vh',
+      height: '275vh',
     },
     desktop: {
       padding: 0,
