@@ -1,6 +1,14 @@
 import {LoadingCircle} from '@codeimage/ui';
 import {type Extension} from '@codemirror/state';
-import {createEffect, createResource, on, Suspense} from 'solid-js';
+import {
+  createEffect,
+  createResource,
+  createRoot,
+  createSignal,
+  on,
+  Show,
+  Suspense,
+} from 'solid-js';
 
 interface CodeEditorProps {
   code: string;
@@ -10,6 +18,7 @@ interface CodeEditorProps {
 export function CodeEditor(props: CodeEditorProps) {
   let ref: HTMLDivElement;
   const [remoteCm] = createResource(() => import('./editor-core'));
+  const [loading, setLoading] = createSignal(true);
 
   createEffect(
     on(
@@ -66,14 +75,26 @@ export function CodeEditor(props: CodeEditorProps) {
           ),
         );
 
+        let customThemeExt;
         if (props.customTheme) {
-          createLazyCompartmentExtension(() => props.customTheme, editorView);
+          customThemeExt = createLazyCompartmentExtension(
+            () => props.customTheme,
+            editorView,
+          );
         }
 
-        createLazyCompartmentExtension(
+        const jsExt = createLazyCompartmentExtension(
           () => import('./lang-javascript-plugin').then(m => m.jsxLanguage),
           editorView,
         );
+        createEffect(() => {
+          const customThemeLoading = customThemeExt
+            ? customThemeExt.loading
+            : false;
+          const jsLoading = jsExt.loading;
+          console.log(customThemeLoading, jsLoading);
+          setLoading(!(!jsLoading && !customThemeLoading));
+        });
       },
       {defer: true},
     ),
@@ -114,6 +135,17 @@ export function CodeEditor(props: CodeEditorProps) {
           'font-family': 'Jetbrains Mono, monospace',
         }}
       />
+      <Show when={loading()}>
+        <div
+          style={{
+            position: 'absolute',
+            right: '1rem',
+            top: '1rem',
+          }}
+        >
+          <LoadingCircle size={'sm'} />
+        </div>
+      </Show>
     </Suspense>
   );
 }
