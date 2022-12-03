@@ -1,6 +1,5 @@
 import {Box, Link, Text} from '@codeimage/ui';
 import {A} from '@solidjs/router';
-import {inView} from 'motion';
 import {createSignal, onMount} from 'solid-js';
 import {injectBreakpoints} from '~/core/breakpoints';
 import * as styles from './OpenSource.css';
@@ -23,14 +22,7 @@ export default function OpenSource() {
   };
 
   const [view, setView] = createSignal(false);
-  onMount(() => {
-    const disposeInView = inView(section, _ => {
-      if (_.isIntersecting) {
-        setView(_.isIntersecting);
-        disposeInView();
-      }
-    });
-  });
+  onMount(() => setView(true));
 
   return (
     <div class={styles.main} ref={section}>
