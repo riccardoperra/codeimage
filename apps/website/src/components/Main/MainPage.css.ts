@@ -48,7 +48,8 @@ export const content = style([
       paddingTop: themeVars.spacing[12],
     },
     desktop: {
-      width: '1280px',
+      maxWidth: '1280px',
+      width: '100%',
       paddingTop: themeVars.spacing[24],
       marginLeft: 'auto',
       marginRight: 'auto',

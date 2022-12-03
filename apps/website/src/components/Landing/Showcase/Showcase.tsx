@@ -101,12 +101,7 @@ export default function Showcase() {
             },
           }}
         >
-          <Box
-            display={'flex'}
-            justifyContent={'center'}
-            flexDirection={'column'}
-            alignItems={'center'}
-          >
+          <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
             <h1 class={styles.heading}>Start now to beautify your snippets</h1>
             <p class={styles.description}>
               with 20+ custom themes and much more...
@@ -116,7 +111,7 @@ export default function Showcase() {
 
         <div class={styles.grid}>
           <For each={filteredBlocks()}>
-            {(block, index) => (
+            {block => (
               <Motion.div
                 animate={{
                   opacity: isInView() ? 1 : 0.5,
@@ -140,14 +135,10 @@ export default function Showcase() {
             )}
           </For>
         </div>
-        <Box
-          marginTop={24}
-          display={'flex'}
-          alignItems={'center'}
-          justifyContent={'center'}
-        >
+
+        <div class={styles.ctaContainer}>
           <Button size={'lg'}>Getting started</Button>
-        </Box>
+        </div>
       </div>
     </div>
   );

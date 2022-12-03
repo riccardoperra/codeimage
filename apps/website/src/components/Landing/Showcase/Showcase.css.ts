@@ -25,9 +25,12 @@ export const content = style([
   responsiveStyle({
     mobile: {
       paddingTop: themeVars.spacing[0],
+      paddingLeft: themeVars.spacing[6],
+      paddingRight: themeVars.spacing[6],
     },
     desktop: {
-      width: '1280px',
+      maxWidth: '1280px',
+      width: '100%',
       paddingTop: themeVars.spacing[24],
       marginLeft: 'auto',
       marginRight: 'auto',
@@ -47,11 +50,13 @@ export const grid = style([
         [textAlignFlex]: 'center',
       },
     },
+    desktop: {
+      justifyContent: 'center',
+    },
   }),
   {
     display: 'flex',
     alignItems: textAlignFlex,
-    justifyContent: 'center',
     flexWrap: 'wrap',
     gap: '24px',
     marginTop: themeVars.spacing[8],
@@ -107,11 +112,13 @@ export const heading = style(
   responsiveStyle({
     mobile: {
       fontSize: themeVars.fontSize['4xl'],
-      textAlign: 'center',
+      textAlign: 'left',
       marginBottom: 0,
-      padding: themeVars.spacing[4],
+      paddingTop: themeVars.spacing[4],
+      paddingBottom: themeVars.spacing[4],
     },
     desktop: {
+      textAlign: 'center',
       fontSize: themeVars.fontSize['6xl'],
     },
   }),
@@ -121,12 +128,26 @@ export const description = style(
   responsiveStyle({
     mobile: {
       fontSize: themeVars.fontSize['2xl'],
-      textAlign: 'center',
+      textAlign: 'left',
       margin: 0,
       marginBottom: themeVars.spacing[8],
     },
     desktop: {
       fontSize: themeVars.fontSize['3xl'],
+      textAlign: 'center',
+    },
+  }),
+);
+
+export const ctaContainer = style(
+  responsiveStyle({
+    mobile: {
+      display: 'flex',
+      marginTop: themeVars.spacing[16],
+    },
+    desktop: {
+      justifyContent: 'center',
+      marginTop: themeVars.spacing[24],
     },
   }),
 );

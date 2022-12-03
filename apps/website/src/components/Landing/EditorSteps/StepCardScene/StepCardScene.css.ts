@@ -43,7 +43,7 @@ globalStyle(
       gridRowStart: 1,
       gridColumnStart: 1,
     },
-    desktop: {
+    tablet: {
       gridColumnStart: 'unset',
     },
   }),
