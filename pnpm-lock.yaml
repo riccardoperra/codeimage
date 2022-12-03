@@ -321,6 +321,7 @@ importers:
       '@vanilla-extract/css': ^1.9.2
       '@vanilla-extract/dynamic': ^2.0.3
       '@vanilla-extract/recipes': ^0.2.5
+      '@vanilla-extract/sprinkles': ^1.5.0
       '@vanilla-extract/vite-plugin': 3.6.1
       motion: 10.14.3
       node-html-parser: 6.1.4
@@ -352,6 +353,7 @@ importers:
       '@vanilla-extract/css': 1.9.2
       '@vanilla-extract/dynamic': 2.0.3
       '@vanilla-extract/recipes': 0.2.5_@vanilla-extract+css@1.9.2
+      '@vanilla-extract/sprinkles': 1.5.0_@vanilla-extract+css@1.9.2
       motion: 10.14.3
       rollup-plugin-visualizer: 5.8.3_rollup@2.79.1
       solid-codemirror: 2.2.1_6d3ox5xxj7fft5yuudu7jexh3q
@@ -6647,6 +6649,14 @@ packages:
       '@vanilla-extract/css': ^1.0.0
     dependencies:
       '@vanilla-extract/css': 1.9.1
+    dev: false
+
+  /@vanilla-extract/sprinkles/1.5.0_@vanilla-extract+css@1.9.2:
+    resolution: {integrity: sha512-W58f2Rzz5lLmk0jbhgStVlZl5wEiPB1Ur3fRvUaBM+MrifZ3qskmFq/CiH//fEYeG5Dh9vF1qRviMMH46cX9Nw==}
+    peerDependencies:
+      '@vanilla-extract/css': ^1.0.0
+    dependencies:
+      '@vanilla-extract/css': 1.9.2
     dev: false
 
   /@vanilla-extract/vite-plugin/3.6.1_vite@3.1.8:
