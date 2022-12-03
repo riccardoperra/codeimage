@@ -1,13 +1,21 @@
-import {createMemo, createRoot, createSignal} from 'solid-js';
+import {createEffect, createMemo, createRoot, createSignal, on} from 'solid-js';
 import {injectBreakpoints} from '~/core/breakpoints';
+import {getUiStore} from '~/ui';
 
 export function createEditorScene() {
   const [progress, setProgress] = createSignal(0);
   const [inView, setInView] = createSignal(false);
   const breakpoints = injectBreakpoints();
+  const uiStore = getUiStore();
 
   const [ref, setRef] = createSignal<HTMLElement>();
   const stepsOffset = [0, 33, 66];
+
+  const stepsMainColors = {
+    0: '#1777f8',
+    1: '#d554f7',
+    2: '#8000FF',
+  };
 
   function getStep(progress: number) {
     progress = Math.floor(progress);
@@ -23,6 +31,18 @@ export function createEditorScene() {
 
   const enableCircleExpansionGradient = () => !breakpoints.isXs();
 
+  const currentStep = createMemo(() => getStep(progress()));
+
+  createEffect(
+    on([inView, currentStep], ([inView, currentStep]) => {
+      if (!inView) {
+        uiStore.set('navColor', undefined);
+      } else {
+        uiStore.set('navColor', stepsMainColors[currentStep]);
+      }
+    }),
+  );
+
   return {
     ref,
     setRef,
@@ -31,8 +51,9 @@ export function createEditorScene() {
     inView,
     setInView,
     enableCircleExpansionGradient,
+    stepsMainColors,
     get currentStep() {
-      return getStep(progress());
+      return currentStep();
     },
   };
 }

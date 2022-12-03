@@ -5,6 +5,7 @@ import {responsiveStyle} from '~/core/responsive';
 export const main = style([
   {
     backgroundColor: '#000',
+    paddingTop: themeVars.spacing[8],
     paddingBottom: themeVars.spacing[8],
   },
   responsiveStyle({
@@ -13,6 +14,7 @@ export const main = style([
       paddingRight: themeVars.spacing[6],
     },
     desktop: {
+      paddingTop: themeVars.spacing[0],
       paddingLeft: themeVars.spacing[0],
       paddingRight: themeVars.spacing[0],
     },
@@ -98,7 +100,7 @@ export const imageWrapper = style({
   borderRadius: '32px',
   height: '568px',
   left: '48px',
-  overflow: 'visible',
+  overflow: 'hidden',
   position: 'absolute',
   right: '-128px',
   top: '48px',
