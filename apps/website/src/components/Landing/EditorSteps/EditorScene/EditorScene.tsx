@@ -5,6 +5,7 @@ import {animate, scroll, spring} from 'motion';
 import {
   children,
   createEffect,
+  createMemo,
   createRoot,
   createSignal,
   lazy,
@@ -14,6 +15,7 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
+import {CodeEditorPreviewBlock} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditorPreviewBlock';
 import {DynamicBackgroundExpansion} from '~/components/Landing/EditorSteps/EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
 import {injectEditorScene} from '../scene';
 import {CircularProgress} from './CircularProgress/CircularProgress';
@@ -83,11 +85,12 @@ export function EditorScene(props: EditorSceneProps) {
     '  return <div>The count is {count()}</div>\n' +
     '}\n';
 
-  const visibleCode = () =>
+  const visibleCode = createMemo(() =>
     codeExample.substring(
       0,
       Math.ceil(codeAnimationProgress() * codeExample.length),
-    );
+    ),
+  );
 
   const backgrounds = {
     0: 'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
@@ -248,37 +251,11 @@ export function EditorScene(props: EditorSceneProps) {
 
               <div class={styles2.snippet}>
                 <Suspense
-                  fallback={
-                    <pre
-                      style={{
-                        'font-family': 'Jetbrains Mono, monospace',
-                        'background-color': 'unset',
-                        color: 'white',
-                        width: '100%',
-                        height: '100%',
-                        overflow: 'hidden',
-                        margin: 0,
-                      }}
-                      innerText={visibleCode()}
-                    />
-                  }
+                  fallback={<CodeEditorPreviewBlock code={visibleCode()} />}
                 >
                   <Show
                     when={mountEditor()}
-                    fallback={
-                      <pre
-                        style={{
-                          'font-family': 'Jetbrains Mono, monospace',
-                          'background-color': 'unset',
-                          color: 'white',
-                          width: '100%',
-                          height: '100%',
-                          overflow: 'hidden',
-                          margin: 0,
-                        }}
-                        innerText={visibleCode()}
-                      />
-                    }
+                    fallback={<CodeEditorPreviewBlock code={visibleCode()} />}
                   >
                     <LazyEditor code={visibleCode()} />
                   </Show>

@@ -8,6 +8,8 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
+import {CodeEditorPreviewBlock} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditorPreviewBlock';
+import * as styles from './CodeEditor.css';
 
 interface CodeEditorProps {
   code: string;
@@ -103,25 +105,8 @@ export function CodeEditor(props: CodeEditorProps) {
     <Suspense
       fallback={
         <>
-          <pre
-            style={{
-              'font-family': 'Jetbrains Mono, monospace',
-              'background-color': 'unset',
-              color: 'white',
-              width: '100%',
-              height: '100%',
-              overflow: 'hidden',
-              margin: 0,
-            }}
-            innerText={props.code}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              right: '1rem',
-              top: '1rem',
-            }}
-          >
+          <CodeEditorPreviewBlock code={props.code} />
+          <div class={styles.loading}>
             <LoadingCircle size={'sm'} />
           </div>
         </>
@@ -135,13 +120,7 @@ export function CodeEditor(props: CodeEditorProps) {
         }}
       />
       <Show when={loading()}>
-        <div
-          style={{
-            position: 'absolute',
-            right: '1rem',
-            top: '1rem',
-          }}
-        >
+        <div class={styles.loading}>
           <LoadingCircle size={'sm'} />
         </div>
       </Show>
