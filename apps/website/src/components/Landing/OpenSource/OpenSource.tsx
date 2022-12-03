@@ -1,22 +1,25 @@
 import {Box, Link, Text} from '@codeimage/ui';
-import * as styles from './OpenSource.css';
 import {A} from '@solidjs/router';
-import {injectBreakpoints} from '~/core/breakpoints';
-import {createSignal, onMount} from 'solid-js';
 import {inView} from 'motion';
+import {createSignal, onMount} from 'solid-js';
+import {injectBreakpoints} from '~/core/breakpoints';
+import * as styles from './OpenSource.css';
 
 export default function OpenSource() {
   let section: HTMLDivElement;
   const bp = injectBreakpoints();
+  const baseUrl = `https://opencollective.com/codeimage/contributors.svg`;
 
   const contributors = () => {
     const isXs = bp.isXs();
     const isTablet = bp.isTablet();
-    if (isXs)
-      return `https://opencollective.com/codeimage/contributors.svg?width=300&limit=27&avatarHeight=40&button=false`;
-    if (isTablet)
-      return `https://opencollective.com/codeimage/contributors.svg?width=680&limit=48&avatarHeight=64&button=false`;
-    return 'https://opencollective.com/codeimage/contributors.svg?width=1024&avatarHeight=56&limit=72&button=false';
+    if (isXs) {
+      return `${baseUrl}?width=300&limit=27&avatarHeight=40&button=false`;
+    }
+    if (isTablet) {
+      return `${baseUrl}?width=680&limit=48&avatarHeight=64&button=false`;
+    }
+    return `${baseUrl}?width=1024&avatarHeight=56&limit=72&button=false`;
   };
 
   const [view, setView] = createSignal(false);

@@ -123,6 +123,7 @@ export const description = style(
     desktop: {
       fontSize: themeVars.fontSize['3xl'],
       padding: themeVars.spacing[4],
+      paddingLeft: 0,
     },
   }),
 );
