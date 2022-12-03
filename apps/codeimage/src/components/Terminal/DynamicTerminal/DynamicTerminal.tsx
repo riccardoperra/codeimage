@@ -4,7 +4,7 @@ import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {children, createMemo, JSXElement, ParentComponent} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use';
-import {CodeImageLogo} from '../../Icons/CodeImageLogo';
+import {CodeImageLogoV2} from '../../Icons/CodeImageLogoV2';
 import * as styles from '../terminal.css';
 import {BaseTerminalProps} from '../TerminalHost';
 
@@ -32,7 +32,7 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
 
       <FadeInOutTransition show={props.showWatermark}>
         <Box class={styles.watermark}>
-          <CodeImageLogo width={125} />
+          <CodeImageLogoV2 width={125} withGradient={false} />
         </Box>
       </FadeInOutTransition>
     </Dynamic>
