@@ -1,3 +1,4 @@
+import {LoadingCircle} from '@codeimage/ui';
 import {type Extension} from '@codemirror/state';
 import {createEffect, createResource, on, Suspense} from 'solid-js';
 
@@ -81,18 +82,29 @@ export function CodeEditor(props: CodeEditorProps) {
   return (
     <Suspense
       fallback={
-        <pre
-          style={{
-            'font-family': 'Jetbrains Mono, monospace',
-            'background-color': 'unset',
-            color: 'white',
-            width: '100%',
-            height: '100%',
-            overflow: 'hidden',
-            margin: 0,
-          }}
-          innerText={props.code}
-        />
+        <>
+          <pre
+            style={{
+              'font-family': 'Jetbrains Mono, monospace',
+              'background-color': 'unset',
+              color: 'white',
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              margin: 0,
+            }}
+            innerText={props.code}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              right: '1rem',
+              top: '1rem',
+            }}
+          >
+            <LoadingCircle size={'sm'} />
+          </div>
+        </>
       }
     >
       <div
