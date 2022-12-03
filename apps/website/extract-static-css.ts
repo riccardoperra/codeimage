@@ -37,7 +37,7 @@ cssEntries.forEach(([key, entry]) => {
 
 patchedSource = patchedSource.replace(
   `</head>`,
-  `<link rel='preload stylesheet' as='style' href='/${criticalStylePath}'></head>`,
+  `<link rel='stylesheet' href='/${criticalStylePath}'></head>`,
 );
 
 console.log(criticalStylePath);
