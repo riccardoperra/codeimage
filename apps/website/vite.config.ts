@@ -5,7 +5,7 @@ import {defineConfig, Plugin} from 'vite';
 
 export default defineConfig({
   build: {
-    cssCodeSplit: true,
+    cssCodeSplit: false,
   },
   plugins: [
     solid({adapter: ssg(), prerenderRoutes: ['/']}),
