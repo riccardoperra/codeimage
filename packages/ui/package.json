@@ -8,6 +8,9 @@
     "dist"
   ],
   "source": "./src/index.tsx",
+  "sideEffects": [
+    "**/*"
+  ],
   "exports": {
     ".": {
       "solid": "./dist/source-gen/index.jsx",

@@ -22,27 +22,17 @@ const htmlSource = readFileSync(join('./dist/public/index.html'), {
 
 let criticalStyle = '';
 let patchedSource = htmlSource;
-let criticalStylePath = '';
 
 cssEntries.forEach(([key, entry]) => {
   const source = readFileSync(join('./dist/public', entry), {
     encoding: 'utf-8',
   });
-  console.log(key);
-  if (key === 'src/entry-client.css') {
-    criticalStylePath = entry;
-  }
   criticalStyle += source;
 });
 
 patchedSource = patchedSource.replace(
-  `</head>`,
-  `<link rel='stylesheet' href='/${criticalStylePath}'></head>`,
+  `<style id="css-critical-style"></style>`,
+  `<style id="css-critical-style">${criticalStyle}</style>`,
 );
-
-console.log(criticalStylePath);
-writeFileSync(`./dist/public/${criticalStylePath}`, criticalStyle, {
-  encoding: 'utf-8',
-});
 
 writeFileSync(htmlSourcePath, patchedSource);

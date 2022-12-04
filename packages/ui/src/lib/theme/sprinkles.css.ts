@@ -3,7 +3,6 @@ import {themeVars} from './global2.css';
 
 export const responsiveProperties = defineProperties({
   properties: {
-    cursor: ['default', 'pointer'],
     display: {
       none: 'none',
       block: 'block',
@@ -12,7 +11,7 @@ export const responsiveProperties = defineProperties({
       inlineFlex: 'inline-flex',
       flex: 'flex',
     },
-    position: ['relative', 'absolute', 'fixed'],
+    position: ['relative', 'absolute'],
     alignItems: {
       flexStart: 'flex-start',
       center: 'center',
@@ -37,9 +36,6 @@ export const responsiveProperties = defineProperties({
     flexShrink: [0],
     flexGrow: [0, 1],
     textAlign: ['left', 'center', 'right'],
-    rowGap: themeVars.spacing,
-    columnGap: themeVars.spacing,
-    gap: themeVars.spacing,
     paddingTop: themeVars.spacing,
     paddingBottom: themeVars.spacing,
     paddingLeft: themeVars.spacing,
@@ -53,7 +49,6 @@ export const responsiveProperties = defineProperties({
     borderRadius: themeVars.borderRadius,
     fontSize: themeVars.fontSize,
     lineHeight: themeVars.lineHeight,
-    boxShadow: themeVars.boxShadow,
   },
   shorthands: {
     padding: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'],
@@ -62,17 +57,10 @@ export const responsiveProperties = defineProperties({
     margin: ['marginTop', 'marginBottom', 'marginLeft', 'marginRight'],
     marginX: ['marginLeft', 'marginRight'],
     marginY: ['marginTop', 'marginBottom'],
-    placeItems: ['alignItems', 'justifyContent'],
-    typeSize: ['fontSize', 'lineHeight'],
   },
 });
 
 const colorProperties = defineProperties({
-  conditions: {
-    lightMode: {},
-    darkMode: {'@media': '(prefers-color-scheme: dark)'},
-  },
-  defaultCondition: 'lightMode',
   properties: {
     color: {
       primary: themeVars.dynamicColors.primary,
