@@ -44,6 +44,6 @@
     "outdent": "0.8.0",
     "postcss": "^8.4.18",
     "postcss-load-config": "^4.0.1",
-    "vite": "^3.1.8"
+    "vite": "^3.2.4"
   }
 }

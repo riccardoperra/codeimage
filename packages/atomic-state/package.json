@@ -41,7 +41,7 @@
     "rollup-preset-solid": "^1.4.0",
     "rxjs": "^7.5.7",
     "solid-js": "^1.5.7",
-    "vite": "^3.1.8",
+    "vite": "^3.2.4",
     "vite-plugin-dts": "^1.6.6",
     "vite-plugin-solid": "^2.3.9"
   }

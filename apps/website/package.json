@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "scripts": {
     "dev": "solid-start dev",
-    "build": "solid-start build && tsx add-css-stylesheet.ts && tsx ./vercel-build-output.ts",
+    "build": "solid-start build && tsx extract-static-css.ts && tsx ./vercel-build-output.ts",
     "start": "solid-start start",
     "lighthouse": "lhci autorun"
   },
