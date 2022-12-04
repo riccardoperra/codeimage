@@ -7,6 +7,10 @@
   "files": [
     "dist"
   ],
+  "sideEffects": [
+    "*.vanilla.css",
+    "*.vanilla.js"
+  ],
   "source": "./src/index.tsx",
   "exports": {
     ".": {

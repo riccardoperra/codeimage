@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "scripts": {
     "dev": "solid-start dev",
-    "build": "solid-start build && tsx ./merge-css.ts && tsx ./vercel-build-output.ts",
+    "build": "solid-start build && tsx add-css-stylesheet.ts && tsx ./vercel-build-output.ts",
     "start": "solid-start start",
     "lighthouse": "lhci autorun"
   },
@@ -14,7 +14,7 @@
     "rollup": "^2.79.1",
     "solid-start-node": "^0.2.6",
     "typescript": "^4.8.4",
-    "vite": "^3.1.8"
+    "vite": "^3.2.4"
   },
   "sideEffects": true,
   "dependencies": {
