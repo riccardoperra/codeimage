@@ -183,8 +183,8 @@ importers:
       '@thisbeyond/solid-dnd': 0.7.2
       '@types/downloadjs': ^1.4.3
       '@vanilla-extract/css': ^1.9.1
-      '@vanilla-extract/dynamic': ^2.0.2
-      '@vanilla-extract/recipes': ^0.2.5
+      '@vanilla-extract/dynamic': ^2.0.3
+      '@vanilla-extract/recipes': ^0.3.0
       '@vanilla-extract/sprinkles': ^1.5.0
       bind-event-listener: ^2.1.1
       clsx: ^1.2.1
@@ -265,8 +265,8 @@ importers:
       '@solidjs/router': 0.5.0_solid-js@1.5.7
       '@thisbeyond/solid-dnd': 0.7.2_solid-js@1.5.7
       '@vanilla-extract/css': 1.9.1
-      '@vanilla-extract/dynamic': 2.0.2
-      '@vanilla-extract/recipes': 0.2.5_@vanilla-extract+css@1.9.1
+      '@vanilla-extract/dynamic': 2.0.3
+      '@vanilla-extract/recipes': 0.3.0_@vanilla-extract+css@1.9.1
       '@vanilla-extract/sprinkles': 1.5.0_@vanilla-extract+css@1.9.1
       bind-event-listener: 2.1.1
       clsx: 1.2.1
@@ -320,11 +320,12 @@ importers:
       '@solidjs/router': ^0.5.1
       '@vanilla-extract/css': ^1.9.2
       '@vanilla-extract/dynamic': ^2.0.3
-      '@vanilla-extract/recipes': ^0.2.5
-      '@vanilla-extract/sprinkles': ^1.5.0
+      '@vanilla-extract/recipes': ^0.3.0
+      '@vanilla-extract/sprinkles': ^1.5.1
       '@vanilla-extract/vite-plugin': 3.6.1
       motion: 10.14.3
       node-html-parser: 6.1.4
+      purgecss: 5.0.0
       rollup: ^2.79.1
       rollup-plugin-visualizer: 5.8.3
       solid-codemirror: 2.2.1
@@ -352,9 +353,10 @@ importers:
       '@solidjs/router': 0.5.1_solid-js@1.6.1
       '@vanilla-extract/css': 1.9.2
       '@vanilla-extract/dynamic': 2.0.3
-      '@vanilla-extract/recipes': 0.2.5_@vanilla-extract+css@1.9.2
-      '@vanilla-extract/sprinkles': 1.5.0_@vanilla-extract+css@1.9.2
+      '@vanilla-extract/recipes': 0.3.0_@vanilla-extract+css@1.9.2
+      '@vanilla-extract/sprinkles': 1.5.1_@vanilla-extract+css@1.9.2
       motion: 10.14.3
+      purgecss: 5.0.0
       rollup-plugin-visualizer: 5.8.3_rollup@2.79.1
       solid-codemirror: 2.2.1_6d3ox5xxj7fft5yuudu7jexh3q
       solid-js: 1.6.1
@@ -589,12 +591,12 @@ importers:
       '@solid-primitives/utils': ^3.0.2
       '@types/node': ^18.11.0
       '@vanilla-extract/css': ^1.9.1
-      '@vanilla-extract/dynamic': ^2.0.2
+      '@vanilla-extract/dynamic': ^2.0.3
       '@vanilla-extract/esbuild-plugin': 2.2.0
       '@vanilla-extract/private': ^1.0.3
-      '@vanilla-extract/recipes': ^0.2.5
+      '@vanilla-extract/recipes': ^0.3.0
       '@vanilla-extract/rollup-plugin': 1.2.0
-      '@vanilla-extract/sprinkles': ^1.5.0
+      '@vanilla-extract/sprinkles': ^1.5.1
       acorn-jsx: 5.3.2
       chalk: 5.1.2
       clsx: ^1.2.1
@@ -643,10 +645,10 @@ importers:
       '@solid-primitives/refs': 0.3.2_solid-js@1.5.7
       '@solid-primitives/utils': 3.0.2_solid-js@1.5.7
       '@vanilla-extract/css': 1.9.1
-      '@vanilla-extract/dynamic': 2.0.2
+      '@vanilla-extract/dynamic': 2.0.3
       '@vanilla-extract/private': 1.0.3
-      '@vanilla-extract/recipes': 0.2.5_@vanilla-extract+css@1.9.1
-      '@vanilla-extract/sprinkles': 1.5.0_@vanilla-extract+css@1.9.1
+      '@vanilla-extract/recipes': 0.3.0_@vanilla-extract+css@1.9.1
+      '@vanilla-extract/sprinkles': 1.5.1_@vanilla-extract+css@1.9.1
       acorn-jsx: 5.3.2
       clsx: 1.2.1
       csstype: 3.1.1
@@ -6558,12 +6560,6 @@ packages:
       media-query-parser: 2.0.2
       outdent: 0.8.0
 
-  /@vanilla-extract/dynamic/2.0.2:
-    resolution: {integrity: sha512-U4nKaEQ8Kuz+exXEr51DUpyaOuzo24/S/k1YbDPQR06cYcNjQqvwFRnwWtZ+9ImocqM1wTKtzrdUgSTtLGIwAg==}
-    dependencies:
-      '@vanilla-extract/private': 1.0.3
-    dev: false
-
   /@vanilla-extract/dynamic/2.0.3:
     resolution: {integrity: sha512-Rglfw2gXAYiBzAQ4jgUG7rBgE2c88e/zcG27ZVoIqMHVq56wf2C1katGMm1yFMNBgzqM7oBNYzz4YOMzznydkg==}
     dependencies:
@@ -6597,16 +6593,16 @@ packages:
   /@vanilla-extract/private/1.0.3:
     resolution: {integrity: sha512-17kVyLq3ePTKOkveHxXuIJZtGYs+cSoev7BlP+Lf4916qfDhk/HBjvlYDe8egrea7LNPHKwSZJK/bzZC+Q6AwQ==}
 
-  /@vanilla-extract/recipes/0.2.5_@vanilla-extract+css@1.9.1:
-    resolution: {integrity: sha512-OWXUUiFJdswD3+Xg8f8avuw/vAHZRFS4oHqFeoV1TcO8cfbDQ0zmkreBHvyspoJU+qsyWK48yPHKSptqNRPy9Q==}
+  /@vanilla-extract/recipes/0.3.0_@vanilla-extract+css@1.9.1:
+    resolution: {integrity: sha512-7wXrgfq1oldKdBfCKen4XmSlDmQR+4o0CQ3WnnLfhQaEtI65xJ774yyQF6dD2CC+hHdW2LFKVXgH5NZRbMQ8Sg==}
     peerDependencies:
       '@vanilla-extract/css': ^1.0.0
     dependencies:
       '@vanilla-extract/css': 1.9.1
     dev: false
 
-  /@vanilla-extract/recipes/0.2.5_@vanilla-extract+css@1.9.2:
-    resolution: {integrity: sha512-OWXUUiFJdswD3+Xg8f8avuw/vAHZRFS4oHqFeoV1TcO8cfbDQ0zmkreBHvyspoJU+qsyWK48yPHKSptqNRPy9Q==}
+  /@vanilla-extract/recipes/0.3.0_@vanilla-extract+css@1.9.2:
+    resolution: {integrity: sha512-7wXrgfq1oldKdBfCKen4XmSlDmQR+4o0CQ3WnnLfhQaEtI65xJ774yyQF6dD2CC+hHdW2LFKVXgH5NZRbMQ8Sg==}
     peerDependencies:
       '@vanilla-extract/css': ^1.0.0
     dependencies:
@@ -6632,8 +6628,16 @@ packages:
       '@vanilla-extract/css': 1.9.1
     dev: false
 
-  /@vanilla-extract/sprinkles/1.5.0_@vanilla-extract+css@1.9.2:
-    resolution: {integrity: sha512-W58f2Rzz5lLmk0jbhgStVlZl5wEiPB1Ur3fRvUaBM+MrifZ3qskmFq/CiH//fEYeG5Dh9vF1qRviMMH46cX9Nw==}
+  /@vanilla-extract/sprinkles/1.5.1_@vanilla-extract+css@1.9.1:
+    resolution: {integrity: sha512-xPYpeEZEC1mhiPqWCBPGdIHkpFaaQIbaAfG9W2JyIW0byqTP7CoaxdYNMPjhZuoV5lkTI14SJg8Bt+fZqmV5yQ==}
+    peerDependencies:
+      '@vanilla-extract/css': ^1.0.0
+    dependencies:
+      '@vanilla-extract/css': 1.9.1
+    dev: false
+
+  /@vanilla-extract/sprinkles/1.5.1_@vanilla-extract+css@1.9.2:
+    resolution: {integrity: sha512-xPYpeEZEC1mhiPqWCBPGdIHkpFaaQIbaAfG9W2JyIW0byqTP7CoaxdYNMPjhZuoV5lkTI14SJg8Bt+fZqmV5yQ==}
     peerDependencies:
       '@vanilla-extract/css': ^1.0.0
     dependencies:
@@ -7909,7 +7913,6 @@ packages:
   /commander/9.4.1:
     resolution: {integrity: sha512-5EEkTNyHNGFPD2H+c/dXXfQZYa/scCKasxWcXJaWnNJ99pnQN9Vnmqow+p+PlFPE63Q6mThaZws1T+HxfpgtPw==}
     engines: {node: ^12.20.0 || >=14}
-    dev: true
 
   /commist/3.1.2:
     resolution: {integrity: sha512-cyQMbb5GiGHD/MiTqqI4V5fySqVKS8WUtN0iwxZ3sd6GYZ+8gzo6aYiT2EhBuwzVoBjsAu8F9mnlqlnXGqADZg==}
@@ -10138,7 +10141,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 5.1.0
+      minimatch: 5.1.1
       once: 1.4.0
 
   /global-dirs/0.1.1:
@@ -11745,13 +11748,13 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       brace-expansion: 2.0.1
+    dev: true
 
   /minimatch/5.1.1:
     resolution: {integrity: sha512-362NP+zlprccbEt/SkxKfRMHnNY85V74mVnpUpNyr3F35covl09Kec7/sEFLt3RA4oXmewtoaanoIf67SE5Y5g==}
     engines: {node: '>=10'}
     dependencies:
       brace-expansion: 2.0.1
-    dev: true
 
   /minimist-options/4.1.0:
     resolution: {integrity: sha512-Q4r8ghd80yhO/0j1O3B2BjweX3fiHg9cdOwjJd2J76Q135c+NDxGCqdYKQ1SKBuFfgWbAUzBfvYjPUEeNgqN1A==}
@@ -12785,6 +12788,14 @@ packages:
       yaml: 2.1.3
     dev: false
 
+  /postcss-selector-parser/6.0.11:
+    resolution: {integrity: sha512-zbARubNdogI9j7WY4nQJBiNqQf3sLS3wCP4WfOidu+p28LofJqDH1tcXypGrcmMHhDk2t9wGhCsYe/+szLTy1g==}
+    engines: {node: '>=4'}
+    dependencies:
+      cssesc: 3.0.0
+      util-deprecate: 1.0.2
+    dev: false
+
   /postcss/8.4.18:
     resolution: {integrity: sha512-Wi8mWhncLJm11GATDaQKobXSNEYGUHeQLiQqDFG1qQ5UTDPTEvKw0Xt5NsTpktGTwLps3ByrWsBrG0rB8YQ9oA==}
     engines: {node: ^10 || ^12 || >=14}
@@ -12950,6 +12961,16 @@ packages:
   /punycode/2.1.1:
     resolution: {integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==}
     engines: {node: '>=6'}
+
+  /purgecss/5.0.0:
+    resolution: {integrity: sha512-RAnuxrGuVyLLTr8uMbKaxDRGWMgK5CCYDfRyUNNcaz5P3kGgD2b7ymQGYEyo2ST7Tl/ScwFgf5l3slKMxHSbrw==}
+    hasBin: true
+    dependencies:
+      commander: 9.4.1
+      glob: 8.0.3
+      postcss: 8.4.19
+      postcss-selector-parser: 6.0.11
+    dev: false
 
   /q/1.5.1:
     resolution: {integrity: sha512-kV/CThkXo6xyFEZUugw/+pIOywXcDbFYgSct5cT3gqlbkBE1SJdwy6UQoZvodiWF/ckQLZyDE/Bu1M6gVu5lVw==}
@@ -13999,6 +14020,7 @@ packages:
 
   /sourcemap-codec/1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
+    deprecated: Please use @jridgewell/sourcemap-codec instead
 
   /spawn-command/0.0.2-1:
     resolution: {integrity: sha512-n98l9E2RMSJ9ON1AKisHzz7V42VDiBQGY6PB1BwRglz99wpVsSuGzQ+jOi6lFXBGVTCrRpltvjm+/XA+tpeJrg==}

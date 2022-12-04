@@ -8,9 +8,6 @@
     "dist"
   ],
   "source": "./src/index.tsx",
-  "sideEffects": [
-    "**/*"
-  ],
   "exports": {
     ".": {
       "solid": "./dist/source-gen/index.jsx",
@@ -71,9 +68,9 @@
     "@solid-primitives/refs": "^0.3.1",
     "@solid-primitives/utils": "^3.0.1",
     "@vanilla-extract/css": "^1.9.1",
-    "@vanilla-extract/dynamic": "^2.0.2",
-    "@vanilla-extract/recipes": "^0.2.5",
-    "@vanilla-extract/sprinkles": "^1.5.0",
+    "@vanilla-extract/dynamic": "^2.0.3",
+    "@vanilla-extract/recipes": "^0.3.0",
+    "@vanilla-extract/sprinkles": "^1.5.1",
     "clsx": "^1.1.1",
     "csstype": "^3.1.0",
     "solid-headless": "^0.11.1",
@@ -104,10 +101,10 @@
     "@solid-primitives/refs": "^0.3.2",
     "@solid-primitives/utils": "^3.0.2",
     "@vanilla-extract/css": "^1.9.1",
-    "@vanilla-extract/dynamic": "^2.0.2",
+    "@vanilla-extract/dynamic": "^2.0.3",
     "@vanilla-extract/private": "^1.0.3",
-    "@vanilla-extract/recipes": "^0.2.5",
-    "@vanilla-extract/sprinkles": "^1.5.0",
+    "@vanilla-extract/recipes": "^0.3.0",
+    "@vanilla-extract/sprinkles": "^1.5.1",
     "acorn-jsx": "5.3.2",
     "clsx": "^1.2.1",
     "csstype": "^3.1.1",

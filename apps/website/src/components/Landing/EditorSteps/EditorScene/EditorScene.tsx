@@ -15,8 +15,8 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
-import {CodeEditorPreviewBlock} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditorPreviewBlock';
-import {DynamicBackgroundExpansion} from '~/components/Landing/EditorSteps/EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
+import {CodeEditorPreviewBlock} from '../CodeEditor/CodeEditorPreviewBlock';
+import {DynamicBackgroundExpansion} from '../EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
 import {injectEditorScene} from '../scene';
 import {CircularProgress} from './CircularProgress/CircularProgress';
 import * as styles from './EditorScene.css';
