@@ -12,13 +12,10 @@ const htmlSource = readFileSync(join('./dist/public/index.html'), {
 let patchedSource = htmlSource;
 
 const entry = manifest['style.css'].file;
-const source = readFileSync(join('./dist/public', entry), {
-  encoding: 'utf-8',
-});
 
 patchedSource = patchedSource.replace(
-  `<style id="css-critical-style"></style>`,
-  `<style id="css-critical-style">${source}</style>`,
+  `</head>`,
+  `<link rel='stylesheet' href='${entry}'></head>`,
 );
 
 writeFileSync(htmlSourcePath, patchedSource);
