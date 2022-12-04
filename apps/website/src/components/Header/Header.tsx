@@ -1,7 +1,7 @@
 import {Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
-import {createMemo, createSignal, onCleanup, onMount, untrack} from 'solid-js';
-import {CodeImageLogoSvgRemote} from '~/components/CodeImageLogo/CodeImageLogo';
+import {createMemo, createSignal, onCleanup, onMount} from 'solid-js';
+import {CodeImageLogoSvg} from '../CodeImageLogo/CodeImageLogoSvg';
 import * as styles from './Header.css';
 import {content} from '../Main/MainPage.css';
 
@@ -25,8 +25,8 @@ export function Header() {
     <div class={styles.header} data-scrolled={dataScrolled() ?? false}>
       <div class={styles.headerContent}>
         <div class={styles.headerContentInner}>
-          <div style={{display: 'flex'}}>
-            <CodeImageLogoSvgRemote height={32} width={164} />
+          <div>
+            <CodeImageLogoSvg height={32} width={164} />
           </div>
           <div class={styles.headerActions}>
             <Button

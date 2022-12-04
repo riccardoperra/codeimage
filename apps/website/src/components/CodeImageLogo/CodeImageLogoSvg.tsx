@@ -1,6 +1,6 @@
 import {JSX} from 'solid-js';
 
-export const CodeImageLogo = (props: JSX.IntrinsicElements['svg']) => {
+export const CodeImageLogoSvg = (props: JSX.IntrinsicElements['svg']) => {
   return (
     <svg
       id="codeimage-logo-blue-dark-v1"
