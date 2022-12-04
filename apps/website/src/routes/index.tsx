@@ -1,4 +1,5 @@
 import {createResource} from 'solid-js';
+import EditorSteps from '~/components/Landing/EditorSteps/EditorSteps';
 import MainPage from '~/components/Main/MainPage';
 import {hydrateOnViewport} from '~/core/hydrateOnViewport';
 
@@ -14,11 +15,6 @@ export function routeData() {
     repoInfo: data(),
   };
 }
-
-const EditorSteps = hydrateOnViewport(
-  () => import('../components/Landing/EditorSteps/EditorSteps'),
-  'idle',
-);
 
 const Projects = hydrateOnViewport(
   () => import('../components/Landing/Projects/Projects'),
