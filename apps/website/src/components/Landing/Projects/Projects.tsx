@@ -1,5 +1,4 @@
-import {Badge, Box, Button, SvgIcon, SvgIconProps, Text} from '@codeimage/ui';
-import {A} from '@solidjs/router';
+import {Badge, Box, Text} from '@codeimage/ui';
 import {animate, scroll} from 'motion';
 import {JSX, onMount} from 'solid-js';
 import {injectBreakpoints} from '~/core/breakpoints';
@@ -58,7 +57,6 @@ export default function Projects() {
           <div class={styles.imageSection}>
             <div class={styles.imageWrapper}>
               <picture>
-                {/* <source type="image/webp" srcset={'/projects-showcase.webp'} loading={'lazy'} /> */}
                 <img
                   class={styles.image}
                   loading={'lazy'}
