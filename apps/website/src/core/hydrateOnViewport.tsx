@@ -86,7 +86,7 @@ export function hydrateOnViewport<
 
     return (
       <div data-hk={hk} ref={el}>
-        <Suspense fallback={<NoHydratedComponent />}>
+        <Suspense>
           <Show when={load()} fallback={<NoHydratedComponent />}>
             <LazyComponent />
           </Show>
