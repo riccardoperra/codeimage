@@ -45,12 +45,11 @@ export default function MainPage() {
             </div>
 
             <div class={styles.ctaContainer}>
-              <Button size={'lg'} variant={'solid'} theme={'primary'}>
+              <Button size={'xl'} variant={'solid'} theme={'primary'}>
                 Getting started
               </Button>
 
               <GithubButton
-                size={'lg'}
                 variant={'solid'}
                 theme={'secondary'}
                 loading={loading()}
