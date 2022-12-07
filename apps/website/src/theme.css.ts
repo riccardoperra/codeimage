@@ -14,9 +14,10 @@ export const rootTheme = style([
   internalRootTheme,
   lchSupportStyle({
     vars: {
-      [themeColors.primary]: 'lch(47.157% 92 272.966)',
-      [themeColors.button.primary.backgroundColor]: 'lch(47.157% 92 272.966)',
-      [rootThemeVars.primaryTextColor]: 'lch(47.157% 92 272.966)',
+      [themeColors.primary]: 'lch(47.157% 75.042 272.966)',
+      [themeColors.button.primary.backgroundColor]:
+        'lch(47.157% 75.042 272.966)',
+      [rootThemeVars.primaryTextColor]: 'lch(60.692% 75.301 265.152)',
       [rootThemeVars.green]: 'lch(68.171% 90 152.173)',
       [rootThemeVars.purple]: 'lch(58.652% 85 302.105)',
       [rootThemeVars.red]: 'lch(60% 90 27.937)',
