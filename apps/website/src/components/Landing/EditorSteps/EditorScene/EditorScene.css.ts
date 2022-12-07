@@ -13,6 +13,7 @@ export const container = style(
       display: 'flex',
       borderRadius: themeVars.borderRadius.xl,
       overflow: 'hidden',
+      clipPath: 'border-box',
     },
     tablet: {
       bottom: 'unset',
