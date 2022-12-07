@@ -16,12 +16,14 @@ export const bgFullAnimation = style({
   opacity: 1,
   margin: '0',
   borderRadius: themeVars.borderRadius.xl,
-  transform: 'translate(-50%, -50%) scale(1)',
-  transition: `transform 700ms ${animationCurve}, width 700ms ${animationCurve}, height 700ms ${animationCurve}`,
+  transform: 'translate3d(-50%, -50%, 0) scale(1) rotate(0deg)',
+  transformOrigin: 'center center',
+
+  transition: `width 700ms ${animationCurve}, height 700ms ${animationCurve}`,
   selectors: {
     '&[data-activate=true]': {
       opacity: 1,
-      transform: 'translate(-50%, -50%) rotate(15deg) scale(2)',
+      transform: 'translate3d(-50%, -50%, 0) rotate(15deg) scale(2)',
       width: '1000px',
       height: '728px',
     },
