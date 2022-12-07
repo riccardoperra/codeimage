@@ -1,6 +1,7 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
+import {gradientPurpleBg, gradientPurpleDarkerBg} from '~/gradients.css';
 
 const animationCurve = createVar();
 
@@ -41,17 +42,9 @@ export const container = style(
   }),
 );
 
-export const backgroundSecondStep = style([
-  bgFullAnimation,
-  {
-    background:
-      'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
-  },
-]);
+export const backgroundSecondStep = style([bgFullAnimation, gradientPurpleBg]);
 
 export const backgroundThirdStep = style([
   bgFullAnimation,
-  {
-    background: 'linear-gradient(-45deg, #402662 0%, #8000FF 100%)',
-  },
+  gradientPurpleDarkerBg,
 ]);

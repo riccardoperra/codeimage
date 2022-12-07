@@ -13,6 +13,8 @@ import {
   Scripts,
   Title,
 } from 'solid-start';
+import {rootStyle} from '~/root.css';
+import {rootTheme} from '~/theme.css';
 import {getUiStore} from '~/ui';
 import {MainPageImagePreloading} from './components/Main/MainPage';
 import './root.css';
@@ -114,7 +116,7 @@ export default function Root() {
           content={uiStore.value.navColor ?? undefined}
         />
       </Head>
-      <Body>
+      <Body class={rootTheme}>
         <Suspense>
           <ErrorBoundary>
             <Routes>

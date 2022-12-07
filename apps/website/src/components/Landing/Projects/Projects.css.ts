@@ -1,6 +1,7 @@
 import {themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
+import {rootThemeVars} from '~/theme.css';
 
 export const main = style([
   {
@@ -66,7 +67,7 @@ export const content = style({
 });
 
 export const storageBadge = style({
-  backgroundColor: themeVars.backgroundColor.green['500'],
+  backgroundColor: rootThemeVars.green,
   width: '64px',
   height: '64px',
   color: 'white',
@@ -79,7 +80,7 @@ export const imageSection = style([
     overflow: 'hidden',
     position: 'relative',
     willChange: 'transform',
-    background: themeVars.backgroundColor.green['500'],
+    background: rootThemeVars.green,
     borderRadius: '48px',
     opacity: 1,
     height: '300px',

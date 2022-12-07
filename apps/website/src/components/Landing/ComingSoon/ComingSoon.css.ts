@@ -2,6 +2,7 @@ import {themeVars} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
+import {rootThemeVars} from '~/theme.css';
 
 export const main = style([
   {
@@ -115,28 +116,28 @@ export const badge = style({
 export const metricsBadge = style([
   badge,
   {
-    backgroundColor: themeVars.backgroundColor.purple['500'],
+    backgroundColor: rootThemeVars.purple,
   },
 ]);
 
 export const themeBuilderBadge = style([
   badge,
   {
-    backgroundColor: themeVars.backgroundColor.red['500'],
+    backgroundColor: rootThemeVars.red,
   },
 ]);
 
 export const embedsBadge = style([
   badge,
   {
-    backgroundColor: themeVars.backgroundColor.teal['500'],
+    backgroundColor: rootThemeVars.teal,
   },
 ]);
 
 export const storageBadge = style([
   badge,
   {
-    backgroundColor: themeVars.backgroundColor.green['500'],
+    backgroundColor: rootThemeVars.green,
   },
 ]);
 
@@ -145,8 +146,7 @@ export const imageSection = style([
     flex: '0 0 auto',
     overflow: 'hidden',
     position: 'relative',
-    willChange: 'transform',
-    background: themeVars.backgroundColor.purple['500'],
+    backgroundColor: rootThemeVars.purple,
     borderRadius: '48px',
     opacity: 1,
     height: '300px',
@@ -165,7 +165,7 @@ export const imageWrapper = style({
   aspectRatio: '2 / 1',
   flex: '0 0 auto',
   borderRadius: '32px',
-  height: 'var(--framer-aspect-ratio-supported, 568px)',
+  height: '568px',
   left: '48px',
   overflow: 'visible',
   position: 'absolute',

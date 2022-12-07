@@ -12,7 +12,6 @@ export const container = style(
       flex: 1,
       display: 'flex',
       borderRadius: themeVars.borderRadius.xl,
-      background: backgroundColorVar,
       overflow: 'hidden',
     },
     tablet: {
