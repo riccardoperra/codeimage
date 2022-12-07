@@ -206,10 +206,11 @@ export function EditorScene(props: EditorSceneProps) {
         >
           <Motion.div
             class={`${styles2.snippetTheme} ${styles2.canvas}`}
+            classList={{
+              [backgrounds[1]]: props.animationProgress >= 66,
+            }}
             animate={{
               padding: props.animationProgress >= 66 ? '32px' : 0,
-              background:
-                props.animationProgress >= 66 ? backgrounds[1] : 'transparent',
               transition: {
                 padding: {
                   easing: spring({velocity: 500}),

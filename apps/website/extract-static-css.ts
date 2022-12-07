@@ -4,17 +4,13 @@ import {PurgeCSS} from 'purgecss';
 
 import manifest from './dist/public/manifest.json';
 
-const [criticalEntries, indexEntries] = [
-  ...Object.entries(manifest).reduce(
-    (acc, [k, v]) => {
-      if (k.endsWith('.css')) {
-        const array = k.startsWith('src/') ? acc[1] : acc[0];
-        array.push([k, v.file]);
-      }
-      return acc;
-    },
-    [[], []],
-  ),
+const cssEntries = [
+  ...Object.entries(manifest).reduce((acc, [k, v]) => {
+    if (k.endsWith('.css')) {
+      acc.push([k, v.file]);
+    }
+    return acc;
+  }, []),
 ];
 
 const htmlSourcePath = join('./dist/public/index.html');
@@ -26,7 +22,7 @@ const htmlSource = readFileSync(join('./dist/public/index.html'), {
 let criticalStyle = '';
 let patchedSource = htmlSource;
 
-[...indexEntries, ...criticalEntries].forEach(([key, entry]) => {
+cssEntries.reverse().forEach(([key, entry]) => {
   const source = readFileSync(join('./dist/public', entry), {
     encoding: 'utf-8',
   });
