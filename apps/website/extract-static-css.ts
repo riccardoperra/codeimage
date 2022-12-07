@@ -22,13 +22,16 @@ const htmlSource = readFileSync(join('./dist/public/index.html'), {
 let criticalStyle = '';
 let patchedSource = htmlSource;
 
-cssEntries.reverse().forEach(([key, entry]) => {
-  const source = readFileSync(join('./dist/public', entry), {
-    encoding: 'utf-8',
+cssEntries
+  .reverse()
+  .sort(a => (a[0] === 'src/entry-client.css' ? -1 : 1))
+  .forEach(([key, entry]) => {
+    const source = readFileSync(join('./dist/public', entry), {
+      encoding: 'utf-8',
+    });
+    criticalStyle += source;
+    console.log(key);
   });
-  criticalStyle += source;
-  console.log(key);
-});
 
 const [resultPurge] = await new PurgeCSS().purge({
   css: [
