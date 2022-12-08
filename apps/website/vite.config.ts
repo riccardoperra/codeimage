@@ -1,6 +1,4 @@
 import {vanillaExtractPlugin as customVanillaExtractPlugin} from '@codeimage/vanilla-extract';
-import fs from 'node:fs';
-import path from 'node:path';
 import ssg from 'solid-start-static';
 import solid from 'solid-start/vite';
 import {defineConfig, Plugin} from 'vite';
