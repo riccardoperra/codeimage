@@ -20,10 +20,11 @@ export function withThemeMode<
 >(themes: T, nestedSelector?: NS): TypedThemeMode<T, NS> {
   const suffix = nestedSelector ? `${nestedSelector}` : '&';
 
-  return Object.entries(themes).reduce<
-    NonNullable<StyleRule['selectors']>
-  >((acc, [themeKey, themeValue]) => {
-    acc[`[data-codeimage-theme=${themeKey}] ${suffix}`] = themeValue;
-    return acc;
-  }, {}) as TypedThemeMode<T, NS>;
+  return Object.entries(themes).reduce<NonNullable<StyleRule['selectors']>>(
+    (acc, [themeKey, themeValue]) => {
+      acc[`[data-codeimage-theme=${themeKey}] ${suffix}`] = themeValue;
+      return acc;
+    },
+    {},
+  ) as TypedThemeMode<T, NS>;
 }
