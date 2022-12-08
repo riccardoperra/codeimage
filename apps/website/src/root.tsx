@@ -106,6 +106,8 @@ export default function Root() {
         <Meta charset="utf-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta name="title" content="CodeImage" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.webmanifest" />
         <Meta
           name="description"
           content="CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code"
