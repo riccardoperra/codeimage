@@ -89,6 +89,10 @@
     "pnpm": ">=7"
   },
   "pnpm": {
-  },
-  "allowNonAppliedPatches": false
+    "overrides": {
+      "typescript": "4.8.4",
+      "vite": "3.1.8"
+    },
+    "allowNonAppliedPatches": false
+  }
 }
