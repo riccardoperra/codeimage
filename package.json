@@ -89,9 +89,6 @@
     "pnpm": ">=7"
   },
   "pnpm": {
-    "overrides": {
-      "vite": "3.2.4"
-    }
   },
   "allowNonAppliedPatches": false
 }
