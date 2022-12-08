@@ -66,7 +66,9 @@ function MainPageImagePreloading() {
         rel="preload"
         href={'/landing/codeimage_preview_mobile.webp'}
         as="image"
-        media={`(min-width: ${breakpoints.tablet}px)`}
+        media={`(min-width: ${breakpoints.tablet}px) and (max-width: ${
+          breakpoints.desktop - 1
+        })`}
       />
       <link
         rel="preload"
@@ -84,6 +86,8 @@ export default function Root() {
     <>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+      <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      <link rel="manifest" href="/manifest.webmanifest" />
       <link
         rel="preload"
         href="/fonts/Mona-Sans-Bold.woff2"
@@ -125,8 +129,6 @@ export default function Root() {
         <Meta charset="utf-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta name="title" content="CodeImage" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/manifest.webmanifest" />
         <Meta
           name="description"
           content="CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code"

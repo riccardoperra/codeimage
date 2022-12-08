@@ -9,7 +9,10 @@ export default defineConfig({
   },
   plugins: [
     customVanillaExtractPlugin(),
-    solid({adapter: ssg(), prerenderRoutes: ['/']}),
+    solid({
+      adapter: ssg(),
+      prerenderRoutes: ['/'],
+    }),
     mergeCssPlugin(),
   ],
   optimizeDeps: {

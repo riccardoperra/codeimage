@@ -48,7 +48,7 @@ export default function MainPage() {
                   <source
                     type="image/webp"
                     srcset={'/landing/codeimage_preview_mobile_ultra.webp'}
-                    media={`(max-width: ${breakpoints.tablet}px)`}
+                    media={`(max-width: ${breakpoints.tablet - 1}px)`}
                   />
                   <source
                     type="image/webp"
