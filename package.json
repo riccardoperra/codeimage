@@ -91,9 +91,6 @@
   "pnpm": {
     "overrides": {
       "vite": "3.2.4"
-    },
-    "patchedDependencies": {
-      "csstype@3.1.1": "patches/csstype@3.1.1.patch"
     }
   },
   "allowNonAppliedPatches": false
