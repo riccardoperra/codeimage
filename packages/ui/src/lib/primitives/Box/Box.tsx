@@ -10,7 +10,10 @@ import {sprinkles, Sprinkles} from '../../theme';
 import {styled} from '../../utils';
 import {boxBase} from './Box.css';
 
-type BoxParameters = Sprinkles;
+type BoxParameters = {
+  // Fallback to support both index number and string (ex. 2 | "2")
+  [key in keyof Sprinkles]: Sprinkles[key] | `${Sprinkles[key] & number}`;
+};
 
 export type BoxProps<T extends ElementType = 'div'> = Partial<BoxParameters> & {
   as?: T;
@@ -35,3 +38,8 @@ export function Box<T extends ElementType = 'div'>(
     </styled.div>
   );
 }
+
+Box({
+  padding: 2,
+  paddingTop: '2',
+});

@@ -12,9 +12,9 @@ export function TextFieldDemo() {
     <div>
       <Text size={'2xl'}>TextField - Text</Text>
 
-      <HStack spacing={'4'}>
+      <HStack spacing={4}>
         <div style={{width: '400px'}}>
-          <VStack spacing={'2'} marginTop={'4'}>
+          <VStack spacing={2} marginTop={4}>
             <FlexField size={'lg'}>
               <FieldLabel>Label</FieldLabel>
               <TextField type={'text'} value={'Text'}></TextField>
@@ -31,7 +31,7 @@ export function TextFieldDemo() {
         </div>
 
         <div style={{width: '400px'}}>
-          <VStack spacing={'2'} marginTop={'4'}>
+          <VStack spacing={2} marginTop={4}>
             <FlexField size={'lg'}>
               <FieldLabel>Label</FieldLabel>
               <TextField inline type={'text'} value={'Text'}></TextField>
