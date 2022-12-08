@@ -83,15 +83,14 @@
     "tslib": "^2.4.0",
     "tsx": "^3.10.1",
     "typescript": "^4.8.4",
-    "vite": "^3.2.4"
+    "vite": "^3.1.8"
   },
   "engines": {
     "pnpm": ">=7"
   },
   "pnpm": {
     "overrides": {
-      "typescript": "^4.8.4",
-      "vite": "^3.1.8"
+      "@vanilla-extract/integration": "6.0.1"
     },
     "allowNonAppliedPatches": false
   }
