@@ -2,93 +2,6 @@ lockfileVersion: 5.4
 
 overrides:
   '@vanilla-extract/integration': 6.0.1
-  '@types/node@^18.11.0': 18.11.9
-  typescript@^4.8.4: 4.9.3
-  typescript@^4.5.5: 4.9.3
-  vite-plugin-solid@^2.3.9: 2.4.0
-  vite-plugin-solid@^2.3.10: 2.4.0
-  '@codemirror/lang-cpp@^6.0.1': 6.0.2
-  '@codemirror/lang-markdown@^6.0.2': 6.0.5
-  '@codemirror/lang-php@^6.0.0': 6.0.1
-  '@codemirror/lang-python@^6.0.2': 6.1.0
-  '@codemirror/lang-rust@^6.0.0': 6.0.1
-  '@codemirror/lang-sql@^6.3.0': 6.3.3
-  '@lezer/highlight@^1.1.1': 1.1.3
-  '@lezer/highlight@^1.0.0': 1.1.3
-  '@motionone/solid@^10.14.2': 10.14.3
-  '@solidjs/router@^0.5.0': 0.5.1
-  '@vanilla-extract/css@^1.9.1': 1.9.2
-  '@vanilla-extract/sprinkles@^1.5.0': 1.5.1
-  solid-codemirror@^2.0.2: 2.2.1
-  solid-js@^1.5.7: 1.6.2
-  solid-js@^1.6.0: 1.6.2
-  vite-plugin-dts@^1.6.6: 1.7.1
-  '@rollup/plugin-typescript@^9.0.1': 9.0.2
-  merge-anything@^5.0.2: 5.1.3
-  postcss@^8.4.18: 8.4.19
-  postcss@^8.3.6: 8.4.19
-  '@babel/runtime@^7.10.4': 7.20.6
-  '@babel/runtime@^7.17.8': 7.20.6
-  '@babel/runtime@^7.6.2': 7.20.6
-  '@babel/runtime@^7.8.4': 7.20.6
-  yargs@^17.0.0: 17.6.2
-  yargs@^17.3.1: 17.6.2
-  yargs@^17.5.1: 17.6.2
-  ignore@^5.2.0: 5.2.1
-  minimatch@^5.0.1: 5.1.1
-  '@babel/core@^7.18.6': 7.20.5
-  '@babel/core@^7.19.6': 7.20.5
-  '@babel/core@^7.17.5': 7.20.5
-  '@babel/core@^7.13.10': 7.20.5
-  '@babel/core@^7.7.5': 7.20.5
-  babel-preset-solid@^1.4.6: 1.6.2
-  babel-preset-solid@^1.3.6: 1.6.2
-  babel-preset-solid@^1.2.6: 1.6.2
-  '@lezer/common@^1.0.0': 1.0.2
-  '@lezer/lr@^1.0.0': 1.2.5
-  '@motionone/dom@^10.14.2': 10.14.3
-  '@solid-primitives/event-listener@^2.2.2': 2.2.4
-  '@solid-primitives/event-listener@^2.1.0': 2.2.4
-  '@solid-primitives/rootless@^1.1.3': 1.2.1
-  deep-object-diff@^1.1.0: 1.1.9
-  '@babel/generator@^7.19.6': 7.20.5
-  '@babel/generator@^7.19.3': 7.20.5
-  '@babel/generator@^7.18.2': 7.20.5
-  '@babel/generator@^7.19.4': 7.20.5
-  '@microsoft/api-extractor@^7.33.1': 7.33.6
-  regenerator-runtime@^0.13.4: 0.13.11
-  ci-info@^3.2.0: 3.7.0
-  decamelize-keys@^1.1.0: 1.1.1
-  '@babel/helper-compilation-targets@^7.19.3': 7.20.0
-  '@babel/helper-module-transforms@^7.19.0': 7.20.2
-  '@babel/helper-module-transforms@^7.19.6': 7.20.2
-  '@babel/helper-module-transforms@^7.18.6': 7.20.2
-  '@babel/helpers@^7.19.0': 7.20.6
-  '@babel/helpers@^7.19.4': 7.20.6
-  '@babel/parser@^7.19.3': 7.20.5
-  '@babel/parser@^7.19.6': 7.20.5
-  '@babel/parser@^7.19.4': 7.20.5
-  '@babel/traverse@^7.19.3': 7.20.5
-  '@babel/traverse@^7.19.6': 7.20.5
-  '@babel/traverse@^7.19.4': 7.20.5
-  '@babel/traverse@^7.19.0': 7.20.5
-  '@babel/types@^7.19.3': 7.20.5
-  '@babel/types@^7.19.4': 7.20.5
-  '@babel/types@^7.18.4': 7.20.5
-  '@babel/compat-data@^7.19.4': 7.20.5
-  '@babel/compat-data@^7.19.3': 7.20.5
-  '@babel/helper-simple-access@^7.18.6': 7.20.2
-  '@babel/helper-simple-access@^7.19.4': 7.20.2
-  tslib@^2.3.1: 2.4.0
-  csstype@^3.1.0: 3.1.1
-  '@babel/plugin-syntax-jsx@^7.16.5': 7.18.6
-  '@babel/helper-plugin-utils@^7.17.12': 7.19.0
-  '@babel/helper-module-imports@^7.16.7': 7.18.6
-  is-core-module@^2.1.0: 2.11.0
-  convert-source-map@^1.7.0: 1.9.0
-  '@jridgewell/trace-mapping@^0.3.9': 0.3.17
-  '@jridgewell/set-array@^1.0.0': 1.1.2
-  '@jridgewell/sourcemap-codec@^1.4.10': 1.4.14
 
 patchedDependencies:
   '@vanilla-extract/integration@6.0.1':
@@ -108,7 +21,7 @@ importers:
       '@commitlint/cli': 17.1.2
       '@commitlint/config-angular': 17.1.0
       '@commitlint/config-conventional': ^17.1.0
-      '@types/node': 18.11.9
+      '@types/node': ^18.11.0
       '@types/prettier': ^2.7.1
       '@typescript-eslint/eslint-plugin': ^5.40.0
       '@typescript-eslint/parser': ^5.40.0
@@ -124,9 +37,9 @@ importers:
       pnpm-bundle-workspace-package: ^1.0.2
       pnpm-deduplicate: 0.4.1
       prettier: ^2.7.1
-      tslib: 2.4.0
+      tslib: ^2.4.0
       tsx: ^3.10.1
-      typescript: 4.9.3
+      typescript: ^4.8.4
       vite: ^3.2.4
     devDependencies:
       '@changesets/assemble-release-plan': 5.2.2
@@ -171,7 +84,7 @@ importers:
       '@fastify/type-provider-typebox': ^2.3.0
       '@prisma/client': ^4.4.0
       '@sinclair/typebox': ^0.24.46
-      '@types/node': 18.11.9
+      '@types/node': ^18.11.0
       '@types/sinon': ^10.0.13
       '@types/tap': ^15.0.7
       close-with-grace: ^1.1.0
@@ -188,7 +101,7 @@ importers:
       prisma: ^4.4.0
       sinon: ^14.0.1
       tap: ^16.3.0
-      typescript: 4.9.3
+      typescript: ^4.8.4
     dependencies:
       '@codeimage/prisma-models': link:../../packages/prisma-models
       '@fastify/autoload': 5.4.1
@@ -234,17 +147,17 @@ importers:
       '@codeimage/vanilla-extract': workspace:*
       '@codemirror/autocomplete': ^6.3.4
       '@codemirror/commands': ^6.1.2
-      '@codemirror/lang-cpp': 6.0.2
+      '@codemirror/lang-cpp': ^6.0.2
       '@codemirror/lang-css': ^6.0.1
       '@codemirror/lang-html': ^6.3.1
       '@codemirror/lang-java': ^6.0.1
       '@codemirror/lang-javascript': ^6.1.1
       '@codemirror/lang-json': ^6.0.1
-      '@codemirror/lang-markdown': 6.0.5
-      '@codemirror/lang-php': 6.0.1
-      '@codemirror/lang-python': 6.1.0
-      '@codemirror/lang-rust': 6.0.1
-      '@codemirror/lang-sql': 6.3.3
+      '@codemirror/lang-markdown': ^6.0.5
+      '@codemirror/lang-php': ^6.0.1
+      '@codemirror/lang-python': ^6.1.0
+      '@codemirror/lang-rust': ^6.0.1
+      '@codemirror/lang-sql': ^6.3.3
       '@codemirror/language': ^6.3.1
       '@codemirror/lint': ^6.1.0
       '@codemirror/search': ^6.2.3
@@ -253,11 +166,11 @@ importers:
       '@floating-ui/core': ^1.0.1
       '@floating-ui/dom': ^1.0.2
       '@formatjs/intl-relativetimeformat': 11.1.4
-      '@lezer/highlight': 1.1.3
+      '@lezer/highlight': ^1.1.1
       '@lion/combobox': ^0.11.1
       '@lion/core': ^0.24.0
       '@lion/listbox': ^0.14.1
-      '@motionone/solid': 10.14.3
+      '@motionone/solid': ^10.14.2
       '@mswjs/data': ^0.10.2
       '@ngneat/falso': ^6.1.0
       '@solid-aria/button': ^0.1.3
@@ -268,17 +181,16 @@ importers:
       '@solid-primitives/immutable': ^0.1.2
       '@solid-primitives/platform': ^0.0.101
       '@solid-primitives/resize-observer': ^2.0.4
-      '@solidjs/router': 0.5.1
+      '@solidjs/router': ^0.5.0
       '@thisbeyond/solid-dnd': 0.7.2
       '@types/downloadjs': ^1.4.3
-      '@vanilla-extract/css': 1.9.2
+      '@vanilla-extract/css': ^1.9.1
       '@vanilla-extract/dynamic': ^2.0.3
       '@vanilla-extract/recipes': ^0.3.0
-      '@vanilla-extract/sprinkles': 1.5.1
+      '@vanilla-extract/sprinkles': ^1.5.0
       bind-event-listener: ^2.1.1
       clsx: ^1.2.1
       cross-env: ^7.0.3
-      csstype: 3.1.1
       downloadjs: ^1.4.7
       https-localhost: ^4.7.1
       idb-keyval: ^6.2.0
@@ -290,15 +202,15 @@ importers:
       rimraf: ^3.0.2
       rxjs: ^7.5.7
       sass: ^1.55.0
-      solid-codemirror: 2.2.1
+      solid-codemirror: ^2.0.2
       solid-headless: ^0.13.0
-      solid-js: 1.6.2
+      solid-js: ^1.5.7
       solid-use: ^0.5.0
       tinykeys: ^1.4.0
-      typescript: 4.9.3
+      typescript: ^4.8.4
       vite: ^3.2.4
       vite-plugin-pwa: ^0.13.1
-      vite-plugin-solid: 2.4.0
+      vite-plugin-solid: ^2.3.9
       vite-tsconfig-paths: ^3.5.1
       workbox-core: ^6.5.4
       workbox-precaching: ^6.5.4
@@ -359,7 +271,6 @@ importers:
       '@vanilla-extract/sprinkles': 1.5.1_@vanilla-extract+css@1.9.2
       bind-event-listener: 2.1.1
       clsx: 1.2.1
-      csstype: 3.1.1
       downloadjs: 1.4.7
       idb-keyval: 6.2.0
       inter-ui: 3.19.3
@@ -400,17 +311,17 @@ importers:
       '@codemirror/language': ^6.3.1
       '@codemirror/state': ^6.1.4
       '@codemirror/view': ^6.6.0
-      '@lezer/highlight': 1.1.3
+      '@lezer/highlight': ^1.1.3
       '@lhci/cli': 0.10.0
-      '@motionone/solid': 10.14.3
+      '@motionone/solid': ^10.14.3
       '@solid-primitives/media': 2.0.4
       '@solid-primitives/platform': ^0.0.101
       '@solidjs/meta': ^0.28.2
-      '@solidjs/router': 0.5.1
-      '@vanilla-extract/css': 1.9.2
+      '@solidjs/router': ^0.5.1
+      '@vanilla-extract/css': ^1.9.2
       '@vanilla-extract/dynamic': ^2.0.3
       '@vanilla-extract/recipes': ^0.3.0
-      '@vanilla-extract/sprinkles': 1.5.1
+      '@vanilla-extract/sprinkles': ^1.5.1
       '@vanilla-extract/vite-plugin': 3.6.1
       motion: 10.14.3
       node-html-parser: 6.1.4
@@ -418,11 +329,11 @@ importers:
       rollup: ^2.79.1
       rollup-plugin-visualizer: 5.8.3
       solid-codemirror: 2.2.1
-      solid-js: 1.6.2
+      solid-js: ^1.6.0
       solid-start: ^0.2.6
       solid-start-node: ^0.2.6
       solid-start-static: ^0.2.6
-      typescript: 4.9.3
+      typescript: ^4.8.4
       undici: ^5.11.0
       vite: ^3.2.4
     dependencies:
@@ -462,14 +373,14 @@ importers:
 
   packages/atomic-state:
     specifiers:
-      '@types/node': 18.11.9
+      '@types/node': ^18.11.0
       rollup: ^2.79.1
       rollup-preset-solid: ^1.4.0
       rxjs: ^7.5.7
-      solid-js: 1.6.2
+      solid-js: ^1.5.7
       vite: ^3.2.4
-      vite-plugin-dts: 1.7.1
-      vite-plugin-solid: 2.4.0
+      vite-plugin-dts: ^1.6.6
+      vite-plugin-solid: ^2.3.9
     devDependencies:
       '@types/node': 18.11.9
       rollup: 2.79.1
@@ -485,17 +396,17 @@ importers:
       '@codeimage/highlight': workspace:*
       '@codemirror/autocomplete': ^6.3.4
       '@codemirror/commands': ^6.1.2
-      '@codemirror/lang-cpp': 6.0.2
+      '@codemirror/lang-cpp': ^6.0.1
       '@codemirror/lang-css': ^6.0.1
       '@codemirror/lang-html': ^6.3.1
       '@codemirror/lang-java': ^6.0.1
       '@codemirror/lang-javascript': ^6.1.1
       '@codemirror/lang-json': ^6.0.1
-      '@codemirror/lang-markdown': 6.0.5
-      '@codemirror/lang-php': 6.0.1
-      '@codemirror/lang-python': 6.1.0
-      '@codemirror/lang-rust': 6.0.1
-      '@codemirror/lang-sql': 6.3.3
+      '@codemirror/lang-markdown': ^6.0.2
+      '@codemirror/lang-php': ^6.0.0
+      '@codemirror/lang-python': ^6.0.2
+      '@codemirror/lang-rust': ^6.0.0
+      '@codemirror/lang-sql': ^6.3.0
       '@codemirror/lang-xml': ^6.0.0
       '@codemirror/language': ^6.3.1
       '@codemirror/legacy-modes': ^6.3.1
@@ -505,11 +416,11 @@ importers:
       '@codemirror/view': ^6.6.0
       material-icon-theme: ^4.21.0
       rimraf: ^3.0.2
-      solid-js: 1.6.2
-      typescript: 4.9.3
+      solid-js: ^1.6.2
+      typescript: ^4.8.4
       vite: ^3.2.4
-      vite-plugin-dts: 1.7.1
-      vite-plugin-solid: 2.4.0
+      vite-plugin-dts: ^1.6.6
+      vite-plugin-solid: ^2.3.9
     dependencies:
       '@codeimage/highlight': link:../highlight
       '@codemirror/autocomplete': 6.3.4_4npvozs3agsv66jx2b7pfvr53q
@@ -544,15 +455,15 @@ importers:
   packages/dom-export:
     specifiers:
       '@solid-primitives/platform': ^0.0.101
-      '@types/node': 18.11.9
+      '@types/node': ^18.11.0
       lint-staged: ^13.0.3
       prettier: ^2.7.1
       rimraf: ^3.0.2
-      solid-js: 1.6.2
-      tslib: 2.4.0
-      typescript: 4.9.3
+      solid-js: ^1.5.7
+      tslib: ^2.4.0
+      typescript: ^4.8.4
       vite: ^3.2.4
-      vite-plugin-dts: 1.7.1
+      vite-plugin-dts: ^1.6.6
     dependencies:
       '@solid-primitives/platform': 0.0.101_solid-js@1.6.2
       solid-js: 1.6.2
@@ -575,25 +486,25 @@ importers:
       '@codemirror/state': ^6.1.2
       '@codemirror/theme-one-dark': ^6.1.0
       '@codemirror/view': ^6.3.1
-      '@lezer/highlight': 1.1.3
+      '@lezer/highlight': ^1.1.1
       '@primer/primitives': ^7.9.0
-      '@rollup/plugin-typescript': 9.0.2
-      '@types/node': 18.11.9
+      '@rollup/plugin-typescript': ^9.0.1
+      '@types/node': ^18.11.0
       '@types/prettier': ^2.7.1
-      '@vanilla-extract/css': 1.9.2
+      '@vanilla-extract/css': ^1.9.1
       '@vanilla-extract/dynamic': ^2.0.2
       chalk: 5.1.2
       enquirer: 2.3.6
       rimraf: ^3.0.2
       rollup: ^2.79.1
       rollup-plugin-dts: ^5.0.0
-      solid-codemirror: 2.2.1
-      solid-js: 1.6.2
+      solid-codemirror: ^2.0.2
+      solid-js: ^1.5.7
       ts-morph: 16.0.0
-      typescript: 4.9.3
+      typescript: ^4.8.4
       vite: ^3.2.4
-      vite-plugin-dts: 1.7.1
-      vite-plugin-solid: 2.4.0
+      vite-plugin-dts: ^1.6.6
+      vite-plugin-solid: ^2.3.9
     dependencies:
       '@codemirror/language': 6.3.1
       '@codemirror/state': 6.1.4
@@ -627,11 +538,11 @@ importers:
     specifiers:
       '@solid-primitives/i18n': ^1.1.1
       rimraf: ^3.0.2
-      solid-js: 1.6.2
-      typescript: 4.9.3
+      solid-js: ^1.5.7
+      typescript: ^4.8.4
       vite: ^3.2.4
-      vite-plugin-dts: 1.7.1
-      vite-plugin-solid: 2.4.0
+      vite-plugin-dts: ^1.6.6
+      vite-plugin-solid: ^2.3.9
     dependencies:
       '@solid-primitives/i18n': 1.1.1_solid-js@1.6.2
       solid-js: 1.6.2
@@ -644,12 +555,9 @@ importers:
 
   packages/prisma-models:
     specifiers:
-      typescript: 4.9.3
+      typescript: ^4.8.4
     devDependencies:
       typescript: 4.9.3
-
-  packages/prisma-models/generated/client:
-    specifiers: {}
 
   packages/ui:
     specifiers:
@@ -658,10 +566,10 @@ importers:
       '@codeimage/vanilla-extract': workspace:*
       '@floating-ui/core': ^1.0.1
       '@floating-ui/dom': ^1.0.2
-      '@motionone/solid': 10.14.3
+      '@motionone/solid': ^10.14.2
       '@rollup/plugin-babel': 6.0.0
       '@rollup/plugin-node-resolve': 15.0.0
-      '@rollup/plugin-typescript': 9.0.2
+      '@rollup/plugin-typescript': ^9.0.1
       '@solid-aria/button': ^0.1.3
       '@solid-aria/collection': ^0.2.0
       '@solid-aria/dialog': ^0.1.4
@@ -678,23 +586,22 @@ importers:
       '@solid-primitives/props': ^2.2.2
       '@solid-primitives/refs': ^0.3.2
       '@solid-primitives/utils': ^3.0.2
-      '@types/node': 18.11.9
-      '@vanilla-extract/css': 1.9.2
+      '@types/node': ^18.11.0
+      '@vanilla-extract/css': ^1.9.1
       '@vanilla-extract/dynamic': ^2.0.3
       '@vanilla-extract/esbuild-plugin': 2.2.0
       '@vanilla-extract/private': ^1.0.3
       '@vanilla-extract/recipes': ^0.3.0
       '@vanilla-extract/rollup-plugin': 1.2.0
-      '@vanilla-extract/sprinkles': 1.5.1
+      '@vanilla-extract/sprinkles': ^1.5.1
       acorn-jsx: 5.3.2
       chalk: 5.1.2
       clsx: ^1.2.1
-      csstype: 3.1.1
       esbuild: 0.15.12
       estree-walker: 2.0.2
       magic-string: 0.26.7
-      merge-anything: 5.1.3
-      postcss: 8.4.19
+      merge-anything: 5.0.4
+      postcss: ^8.4.18
       pretty-ms: 8.0.0
       rimraf: ^3.0.2
       rollup: ^2.79.1
@@ -702,14 +609,14 @@ importers:
       rollup-plugin-terser: 7.0.2
       rollup-preset-solid: ^1.4.0
       solid-headless: ^0.11.1
-      solid-js: 1.6.2
+      solid-js: ^1.5.7
       solid-toast: ^0.3.5
       solid-use: ^0.5.0
       tiny-glob: ^0.2.9
-      typescript: 4.9.3
+      typescript: ^4.8.4
       vite: ^3.2.4
-      vite-plugin-dts: 1.7.1
-      vite-plugin-solid: 2.4.0
+      vite-plugin-dts: ^1.6.6
+      vite-plugin-solid: ^2.3.9
     dependencies:
       '@codeimage/locale': link:../locale
       '@codeimage/vanilla-extract': link:../vanilla-extract
@@ -740,7 +647,6 @@ importers:
       '@vanilla-extract/sprinkles': 1.5.1_@vanilla-extract+css@1.9.2
       acorn-jsx: 5.3.2
       clsx: 1.2.1
-      csstype: 3.1.1
       solid-headless: 0.11.1_solid-js@1.6.2
       solid-toast: 0.3.5_solid-js@1.6.2
       solid-use: 0.5.0_solid-js@1.6.2
@@ -755,7 +661,7 @@ importers:
       esbuild: 0.15.12
       estree-walker: 2.0.2
       magic-string: 0.26.7
-      merge-anything: 5.1.3
+      merge-anything: 5.0.4
       postcss: 8.4.19
       pretty-ms: 8.0.0
       rimraf: 3.0.2
@@ -772,24 +678,24 @@ importers:
 
   packages/vanilla-extract:
     specifiers:
-      '@rollup/plugin-typescript': 9.0.2
-      '@types/node': 18.11.9
+      '@rollup/plugin-typescript': ^9.0.1
+      '@types/node': 18.11.0
       '@vanilla-extract/integration': 6.0.1
       outdent: 0.8.0
-      postcss: 8.4.19
+      postcss: ^8.4.18
       postcss-load-config: ^4.0.1
       rollup: ^2.79.1
-      typescript: 4.9.3
+      typescript: ^4.8.4
       vite: ^3.2.4
     dependencies:
       '@vanilla-extract/integration': 6.0.1_v37axvkuzaeklpevgd6rbci2ni
       outdent: 0.8.0
       postcss: 8.4.19
       postcss-load-config: 4.0.1_postcss@8.4.19
-      vite: 3.2.4_@types+node@18.11.9
+      vite: 3.2.4_@types+node@18.11.0
     devDependencies:
       '@rollup/plugin-typescript': 9.0.2_k35zwyycrckt5xfsejji7kbwn4
-      '@types/node': 18.11.9
+      '@types/node': 18.11.0
       rollup: 2.79.1
       typescript: 4.9.3
 
@@ -2480,7 +2386,7 @@ packages:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
     dependencies:
-      '@jridgewell/trace-mapping': 0.3.17
+      '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
   /@cush/relative/1.0.0:
@@ -2798,6 +2704,13 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
 
+  /@jridgewell/trace-mapping/0.3.9:
+    resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.0
+      '@jridgewell/sourcemap-codec': 1.4.14
+    dev: true
+
   /@lezer/common/1.0.2:
     resolution: {integrity: sha512-SVgiGtMnMnW3ActR8SXgsDhw7a0w0ChHSYAyAUxxrOiJ1OqYWEKk/xJd84tTSPo1mo6DXLObAJALNnd0Hrv7Ng==}
 
@@ -3026,7 +2939,7 @@ packages:
       resolve: 1.17.0
       semver: 7.3.8
       source-map: 0.6.1
-      typescript: 4.9.3
+      typescript: 4.8.4
     dev: true
 
   /@microsoft/tsdoc-config/0.16.2:
@@ -5165,6 +5078,9 @@ packages:
   /@types/node/14.18.32:
     resolution: {integrity: sha512-Y6S38pFr04yb13qqHf8uk1nHE3lXgQ30WZbv1mLliV9pt0NjvqdWttLcrOYLnXbOafknVYRHZGoMSpR9UwfYow==}
     dev: true
+
+  /@types/node/18.11.0:
+    resolution: {integrity: sha512-IOXCvVRToe7e0ny7HpT/X9Rb2RYtElG1a+VshjwT00HxrM2dWBApHQoqsI6WiY7Q03vdf2bCrIGzVrkF/5t10w==}
 
   /@types/node/18.11.9:
     resolution: {integrity: sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==}
@@ -10373,6 +10289,14 @@ packages:
       yargs-parser: 20.2.9
     dev: true
 
+  /merge-anything/5.0.4:
+    resolution: {integrity: sha512-YFsDeY5A9SLXhL21Qn15wCWewRUW6wMTxQF4SuPe9bNdr1wsjiE44Rp8FQUTCtwO0WLdlKiFzhAVE5tlf857Tg==}
+    engines: {node: '>=12.13'}
+    dependencies:
+      is-what: 4.1.7
+      ts-toolbelt: 9.6.0
+    dev: true
+
   /merge-anything/5.1.3:
     resolution: {integrity: sha512-pMb85+QShjqye+99Dkrg9m6EbTjDXwZFQbPysx/lNkuwjT+UJZlQvpnOy0P8kgGXzUx8iWSoNQel5QJjoyWHmQ==}
     engines: {node: '>=12.13'}
@@ -13384,6 +13308,10 @@ packages:
       yn: 3.1.1
     dev: true
 
+  /ts-toolbelt/9.6.0:
+    resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
+    dev: true
+
   /tsconfig-paths/4.1.0:
     resolution: {integrity: sha512-AHx4Euop/dXFC+Vx589alFba8QItjF+8hf8LtmuiCwHyI4rHXQtOOENaM8kvYf5fR0dRChy3wzWIZ9WbB7FWow==}
     engines: {node: '>=6'}
@@ -13505,6 +13433,12 @@ packages:
 
   /typedarray/0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
+    dev: true
+
+  /typescript/4.8.4:
+    resolution: {integrity: sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
     dev: true
 
   /typescript/4.9.3:
@@ -13823,6 +13757,40 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
 
+  /vite/3.2.4_@types+node@18.11.0:
+    resolution: {integrity: sha512-Z2X6SRAffOUYTa+sLy3NQ7nlHFU100xwanq1WDwqaiFiCe+25zdxP1TfCS5ojPV2oDDcXudHIoPnI1Z/66B7Yw==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': '>= 14'
+      less: '*'
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      '@types/node': 18.11.0
+      esbuild: 0.15.16
+      postcss: 8.4.19
+      resolve: 1.22.1
+      rollup: 2.79.1
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: false
+
   /vite/3.2.4_@types+node@18.11.9:
     resolution: {integrity: sha512-Z2X6SRAffOUYTa+sLy3NQ7nlHFU100xwanq1WDwqaiFiCe+25zdxP1TfCS5ojPV2oDDcXudHIoPnI1Z/66B7Yw==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -13855,6 +13823,7 @@ packages:
       rollup: 2.79.1
     optionalDependencies:
       fsevents: 2.3.2
+    dev: true
 
   /vite/3.2.4_sass@1.55.0:
     resolution: {integrity: sha512-Z2X6SRAffOUYTa+sLy3NQ7nlHFU100xwanq1WDwqaiFiCe+25zdxP1TfCS5ojPV2oDDcXudHIoPnI1Z/66B7Yw==}

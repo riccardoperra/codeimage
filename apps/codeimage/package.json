@@ -87,7 +87,6 @@
     "@vanilla-extract/sprinkles": "^1.5.0",
     "bind-event-listener": "^2.1.1",
     "clsx": "^1.2.1",
-    "csstype": "^3.1.1",
     "downloadjs": "^1.4.7",
     "idb-keyval": "^6.2.0",
     "inter-ui": "^3.19.3",
