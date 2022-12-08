@@ -105,6 +105,7 @@
     "@vanilla-extract/recipes": "^0.3.0",
     "@vanilla-extract/sprinkles": "^1.5.1",
     "clsx": "^1.2.1",
+    "csstype": "3.1.1",
     "solid-headless": "^0.13.0",
     "solid-toast": "^0.3.5",
     "solid-use": "^0.6.2"
@@ -117,7 +118,6 @@
     "@vanilla-extract/esbuild-plugin": "2.2.0",
     "@vanilla-extract/rollup-plugin": "1.2.0",
     "acorn-jsx": "5.3.2",
-    "csstype": "^3.1.1",
     "chalk": "5.1.2",
     "esbuild": "0.15.12",
     "estree-walker": "2.0.2",
