@@ -1,6 +1,6 @@
 import {themeColors, themeVars} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
-import {createTheme, globalStyle, style} from '@vanilla-extract/css';
+import {globalStyle} from '@vanilla-extract/css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 
 globalStyle('html, body', {

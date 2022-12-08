@@ -1,5 +1,5 @@
 import {Button, Link} from '@codeimage/ui';
-import {useRouteData} from '@solidjs/router';
+import {A, useRouteData} from '@solidjs/router';
 import {createSignal} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
@@ -35,7 +35,7 @@ export default function MainPage() {
 
             <div class={styles.ctaContainer}>
               <Button
-                as={Link}
+                as={A}
                 link={true}
                 rel={'canonical'}
                 href={'https://codeimage.dev'}

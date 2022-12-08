@@ -67,45 +67,6 @@ export const halfCard = style([
   }),
 ]);
 
-export const card = style([
-  {
-    border: `1px solid rgb(24 24 27)`,
-    backgroundColor: 'rgb(39 39 42 / 0.25)',
-    placeContent: 'center flex-start',
-    alignItems: 'center',
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    gap: '96px',
-    overflow: 'visible',
-    position: 'relative',
-    flexDirection: 'column-reverse',
-    padding: '24px',
-  },
-  responsiveStyle({
-    mobile: {
-      borderRadius: '32px',
-    },
-    desktop: {
-      flexDirection: 'row',
-      borderRadius: '96px',
-      padding: '48px',
-    },
-  }),
-]);
-
-export const content = style({
-  placeContent: 'center',
-  alignItems: 'center',
-  display: 'flex',
-  flexFlow: 'column nowrap',
-  gap: '48px',
-  overflow: 'hidden',
-  padding: '0px',
-  position: 'relative',
-  textAlign: 'center',
-  flex: 1,
-});
-
 export const badge = style({
   width: '64px',
   height: '64px',
@@ -141,42 +102,23 @@ export const storageBadge = style([
   },
 ]);
 
-export const imageSection = style([
-  {
-    flex: '0 0 auto',
-    overflow: 'hidden',
-    position: 'relative',
-    backgroundColor: rootThemeVars.purple,
-    borderRadius: '48px',
-    opacity: 1,
-    height: '300px',
-    width: '100%',
-  },
+export const analyticsFeatureCard = style(
   responsiveStyle({
+    mobile: {
+      flexDirection: 'column-reverse',
+    },
     desktop: {
-      height: '484px',
-      borderRadius: '64px',
-      flex: 1,
+      flexDirection: 'row',
     },
   }),
+);
+
+export const analyticsCardContainer = style([
+  {
+    display: 'flex',
+    gap: '24px',
+  },
 ]);
-
-export const imageWrapper = style({
-  aspectRatio: '2 / 1',
-  flex: '0 0 auto',
-  borderRadius: '32px',
-  height: '568px',
-  left: '48px',
-  overflow: 'visible',
-  position: 'absolute',
-  right: '-128px',
-  top: '48px',
-});
-
-export const analyticsCardContainer = style({
-  display: 'flex',
-  gap: '24px',
-});
 
 export const leftCardAnalytics = style({
   display: 'flex',

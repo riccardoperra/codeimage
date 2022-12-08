@@ -1,4 +1,4 @@
-import {Button, Link} from '@codeimage/ui';
+import {Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import {createMemo, createSignal, onCleanup, onMount} from 'solid-js';
 import {injectBreakpoints} from '~/core/breakpoints';
@@ -31,7 +31,7 @@ export function Header() {
           <CodeImageLogoSvg height={32} width={164} />
           <div class={styles.headerActions}>
             <Button
-              as={Link}
+              as={A}
               link={true}
               href="https://codeimage.dev"
               variant="solid"
