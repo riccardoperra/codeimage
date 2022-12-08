@@ -1,7 +1,7 @@
+import {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
 import {
   DynamicProps,
-  ValidConstructor,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import {JSXElement, ParentProps} from 'solid-js';
@@ -14,14 +14,14 @@ export type TextComponentProps = {
   weight?: UseTextProps['weight'];
 };
 
-export type TextProps<T extends ValidConstructor = 'span'> = {
-  as?: T | ValidConstructor;
+export type TextProps<T extends ElementType = 'span'> = {
+  as?: T | ElementType;
   innerHTML?: JSXElement | string;
 } & WithRef<T> &
   Omit<DynamicProps<T>, 'ref' | 'as'> &
   TextComponentProps;
 
-export function Text<T extends ValidConstructor = 'span'>(
+export function Text<T extends ElementType = 'span'>(
   props: ParentProps<TextProps<T>>,
 ): JSXElement {
   const textClasses = useText(props);

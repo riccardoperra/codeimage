@@ -79,7 +79,6 @@
     "husky": "8.0.1",
     "lint-staged": "^13.0.3",
     "pnpm-bundle-workspace-package": "^1.0.2",
-    "pnpm-deduplicate": "0.4.1",
     "prettier": "^2.7.1",
     "tslib": "^2.4.0",
     "tsx": "^3.10.1",
@@ -90,11 +89,8 @@
     "pnpm": ">=7"
   },
   "pnpm": {
-    "patchedDependencies": {
-      "@vanilla-extract/integration@6.0.1": "patches/@vanilla-extract__integration@6.0.1.patch"
-    },
     "overrides": {
-      "@vanilla-extract/integration": "6.0.1"
+      "vite": "3.2.4"
     }
   },
   "allowNonAppliedPatches": false

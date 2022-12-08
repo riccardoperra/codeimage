@@ -1,7 +1,7 @@
+import {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
 import type {
   DynamicProps,
-  ValidConstructor,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import type {JSXElement, PropsWithChildren} from 'solid-js';
@@ -12,13 +12,12 @@ import {boxBase} from './Box.css';
 
 type BoxParameters = Sprinkles;
 
-export type BoxProps<T extends ValidConstructor = 'div'> =
-  Partial<BoxParameters> & {
-    as?: T;
-  } & WithRef<T> &
-    Omit<DynamicProps<T>, 'as' | 'disabled' | 'ref'>;
+export type BoxProps<T extends ElementType = 'div'> = Partial<BoxParameters> & {
+  as?: T;
+} & WithRef<T> &
+  Omit<DynamicProps<T>, 'as' | 'disabled' | 'ref'>;
 
-export function Box<T extends ValidConstructor = 'div'>(
+export function Box<T extends ElementType = 'div'>(
   props: PropsWithChildren<BoxProps<T>>,
 ): JSXElement {
   return (
