@@ -1,3 +1,4 @@
+import {ElementType} from '@solid-aria/types';
 import {
   Transition,
   TransitionChild,
@@ -6,13 +7,15 @@ import {
 } from 'solid-headless';
 import {JSXElement} from 'solid-js';
 import * as styles from './Transition.css';
-import {ValidConstructor} from 'solid-headless/dist/types/utils/dynamic-prop';
 
-type FadeInOutTransitionProps<T extends ValidConstructor> =
+type FadeInOutTransitionProps<T extends ElementType> =
   | ({childTransition: true} & TransitionChildProps<T>)
   | ({childTransition?: boolean; show: boolean} & TransitionProps<T>);
 
-export function FadeInOutTransition<T extends ValidConstructor>(
+/**
+ * @deprecated Should convert to motion animation
+ */
+export function FadeInOutTransition<T extends ElementType>(
   props: FadeInOutTransitionProps<T>,
 ): JSXElement {
   return (
@@ -47,7 +50,7 @@ export function FadeInOutTransition<T extends ValidConstructor>(
   );
 }
 
-export function FadeInOutWithScaleTransition<T extends ValidConstructor>(
+export function FadeInOutWithScaleTransition<T extends ElementType>(
   props: FadeInOutTransitionProps<T>,
 ): JSXElement {
   return (

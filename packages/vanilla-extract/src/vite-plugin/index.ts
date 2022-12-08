@@ -20,6 +20,7 @@ import path from 'path';
 
 import type {Plugin, ResolvedConfig, ViteDevServer} from 'vite';
 import {normalizePath} from 'vite';
+import {vanillaCssTsFilesLoader} from '../esbuild/vanillaCssTsFilesLoader';
 import {PostCSSConfigResult, resolvePostcssConfig} from './postcss';
 
 const styleUpdateEvent = (fileId: string) =>
@@ -32,6 +33,8 @@ interface Options {
   identifiers?: IdentifierOption;
   esbuildOptions?: CompileOptions['esbuildOptions'];
 }
+
+const coreEsbuildPlugins = [vanillaCssTsFilesLoader()];
 
 export function vanillaExtractPlugin({
   identifiers,
@@ -50,6 +53,11 @@ export function vanillaExtractPlugin({
   if (!esbuildOptions.external) {
     esbuildOptions.external = ['solid-js/web'];
   }
+
+  esbuildOptions.plugins = [
+    ...(esbuildOptions?.plugins ?? []),
+    ...coreEsbuildPlugins,
+  ];
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   let forceEmitCssInSsrBuild: boolean = !!process.env.VITE_RSC_BUILD;
