@@ -1,5 +1,4 @@
 import {vanillaExtractPlugin as customVanillaExtractPlugin} from '@codeimage/vanilla-extract';
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import fs from 'node:fs';
 import path from 'node:path';
 import ssg from 'solid-start-static';
@@ -11,29 +10,7 @@ export default defineConfig({
     cssCodeSplit: true,
   },
   plugins: [
-    vanillaExtractPlugin({
-      esbuildOptions: {
-        external: ['solid-js/web', 'solid-headless'],
-        // plugins: [
-        //   {
-        //     name: 'build-xt',
-        //     setup(build) {
-        //       build.onLoad(
-        //         {filter: /.css.ts.vanilla.css$/},
-        //         async ({path: path$1}) => {
-        //           const css = await fs.promises.readFile(path$1, 'utf-8');
-        //           return {
-        //             contents: css,
-        //             loader: 'text',
-        //             resolveDir: path.dirname(path$1),
-        //           };
-        //         },
-        //       );
-        //     },
-        //   },
-        // ],
-      },
-    }),
+    customVanillaExtractPlugin(),
     solid({adapter: ssg(), prerenderRoutes: ['/']}),
     mergeCssPlugin(),
   ],
