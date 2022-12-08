@@ -152,6 +152,7 @@ export const WindowStyleForm: ParentComponent = () => {
               native={modality === 'mobile'}
               items={terminalShadows()}
               value={terminal.state.shadow}
+              multiple={false}
               onSelectChange={value => {
                 const shadowSelected = value ?? TERMINAL_SHADOWS.bottom;
                 umami.trackEvent(shadowSelected, 'change-shadow');

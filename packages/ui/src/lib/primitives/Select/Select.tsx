@@ -37,12 +37,23 @@ export interface SelectOptions<T> {
   value: T;
 }
 
-type SelectProps<T> = ListboxProps<T> & {
+type SelectProps<T> = Omit<ListboxProps<T>, 'onSelectChange' | 'value'> & {
   items: SelectOptions<T>[];
   itemContent?: Component<SelectOptions<T> & {selected: boolean}>;
   native?: boolean;
   id?: string;
-};
+} & (
+    | {
+        multiple: true;
+        value: T[];
+        onSelectChange: (value: T[]) => unknown;
+      }
+    | {
+        multiple: false;
+        value: T;
+        onSelectChange: (value: T) => unknown;
+      }
+  );
 
 export function Select<T>(props: SelectProps<T>): JSXElement {
   const floating = useFloating({
@@ -52,7 +63,7 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
 
   const label = () => {
     return (
-      props.items.find(item => item.value === (props as any).value)?.label ??
+      props.items.find(item => item.value === props.value)?.label ??
       'No items selected'
     );
   };
