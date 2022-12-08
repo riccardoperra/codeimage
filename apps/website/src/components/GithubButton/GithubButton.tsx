@@ -4,7 +4,7 @@ import * as styles from './GithubButton.css';
 
 type GithubButtonProps = {
   stars: number;
-  class: string;
+  class?: string;
   loading: boolean;
 };
 

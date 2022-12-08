@@ -1,29 +1,18 @@
 import {Button} from '@codeimage/ui';
-import {createDeferred, createSignal} from 'solid-js';
-import {useRouteData} from 'solid-start';
+import {useRouteData} from '@solidjs/router';
+import {createSignal} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
-import {routeData as RouteData} from '~/routes/index';
+import {routeData} from '~/routes';
 import {GithubButton} from '../GithubButton/GithubButton';
 import {Header} from '../Header/Header';
 
-function getRepoInfo() {
-  return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
-    .then(res => res.json())
-    .then(res => res.repo);
-}
-
 export default function MainPage() {
   let imageBox: HTMLDivElement;
-  const routeData = useRouteData<typeof RouteData>();
-  const [loading, setLoading] = createSignal(true);
-  const [repo, setRepo] = createSignal<any>(routeData.repoInfo || {stars: 0});
+  const [loading] = createSignal(false);
+  const data = useRouteData<typeof routeData>();
 
-  createDeferred(() =>
-    getRepoInfo()
-      .then(response => setRepo(response))
-      .finally(() => setLoading(false)),
-  );
+  const stars = () => data()?.repo?.stars ?? '?';
 
   return (
     <>
@@ -49,12 +38,7 @@ export default function MainPage() {
                 Getting started
               </Button>
 
-              <GithubButton
-                variant={'solid'}
-                theme={'secondary'}
-                loading={loading()}
-                stars={repo().stars}
-              />
+              <GithubButton loading={loading()} stars={stars()} />
             </div>
           </div>
           <div class={styles.imagePerspectiveBox} ref={imageBox}>

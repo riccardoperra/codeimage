@@ -1,11 +1,8 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, keyframes, style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
-import {lchSupportStyle} from '~/core/supportLch';
 import {gradientBlueBg} from '~/gradients.css';
 import {rootThemeVars} from '~/theme.css';
-
-export const progressOpacityEditor = createVar();
 
 const dotColor = createVar();
 
