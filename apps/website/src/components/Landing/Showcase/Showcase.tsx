@@ -116,10 +116,9 @@ export default function Showcase() {
                 animate={{
                   opacity: isInView() ? 1 : 0.5,
                   transform: isInView()
-                    ? `transformY(0px) scale(1)`
-                    : `transformY(20px) scale(0.7)`,
+                    ? `translateY(0px) scale(1)`
+                    : `translateY(20px) scale(0.65)`,
                   transition: {
-                    duration: 1,
                     easing: [0.16, 1, 0.3, 1],
                   },
                 }}

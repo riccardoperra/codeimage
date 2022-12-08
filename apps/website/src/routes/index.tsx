@@ -44,7 +44,7 @@ const OpenSource = hydrateOnViewport(
   () => import('../components/Landing/OpenSource/OpenSource'),
   'visible',
   {
-    rootMargin: '500px',
+    rootMargin: '1000px',
   },
 );
 
@@ -52,7 +52,7 @@ const Showcase = hydrateOnViewport(
   () => import('../components/Landing/Showcase/Showcase'),
   'visible',
   {
-    rootMargin: '500px',
+    rootMargin: '1000px',
   },
 );
 
