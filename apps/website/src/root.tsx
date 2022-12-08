@@ -13,6 +13,7 @@ import {
   Scripts,
   Title,
 } from 'solid-start';
+import {UmamiScript} from '~/components/Umami/UmamiScript';
 import {breakpoints} from '~/core/breakpoints';
 import {rootTheme} from '~/theme.css';
 import {getUiStore} from '~/ui';
@@ -147,6 +148,7 @@ export default function Root() {
           </ErrorBoundary>
         </Suspense>
         <Scripts />
+        <UmamiScript />
       </Body>
     </Html>
   );

@@ -35,8 +35,7 @@ export default function MainPage() {
 
             <div class={styles.ctaContainer}>
               <Button
-                as={A}
-                link={true}
+                as={'a'}
                 rel={'canonical'}
                 href={'https://codeimage.dev'}
                 size={'xl'}

@@ -328,6 +328,8 @@ jobs:
       - name: Build website preview
         env:
           ENABLE_VERCEL_BUILD: true
+          VITE_UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_LANDING_SCRIPT_SRC }}
+          VITE_UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_LANDING_WEBSITE_ID }}
         run: |
           pnpm --filter=@codeimage/website build
 

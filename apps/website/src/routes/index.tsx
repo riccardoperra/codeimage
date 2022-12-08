@@ -9,7 +9,8 @@ export function routeData() {
         'https://ungh.unjs.io/repos/riccardoperra/codeimage',
       )
         .then(res => res.json())
-        .then(res => res.repo);
+        .then(res => res.repo)
+        .catch(() => ({stars: '?'}));
 
       return {
         repo: result,
