@@ -45,7 +45,18 @@ export function Button<T extends ElementType = 'button'>(
 
   return (
     <ShButton
-      {...omitProps(props, ['class', 'leftIcon', 'loading'])}
+      {...omitProps(props, [
+        'class',
+        'leftIcon',
+        'loading',
+        'pill',
+        'block',
+        'theme',
+        'variant',
+        'size',
+        'loading',
+      ])}
+      as={props.as ?? 'button'}
       class={classes()}
     >
       <Show when={!!props.leftIcon && !props.loading}>{resolvedIcon()}</Show>

@@ -66,6 +66,8 @@ export default function OpenSource() {
                   as={A}
                   underline={true}
                   href="https://github.com/riccardoperra/codeimage/contributors"
+                  target="_blank'"
+                  rel={'noopener'}
                 >
                   contributors
                 </Link>
@@ -93,6 +95,8 @@ export default function OpenSource() {
                     as={A}
                     underline={true}
                     href="https://github.com/riccardoperra/codeimage"
+                    target="_blank'"
+                    rel={'noopener'}
                   >
                     Become a contributor
                   </Link>

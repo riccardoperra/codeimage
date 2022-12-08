@@ -1,4 +1,4 @@
-import {Button} from '@codeimage/ui';
+import {Button, Link} from '@codeimage/ui';
 import {useRouteData} from '@solidjs/router';
 import {createSignal} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
@@ -34,7 +34,15 @@ export default function MainPage() {
             </div>
 
             <div class={styles.ctaContainer}>
-              <Button size={'xl'} variant={'solid'} theme={'primary'}>
+              <Button
+                as={Link}
+                link={true}
+                rel={'canonical'}
+                href={'https://codeimage.dev'}
+                size={'xl'}
+                variant={'solid'}
+                theme={'primary'}
+              >
                 Getting started
               </Button>
 

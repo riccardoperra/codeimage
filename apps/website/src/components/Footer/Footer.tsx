@@ -1,4 +1,4 @@
-import {Text, HStack, Link} from '@codeimage/ui';
+import {HStack, Link, Text, VStack} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import * as styles from '~/components/Footer/Footer.css';
 
