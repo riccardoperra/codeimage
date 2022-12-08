@@ -75,22 +75,3 @@ export default function MainPage() {
     </>
   );
 }
-
-export function MainPageImagePreloading() {
-  return (
-    <>
-      <link
-        rel="preload"
-        href={'/landing/codeimage_preview_mobile.webp'}
-        as="image"
-        media={`(min-width: ${breakpoints.tablet}px)`}
-      />
-      <link
-        rel="preload"
-        href={'/landing/codeimage_preview_desktop.webp'}
-        as="image"
-        media={`(min-width: ${breakpoints.desktop}px)`}
-      />
-    </>
-  );
-}

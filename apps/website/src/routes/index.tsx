@@ -1,5 +1,4 @@
 import {createRouteData} from 'solid-start';
-import MainPage from '~/components/Main/MainPage';
 import {hydrateOnViewport} from '~/core/hydrateOnViewport';
 
 export function routeData() {
@@ -18,6 +17,11 @@ export function routeData() {
     {key: ['repoInfo']},
   );
 }
+
+const MainPage = hydrateOnViewport(
+  () => import('../components/Main/MainPage'),
+  'idle',
+);
 
 const EditorSteps = hydrateOnViewport(
   () => import('../components/Landing/EditorSteps/EditorSteps'),

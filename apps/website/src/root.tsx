@@ -13,9 +13,9 @@ import {
   Scripts,
   Title,
 } from 'solid-start';
+import {breakpoints} from '~/core/breakpoints';
 import {rootTheme} from '~/theme.css';
 import {getUiStore} from '~/ui';
-import {MainPageImagePreloading} from './components/Main/MainPage';
 import './root.css';
 
 function FontDefinitions() {
@@ -56,6 +56,25 @@ function FontDefinitions() {
       }
     `}
     </style>
+  );
+}
+
+function MainPageImagePreloading() {
+  return (
+    <>
+      <link
+        rel="preload"
+        href={'/landing/codeimage_preview_mobile.webp'}
+        as="image"
+        media={`(min-width: ${breakpoints.tablet}px)`}
+      />
+      <link
+        rel="preload"
+        href={'/landing/codeimage_preview_desktop.webp'}
+        as="image"
+        media={`(min-width: ${breakpoints.desktop}px)`}
+      />
+    </>
   );
 }
 
