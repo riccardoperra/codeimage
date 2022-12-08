@@ -1,8 +1,8 @@
 lockfileVersion: 5.4
 
 overrides:
-  typescript: 4.8.4
-  vite: 3.1.8
+  typescript: ^4.8.4
+  vite: ^3.1.8
 
 importers:
 
@@ -34,8 +34,8 @@ importers:
       prettier: ^2.7.1
       tslib: ^2.4.0
       tsx: ^3.10.1
-      typescript: 4.8.4
-      vite: 3.1.8
+      typescript: ^4.8.4
+      vite: ^3.1.8
     devDependencies:
       '@changesets/assemble-release-plan': 5.2.2
       '@changesets/changelog-github': 0.4.7
@@ -95,7 +95,7 @@ importers:
       prisma: ^4.4.0
       sinon: ^14.0.1
       tap: ^16.3.0
-      typescript: 4.8.4
+      typescript: ^4.8.4
     dependencies:
       '@codeimage/prisma-models': link:../../packages/prisma-models
       '@fastify/autoload': 5.4.1
@@ -201,8 +201,8 @@ importers:
       solid-js: ^1.6.3
       solid-use: ^0.5.0
       tinykeys: ^1.4.0
-      typescript: 4.8.4
-      vite: 3.1.8
+      typescript: ^4.8.4
+      vite: ^3.1.8
       vite-plugin-pwa: ^0.13.1
       vite-plugin-solid: ^2.3.9
       vite-tsconfig-paths: ^3.5.1
@@ -326,9 +326,9 @@ importers:
       solid-start: ^0.2.7
       solid-start-node: ^0.2.6
       solid-start-static: ^0.2.7
-      typescript: 4.8.4
+      typescript: ^4.8.4
       undici: ^5.11.0
-      vite: 3.1.8
+      vite: ^3.1.8
     dependencies:
       '@codeimage/highlight': link:../../packages/highlight
       '@codeimage/ui': link:../../packages/ui
@@ -370,7 +370,7 @@ importers:
       rollup-preset-solid: ^1.4.0
       rxjs: ^7.5.7
       solid-js: ^1.5.7
-      vite: 3.1.8
+      vite: ^3.1.8
       vite-plugin-dts: ^1.6.6
       vite-plugin-solid: ^2.3.9
     devDependencies:
@@ -409,8 +409,8 @@ importers:
       material-icon-theme: ^4.21.0
       rimraf: ^3.0.2
       solid-js: ^1.6.2
-      typescript: 4.8.4
-      vite: 3.1.8
+      typescript: ^4.8.4
+      vite: ^3.1.8
       vite-plugin-dts: ^1.6.6
       vite-plugin-solid: ^2.3.9
     dependencies:
@@ -453,8 +453,8 @@ importers:
       rimraf: ^3.0.2
       solid-js: ^1.5.7
       tslib: ^2.4.0
-      typescript: 4.8.4
-      vite: 3.1.8
+      typescript: ^4.8.4
+      vite: ^3.1.8
       vite-plugin-dts: ^1.6.6
     dependencies:
       '@solid-primitives/platform': 0.0.101_solid-js@1.6.2
@@ -493,8 +493,8 @@ importers:
       solid-codemirror: ^2.0.2
       solid-js: ^1.5.7
       ts-morph: 16.0.0
-      typescript: 4.8.4
-      vite: 3.1.8
+      typescript: ^4.8.4
+      vite: ^3.1.8
       vite-plugin-dts: ^1.6.6
       vite-plugin-solid: ^2.3.9
     dependencies:
@@ -531,8 +531,8 @@ importers:
       '@solid-primitives/i18n': ^1.1.1
       rimraf: ^3.0.2
       solid-js: ^1.5.7
-      typescript: 4.8.4
-      vite: 3.1.8
+      typescript: ^4.8.4
+      vite: ^3.1.8
       vite-plugin-dts: ^1.6.6
       vite-plugin-solid: ^2.3.9
     dependencies:
@@ -547,7 +547,7 @@ importers:
 
   packages/prisma-models:
     specifiers:
-      typescript: 4.8.4
+      typescript: ^4.8.4
     devDependencies:
       typescript: 4.8.4
 
@@ -606,8 +606,8 @@ importers:
       solid-toast: ^0.3.5
       solid-use: ^0.6.2
       tiny-glob: ^0.2.9
-      typescript: 4.8.4
-      vite: 3.1.8
+      typescript: ^4.8.4
+      vite: ^3.1.8
       vite-plugin-dts: ^1.6.6
       vite-plugin-solid: ^2.3.9
     dependencies:
@@ -680,8 +680,8 @@ importers:
       postcss: ^8.4.18
       postcss-load-config: ^4.0.1
       rollup: ^2.79.1
-      typescript: 4.8.4
-      vite: 3.1.8
+      typescript: ^4.8.4
+      vite: ^3.1.8
     dependencies:
       '@vanilla-extract/integration': 6.0.1
       outdent: 0.8.0
