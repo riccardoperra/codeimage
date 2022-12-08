@@ -1,4 +1,3 @@
-import {backgroundColorVar} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {animate, scroll, spring} from 'motion';
@@ -114,10 +113,17 @@ export function EditorScene(props: EditorSceneProps) {
         offset: ['-25%', '50% end'],
       },
     );
-    scroll(animate(progressBarEl, {scaleX: [0, 1]}), {
-      target: ref,
-      offset: ['start', '95% end'],
-    });
+    scroll(
+      animate(
+        progressBarEl,
+        {transform: ['scaleX(0)', 'scaleX(1)']},
+        {allowWebkitAcceleration: true},
+      ),
+      {
+        target: ref,
+        offset: ['start', '95% end'],
+      },
+    );
   });
 
   const centeredWrapperTransform = () =>
@@ -127,12 +133,11 @@ export function EditorScene(props: EditorSceneProps) {
     if (!el) {
       return 1;
     }
-    const scale = getScaleByRatio(
+    return getScaleByRatio(
       {width: el.clientWidth, height: el.clientHeight},
       {width: 624, height: 612},
       1.1,
     );
-    return scale;
   }
 
   const [mountEditor, setMountEditor] = createSignal(false);
@@ -210,12 +215,9 @@ export function EditorScene(props: EditorSceneProps) {
               [backgrounds[1]]: props.animationProgress >= 66,
             }}
             animate={{
-              padding: props.animationProgress >= 66 ? '32px' : 0,
+              padding: scene.currentStep >= 2 ? '32px' : 0,
               transition: {
-                padding: {
-                  easing: spring({velocity: 500}),
-                },
-                allowWebkitAcceleration: true,
+                padding: {easing: spring({velocity: 500})},
               },
             }}
           >

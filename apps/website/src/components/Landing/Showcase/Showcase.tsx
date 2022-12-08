@@ -1,8 +1,8 @@
 import {CustomTheme} from '@codeimage/highlight';
-import {backgroundColorVar, Box, Button, Text} from '@codeimage/ui';
+import {backgroundColorVar, Box, Button} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
-import {inView, spring} from 'motion';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {inView} from 'motion';
 import {
   createMemo,
   createResource,
@@ -115,10 +115,9 @@ export default function Showcase() {
               <Motion.div
                 animate={{
                   opacity: isInView() ? 1 : 0.5,
-                  scale: isInView() ? 1 : 0.7,
                   transform: isInView()
-                    ? `transformY(0px)`
-                    : `transformY(20px)`,
+                    ? `transformY(0px) scale(1)`
+                    : `transformY(20px) scale(0.7)`,
                   transition: {
                     duration: 1,
                     easing: [0.16, 1, 0.3, 1],
@@ -137,7 +136,7 @@ export default function Showcase() {
         </div>
 
         <div class={styles.ctaContainer}>
-          <Button size={'lg'}>Getting started</Button>
+          <Button size={'xl'}>Getting started</Button>
         </div>
       </div>
     </div>
@@ -149,6 +148,7 @@ interface PreviewCodeEditorProps {
   code: string;
   alternativePreviewBackground?: string;
 }
+
 export function PreviewCodeEditor(props: PreviewCodeEditorProps) {
   const [customTheme] = createResource(() => props.customTheme, {
     deferStream: true,

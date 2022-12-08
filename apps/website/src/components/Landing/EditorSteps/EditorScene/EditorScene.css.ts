@@ -1,4 +1,4 @@
-import {backgroundColorVar, themeVars} from '@codeimage/ui';
+import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
 

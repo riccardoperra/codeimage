@@ -16,6 +16,7 @@ export const progressBar = style({
   right: 0,
   height: '10px',
   backgroundColor: 'rgb(255, 255, 255, 1)',
+  width: '100%',
   transform: 'scaleX(0)',
   transformOrigin: '0%',
 });

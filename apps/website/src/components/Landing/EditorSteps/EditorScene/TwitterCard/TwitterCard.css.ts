@@ -11,9 +11,10 @@ export const card = style({
   position: 'absolute',
   left: '50%',
   top: '50%',
-  transform: 'scale(0) translate(-50%, 50%)',
+  transform: 'scale(0) translate3d(-50%, 50%, 0)',
   backgroundColor: darkGrayScale.gray2,
-  opacity: 0,
+  opacity: 1,
+  willChange: 'transform',
 });
 
 export const title = style({
