@@ -60,12 +60,10 @@ export default function ComingSoon() {
 
   onMount(() => {
     if (!bp.isXs()) {
-      queueMicrotask(() => {
-        [cardRef, themeBuilderRef, embedsRef].forEach(ref => {
-          scroll(animate(ref, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
-            target: ref,
-            offset: ['start end', 'end end', 'start start', 'end start'],
-          });
+      [cardRef, themeBuilderRef, embedsRef].forEach(ref => {
+        scroll(animate(ref, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
+          target: ref,
+          offset: ['start end', 'end end', 'start start', 'end start'],
         });
       });
     }

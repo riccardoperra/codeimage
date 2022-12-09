@@ -1,12 +1,11 @@
 import {
   createComponent,
-  createEffect,
-  createSignal,
   createUniqueId,
   getOwner,
   JSXElement,
   lazy,
   onMount,
+  Owner,
   runWithOwner,
 } from 'solid-js';
 import {hydrate, Hydration, NoHydration} from 'solid-js/web';
@@ -19,22 +18,29 @@ type ExtractOptionsByLoadType<TLoadType extends LoadType> = {
   load: never;
 }[TLoadType];
 
+declare module 'solid-js' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      'codeimage-hydratable': {
+        children: JSX.Element;
+      };
+    }
+  }
+}
+
 export function hydrateOnViewport<
-  T extends () => any,
+  T extends () => JSXElement,
   TLoadType extends LoadType,
 >(
-  Comp:
-    | T
-    | (() => Promise<{
-        default: T;
-      }>),
+  Comp: () => Promise<{default: T}>,
   type: TLoadType,
   options?: ExtractOptionsByLoadType<TLoadType>,
 ): () => JSXElement {
-  let el: HTMLDivElement;
-  const [load, setLoad] = createSignal(!!import.meta.env.SSR);
-
-  const LazyComponent = lazy(Comp as () => Promise<{default: T}>);
+  const LazyComponent = lazy(Comp);
+  let el: Element;
+  let id: string;
+  let owner: Owner;
 
   function NoHydratedComponent() {
     return (
@@ -45,7 +51,7 @@ export function hydrateOnViewport<
   }
 
   function onIdle() {
-    const cb = () => setLoad(true);
+    const cb = () => mount();
     if ('requestIdleCallback' in window) {
       window.requestIdleCallback(cb, {timeout: 200});
     } else {
@@ -57,7 +63,7 @@ export function hydrateOnViewport<
     const ioOptions: IntersectionObserverInit = {...(options || {})};
     const io = new IntersectionObserver(cb => {
       if (cb[0].isIntersecting) {
-        setLoad(true);
+        mount();
         io.disconnect();
       }
     }, ioOptions);
@@ -65,15 +71,26 @@ export function hydrateOnViewport<
   }
 
   function onLoad() {
-    setLoad(true);
+    mount();
+  }
+
+  function mount() {
+    if (!import.meta.env.SSR) {
+      LazyComponent.preload().then(m => {
+        runWithOwner(owner, () => {
+          const component = createComponent(m.default, {});
+          hydrate(() => component, el, {renderId: id});
+        });
+      });
+    }
   }
 
   return () => {
-    const id = createUniqueId();
-    const owner = getOwner();
+    id = createUniqueId();
+    owner = getOwner();
 
     onMount(() => {
-      el = document.querySelector(`[data-c="${id}"]`);
+      el = document.querySelector(`[data-c="${id}"]`) as Element;
       const strategy = {
         visible: onVisible,
         load: onLoad,
@@ -85,33 +102,13 @@ export function hydrateOnViewport<
     if (import.meta.env.SSR) {
       return (
         <Hydration>
-          <div data-c={id} ref={el}>
+          <codeimage-hydratable data-c={id}>
             <NoHydratedComponent />
-          </div>
+          </codeimage-hydratable>
         </Hydration>
       );
     } else {
-      createEffect(() => {
-        if (load()) {
-          const marker = document.querySelector(
-            `[data-c="${id}"]`,
-          ) as HTMLElement;
-          LazyComponent.preload().then(m => {
-            const component = runWithOwner(owner, () =>
-              createComponent(m.default, {}),
-            );
-            hydrate(() => component, marker, {
-              renderId: marker.dataset.hk,
-              owner,
-            });
-          });
-        }
-      });
-
       return <NoHydratedComponent />;
-      // {/*<Show when={load()} fallback={<NoHydratedComponent />}>*/}
-      // {/*  <LazyComponent />*/}
-      // {/*</Show>*/}
     }
   };
 }
