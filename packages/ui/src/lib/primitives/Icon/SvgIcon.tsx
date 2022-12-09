@@ -10,11 +10,14 @@ export function SvgIcon(props: SvgIconProps): JSX.Element {
   const [local, others] = splitProps(props, ['class', 'children', 'viewBox']);
 
   return (
+    // eslint-disable-next-line solid/jsx-no-duplicate-props
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       class={classes()}
       viewBox={local.viewBox}
+      // eslint-disable-next-line solid/no-innerhtml
+      innerHTML={props.innerHTML ?? undefined}
       {...others}
     >
       {props.children}
