@@ -13,8 +13,10 @@ import {
   Scripts,
   Title,
 } from 'solid-start';
+import {UmamiScript} from '~/components/Umami/UmamiScript';
+import {breakpoints} from '~/core/breakpoints';
+import {rootTheme} from '~/theme.css';
 import {getUiStore} from '~/ui';
-import {MainPageImagePreloading} from './components/Main/MainPage';
 import './root.css';
 
 function FontDefinitions() {
@@ -58,12 +60,35 @@ function FontDefinitions() {
   );
 }
 
+function MainPageImagePreloading() {
+  return (
+    <>
+      <link
+        rel="preload"
+        href={'/landing/codeimage_preview_mobile.webp'}
+        as="image"
+        media={`(min-width: ${breakpoints.tablet}px) and (max-width: ${
+          breakpoints.desktop - 1
+        })`}
+      />
+      <link
+        rel="preload"
+        href={'/landing/codeimage_preview_desktop.webp'}
+        as="image"
+        media={`(min-width: ${breakpoints.desktop}px)`}
+      />
+    </>
+  );
+}
+
 export default function Root() {
   const uiStore = getUiStore();
   useAssets(() => (
     <>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+      <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      <link rel="manifest" href="/manifest.webmanifest" />
       <link
         rel="preload"
         href="/fonts/Mona-Sans-Bold.woff2"
@@ -114,7 +139,7 @@ export default function Root() {
           content={uiStore.value.navColor ?? undefined}
         />
       </Head>
-      <Body>
+      <Body class={rootTheme}>
         <Suspense>
           <ErrorBoundary>
             <Routes>
@@ -123,6 +148,7 @@ export default function Root() {
           </ErrorBoundary>
         </Suspense>
         <Scripts />
+        <UmamiScript />
       </Body>
     </Html>
   );

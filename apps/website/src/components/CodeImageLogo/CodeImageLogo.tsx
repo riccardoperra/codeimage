@@ -6,7 +6,7 @@ export const CodeImageLogoSvgRemote = (props: JSX.IntrinsicElements['img']) => {
   useAssets(() => <link rel="preload" as="image" href={logo} />);
 
   return (
-    <picture>
+    <picture style={{display: 'flex'}}>
       <source type="image/webp" srcset={logo} />
       <img src={logo} alt={'CodeImage logo svg'} {...props} />
     </picture>

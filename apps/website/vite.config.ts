@@ -1,4 +1,4 @@
-import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
+import {vanillaExtractPlugin as customVanillaExtractPlugin} from '@codeimage/vanilla-extract';
 import ssg from 'solid-start-static';
 import solid from 'solid-start/vite';
 import {defineConfig, Plugin} from 'vite';
@@ -8,8 +8,11 @@ export default defineConfig({
     cssCodeSplit: true,
   },
   plugins: [
-    solid({adapter: ssg(), prerenderRoutes: ['/']}),
-    vanillaExtractPlugin(),
+    customVanillaExtractPlugin(),
+    solid({
+      adapter: ssg(),
+      prerenderRoutes: ['/'],
+    }),
     mergeCssPlugin(),
   ],
   optimizeDeps: {

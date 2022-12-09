@@ -44,7 +44,7 @@ export function hydrateOnViewport<
   function onIdle() {
     const cb = () => setLoad(true);
     if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(cb);
+      window.requestIdleCallback(cb, {timeout: 200});
     } else {
       setTimeout(cb, 200);
     }

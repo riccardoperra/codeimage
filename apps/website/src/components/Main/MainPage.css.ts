@@ -1,8 +1,8 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, keyframes, style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
-
-export const progressOpacityEditor = createVar();
+import {gradientBlueBg} from '~/gradients.css';
+import {rootThemeVars} from '~/theme.css';
 
 const dotColor = createVar();
 
@@ -98,6 +98,13 @@ const float = keyframes({
   },
 });
 
+const imageBoxGradients = {
+  gradient1: createVar(),
+  gradient2: createVar(),
+  gradient3: createVar(),
+  gradient4: createVar(),
+};
+
 export const imageBox = style([
   {
     position: 'relative',
@@ -107,8 +114,6 @@ export const imageBox = style([
     marginTop: 0,
     borderRadius: '12px',
     overflow: 'hidden',
-    background:
-      'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
   },
   responsiveStyle({
     desktop: {
@@ -116,6 +121,7 @@ export const imageBox = style([
       transform: 'translate(40px, -40px)',
     },
   }),
+  gradientBlueBg,
 ]);
 
 // export const imagePattern = style({
@@ -260,7 +266,7 @@ export const backdrop = style({
 });
 
 export const screenshot = style({
-  color: themeVars.backgroundColor.blue[500],
+  color: rootThemeVars.primaryTextColor,
 });
 
 export const ctaContainer = style(

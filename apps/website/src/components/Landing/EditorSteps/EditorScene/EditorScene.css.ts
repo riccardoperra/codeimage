@@ -1,4 +1,4 @@
-import {backgroundColorVar, themeVars} from '@codeimage/ui';
+import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/core/responsive';
 
@@ -12,8 +12,8 @@ export const container = style(
       flex: 1,
       display: 'flex',
       borderRadius: themeVars.borderRadius.xl,
-      background: backgroundColorVar,
       overflow: 'hidden',
+      clipPath: 'border-box',
     },
     tablet: {
       bottom: 'unset',

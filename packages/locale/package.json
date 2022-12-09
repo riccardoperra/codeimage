@@ -31,10 +31,10 @@
   },
   "dependencies": {
     "@solid-primitives/i18n": "^1.1.1",
-    "solid-js": "^1.5.7"
+    "solid-js": "^1.6.3"
   },
   "peerDependencies": {
-    "solid-js": "^1.5.2"
+    "solid-js": "^1.6.3"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",

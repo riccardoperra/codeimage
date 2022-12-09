@@ -29,7 +29,6 @@ export const backdrop = style({
   right: 0,
   bottom: 0,
   left: 0,
-  background: backgroundColorVar,
   transform: 'translate3d(0px, -50%, 0) scale(0.90)',
   filter: 'blur(500px) saturate(300%)',
   opacity: '0.7',

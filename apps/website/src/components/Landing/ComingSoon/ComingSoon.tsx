@@ -1,7 +1,13 @@
-import {Badge, Box, SvgIcon, SvgIconProps, Text} from '@codeimage/ui';
+import {Badge, Box, SvgIconProps, Text} from '@codeimage/ui';
 import {animate, scroll} from 'motion';
 import {onMount} from 'solid-js';
+import {
+  FeatureCard,
+  FeatureContent,
+  FeatureImageContent,
+} from '~/components/FeatureCard/FeatureCard';
 import {injectBreakpoints} from '~/core/breakpoints';
+import {rootThemeVars} from '~/theme.css';
 import * as styles from './ComingSoon.css';
 
 function PaintBrush(props: SvgIconProps) {
@@ -67,12 +73,12 @@ export default function ComingSoon() {
     <div class={styles.main}>
       <div class={styles.container}>
         <Box class={styles.twoSections}>
-          <div class={styles.halfCard} ref={themeBuilderRef}>
-            <div class={styles.content}>
+          <FeatureCard ref={themeBuilderRef}>
+            <FeatureContent>
               <Badge theme={styles.themeBuilderBadge}>
                 <PaintBrush width={26} height={26} />
               </Badge>
-              <Box>
+              <div>
                 <Text size={'5xl'} weight={'bold'}>
                   Theme builder
                 </Text>
@@ -87,11 +93,11 @@ export default function ComingSoon() {
                     </span>
                   </Text>
                 </Box>
-              </Box>
-            </div>
-          </div>
-          <div class={styles.halfCard} ref={embedsRef}>
-            <div class={styles.content}>
+              </div>
+            </FeatureContent>
+          </FeatureCard>
+          <FeatureCard ref={embedsRef}>
+            <FeatureContent>
               <Badge theme={styles.embedsBadge}>
                 <DocumentText width={26} height={26} />
               </Badge>
@@ -110,86 +116,84 @@ export default function ComingSoon() {
                   </Text>
                 </Box>
               </Box>
-            </div>
-          </div>
+            </FeatureContent>
+          </FeatureCard>
         </Box>
         <Box marginTop={8}>
-          <div class={styles.card} ref={cardRef}>
-            <div class={styles.imageSection}>
-              <div class={styles.imageWrapper}>
-                <div class={styles.analyticsCardContainer}>
-                  <div class={styles.leftCardAnalytics}>
-                    <div class={styles.analyticsCard}>
-                      <Text size={'lg'} weight={'bold'}>
-                        Angular Change Detection
+          <FeatureCard ref={cardRef} class={styles.analyticsFeatureCard}>
+            <FeatureImageContent bgColor={rootThemeVars.purple}>
+              <div class={styles.analyticsCardContainer}>
+                <div class={styles.leftCardAnalytics}>
+                  <div class={styles.analyticsCard}>
+                    <Text size={'lg'} weight={'bold'}>
+                      Angular Change Detection
+                    </Text>
+                    <Box marginY={4}>
+                      <Text>Last week</Text>
+                    </Box>
+                    <Box marginTop={8}>
+                      <Text size={'2xl'} weight={'black'}>
+                        1400
                       </Text>
-                      <Box marginY={4}>
-                        <Text>Last week</Text>
+                      <Box as={Text} size={'lg'} marginLeft={2}>
+                        views
                       </Box>
-                      <Box marginTop={8}>
-                        <Text size={'2xl'} weight={'black'}>
-                          1400
-                        </Text>
-                        <Box as={Text} size={'lg'} marginLeft={2}>
-                          views
-                        </Box>
-                      </Box>
-                    </div>
-                    <div class={styles.analyticsCard}>
-                      <Text size={'lg'} weight={'bold'}>
-                        Solid Reactivity Example
-                      </Text>
-                      <Box marginY={4}>
-                        <Text>This month</Text>
-                      </Box>
-                      <Box marginTop={8}>
-                        <Text size={'2xl'} weight={'black'}>
-                          10k
-                        </Text>
-                        <Box as={Text} size={'lg'} marginLeft={2}>
-                          views
-                        </Box>
-                      </Box>
-                    </div>
+                    </Box>
                   </div>
-                  <div class={styles.rightCardAnalytics}>
-                    <div class={styles.analyticsCard}>
-                      <Text size={'lg'} weight={'bold'}>
-                        Rxjs operators
+                  <div class={styles.analyticsCard}>
+                    <Text size={'lg'} weight={'bold'}>
+                      Solid Reactivity Example
+                    </Text>
+                    <Box marginY={4}>
+                      <Text>This month</Text>
+                    </Box>
+                    <Box marginTop={8}>
+                      <Text size={'2xl'} weight={'black'}>
+                        10k
                       </Text>
-                      <Box marginY={4}>
-                        <Text>Last week</Text>
+                      <Box as={Text} size={'lg'} marginLeft={2}>
+                        views
                       </Box>
-                      <Box marginTop={8}>
-                        <Text size={'2xl'} weight={'black'}>
-                          700
-                        </Text>
-                        <Box as={Text} size={'lg'} marginLeft={2}>
-                          views
-                        </Box>
-                      </Box>
-                    </div>
-                    <div class={styles.analyticsCard}>
-                      <Text size={'lg'} weight={'bold'}>
-                        Jest vs Jasmine
+                    </Box>
+                  </div>
+                </div>
+                <div class={styles.rightCardAnalytics}>
+                  <div class={styles.analyticsCard}>
+                    <Text size={'lg'} weight={'bold'}>
+                      Rxjs operators
+                    </Text>
+                    <Box marginY={4}>
+                      <Text>Last week</Text>
+                    </Box>
+                    <Box marginTop={8}>
+                      <Text size={'2xl'} weight={'black'}>
+                        700
                       </Text>
-                      <Box marginY={4}>
-                        <Text>Today</Text>
+                      <Box as={Text} size={'lg'} marginLeft={2}>
+                        views
                       </Box>
-                      <Box marginTop={8}>
-                        <Text size={'2xl'} weight={'black'}>
-                          0
-                        </Text>
-                        <Box as={Text} size={'lg'} marginLeft={2}>
-                          views
-                        </Box>
+                    </Box>
+                  </div>
+                  <div class={styles.analyticsCard}>
+                    <Text size={'lg'} weight={'bold'}>
+                      Jest vs Jasmine
+                    </Text>
+                    <Box marginY={4}>
+                      <Text>Today</Text>
+                    </Box>
+                    <Box marginTop={8}>
+                      <Text size={'2xl'} weight={'black'}>
+                        0
+                      </Text>
+                      <Box as={Text} size={'lg'} marginLeft={2}>
+                        views
                       </Box>
-                    </div>
+                    </Box>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class={styles.content}>
+            </FeatureImageContent>
+            <FeatureContent>
               <Badge theme={styles.metricsBadge}>
                 <ChartPie width={26} height={26} />
               </Badge>
@@ -209,8 +213,8 @@ export default function ComingSoon() {
                   </Text>
                 </Box>
               </Box>
-            </div>
-          </div>
+            </FeatureContent>
+          </FeatureCard>
         </Box>
       </div>
     </div>

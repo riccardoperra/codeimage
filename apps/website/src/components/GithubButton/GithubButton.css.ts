@@ -38,8 +38,8 @@ export const btn = style([
     border: '1px solid',
     borderRadius: themeVars.borderRadius.lg,
     background: buttonBgColor,
-    paddingLeft: themeVars.spacing[3],
-    paddingRight: themeVars.spacing[3],
+    paddingLeft: themeVars.spacing[5],
+    paddingRight: themeVars.spacing[5],
     textDecoration: 'unset',
     selectors: {
       '&:not(:last-child)': {

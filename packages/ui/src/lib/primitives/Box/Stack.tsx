@@ -5,8 +5,10 @@ import * as styles from './Stack.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {themeVars} from '../../theme';
 
+type Spacing = keyof typeof themeVars.spacing;
+
 interface StackProps extends BoxProps {
-  spacing: keyof typeof themeVars.spacing;
+  spacing: Spacing | `${Spacing}`;
 }
 
 export const VStack = (props: StackProps) => {

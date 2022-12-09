@@ -29,7 +29,7 @@ export function ButtonDemo() {
       </Text>
       <For each={variants}>
         {variant => (
-          <VStack spacing={'1'}>
+          <VStack spacing={1}>
             <Text size={'lg'} as={'div'}>
               {variant}
             </Text>
@@ -54,7 +54,7 @@ export function ButtonDemo() {
       <Box marginTop={'12'}>
         <For each={variants}>
           {variant => (
-            <VStack spacing={'1'}>
+            <VStack spacing={1}>
               <Text size={'lg'} as={'div'}>
                 {variant}
               </Text>
@@ -87,7 +87,7 @@ export function ButtonDemo() {
       <Box marginTop={'12'}>
         <For each={variants}>
           {variant => (
-            <VStack spacing={'1'}>
+            <VStack spacing={1}>
               <Text size={'lg'} as={'div'}>
                 {variant}
               </Text>
@@ -115,7 +115,7 @@ export function ButtonDemo() {
       <Box marginTop={'12'}>
         <For each={variants}>
           {variant => (
-            <VStack spacing={'1'}>
+            <VStack spacing={1}>
               <Text size={'lg'} as={'div'}>
                 {variant}
               </Text>

@@ -1,4 +1,4 @@
-import {Properties} from 'csstype';
+import type {Properties} from 'csstype';
 
 export const mapToProperty =
   <Property extends keyof Properties<string | number>>(property: Property) =>

@@ -1,21 +1,24 @@
 import {Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
-import {createMemo, createSignal, onCleanup, onMount, untrack} from 'solid-js';
-import {CodeImageLogoSvgRemote} from '~/components/CodeImageLogo/CodeImageLogo';
-import * as styles from './Header.css';
+import {createMemo, createSignal, onCleanup, onMount} from 'solid-js';
+import {injectBreakpoints} from '~/core/breakpoints';
+import {CodeImageLogoSvg} from '../CodeImageLogo/CodeImageLogoSvg';
 import {content} from '../Main/MainPage.css';
+import * as styles from './Header.css';
 
 export function Header() {
   const [scrolled, setScrolled] = createSignal(false);
+  const bp = injectBreakpoints();
   onMount(() => {
+    const contentEl = document.querySelector(`.${content}`) as HTMLElement;
     const observer = new IntersectionObserver(
       entries => {
         const entry = entries[0];
         setScrolled(!entry.isIntersecting);
       },
-      {threshold: 0.1},
+      {rootMargin: '0px', threshold: [0.95]},
     );
-    observer.observe(document.querySelector(`.${content}`));
+    observer.observe(contentEl);
     onCleanup(() => observer.disconnect());
   });
 
@@ -25,17 +28,14 @@ export function Header() {
     <div class={styles.header} data-scrolled={dataScrolled() ?? false}>
       <div class={styles.headerContent}>
         <div class={styles.headerContentInner}>
-          <div style={{display: 'flex'}}>
-            <CodeImageLogoSvgRemote height={32} width={164} />
-          </div>
+          <CodeImageLogoSvg height={32} width={164} />
           <div class={styles.headerActions}>
             <Button
-              as={A}
+              as={'a'}
               link={true}
               href="https://codeimage.dev"
               variant="solid"
               theme="primary"
-              pill
             >
               Getting started
             </Button>

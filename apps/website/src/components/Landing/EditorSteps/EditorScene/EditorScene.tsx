@@ -1,4 +1,3 @@
-import {backgroundColorVar} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {animate, scroll, spring} from 'motion';
@@ -15,8 +14,13 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
-import {CodeEditorPreviewBlock} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditorPreviewBlock';
-import {DynamicBackgroundExpansion} from '~/components/Landing/EditorSteps/EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
+import {
+  gradientBlueBg,
+  gradientPurpleBg,
+  gradientPurpleDarkerBg,
+} from '~/gradients.css';
+import {CodeEditorPreviewBlock} from '../CodeEditor/CodeEditorPreviewBlock';
+import {DynamicBackgroundExpansion} from '../EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
 import {injectEditorScene} from '../scene';
 import {CircularProgress} from './CircularProgress/CircularProgress';
 import * as styles from './EditorScene.css';
@@ -93,9 +97,9 @@ export function EditorScene(props: EditorSceneProps) {
   );
 
   const backgrounds = {
-    0: 'linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))',
-    1: 'linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)',
-    2: 'linear-gradient(-45deg, #402662 0%, #8000FF 100%)',
+    0: gradientBlueBg,
+    1: gradientPurpleBg,
+    2: gradientPurpleDarkerBg,
   };
 
   onMount(() => {
@@ -109,10 +113,17 @@ export function EditorScene(props: EditorSceneProps) {
         offset: ['-25%', '50% end'],
       },
     );
-    scroll(animate(progressBarEl, {scaleX: [0, 1]}), {
-      target: ref,
-      offset: ['start', '95% end'],
-    });
+    scroll(
+      animate(
+        progressBarEl,
+        {transform: ['scaleX(0)', 'scaleX(1)']},
+        {allowWebkitAcceleration: true},
+      ),
+      {
+        target: ref,
+        offset: ['start', '95% end'],
+      },
+    );
   });
 
   const centeredWrapperTransform = () =>
@@ -122,12 +133,11 @@ export function EditorScene(props: EditorSceneProps) {
     if (!el) {
       return 1;
     }
-    const scale = getScaleByRatio(
+    return getScaleByRatio(
       {width: el.clientWidth, height: el.clientHeight},
       {width: 624, height: 612},
       1.1,
     );
-    return scale;
   }
 
   const [mountEditor, setMountEditor] = createSignal(false);
@@ -165,15 +175,16 @@ export function EditorScene(props: EditorSceneProps) {
     );
   });
 
+  function getBackgroundClass() {
+    return enabledCircleExpansionGradient()
+      ? backgrounds[0]
+      : backgrounds[scene.currentStep];
+  }
+
   return (
     <div
-      class={styles.container}
+      class={`${styles.container} ${getBackgroundClass()}`}
       ref={setContainerRef}
-      style={assignInlineVars({
-        [backgroundColorVar]: enabledCircleExpansionGradient()
-          ? backgrounds[0]
-          : backgrounds[scene.currentStep],
-      })}
     >
       <DynamicBackgroundExpansion />
 
@@ -200,15 +211,13 @@ export function EditorScene(props: EditorSceneProps) {
         >
           <Motion.div
             class={`${styles2.snippetTheme} ${styles2.canvas}`}
+            classList={{
+              [backgrounds[1]]: props.animationProgress >= 66,
+            }}
             animate={{
-              padding: props.animationProgress >= 66 ? '32px' : 0,
-              background:
-                props.animationProgress >= 66 ? backgrounds[1] : 'transparent',
+              padding: scene.currentStep >= 2 ? '32px' : 0,
               transition: {
-                padding: {
-                  easing: spring({velocity: 500}),
-                },
-                allowWebkitAcceleration: true,
+                padding: {easing: spring({velocity: 500})},
               },
             }}
           >

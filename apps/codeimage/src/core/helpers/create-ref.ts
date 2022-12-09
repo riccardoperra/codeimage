@@ -1,8 +1,8 @@
 import {
   DynamicNode,
-  ValidConstructor,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
+import {ValidConstructor} from 'solid-headless/src/utils/dynamic-prop';
 
 type RefCallback<T> = (el: T) => void;
 type RefField<T> = T | RefCallback<T>;
@@ -16,6 +16,11 @@ function isRefFunction<U extends ValidConstructor>(
   return typeof callback === 'function';
 }
 
+/**
+ * @deprecated should use mergeRefs
+ * @param props
+ * @param callback
+ */
 export function createRef<U extends ValidConstructor>(
   props: WithRef<U>,
   callback: RefCallback<DynamicNode<U>>,

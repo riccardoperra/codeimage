@@ -1,8 +1,13 @@
-import {Badge, Box, Button, SvgIcon, SvgIconProps, Text} from '@codeimage/ui';
-import {A} from '@solidjs/router';
+import {Badge, Box, Text} from '@codeimage/ui';
 import {animate, scroll} from 'motion';
 import {JSX, onMount} from 'solid-js';
+import {
+  FeatureCard,
+  FeatureContent,
+  FeatureImageContent,
+} from '~/components/FeatureCard/FeatureCard';
 import {injectBreakpoints} from '~/core/breakpoints';
+import {rootThemeVars} from '~/theme.css';
 import * as styles from './Projects.css';
 
 function StorageBox(props: JSX.IntrinsicElements['svg']) {
@@ -34,13 +39,12 @@ export default function Projects() {
   return (
     <div class={styles.main}>
       <div class={styles.container}>
-        <div class={styles.card} ref={cardRef}>
-          <div class={styles.content}>
+        <FeatureCard ref={cardRef}>
+          <FeatureContent>
             <Badge theme={styles.storageBadge}>
               <StorageBox width={26} height={26} />
             </Badge>
-
-            <Box>
+            <div>
               <Text size={'5xl'} weight={'bold'}>
                 Store your snippets
               </Text>
@@ -53,22 +57,19 @@ export default function Projects() {
                   </span>
                 </Text>
               </Box>
-            </Box>
-          </div>
-          <div class={styles.imageSection}>
-            <div class={styles.imageWrapper}>
-              <picture>
-                {/* <source type="image/webp" srcset={'/projects-showcase.webp'} loading={'lazy'} /> */}
-                <img
-                  class={styles.image}
-                  loading={'lazy'}
-                  alt={'Project showcase preview'}
-                  src={'/projects-showcase.webp'}
-                />
-              </picture>
             </div>
-          </div>
-        </div>
+          </FeatureContent>
+          <FeatureImageContent bgColor={rootThemeVars.green}>
+            <picture>
+              <img
+                class={styles.image}
+                loading={'lazy'}
+                alt={'Project showcase preview'}
+                src={'/projects-showcase.webp'}
+              />
+            </picture>
+          </FeatureImageContent>
+        </FeatureCard>
       </div>
     </div>
   );

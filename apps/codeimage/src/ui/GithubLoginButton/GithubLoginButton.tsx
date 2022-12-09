@@ -18,7 +18,7 @@ export function GithubLoginButton(
   const modality = useModality();
   return (
     <Button as={'a'} class={styles.button} {...buttonProps}>
-      <GithubIcon size={'md'}></GithubIcon>
+      <GithubIcon size={'md'} />
       <Box as={'span'} marginLeft={2}>
         <Show fallback={'Sign in'} when={modality === 'full'} keyed={true}>
           Sign in with Github

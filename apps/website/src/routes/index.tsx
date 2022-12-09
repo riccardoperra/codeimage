@@ -1,18 +1,23 @@
-import {createResource} from 'solid-js';
+import {createRouteData} from 'solid-start';
 import MainPage from '~/components/Main/MainPage';
 import {hydrateOnViewport} from '~/core/hydrateOnViewport';
 
-function getRepoInfo() {
-  return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
-    .then(res => res.json())
-    .then(res => res.repo);
-}
-
 export function routeData() {
-  const [data] = createResource(getRepoInfo);
-  return {
-    repoInfo: data(),
-  };
+  return createRouteData(
+    async () => {
+      const result = await fetch(
+        'https://ungh.unjs.io/repos/riccardoperra/codeimage',
+      )
+        .then(res => res.json())
+        .then(res => res.repo)
+        .catch(() => ({stars: '?'}));
+
+      return {
+        repo: result,
+      };
+    },
+    {key: ['repoInfo']},
+  );
 }
 
 const EditorSteps = hydrateOnViewport(
@@ -40,7 +45,7 @@ const OpenSource = hydrateOnViewport(
   () => import('../components/Landing/OpenSource/OpenSource'),
   'visible',
   {
-    rootMargin: '500px',
+    rootMargin: '1000px',
   },
 );
 
@@ -48,7 +53,7 @@ const Showcase = hydrateOnViewport(
   () => import('../components/Landing/Showcase/Showcase'),
   'visible',
   {
-    rootMargin: '500px',
+    rootMargin: '1000px',
   },
 );
 

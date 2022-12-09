@@ -8,7 +8,7 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
-import {CodeEditorPreviewBlock} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditorPreviewBlock';
+import {CodeEditorPreviewBlock} from '../CodeEditor/CodeEditorPreviewBlock';
 import * as styles from './CodeEditor.css';
 
 interface CodeEditorProps {

@@ -4,6 +4,7 @@ import {themeVars} from '../../theme';
 import * as variables from '../../theme/variables.css';
 
 export const buttonHeight = createVar();
+export const buttonPadding = createVar();
 
 export const enum ButtonSizes {
   xxs = 'xxs',
@@ -11,6 +12,7 @@ export const enum ButtonSizes {
   sm = 'sm',
   md = 'md',
   lg = 'lg',
+  xl = 'xl',
 }
 
 export const button = style({
@@ -18,7 +20,7 @@ export const button = style({
   display: 'inline-flex',
   overflow: 'hidden',
   height: buttonHeight,
-  padding: `0 ${themeVars.spacing['3']}`,
+  padding: buttonPadding,
   borderRadius: themeVars.borderRadius.lg,
   fontSize: variables.fontSize,
   fontWeight: themeVars.fontWeight.medium,
@@ -35,6 +37,7 @@ export const button = style({
 
   vars: {
     [variables.fontSize]: themeVars.fontSize.sm,
+    [buttonPadding]: `0 ${themeVars.spacing['3']}`,
   },
 
   ':disabled': {
@@ -171,6 +174,14 @@ export const buttonVariant = recipe({
     },
 
     size: {
+      [ButtonSizes.xl]: {
+        vars: {
+          [buttonHeight]: '56px',
+          [buttonPadding]: `0 ${themeVars.spacing['6']}`,
+          [variables.fontSize]: themeVars.fontSize.xl,
+        },
+        minWidth: '84px',
+      },
       [ButtonSizes.lg]: {
         vars: {
           [buttonHeight]: '48px',

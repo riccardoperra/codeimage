@@ -89,12 +89,9 @@
     "pnpm": ">=7"
   },
   "pnpm": {
-    "patchedDependencies": {
-      "@vanilla-extract/integration@6.0.1": "patches/@vanilla-extract__integration@6.0.1.patch"
-    },
     "overrides": {
       "@vanilla-extract/integration": "6.0.1"
-    }
-  },
-  "allowNonAppliedPatches": false
+    },
+    "allowNonAppliedPatches": false
+  }
 }

@@ -1,17 +1,16 @@
 import {readFileSync, writeFileSync} from 'node:fs';
 import {join} from 'node:path';
+import {PurgeCSS} from 'purgecss';
 
 import manifest from './dist/public/manifest.json';
 
 const cssEntries = [
-  ...Object.entries(manifest)
-    .reduce((acc, [k, v]) => {
-      if (k.endsWith('.css')) {
-        return [...acc, [k, v.file]];
-      }
-      return acc;
-    }, [])
-    .sort(a => (a[0].startsWith('src/') ? 1 : -1)),
+  ...Object.entries(manifest).reduce((acc, [k, v]) => {
+    if (k.endsWith('.css')) {
+      acc.push([k, v.file]);
+    }
+    return acc;
+  }, []),
 ];
 
 const htmlSourcePath = join('./dist/public/index.html');
@@ -22,27 +21,32 @@ const htmlSource = readFileSync(join('./dist/public/index.html'), {
 
 let criticalStyle = '';
 let patchedSource = htmlSource;
-let criticalStylePath = '';
 
-cssEntries.forEach(([key, entry]) => {
-  const source = readFileSync(join('./dist/public', entry), {
-    encoding: 'utf-8',
+cssEntries
+  .reverse()
+  .sort(a => (a[0] === 'src/entry-client.css' ? -1 : 1))
+  .forEach(([key, entry]) => {
+    const source = readFileSync(join('./dist/public', entry), {
+      encoding: 'utf-8',
+    });
+    criticalStyle += source;
+    console.log(key);
   });
-  console.log(key);
-  if (key === 'src/entry-client.css') {
-    criticalStylePath = entry;
-  }
-  criticalStyle += source;
+
+const [resultPurge] = await new PurgeCSS().purge({
+  css: [
+    {
+      raw: criticalStyle,
+    },
+  ],
+  content: ['dist/public/index.html', 'dist/public/**.js'],
 });
 
 patchedSource = patchedSource.replace(
-  `</head>`,
-  `<link rel='stylesheet' href='/${criticalStylePath}'></head>`,
+  // prettier-ignore
+  `<style id="css-critical-style"></style>`,
+  // prettier-ignore
+  `<style id="css-critical-style">${resultPurge.css}</style>`,
 );
-
-console.log(criticalStylePath);
-writeFileSync(`./dist/public/${criticalStylePath}`, criticalStyle, {
-  encoding: 'utf-8',
-});
 
 writeFileSync(htmlSourcePath, patchedSource);

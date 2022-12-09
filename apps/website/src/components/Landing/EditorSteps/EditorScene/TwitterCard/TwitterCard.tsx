@@ -27,25 +27,24 @@ export function TwitterCard(props: TwitterCardProps) {
   const badgePictureUrl =
     'https://avatars.githubusercontent.com/u/37072694?v=4';
 
-  const transform = createMemo(() =>
-    props.visible
-      ? `translate(-50%, -50%) scale(1)`
-      : `translate(-50%, 50%) scale(0)`,
-  );
+  const visible = createMemo(() => props.visible);
 
-  // >66
+  const transform = createMemo(() =>
+    visible()
+      ? `translate3d(-50%, -50%, 0) scale(1)`
+      : `translate3d(-50%, -25%, 0) scale(0.1)`,
+  );
 
   return (
     <Motion.div
       class={styles.card}
-      initial={{transform: 'translate(-50%, 50%) scale(0.1)'}}
+      initial={{transform: 'translate3d(-50%, 50%, 0) scale(0.1)'}}
       animate={{
         transform: transform(),
-        opacity: props.visible ? 1 : 0,
+        opacity: visible() ? 1 : 0,
         transition: {
           transform: {
-            easing: spring({velocity: 500}),
-            allowWebkitAcceleration: true,
+            easing: 'ease-in-out',
           },
           opacity: {
             easing: 'ease-in-out',

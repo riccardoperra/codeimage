@@ -1,14 +1,14 @@
+import {ElementType} from '@solid-aria/types';
 import {elements} from '@solid-primitives/refs';
 import clsx from 'clsx';
 import {Button as ShButton, ButtonProps as ShButtonProps} from 'solid-headless';
-import {ValidConstructor} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {children, JSXElement, ParentProps, Show} from 'solid-js';
 import {omitProps} from 'solid-use';
 import {CustomComponentProps} from '../../utils';
 import {LoadingCircle} from '../Loader';
 import * as styles from './Button.css';
 
-export type ButtonProps<T extends ValidConstructor = 'button'> =
+export type ButtonProps<T extends ElementType = 'button'> =
   CustomComponentProps<
     T,
     {
@@ -18,7 +18,7 @@ export type ButtonProps<T extends ValidConstructor = 'button'> =
       styles.ButtonVariants
   >;
 
-export function Button<T extends ValidConstructor = 'button'>(
+export function Button<T extends ElementType = 'button'>(
   props: ParentProps<ButtonProps<T>>,
 ): JSXElement {
   const classes = () =>
@@ -45,7 +45,18 @@ export function Button<T extends ValidConstructor = 'button'>(
 
   return (
     <ShButton
-      {...omitProps(props, ['class', 'leftIcon', 'loading'])}
+      {...omitProps(props, [
+        'class',
+        'leftIcon',
+        'loading',
+        'pill',
+        'block',
+        'theme',
+        'variant',
+        'size',
+        'loading',
+      ])}
+      as={props.as ?? 'button'}
       class={classes()}
     >
       <Show when={!!props.leftIcon && !props.loading}>{resolvedIcon()}</Show>

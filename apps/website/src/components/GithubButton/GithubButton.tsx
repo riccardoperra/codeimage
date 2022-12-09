@@ -1,9 +1,11 @@
 import {Button, LoadingCircle} from '@codeimage/ui';
-import {JSX, Show} from 'solid-js';
+import {JSX, ParentProps, Show} from 'solid-js';
 import * as styles from './GithubButton.css';
 
-type GithubButtonProps = Parameters<typeof Button>[0] & {
+type GithubButtonProps = {
   stars: number;
+  class?: string;
+  loading: boolean;
 };
 
 function Star(props: JSX.IntrinsicElements['svg']) {
@@ -25,10 +27,10 @@ function Star(props: JSX.IntrinsicElements['svg']) {
   );
 }
 
-export function GithubButton(props: GithubButtonProps) {
+export function GithubButton(props: ParentProps<GithubButtonProps>) {
   return (
     <Button
-      size={'lg'}
+      size={'xl'}
       variant={'solid'}
       theme={'secondary'}
       class={

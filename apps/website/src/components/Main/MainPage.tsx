@@ -1,29 +1,18 @@
-import {Button} from '@codeimage/ui';
-import {createDeferred, createSignal} from 'solid-js';
-import {useRouteData} from 'solid-start';
+import {Button, Link} from '@codeimage/ui';
+import {A, useRouteData} from '@solidjs/router';
+import {createSignal} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
-import {routeData as RouteData} from '~/routes/index';
+import {routeData} from '~/routes';
 import {GithubButton} from '../GithubButton/GithubButton';
 import {Header} from '../Header/Header';
 
-function getRepoInfo() {
-  return fetch('https://ungh.unjs.io/repos/riccardoperra/codeimage')
-    .then(res => res.json())
-    .then(res => res.repo);
-}
-
 export default function MainPage() {
   let imageBox: HTMLDivElement;
-  const routeData = useRouteData<typeof RouteData>();
-  const [loading, setLoading] = createSignal(true);
-  const [repo, setRepo] = createSignal<any>(routeData.repoInfo || {stars: 0});
+  const [loading] = createSignal(false);
+  const data = useRouteData<typeof routeData>();
 
-  createDeferred(() =>
-    getRepoInfo()
-      .then(response => setRepo(response))
-      .finally(() => setLoading(false)),
-  );
+  const stars = () => data()?.repo?.stars ?? '?';
 
   return (
     <>
@@ -45,17 +34,18 @@ export default function MainPage() {
             </div>
 
             <div class={styles.ctaContainer}>
-              <Button size={'lg'} variant={'solid'} theme={'primary'}>
+              <Button
+                as={'a'}
+                rel={'canonical'}
+                href={'https://codeimage.dev'}
+                size={'xl'}
+                variant={'solid'}
+                theme={'primary'}
+              >
                 Getting started
               </Button>
 
-              <GithubButton
-                size={'lg'}
-                variant={'solid'}
-                theme={'secondary'}
-                loading={loading()}
-                stars={repo().stars}
-              />
+              <GithubButton loading={loading()} stars={stars()} />
             </div>
           </div>
           <div class={styles.imagePerspectiveBox} ref={imageBox}>
@@ -65,7 +55,7 @@ export default function MainPage() {
                   <source
                     type="image/webp"
                     srcset={'/landing/codeimage_preview_mobile_ultra.webp'}
-                    media={`(max-width: ${breakpoints.tablet}px)`}
+                    media={`(max-width: ${breakpoints.tablet - 1}px)`}
                   />
                   <source
                     type="image/webp"
@@ -89,25 +79,6 @@ export default function MainPage() {
           </div>
         </div>
       </section>
-    </>
-  );
-}
-
-export function MainPageImagePreloading() {
-  return (
-    <>
-      <link
-        rel="preload"
-        href={'/landing/codeimage_preview_mobile.webp'}
-        as="image"
-        media={`(min-width: ${breakpoints.tablet}px)`}
-      />
-      <link
-        rel="preload"
-        href={'/landing/codeimage_preview_desktop.webp'}
-        as="image"
-        media={`(min-width: ${breakpoints.desktop}px)`}
-      />
     </>
   );
 }

@@ -4,8 +4,8 @@ import {ButtonDemo} from './demo/Button';
 import {SegmentedFieldDemo} from './demo/SegmentedControl';
 import {SelectDemo} from './demo/Select';
 import {TextFieldDemo} from './demo/TextField';
-import './global.css';
 import './reset.scss';
+import './global.css';
 import '../src/lib/themes/dark-theme.css';
 import '../src/lib/themes/light-theme.css';
 

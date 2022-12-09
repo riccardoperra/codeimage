@@ -34,12 +34,12 @@ export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
           </Text>
 
           <Show when={!!props.actions}>
-            <Box marginLeft={'4'}>
+            <Box marginLeft={4}>
               <Dynamic component={props.actions} />
             </Box>
           </Show>
           <Show when={props.closeable}>
-            <Box marginLeft={'4'}>
+            <Box marginLeft={4}>
               <Button
                 type={'button'}
                 size={ButtonSizes.xs}

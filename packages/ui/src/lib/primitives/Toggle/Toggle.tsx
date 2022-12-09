@@ -1,5 +1,5 @@
 import * as styles from './Toggle.css';
-import {ToggleProps as ShToggleProps} from 'solid-headless/dist/types/components/Toggle';
+import {ToggleProps as ShToggleProps} from 'solid-headless';
 import {Toggle as ShToggle} from 'solid-headless';
 import {Component} from 'solid-js';
 
