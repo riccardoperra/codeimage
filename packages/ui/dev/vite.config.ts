@@ -4,7 +4,7 @@ import solidPlugin from 'vite-plugin-solid';
 import {withStaticVercelPreview} from '../../../scripts/vercel-output-build';
 
 export const viteConfig = defineConfig({
-  plugins: [vanillaExtractPlugin(), solidPlugin(), withStaticVercelPreview()],
+  plugins: [solidPlugin(), vanillaExtractPlugin(), withStaticVercelPreview()],
 });
 
 export default viteConfig;
