@@ -1,11 +1,5 @@
 import {DOMElements, ElementType} from '@solid-aria/types';
-import {
-  ComponentProps,
-  createComponent,
-  JSX,
-  mergeProps,
-  ParentProps,
-} from 'solid-js';
+import {ComponentProps, createComponent, JSX, mergeProps, ParentProps, splitProps} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -50,13 +44,15 @@ const _styled: CustomComponentFactory = <T extends ElementType>(
   component: T,
 ) => {
   const componentFactory: CustomComponent<T> = props => {
+    const [local, others] = splitProps(props, ['as']);
+
     const propsWithDefault = mergeProps(
       {
         get component() {
-          return props.as ?? component;
+          return local.as ?? component;
         },
       },
-      props,
+      others,
     );
     return createComponent(Dynamic, propsWithDefault);
   };

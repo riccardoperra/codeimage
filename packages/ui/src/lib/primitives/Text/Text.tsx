@@ -13,23 +13,23 @@ export type TextComponentProps = {
   weight?: UseTextProps['weight'];
 };
 
-export type TextProps<T extends ElementType = 'span'> = {
+export type TextProps<T extends ElementType = 'span'> = TextComponentProps & {
   as?: T | ElementType;
   innerHTML?: JSXElement | string;
 } & WithRef<T> &
-  Omit<DynamicProps<T>, 'ref' | 'as'> &
-  TextComponentProps;
+  Omit<DynamicProps<T>, 'ref' | 'as'>;
 
 export function Text<T extends ElementType = 'span'>(
   props: ParentProps<TextProps<T>>,
 ): JSXElement {
+  // @ts-expect-error TODO: find why class is not present
+  const [local, others] = splitProps(props, ['as', 'class']);
   const textClasses = useText(props);
-  const [local, others] = splitProps(props, ['as', 'size', 'weight']);
 
   return (
     <Dynamic
       component={local.as ?? 'span'}
-      class={clsx(textClasses(), props.class)}
+      class={clsx(textClasses(), local.class)}
       {...others}
     >
       {props.children}

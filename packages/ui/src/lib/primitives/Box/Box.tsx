@@ -25,6 +25,7 @@ export function Box<T extends ElementType = 'div'>(
 ): JSXElement {
   return (
     <styled.div
+      {...omitProps(props, ['as', 'ref'])}
       as={props.as ?? 'div'}
       ref={props.ref}
       class={clsx(
@@ -32,14 +33,8 @@ export function Box<T extends ElementType = 'div'>(
         props.class,
         sprinkles(pickProps(props, [...sprinkles.properties.keys()])),
       )}
-      {...omitProps(props, ['as', 'ref'])}
     >
       {props.children}
     </styled.div>
   );
 }
-
-Box({
-  padding: 2,
-  paddingTop: '2',
-});

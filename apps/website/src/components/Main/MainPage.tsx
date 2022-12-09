@@ -1,8 +1,9 @@
-import {Button, Link} from '@codeimage/ui';
-import {A, useRouteData} from '@solidjs/router';
+import {Button} from '@codeimage/ui';
+import {useRouteData} from '@solidjs/router';
 import {createSignal} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/core/breakpoints';
+import {mainWebsiteLink} from '~/core/constants';
 import {routeData} from '~/routes';
 import {GithubButton} from '../GithubButton/GithubButton';
 import {Header} from '../Header/Header';
@@ -37,7 +38,7 @@ export default function MainPage() {
               <Button
                 as={'a'}
                 rel={'canonical'}
-                href={'https://codeimage.dev'}
+                href={mainWebsiteLink}
                 size={'xl'}
                 variant={'solid'}
                 theme={'primary'}

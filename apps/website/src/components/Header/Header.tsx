@@ -2,6 +2,7 @@ import {Button} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import {createMemo, createSignal, onCleanup, onMount} from 'solid-js';
 import {injectBreakpoints} from '~/core/breakpoints';
+import {mainWebsiteLink} from '~/core/constants';
 import {CodeImageLogoSvg} from '../CodeImageLogo/CodeImageLogoSvg';
 import {content} from '../Main/MainPage.css';
 import * as styles from './Header.css';
@@ -32,8 +33,7 @@ export function Header() {
           <div class={styles.headerActions}>
             <Button
               as={'a'}
-              link={true}
-              href="https://codeimage.dev"
+              href={mainWebsiteLink}
               variant="solid"
               theme="primary"
             >
