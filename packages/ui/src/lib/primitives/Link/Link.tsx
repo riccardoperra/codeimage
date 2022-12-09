@@ -1,24 +1,31 @@
-import {JSX} from 'solid-js';
-import * as styles from './Link.css';
 import clsx from 'clsx';
+import {JSX, splitProps} from 'solid-js';
 import {omitProps} from 'solid-use';
 import {Text, TextProps} from '../Text/Text';
+import * as styles from './Link.css';
 
 interface LinkProps extends TextProps<'a'> {
   underline?: boolean;
 }
 
 export function Link(props: LinkProps): JSX.Element {
+  const [local, others] = splitProps(props, [
+    'underline',
+    'class',
+    'children',
+    'as',
+  ]);
+
   return (
     <Text
       as={'a'}
-      {...omitProps(props, ['underline'])}
       class={clsx(
-        props.class,
+        local.class,
         styles.link({
-          underline: props.underline,
+          underline: local.underline,
         }),
       )}
+      {...others}
     >
       {props.children}
     </Text>

@@ -4,9 +4,8 @@ import {
   DynamicProps,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {JSXElement, ParentProps} from 'solid-js';
+import {JSXElement, ParentProps, splitProps} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {omitProps} from 'solid-use';
 import {useText, UseTextProps} from './useText';
 
 export type TextComponentProps = {
@@ -25,12 +24,13 @@ export function Text<T extends ElementType = 'span'>(
   props: ParentProps<TextProps<T>>,
 ): JSXElement {
   const textClasses = useText(props);
+  const [local, others] = splitProps(props, ['as', 'size', 'weight']);
 
   return (
     <Dynamic
-      component={props.as ?? 'span'}
-      {...omitProps(props, ['as', 'children', 'size', 'weight'])}
+      component={local.as ?? 'span'}
       class={clsx(textClasses(), props.class)}
+      {...others}
     >
       {props.children}
     </Dynamic>

@@ -1,4 +1,4 @@
-import {HStack, Link, Text, VStack} from '@codeimage/ui';
+import {HStack, Link, Text} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import * as styles from '~/components/Footer/Footer.css';
 
@@ -15,7 +15,6 @@ export default function Footer() {
             <Link
               class={styles.link}
               underline={true}
-              as={A}
               href={'https://github.com/riccardoperra/codeimage'}
               title="Github repository"
               children={'Github'}
@@ -23,7 +22,6 @@ export default function Footer() {
             <Link
               class={styles.link}
               underline={true}
-              as={A}
               href={'https://github.com/riccardoperra/codeimage/issues'}
               title="Issues"
               children={'Issues & Feedback'}
@@ -31,7 +29,6 @@ export default function Footer() {
             <Link
               class={styles.link}
               underline={true}
-              as={A}
               href={'https://github.com/riccardoperra/codeimage/releases'}
               title="Releases"
               children={'Releases'}
