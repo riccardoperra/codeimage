@@ -1,12 +1,15 @@
 import {
+  createComponent,
+  createEffect,
   createSignal,
+  createUniqueId,
+  getOwner,
   JSXElement,
   lazy,
   onMount,
-  Show,
-  Suspense,
+  runWithOwner,
 } from 'solid-js';
-import {NoHydration} from 'solid-js/web';
+import {hydrate, Hydration, NoHydration} from 'solid-js/web';
 
 type LoadType = 'visible' | 'idle' | 'load';
 
@@ -29,7 +32,7 @@ export function hydrateOnViewport<
   options?: ExtractOptionsByLoadType<TLoadType>,
 ): () => JSXElement {
   let el: HTMLDivElement;
-  const [load, setLoad] = createSignal(false);
+  const [load, setLoad] = createSignal(!!import.meta.env.SSR);
 
   const LazyComponent = lazy(Comp as () => Promise<{default: T}>);
 
@@ -66,7 +69,11 @@ export function hydrateOnViewport<
   }
 
   return () => {
+    const id = createUniqueId();
+    const owner = getOwner();
+
     onMount(() => {
+      el = document.querySelector(`[data-c="${id}"]`);
       const strategy = {
         visible: onVisible,
         load: onLoad,
@@ -75,22 +82,36 @@ export function hydrateOnViewport<
       strategy[type](options);
     });
 
-    if (!globalThis.window) {
+    if (import.meta.env.SSR) {
       return (
-        <div>
-          <NoHydratedComponent />
-        </div>
+        <Hydration>
+          <div data-c={id} ref={el}>
+            <NoHydratedComponent />
+          </div>
+        </Hydration>
       );
-    }
+    } else {
+      createEffect(() => {
+        if (load()) {
+          const marker = document.querySelector(
+            `[data-c="${id}"]`,
+          ) as HTMLElement;
+          LazyComponent.preload().then(m => {
+            const component = runWithOwner(owner, () =>
+              createComponent(m.default, {}),
+            );
+            hydrate(() => component, marker, {
+              renderId: marker.dataset.hk,
+              owner,
+            });
+          });
+        }
+      });
 
-    return (
-      <div ref={el}>
-        <Suspense>
-          <Show when={load()} fallback={<NoHydratedComponent />}>
-            <LazyComponent />
-          </Show>
-        </Suspense>
-      </div>
-    ) as unknown as T;
+      return <NoHydratedComponent />;
+      // {/*<Show when={load()} fallback={<NoHydratedComponent />}>*/}
+      // {/*  <LazyComponent />*/}
+      // {/*</Show>*/}
+    }
   };
 }

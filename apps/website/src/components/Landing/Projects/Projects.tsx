@@ -29,9 +29,14 @@ export default function Projects() {
 
   onMount(() => {
     if (!bp.isXs()) {
-      scroll(animate(cardRef, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
-        target: cardRef,
-        offset: ['start end', 'end end', 'start start', 'end start'],
+      queueMicrotask(() => {
+        scroll(
+          animate(cardRef, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}),
+          {
+            target: cardRef,
+            offset: ['start end', 'end end', 'start start', 'end start'],
+          },
+        );
       });
     }
   });
