@@ -6,7 +6,7 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
-import {getHydrationKey, NoHydration} from 'solid-js/web';
+import {NoHydration} from 'solid-js/web';
 
 type LoadType = 'visible' | 'idle' | 'load';
 
@@ -66,7 +66,6 @@ export function hydrateOnViewport<
   }
 
   return () => {
-    const hk = getHydrationKey();
     onMount(() => {
       const strategy = {
         visible: onVisible,
@@ -78,14 +77,14 @@ export function hydrateOnViewport<
 
     if (!globalThis.window) {
       return (
-        <div data-hk={hk}>
+        <div>
           <NoHydratedComponent />
         </div>
       );
     }
 
     return (
-      <div data-hk={hk} ref={el}>
+      <div ref={el}>
         <Suspense>
           <Show when={load()} fallback={<NoHydratedComponent />}>
             <LazyComponent />
