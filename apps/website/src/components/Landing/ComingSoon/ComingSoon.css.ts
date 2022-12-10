@@ -144,7 +144,7 @@ export const analyticsCard = style([
   },
   responsiveStyle({
     mobile: {
-      borderRadius: themeVars.borderRadius.lg,
+      borderRadius: `16px`,
     },
     desktop: {
       borderRadius: '32px',

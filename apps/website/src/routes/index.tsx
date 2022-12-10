@@ -88,6 +88,9 @@ export default function Home() {
       <Footer
         $hydration={{
           strategy: 'visible',
+          init: {
+            rootMargin: '500px',
+          },
         }}
       />
     </main>
