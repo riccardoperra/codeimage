@@ -66,3 +66,7 @@ export const image = style({
   objectFit: 'cover',
   imageRendering: 'auto',
 });
+
+export const descriptionText = style({
+  color: themeVars.dynamicColors.descriptionTextColor,
+});

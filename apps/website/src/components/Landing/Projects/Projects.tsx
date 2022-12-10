@@ -1,4 +1,4 @@
-import {Badge, Box, Text} from '@codeimage/ui';
+import {Badge, Box, Button, Text} from '@codeimage/ui';
 import {animate, scroll} from 'motion';
 import {JSX, onMount} from 'solid-js';
 import {
@@ -56,6 +56,17 @@ export default function Projects() {
                     place to save them.
                   </span>
                 </Text>
+              </Box>
+
+              <Box marginTop={8}>
+                <Button size={'lg'} theme={'primaryAlt'}>
+                  Getting started
+                </Button>
+                <Box marginTop={8}>
+                  <Text class={styles.descriptionText}>
+                    *You must be authenticated to save your snippets remotely.
+                  </Text>
+                </Box>
               </Box>
             </div>
           </FeatureContent>

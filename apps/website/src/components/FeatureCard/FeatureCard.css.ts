@@ -27,15 +27,17 @@ export const card = style([
   },
   responsiveStyle({
     mobile: {
-      borderRadius: '32px',
+      borderRadius: [cardOuterRadius],
+      gap: '44px',
       minHeight: '512px',
       vars: {
-        [cardOuterRadius]: '32px',
+        [cardOuterRadius]: '24px',
+        [cardPadding]: '32px',
       },
     },
     desktop: {
+      gap: '96px',
       flexDirection: 'row',
-      borderRadius: '96px',
       minHeight: '564px',
       vars: {
         [cardOuterRadius]: '96px',
