@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import {JSX, splitProps} from 'solid-js';
-import {omitProps} from 'solid-use';
 import {Text, TextProps} from '../Text/Text';
 import * as styles from './Link.css';
 
