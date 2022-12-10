@@ -1,7 +1,7 @@
 import {Badge, Box, Text} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
-import {spring} from 'motion';
 import {createMemo} from 'solid-js';
+import {getUiStore} from '~/ui';
 import * as styles from './TwitterCard.css';
 
 interface TwitterCardProps {
@@ -35,6 +35,14 @@ export function TwitterCard(props: TwitterCardProps) {
       : `translate3d(-50%, -25%, 0) scale(0.1)`,
   );
 
+  const nickname = () => getUiStore().user()?.nickname ?? 'codeimageapp';
+
+  const username = () => {
+    return `@${nickname()}`;
+  };
+
+  const picture = () => getUiStore()?.user()?.picture ?? badgePictureUrl;
+
   return (
     <Motion.div
       class={styles.card}
@@ -61,14 +69,14 @@ export function TwitterCard(props: TwitterCardProps) {
                 alt="Profile picture"
                 loading="lazy"
                 class={styles.badgePicture}
-                src={badgePictureUrl}
+                src={picture()}
               />
             </Badge>
             <Box display={'flex'} flexDirection={'column'}>
               <Text size={'lg'} weight={'bold'}>
-                CodeImage
+                {nickname()}
               </Text>
-              <Text size={'sm'}>@codeimageapp</Text>
+              <Text size={'sm'}>{username()}</Text>
             </Box>
             <Box marginLeft={'auto'}>
               <TwitterLogo />
