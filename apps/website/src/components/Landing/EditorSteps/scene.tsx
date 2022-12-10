@@ -33,14 +33,19 @@ export function createEditorScene() {
 
   const currentStep = createMemo(() => getStep(progress()));
 
+  const canAnimateNavbar = createMemo(() => progress() > 0);
+
   createEffect(
-    on([inView, currentStep], ([inView, currentStep]) => {
-      if (!inView) {
-        uiStore.set('navColor', undefined);
-      } else {
-        uiStore.set('navColor', stepsMainColors[currentStep]);
-      }
-    }),
+    on(
+      [inView, canAnimateNavbar, currentStep],
+      ([inView, canAnimateNavbar, currentStep]) => {
+        if (!inView) {
+          uiStore.set('navColor', undefined);
+        } else if (canAnimateNavbar) {
+          uiStore.set('navColor', stepsMainColors[currentStep]);
+        }
+      },
+    ),
   );
 
   return {
