@@ -85,7 +85,7 @@ export const imageSection = style([
 export const imageWrapper = style({
   aspectRatio: '2 / 1',
   flex: '0 0 auto',
-  borderRadius: '32px',
+  borderRadius: `16px`,
   height: '568px',
   left: '48px',
   overflow: 'hidden',
