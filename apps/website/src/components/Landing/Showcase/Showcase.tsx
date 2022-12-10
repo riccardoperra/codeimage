@@ -1,6 +1,7 @@
 import {CustomTheme} from '@codeimage/highlight';
 import {backgroundColorVar, Box, Button} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
+import {A} from '@solidjs/router';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {inView} from 'motion';
 import {
@@ -14,6 +15,7 @@ import {
   Suspense,
 } from 'solid-js';
 import {injectBreakpoints} from '~/core/breakpoints';
+import {mainWebsiteLink} from '~/core/constants';
 import {CodeEditor} from '../EditorSteps/CodeEditor/CodeEditor';
 import * as styles from './Showcase.css';
 
@@ -135,7 +137,9 @@ export default function Showcase() {
         </div>
 
         <div class={styles.ctaContainer}>
-          <Button size={'xl'}>Getting started</Button>
+          <Button size={'xl'} as={A} href={mainWebsiteLink}>
+            Getting started
+          </Button>
         </div>
       </div>
     </div>

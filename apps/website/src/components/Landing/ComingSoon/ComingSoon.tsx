@@ -1,6 +1,7 @@
 import {Badge, Box, SvgIconProps, Text} from '@codeimage/ui';
-import {animate, scroll} from 'motion';
-import {onMount} from 'solid-js';
+import {Motion} from '@motionone/solid';
+import {animate, inView, scroll} from 'motion';
+import {createSignal, FlowProps, onMount} from 'solid-js';
 import {
   FeatureCard,
   FeatureContent,
@@ -53,20 +54,27 @@ function DocumentText(props: SvgIconProps) {
 }
 
 export default function ComingSoon() {
-  let cardRef: HTMLDivElement;
+  let analyticsCardRef: HTMLDivElement;
   let themeBuilderRef: HTMLDivElement;
   let embedsRef: HTMLDivElement;
   const bp = injectBreakpoints();
 
+  const [analyticsInView, setAnalyticsInView] = createSignal(true);
+
   onMount(() => {
     if (!bp.isXs()) {
-      [cardRef, themeBuilderRef, embedsRef].forEach(ref => {
+      [analyticsCardRef, themeBuilderRef, embedsRef].forEach(ref => {
         scroll(animate(ref, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
           target: ref,
           offset: ['start end', 'end end', 'start start', 'end start'],
         });
       });
     }
+
+    inView(analyticsCardRef, () => {
+      setAnalyticsInView(true);
+      return () => setAnalyticsInView(false);
+    });
   });
 
   return (
@@ -120,11 +128,14 @@ export default function ComingSoon() {
           </FeatureCard>
         </Box>
         <Box marginTop={8}>
-          <FeatureCard ref={cardRef} class={styles.analyticsFeatureCard}>
+          <FeatureCard
+            ref={analyticsCardRef}
+            class={styles.analyticsFeatureCard}
+          >
             <FeatureImageContent bgColor={rootThemeVars.purple}>
               <div class={styles.analyticsCardContainer}>
                 <div class={styles.leftCardAnalytics}>
-                  <div class={styles.analyticsCard}>
+                  <AnalyticsCardBoxAnimation inView={analyticsInView()}>
                     <Text size={'lg'} weight={'bold'}>
                       Angular Change Detection
                     </Text>
@@ -139,8 +150,8 @@ export default function ComingSoon() {
                         views
                       </Box>
                     </Box>
-                  </div>
-                  <div class={styles.analyticsCard}>
+                  </AnalyticsCardBoxAnimation>
+                  <AnalyticsCardBoxAnimation inView={analyticsInView()}>
                     <Text size={'lg'} weight={'bold'}>
                       Solid Reactivity Example
                     </Text>
@@ -155,10 +166,10 @@ export default function ComingSoon() {
                         views
                       </Box>
                     </Box>
-                  </div>
+                  </AnalyticsCardBoxAnimation>
                 </div>
                 <div class={styles.rightCardAnalytics}>
-                  <div class={styles.analyticsCard}>
+                  <AnalyticsCardBoxAnimation inView={analyticsInView()}>
                     <Text size={'lg'} weight={'bold'}>
                       Rxjs operators
                     </Text>
@@ -173,8 +184,8 @@ export default function ComingSoon() {
                         views
                       </Box>
                     </Box>
-                  </div>
-                  <div class={styles.analyticsCard}>
+                  </AnalyticsCardBoxAnimation>
+                  <AnalyticsCardBoxAnimation inView={analyticsInView()}>
                     <Text size={'lg'} weight={'bold'}>
                       Jest vs Jasmine
                     </Text>
@@ -189,7 +200,7 @@ export default function ComingSoon() {
                         views
                       </Box>
                     </Box>
-                  </div>
+                  </AnalyticsCardBoxAnimation>
                 </div>
               </div>
             </FeatureImageContent>
@@ -199,7 +210,7 @@ export default function ComingSoon() {
               </Badge>
               <Box>
                 <Text size={'5xl'} weight={'bold'}>
-                  Measure your engagement
+                  Measure the engagement
                 </Text>
                 <Box marginY={4}>
                   <div class={styles.comingSoonBadge}>Coming in 2023</div>
@@ -218,5 +229,21 @@ export default function ComingSoon() {
         </Box>
       </div>
     </div>
+  );
+}
+
+function AnalyticsCardBoxAnimation(props: FlowProps<{inView: boolean}>) {
+  return (
+    <Motion.div
+      animate={{
+        transform: props.inView
+          ? 'translateY(0px) scale(1)'
+          : 'translateY(40px) scale(0.7)',
+        opacity: props.inView ? 1 : 0.4,
+      }}
+      class={styles.analyticsCard}
+    >
+      {props.children}
+    </Motion.div>
   );
 }

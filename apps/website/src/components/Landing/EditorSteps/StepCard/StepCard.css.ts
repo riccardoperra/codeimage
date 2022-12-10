@@ -33,6 +33,12 @@ export const container = style([
         opacity: disabledOpacity,
       },
     },
+    '@media': {
+      '(min--moz-device-pixel-ratio:0)': {
+        // Trying to simulate Chrome/Safari blurry effect with firefox
+        backgroundColor: 'rgb(0 0 0 / 0.35)',
+      },
+    },
   },
   responsiveStyle({
     mobile: {

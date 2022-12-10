@@ -133,15 +133,24 @@ export const rightCardAnalytics = style({
   gap: '24px',
 });
 
-export const analyticsCard = style({
-  width: '224px',
-  height: '140px',
-  boxSizing: 'content-box',
-  background: themeVars.backgroundColor.purple['200'],
-  padding: '24px',
-  borderRadius: '32px',
-  color: themeVars.textColor.gray['800'],
-});
+export const analyticsCard = style([
+  {
+    width: '224px',
+    height: '140px',
+    boxSizing: 'content-box',
+    background: themeVars.backgroundColor.purple['200'],
+    padding: '24px',
+    color: themeVars.textColor.gray['800'],
+  },
+  responsiveStyle({
+    mobile: {
+      borderRadius: `16px`,
+    },
+    desktop: {
+      borderRadius: '32px',
+    },
+  }),
+]);
 
 export const image = style({
   pointerEvents: 'none',

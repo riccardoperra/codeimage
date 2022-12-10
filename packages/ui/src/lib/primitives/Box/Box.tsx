@@ -38,8 +38,3 @@ export function Box<T extends ElementType = 'div'>(
     </styled.div>
   );
 }
-
-Box({
-  padding: 2,
-  paddingTop: '2',
-});

@@ -27,15 +27,17 @@ export const card = style([
   },
   responsiveStyle({
     mobile: {
-      borderRadius: '32px',
+      borderRadius: [cardOuterRadius],
+      gap: '44px',
       minHeight: '512px',
       vars: {
-        [cardOuterRadius]: '32px',
+        [cardOuterRadius]: '24px',
+        [cardPadding]: '32px',
       },
     },
     desktop: {
+      gap: '96px',
       flexDirection: 'row',
-      borderRadius: '96px',
       minHeight: '564px',
       vars: {
         [cardOuterRadius]: '96px',
@@ -67,6 +69,9 @@ export const imageSection = style([
     opacity: 1,
     height: '300px',
     width: '100%',
+    // @ts-expect-error No present in types. This is for safari absolute + overflow hidden bug
+    '-webkitMaskImage':
+      '-webkit-radial-gradient(circle, white 100%, black 100%)',
   },
   responsiveStyle({
     mobile: {
@@ -83,7 +88,7 @@ export const imageSection = style([
 export const imageWrapper = style({
   aspectRatio: '2 / 1',
   flex: '0 0 auto',
-  borderRadius: '32px',
+  borderRadius: `16px`,
   height: '568px',
   left: '48px',
   overflow: 'hidden',

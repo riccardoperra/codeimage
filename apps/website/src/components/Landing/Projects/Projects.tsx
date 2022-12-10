@@ -1,4 +1,4 @@
-import {Badge, Box, Text} from '@codeimage/ui';
+import {Badge, Box, Button, Text} from '@codeimage/ui';
 import {animate, scroll} from 'motion';
 import {JSX, onMount} from 'solid-js';
 import {
@@ -7,6 +7,7 @@ import {
   FeatureImageContent,
 } from '~/components/FeatureCard/FeatureCard';
 import {injectBreakpoints} from '~/core/breakpoints';
+import {mainWebsiteLink} from '~/core/constants';
 import {rootThemeVars} from '~/theme.css';
 import * as styles from './Projects.css';
 
@@ -56,6 +57,22 @@ export default function Projects() {
                     place to save them.
                   </span>
                 </Text>
+              </Box>
+
+              <Box marginTop={8}>
+                <Button
+                  as={'a'}
+                  size={'lg'}
+                  theme={'primaryAlt'}
+                  href={mainWebsiteLink}
+                >
+                  Getting started
+                </Button>
+                <Box marginTop={8}>
+                  <Text class={styles.descriptionText}>
+                    *You must be authenticated to save your snippets remotely.
+                  </Text>
+                </Box>
               </Box>
             </div>
           </FeatureContent>

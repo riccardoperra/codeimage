@@ -1,5 +1,4 @@
 import {themeVars} from '@codeimage/ui';
-import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {createTheme, createVar, style} from '@vanilla-extract/css';
 
 export const [toolbarTheme, toolbarVars] = createTheme({
@@ -9,11 +8,14 @@ export const [toolbarTheme, toolbarVars] = createTheme({
 
 const headerBorderColor = createVar();
 
+export const headerBgColor = createVar();
+
 export const header = style([
   toolbarTheme,
   {
     vars: {
       [headerBorderColor]: 'rgba(0,0,0,0)',
+      [headerBgColor]: 'rgba(12, 12, 12, 0.6)',
     },
     display: 'flex',
     position: 'fixed',
@@ -24,7 +26,7 @@ export const header = style([
     transition: 'border-color 250ms ease-in-out',
     selectors: {
       '&[data-scrolled=true]': {
-        backgroundColor: `rgba(12, 12, 12, 0.6)`,
+        backgroundColor: headerBgColor,
         backdropFilter: 'saturate(180%) blur(20px)',
         // @ts-expect-error: Why not working
         '-webkitBackdropFilter': 'saturate(180%) blur(20px)',

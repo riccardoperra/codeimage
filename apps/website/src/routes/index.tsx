@@ -1,6 +1,6 @@
 import {createRouteData} from 'solid-start';
 import MainPage from '~/components/Main/MainPage';
-import {hydrateOnViewport} from '~/core/hydrateOnViewport';
+import {createHydratable} from '~/core/hydration/createHydratable';
 
 export function routeData() {
   return createRouteData(
@@ -20,58 +20,79 @@ export function routeData() {
   );
 }
 
-const EditorSteps = hydrateOnViewport(
+const EditorSteps = createHydratable(
   () => import('../components/Landing/EditorSteps/EditorSteps'),
-  'idle',
 );
 
-const Projects = hydrateOnViewport(
+const Projects = createHydratable(
   () => import('../components/Landing/Projects/Projects'),
-  'visible',
-  {
-    rootMargin: '500px',
-  },
 );
 
-const ComingSoon = hydrateOnViewport(
+const ComingSoon = createHydratable(
   () => import('../components/Landing/ComingSoon/ComingSoon'),
-  'visible',
-  {
-    rootMargin: '500px',
-  },
 );
 
-const OpenSource = hydrateOnViewport(
+const OpenSource = createHydratable(
   () => import('../components/Landing/OpenSource/OpenSource'),
-  'visible',
-  {
-    rootMargin: '1000px',
-  },
 );
 
-const Showcase = hydrateOnViewport(
+const Showcase = createHydratable(
   () => import('../components/Landing/Showcase/Showcase'),
-  'visible',
-  {
-    rootMargin: '1000px',
-  },
 );
 
-const Footer = hydrateOnViewport(
-  () => import('../components/Footer/Footer'),
-  'visible',
-);
+const Footer = createHydratable(() => import('../components/Footer/Footer'));
 
 export default function Home() {
   return (
     <main>
       <MainPage />
-      <EditorSteps />
-      <Projects />
-      <ComingSoon />
-      <OpenSource />
-      <Showcase />
-      <Footer />
+      <EditorSteps
+        $hydration={{
+          strategy: 'idle',
+          timeout: 200,
+        }}
+        test={5}
+      />
+      <Projects
+        $hydration={{
+          strategy: 'visible',
+          init: {
+            rootMargin: '500px',
+          },
+        }}
+      />
+      <ComingSoon
+        $hydration={{
+          strategy: 'visible',
+          init: {
+            rootMargin: '500px',
+          },
+        }}
+      />
+      <OpenSource
+        $hydration={{
+          strategy: 'visible',
+          init: {
+            rootMargin: '1000px',
+          },
+        }}
+      />
+      <Showcase
+        $hydration={{
+          strategy: 'visible',
+          init: {
+            rootMargin: '500px',
+          },
+        }}
+      />
+      <Footer
+        $hydration={{
+          strategy: 'visible',
+          init: {
+            rootMargin: '500px',
+          },
+        }}
+      />
     </main>
   );
 }
