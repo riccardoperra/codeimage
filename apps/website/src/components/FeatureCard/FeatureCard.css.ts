@@ -69,6 +69,9 @@ export const imageSection = style([
     opacity: 1,
     height: '300px',
     width: '100%',
+    // @ts-expect-error No present in types. This is for safari absolute + overflow hidden bug
+    '-webkitMaskImage':
+      '-webkit-radial-gradient(circle, white 100%, black 100%)',
   },
   responsiveStyle({
     mobile: {

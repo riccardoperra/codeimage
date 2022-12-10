@@ -1,6 +1,7 @@
 import {Badge, Box, SvgIconProps, Text} from '@codeimage/ui';
+import {Motion} from '@motionone/solid';
 import {animate, scroll} from 'motion';
-import {onMount} from 'solid-js';
+import {FlowProps, onMount} from 'solid-js';
 import {
   FeatureCard,
   FeatureContent,
@@ -124,7 +125,7 @@ export default function ComingSoon() {
             <FeatureImageContent bgColor={rootThemeVars.purple}>
               <div class={styles.analyticsCardContainer}>
                 <div class={styles.leftCardAnalytics}>
-                  <div class={styles.analyticsCard}>
+                  <AnalyticsCardBoxAnimation>
                     <Text size={'lg'} weight={'bold'}>
                       Angular Change Detection
                     </Text>
@@ -139,8 +140,8 @@ export default function ComingSoon() {
                         views
                       </Box>
                     </Box>
-                  </div>
-                  <div class={styles.analyticsCard}>
+                  </AnalyticsCardBoxAnimation>
+                  <AnalyticsCardBoxAnimation>
                     <Text size={'lg'} weight={'bold'}>
                       Solid Reactivity Example
                     </Text>
@@ -155,10 +156,10 @@ export default function ComingSoon() {
                         views
                       </Box>
                     </Box>
-                  </div>
+                  </AnalyticsCardBoxAnimation>
                 </div>
                 <div class={styles.rightCardAnalytics}>
-                  <div class={styles.analyticsCard}>
+                  <AnalyticsCardBoxAnimation>
                     <Text size={'lg'} weight={'bold'}>
                       Rxjs operators
                     </Text>
@@ -173,8 +174,8 @@ export default function ComingSoon() {
                         views
                       </Box>
                     </Box>
-                  </div>
-                  <div class={styles.analyticsCard}>
+                  </AnalyticsCardBoxAnimation>
+                  <AnalyticsCardBoxAnimation>
                     <Text size={'lg'} weight={'bold'}>
                       Jest vs Jasmine
                     </Text>
@@ -189,7 +190,7 @@ export default function ComingSoon() {
                         views
                       </Box>
                     </Box>
-                  </div>
+                  </AnalyticsCardBoxAnimation>
                 </div>
               </div>
             </FeatureImageContent>
@@ -199,7 +200,7 @@ export default function ComingSoon() {
               </Badge>
               <Box>
                 <Text size={'5xl'} weight={'bold'}>
-                  Measure your engagement
+                  Measure the engagement
                 </Text>
                 <Box marginY={4}>
                   <div class={styles.comingSoonBadge}>Coming in 2023</div>
@@ -218,5 +219,23 @@ export default function ComingSoon() {
         </Box>
       </div>
     </div>
+  );
+}
+
+function AnalyticsCardBoxAnimation(props: FlowProps) {
+  return (
+    <Motion.div
+      inView={{
+        transform: ['translateY(40px) scale(0.7)', 'translateY(0px) scale(1)'],
+        opacity: [0, 1],
+      }}
+      exit={{
+        transform: ['translateY(0px) scale(0)'],
+        opacity: 0,
+      }}
+      class={styles.analyticsCard}
+    >
+      {props.children}
+    </Motion.div>
   );
 }
