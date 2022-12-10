@@ -29,8 +29,8 @@ export const backdrop = style({
   right: 0,
   bottom: 0,
   left: 0,
-  transform: 'translate3d(0px, -50%, 0) scale(0.90)',
-  filter: 'blur(500px) saturate(300%)',
+  transform: 'translate3d(0px, -0%, 0) scale(0.90)',
+  filter: 'blur(500px) saturate(200%)',
   opacity: '0.7',
   transition: 'opacity 0.3s',
   borderRadius: '1.5rem',
@@ -38,6 +38,16 @@ export const backdrop = style({
   overflow: 'hidden',
   height: '500px',
   top: '50%',
+  '@media': {
+    '(min--moz-device-pixel-ratio:0)': {
+      // Trying to simulate Chrome/Safari blurry effect with firefox
+      transform: 'translate3d(0, 0, 0) scale(0.90)',
+      height: '100%',
+      top: 0,
+      opacity: 0.3,
+      filter: 'blur(200px)',
+    },
+  },
 });
 
 export const stickyContent = style([
