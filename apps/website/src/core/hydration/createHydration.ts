@@ -24,21 +24,28 @@ export type HydratableComponentProps = {
   $hydration: HydratableProps;
 };
 
+type CreateHydration = {
+  onHydratable: (
+    onHydrate: (
+      node: MountableElement,
+      component: Component<unknown>,
+    ) => Promise<void>,
+  ) => void;
+  id: string;
+};
+
 export function createHydration<
   THydratableProps extends HydratableComponentProps,
->(hydrationProps: THydratableProps, lazyComponent: ReturnType<typeof lazy>) {
+>(
+  hydrationProps: THydratableProps,
+  lazyComponent: ReturnType<typeof lazy>,
+): CreateHydration {
   const id = createUniqueId();
   const owner = getOwner();
-  return {
-    onHydratable: (
-      onHydrate: (
-        node: MountableElement,
-        component: Component<unknown>,
-      ) => Promise<void>,
-    ) => {
-      if (import.meta.env.SSR) return;
-      let rootElement: Element;
 
+  return {
+    onHydratable: onHydrate => {
+      let rootElement: Element;
       onMount(() => {
         rootElement = document.querySelector(`[data-ch="${id}"]`);
         if (!rootElement) return;

@@ -32,11 +32,13 @@ export function createHydratable<
   return props => {
     const {onHydratable, id} = createHydration(props, LazyComponent);
 
-    onHydratable(async (node, component) => {
-      const [, others] = splitProps(props, ['$hydration']);
-      const $$component = createComponent(component, others);
-      hydrate(() => $$component, node, {renderId: id});
-    });
+    if (!import.meta.env.SSR) {
+      onHydratable(async (node, component) => {
+        const [, others] = splitProps(props, ['$hydration']);
+        const $$component = createComponent(component, others);
+        hydrate(() => $$component, node, {renderId: id});
+      });
+    }
 
     return (
       <CustomHydratable id={id}>
