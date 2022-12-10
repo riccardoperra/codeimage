@@ -29,7 +29,7 @@ export const backdrop = style({
   right: 0,
   bottom: 0,
   left: 0,
-  transform: 'translate3d(0px, -0%, 0) scale(0.90)',
+  transform: 'translate3d(0px, -50%, 0) scale(0.90)',
   filter: 'blur(500px) saturate(200%)',
   opacity: '0.7',
   transition: 'opacity 0.3s',
