@@ -1,7 +1,7 @@
 import {backgroundColorVar} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {inView, scroll} from 'motion';
-import {onMount} from 'solid-js';
+import {createEffect, onMount} from 'solid-js';
 import {
   gradientBlueBg,
   gradientPurpleBg,
@@ -12,9 +12,11 @@ import * as styles from './EditorSteps.css';
 import {injectEditorScene} from './scene';
 import {StepCardArea} from './StepCardScene/StepCardScene';
 
-export default function EditorSteps() {
+export default function EditorSteps(props: {test: number}) {
   const scene = injectEditorScene();
   let ref: HTMLElement;
+
+  createEffect(() => console.log(props.test, props));
 
   const backgrounds = {
     0: gradientBlueBg,
