@@ -1,12 +1,14 @@
 import {
-  createSignal,
+  createComponent,
+  createUniqueId,
+  getOwner,
   JSXElement,
   lazy,
   onMount,
-  Show,
-  Suspense,
+  Owner,
+  runWithOwner,
 } from 'solid-js';
-import {NoHydration} from 'solid-js/web';
+import {hydrate, Hydration, NoHydration} from 'solid-js/web';
 
 type LoadType = 'visible' | 'idle' | 'load';
 
@@ -16,22 +18,29 @@ type ExtractOptionsByLoadType<TLoadType extends LoadType> = {
   load: never;
 }[TLoadType];
 
+declare module 'solid-js' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      'codeimage-hydratable': {
+        children: JSX.Element;
+      };
+    }
+  }
+}
+
 export function hydrateOnViewport<
-  T extends () => any,
+  T extends () => JSXElement,
   TLoadType extends LoadType,
 >(
-  Comp:
-    | T
-    | (() => Promise<{
-        default: T;
-      }>),
+  Comp: () => Promise<{default: T}>,
   type: TLoadType,
   options?: ExtractOptionsByLoadType<TLoadType>,
 ): () => JSXElement {
-  let el: HTMLDivElement;
-  const [load, setLoad] = createSignal(false);
-
-  const LazyComponent = lazy(Comp as () => Promise<{default: T}>);
+  const LazyComponent = lazy(Comp);
+  let el: Element;
+  let id: string;
+  let owner: Owner;
 
   function NoHydratedComponent() {
     return (
@@ -42,7 +51,7 @@ export function hydrateOnViewport<
   }
 
   function onIdle() {
-    const cb = () => setLoad(true);
+    const cb = () => mount();
     if ('requestIdleCallback' in window) {
       window.requestIdleCallback(cb, {timeout: 200});
     } else {
@@ -54,7 +63,7 @@ export function hydrateOnViewport<
     const ioOptions: IntersectionObserverInit = {...(options || {})};
     const io = new IntersectionObserver(cb => {
       if (cb[0].isIntersecting) {
-        setLoad(true);
+        mount();
         io.disconnect();
       }
     }, ioOptions);
@@ -62,11 +71,26 @@ export function hydrateOnViewport<
   }
 
   function onLoad() {
-    setLoad(true);
+    mount();
+  }
+
+  function mount() {
+    if (!import.meta.env.SSR) {
+      LazyComponent.preload().then(m => {
+        runWithOwner(owner, () => {
+          const component = createComponent(m.default, {});
+          hydrate(() => component, el, {renderId: id});
+        });
+      });
+    }
   }
 
   return () => {
+    id = createUniqueId();
+    owner = getOwner();
+
     onMount(() => {
+      el = document.querySelector(`[data-c="${id}"]`) as Element;
       const strategy = {
         visible: onVisible,
         load: onLoad,
@@ -75,22 +99,16 @@ export function hydrateOnViewport<
       strategy[type](options);
     });
 
-    if (!globalThis.window) {
+    if (import.meta.env.SSR) {
       return (
-        <div>
-          <NoHydratedComponent />
-        </div>
+        <Hydration>
+          <codeimage-hydratable data-c={id}>
+            <NoHydratedComponent />
+          </codeimage-hydratable>
+        </Hydration>
       );
+    } else {
+      return <NoHydratedComponent />;
     }
-
-    return (
-      <div ref={el}>
-        <Suspense>
-          <Show when={load()} fallback={<NoHydratedComponent />}>
-            <LazyComponent />
-          </Show>
-        </Suspense>
-      </div>
-    ) as unknown as T;
   };
 }
