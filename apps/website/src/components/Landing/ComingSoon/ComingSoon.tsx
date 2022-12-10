@@ -1,7 +1,7 @@
 import {Badge, Box, SvgIconProps, Text} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
-import {animate, scroll} from 'motion';
-import {FlowProps, onMount} from 'solid-js';
+import {animate, inView, scroll} from 'motion';
+import {createSignal, FlowProps, onMount} from 'solid-js';
 import {
   FeatureCard,
   FeatureContent,
@@ -54,20 +54,27 @@ function DocumentText(props: SvgIconProps) {
 }
 
 export default function ComingSoon() {
-  let cardRef: HTMLDivElement;
+  let analyticsCardRef: HTMLDivElement;
   let themeBuilderRef: HTMLDivElement;
   let embedsRef: HTMLDivElement;
   const bp = injectBreakpoints();
 
+  const [analyticsInView, setAnalyticsInView] = createSignal(true);
+
   onMount(() => {
     if (!bp.isXs()) {
-      [cardRef, themeBuilderRef, embedsRef].forEach(ref => {
+      [analyticsCardRef, themeBuilderRef, embedsRef].forEach(ref => {
         scroll(animate(ref, {opacity: [0, 1, 1, 0], scale: [0.7, 1, 1, 1]}), {
           target: ref,
           offset: ['start end', 'end end', 'start start', 'end start'],
         });
       });
     }
+
+    inView(analyticsCardRef, () => {
+      setAnalyticsInView(true);
+      return () => setAnalyticsInView(false);
+    });
   });
 
   return (
@@ -121,11 +128,14 @@ export default function ComingSoon() {
           </FeatureCard>
         </Box>
         <Box marginTop={8}>
-          <FeatureCard ref={cardRef} class={styles.analyticsFeatureCard}>
+          <FeatureCard
+            ref={analyticsCardRef}
+            class={styles.analyticsFeatureCard}
+          >
             <FeatureImageContent bgColor={rootThemeVars.purple}>
               <div class={styles.analyticsCardContainer}>
                 <div class={styles.leftCardAnalytics}>
-                  <AnalyticsCardBoxAnimation>
+                  <AnalyticsCardBoxAnimation inView={analyticsInView()}>
                     <Text size={'lg'} weight={'bold'}>
                       Angular Change Detection
                     </Text>
@@ -141,7 +151,7 @@ export default function ComingSoon() {
                       </Box>
                     </Box>
                   </AnalyticsCardBoxAnimation>
-                  <AnalyticsCardBoxAnimation>
+                  <AnalyticsCardBoxAnimation inView={analyticsInView()}>
                     <Text size={'lg'} weight={'bold'}>
                       Solid Reactivity Example
                     </Text>
@@ -159,7 +169,7 @@ export default function ComingSoon() {
                   </AnalyticsCardBoxAnimation>
                 </div>
                 <div class={styles.rightCardAnalytics}>
-                  <AnalyticsCardBoxAnimation>
+                  <AnalyticsCardBoxAnimation inView={analyticsInView()}>
                     <Text size={'lg'} weight={'bold'}>
                       Rxjs operators
                     </Text>
@@ -175,7 +185,7 @@ export default function ComingSoon() {
                       </Box>
                     </Box>
                   </AnalyticsCardBoxAnimation>
-                  <AnalyticsCardBoxAnimation>
+                  <AnalyticsCardBoxAnimation inView={analyticsInView()}>
                     <Text size={'lg'} weight={'bold'}>
                       Jest vs Jasmine
                     </Text>
@@ -222,16 +232,14 @@ export default function ComingSoon() {
   );
 }
 
-function AnalyticsCardBoxAnimation(props: FlowProps) {
+function AnalyticsCardBoxAnimation(props: FlowProps<{inView: boolean}>) {
   return (
     <Motion.div
-      inView={{
-        transform: ['translateY(40px) scale(0.7)', 'translateY(0px) scale(1)'],
-        opacity: [0, 1],
-      }}
-      exit={{
-        transform: ['translateY(0px) scale(0)'],
-        opacity: 0,
+      animate={{
+        transform: props.inView
+          ? 'translateY(0px) scale(1)'
+          : 'translateY(40px) scale(0.7)',
+        opacity: props.inView ? 1 : 0.4,
       }}
       class={styles.analyticsCard}
     >
