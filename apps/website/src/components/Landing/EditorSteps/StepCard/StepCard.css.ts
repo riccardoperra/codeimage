@@ -1,5 +1,5 @@
 import {createVar, style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
+import {responsiveStyle} from '~/theme/responsive';
 
 export const activeColorVar = createVar();
 export const disabledOpacity = createVar();
@@ -31,6 +31,12 @@ export const container = style([
       },
       '&[data-active=false]': {
         opacity: disabledOpacity,
+      },
+    },
+    '@media': {
+      '(min--moz-device-pixel-ratio:0)': {
+        // Trying to simulate Chrome/Safari blurry effect with firefox
+        backgroundColor: 'rgb(0 0 0 / 0.35)',
       },
     },
   },

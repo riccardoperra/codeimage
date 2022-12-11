@@ -14,10 +14,10 @@ import {
   Title,
 } from 'solid-start';
 import {UmamiScript} from '~/components/Umami/UmamiScript';
-import {breakpoints} from '~/core/breakpoints';
-import {rootTheme} from '~/theme.css';
+import {breakpoints} from '~/theme/breakpoints';
+import {rootTheme} from '~/theme/theme.css';
 import {getUiStore} from '~/ui';
-import './root.css';
+import './theme/root.css';
 
 function FontDefinitions() {
   return (

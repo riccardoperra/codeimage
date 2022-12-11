@@ -7,11 +7,8 @@ import {
   splitProps,
 } from 'solid-js';
 import {hydrate, NoHydration} from 'solid-js/web';
-import {
-  createHydration,
-  HydratableComponentProps,
-} from '~/core/hydration/createHydration';
-import {CustomHydratable} from '~/core/hydration/CustomHydratable';
+import {createHydration, HydratableComponentProps} from './createHydration';
+import {CustomHydratable} from './CustomHydratable';
 
 export function createHydratable<
   T extends Component<unknown>,

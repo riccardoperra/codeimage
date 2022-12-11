@@ -1,7 +1,7 @@
-import {Box, Link, Text} from '@codeimage/ui';
+import {Box, HStack, Link, Text} from '@codeimage/ui';
 import {A} from '@solidjs/router';
 import {createSignal, onMount} from 'solid-js';
-import {injectBreakpoints} from '~/core/breakpoints';
+import {injectBreakpoints} from '~/theme/breakpoints';
 import * as styles from './OpenSource.css';
 
 export default function OpenSource() {
@@ -28,10 +28,10 @@ export default function OpenSource() {
     <div class={styles.main} ref={section}>
       <div class={styles.contributorsContent}>
         <div class={styles.contributorsStickyContent}>
-          <div class={styles.githubLogo}>
+          <HStack display={'flex'} alignItems={'center'} spacing={6}>
             <svg
-              width={128}
-              height={128}
+              width={54}
+              height={54}
               viewBox="0 0 1024 1024"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -44,66 +44,41 @@ export default function OpenSource() {
                 fill="#fff"
               />
             </svg>
+            <Text weight={'bold'} size={'4xl'} class={styles.heading}>
+              Open Source
+            </Text>
+          </HStack>
+
+          <Box marginTop={4}>
+            <Text class={styles.description}>
+              CodeImage is an open source project, which is available entirely
+              on Github.
+            </Text>
+          </Box>
+
+          <div class={styles.contributorsObject} data-visible={view()}>
+            <object
+              data={view() ? contributors() : undefined}
+              title="Contributors"
+            />
           </div>
 
-          <Box marginTop={24}>
-            <Box display={'flex'}>
-              <Text weight={'bold'} size={'5xl'} class={styles.heading}>
-                Open Source
-              </Text>
-            </Box>
-
-            <Box marginTop={6} display={'flex'}>
-              <Text
-                size={'3xl'}
-                style={{'line-height': 1.5}}
-                class={styles.description}
-              >
-                CodeImage is an open source project, which is available on
-                Github. <br />
-                We thank all our{' '}
-                <Link
-                  as={A}
-                  underline={true}
-                  href="https://github.com/riccardoperra/codeimage/contributors"
-                  target="_blank'"
-                  rel={'noopener'}
-                >
-                  contributors
-                </Link>
-                &nbsp; and supporters to make CodeImage better every day.
-              </Text>
-            </Box>
-
-            <div class={styles.contributorsObject} data-visible={view()}>
-              <object
-                data={view() ? contributors() : undefined}
-                title="Contributors"
-              />
-            </div>
-
-            <Box marginTop={12} display={'flex'}>
-              <Text
-                size={'3xl'}
-                style={{'line-height': 1.5}}
-                class={styles.description}
-              >
-                Contributors can help fix bugs and implement new features in
-                CodeImage.
-                <Box as={'div'}>
-                  <Link
-                    as={A}
-                    underline={true}
-                    href="https://github.com/riccardoperra/codeimage"
-                    target="_blank'"
-                    rel={'noopener'}
-                  >
-                    Become a contributor
-                  </Link>
-                </Box>
-              </Text>
-            </Box>
+          <Box>
+            <Text as={'p'} class={styles.description}>
+              Contributors can help fix bugs and implement new features in
+              CodeImage.
+            </Text>
           </Box>
+          <Link
+            as={A}
+            href="https://github.com/riccardoperra/codeimage"
+            target="_blank'"
+            rel={'noopener'}
+            underline={true}
+            class={styles.becomeContributorLink}
+          >
+            Become a contributor →
+          </Link>
         </div>
       </div>
     </div>

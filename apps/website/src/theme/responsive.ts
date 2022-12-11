@@ -1,6 +1,6 @@
 import type {StyleRule} from '@vanilla-extract/css';
 import {breakpoints} from './breakpoints';
-import {mapValues, omit} from './object';
+import {mapValues, omit} from '../core/object';
 
 type CSSProps = Omit<StyleRule, '@media' | '@supports'>;
 

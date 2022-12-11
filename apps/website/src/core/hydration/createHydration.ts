@@ -13,7 +13,7 @@ import {
   onIdle,
   onLoad,
   onVisible,
-} from '~/core/hydration/strategy';
+} from './strategy';
 
 export type HydratableProps =
   | ({strategy: 'visible'} & HydrateOnVisibleProps)

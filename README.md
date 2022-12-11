@@ -1,4 +1,4 @@
-![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/banner.png?raw=true)
+![CodeImage logo](./docs/banner.png?raw=true)
 
 > Create elegant code screenshots of your source code.
 

@@ -1,6 +1,6 @@
 import {themeColors, themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
-import {lchSupportStyle} from '~/core/supportLch';
+import {lchSupportStyle} from '~/theme/supportLch';
 
 export const [internalRootTheme, rootThemeVars] = createTheme({
   primaryTextColor: themeVars.backgroundColor.blue[500],
@@ -8,16 +8,17 @@ export const [internalRootTheme, rootThemeVars] = createTheme({
   purple: themeVars.backgroundColor.purple['500'],
   red: themeVars.backgroundColor.red['500'],
   teal: themeVars.backgroundColor.teal['500'],
+  // Extra dark colors not covered by @codeimage/ui darkGrayScale
+  black: '#000',
 });
 
 export const rootTheme = style([
   internalRootTheme,
   lchSupportStyle({
     vars: {
-      [themeColors.primary]: 'lch(47.157% 75.042 272.966)',
-      [themeColors.button.primary.backgroundColor]:
-        'lch(47.157% 75.042 272.966)',
-      [rootThemeVars.primaryTextColor]: 'lch(60.692% 75.301 265.152)',
+      [themeColors.primary]: 'lch(45% 85 260)',
+      [themeColors.button.primary.backgroundColor]: 'lch(45% 85 260)',
+      [rootThemeVars.primaryTextColor]: 'lch(45% 85 260)',
       [rootThemeVars.green]: 'lch(68.171% 90 152.173)',
       [rootThemeVars.purple]: 'lch(58.652% 85 302.105)',
       [rootThemeVars.red]: 'lch(60% 90 27.937)',
