@@ -344,14 +344,13 @@ jobs:
           alias-domains: | #Optional
             codeimage-website-pr-{{PR_NUMBER}}.vercel.app
 
-      - name: Publish
-        uses: cloudflare/pages-action@1
+      - name: Publish on Netlify
+        uses: netlify/actions/cli@master
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_DEPLOY }}
-          accountId: ${{ secrets.CLOUDFLARE_API_ACCOUNT_ID }}
-          projectName: codeimage # e.g. 'my-project'
-          directory: apps/website/dist/public # e.g. 'dist'
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          args: deploy --dir=apps/website/dist/public --prod
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.WEBSITE_NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.WEBSITE_NETLIFY_AUTH_TOKEN }}
 
       - name: Cache website
         uses: actions/cache@v3
