@@ -1,12 +1,12 @@
 import {themeVars} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
-import {rootThemeVars} from '~/theme.css';
+import {responsiveStyle} from '~/theme/responsive';
+import {rootThemeVars} from '~/theme/theme.css';
 
 export const main = style([
   {
-    backgroundColor: '#000',
+    backgroundColor: rootThemeVars.black,
     paddingLeft: themeVars.spacing[6],
     paddingRight: themeVars.spacing[6],
     paddingBottom: themeVars.spacing[24],
@@ -33,36 +33,6 @@ export const twoSections = style([
   responsiveStyle({
     desktop: {
       flexDirection: 'row',
-    },
-  }),
-]);
-
-export const halfCard = style([
-  {
-    border: `1px solid rgb(24 24 27)`,
-    backgroundColor: 'rgb(39 39 42 / 0.25)',
-    placeContent: 'center flex-start',
-    alignItems: 'center',
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    gap: '96px',
-    overflow: 'visible',
-    position: 'relative',
-    flexDirection: 'column',
-    padding: '24px',
-    borderRadius: '24px',
-    flex: 1,
-  },
-  responsiveStyle({
-    mobile: {
-      borderRadius: '32px',
-    },
-    desktop: {
-      flexDirection: 'row',
-      borderRadius: '96px',
-      padding: '48px',
-      paddingTop: themeVars.spacing[24],
-      paddingBottom: themeVars.spacing[24],
     },
   }),
 ]);

@@ -18,7 +18,7 @@ import {
   gradientBlueBg,
   gradientPurpleBg,
   gradientPurpleDarkerBg,
-} from '~/gradients.css';
+} from '~/theme/gradients.css';
 import {CodeEditorPreviewBlock} from '../CodeEditor/CodeEditorPreviewBlock';
 import {DynamicBackgroundExpansion} from '../EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
 import {injectEditorScene} from '../scene';

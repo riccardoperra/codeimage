@@ -1,7 +1,7 @@
 import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {createVar, style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
+import {responsiveStyle} from '~/theme/responsive';
 
 const textAlignFlex = createVar();
 

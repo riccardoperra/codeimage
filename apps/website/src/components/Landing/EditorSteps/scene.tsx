@@ -1,5 +1,5 @@
 import {createEffect, createMemo, createRoot, createSignal, on} from 'solid-js';
-import {injectBreakpoints} from '~/core/breakpoints';
+import {injectBreakpoints} from '~/theme/breakpoints';
 import {getUiStore} from '~/ui';
 
 export function createEditorScene() {

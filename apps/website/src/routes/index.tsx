@@ -51,7 +51,6 @@ export default function Home() {
           strategy: 'idle',
           timeout: 200,
         }}
-        test={5}
       />
       <Projects
         $hydration={{
@@ -69,19 +68,19 @@ export default function Home() {
           },
         }}
       />
-      <OpenSource
-        $hydration={{
-          strategy: 'visible',
-          init: {
-            rootMargin: '1000px',
-          },
-        }}
-      />
       <Showcase
         $hydration={{
           strategy: 'visible',
           init: {
             rootMargin: '500px',
+          },
+        }}
+      />
+      <OpenSource
+        $hydration={{
+          strategy: 'visible',
+          init: {
+            rootMargin: '1000px',
           },
         }}
       />

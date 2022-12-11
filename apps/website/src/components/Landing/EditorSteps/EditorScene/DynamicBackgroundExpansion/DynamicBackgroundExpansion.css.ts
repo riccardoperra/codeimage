@@ -1,7 +1,7 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
-import {gradientPurpleBg, gradientPurpleDarkerBg} from '~/gradients.css';
+import {responsiveStyle} from '~/theme/responsive';
+import {gradientPurpleBg, gradientPurpleDarkerBg} from '~/theme/gradients.css';
 
 const animationCurve = createVar();
 

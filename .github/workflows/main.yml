@@ -199,7 +199,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
-            codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
+            codeimage-app-pr-{{PR_NUMBER}}.vercel.app
 
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'

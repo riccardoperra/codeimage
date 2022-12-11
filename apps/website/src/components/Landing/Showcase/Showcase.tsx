@@ -14,7 +14,7 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
-import {injectBreakpoints} from '~/core/breakpoints';
+import {injectBreakpoints} from '~/theme/breakpoints';
 import {mainWebsiteLink} from '~/core/constants';
 import {CodeEditor} from '../EditorSteps/CodeEditor/CodeEditor';
 import * as styles from './Showcase.css';

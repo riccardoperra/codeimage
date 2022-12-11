@@ -1,8 +1,8 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, keyframes, style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
-import {gradientBlueBg} from '~/gradients.css';
-import {rootThemeVars} from '~/theme.css';
+import {gradientBlueBg} from '~/theme/gradients.css';
+import {responsiveStyle} from '~/theme/responsive';
+import {rootThemeVars} from '~/theme/theme.css';
 
 const dotColor = createVar();
 
@@ -247,23 +247,6 @@ export const imageLeft = style([
     },
   }),
 ]);
-
-export const backdrop = style({
-  filter: 'blur(160px)',
-  transform: 'translateZ(0px)',
-  opacity: '.5',
-  background:
-    'conic-gradient(from 230.29deg at 51.63% 52.16%, rgb(36, 0, 255) 0deg, rgb(0, 135, 255) 67.5deg, rgb(108, 39, 157) 198.75deg, rgb(24, 38, 163) 251.25deg, rgb(54, 103, 196) 301.88deg, rgb(105, 30, 255) 360deg)',
-  overflow: 'hidden',
-  backgroundSize: '400% 400%',
-  width: '60%',
-  height: '100%',
-  position: 'absolute',
-  zIndex: 0,
-  margin: 'auto',
-  animation: `${bgAnimation} 7s ease infinite, ${backdropTransform} 6s ease-in-out 1`,
-  marginTop: '100px',
-});
 
 export const screenshot = style({
   color: rootThemeVars.primaryTextColor,

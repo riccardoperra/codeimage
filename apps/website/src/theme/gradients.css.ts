@@ -1,5 +1,5 @@
 import {createVar, style} from '@vanilla-extract/css';
-import {lchSupportStyle} from '~/core/supportLch';
+import {lchSupportStyle} from '~/theme/supportLch';
 
 export const gradientBlue1 = {
   gradient1: createVar(),

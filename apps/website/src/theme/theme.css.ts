@@ -1,6 +1,6 @@
 import {themeColors, themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
-import {lchSupportStyle} from '~/core/supportLch';
+import {lchSupportStyle} from '~/theme/supportLch';
 
 export const [internalRootTheme, rootThemeVars] = createTheme({
   primaryTextColor: themeVars.backgroundColor.blue[500],
@@ -8,6 +8,8 @@ export const [internalRootTheme, rootThemeVars] = createTheme({
   purple: themeVars.backgroundColor.purple['500'],
   red: themeVars.backgroundColor.red['500'],
   teal: themeVars.backgroundColor.teal['500'],
+  // Extra dark colors not covered by @codeimage/ui darkGrayScale
+  black: '#000',
 });
 
 export const rootTheme = style([
