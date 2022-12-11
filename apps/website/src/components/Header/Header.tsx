@@ -2,6 +2,7 @@ import {Button, SvgIcon, SvgIconProps} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createMemo, createSignal, onCleanup, onMount} from 'solid-js';
 import {mainWebsiteLink} from '~/core/constants';
+import {injectBreakpoints} from '~/theme/breakpoints';
 import {getUiStore} from '~/ui';
 import {CodeImageLogoSvg} from '../CodeImageLogo/CodeImageLogoSvg';
 import {content} from '../Main/MainPage.css';
@@ -9,6 +10,7 @@ import * as styles from './Header.css';
 
 export function Header() {
   const [scrolled, setScrolled] = createSignal(false);
+  const bp = injectBreakpoints();
   const ui = getUiStore();
   onMount(() => {
     const contentEl = document.querySelector(`.${content}`) as HTMLElement;

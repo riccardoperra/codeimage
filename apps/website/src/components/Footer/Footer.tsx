@@ -10,12 +10,9 @@ export default function Footer() {
             <Text as={'span'} weight={'semibold'} size={'lg'}>
               © 2022 Riccardo Perra.
             </Text>
-            <Text as={'span'} weight={'light'} size={'lg'}>
+            <Text as={'span'} weight={'light'} size={'md'}>
               Made with{' '}
-              <Link
-                underline={true}
-                href={'https://github.com/solidjs/solid'}
-              >
+              <Link underline={true} href={'https://github.com/solidjs/solid'}>
                 SolidJS
               </Link>{' '}
               ❤️
