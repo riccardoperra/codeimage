@@ -21,6 +21,7 @@ export function $createUIStore() {
         authorizationParams: {
           audience: import.meta.env.VITE_PUBLIC_AUTH0_AUDIENCE,
         },
+        cookieDomain: 'codeimage.dev',
         cacheLocation: 'localstorage',
       });
       setAuth(() => auth0Client);
