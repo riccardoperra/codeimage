@@ -1,3 +1,4 @@
+import {HTMLElement} from 'node-html-parser';
 import {
   Component,
   createUniqueId,
@@ -16,11 +17,14 @@ import {
 } from './strategy';
 
 export type HydratableProps =
-  | ({strategy: 'visible'} & HydrateOnVisibleProps)
+  | ({strategy: 'visible'} & HydrateOnVisibleProps & {
+        afterIntersectedElementId?: string;
+      })
   | ({strategy: 'idle'} & HydrateOnIdleProps)
   | {strategy: 'load'};
 
 export type HydratableComponentProps = {
+  id?: string;
   $hydration: HydratableProps;
 };
 
@@ -57,12 +61,18 @@ export function createHydration<
         };
         switch (hydrationProps.$hydration.strategy) {
           case 'visible': {
-            const config = {
-              ...hydrationProps.$hydration,
-              el: rootElement,
-            };
+            const targetElementId =
+              hydrationProps.$hydration.afterIntersectedElementId;
 
-            return onVisible(initHydrationCallback, config);
+            const ioElement = targetElementId
+              ? document.querySelector(`#${targetElementId}`)
+              : null;
+
+            return onVisible(initHydrationCallback, {
+              init: hydrationProps.$hydration.init,
+              el: rootElement,
+              intersectionElement: ioElement ?? null,
+            });
           }
           case 'idle': {
             return onIdle(initHydrationCallback, hydrationProps.$hydration);

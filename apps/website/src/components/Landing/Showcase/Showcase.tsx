@@ -9,13 +9,16 @@ import {
   createResource,
   createSignal,
   For,
+  JSXElement,
   on,
   onMount,
   Show,
   Suspense,
+  VoidProps,
 } from 'solid-js';
-import {injectBreakpoints} from '~/theme/breakpoints';
+import {CodeEditorPreviewBlock} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditorPreviewBlock';
 import {mainWebsiteLink} from '~/core/constants';
+import {injectBreakpoints} from '~/theme/breakpoints';
 import {CodeEditor} from '../EditorSteps/CodeEditor/CodeEditor';
 import * as styles from './Showcase.css';
 
@@ -77,7 +80,7 @@ export default function Showcase() {
   });
 
   let contentEl: HTMLDivElement;
-  const [isInView, setIsInView] = createSignal(false);
+  const [isInView, setIsInView] = createSignal(true);
 
   onMount(() => {
     inView(
@@ -126,7 +129,7 @@ export default function Showcase() {
                 }}
                 style={{'z-index': '10'}}
               >
-                <PreviewCodeEditor
+                <ShowcaseCodeEditorBlock
                   code={block.code}
                   alternativePreviewBackground={block.alternativeBackground}
                   customTheme={block.theme}
@@ -146,20 +149,44 @@ export default function Showcase() {
   );
 }
 
-interface PreviewCodeEditorProps {
+interface ShowcaseCodeEditorBlockProps {
   customTheme: Promise<CustomTheme>;
   code: string;
   alternativePreviewBackground?: string;
 }
 
-export function PreviewCodeEditor(props: PreviewCodeEditorProps) {
-  const [customTheme] = createResource(() => props.customTheme, {
-    deferStream: true,
-  });
+function ShowcaseCodeEditorPreview(
+  props: VoidProps<{code: string}>,
+): JSXElement {
+  return (
+    <div
+      class={styles.codeContainer}
+      style={assignInlineVars({
+        [styles.codeContainerBg]: '#1d1d1d',
+      })}
+    >
+      <div
+        class={styles.codeBlock}
+        style={assignInlineVars({
+          [styles.codeBlockBg]: '#111',
+        })}
+      >
+        <CodeEditorPreviewBlock code={props.code} />
+      </div>
+    </div>
+  );
+}
+
+export function ShowcaseCodeEditorBlock(props: ShowcaseCodeEditorBlockProps) {
+  const [customTheme] = createResource(() => props.customTheme);
 
   return (
-    <Suspense fallback={<></>}>
-      <Show when={customTheme()} keyed={true}>
+    <Suspense fallback={<ShowcaseCodeEditorPreview code={props.code} />}>
+      <Show
+        fallback={<ShowcaseCodeEditorPreview code={props.code} />}
+        when={customTheme()}
+        keyed={true}
+      >
         {customTheme => (
           <div
             class={styles.codeContainer}
@@ -175,10 +202,12 @@ export function PreviewCodeEditor(props: PreviewCodeEditorProps) {
                 [styles.codeBlockBg]: customTheme.properties.terminal.main,
               })}
             >
-              <CodeEditor
-                code={props.code}
-                customTheme={Promise.resolve(customTheme.editorTheme)}
-              />
+              <Suspense fallback={<CodeEditorPreviewBlock code={props.code} />}>
+                <CodeEditor
+                  code={props.code}
+                  customTheme={Promise.resolve(customTheme.editorTheme)}
+                />
+              </Suspense>
             </div>
             <div
               class={styles.backdrop}
