@@ -2,7 +2,7 @@ import {Button} from '@codeimage/ui';
 import {useRouteData} from '@solidjs/router';
 import {createSignal} from 'solid-js';
 import * as styles from '~/components/Main/MainPage.css';
-import {breakpoints} from '~/core/breakpoints';
+import {breakpoints} from '~/theme/breakpoints';
 import {mainWebsiteLink} from '~/core/constants';
 import {routeData} from '~/routes';
 import {GithubButton} from '../GithubButton/GithubButton';

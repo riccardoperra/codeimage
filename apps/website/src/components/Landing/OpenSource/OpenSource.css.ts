@@ -1,7 +1,7 @@
 import {themeVars} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
+import {responsiveStyle} from '~/theme/responsive';
 
 export const main = style({
   backgroundColor: darkGrayScale.gray2,

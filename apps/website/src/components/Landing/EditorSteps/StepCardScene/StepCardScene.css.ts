@@ -1,5 +1,5 @@
 import {globalStyle, style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
+import {responsiveStyle} from '~/theme/responsive';
 
 export const container = style({
   marginLeft: 'auto',

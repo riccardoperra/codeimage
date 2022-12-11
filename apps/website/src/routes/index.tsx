@@ -51,7 +51,6 @@ export default function Home() {
           strategy: 'idle',
           timeout: 200,
         }}
-        test={5}
       />
       <Projects
         $hydration={{

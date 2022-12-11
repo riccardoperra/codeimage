@@ -1,7 +1,7 @@
 import {themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
-import {rootThemeVars} from '~/theme.css';
+import {responsiveStyle} from '~/theme/responsive';
+import {rootThemeVars} from '~/theme/theme.css';
 
 export const main = style([
   {

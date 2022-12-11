@@ -6,9 +6,9 @@ import {
   FeatureContent,
   FeatureImageContent,
 } from '~/components/FeatureCard/FeatureCard';
-import {injectBreakpoints} from '~/core/breakpoints';
+import {injectBreakpoints} from '~/theme/breakpoints';
 import {mainWebsiteLink} from '~/core/constants';
-import {rootThemeVars} from '~/theme.css';
+import {rootThemeVars} from '~/theme/theme.css';
 import * as styles from './Projects.css';
 
 function StorageBox(props: JSX.IntrinsicElements['svg']) {

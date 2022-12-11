@@ -1,5 +1,5 @@
 import {createVar, style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
+import {responsiveStyle} from '~/theme/responsive';
 
 export const activeColorVar = createVar();
 export const disabledOpacity = createVar();

@@ -1,8 +1,8 @@
 import {themeVars} from '@codeimage/ui';
 import {createVar, keyframes, style} from '@vanilla-extract/css';
-import {responsiveStyle} from '~/core/responsive';
-import {gradientBlueBg} from '~/gradients.css';
-import {rootThemeVars} from '~/theme.css';
+import {responsiveStyle} from '~/theme/responsive';
+import {gradientBlueBg} from '~/theme/gradients.css';
+import {rootThemeVars} from '~/theme/theme.css';
 
 const dotColor = createVar();
 

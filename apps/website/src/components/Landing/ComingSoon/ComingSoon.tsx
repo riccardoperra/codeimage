@@ -7,8 +7,8 @@ import {
   FeatureContent,
   FeatureImageContent,
 } from '~/components/FeatureCard/FeatureCard';
-import {injectBreakpoints} from '~/core/breakpoints';
-import {rootThemeVars} from '~/theme.css';
+import {injectBreakpoints} from '~/theme/breakpoints';
+import {rootThemeVars} from '~/theme/theme.css';
 import * as styles from './ComingSoon.css';
 
 function PaintBrush(props: SvgIconProps) {

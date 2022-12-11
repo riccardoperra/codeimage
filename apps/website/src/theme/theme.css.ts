@@ -1,6 +1,6 @@
 import {themeColors, themeVars} from '@codeimage/ui';
 import {createTheme, style} from '@vanilla-extract/css';
-import {lchSupportStyle} from '~/core/supportLch';
+import {lchSupportStyle} from '~/theme/supportLch';
 
 export const [internalRootTheme, rootThemeVars] = createTheme({
   primaryTextColor: themeVars.backgroundColor.blue[500],

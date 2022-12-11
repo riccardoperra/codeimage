@@ -93,7 +93,6 @@ export function CodeEditor(props: CodeEditorProps) {
             ? customThemeExt.loading
             : false;
           const jsLoading = jsExt.loading;
-          console.log(customThemeLoading, jsLoading);
           setLoading(!(!jsLoading && !customThemeLoading));
         });
       },
