@@ -199,7 +199,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
-            codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
+            codeimage-app-pr-{{PR_NUMBER}}.vercel.app
 
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'
@@ -343,14 +343,6 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_WEBSITE_DEV_PROJECT_ID}} #Required
           alias-domains: | #Optional
             codeimage-website-pr-{{PR_NUMBER}}.vercel.app
-
-      - name: Publish on Netlify
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=apps/website/dist/public --prod
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.WEBSITE_NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.WEBSITE_NETLIFY_AUTH_TOKEN }}
 
       - name: Cache website
         uses: actions/cache@v3
