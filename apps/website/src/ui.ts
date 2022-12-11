@@ -1,5 +1,5 @@
 import {Auth0Client, User} from '@auth0/auth0-spa-js';
-import {createEffect, createRoot, createSignal, onMount} from 'solid-js';
+import {createRoot, createSignal, onMount} from 'solid-js';
 import {createStore} from 'solid-js/store';
 
 interface GlobalUiStore {
@@ -24,31 +24,19 @@ export function $createUIStore() {
         cacheLocation: 'localstorage',
       });
       setAuth(() => auth0Client);
-      //if you do this, you'll need to check the session yourself
-    });
-    createEffect(() => {
       const authValue = auth();
-      setTimeout(async () => {
-        if (authValue) {
-          try {
-            await authValue.getTokenSilently();
-            console.log('is auth', await authValue.isAuthenticated());
-          } catch (error) {
-            console.log('error test', error);
-            console.log('is auth', await authValue.isAuthenticated());
-            if (error.error !== 'login_required') {
-              throw error;
-            }
-          }
-
-          authValue
-            .getUser()
-            .then(user => {
-              return setUser(user);
-            })
-            .catch(() => null);
-        }
-      });
+      if (authValue) {
+        authValue
+          .getUser()
+          .then(user => {
+            console.log('set user ready', user);
+            return setUser(user);
+          })
+          .catch(() => {
+            console.log('set user not present', null);
+            return setUser(null);
+          });
+      }
     });
   });
 

@@ -1,5 +1,7 @@
 import {themeVars} from '@codeimage/ui';
+import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {createTheme, createVar, style} from '@vanilla-extract/css';
+import {responsiveStyle} from '~/theme/responsive';
 
 export const [toolbarTheme, toolbarVars] = createTheme({
   backgroundColor: themeVars.backgroundColor.white,
@@ -61,4 +63,28 @@ export const headerContentInner = style({
 
 export const headerActions = style({
   marginLeft: 'auto',
+  gap: themeVars.spacing[2],
+  display: 'flex',
 });
+
+export const loginButton = style({
+  cursor: 'pointer',
+  boxShadow: themeVars.boxShadow.lg,
+  border: `1px solid rgba(255, 255, 255, 0.08)`,
+  backgroundColor: darkGrayScale.gray1,
+  selectors: {
+    '&:hover': {
+      backgroundColor: darkGrayScale.gray2,
+    },
+  },
+});
+
+export const gettingStartedBtn = style([
+  {
+    boxShadow: themeVars.boxShadow.lg,
+  },
+  responsiveStyle({
+    mobile: {display: 'none'},
+    tablet: {display: 'inline-flex'},
+  }),
+]);

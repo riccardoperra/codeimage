@@ -1,8 +1,7 @@
 import {ElementType} from '@solid-aria/types';
-import {elements} from '@solid-primitives/refs';
 import clsx from 'clsx';
 import {ButtonProps as ShButtonProps} from 'solid-headless';
-import {children, JSXElement, ParentProps, Show, splitProps} from 'solid-js';
+import {JSXElement, ParentProps, Show, splitProps} from 'solid-js';
 import {CustomComponentProps, styled} from '../../utils';
 import {LoadingCircle} from '../Loader';
 import * as styles from './Button.css';
@@ -47,18 +46,11 @@ export function Button<T extends ElementType = 'button'>(
       local.class,
     );
 
-  const resolvedIcon = (): JSXElement => {
-    if (!local.leftIcon) return null;
-    const item = children(() => local.leftIcon);
-    const els = elements(item, SVGElement, HTMLElement);
-    // Should always be 1
-    els().forEach(el => el.classList.add(styles.buttonIcon));
-    return els();
-  };
-
   return (
     <styled.button as={local.as ?? 'button'} class={classes()} {...others}>
-      <Show when={!!local.leftIcon && !local.loading}>{resolvedIcon()}</Show>
+      <Show when={!!local.leftIcon && !local.loading}>
+        <span class={styles.buttonIcon}>{local.leftIcon}</span>
+      </Show>
       <Show when={local.loading}>
         <LoadingCircle class={styles.buttonIcon} size={local.size ?? 'sm'} />
       </Show>

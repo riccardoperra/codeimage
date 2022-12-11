@@ -33,20 +33,20 @@ cssEntries
     console.log(key);
   });
 
-const [resultPurge] = await new PurgeCSS().purge({
-  css: [
-    {
-      raw: criticalStyle,
-    },
-  ],
-  content: ['dist/public/index.html', 'dist/public/**.js'],
-});
+// const [resultPurge] = await new PurgeCSS().purge({
+//   css: [
+//     {
+//       raw: criticalStyle,
+//     },
+//   ],
+//   content: ['dist/public/index.html', 'dist/public/**.js'],
+// });
 
 patchedSource = patchedSource.replace(
   // prettier-ignore
   `<style id="css-critical-style"></style>`,
   // prettier-ignore
-  `<style id="css-critical-style">${resultPurge.css}</style>`,
+  `<style id="css-critical-style">${criticalStyle}</style>`,
 );
 
 writeFileSync(htmlSourcePath, patchedSource);
