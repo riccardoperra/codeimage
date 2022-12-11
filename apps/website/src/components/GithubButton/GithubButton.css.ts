@@ -9,6 +9,7 @@ export const githubButton = style({
   padding: 0,
   overflow: 'unset',
   background: 'unset',
+  gap: 0,
   ':focus': {
     outline: 'none',
     boxShadow: 'none',

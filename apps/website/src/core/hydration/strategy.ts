@@ -21,14 +21,21 @@ export type HydrateOnVisibleProps = {
 
 export function onVisible(
   onHydrate: () => void,
-  options: HydrateOnVisibleProps & {el: Element},
+  options: HydrateOnVisibleProps & {el: Element; intersectionElement?: Element},
 ) {
   const ioOptions = {...(options || {})};
-  const io = new IntersectionObserver(cb => {
-    if (cb[0].isIntersecting) {
-      onHydrate();
+  const io = new IntersectionObserver(entries => {
+    const [el, maybeIntersectionOElement] = entries;
+    if (el.isIntersecting || maybeIntersectionOElement?.isIntersecting) {
+      onIdle(() => onHydrate(), {timeout: 0});
       io.disconnect();
     }
   }, ioOptions.init);
+
+  // This is always needed if the user refresh 😁
   io.observe(ioOptions.el);
+
+  if (ioOptions.intersectionElement) {
+    io.observe(ioOptions.intersectionElement);
+  }
 }

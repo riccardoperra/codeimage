@@ -57,18 +57,6 @@ export const content = style([
   }),
 ]);
 
-export const bgAnimation = keyframes({
-  '0%': {
-    opacity: '0',
-  },
-  '50%': {
-    opacity: '1',
-  },
-  '100%': {
-    opacity: '0',
-  },
-});
-
 export const imageSection = style(
   responsiveStyle({
     mobile: {
@@ -88,22 +76,15 @@ export const imageSection = style(
 
 const float = keyframes({
   '0%': {
-    transform: 'translateY(-20px)',
+    transform: 'translate(40px, -40px)',
   },
   '50%': {
-    transform: 'translateY(0px)',
+    transform: 'translate(40px, -25px)',
   },
   '100%': {
-    transform: 'translateY(-20px)',
+    transform: 'translate(40px, -40px)',
   },
 });
-
-const imageBoxGradients = {
-  gradient1: createVar(),
-  gradient2: createVar(),
-  gradient3: createVar(),
-  gradient4: createVar(),
-};
 
 export const imageBox = style([
   {
@@ -118,7 +99,7 @@ export const imageBox = style([
   responsiveStyle({
     desktop: {
       borderRadius: '42px',
-      transform: 'translate(40px, -40px)',
+      animation: `${float} 6s ease-in-out infinite`,
     },
   }),
   gradientBlueBg,
@@ -137,7 +118,6 @@ export const imagePerspectiveBox = style([
     display: 'flex',
     gridColumnStart: 1,
     justifyContent: 'flex-end',
-    animation: `${float} 6s ease-in-out infinite`,
   },
   responsiveStyle({
     mobile: {
@@ -147,7 +127,8 @@ export const imagePerspectiveBox = style([
     desktop: {
       gridRowStart: 1,
       paddingBottom: 0,
-      marginTop: '240px',
+      marginTop: '200px',
+      marginBottom: '20px',
     },
   }),
 ]);

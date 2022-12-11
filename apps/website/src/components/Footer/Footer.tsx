@@ -1,5 +1,4 @@
 import {HStack, Link, Text} from '@codeimage/ui';
-import {A} from '@solidjs/router';
 import * as styles from '~/components/Footer/Footer.css';
 
 export default function Footer() {
@@ -7,9 +6,18 @@ export default function Footer() {
     <footer class={styles.footer}>
       <div class={styles.content}>
         <div class={styles.grid}>
-          <Text as={'span'} weight={'semibold'} size={'lg'}>
-            © 2022 Riccardo Perra
-          </Text>
+          <div class={styles.info}>
+            <Text as={'span'} weight={'semibold'} size={'lg'}>
+              © 2022 Riccardo Perra.
+            </Text>
+            <Text as={'span'} weight={'light'} size={'md'}>
+              Made with{' '}
+              <Link underline={true} href={'https://github.com/solidjs/solid'}>
+                SolidJS
+              </Link>{' '}
+              ❤️
+            </Text>
+          </div>
 
           <HStack spacing={'8'}>
             <Link

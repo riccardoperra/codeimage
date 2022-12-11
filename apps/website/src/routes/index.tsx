@@ -22,22 +22,27 @@ export function routeData() {
 
 const EditorSteps = createHydratable(
   () => import('../components/Landing/EditorSteps/EditorSteps'),
+  'editorSteps',
 );
 
 const Projects = createHydratable(
   () => import('../components/Landing/Projects/Projects'),
+  'projects',
 );
 
 const ComingSoon = createHydratable(
   () => import('../components/Landing/ComingSoon/ComingSoon'),
+  'comingSoon',
 );
 
 const OpenSource = createHydratable(
   () => import('../components/Landing/OpenSource/OpenSource'),
+  'openSource',
 );
 
 const Showcase = createHydratable(
   () => import('../components/Landing/Showcase/Showcase'),
+  'showcase',
 );
 
 const Footer = createHydratable(() => import('../components/Footer/Footer'));
@@ -46,50 +51,35 @@ export default function Home() {
   return (
     <main>
       <MainPage />
-      <EditorSteps
-        $hydration={{
-          strategy: 'idle',
-          timeout: 200,
-        }}
-      />
+      <EditorSteps $hydration={{strategy: 'idle', timeout: 200}} />
       <Projects
         $hydration={{
           strategy: 'visible',
-          init: {
-            rootMargin: '500px',
-          },
+          afterIntersectedElementId: EditorSteps.sectionId,
         }}
       />
       <ComingSoon
         $hydration={{
           strategy: 'visible',
-          init: {
-            rootMargin: '500px',
-          },
+          afterIntersectedElementId: EditorSteps.sectionId,
         }}
       />
       <Showcase
         $hydration={{
           strategy: 'visible',
-          init: {
-            rootMargin: '500px',
-          },
+          afterIntersectedElementId: Projects.sectionId,
         }}
       />
       <OpenSource
         $hydration={{
           strategy: 'visible',
-          init: {
-            rootMargin: '1000px',
-          },
+          afterIntersectedElementId: ComingSoon.sectionId,
         }}
       />
       <Footer
         $hydration={{
           strategy: 'visible',
-          init: {
-            rootMargin: '500px',
-          },
+          afterIntersectedElementId: ComingSoon.sectionId,
         }}
       />
     </main>

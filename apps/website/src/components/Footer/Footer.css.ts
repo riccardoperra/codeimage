@@ -28,6 +28,16 @@ export const grid = style([
   }),
 ]);
 
+export const info = style([
+  {
+    lineHeight: 1.5,
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: themeVars.spacing[2],
+  },
+]);
+
 export const link = style({
   color: themeVars.dynamicColors.descriptionTextColor,
 

@@ -2,6 +2,10 @@ import {createVar, fallbackVar, style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {themeVars} from '../../theme';
 import * as variables from '../../theme/variables.css';
+import {
+  inheritedHeight as svgInheritedHeight,
+  inheritedWidth as svgInheritedWidth,
+} from '../Icon/SvgIcon.css';
 
 export const buttonHeight = createVar();
 export const buttonPadding = createVar();
@@ -24,8 +28,8 @@ export const button = style({
   borderRadius: themeVars.borderRadius.lg,
   fontSize: variables.fontSize,
   fontWeight: themeVars.fontWeight.medium,
-  lineHeight: 1,
   fontFamily: 'inherit',
+  gap: themeVars.spacing[2],
   outline: 'none',
   placeContent: 'center',
   placeItems: 'center',
@@ -51,9 +55,13 @@ export const button = style({
 });
 
 export const buttonIcon = style({
-  marginRight: themeVars.spacing['2'],
-  width: `calc(${variables.fontSize} + 0.25rem)`,
-  height: `calc(${variables.fontSize} + 0.25rem)`,
+  display: 'inline-flex',
+  alignItems: 'center',
+  flexShrink: 0,
+  vars: {
+    [svgInheritedWidth]: `calc(${variables.fontSize} + 0.25rem)`,
+    [svgInheritedHeight]: `calc(${variables.fontSize} + 0.25rem)`,
+  },
 });
 
 export const buttonVariant = recipe({
