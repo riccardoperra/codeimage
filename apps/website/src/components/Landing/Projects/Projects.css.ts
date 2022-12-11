@@ -5,7 +5,7 @@ import {rootThemeVars} from '~/theme/theme.css';
 
 export const main = style([
   {
-    backgroundColor: '#000',
+    backgroundColor: rootThemeVars.black,
     paddingTop: themeVars.spacing[8],
     paddingBottom: themeVars.spacing[8],
   },

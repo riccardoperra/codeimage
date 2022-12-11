@@ -1,10 +1,11 @@
 import {backgroundColorVar, themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 import {responsiveStyle} from '~/theme/responsive';
+import {rootThemeVars} from '~/theme/theme.css';
 
 export const sectionWrapper = style([
   {
-    backgroundColor: '#000',
+    backgroundColor: rootThemeVars.black,
     position: 'relative',
   },
   responsiveStyle({
