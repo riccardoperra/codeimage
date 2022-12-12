@@ -1,5 +1,11 @@
 # @codeimage/vanilla-extract
 
+## 0.2.0
+
+### Minor Changes
+
+- [#404](https://github.com/riccardoperra/codeimage/pull/404) [`5822f2b`](https://github.com/riccardoperra/codeimage/commit/5822f2bdb309ef1897a03d9aaea3bb2efeec7f15) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add loader for vanilla.css.ts files
+
 ## 0.1.2
 
 ### Patch Changes

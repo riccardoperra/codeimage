@@ -1,5 +1,14 @@
 # @codeimage/app
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [[`5822f2b`](https://github.com/riccardoperra/codeimage/commit/5822f2bdb309ef1897a03d9aaea3bb2efeec7f15), [`21746dc`](https://github.com/riccardoperra/codeimage/commit/21746dca2034ec0c357b9262d30e6fb2769d47da), [`5822f2b`](https://github.com/riccardoperra/codeimage/commit/5822f2bdb309ef1897a03d9aaea3bb2efeec7f15)]:
+  - @codeimage/vanilla-extract@0.2.0
+  - @codeimage/ui@0.9.2
+  - @codeimage/highlight@0.10.4
+
 ## 1.0.3
 
 ### Patch Changes
