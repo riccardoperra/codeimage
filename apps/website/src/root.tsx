@@ -131,7 +131,7 @@ export default function Root() {
       />
       <meta property="og:image" content="/codeimage-card.png" />
 
-      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:card" content="summary" />
       <meta property="twitter:url" content="https://codeimage.dev/" />
       <meta
         property="twitter:title"
