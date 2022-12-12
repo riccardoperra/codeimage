@@ -141,7 +141,7 @@ export default function Root() {
         property="twitter:description"
         content="CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code"
       />
-      <meta property="twitter:image" content="/codeimage-card.png" />
+      <meta property="twitter:image:src" content="/codeimage-card.png" />
     </>
   ));
   useAssets(() => <style id="css-critical-style" />);
