@@ -14,6 +14,7 @@ import {
   Title,
 } from 'solid-start';
 import {UmamiScript} from '~/components/Umami/UmamiScript';
+import {ogImageUrl} from '~/core/constants';
 import {breakpoints} from '~/theme/breakpoints';
 import {rootTheme} from '~/theme/theme.css';
 import {getUiStore} from '~/ui';
@@ -119,6 +120,27 @@ export default function Root() {
       />
       <FontDefinitions />
       <MainPageImagePreloading />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://codeimage.dev/" />
+      <meta
+        property="og:title"
+        content="CodeImage - A tool for manage and beautify your code screenshots"
+      />
+      <meta
+        property="og:description"
+        content="CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code"
+      />
+      <meta property="og:image" content={ogImageUrl} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content="https://codeimage.dev/" />
+      <meta
+        property="twitter:title"
+        content="CodeImage - A tool for manage and beautify your code screenshots"
+      />
+      <meta
+        property="twitter:description"
+        content="CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code"
+      />
     </>
   ));
   useAssets(() => <style id="css-critical-style" />);
@@ -126,13 +148,15 @@ export default function Root() {
   return (
     <Html lang="en" data-codeimage-theme="dark">
       <Head>
-        <Title>CodeImage</Title>
+        <Title>
+          CodeImage - A tool for manage and beautify your code screenshots
+        </Title>
         <Meta charset="utf-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta name="title" content="CodeImage" />
         <Meta
           name="description"
-          content="CodeImage is the next-gen tool to help developers to create and share beautiful screenshots of their source code"
+          content="CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code"
         />
         <Meta
           name="theme-color"
