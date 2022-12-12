@@ -14,6 +14,7 @@ import {
   Title,
 } from 'solid-start';
 import {UmamiScript} from '~/components/Umami/UmamiScript';
+import {ogImageUrl} from '~/core/constants';
 import {breakpoints} from '~/theme/breakpoints';
 import {rootTheme} from '~/theme/theme.css';
 import {getUiStore} from '~/ui';
@@ -129,9 +130,8 @@ export default function Root() {
         property="og:description"
         content="CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code"
       />
-      <meta property="og:image" content="/codeimage-card.png" />
-
-      <meta property="twitter:card" content="summary" />
+      <meta property="og:image" content={ogImageUrl} />
+      <meta name="twitter:card" content="summary_large_image" />
       <meta property="twitter:url" content="https://codeimage.dev/" />
       <meta
         property="twitter:title"
@@ -140,10 +140,6 @@ export default function Root() {
       <meta
         property="twitter:description"
         content="CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code"
-      />
-      <meta
-        property="twitter:image"
-        content="https://raw.githubusercontent.com/riccardoperra/codeimage/feat/website-og-images/apps/website/public/codeimage-card.png"
       />
     </>
   ));
