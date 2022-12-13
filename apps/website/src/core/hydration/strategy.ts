@@ -1,14 +1,12 @@
+import {runOnIdle} from '~/core/hydration/schedule';
+
 export type HydrateOnIdleProps = {
   timeout?: number;
 };
 
 export function onIdle(onHydrate: () => void, options: HydrateOnIdleProps) {
   const {timeout = 200} = options;
-  if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(onHydrate, {timeout});
-  } else {
-    setTimeout(onHydrate, timeout);
-  }
+  return runOnIdle(onHydrate, timeout, false);
 }
 
 export function onLoad(onHydrate: () => void) {
