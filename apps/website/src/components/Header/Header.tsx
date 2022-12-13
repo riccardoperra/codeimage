@@ -1,5 +1,4 @@
 import {Button, SvgIcon, SvgIconProps} from '@codeimage/ui';
-import {A} from '@solidjs/router';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createMemo, createSignal, onCleanup, onMount} from 'solid-js';
 import {mainWebsiteLink} from '~/core/constants';
@@ -42,8 +41,7 @@ export function Header() {
           <div class={styles.headerActions}>
             <Button
               variant="solid"
-              as={A}
-              link={true}
+              as={'a'}
               href={`${mainWebsiteLink}/login`}
               theme="secondary"
               leftIcon={<GithubIcon />}

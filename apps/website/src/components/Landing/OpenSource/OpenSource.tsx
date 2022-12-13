@@ -1,5 +1,4 @@
 import {Box, HStack, Link, Text} from '@codeimage/ui';
-import {A} from '@solidjs/router';
 import {createSignal, onMount} from 'solid-js';
 import {injectBreakpoints} from '~/theme/breakpoints';
 import * as styles from './OpenSource.css';
@@ -70,7 +69,7 @@ export default function OpenSource() {
             </Text>
           </Box>
           <Link
-            as={A}
+            as={'a'}
             href="https://github.com/riccardoperra/codeimage"
             target="_blank'"
             rel={'noopener'}
