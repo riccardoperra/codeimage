@@ -203,11 +203,11 @@
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
   },
   "dependencies": {
-    "@codemirror/language": "^6.2.1",
-    "@codemirror/state": "^6.1.2",
+    "@codemirror/language": "^6.3.1",
+    "@codemirror/state": "^6.1.4",
     "@codemirror/theme-one-dark": "^6.1.0",
-    "@codemirror/view": "^6.3.1",
-    "@lezer/highlight": "^1.1.1",
+    "@codemirror/view": "^6.7.1",
+    "@lezer/highlight": "^1.1.3",
     "@primer/primitives": "^7.9.0"
   },
   "peerDependencies": {
@@ -219,7 +219,7 @@
   "devDependencies": {
     "@codeimage/ui": "workspace:*",
     "@codeimage/vanilla-extract": "workspace:*",
-    "@codemirror/lang-javascript": "^6.1.0",
+    "@codemirror/lang-javascript": "^6.1.2",
     "@rollup/plugin-typescript": "^9.0.1",
     "@types/node": "^18.11.0",
     "@types/prettier": "^2.7.1",
