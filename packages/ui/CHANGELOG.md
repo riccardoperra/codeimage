@@ -1,5 +1,16 @@
 # @codeimage/ui
 
+## 0.9.2
+
+### Patch Changes
+
+- [#408](https://github.com/riccardoperra/codeimage/pull/408) [`21746dc`](https://github.com/riccardoperra/codeimage/commit/21746dca2034ec0c357b9262d30e6fb2769d47da) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix svg icon
+
+- [#404](https://github.com/riccardoperra/codeimage/pull/404) [`5822f2b`](https://github.com/riccardoperra/codeimage/commit/5822f2bdb309ef1897a03d9aaea3bb2efeec7f15) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Improvements for button and styles
+
+- Updated dependencies [[`5822f2b`](https://github.com/riccardoperra/codeimage/commit/5822f2bdb309ef1897a03d9aaea3bb2efeec7f15)]:
+  - @codeimage/vanilla-extract@0.2.0
+
 ## 0.9.1
 
 ### Patch Changes
