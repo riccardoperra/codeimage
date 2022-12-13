@@ -73,6 +73,7 @@ const NotFoundPage = lazyWithNoLauncher(
 export function Bootstrap() {
   getRootEditorStore();
   const [, {locale}] = useI18n();
+  const auth0 = getAuth0State();
   createEffect(on(() => uiStore.locale, locale));
   const mode = () => uiStore.themeMode;
 
@@ -100,6 +101,16 @@ export function Bootstrap() {
       path: 'dashboard',
       data: ({navigate}) => navigate('/'),
       component: Dashboard,
+    },
+    {
+      path: 'login',
+      data: ({navigate}) => {
+        if (auth0.loggedIn()) {
+          navigate('/');
+        } else {
+          auth0.login();
+        }
+      },
     },
     {
       path: '/*all',
