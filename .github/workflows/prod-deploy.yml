@@ -402,6 +402,8 @@ jobs:
 
 
   deploy-website:
+    name: Deploy @codeimage/website
+    environment: Production
     needs: [ install, lint, typecheck-packages, build-packages ]
     runs-on: ubuntu-latest
     steps:
