@@ -27,17 +27,6 @@ export function Header() {
 
   const dataScrolled = createMemo(() => scrolled());
 
-  const redirectToLogin = () => {
-    const auth = ui.auth();
-    if (!auth) window.location.replace(mainWebsiteLink);
-    auth.loginWithRedirect({
-      authorizationParams: {
-        redirect_uri: mainWebsiteLink,
-        connection: 'github',
-      },
-    });
-  };
-
   return (
     <div
       class={styles.header}
@@ -53,7 +42,7 @@ export function Header() {
             <Button
               variant="solid"
               theme="secondary"
-              onClick={redirectToLogin}
+              onClick={ui.login}
               leftIcon={<GithubIcon />}
               class={styles.loginButton}
               title={'Login'}

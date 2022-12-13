@@ -1,6 +1,7 @@
 import {Auth0Client, User} from '@auth0/auth0-spa-js';
 import {createRoot, createSignal, onMount} from 'solid-js';
 import {createStore} from 'solid-js/store';
+import {mainWebsiteLink} from '~/core/constants';
 
 interface GlobalUiStore {
   navColor: string | undefined;
@@ -29,23 +30,29 @@ export function $createUIStore() {
       if (authValue) {
         authValue
           .getUser()
-          .then(user => {
-            console.log('set user ready', user);
-            return setUser(user);
-          })
-          .catch(() => {
-            console.log('set user not present', null);
-            return setUser(null);
-          });
+          .then(user => setUser(user))
+          .catch(() => setUser(null));
       }
     });
   });
+
+  const login = () => {
+    const authValue = auth();
+    if (!authValue) window.location.replace(mainWebsiteLink);
+    return authValue.loginWithRedirect({
+      authorizationParams: {
+        redirect_uri: mainWebsiteLink,
+        connection: 'github',
+      },
+    });
+  };
 
   return {
     value: store,
     set: setStore,
     auth,
     user,
+    login,
   };
 }
 
