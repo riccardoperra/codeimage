@@ -428,6 +428,12 @@ jobs:
           pnpm --prefer-offline install
 
       - name: Build
+        env:
+          VITE_UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_LANDING_SCRIPT_SRC }}
+          VITE_UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_LANDING_WEBSITE_ID }}
+          VITE_PUBLIC_AUTH0_DOMAIN: ${{ secrets.VITE_PUBLIC_AUTH0_DOMAIN }}
+          VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
+          VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
         run: |
           pnpm --filter=@codeimage/website build
 
