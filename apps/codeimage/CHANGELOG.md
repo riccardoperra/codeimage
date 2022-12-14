@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.0.5
+
+### Patch Changes
+
+- [#417](https://github.com/riccardoperra/codeimage/pull/417) [`1939b60`](https://github.com/riccardoperra/codeimage/commit/1939b60ad6dc1646f84ba80d2f9395c0f181235b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(app): fix light mode
+
 ## 1.0.4
 
 ### Patch Changes
