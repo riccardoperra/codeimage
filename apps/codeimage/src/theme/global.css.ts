@@ -1,7 +1,6 @@
 import {globalStyle} from '@vanilla-extract/css';
-import '@codeimage/ui/themes/lightTheme';
 
-globalStyle('body', {
+globalStyle('body', 
   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
   '@supports': {
     '(font-variation-settings: normal)': {
