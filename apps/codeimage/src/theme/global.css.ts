@@ -1,6 +1,6 @@
 import {globalStyle} from '@vanilla-extract/css';
 
-globalStyle('body', { 
+globalStyle('body', {
   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
   '@supports': {
     '(font-variation-settings: normal)': {
