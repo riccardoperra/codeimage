@@ -9,6 +9,7 @@ import {
   SnackbarHost,
   ThemeProviderProps,
 } from '@codeimage/ui';
+import '@codeimage/ui/themes/lightTheme';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {enableUmami} from '@core/constants/umami';
 import {OverlayProvider} from '@solid-aria/overlays';
