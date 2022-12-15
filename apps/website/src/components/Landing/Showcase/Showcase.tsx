@@ -114,28 +114,39 @@ export default function Showcase() {
         </Motion.div>
 
         <div class={styles.grid}>
-          <For each={filteredBlocks()}>
-            {block => (
-              <Motion.div
-                animate={{
-                  opacity: isInView() ? 1 : 0.5,
-                  transform: isInView()
-                    ? `translateY(0px) scale(1)`
-                    : `translateY(20px) scale(0.65)`,
-                  transition: {
-                    easing: [0.16, 1, 0.3, 1],
-                  },
-                }}
-                style={{'z-index': '10'}}
-              >
-                <ShowcaseCodeEditorBlock
-                  code={block.code}
-                  alternativePreviewBackground={block.alternativeBackground}
-                  customTheme={block.theme}
-                />
-              </Motion.div>
-            )}
-          </For>
+          <Show
+            fallback={
+              <ShowcaseCodeEditorBlock
+                code={blocks[0].code}
+                alternativePreviewBackground={blocks[0].alternativeBackground}
+              />
+            }
+            when={!bp.isXs()}
+            keyed={false}
+          >
+            <For each={filteredBlocks()}>
+              {block => (
+                <Motion.div
+                  animate={{
+                    opacity: isInView() ? 1 : 0.5,
+                    transform: isInView()
+                      ? `translateY(0px) scale(1)`
+                      : `translateY(20px) scale(0.65)`,
+                    transition: {
+                      easing: [0.16, 1, 0.3, 1],
+                    },
+                  }}
+                  style={{'z-index': '10'}}
+                >
+                  <ShowcaseCodeEditorBlock
+                    code={block.code}
+                    alternativePreviewBackground={block.alternativeBackground}
+                    customTheme={block.theme}
+                  />
+                </Motion.div>
+              )}
+            </For>
+          </Show>
         </div>
 
         <div class={styles.ctaContainer}>
@@ -149,7 +160,7 @@ export default function Showcase() {
 }
 
 interface ShowcaseCodeEditorBlockProps {
-  customTheme: Promise<CustomTheme>;
+  customTheme?: Promise<CustomTheme>;
   code: string;
   alternativePreviewBackground?: string;
 }
@@ -184,38 +195,36 @@ export function ShowcaseCodeEditorBlock(props: ShowcaseCodeEditorBlockProps) {
       <Show
         fallback={<ShowcaseCodeEditorPreview code={props.code} />}
         when={customTheme()}
-        keyed={true}
+        keyed={false}
       >
-        {customTheme => (
+        <div
+          class={styles.codeContainer}
+          style={assignInlineVars({
+            [styles.codeContainerBg]:
+              props.alternativePreviewBackground ||
+              customTheme().properties.previewBackground,
+          })}
+        >
           <div
-            class={styles.codeContainer}
+            class={styles.codeBlock}
             style={assignInlineVars({
-              [styles.codeContainerBg]:
-                props.alternativePreviewBackground ||
-                customTheme.properties.previewBackground,
+              [styles.codeBlockBg]: customTheme().properties.terminal.main,
             })}
           >
-            <div
-              class={styles.codeBlock}
-              style={assignInlineVars({
-                [styles.codeBlockBg]: customTheme.properties.terminal.main,
-              })}
-            >
-              <Suspense fallback={<CodeEditorPreviewBlock code={props.code} />}>
-                <CodeEditor
-                  code={props.code}
-                  customTheme={Promise.resolve(customTheme.editorTheme)}
-                />
-              </Suspense>
-            </div>
-            <div
-              class={styles.backdrop}
-              style={assignInlineVars({
-                [backgroundColorVar]: customTheme.properties.previewBackground,
-              })}
-            />
+            <Suspense fallback={<CodeEditorPreviewBlock code={props.code} />}>
+              <CodeEditor
+                code={props.code}
+                customTheme={Promise.resolve(customTheme().editorTheme)}
+              />
+            </Suspense>
           </div>
-        )}
+          <div
+            class={styles.backdrop}
+            style={assignInlineVars({
+              [backgroundColorVar]: customTheme().properties.previewBackground,
+            })}
+          />
+        </div>
       </Show>
     </Suspense>
   );
