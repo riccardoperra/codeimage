@@ -1,4 +1,4 @@
-import {Badge, Box, Text} from '@codeimage/ui';
+import {Box, Text} from '@codeimage/ui';
 import {Motion} from '@motionone/solid';
 import {createMemo} from 'solid-js';
 import {getUiStore} from '~/ui';
@@ -64,14 +64,15 @@ export function TwitterCard(props: TwitterCardProps) {
       <div data-visible={props.visible} class={styles.twitterInfo}>
         <Box marginBottom={2}>
           <div class={styles.title}>
-            <Badge size={'md'} theme={styles.badge} variant={'rounded'}>
+            <div class={styles.badge}>
               <img
                 alt="Profile picture"
                 loading="lazy"
-                class={styles.badgePicture}
+                width={'100%'}
+                height={'100%'}
                 src={picture()}
               />
-            </Badge>
+            </div>
             <Box display={'flex'} flexDirection={'column'}>
               <Text size={'lg'} weight={'bold'}>
                 {nickname()}

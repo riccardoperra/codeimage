@@ -123,7 +123,7 @@ export default function Root() {
       <meta property="og:url" content="https://codeimage.dev/" />
       <meta
         property="og:title"
-        content="CodeImage - A tool for manage and beautify your code screenshots"
+        content="CodeImage - A tool to manage and beautify your code screenshots"
       />
       <meta
         property="og:description"
@@ -134,7 +134,7 @@ export default function Root() {
       <meta property="twitter:url" content="https://codeimage.dev/" />
       <meta
         property="twitter:title"
-        content="CodeImage - A tool for manage and beautify your code screenshots"
+        content="CodeImage - A tool to manage and beautify your code screenshots"
       />
       <meta
         property="twitter:description"
@@ -148,7 +148,7 @@ export default function Root() {
     <Html lang="en" data-codeimage-theme="dark">
       <Head>
         <Title>
-          CodeImage - A tool for manage and beautify your code screenshots
+          CodeImage - A tool to manage and beautify your code screenshots
         </Title>
         <Meta charset="utf-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
