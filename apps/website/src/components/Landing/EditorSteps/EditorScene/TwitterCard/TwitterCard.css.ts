@@ -34,12 +34,6 @@ export const badge = style({
   overflow: 'hidden',
 });
 
-export const badgePicture = style({
-  width: '100%',
-  position: 'absolute',
-  height: '100%',
-});
-
 export const twitterInfo = style({
   opacity: 0,
   transition: 'opacity 300ms ease-in-out',

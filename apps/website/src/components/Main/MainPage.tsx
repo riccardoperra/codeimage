@@ -23,9 +23,8 @@ export default function MainPage() {
           <div class={styles.textBox}>
             <div class={styles.heroContainer}>
               <h1 class={styles.heading}>
-                A tool for <br />{' '}
-                <span class={styles.screenshot}>beautify</span> your{' '}
-                <span class={styles.screenshot}>code</span> screenshots
+                A tool to <br /> <span class={styles.screenshot}>beautify</span>{' '}
+                your <span class={styles.screenshot}>code</span> screenshots
               </h1>
 
               <p class={styles.mobileDescription}>
