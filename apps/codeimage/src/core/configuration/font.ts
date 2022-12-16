@@ -64,4 +64,12 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
       {name: 'Bold', weight: 700},
     ],
   },
+  {
+    id: 'cascadia-code',
+    name: 'Cascadia Code',
+    types: [
+      {name: 'Regular', weight: 400},
+      {name: 'Bold', weight: 700},
+    ],
+  },
 ] as const);
