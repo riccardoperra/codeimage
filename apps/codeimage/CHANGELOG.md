@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.0.8
+
+### Patch Changes
+
+- [#427](https://github.com/riccardoperra/codeimage/pull/427) [`716d7ee0`](https://github.com/riccardoperra/codeimage/commit/716d7ee06f73112d6bdad640382950827235ed49) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: umami is not defined for some browsers
+
 ## 1.0.7
 
 ### Patch Changes
