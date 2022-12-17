@@ -1,6 +1,6 @@
 import {LanguageIconDefinition} from '@codeimage/config';
 import {TerminalState} from '@codeimage/store/editor/model';
-import {FadeInOutTransition, themeVars} from '@codeimage/ui';
+import {FadeInOutTransition} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
 import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
