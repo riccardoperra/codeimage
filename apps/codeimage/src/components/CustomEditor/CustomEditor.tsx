@@ -43,6 +43,7 @@ import {
   runWithOwner,
   VoidProps,
 } from 'solid-js';
+import {createTabIcon} from '../../hooks/use-tab-icon';
 
 interface CustomFontExtensionOptions {
   fontName: string;
@@ -102,6 +103,16 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
     plugin(),
   );
+
+  const icon = createTabIcon(
+    () => editor()?.tab.tabName ?? null,
+    () => editor()?.languageId ?? '',
+    true,
+  );
+
+  const [currentExtraLanguage] = createResource(icon, iconDef => {
+    return iconDef?.extraLanguage?.() ?? [];
+  });
 
   const themeConfiguration = createMemo(
     () =>
@@ -184,6 +195,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(EditorView.lineWrapping);
   createExtension(customFontExtension);
   createExtension(currentLanguage);
+  createExtension(currentExtraLanguage);
   createExtension(() =>
     editorState.options.showLineNumbers ? lineNumbers() : [],
   );
