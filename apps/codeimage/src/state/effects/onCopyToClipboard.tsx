@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getInvertedThemeMode} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
+import {getUmami} from '@core/constants/umami';
 import {
   catchError,
   EMPTY,
@@ -57,7 +58,7 @@ createRoot(() => {
             ).pipe(
               tap(() => runWithOwner(owner, openSnackbar)),
               catchError(() => EMPTY),
-              tap(() => umami.trackEvent('true', `copy-to-clipboard`)),
+              tap(() => getUmami().trackEvent('true', `copy-to-clipboard`)),
             );
           }),
         );

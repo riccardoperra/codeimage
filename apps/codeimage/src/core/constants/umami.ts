@@ -6,9 +6,8 @@ declare global {
 
 const isDev = import.meta.env.DEV;
 
-export const enableUmami = () => {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const umamiMock: Umami = function () {};
+function getUmamiMock() {
+  const umamiMock: Umami = () => void 0;
 
   if (isDev) {
     umamiMock.trackEvent = (event_value, event_type, url, website_id) => {
@@ -21,7 +20,14 @@ export const enableUmami = () => {
       console.table([{url, referrer, website_id}]);
       console.groupEnd();
     };
-
-    window.umami = window.umami || umamiMock;
+  } else {
+    umamiMock.trackEvent = () => void 0;
+    umamiMock.trackView = () => void 0;
   }
-};
+
+  return umamiMock;
+}
+
+export function getUmami() {
+  return window?.umami ?? getUmamiMock();
+}

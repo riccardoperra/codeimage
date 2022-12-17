@@ -49,7 +49,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
           tabTheme()?.background ?? '',
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
-        [styles.terminalVars.boxShadow]: props.shadow ?? themeVars.boxShadow.lg,
+        [styles.terminalVars.boxShadow]: props.shadow ?? 'unset',
         [styles.terminalVars.tabTextColor]: tabTheme()?.textColor ?? '',
         [styles.terminalVars.tabAccentActiveBackground]:
           tabTheme().activeTabBackground ?? '',

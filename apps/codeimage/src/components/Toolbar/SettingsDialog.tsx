@@ -21,6 +21,7 @@ import {
   VStack,
 } from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
+import {getUmami} from '@core/constants/umami';
 import {createSignal, For, Match, ParentProps, Switch} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import * as styles from './SettingsDialog.css';
@@ -110,7 +111,7 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                       label={'Locale'}
                       onChange={locale => {
                         setLocale(locale);
-                        umami.trackEvent(locale, `change-app-language`);
+                        getUmami().trackEvent(locale, `change-app-language`);
                       }}
                     >
                       <For each={locales}>
