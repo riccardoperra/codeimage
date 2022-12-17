@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.0.6
+
+### Patch Changes
+
+- [#421](https://github.com/riccardoperra/codeimage/pull/421) [`87e2f7e`](https://github.com/riccardoperra/codeimage/commit/87e2f7e0b67bef02bb0ca8080670857aea358d4f) Thanks [@max-programming](https://github.com/max-programming)! - feat: added Cascadia Code font
+
 ## 1.0.5
 
 ### Patch Changes
