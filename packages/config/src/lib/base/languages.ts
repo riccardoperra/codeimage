@@ -50,6 +50,8 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.vue',
         content: () => import('material-icon-theme/icons/vue.svg?raw'),
         matcher: /^.*\.(vue)$/,
+        extraLanguage: () =>
+          import('@codemirror/lang-html').then(({html}) => html()),
       },
       {
         name: 'redux-store',
@@ -123,6 +125,8 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.vue',
         content: () => import('material-icon-theme/icons/vue.svg?raw'),
         matcher: /^.*\.(vue)$/,
+        extraLanguage: () =>
+          import('@codemirror/lang-html').then(({html}) => html()),
       },
       {
         name: 'redux-store',

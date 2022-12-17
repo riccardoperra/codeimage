@@ -5,6 +5,7 @@ export interface LanguageIconDefinition {
   extension: string;
   content: string | (() => Promise<typeof import('*.svg')>);
   matcher: RegExp;
+  extraLanguage?: () => Promise<Extension>;
 }
 
 export interface LanguageDefinition {
