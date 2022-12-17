@@ -4,6 +4,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {SegmentedField, Select, Text} from '@codeimage/ui';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
+import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
@@ -61,7 +62,7 @@ export const EditorStyleForm: ParentComponent = () => {
                   onSelectChange={value => {
                     const language = value ?? languages[0].id;
                     setLanguageId(language);
-                    umami.trackEvent(language, 'change-language');
+                    getUmami().trackEvent(language, 'change-language');
                   }}
                 />
               </SuspenseEditorItem>

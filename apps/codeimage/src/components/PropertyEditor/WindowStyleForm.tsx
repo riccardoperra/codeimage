@@ -3,6 +3,7 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Box, Group, RadioBlock, SegmentedField, Select} from '@codeimage/ui';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
+import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, For, ParentComponent, Show} from 'solid-js';
@@ -155,7 +156,10 @@ export const WindowStyleForm: ParentComponent = () => {
               multiple={false}
               onSelectChange={value => {
                 const shadowSelected = value;
-                umami.trackEvent(shadowSelected ?? 'none', 'change-shadow');
+                getUmami().trackEvent(
+                  shadowSelected ?? 'none',
+                  'change-shadow',
+                );
                 terminal.setShadow(shadowSelected);
               }}
             />
