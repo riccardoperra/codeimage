@@ -60,7 +60,7 @@ export function createTerminalState() {
         return {...state, ...persistedState};
       });
     },
-    setShadow: (shadow: string) => setState('shadow', shadow),
+    setShadow: (shadow: string | null) => setState('shadow', shadow),
     setType: (type: string) => setState('type', type),
     setAccentVisible: (accentVisible: boolean) =>
       setState('accentVisible', accentVisible),
