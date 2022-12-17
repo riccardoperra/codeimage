@@ -6,7 +6,7 @@ export type HydrateOnIdleProps = {
 
 export function onIdle(onHydrate: () => void, options: HydrateOnIdleProps) {
   const {timeout = 200} = options;
-  return runOnIdle(onHydrate, timeout, false);
+  return runOnIdle(onHydrate, timeout, true);
 }
 
 export function onLoad(onHydrate: () => void) {
