@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.0.7
+
+### Patch Changes
+
+- [#425](https://github.com/riccardoperra/codeimage/pull/425) [`ca74f973`](https://github.com/riccardoperra/codeimage/commit/ca74f97310ae3bc0db54719ee414fed108888cdc) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix set shadow none value
+
 ## 1.0.6
 
 ### Patch Changes
