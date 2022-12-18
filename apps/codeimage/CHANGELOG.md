@@ -1,5 +1,14 @@
 # @codeimage/app
 
+## 1.0.9
+
+### Patch Changes
+
+- [#429](https://github.com/riccardoperra/codeimage/pull/429) [`1b042f82`](https://github.com/riccardoperra/codeimage/commit/1b042f82f2798b7d23936235e93811e69a3fce1b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(app/config): vue highlighting support
+
+- Updated dependencies [[`1b042f82`](https://github.com/riccardoperra/codeimage/commit/1b042f82f2798b7d23936235e93811e69a3fce1b)]:
+  - @codeimage/config@8.0.6
+
 ## 1.0.8
 
 ### Patch Changes
