@@ -35,6 +35,7 @@ export const locale = {
       openNewTab: 'Apri',
       loadingNewTab: 'Preparando link...',
       share: 'Condividi',
+      copyToCliboard: 'Copy to clipboard',
       generateLink: 'Genera link',
       toggleTheme: 'Modifica tema',
       changeLanguage: 'Modifica lingua',

@@ -6,6 +6,7 @@ import {
   catchError,
   EMPTY,
   exhaustMap,
+  finalize,
   from,
   Subject,
   switchMap,
@@ -41,6 +42,8 @@ createRoot(() => {
           pixelRatio: Math.floor(window.devicePixelRatio),
           extension: ExportExtension.png,
         };
+        loading$.next(true);
+
         return from(
           runWithOwner(owner, () => exportImage({ref, options})),
         ).pipe(

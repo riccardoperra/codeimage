@@ -1,4 +1,5 @@
 import {themeVars, withThemeMode} from '@codeimage/ui';
+import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {createTheme, style} from '@vanilla-extract/css';
 
 export const [frameHandler, frameHandlerVars] = createTheme({
@@ -46,9 +47,29 @@ export const handler = style([
 export const content = style({
   width: '100%',
   height: '100%',
-  marginTop: '20px',
   marginBottom: '40px',
   position: 'relative',
+});
+
+export const frameToolbar = style({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  padding: themeVars.spacing[2],
+  borderTopLeftRadius: themeVars.borderRadius.lg,
+  borderTopRightRadius: themeVars.borderRadius.lg,
+  borderBottomLeftRadius: themeVars.borderRadius.lg,
+  borderBottomRightRadius: themeVars.borderRadius.lg,
+  marginBottom: themeVars.spacing[2],
+  selectors: {
+    ...withThemeMode({
+      dark: {
+        background: `${darkGrayScale.gray4}`,
+      },
+      light: {
+        background: themeVars.backgroundColor.gray['400'],
+      },
+    }),
+  },
 });
 
 export const squaredBackgroundOverlay = style({
