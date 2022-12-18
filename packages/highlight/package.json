@@ -22,6 +22,10 @@
       "import": "./dist/lib/themes/arcDark/index.js",
       "types": "./dist/lib/themes/arcDark/index.d.ts"
     },
+    "./auraDark": {
+      "import": "./dist/lib/themes/auraDark/index.js",
+      "types": "./dist/lib/themes/auraDark/index.d.ts"
+    },
     "./coldarkCold": {
       "import": "./dist/lib/themes/coldarkCold/index.js",
       "types": "./dist/lib/themes/coldarkCold/index.d.ts"
@@ -115,6 +119,9 @@
     "*": {
       "arcDark": [
         "./dist/lib/themes/arcDark/index.d.ts"
+      ],
+      "auraDark": [
+        "./dist/lib/themes/auraDark/index.d.ts"
       ],
       "coldarkCold": [
         "./dist/lib/themes/coldarkCold/index.d.ts"
