@@ -105,7 +105,7 @@ function parseCSS(source: string) {
   return result;
 }
 
-async function getCSSRules(
+export async function getCSSRules(
   styleSheets: CSSStyleSheet[],
   options: Options,
 ): Promise<CSSStyleRule[]> {
@@ -251,6 +251,8 @@ const getUsedFontFamiliesRecursively = <T extends Element>(
       acc.push(...fontFamilies.filter(id => !acc.includes(id)));
     }
   }
+
+  console.log('acc test', acc);
 
   return acc;
 };
