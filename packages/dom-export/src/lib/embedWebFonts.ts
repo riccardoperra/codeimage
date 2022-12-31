@@ -195,10 +195,93 @@ async function getCSSRules(
   });
 }
 
-function getWebFontRules(cssRules: CSSStyleRule[]): CSSStyleRule[] {
-  return cssRules
+export function getFontsMap(cssStyleRules: CSSStyleRule[]): FontsMap {
+  const fontInfo: Record<string, Record<string, CSSStyleRule>> = {};
+
+  for (const stylesheet of cssStyleRules) {
+    const {fontFamily, fontWeight, fontStyle} = stylesheet.style;
+    const escapedFontFamily = getFontName(fontFamily)[0];
+    if (!(fontFamily in fontInfo)) {
+      fontInfo[escapedFontFamily] = {};
+    }
+    fontInfo[escapedFontFamily][`${fontWeight}-${fontStyle}`] = stylesheet;
+  }
+  return fontInfo;
+}
+
+const getFontName = (fontFamily: string) => {
+  const fonts = fontFamily.split(',');
+  return fonts.map(font =>
+    font.trim().toLowerCase().replace(REGEXP_QUOTE_FONT_FAMILY, ''),
+  );
+};
+
+const getUsedFontFamiliesRecursively = <T extends Element>(
+  acc: string[],
+  fontsMap: FontsMap,
+  internalNode: T,
+  parentFont: string | null,
+): string[] => {
+  const elementStyle = (internalNode as unknown as HTMLElement).style;
+  const {fontFamily, fontWeight, fontStyle} = elementStyle;
+  if (fontFamily) {
+    parentFont = fontFamily;
+  }
+  if (fontFamily || fontStyle || fontWeight) {
+    const computedFont = getFontName(fontFamily ?? parentFont ?? 'default')[0];
+    const fontId = `${computedFont}-${fontWeight}-${fontStyle}`;
+    if (!acc.includes(fontId) && !!fontsMap[computedFont]) {
+      acc.push(fontId);
+    }
+  }
+
+  if (internalNode.children.length === 0) {
+    return acc;
+  }
+
+  for (let i = 0; i <= internalNode.children.length; i++) {
+    const childNode = internalNode.children[i];
+    if (childNode) {
+      const fontFamilies = getUsedFontFamiliesRecursively(
+        acc,
+        fontsMap,
+        childNode as T,
+        parentFont,
+      );
+      acc.push(...fontFamilies.filter(id => !acc.includes(id)));
+    }
+  }
+
+  return acc;
+};
+
+export function getUsedFontFamiliesByNode<T extends Element>(
+  fontsMap: FontsMap,
+  node: T,
+  cssStyleRules: CSSStyleRule[],
+): CSSStyleRule[] {
+  const fontFamilies = getUsedFontFamiliesRecursively([], fontsMap, node, null);
+  return cssStyleRules.filter(styleRule => {
+    const {fontStyle, fontFamily, fontWeight} = styleRule.style;
+    const id = `${getFontName(fontFamily)[0]}-${fontWeight}-${fontStyle}`;
+    return fontFamilies.includes(id);
+  });
+}
+
+function getWebFontRules(
+  node: HTMLElement,
+  cssRules: CSSStyleRule[],
+  experimental_optimizeFontLoading: boolean,
+): CSSStyleRule[] {
+  const webFontsRules = cssRules
     .filter(rule => rule.type === CSSRule.FONT_FACE_RULE)
     .filter(rule => shouldEmbed(rule.style.getPropertyValue('src')));
+
+  if (!experimental_optimizeFontLoading) {
+    return webFontsRules;
+  }
+  const fontsMap = getFontsMap(webFontsRules);
+  return getUsedFontFamiliesByNode(fontsMap, node, webFontsRules);
 }
 
 async function parseWebFontRules<T extends HTMLElement>(
