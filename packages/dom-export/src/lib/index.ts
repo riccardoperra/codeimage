@@ -1,5 +1,6 @@
 import {applyStyleFromOptions} from './applyStyleFromOptions';
 import {cloneNode} from './cloneNode';
+import {removeSandbox} from './cloneStyle';
 import {embedImages} from './embedImages';
 import {embedWebFonts, getWebFontCSS} from './embedWebFonts';
 import {Options} from './options';
@@ -80,6 +81,8 @@ export async function toCanvas<T extends HTMLElement>(
   }
 
   context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  removeSandbox();
 
   return canvas;
 }

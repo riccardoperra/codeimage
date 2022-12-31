@@ -252,8 +252,6 @@ const getUsedFontFamiliesRecursively = <T extends Element>(
     }
   }
 
-  console.log('acc test', acc);
-
   return acc;
 };
 
@@ -263,11 +261,15 @@ export function getUsedFontFamiliesByNode<T extends Element>(
   cssStyleRules: CSSStyleRule[],
 ): CSSStyleRule[] {
   const fontFamilies = getUsedFontFamiliesRecursively([], fontsMap, node, null);
-  return cssStyleRules.filter(styleRule => {
+  console.log(fontFamilies);
+  return cssStyleRules.reduce((acc, styleRule) => {
     const {fontStyle, fontFamily, fontWeight} = styleRule.style;
     const id = `${getFontName(fontFamily)[0]}-${fontWeight}-${fontStyle}`;
-    return fontFamilies.includes(id);
-  });
+    if (!fontFamilies.includes(id)) {
+      return acc;
+    }
+    return acc.concat(styleRule);
+  }, [] as CSSStyleRule[]);
 }
 
 function getWebFontRules(
@@ -308,11 +310,12 @@ export async function getWebFontCSS<T extends HTMLElement>(
   node: T,
   options: Options,
 ): Promise<string> {
+  const cacheUrls = new Set<string>();
   const rules = await parseWebFontRules(node, options);
   const cssTexts = await Promise.all(
     rules.map(rule => {
       const baseUrl = rule.parentStyleSheet ? rule.parentStyleSheet.href : null;
-      return embedResources(rule.cssText, baseUrl, options);
+      return embedResources(rule.cssText, baseUrl, {...options, cacheUrls});
     }),
   );
 

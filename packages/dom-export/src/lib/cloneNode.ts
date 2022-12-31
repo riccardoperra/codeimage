@@ -1,5 +1,6 @@
 import {isIOS} from '@solid-primitives/platform';
 import {clonePseudoElements} from './clonePseudoElements';
+import {copyFont, copyUserComputedStyleFast} from './cloneStyle';
 import {getBlobFromURL} from './getBlobFromURL';
 import {Options} from './options';
 import {createImage, getMimeType, makeDataUrl, toArray} from './util';
@@ -55,48 +56,36 @@ async function cloneChildren<T extends HTMLElement>(
     return Promise.resolve(clonedNode);
   }
 
-  await children.reduce(
-    (deferred, child) =>
-      deferred
-        .then(() => cloneNode(child, options))
-        .then((clonedChild: HTMLElement | null) => {
-          if (clonedChild) {
-            clonedNode.appendChild(clonedChild);
-          }
-        }),
-    Promise.resolve(),
-  );
+  await children.reduce((deferred, child) => {
+    const computedStyles = getComputedStyle(nativeNode);
+    return deferred
+      .then(() => cloneNode(child, options, false, computedStyles))
+      .then((clonedChild: HTMLElement | null) => {
+        if (clonedChild) {
+          clonedNode.appendChild(clonedChild);
+        }
+      });
+  }, Promise.resolve());
 
   return clonedNode;
 }
 
-function cloneCSSStyle<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
-  const targetStyle = clonedNode.style;
-  if (!targetStyle) {
-    return;
-  }
-
-  const sourceStyle = window.getComputedStyle(nativeNode);
-
-  if (sourceStyle.cssText) {
-    targetStyle.cssText = sourceStyle.cssText;
-    targetStyle.transformOrigin = sourceStyle.transformOrigin;
+function cloneCSSStyle<T extends HTMLElement>(
+  nativeNode: T,
+  clonedNode: T,
+  parentComputedStyles: CSSStyleDeclaration,
+) {
+  const nativeComputedStyle = getComputedStyle(nativeNode);
+  const sourceStyle = clonedNode.style;
+  if (nativeComputedStyle.cssText) {
+    clonedNode.style.cssText = nativeComputedStyle.cssText;
+    copyFont(nativeComputedStyle, clonedNode.style); // here we re-assign the font props.
   } else {
-    toArray<string>(sourceStyle).forEach(name => {
-      let value = sourceStyle.getPropertyValue(name);
-      if (name === 'font-size' && value.endsWith('px')) {
-        const reducedFont =
-          Math.floor(parseFloat(value.substring(0, value.length - 2))) - 0.1;
-        value = `${reducedFont}px`;
-      }
-      if (value !== '') {
-        targetStyle.setProperty(
-          name,
-          value,
-          sourceStyle.getPropertyPriority(name),
-        );
-      }
-    });
+    copyUserComputedStyleFast(
+      nativeComputedStyle,
+      parentComputedStyles,
+      clonedNode,
+    );
   }
 
   const webkitBackgroundClip = sourceStyle.getPropertyValue(
@@ -164,12 +153,13 @@ function cloneSelectValue<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
 async function decorate<T extends HTMLElement>(
   nativeNode: T,
   clonedNode: T,
+  parentComputedStyles: CSSStyleDeclaration,
 ): Promise<T> {
   if (!(clonedNode instanceof Element)) {
     return clonedNode;
   }
 
-  cloneCSSStyle(nativeNode, clonedNode);
+  cloneCSSStyle(nativeNode, clonedNode, parentComputedStyles);
   clonePseudoElements(nativeNode, clonedNode);
   cloneInputValue(nativeNode, clonedNode);
   cloneSelectValue(nativeNode, clonedNode);
@@ -195,7 +185,7 @@ async function ensureSVGSymbols<T extends HTMLElement>(
       const definition = document.querySelector(id) as HTMLElement;
       if (!exist && definition && !processedDefs[id]) {
         // eslint-disable-next-line no-await-in-loop
-        processedDefs[id] = (await cloneNode(definition, options, true))!;
+        processedDefs[id] = (await cloneNode(definition, options, true, null))!;
       }
     }
   }
@@ -228,6 +218,7 @@ export async function cloneNode<T extends HTMLElement>(
   node: T,
   options: Options,
   isRoot?: boolean,
+  parentComputedStyles?: any,
 ): Promise<T | null> {
   if (!isRoot && options.filter && !options.filter(node)) {
     return null;
@@ -236,6 +227,6 @@ export async function cloneNode<T extends HTMLElement>(
   return Promise.resolve(node)
     .then(clonedNode => cloneSingleNode(clonedNode, options) as Promise<T>)
     .then(clonedNode => cloneChildren(node, clonedNode, options))
-    .then(clonedNode => decorate(node, clonedNode))
+    .then(clonedNode => decorate(node, clonedNode, parentComputedStyles))
     .then(clonedNode => ensureSVGSymbols(clonedNode, options));
 }
