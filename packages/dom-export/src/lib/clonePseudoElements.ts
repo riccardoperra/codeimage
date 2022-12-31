@@ -1,4 +1,4 @@
-import {uuid, toArray} from './util';
+import {toArray, uuid} from './util';
 
 type Pseudo = ':before' | ':after';
 
@@ -43,7 +43,6 @@ function clonePseudoElement<T extends HTMLElement>(
   }
 
   const className = uuid();
-
   try {
     clonedNode.className = `${clonedNode.className} ${className}`;
   } catch (err) {

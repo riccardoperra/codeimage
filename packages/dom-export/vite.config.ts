@@ -1,6 +1,7 @@
-import {defineConfig} from 'vite';
 import path from 'path';
+import {defineConfig} from 'vite';
 import dts from 'vite-plugin-dts';
+import {dependencies, peerDependencies} from './package.json';
 
 module.exports = defineConfig({
   build: {
@@ -13,10 +14,8 @@ module.exports = defineConfig({
     cssCodeSplit: true,
     rollupOptions: {
       external: [
-        '@codemirror/state',
-        '@codemirror/language',
-        '@codemirror/view',
-        '@lezer/highlight',
+        ...Object.keys(dependencies),
+        ...Object.keys(peerDependencies),
       ],
       output: {},
     },
