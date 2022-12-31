@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Button, toast} from '@codeimage/ui';
+import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {Component, createEffect, untrack} from 'solid-js';
 import {
@@ -25,7 +26,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
     data.loading ? t('toolbar.loadingNewTab') : t('toolbar.openNewTab');
 
   function openInTab() {
-    umami.trackEvent(`true`, 'export-new-tab');
+    getUmami().trackEvent(`true`, 'export-new-tab');
 
     notify({
       ref: props.canvasRef,
