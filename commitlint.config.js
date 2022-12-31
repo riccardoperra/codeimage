@@ -10,6 +10,7 @@ module.exports = {
         'highlight',
         'config',
         'locale',
+        'dom-export',
         // Only using changeset
         'changeset',
         // Must be used for ci only or deploy commit
