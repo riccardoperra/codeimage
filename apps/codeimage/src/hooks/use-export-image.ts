@@ -112,6 +112,7 @@ export async function exportImage(
     },
     pixelRatio: pixelRatio,
     quality: quality,
+    experimental_optimizeFontLoading: true,
   };
 
   async function exportByMode(ref: HTMLElement) {

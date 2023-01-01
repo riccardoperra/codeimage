@@ -82,16 +82,17 @@ export function shouldEmbed(url: string): boolean {
 export async function embedResources(
   cssText: string,
   baseUrl: string | null,
-  options: Options,
+  options: Options & {cacheUrls?: Set<string>},
 ): Promise<string> {
   if (!shouldEmbed(cssText)) {
     return cssText;
   }
-
   const filteredCSSText = filterPreferredFontFormat(cssText, options);
-  const urls = parseURLs(filteredCSSText);
-  return urls.reduce(
-    (deferred, url) => deferred.then(css => embed(css, url, baseUrl, options)),
-    Promise.resolve(filteredCSSText),
+  const urls = [...new Set(parseURLs(filteredCSSText))].filter(url =>
+    !options.cacheUrls ? true : !options.cacheUrls.has(url),
   );
+  return urls.reduce((deferred, url) => {
+    options.cacheUrls?.add?.(url);
+    return deferred.then(css => embed(css, url, baseUrl, options));
+  }, Promise.resolve(filteredCSSText));
 }
