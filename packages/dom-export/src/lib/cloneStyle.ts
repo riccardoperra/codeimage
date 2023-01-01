@@ -31,7 +31,7 @@ export function copyUserComputedStyleFast<T extends HTMLElement>(
   parentComputedStyles: CSSStyleDeclaration,
   targetElement: T,
 ) {
-  const defaultStyle = getDefaultStyle(targetElement.tagName);
+  const defaultStyle = getDefaultStyle(targetElement);
   const targetStyle = targetElement.style;
 
   toArray(sourceComputedStyles).forEach(name => {
@@ -48,9 +48,10 @@ export function copyUserComputedStyleFast<T extends HTMLElement>(
 
     // This is needed to be able to "treeshake" web fonts during embedding
     if (
-      name === 'font-family' ||
-      name === 'font-weight' ||
-      name === 'font-style'
+      (name === 'font-family' ||
+        name === 'font-weight' ||
+        name === 'font-style') &&
+      !!sourceValue
     ) {
       targetStyle.setProperty(name, sourceValue);
     }
@@ -92,7 +93,14 @@ let removeDefaultStylesTimeoutId: number | null = null;
 let sandbox: HTMLIFrameElement | null = null;
 let tagNameDefaultStyles: Record<string, Record<string, string>> = {};
 
-function getDefaultStyle(tagName: string) {
+export const isSlotElement = (node: Node): node is HTMLSlotElement =>
+  (node as Element).tagName === 'SLOT';
+
+export const isCustomElement = (node: Element): boolean =>
+  node.tagName.indexOf('-') > 0;
+
+function getDefaultStyle<T extends Element>(element: T) {
+  const tagName = element.tagName;
   if (tagNameDefaultStyles[tagName]) {
     return tagNameDefaultStyles[tagName];
   }
@@ -111,26 +119,31 @@ function getDefaultStyle(tagName: string) {
       );
     }
   }
-  const defaultElement = document.createElement(tagName);
   if (!sandbox.contentWindow) return {};
-  sandbox.contentWindow.document.body.appendChild(defaultElement);
-  // Ensure that there is some content, so that properties like margin are applied.
-  defaultElement.textContent = '.';
-  const defaultComputedStyle =
-    sandbox.contentWindow.getComputedStyle(defaultElement);
-  const defaultStyle: Record<string, string> = {};
-  // Copy styles to an object, making sure that 'width' and 'height' are given the default value of 'auto', since
-  // their initial value is always 'auto' despite that the default computed value is sometimes an absolute length.
-  toArray(defaultComputedStyle).forEach(name => {
-    const typedName = name as string;
-    defaultStyle[typedName] =
-      name === 'width' || name === 'height'
-        ? 'auto'
-        : defaultComputedStyle.getPropertyValue(typedName);
-  });
-  sandbox.contentWindow.document.body.removeChild(defaultElement);
-  tagNameDefaultStyles[tagName] = defaultStyle;
-  return defaultStyle;
+
+  if (!isSlotElement(element) && !isCustomElement(element)) {
+    const defaultElement = document.createElement(tagName);
+    sandbox.contentWindow.document.body.appendChild(defaultElement);
+    // Ensure that there is some content, so that properties like margin are applied.
+    defaultElement.textContent = '.';
+    const defaultComputedStyle =
+      sandbox.contentWindow.getComputedStyle(defaultElement);
+    const defaultStyle: Record<string, string> = {};
+    // Copy styles to an object, making sure that 'width' and 'height' are given the default value of 'auto', since
+    // their initial value is always 'auto' despite that the default computed value is sometimes an absolute length.
+    toArray(defaultComputedStyle).forEach(name => {
+      const typedName = name as string;
+      defaultStyle[typedName] =
+        name === 'width' || name === 'height'
+          ? 'auto'
+          : defaultComputedStyle.getPropertyValue(typedName);
+    });
+    sandbox.contentWindow.document.body.removeChild(defaultElement);
+    tagNameDefaultStyles[tagName] = defaultStyle;
+    return defaultStyle;
+  }
+
+  return {};
 }
 
 export function removeSandbox() {
