@@ -4,7 +4,7 @@
  *:
  * https://github.com/1904labs/dom-to-image-more
  */
-import {toArray} from './util';
+import {isCustomElement, isSlotElement, toArray} from './util';
 
 export function copyFont(
   source: CSSStyleDeclaration,
@@ -28,7 +28,7 @@ export function copyFont(
 
 export function copyUserComputedStyleFast<T extends HTMLElement>(
   sourceComputedStyles: CSSStyleDeclaration,
-  parentComputedStyles: CSSStyleDeclaration,
+  parentComputedStyles: CSSStyleDeclaration | null,
   targetElement: T,
 ) {
   const defaultStyle = getDefaultStyle(targetElement);
@@ -36,15 +36,7 @@ export function copyUserComputedStyleFast<T extends HTMLElement>(
 
   toArray(sourceComputedStyles).forEach(name => {
     const typedName = name as string;
-    let sourceValue = sourceComputedStyles.getPropertyValue(typedName);
-
-    if (name === 'font-size' && sourceValue.endsWith('px')) {
-      const reducedFont =
-        Math.floor(
-          parseFloat(sourceValue.substring(0, sourceValue.length - 2)),
-        ) - 0.1;
-      sourceValue = `${reducedFont}px`;
-    }
+    const sourceValue = sourceComputedStyles.getPropertyValue(typedName);
 
     // This is needed to be able to "treeshake" web fonts during embedding
     if (
@@ -93,12 +85,6 @@ let removeDefaultStylesTimeoutId: number | null = null;
 let sandbox: HTMLIFrameElement | null = null;
 let tagNameDefaultStyles: Record<string, Record<string, string>> = {};
 
-export const isSlotElement = (node: Node): node is HTMLSlotElement =>
-  (node as Element).tagName === 'SLOT';
-
-export const isCustomElement = (node: Element): boolean =>
-  node.tagName.indexOf('-') > 0;
-
 function getDefaultStyle<T extends Element>(element: T) {
   const tagName = element.tagName;
   if (tagNameDefaultStyles[tagName]) {
@@ -121,29 +107,42 @@ function getDefaultStyle<T extends Element>(element: T) {
   }
   if (!sandbox.contentWindow) return {};
 
+  const defaultStyle: Record<string, string> = {};
+
   if (!isSlotElement(element) && !isCustomElement(element)) {
     const defaultElement = document.createElement(tagName);
     sandbox.contentWindow.document.body.appendChild(defaultElement);
     // Ensure that there is some content, so that properties like margin are applied.
     defaultElement.textContent = '.';
-    const defaultComputedStyle =
-      sandbox.contentWindow.getComputedStyle(defaultElement);
-    const defaultStyle: Record<string, string> = {};
-    // Copy styles to an object, making sure that 'width' and 'height' are given the default value of 'auto', since
-    // their initial value is always 'auto' despite that the default computed value is sometimes an absolute length.
-    toArray(defaultComputedStyle).forEach(name => {
-      const typedName = name as string;
-      defaultStyle[typedName] =
-        name === 'width' || name === 'height'
-          ? 'auto'
-          : defaultComputedStyle.getPropertyValue(typedName);
-    });
+
+    copyCSSStyleDeclaration(
+      defaultStyle,
+      sandbox.contentWindow.getComputedStyle(defaultElement),
+    );
+
     sandbox.contentWindow.document.body.removeChild(defaultElement);
-    tagNameDefaultStyles[tagName] = defaultStyle;
     return defaultStyle;
+  } else {
+    copyCSSStyleDeclaration(defaultStyle, window.getComputedStyle(element));
   }
 
-  return {};
+  return defaultStyle;
+}
+
+function copyCSSStyleDeclaration(
+  targetDefaultStyle: Record<string, string>,
+  declaration: CSSStyleDeclaration,
+) {
+  // Copy styles to an object, making sure that 'width' and 'height' are given the default value of 'auto', since
+  // their initial value is always 'auto' despite that the default computed value is sometimes an absolute length.
+  toArray(declaration).forEach(name => {
+    const typedName = name as string;
+    targetDefaultStyle[typedName] =
+      name === 'width' || name === 'height'
+        ? 'auto'
+        : declaration.getPropertyValue(typedName);
+  });
+  return targetDefaultStyle;
 }
 
 export function removeSandbox() {

@@ -73,7 +73,7 @@ async function cloneChildren<T extends HTMLElement>(
 function cloneCSSStyle<T extends HTMLElement>(
   nativeNode: T,
   clonedNode: T,
-  parentComputedStyles: CSSStyleDeclaration,
+  parentComputedStyles: CSSStyleDeclaration | null,
 ) {
   const nativeComputedStyle = getComputedStyle(nativeNode);
   const sourceStyle = clonedNode.style;
@@ -153,7 +153,7 @@ function cloneSelectValue<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
 async function decorate<T extends HTMLElement>(
   nativeNode: T,
   clonedNode: T,
-  parentComputedStyles: CSSStyleDeclaration,
+  parentComputedStyles: CSSStyleDeclaration | null,
 ): Promise<T> {
   if (!(clonedNode instanceof Element)) {
     return clonedNode;
@@ -218,7 +218,7 @@ export async function cloneNode<T extends HTMLElement>(
   node: T,
   options: Options,
   isRoot?: boolean,
-  parentComputedStyles?: any,
+  parentComputedStyles?: CSSStyleDeclaration | null,
 ): Promise<T | null> {
   if (!isRoot && options.filter && !options.filter(node)) {
     return null;
@@ -227,6 +227,8 @@ export async function cloneNode<T extends HTMLElement>(
   return Promise.resolve(node)
     .then(clonedNode => cloneSingleNode(clonedNode, options) as Promise<T>)
     .then(clonedNode => cloneChildren(node, clonedNode, options))
-    .then(clonedNode => decorate(node, clonedNode, parentComputedStyles))
+    .then(clonedNode =>
+      decorate(node, clonedNode, parentComputedStyles ?? null),
+    )
     .then(clonedNode => ensureSVGSymbols(clonedNode, options));
 }
