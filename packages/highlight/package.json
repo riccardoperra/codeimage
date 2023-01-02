@@ -1,6 +1,6 @@
 {
   "name": "@codeimage/highlight",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "module": "./dist/index.js",
   "main": "./dist/index.js",
   "types": "./dist/public-api.d.ts",

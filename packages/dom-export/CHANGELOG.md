@@ -1,5 +1,11 @@
 # @codeimage/dom-export
 
+## 1.11.0
+
+### Minor Changes
+
+- [#433](https://github.com/riccardoperra/codeimage/pull/433) [`25c4fdf4`](https://github.com/riccardoperra/codeimage/commit/25c4fdf4560282bb1769fd14cbc7a5b5301855fd) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add experimental `experimental_optimizeFontLoading` property
+
 ## 1.10.1
 
 ### Patch Changes
