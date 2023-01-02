@@ -21,6 +21,18 @@ export const aura = [
     HighlightStyle.define([
       {tag: t.self, fontStyle: 'italic'},
       {tag: t.typeName, fontStyle: 'italic'},
+      {tag: [t.bracket], color: palette.white},
+      {tag: [t.meta], color: palette.pink},
+      {tag: [t.punctuation], color: palette.pink},
+      {
+        // Needed for JSXStartTag / JSXEndTag
+        tag: [t.angleBracket],
+        color: palette.orange,
+      },
+      {
+        tag: [t.standard(t.tagName)],
+        color: palette.green,
+      },
     ]),
   ),
   defineEditorTheme({
@@ -44,10 +56,9 @@ export const aura = [
       brackets: palette.white,
       self: palette.purple,
       annotation: palette.purple,
-      punctuation: palette.white,
       className: palette.blue,
       moduleKeyword: palette.purple,
-      typeName: palette.white,
+      typeName: palette.blue,
       boolean: palette.green,
       meta: palette.green,
       quote: palette.white,
