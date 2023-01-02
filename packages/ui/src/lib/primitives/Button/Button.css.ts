@@ -1,4 +1,4 @@
-import {createVar, fallbackVar, style} from '@vanilla-extract/css';
+import {createVar, fallbackVar, keyframes, style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {themeVars} from '../../theme';
 import * as variables from '../../theme/variables.css';
@@ -19,6 +19,18 @@ export const enum ButtonSizes {
   xl = 'xl',
 }
 
+const buttonPopKf = keyframes({
+  '0%': {
+    transform: 'scale(var(--btn-focus-scale, 0.95))',
+  },
+  '40%': {
+    transform: 'scale(1.02)',
+  },
+  '100%': {
+    transform: 'scale(1)',
+  },
+});
+
 export const button = style({
   position: 'relative',
   display: 'inline-flex',
@@ -33,12 +45,13 @@ export const button = style({
   outline: 'none',
   placeContent: 'center',
   placeItems: 'center',
-  transition: 'opacity .2s, background-color .2s, box-shadow .2s',
+  transition:
+    'opacity .2s, background-color .2s, box-shadow .2s, transform .2s',
   backgroundColor: variables.backgroundColorVar,
   color: fallbackVar(variables.colorVar, themeVars.dynamicColors.baseText),
   userSelect: 'none',
   textDecoration: 'none',
-
+  animation: `${buttonPopKf} .25s ease-out`,
   vars: {
     [variables.fontSize]: themeVars.fontSize.sm,
     [buttonPadding]: `0 ${themeVars.spacing['3']}`,
@@ -50,7 +63,14 @@ export const button = style({
   },
 
   ':focus': {
-    boxShadow: themeVars.boxShadow.outline,
+    boxShadow: 'unset',
+  },
+
+  selectors: {
+    '&:active:focus': {
+      animation: 'none',
+      transform: 'scale(0.95)',
+    },
   },
 });
 
