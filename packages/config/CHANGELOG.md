@@ -1,5 +1,12 @@
 # @codeimage/highlight
 
+## 8.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`52d3cab6`](https://github.com/riccardoperra/codeimage/commit/52d3cab6a9ff446287380229fd7dfd0eb4c4afef)]:
+  - @codeimage/highlight@0.10.5
+
 ## 8.0.6
 
 ### Patch Changes

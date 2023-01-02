@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 0.10.5
+
+### Patch Changes
+
+- [#431](https://github.com/riccardoperra/codeimage/pull/431) [`52d3cab6`](https://github.com/riccardoperra/codeimage/commit/52d3cab6a9ff446287380229fd7dfd0eb4c4afef) Thanks [@zihan-ch](https://github.com/zihan-ch)! - feat: add aura theme
+
 ## 0.10.4
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @codeimage/app
 
+## 1.0.10
+
+### Patch Changes
+
+- [#433](https://github.com/riccardoperra/codeimage/pull/433) [`25c4fdf4`](https://github.com/riccardoperra/codeimage/commit/25c4fdf4560282bb1769fd14cbc7a5b5301855fd) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Enable `experimental_optimizeFontLoading` for svg export
+
+- Updated dependencies [[`52d3cab6`](https://github.com/riccardoperra/codeimage/commit/52d3cab6a9ff446287380229fd7dfd0eb4c4afef), [`25c4fdf4`](https://github.com/riccardoperra/codeimage/commit/25c4fdf4560282bb1769fd14cbc7a5b5301855fd), [`f38633d4`](https://github.com/riccardoperra/codeimage/commit/f38633d4ae89bae1c3a40bdedf4b8fb94adde689)]:
+  - @codeimage/highlight@0.10.5
+  - @codeimage/dom-export@1.11.0
+  - @codeimage/api@0.1.1
+  - @codeimage/config@8.0.7
+
 ## 1.0.9
 
 ### Patch Changes
