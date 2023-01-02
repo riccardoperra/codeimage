@@ -57,6 +57,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.pandaTheme),
   },
   {
+    id: 'aura',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.auraTheme),
+  },
+  {
     id: 'light',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.lightTheme),
