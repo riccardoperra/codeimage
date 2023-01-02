@@ -48,7 +48,15 @@
     "@codemirror/search": "^6.2.3",
     "@codemirror/state": "^6.1.4",
     "@codemirror/view": "^6.7.1",
+    "@prettier/plugin-php": "0.19.2",
+    "@prettier/plugin-ruby": "3.2.2",
+    "@prettier/plugin-xml": "2.2.0",
+    "@types/prettier": "^2.7.1",
     "material-icon-theme": "^4.21.0",
+    "prettier": "^2.7.1",
+    "prettier-plugin-java": "2.0.0",
+    "prettier-plugin-rust": "0.1.8",
+    "prettier-plugin-sql": "0.12.1",
     "solid-js": "^1.6.3"
   },
   "peerDependencies": {
