@@ -34,8 +34,9 @@ The script will do the following:
 ## Available themes
 
 | Feature                                                |        Name        |
-|:-------------------------------------------------------|:------------------:|
+| :----------------------------------------------------- | :----------------: |
 | ![Arc Dark](./assets/arc-dark.png)                     |      Arc Dark      |
+| ![Aura Dark](./assets/aura-dark.png)                   |     Aura Dark      |
 | ![Coldark Cold](./assets/coldark-cold.png)             |    Coldark Cold    |
 | ![Coldark Dark](./assets/coldark-dark.png)             |    Coldark Dark    |
 | ![Dracula](./assets/dracula.png)                       |      Dracula       |
@@ -50,5 +51,4 @@ The script will do the following:
 | ![Night owl](./assets/night-owl.png)                   |     Night Owl      |
 | ![One Dark](./assets/one-dark.png)                     |      One Dark      |
 | ![Synthwave84](./assets/synthwave84.png)               |    Synthwave 84    |
-| ![VSCodeDark](./assets/vscode-dark.png)                |  VSCode Dark       |
-
+| ![VSCodeDark](./assets/vscode-dark.png)                |    VSCode Dark     |
