@@ -27,7 +27,9 @@ export async function makeFetch(
     if (token) {
       headers.append('Authorization', `Bearer ${token}`);
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 
   if (requestParams.querystring) {
     const querystring = new URLSearchParams();

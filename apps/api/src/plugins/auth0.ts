@@ -8,10 +8,10 @@ import {
 import fastifyAuth0Verify, {Authenticate} from 'fastify-auth0-verify';
 import fp from 'fastify-plugin';
 
-declare module '@fastify/jwt/jwt' {
+declare module '@fastify/jwt' {
   interface FastifyJWT {
     payload: {id: number}; // payload type is used for signing and verifying
-    user: Record<string, unknown>;
+    user: Record<string, unknown>; // user type is return type of `request.user` object
   }
 }
 
@@ -76,6 +76,10 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
       }
 
       const email = req.user[emailClaim] as string;
+
+      if (!email) {
+        throw fastify.httpErrors.badRequest('No valid user data');
+      }
 
       const user = await fastify.prisma.user.findFirst({
         where: {
