@@ -76,8 +76,6 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
             <Show when={modality === 'full'} keyed={false}>
               <ShareButton showLabel={false} />
 
-              <ExportInNewTabButton canvasRef={props.canvasRef} />
-
               <ExportButton canvasRef={props.canvasRef} />
             </Show>
             <UserBadge />

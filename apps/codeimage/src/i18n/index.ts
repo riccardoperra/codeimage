@@ -19,6 +19,8 @@ export const locale = {
     canvas: {
       copiedToClipboard: 'Snippet copiato negli appunti',
       linkGeneratedToClipboard: 'Link copiato negli appunti',
+      formattedCode: 'Il codice é stato formattato',
+      errorFormattedCode: 'Il codice da formattare non è valido',
     },
     readOnlyBanner: {
       title:
@@ -93,6 +95,8 @@ export const locale = {
     canvas: {
       copiedToClipboard: 'Snippet copied to clipboard',
       linkGeneratedToClipboard: 'Link copied to clipboard',
+      formattedCode: 'Code has been formatted',
+      errorFormattedCode: 'Invalid code while formatting',
     },
     common: {
       close: 'Close',
@@ -184,6 +188,8 @@ export const locale = {
     canvas: {
       copiedToClipboard: 'Code-Schnipsel in Zwischenablage kopiert',
       linkGeneratedToClipboard: 'Link in Zwischenablage kopiert',
+      formattedCode: 'Code has been formatted',
+      errorFormattedCode: 'Invalid code while formatting',
     },
     readOnlyBanner: {
       title:
@@ -266,6 +272,8 @@ export const locale = {
     canvas: {
       copiedToClipboard: 'Snippet copiado al portapapeles',
       linkGeneratedToClipboard: 'Link copiado al portapapeles',
+      formattedCode: 'Code has been formatted',
+      errorFormattedCode: 'Invalid code while formatting',
     },
     readOnlyBanner: {
       title:

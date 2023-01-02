@@ -1,6 +1,6 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
-import {Box, HStack} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {createRef} from '@core/helpers/create-ref';
 import {getScaleByRatio} from '@core/helpers/getScale';
@@ -15,7 +15,6 @@ import {
   ParentProps,
 } from 'solid-js';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {CopyToClipboardButton} from '../Toolbar/CopyToClipboardButton';
 import * as styles from './FrameHandler.css';
 
 const exportExclude = _exportExclude;
@@ -77,12 +76,6 @@ export function FrameHandler(
         }
         ref={setHandlerRef}
       >
-        <div class={styles.frameToolbar}>
-          <HStack spacing={1}>
-            <CopyToClipboardButton canvasRef={ref()} />
-          </HStack>
-        </div>
-
         <div
           class={styles.content}
           ref={createRef<'div'>(props, e => {

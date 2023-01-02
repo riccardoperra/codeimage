@@ -31,6 +31,7 @@ export const CodeImageLogoV2 = (
       <defs>
         <style>
           {`.cls-1 { fill: ${color} } .cls-2 { fill: url(#codeimage-gradient-blue); }`}
+          {`[data-theme-mode=light] .cls-1 { fill: #000 } [data-theme-mode=light] .cls-3 { fill: #fff }`}
         </style>
         <linearGradient
           id="codeimage-gradient-blue"
@@ -93,7 +94,7 @@ export const CodeImageLogoV2 = (
           </g>
           <rect
             id="c-shape-5"
-            class="cls-1"
+            class="cls-1 cls-3"
             x="83.95"
             y="134.35"
             width="53.15"
@@ -104,7 +105,7 @@ export const CodeImageLogoV2 = (
           />
           <rect
             id="c-shape-4"
-            class="cls-1"
+            class="cls-1 cls-3"
             x="57.33"
             y="109.86"
             width="88.58"
@@ -115,7 +116,7 @@ export const CodeImageLogoV2 = (
           />
           <rect
             id="c-shape-3"
-            class="cls-1"
+            class="cls-1 cls-3"
             x="34.58"
             y="94.74"
             width="73.6"
@@ -126,7 +127,7 @@ export const CodeImageLogoV2 = (
           />
           <rect
             id="c-shape-2"
-            class="cls-1"
+            class="cls-1 cls-3"
             x="48.81"
             y="40.65"
             width="53.15"
@@ -137,7 +138,7 @@ export const CodeImageLogoV2 = (
           />
           <rect
             id="c-shape-1"
-            class="cls-1"
+            class="cls-1 cls-3"
             x="40.15"
             y="63.55"
             width="88.58"

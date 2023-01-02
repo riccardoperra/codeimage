@@ -1,5 +1,10 @@
+import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
+import {getInvertedThemeMode} from '@codeimage/store/ui';
+import {toast} from '@codeimage/ui';
 import {createRoot} from 'solid-js';
+import {createPrettierParser} from '../../hooks/createPrettierParser';
+import {AppLocaleEntries} from '../../i18n';
 
 const $activeEditorState = createRoot(() => {
   const {
@@ -22,6 +27,48 @@ const $activeEditorState = createRoot(() => {
     editor: currentEditor,
     setLanguageId,
     setCode,
+    async format(code = currentEditor()?.code ?? '') {
+      const parser = createPrettierParser(
+        () => currentEditor()?.languageId ?? '',
+        () => currentEditor()?.tab?.tabName ?? '',
+      );
+
+      try {
+        const result = await parser.parse(code, {
+          singleAttributePerLine: true,
+          trailingComma: 'none',
+          arrowParens: 'always',
+          bracketSpacing: true,
+          proseWrap: 'always',
+          printWidth: 90,
+        });
+
+        if (result !== currentEditor()?.code) {
+          setCode(result);
+          toast.success(
+            () => {
+              const [t] = useI18n<AppLocaleEntries>();
+              return t('canvas.formattedCode');
+            },
+            {
+              position: 'bottom-center',
+              theme: getInvertedThemeMode(),
+            },
+          );
+        }
+      } catch (e) {
+        toast.error(
+          () => {
+            const [t] = useI18n<AppLocaleEntries>();
+            return t('canvas.errorFormattedCode');
+          },
+          {
+            position: 'bottom-center',
+            theme: getInvertedThemeMode(),
+          },
+        );
+      }
+    },
   };
 });
 

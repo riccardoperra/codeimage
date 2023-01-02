@@ -54,22 +54,28 @@ export const content = style({
 export const frameToolbar = style({
   display: 'flex',
   justifyContent: 'flex-end',
-  padding: themeVars.spacing[2],
+  padding: '10px',
   borderTopLeftRadius: themeVars.borderRadius.lg,
   borderTopRightRadius: themeVars.borderRadius.lg,
   borderBottomLeftRadius: themeVars.borderRadius.lg,
   borderBottomRightRadius: themeVars.borderRadius.lg,
-  marginBottom: themeVars.spacing[2],
+  height: '50px',
   selectors: {
     ...withThemeMode({
       dark: {
-        background: `${darkGrayScale.gray4}`,
+        background: `${darkGrayScale.gray1}`,
+        boxShadow: themeVars.boxShadow.lg,
       },
       light: {
         background: themeVars.backgroundColor.gray['400'],
       },
     }),
   },
+  position: 'fixed',
+  bottom: '20px',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  borderRadius: '15px',
 });
 
 export const squaredBackgroundOverlay = style({
