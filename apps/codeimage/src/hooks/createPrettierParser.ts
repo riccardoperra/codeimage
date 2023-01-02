@@ -35,7 +35,7 @@ export function createPrettierParser(
       const format = await getFormatter();
       const languageDef = currentLanguage();
       const languageIconDef = tabIcon();
-      if (!languageDef || !languageIconDef) {
+      if (!languageDef && !languageIconDef) {
         throw new Error('Invalid language definition');
       }
       const parser = getParser();

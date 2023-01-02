@@ -14,7 +14,6 @@ import {createSignal, lazy, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
-import {frameToolbar} from '../../components/Frame/FrameHandler.css';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {ColorSwatchIcon} from '../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../components/Icons/SparklesIcon';
@@ -24,9 +23,9 @@ import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditor
 import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
 import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
 import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
-import {CopyToClipboardButton} from '../../components/Toolbar/CopyToClipboardButton';
 import {ExportButton} from '../../components/Toolbar/ExportButton';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
+import {FrameToolbar} from '../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
 import * as styles from './App.css';
@@ -116,36 +115,8 @@ export function App() {
               </Suspense>
             </FrameHandler>
 
-            <Show when={modality === 'full'}>
-              <div class={frameToolbar}>
-                <HStack spacing={2}>
-                  <CopyToClipboardButton canvasRef={frameRef()} />
-                  <Button
-                    size={'xs'}
-                    variant={'solid'}
-                    theme={'secondary'}
-                    leftIcon={<ColorSwatchIcon />}
-                    onClick={dispatchRandomTheme}
-                  >
-                    Randomize
-                  </Button>
-                  <Button
-                    size={'xs'}
-                    variant={'solid'}
-                    theme={'secondary'}
-                    leftIcon={<SparklesIcon />}
-                    onClick={() => {
-                      getActiveEditorStore().format();
-                    }}
-                  >
-                    Format
-                  </Button>
-                  <ExportInNewTabButton canvasRef={frameRef()} size={'xs'} />
-                </HStack>
-              </div>
-            </Show>
-
             <Show when={modality === 'full'} keyed={false}>
+              <FrameToolbar frameRef={frameRef()} />
               <Footer />
             </Show>
           </SuspenseEditorItem>

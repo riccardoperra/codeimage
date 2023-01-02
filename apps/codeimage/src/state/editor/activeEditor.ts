@@ -27,47 +27,51 @@ const $activeEditorState = createRoot(() => {
     editor: currentEditor,
     setLanguageId,
     setCode,
-    async format(code = currentEditor()?.code ?? '') {
-      const parser = createPrettierParser(
-        () => currentEditor()?.languageId ?? '',
-        () => currentEditor()?.tab?.tabName ?? '',
-      );
+    format(code = currentEditor()?.code ?? '') {
+      return new Promise(async r => {
+        const parser = createPrettierParser(
+          () => currentEditor()?.languageId ?? '',
+          () => currentEditor()?.tab?.tabName ?? '',
+        );
 
-      try {
-        const result = await parser.parse(code, {
-          singleAttributePerLine: true,
-          trailingComma: 'none',
-          arrowParens: 'always',
-          bracketSpacing: true,
-          proseWrap: 'always',
-          printWidth: 90,
-        });
+        try {
+          const result = await parser.parse(code, {
+            singleAttributePerLine: true,
+            trailingComma: 'none',
+            arrowParens: 'always',
+            bracketSpacing: true,
+            proseWrap: 'always',
+            printWidth: 90,
+          });
 
-        if (result !== currentEditor()?.code) {
-          setCode(result);
-          toast.success(
+          if (result !== currentEditor()?.code) {
+            setCode(result);
+            toast.success(
+              () => {
+                const [t] = useI18n<AppLocaleEntries>();
+                return t('canvas.formattedCode');
+              },
+              {
+                position: 'bottom-center',
+                theme: getInvertedThemeMode(),
+              },
+            );
+          }
+          r(true);
+        } catch (e) {
+          toast.error(
             () => {
               const [t] = useI18n<AppLocaleEntries>();
-              return t('canvas.formattedCode');
+              return t('canvas.errorFormattedCode');
             },
             {
               position: 'bottom-center',
               theme: getInvertedThemeMode(),
             },
           );
+          r(false);
         }
-      } catch (e) {
-        toast.error(
-          () => {
-            const [t] = useI18n<AppLocaleEntries>();
-            return t('canvas.errorFormattedCode');
-          },
-          {
-            position: 'bottom-center',
-            theme: getInvertedThemeMode(),
-          },
-        );
-      }
+      });
     },
   };
 });

@@ -7,8 +7,10 @@ import {
   EMPTY,
   exhaustMap,
   from,
+  lastValueFrom,
   Subject,
   switchMap,
+  take,
   tap,
 } from 'rxjs';
 import {createRoot, getOwner, runWithOwner} from 'solid-js';
@@ -25,9 +27,11 @@ interface CopyToClipboardEvent {
 }
 
 const event$ = new Subject<CopyToClipboardEvent>();
+const eventCompleted$ = new Subject<boolean>();
 
 export function dispatchCopyToClipboard(event: CopyToClipboardEvent) {
   event$.next(event);
+  return lastValueFrom(eventCompleted$.pipe(take(1)));
 }
 
 createRoot(() => {
@@ -61,6 +65,7 @@ createRoot(() => {
               tap(() => getUmami().trackEvent('true', `copy-to-clipboard`)),
             );
           }),
+          tap(() => eventCompleted$.next(true)),
         );
       }),
     )

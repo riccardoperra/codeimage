@@ -2,7 +2,10 @@ import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
+import {
+  dispatchRandomTheme,
+  dispatchUpdateTheme,
+} from '@codeimage/store/effects/onThemeChange';
 import * as ui from '@codeimage/store/ui';
 import {
   Button,
@@ -96,9 +99,7 @@ export function KeyboardShortcuts(): JSXElement {
     },
     R: () => {
       if (filterHotKey()) return;
-      const index = Math.floor(Math.random() * themes.length);
-      const theme = themes[index];
-      dispatchUpdateTheme({theme});
+      dispatchRandomTheme();
     },
     // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
     'Shift+?': () => {
