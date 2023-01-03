@@ -1,11 +1,11 @@
-import {map, Subject} from 'rxjs';
+import {filter, map, Observable, Subject} from 'rxjs';
 import {Accessor, batch, createMemo, untrack} from 'solid-js';
-import {createStore, SetStoreFunction} from 'solid-js/store';
+import {reconcile, SetStoreFunction} from 'solid-js/store';
 import {createDerivedSetter} from '../createDerivedSetter';
+import {createStore} from '../createStore';
 import {
   CommandIdentity,
   CommandPayload,
-  createCommand,
   ExecutedGenericStateCommand,
   GenericStateCommand,
 } from './command';
@@ -14,6 +14,7 @@ const $updateCallbackReturn = Symbol('$updateCallbackReturn');
 
 type ExecuteCommandCallback<T, Command extends GenericStateCommand> = (
   payload: CommandPayload<Command>,
+  state: T,
   meta: {
     $update: SetStoreFunction<T>;
   },
@@ -44,10 +45,15 @@ interface StoreContainer<
   ): void;
 
   readonly commands: Commands;
+
+  watchCommand<Commands extends GenericStateCommand[]>(
+    commands?: Commands,
+  ): Observable<Commands[number]>;
 }
 
 export function createStoreContainer<TState>(
   initialState: TState,
+  // eslint-disable-next-line @typescript-eslint/ban-types
 ): StoreContainer<TState, {}> {
   const [store, setStore] = createStore<{
     data: TState;
@@ -78,27 +84,29 @@ export function createStoreContainer<TState>(
               (setStore as (...args: unknown[]) => void)('data', ...args);
               return $updateCallbackReturn;
             };
-            const result = callback(store.data, command.meta.consumerValue, {
-              $update: $update as unknown as (
-                ...args: Parameters<SetStoreFunction<TState>>
-              ) => typeof $updateCallbackReturn,
+            const result = callback(command.meta.consumerValue, store.data, {
+              $update: $update,
             });
             if (result === $updateCallbackReturn) {
               return;
             }
-            setStore('data', result);
+            setStore('data', reconcile(result));
           });
         }
       });
     });
 
   const state = createMemo(() => store.data);
+
+  const commands: Record<string, GenericStateCommand> = {};
+
   return {
     get: state,
-    set: createDerivedSetter(store, ['data']),
-    commands: {},
+    set: createDerivedSetter(store, ['data']) as SetStoreFunction<TState>,
+    commands,
     on(command, executeFn): StoreContainer<TState, any> {
       const callbacks = commandsCallbackMap.get(command.meta.identity) ?? [];
+      commands[command.meta.identity] = command;
       commandsCallbackMap.set(
         command.meta.identity,
         callbacks.concat(executeFn),
@@ -114,6 +122,15 @@ export function createStoreContainer<TState>(
       } else {
         commandsSubject$.next(command.execute(payload));
       }
+    },
+    watchCommand<Commands extends GenericStateCommand>(commands?: Commands[]) {
+      return (commandsSubject$ as Observable<Commands>).pipe(
+        filter(command => {
+          return !!(commands ?? []).find(
+            x => x.meta.identity === command.meta.identity,
+          );
+        }),
+      );
     },
   };
 }

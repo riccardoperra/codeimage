@@ -1,15 +1,7 @@
-import {
-  from,
-  Observable,
-  Observer,
-  skip,
-  Subject,
-  Subscription,
-  tap,
-} from 'rxjs';
+import {from, Observable, Observer, skip, Subscription, tap} from 'rxjs';
 import {Accessor, createSignal, observable} from 'solid-js';
 
-interface Effect<T> {
+export interface Effect<T> {
   (payload: T): void;
 
   (payload?: void): void;
