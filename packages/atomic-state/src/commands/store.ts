@@ -1,8 +1,11 @@
 import {map, Subject} from 'rxjs';
-import {batch, createMemo, untrack} from 'solid-js';
+import {Accessor, batch, createMemo, untrack} from 'solid-js';
 import {createStore, SetStoreFunction} from 'solid-js/store';
+import {createDerivedSetter} from '../createDerivedSetter';
 import {
+  CommandIdentity,
   CommandPayload,
+  createCommand,
   ExecutedGenericStateCommand,
   GenericStateCommand,
 } from './command';
@@ -10,30 +13,42 @@ import {
 const $updateCallbackReturn = Symbol('$updateCallbackReturn');
 
 type ExecuteCommandCallback<T, Command extends GenericStateCommand> = (
-  state: T,
   payload: CommandPayload<Command>,
   meta: {
     $update: SetStoreFunction<T>;
   },
 ) => T | typeof $updateCallbackReturn;
 
-interface StoreContainer<T> {
-  state(): T;
+interface StoreContainer<
+  T,
+  Commands extends Record<PropertyKey, GenericStateCommand>,
+> {
+  get: Accessor<T>;
+  set: SetStoreFunction<T>;
 
-  on<Command extends GenericStateCommand>(
+  on<
+    Command extends GenericStateCommand,
+    TCommandName extends CommandIdentity<Command>,
+  >(
     command: Command,
     executeFn: ExecuteCommandCallback<T, Command>,
-  ): StoreContainer<T>;
+  ): StoreContainer<T, Commands & {[key in TCommandName]: Command}>;
 
-  dispatch<Command extends GenericStateCommand>(
+  dispatch<Command extends GenericStateCommand | (keyof Commands & string)>(
     command: Command,
-    payload: CommandPayload<Command>,
+    payload: CommandPayload<
+      Command extends GenericStateCommand
+        ? Command
+        : Commands[Command & keyof Commands]
+    >,
   ): void;
+
+  readonly commands: Commands;
 }
 
 export function createStoreContainer<TState>(
   initialState: TState,
-): StoreContainer<TState> {
+): StoreContainer<TState, {}> {
   const [store, setStore] = createStore<{
     data: TState;
   }>({
@@ -42,6 +57,7 @@ export function createStoreContainer<TState>(
 
   const commandsSubject$ = new Subject<ExecutedGenericStateCommand>();
 
+  const commandsMap = new Map<string, GenericStateCommand>();
   const commandsCallbackMap = new Map<
     string,
     ReadonlyArray<ExecuteCommandCallback<TState, GenericStateCommand>>
@@ -63,7 +79,9 @@ export function createStoreContainer<TState>(
               return $updateCallbackReturn;
             };
             const result = callback(store.data, command.meta.consumerValue, {
-              $update,
+              $update: $update as unknown as (
+                ...args: Parameters<SetStoreFunction<TState>>
+              ) => typeof $updateCallbackReturn,
             });
             if (result === $updateCallbackReturn) {
               return;
@@ -76,8 +94,10 @@ export function createStoreContainer<TState>(
 
   const state = createMemo(() => store.data);
   return {
-    state,
-    on(command, executeFn): StoreContainer<TState> {
+    get: state,
+    set: createDerivedSetter(store, ['data']),
+    commands: {},
+    on(command, executeFn): StoreContainer<TState, any> {
       const callbacks = commandsCallbackMap.get(command.meta.identity) ?? [];
       commandsCallbackMap.set(
         command.meta.identity,
@@ -86,7 +106,14 @@ export function createStoreContainer<TState>(
       return this;
     },
     dispatch(command, payload) {
-      commandsSubject$.next(command.execute(payload));
+      if (typeof command === 'string') {
+        const resolvedCommand = commandsMap.get(command);
+        if (resolvedCommand) {
+          commandsSubject$.next(resolvedCommand.execute(payload));
+        }
+      } else {
+        commandsSubject$.next(command.execute(payload));
+      }
     },
   };
 }

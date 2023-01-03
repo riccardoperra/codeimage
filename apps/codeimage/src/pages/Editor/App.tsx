@@ -94,7 +94,7 @@ export function App() {
                     variant={'solid'}
                     theme={'secondary'}
                     leftIcon={<ColorSwatchIcon />}
-                    onClick={dispatchRandomTheme}
+                    onClick={() => dispatchRandomTheme()}
                   />
                   <Button
                     size={'xs'}
