@@ -4,42 +4,46 @@ import type {
   Options as PrettierOptions,
   Plugin as PrettierPlugin,
 } from 'prettier';
-import {Accessor} from 'solid-js';
+import {Accessor, createMemo, untrack} from 'solid-js';
 
 interface PrettierParserConfig {
   parser?: BuiltInParserName | string | null;
   parentParser?: BuiltInParserName | string;
-  plugins?: PrettierPlugin[] | null;
+  plugins?: Promise<PrettierPlugin[] | null>;
 }
 
-const unwrapPlugins = (
+const wrapPluginInPromise = (
   plugins: Promise<PrettierPlugin[] | PrettierPlugin> | undefined,
 ) => {
-  if (!plugins) return [];
-  return plugins.then(plugin => {
-    return Array.isArray(plugin) ? plugin : [plugin];
+  return new Promise<PrettierPlugin[]>(async r => {
+    if (!plugins) return Promise.resolve([]);
+    const resolvedPlugins = await plugins;
+    const result = Array.isArray(resolvedPlugins)
+      ? resolvedPlugins
+      : [resolvedPlugins];
+    r(result);
   });
 };
 
-async function makePrettierParser(
+function makePrettierFormatter(
   language: string,
   tabName: string | null,
-): Promise<PrettierParserConfig> {
+): PrettierParserConfig {
   const selectedLanguage = SUPPORTED_LANGUAGES.find(
     supportedLanguage => supportedLanguage.id === language,
   );
   if (!selectedLanguage) {
     return {
       parser: null,
-      plugins: [],
+      plugins: Promise.resolve([]),
       parentParser: undefined,
     };
   }
 
   if (!tabName) {
     return {
-      parser: selectedLanguage?.prettier?.parser ?? 'babel',
-      plugins: await unwrapPlugins(selectedLanguage?.prettier?.plugin?.()),
+      parser: selectedLanguage?.prettier?.parser,
+      plugins: wrapPluginInPromise(selectedLanguage?.prettier?.plugin?.()),
     };
   }
 
@@ -50,8 +54,8 @@ async function makePrettierParser(
 
   if (!matchedIcon) {
     return {
-      parser: selectedLanguage?.prettier?.parser ?? 'babel',
-      plugins: await unwrapPlugins(selectedLanguage?.prettier?.plugin?.()),
+      parser: selectedLanguage?.prettier?.parser,
+      plugins: wrapPluginInPromise(selectedLanguage?.prettier?.plugin?.()),
     };
   }
 
@@ -62,40 +66,56 @@ async function makePrettierParser(
         ? selectedLanguage?.prettier?.parser
         : undefined,
     parser: prettier?.parser,
-    plugins: await unwrapPlugins(prettier?.plugin?.()),
+    plugins: wrapPluginInPromise(prettier?.plugin?.()),
   };
 }
 
-export function createPrettierParser(
+export function createPrettierFormatter(
   language: Accessor<string>,
   tabName: Accessor<string>,
 ) {
   const getFormatter = () =>
     import('prettier').then(prettier => prettier.format);
+
+  const resolvedFormatter = createMemo(() =>
+    makePrettierFormatter(language(), tabName()),
+  );
+
+  const canFormat = createMemo(() => {
+    const formatter = resolvedFormatter();
+    console.log(formatter);
+    return !!formatter.parser;
+  });
+
   return {
-    async parse(
+    canFormat,
+    async format(
       code: string,
       options?: Omit<PrettierOptions, 'parser' | 'plugins'>,
     ) {
+      if (!untrack(canFormat)) {
+        throw new Error('No configuration found');
+      }
+
       const format = await getFormatter();
       const languageDef = language();
       const languageIconDef = tabName();
       if (!languageDef && !languageIconDef) {
         throw new Error('Invalid language definition');
       }
-      const {parser, plugins, parentParser} = await makePrettierParser(
+      const {parser, plugins, parentParser} = await makePrettierFormatter(
         languageDef,
         languageIconDef,
       );
 
-      if (!parser || !plugins) {
+      if (!parser) {
         throw new Error('Invalid parser configuration');
       }
 
       return format(code, {
         ...(options || {}),
         parser,
-        plugins,
+        plugins: (await plugins) ?? [],
         parentParser: parentParser ?? undefined,
       });
     },

@@ -3,7 +3,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getInvertedThemeMode} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
 import {createRoot} from 'solid-js';
-import {createPrettierParser} from '../../hooks/createPrettierParser';
+import {createPrettierFormatter} from '../../hooks/createPrettierFormatter';
 import {AppLocaleEntries} from '../../i18n';
 
 const $activeEditorState = createRoot(() => {
@@ -23,19 +23,20 @@ const $activeEditorState = createRoot(() => {
   const setCode = (code: string) =>
     setEditors(currentEditorIndex(), 'code', code);
 
+  const formatter = createPrettierFormatter(
+    () => currentEditor()?.languageId ?? '',
+    () => currentEditor()?.tab?.tabName ?? '',
+  );
+
   return {
     editor: currentEditor,
     setLanguageId,
     setCode,
+    canFormat: formatter.canFormat,
     format(code = currentEditor()?.code ?? '') {
       return new Promise(async r => {
-        const parser = createPrettierParser(
-          () => currentEditor()?.languageId ?? '',
-          () => currentEditor()?.tab?.tabName ?? '',
-        );
-
         try {
-          const result = await parser.parse(code, {
+          const result = await formatter.format(code, {
             singleAttributePerLine: true,
             trailingComma: 'none',
             arrowParens: 'always',
@@ -59,6 +60,7 @@ const $activeEditorState = createRoot(() => {
           }
           r(true);
         } catch (e) {
+          console.log(e);
           toast.error(
             () => {
               const [t] = useI18n<AppLocaleEntries>();

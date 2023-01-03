@@ -13,8 +13,9 @@ interface FrameToolbarProps {
 }
 
 export function FrameToolbar(props: FrameToolbarProps) {
+  const activeEditor = getActiveEditorStore();
   const [formatAction, {notify: dispatchFormat}] = createAsyncAction(() =>
-    getActiveEditorStore().format(),
+    activeEditor.format(),
   );
 
   return (
@@ -36,7 +37,7 @@ export function FrameToolbar(props: FrameToolbarProps) {
           theme={'secondary'}
           loading={formatAction.loading}
           leftIcon={<SparklesIcon />}
-          disabled={formatAction.loading}
+          disabled={!activeEditor.canFormat() || formatAction.loading}
           onClick={() => dispatchFormat()}
         >
           Format
