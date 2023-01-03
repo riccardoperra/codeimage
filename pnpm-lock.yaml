@@ -408,7 +408,6 @@ importers:
       '@codemirror/state': ^6.1.4
       '@codemirror/view': ^6.7.1
       '@prettier/plugin-php': 0.19.2
-      '@prettier/plugin-ruby': 3.2.2
       '@prettier/plugin-xml': 2.2.0
       '@types/prettier': ^2.7.1
       material-icon-theme: ^4.21.0
@@ -445,7 +444,6 @@ importers:
       '@codemirror/state': 6.1.4
       '@codemirror/view': 6.7.1
       '@prettier/plugin-php': 0.19.2_prettier@2.7.1
-      '@prettier/plugin-ruby': 3.2.2
       '@prettier/plugin-xml': 2.2.0
       '@types/prettier': 2.7.1
       material-icon-theme: 4.21.0
@@ -6169,12 +6167,6 @@ packages:
       mem: 8.1.1
       php-parser: 3.1.2
       prettier: 2.7.1
-    dev: false
-
-  /@prettier/plugin-ruby/3.2.2:
-    resolution: {integrity: sha512-Vc7jVE39Fgswl517ET4kPtpnoRWE6XTi1Sivd84rZyomYnHYUmvUsEeoOf6tVhzTuIXE5XVQB1YCG2hulrwR3Q==}
-    dependencies:
-      prettier: 2.8.0
     dev: false
 
   /@prettier/plugin-xml/2.2.0:

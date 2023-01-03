@@ -402,7 +402,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
     prettier: {
-      parser: 'rust',
+      parser: 'jinx-rust',
       plugin: () => import('prettier-plugin-rust'),
     },
   },
@@ -434,7 +434,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
     prettier: {
-      parser: 'ruby',
+      parser: 'xml',
       // @ts-expect-error No definitions
       plugin: () => import('@prettier/plugin-xml'),
     },
@@ -456,11 +456,6 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(rb)$/,
       },
     ],
-    prettier: {
-      parser: 'ruby',
-      // @ts-expect-error No definitions
-      plugin: () => import('@prettier/plugin-ruby'),
-    },
   },
   {
     id: 'plain-text',
