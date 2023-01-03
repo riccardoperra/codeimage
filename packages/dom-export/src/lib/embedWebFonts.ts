@@ -261,7 +261,6 @@ export function getUsedFontFamiliesByNode<T extends Element>(
   cssStyleRules: CSSStyleRule[],
 ): CSSStyleRule[] {
   const fontFamilies = getUsedFontFamiliesRecursively([], fontsMap, node, null);
-  console.log(fontFamilies);
   return cssStyleRules.reduce((acc, styleRule) => {
     const {fontStyle, fontFamily, fontWeight} = styleRule.style;
     const id = `${getFontName(fontFamily)[0]}-${fontWeight}-${fontStyle}`;

@@ -1,5 +1,5 @@
-import {defineConfig} from 'vite';
 import path from 'path';
+import {defineConfig} from 'vite';
 import dts from 'vite-plugin-dts';
 import solidPlugin from 'vite-plugin-solid';
 
@@ -39,5 +39,27 @@ module.exports = defineConfig({
       },
     },
   },
-  plugins: [solidPlugin(), dts()],
+  plugins: [
+    solidPlugin(),
+    dts(),
+    {
+      name: 'fix_prettier_parser',
+      transform(code, id) {
+        if (
+          (id.endsWith('/node_modules/java-parser/src/utils.js') &&
+            code.includes('process')) ||
+          code.includes('process.env.NODE_DEBUG')
+        ) {
+          console.log(id);
+          return {
+            code: [code, ';globalThis.process = globalThis.process;'].join(
+              '\n',
+            ),
+            map: null,
+          };
+        }
+        return;
+      },
+    },
+  ],
 });

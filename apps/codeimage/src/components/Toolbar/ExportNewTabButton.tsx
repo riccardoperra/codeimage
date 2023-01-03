@@ -14,6 +14,7 @@ import {ExternalLinkIcon} from '../Icons/ExternalLink';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
+  size?: 'sm' | 'xs';
 }
 
 export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
@@ -49,6 +50,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
           },
           {
             position: 'bottom-center',
+            duration: 99999,
           },
         );
       });
@@ -69,7 +71,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
       loading={data.loading}
       leftIcon={() => <ExternalLinkIcon />}
       onClick={() => openInTab()}
-      size={modality === 'full' ? 'sm' : 'xs'}
+      size={props.size ?? (modality === 'full' ? 'sm' : 'xs')}
     >
       {label()}
     </Button>

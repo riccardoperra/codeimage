@@ -16,7 +16,7 @@ export async function makeFetch(
   input: RequestInfo,
   requestParams: Omit<RequestInit, keyof RequestParams> & RequestParams,
 ): Promise<Response> {
-  const {getToken} = getAuth0State();
+  const {getToken, forceLogin} = getAuth0State();
 
   let url = typeof input === 'string' ? input : input.url;
   const headers = new Headers();
@@ -28,6 +28,7 @@ export async function makeFetch(
       headers.append('Authorization', `Bearer ${token}`);
     }
   } catch (e) {
+    forceLogin();
     console.log(e);
   }
 

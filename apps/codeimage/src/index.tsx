@@ -13,6 +13,7 @@ import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import '@codeimage/ui/themes/lightTheme';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';
+import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Component, createEffect, lazy, on, Show, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
@@ -128,7 +129,7 @@ export function Bootstrap() {
     <Scaffold>
       <CodeImageThemeProvider tokens={tokens} theme={uiStore.themeMode}>
         <OverlayProvider>
-          <SnackbarHost />
+          <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
           <Router>
             <Suspense>
               <Routes />

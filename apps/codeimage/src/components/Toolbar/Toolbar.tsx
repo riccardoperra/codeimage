@@ -12,7 +12,6 @@ import {CollectionIcon} from '../Icons/Collection';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
-import {ExportInNewTabButton} from './ExportNewTabButton';
 import {ShareButton} from './ShareButton';
 import * as styles from './Toolbar.css';
 import {ToolbarSettingsButton} from './ToolbarSettings';
@@ -75,8 +74,6 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
           <HStack marginLeft={'auto'} spacing={'2'}>
             <Show when={modality === 'full'} keyed={false}>
               <ShareButton showLabel={false} />
-
-              <ExportInNewTabButton canvasRef={props.canvasRef} />
 
               <ExportButton canvasRef={props.canvasRef} />
             </Show>

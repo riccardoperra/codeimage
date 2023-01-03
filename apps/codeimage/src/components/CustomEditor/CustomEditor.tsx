@@ -202,6 +202,16 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
   createExtension(EDITOR_BASE_SETUP);
+  createExtension(() =>
+    EditorView.domEventHandlers({
+      paste(event, view) {
+        setTimeout(() => {
+          const localValue = view.state.doc.toString();
+          getActiveEditorStore().format(localValue);
+        });
+      },
+    }),
+  );
 
   createEffect(
     on(editorView, view => {

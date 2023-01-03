@@ -1,4 +1,4 @@
-import {Component} from 'solid-js';
+import {Component, VoidProps} from 'solid-js';
 import {toast as $toast, Toaster as ToasterV2, ToastHandler} from 'solid-toast';
 import {AugmentedToastHandler, createPatch} from './patch-solid-toast';
 import * as styles from './Snackbar.css';
@@ -18,7 +18,11 @@ let toast: {
   remove: typeof $toast['remove'];
 };
 
-export function SnackbarHost() {
+interface SnackbarHostProps {
+  containerClassName?: string;
+}
+
+export function SnackbarHost(props: VoidProps<SnackbarHostProps>) {
   toast = {
     success: createPatch($toast, 'success'),
     error: createPatch($toast, 'error'),
@@ -28,6 +32,7 @@ export function SnackbarHost() {
   };
   return (
     <ToasterV2
+      containerClassName={props.containerClassName}
       toastOptions={{
         className: styles.snackbar,
         style: {},
