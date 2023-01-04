@@ -19,7 +19,8 @@ export function getInitialFrameState(): FrameState {
 
 export function createFrameState() {
   const store = storeV2
-    .createStoreContainer<FrameState>(getInitialFrameState())
+    .createExperimentalStore<FrameState>(getInitialFrameState())
+    .with(storeV2.makeCommands())
     .on(
       storeV2.createCommand('setBackground').withPayload<string>(),
       (background, state) => ({...state, background}),
@@ -99,7 +100,7 @@ export function createFrameState() {
 
   return {
     get store() {
-      return store.get();
+      return store.state;
     },
     setStore: store.set,
     stateToPersist$,

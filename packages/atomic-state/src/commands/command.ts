@@ -1,4 +1,8 @@
-export interface StateCommand<Identity extends string, T> {
+export interface StateCommand<
+  Identity extends string,
+  T,
+  Metadata extends object = {},
+> {
   withPayload<TPayload>(): StateCommand<
     Identity,
     unknown extends T ? TPayload : T | TPayload
@@ -6,14 +10,15 @@ export interface StateCommand<Identity extends string, T> {
 
   meta: {
     identity: string;
-    silent: false;
-  };
+  } & Metadata;
 
   execute<TValue extends T>(
     payload: TValue,
   ): ExecutedStateCommand<Identity, TValue>;
 
-  silent(): SilentCommand<StateCommand<Identity, T>>;
+  with<TMetadata extends object>(
+    metadata: TMetadata,
+  ): StateCommand<Identity, T, Metadata & TMetadata>;
 }
 
 export type ExecutedStateCommand<Identity extends string, T> = Readonly<
@@ -21,12 +26,6 @@ export type ExecutedStateCommand<Identity extends string, T> = Readonly<
     meta: {consumerValue: T};
   }
 >;
-
-type SilentCommand<Command extends GenericStateCommand> = Command & {
-  meta: {
-    silent: true;
-  };
-};
 
 export type GenericStateCommand = StateCommand<string, unknown>;
 export type ExecutedGenericStateCommand = ExecutedStateCommand<string, unknown>;
@@ -53,11 +52,10 @@ export function createCommand<Identity extends string, T = unknown>(
     },
     meta: {
       identity,
-      silent: false,
     },
-    silent(): SilentCommand<StateCommand<Identity, T>> {
+    with(metadata) {
       return Object.assign(this, {
-        meta: Object.assign(this.meta, {silent: true as const}),
+        meta: Object.assign(this.meta, metadata),
       });
     },
     execute<TValue extends T>(
