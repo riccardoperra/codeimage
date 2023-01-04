@@ -86,7 +86,7 @@ export function createTerminalState() {
       }),
     )
     .on(
-      experimental.createCommand('toggleWatermark').withPayload<boolean>(),
+      experimental.createCommand('toggleWatermark').withPayload<void>(),
       (_, {state}) => ({
         ...state,
         showWatermark: !state.showWatermark,

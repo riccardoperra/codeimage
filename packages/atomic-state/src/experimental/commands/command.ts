@@ -1,6 +1,7 @@
 export interface StateCommand<
   Identity extends string,
   T,
+  // eslint-disable-next-line @typescript-eslint/ban-types
   Metadata extends object = {},
 > {
   withPayload<TPayload>(): StateCommand<
