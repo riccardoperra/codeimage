@@ -1,4 +1,4 @@
-import {filter, map, Observable, Subject} from 'rxjs';
+import {filter, map, Observable, shareReplay, Subject} from 'rxjs';
 import {batch, untrack} from 'solid-js';
 import {reconcile, SetStoreFunction} from 'solid-js/store';
 import {createTrackObserver} from '../../createTrackObserver';
@@ -86,6 +86,7 @@ export function makeCommandNotifier<T>(ctx: Store<T>) {
               !(x.meta as any).silent,
           );
         }),
+        shareReplay({refCount: true, bufferSize: 1}),
       );
     },
     dispatch<Command extends GenericStateCommand>(

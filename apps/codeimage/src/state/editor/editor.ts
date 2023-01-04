@@ -5,7 +5,7 @@ import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
-import {map} from 'rxjs';
+import {map, shareReplay} from 'rxjs';
 import {createMemo, createSelector} from 'solid-js';
 import {SetStoreFunction} from 'solid-js/store';
 import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
@@ -139,6 +139,7 @@ export function createEditorsStore() {
     .pipe(
       map(() => store.get()),
       map(mapToStateToPersistState),
+      shareReplay({refCount: true, bufferSize: 1}),
     );
 
   const addEditor = (

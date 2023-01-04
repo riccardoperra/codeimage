@@ -60,7 +60,6 @@ const $activeEditorState = createRoot(() => {
           }
           r(true);
         } catch (e) {
-          console.log(e);
           toast.error(
             () => {
               const [t] = useI18n<AppLocaleEntries>();

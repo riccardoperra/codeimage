@@ -123,7 +123,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const baseTheme = EditorView.theme({
     '&': {
       textAlign: 'left',
-      background: 'transparent',
+      background: 'transparent !important',
     },
     '.cm-content': {
       textAlign: 'left',
