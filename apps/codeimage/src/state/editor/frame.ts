@@ -3,7 +3,6 @@ import {editorStore} from '@codeimage/store/editor/index';
 import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
 import {appEnvironment} from '@core/configuration';
 import {map} from 'rxjs';
-import {from} from 'solid-js';
 
 export function getInitialFrameState(): FrameState {
   return {
@@ -72,6 +71,16 @@ export function createFrameState() {
       },
     );
 
+  const mapToStateToPersistState = (state: FrameState): PersistedFrameState => {
+    return {
+      background: state.background,
+      opacity: state.opacity,
+      padding: state.padding,
+      visible: state.visible,
+      radius: state.radius,
+    } as PersistedFrameState;
+  };
+
   const stateToPersist$ = store
     .watchCommand([
       store.commands.setBackground,
@@ -83,7 +92,10 @@ export function createFrameState() {
       store.commands.setVisibility,
       store.commands.setNextPadding,
     ])
-    .pipe(map(() => store.get()));
+    .pipe(
+      map(() => store.get()),
+      map(mapToStateToPersistState),
+    );
 
   return {
     get store() {
@@ -91,8 +103,11 @@ export function createFrameState() {
     },
     setStore: store.set,
     stateToPersist$,
-    stateToPersist: from(stateToPersist$),
-    ...storeV2.mapCommandsToActions(store.dispatch, store.commands),
+    stateToPersist() {
+      const state = store.get();
+      return mapToStateToPersistState(state);
+    },
+    ...store.actions,
   };
 }
 

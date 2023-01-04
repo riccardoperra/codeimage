@@ -1,3 +1,4 @@
+import {storeV2} from '@codeimage/atomic-state';
 import {createEditorsStore} from '@codeimage/store/editor/editor';
 import {createFrameState} from '@codeimage/store/editor/frame';
 import {createTerminalState} from '@codeimage/store/editor/terminal';
@@ -16,11 +17,13 @@ export function createEditorStore() {
   createEffect(
     on(resource, async resource => {
       if (resource) {
-        terminal.setState('background', resource.properties.terminal.main);
-        terminal.setState('textColor', resource.properties.terminal.text);
-        if (frame.store.background === null) {
-          frame.setBackground(resource.properties.previewBackground);
-        }
+        storeV2.untrackCommand(() => {
+          terminal.setState('background', resource.properties.terminal.main);
+          terminal.setState('textColor', resource.properties.terminal.text);
+          if (frame.store.background === null) {
+            frame.setBackground(resource.properties.previewBackground);
+          }
+        }, false);
         setInitialized(true);
       }
     }),

@@ -11,11 +11,12 @@ import {createContextProvider} from '@solid-primitives/context';
 import {useNavigate} from '@solidjs/router';
 import {
   catchError,
-  combineLatest,
   debounceTime,
   EMPTY,
   filter,
   from,
+  map,
+  merge,
   skip,
   switchMap,
   tap,
@@ -93,13 +94,21 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
     return !loading && initialized;
   };
 
-  const onChange$ = combineLatest([
+  const onChange$ = merge(
     frameStore.stateToPersist$,
     terminalStore.stateToPersist$,
     editorStore.stateToPersist$,
-  ]).pipe(
+  ).pipe(
     filter(() => isReadyToSync()),
     skip(1),
+    map(
+      () =>
+        [
+          frameStore.stateToPersist(),
+          terminalStore.stateToPersist(),
+          editorStore.stateToPersist(),
+        ] as const,
+    ),
   );
 
   createEffect(() => {
