@@ -7,14 +7,9 @@ import {
   MapCommandToActions,
   StateCommand,
 } from './command';
-import {makeCommandNotifier} from './notifier';
+import {ExecuteCommandCallback, makeCommandNotifier} from './notifier';
 
 type GenericCommandsMap = Record<PropertyKey, GenericStateCommand>;
-
-type ExecuteCommandCallback<T, Command extends GenericStateCommand> = (
-  payload: CommandPayload<Command>,
-  state: T,
-) => T;
 
 interface StoreWithProxyCommands<
   T,

@@ -36,46 +36,46 @@ export function createFrameState() {
     .extend(experimental.withProxyCommands<Commands>());
 
   store
-    .hold(store.commands.setBackground, (background, state) => ({
+    .hold(store.commands.setBackground, (background, {state}) => ({
       ...state,
       background,
     }))
-    .hold(store.commands.setOpacity, (opacity, state) => ({
+    .hold(store.commands.setOpacity, (opacity, {state}) => ({
       ...state,
       opacity,
     }))
-    .hold(store.commands.setPadding, (padding, state) => ({
+    .hold(store.commands.setPadding, (padding, {state}) => ({
       ...state,
       padding,
     }))
-    .hold(store.commands.setRadius, (radius, state) => ({
+    .hold(store.commands.setRadius, (radius, {state}) => ({
       ...state,
       radius,
     }))
-    .hold(store.commands.setScale, (scale, state) => ({
+    .hold(store.commands.setScale, (scale, {state}) => ({
       ...state,
       scale,
     }))
-    .hold(store.commands.setAutoWidth, (autoWidth, state) => ({
+    .hold(store.commands.setAutoWidth, (autoWidth, {state}) => ({
       ...state,
       autoWidth,
     }))
-    .hold(store.commands.setVisibility, (visible, state) => ({
+    .hold(store.commands.setVisibility, (visible, {state}) => ({
       ...state,
       visible,
     }))
-    .hold(store.commands.toggleVisibility, (_, state) => ({
+    .hold(store.commands.toggleVisibility, (_, {state}) => ({
       ...state,
       visible: !state.visible,
     }))
-    .hold(store.commands.setNextPadding, (_, state) => {
+    .hold(store.commands.setNextPadding, (_, {state}) => {
       const availablePadding = appEnvironment.editorPadding;
       const padding = state.padding;
       const currentIndex = appEnvironment.editorPadding.indexOf(padding);
       const next = (currentIndex + 1) % availablePadding.length;
       return {...state, padding: availablePadding[next]};
     })
-    .hold(store.commands.setFromPersistedState, (_, state) => {
+    .hold(store.commands.setFromPersistedState, (_, {state}) => {
       return {...state, ..._};
     });
 

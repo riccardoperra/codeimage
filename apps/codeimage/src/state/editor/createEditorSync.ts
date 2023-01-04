@@ -17,7 +17,6 @@ import {
   from,
   map,
   merge,
-  skip,
   switchMap,
   tap,
 } from 'rxjs';
@@ -100,7 +99,6 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
     editorStore.stateToPersist$,
   ).pipe(
     filter(() => isReadyToSync()),
-    skip(1),
     map(
       () =>
         [

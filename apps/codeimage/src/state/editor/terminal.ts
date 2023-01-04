@@ -37,57 +37,57 @@ export function createTerminalState() {
         .createCommand('setShadow')
         .withPayload<string>()
         .withPayload<null>(),
-      (shadow, state) => ({...state, shadow}),
+      (shadow, {state}) => ({...state, shadow}),
     )
     .on(
       experimental.createCommand('setType').withPayload<string>(),
-      (type, state) => ({...state, type}),
+      (type, {state}) => ({...state, type}),
     )
     .on(
       experimental.createCommand('setAccentVisible').withPayload<boolean>(),
-      (accentVisible, state) => ({...state, accentVisible}),
+      (accentVisible, {state}) => ({...state, accentVisible}),
     )
     .on(
       experimental.createCommand('setShowHeader').withPayload<boolean>(),
-      (showHeader, state) => ({...state, showHeader}),
+      (showHeader, {state}) => ({...state, showHeader}),
     )
     .on(
       experimental
         .createCommand('setShowGlassReflection')
         .withPayload<boolean>(),
-      (showGlassReflection, state) => ({...state, showGlassReflection}),
+      (showGlassReflection, {state}) => ({...state, showGlassReflection}),
     )
     .on(
       experimental.createCommand('setShowWatermark').withPayload<boolean>(),
-      (showWatermark, state) => ({
+      (showWatermark, {state}) => ({
         ...state,
         showWatermark,
       }),
     )
     .on(
       experimental.createCommand('setOpacity').withPayload<number>(),
-      (opacity, state) => ({
+      (opacity, {state}) => ({
         ...state,
         opacity,
       }),
     )
     .on(
       experimental.createCommand('setAlternativeTheme').withPayload<boolean>(),
-      (alternativeTheme, state) => ({
+      (alternativeTheme, {state}) => ({
         ...state,
         alternativeTheme,
       }),
     )
     .on(
       experimental.createCommand('toggleShowHeader').withPayload<void>(),
-      (_, state) => ({
+      (_, {state}) => ({
         ...state,
         showHeader: !state.showHeader,
       }),
     )
     .on(
       experimental.createCommand('toggleWatermark').withPayload<boolean>(),
-      (_, state) => ({
+      (_, {state}) => ({
         ...state,
         showWatermark: !state.showWatermark,
       }),
@@ -96,7 +96,7 @@ export function createTerminalState() {
       experimental
         .createCommand('setFromPersistedState')
         .withPayload<PersistedTerminalState>(),
-      (persistedState, state) => {
+      (persistedState, {state}) => {
         const shadows = TERMINAL_SHADOWS;
         if (!Object.values<string | null>(shadows).includes(state.shadow)) {
           state.shadow = shadows.bottom;

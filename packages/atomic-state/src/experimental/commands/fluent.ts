@@ -6,12 +6,7 @@ import {
   GenericStateCommand,
   MapCommandToActions,
 } from './command';
-import {makeCommandNotifier} from './notifier';
-
-type ExecuteCommandCallback<T, Command extends GenericStateCommand> = (
-  payload: CommandPayload<Command>,
-  state: T,
-) => T;
+import {ExecuteCommandCallback, makeCommandNotifier} from './notifier';
 
 type GenericCommandsMap = Record<PropertyKey, GenericStateCommand>;
 

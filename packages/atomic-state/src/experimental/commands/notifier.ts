@@ -1,6 +1,6 @@
 import {filter, map, Observable, Subject} from 'rxjs';
 import {batch, untrack} from 'solid-js';
-import {reconcile} from 'solid-js/store';
+import {reconcile, SetStoreFunction} from 'solid-js/store';
 import {createTrackObserver} from '../../createTrackObserver';
 import {Store} from '../store';
 import {
@@ -10,10 +10,13 @@ import {
   GenericStateCommand,
 } from './command';
 
-type ExecuteCommandCallback<T, Command extends GenericStateCommand> = (
+export type ExecuteCommandCallback<T, Command extends GenericStateCommand> = (
   payload: CommandPayload<Command>,
-  state: T,
-) => T;
+  meta: {
+    set: SetStoreFunction<T>;
+    state: T;
+  },
+) => T | void;
 
 export const [track, untrackCommand] = createTrackObserver();
 
@@ -37,8 +40,13 @@ export function makeCommandNotifier<T>(ctx: Store<T>) {
       batch(() => {
         untrack(() => {
           for (const callback of callbacks) {
-            const result = callback(command.meta.consumerValue, ctx.get());
-            ctx.set(reconcile(result));
+            const result = callback(command.meta.consumerValue, {
+              set: ctx.set,
+              state: ctx.get(),
+            });
+            if (result !== undefined) {
+              ctx.set(reconcile(result));
+            }
           }
         });
 
