@@ -1,4 +1,4 @@
-import {filter, map, Subject} from 'rxjs';
+import {filter, map, Observable, Subject} from 'rxjs';
 import {batch, untrack} from 'solid-js';
 import {reconcile} from 'solid-js/store';
 import {createTrackObserver} from '../../createTrackObserver';
@@ -31,8 +31,8 @@ export function makeCommandNotifier<T>(ctx: Store<T>) {
         const resolvedCallbacks = callbacks.get(command.meta.identity) ?? [];
         return [command, resolvedCallbacks] as const;
       }),
+      filter(([command]) => !command.meta.identity.endsWith('@Done')),
     )
-    .pipe(filter(([command]) => !command.meta.identity.endsWith('@Done')))
     .subscribe(([command, callbacks]) => {
       batch(() => {
         untrack(() => {
@@ -69,5 +69,25 @@ export function makeCommandNotifier<T>(ctx: Store<T>) {
     callbacks,
     track,
     untrackCommand,
+    watchCommand<Commands extends GenericStateCommand>(commands?: Commands[]) {
+      return (commandsSubject$ as Observable<Commands>).pipe(
+        filter(command => {
+          return !!(commands ?? []).find(
+            x =>
+              x.meta.identity === command.meta.identity &&
+              !(x.meta as any).silent,
+          );
+        }),
+      );
+    },
+    dispatch<Command extends GenericStateCommand>(
+      command: Command,
+      payload: CommandPayload<Command>,
+    ): void {
+      const resolvedCommand = !track()
+        ? command.with({silent: true as const})
+        : command;
+      commandsSubject$.next(resolvedCommand.execute(payload));
+    },
   };
 }

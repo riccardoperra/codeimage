@@ -1,4 +1,4 @@
-import {filter, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Store} from '../store';
 import {
   CommandPayload,
@@ -26,7 +26,7 @@ interface StoreWithProxyCommands<
   hold<Command extends GenericStateCommand>(
     command: Command,
     callback: ExecuteCommandCallback<T, Command>,
-  ): void;
+  ): this;
 
   dispatch<Command extends GenericStateCommand>(
     command: Command,
@@ -52,16 +52,58 @@ function plugin<ActionsMap extends Record<string, unknown>>(): <TState>(
   type ProxifiedCommands = ProxifyCommands<ActionsMap>;
 
   return <T>(ctx: Store<T>) => {
-    const {commandsSubject$, callbacks, track} = makeCommandNotifier(ctx);
+    const {commandsSubject$, callbacks, track, watchCommand} =
+      makeCommandNotifier(ctx);
 
     function commandsProxyHandler(): ProxyHandler<ProxifiedCommands> {
       const commandsMap: Record<string, GenericStateCommand> = {};
       return {
+        ownKeys() {
+          return Reflect.ownKeys(actions);
+        },
+        getOwnPropertyDescriptor(target, key) {
+          return {
+            value: Reflect.get(commands, key),
+            enumerable: true,
+            configurable: true,
+          };
+        },
         get(_, property: string) {
           if (!commandsMap[property]) {
             commandsMap[property] = createCommand(property).withPayload();
+            actions[property];
           }
           return commandsMap[property];
+        },
+      };
+    }
+
+    function actionsProxyHandler(): ProxyHandler<
+      MapCommandToActions<ProxifiedCommands>
+    > {
+      const actions: MapCommandToActions<GenericCommandsMap> = {};
+
+      return {
+        ownKeys() {
+          return Reflect.ownKeys(actions);
+        },
+        getOwnPropertyDescriptor(target, key) {
+          return {
+            value: Reflect.get(actions, key),
+            enumerable: true,
+            configurable: true,
+          };
+        },
+        get(_, property: string) {
+          const command = commands[
+            property as keyof typeof commands
+          ] as unknown as GenericStateCommand;
+          if (!actions[property]) {
+            actions[property] = payload => {
+              dispatch(command, payload);
+            };
+          }
+          return actions[property];
         },
       };
     }
@@ -78,56 +120,24 @@ function plugin<ActionsMap extends Record<string, unknown>>(): <TState>(
 
     const commands = new Proxy({} as ProxifiedCommands, commandsProxyHandler());
 
-    function actionsProxyHandler(): ProxyHandler<
-      MapCommandToActions<ProxifiedCommands>
-    > {
-      const actions: MapCommandToActions<GenericCommandsMap> = {};
-
-      return {
-        get(_, property: string) {
-          const command = commands[
-            property as keyof typeof commands
-          ] as unknown as GenericStateCommand;
-          if (!actions[property]) {
-            actions[property] = payload => dispatch(command, payload);
-          }
-          return actions[property];
-        },
-      };
-    }
+    const actions = new Proxy(
+      {} as MapCommandToActions<ProxifiedCommands>,
+      actionsProxyHandler(),
+    );
 
     return {
       commands,
-      actions: new Proxy(
-        {} as MapCommandToActions<ProxifiedCommands>,
-        actionsProxyHandler(),
-      ),
-      dispatch(command, payload) {
-        const resolvedCommand = !track()
-          ? command.with({silent: true as const})
-          : command;
-        commandsSubject$.next(resolvedCommand.execute(payload));
-      },
+      actions,
       hold(command, cb) {
         const resolvedCallbacks = callbacks.get(command.meta.identity) || [];
         const updatedCallbacks = resolvedCallbacks.concat(
           cb as unknown as ExecuteCommandCallback<T, GenericStateCommand>,
         );
         callbacks.set(command.meta.identity, updatedCallbacks);
+        return this;
       },
-      watchCommand<Commands extends GenericStateCommand>(
-        commands?: Commands[],
-      ) {
-        return (commandsSubject$ as Observable<Commands>).pipe(
-          filter(command => {
-            return !!(commands ?? []).find(
-              x =>
-                x.meta.identity === command.meta.identity &&
-                !(x.meta as any).silent,
-            );
-          }),
-        );
-      },
+      dispatch,
+      watchCommand,
     };
   };
 }

@@ -17,60 +17,67 @@ export function getInitialFrameState(): FrameState {
   };
 }
 
+type Commands = {
+  setBackground: string;
+  setOpacity: number;
+  setPadding: number;
+  setRadius: number;
+  setScale: number;
+  setAutoWidth: boolean;
+  setVisibility: boolean;
+  toggleVisibility: void;
+  setNextPadding: void;
+  setFromPersistedState: PersistedFrameState;
+};
+
 export function createFrameState() {
   const store = experimental
     .createExperimentalStore<FrameState>(getInitialFrameState())
-    .extend(experimental.withCommands())
-    .on(
-      experimental.createCommand('setBackground').withPayload<string>(),
-      (background, state) => ({...state, background}),
-    )
-    .on(
-      experimental.createCommand('setOpacity').withPayload<number>(),
-      (opacity, state) => ({...state, opacity}),
-    )
-    .on(
-      experimental.createCommand('setPadding').withPayload<number>(),
-      (padding, state) => ({...state, padding}),
-    )
-    .on(
-      experimental.createCommand('setRadius').withPayload<number>(),
-      (radius, state) => ({...state, radius}),
-    )
-    .on(
-      experimental.createCommand('setScale').withPayload<number>(),
-      (scale, state) => ({...state, scale}),
-    )
-    .on(
-      experimental.createCommand('setAutoWidth').withPayload<boolean>(),
-      (autoWidth, state) => ({...state, autoWidth}),
-    )
-    .on(
-      experimental.createCommand('setVisibility').withPayload<boolean>(),
-      (visible, state) => ({...state, visible}),
-    )
-    .on(
-      experimental.createCommand('toggleVisibility').withPayload<void>(),
-      (_, state) => ({...state, visible: !state.visible}),
-    )
-    .on(
-      experimental.createCommand('setNextPadding').withPayload<void>(),
-      (_, state) => {
-        const availablePadding = appEnvironment.editorPadding;
-        const padding = state.padding;
-        const currentIndex = appEnvironment.editorPadding.indexOf(padding);
-        const next = (currentIndex + 1) % availablePadding.length;
-        return {...state, padding: availablePadding[next]};
-      },
-    )
-    .on(
-      experimental
-        .createCommand('setFromPersistedState')
-        .withPayload<PersistedFrameState>(),
-      (_, state) => {
-        return {...state, ..._};
-      },
-    );
+    .extend(experimental.withProxyCommands<Commands>());
+
+  store
+    .hold(store.commands.setBackground, (background, state) => ({
+      ...state,
+      background,
+    }))
+    .hold(store.commands.setOpacity, (opacity, state) => ({
+      ...state,
+      opacity,
+    }))
+    .hold(store.commands.setPadding, (padding, state) => ({
+      ...state,
+      padding,
+    }))
+    .hold(store.commands.setRadius, (radius, state) => ({
+      ...state,
+      radius,
+    }))
+    .hold(store.commands.setScale, (scale, state) => ({
+      ...state,
+      scale,
+    }))
+    .hold(store.commands.setAutoWidth, (autoWidth, state) => ({
+      ...state,
+      autoWidth,
+    }))
+    .hold(store.commands.setVisibility, (visible, state) => ({
+      ...state,
+      visible,
+    }))
+    .hold(store.commands.toggleVisibility, (_, state) => ({
+      ...state,
+      visible: !state.visible,
+    }))
+    .hold(store.commands.setNextPadding, (_, state) => {
+      const availablePadding = appEnvironment.editorPadding;
+      const padding = state.padding;
+      const currentIndex = appEnvironment.editorPadding.indexOf(padding);
+      const next = (currentIndex + 1) % availablePadding.length;
+      return {...state, padding: availablePadding[next]};
+    })
+    .hold(store.commands.setFromPersistedState, (_, state) => {
+      return {...state, ..._};
+    });
 
   const mapToStateToPersistState = (state: FrameState): PersistedFrameState => {
     return {

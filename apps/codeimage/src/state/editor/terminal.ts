@@ -1,11 +1,9 @@
 import {experimental} from '@codeimage/atomic-state';
-import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {editorStore} from '@codeimage/store/editor/index';
 import {
   PersistedTerminalState,
   TerminalState,
 } from '@codeimage/store/editor/model';
-import {FrameState} from '@codeimage/store/frame/model';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {map} from 'rxjs';
@@ -33,7 +31,7 @@ export function getInitialTerminalState(): TerminalState {
 export function createTerminalState() {
   const store = experimental
     .createExperimentalStore<TerminalState>(getInitialTerminalState())
-    .extend(experimental.withCommands())
+    .extend(experimental.withFluentCommands())
     .on(
       experimental
         .createCommand('setShadow')

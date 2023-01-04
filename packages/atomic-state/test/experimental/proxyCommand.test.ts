@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest';
 import {createExperimentalStore} from '../../src/experimental';
-import {withProxyCommands} from '../../src/experimental/commands';
+import {withProxyCommands} from '../../src/experimental';
 
 type Commands = {
   setFirstName: string;
@@ -32,13 +32,9 @@ describe('proxyCommand', () => {
     expect(store.state.lastName).toBe('updated 2');
   });
 
-  it('should update state while using object assign as first argument', () => {
+  it('should not lose proxied getters while spreading', () => {
     function $innerStore() {
-      return Object.assign(store.actions, {
-        get state() {
-          return store.state;
-        },
-      });
+      return {...store.actions};
     }
 
     const innerStore = $innerStore();

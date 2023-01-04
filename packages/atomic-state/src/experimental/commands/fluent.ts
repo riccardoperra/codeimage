@@ -1,4 +1,4 @@
-import {filter, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Store} from '../store';
 import {
   CommandIdentity,
@@ -45,9 +45,9 @@ interface StoreWithCommands<
 
 function plugin<T>(ctx: Store<T>): StoreWithCommands<T> {
   const {
-    commandsSubject$,
     callbacks: commandsCallbackMap,
-    track,
+    dispatch,
+    watchCommand,
   } = makeCommandNotifier(ctx);
 
   const commands: Record<string, GenericStateCommand> = {};
@@ -83,23 +83,8 @@ function plugin<T>(ctx: Store<T>): StoreWithCommands<T> {
           GenericCommandsMap & {[key in TCommandName]: Command}
         >;
     },
-    dispatch(command, payload) {
-      const resolvedCommand = !track()
-        ? command.with({silent: true as const})
-        : command;
-      commandsSubject$.next(resolvedCommand.execute(payload));
-    },
-    watchCommand<Commands extends GenericStateCommand>(commands?: Commands[]) {
-      return (commandsSubject$ as Observable<Commands>).pipe(
-        filter(command => {
-          return !!(commands ?? []).find(
-            x =>
-              x.meta.identity === command.meta.identity &&
-              !(x.meta as any).silent,
-          );
-        }),
-      );
-    },
+    dispatch,
+    watchCommand,
   };
 }
 
