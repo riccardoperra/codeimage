@@ -7,7 +7,7 @@ export interface Store<T> {
   set: SetStoreFunction<T>;
   state: T;
 
-  extend<Data>(mergeCb: (ctx: this) => Data): Store<T> & Data;
+  extend<Data>(mergeCb: (ctx: Store<T>) => Data): Store<T> & Data;
 }
 
 export function createExperimentalStore<TState extends object>(
@@ -16,7 +16,9 @@ export function createExperimentalStore<TState extends object>(
   const [store, setStore] = createStore(initialState);
 
   return {
-    get: store.accessor,
+    get() {
+      return store;
+    },
     set: setStore,
     state: store,
     extend(ctx) {

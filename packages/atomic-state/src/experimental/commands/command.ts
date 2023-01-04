@@ -70,7 +70,5 @@ export function createCommand<Identity extends string, T = unknown>(
 
 export type MapCommandToActions<T extends Record<string, GenericStateCommand>> =
   {
-    [K in keyof T]: (
-      payload: CommandPayload<T[K] & GenericStateCommand>,
-    ) => void;
+    [K in keyof T]: (payload: CommandPayload<T[K]>) => void;
   };

@@ -25,6 +25,7 @@
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
     "clean": "rimraf dist",
+    "test": "vitest",
     "build-esm": "tsc -p tsconfig.esm.json",
     "build-dts": "tsc -p tsconfig.dts.json",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
@@ -43,6 +44,7 @@
     "solid-js": "^1.6.3",
     "vite": "^3.1.8",
     "vite-plugin-dts": "^1.6.6",
-    "vite-plugin-solid": "^2.3.9"
+    "vite-plugin-solid": "^2.3.9",
+    "vitest": "0.26.2"
   }
 }
