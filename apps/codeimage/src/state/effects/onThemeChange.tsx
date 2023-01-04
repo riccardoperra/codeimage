@@ -8,7 +8,7 @@ import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {pipe, tap} from 'rxjs';
 import {batch} from 'solid-js';
-import {storeV2} from '@codeimage/atomic-state';
+import {experimental} from '@codeimage/atomic-state';
 
 export type DispatchUpdateThemeParams = {theme: CustomTheme};
 
@@ -30,7 +30,7 @@ const randomizeElement = <T,>(array: readonly T[]): T => {
   return array[Math.floor(Math.random() * array.length)];
 };
 
-export const dispatchRandomTheme = storeV2.effect<void>(
+export const dispatchRandomTheme = experimental.effect<void>(
   pipe(
     tap(() => {
       const {themeArray: themes} = getThemeStore();

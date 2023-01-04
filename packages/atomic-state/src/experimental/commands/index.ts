@@ -1,6 +1,9 @@
 import {filter, map, Observable, Subject} from 'rxjs';
 import {batch, untrack} from 'solid-js';
 import {reconcile} from 'solid-js/store';
+import {createTrackObserver} from '../../createTrackObserver';
+import {makePlugin} from '../plugin';
+import {Store} from '../store';
 import {
   CommandIdentity,
   CommandPayload,
@@ -8,10 +11,7 @@ import {
   ExecutedGenericStateCommand,
   GenericStateCommand,
   MapCommandToActions,
-} from '../commands/command';
-import {createTrackObserver} from '../createTrackObserver';
-import {makePlugin} from './plugin';
-import {Store} from './store';
+} from './command';
 
 export const [track, untrackCommand] = createTrackObserver();
 
@@ -150,4 +150,6 @@ function plugin<T extends object>(ctx: Store<T>): StoreWithCommands<T> {
   };
 }
 
-export const makeCommands = () => makePlugin('commands', plugin);
+export const withCommands = () => makePlugin('commands', plugin);
+
+export {createCommand};

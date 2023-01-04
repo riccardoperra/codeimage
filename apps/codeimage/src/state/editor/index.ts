@@ -1,4 +1,4 @@
-import {storeV2} from '@codeimage/atomic-state';
+import {experimental} from '@codeimage/atomic-state';
 import {createEditorsStore} from '@codeimage/store/editor/editor';
 import {createFrameState} from '@codeimage/store/editor/frame';
 import {createTerminalState} from '@codeimage/store/editor/terminal';
@@ -17,7 +17,7 @@ export function createEditorStore() {
   createEffect(
     on(resource, async resource => {
       if (resource) {
-        storeV2.untrackCommand(() => {
+        experimental.untrackCommand(() => {
           terminal.setState('background', resource.properties.terminal.main);
           terminal.setState('textColor', resource.properties.terminal.text);
           if (frame.store.background === null) {

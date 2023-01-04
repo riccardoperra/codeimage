@@ -10,4 +10,4 @@ export {createStoreAutoSetters} from './createStoreSetters';
 export {createDerivedSetter} from './createDerivedSetter';
 export {createTrackObserver, emitWhenTracked} from './createTrackObserver';
 
-export * as storeV2 from './commands';
+export * as experimental from './experimental';

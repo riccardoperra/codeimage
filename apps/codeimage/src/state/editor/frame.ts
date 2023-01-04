@@ -1,4 +1,4 @@
-import {storeV2} from '@codeimage/atomic-state';
+import {experimental} from '@codeimage/atomic-state';
 import {editorStore} from '@codeimage/store/editor/index';
 import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
 import {appEnvironment} from '@core/configuration';
@@ -18,43 +18,43 @@ export function getInitialFrameState(): FrameState {
 }
 
 export function createFrameState() {
-  const store = storeV2
+  const store = experimental
     .createExperimentalStore<FrameState>(getInitialFrameState())
-    .with(storeV2.makeCommands())
+    .extend(experimental.withCommands())
     .on(
-      storeV2.createCommand('setBackground').withPayload<string>(),
+      experimental.createCommand('setBackground').withPayload<string>(),
       (background, state) => ({...state, background}),
     )
     .on(
-      storeV2.createCommand('setOpacity').withPayload<number>(),
+      experimental.createCommand('setOpacity').withPayload<number>(),
       (opacity, state) => ({...state, opacity}),
     )
     .on(
-      storeV2.createCommand('setPadding').withPayload<number>(),
+      experimental.createCommand('setPadding').withPayload<number>(),
       (padding, state) => ({...state, padding}),
     )
     .on(
-      storeV2.createCommand('setRadius').withPayload<number>(),
+      experimental.createCommand('setRadius').withPayload<number>(),
       (radius, state) => ({...state, radius}),
     )
     .on(
-      storeV2.createCommand('setScale').withPayload<number>(),
+      experimental.createCommand('setScale').withPayload<number>(),
       (scale, state) => ({...state, scale}),
     )
     .on(
-      storeV2.createCommand('setAutoWidth').withPayload<boolean>(),
+      experimental.createCommand('setAutoWidth').withPayload<boolean>(),
       (autoWidth, state) => ({...state, autoWidth}),
     )
     .on(
-      storeV2.createCommand('setVisibility').withPayload<boolean>(),
+      experimental.createCommand('setVisibility').withPayload<boolean>(),
       (visible, state) => ({...state, visible}),
     )
     .on(
-      storeV2.createCommand('toggleVisibility').withPayload<void>(),
+      experimental.createCommand('toggleVisibility').withPayload<void>(),
       (_, state) => ({...state, visible: !state.visible}),
     )
     .on(
-      storeV2.createCommand('setNextPadding').withPayload<void>(),
+      experimental.createCommand('setNextPadding').withPayload<void>(),
       (_, state) => {
         const availablePadding = appEnvironment.editorPadding;
         const padding = state.padding;
@@ -64,7 +64,7 @@ export function createFrameState() {
       },
     )
     .on(
-      storeV2
+      experimental
         .createCommand('setFromPersistedState')
         .withPayload<PersistedFrameState>(),
       (_, state) => {

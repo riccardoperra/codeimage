@@ -74,19 +74,3 @@ export type MapCommandToActions<T extends Record<string, GenericStateCommand>> =
       payload: CommandPayload<T[K] & GenericStateCommand>,
     ) => void;
   };
-
-export function mapCommandsToActions<
-  T extends Record<string, GenericStateCommand>,
->(
-  dispatcher: (
-    command: GenericStateCommand,
-    payload: CommandPayload<GenericStateCommand>,
-  ) => void,
-  commands: T,
-): MapCommandToActions<T> {
-  return Object.fromEntries(
-    Object.entries(commands).map(([k, command]) => {
-      return [k, (payload: unknown) => dispatcher(command, payload)] as const;
-    }),
-  ) as MapCommandToActions<T>;
-}

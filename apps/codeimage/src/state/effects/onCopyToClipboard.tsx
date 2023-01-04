@@ -1,4 +1,4 @@
-import {storeV2} from '@codeimage/atomic-state';
+import {experimental} from '@codeimage/atomic-state';
 import {useI18n} from '@codeimage/locale';
 import {getInvertedThemeMode} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
@@ -19,37 +19,40 @@ interface CopyToClipboardEvent {
 
 const owner = getOwner()!;
 
-export const dispatchCopyToClipboard = storeV2.effect<CopyToClipboardEvent>(
-  pipe(
-    exhaustMap(({ref}) => {
-      const options: ExportOptions = {
-        mode: ExportMode.getBlob,
-        quality: 100,
-        pixelRatio: Math.floor(window.devicePixelRatio),
-        extension: ExportExtension.png,
-      };
-      return from(runWithOwner(owner, () => exportImage({ref, options}))).pipe(
-        switchMap(data => {
-          if (!(data instanceof Blob)) return EMPTY;
-          return from(
-            navigator.clipboard.write([
-              new ClipboardItem(
-                {
-                  [data.type]: data,
-                },
-                {presentationStyle: 'attachment'},
-              ),
-            ]),
-          ).pipe(
-            tap(() => runWithOwner(owner, openSnackbar)),
-            catchError(() => EMPTY),
-            tap(() => getUmami().trackEvent('true', `copy-to-clipboard`)),
-          );
-        }),
-      );
-    }),
-  ),
-);
+export const dispatchCopyToClipboard =
+  experimental.effect<CopyToClipboardEvent>(
+    pipe(
+      exhaustMap(({ref}) => {
+        const options: ExportOptions = {
+          mode: ExportMode.getBlob,
+          quality: 100,
+          pixelRatio: Math.floor(window.devicePixelRatio),
+          extension: ExportExtension.png,
+        };
+        return from(
+          runWithOwner(owner, () => exportImage({ref, options})),
+        ).pipe(
+          switchMap(data => {
+            if (!(data instanceof Blob)) return EMPTY;
+            return from(
+              navigator.clipboard.write([
+                new ClipboardItem(
+                  {
+                    [data.type]: data,
+                  },
+                  {presentationStyle: 'attachment'},
+                ),
+              ]),
+            ).pipe(
+              tap(() => runWithOwner(owner, openSnackbar)),
+              catchError(() => EMPTY),
+              tap(() => getUmami().trackEvent('true', `copy-to-clipboard`)),
+            );
+          }),
+        );
+      }),
+    ),
+  );
 
 function openSnackbar(): void {
   toast.success(

@@ -1,4 +1,4 @@
-import {storeV2} from '@codeimage/atomic-state';
+import {experimental} from '@codeimage/atomic-state';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {editorStore} from '@codeimage/store/editor/index';
 import {
@@ -31,69 +31,71 @@ export function getInitialTerminalState(): TerminalState {
 }
 
 export function createTerminalState() {
-  const store = storeV2
+  const store = experimental
     .createExperimentalStore<TerminalState>(getInitialTerminalState())
-    .with(storeV2.makeCommands())
+    .extend(experimental.withCommands())
     .on(
-      storeV2
+      experimental
         .createCommand('setShadow')
         .withPayload<string>()
         .withPayload<null>(),
       (shadow, state) => ({...state, shadow}),
     )
     .on(
-      storeV2.createCommand('setType').withPayload<string>(),
+      experimental.createCommand('setType').withPayload<string>(),
       (type, state) => ({...state, type}),
     )
     .on(
-      storeV2.createCommand('setAccentVisible').withPayload<boolean>(),
+      experimental.createCommand('setAccentVisible').withPayload<boolean>(),
       (accentVisible, state) => ({...state, accentVisible}),
     )
     .on(
-      storeV2.createCommand('setShowHeader').withPayload<boolean>(),
+      experimental.createCommand('setShowHeader').withPayload<boolean>(),
       (showHeader, state) => ({...state, showHeader}),
     )
     .on(
-      storeV2.createCommand('setShowGlassReflection').withPayload<boolean>(),
+      experimental
+        .createCommand('setShowGlassReflection')
+        .withPayload<boolean>(),
       (showGlassReflection, state) => ({...state, showGlassReflection}),
     )
     .on(
-      storeV2.createCommand('setShowWatermark').withPayload<boolean>(),
+      experimental.createCommand('setShowWatermark').withPayload<boolean>(),
       (showWatermark, state) => ({
         ...state,
         showWatermark,
       }),
     )
     .on(
-      storeV2.createCommand('setOpacity').withPayload<number>(),
+      experimental.createCommand('setOpacity').withPayload<number>(),
       (opacity, state) => ({
         ...state,
         opacity,
       }),
     )
     .on(
-      storeV2.createCommand('setAlternativeTheme').withPayload<boolean>(),
+      experimental.createCommand('setAlternativeTheme').withPayload<boolean>(),
       (alternativeTheme, state) => ({
         ...state,
         alternativeTheme,
       }),
     )
     .on(
-      storeV2.createCommand('toggleShowHeader').withPayload<void>(),
+      experimental.createCommand('toggleShowHeader').withPayload<void>(),
       (_, state) => ({
         ...state,
         showHeader: !state.showHeader,
       }),
     )
     .on(
-      storeV2.createCommand('toggleWatermark').withPayload<boolean>(),
+      experimental.createCommand('toggleWatermark').withPayload<boolean>(),
       (_, state) => ({
         ...state,
         showWatermark: !state.showWatermark,
       }),
     )
     .on(
-      storeV2
+      experimental
         .createCommand('setFromPersistedState')
         .withPayload<PersistedTerminalState>(),
       (persistedState, state) => {
