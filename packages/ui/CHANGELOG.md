@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.10.0
+
+### Minor Changes
+
+- [`513c6aa6`](https://github.com/riccardoperra/codeimage/commit/513c6aa66356ef43d96cdd18906b13bf5d8218da) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Button press animations and snackbar custom container class support
+
 ## 0.9.2
 
 ### Patch Changes

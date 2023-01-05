@@ -1,5 +1,21 @@
 # @codeimage/app
 
+## 1.1.0
+
+### Minor Changes
+
+- [`513c6aa6`](https://github.com/riccardoperra/codeimage/commit/513c6aa66356ef43d96cdd18906b13bf5d8218da) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add action toolbar and randomize, copy to clipboard and prettier format actions
+
+### Patch Changes
+
+- [#438](https://github.com/riccardoperra/codeimage/pull/438) [`7f41e9d8`](https://github.com/riccardoperra/codeimage/commit/7f41e9d85a38de540f1cd23f763bf22d73c93812) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: refactor state management
+
+- Updated dependencies [[`7f41e9d8`](https://github.com/riccardoperra/codeimage/commit/7f41e9d85a38de540f1cd23f763bf22d73c93812), [`513c6aa6`](https://github.com/riccardoperra/codeimage/commit/513c6aa66356ef43d96cdd18906b13bf5d8218da), [`513c6aa6`](https://github.com/riccardoperra/codeimage/commit/513c6aa66356ef43d96cdd18906b13bf5d8218da)]:
+  - @codeimage/atomic-state@1.0.0
+  - @codeimage/ui@0.10.0
+  - @codeimage/config@8.1.0
+  - @codeimage/highlight@0.10.5
+
 ## 1.0.10
 
 ### Patch Changes
