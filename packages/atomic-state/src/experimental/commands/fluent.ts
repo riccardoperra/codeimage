@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {Store} from '../store';
+import {Store, StoreValue} from 'statesolid';
 import {
   CommandIdentity,
   CommandPayload,
@@ -38,7 +38,7 @@ interface StoreWithCommands<
   ): Observable<Commands[number]>;
 }
 
-function plugin<T>(ctx: Store<T>): StoreWithCommands<T> {
+function plugin<T extends StoreValue>(ctx: Store<T>): StoreWithCommands<T> {
   const {
     callbacks: commandsCallbackMap,
     dispatch,
@@ -85,5 +85,5 @@ function plugin<T>(ctx: Store<T>): StoreWithCommands<T> {
 
 export const withFluentCommands =
   () =>
-  <S>(ctx: Store<S>) =>
+  <S extends StoreValue>(ctx: Store<S>) =>
     plugin(ctx);

@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {Store} from '../store';
+import {Store, StoreValue} from 'statesolid';
 import {
   CommandPayload,
   createCommand,
@@ -41,12 +41,14 @@ type ProxifyCommands<T extends Record<string, unknown>> = {
   [K in keyof T]: StateCommand<K & string, T[K]>;
 };
 
-function plugin<ActionsMap extends Record<string, unknown>>(): <TState>(
+function plugin<ActionsMap extends Record<string, unknown>>(): <
+  TState extends StoreValue,
+>(
   ctx: Store<TState>,
 ) => StoreWithProxyCommands<TState, ProxifyCommands<ActionsMap>> {
   type ProxifiedCommands = ProxifyCommands<ActionsMap>;
 
-  return <T>(ctx: Store<T>) => {
+  return <T extends StoreValue>(ctx: Store<T>) => {
     const {commandsSubject$, callbacks, track, watchCommand} =
       makeCommandNotifier(ctx);
 
@@ -138,7 +140,7 @@ function plugin<ActionsMap extends Record<string, unknown>>(): <TState>(
 }
 
 export function withProxyCommands<T extends Record<string, unknown>>() {
-  return <S>(ctx: Store<S>) => {
+  return <S extends StoreValue>(ctx: Store<S>) => {
     return plugin<T>()(ctx);
   };
 }

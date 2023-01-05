@@ -1,8 +1,8 @@
 import {filter, map, Observable, shareReplay, Subject} from 'rxjs';
 import {batch, untrack} from 'solid-js';
 import {reconcile, SetStoreFunction} from 'solid-js/store';
+import {Store, StoreValue} from 'statesolid';
 import {createTrackObserver} from '../../createTrackObserver';
-import {Store} from '../store';
 import {
   CommandPayload,
   createCommand,
@@ -20,7 +20,7 @@ export type ExecuteCommandCallback<T, Command extends GenericStateCommand> = (
 
 export const [track, untrackCommand] = createTrackObserver();
 
-export function makeCommandNotifier<T>(ctx: Store<T>) {
+export function makeCommandNotifier<T extends StoreValue>(ctx: Store<T>) {
   const commandsSubject$ = new Subject<ExecutedGenericStateCommand>();
 
   const callbacks = new Map<
@@ -41,8 +41,9 @@ export function makeCommandNotifier<T>(ctx: Store<T>) {
         untrack(() => {
           for (const callback of callbacks) {
             const result = callback(command.meta.consumerValue, {
+              // @ts-expect-error Mismatch solid version TODO: fix
               set: ctx.set,
-              state: ctx.get(),
+              state: ctx(),
             });
             if (result !== undefined) {
               ctx.set(reconcile(result));
@@ -64,7 +65,7 @@ export function makeCommandNotifier<T>(ctx: Store<T>) {
               consumerValue: {
                 source: command,
                 payload: command.meta.consumerValue,
-                state: ctx.get(),
+                state: ctx(),
               },
             }),
           }),

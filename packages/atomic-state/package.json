@@ -46,5 +46,8 @@
     "vite-plugin-dts": "^1.6.6",
     "vite-plugin-solid": "^2.3.9",
     "vitest": "0.26.2"
+  },
+  "dependencies": {
+    "statesolid": "latest"
   }
 }
