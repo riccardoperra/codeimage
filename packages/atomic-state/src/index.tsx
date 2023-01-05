@@ -12,4 +12,4 @@ export {createTrackObserver, emitWhenTracked} from './createTrackObserver';
 
 export * from 'statesolid';
 
-export * as experimental from './experimental';
+export * from './experimental';

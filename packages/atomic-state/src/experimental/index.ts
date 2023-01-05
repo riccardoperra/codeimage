@@ -1,7 +1,2 @@
-export {
-  createCommand,
-  withFluentCommands,
-  withProxyCommands,
-  untrackCommand,
-} from './commands';
+export * as commands from './commands';
 export {effect, type Effect} from './effects';

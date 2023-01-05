@@ -1,6 +1,7 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {defineStore, experimental, provideState} from '@codeimage/atomic-state';
+import {commands, defineStore} from '@codeimage/atomic-state';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
@@ -42,7 +43,7 @@ export function createEditorsStore() {
     options: getInitialEditorUiOptions(),
     activeEditorId: defaultId,
   })).extend(
-    experimental.withProxyCommands<{
+    commands.withProxyCommands<{
       setActiveEditorId: string;
       setFocused: boolean;
       setFontId: string;
@@ -53,9 +54,9 @@ export function createEditorsStore() {
     }>(),
   );
 
-  const store = provideState(config);
+  const store = provideAppState(config);
 
-  const editorUpdateCommand = experimental
+  const editorUpdateCommand = commands
     .createCommand('editorUpdate')
     .withPayload<void>();
 
@@ -231,6 +232,7 @@ export function createEditorsStore() {
   const setEditorsWithCommand: SetStoreFunction<EditorState[]> = (
     ...args: unknown[]
   ) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (setEditors as any)(...args);
     store.dispatch(editorUpdateCommand, void 0);
   };

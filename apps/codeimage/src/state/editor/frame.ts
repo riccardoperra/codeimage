@@ -1,5 +1,6 @@
-import {defineStore, experimental, provideState} from '@codeimage/atomic-state';
+import {commands, defineStore} from '@codeimage/atomic-state';
 import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
+import {provideAppState} from '@codeimage/store/index';
 import {appEnvironment} from '@core/configuration';
 import {map} from 'rxjs';
 
@@ -30,7 +31,7 @@ type Commands = {
 };
 
 const frameState = defineStore(() => getInitialFrameState())
-  .extend(experimental.withProxyCommands<Commands>())
+  .extend(commands.withProxyCommands<Commands>())
   .extend(store => {
     store
       .hold(store.commands.setBackground, (background, {state}) => ({
@@ -75,10 +76,6 @@ const frameState = defineStore(() => getInitialFrameState())
       .hold(store.commands.setFromPersistedState, (_, {state}) => {
         return {...state, ..._};
       });
-
-    return {
-      ...store.actions,
-    };
   })
   .extend(store => {
     const mapToStateToPersistState = (
@@ -124,5 +121,5 @@ const frameState = defineStore(() => getInitialFrameState())
   });
 
 export function getFrameState() {
-  return provideState(frameState);
+  return provideAppState(frameState);
 }

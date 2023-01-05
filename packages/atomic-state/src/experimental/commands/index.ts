@@ -1,6 +1,8 @@
-import {createCommand} from './command';
+import {
+  createCommand,
+  untrackCommand,
+  withProxyCommands,
+} from 'statesolid/commands';
 import {withFluentCommands} from './fluent';
-import {withProxyCommands} from './proxy';
-import {untrackCommand} from './notifier';
 
 export {createCommand, withFluentCommands, withProxyCommands, untrackCommand};

@@ -3,10 +3,11 @@ import {Store, StoreValue} from 'statesolid';
 import {
   CommandIdentity,
   CommandPayload,
+  ExecuteCommandCallback,
   GenericStateCommand,
+  makeCommandNotifier,
   MapCommandToActions,
-} from './command';
-import {ExecuteCommandCallback, makeCommandNotifier} from './notifier';
+} from 'statesolid/commands';
 
 type GenericCommandsMap = Record<PropertyKey, GenericStateCommand>;
 
@@ -62,13 +63,10 @@ function plugin<T extends StoreValue>(ctx: Store<T>): StoreWithCommands<T> {
       T,
       GenericCommandsMap & {[key in TCommandName]: Command}
     > {
-      const callbacks = commandsCallbackMap.get(command.meta.identity) ?? [];
-      commands[command.meta.identity] = command;
-      commandsCallbackMap.set(
-        command.meta.identity,
-        callbacks.concat(executeFn),
-      );
-      actions[command.meta.identity] = payload => {
+      const callbacks = commandsCallbackMap.get(command.identity) ?? [];
+      commands[command.identity] = command;
+      commandsCallbackMap.set(command.identity, callbacks.concat(executeFn));
+      actions[command.identity] = payload => {
         this.dispatch(command, payload);
       };
 

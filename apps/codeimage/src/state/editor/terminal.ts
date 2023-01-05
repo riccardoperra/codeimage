@@ -1,9 +1,10 @@
-import {defineStore, experimental, provideState} from '@codeimage/atomic-state';
-import {editorStore, getEditorStore} from '@codeimage/store/editor/index';
+import {commands, defineStore} from '@codeimage/atomic-state';
+import {getEditorStore} from '@codeimage/store/editor';
 import {
   PersistedTerminalState,
   TerminalState,
 } from '@codeimage/store/editor/model';
+import {provideAppState} from '@codeimage/store/index';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {map} from 'rxjs';
@@ -30,85 +31,65 @@ export function getInitialTerminalState(): TerminalState {
 
 export function createTerminalState() {
   const config = defineStore(() => getInitialTerminalState()).extend(
-    experimental.withFluentCommands(),
+    commands.withProxyCommands<{
+      setShadow: string | null;
+      setType: string;
+      setAccentVisible: boolean;
+      setShowHeader: boolean;
+      setShowGlassReflection: boolean;
+      setShowWatermark: boolean;
+      setOpacity: number;
+      setAlternativeTheme: boolean;
+      toggleShowHeader: void;
+      toggleWatermark: void;
+      setFromPersistedState: PersistedTerminalState;
+    }>(),
   );
-  const store = provideState(config);
-
+  const store = provideAppState(config);
   store
-    .on(
-      experimental
-        .createCommand('setShadow')
-        .withPayload<string>()
-        .withPayload<null>(),
-      (shadow, {state}) => ({...state, shadow}),
-    )
-    .on(
-      experimental.createCommand('setType').withPayload<string>(),
-      (type, {state}) => ({...state, type}),
-    )
-    .on(
-      experimental.createCommand('setAccentVisible').withPayload<boolean>(),
-      (accentVisible, {state}) => ({...state, accentVisible}),
-    )
-    .on(
-      experimental.createCommand('setShowHeader').withPayload<boolean>(),
-      (showHeader, {state}) => ({...state, showHeader}),
-    )
-    .on(
-      experimental
-        .createCommand('setShowGlassReflection')
-        .withPayload<boolean>(),
+    .hold(store.commands.setShadow, (shadow, {state}) => ({...state, shadow}))
+    .hold(store.commands.setType, (type, {state}) => ({...state, type}))
+    .hold(store.commands.setAccentVisible, (accentVisible, {state}) => ({
+      ...state,
+      accentVisible,
+    }))
+    .hold(store.commands.setShowHeader, (showHeader, {state}) => ({
+      ...state,
+      showHeader,
+    }))
+    .hold(
+      store.commands.setShowGlassReflection,
       (showGlassReflection, {state}) => ({...state, showGlassReflection}),
     )
-    .on(
-      experimental.createCommand('setShowWatermark').withPayload<boolean>(),
-      (showWatermark, {state}) => ({
+    .hold(store.commands.setShowWatermark, (showWatermark, {state}) => ({
+      ...state,
+      showWatermark,
+    }))
+    .hold(store.commands.setOpacity, (opacity, {state}) => ({
+      ...state,
+      opacity,
+    }))
+    .hold(store.commands.setAlternativeTheme, (alternativeTheme, {state}) => ({
+      ...state,
+      alternativeTheme,
+    }))
+    .hold(store.commands.toggleShowHeader, (_, {state}) => {
+      return {
         ...state,
-        showWatermark,
-      }),
-    )
-    .on(
-      experimental.createCommand('setOpacity').withPayload<number>(),
-      (opacity, {state}) => ({
-        ...state,
-        opacity,
-      }),
-    )
-    .on(
-      experimental.createCommand('setAlternativeTheme').withPayload<boolean>(),
-      (alternativeTheme, {state}) => ({
-        ...state,
-        alternativeTheme,
-      }),
-    )
-    .on(
-      experimental.createCommand('toggleShowHeader').withPayload<void>(),
-      (_, {state}) => {
-        return {
-          ...state,
-          showHeader: !state.showHeader,
-        };
-      },
-    )
-    .on(
-      experimental.createCommand('toggleWatermark').withPayload<void>(),
-      (_, {state}) => ({
-        ...state,
-        showWatermark: !state.showWatermark,
-      }),
-    )
-    .on(
-      experimental
-        .createCommand('setFromPersistedState')
-        .withPayload<PersistedTerminalState>(),
-      (persistedState, {state}) => {
-        const shadows = TERMINAL_SHADOWS;
-        if (!Object.values<string | null>(shadows).includes(state.shadow)) {
-          state.shadow = shadows.bottom;
-        }
-        return {...state, ...persistedState};
-      },
-    );
+        showHeader: !state.showHeader,
+      };
+    })
+    .hold(store.commands.toggleWatermark, (_, {state}) => ({
+      ...state,
+      showWatermark: !state.showWatermark,
+    }))
+    .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
+      const shadows = TERMINAL_SHADOWS;
+      if (!Object.values<string | null>(shadows).includes(state.shadow)) {
+        state.shadow = shadows.bottom;
+      }
+      return {...state, ...persistedState};
+    });
 
   const mapToStateToPersistState = (
     state: TerminalState,
