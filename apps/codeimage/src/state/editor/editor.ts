@@ -1,15 +1,14 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {
-  createDerivedObservable,
-  createDerivedSetter,
-  createStore,
-} from '@codeimage/atomic-state';
+import {commands, defineStore} from '@codeimage/atomic-state';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
+import {map, shareReplay} from 'rxjs';
 import {createMemo, createSelector} from 'solid-js';
+import {SetStoreFunction} from 'solid-js/store';
 import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
 
 const defaultId = createUniqueId();
@@ -39,40 +38,120 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
 export function createEditorsStore() {
   const MAX_TABS = 6;
 
-  const [state, setState] = createStore({
+  const config = defineStore(() => ({
     editors: [getInitialEditorState()],
     options: getInitialEditorUiOptions(),
     activeEditorId: defaultId,
-  });
+  })).extend(
+    commands.withProxyCommands<{
+      setActiveEditorId: string;
+      setFocused: boolean;
+      setFontId: string;
+      setThemeId: string;
+      setFontWeight: number;
+      setShowLineNumbers: boolean;
+      setFromPersistedState: PersistedEditorState;
+    }>(),
+  );
 
-  const isActive = createSelector(() => state.activeEditorId);
-  const setEditors = createDerivedSetter(state, ['editors']);
+  const store = provideAppState(config);
 
-  const [stateToPersist$, stateToPersist] =
-    createDerivedObservable<PersistedEditorState>(() => {
+  const editorUpdateCommand = commands
+    .createCommand('editorUpdate')
+    .withPayload<void>();
+
+  store
+    .hold(store.commands.setActiveEditorId, (activeEditorId, {set}) =>
+      set('activeEditorId', activeEditorId),
+    )
+    .hold(store.commands.setFocused, (focused, {set}) =>
+      set('options', 'focused', focused),
+    )
+    .hold(store.commands.setFocused, (focused, {set}) =>
+      set('options', 'focused', focused),
+    )
+    .hold(store.commands.setFontId, (fontId, {set}) =>
+      set('options', 'fontId', fontId),
+    )
+    .hold(store.commands.setThemeId, (themeId, {set}) =>
+      set('options', 'themeId', themeId),
+    )
+    .hold(store.commands.setFontWeight, (fontWeight, {set}) =>
+      set('options', 'fontWeight', fontWeight),
+    )
+    .hold(store.commands.setShowLineNumbers, (showLineNumbers, {set}) =>
+      set('options', 'showLineNumbers', showLineNumbers),
+    )
+    .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
+      const editors = (persistedState.editors ?? [])
+        .slice(0, MAX_TABS)
+        .map(editor => ({
+          tabName: editor.tabName,
+          languageId: editor.languageId,
+          id: editor.id,
+          code: editor.code,
+        }));
       return {
-        editors: state.editors.map(editor => {
+        options: {...persistedState.options, ...state.options},
+        activeEditorId: editors[0].id,
+        editors: editors.map(editor => {
           return {
-            languageId: editor.languageId,
             code: editor.code,
-            tabName: editor.tab.tabName ?? '',
+            languageId: editor.languageId,
+            tab: {tabName: editor.tabName},
             id: editor.id,
           };
         }),
-        options: {
-          themeId: state.options.themeId,
-          showLineNumbers: state.options.showLineNumbers,
-          fontId: state.options.fontId,
-          fontWeight: state.options.fontWeight,
-        },
       };
     });
+
+  const isActive = createSelector(() => store.get.activeEditorId);
+  const setEditors: SetStoreFunction<EditorState[]> = (...args: unknown[]) => {
+    // TODO: add derived state store
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (store.set as any)('editors', ...args);
+  };
+
+  const mapToStateToPersistState = (
+    state: typeof store.get,
+  ): PersistedEditorState => {
+    return {
+      editors: state.editors.map(editor => {
+        return {
+          languageId: editor.languageId,
+          code: editor.code,
+          tabName: editor.tab.tabName ?? '',
+          id: editor.id,
+        };
+      }),
+      options: {
+        themeId: state.options.themeId,
+        showLineNumbers: state.options.showLineNumbers,
+        fontId: state.options.fontId,
+        fontWeight: state.options.fontWeight,
+      },
+    };
+  };
+
+  const stateToPersist$ = store
+    .watchCommand([
+      store.commands.setFontId,
+      store.commands.setThemeId,
+      store.commands.setFontWeight,
+      store.commands.setShowLineNumbers,
+      editorUpdateCommand,
+    ])
+    .pipe(
+      map(() => store()),
+      map(mapToStateToPersistState),
+      shareReplay({refCount: true, bufferSize: 1}),
+    );
 
   const addEditor = (
     editorState?: Partial<EditorState> | null,
     active?: boolean,
   ) => {
-    if (state.editors.length === MAX_TABS) return;
+    if (store.get.editors.length === MAX_TABS) return;
     const id = createUniqueId();
     const editor: EditorState = {
       ...getInitialEditorState(),
@@ -83,27 +162,31 @@ export function createEditorsStore() {
       id,
     };
     setEditors(editors => [...editors, editor]);
-    if (active) setState('activeEditorId', id);
+    if (active) store.set('activeEditorId', id);
+    store.dispatch(editorUpdateCommand, void 0);
   };
 
-  const canAddEditor = () => state.editors.length < MAX_TABS;
+  const canAddEditor = () => store.get.editors.length < MAX_TABS;
 
   const removeEditor = (id: string) => {
-    if (state.editors.length === 1) {
+    if (store.get.editors.length === 1) {
       return;
     }
     const $isActive = isActive(id);
-    const currentIndex = state.editors.findIndex(editor => editor.id === id);
-    const newActiveEditor = state.editors[currentIndex - 1];
-    const updatedEditors = state.editors.filter(editor => editor.id !== id);
+    const currentIndex = store.get.editors.findIndex(
+      editor => editor.id === id,
+    );
+    const newActiveEditor = store.get.editors[currentIndex - 1];
+    const updatedEditors = store.get.editors.filter(editor => editor.id !== id);
     if ($isActive) {
-      setState('activeEditorId', newActiveEditor?.id ?? updatedEditors[0]?.id);
+      store.set('activeEditorId', newActiveEditor?.id ?? updatedEditors[0]?.id);
     }
     setEditors(updatedEditors);
+    store.dispatch(editorUpdateCommand, void 0);
   };
 
   const setTabName = (id: string, name: string, updateLanguage: boolean) => {
-    const index = state.editors.findIndex(tab => isActive(tab.id));
+    const index = store.get.editors.findIndex(tab => isActive(tab.id));
     setEditors(index, 'tab', 'tabName', name);
     if (updateLanguage) {
       const matches = SUPPORTED_LANGUAGES.filter(language => {
@@ -111,16 +194,20 @@ export function createEditorsStore() {
       });
       if (
         !matches.length ||
-        matches.map(match => match.id).includes(state.editors[index].languageId)
+        matches
+          .map(match => match.id)
+          .includes(store.get.editors[index].languageId)
       ) {
         return;
       }
       setEditors(index, 'languageId', matches[0].id);
     }
+    store.dispatch(editorUpdateCommand, void 0);
   };
 
   const font = createMemo(
-    () => filter(SUPPORTED_FONTS, font => font.id === state.options.fontId)[0],
+    () =>
+      filter(SUPPORTED_FONTS, font => font.id === store.get.options.fontId)[0],
   );
 
   const setFromWorkspace = (item: ApiTypes.GetProjectByIdApi['response']) => {
@@ -137,68 +224,41 @@ export function createEditorsStore() {
           } as EditorState),
       ),
     );
-    setState('activeEditorId', item.editorTabs[0].id);
-    setState('options', item.editorOptions);
+    store.set('activeEditorId', item.editorTabs[0].id);
+    store.set('options', item.editorOptions);
+    store.dispatch(editorUpdateCommand, void 0);
+  };
+
+  const setEditorsWithCommand: SetStoreFunction<EditorState[]> = (
+    ...args: unknown[]
+  ) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (setEditors as any)(...args);
+    store.dispatch(editorUpdateCommand, void 0);
   };
 
   return {
-    state,
-    setState,
+    get state() {
+      return store.get;
+    },
+    setState: store.set,
     isActive,
-    stateToPersist,
+    stateToPersist() {
+      const state = store();
+      return mapToStateToPersistState(state);
+    },
     stateToPersist$,
     computed: {
       font,
       canAddEditor,
     },
     actions: {
-      setEditors,
+      setEditors: setEditorsWithCommand,
       addEditor,
       removeEditor,
       setTabName,
       setFromWorkspace,
-      setFromPersistedState: (state: PersistedEditorState) => {
-        const editors = (state.editors ?? [])
-          .slice(0, MAX_TABS)
-          .map(editor => ({
-            tabName: editor.tabName,
-            languageId: editor.languageId,
-            id: editor.id,
-            code: editor.code,
-          }));
-        setState(prevState => ({
-          options: {...prevState.options, ...state.options},
-          activeEditorId: editors[0].id,
-          editors: editors.map(editor => {
-            return {
-              code: editor.code,
-              languageId: editor.languageId,
-              tab: {
-                tabName: editor.tabName,
-              },
-              id: editor.id,
-            };
-          }),
-        }));
-      },
-      setActiveEditorId: (id: string) => {
-        setState('activeEditorId', id);
-      },
-      setFocused: (focused: boolean) => {
-        setState('options', 'focused', focused);
-      },
-      setFontId: (fontId: string) => {
-        setState('options', 'fontId', fontId);
-      },
-      setThemeId: (themeId: string) => {
-        setState('options', 'themeId', themeId);
-      },
-      setFontWeight: (fontWeight: number) => {
-        setState('options', 'fontWeight', fontWeight);
-      },
-      setShowLineNumbers: (show: boolean) => {
-        setState('options', 'showLineNumbers', show);
-      },
+      ...store.actions,
     },
   } as const;
 }

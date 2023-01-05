@@ -1,11 +1,13 @@
-import {createDerivedObservable, createStore} from '@codeimage/atomic-state';
-import {editorStore} from '@codeimage/store/editor/index';
+import {commands, defineStore} from '@codeimage/atomic-state';
+import {getEditorStore} from '@codeimage/store/editor';
 import {
   PersistedTerminalState,
   TerminalState,
 } from '@codeimage/store/editor/model';
+import {provideAppState} from '@codeimage/store/index';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
+import {map} from 'rxjs';
 
 export function getInitialTerminalState(): TerminalState {
   const terminalName =
@@ -28,56 +30,114 @@ export function getInitialTerminalState(): TerminalState {
 }
 
 export function createTerminalState() {
-  const [state, setState] = createStore(getInitialTerminalState());
-
-  const [stateToPersist$, stateToPersist] =
-    createDerivedObservable<TerminalState>(() => {
+  const config = defineStore(() => getInitialTerminalState()).extend(
+    commands.withProxyCommands<{
+      setShadow: string | null;
+      setType: string;
+      setAccentVisible: boolean;
+      setShowHeader: boolean;
+      setShowGlassReflection: boolean;
+      setShowWatermark: boolean;
+      setOpacity: number;
+      setAlternativeTheme: boolean;
+      toggleShowHeader: void;
+      toggleWatermark: void;
+      setFromPersistedState: PersistedTerminalState;
+    }>(),
+  );
+  const store = provideAppState(config);
+  store
+    .hold(store.commands.setShadow, (shadow, {state}) => ({...state, shadow}))
+    .hold(store.commands.setType, (type, {state}) => ({...state, type}))
+    .hold(store.commands.setAccentVisible, (accentVisible, {state}) => ({
+      ...state,
+      accentVisible,
+    }))
+    .hold(store.commands.setShowHeader, (showHeader, {state}) => ({
+      ...state,
+      showHeader,
+    }))
+    .hold(
+      store.commands.setShowGlassReflection,
+      (showGlassReflection, {state}) => ({...state, showGlassReflection}),
+    )
+    .hold(store.commands.setShowWatermark, (showWatermark, {state}) => ({
+      ...state,
+      showWatermark,
+    }))
+    .hold(store.commands.setOpacity, (opacity, {state}) => ({
+      ...state,
+      opacity,
+    }))
+    .hold(store.commands.setAlternativeTheme, (alternativeTheme, {state}) => ({
+      ...state,
+      alternativeTheme,
+    }))
+    .hold(store.commands.toggleShowHeader, (_, {state}) => {
       return {
-        alternativeTheme: state.alternativeTheme,
-        showGlassReflection: state.showGlassReflection,
-        showWatermark: state.showWatermark,
-        textColor: state.textColor,
-        background: state.background,
-        opacity: state.opacity,
-        shadow: state.shadow,
-        showHeader: state.showHeader,
-        type: state.type,
-        accentVisible: state.accentVisible,
+        ...state,
+        showHeader: !state.showHeader,
       };
+    })
+    .hold(store.commands.toggleWatermark, (_, {state}) => ({
+      ...state,
+      showWatermark: !state.showWatermark,
+    }))
+    .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
+      const shadows = TERMINAL_SHADOWS;
+      if (!Object.values<string | null>(shadows).includes(state.shadow)) {
+        state.shadow = shadows.bottom;
+      }
+      return {...state, ...persistedState};
     });
 
+  const mapToStateToPersistState = (
+    state: TerminalState,
+  ): PersistedTerminalState => {
+    return {
+      alternativeTheme: state.alternativeTheme,
+      showGlassReflection: state.showGlassReflection,
+      showWatermark: state.showWatermark,
+      textColor: state.textColor,
+      background: state.background,
+      opacity: state.opacity,
+      shadow: state.shadow,
+      showHeader: state.showHeader,
+      type: state.type,
+      accentVisible: state.accentVisible,
+    };
+  };
+
+  const stateToPersist$ = store
+    .watchCommand([
+      store.commands.setAccentVisible,
+      store.commands.setOpacity,
+      store.commands.setAlternativeTheme,
+      store.commands.setShadow,
+      store.commands.setType,
+      store.commands.setShowGlassReflection,
+      store.commands.setShowHeader,
+      store.commands.setShowWatermark,
+      store.commands.toggleShowHeader,
+      store.commands.toggleWatermark,
+    ])
+    .pipe(
+      map(() => store()),
+      map(mapToStateToPersistState),
+    );
+
   return {
-    state,
-    setState,
-    stateToPersist,
+    state: store.get,
+    setState: store.set,
     stateToPersist$,
-    setFromPersistedState(persistedState: PersistedTerminalState) {
-      const shadows = TERMINAL_SHADOWS;
-      setState(state => {
-        if (!Object.values<string | null>(shadows).includes(state.shadow)) {
-          state.shadow = shadows.bottom;
-        }
-        return {...state, ...persistedState};
-      });
+    stateToPersist() {
+      const state = store();
+      return mapToStateToPersistState(state);
     },
-    setShadow: (shadow: string | null) => setState('shadow', shadow),
-    setType: (type: string) => setState('type', type),
-    setAccentVisible: (accentVisible: boolean) =>
-      setState('accentVisible', accentVisible),
-    setShowHeader: (showHeader: boolean) => setState('showHeader', showHeader),
-    setShowGlassReflection: (showGlassReflection: boolean) =>
-      setState('showGlassReflection', showGlassReflection),
-    setShowWatermark: (showWatermark: boolean) =>
-      setState('showWatermark', showWatermark),
-    setOpacity: (opacity: number) => setState('opacity', opacity),
-    setAlternativeTheme: (alternativeTheme: boolean) =>
-      setState('alternativeTheme', alternativeTheme),
-    toggleShowHeader: () => setState('showHeader', showHeader => !showHeader),
-    toggleWatermark: () =>
-      setState('showWatermark', showWatermark => !showWatermark),
+    ...store.actions,
   };
 }
 
 export function getTerminalState() {
-  return editorStore.terminal;
+  return getEditorStore().terminal;
 }

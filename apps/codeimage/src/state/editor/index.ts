@@ -1,14 +1,15 @@
+import {commands} from '@codeimage/atomic-state';
 import {createEditorsStore} from '@codeimage/store/editor/editor';
-import {createFrameState} from '@codeimage/store/editor/frame';
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {createTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {createEffect, createRoot, createSignal, on} from 'solid-js';
+import {createEffect, createSignal, on} from 'solid-js';
 
 export function createEditorStore() {
   const terminal = createTerminalState();
   const [initialized, setInitialized] = createSignal(false);
   const registry = getThemeStore();
-  const frame = createFrameState();
+  const frame = getFrameState();
   const editor = createEditorsStore();
 
   const [resource] = registry.getThemeResource('vsCodeDarkTheme');
@@ -16,11 +17,13 @@ export function createEditorStore() {
   createEffect(
     on(resource, async resource => {
       if (resource) {
-        terminal.setState('background', resource.properties.terminal.main);
-        terminal.setState('textColor', resource.properties.terminal.text);
-        if (frame.store.background === null) {
-          frame.setBackground(resource.properties.previewBackground);
-        }
+        commands.untrackCommand(() => {
+          terminal.setState('background', resource.properties.terminal.main);
+          terminal.setState('textColor', resource.properties.terminal.text);
+          if (frame.store.background === null) {
+            frame.setBackground(resource.properties.previewBackground);
+          }
+        }, false);
         setInitialized(true);
       }
     }),
@@ -34,12 +37,16 @@ export function createEditorStore() {
   };
 }
 
-export const editorStore = createRoot(createEditorStore);
+let store: ReturnType<typeof createEditorStore>;
+const editorStore = () => {
+  if (!store) store = createEditorStore();
+  return store;
+};
 
 export function getEditorStore() {
-  return editorStore;
+  return editorStore();
 }
 
 export function getRootEditorStore() {
-  return editorStore.editor;
+  return editorStore().editor;
 }
