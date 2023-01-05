@@ -552,22 +552,22 @@ importers:
 
   packages/locale:
     specifiers:
-      '@solid-primitives/i18n': ^1.1.1
+      '@solid-primitives/i18n': ^1.1.2
       rimraf: ^3.0.2
-      solid-js: ^1.6.3
+      solid-js: ^1.6.8
       typescript: ^4.8.4
       vite: ^3.1.8
       vite-plugin-dts: ^1.6.6
       vite-plugin-solid: ^2.3.9
     dependencies:
-      '@solid-primitives/i18n': 1.1.1_solid-js@1.6.3
-      solid-js: 1.6.3
+      '@solid-primitives/i18n': 1.1.2_solid-js@1.6.8
+      solid-js: 1.6.8
     devDependencies:
       rimraf: 3.0.2
       typescript: 4.8.4
       vite: 3.1.8
       vite-plugin-dts: 1.6.6_vite@3.1.8
-      vite-plugin-solid: 2.3.9_solid-js@1.6.3+vite@3.1.8
+      vite-plugin-solid: 2.3.9_solid-js@1.6.8+vite@3.1.8
 
   packages/prisma-models:
     specifiers:
@@ -6895,18 +6895,18 @@ packages:
       solid-js: 1.6.3
     dev: false
 
-  /@solid-primitives/i18n/1.1.1_solid-js@1.6.3:
-    resolution: {integrity: sha512-ywIJ4MADZ25of6X/hgPTd6UNWbgM6X/ZNJStIexAlaLi9fFWw1yFRP/cllSBabEfMoCWgOETgoT16JQzxZlphg==}
-    peerDependencies:
-      solid-js: ^1.3.1
-    dependencies:
-      solid-js: 1.6.3
-    dev: false
-
   /@solid-primitives/i18n/1.1.1_solid-js@1.6.8:
     resolution: {integrity: sha512-ywIJ4MADZ25of6X/hgPTd6UNWbgM6X/ZNJStIexAlaLi9fFWw1yFRP/cllSBabEfMoCWgOETgoT16JQzxZlphg==}
     peerDependencies:
       solid-js: ^1.3.1
+    dependencies:
+      solid-js: 1.6.8
+    dev: false
+
+  /@solid-primitives/i18n/1.1.2_solid-js@1.6.8:
+    resolution: {integrity: sha512-eLTqmDKorLa99cXrgS4DgTqrk0n/F4rB0YR76A6gr90by5TLE+HSZ0agiZVBIUGs2g5EFeEnLqwxKsM+F5hcJQ==}
+    peerDependencies:
+      solid-js: ^1.5.0
     dependencies:
       solid-js: 1.6.8
     dev: false

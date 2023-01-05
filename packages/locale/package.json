@@ -30,8 +30,8 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
-    "@solid-primitives/i18n": "^1.1.1",
-    "solid-js": "^1.6.3"
+    "@solid-primitives/i18n": "^1.1.2",
+    "solid-js": "^1.6.8"
   },
   "peerDependencies": {
     "solid-js": "^1.6.3"
