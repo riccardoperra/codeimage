@@ -1,5 +1,5 @@
-import {experimental} from '@codeimage/atomic-state';
-import {editorStore} from '@codeimage/store/editor/index';
+import {defineStore, experimental, provideState} from '@codeimage/atomic-state';
+import {editorStore, getEditorStore} from '@codeimage/store/editor/index';
 import {
   PersistedTerminalState,
   TerminalState,
@@ -29,9 +29,12 @@ export function getInitialTerminalState(): TerminalState {
 }
 
 export function createTerminalState() {
-  const store = experimental
-    .createExperimentalStore<TerminalState>(getInitialTerminalState())
-    .extend(experimental.withFluentCommands())
+  const config = defineStore(() => getInitialTerminalState()).extend(
+    experimental.withFluentCommands(),
+  );
+  const store = provideState(config);
+
+  store
     .on(
       experimental
         .createCommand('setShadow')
@@ -80,10 +83,12 @@ export function createTerminalState() {
     )
     .on(
       experimental.createCommand('toggleShowHeader').withPayload<void>(),
-      (_, {state}) => ({
-        ...state,
-        showHeader: !state.showHeader,
-      }),
+      (_, {state}) => {
+        return {
+          ...state,
+          showHeader: !state.showHeader,
+        };
+      },
     )
     .on(
       experimental.createCommand('toggleWatermark').withPayload<void>(),
@@ -136,18 +141,16 @@ export function createTerminalState() {
       store.commands.toggleWatermark,
     ])
     .pipe(
-      map(() => store.get()),
+      map(() => store()),
       map(mapToStateToPersistState),
     );
 
   return {
-    get state() {
-      return store.state;
-    },
+    state: store.get,
     setState: store.set,
     stateToPersist$,
     stateToPersist() {
-      const state = store.get();
+      const state = store();
       return mapToStateToPersistState(state);
     },
     ...store.actions,
@@ -155,5 +158,5 @@ export function createTerminalState() {
 }
 
 export function getTerminalState() {
-  return editorStore.terminal;
+  return getEditorStore().terminal;
 }

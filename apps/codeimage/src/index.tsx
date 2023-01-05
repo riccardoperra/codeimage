@@ -1,3 +1,4 @@
+import {StateProvider} from '@codeimage/atomic-state';
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -148,7 +149,9 @@ getAuth0State()
     render(
       () => (
         <I18nContext.Provider value={i18n}>
-          <Bootstrap />
+          <StateProvider>
+            <Bootstrap />
+          </StateProvider>
         </I18nContext.Provider>
       ),
       document.getElementById('root') as HTMLElement,

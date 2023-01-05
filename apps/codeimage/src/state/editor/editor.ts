@@ -1,5 +1,5 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {createDerivedSetter, experimental} from '@codeimage/atomic-state';
+import {defineStore, experimental, provideState} from '@codeimage/atomic-state';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
@@ -37,23 +37,23 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
 export function createEditorsStore() {
   const MAX_TABS = 6;
 
-  const store = experimental
-    .createExperimentalStore({
-      editors: [getInitialEditorState()],
-      options: getInitialEditorUiOptions(),
-      activeEditorId: defaultId,
-    })
-    .extend(
-      experimental.withProxyCommands<{
-        setActiveEditorId: string;
-        setFocused: boolean;
-        setFontId: string;
-        setThemeId: string;
-        setFontWeight: number;
-        setShowLineNumbers: boolean;
-        setFromPersistedState: PersistedEditorState;
-      }>(),
-    );
+  const config = defineStore(() => ({
+    editors: [getInitialEditorState()],
+    options: getInitialEditorUiOptions(),
+    activeEditorId: defaultId,
+  })).extend(
+    experimental.withProxyCommands<{
+      setActiveEditorId: string;
+      setFocused: boolean;
+      setFontId: string;
+      setThemeId: string;
+      setFontWeight: number;
+      setShowLineNumbers: boolean;
+      setFromPersistedState: PersistedEditorState;
+    }>(),
+  );
+
+  const store = provideState(config);
 
   const editorUpdateCommand = experimental
     .createCommand('editorUpdate')
@@ -104,11 +104,15 @@ export function createEditorsStore() {
       };
     });
 
-  const isActive = createSelector(() => store.state.activeEditorId);
-  const setEditors = createDerivedSetter(store.state, ['editors']);
+  const isActive = createSelector(() => store.get.activeEditorId);
+  const setEditors: SetStoreFunction<EditorState[]> = (...args: unknown[]) => {
+    // TODO: add derived state store
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (store.set as any)('editors', ...args);
+  };
 
   const mapToStateToPersistState = (
-    state: typeof store.state,
+    state: typeof store.get,
   ): PersistedEditorState => {
     return {
       editors: state.editors.map(editor => {
@@ -137,7 +141,7 @@ export function createEditorsStore() {
       editorUpdateCommand,
     ])
     .pipe(
-      map(() => store.get()),
+      map(() => store()),
       map(mapToStateToPersistState),
       shareReplay({refCount: true, bufferSize: 1}),
     );
@@ -146,7 +150,7 @@ export function createEditorsStore() {
     editorState?: Partial<EditorState> | null,
     active?: boolean,
   ) => {
-    if (store.state.editors.length === MAX_TABS) return;
+    if (store.get.editors.length === MAX_TABS) return;
     const id = createUniqueId();
     const editor: EditorState = {
       ...getInitialEditorState(),
@@ -161,20 +165,18 @@ export function createEditorsStore() {
     store.dispatch(editorUpdateCommand, void 0);
   };
 
-  const canAddEditor = () => store.state.editors.length < MAX_TABS;
+  const canAddEditor = () => store.get.editors.length < MAX_TABS;
 
   const removeEditor = (id: string) => {
-    if (store.state.editors.length === 1) {
+    if (store.get.editors.length === 1) {
       return;
     }
     const $isActive = isActive(id);
-    const currentIndex = store.state.editors.findIndex(
+    const currentIndex = store.get.editors.findIndex(
       editor => editor.id === id,
     );
-    const newActiveEditor = store.state.editors[currentIndex - 1];
-    const updatedEditors = store.state.editors.filter(
-      editor => editor.id !== id,
-    );
+    const newActiveEditor = store.get.editors[currentIndex - 1];
+    const updatedEditors = store.get.editors.filter(editor => editor.id !== id);
     if ($isActive) {
       store.set('activeEditorId', newActiveEditor?.id ?? updatedEditors[0]?.id);
     }
@@ -183,7 +185,7 @@ export function createEditorsStore() {
   };
 
   const setTabName = (id: string, name: string, updateLanguage: boolean) => {
-    const index = store.state.editors.findIndex(tab => isActive(tab.id));
+    const index = store.get.editors.findIndex(tab => isActive(tab.id));
     setEditors(index, 'tab', 'tabName', name);
     if (updateLanguage) {
       const matches = SUPPORTED_LANGUAGES.filter(language => {
@@ -193,7 +195,7 @@ export function createEditorsStore() {
         !matches.length ||
         matches
           .map(match => match.id)
-          .includes(store.state.editors[index].languageId)
+          .includes(store.get.editors[index].languageId)
       ) {
         return;
       }
@@ -204,10 +206,7 @@ export function createEditorsStore() {
 
   const font = createMemo(
     () =>
-      filter(
-        SUPPORTED_FONTS,
-        font => font.id === store.state.options.fontId,
-      )[0],
+      filter(SUPPORTED_FONTS, font => font.id === store.get.options.fontId)[0],
   );
 
   const setFromWorkspace = (item: ApiTypes.GetProjectByIdApi['response']) => {
@@ -238,12 +237,12 @@ export function createEditorsStore() {
 
   return {
     get state() {
-      return store.state;
+      return store.get;
     },
     setState: store.set,
     isActive,
     stateToPersist() {
-      const state = store.get();
+      const state = store();
       return mapToStateToPersistState(state);
     },
     stateToPersist$,
