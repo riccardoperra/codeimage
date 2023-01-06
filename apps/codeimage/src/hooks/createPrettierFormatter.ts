@@ -83,6 +83,7 @@ export function createPrettierFormatter(
 
   const canFormat = createMemo(() => {
     const formatter = resolvedFormatter();
+    console.log(formatter);
     return !!formatter.parser;
   });
 

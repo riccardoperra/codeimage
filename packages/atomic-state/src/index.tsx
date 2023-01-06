@@ -9,7 +9,3 @@ export {createDerivedObservable} from './createDerivedObservable';
 export {createStoreAutoSetters} from './createStoreSetters';
 export {createDerivedSetter} from './createDerivedSetter';
 export {createTrackObserver, emitWhenTracked} from './createTrackObserver';
-
-export * from 'statesolid';
-
-export * from './experimental';

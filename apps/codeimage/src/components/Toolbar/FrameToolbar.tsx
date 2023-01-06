@@ -27,7 +27,7 @@ export function FrameToolbar(props: FrameToolbarProps) {
           variant={'solid'}
           theme={'secondary'}
           leftIcon={<ColorSwatchIcon />}
-          onClick={() => dispatchRandomTheme()}
+          onClick={dispatchRandomTheme}
         >
           Randomize
         </Button>

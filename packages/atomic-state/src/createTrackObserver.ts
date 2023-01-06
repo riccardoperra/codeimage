@@ -3,19 +3,17 @@ import {Accessor, untrack} from 'solid-js';
 
 export function createTrackObserver(): [
   track: Accessor<boolean>,
-  untrackCallback: (cb: () => void, async?: boolean) => void,
+  untrackCallback: (cb: () => void) => void,
 ] {
   let track = true;
   return [
     () => track,
-    (cb: () => void, async = true) => {
+    (cb: () => void) => {
       track = false;
       cb();
-      const schedule = async
-        ? asyncScheduler.schedule
-        : (cb: () => void) => cb();
-
-      schedule(() => (track = true));
+      asyncScheduler.schedule(() => {
+        track = true;
+      });
     },
   ];
 }

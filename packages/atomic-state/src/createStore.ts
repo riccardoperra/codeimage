@@ -42,8 +42,7 @@ export function createStore<T extends object>(initialState: T) {
   const [signal, setSignal] = createSignal<symbol>();
 
   const setStore = (...args: Parameters<typeof internalSetStore>) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const returnValue = (internalSetStore as any)(...args);
+    const returnValue = internalSetStore(...args);
     setSignal(Symbol());
     return returnValue;
   };

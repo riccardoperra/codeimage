@@ -36,8 +36,7 @@ export function createStoreAutoSetters<T extends {}>(
           const fnArgs = [lowerProperty, ...args] as unknown as Parameters<
             typeof $$setter
           >;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ($$setter as any)(...fnArgs);
+          $$setter(...fnArgs);
         };
       },
     },

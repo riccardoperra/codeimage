@@ -1,5 +1,7 @@
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {Button} from '@codeimage/ui';
+import {getUmami} from '@core/constants/umami';
+import {createAsyncAction} from '@core/hooks/async-action';
 import {Component} from 'solid-js';
 import {ClipboardIcon} from '../Icons/Clipboard';
 
@@ -10,8 +12,13 @@ interface ExportButtonProps {
 export const CopyToClipboardButton: Component<ExportButtonProps> = props => {
   const label = () => 'Copy to clipboard';
 
+  const [action, {notify: dispatch}] = createAsyncAction(() =>
+    copyToClipboard(),
+  );
+
   function copyToClipboard() {
     if (props.canvasRef) {
+      getUmami().trackEvent(`true`, 'copy-to-clipboard');
       return dispatchCopyToClipboard({ref: props.canvasRef});
     }
     return Promise.resolve(true);
@@ -21,10 +28,10 @@ export const CopyToClipboardButton: Component<ExportButtonProps> = props => {
     <Button
       variant={'solid'}
       theme={'secondary'}
-      loading={dispatchCopyToClipboard.loading()}
-      disabled={dispatchCopyToClipboard.loading()}
+      loading={action.loading}
+      disabled={action.loading}
       leftIcon={() => <ClipboardIcon />}
-      onClick={copyToClipboard}
+      onClick={dispatch}
       size={'xs'}
     >
       {label()}
