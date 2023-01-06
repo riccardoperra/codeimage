@@ -7,7 +7,6 @@ import {createPrettierFormatter} from '../../hooks/createPrettierFormatter';
 import {AppLocaleEntries} from '../../i18n';
 
 const $activeEditorState = () => {
-  return createRoot(() => {
     const {
       state,
       isActive,
@@ -77,7 +76,6 @@ const $activeEditorState = () => {
         });
       },
     };
-  });
 };
 
 let state: ReturnType<typeof $activeEditorState>;
