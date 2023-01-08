@@ -1,3 +1,4 @@
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getInvertedThemeMode} from '@codeimage/store/ui';
@@ -8,6 +9,7 @@ import {AppLocaleEntries} from '../../i18n';
 
 const $activeEditorState = () => {
   return createRoot(() => {
+    const languages = SUPPORTED_LANGUAGES;
     const {
       state,
       isActive,
@@ -19,8 +21,24 @@ const $activeEditorState = () => {
     const currentEditorIndex = () =>
       state.editors.findIndex(editor => editor.id === currentEditor()?.id);
 
-    const setLanguageId = (languageId: string) =>
+    const setLanguageId = (languageId: string) => {
+      const currentLanguageId = currentEditor()?.languageId;
       setEditors(currentEditorIndex(), 'languageId', languageId);
+      if (currentLanguageId !== languageId) {
+        const language = languages.find(language => language.id === languageId);
+        if (language) {
+          const tabName = currentEditor()?.tab?.tabName;
+          if (!language.icons.find(item => item.matcher.test(tabName ?? ''))) {
+            setEditors(currentEditorIndex(), 'tab', 'tabName', name =>
+              (name ?? 'index.tsx').replace(
+                /\.[^.]*$/,
+                language.icons[0].extension,
+              ),
+            );
+          }
+        }
+      }
+    };
 
     const setCode = (code: string) =>
       setEditors(currentEditorIndex(), 'code', code);
