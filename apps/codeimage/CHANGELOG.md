@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.1.1
+
+### Patch Changes
+
+- [#443](https://github.com/riccardoperra/codeimage/pull/443) [`097c0201`](https://github.com/riccardoperra/codeimage/commit/097c02013a5f2f84f97fe7f853a204508de9998d) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(app): change file extension on language change
+
 ## 1.1.0
 
 ### Minor Changes
