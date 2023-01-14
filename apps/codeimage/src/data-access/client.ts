@@ -16,20 +16,22 @@ export async function makeFetch(
   input: RequestInfo,
   requestParams: Omit<RequestInit, keyof RequestParams> & RequestParams,
 ): Promise<Response> {
-  const {getToken, forceLogin} = getAuth0State();
+  const {getToken, forceLogin, loggedIn} = getAuth0State();
 
   let url = typeof input === 'string' ? input : input.url;
   const headers = new Headers();
   const request: RequestInit = {...(requestParams as RequestInit)};
 
-  try {
-    const token = await getToken();
-    if (token) {
-      headers.append('Authorization', `Bearer ${token}`);
+  if (loggedIn()) {
+    try {
+      const token = await getToken();
+      if (token) {
+        headers.append('Authorization', `Bearer ${token}`);
+      }
+    } catch (e) {
+      forceLogin();
+      console.log(e);
     }
-  } catch (e) {
-    forceLogin();
-    console.log(e);
   }
 
   if (requestParams.querystring) {
