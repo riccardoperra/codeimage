@@ -398,7 +398,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} #Required
           alias-domains: | #Optional
-            codeimage.dev
+            app.codeimage.dev
 
 
   deploy-website:
