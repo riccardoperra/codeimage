@@ -195,11 +195,42 @@ export async function getCSSRules(
   });
 }
 
+/**
+ * Return value from `CSSStyleRule.style` property
+ *
+ * This method is needed to have compatibility across different browsers. In fact,
+ * it seems that Firefox force to use the `.getPropertyValue()` method in order to
+ * get the style value, since the property accessor doesn't work like chrome and safari
+ *
+ * @param cssStyleRule
+ * @param property
+ * @param cssProperty
+ */
+function getStylesheetValue<K extends keyof CSSStyleDeclaration & string>(
+  cssStyleRule: CSSStyleRule,
+  property: K,
+  cssProperty: string,
+) {
+  return Reflect.has(cssStyleRule.style, property)
+    ? Reflect.get(cssStyleRule.style, property)
+    : cssStyleRule.style.getPropertyValue(cssProperty);
+}
+
+function getStylesheetFontValues(stylesheet: CSSStyleRule) {
+  return {
+    fontFamily: getStylesheetValue(stylesheet, 'fontFamily', 'font-family'),
+    fontWeight: getStylesheetValue(stylesheet, 'fontWeight', 'font-weight'),
+    fontStyle: getStylesheetValue(stylesheet, 'fontStyle', 'font-style'),
+  };
+}
+
 export function getFontsMap(cssStyleRules: CSSStyleRule[]): FontsMap {
   const fontInfo: Record<string, Record<string, CSSStyleRule>> = {};
 
   for (const stylesheet of cssStyleRules) {
-    const {fontFamily, fontWeight, fontStyle} = stylesheet.style;
+    const {fontFamily, fontWeight, fontStyle} =
+      getStylesheetFontValues(stylesheet);
+
     const escapedFontFamily = getFontName(fontFamily)[0];
     if (!(fontFamily in fontInfo)) {
       fontInfo[escapedFontFamily] = {};
@@ -210,6 +241,10 @@ export function getFontsMap(cssStyleRules: CSSStyleRule[]): FontsMap {
 }
 
 const getFontName = (fontFamily: string) => {
+  if (!fontFamily) {
+    console.warn('[dom-export] Given font-family value is invalid');
+    return [];
+  }
   const fonts = fontFamily.split(',');
   return fonts.map(font =>
     font.trim().toLowerCase().replace(REGEXP_QUOTE_FONT_FAMILY, ''),
@@ -262,7 +297,9 @@ export function getUsedFontFamiliesByNode<T extends Element>(
 ): CSSStyleRule[] {
   const fontFamilies = getUsedFontFamiliesRecursively([], fontsMap, node, null);
   return cssStyleRules.reduce((acc, styleRule) => {
-    const {fontStyle, fontFamily, fontWeight} = styleRule.style;
+    const {fontFamily, fontWeight, fontStyle} =
+      getStylesheetFontValues(styleRule);
+
     const id = `${getFontName(fontFamily)[0]}-${fontWeight}-${fontStyle}`;
     if (!fontFamilies.includes(id)) {
       return acc;
