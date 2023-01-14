@@ -1,5 +1,14 @@
 # @codeimage/app
 
+## 1.1.2
+
+### Patch Changes
+
+- [#447](https://github.com/riccardoperra/codeimage/pull/447) [`7cfdbc2b`](https://github.com/riccardoperra/codeimage/commit/7cfdbc2bad2d285e57700cbbd4778308da593d3e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(app): remove login auto-redirect on api that does not require authentication
+
+- Updated dependencies [[`eddbed7f`](https://github.com/riccardoperra/codeimage/commit/eddbed7f6d2d1e89e7d2ec37a9718a80a3045096)]:
+  - @codeimage/dom-export@1.11.1
+
 ## 1.1.1
 
 ### Patch Changes

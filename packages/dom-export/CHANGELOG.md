@@ -1,5 +1,11 @@
 # @codeimage/dom-export
 
+## 1.11.1
+
+### Patch Changes
+
+- [#446](https://github.com/riccardoperra/codeimage/pull/446) [`eddbed7f`](https://github.com/riccardoperra/codeimage/commit/eddbed7f6d2d1e89e7d2ec37a9718a80a3045096) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(dom-export): cannot load font style value on firefox
+
 ## 1.11.0
 
 ### Minor Changes

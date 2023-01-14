@@ -1,6 +1,6 @@
 {
   "name": "@codeimage/dom-export",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "Generates an image from a DOM node using HTML5 canvas and SVG.",
   "main": "./dist/dom-export.mjs",
   "module": "./dist/dom-export.mjs",
