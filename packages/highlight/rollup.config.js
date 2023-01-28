@@ -17,6 +17,7 @@ const external = [
   ...Object.keys(pkg.peerDependencies || {}),
   '@primer/primitives/dist/ts/colors/dark',
   '@primer/primitives/dist/ts/colors/light',
+  '@primer/primitives/dist/ts/colors/dark_dimmed',
 ];
 
 const inputs = themes.reduce((acc, theme) => {

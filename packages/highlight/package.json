@@ -113,6 +113,10 @@
     "./vitesseDark": {
       "import": "./dist/lib/themes/vitesseDark/index.js",
       "types": "./dist/lib/themes/vitesseDark/index.d.ts"
+    },
+    "./githubDarkDimmed": {
+      "import": "./dist/lib/themes/githubDarkDimmed/index.js",
+      "types": "./dist/lib/themes/githubDarkDimmed/index.d.ts"
     }
   },
   "typesVersions": {
@@ -191,6 +195,9 @@
       ],
       "vitesseDark": [
         "./dist/lib/themes/vitesseDark/index.d.ts"
+      ],
+      "githubDarkDimmed": [
+        "./dist/lib/themes/githubDarkDimmed/index.d.ts"
       ]
     }
   },
@@ -202,7 +209,7 @@
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
-    "generate:theme": "tsx scripts/generate-theme.ts",
+    "generate:theme": "tsx scripts/generate-theme.cts",
     "clean": "rimraf dist",
     "build-esm": "tsc -p tsconfig.esm.json",
     "build-dts": "tsc -p tsconfig.dts.json",
@@ -215,7 +222,8 @@
     "@codemirror/theme-one-dark": "^6.1.0",
     "@codemirror/view": "^6.7.1",
     "@lezer/highlight": "^1.1.3",
-    "@primer/primitives": "^7.9.0"
+    "@primer/primitives": "^7.9.0",
+    "@solid-primitives/props": "^2.2.2"
   },
   "peerDependencies": {
     "@codemirror/language": "^6.2.1",
@@ -228,6 +236,7 @@
     "@codeimage/vanilla-extract": "workspace:*",
     "@codemirror/lang-javascript": "^6.1.2",
     "@rollup/plugin-typescript": "^9.0.1",
+    "@solid-aria/focus": "^0.1.4",
     "@types/node": "^18.11.0",
     "@types/prettier": "^2.7.1",
     "@vanilla-extract/css": "^1.9.1",
