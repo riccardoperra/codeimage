@@ -1,10 +1,12 @@
 export * from './arcDark';
+export * from './auraDark';
 export * from './coldarkCold';
 export * from './coldarkDark';
 export * from './dracula';
 export * from './duotoneDark';
 export * from './duotoneSea';
 export * from './githubDark';
+export * from './githubDarkDimmed';
 export * from './githubLight';
 export * from './holi';
 export * from './light';
@@ -21,4 +23,3 @@ export * from './shadeOfPurple';
 export * from './synthwave84';
 export * from './vitesseDark';
 export * from './vsCodeDark';
-export * from './auraDark';

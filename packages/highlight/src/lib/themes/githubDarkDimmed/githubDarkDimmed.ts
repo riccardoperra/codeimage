@@ -1,9 +1,9 @@
 import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
 import {tags as t} from '@lezer/highlight';
-import libColors from '@primer/primitives/dist/ts/colors/dark';
+import libColors from '@primer/primitives/dist/ts/colors/dark_dimmed';
 import {defineEditorTheme} from '../../core';
 
-export const githubDark = [
+export const githubDarkDimmed = [
   defineEditorTheme({
     darkMode: true,
     cursor: {
@@ -38,6 +38,7 @@ export const githubDark = [
       variableName: libColors.codemirror.text,
       regexp: libColors.prettylights.syntax.stringRegexp,
       comments: libColors.prettylights.syntax.comment,
+      attrName: libColors.prettylights.syntax.constant,
       function: libColors.prettylights.syntax.entity,
       typeName: libColors.prettylights.syntax.constant,
     },
