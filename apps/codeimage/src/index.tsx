@@ -1,4 +1,4 @@
-import {StateProvider} from '@codeimage/atomic-state';
+import {StateProvider} from 'statebuilder';
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';

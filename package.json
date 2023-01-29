@@ -95,5 +95,8 @@
       "solid-js": "1.6.3"
     },
     "allowNonAppliedPatches": false
+  },
+  "dependencies": {
+    "statebuilder": "0.2.2"
   }
 }

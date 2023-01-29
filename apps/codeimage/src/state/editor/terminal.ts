@@ -1,4 +1,3 @@
-import {commands, defineStore} from '@codeimage/atomic-state';
 import {getEditorStore} from '@codeimage/store/editor';
 import {
   PersistedTerminalState,
@@ -8,6 +7,8 @@ import {provideAppState} from '@codeimage/store/index';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {map} from 'rxjs';
+import {defineStore} from 'statebuilder';
+import {withProxyCommands} from 'statebuilder/commands';
 
 export function getInitialTerminalState(): TerminalState {
   const terminalName =
@@ -31,7 +32,7 @@ export function getInitialTerminalState(): TerminalState {
 
 export function createTerminalState() {
   const config = defineStore(() => getInitialTerminalState()).extend(
-    commands.withProxyCommands<{
+    withProxyCommands<{
       setShadow: string | null;
       setType: string;
       setAccentVisible: boolean;

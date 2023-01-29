@@ -1,8 +1,9 @@
-import {commands, defineStore} from '@codeimage/atomic-state';
 import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
 import {provideAppState} from '@codeimage/store/index';
 import {appEnvironment} from '@core/configuration';
 import {map} from 'rxjs';
+import {defineStore} from 'statebuilder';
+import {withProxyCommands} from 'statebuilder/commands';
 
 export function getInitialFrameState(): FrameState {
   return {
@@ -31,7 +32,7 @@ type Commands = {
 };
 
 const frameState = defineStore(() => getInitialFrameState())
-  .extend(commands.withProxyCommands<Commands>())
+  .extend(withProxyCommands<Commands>())
   .extend(store => {
     store
       .hold(store.commands.setBackground, (background, {state}) => ({
