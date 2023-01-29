@@ -34,8 +34,8 @@ export const githubDarkDimmed = [
       brackets: libColors.scale.yellow[1],
       keywords: libColors.prettylights.syntax.keyword,
       strings: libColors.prettylights.syntax.string,
-      propertyName: libColors.prettylights.syntax.constantOtherReferenceLink,
-      variableName: libColors.prettylights.syntax.variable,
+      propertyName: libColors.prettylights.syntax.entity,
+      variableName: libColors.codemirror.text,
       regexp: libColors.prettylights.syntax.stringRegexp,
       comments: libColors.prettylights.syntax.comment,
       attrName: libColors.prettylights.syntax.constant,
@@ -47,7 +47,7 @@ export const githubDarkDimmed = [
     HighlightStyle.define([
       {
         tag: t.definition(t.variableName),
-        color: libColors.prettylights.syntax.constant,
+        color: libColors.codemirror.text,
       },
     ]),
   ),
