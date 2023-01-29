@@ -1,5 +1,15 @@
 # @codeimage/app
 
+## 1.1.3
+
+### Patch Changes
+
+- [#450](https://github.com/riccardoperra/codeimage/pull/450) [`f57497fc`](https://github.com/riccardoperra/codeimage/commit/f57497fce4d1aeea72d2e55e0261acbf6a4744dc) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(app/highlight): add github dark dimmed theme
+
+- Updated dependencies [[`f57497fc`](https://github.com/riccardoperra/codeimage/commit/f57497fce4d1aeea72d2e55e0261acbf6a4744dc)]:
+  - @codeimage/highlight@0.10.6
+  - @codeimage/config@8.1.1
+
 ## 1.1.2
 
 ### Patch Changes
