@@ -1,4 +1,4 @@
-import {Container} from '@codeimage/atomic-state';
+import {Container} from 'statebuilder';
 import {createRoot} from 'solid-js';
 
 const container = createRoot(() => Container.create());

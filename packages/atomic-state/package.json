@@ -48,6 +48,6 @@
     "vitest": "0.26.2"
   },
   "dependencies": {
-    "statesolid": "^0.1.0-unstable.6"
+    "statebuilder": "^0.2.2"
   }
 }

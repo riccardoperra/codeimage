@@ -1,5 +1,6 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {commands, defineStore} from '@codeimage/atomic-state';
+import {defineStore} from 'statebuilder';
+import {withProxyCommands, createCommand} from 'statebuilder/commands';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
@@ -43,7 +44,7 @@ export function createEditorsStore() {
     options: getInitialEditorUiOptions(),
     activeEditorId: defaultId,
   })).extend(
-    commands.withProxyCommands<{
+    withProxyCommands<{
       setActiveEditorId: string;
       setFocused: boolean;
       setFontId: string;
@@ -56,9 +57,7 @@ export function createEditorsStore() {
 
   const store = provideAppState(config);
 
-  const editorUpdateCommand = commands
-    .createCommand('editorUpdate')
-    .withPayload<void>();
+  const editorUpdateCommand = createCommand('editorUpdate').withPayload<void>();
 
   store
     .hold(store.commands.setActiveEditorId, (activeEditorId, {set}) =>

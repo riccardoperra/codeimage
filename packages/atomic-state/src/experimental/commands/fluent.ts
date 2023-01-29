@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {Store, StoreValue} from 'statesolid';
+import {Store} from 'statebuilder';
 import {
   CommandIdentity,
   CommandPayload,
@@ -7,7 +7,7 @@ import {
   GenericStateCommand,
   makeCommandNotifier,
   MapCommandToActions,
-} from 'statesolid/commands';
+} from 'statebuilder/commands';
 
 type GenericCommandsMap = Record<PropertyKey, GenericStateCommand>;
 
@@ -39,7 +39,8 @@ interface StoreWithCommands<
   ): Observable<Commands[number]>;
 }
 
-function plugin<T extends StoreValue>(ctx: Store<T>): StoreWithCommands<T> {
+// eslint-disable-next-line @typescript-eslint/ban-types
+function plugin<T extends {}>(ctx: Store<T>): StoreWithCommands<T> {
   const {
     callbacks: commandsCallbackMap,
     dispatch,
@@ -83,5 +84,6 @@ function plugin<T extends StoreValue>(ctx: Store<T>): StoreWithCommands<T> {
 
 export const withFluentCommands =
   () =>
-  <S extends StoreValue>(ctx: Store<S>) =>
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  <S extends {}>(ctx: Store<S>) =>
     plugin(ctx);
