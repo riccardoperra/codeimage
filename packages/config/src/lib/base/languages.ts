@@ -507,4 +507,58 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       plugin: () => import('prettier-plugin-sql').then(res => res.default),
     },
   },
+  {
+    id: 'shell',
+    label: 'Shell',
+    color: '#89e051',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/shell'),
+      ]).then(([cb, m]) => cb(m.shell)),
+    icons: [
+      {
+        name: 'shell',
+        extension: '.sh',
+        content: () => import('material-icon-theme/icons/console.svg?raw'),
+        matcher: /^.*\.(sh)$/,
+      },
+    ],
+  },
+  {
+    id: 'swift',
+    label: 'Swift',
+    color: '#F05138ó',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/swift'),
+      ]).then(([cb, m]) => cb(m.swift)),
+    icons: [
+      {
+        name: 'swift',
+        extension: '.swift',
+        content: () => import('material-icon-theme/icons/swift.svg?raw'),
+        matcher: /^.*\.(swift)$/,
+      },
+    ],
+  },
+  {
+    id: 'dockerfile',
+    label: 'Dockerfile',
+    color: '#384d54',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/dockerfile'),
+      ]).then(([cb, m]) => cb(m.dockerFile)),
+    icons: [
+      {
+        name: 'docker',
+        extension: '.dockerfile',
+        content: () => import('material-icon-theme/icons/docker.svg?raw'),
+        matcher: /^.*\.(dockerfile)$/,
+      },
+    ],
+  },
 ];
