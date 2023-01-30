@@ -1,5 +1,12 @@
 # @codeimage/app
 
+## 1.1.4
+
+### Patch Changes
+
+- Updated dependencies [[`0730775f`](https://github.com/riccardoperra/codeimage/commit/0730775fbcf1afe457a0e72cbde3098291df4641)]:
+  - @codeimage/config@8.1.2
+
 ## 1.1.3
 
 ### Patch Changes

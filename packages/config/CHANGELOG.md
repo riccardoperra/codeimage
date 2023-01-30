@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 8.1.2
+
+### Patch Changes
+
+- [#455](https://github.com/riccardoperra/codeimage/pull/455) [`0730775f`](https://github.com/riccardoperra/codeimage/commit/0730775fbcf1afe457a0e72cbde3098291df4641) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(config): add support for shell, dockerfile, swift
+
 ## 8.1.1
 
 ### Patch Changes
