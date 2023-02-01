@@ -95,7 +95,7 @@ You will be able to access the Project repository through this link:
 
 https://codesandbox.io/p/github/riccardoperra/codeimage
 
-![img.png](docs/codesandbox_fork.png)
+![img.png](assets/codesandbox_fork.png)
 *Preview of CodeSandbox projects with Fork action*
 
 [You don't know CodeSandbox Projects?](https://codesandbox.io/post/announcing-codesandbox-projects)

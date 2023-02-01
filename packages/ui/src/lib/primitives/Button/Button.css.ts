@@ -1,9 +1,14 @@
-import {createVar, fallbackVar, style} from '@vanilla-extract/css';
+import {createVar, fallbackVar, keyframes, style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 import {themeVars} from '../../theme';
 import * as variables from '../../theme/variables.css';
+import {
+  inheritedHeight as svgInheritedHeight,
+  inheritedWidth as svgInheritedWidth,
+} from '../Icon/SvgIcon.css';
 
 export const buttonHeight = createVar();
+export const buttonPadding = createVar();
 
 export const enum ButtonSizes {
   xxs = 'xxs',
@@ -11,30 +16,45 @@ export const enum ButtonSizes {
   sm = 'sm',
   md = 'md',
   lg = 'lg',
+  xl = 'xl',
 }
+
+const buttonPopKf = keyframes({
+  '0%': {
+    transform: 'scale(var(--btn-focus-scale, 0.95))',
+  },
+  '40%': {
+    transform: 'scale(1.02)',
+  },
+  '100%': {
+    transform: 'scale(1)',
+  },
+});
 
 export const button = style({
   position: 'relative',
   display: 'inline-flex',
   overflow: 'hidden',
   height: buttonHeight,
-  padding: `0 ${themeVars.spacing['3']}`,
+  padding: buttonPadding,
   borderRadius: themeVars.borderRadius.lg,
   fontSize: variables.fontSize,
   fontWeight: themeVars.fontWeight.medium,
-  lineHeight: 1,
   fontFamily: 'inherit',
+  gap: themeVars.spacing[2],
   outline: 'none',
   placeContent: 'center',
   placeItems: 'center',
-  transition: 'opacity .2s, background-color .2s, box-shadow .2s',
+  transition:
+    'opacity .2s, background-color .2s, box-shadow .2s, transform .2s',
   backgroundColor: variables.backgroundColorVar,
   color: fallbackVar(variables.colorVar, themeVars.dynamicColors.baseText),
   userSelect: 'none',
   textDecoration: 'none',
-
+  animation: `${buttonPopKf} .25s ease-out`,
   vars: {
     [variables.fontSize]: themeVars.fontSize.sm,
+    [buttonPadding]: `0 ${themeVars.spacing['3']}`,
   },
 
   ':disabled': {
@@ -43,14 +63,25 @@ export const button = style({
   },
 
   ':focus': {
-    boxShadow: themeVars.boxShadow.outline,
+    boxShadow: 'unset',
+  },
+
+  selectors: {
+    '&:active:focus': {
+      animation: 'none',
+      transform: 'scale(0.95)',
+    },
   },
 });
 
 export const buttonIcon = style({
-  marginRight: themeVars.spacing['2'],
-  width: `calc(${variables.fontSize} + 0.25rem)`,
-  height: `calc(${variables.fontSize} + 0.25rem)`,
+  display: 'inline-flex',
+  alignItems: 'center',
+  flexShrink: 0,
+  vars: {
+    [svgInheritedWidth]: `calc(${variables.fontSize} + 0.25rem)`,
+    [svgInheritedHeight]: `calc(${variables.fontSize} + 0.25rem)`,
+  },
 });
 
 export const buttonVariant = recipe({
@@ -171,6 +202,14 @@ export const buttonVariant = recipe({
     },
 
     size: {
+      [ButtonSizes.xl]: {
+        vars: {
+          [buttonHeight]: '56px',
+          [buttonPadding]: `0 ${themeVars.spacing['6']}`,
+          [variables.fontSize]: themeVars.fontSize.xl,
+        },
+        minWidth: '84px',
+      },
       [ButtonSizes.lg]: {
         vars: {
           [buttonHeight]: '48px',

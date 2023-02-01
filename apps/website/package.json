@@ -1,0 +1,51 @@
+{
+  "name": "@codeimage/website",
+  "version": "0.0.6",
+  "scripts": {
+    "dev": "solid-start dev",
+    "build": "solid-start build && tsx extract-static-css.ts && tsx ./vercel-build-output.ts",
+    "start": "solid-start start",
+    "lighthouse": "lhci autorun"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@vanilla-extract/vite-plugin": "3.6.1",
+    "node-html-parser": "6.1.4",
+    "rollup": "^2.79.1",
+    "solid-start-node": "^0.2.7",
+    "typescript": "^4.8.4",
+    "vite": "^3.1.8"
+  },
+  "sideEffects": true,
+  "dependencies": {
+    "@auth0/auth0-spa-js": "^2.0.0",
+    "@codeimage/highlight": "workspace:*",
+    "@codeimage/ui": "workspace:*",
+    "@codeimage/vanilla-extract": "workspace:*",
+    "@codemirror/lang-javascript": "^6.1.2",
+    "@codemirror/language": "^6.3.1",
+    "@codemirror/state": "^6.1.4",
+    "@codemirror/view": "^6.7.1",
+    "@lezer/highlight": "^1.1.3",
+    "@lhci/cli": "0.10.0",
+    "@motionone/solid": "^10.15.3",
+    "@solid-primitives/media": "2.0.4",
+    "@solid-primitives/platform": "^0.0.101",
+    "@solidjs/meta": "^0.28.2",
+    "@solidjs/router": "^0.5.1",
+    "@vanilla-extract/css": "^1.9.2",
+    "@vanilla-extract/dynamic": "^2.0.3",
+    "@vanilla-extract/recipes": "^0.3.0",
+    "@vanilla-extract/sprinkles": "^1.5.1",
+    "motion": "^10.15.3",
+    "purgecss": "^5.0.0",
+    "solid-codemirror": "2.2.1",
+    "solid-js": "^1.6.3",
+    "solid-start": "^0.2.6",
+    "solid-start-static": "^0.2.6",
+    "undici": "^5.11.0"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

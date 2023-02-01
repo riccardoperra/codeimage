@@ -5,6 +5,7 @@ import {
   JSX,
   mergeProps,
   ParentProps,
+  splitProps,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 
@@ -50,13 +51,15 @@ const _styled: CustomComponentFactory = <T extends ElementType>(
   component: T,
 ) => {
   const componentFactory: CustomComponent<T> = props => {
+    const [local, others] = splitProps(props, ['as']);
+
     const propsWithDefault = mergeProps(
       {
         get component() {
-          return props.as ?? component;
+          return local.as ?? component;
         },
       },
-      props,
+      others,
     );
     return createComponent(Dynamic, propsWithDefault);
   };

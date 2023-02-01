@@ -4,10 +4,10 @@
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!--Url Extract: 1-->
   <url>
-    <loc>https://codeimage.dev/</loc>
-    <lastmod>2022-04-01</lastmod>
+    <loc>https://app.codeimage.dev/</loc>
+    <lastmod>2022-13-12</lastmod>
     <image:image>
-      <image:loc>https://codeimage.dev/assets/codeimage-logo-white.svg</image:loc>
+      <image:loc>https://app.codeimage.dev/assets/codeimage-logo-blue-svg-v1</image:loc>
     </image:image>
   </url>
 </urlset>

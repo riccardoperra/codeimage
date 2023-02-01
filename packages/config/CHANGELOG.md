@@ -1,5 +1,51 @@
 # @codeimage/highlight
 
+## 8.1.2
+
+### Patch Changes
+
+- [#455](https://github.com/riccardoperra/codeimage/pull/455) [`0730775f`](https://github.com/riccardoperra/codeimage/commit/0730775fbcf1afe457a0e72cbde3098291df4641) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(config): add support for shell, dockerfile, swift
+
+## 8.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`f57497fc`](https://github.com/riccardoperra/codeimage/commit/f57497fce4d1aeea72d2e55e0261acbf6a4744dc)]:
+  - @codeimage/highlight@0.10.6
+
+## 8.1.0
+
+### Minor Changes
+
+- [`513c6aa6`](https://github.com/riccardoperra/codeimage/commit/513c6aa66356ef43d96cdd18906b13bf5d8218da) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add prettier language formatting support
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @codeimage/highlight@0.10.5
+
+## 8.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`52d3cab6`](https://github.com/riccardoperra/codeimage/commit/52d3cab6a9ff446287380229fd7dfd0eb4c4afef)]:
+  - @codeimage/highlight@0.10.5
+
+## 8.0.6
+
+### Patch Changes
+
+- [#429](https://github.com/riccardoperra/codeimage/pull/429) [`1b042f82`](https://github.com/riccardoperra/codeimage/commit/1b042f82f2798b7d23936235e93811e69a3fce1b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(app/config): vue highlighting support
+
+## 8.0.5
+
+### Patch Changes
+
+- [#390](https://github.com/riccardoperra/codeimage/pull/390) [`ba3389a`](https://github.com/riccardoperra/codeimage/commit/ba3389a635ba8a5dae619ca59b38b48f2cb7a768) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update dependencies
+
+- Updated dependencies [[`ba3389a`](https://github.com/riccardoperra/codeimage/commit/ba3389a635ba8a5dae619ca59b38b48f2cb7a768)]:
+  - @codeimage/highlight@0.10.4
+
 ## 8.0.4
 
 ### Patch Changes

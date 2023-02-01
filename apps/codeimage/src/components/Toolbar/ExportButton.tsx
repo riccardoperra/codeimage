@@ -18,6 +18,7 @@ import {
   toast,
   VStack,
 } from '@codeimage/ui';
+import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {createButton} from '@solid-aria/button';
@@ -191,7 +192,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
     const selectedExtension = extension();
 
     const name = selectedMode === ExportMode.export ? 'Download' : 'Share';
-    umami.trackEvent(
+    getUmami().trackEvent(
       `${name} ${selectedExtension.toUpperCase()}`,
       selectedMode,
     );

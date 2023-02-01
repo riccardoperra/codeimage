@@ -1,6 +1,6 @@
 import {LanguageIconDefinition} from '@codeimage/config';
 import {TerminalState} from '@codeimage/store/editor/model';
-import {FadeInOutTransition, themeVars} from '@codeimage/ui';
+import {FadeInOutTransition} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
 import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
@@ -49,7 +49,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
           tabTheme()?.background ?? '',
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
-        [styles.terminalVars.boxShadow]: props.shadow ?? themeVars.boxShadow.lg,
+        [styles.terminalVars.boxShadow]: props.shadow ?? 'unset',
         [styles.terminalVars.tabTextColor]: tabTheme()?.textColor ?? '',
         [styles.terminalVars.tabAccentActiveBackground]:
           tabTheme().activeTabBackground ?? '',

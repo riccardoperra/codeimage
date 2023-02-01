@@ -1,5 +1,17 @@
 # @codeimage/dom-export
 
+## 1.11.1
+
+### Patch Changes
+
+- [#446](https://github.com/riccardoperra/codeimage/pull/446) [`eddbed7f`](https://github.com/riccardoperra/codeimage/commit/eddbed7f6d2d1e89e7d2ec37a9718a80a3045096) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(dom-export): cannot load font style value on firefox
+
+## 1.11.0
+
+### Minor Changes
+
+- [#433](https://github.com/riccardoperra/codeimage/pull/433) [`25c4fdf4`](https://github.com/riccardoperra/codeimage/commit/25c4fdf4560282bb1769fd14cbc7a5b5301855fd) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add experimental `experimental_optimizeFontLoading` property
+
 ## 1.10.1
 
 ### Patch Changes

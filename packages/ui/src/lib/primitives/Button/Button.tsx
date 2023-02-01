@@ -1,14 +1,13 @@
-import {elements} from '@solid-primitives/refs';
+import {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
-import {Button as ShButton, ButtonProps as ShButtonProps} from 'solid-headless';
-import {ValidConstructor} from 'solid-headless/dist/types/utils/dynamic-prop';
-import {children, JSXElement, ParentProps, Show} from 'solid-js';
-import {omitProps} from 'solid-use';
-import {CustomComponentProps} from '../../utils';
+import {ButtonProps as ShButtonProps} from 'solid-headless';
+import {JSXElement, ParentProps, Show, splitProps} from 'solid-js';
+import {CustomComponentProps, styled} from '../../utils';
 import {LoadingCircle} from '../Loader';
 import * as styles from './Button.css';
+import {ButtonSizes} from './Button.css';
 
-export type ButtonProps<T extends ValidConstructor = 'button'> =
+export type ButtonProps<T extends ElementType = 'button'> =
   CustomComponentProps<
     T,
     {
@@ -18,41 +17,44 @@ export type ButtonProps<T extends ValidConstructor = 'button'> =
       styles.ButtonVariants
   >;
 
-export function Button<T extends ValidConstructor = 'button'>(
+export function Button<T extends ElementType = 'button'>(
   props: ParentProps<ButtonProps<T>>,
 ): JSXElement {
+  const [local, others] = splitProps(props, [
+    'as',
+    'class',
+    'loading',
+    'pill',
+    'loading',
+    'block',
+    'theme',
+    'variant',
+    'size',
+    'children',
+    'leftIcon',
+  ]);
   const classes = () =>
     clsx(
       styles.buttonVariant({
-        pill: props.pill,
-        block: props.block,
-        theme: props.theme,
-        variant: props.variant,
-        size: props.size || 'sm',
-        loading: props.loading,
+        pill: local.pill,
+        block: local.block,
+        theme: local.theme,
+        variant: local.variant,
+        size: local.size || ('sm' as ButtonSizes),
+        loading: local.loading,
       }),
-      props.class,
+      local.class,
     );
 
-  const resolvedIcon = (): JSXElement => {
-    if (!props.leftIcon) return null;
-    const item = children(() => props.leftIcon);
-    const els = elements(item, SVGElement, HTMLElement);
-    // Should always be 1
-    els().forEach(el => el.classList.add(styles.buttonIcon));
-    return els();
-  };
-
   return (
-    <ShButton
-      {...omitProps(props, ['class', 'leftIcon', 'loading'])}
-      class={classes()}
-    >
-      <Show when={!!props.leftIcon && !props.loading}>{resolvedIcon()}</Show>
-      <Show when={props.loading}>
-        <LoadingCircle class={styles.buttonIcon} size={props.size ?? 'sm'} />
+    <styled.button as={local.as ?? 'button'} class={classes()} {...others}>
+      <Show when={!!local.leftIcon && !local.loading}>
+        <span class={styles.buttonIcon}>{local.leftIcon}</span>
       </Show>
-      {props.children}
-    </ShButton>
+      <Show when={local.loading}>
+        <LoadingCircle class={styles.buttonIcon} size={local.size ?? 'sm'} />
+      </Show>
+      {local.children}
+    </styled.button>
   );
 }

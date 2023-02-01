@@ -7,12 +7,11 @@ import {useModality} from '@core/hooks/isMobile';
 import {Link} from '@solidjs/router';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createMemo, Show, VoidProps} from 'solid-js';
-import {CodeImageLogo} from '../Icons/CodeImageLogo';
+import {CodeImageLogoV2} from '../Icons/CodeImageLogoV2';
 import {CollectionIcon} from '../Icons/Collection';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
-import {ExportInNewTabButton} from './ExportNewTabButton';
 import {ShareButton} from './ShareButton';
 import * as styles from './Toolbar.css';
 import {ToolbarSettingsButton} from './ToolbarSettings';
@@ -50,7 +49,7 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
         <ToolbarSettingsButton />
         <Box display={'flex'} alignItems={'center'} marginLeft={5}>
           <div class={sidebarLogo}>
-            <CodeImageLogo width={'140px'} />
+            <CodeImageLogoV2 height={26} withGradient={true} />
           </div>
           <Show when={loggedIn() && modality === 'full'}>
             <Box marginLeft={16}>
@@ -75,8 +74,6 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
           <HStack marginLeft={'auto'} spacing={'2'}>
             <Show when={modality === 'full'} keyed={false}>
               <ShareButton showLabel={false} />
-
-              <ExportInNewTabButton canvasRef={props.canvasRef} />
 
               <ExportButton canvasRef={props.canvasRef} />
             </Show>

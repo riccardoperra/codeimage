@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Livello_2" data-name="Livello 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 183.56 183.56">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill: #07f;
+      }
+    </style>
+  </defs>
+  <g id="Livello_6_copia" data-name="Livello 6 copia">
+    <rect class="cls-2" width="183.56" height="183.56" rx="60.11" ry="60.11"/>
+    <rect class="cls-1" x="40.15" y="63.55" width="88.58" height="14.08" rx="6.65" ry="6.65" transform="translate(-19.28 33.77) rotate(-20.35)"/>
+    <rect class="cls-1" x="83.95" y="134.35" width="53.15" height="14.08" rx="6.65" ry="6.65" transform="translate(-42.28 47.27) rotate(-20.35)"/>
+    <rect class="cls-1" x="57.33" y="109.86" width="88.58" height="14.08" rx="6.65" ry="6.65" transform="translate(-34.31 42.64) rotate(-20.35)"/>
+    <rect class="cls-1" x="34.58" y="94.74" width="73.6" height="14.08" rx="6.65" ry="6.65" transform="translate(-30.94 31.18) rotate(-20.35)"/>
+    <rect class="cls-1" x="48.81" y="40.65" width="53.15" height="14.08" rx="6.65" ry="6.65" transform="translate(-11.88 29.19) rotate(-20.35)"/>
+  </g>
+</svg>

@@ -1,12 +1,16 @@
 {
   "name": "@codeimage/locale",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "module": "./dist/locale.mjs",
+  "main": "./dist/locale.js",
   "source": "./src/public-api.ts",
   "types": "./dist/public-api.d.ts",
   "exports": {
     ".": {
       "import": "./dist/locale.mjs",
+      "node": "./dist/locale.js",
+      "browser": "./dist/locale.mjs",
+      "require": "./dist/locale.js",
       "types": "./dist/public-api.d.ts"
     }
   },
@@ -27,10 +31,10 @@
   },
   "dependencies": {
     "@solid-primitives/i18n": "^1.1.1",
-    "solid-js": "^1.5.7"
+    "solid-js": "^1.6.3"
   },
   "peerDependencies": {
-    "solid-js": "^1.5.2"
+    "solid-js": "^1.6.3"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",

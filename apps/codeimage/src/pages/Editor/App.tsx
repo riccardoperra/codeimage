@@ -1,12 +1,22 @@
+import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {adaptiveFullScreenHeight, Box, HStack, PortalHost} from '@codeimage/ui';
+import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
+import {
+  adaptiveFullScreenHeight,
+  Box,
+  Button,
+  HStack,
+  PortalHost,
+} from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
 import {createSignal, lazy, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
+import {ColorSwatchIcon} from '../../components/Icons/ColorSwatch';
+import {SparklesIcon} from '../../components/Icons/SparklesIcon';
 import {KeyboardShortcuts} from '../../components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
 import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItem';
@@ -15,6 +25,7 @@ import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
 import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
 import {ExportButton} from '../../components/Toolbar/ExportButton';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
+import {FrameToolbar} from '../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
 import * as styles from './App.css';
@@ -78,6 +89,20 @@ export function App() {
               <Box class={styles.mobileActionToolbar}>
                 <HStack spacing={'2'} justifyContent={'flexEnd'}>
                   <ShareButton showLabel={false} />
+                  <Button
+                    size={'xs'}
+                    variant={'solid'}
+                    theme={'secondary'}
+                    leftIcon={<ColorSwatchIcon />}
+                    onClick={() => dispatchRandomTheme()}
+                  />
+                  <Button
+                    size={'xs'}
+                    variant={'solid'}
+                    theme={'secondary'}
+                    leftIcon={<SparklesIcon />}
+                    onClick={() => getActiveEditorStore().format()}
+                  />
                   <ExportInNewTabButton canvasRef={frameRef()} />
                   <ExportButton canvasRef={frameRef()} />
                 </HStack>
@@ -91,6 +116,7 @@ export function App() {
             </FrameHandler>
 
             <Show when={modality === 'full'} keyed={false}>
+              <FrameToolbar frameRef={frameRef()} />
               <Footer />
             </Show>
           </SuspenseEditorItem>

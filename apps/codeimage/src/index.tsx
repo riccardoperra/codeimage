@@ -1,3 +1,4 @@
+import {StateProvider} from 'statebuilder';
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -10,19 +11,12 @@ import {
   ThemeProviderProps,
 } from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
-import {enableUmami} from '@core/constants/umami';
+import '@codeimage/ui/themes/lightTheme';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';
+import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import {
-  Component,
-  createEffect,
-  lazy,
-  on,
-  onMount,
-  Show,
-  Suspense,
-} from 'solid-js';
+import {Component, createEffect, lazy, on, Show, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
@@ -73,6 +67,7 @@ const NotFoundPage = lazyWithNoLauncher(
 export function Bootstrap() {
   getRootEditorStore();
   const [, {locale}] = useI18n();
+  const auth0 = getAuth0State();
   createEffect(on(() => uiStore.locale, locale));
   const mode = () => uiStore.themeMode;
 
@@ -102,13 +97,21 @@ export function Bootstrap() {
       component: Dashboard,
     },
     {
+      path: 'login',
+      data: ({navigate}) => {
+        if (auth0.loggedIn()) {
+          navigate('/');
+        } else {
+          auth0.login();
+        }
+      },
+    },
+    {
       path: '/*all',
       data: ({navigate}) => navigate('/404'),
       component: NotFoundPage,
     },
   ]);
-
-  onMount(() => enableUmami());
 
   createEffect(
     on(mode, theme => {
@@ -127,7 +130,7 @@ export function Bootstrap() {
     <Scaffold>
       <CodeImageThemeProvider tokens={tokens} theme={uiStore.themeMode}>
         <OverlayProvider>
-          <SnackbarHost />
+          <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
           <Router>
             <Suspense>
               <Routes />
@@ -146,7 +149,9 @@ getAuth0State()
     render(
       () => (
         <I18nContext.Provider value={i18n}>
-          <Bootstrap />
+          <StateProvider>
+            <Bootstrap />
+          </StateProvider>
         </I18nContext.Provider>
       ),
       document.getElementById('root') as HTMLElement,

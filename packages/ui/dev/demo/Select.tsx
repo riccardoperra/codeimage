@@ -25,36 +25,40 @@ export function SelectDemo() {
     <div>
       <Text size={'2xl'}>Segmented Control</Text>
 
-      <HStack spacing={'4'}>
+      <HStack spacing={4}>
         <div style={{width: '400px'}}>
-          <VStack spacing={'2'} marginTop={'4'}>
+          <VStack spacing={2} marginTop={4}>
             <FlexField size={'lg'}>
               <Select
+                multiple={false}
                 items={items}
                 value={first()}
                 onSelectChange={setFirst}
-              ></Select>
+              />
             </FlexField>
             <FlexField size={'md'}>
               <Select
+                multiple={false}
                 items={items}
                 value={second()}
                 onSelectChange={setSecond}
-              ></Select>
+              />
             </FlexField>
             <FlexField size={'xs'}>
               <Select
+                multiple={false}
                 items={items}
                 value={third()}
                 onSelectChange={setThird}
-              ></Select>
+              />
             </FlexField>
             <div>
               <Select
+                multiple={false}
                 items={items}
                 value={third()}
                 onSelectChange={setThird}
-              ></Select>
+              />
             </div>
           </VStack>
         </div>

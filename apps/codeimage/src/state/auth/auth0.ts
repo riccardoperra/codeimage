@@ -34,6 +34,15 @@ export function $auth0State() {
     });
   }
 
+  async function forceLogin() {
+    auth0.loginWithRedirect({
+      authorizationParams: {
+        prompt: 'login',
+        connection: 'github',
+      },
+    });
+  }
+
   async function signOut() {
     await auth0.logout({
       logoutParams: {
@@ -60,6 +69,7 @@ export function $auth0State() {
     user,
     getToken,
     login,
+    forceLogin,
     signOut,
     loggedIn,
     initLogin,

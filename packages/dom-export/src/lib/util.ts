@@ -64,6 +64,12 @@ export function isDataUrl(url: string) {
   return url.search(/^(data:)/) !== -1;
 }
 
+export const isSlotElement = (node: Node): node is HTMLSlotElement =>
+  (node as Element).tagName === 'SLOT';
+
+export const isCustomElement = (node: Element): boolean =>
+  node.tagName.indexOf('-') > 0;
+
 export function makeDataUrl(content: string, mimeType: string) {
   return `data:${mimeType};base64,${content}`;
 }

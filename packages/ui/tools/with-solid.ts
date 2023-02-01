@@ -150,6 +150,7 @@ function processOptions(options: Options, asSubPackage = true): RollupOptions {
               jsx: ts.JsxEmit.Preserve,
               jsxImportSource: 'solid-js',
               declarationMap: false,
+              sourceMap: false,
               outDir: `dist/source`,
               declarationDir: 'dist/types',
             },

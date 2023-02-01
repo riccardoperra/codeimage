@@ -1,5 +1,23 @@
 # @codeimage/highlight
 
+## 0.10.6
+
+### Patch Changes
+
+- [#450](https://github.com/riccardoperra/codeimage/pull/450) [`f57497fc`](https://github.com/riccardoperra/codeimage/commit/f57497fce4d1aeea72d2e55e0261acbf6a4744dc) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(app/highlight): add github dark dimmed theme
+
+## 0.10.5
+
+### Patch Changes
+
+- [#431](https://github.com/riccardoperra/codeimage/pull/431) [`52d3cab6`](https://github.com/riccardoperra/codeimage/commit/52d3cab6a9ff446287380229fd7dfd0eb4c4afef) Thanks [@zihan-ch](https://github.com/zihan-ch)! - feat: add aura theme
+
+## 0.10.4
+
+### Patch Changes
+
+- [#390](https://github.com/riccardoperra/codeimage/pull/390) [`ba3389a`](https://github.com/riccardoperra/codeimage/commit/ba3389a635ba8a5dae619ca59b38b48f2cb7a768) Thanks [@riccardoperra](https://github.com/riccardoperra)! - update dependencies
+
 ## 0.10.3
 
 ### Patch Changes

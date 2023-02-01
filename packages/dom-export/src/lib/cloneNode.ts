@@ -1,8 +1,9 @@
+import {isIOS} from '@solid-primitives/platform';
 import {clonePseudoElements} from './clonePseudoElements';
+import {copyFont, copyUserComputedStyleFast} from './cloneStyle';
 import {getBlobFromURL} from './getBlobFromURL';
 import {Options} from './options';
 import {createImage, getMimeType, makeDataUrl, toArray} from './util';
-import {isIOS} from '@solid-primitives/platform';
 
 async function cloneCanvasElement(canvas: HTMLCanvasElement) {
   const dataURL = canvas.toDataURL();
@@ -35,7 +36,7 @@ async function cloneSingleNode<T extends HTMLElement>(
     return cloneVideoElement(node, options);
   }
 
-  return Promise.resolve(node.cloneNode(false) as T);
+  return node.cloneNode(false) as T;
 }
 
 const isSlotElement = (node: HTMLElement): node is HTMLSlotElement =>
@@ -55,43 +56,39 @@ async function cloneChildren<T extends HTMLElement>(
     return Promise.resolve(clonedNode);
   }
 
-  return children
-    .reduce(
-      (deferred, child) =>
-        deferred
-          .then(() => cloneNode(child, options))
-          .then((clonedChild: HTMLElement | null) => {
-            if (clonedChild) {
-              clonedNode.appendChild(clonedChild);
-            }
-          }),
-      Promise.resolve(),
-    )
-    .then(() => clonedNode);
+  await children.reduce((deferred, child) => {
+    const computedStyles = getComputedStyle(nativeNode);
+    return deferred
+      .then(() => cloneNode(child, options, false, computedStyles))
+      .then((clonedChild: HTMLElement | null) => {
+        if (clonedChild) {
+          clonedNode.appendChild(clonedChild);
+        }
+      });
+  }, Promise.resolve());
+
+  return clonedNode;
 }
 
-function cloneCSSStyle<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
-  const source = window.getComputedStyle(nativeNode);
-  const target = clonedNode.style;
-
-  if (!target) {
-    return;
-  }
-
-  // eslint-disable-next-line spaced-comment
-  if (source.cssText) {
-    target.cssText = source.cssText;
+function cloneCSSStyle<T extends HTMLElement>(
+  nativeNode: T,
+  clonedNode: T,
+  parentComputedStyles: CSSStyleDeclaration | null,
+) {
+  const nativeComputedStyle = getComputedStyle(nativeNode);
+  const sourceStyle = clonedNode.style;
+  if (nativeComputedStyle.cssText) {
+    clonedNode.style.cssText = nativeComputedStyle.cssText;
+    copyFont(nativeComputedStyle, clonedNode.style); // here we re-assign the font props.
   } else {
-    toArray<string>(source).forEach(name => {
-      target.setProperty(
-        name,
-        source.getPropertyValue(name),
-        source.getPropertyPriority(name),
-      );
-    });
+    copyUserComputedStyleFast(
+      nativeComputedStyle,
+      parentComputedStyles,
+      clonedNode,
+    );
   }
 
-  const webkitBackgroundClip = source.getPropertyValue(
+  const webkitBackgroundClip = sourceStyle.getPropertyValue(
     '-webkit-background-clip',
   );
   if (webkitBackgroundClip !== 'border-box') {
@@ -104,7 +101,7 @@ function cloneCSSStyle<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
   }
 
   // fix for flex align bug in safari
-  const alignItems = source.getPropertyValue('align-items');
+  const alignItems = sourceStyle.getPropertyValue('align-items');
   if (alignItems !== 'normal') {
     clonedNode.setAttribute(
       'style',
@@ -113,7 +110,7 @@ function cloneCSSStyle<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
   }
 
   // fix for perspective bug in safari
-  const perspective = source.getPropertyValue('perspective');
+  const perspective = sourceStyle.getPropertyValue('perspective');
   if (perspective !== 'none') {
     clonedNode.setAttribute(
       'style',
@@ -121,7 +118,7 @@ function cloneCSSStyle<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
     );
   }
 
-  const boxShadow = source.getPropertyValue('boxShadow');
+  const boxShadow = sourceStyle.getPropertyValue('boxShadow');
   if (boxShadow !== 'none' && isIOS) {
     clonedNode.setAttribute(
       'style',
@@ -156,12 +153,13 @@ function cloneSelectValue<T extends HTMLElement>(nativeNode: T, clonedNode: T) {
 async function decorate<T extends HTMLElement>(
   nativeNode: T,
   clonedNode: T,
+  parentComputedStyles: CSSStyleDeclaration | null,
 ): Promise<T> {
   if (!(clonedNode instanceof Element)) {
     return clonedNode;
   }
 
-  cloneCSSStyle(nativeNode, clonedNode);
+  cloneCSSStyle(nativeNode, clonedNode, parentComputedStyles);
   clonePseudoElements(nativeNode, clonedNode);
   cloneInputValue(nativeNode, clonedNode);
   cloneSelectValue(nativeNode, clonedNode);
@@ -169,10 +167,58 @@ async function decorate<T extends HTMLElement>(
   return clonedNode;
 }
 
+async function ensureSVGSymbols<T extends HTMLElement>(
+  clone: T,
+  options: Options,
+) {
+  const uses = clone.querySelectorAll ? clone.querySelectorAll('use') : [];
+  if (uses.length === 0) {
+    return clone;
+  }
+
+  const processedDefs: {[key: string]: HTMLElement} = {};
+  for (let i = 0; i < uses.length; i++) {
+    const use = uses[i];
+    const id = use.getAttribute('xlink:href');
+    if (id) {
+      const exist = clone.querySelector(id);
+      const definition = document.querySelector(id) as HTMLElement;
+      if (!exist && definition && !processedDefs[id]) {
+        // eslint-disable-next-line no-await-in-loop
+        processedDefs[id] = (await cloneNode(definition, options, true, null))!;
+      }
+    }
+  }
+
+  const nodes = Object.values(processedDefs);
+  if (nodes.length) {
+    const ns = 'http://www.w3.org/1999/xhtml';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('xmlns', ns);
+    svg.style.position = 'absolute';
+    svg.style.width = '0';
+    svg.style.height = '0';
+    svg.style.overflow = 'hidden';
+    svg.style.display = 'none';
+
+    const defs = document.createElementNS(ns, 'defs');
+    svg.appendChild(defs);
+
+    for (let i = 0; i < nodes.length; i++) {
+      defs.appendChild(nodes[i]);
+    }
+
+    clone.appendChild(svg);
+  }
+
+  return clone;
+}
+
 export async function cloneNode<T extends HTMLElement>(
   node: T,
   options: Options,
   isRoot?: boolean,
+  parentComputedStyles?: CSSStyleDeclaration | null,
 ): Promise<T | null> {
   if (!isRoot && options.filter && !options.filter(node)) {
     return null;
@@ -181,5 +227,8 @@ export async function cloneNode<T extends HTMLElement>(
   return Promise.resolve(node)
     .then(clonedNode => cloneSingleNode(clonedNode, options) as Promise<T>)
     .then(clonedNode => cloneChildren(node, clonedNode, options))
-    .then(clonedNode => decorate(node, clonedNode));
+    .then(clonedNode =>
+      decorate(node, clonedNode, parentComputedStyles ?? null),
+    )
+    .then(clonedNode => ensureSVGSymbols(clonedNode, options));
 }

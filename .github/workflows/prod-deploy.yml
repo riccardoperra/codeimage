@@ -398,4 +398,49 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} #Required
           alias-domains: | #Optional
-            codeimage.dev
+            app.codeimage.dev
+
+
+  deploy-website:
+    name: Deploy @codeimage/website
+    environment: Production
+    needs: [ install, lint, typecheck-packages, build-packages ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Restore packages
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
+
+      - name: Build
+        env:
+          VITE_UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_LANDING_SCRIPT_SRC }}
+          VITE_UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_LANDING_WEBSITE_ID }}
+          VITE_PUBLIC_AUTH0_DOMAIN: ${{ secrets.VITE_PUBLIC_AUTH0_DOMAIN }}
+          VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
+          VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
+        run: |
+          pnpm --filter=@codeimage/website build
+
+      - name: Publish on Netlify
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --dir=apps/website/dist/public --prod
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.WEBSITE_NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.WEBSITE_NETLIFY_AUTH_TOKEN }}

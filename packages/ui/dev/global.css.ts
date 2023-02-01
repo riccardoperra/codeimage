@@ -1,5 +1,5 @@
 import {globalStyle} from '@vanilla-extract/css';
-import {themeVars} from '../src';
+import {themeVars} from '../src/lib/theme/global2.css';
 
 globalStyle('html, body', {
   fontFamily: 'Albert Sans, sans-serif',

@@ -1,22 +1,24 @@
-![CodeImage logo](https://github.com/riccardoperra/codeimage/blob/main/banner.png?raw=true)
+![CodeImage logo](assets/banner.png?raw=true)
 
 > Create elegant code screenshots of your source code.
 
 ![Latest release Version](https://img.shields.io/badge/dynamic/json?color=success&label=Version&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Friccardoperra%2Fcodeimage%2Fmain%2Fpackage.json)
-![Build workflow badge](https://img.shields.io/github/workflow/status/riccardoperra/codeimage/Build)
+![Build workflow badge](https://img.shields.io/github/actions/workflow/status/riccardoperra/codeimage/prod-deploy.yml?branch=main)
 [![Issues](https://img.shields.io/github/issues/riccardoperra/codeimage)](https://github.com/riccardoperra/codeimage/issues)
-![Lint workflow badge](https://img.shields.io/github/workflow/status/riccardoperra/codeimage/Lint?label=lint)
 [![Built with SolidJS](https://img.shields.io/badge/Built%20with-SolidJS-blue)](https://github.com/solidjs/solid)
 [![Built with Vanilla Extract](https://img.shields.io/badge/Built%20with-Vanilla%20Extract-ff69b4)](https://github.com/seek-oss/vanilla-extract)
 [![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)](https://lgtm.com/projects/g/riccardoperra/codeimage/alerts/?mode=list)
 ![License](https://img.shields.io/github/license/riccardoperra/codeimage)
-![CodeImage showcase](docs/showcase_1.png)
 
 ## Introduction
 
 [CodeImage](https://codeimage.dev) is the newest tool to help developers to create beautiful screenshots of their code,
 providing several
 features to speed up the process to post in social media.
+
+<a href="https://www.producthunt.com/posts/codeimage?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-codeimage" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=371306&theme=light" alt="CodeImage - A&#0032;tool&#0032;to&#0032;manage&#0032;and&#0032;beautify&#0032;your&#0032;code&#0032;screenshots | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
+![CodeImage showcase](assets/showcase_1.png)
 
 
 ## 🤖 Tech stack

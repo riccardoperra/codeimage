@@ -31,9 +31,9 @@ export function SegmentedFieldDemo() {
     <div>
       <Text size={'2xl'}>Segmented Control</Text>
 
-      <HStack spacing={'4'}>
+      <HStack spacing={4}>
         <div style={{width: '400px'}}>
-          <VStack spacing={'2'} marginTop={'4'}>
+          <VStack spacing={2} marginTop={4}>
             <FlexField size={'lg'}>
               <SegmentedField
                 items={items}

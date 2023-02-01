@@ -1,3 +1,4 @@
+import {flip, offset} from '@floating-ui/dom';
 import {
   HeadlessDisclosureChild,
   Listbox,
@@ -7,12 +8,10 @@ import {
   ListboxProps,
 } from 'solid-headless';
 import {Component, For, JSX, JSXElement, Show} from 'solid-js';
-import * as styles from './Select.css';
-import Fragment from 'solid-headless/src/utils/Fragment';
-import {flip, offset} from '@floating-ui/dom';
-import {Box} from '../Box';
 import {useFloating} from '../../hooks';
+import {Box} from '../Box';
 import {Text} from '../Text';
+import * as styles from './Select.css';
 
 function SelectorIcon(props: JSX.IntrinsicElements['svg']): JSX.Element {
   return (
@@ -38,12 +37,23 @@ export interface SelectOptions<T> {
   value: T;
 }
 
-type SelectProps<T> = ListboxProps<T, typeof Fragment> & {
+type SelectProps<T> = Omit<ListboxProps<T>, 'onSelectChange' | 'value'> & {
   items: SelectOptions<T>[];
   itemContent?: Component<SelectOptions<T> & {selected: boolean}>;
   native?: boolean;
   id?: string;
-};
+} & (
+    | {
+        multiple: true;
+        value: T[];
+        onSelectChange: (value: T[]) => unknown;
+      }
+    | {
+        multiple: false;
+        value: T;
+        onSelectChange: (value: T) => unknown;
+      }
+  );
 
 export function Select<T>(props: SelectProps<T>): JSXElement {
   const floating = useFloating({
@@ -60,8 +70,9 @@ export function Select<T>(props: SelectProps<T>): JSXElement {
 
   return (
     <Listbox
-      value={props.value}
-      onSelectChange={value => props?.onSelectChange?.(value as T[] & T)}
+      defaultOpen={false}
+      value={(props as any).value}
+      onSelectChange={(value: any) => props?.onSelectChange?.(value as T[] & T)}
     >
       <Box class={styles.wrapper} ref={floating.setReference} id={props.id}>
         <Show when={props.native}>

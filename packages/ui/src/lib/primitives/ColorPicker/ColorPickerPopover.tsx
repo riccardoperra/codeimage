@@ -56,7 +56,7 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
   });
 
   return (
-    <VStack spacing={'4'}>
+    <VStack spacing={4}>
       <FlexField size={'md'}>
         <SegmentedField
           value={mode()}

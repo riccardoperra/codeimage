@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Button, toast} from '@codeimage/ui';
+import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {Component, createEffect, untrack} from 'solid-js';
 import {
@@ -13,6 +14,7 @@ import {ExternalLinkIcon} from '../Icons/ExternalLink';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
+  size?: 'sm' | 'xs';
 }
 
 export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
@@ -25,7 +27,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
     data.loading ? t('toolbar.loadingNewTab') : t('toolbar.openNewTab');
 
   function openInTab() {
-    umami.trackEvent(`true`, 'export-new-tab');
+    getUmami().trackEvent(`true`, 'export-new-tab');
 
     notify({
       ref: props.canvasRef,
@@ -48,6 +50,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
           },
           {
             position: 'bottom-center',
+            duration: 99999,
           },
         );
       });
@@ -68,7 +71,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
       loading={data.loading}
       leftIcon={() => <ExternalLinkIcon />}
       onClick={() => openInTab()}
-      size={modality === 'full' ? 'sm' : 'xs'}
+      size={props.size ?? (modality === 'full' ? 'sm' : 'xs')}
     >
       {label()}
     </Button>

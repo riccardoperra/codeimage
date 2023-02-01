@@ -22,6 +22,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.githubDarkTheme),
   },
   {
+    id: 'githubDarkDimmed',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.githubDarkDimmedTheme),
+  },
+  {
     id: 'dracula',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.draculaTheme),
@@ -55,6 +60,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     id: 'panda',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.pandaTheme),
+  },
+  {
+    id: 'aura',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.auraTheme),
   },
   {
     id: 'light',

@@ -20,6 +20,10 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       import('@codemirror/lang-javascript').then(({javascript}) =>
         javascript({jsx: true}),
       ),
+    prettier: {
+      parser: 'babel',
+      plugin: () => import('prettier/parser-babel'),
+    },
     icons: [
       {
         name: 'js',
@@ -50,6 +54,12 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.vue',
         content: () => import('material-icon-theme/icons/vue.svg?raw'),
         matcher: /^.*\.(vue)$/,
+        extraLanguage: () =>
+          import('@codemirror/lang-html').then(({html}) => html()),
+        prettier: {
+          parser: 'vue',
+          plugin: () => import('prettier/parser-html'),
+        },
       },
       {
         name: 'redux-store',
@@ -93,6 +103,10 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       import('@codemirror/lang-javascript').then(({javascript}) =>
         javascript({jsx: true, typescript: true}),
       ),
+    prettier: {
+      parser: 'babel-ts',
+      plugin: () => import('prettier/parser-babel'),
+    },
     icons: [
       {
         name: 'ts',
@@ -123,6 +137,12 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.vue',
         content: () => import('material-icon-theme/icons/vue.svg?raw'),
         matcher: /^.*\.(vue)$/,
+        extraLanguage: () =>
+          import('@codemirror/lang-html').then(({html}) => html()),
+        prettier: {
+          parser: 'vue',
+          plugin: () => import('prettier/parser-html'),
+        },
       },
       {
         name: 'redux-store',
@@ -212,6 +232,11 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(java)$/,
       },
     ],
+    prettier: {
+      parser: 'java',
+      // @ts-expect-error No definitions
+      plugin: () => import('prettier-plugin-java'),
+    },
   },
   {
     id: 'kotlin',
@@ -236,6 +261,10 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     label: 'Css',
     color: '#563d7c',
     plugin: () => import('@codemirror/lang-css').then(({css}) => css()),
+    prettier: {
+      parser: 'css',
+      plugin: () => import('prettier/parser-postcss'),
+    },
     icons: [
       {
         name: 'css',
@@ -248,18 +277,26 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.sass',
         content: () => import('material-icon-theme/icons/sass.svg?raw'),
         matcher: /^.*\.(scss|sass)$/,
+        prettier: {
+          parser: 'scss',
+          plugin: () => import('prettier/parser-postcss'),
+        },
       },
       {
         name: 'less',
         extension: '.less',
         content: () => import('material-icon-theme/icons/less.svg?raw'),
         matcher: /^.*\.(less)$/,
+        prettier: {
+          parser: 'less',
+          plugin: () => import('prettier/parser-postcss'),
+        },
       },
       {
         name: 'stylus',
-        extension: '.stylus',
+        extension: '.styl',
         content: () => import('material-icon-theme/icons/stylus.svg?raw'),
-        matcher: /^.*\.(stylus)$/,
+        matcher: /^.*\.(styl)$/,
       },
     ],
   },
@@ -271,12 +308,30 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       import('@codemirror/lang-html').then(({html}) =>
         html({matchClosingTags: true, autoCloseTags: true}),
       ),
+    prettier: {
+      parser: 'html',
+      plugin: () => import('prettier/parser-html'),
+    },
     icons: [
       {
         name: 'html',
         extension: '.html',
         content: () => import('material-icon-theme/icons/html.svg?raw'),
         matcher: /^.*\.(html)$/,
+      },
+      {
+        name: 'html',
+        extension: '.component.html',
+        content: () => import('material-icon-theme/icons/html.svg?raw'),
+        matcher: /^.*\.(component.html)$/,
+        prettier: {
+          parser: 'angular',
+          plugin: () =>
+            Promise.all([
+              import('prettier/parser-angular'),
+              import('prettier/parser-html'),
+            ]),
+        },
       },
     ],
   },
@@ -293,6 +348,11 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(php)$/,
       },
     ],
+    prettier: {
+      parser: 'php',
+      // @ts-expect-error No definitions
+      plugin: () => import('@prettier/plugin-php/standalone.js'),
+    },
   },
   {
     id: 'python',
@@ -323,6 +383,10 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(md)$/,
       },
     ],
+    prettier: {
+      parser: 'markdown',
+      plugin: () => import('prettier/parser-markdown'),
+    },
   },
   {
     id: 'rust',
@@ -337,6 +401,10 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(rs)$/,
       },
     ],
+    prettier: {
+      parser: 'jinx-rust',
+      plugin: () => import('prettier-plugin-rust'),
+    },
   },
   {
     id: 'cpp',
@@ -365,6 +433,11 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(xml)$/,
       },
     ],
+    prettier: {
+      parser: 'xml',
+      // @ts-expect-error No definitions
+      plugin: () => import('@prettier/plugin-xml'),
+    },
   },
   {
     id: 'ruby',
@@ -411,6 +484,10 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(json)$/,
       },
     ],
+    prettier: {
+      parser: 'json5',
+      plugin: () => import('prettier/parser-babel'),
+    },
   },
   {
     id: 'sql',
@@ -423,6 +500,64 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.sql',
         content: () => import('material-icon-theme/icons/database.svg?raw'),
         matcher: /^.*\.(sql)$/,
+      },
+    ],
+    prettier: {
+      parser: 'sql',
+      plugin: () => import('prettier-plugin-sql').then(res => res.default),
+    },
+  },
+  {
+    id: 'shell',
+    label: 'Shell',
+    color: '#89e051',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/shell'),
+      ]).then(([cb, m]) => cb(m.shell)),
+    icons: [
+      {
+        name: 'shell',
+        extension: '.sh',
+        content: () => import('material-icon-theme/icons/console.svg?raw'),
+        matcher: /^.*\.(sh)$/,
+      },
+    ],
+  },
+  {
+    id: 'swift',
+    label: 'Swift',
+    color: '#F05138ó',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/swift'),
+      ]).then(([cb, m]) => cb(m.swift)),
+    icons: [
+      {
+        name: 'swift',
+        extension: '.swift',
+        content: () => import('material-icon-theme/icons/swift.svg?raw'),
+        matcher: /^.*\.(swift)$/,
+      },
+    ],
+  },
+  {
+    id: 'dockerfile',
+    label: 'Dockerfile',
+    color: '#384d54',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/dockerfile'),
+      ]).then(([cb, m]) => cb(m.dockerFile)),
+    icons: [
+      {
+        name: 'docker',
+        extension: '.dockerfile',
+        content: () => import('material-icon-theme/icons/docker.svg?raw'),
+        matcher: /^.*\.(dockerfile)$/,
       },
     ],
   },

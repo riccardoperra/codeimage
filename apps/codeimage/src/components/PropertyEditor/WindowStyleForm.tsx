@@ -1,8 +1,9 @@
 import {useI18n} from '@codeimage/locale';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Box, Group, RadioBlock, SegmentedField, Select} from '@codeimage/ui';
-import {shadowsLabel, TERMINAL_SHADOWS} from '@core/configuration/shadow';
+import {shadowsLabel} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
+import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, For, ParentComponent, Show} from 'solid-js';
@@ -152,9 +153,13 @@ export const WindowStyleForm: ParentComponent = () => {
               native={modality === 'mobile'}
               items={terminalShadows()}
               value={terminal.state.shadow}
+              multiple={false}
               onSelectChange={value => {
-                const shadowSelected = value ?? TERMINAL_SHADOWS.bottom;
-                umami.trackEvent(shadowSelected, 'change-shadow');
+                const shadowSelected = value;
+                getUmami().trackEvent(
+                  shadowSelected ?? 'none',
+                  'change-shadow',
+                );
                 terminal.setShadow(shadowSelected);
               }}
             />

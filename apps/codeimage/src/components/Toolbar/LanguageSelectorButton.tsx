@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Button, DropdownMenuV2, MenuButton, SvgIcon} from '@codeimage/ui';
+import {getUmami} from '@core/constants/umami';
 import {Item} from '@solid-aria/collection';
 import {For} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -15,7 +16,7 @@ export const LanguageSelectorButton = (props: LanguageSelectorButtonProps) => {
 
   function onUpdateLanguage(locale: string): void {
     props.onLocaleChange(locale);
-    umami.trackEvent(locale, `change-app-language`);
+    getUmami().trackEvent(locale, `change-app-language`);
   }
 
   return (

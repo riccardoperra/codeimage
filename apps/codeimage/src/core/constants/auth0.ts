@@ -16,6 +16,7 @@ function createAuth0(): Promise<Auth0Client> {
         redirect_uri: `${window.location.protocol}//${window.location.host}`,
         audience: env.VITE_PUBLIC_AUTH0_AUDIENCE,
       },
+      cookieDomain: 'codeimage.dev',
       cacheLocation: 'localstorage',
     }),
   );

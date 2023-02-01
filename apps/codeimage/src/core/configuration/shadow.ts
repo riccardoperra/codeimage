@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {AppLocaleEntries} from '../../i18n';
 
 export const TERMINAL_SHADOWS = {
-  none: null,
+  none: 'unset',
   bottom: 'rgba(0, 0, 0, 0.45) 0px 25px 20px -20px',
   sm: 'rgba(0, 0, 0, 0.5) 0px 0px 5px 0px, rgba(0, 0, 0, 0.5) 0px 0px 1px 0px',
   md: 'rgb(0 0 0 / 40%) 0px 30px 55px',

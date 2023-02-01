@@ -1,12 +1,11 @@
+import {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
 import {
   DynamicProps,
-  ValidConstructor,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {JSXElement, ParentProps} from 'solid-js';
+import {JSXElement, ParentProps, splitProps} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {omitProps} from 'solid-use';
 import {useText, UseTextProps} from './useText';
 
 export type TextComponentProps = {
@@ -14,23 +13,24 @@ export type TextComponentProps = {
   weight?: UseTextProps['weight'];
 };
 
-export type TextProps<T extends ValidConstructor = 'span'> = {
-  as?: T | ValidConstructor;
+export type TextProps<T extends ElementType = 'span'> = TextComponentProps & {
+  as?: T | ElementType;
   innerHTML?: JSXElement | string;
 } & WithRef<T> &
-  Omit<DynamicProps<T>, 'ref' | 'as'> &
-  TextComponentProps;
+  Omit<DynamicProps<T>, 'ref' | 'as'>;
 
-export function Text<T extends ValidConstructor = 'span'>(
+export function Text<T extends ElementType = 'span'>(
   props: ParentProps<TextProps<T>>,
 ): JSXElement {
+  // @ts-expect-error TODO: find why class is not present
+  const [local, others] = splitProps(props, ['as', 'class']);
   const textClasses = useText(props);
 
   return (
     <Dynamic
-      component={props.as ?? 'span'}
-      {...omitProps(props, ['as', 'children', 'size', 'weight'])}
-      class={clsx(textClasses(), props.class)}
+      component={local.as ?? 'span'}
+      class={clsx(textClasses(), local.class)}
+      {...others}
     >
       {props.children}
     </Dynamic>

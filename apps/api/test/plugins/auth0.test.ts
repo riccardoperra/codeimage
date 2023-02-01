@@ -170,6 +170,27 @@ t.test('should also sync user in db if not exists', async t => {
   t.same(resObj.appUser?.email, 'email@example.it');
 });
 
+t.test('should return bad user detail if user has no email', async t => {
+  const app = await build(t);
+  sinon.stub(app, 'authenticate').callsFake(async req => {
+    req.user = {
+      [`${process.env.AUTH0_CLIENT_CLAIMS}/email`]: null,
+    };
+  });
+
+  const response = await app.inject({
+    method: 'GET',
+    url: '/',
+  });
+
+  t.same(response.statusCode, 400);
+  t.same(response.json(), {
+    statusCode: 400,
+    message: 'No valid user data',
+    error: 'Bad Request',
+  });
+});
+
 t.test('should mock auth', async t => {
   const app = await build(t, {mockAuth: true});
 

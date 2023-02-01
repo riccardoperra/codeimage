@@ -43,6 +43,7 @@ import {
   runWithOwner,
   VoidProps,
 } from 'solid-js';
+import {createTabIcon} from '../../hooks/use-tab-icon';
 
 interface CustomFontExtensionOptions {
   fontName: string;
@@ -103,6 +104,16 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     plugin(),
   );
 
+  const icon = createTabIcon(
+    () => editor()?.tab.tabName ?? null,
+    () => editor()?.languageId ?? '',
+    true,
+  );
+
+  const [currentExtraLanguage] = createResource(icon, iconDef => {
+    return iconDef?.extraLanguage?.() ?? [];
+  });
+
   const themeConfiguration = createMemo(
     () =>
       themes().find(theme => theme()?.id === editorState.options.themeId)?.() ??
@@ -112,7 +123,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const baseTheme = EditorView.theme({
     '&': {
       textAlign: 'left',
-      background: 'transparent',
+      background: 'transparent !important',
     },
     '.cm-content': {
       textAlign: 'left',
@@ -184,12 +195,23 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(EditorView.lineWrapping);
   createExtension(customFontExtension);
   createExtension(currentLanguage);
+  createExtension(currentExtraLanguage);
   createExtension(() =>
     editorState.options.showLineNumbers ? lineNumbers() : [],
   );
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
   createExtension(EDITOR_BASE_SETUP);
+  createExtension(() =>
+    EditorView.domEventHandlers({
+      paste(event, view) {
+        setTimeout(() => {
+          const localValue = view.state.doc.toString();
+          getActiveEditorStore().format(localValue);
+        });
+      },
+    }),
+  );
 
   createEffect(
     on(editorView, view => {

@@ -7,6 +7,7 @@ import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
 import {Box, FlexField, TextField} from '@codeimage/ui';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
+import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -43,7 +44,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
 
   const onSelectTheme = (theme: CustomTheme) => {
     dispatchUpdateTheme({theme});
-    umami.trackEvent(theme.id, `theme-change`);
+    getUmami().trackEvent(theme.id, `theme-change`);
   };
   const exampleCode =
     '// Just a code example \n' +

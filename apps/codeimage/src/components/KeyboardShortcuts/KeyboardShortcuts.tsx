@@ -2,7 +2,6 @@ import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import * as ui from '@codeimage/store/ui';
 import {
   Button,
@@ -14,7 +13,6 @@ import {
 import {offset} from '@floating-ui/dom';
 import {Popover, PopoverButton} from 'solid-headless';
 import {createMemo, createSignal, For, JSXElement} from 'solid-js';
-import {appEnvironment} from '../../core/configuration';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {AppLocaleEntries} from '../../i18n';
 import {HintIcon} from '../Icons/Hint';
@@ -26,7 +24,6 @@ export interface KeyboardShortcut {
 }
 
 export function KeyboardShortcuts(): JSXElement {
-  const {themes} = appEnvironment;
   const [t] = useI18n<AppLocaleEntries>();
   const [show, setShow] = createSignal(false);
   const editor = getRootEditorStore();
@@ -40,7 +37,6 @@ export function KeyboardShortcuts(): JSXElement {
     {label: t('shortcut.toggleDarkMode'), key: ['D']},
     {label: t('shortcut.toggleHeader'), key: ['H']},
     {label: t('shortcut.changePadding'), key: ['P']},
-    {label: t('shortcut.pickRandomTheme'), key: ['R']},
     {label: t('shortcut.export'), key: ['Ctrl', 'S']},
     {label: t('shortcut.exportNewTab'), key: ['Ctrl', 'O']},
     {label: t('shortcut.copyLink'), key: ['Ctrl', 'Shift', 'C']},
@@ -93,12 +89,6 @@ export function KeyboardShortcuts(): JSXElement {
     W: () => {
       if (filterHotKey()) return;
       terminal.toggleWatermark();
-    },
-    R: () => {
-      if (filterHotKey()) return;
-      const index = Math.floor(Math.random() * themes.length);
-      const theme = themes[index];
-      dispatchUpdateTheme({theme});
     },
     // ATTENTION: does it work for all keyboards? https://github.com/jamiebuilds/tinykeys/issues/155
     'Shift+?': () => {

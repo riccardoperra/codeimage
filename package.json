@@ -1,10 +1,11 @@
 {
   "name": "codeimage",
-  "version": "1.0.2",
+  "version": "1.1.4",
   "description": "Create elegant code screenshots of your source code",
   "info": "Codeimage is the newest open source tool to help developers to create beautiful screenshots of their code, providing several features to speed up the process to post in social media. It's built on the top of solid-js and has a rich choice of customizations, 15+ custom themes, supports for mobile devices and much more!",
   "homepage": "https://codeimage.dev/",
   "private": true,
+  "sideEffects": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/riccardoperra/codeimage"
@@ -35,6 +36,7 @@
   },
   "scripts": {
     "prepare": "husky install",
+    "postinstall": "pnpm patch-solid-exports",
     "dev": "pnpm --filter=@codeimage/app dev",
     "dev:api": "pnpm --filter=@codeimage/api dev",
     "libs:build": "pnpm libs:build:core && pnpm libs:build:config",
@@ -86,5 +88,15 @@
   },
   "engines": {
     "pnpm": ">=7"
+  },
+  "pnpm": {
+    "overrides": {
+      "@vanilla-extract/integration": "6.0.1",
+      "solid-js": "1.6.3"
+    },
+    "allowNonAppliedPatches": false
+  },
+  "dependencies": {
+    "statebuilder": "0.2.2"
   }
 }

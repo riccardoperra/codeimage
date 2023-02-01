@@ -1,31 +1,31 @@
 import {PersistedFrameState} from '@codeimage/store/frame/model';
 
 export interface EditorUIOptions {
-  readonly fontId: string;
-  readonly fontWeight: number;
-  readonly showLineNumbers: boolean;
-  readonly focused: boolean;
-  readonly themeId: string;
+  fontId: string;
+  fontWeight: number;
+  showLineNumbers: boolean;
+  focused: boolean;
+  themeId: string;
 }
 
 export interface TabState {
-  readonly tabName: string | null;
-  readonly tabIcon?: string;
+  tabName: string | null;
+  tabIcon?: string;
 }
 
 export interface EditorState {
-  readonly id: string;
-  readonly code: string;
-  readonly tab: TabState;
-  readonly languageId: string;
+  id: string;
+  code: string;
+  tab: TabState;
+  languageId: string;
 }
 
 export interface EditorUIOptions {
-  readonly fontId: string;
-  readonly fontWeight: number;
-  readonly showLineNumbers: boolean;
-  readonly focused: boolean;
-  readonly themeId: string;
+  fontId: string;
+  fontWeight: number;
+  showLineNumbers: boolean;
+  focused: boolean;
+  themeId: string;
 }
 
 export interface PersistedEditorState {
