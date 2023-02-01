@@ -21,7 +21,7 @@ export function GithubLoginButton(
       <GithubIcon size={'md'}></GithubIcon>
       <Box as={'span'} marginLeft={2}>
         <Show fallback={'Sign in'} when={modality === 'full'} keyed={true}>
-          Sign in with Github
+          Sign in with GitHub
         </Show>
       </Box>
     </Button>

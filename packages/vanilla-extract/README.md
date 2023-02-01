@@ -5,7 +5,7 @@
 This module contains some customization of [Vanilla Extract](https://github.com/seek-oss/vanilla-extract) that
 are not shipped yet into their repository.
 
-All the original code is available on Github and MIT Licensed. You can find a copy of SEEK MIT license in [LICENSE.seek.md](./LICENSE.seek.md)
+All the original code is available on GitHub and MIT Licensed. You can find a copy of SEEK MIT license in [LICENSE.seek.md](./LICENSE.seek.md)
 
 ### Differences between Vanilla Extract and @codeimage/vanilla-extract
 
