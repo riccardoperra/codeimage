@@ -7,7 +7,7 @@ export const githubLightTheme = createTheme({
   editorTheme: githubLight,
   properties: {
     darkMode: false,
-    label: 'Github Light',
+    label: 'GitHub Light',
     previewBackground:
       'linear-gradient(-45deg, rgba(73,84,222,1) 0%,rgba(73,221,216,1) 100%)',
     terminal: {

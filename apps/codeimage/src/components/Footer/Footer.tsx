@@ -10,7 +10,7 @@ export const Footer = () => {
       <Box display={'flex'} justifyContent={'flexEnd'} padding={2}>
         <Box marginRight={5}>
           <Link href={'https://github.com/riccardoperra/codeimage'} size="xs">
-            Github
+            GitHub
           </Link>
         </Box>
 
