@@ -7,7 +7,6 @@
 [![Issues](https://img.shields.io/github/issues/riccardoperra/codeimage)](https://github.com/riccardoperra/codeimage/issues)
 [![Built with SolidJS](https://img.shields.io/badge/Built%20with-SolidJS-blue)](https://github.com/solidjs/solid)
 [![Built with Vanilla Extract](https://img.shields.io/badge/Built%20with-Vanilla%20Extract-ff69b4)](https://github.com/seek-oss/vanilla-extract)
-[![Code quality](https://img.shields.io/lgtm/grade/javascript/github/riccardoperra/codeimage)](https://lgtm.com/projects/g/riccardoperra/codeimage/alerts/?mode=list)
 ![License](https://img.shields.io/github/license/riccardoperra/codeimage)
 
 ## Introduction
