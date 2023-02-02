@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.1.5
+
+### Patch Changes
+
+- [#458](https://github.com/riccardoperra/codeimage/pull/458) [`02564b11`](https://github.com/riccardoperra/codeimage/commit/02564b1148b0496b08f93777bece24771423b524) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Update README.md / fix H uncapitalized letter on GitHub labels
+
 ## 1.1.4
 
 ### Patch Changes
