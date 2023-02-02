@@ -1,5 +1,5 @@
 ---
-"@codeimage/app": fix H uncapitalized letter on GitHub labels 
+"@codeimage/app": patch 
 ---
 
-Update README.md
+Update README.md / fix H uncapitalized letter on GitHub labels
