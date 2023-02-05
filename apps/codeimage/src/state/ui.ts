@@ -1,6 +1,6 @@
 import {provideAppState} from '@codeimage/store/index';
+import {withLocalStorage} from '@codeimage/store/plugins/local-storage';
 import {createEffect, createSignal, on} from 'solid-js';
-import {reconcile} from 'solid-js/store';
 import {defineStore, makePlugin, Store} from 'statebuilder';
 
 type Theme = 'light' | 'dark';
@@ -70,29 +70,7 @@ const withUiThemeModeListener = makePlugin(
 );
 
 export const $uiStore = defineStore(() => initialState)
-  .extend(store => {
-    // TODO: add plugin storage
-    const storeName = '@store/ui';
-    const initialState = localStorage.getItem(storeName);
-
-    if (initialState) {
-      try {
-        const parsedState = JSON.parse(initialState);
-        store.set(reconcile(parsedState));
-      } catch {}
-    }
-
-    const defaultSet = store.set;
-
-    // TODO: add statebuilder utilities to override set with better typings
-    store.set = (...args: unknown[]): void => {
-      const result = defaultSet(...(args as Parameters<typeof defaultSet>));
-      localStorage.setItem(storeName, JSON.stringify(store.get));
-      return result;
-    };
-
-    return {};
-  })
+  .extend(withLocalStorage('@store/ui'))
   .extend(withUiThemeModeListener)
   .extend(store => {
     return {
