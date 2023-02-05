@@ -97,6 +97,6 @@
     "allowNonAppliedPatches": false
   },
   "dependencies": {
-    "statebuilder": "0.2.2"
+    "statebuilder": "^0.2.3"
   }
 }
