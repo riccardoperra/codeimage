@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.1.6
+
+### Patch Changes
+
+- [`3f810245`](https://github.com/riccardoperra/codeimage/commit/3f8102455a52cf15d6481c5a037c8015eb4ec042) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add auto day/night mode #460
+
 ## 1.1.5
 
 ### Patch Changes
