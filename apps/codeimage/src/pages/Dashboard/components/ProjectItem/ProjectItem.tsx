@@ -1,7 +1,7 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
-import {uiStore} from '@codeimage/store/ui';
+import {getUiStore} from '@codeimage/store/ui';
 import {
   backgroundColorVar,
   Box,
@@ -34,7 +34,8 @@ const highlight = _highlight;
 
 export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const dashboard = getDashboardState()!;
-  const locale = () => uiStore.locale;
+  const uiStore = getUiStore();
+  const locale = () => uiStore.get.locale;
   const createDialog = createStandaloneDialog();
   const navigate = useNavigate();
   const [t] = useI18n<AppLocaleEntries>();

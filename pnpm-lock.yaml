@@ -32,13 +32,13 @@ importers:
       lint-staged: ^13.0.3
       pnpm-bundle-workspace-package: ^1.0.2
       prettier: ^2.7.1
-      statebuilder: 0.2.2
+      statebuilder: ^0.2.3
       tslib: ^2.4.0
       tsx: ^3.10.1
       typescript: ^4.8.4
       vite: ^3.1.8
     dependencies:
-      statebuilder: 0.2.2
+      statebuilder: 0.2.3
     devDependencies:
       '@changesets/assemble-release-plan': 5.2.2
       '@changesets/changelog-github': 0.4.7
@@ -203,7 +203,7 @@ importers:
       solid-headless: ^0.13.0
       solid-js: 1.6.3
       solid-use: ^0.5.0
-      statebuilder: 0.2.2
+      statebuilder: ^0.2.2
       tinykeys: ^1.4.0
       typescript: ^4.8.4
       vite: ^3.1.8
@@ -5122,6 +5122,23 @@ packages:
       - supports-color
     dev: true
 
+  /@mswjs/interceptors/0.17.7:
+    resolution: {integrity: sha512-dPInyLEF6ybLxfKGY99euI+mbT6ls4PVO9qPgGIsRk3+2VZVfT7fo9Sq6Q8eKT9W38QtUyhG74hN7xMtKWioGw==}
+    engines: {node: '>=14'}
+    dependencies:
+      '@open-draft/until': 1.0.3
+      '@types/debug': 4.1.7
+      '@xmldom/xmldom': 0.8.6
+      debug: 4.3.4
+      headers-polyfill: 3.1.2
+      outvariant: 1.3.0
+      strict-event-emitter: 0.2.7
+      web-encoding: 1.1.5
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+    optional: true
+
   /@ngneat/falso/6.1.0:
     resolution: {integrity: sha512-eka5OxW65B1RphpLJ04Pd4PEkrmTab/Ut50K0OceAdM+O+MZA7YF9xo51uZgkxbhg8bJ5zEh5vucDRMSofcqsw==}
     dependencies:
@@ -5509,7 +5526,7 @@ packages:
     resolution: {integrity: sha512-W3zsG9585cKL+FqgcT+IfTgZX5C+CbNkFjOnJN+qbysT1N30+BbvEByCcDMsTy7QDrAk6oS7WU1Rym3U2xlh2Q==}
     engines: {node: '>=14.6'}
     dependencies:
-      execa: /safe-execa/0.1.2
+      execa: /safe-execa/0.1.3
     dev: true
 
   /@pnpm/graceful-fs/2.0.0:
@@ -5881,7 +5898,7 @@ packages:
       '@pnpm/logger': 4.0.0
       '@pnpm/types': 8.7.0
       detect-libc: 2.0.1
-      execa: /safe-execa/0.1.2
+      execa: /safe-execa/0.1.3
       mem: 8.1.1
       semver: 7.3.8
     dev: true
@@ -7434,6 +7451,12 @@ packages:
     resolution: {integrity: sha512-Lv2vySXypg4nfa51LY1nU8yDAGo/5YwF+EY/rUZgIbfvwVARcd67ttCM8SMsTeJy51YhHYavEq+FS6R0hW9PFQ==}
     engines: {node: '>=10.0.0'}
     dev: true
+
+  /@xmldom/xmldom/0.8.6:
+    resolution: {integrity: sha512-uRjjusqpoqfmRkTaNuLJ2VohVr67Q5YwDATW3VU7PfzTj6IRaihGrYI7zckGZjxQPBIp63nfvJbM+Yu5ICh0Bg==}
+    engines: {node: '>=10.0.0'}
+    dev: true
+    optional: true
 
   /@yarnpkg/core/4.0.0-rc.14:
     resolution: {integrity: sha512-SWq+T56I7GiRMrMECGsvCJvQmbXi+pBexjX9sYICPj+OgTHbWDmIOh/OrSC8honE6WEE2ZzPNmwF4Y355NKgew==}
@@ -13038,7 +13061,7 @@ packages:
         optional: true
     dependencies:
       '@mswjs/cookies': 0.2.2
-      '@mswjs/interceptors': 0.17.6
+      '@mswjs/interceptors': 0.17.7
       '@open-draft/until': 1.0.3
       '@types/cookie': 0.4.1
       '@types/js-levenshtein': 1.1.1
@@ -13050,7 +13073,7 @@ packages:
       inquirer: 8.2.5
       is-node-process: 1.0.1
       js-levenshtein: 1.1.6
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       outvariant: 1.3.0
       path-to-regexp: 6.2.1
       strict-event-emitter: 0.4.4
@@ -13137,6 +13160,19 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
+
+  /node-fetch/2.6.9:
+    resolution: {integrity: sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+    dev: true
+    optional: true
 
   /node-fetch/3.0.0-beta.9:
     resolution: {integrity: sha512-RdbZCEynH2tH46+tj0ua9caUHVWrd/RHnRfvly2EVdqGmI3ndS1Vn/xjm5KuGejDt2RNDQsVRLPNd2QPwcewVg==}
@@ -14671,8 +14707,8 @@ packages:
   /safe-buffer/5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
 
-  /safe-execa/0.1.2:
-    resolution: {integrity: sha512-vdTshSQ2JsRCgT8eKZWNJIL26C6bVqy1SOmuCMlKHegVeo8KYRobRrefOdUq9OozSPUUiSxrylteeRmLOMFfWg==}
+  /safe-execa/0.1.3:
+    resolution: {integrity: sha512-KuOb5C35fJRrhTfErHX+Bw03PayibKwpmOPHnyWMkwSqeiyjq2/D6E524rtJFrvqoUKH6iTe/NC4nOtgWflU7g==}
     engines: {node: '>=12'}
     dependencies:
       '@zkochan/which': 2.0.3
@@ -15302,6 +15338,16 @@ packages:
 
   /statebuilder/0.2.2:
     resolution: {integrity: sha512-8M5LkiGuSycvUgKDKyqlrMVkrW8AQLN4XOtSjZNGfMyxcgJFC6k+ubUj9jAIg0CL1M1RgS/6IUOM46DCk3/+PA==}
+    peerDependenciesMeta:
+      rxjs:
+        optional: true
+    dependencies:
+      rxjs: 7.8.0
+      solid-js: 1.6.3
+    dev: false
+
+  /statebuilder/0.2.3:
+    resolution: {integrity: sha512-M6BJlstF+GqCfnjEHfU8qvZuUGHZDp2nkfYNcy0iGaLnLgzFr4cyZQ6u29YaCm9LiFUK0++Rojrgir+YIg/n+g==}
     peerDependenciesMeta:
       rxjs:
         optional: true

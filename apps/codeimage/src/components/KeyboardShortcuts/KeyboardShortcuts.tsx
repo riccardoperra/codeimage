@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import * as ui from '@codeimage/store/ui';
+import {getUiStore} from '@codeimage/store/ui';
 import {
   Button,
   FadeInOutTransition,
@@ -28,6 +28,7 @@ export function KeyboardShortcuts(): JSXElement {
   const [show, setShow] = createSignal(false);
   const editor = getRootEditorStore();
   const frame = getFrameState();
+  const ui = getUiStore();
   const terminal = getTerminalState();
 
   const shortcuts = createMemo<KeyboardShortcut[]>(() => [

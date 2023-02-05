@@ -12,4 +12,11 @@ export const dialogLeftPanel = style({
 
 export const dialogContent = style({
   flex: 1,
+  width: '100%',
+  minWidth: '0px',
+  '@media': {
+    'screen and (max-width: 768px)': {
+      width: '80vw',
+    },
+  },
 });

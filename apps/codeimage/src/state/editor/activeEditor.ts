@@ -1,7 +1,7 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {getInvertedThemeMode} from '@codeimage/store/ui';
+import {getUiStore} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
 import {createRoot} from 'solid-js';
 import {createPrettierFormatter} from '../../hooks/createPrettierFormatter';
@@ -74,7 +74,7 @@ const $activeEditorState = () => {
                 },
                 {
                   position: 'bottom-center',
-                  theme: getInvertedThemeMode(),
+                  theme: getUiStore().invertedThemeMode(),
                 },
               );
             }
@@ -87,7 +87,7 @@ const $activeEditorState = () => {
               },
               {
                 position: 'bottom-center',
-                theme: getInvertedThemeMode(),
+                theme: getUiStore().invertedThemeMode(),
               },
             );
             r(false);

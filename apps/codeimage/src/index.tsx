@@ -1,9 +1,8 @@
-import {StateProvider} from 'statebuilder';
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {uiStore} from '@codeimage/store/ui';
+import {getUiStore} from '@codeimage/store/ui';
 import {
   backgroundColorVar,
   CodeImageThemeProvider,
@@ -18,6 +17,7 @@ import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Component, createEffect, lazy, on, Show, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
+import {StateProvider} from 'statebuilder';
 import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Scaffold} from './components/Scaffold/Scaffold';
@@ -67,9 +67,10 @@ const NotFoundPage = lazyWithNoLauncher(
 export function Bootstrap() {
   getRootEditorStore();
   const [, {locale}] = useI18n();
+  const uiStore = getUiStore();
   const auth0 = getAuth0State();
-  createEffect(on(() => uiStore.locale, locale));
-  const mode = () => uiStore.themeMode;
+  createEffect(on(() => uiStore.get.locale, locale));
+  const mode = () => uiStore.currentTheme();
 
   const Routes = useRoutes([
     {
@@ -128,7 +129,7 @@ export function Bootstrap() {
 
   return (
     <Scaffold>
-      <CodeImageThemeProvider tokens={tokens} theme={uiStore.themeMode}>
+      <CodeImageThemeProvider tokens={tokens} theme={mode()}>
         <OverlayProvider>
           <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
           <Router>

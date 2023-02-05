@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {setLocale, setThemeMode, uiStore} from '@codeimage/store/ui';
+import {getUiStore} from '@codeimage/store/ui';
 import {
   Box,
   Button,
@@ -22,6 +22,7 @@ import {
 } from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
+import {useModality} from '@core/hooks/isMobile';
 import {createSignal, For, Match, ParentProps, Switch} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import * as styles from './SettingsDialog.css';
@@ -29,8 +30,9 @@ import * as styles from './SettingsDialog.css';
 export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
   const [page] = createSignal<'general' | 'account'>('general');
   const {user, loggedIn} = getAuth0State();
-  const ui = uiStore;
+  const ui = getUiStore();
   const {locales} = appEnvironment;
+  const modality = useModality();
 
   const [t] = useI18n<AppLocaleEntries>();
 
@@ -38,10 +40,6 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
     <Dialog size={'lg'} isOpen title={'Settings'} {...props}>
       <DialogPanelContent>
         <Box display={'flex'}>
-          {/*<div class={styles.dialogLeftPanel}>*/}
-          {/*  <span onClick={() => setPage('general')}>General</span>*/}
-          {/*  <span onClick={() => setPage('account')}>Account</span>*/}
-          {/*</div>*/}
           <div class={styles.dialogContent}>
             <Switch>
               <Match when={page() === 'general'}>
@@ -50,11 +48,15 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                     <FieldLabel size={'sm'} for={'theme'}>
                       Theme
                     </FieldLabel>
-                    <Group orientation={'horizontal'}>
+                    <Group
+                      orientation={
+                        modality === 'full' ? 'horizontal' : 'vertical'
+                      }
+                    >
                       <RadioBlock
                         value={'dark'}
-                        selected={ui.themeMode === 'dark'}
-                        onSelect={setThemeMode}
+                        selected={ui.get.themeMode === 'dark'}
+                        onSelect={ui.setThemeMode}
                       >
                         <Box
                           display={'flex'}
@@ -76,8 +78,8 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                       </RadioBlock>
                       <RadioBlock
                         value={'light'}
-                        selected={ui.themeMode === 'light'}
-                        onSelect={setThemeMode}
+                        selected={ui.get.themeMode === 'light'}
+                        onSelect={ui.setThemeMode}
                       >
                         <Box
                           display={'flex'}
@@ -101,16 +103,39 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                           </div>
                         </Box>
                       </RadioBlock>
+                      <RadioBlock
+                        value={'system'}
+                        selected={ui.get.themeMode === 'system'}
+                        onSelect={ui.setThemeMode}
+                      >
+                        <Box
+                          display={'flex'}
+                          padding={4}
+                          alignItems={'center'}
+                          justifyContent={'spaceBetween'}
+                        >
+                          <Text>System</Text>
+                          <div>
+                            <SvgIcon viewBox="0 0 20 20" fill="currentColor">
+                              <path
+                                fill-rule="evenodd"
+                                d="M2 4.25A2.25 2.25 0 014.25 2h11.5A2.25 2.25 0 0118 4.25v8.5A2.25 2.25 0 0115.75 15h-3.105a3.501 3.501 0 001.1 1.677A.75.75 0 0113.26 18H6.74a.75.75 0 01-.484-1.323A3.501 3.501 0 007.355 15H4.25A2.25 2.25 0 012 12.75v-8.5zm1.5 0a.75.75 0 01.75-.75h11.5a.75.75 0 01.75.75v7.5a.75.75 0 01-.75.75H4.25a.75.75 0 01-.75-.75v-7.5z"
+                                clip-rule="evenodd"
+                              />
+                            </SvgIcon>
+                          </div>
+                        </Box>
+                      </RadioBlock>
                     </Group>
                   </FlexField>
                   <FlexField size={'lg'}>
                     <RadioGroupField
                       orientation={'vertical'}
-                      value={ui.locale}
+                      value={ui.get.locale}
                       name={'language-field'}
                       label={'Locale'}
                       onChange={locale => {
-                        setLocale(locale);
+                        ui.setLocale(locale);
                         getUmami().trackEvent(locale, `change-app-language`);
                       }}
                     >
