@@ -1,6 +1,6 @@
 import {effect} from '@codeimage/atomic-state';
 import {useI18n} from '@codeimage/locale';
-import {getInvertedThemeMode} from '@codeimage/store/ui';
+import {getUiStore} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
 import {getUmami} from '@core/constants/umami';
 import {catchError, EMPTY, exhaustMap, from, pipe, switchMap, tap} from 'rxjs';
@@ -60,7 +60,7 @@ function openSnackbar(): void {
     },
     {
       position: 'bottom-center',
-      theme: getInvertedThemeMode(),
+      theme: getUiStore().invertedThemeMode(),
     },
   );
 }

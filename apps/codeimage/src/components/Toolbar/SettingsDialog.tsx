@@ -1,6 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {setLocale, setThemeMode, uiStore} from '@codeimage/store/ui';
+import {getUiStore} from '@codeimage/store/ui';
 import {
   Box,
   Button,
@@ -29,7 +29,7 @@ import * as styles from './SettingsDialog.css';
 export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
   const [page] = createSignal<'general' | 'account'>('general');
   const {user, loggedIn} = getAuth0State();
-  const ui = uiStore;
+  const ui = getUiStore();
   const {locales} = appEnvironment;
 
   const [t] = useI18n<AppLocaleEntries>();
@@ -53,8 +53,8 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                     <Group orientation={'horizontal'}>
                       <RadioBlock
                         value={'dark'}
-                        selected={ui.themeMode === 'dark'}
-                        onSelect={setThemeMode}
+                        selected={ui.get.themeMode === 'dark'}
+                        onSelect={ui.setThemeMode}
                       >
                         <Box
                           display={'flex'}
@@ -76,8 +76,8 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                       </RadioBlock>
                       <RadioBlock
                         value={'light'}
-                        selected={ui.themeMode === 'light'}
-                        onSelect={setThemeMode}
+                        selected={ui.get.themeMode === 'light'}
+                        onSelect={ui.setThemeMode}
                       >
                         <Box
                           display={'flex'}
@@ -101,16 +101,30 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                           </div>
                         </Box>
                       </RadioBlock>
+                      <RadioBlock
+                        value={'system'}
+                        selected={ui.get.themeMode === 'system'}
+                        onSelect={ui.setThemeMode}
+                      >
+                        <Box
+                          display={'flex'}
+                          padding={4}
+                          alignItems={'center'}
+                          justifyContent={'spaceBetween'}
+                        >
+                          <Text>System</Text>
+                        </Box>
+                      </RadioBlock>
                     </Group>
                   </FlexField>
                   <FlexField size={'lg'}>
                     <RadioGroupField
                       orientation={'vertical'}
-                      value={ui.locale}
+                      value={ui.get.locale}
                       name={'language-field'}
                       label={'Locale'}
                       onChange={locale => {
-                        setLocale(locale);
+                        ui.setLocale(locale);
                         getUmami().trackEvent(locale, `change-app-language`);
                       }}
                     >
