@@ -301,6 +301,24 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     ],
   },
   {
+    id: 'csharp',
+    label: 'C#',
+    color: '#178600',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/clike'),
+      ]).then(([cb, m]) => cb(m.csharp)),
+    icons: [
+      {
+        name: 'csharp',
+        extension: '.cs',
+        content: () => import('material-icon-theme/icons/csharp.svg?raw'),
+        matcher: /^.*\.(cs)$/,
+      },
+    ],
+  },
+  {
     id: 'html',
     label: 'Html',
     color: '#e34c26',
