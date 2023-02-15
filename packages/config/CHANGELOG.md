@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 8.1.3
+
+### Patch Changes
+
+- [#464](https://github.com/riccardoperra/codeimage/pull/464) [`a2abb3d7`](https://github.com/riccardoperra/codeimage/commit/a2abb3d7c824fa4acf10ff024d462d127c90615f) Thanks [@hackpirodev](https://github.com/hackpirodev)! - feat(config): added csharp
+
 ## 8.1.2
 
 ### Patch Changes
