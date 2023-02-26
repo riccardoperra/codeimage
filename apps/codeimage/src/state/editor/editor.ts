@@ -1,6 +1,4 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {defineStore} from 'statebuilder';
-import {withProxyCommands, createCommand} from 'statebuilder/commands';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
@@ -10,6 +8,8 @@ import {filter} from '@solid-primitives/immutable';
 import {map, shareReplay} from 'rxjs';
 import {createMemo, createSelector} from 'solid-js';
 import {SetStoreFunction} from 'solid-js/store';
+import {defineStore} from 'statebuilder';
+import {createCommand, withProxyCommands} from 'statebuilder/commands';
 import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
 
 const defaultId = createUniqueId();
@@ -91,7 +91,7 @@ export function createEditorsStore() {
           code: editor.code,
         }));
       return {
-        options: {...persistedState.options, ...state.options},
+        options: {...state.options, ...persistedState.options},
         activeEditorId: editors[0].id,
         editors: editors.map(editor => {
           return {
