@@ -1,4 +1,5 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
@@ -9,14 +10,7 @@ import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
-import {
-  createEffect,
-  createMemo,
-  createRoot,
-  on,
-  ParentComponent,
-  Show,
-} from 'solid-js';
+import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
@@ -27,15 +21,13 @@ export const EditorStyleForm: ParentComponent = () => {
   const languages = SUPPORTED_LANGUAGES;
 
   const highlights = () =>
-    themeArray().map(theme => {
-      // TODO: this is potentially unsafe!!
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const resolvedTheme = () => theme()!;
-      return {
-        label: resolvedTheme().properties.label ?? 'Loading...',
-        value: resolvedTheme().id,
-      };
-    });
+    themeArray()
+      .map(theme => theme())
+      .filter((theme): theme is CustomTheme => !!theme)
+      .map(theme => ({
+        label: theme.properties.label,
+        value: theme.id,
+      }));
 
   const fonts = SUPPORTED_FONTS;
   const modality = useModality();
@@ -102,25 +94,10 @@ export const EditorStyleForm: ParentComponent = () => {
                   native={modality === 'mobile'}
                   items={highlights()}
                   value={state.options.themeId}
-                  onSelectChange={value => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    const theme = themeArray().find(
-                      theme => theme()?.id === value,
-                    )!;
-                    // TODO: this is potentially unsafe!!
-                    createRoot(dispose => {
-                      createEffect(
-                        on(theme, theme => {
-                          if (theme) {
-                            getUmami().trackEvent(theme.id, `theme-change`);
-                            dispatchUpdateTheme({
-                              updateBackground: false,
-                              theme,
-                            });
-                          }
-                          dispose();
-                        }),
-                      );
+                  onSelectChange={theme => {
+                    dispatchUpdateTheme({
+                      updateBackground: false,
+                      theme,
                     });
                   }}
                 />
