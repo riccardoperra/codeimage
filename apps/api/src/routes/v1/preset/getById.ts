@@ -1,4 +1,4 @@
-import {PresetResponseSchema} from '../../../modules/preset/schema/preset-get-by-id.schema';
+import {PresetGetByIdResponseSchema} from '../../../modules/project/schema/preset-get-by-id.schema';
 import {Type} from '@sinclair/typebox';
 import {GetApiTypes} from '../../../common/types/extract-api-types';
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
@@ -10,7 +10,7 @@ const schema = {
     id: Type.String(),
   }),
   response: {
-    200: PresetResponseSchema,
+    200: PresetGetByIdResponseSchema,
   },
 };
 
@@ -20,7 +20,10 @@ const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
   fastify.get(
     '/:id',
     {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
+      preValidation: (req, reply) =>
+        fastify.authorize(req, reply, {
+          mustBeAuthenticated: false,
+        }),
       schema,
     },
     async request => {
@@ -28,7 +31,7 @@ const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
         appUser,
         params: {id},
       } = request;
-      return fastify.presetService.findById(appUser.id, id);
+      return fastify.projectService.findById(appUser, id);
     },
   );
 };

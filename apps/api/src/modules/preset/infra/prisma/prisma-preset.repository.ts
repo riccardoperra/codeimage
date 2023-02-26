@@ -13,40 +13,21 @@ export const makePrismaPresetRepository = (
     });
   };
 
-  const create = async (data: PresetCreateRequest) => {
+  const create = async (ownerId: string, data: PresetCreateRequest) => {
     return client.preset.create({
       data: {
         name: data.name,
         owner: {
-          connect: {id: data.ownerId},
+          connect: {id: ownerId},
         },
-        data: data.data ?? {},
-      },
-    });
-  };
-
-  const update = async (id: string, data: PresetCreateRequest) => {
-    return client.preset.update({
-      where: {
-        id,
-      },
-      data: {
-        name: data.name,
-        data: data.data ?? {},
-      },
-    });
-  };
-  const deletePreset = async (id: string) => {
-    return client.preset.delete({
-      where: {
-        id,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        data: data.data,
       },
     });
   };
   return {
     findById,
     create,
-    update,
-    deletePreset,
   };
 };
