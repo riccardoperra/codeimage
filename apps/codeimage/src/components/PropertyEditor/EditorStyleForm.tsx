@@ -2,19 +2,41 @@ import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {SegmentedField, Select, Text} from '@codeimage/ui';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
-import {createMemo, ParentComponent, Show} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createRoot,
+  on,
+  ParentComponent,
+  Show,
+} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
 
 export const EditorStyleForm: ParentComponent = () => {
+  const {themeArray} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
+
+  const highlights = () =>
+    themeArray().map(theme => {
+      // TODO: this is potentially unsafe!!
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const resolvedTheme = () => theme()!;
+      return {
+        label: resolvedTheme().properties.label ?? 'Loading...',
+        value: resolvedTheme().id,
+      };
+    });
+
   const fonts = SUPPORTED_FONTS;
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
@@ -63,6 +85,43 @@ export const EditorStyleForm: ParentComponent = () => {
                     const language = value ?? languages[0].id;
                     setLanguageId(language);
                     getUmami().trackEvent(language, 'change-language');
+                  }}
+                />
+              </SuspenseEditorItem>
+            </TwoColumnPanelRow>
+          </PanelRow>
+
+          <PanelRow for={'frameLanguageField'} label={t('frame.theme')}>
+            <TwoColumnPanelRow>
+              <SuspenseEditorItem
+                fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+              >
+                <Select
+                  id={'frameSyntaxHighlightField'}
+                  multiple={false}
+                  native={modality === 'mobile'}
+                  items={highlights()}
+                  value={state.options.themeId}
+                  onSelectChange={value => {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    const theme = themeArray().find(
+                      theme => theme()?.id === value,
+                    )!;
+                    // TODO: this is potentially unsafe!!
+                    createRoot(dispose => {
+                      createEffect(
+                        on(theme, theme => {
+                          if (theme) {
+                            getUmami().trackEvent(theme.id, `theme-change`);
+                            dispatchUpdateTheme({
+                              updateBackground: false,
+                              theme,
+                            });
+                          }
+                          dispose();
+                        }),
+                      );
+                    });
                   }}
                 />
               </SuspenseEditorItem>
