@@ -1,5 +1,17 @@
 # @codeimage/app
 
+## 1.2.0
+
+### Minor Changes
+
+- [#477](https://github.com/riccardoperra/codeimage/pull/477) [`782acf64`](https://github.com/riccardoperra/codeimage/commit/782acf647927359973407bf7262d7b614a8a3ede) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(app): change syntax highlight with locked bg
+
+### Patch Changes
+
+- Updated dependencies [[`ff6dfdcd`](https://github.com/riccardoperra/codeimage/commit/ff6dfdcd71e524d681895fb6554bf9500b1e1957)]:
+  - @codeimage/ui@0.10.1
+  - @codeimage/highlight@0.10.6
+
 ## 1.1.8
 
 ### Patch Changes
