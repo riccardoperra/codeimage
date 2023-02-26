@@ -7,28 +7,48 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
+import {getUmami} from '@core/constants/umami';
 import {pipe, tap} from 'rxjs';
-import {batch} from 'solid-js';
+import {batch, createEffect, createRoot, on} from 'solid-js';
 
 export type DispatchUpdateThemeParams = {
-  theme: CustomTheme;
+  theme: CustomTheme | string;
   updateBackground?: boolean;
 };
 
-export function dispatchUpdateTheme({
-  theme,
-  updateBackground,
-}: DispatchUpdateThemeParams): void {
+export function dispatchUpdateTheme(params: DispatchUpdateThemeParams): void {
+  const {theme, updateBackground} = params;
   const frame = getFrameState();
   const terminal = getTerminalState();
   const editor = getRootEditorStore();
-  batch(() => {
-    if (updateBackground) {
-      frame.setBackground(theme.properties.previewBackground);
+  const {getThemeResource} = getThemeStore();
+
+  const resolvedTheme = () => {
+    if (typeof theme === 'string') {
+      const [resource] = getThemeResource(theme);
+      return resource();
+    } else {
+      return theme;
     }
-    terminal.setState('background', theme.properties.terminal.main);
-    terminal.setState('textColor', theme.properties.terminal.text);
-    editor.actions.setThemeId(theme.id);
+  };
+
+  createRoot(dispose => {
+    createEffect(
+      on(resolvedTheme, theme => {
+        if (theme) {
+          batch(() => {
+            if (updateBackground) {
+              frame.setBackground(theme.properties.previewBackground);
+            }
+            terminal.setState('background', theme.properties.terminal.main);
+            terminal.setState('textColor', theme.properties.terminal.text);
+            editor.actions.setThemeId(theme.id);
+          });
+          getUmami().trackEvent(theme.id, `theme-change`);
+        }
+        dispose();
+      }),
+    );
   });
 }
 
