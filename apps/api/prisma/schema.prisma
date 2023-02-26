@@ -17,6 +17,7 @@ model User {
   createdAt DateTime  @default(now())
   email     String    @unique
   projects  Project[]
+  presets   Preset[]
 }
 
 model Project {
@@ -81,4 +82,18 @@ model SnippetEditorTab {
   tabName    String  @default("")
 
   @@unique([id, projectId])
+}
+
+model Preset {
+  id        String   @id @default(uuid())
+  name      String
+  data      Json
+  version   BigInt   @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String
+
+  @@unique([id, ownerId])
+  @@index([name, ownerId])
 }

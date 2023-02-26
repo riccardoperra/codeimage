@@ -1,14 +1,16 @@
 import {Type} from '@sinclair/typebox';
 import {Nullable} from '../../../common/typebox/nullable';
 
+export const BaseResponse = {
+  id: Type.String({format: 'uuid'}),
+  name: Type.String(),
+  createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
+  updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
+  ownerId: Type.String({format: 'uuid'}),
+};
+
 export const BaseProjectResponseSchema = Type.Object(
-  {
-    id: Type.String({format: 'uuid'}),
-    name: Type.String(),
-    createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
-    updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
-    ownerId: Type.String({format: 'uuid'}),
-  },
+  {...BaseResponse},
   {
     title: 'BaseProjectResponse',
   },
