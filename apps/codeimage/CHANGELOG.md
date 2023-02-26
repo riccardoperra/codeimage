@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.1.8
+
+### Patch Changes
+
+- [#474](https://github.com/riccardoperra/codeimage/pull/474) [`34be9c47`](https://github.com/riccardoperra/codeimage/commit/34be9c47209bbd66baec9d193e950cf6285ece23) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(app): fix editor state options persistence after refresh
+
 ## 1.1.7
 
 ### Patch Changes
