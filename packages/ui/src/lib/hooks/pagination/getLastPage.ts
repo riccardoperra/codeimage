@@ -13,6 +13,6 @@ export const getLastPage = <T>(
   data: Accessor<T[]>,
   pageSize: Accessor<number>,
 ) => {
-  const last = Math.floor(data().length / pageSize());
+  const last = Math.ceil(data().length / pageSize());
   return last === 0 ? 1 : last;
 };

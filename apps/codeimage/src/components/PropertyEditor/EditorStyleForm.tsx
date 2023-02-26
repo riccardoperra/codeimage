@@ -20,7 +20,7 @@ export const EditorStyleForm: ParentComponent = () => {
   const {themeArray} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
 
-  const highlights = () =>
+  const themeItems = () =>
     themeArray()
       .map(theme => theme())
       .filter((theme): theme is CustomTheme => !!theme)
@@ -92,7 +92,7 @@ export const EditorStyleForm: ParentComponent = () => {
                   id={'frameSyntaxHighlightField'}
                   multiple={false}
                   native={modality === 'mobile'}
-                  items={highlights()}
+                  items={themeItems()}
                   value={state.options.themeId}
                   onSelectChange={theme => {
                     dispatchUpdateTheme({
