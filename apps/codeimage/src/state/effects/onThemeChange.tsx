@@ -8,47 +8,43 @@ import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
-import {defer, from, Observable, of, pipe, switchMap, take, tap} from 'rxjs';
-import {batch, observable} from 'solid-js';
+import {pipe, tap} from 'rxjs';
+import {batch} from 'solid-js';
 
 export type DispatchUpdateThemeParams = {
   theme: CustomTheme | string;
   updateBackground?: boolean;
 };
 
-export const dispatchUpdateTheme = effect<DispatchUpdateThemeParams>(
-  pipe(
-    switchMap(({theme: themeOrId, updateBackground}) =>
-      defer(() => {
-        if (typeof themeOrId === 'string') {
-          const [resource] = getThemeStore().getThemeResource(themeOrId);
-          return (
-            from(observable(resource)) as Observable<CustomTheme | undefined>
-          ).pipe(take(1));
-        } else {
-          return of(themeOrId);
+export function dispatchUpdateTheme(params: DispatchUpdateThemeParams): void {
+  const {theme, updateBackground} = params;
+  const frame = getFrameState();
+  const terminal = getTerminalState();
+  const editor = getRootEditorStore();
+  const {getThemeDef} = getThemeStore();
+
+  const resolvedTheme = new Promise<CustomTheme | undefined>(r => {
+    if (typeof theme === 'string') {
+      return getThemeDef(theme)?.load().then(r);
+    } else {
+      return r(theme);
+    }
+  });
+
+  resolvedTheme.then(theme => {
+    if (theme) {
+      batch(() => {
+        if (updateBackground) {
+          frame.setBackground(theme.properties.previewBackground);
         }
-      }).pipe(
-        tap(theme => {
-          const frame = getFrameState();
-          const terminal = getTerminalState();
-          const editor = getRootEditorStore();
-          if (theme) {
-            batch(() => {
-              if (updateBackground) {
-                frame.setBackground(theme.properties.previewBackground);
-              }
-              terminal.setState('background', theme.properties.terminal.main);
-              terminal.setState('textColor', theme.properties.terminal.text);
-              editor.actions.setThemeId(theme.id);
-            });
-            getUmami().trackEvent(theme.id, `theme-change`);
-          }
-        }),
-      ),
-    ),
-  ),
-);
+        terminal.setState('background', theme.properties.terminal.main);
+        terminal.setState('textColor', theme.properties.terminal.text);
+        editor.actions.setThemeId(theme.id);
+      });
+      getUmami().trackEvent(theme.id, `theme-change`);
+    }
+  });
+}
 
 const randomizeBoolean = () => Math.random() < 0.5;
 
