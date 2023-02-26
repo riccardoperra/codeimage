@@ -8,16 +8,23 @@ export default fp(async fastify => {
   fastify.setErrorHandler(error => {
     let httpError: HttpError | null = null;
 
-    if (error instanceof NotFoundEntityException) {
-      httpError = fastify.httpErrors.notFound(error.message);
-    }
+    if (error.statusCode) {
+      httpError = fastify.httpErrors.createError(
+        error.statusCode,
+        error.message,
+      );
+    } else {
+      if (error instanceof NotFoundEntityException) {
+        httpError = fastify.httpErrors.notFound(error.message);
+      }
 
-    if (error instanceof ForbiddenEntityException) {
-      httpError = fastify.httpErrors.forbidden(error.message);
-    }
+      if (error instanceof ForbiddenEntityException) {
+        httpError = fastify.httpErrors.forbidden(error.message);
+      }
 
-    if (error instanceof EntityNotUpdatableException) {
-      httpError = fastify.httpErrors.badRequest(error.message);
+      if (error instanceof EntityNotUpdatableException) {
+        httpError = fastify.httpErrors.badRequest(error.message);
+      }
     }
 
     if (httpError) {
