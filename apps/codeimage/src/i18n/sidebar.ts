@@ -16,6 +16,7 @@ export default {
       language: 'Language',
       lineNumbers: 'Line number',
       font: 'Font',
+      theme: 'Theme',
       fontWeight: 'Font weight',
       reflection: 'Reflection',
       backgroundType: 'Background',
@@ -41,6 +42,7 @@ export default {
       reflection: 'Riflesso',
       watermark: 'Watermark',
       backgroundType: 'Tipo background',
+      theme: 'Tema',
     },
   },
   de: {
@@ -63,6 +65,7 @@ export default {
       reflection: 'Reflektion',
       watermark: 'Wasserzeichen',
       backgroundType: 'Hintergrundtyp',
+      theme: 'Theme',
     },
   },
   es: {
@@ -85,6 +88,7 @@ export default {
       reflection: 'Reflexión',
       watermark: 'filigrana',
       backgroundType: 'Tipo de fondo',
+      theme: 'Theme',
     },
   },
 } as const;

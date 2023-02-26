@@ -1,3 +1,4 @@
+import {effect} from '@codeimage/atomic-state';
 import {AVAILABLE_COLORS, AVAILABLE_GRADIENTS} from '@codeimage/config';
 import {CustomTheme} from '@codeimage/highlight';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -6,21 +7,42 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
+import {getUmami} from '@core/constants/umami';
 import {pipe, tap} from 'rxjs';
 import {batch} from 'solid-js';
-import {effect} from '@codeimage/atomic-state';
 
-export type DispatchUpdateThemeParams = {theme: CustomTheme};
+export type DispatchUpdateThemeParams = {
+  theme: CustomTheme | string;
+  updateBackground?: boolean;
+};
 
-export function dispatchUpdateTheme({theme}: DispatchUpdateThemeParams): void {
+export function dispatchUpdateTheme(params: DispatchUpdateThemeParams): void {
+  const {theme, updateBackground} = params;
   const frame = getFrameState();
   const terminal = getTerminalState();
   const editor = getRootEditorStore();
-  batch(() => {
-    frame.setBackground(theme.properties.previewBackground);
-    terminal.setState('background', theme.properties.terminal.main);
-    terminal.setState('textColor', theme.properties.terminal.text);
-    editor.actions.setThemeId(theme.id);
+  const {getThemeDef} = getThemeStore();
+
+  const resolvedTheme = new Promise<CustomTheme | undefined>(r => {
+    if (typeof theme === 'string') {
+      return getThemeDef(theme)?.load().then(r);
+    } else {
+      return r(theme);
+    }
+  });
+
+  resolvedTheme.then(theme => {
+    if (theme) {
+      batch(() => {
+        if (updateBackground) {
+          frame.setBackground(theme.properties.previewBackground);
+        }
+        terminal.setState('background', theme.properties.terminal.main);
+        terminal.setState('textColor', theme.properties.terminal.text);
+        editor.actions.setThemeId(theme.id);
+      });
+      getUmami().trackEvent(theme.id, `theme-change`);
+    }
   });
 }
 

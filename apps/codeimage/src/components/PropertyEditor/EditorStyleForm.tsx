@@ -1,7 +1,10 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {SegmentedField, Select, Text} from '@codeimage/ui';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
@@ -14,7 +17,18 @@ import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
 
 export const EditorStyleForm: ParentComponent = () => {
+  const {themeArray} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
+
+  const themeItems = () =>
+    themeArray()
+      .map(theme => theme())
+      .filter((theme): theme is CustomTheme => !!theme)
+      .map(theme => ({
+        label: theme.properties.label,
+        value: theme.id,
+      }));
+
   const fonts = SUPPORTED_FONTS;
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
@@ -63,6 +77,28 @@ export const EditorStyleForm: ParentComponent = () => {
                     const language = value ?? languages[0].id;
                     setLanguageId(language);
                     getUmami().trackEvent(language, 'change-language');
+                  }}
+                />
+              </SuspenseEditorItem>
+            </TwoColumnPanelRow>
+          </PanelRow>
+
+          <PanelRow for={'frameLanguageField'} label={t('frame.theme')}>
+            <TwoColumnPanelRow>
+              <SuspenseEditorItem
+                fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+              >
+                <Select
+                  id={'frameSyntaxHighlightField'}
+                  multiple={false}
+                  native={modality === 'mobile'}
+                  items={themeItems()}
+                  value={state.options.themeId}
+                  onSelectChange={theme => {
+                    dispatchUpdateTheme({
+                      updateBackground: false,
+                      theme,
+                    });
                   }}
                 />
               </SuspenseEditorItem>
