@@ -1,7 +1,9 @@
 import {HandlerError} from './handlerError';
 
-export class EntityNotUpdatableException extends HandlerError<{code: string}> {
-  createMessage(args: {code: string}): string {
-    return `Entity with id ${args.code} not updatable`;
+export class EntityNotUpdatableException<
+  Args extends Record<string, string | number> | void = void,
+> extends HandlerError<Args> {
+  createMessage(): string {
+    return `Cannot update given entity`;
   }
 }
