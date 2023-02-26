@@ -1,20 +1,18 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {GetApiTypes} from '../../../common/types/extract-api-types';
-import {
-  ProjectCreateRequestSchema,
-  ProjectCreateResponseSchema,
-} from '../../../modules/project/schema';
+import {PresetResponseSchema} from '../../../modules/preset/schema/preset-get-by-id.schema';
+import {PresetBaseRequestSchema} from '../../../modules/preset/schema/preset-update.schema';
 
 const schema = {
-  tags: ['Project'],
-  description: 'Create a new CodeImage project',
-  body: ProjectCreateRequestSchema,
+  tags: ['Preset'],
+  description: 'Create a new CodeImage Preset',
+  body: PresetBaseRequestSchema,
   response: {
-    200: ProjectCreateResponseSchema,
+    200: PresetResponseSchema,
   },
 };
 
-export type CreateProjectApi = GetApiTypes<typeof schema>;
+export type CreatePresetApi = GetApiTypes<typeof schema>;
 
 const createRoute: FastifyPluginAsyncTypebox = async fastify => {
   fastify.post(
@@ -25,7 +23,7 @@ const createRoute: FastifyPluginAsyncTypebox = async fastify => {
     },
     request => {
       const {appUser, body} = request;
-      return fastify.projectService.createNewProject(appUser.id, body);
+      return fastify.presetService.create(appUser.id, body);
     },
   );
 };
