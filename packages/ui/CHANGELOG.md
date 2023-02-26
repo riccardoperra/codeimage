@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.10.1
+
+### Patch Changes
+
+- [#478](https://github.com/riccardoperra/codeimage/pull/478) [`ff6dfdcd`](https://github.com/riccardoperra/codeimage/commit/ff6dfdcd71e524d681895fb6554bf9500b1e1957) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(ui): fix pagination total pages calc
+
 ## 0.10.0
 
 ### Minor Changes
