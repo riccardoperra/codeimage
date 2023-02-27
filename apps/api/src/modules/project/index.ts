@@ -1,6 +1,9 @@
 import {FastifyPluginAsync} from 'fastify';
-import {makeProjectService, ProjectService} from './handlers/project.service';
+import {prepareHandlers} from './handler';
+import * as handlers from './handlers';
 import {makePrismaProjectRepository, ProjectRepository} from './repository';
+
+const resolveHandlers = prepareHandlers(handlers);
 
 export const project: FastifyPluginAsync = async fastify => {
   // TODO: to remove
@@ -11,14 +14,17 @@ export const project: FastifyPluginAsync = async fastify => {
 
   fastify.decorate(
     'projectService',
-    makeProjectService(fastify.projectRepository, fastify.httpErrors),
+    resolveHandlers({
+      repository: fastify.prisma,
+      httpErrors: fastify.httpErrors,
+    }),
   );
 };
 
 declare module 'fastify' {
   interface FastifyInstance {
     projectRepository: ProjectRepository;
-    projectService: ProjectService;
+    projectService: ReturnType<typeof resolveHandlers>;
   }
 }
 
