@@ -1,8 +1,8 @@
 import {Static, Type} from '@sinclair/typebox';
-import {BaseResponse} from '../../project/schema/project.schema';
+import {BaseResponse} from '../../../common/schemas/baserResponse';
 
 export const BasePresetResponseSchema = Type.Object(
-  {...BaseResponse},
+  {...BaseResponse, version: Type.Number()},
   {
     title: 'BasePresetResponse',
   },
