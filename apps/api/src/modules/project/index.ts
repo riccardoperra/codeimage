@@ -1,16 +1,13 @@
 import {FastifyPluginAsync} from 'fastify';
 import {prepareHandlers} from './handler';
 import * as handlers from './handlers';
-import {makePrismaProjectRepository, ProjectRepository} from './repository';
+import {ProjectRepository} from './repository';
 
 const resolveHandlers = prepareHandlers(handlers);
 
 export const project: FastifyPluginAsync = async fastify => {
   // TODO: to remove
-  fastify.decorate(
-    'projectRepository',
-    makePrismaProjectRepository(fastify.prisma),
-  );
+  fastify.decorate('projectRepository', new ProjectRepository(fastify.prisma));
 
   fastify.decorate(
     'projectService',
