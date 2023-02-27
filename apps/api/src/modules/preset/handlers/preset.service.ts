@@ -1,9 +1,8 @@
 import {HttpErrors} from '@fastify/sensible/lib/httpError';
 import {PresetCreateRequest, PresetCreateResponse} from '../domain';
 import {PresetRepository} from '../repository';
-type PresetCompleteResponse = PresetCreateResponse & {isOwner: boolean};
 export interface PresetService {
-  findById(ownerId: string | null, id: string): Promise<PresetCompleteResponse>;
+  findById(ownerId: string, id: string): Promise<PresetCreateResponse>;
   create(
     userId: string,
     data: PresetCreateRequest,
@@ -22,14 +21,16 @@ export const makePresetService = (
   const findById = async (
     ownerId: string,
     id: string,
-  ): Promise<PresetCompleteResponse> => {
+  ): Promise<PresetCreateResponse> => {
     const preset = await repository.findById(id);
     if (!preset) {
       throw httpErrors.notFound(`Preset with id ${id} not found`);
     }
-    const isOwner = !!ownerId && ownerId === preset.ownerId;
+    if (preset.ownerId !== ownerId) {
+      throw httpErrors.forbidden('You are not allowed to access this preset');
+    }
 
-    return {...preset, isOwner};
+    return preset;
   };
   const create = (
     ownerId: string,
@@ -43,13 +44,7 @@ export const makePresetService = (
     id: string,
     data: PresetCreateRequest,
   ) => {
-    const preset = await repository.findById(id);
-    if (!preset) {
-      throw httpErrors.notFound(`Preset with id ${id} not found`);
-    }
-    if (preset.ownerId !== userId) {
-      throw httpErrors.forbidden('You are not allowed to update this preset');
-    }
+    await findById(userId, id);
     return repository.update(id, data);
   };
 
