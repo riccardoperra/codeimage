@@ -1,13 +1,45 @@
-import {HandlerCallback, HandlersMap, ResolvedHandlersMap, Wrap} from './types';
+import {
+  HandlerCallback,
+  HandlersMap,
+  ResolvedHandlersMap,
+  ResolveHandler,
+  Wrap,
+} from './types';
 
 const $HANDLER = Symbol('domain-handler');
 
+type HandlerMetadata = {
+  registry: DomainHandlerRegistry<any>;
+};
+
 export class DomainHandlerRegistry<TDependencies> {
+  #dependencies: TDependencies | null = null;
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected constructor() {}
 
+  get dependencies(): TDependencies | null {
+    return this.#dependencies;
+  }
+
   static domain<T>() {
     return new DomainHandlerRegistry<T>();
+  }
+
+  static inject<THandler extends HandlerCallback>(
+    handler: THandler,
+  ): ResolveHandler<THandler> {
+    if (!Reflect.has(handler, $HANDLER)) {
+      throw new Error('Cannot inject handler in current scope');
+    }
+
+    const metadata = Reflect.get(handler, $HANDLER) as HandlerMetadata;
+
+    if (!metadata.registry.dependencies) {
+      throw new Error('Cannot inject handler dependency in current scope');
+    }
+
+    return handler(metadata.registry.dependencies) as ResolveHandler<THandler>;
   }
 
   prepareHandlers<THandlers extends HandlersMap<TDependencies>>(
@@ -16,6 +48,7 @@ export class DomainHandlerRegistry<TDependencies> {
     dependencies: TDependencies,
   ) => Wrap<ResolvedHandlersMap<TDependencies, THandlers>> {
     return (dependencies: TDependencies) => {
+      this.#dependencies = dependencies;
       return this.resolveHandlers(handlers, dependencies);
     };
   }
@@ -34,7 +67,11 @@ export class DomainHandlerRegistry<TDependencies> {
   createHandler<Callback extends (...args: any[]) => unknown>(
     callback: (dependencies: TDependencies) => Callback,
   ) {
-    Object.defineProperty(callback, $HANDLER, {value: true});
+    Object.defineProperty(callback, $HANDLER, {
+      value: {
+        registry: this,
+      } as HandlerMetadata,
+    });
     return callback;
   }
 

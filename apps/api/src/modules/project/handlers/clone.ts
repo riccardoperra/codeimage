@@ -1,5 +1,6 @@
 import {User} from '@codeimage/prisma-models';
 import {HttpError} from '@fastify/sensible/lib/httpError';
+import {DomainHandlerRegistry} from '../../../common/domainFunctions/registerHandlers';
 import {createHandler} from '../handler';
 import {ProjectCreateResponse} from '../schema';
 import createNewProject from './createNewProject';
@@ -15,7 +16,7 @@ export default createHandler(({repository, httpErrors}) => {
       if (!project) {
         throw {name: 'NotFoundError'} as HttpError;
       }
-      return createNewProject({repository, httpErrors})(user.id, {
+      return DomainHandlerRegistry.inject(createNewProject)(user.id, {
         name: newName ?? project.name,
         frame: project.frame,
         editors: project.editorTabs,
