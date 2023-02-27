@@ -26,9 +26,13 @@ export class DomainHandlerRegistry<TDependencies> {
     return new DomainHandlerRegistry<T>();
   }
 
-  static inject<THandler extends HandlerCallback>(
+  static callHandler<
+    THandler extends HandlerCallback,
+    TResolveHandler extends ResolveHandler<THandler> = ResolveHandler<THandler>,
+  >(
     handler: THandler,
-  ): ResolveHandler<THandler> {
+    ...args: Parameters<TResolveHandler>
+  ): ReturnType<TResolveHandler> {
     if (!Reflect.has(handler, $HANDLER)) {
       throw new Error('Cannot inject handler in current scope');
     }
@@ -39,7 +43,9 @@ export class DomainHandlerRegistry<TDependencies> {
       throw new Error('Cannot inject handler dependency in current scope');
     }
 
-    return handler(metadata.registry.dependencies) as ResolveHandler<THandler>;
+    return handler(metadata.registry.dependencies)(
+      ...args,
+    ) as ReturnType<TResolveHandler>;
   }
 
   prepareHandlers<THandlers extends HandlersMap<TDependencies>>(

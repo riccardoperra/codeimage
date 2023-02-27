@@ -16,7 +16,7 @@ export default createHandler(({repository, httpErrors}) => {
       if (!project) {
         throw {name: 'NotFoundError'} as HttpError;
       }
-      return DomainHandlerRegistry.inject(createNewProject)(user.id, {
+      return DomainHandlerRegistry.callHandler(createNewProject, user.id, {
         name: newName ?? project.name,
         frame: project.frame,
         editors: project.editorTabs,
