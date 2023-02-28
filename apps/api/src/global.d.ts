@@ -1,8 +1,3 @@
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DomainHandler {}
-}
-
 declare module '@api/domain' {
   export type HandlersMap<TDependencies> = Record<
     string,
