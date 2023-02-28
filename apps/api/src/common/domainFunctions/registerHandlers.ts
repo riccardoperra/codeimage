@@ -13,6 +13,7 @@ type HandlerMetadata = {
 };
 
 export class DomainHandlerRegistry<TDependencies = unknown> {
+  #moduleName: string | null = null;
   #dependencies: TDependencies | null = null;
 
   get dependencies() {
@@ -20,10 +21,12 @@ export class DomainHandlerRegistry<TDependencies = unknown> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected constructor() {}
+  protected constructor(moduleName?: string) {
+    this.#moduleName = moduleName ?? null;
+  }
 
-  static domain<T>() {
-    return new DomainHandlerRegistry<T>();
+  static forModule<T>(moduleName: string) {
+    return new DomainHandlerRegistry<T>(moduleName);
   }
 
   static callHandler<

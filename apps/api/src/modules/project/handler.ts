@@ -7,7 +7,7 @@ export const {
   resolveHandlers,
   prepareHandlers,
   createNamedHandler,
-} = DomainHandlerRegistry.domain<{
+} = DomainHandlerRegistry.forModule<{
   repository: PrismaClient;
   httpErrors: HttpErrors;
-}>();
+}>('project');
