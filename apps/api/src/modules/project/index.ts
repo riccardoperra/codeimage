@@ -1,6 +1,6 @@
 import {FastifyPluginAsync} from 'fastify';
 import {prepareHandlers} from './handler';
-import findAllByUserId from './handlers/findByUserId';
+import {findAllByUserId} from './handlers/findByUserId';
 import {ProjectRepository} from './repository';
 import clone from './handlers/clone';
 import createNewProject from './handlers/createNewProject';
@@ -21,15 +21,14 @@ export const project: FastifyPluginAsync = async fastify => {
   // TODO: to remove
   fastify.decorate('projectRepository', new ProjectRepository(fastify.prisma));
 
-  fastify.decorate(
-    'projectService',
-    prepareHandlers(handlers)({
-      repository: fastify.projectRepository,
-      httpErrors: fastify.httpErrors,
-    }),
-  );
+  const dependencies = {
+    repository: fastify.projectRepository,
+    httpErrors: fastify.httpErrors,
+  } as const;
 
-  fastify.register(findAllByUserId);
+  fastify.decorate('projectService', prepareHandlers(handlers)(dependencies));
+
+  fastify.eventRegistry.add(findAllByUserId, dependencies);
 };
 
 declare module 'fastify' {

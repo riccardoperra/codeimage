@@ -1,4 +1,3 @@
-import fp from 'fastify-plugin';
 import {ProjectGetByIdResponse} from '../domain';
 import {createNamedHandler} from '../handler';
 
@@ -12,13 +11,6 @@ export const findAllByUserId = createNamedHandler(
     };
   },
 );
-
-export default fp(async fastify => {
-  fastify.eventRegistry.add(findAllByUserId, {
-    httpErrors: fastify.httpErrors,
-    repository: fastify.projectRepository,
-  });
-});
 
 declare module '@api/domain' {
   interface DomainHandler {
