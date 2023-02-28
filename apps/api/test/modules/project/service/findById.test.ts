@@ -3,7 +3,7 @@ import * as sinon from 'sinon';
 import {test} from 'tap';
 import {ProjectGetByIdResponse} from '../../../../src/modules/project/domain';
 import {ProjectNotFoundException} from '../../../../src/modules/project/exceptions/projectNotFoundException';
-import {findById} from '../../../../src/modules/project/handlers';
+import findById from '../../../../src/modules/project/handlers/findById';
 import {makeMockProjectService} from './project.service.test';
 
 const baseResponse = {
@@ -53,11 +53,11 @@ test('findById -> should return 404 error when not found project', async t => {
     email: 'email@example.it',
     createdAt: new Date(),
   };
-  const {repository, httpErrors} = makeMockProjectService();
-  sinon.stub(repository, 'findById').callsFake(async () => null);
+  const dependencies = makeMockProjectService();
+  sinon.stub(dependencies.repository, 'findById').callsFake(async () => null);
 
   await t.rejects(
-    findById({repository, httpErrors})(user, id),
+    findById(dependencies)(user, id),
     'will reject',
     new ProjectNotFoundException({id}),
   );
@@ -70,11 +70,11 @@ test('findById -> should return 404 error when not found project', async t => {
     email: 'email@example.it',
     createdAt: new Date(),
   };
-  const {repository} = makeMockProjectService();
-  sinon.stub(repository, 'findById').callsFake(async () => null);
+  const dependencies = makeMockProjectService();
+  sinon.stub(dependencies.repository, 'findById').callsFake(async () => null);
 
   await t.rejects(
-    findById(makeMockProjectService())(user, id),
+    findById(dependencies)(user, id),
     'will reject',
     new ProjectNotFoundException({id}),
   );
@@ -87,10 +87,10 @@ test('findById -> should return project', async t => {
     email: 'email@example.it',
     createdAt: new Date(),
   };
-  const {repository, httpErrors} = makeMockProjectService();
+  const dependencies = makeMockProjectService();
 
   sinon
-    .stub(repository, 'findById')
+    .stub(dependencies.repository, 'findById')
     .withArgs(id)
     .callsFake(() =>
       Promise.resolve({
@@ -99,7 +99,7 @@ test('findById -> should return project', async t => {
       }),
     );
 
-  const result = await findById({repository, httpErrors})(user, id);
+  const result = await findById(dependencies)(user, id);
 
   t.ok(result.isOwner);
   t.same(result.ownerId, user.id);
@@ -113,10 +113,10 @@ test('findById -> should return project and not owner', async t => {
     email: 'email@example.it',
     createdAt: new Date(),
   };
-  const {repository, httpErrors} = makeMockProjectService();
+  const dependencies = makeMockProjectService();
 
   sinon
-    .stub(repository, 'findById')
+    .stub(dependencies.repository, 'findById')
     .withArgs(id)
     .callsFake(() =>
       Promise.resolve({
@@ -126,7 +126,7 @@ test('findById -> should return project and not owner', async t => {
       } as ProjectGetByIdResponse),
     );
 
-  const result = await findById({repository, httpErrors})(user, id);
+  const result = await findById(dependencies)(user, id);
 
   t.notOk(result.isOwner);
   t.same(result.ownerId, 'differentOwner');

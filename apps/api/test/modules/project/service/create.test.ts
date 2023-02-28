@@ -1,13 +1,13 @@
 import * as sinon from 'sinon';
 import t from 'tap';
 import {ProjectCreateResponse} from '../../../../src/modules/project/domain';
-import {createNewProject} from '../../../../src/modules/project/handlers';
+import createNewProject from '../../../../src/modules/project/handlers/createNewProject';
 import {makeMockProjectService} from './project.service.test';
 
 t.beforeEach(() => sinon.reset());
 
 t.test('create project', async t => {
-  const {repository, httpErrors} = makeMockProjectService();
+  const dependencies = makeMockProjectService();
   const data = {
     name: 'new project',
     editorOptions: {
@@ -38,7 +38,7 @@ t.test('create project', async t => {
     },
   };
 
-  sinon.stub(repository, 'createNewProject').resolves({
+  sinon.stub(dependencies.repository, 'createNewProject').resolves({
     ...data,
     updatedAt: new Date(),
     createdAt: new Date(),
@@ -49,10 +49,7 @@ t.test('create project', async t => {
     frameId: 'frameId1',
   } as unknown as ProjectCreateResponse);
 
-  const result = await createNewProject({repository, httpErrors})(
-    'userId',
-    data,
-  );
+  const result = await createNewProject(dependencies)('userId', data);
 
   t.strictSame(result.name, 'new project');
 });

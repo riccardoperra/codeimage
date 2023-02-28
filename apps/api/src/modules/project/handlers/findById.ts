@@ -1,10 +1,9 @@
 import {User} from '@codeimage/prisma-models';
 import {ProjectNotFoundException} from '../exceptions/projectNotFoundException';
 import {createHandler} from '../handler';
-import {createCompleteProjectGetByIdResponseMapper} from '../mapper/get-project-by-id-mapper';
 import {ProjectCompleteResponse} from '../schema';
 
-export default createHandler(({repository}) => {
+export default createHandler(({repository, mapper}) => {
   return async function findByUserId(
     user: User | null,
     id: string,
@@ -15,11 +14,6 @@ export default createHandler(({repository}) => {
       throw new ProjectNotFoundException({id});
     }
 
-    const isOwner = !!user && user.id === project.ownerId;
-
-    const mappedProject = createCompleteProjectGetByIdResponseMapper(project);
-    mappedProject.isOwner = isOwner;
-
-    return mappedProject;
+    return mapper.fromDomainToCompleteProjectResponse(project, user?.id);
   };
 });

@@ -2,11 +2,10 @@ import {User} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
 import t from 'tap';
 import {DomainHandlerRegistry} from '../../../../src/common/domainFunctions/registerHandlers';
+import {NotFoundEntityException} from '../../../../src/common/exceptions/notFoundEntityException';
 import {ProjectGetByIdResponse} from '../../../../src/modules/project/domain';
-import {
-  clone,
-  createNewProject,
-} from '../../../../src/modules/project/handlers';
+import clone from '../../../../src/modules/project/handlers/clone';
+import createNewProject from '../../../../src/modules/project/handlers/createNewProject';
 import {makeMockProjectService} from './project.service.test';
 
 const baseResponse = {
@@ -50,8 +49,8 @@ const baseResponse = {
 } as ProjectGetByIdResponse;
 
 t.test('clone -> should return cloned project', async t => {
-  const {repository, httpErrors} = makeMockProjectService();
-  sinon.stub(repository, 'findById').callsFake(async () => ({
+  const dependencies = makeMockProjectService();
+  sinon.stub(dependencies.repository, 'findById').callsFake(async () => ({
     ...baseResponse,
     name: 'Existing',
     ownerId: 'userId1',
@@ -71,18 +70,14 @@ t.test('clone -> should return cloned project', async t => {
       name: 'Existing',
     });
 
-  const result1 = await clone({httpErrors, repository})(
-    user,
-    'projectId1',
-    null,
-  );
+  const result1 = await clone(dependencies)(user, 'projectId1', null);
 
   t.ok(createNewProjectStub.calledOnce);
   t.same(result1.name, 'Existing');
 
   sinon.restore();
 
-  sinon.stub(repository, 'findById').callsFake(async () => ({
+  sinon.stub(dependencies.repository, 'findById').callsFake(async () => ({
     ...baseResponse,
     name: 'Existing',
     ownerId: 'userId1',
@@ -97,11 +92,7 @@ t.test('clone -> should return cloned project', async t => {
       name: 'new name',
     });
 
-  const result2 = await clone({repository, httpErrors})(
-    user,
-    'projectId1',
-    'new name',
-  );
+  const result2 = await clone(dependencies)(user, 'projectId1', 'new name');
   t.same(result2.name, 'new name');
   t.ok(createNewProjectStub2.calledOnce);
 });
@@ -113,23 +104,23 @@ t.test('clone -> should not wrap exception', {only: true}, async t => {
     email: 'email@example.it',
     createdAt: new Date(),
   };
-  const {repository, httpErrors} = makeMockProjectService();
+  const dependencies = makeMockProjectService();
 
   const error = new Error('same exception');
 
   sinon
-    .stub(repository, 'findById')
+    .stub(dependencies.repository, 'findById')
     .callsFake(async () => Promise.reject(error));
 
-  await t.rejects(clone({repository, httpErrors})(user, id, null), error);
+  await t.rejects(clone(dependencies)(user, id, null), error);
 
   sinon.restore();
 
   sinon
-    .stub(repository, 'findById')
-    .callsFake(async () => Promise.reject(httpErrors.notFound('not found')));
+    .stub(dependencies.repository, 'findById')
+    .callsFake(async () => Promise.reject(new NotFoundEntityException()));
 
-  await t.rejects(clone({repository, httpErrors})(user, id, null), {
+  await t.rejects(clone(dependencies)(user, id, null), {
     message: `Cannot clone project with id ${id} since it does not exists`,
   });
 });

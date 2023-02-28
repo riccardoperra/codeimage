@@ -2,6 +2,9 @@
 // import {ProjectRepository} from '../../../../src/modules/project/repository';
 //
 import {HttpErrors} from '@fastify/sensible/lib/httpError';
+import {ProjectMapper} from '../../../../src/modules/project/mapper';
+import {createProjectRequestMapper} from '../../../../src/modules/project/mapper/create-project-mapper';
+import {createCompleteProjectGetByIdResponseMapper} from '../../../../src/modules/project/mapper/get-project-by-id-mapper';
 import {ProjectRepository} from '../../../../src/modules/project/repository';
 
 export function makeMockProjectService() {
@@ -17,5 +20,10 @@ export function makeMockProjectService() {
   return {
     repository,
     httpErrors: {} as HttpErrors,
+    mapper: {
+      fromCreateRequestToDomainModel: createProjectRequestMapper,
+      fromDomainToCompleteProjectResponse:
+        createCompleteProjectGetByIdResponseMapper,
+    } as ProjectMapper,
   };
 }
