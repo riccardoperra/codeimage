@@ -1,7 +1,9 @@
-import {createHandler} from '../handler';
+import {createNamedHandler} from '../handler';
 import {ProjectUpdateRequest, ProjectUpdateResponse} from '../schema';
 
-export default createHandler(({repository}) => {
+const event = 'project:update';
+
+export const update = createNamedHandler(event, ({repository}) => {
   return async function update(
     userId: string,
     projectId: string,
@@ -10,3 +12,11 @@ export default createHandler(({repository}) => {
     return repository.updateProject(userId, projectId, data);
   };
 });
+
+export default update;
+
+declare module '@api/domain' {
+  interface DomainHandler {
+    [event]: ResolveHandler<typeof update>;
+  }
+}

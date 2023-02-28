@@ -1,5 +1,5 @@
 import {FastifyPluginAsync} from 'fastify';
-import {prepareHandlers} from './handler';
+import {resolveHandlers} from './handler';
 import {findAllByUserId} from './handlers/findByUserId';
 import {ProjectRepository} from './repository';
 import clone from './handlers/clone';
@@ -26,7 +26,7 @@ export const project: FastifyPluginAsync = async fastify => {
     httpErrors: fastify.httpErrors,
   } as const;
 
-  fastify.decorate('projectService', prepareHandlers(handlers)(dependencies));
+  fastify.decorate('projectService', resolveHandlers(handlers, dependencies));
 
   fastify.eventRegistry.add(findAllByUserId, dependencies);
 };
