@@ -1,8 +1,21 @@
 import {FastifyPluginAsync} from 'fastify';
 import {prepareHandlers} from './handler';
-import * as handlers from './handlers';
 import findAllByUserId from './handlers/findByUserId';
 import {ProjectRepository} from './repository';
+import clone from './handlers/clone';
+import createNewProject from './handlers/createNewProject';
+import findById from './handlers/findById';
+import update from './handlers/update';
+import updateName from './handlers/updateName';
+import {ResolvedHandlersMap} from '@api/domain';
+
+const handlers = {
+  clone,
+  createNewProject,
+  findById,
+  update,
+  updateName,
+} as const;
 
 const resolveHandlers = prepareHandlers(handlers);
 
@@ -24,7 +37,7 @@ export const project: FastifyPluginAsync = async fastify => {
 declare module 'fastify' {
   interface FastifyInstance {
     projectRepository: ProjectRepository;
-    projectService: ReturnType<typeof resolveHandlers>;
+    projectService: ResolvedHandlersMap<any, typeof handlers>;
   }
 }
 
