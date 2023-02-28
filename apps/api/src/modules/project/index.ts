@@ -17,15 +17,13 @@ const handlers = {
   updateName,
 } as const;
 
-const resolveHandlers = prepareHandlers(handlers);
-
 export const project: FastifyPluginAsync = async fastify => {
   // TODO: to remove
   fastify.decorate('projectRepository', new ProjectRepository(fastify.prisma));
 
   fastify.decorate(
     'projectService',
-    resolveHandlers({
+    prepareHandlers(handlers)({
       repository: fastify.projectRepository,
       httpErrors: fastify.httpErrors,
     }),
