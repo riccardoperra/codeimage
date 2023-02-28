@@ -4,13 +4,14 @@ export class EventRegistry {
   #events = new Map<string, GenericHandler>();
 
   add<Dependencies>(
-    cb: HandlerCallback<Dependencies>,
+    handler: HandlerCallback<Dependencies>,
     dependencies: Dependencies,
   ) {
-    console.log('add cb test', cb);
-
-    const name = Reflect.get(cb, 'eventHandlerName');
-    this.#events.set(name, cb(dependencies));
+    const name = Reflect.get(handler, 'eventHandlerName');
+    if (name) {
+      throw new Error('Given object is not a valid handler');
+    }
+    this.#events.set(name, handler(dependencies));
   }
 
   execute<K extends keyof DomainHandler>(
@@ -19,7 +20,7 @@ export class EventRegistry {
   ): ReturnType<DomainHandler[K]> {
     const cb = this.#events.get(event);
     if (!cb) {
-      throw new Error('Event not found');
+      throw new Error('Given string is not a valid event name');
     }
     return cb(...payload);
   }
