@@ -38,9 +38,3 @@ export default createHandler<CloneProjectHandler>(
     };
   },
 );
-
-declare global {
-  interface DomainHandler {
-    'clone-project': CloneProjectHandler;
-  }
-}

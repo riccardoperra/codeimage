@@ -1,22 +1,26 @@
-import {GenericHandler, HandlerCallback, ResolveHandler} from './types';
+import {DomainHandler, GenericHandler, HandlerCallback} from '@api/domain';
 
 export class EventRegistry {
-  #events = new WeakMap<HandlerCallback, GenericHandler>();
+  #events = new Map<string, GenericHandler>();
 
-  add(cb: any) {
-    console.log(cb);
+  add<Dependencies>(
+    cb: HandlerCallback<Dependencies>,
+    dependencies: Dependencies,
+  ) {
+    console.log('add cb test', cb);
+
+    const name = Reflect.get(cb, 'eventHandlerName');
+    this.#events.set(name, cb(dependencies));
   }
 
-  execute<
-    T extends HandlerCallback,
-    TResolveHandler extends ResolveHandler<T> = ResolveHandler<T>,
-  >(handler: T, ...args: Parameters<TResolveHandler>) {
-    const handlerCallback = this.#events.get(handler);
-    if (!handlerCallback) {
-      return;
+  execute<K extends keyof DomainHandler>(
+    event: K,
+    payload: Parameters<DomainHandler[K]>,
+  ): ReturnType<DomainHandler[K]> {
+    const cb = this.#events.get(event);
+    if (!cb) {
+      throw new Error('Event not found');
     }
-    return handlerCallback(...args);
+    return cb(...payload);
   }
 }
-
-export const AppEventRegistry = new EventRegistry();

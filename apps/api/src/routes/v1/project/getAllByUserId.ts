@@ -13,7 +13,9 @@ const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
     },
     async (request): Promise<ProjectGetByIdResponse[]> => {
       const {appUser} = request;
-      return fastify.projectService.findAllByUserId(appUser.id);
+      return fastify.eventRegistry.execute('findAllProjectsByUserId', [
+        appUser.id,
+      ]);
     },
   );
 };

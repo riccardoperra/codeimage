@@ -10,7 +10,7 @@ declare module 'fastify' {
 
 const eventRegistryPlugin: FastifyPluginAsync = fp(
   async fastify => {
-    fastify.decorate('eventRegistryPlugin', new EventRegistry());
+    fastify.decorate('eventRegistry', new EventRegistry());
   },
   {name: 'eventRegistry'},
 );

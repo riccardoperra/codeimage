@@ -1,6 +1,7 @@
 import {FastifyPluginAsync} from 'fastify';
 import {prepareHandlers} from './handler';
 import * as handlers from './handlers';
+import findAllByUserId from './handlers/findByUserId';
 import {ProjectRepository} from './repository';
 
 const resolveHandlers = prepareHandlers(handlers);
@@ -16,6 +17,8 @@ export const project: FastifyPluginAsync = async fastify => {
       httpErrors: fastify.httpErrors,
     }),
   );
+
+  fastify.register(findAllByUserId);
 };
 
 declare module 'fastify' {

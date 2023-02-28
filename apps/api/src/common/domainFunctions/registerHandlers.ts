@@ -4,7 +4,7 @@ import {
   ResolvedHandlersMap,
   ResolveHandler,
   Wrap,
-} from './types';
+} from '@api/domain';
 
 const $HANDLER = Symbol('domain-handler');
 
@@ -77,6 +77,21 @@ export class DomainHandlerRegistry<TDependencies> {
       value: {
         registry: this,
       } as HandlerMetadata,
+    });
+    return callback;
+  };
+
+  createNamedHandler = <Callback extends (...args: any[]) => unknown>(
+    name: string,
+    callback: (dependencies: TDependencies) => Callback,
+  ) => {
+    Object.defineProperties(callback, {
+      eventHandlerName: {value: name},
+      [$HANDLER]: {
+        value: {
+          registry: this,
+        } as HandlerMetadata,
+      },
     });
     return callback;
   };
