@@ -1,27 +1,51 @@
+import {ResolveHandlerMap} from '@api/domain';
 import {FastifyPluginAsync} from 'fastify';
-import {prepareHandlers} from './handler';
-import * as handlers from './handlers';
+import {resolveHandlers} from './handler';
+import clone from './handlers/clone';
+import createNewProject from './handlers/createNewProject';
+import findById from './handlers/findById';
+import {findAllByUserId} from './handlers/findByUserId';
+import update from './handlers/update';
+import updateName from './handlers/updateName';
+import {ProjectMapper} from './mapper';
+import {createProjectRequestMapper} from './mapper/create-project-mapper';
+import {createCompleteProjectGetByIdResponseMapper} from './mapper/get-project-by-id-mapper';
 import {ProjectRepository} from './repository';
 
-const resolveHandlers = prepareHandlers(handlers);
+const handlers = {
+  clone,
+  createNewProject,
+  findById,
+  update,
+  updateName,
+} as const;
+
+const mapper: ProjectMapper = {
+  fromCreateRequestToDomainModel: createProjectRequestMapper,
+  fromDomainToCompleteProjectResponse:
+    createCompleteProjectGetByIdResponseMapper,
+};
 
 export const project: FastifyPluginAsync = async fastify => {
-  // TODO: to remove
   fastify.decorate('projectRepository', new ProjectRepository(fastify.prisma));
+  fastify.decorate('projectMapper', mapper);
 
-  fastify.decorate(
-    'projectService',
-    resolveHandlers({
-      repository: fastify.prisma,
-      httpErrors: fastify.httpErrors,
-    }),
-  );
+  const dependencies = {
+    repository: fastify.projectRepository,
+    httpErrors: fastify.httpErrors,
+    mapper: fastify.projectMapper,
+  } as const;
+
+  fastify.decorate('projectService', resolveHandlers(handlers, dependencies));
+
+  fastify.eventRegistry.add(findAllByUserId, dependencies);
 };
 
 declare module 'fastify' {
   interface FastifyInstance {
+    projectMapper: ProjectMapper;
     projectRepository: ProjectRepository;
-    projectService: ReturnType<typeof resolveHandlers>;
+    projectService: ResolveHandlerMap<typeof handlers>;
   }
 }
 

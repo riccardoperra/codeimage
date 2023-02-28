@@ -1,29 +1,32 @@
 import {
   HandlerCallback,
   HandlersMap,
-  ResolvedHandlersMap,
   ResolveHandler,
   Wrap,
-} from './types';
+  StrictResolvedHandlersMap,
+} from '@api/domain';
 
 const $HANDLER = Symbol('domain-handler');
 
 type HandlerMetadata = {
-  registry: DomainHandlerRegistry<any>;
+  registry: DomainHandlerRegistry;
 };
 
-export class DomainHandlerRegistry<TDependencies> {
+export class DomainHandlerRegistry<TDependencies = unknown> {
+  #moduleName: string | null = null;
   #dependencies: TDependencies | null = null;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected constructor() {}
-
-  get dependencies(): TDependencies | null {
+  get dependencies() {
     return this.#dependencies;
   }
 
-  static domain<T>() {
-    return new DomainHandlerRegistry<T>();
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected constructor(moduleName?: string) {
+    this.#moduleName = moduleName ?? null;
+  }
+
+  static forModule<T>(moduleName: string) {
+    return new DomainHandlerRegistry<T>(moduleName);
   }
 
   static callHandler<
@@ -48,46 +51,57 @@ export class DomainHandlerRegistry<TDependencies> {
     ) as ReturnType<TResolveHandler>;
   }
 
-  prepareHandlers<THandlers extends HandlersMap<TDependencies>>(
+  prepareHandlers = <THandlers extends HandlersMap<TDependencies>>(
     handlers: THandlers,
-  ): (
+  ): ((
     dependencies: TDependencies,
-  ) => Wrap<ResolvedHandlersMap<TDependencies, THandlers>> {
+  ) => Wrap<StrictResolvedHandlersMap<TDependencies, THandlers>>) => {
     return (dependencies: TDependencies) => {
       this.#dependencies = dependencies;
       return this.resolveHandlers(handlers, dependencies);
     };
-  }
+  };
 
-  resolveHandlers<THandlers extends HandlersMap<TDependencies>>(
+  resolveHandlers = <THandlers extends HandlersMap<TDependencies>>(
     handlers: THandlers,
     dependencies: TDependencies,
-  ): Wrap<ResolvedHandlersMap<TDependencies, THandlers>> {
+  ): Wrap<StrictResolvedHandlersMap<TDependencies, THandlers>> => {
     return Object.fromEntries(
       Object.entries(handlers).map(
         ([key, fn]) => [key, this.#resolve(fn, dependencies)] as const,
       ),
-    ) as Wrap<ResolvedHandlersMap<TDependencies, THandlers>>;
-  }
+    ) as Wrap<StrictResolvedHandlersMap<TDependencies, THandlers>>;
+  };
 
-  createHandler<Callback extends (...args: any[]) => unknown>(
+  createHandler = <Callback extends (...args: any[]) => unknown>(
     callback: (dependencies: TDependencies) => Callback,
-  ) {
+  ) => {
     Object.defineProperty(callback, $HANDLER, {
       value: {
         registry: this,
       } as HandlerMetadata,
     });
     return callback;
-  }
+  };
 
-  #resolve(
+  createNamedHandler = <Callback extends (...args: any[]) => unknown>(
+    name: string,
+    callback: (dependencies: TDependencies) => Callback,
+  ) => {
+    const handler = this.createHandler(callback);
+    Object.defineProperties(handler, {
+      eventHandlerName: {value: name},
+    });
+    return callback;
+  };
+
+  #resolve = (
     handler: HandlerCallback<TDependencies>,
     dependencies: TDependencies,
-  ) {
+  ) => {
     if (!Reflect.has(handler, $HANDLER)) {
       throw new Error('Given object is not a valid handler');
     }
     return handler(dependencies);
-  }
+  };
 }

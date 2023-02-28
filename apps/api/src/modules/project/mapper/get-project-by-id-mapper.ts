@@ -3,6 +3,7 @@ import {ProjectCompleteResponse} from '../schema/project-get-by-id.schema';
 
 export function createCompleteProjectGetByIdResponseMapper(
   data: DomainModel.ProjectGetByIdResponse,
+  userId?: string,
 ): ProjectCompleteResponse {
   return {
     id: data.id,
@@ -45,6 +46,6 @@ export function createCompleteProjectGetByIdResponseMapper(
       code: editor.code,
       tabName: editor.tabName,
     })),
-    isOwner: false,
+    isOwner: !!userId && data.ownerId === userId,
   };
 }

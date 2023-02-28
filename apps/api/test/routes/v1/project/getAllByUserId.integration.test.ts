@@ -15,7 +15,9 @@ t.before(async () => {
 t.test('/v1/project -> 200', async t => {
   const fastify = await build(t);
   const userId = t.context.user.id;
-  const spy = sinon.spy(fastify.projectService, 'findAllByUserId');
+  const spy = sinon
+    .spy(fastify.eventRegistry, 'execute')
+    .withArgs('findAllProjectsByUserId', [userId]);
 
   const response = await fastify.inject({
     url: '/api/v1/project',
@@ -24,7 +26,7 @@ t.test('/v1/project -> 200', async t => {
 
   const body = response.json<ProjectGetByIdResponse[]>();
 
-  t.ok(spy.withArgs(userId).calledOnce);
+  t.ok(spy.calledOnce);
   t.ok(body.find(el => el.id === t.context.project1.id));
   t.same(body[0].ownerId, userId);
   t.same(response.statusCode, 200);
