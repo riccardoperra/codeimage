@@ -1,12 +1,11 @@
 import {createHandler} from '../handler';
-import {ProjectUpdateRequest, ProjectUpdateResponse} from '../schema';
 
 export default createHandler(({repository}) => {
-  return async function update(
+  return async function updateName(
     userId: string,
     projectId: string,
-    data: ProjectUpdateRequest,
-  ): Promise<ProjectUpdateResponse> {
-    return repository.updateProject(userId, projectId, data);
+    newName: string,
+  ) {
+    return repository.updateProjectName(projectId, newName);
   };
 });

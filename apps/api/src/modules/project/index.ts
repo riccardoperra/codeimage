@@ -12,7 +12,7 @@ export const project: FastifyPluginAsync = async fastify => {
   fastify.decorate(
     'projectService',
     resolveHandlers({
-      repository: fastify.prisma,
+      repository: fastify.projectRepository,
       httpErrors: fastify.httpErrors,
     }),
   );

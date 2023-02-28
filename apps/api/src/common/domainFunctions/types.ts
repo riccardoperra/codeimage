@@ -3,11 +3,13 @@ export type HandlersMap<TDependencies> = Record<
   HandlerCallback<TDependencies>
 >;
 
+export type GenericHandler = (...args: any[]) => any;
+
 export type Wrap<T> = T extends infer U ? {[K in keyof U]: U[K]} : never;
 
 export type HandlerCallback<TDependencies = any> = (
   dependencies: TDependencies,
-) => (...args: any[]) => unknown;
+) => GenericHandler;
 
 export type ResolveHandler<THandler extends HandlerCallback<any>> =
   THandler extends (dependencies: any) => infer TCallback ? TCallback : never;
