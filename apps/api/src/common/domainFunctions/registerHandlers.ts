@@ -85,13 +85,9 @@ export class DomainHandlerRegistry<TDependencies> {
     name: string,
     callback: (dependencies: TDependencies) => Callback,
   ) => {
-    Object.defineProperties(callback, {
+    const handler = this.createHandler(callback);
+    Object.defineProperties(handler, {
       eventHandlerName: {value: name},
-      [$HANDLER]: {
-        value: {
-          registry: this,
-        } as HandlerMetadata,
-      },
     });
     return callback;
   };
