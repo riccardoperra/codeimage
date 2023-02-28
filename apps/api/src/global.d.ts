@@ -12,21 +12,18 @@ declare module '@api/domain' {
     dependencies: TDependencies,
   ) => GenericHandler;
 
+  type ResolveHandlerMap<TMap extends HandlersMap<TDependencies>> =
+    ResolvedHandlersMap<any, TMap>;
+
   type ResolveHandler<THandler extends HandlerCallback<any>> =
     THandler extends (dependencies: any) => infer TCallback ? TCallback : never;
 
-  type ResolvedHandlersMap<
+  type StrictResolvedHandlersMap<
     TDependencies,
     TMap extends HandlersMap<TDependencies>,
   > = {
     [K in keyof TMap]: ResolveHandler<TMap[K]>;
   };
-
-  type HandlersOf<TMap extends HandlersMap<any>> = Wrap<{
-    [K in keyof TMap]: TMap[K] extends (dependencies: any) => infer TCallback
-      ? TCallback
-      : never;
-  }>;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DomainHandler {}

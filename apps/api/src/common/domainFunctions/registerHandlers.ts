@@ -1,18 +1,18 @@
 import {
   HandlerCallback,
   HandlersMap,
-  ResolvedHandlersMap,
   ResolveHandler,
   Wrap,
+  StrictResolvedHandlersMap,
 } from '@api/domain';
 
 const $HANDLER = Symbol('domain-handler');
 
 type HandlerMetadata = {
-  registry: DomainHandlerRegistry<any>;
+  registry: DomainHandlerRegistry;
 };
 
-export class DomainHandlerRegistry<TDependencies> {
+export class DomainHandlerRegistry<TDependencies = unknown> {
   #dependencies: TDependencies | null = null;
 
   get dependencies() {
@@ -52,7 +52,7 @@ export class DomainHandlerRegistry<TDependencies> {
     handlers: THandlers,
   ): ((
     dependencies: TDependencies,
-  ) => Wrap<ResolvedHandlersMap<TDependencies, THandlers>>) => {
+  ) => Wrap<StrictResolvedHandlersMap<TDependencies, THandlers>>) => {
     return (dependencies: TDependencies) => {
       this.#dependencies = dependencies;
       return this.resolveHandlers(handlers, dependencies);
@@ -62,12 +62,12 @@ export class DomainHandlerRegistry<TDependencies> {
   resolveHandlers = <THandlers extends HandlersMap<TDependencies>>(
     handlers: THandlers,
     dependencies: TDependencies,
-  ): Wrap<ResolvedHandlersMap<TDependencies, THandlers>> => {
+  ): Wrap<StrictResolvedHandlersMap<TDependencies, THandlers>> => {
     return Object.fromEntries(
       Object.entries(handlers).map(
         ([key, fn]) => [key, this.#resolve(fn, dependencies)] as const,
       ),
-    ) as Wrap<ResolvedHandlersMap<TDependencies, THandlers>>;
+    ) as Wrap<StrictResolvedHandlersMap<TDependencies, THandlers>>;
   };
 
   createHandler = <Callback extends (...args: any[]) => unknown>(

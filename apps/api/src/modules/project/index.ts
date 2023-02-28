@@ -7,7 +7,7 @@ import createNewProject from './handlers/createNewProject';
 import findById from './handlers/findById';
 import update from './handlers/update';
 import updateName from './handlers/updateName';
-import {ResolvedHandlersMap} from '@api/domain';
+import {ResolveHandlerMap} from '@api/domain';
 
 const handlers = {
   clone,
@@ -34,7 +34,7 @@ export const project: FastifyPluginAsync = async fastify => {
 declare module 'fastify' {
   interface FastifyInstance {
     projectRepository: ProjectRepository;
-    projectService: ResolvedHandlersMap<any, typeof handlers>;
+    projectService: ResolveHandlerMap<typeof handlers>;
   }
 }
 
