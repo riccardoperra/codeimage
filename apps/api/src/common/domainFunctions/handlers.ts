@@ -1,6 +1,5 @@
 import {
   ComposeHandlers,
-  GenericHandlerDependencies,
   Handler,
   HandlerCallbackMetadata,
   HandlerInternalData,
@@ -22,7 +21,7 @@ export function getHandlerMetadata(handler: object): HandlerMetadata {
 }
 
 export function createModuleHandlers<
-  TDependencies extends GenericHandlerDependencies,
+  TDependencies extends Record<string, any>,
 >() {
   const builder = HandlerBuilder.withDependencies<TDependencies>();
   return <THandlerName extends string, R extends (...args: any[]) => any>(
