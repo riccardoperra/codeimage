@@ -1,7 +1,9 @@
-import {createHandler} from '../handler';
+import {createNamedHandler} from '../handler';
 import {ProjectCreateRequest, ProjectCreateResponse} from '../schema';
 
-export default createHandler(({repository, mapper}) => {
+const event = 'createNewProject';
+
+const createNewProject = createNamedHandler(event, ({repository, mapper}) => {
   return async function createNewProject(
     userId: string,
     data: ProjectCreateRequest,
@@ -12,3 +14,11 @@ export default createHandler(({repository, mapper}) => {
     );
   };
 });
+
+export default createNewProject;
+
+declare module '@api/domain' {
+  interface DomainHandler {
+    createNewProject: ResolveHandler<typeof createNewProject>;
+  }
+}

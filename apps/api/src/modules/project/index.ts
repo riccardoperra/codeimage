@@ -32,11 +32,13 @@ export const project: FastifyPluginAsync = async fastify => {
 
   const dependencies = {
     repository: fastify.projectRepository,
-    httpErrors: fastify.httpErrors,
     mapper: fastify.projectMapper,
   } as const;
 
-  fastify.decorate('projectService', resolveHandlers(handlers, dependencies));
+  fastify.decorate(
+    'projectService',
+    resolveHandlers(handlers, dependencies, fastify.eventRegistry),
+  );
 
   fastify.eventRegistry.add(findAllByUserId, dependencies);
 };

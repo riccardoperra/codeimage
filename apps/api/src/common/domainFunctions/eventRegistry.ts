@@ -1,7 +1,13 @@
 import {DomainHandler, GenericHandler, HandlerCallback} from '@api/domain';
 
 export class EventRegistry {
-  #events = new Map<string, GenericHandler>();
+  #events = new Map<string, () => GenericHandler>();
+
+  get events(): DomainHandler {
+    return Object.fromEntries(
+      this.#events.entries(),
+    ) as unknown as DomainHandler;
+  }
 
   add<Dependencies>(
     handler: HandlerCallback<Dependencies>,
@@ -11,7 +17,7 @@ export class EventRegistry {
     if (name) {
       throw new Error('Given object is not a valid handler');
     }
-    this.#events.set(name, handler(dependencies));
+    this.#events.set(name, () => handler(dependencies, this.events));
   }
 
   execute<K extends keyof DomainHandler>(
@@ -22,6 +28,6 @@ export class EventRegistry {
     if (!cb) {
       throw new Error('Given string is not a valid event name');
     }
-    return cb(...payload);
+    return cb()(...payload);
   }
 }

@@ -10,6 +10,7 @@ declare module '@api/domain' {
 
   type HandlerCallback<TDependencies = any> = (
     dependencies: TDependencies,
+    events: any,
   ) => GenericHandler;
 
   type ResolveHandlerMap<TMap extends HandlersMap<TDependencies>> =

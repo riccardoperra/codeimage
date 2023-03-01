@@ -5,7 +5,9 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "typeRoots": ["./src/global.d.ts"]
+    "typeRoots": [
+      "./src/common/domainFunctions/event.d.ts"
+    ]
   },
   "include": [
     "./src/**/*.ts"

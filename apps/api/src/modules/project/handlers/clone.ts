@@ -1,11 +1,9 @@
 import {User} from '@codeimage/prisma-models';
-import {DomainHandlerRegistry} from '../../../common/domainFunctions/registerHandlers';
+import {ProjectNotFoundOnCloneError} from '../exceptions/projectCloneErrorException';
 import {createHandler} from '../handler';
 import {ProjectCreateResponse} from '../schema';
-import createNewProject from './createNewProject';
-import {ProjectNotFoundOnCloneError} from '../exceptions/projectCloneErrorException';
 
-export default createHandler(({repository}) => {
+export default createHandler(({repository}, events) => {
   return async (
     user: User,
     projectId: string,
@@ -13,9 +11,9 @@ export default createHandler(({repository}) => {
   ): Promise<ProjectCreateResponse> => {
     const project = await repository.findById(projectId);
     if (!project) {
-      throw new ProjectNotFoundOnCloneError({id: project});
+      throw new ProjectNotFoundOnCloneError({id: projectId});
     }
-    return DomainHandlerRegistry.callHandler(createNewProject, user.id, {
+    return events.createNewProject(user.id, {
       name: newName ?? project.name,
       frame: project.frame,
       editors: project.editorTabs,
