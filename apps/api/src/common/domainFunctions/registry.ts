@@ -1,13 +1,8 @@
-import {
-  $HANDLER,
-  DomainHandlerMap,
-  GenericHandler,
-  HandlerCallback,
-  Lazy,
-} from '@api/domain';
+import {DomainHandlerMap, GenericHandler} from '@api/domain';
+import {getHandlerMetadata} from './handlers';
 
 export class HandlerRegistry {
-  #events = new Map<string, Lazy<GenericHandler>>();
+  #events = new Map<string, GenericHandler>();
 
   get handlers(): DomainHandlerMap {
     return Object.fromEntries(
@@ -15,15 +10,8 @@ export class HandlerRegistry {
     ) as unknown as DomainHandlerMap;
   }
 
-  add<THandlerDependencies>(
-    handler: HandlerCallback<THandlerDependencies>,
-    dependencies: THandlerDependencies,
-  ): void {
-    const metadata = handler[$HANDLER];
-    if (!metadata) {
-      throw new Error('Given object is not a valid handler');
-    }
-
-    this.#events.set(metadata.name, () => handler(dependencies, this.handlers));
+  add(handler: (...args: any[]) => any): void {
+    const metadata = getHandlerMetadata(handler);
+    this.#events.set(metadata.name, handler);
   }
 }

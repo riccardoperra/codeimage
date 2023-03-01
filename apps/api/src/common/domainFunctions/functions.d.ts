@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-declare module '@api/domain' {
-  const $HANDLER = Symbol.for('handler');
+const $$Handler = Symbol('handler');
 
+declare module '@api/domain' {
   interface HandlerMetadata {
     name: string;
   }
@@ -15,7 +15,7 @@ declare module '@api/domain' {
     dependencies: TDependencies,
     handlers: HandlersMap,
   ) => GenericHandler) & {
-    [$HANDLER]: HandlerMetadata;
+    [$$Handler]: HandlerMetadata;
   };
 
   type HandlerInternalData = {
@@ -24,14 +24,18 @@ declare module '@api/domain' {
     output: unknown;
   };
 
+  type HandlerCallbackMetadata = {
+    handlers: DomainHandlerMap;
+  };
+
   type Handler<
     HandlerName extends string,
     THandlerInternals extends HandlerInternalData,
   > = ((
     dependencies: THandlerInternals['dependencies'],
-    metadata: {handlers: DomainHandlerMap},
+    metadata: HandlerCallbackMetadata,
   ) => Return) & {
-    readonly [$HANDLER]: {name: HandlerName};
+    [$$Handler]: {name: HandlerName};
   };
 
   type MergeHandlerDependencies<
@@ -53,12 +57,12 @@ declare module '@api/domain' {
       ? Acc &
           ComposeHandlers<
             RH,
-            {[key in S]: (...args: D['input']) => D['output']}
+            {
+              [key in S]: (...args: D['input']) => D['output'];
+            }
           >
       : Acc
     : Acc;
-
-  type Lazy<T> = () => T;
 
   export type HandlersMap<TDependencies> = Record<
     string,
