@@ -1,16 +1,20 @@
-import {DomainHandlerMap, GenericHandler} from '@api/domain';
+import {
+  DomainHandlerMap,
+  GenericHandler,
+  ResolvedDomainHandlerMap,
+} from '@api/domain';
 import {getHandlerMetadata} from './handlers';
 
-export class HandlerRegistry {
+export class HandlerRegistry<T extends object = DomainHandlerMap> {
   #events = new Map<string, GenericHandler>();
 
-  get handlers(): DomainHandlerMap {
+  get handlers(): ResolvedDomainHandlerMap<T> {
     return Object.fromEntries(
       this.#events.entries(),
-    ) as unknown as DomainHandlerMap;
+    ) as unknown as ResolvedDomainHandlerMap<T>;
   }
 
-  add(handler: (...args: any[]) => any): void {
+  add(handler: GenericHandler): void {
     const metadata = getHandlerMetadata(handler);
     this.#events.set(metadata.name, handler);
   }

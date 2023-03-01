@@ -7,16 +7,7 @@ declare module '@api/domain' {
     name: string;
   }
 
-  type GenericHandlerDependencies = Record<string, any>;
-
   type GenericHandler = (...args: any[]) => any;
-
-  type HandlerCallback<TDependencies = any, HandlersMap = any> = ((
-    dependencies: TDependencies,
-    handlers: HandlersMap,
-  ) => GenericHandler) & {
-    [$$Handler]: HandlerMetadata;
-  };
 
   type HandlerInternalData = {
     dependencies: unknown;
@@ -64,25 +55,13 @@ declare module '@api/domain' {
       : Acc
     : Acc;
 
-  export type HandlersMap<TDependencies> = Record<
-    string,
-    HandlerCallback<TDependencies>
-  >;
+  type ResolvedDomainHandlerMap<T extends object> = {
+    [K in keyof T]: T[K] extends Handler<string, infer R>
+      ? (...args: R['input']) => R['output']
+      : never;
+  };
 
   type Wrap<T> = T extends infer U ? {[K in keyof U]: U[K]} : never;
-
-  type ResolveHandlerMap<TMap extends HandlersMap<TDependencies>> =
-    StrictResolvedHandlersMap<any, TMap>;
-
-  type ResolveHandler<THandler extends HandlerCallback<any>> =
-    THandler extends (dependencies: any) => infer TCallback ? TCallback : never;
-
-  type StrictResolvedHandlersMap<
-    TDependencies,
-    TMap extends HandlersMap<TDependencies>,
-  > = {
-    [K in keyof TMap]: ResolveHandler<TMap[K]>;
-  };
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DomainHandlerMap {}
