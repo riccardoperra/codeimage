@@ -1,13 +1,24 @@
 import {
-  $HANDLER,
   ComposeHandlers,
-  DomainHandlerMap,
   GenericHandlerDependencies,
   Handler,
+  HandlerCallbackMetadata,
+  HandlerInternalData,
+  HandlerMetadata,
   MergeHandlerDependencies,
   Wrap,
 } from '@api/domain';
 import {HandlerRegistry} from './registry';
+
+export const $HANDLER = Symbol('handler');
+
+export function getHandlerMetadata(handler: object): HandlerMetadata {
+  const metadata = Reflect.get(handler, $HANDLER);
+  if (!metadata) {
+    throw new Error('Given object is not a valid handler');
+  }
+  return metadata;
+}
 
 export function createModuleHandlers<
   TDependencies extends GenericHandlerDependencies,
@@ -16,7 +27,7 @@ export function createModuleHandlers<
     name: THandlerName,
     handlerCallback: (
       dependencies: TDependencies,
-      handler: DomainHandlerMap,
+      metadata: HandlerCallbackMetadata,
     ) => R,
   ): Handler<
     THandlerName,
@@ -26,10 +37,9 @@ export function createModuleHandlers<
       output: ReturnType<R>;
     }
   > => {
-    Object.defineProperty(handlerCallback, $HANDLER, {value: name});
     return Object.assign(handlerCallback, {
       [$HANDLER]: {name},
-    }) as Handler<THandlerName, any>;
+    }) as unknown as Handler<THandlerName, any>;
   };
 }
 
@@ -39,15 +49,19 @@ export function registerHandlers<S extends Handler<string, any>[]>(
   registry: HandlerRegistry,
 ): Wrap<ComposeHandlers<S>> {
   return Object.fromEntries(
-    handlers.map((handler: Handler<string, any>) => {
-      return [
-        handler[$HANDLER].name,
-        handler(dependencies, {
-          get handlers() {
-            return registry.handlers;
-          },
-        }),
-      ] as const;
+    handlers.map((handler: Handler<string, HandlerInternalData>) => {
+      const metadata = getHandlerMetadata(handler);
+      const handlerCallback = Object.assign(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (...args: any[]) => {
+          return handler(dependencies, {handlers: registry.handlers})(...args);
+        },
+        {
+          [$HANDLER]: metadata,
+        },
+      );
+      registry.add(handlerCallback);
+      return [metadata.name, handlerCallback] as const;
     }),
   ) as Wrap<ComposeHandlers<S>>;
 }
