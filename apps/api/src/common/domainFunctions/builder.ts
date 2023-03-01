@@ -1,34 +1,30 @@
-import {
-  Handler,
-  HandlerCallbackMetadata,
-  HandlerInternalMetadata,
-  Wrap,
-} from '@api/domain';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {Handler, HandlerCallbackMetadata, Wrap} from '@api/domain';
 import {$HANDLER} from './handlers';
 
 type HandlerBuilderData = {
-  dependencies?: unknown;
-  input?: unknown[];
-  output?: unknown;
-  name?: string;
+  dependencies: any;
+  input: any[];
+  output: any;
+  name: any;
 };
 
 type ExtendBuilder<
   T extends HandlerBuilderData,
   S extends Partial<HandlerBuilderData>,
-> = Wrap<Omit<T, keyof S> & S> extends infer U
-  ? U extends HandlerInternalMetadata
+> = Wrap<Omit<T, keyof S>> & S extends infer U
+  ? U extends HandlerBuilderData
     ? U
     : never
   : never;
 
 export class HandlerBuilder<T extends HandlerBuilderData> {
-  private name: T['name'] = undefined;
+  private name!: T['name'];
 
   private callback!: (
     dependencies: T['dependencies'],
     metadata: HandlerCallbackMetadata,
-  ) => (...args: T['input'] & unknown[]) => T['output'];
+  ) => (...args: NonNullable<T['input']>) => T['output'];
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected constructor() {}
@@ -73,11 +69,11 @@ export class HandlerBuilder<T extends HandlerBuilderData> {
   }
 
   build(): Handler<
-    T['name'] & string,
+    T['name'],
     Wrap<Required<Pick<T, 'input' | 'output' | 'dependencies'>>>
   > {
     return Object.assign(this.callback, {
       [$HANDLER]: {name: this.name},
-    }) as unknown as Handler<T['name'] & string, any>;
+    }) as unknown as any;
   }
 }

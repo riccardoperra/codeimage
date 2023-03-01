@@ -17,11 +17,11 @@ declare module '@api/domain' {
 
   type Handler<
     HandlerName extends string,
-    THandlerInternals extends HandlerInternalMetadata,
-  > = (<TReturn>(
+    THandlerInternals extends HandlerInternalMetadata = HandlerInternalMetadata,
+  > = ((
     dependencies: THandlerInternals['dependencies'],
     metadata: HandlerCallbackMetadata,
-  ) => TReturn) & {
+  ) => (...args: THandlerInternals['input']) => THandlerInternals['output']) & {
     [$HANDLER]: {name: HandlerName};
   };
 

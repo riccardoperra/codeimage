@@ -2,7 +2,6 @@ import {
   ComposeHandlers,
   Handler,
   HandlerCallbackMetadata,
-  HandlerInternalMetadata,
   MergeHandlerDependencies,
   Wrap,
 } from '@api/domain';
@@ -51,13 +50,12 @@ export function registerHandlers<S extends Handler<string, any>[]>(
   registry: HandlerRegistry,
 ): Wrap<ComposeHandlers<S>> {
   return Object.fromEntries(
-    handlers.map((handler: Handler<string, HandlerInternalMetadata>) => {
+    handlers.map((handler: Handler<string>) => {
       const metadata = getHandlerMetadata(handler);
       const handlerCallback = Object.assign(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (...args: any[]) => {
-          return handler(dependencies, {handlers: registry.handlers})(...args);
-        },
+        (...args: any[]) =>
+          handler(dependencies, {handlers: registry.handlers})(...args),
         {
           [$HANDLER]: metadata,
         },
