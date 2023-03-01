@@ -1,7 +1,7 @@
 import {
   Handler,
   HandlerCallbackMetadata,
-  HandlerInternalData,
+  HandlerInternalMetadata,
   Wrap,
 } from '@api/domain';
 import {$HANDLER} from './handlers';
@@ -17,7 +17,7 @@ type ExtendBuilder<
   T extends HandlerBuilderData,
   S extends Partial<HandlerBuilderData>,
 > = Wrap<Omit<T, keyof S> & S> extends infer U
-  ? U extends HandlerInternalData
+  ? U extends HandlerInternalMetadata
     ? U
     : never
   : never;

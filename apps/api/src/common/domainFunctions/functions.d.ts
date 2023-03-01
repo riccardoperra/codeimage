@@ -1,17 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-types */
 
-const $$Handler = Symbol('handler');
+const $HANDLER: unique symbol = Symbol('handler');
 
 declare module '@api/domain' {
-  interface HandlerMetadata {
-    name: string;
-  }
-
   type GenericHandler = (...args: any[]) => any;
 
-  type HandlerInternalData = {
+  type HandlerInternalMetadata = {
     dependencies: unknown;
-    input: unknown;
+    input: any[];
     output: unknown;
   };
 
@@ -21,39 +17,41 @@ declare module '@api/domain' {
 
   type Handler<
     HandlerName extends string,
-    THandlerInternals extends HandlerInternalData,
-  > = ((
+    THandlerInternals extends HandlerInternalMetadata,
+  > = (<TReturn>(
     dependencies: THandlerInternals['dependencies'],
     metadata: HandlerCallbackMetadata,
-  ) => Return) & {
-    [$$Handler]: {name: HandlerName};
+  ) => TReturn) & {
+    [$HANDLER]: {name: HandlerName};
   };
 
   type MergeHandlerDependencies<
-    H extends Handler<string, any>[],
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    Acc extends Record<string, any> = {},
-  > = H extends [infer LH, ...infer RH]
-    ? LH extends Handler<any, infer D>
-      ? Acc & MergeHandlerDependencies<RH, D['dependencies']>
-      : Acc
-    : Acc;
+    THandlers extends Handler<string, any>[],
+    Accumulator extends Record<string, any> = {},
+  > = THandlers extends [infer InferredHandler, ...infer RestHandlers]
+    ? InferredHandler extends Handler<any, infer HandlerMetadata>
+      ? MergeHandlerDependencies<
+          RestHandlers & Handler<string, any>[],
+          Accumulator & HandlerMetadata['dependencies']
+        >
+      : Accumulator
+    : Accumulator;
 
   type ComposeHandlers<
-    H extends Handler<string, any>[],
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    Acc extends Record<string, any> = {},
-  > = H extends [infer LH, ...infer RH]
-    ? LH extends Handler<infer S, infer D>
-      ? Acc &
-          ComposeHandlers<
-            RH,
-            {
-              [key in S]: (...args: D['input']) => D['output'];
-            }
-          >
-      : Acc
-    : Acc;
+    THandlers extends Handler<string, any>[],
+    Accumulator extends Record<string, any> = {},
+  > = THandlers extends [infer InferredHandler, ...infer RestHandlers]
+    ? InferredHandler extends Handler<infer HandlerName, infer HandlerMetadata>
+      ? ComposeHandlers<
+          RestHandlers & Handler<string, any>[],
+          Accumulator & {
+            [key in HandlerName]: (
+              ...args: HandlerMetadata['input']
+            ) => HandlerMetadata['output'];
+          }
+        >
+      : Accumulator
+    : Accumulator;
 
   type ResolvedDomainHandlerMap<T extends object> = {
     [K in keyof T]: T[K] extends Handler<string, infer R>
