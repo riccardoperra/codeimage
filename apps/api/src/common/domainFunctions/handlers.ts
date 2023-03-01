@@ -2,15 +2,18 @@ import {
   ComposeHandlers,
   Handler,
   HandlerCallbackMetadata,
-  HandlerInternalData,
-  HandlerMetadata,
+  HandlerInternalMetadata,
   MergeHandlerDependencies,
   Wrap,
 } from '@api/domain';
 import {HandlerBuilder} from './builder';
 import {HandlerRegistry} from './registry';
 
-export const $HANDLER = Symbol('handler');
+export const $HANDLER: unique symbol = Symbol('handler-metadata');
+
+interface HandlerMetadata {
+  name: string;
+}
 
 export function getHandlerMetadata(handler: object): HandlerMetadata {
   const metadata = Reflect.get(handler, $HANDLER);
@@ -48,7 +51,7 @@ export function registerHandlers<S extends Handler<string, any>[]>(
   registry: HandlerRegistry,
 ): Wrap<ComposeHandlers<S>> {
   return Object.fromEntries(
-    handlers.map((handler: Handler<string, HandlerInternalData>) => {
+    handlers.map((handler: Handler<string, HandlerInternalMetadata>) => {
       const metadata = getHandlerMetadata(handler);
       const handlerCallback = Object.assign(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
