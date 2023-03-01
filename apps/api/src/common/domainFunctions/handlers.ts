@@ -8,6 +8,7 @@ import {
   MergeHandlerDependencies,
   Wrap,
 } from '@api/domain';
+import {HandlerBuilder} from './builder';
 import {HandlerRegistry} from './registry';
 
 export const $HANDLER = Symbol('handler');
@@ -23,6 +24,7 @@ export function getHandlerMetadata(handler: object): HandlerMetadata {
 export function createModuleHandlers<
   TDependencies extends GenericHandlerDependencies,
 >() {
+  const builder = HandlerBuilder.withDependencies<TDependencies>();
   return <THandlerName extends string, R extends (...args: any[]) => any>(
     name: THandlerName,
     handlerCallback: (
@@ -37,9 +39,7 @@ export function createModuleHandlers<
       output: ReturnType<R>;
     }
   > => {
-    return Object.assign(handlerCallback, {
-      [$HANDLER]: {name},
-    }) as unknown as Handler<THandlerName, any>;
+    return builder.withName(name).withImplementation(handlerCallback).build();
   };
 }
 
