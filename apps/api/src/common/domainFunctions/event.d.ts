@@ -14,7 +14,7 @@ declare module '@api/domain' {
   ) => GenericHandler;
 
   type ResolveHandlerMap<TMap extends HandlersMap<TDependencies>> =
-    ResolvedHandlersMap<any, TMap>;
+    StrictResolvedHandlersMap<any, TMap>;
 
   type ResolveHandler<THandler extends HandlerCallback<any>> =
     THandler extends (dependencies: any) => infer TCallback ? TCallback : never;
