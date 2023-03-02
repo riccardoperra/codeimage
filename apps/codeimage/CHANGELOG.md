@@ -1,5 +1,16 @@
 # @codeimage/app
 
+## 1.3.0
+
+### Minor Changes
+
+- [#486](https://github.com/riccardoperra/codeimage/pull/486) [`f5df888f`](https://github.com/riccardoperra/codeimage/commit/f5df888f031b416e0db62863218f2aeb512766c8) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(app/api): allow to disable ligatures in fonts #483
+
+### Patch Changes
+
+- Updated dependencies [[`f5df888f`](https://github.com/riccardoperra/codeimage/commit/f5df888f031b416e0db62863218f2aeb512766c8)]:
+  - @codeimage/api@0.2.0
+
 ## 1.2.0
 
 ### Minor Changes
