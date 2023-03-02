@@ -43,7 +43,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const isSelected = createSelector(() => editor.state.options.themeId);
 
   const onSelectTheme = (theme: CustomTheme) => {
-    dispatchUpdateTheme({theme});
+    dispatchUpdateTheme({theme, updateBackground: true});
     getUmami().trackEvent(theme.id, `theme-change`);
   };
   const exampleCode =
