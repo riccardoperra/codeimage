@@ -12,6 +12,7 @@ import {useModality} from '@core/hooks/isMobile';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
+import {PanelDivider} from './PanelDivider';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
@@ -35,7 +36,7 @@ export const EditorStyleForm: ParentComponent = () => {
   const {editor, setLanguageId} = getActiveEditorStore();
   const {
     state,
-    actions: {setShowLineNumbers, setFontWeight, setFontId},
+    actions: {setShowLineNumbers, setFontWeight, setFontId, setEnableLigatures},
     computed: {font},
   } = getRootEditorStore();
 
@@ -127,6 +128,10 @@ export const EditorStyleForm: ParentComponent = () => {
             </TwoColumnPanelRow>
           </PanelRow>
 
+          <PanelDivider />
+
+          <PanelHeader label={t('frame.font')} />
+
           <PanelRow for={'frameFontField'} label={t('frame.font')}>
             <TwoColumnPanelRow>
               <SuspenseEditorItem
@@ -167,6 +172,25 @@ export const EditorStyleForm: ParentComponent = () => {
                   onSelectChange={value =>
                     setFontWeight(value ?? font()?.types[0].weight ?? 400)
                   }
+                />
+              </SuspenseEditorItem>
+            </TwoColumnPanelRow>
+          </PanelRow>
+
+          <PanelRow for={'frameFontWeightField'} label={t('frame.ligatures')}>
+            <TwoColumnPanelRow>
+              <SuspenseEditorItem
+                fallback={<SkeletonLine width={'85%'} height={'26px'} />}
+              >
+                <SegmentedField
+                  size={'xs'}
+                  id={'frameLigaturesField'}
+                  value={state.options.enableLigatures}
+                  onChange={setEnableLigatures}
+                  items={[
+                    {label: t('common.yes'), value: true},
+                    {label: t('common.no'), value: false},
+                  ]}
                 />
               </SuspenseEditorItem>
             </TwoColumnPanelRow>
