@@ -48,6 +48,7 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
       showLineNumbers: false,
       fontId: '3',
       themeId: 'vscode',
+      enableLigatures: true,
     },
     terminal: {
       opacity: 0,
@@ -95,6 +96,7 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
       showLineNumbers: false,
       fontId: '3',
       themeId: 'vscode',
+      enableLigatures: true,
     } as ProjectUpdateResponse['editorOptions'],
     'return updated editor options',
   );

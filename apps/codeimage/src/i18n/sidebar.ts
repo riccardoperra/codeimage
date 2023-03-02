@@ -20,6 +20,7 @@ export default {
       fontWeight: 'Font weight',
       reflection: 'Reflection',
       backgroundType: 'Background',
+      ligatures: 'Ligatures',
     },
   },
   it: {
@@ -43,6 +44,7 @@ export default {
       watermark: 'Watermark',
       backgroundType: 'Tipo background',
       theme: 'Tema',
+      ligatures: 'Ligatures',
     },
   },
   de: {
@@ -66,6 +68,7 @@ export default {
       watermark: 'Wasserzeichen',
       backgroundType: 'Hintergrundtyp',
       theme: 'Theme',
+      ligatures: 'Ligatures',
     },
   },
   es: {
@@ -89,6 +92,7 @@ export default {
       watermark: 'filigrana',
       backgroundType: 'Tipo de fondo',
       theme: 'Theme',
+      ligatures: 'Ligatures',
     },
   },
 } as const;

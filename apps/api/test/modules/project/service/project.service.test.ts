@@ -85,6 +85,7 @@ const baseResponse = {
     fontWeight: 300,
     showLineNumbers: true,
     themeId: 'themeId',
+    enableLigatures: true,
   },
   frame: {
     background: '#fff',
@@ -124,6 +125,7 @@ t.test('create project', async t => {
       fontWeight: 300,
       showLineNumbers: true,
       themeId: 'themeId',
+      enableLigatures: true,
     },
     editors: [],
     frame: {
@@ -265,11 +267,13 @@ t.test('clone -> should return cloned project', async t => {
     createdAt: new Date(),
   };
 
-  let createNewProjectStub = sinon.stub(service, 'createNewProject').resolves({
-    ...baseResponse,
-    id: baseResponse.id,
-    name: 'Existing',
-  });
+  const createNewProjectStub = sinon
+    .stub(service, 'createNewProject')
+    .resolves({
+      ...baseResponse,
+      id: baseResponse.id,
+      name: 'Existing',
+    });
 
   const result1 = await service.clone(user, 'projectId1', null);
 

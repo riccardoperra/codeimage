@@ -45,11 +45,6 @@ import {
 } from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 
-interface CustomFontExtensionOptions {
-  fontName: string;
-  fontWeight: number;
-}
-
 const EDITOR_BASE_SETUP: Extension = [
   highlightSpecialChars(),
   drawSelection(),
@@ -152,30 +147,28 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     },
   });
 
-  const createCustomFontExtension = (
-    options: CustomFontExtensionOptions,
-  ): Extension => {
+  const customFontExtension = (): Extension => {
+    const fontName =
+        fonts.find(({id}) => editorState.options.fontId === id)?.name ||
+        fonts[0].name,
+      fontWeight = editorState.options.fontWeight,
+      enableLigatures = editorState.options.enableLigatures;
+
+    const fontVariantLigatures = !!enableLigatures ? 'normal' : 'none';
+
     return EditorView.theme({
       '.cm-content *': {
-        fontFamily: `${options.fontName}, monospace`,
-        fontWeight: options.fontWeight,
-        fontVariantLigatures: 'normal',
+        fontFamily: `${fontName}, monospace`,
+        fontWeight: fontWeight,
+        fontVariantLigatures,
       },
       '.cm-gutters': {
-        fontFamily: `${options.fontName}, monospace`,
+        fontFamily: `${fontName}, monospace`,
         fontWeight: 400,
-        fontVariantLigatures: 'normal',
+        fontVariantLigatures,
       },
     });
   };
-
-  const customFontExtension = () =>
-    createCustomFontExtension({
-      fontName:
-        fonts.find(({id}) => editorState.options.fontId === id)?.name ||
-        fonts[0].name,
-      fontWeight: editorState.options.fontWeight,
-    });
 
   onMount(() => {
     setRef(() => editorEl);
@@ -193,7 +186,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createEditorControlledValue(editorView, () => editor()?.code ?? '');
   createEditorReadonly(editorView, () => props.readOnly);
   createExtension(EditorView.lineWrapping);
-  createExtension(customFontExtension);
+  createExtension(() => customFontExtension());
   createExtension(currentLanguage);
   createExtension(currentExtraLanguage);
   createExtension(() =>

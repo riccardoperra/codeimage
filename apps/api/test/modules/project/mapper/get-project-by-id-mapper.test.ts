@@ -44,6 +44,7 @@ t.test(
         showLineNumbers: true,
         themeId: 'themeId',
         fontWeight: 400,
+        enableLigatures: true,
       },
       editorTabs: [],
     });
@@ -83,6 +84,7 @@ t.test(
         showLineNumbers: true,
         themeId: 'themeId',
         fontWeight: 400,
+        enableLigatures: true,
       },
     } as SchemaModel.ProjectCompleteResponse);
   },
