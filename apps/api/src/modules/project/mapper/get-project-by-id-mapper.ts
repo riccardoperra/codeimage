@@ -37,6 +37,7 @@ export function createCompleteProjectGetByIdResponseMapper(
       fontId: data.editorOptions.fontId,
       showLineNumbers: data.editorOptions.showLineNumbers,
       themeId: data.editorOptions.themeId,
+      enableLigatures: data.editorOptions.enableLigatures,
     },
     editorTabs: data.editorTabs.map(editor => ({
       projectId: data.id,

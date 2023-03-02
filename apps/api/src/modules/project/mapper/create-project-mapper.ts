@@ -56,6 +56,7 @@ export function createProjectRequestMapper(
         data.editorOptions.showLineNumbers ??
         EditorOptionsCreateRequestSchema.properties.showLineNumbers.default,
       themeId: data.editorOptions.themeId,
+      enableLigatures: data.editorOptions.enableLigatures,
     },
     editors: data.editors.map(editor => ({
       languageId: editor.languageId,

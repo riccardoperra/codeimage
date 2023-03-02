@@ -53,4 +53,5 @@ export const BaseSnippetEditorOptionsSchema = Type.Object({
   fontWeight: Type.Number(),
   showLineNumbers: Type.Boolean(),
   themeId: Type.String(),
+  enableLigatures: Type.Boolean(),
 });
