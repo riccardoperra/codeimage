@@ -1,4 +1,5 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {LanguageDefinition} from '@codeimage/config/src/lib/types/language-def';
 import {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -17,9 +18,22 @@ import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
 
+const languages: readonly LanguageDefinition[] = [...SUPPORTED_LANGUAGES].sort(
+  (a, b) => {
+    if (a.featured && !b.featured) {
+      return -1; // a comes first
+    } else if (!a.featured && b.featured) {
+      return 1; // b comes first
+    } else if (a.featured && b.featured) {
+      return SUPPORTED_LANGUAGES.indexOf(a) - SUPPORTED_LANGUAGES.indexOf(b); // sort by position
+    } else {
+      return a.label.localeCompare(b.label); // sort alphabetically
+    }
+  },
+);
+
 export const EditorStyleForm: ParentComponent = () => {
   const {themeArray} = getThemeStore();
-  const languages = SUPPORTED_LANGUAGES;
 
   const themeItems = () =>
     themeArray()

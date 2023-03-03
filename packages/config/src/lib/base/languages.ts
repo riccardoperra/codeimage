@@ -16,6 +16,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     id: 'javascript',
     label: 'Javascript',
     color: '#f1e05a',
+    featured: true,
     plugin: () =>
       import('@codemirror/lang-javascript').then(({javascript}) =>
         javascript({jsx: true}),
@@ -99,6 +100,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     id: 'typescript',
     label: 'Typescript',
     color: '#3178c6',
+    featured: true,
     plugin: () =>
       import('@codemirror/lang-javascript').then(({javascript}) =>
         javascript({jsx: true, typescript: true}),
@@ -260,6 +262,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     id: 'css',
     label: 'Css',
     color: '#563d7c',
+    featured: true,
     plugin: () => import('@codemirror/lang-css').then(({css}) => css()),
     prettier: {
       parser: 'css',
@@ -322,6 +325,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     id: 'html',
     label: 'Html',
     color: '#e34c26',
+    featured: true,
     plugin: () =>
       import('@codemirror/lang-html').then(({html}) =>
         html({matchClosingTags: true, autoCloseTags: true}),
