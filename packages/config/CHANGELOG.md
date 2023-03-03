@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 8.1.4
+
+### Patch Changes
+
+- [#488](https://github.com/riccardoperra/codeimage/pull/488) [`dc6b66ae`](https://github.com/riccardoperra/codeimage/commit/dc6b66aeeae6f14f72b6a60958c7da145128a42f) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(app,config): sort editor language by featured property and alphabetically
+
 ## 8.1.3
 
 ### Patch Changes
