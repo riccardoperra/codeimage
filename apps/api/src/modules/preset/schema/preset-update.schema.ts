@@ -1,4 +1,3 @@
-import {Prisma} from '@codeimage/prisma-models/*';
 import {Type} from '@sinclair/typebox';
 
 export const PresetBaseRequestSchema = Type.Object(

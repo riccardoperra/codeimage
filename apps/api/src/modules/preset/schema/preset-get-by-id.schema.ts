@@ -1,18 +1,18 @@
 import {Static, Type} from '@sinclair/typebox';
-import {BaseResponse} from '../../../common/schemas/baserResponse';
 
 export const BasePresetResponseSchema = Type.Object(
-  {...BaseResponse, version: Type.Number()},
+  {
+    id: Type.String({format: 'uuid'}),
+    name: Type.String(),
+    createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
+    updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
+    version: Type.Number(),
+  },
   {
     title: 'BasePresetResponse',
   },
 );
 
-export const PresetResponseSchema = Type.Intersect([
-  BasePresetResponseSchema,
-  Type.Object({
-    isOwner: Type.Boolean(),
-  }),
-]);
+export const PresetResponseSchema = Type.Intersect([BasePresetResponseSchema]);
 
-export type PresetCompleteResponse = Static<typeof PresetResponseSchema>;
+export type PresetDto = Static<typeof PresetResponseSchema>;
