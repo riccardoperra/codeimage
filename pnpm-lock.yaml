@@ -99,6 +99,7 @@ importers:
       sinon: ^15.0.1
       tap: ^16.3.2
       typescript: ^4.8.4
+      vitest: 0.26.2
     dependencies:
       '@codeimage/prisma-models': link:../../packages/prisma-models
       '@fastify/autoload': 5.7.0
@@ -129,6 +130,7 @@ importers:
       sinon: 15.0.1
       tap: 16.3.2_typescript@4.8.4
       typescript: 4.8.4
+      vitest: 0.26.2
 
   apps/codeimage:
     specifiers:
@@ -5099,7 +5101,7 @@ packages:
       strict-event-emitter: 0.2.7
       uuid: 8.3.2
     optionalDependencies:
-      msw: 1.0.0_typescript@4.9.4
+      msw: 1.1.0_typescript@4.9.4
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -13049,8 +13051,8 @@ packages:
       - supports-color
     dev: true
 
-  /msw/1.0.0_typescript@4.9.4:
-    resolution: {integrity: sha512-8QVa1RAN/Nzbn/tKmtimJ+b2M1QZOMdETQW7/1TmBOZ4w+wJojfxuh1Hj5J4FYdBgZWW/TK4CABUOlOM4OjTOA==}
+  /msw/1.1.0_typescript@4.9.4:
+    resolution: {integrity: sha512-oqMvUXm1bMbwvGpoXAQVz8vXXQyQyx52HBDg3EDOK+dFXkQHssgkXEG4LfMwwZyr2Qt18I/w04XPaY4BkFTkzA==}
     engines: {node: '>=14'}
     hasBin: true
     requiresBuild: true
