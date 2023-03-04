@@ -18,21 +18,22 @@ const schema = {
 
 export type UpdatePresetApi = GetApiTypes<typeof schema>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.put(
-    '/:id',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    request => {
-      const {
-        appUser,
-        params: {id},
-        body,
-      } = request;
-      return fastify.presetService.updatePreset(appUser.id, id, body);
-    },
-  );
+  // fastify.put(
+  //   '/:id',
+  //   {
+  //     preValidation: (req, reply) => fastify.authorize(req, reply),
+  //     schema,
+  //   },
+  //   request => {
+  //     const {
+  //       appUser,
+  //       params: {id},
+  //       body,
+  //     } = request;
+  //     return fastify.presetService.updatePreset(appUser.id, id, body);
+  //   },
+  // );
 };
 export default updateRoute;
