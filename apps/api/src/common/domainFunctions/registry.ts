@@ -11,7 +11,7 @@ export class HandlerRegistry<T extends object = DomainHandlerMap> {
   get handlers(): ResolvedDomainHandlerMap<T> {
     return Object.fromEntries(
       this.#events.entries(),
-    ) as unknown as ResolvedDomainHandlerMap<T>;
+    ) as ResolvedDomainHandlerMap<T>;
   }
 
   add(handler: GenericHandler): void {
