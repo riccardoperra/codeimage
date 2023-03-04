@@ -212,9 +212,27 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
     });
   }
 
+  function syncFromLocalData() {
+    const editorState = editorStore.stateToPersist();
+
+    const data: ApiTypes.CreateProjectApi['request'] = {
+      body: {
+        name: 'Untitled',
+        editorOptions: editorState.options,
+        terminal: terminalStore.stateToPersist(),
+        frame: frameStore.stateToPersist(),
+        editors: editorState.editors,
+      },
+    };
+
+    return API.project.createSnippet(data);
+  }
+
   onMount(() => {
     initRemoteDbSync();
   });
+
+  const isOnlyLocalSync = () => !activeWorkspace();
 
   return {
     indexedDbState: () => idb.get<ProjectEditorPersistedState>('document'),
@@ -226,6 +244,8 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
     setActiveWorkspace,
     remoteSync,
     initRemoteDbSync,
+    isOnlyLocalSync,
+    syncFromLocalData,
   } as const;
 }
 

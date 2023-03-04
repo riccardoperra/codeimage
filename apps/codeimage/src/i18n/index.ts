@@ -37,6 +37,7 @@ export const locale = {
       openNewTab: 'Apri',
       loadingNewTab: 'Preparando link...',
       share: 'Condividi',
+      saveProject: 'Salva progetto',
       copyToCliboard: 'Copy to clipboard',
       generateLink: 'Genera link',
       toggleTheme: 'Modifica tema',
@@ -127,6 +128,7 @@ export const locale = {
       toggleTheme: 'Toggle theme',
       changeLanguage: 'Change language',
       exportLoading: 'Exporting...',
+      saveProject: 'Save project',
     },
     pwa: {
       offline: 'App ready to work offline',
@@ -210,6 +212,7 @@ export const locale = {
       changeLanguage: 'Sprache wechseln',
       generateLink: 'Link erstellen',
       exportLoading: 'Exportieren...',
+      saveProject: 'Save project',
     },
     pwa: {
       offline: 'App bereit, um offline zu arbeiten',
@@ -294,6 +297,7 @@ export const locale = {
       toggleTheme: 'Editar tema',
       changeLanguage: 'Editar lenguaje',
       exportLoading: 'Exportando...',
+      saveProject: 'Save project',
     },
     pwa: {
       offline: 'App lista para trabajar sin conexión',

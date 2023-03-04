@@ -13,6 +13,7 @@ import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
 import {ShareButton} from './ShareButton';
+import {SyncRemoteButton} from './SyncRemoteButton';
 import * as styles from './Toolbar.css';
 import {ToolbarSettingsButton} from './ToolbarSettings';
 import {ToolbarSnippetName} from './ToolbarSnippetName';
@@ -55,7 +56,7 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
             <Box marginLeft={16}>
               <Button
                 as={Link}
-                href={'/dashboard'}
+                href={'/projects'}
                 variant={'link'}
                 theme={'secondary'}
                 leftIcon={<CollectionIcon />}
@@ -74,6 +75,8 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
           <HStack marginLeft={'auto'} spacing={'2'}>
             <Show when={modality === 'full'} keyed={false}>
               <ShareButton showLabel={false} />
+
+              <SyncRemoteButton showLabel={true} />
 
               <ExportButton canvasRef={props.canvasRef} />
             </Show>

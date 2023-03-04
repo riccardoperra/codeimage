@@ -15,7 +15,7 @@ import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import {Component, createEffect, lazy, on, Show, Suspense} from 'solid-js';
+import {Component, createEffect, lazy, on, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import {StateProvider} from 'statebuilder';
 import './assets/styles/app.scss';
@@ -75,14 +75,7 @@ export function Bootstrap() {
   const Routes = useRoutes([
     {
       path: '',
-      component: () => {
-        const state = getAuth0State();
-        return (
-          <Show fallback={<Editor />} when={state.loggedIn()}>
-            <Dashboard />
-          </Show>
-        );
-      },
+      component: Editor,
     },
     {
       path: ':snippetId',
@@ -93,8 +86,7 @@ export function Bootstrap() {
       component: NotFoundPage,
     },
     {
-      path: 'dashboard',
-      data: ({navigate}) => navigate('/'),
+      path: 'projects',
       component: Dashboard,
     },
     {
