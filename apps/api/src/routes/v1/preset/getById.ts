@@ -1,7 +1,7 @@
-import {PresetResponseSchema} from '../../../modules/preset/schema/preset-get-by-id.schema';
+import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
 import {GetApiTypes} from '../../../common/types/extract-api-types';
-import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import {PresetResponseSchema} from '../../../modules/preset/schema/preset-get-by-id.schema';
 
 const schema = {
   tags: ['Preset'],
@@ -28,7 +28,7 @@ const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
         appUser,
         params: {id},
       } = request;
-      return fastify.presetService.findById(appUser.id, id);
+      return fastify.presetService.findPresetById(appUser.id, id);
     },
   );
 };

@@ -5,15 +5,15 @@ import {create} from './handlers/create';
 import {remove} from './handlers/delete';
 import {findById} from './handlers/findById';
 import {update} from './handlers/update';
-import {makePrismaPresetRepository} from './infra/prisma/prisma-preset.repository';
-import {PresetRepository} from './repository/preset.repository';
+import {PrismaPresetRepository} from './repository/prisma-preset.repository';
+import {PresetRepository} from './repository';
 
 const handlers = [create, remove, findById, update] as const;
 
 export const preset: FastifyPluginAsync = async fastify => {
   fastify.decorate(
     'presetRepository',
-    makePrismaPresetRepository(fastify.prisma),
+    new PrismaPresetRepository(fastify.prisma),
   );
   fastify.decorate(
     'presetService',
