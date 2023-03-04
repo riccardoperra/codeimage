@@ -32,6 +32,7 @@ t.test(
         showLineNumbers: null,
         themeId: 'themeId',
         fontWeight: 400,
+        enableLigatures: true,
       },
     });
 
@@ -62,6 +63,7 @@ t.test(
         showLineNumbers: false,
         themeId: 'themeId',
         fontWeight: 400,
+        enableLigatures: true,
       },
     } as DomainModel.ProjectCreateRequest);
   },

@@ -33,6 +33,7 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
     fontId: appEnvironment.defaultState.editor.font.id,
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
     focused: false,
+    enableLigatures: true,
   };
 }
 
@@ -52,6 +53,7 @@ export function createEditorsStore() {
       setFontWeight: number;
       setShowLineNumbers: boolean;
       setFromPersistedState: PersistedEditorState;
+      setEnableLigatures: boolean;
     }>(),
   );
 
@@ -80,6 +82,9 @@ export function createEditorsStore() {
     )
     .hold(store.commands.setShowLineNumbers, (showLineNumbers, {set}) =>
       set('options', 'showLineNumbers', showLineNumbers),
+    )
+    .hold(store.commands.setEnableLigatures, (enable, {set}) =>
+      set('options', 'enableLigatures', enable),
     )
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
       const editors = (persistedState.editors ?? [])
@@ -128,6 +133,7 @@ export function createEditorsStore() {
         showLineNumbers: state.options.showLineNumbers,
         fontId: state.options.fontId,
         fontWeight: state.options.fontWeight,
+        enableLigatures: state.options.enableLigatures ?? true,
       },
     };
   };
@@ -138,6 +144,7 @@ export function createEditorsStore() {
       store.commands.setThemeId,
       store.commands.setFontWeight,
       store.commands.setShowLineNumbers,
+      store.commands.setEnableLigatures,
       editorUpdateCommand,
     ])
     .pipe(

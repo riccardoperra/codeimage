@@ -34,6 +34,7 @@ t.test('POST /v1/project/ [Create Project] -> 200', async t => {
       showLineNumbers: true,
       fontId: '1',
       themeId: 'default',
+      enableLigatures: true,
     },
     terminal: {
       opacity: 1,

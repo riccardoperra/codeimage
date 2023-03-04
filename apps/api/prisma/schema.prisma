@@ -71,6 +71,7 @@ model SnippetEditorOptions {
   fontWeight      Int      @default(400)
   showLineNumbers Boolean  @default(false)
   themeId         String
+  enableLigatures Boolean  @default(true)
 }
 
 model SnippetEditorTab {

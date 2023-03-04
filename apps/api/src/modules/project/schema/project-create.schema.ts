@@ -54,6 +54,7 @@ export const EditorOptionsCreateRequestSchema = Type.Object(
     fontWeight: Type.Number({default: 400}),
     themeId: Type.String(),
     showLineNumbers: Nullable(Type.Boolean(), {default: false}),
+    enableLigatures: Type.Boolean(),
   },
   {
     title: 'EditorOptionsCreateRequest',
