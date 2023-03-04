@@ -19,6 +19,7 @@ export interface LanguageDefinition {
   readonly id: string;
   readonly label: string;
   readonly color: string;
+  readonly featured?: boolean;
   readonly plugin: () => Promise<Extension>;
   readonly icons: LanguageIconDefinition[];
   readonly prettier?: PrettierPluginDefinition;

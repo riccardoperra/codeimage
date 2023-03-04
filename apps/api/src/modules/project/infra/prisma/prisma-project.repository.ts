@@ -162,6 +162,7 @@ export function makePrismaProjectRepository(
             fontWeight: data.editorOptions.fontWeight,
             showLineNumbers: data.editorOptions.showLineNumbers,
             themeId: data.editorOptions.themeId,
+            enableLigatures: data.editorOptions.enableLigatures,
           },
         },
         frame: {

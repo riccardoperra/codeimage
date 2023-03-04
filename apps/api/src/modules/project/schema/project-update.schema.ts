@@ -49,6 +49,7 @@ const EditorOptionsUpdateRequestSchema = Type.Object(
     fontWeight: Type.Number(),
     themeId: Type.String(),
     showLineNumbers: Type.Boolean(),
+    enableLigatures: Type.Boolean(),
   },
   {
     title: 'EditorOptionsUpdateRequest',

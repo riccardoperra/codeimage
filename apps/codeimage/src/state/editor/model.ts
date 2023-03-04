@@ -26,6 +26,7 @@ export interface EditorUIOptions {
   showLineNumbers: boolean;
   focused: boolean;
   themeId: string;
+  enableLigatures: boolean;
 }
 
 export interface PersistedEditorState {
