@@ -12,7 +12,7 @@ declare module '@api/domain' {
   };
 
   type HandlerCallbackMetadata = {
-    handlers: DomainHandlerMap;
+    handlers: ResolvedDomainHandlerMap<DomainHandlerMap>;
   };
 
   type Handler<
@@ -26,24 +26,24 @@ declare module '@api/domain' {
   };
 
   type MergeHandlerDependencies<
-    THandlers extends Handler<string, any>[],
+    THandlers extends readonly Handler<string, any>[],
     Accumulator extends Record<string, any> = {},
   > = THandlers extends [infer InferredHandler, ...infer RestHandlers]
     ? InferredHandler extends Handler<any, infer HandlerMetadata>
       ? MergeHandlerDependencies<
-          RestHandlers & Handler<string, any>[],
+          RestHandlers,
           Accumulator & HandlerMetadata['dependencies']
         >
       : Accumulator
     : Accumulator;
 
   type ComposeHandlers<
-    THandlers extends Handler<string, any>[],
+    THandlers extends readonly Handler<string, any>[],
     Accumulator extends Record<string, any> = {},
   > = THandlers extends [infer InferredHandler, ...infer RestHandlers]
     ? InferredHandler extends Handler<infer HandlerName, infer HandlerMetadata>
       ? ComposeHandlers<
-          RestHandlers & Handler<string, any>[],
+          RestHandlers,
           Accumulator & {
             [key in HandlerName]: (
               ...args: HandlerMetadata['input']
