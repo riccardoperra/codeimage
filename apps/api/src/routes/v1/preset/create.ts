@@ -23,7 +23,7 @@ const createRoute: FastifyPluginAsyncTypebox = async fastify => {
     },
     request => {
       const {appUser, body} = request;
-      return fastify.presetService.create(appUser.id, body);
+      return fastify.presetService.createPreset(appUser.id, body);
     },
   );
 };

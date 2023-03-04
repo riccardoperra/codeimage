@@ -37,21 +37,13 @@ declare module '@api/domain' {
       : Accumulator
     : Accumulator;
 
-  type ComposeHandlers<
-    THandlers extends readonly Handler<string, any>[],
-    Accumulator extends Record<string, any> = {},
-  > = THandlers extends [infer InferredHandler, ...infer RestHandlers]
-    ? InferredHandler extends Handler<infer HandlerName, infer HandlerMetadata>
-      ? ComposeHandlers<
-          RestHandlers,
-          Accumulator & {
-            [key in HandlerName]: (
-              ...args: HandlerMetadata['input']
-            ) => HandlerMetadata['output'];
-          }
-        >
-      : Accumulator
-    : Accumulator;
+  type ComposeHandlers<THandlers extends readonly Handler<any, any>[]> = Wrap<{
+    [K in keyof THandlers & string as THandlers[K] extends Handler<infer R, any>
+      ? R
+      : never]: THandlers[K] extends Handler<any, infer HandlerMetadata>
+      ? (...args: HandlerMetadata['input']) => HandlerMetadata['output']
+      : never;
+  }>;
 
   type ResolvedDomainHandlerMap<T extends object> = {
     [K in keyof T]: T[K] extends Handler<string, infer R>

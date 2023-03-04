@@ -1,8 +1,8 @@
-import {PresetBaseRequestSchema} from './../../../modules/preset/schema/preset-update.schema';
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
 import {GetApiTypes} from '../../../common/types/extract-api-types';
 import {BasePresetResponseSchema} from '../../../modules/preset/schema/preset-get-by-id.schema';
+import {PresetBaseRequestSchema} from './../../../modules/preset/schema/preset-update.schema';
 
 const schema = {
   tags: ['Preset'],
@@ -29,8 +29,9 @@ const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
       const {
         appUser,
         params: {id},
+        body,
       } = request;
-      return fastify.presetService.deletePreset(appUser.id, id);
+      return fastify.presetService.updatePreset(appUser.id, id, body);
     },
   );
 };

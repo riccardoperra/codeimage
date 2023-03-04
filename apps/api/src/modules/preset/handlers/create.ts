@@ -11,3 +11,9 @@ export const create =
       };
     })
     .build();
+
+declare module '@api/domain' {
+  interface DomainHandlerMap {
+    createPreset: typeof create;
+  }
+}
