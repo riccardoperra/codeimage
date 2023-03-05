@@ -15,7 +15,7 @@ t.before(async () => {
   t.context.preset1 = preset1;
 });
 
-t.test('/v1/preset -> when preset found -> 200', async t => {
+t.test('/v1/preset/:id -> when preset found -> 200', async t => {
   const fastify = await build(t);
   const presetId = t.context.preset1.id;
   const spy = sinon.spy(fastify.presetService, 'findPresetById');
@@ -34,7 +34,7 @@ t.test('/v1/preset -> when preset found -> 200', async t => {
   t.same(body.version, BigInt(1));
 });
 
-t.test('/v1/project -> when preset not found -> 404', async t => {
+t.test('/v1/preset/:id -> when preset not found -> 404', async t => {
   const fastify = await build(t);
   const userId = t.context.user.id;
   const presetId = 'badId';
