@@ -50,7 +50,7 @@ export class HandlerBuilder<T extends HandlerBuilderData> {
     return this as any;
   };
 
-  withImplementation<R extends (...args: any[]) => any>(
+  withImplementation = <R extends (...args: any[]) => any>(
     handlerCallback: (
       dependencies: T['dependencies'],
       metadata: HandlerCallbackMetadata,
@@ -63,17 +63,16 @@ export class HandlerBuilder<T extends HandlerBuilderData> {
         output: ReturnType<R>;
       }
     >
-  > {
+  > => {
     this.callback = handlerCallback;
     return this as any;
-  }
+  };
 
   build(): Handler<
     T['name'],
     Wrap<Required<Pick<T, 'input' | 'output' | 'dependencies'>>>
   > {
-    return Object.assign(this.callback, {
-      [$HANDLER]: {name: this.name},
-    }) as unknown as any;
+    Object.defineProperty(this.callback, $HANDLER, {value: {name: this.name}});
+    return this.callback as any;
   }
 }
