@@ -44,9 +44,9 @@ export function createModuleHandlers<
   };
 }
 
-export function registerHandlers<S extends Handler<string, any>[]>(
-  handlers: [...S],
-  dependencies: Wrap<MergeHandlerDependencies<S>>,
+export function registerHandlers<S extends readonly Handler<string, any>[]>(
+  handlers: readonly [...S],
+  dependencies: MergeHandlerDependencies<S>,
   registry: HandlerRegistry,
 ): Wrap<ComposeHandlers<S>> {
   return Object.fromEntries(
