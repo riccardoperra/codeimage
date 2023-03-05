@@ -1,5 +1,4 @@
 import {Static, Type} from '@sinclair/typebox';
-import {BigNumber} from '../../../common/typebox/bigInt';
 
 export const PresetDtoSchema = Type.Object(
   {
@@ -7,7 +6,7 @@ export const PresetDtoSchema = Type.Object(
     name: Type.String(),
     createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
-    version: BigNumber(),
+    version: Type.Number(),
   },
   {
     title: 'PresetResponse',

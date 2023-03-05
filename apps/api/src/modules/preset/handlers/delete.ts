@@ -7,7 +7,14 @@ export const remove =
     .withImplementation(({repository}, {handlers}) => {
       return async (userId: string, id: string) => {
         const preset = await handlers.findPresetById(userId, id);
-        return repository.deletePreset(preset.id);
+
+        return await repository.deletePreset(preset.id);
       };
     })
     .build();
+
+declare module '@api/domain' {
+  interface DomainHandlerMap {
+    deletePreset: typeof remove;
+  }
+}

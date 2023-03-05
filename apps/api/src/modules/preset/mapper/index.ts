@@ -10,7 +10,7 @@ export class PresetMapper implements PresetMapper {
     return {
       id: entity.id,
       name: entity.name,
-      version: entity.version,
+      version: Number(entity.version),
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     } as const;

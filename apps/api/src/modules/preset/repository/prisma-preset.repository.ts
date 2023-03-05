@@ -28,7 +28,6 @@ export class PrismaPresetRepository implements PresetRepository {
   findByIdAndOwnerId(id: string, ownerId: string): Promise<Preset | null> {
     return this.client.preset.findUnique({
       where: {
-        id,
         id_ownerId: {
           id,
           ownerId,

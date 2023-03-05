@@ -10,8 +10,6 @@ test('create handler', async t => {
     .withImplementation(deps => (arg: any) => fn(arg, deps))
     .build();
 
-  console.log('consoel log handler', handler('test-deps', {} as any));
-
   handler('test-deps', {} as any)(1);
 
   t.ok(fn.calledWith(1, 'test-deps'));

@@ -11,7 +11,7 @@ test('fromEntityToDto', async t => {
     id: entity.id,
     updatedAt: entity.updatedAt,
     createdAt: entity.createdAt,
-    version: entity.version,
+    version: Number(entity.version),
     name: entity.name,
   } as PresetDto;
 

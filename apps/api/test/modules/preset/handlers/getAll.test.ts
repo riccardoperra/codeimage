@@ -37,7 +37,7 @@ t.test('when findAll', async t => {
   const expected1 = {
     id: preset1.id,
     name: preset1.name,
-    version: preset1.version,
+    version: Number(preset1.version),
     createdAt: preset1.createdAt,
     updatedAt: preset1.updatedAt,
   } as PresetDto;
