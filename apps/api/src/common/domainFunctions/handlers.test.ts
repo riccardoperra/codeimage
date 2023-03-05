@@ -1,4 +1,4 @@
-import {DomainHandlerMap} from '@api/domain';
+import {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
 import {expect, test, vi} from 'vitest';
 import {$HANDLER, createModuleHandlers, registerHandlers} from './handlers';
 import {HandlerRegistry} from './registry';
@@ -71,7 +71,7 @@ test('resolve handlers', () => {
 });
 
 test('handler events are evaluated only after call', () => {
-  const mockFn = vi.fn<[Deps, DomainHandlerMap]>();
+  const mockFn = vi.fn<[Deps, ResolvedDomainHandlerMap<DomainHandlerMap>]>();
   const mockFn2 = vi.fn();
   const registry = new HandlerRegistry();
 

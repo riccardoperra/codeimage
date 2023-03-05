@@ -12,7 +12,7 @@ declare module '@api/domain' {
   };
 
   type HandlerCallbackMetadata = {
-    handlers: DomainHandlerMap;
+    handlers: ResolvedDomainHandlerMap<DomainHandlerMap>;
   };
 
   type Handler<
@@ -26,32 +26,24 @@ declare module '@api/domain' {
   };
 
   type MergeHandlerDependencies<
-    THandlers extends Handler<string, any>[],
+    THandlers extends readonly Handler<string, any>[],
     Accumulator extends Record<string, any> = {},
   > = THandlers extends [infer InferredHandler, ...infer RestHandlers]
     ? InferredHandler extends Handler<any, infer HandlerMetadata>
       ? MergeHandlerDependencies<
-          RestHandlers & Handler<string, any>[],
+          RestHandlers,
           Accumulator & HandlerMetadata['dependencies']
         >
       : Accumulator
     : Accumulator;
 
-  type ComposeHandlers<
-    THandlers extends Handler<string, any>[],
-    Accumulator extends Record<string, any> = {},
-  > = THandlers extends [infer InferredHandler, ...infer RestHandlers]
-    ? InferredHandler extends Handler<infer HandlerName, infer HandlerMetadata>
-      ? ComposeHandlers<
-          RestHandlers & Handler<string, any>[],
-          Accumulator & {
-            [key in HandlerName]: (
-              ...args: HandlerMetadata['input']
-            ) => HandlerMetadata['output'];
-          }
-        >
-      : Accumulator
-    : Accumulator;
+  type ComposeHandlers<THandlers extends readonly Handler<any, any>[]> = Wrap<{
+    [K in keyof THandlers & string as THandlers[K] extends Handler<infer R, any>
+      ? R
+      : never]: THandlers[K] extends Handler<any, infer HandlerMetadata>
+      ? (...args: HandlerMetadata['input']) => HandlerMetadata['output']
+      : never;
+  }>;
 
   type ResolvedDomainHandlerMap<T extends object> = {
     [K in keyof T]: T[K] extends Handler<string, infer R>
