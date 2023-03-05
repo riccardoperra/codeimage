@@ -1,11 +1,11 @@
 import {Preset, PrismaClient} from '@codeimage/prisma-models/*';
-import {PresetCreateRequest, PresetCreateResponse} from '../domain';
+import {PresetCreateRequest} from '../domain';
 import {PresetRepository} from './index';
 
 export class PrismaPresetRepository implements PresetRepository {
   constructor(private readonly client: PrismaClient) {}
 
-  create(data: PresetCreateRequest): Promise<PresetCreateResponse> {
+  create(data: PresetCreateRequest): Promise<Preset> {
     return this.client.preset.create({
       data: {
         name: data.name,
@@ -17,7 +17,7 @@ export class PrismaPresetRepository implements PresetRepository {
     });
   }
 
-  deletePreset(id: string): Promise<PresetCreateResponse> {
+  deletePreset(id: string): Promise<Preset> {
     return this.client.preset.delete({
       where: {
         id,
@@ -25,10 +25,22 @@ export class PrismaPresetRepository implements PresetRepository {
     });
   }
 
-  findById(id: string): Promise<Preset | null> {
+  findByIdAndOwnerId(id: string, ownerId: string): Promise<Preset | null> {
     return this.client.preset.findUnique({
       where: {
         id,
+        id_ownerId: {
+          id,
+          ownerId,
+        },
+      },
+    });
+  }
+
+  findAllByOwnerId(ownerId: string): Promise<Preset[]> {
+    return this.client.preset.findMany({
+      where: {
+        ownerId,
       },
     });
   }

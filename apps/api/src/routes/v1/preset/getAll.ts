@@ -5,30 +5,24 @@ import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema'
 
 const schema = {
   tags: ['Preset'],
-  description: 'Returns current user preset by id',
-  params: Type.Object({
-    id: Type.String(),
-  }),
+  description: 'Get all CodeImage presets filtered by current user',
   response: {
-    200: PresetDtoSchema,
+    200: Type.Array(PresetDtoSchema),
   },
 };
 
-export type GetPresetByIdApi = GetApiTypes<typeof schema>;
+export type GetAllPresetApi = GetApiTypes<typeof schema>;
 
 const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
   fastify.get(
-    '/:id',
+    '/',
     {
       preValidation: (req, reply) => fastify.authorize(req, reply),
       schema,
     },
     async request => {
-      const {
-        appUser,
-        params: {id},
-      } = request;
-      return fastify.presetService.findPresetById(appUser.id, id);
+      const {appUser} = request;
+      return fastify.presetService.findAllPresets(appUser.id);
     },
   );
 };

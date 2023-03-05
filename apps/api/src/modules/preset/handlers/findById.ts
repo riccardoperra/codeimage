@@ -1,5 +1,6 @@
 import {HandlerBuilder} from '../../../common/domainFunctions/builder';
-import {PresetDto} from '../schema/preset-get-by-id.schema';
+import {NotFoundPresetException} from '../exceptions/NotFoundPresetException';
+import {PresetDto} from '../schema/preset-dto.schema';
 import {PresetHandlerDependencies} from './';
 
 export const findById =
@@ -7,17 +8,9 @@ export const findById =
     .withName('findPresetById')
     .withImplementation(({repository, mapper}) => {
       return async (ownerId: string, id: string): Promise<PresetDto> => {
-        const preset = await repository.findById(id);
+        const preset = await repository.findByIdAndOwnerId(id, ownerId);
         if (!preset) {
-          // TODO: add custom error
-          throw new Error('not found');
-          // throw httpErrors.notFound(`Preset with id ${id} not found`);
-        }
-        // TODO: not needed we will use findByIdAndOwnerId
-        if (preset.ownerId !== ownerId) {
-          // throw httpErrors.forbidden(
-          //   'You are not allowed to access this preset',
-          // );
+          throw new NotFoundPresetException({id, ownerId});
         }
         return mapper.fromEntityToDto(preset);
       };

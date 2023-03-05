@@ -1,18 +1,17 @@
 import {Static, Type} from '@sinclair/typebox';
+import {BigNumber} from '../../../common/typebox/bigInt';
 
-export const BasePresetResponseSchema = Type.Object(
+export const PresetDtoSchema = Type.Object(
   {
     id: Type.String({format: 'uuid'}),
     name: Type.String(),
     createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
-    version: Type.Number(),
+    version: BigNumber(),
   },
   {
-    title: 'BasePresetResponse',
+    title: 'PresetResponse',
   },
 );
 
-export const PresetResponseSchema = Type.Intersect([BasePresetResponseSchema]);
-
-export type PresetDto = Static<typeof PresetResponseSchema>;
+export type PresetDto = Static<typeof PresetDtoSchema>;
