@@ -1,23 +1,38 @@
-import {PresetRepository} from './repository/preset.repository';
+import {ComposeHandlers} from '@api/domain';
 import {FastifyPluginAsync} from 'fastify';
-import {makePresetService, PresetService} from './handlers/preset.service';
-import {makePrismaPresetRepository} from './infra/prisma/prisma-preset.repository';
+import {registerHandlers} from '../../common/domainFunctions/handlers';
+import {create} from './handlers/create';
+import {remove} from './handlers/delete';
+import {findAll} from './handlers/findAll';
+import {findById} from './handlers/findById';
+import {update} from './handlers/update';
+import {PresetMapper} from './mapper';
+import {PresetRepository} from './repository';
+import {PrismaPresetRepository} from './repository/prisma-preset.repository';
 
-export const preset: FastifyPluginAsync = async fastify => {
+const handlers = [create, remove, findById, update, findAll] as const;
+
+const preset: FastifyPluginAsync = async fastify => {
+  const mapper = new PresetMapper();
+
   fastify.decorate(
     'presetRepository',
-    makePrismaPresetRepository(fastify.prisma),
+    new PrismaPresetRepository(fastify.prisma),
   );
   fastify.decorate(
     'presetService',
-    makePresetService(fastify.presetRepository, fastify.httpErrors),
+    registerHandlers(
+      handlers,
+      {repository: fastify.presetRepository, mapper},
+      fastify.handlerRegistry,
+    ),
   );
 };
 
 declare module 'fastify' {
   interface FastifyInstance {
     presetRepository: PresetRepository;
-    presetService: PresetService;
+    presetService: ComposeHandlers<typeof handlers>;
   }
 }
 export default preset;

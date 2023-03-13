@@ -13,6 +13,7 @@
   },
   "scripts": {
     "test": "dotenv -e .env.test -- tap --ts --reporter=terse './test/**/*.test.ts' --before=test/before-test.ts",
+    "test:coverage": "dotenv -e .env.test -- tap --ts --reporter=terse  --coverage-report=html './test/**/*.test.ts' --before=test/before-test.ts --save=tests.txt",
     "test:ci": "dotenv -e .env.test -- tap --no-check-coverage --ts './test/**/*.test.ts' --before=test/before-test.ts",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
@@ -41,7 +42,7 @@
     "@fastify/swagger": "^8.2.1",
     "@fastify/type-provider-typebox": "^2.4.0",
     "@prisma/client": "^4.8.0",
-    "@sinclair/typebox": "^0.25.16",
+    "@sinclair/typebox": "^0.25.24",
     "close-with-grace": "^1.1.0",
     "dotenv": "^16.0.3",
     "dotenv-cli": "^6.0.0",
