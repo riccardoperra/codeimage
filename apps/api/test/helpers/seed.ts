@@ -37,6 +37,20 @@ export const userSeed = {
   },
 };
 
+export const presetSeed = {
+  clean: () => client.$transaction([client.preset.deleteMany()]),
+  createPresetV1(presetName: string, ownerId: string, data: object) {
+    return client.preset.create({
+      data: {
+        name: presetName,
+        owner: {connect: {id: ownerId}},
+        version: BigInt(1),
+        data,
+      },
+    });
+  },
+};
+
 export const projectSeed = {
   clean: () => client.$transaction([client.project.deleteMany()]),
   createProject(projectName: string, ownerId: string) {

@@ -1,9 +1,14 @@
-import {PresetCreateRequest} from './../domain/index';
-import {PresetCreateResponse} from '../domain';
+import {Preset} from '@codeimage/prisma-models';
+import {PresetCreateRequest, PresetUpdateRequest} from '../domain';
 
 export interface PresetRepository {
-  findById(id: string): Promise<PresetCreateResponse | null>;
-  create(data: PresetCreateRequest): Promise<PresetCreateResponse>;
-  update(id: string, data: PresetCreateRequest): Promise<PresetCreateResponse>;
-  deletePreset(id: string): Promise<PresetCreateResponse>;
+  findByIdAndOwnerId(id: string, ownerId: string): Promise<Preset | null>;
+
+  findAllByOwnerId(ownerId: string): Promise<readonly Preset[]>;
+
+  create(data: PresetCreateRequest): Promise<Preset>;
+
+  update(id: string, data: PresetUpdateRequest): Promise<Preset>;
+
+  deletePreset(id: string): Promise<Preset>;
 }
