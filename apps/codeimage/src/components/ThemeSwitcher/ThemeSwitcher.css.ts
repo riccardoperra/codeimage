@@ -35,7 +35,7 @@ export const themeBox = style({
   borderRadius: themeVars.borderRadius.lg,
   background: backgroundColorVar,
   overflow: 'hidden',
-  cursor: 'pointer',
+  position: 'relative',
 
   selectors: {
     '&[data-selected="true"]': {
@@ -66,12 +66,29 @@ export const themeBoxFooter = style({
       borderRadius: themeVars.borderRadius.lg,
       margin: themeVars.spacing['4'],
       marginTop: 0,
+      userSelect: 'none',
     },
   },
 });
 
 export const themeBoxTerminalHost = style({
   padding: `${themeVars.spacing['2']} ${themeVars.spacing['1']}`,
+});
+
+export const themeBoxSelectedOverlay = style({
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  background: 'rgba(255,255,255,.3)',
+  mixBlendMode: 'overlay',
+  opacity: '0',
+  transition: 'opacity 0.2s ease-in-out',
+  top: 0,
+  selectors: {
+    [`${themeBox}:hover &`]: {
+      opacity: 1,
+    },
+  },
 });
 
 export type ThemeSwitcherVariant = RecipeVariants<typeof grid>;
