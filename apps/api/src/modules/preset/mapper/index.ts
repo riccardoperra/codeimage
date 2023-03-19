@@ -13,6 +13,7 @@ export class PresetMapper implements PresetMapper {
       version: Number(entity.version),
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
+      data: entity.data,
     } as const;
   }
 }
