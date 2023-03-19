@@ -17,11 +17,8 @@ import {
   ParentComponent,
   Show,
   Suspense,
-  SuspenseList,
 } from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
-import {CheckCircle} from '../Icons/CheckCircle';
-import {EmptyCircle} from '../Icons/EmptyCircle';
 import {TerminalHost} from '../Terminal/TerminalHost';
 import {ThemeBox} from './ThemeBox';
 import {ThemeBoxSkeleton} from './ThemeBoxSkeleton';
@@ -48,7 +45,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   };
   const exampleCode =
     '// Just a code example \n' +
-    'export function Preview() {\n' +
+    'function Preview() {\n' +
     ' const [count, setCount] = \n' +
     '   createSignal(0);\n' +
     '}';
@@ -62,7 +59,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
         [gridSize]: filteredThemes().length.toString(),
       })}
     >
-      <Show when={modality === 'full'}>
+      <Show when={modality === 'full'} keyed={false}>
         <FlexField size={'lg'}>
           <TextField
             type={'text'}
@@ -80,7 +77,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
             <Suspense fallback={<ThemeBoxSkeleton />}>
               <Show when={theme()} keyed={true}>
                 {theme => (
-                  <Show when={isMatched(theme.id)}>
+                  <Show when={isMatched(theme.id)} keyed={false}>
                     <div>
                       <ThemeBox
                         theme={theme}
@@ -111,26 +108,6 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                           />
                         </TerminalHost>
                       </ThemeBox>
-
-                      <Box
-                        display={'flex'}
-                        justifyContent={'center'}
-                        marginTop={4}
-                      >
-                        <Show
-                          when={isSelected(theme.id)}
-                          fallback={
-                            <EmptyCircle
-                              cursor={'pointer'}
-                              onClick={() => dispatchUpdateTheme({theme})}
-                              size={'md'}
-                              opacity={0.35}
-                            />
-                          }
-                        >
-                          <CheckCircle size={'md'} />
-                        </Show>
-                      </Box>
                     </div>
                   </Show>
                 )}

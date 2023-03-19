@@ -9,7 +9,7 @@ export const gridSize = createVar();
 export const grid = recipe({
   base: {
     display: 'grid',
-    gap: '40px',
+    gap: themeVars.spacing['8'],
     padding: themeVars.spacing['4'],
     overflowY: 'auto',
     height: '100%',
@@ -32,14 +32,16 @@ export const grid = recipe({
 
 export const themeBox = style({
   width: '100%',
-  borderRadius: themeVars.borderRadius.xl,
+  borderRadius: themeVars.borderRadius.lg,
   background: backgroundColorVar,
   overflow: 'hidden',
   cursor: 'pointer',
 
   selectors: {
     '&[data-selected="true"]': {
-      boxShadow: themeVars.boxShadow.outline,
+      boxShadow: themeVars.boxShadow.lg,
+      outline: `2px solid ${themeVars.dynamicColors.primary}`,
+      outlineOffset: '2px',
     },
   },
 });
@@ -47,7 +49,7 @@ export const themeBox = style({
 export const themeBoxContent = style({
   selectors: {
     [`${themeBox} &`]: {
-      padding: themeVars.spacing['3'],
+      padding: themeVars.spacing['4'],
     },
   },
 });
@@ -61,6 +63,9 @@ export const themeBoxFooter = style({
       alignItems: 'center',
       backgroundColor: `rgba(0, 0, 0, .40)`,
       color: themeVars.backgroundColor.white,
+      borderRadius: themeVars.borderRadius.lg,
+      margin: themeVars.spacing['4'],
+      marginTop: 0,
     },
   },
 });
