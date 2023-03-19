@@ -21,6 +21,7 @@ import {ColorSwatchIcon} from '../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../components/Icons/SparklesIcon';
 import {KeyboardShortcuts} from '../../components/KeyboardShortcuts/KeyboardShortcuts';
 import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
+import {PanelDivider} from '../../components/PropertyEditor/PanelDivider';
 import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItem';
 import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
 import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
@@ -57,7 +58,38 @@ export function App() {
       <div class={styles.wrapper}>
         <Show when={modality === 'full' && !readOnly()}>
           <Sidebar position={'left'}>
-            <EditorSidebar />
+            {() => {
+              const [value, setValue] = createSignal<'styles' | 'preset'>(
+                'styles',
+              );
+
+              return (
+                <Box>
+                  <Box padding={'3'}>
+                    <FlexField size={'md'}>
+                      <SegmentedField
+                        items={[
+                          {label: 'Styles', value: 'styles'},
+                          {label: 'Presets', value: 'preset'},
+                        ]}
+                        value={value()}
+                        onChange={setValue}
+                      />
+
+                      <PanelDivider />
+                    </FlexField>
+                  </Box>
+                  <Switch>
+                    <Match when={value() === 'styles'} keyed={false}>
+                      <EditorSidebar />
+                    </Match>
+                    <Match when={value() === 'preset'} keyed={false}>
+                      <PresetSwitcher orientation={'vertical'} />
+                    </Match>
+                  </Switch>
+                </Box>
+              );
+            }}
           </Sidebar>
         </Show>
 
@@ -85,11 +117,6 @@ export function App() {
                 <HStack spacing={'2'}>
                   <KeyboardShortcuts />
                 </HStack>
-                <Box marginLeft={'auto'}>
-                  <Button size={'xs'} onClick={async () => {}}>
-                    Presets
-                  </Button>
-                </Box>
               </Box>
             </Show>
 
@@ -136,36 +163,7 @@ export function App() {
             fallback={<BottomBar portalHostRef={portalHostRef()} />}
           >
             <Sidebar position={'right'}>
-              {() => {
-                const [value, setValue] = createSignal<'theme' | 'preset'>(
-                  'preset',
-                );
-
-                return (
-                  <Box>
-                    <Box padding={'3'}>
-                      <FlexField size={'md'}>
-                        <SegmentedField
-                          items={[
-                            {label: 'Presets', value: 'preset'},
-                            {label: 'Themes', value: 'theme'},
-                          ]}
-                          value={value()}
-                          onChange={setValue}
-                        />
-                      </FlexField>
-                    </Box>
-                    <Switch>
-                      <Match when={value() === 'theme'} keyed={false}>
-                        <ThemeSwitcher orientation={'vertical'} />
-                      </Match>
-                      <Match when={value() === 'preset'} keyed={false}>
-                        <PresetSwitcher orientation={'vertical'} />
-                      </Match>
-                    </Switch>
-                  </Box>
-                );
-              }}
+              <ThemeSwitcher orientation={'vertical'} />
             </Sidebar>
           </Show>
         </Show>
