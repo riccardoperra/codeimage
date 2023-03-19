@@ -93,7 +93,7 @@
     "modern-normalize": "^1.1.0",
     "polished": "^4.2.2",
     "rxjs": "^7.8.0",
-    "solid-codemirror": "^2.0.2",
+    "solid-codemirror": "^2.2.3",
     "solid-headless": "^0.13.0",
     "solid-js": "^1.6.8",
     "solid-use": "^0.5.0",

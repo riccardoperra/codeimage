@@ -7,6 +7,7 @@ export const PresetDtoSchema = Type.Object(
     createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     version: Type.Number(),
+    data: Type.Any(),
   },
   {
     title: 'PresetResponse',
