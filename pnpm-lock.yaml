@@ -201,7 +201,7 @@ importers:
       rimraf: ^3.0.2
       rxjs: ^7.8.0
       sass: ^1.55.0
-      solid-codemirror: ^2.0.2
+      solid-codemirror: ^2.2.3
       solid-headless: ^0.13.0
       solid-js: 1.6.3
       solid-use: ^0.5.0
@@ -277,7 +277,7 @@ importers:
       modern-normalize: 1.1.0
       polished: 4.2.2
       rxjs: 7.8.0
-      solid-codemirror: 2.0.2_qekijhimgn4gqbjvle4kzyqjj4
+      solid-codemirror: 2.2.3_qekijhimgn4gqbjvle4kzyqjj4
       solid-headless: 0.13.0_solid-js@1.6.3
       solid-js: 1.6.3
       solid-use: 0.5.0_solid-js@1.6.3
@@ -15019,20 +15019,6 @@ packages:
       smart-buffer: 4.2.0
     dev: true
 
-  /solid-codemirror/2.0.2_qekijhimgn4gqbjvle4kzyqjj4:
-    resolution: {integrity: sha512-CZcLdyqwYP3lG49HwFGezjw8mlqEYJFQYHyVE7L6jKxCPU5BlNV15ZeaqxEgGl70z1JS7FKpRWE9X9l5ccHLKQ==}
-    engines: {node: '>=14'}
-    peerDependencies:
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      solid-js: ^1.4.2
-    dependencies:
-      '@changesets/cli': 2.25.0
-      '@codemirror/state': 6.1.4
-      '@codemirror/view': 6.7.1
-      solid-js: 1.6.3
-    dev: false
-
   /solid-codemirror/2.2.1_qekijhimgn4gqbjvle4kzyqjj4:
     resolution: {integrity: sha512-uZhr+uwdyjJEKa/jLlGOLrw+36BOFRrE4CtsTWpazky2sy1VMiuFYMlrMYzITqGdrLJfYnb79eTDHpoUDRXxSg==}
     engines: {node: '>=14'}
@@ -15045,6 +15031,20 @@ packages:
       '@codemirror/state': 6.1.4
       '@codemirror/view': 6.7.1
       solid-js: 1.6.3
+
+  /solid-codemirror/2.2.3_qekijhimgn4gqbjvle4kzyqjj4:
+    resolution: {integrity: sha512-KaFatOaEQ79ZiBBGv/nw/3BkubE1BzDcvERpvXjQfr1WlM6qzSyEx0Af+2biPt7RE+ARC2YO18RULJ7of9+ukw==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      '@codemirror/state': ^6.0.0
+      '@codemirror/view': ^6.0.0
+      solid-js: ^1.6.0
+    dependencies:
+      '@changesets/cli': 2.25.0
+      '@codemirror/state': 6.1.4
+      '@codemirror/view': 6.7.1
+      solid-js: 1.6.3
+    dev: false
 
   /solid-headless/0.13.0_solid-js@1.6.3:
     resolution: {integrity: sha512-N118iPl7W5lyug4K+4c0cwM8YR2yEVJ/3H4wq6tVijATHfXfLnB1ACFI5GGHSXlwu70PUzaGSKwcVqLlloUMyA==}

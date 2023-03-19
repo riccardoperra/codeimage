@@ -6,11 +6,13 @@ import {
   adaptiveFullScreenHeight,
   Box,
   Button,
+  FlexField,
   HStack,
   PortalHost,
+  SegmentedField,
 } from '@codeimage/ui';
 import {useModality} from '@core/hooks/isMobile';
-import {createSignal, lazy, Show, Suspense} from 'solid-js';
+import {createSignal, lazy, Match, Show, Suspense, Switch} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
@@ -22,6 +24,7 @@ import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
 import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItem';
 import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
 import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
+import {PresetSwitcher} from '../../components/ThemeSwitcher/PresetSwitcher';
 import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
 import {ExportButton} from '../../components/Toolbar/ExportButton';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
@@ -78,10 +81,15 @@ export function App() {
             </Show>
 
             <Show when={!readOnly() && modality === 'full'}>
-              <Box paddingLeft={4} paddingTop={3}>
+              <Box display={'flex'} paddingTop={3} paddingX={4}>
                 <HStack spacing={'2'}>
                   <KeyboardShortcuts />
                 </HStack>
+                <Box marginLeft={'auto'}>
+                  <Button size={'xs'} onClick={async () => {}}>
+                    Presets
+                  </Button>
+                </Box>
               </Box>
             </Show>
 
@@ -128,7 +136,36 @@ export function App() {
             fallback={<BottomBar portalHostRef={portalHostRef()} />}
           >
             <Sidebar position={'right'}>
-              <ThemeSwitcher orientation={'vertical'} />
+              {() => {
+                const [value, setValue] = createSignal<'theme' | 'preset'>(
+                  'preset',
+                );
+
+                return (
+                  <Box>
+                    <Box padding={'3'}>
+                      <FlexField size={'md'}>
+                        <SegmentedField
+                          items={[
+                            {label: 'Presets', value: 'preset'},
+                            {label: 'Themes', value: 'theme'},
+                          ]}
+                          value={value()}
+                          onChange={setValue}
+                        />
+                      </FlexField>
+                    </Box>
+                    <Switch>
+                      <Match when={value() === 'theme'} keyed={false}>
+                        <ThemeSwitcher orientation={'vertical'} />
+                      </Match>
+                      <Match when={value() === 'preset'} keyed={false}>
+                        <PresetSwitcher orientation={'vertical'} />
+                      </Match>
+                    </Switch>
+                  </Box>
+                );
+              }}
             </Sidebar>
           </Show>
         </Show>
