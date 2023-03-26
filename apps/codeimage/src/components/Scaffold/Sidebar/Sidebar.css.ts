@@ -20,15 +20,11 @@ export const sidebar = recipe({
       transition: 'background-color .2s, border .2s',
       overflowY: 'auto',
       overflowX: 'hidden',
-
-      selectors: {
-        '&:not([data-platform=firefox])': {
-          '@supports': {
-            '(scrollbar-gutter: stable)': {
-              paddingRight: 0,
-              scrollbarGutter: 'stable',
-            },
-          },
+      paddingRight: themeVars.spacing['2'],
+      '@supports': {
+        '(scrollbar-gutter: stable)': {
+          paddingRight: 0,
+          scrollbarGutter: 'stable',
         },
       },
       flexShrink: 0,
