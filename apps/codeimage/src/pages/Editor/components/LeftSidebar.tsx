@@ -12,7 +12,7 @@ export function EditorLeftSidebar() {
   const [toggle, setToggle] = createSignal(false);
 
   return (
-    <div style={{position: 'relative', display: 'flex'}}>
+    <>
       <Sidebar>
         <EditorForm>
           <Box marginTop={3}>
@@ -56,6 +56,6 @@ export function EditorLeftSidebar() {
           </EditorForm>
         </Sidebar>
       </Motion.div>
-    </div>
+    </>
   );
 }

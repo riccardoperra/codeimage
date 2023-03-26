@@ -11,19 +11,7 @@ export const [sidebarTheme, sidebarVars] = createTheme({
 export const sidebar = style([
   sidebarTheme,
   {
-    padding: `0px ${sidebarVars.gap} ${sidebarVars.gap}`,
-    overflowY: 'auto',
-    height: '100%',
-    selectors: {
-      '&:not([data-platform=firefox])': {
-        '@supports': {
-          '(scrollbar-gutter: stable)': {
-            paddingRight: 0,
-            scrollbarGutter: 'stable',
-          },
-        },
-      },
-    },
+    paddingLeft: sidebarVars.gap,
   },
 ]);
 

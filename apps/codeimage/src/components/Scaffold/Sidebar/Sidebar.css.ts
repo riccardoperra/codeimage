@@ -18,7 +18,19 @@ export const sidebar = recipe({
       color: themeVars.dynamicColors.panel.textColor,
       zIndex: 1,
       transition: 'background-color .2s, border .2s',
-      overflow: 'auto',
+      overflowY: 'auto',
+      overflowX: 'hidden',
+
+      selectors: {
+        '&:not([data-platform=firefox])': {
+          '@supports': {
+            '(scrollbar-gutter: stable)': {
+              paddingRight: 0,
+              scrollbarGutter: 'stable',
+            },
+          },
+        },
+      },
       flexShrink: 0,
     },
   ]),
