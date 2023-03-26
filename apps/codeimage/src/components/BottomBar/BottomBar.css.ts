@@ -19,8 +19,6 @@ export const wrapper = style({
 
 export const button = style([
   {
-    display: 'flex',
-    flexDirection: 'column',
     color: themeVars.dynamicColors.bottomBar.textColor,
   },
 ]);
@@ -45,4 +43,14 @@ export const portalContent = style({
   overflowY: 'auto',
   flex: 0,
   maxHeight: '50vh',
+});
+
+export const scrollableContentWithPadding = style({
+  paddingRight: themeVars.spacing['3'],
+  '@supports': {
+    '(scrollbar-gutter: stable)': {
+      paddingRight: 0,
+      scrollbarGutter: 'stable',
+    },
+  },
 });

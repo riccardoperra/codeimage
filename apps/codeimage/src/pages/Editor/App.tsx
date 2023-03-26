@@ -115,8 +115,8 @@ export function App() {
 
             <Show when={modality === 'full'} keyed={false}>
               <FrameToolbar frameRef={frameRef()} />
-              <Footer />
             </Show>
+            <Footer />
           </SuspenseEditorItem>
         </Canvas>
         <Show when={!readOnly()}>
