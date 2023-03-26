@@ -24,6 +24,10 @@ export const ThemeBox: ParentComponent<ThemeBoxProps> = props => {
       })}
       onClick={e => propsWithDefault.onClick(e)}
     >
+      <div
+        class={styles.themeBoxSelectedOverlay}
+        data-visible={propsWithDefault.selected}
+      />
       <div class={styles.themeBoxContent}>{propsWithDefault.children}</div>
       <Show when={propsWithDefault.showFooter} keyed={false}>
         <div class={styles.themeBoxFooter}>
@@ -32,10 +36,6 @@ export const ThemeBox: ParentComponent<ThemeBoxProps> = props => {
           </Text>
         </div>
       </Show>
-      <div
-        class={styles.themeBoxSelectedOverlay}
-        data-visible={propsWithDefault.selected}
-      />
     </div>
   );
 };

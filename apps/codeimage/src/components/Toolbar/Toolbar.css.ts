@@ -24,7 +24,6 @@ export const wrapper = style([
     width: '100%',
     backgroundColor: themeVars.dynamicColors.panel.background,
     color: themeVars.dynamicColors.panel.textColor,
-    borderBottom: `1px solid ${themeVars.dynamicColors.divider}`,
     paddingLeft: themeVars.spacing['4'],
     paddingRight: themeVars.spacing['4'],
 

@@ -10,4 +10,8 @@ export const canvas = style({
   overflow: 'hidden',
   display: 'flex',
   flexDirection: 'column',
+  width: '100%',
+  borderRadius: '32px',
+  borderBottomLeftRadius: 0,
+  borderBottomRightRadius: 0,
 });

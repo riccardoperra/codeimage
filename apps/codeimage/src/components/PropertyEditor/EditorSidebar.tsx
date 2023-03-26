@@ -1,4 +1,3 @@
-import {EditorForm} from './EditorForm';
 import {EditorStyleForm} from './EditorStyleForm';
 import {FrameStyleForm} from './FrameStyleForm';
 import {PanelDivider} from './PanelDivider';
@@ -6,7 +5,7 @@ import {WindowStyleForm} from './WindowStyleForm';
 
 export const EditorSidebar = () => {
   return (
-    <EditorForm>
+    <>
       <div>
         <FrameStyleForm />
       </div>
@@ -20,6 +19,6 @@ export const EditorSidebar = () => {
       <div>
         <EditorStyleForm />
       </div>
-    </EditorForm>
+    </>
   );
 };

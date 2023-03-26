@@ -32,7 +32,7 @@ export const grid = recipe({
 
 export const themeBox = style({
   width: '100%',
-  borderRadius: themeVars.borderRadius.lg,
+  borderRadius: themeVars.borderRadius.xl,
   background: backgroundColorVar,
   overflow: 'hidden',
   position: 'relative',
