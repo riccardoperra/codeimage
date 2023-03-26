@@ -14,6 +14,11 @@ export const canvas = style({
   borderRadius: '32px',
   borderBottomLeftRadius: 0,
   borderBottomRightRadius: 0,
+  '@media': {
+    'screen and (max-width: 768px)': {
+      borderTopRightRadius: 0,
+    },
+  },
 });
 
 export const wrapper = style({
@@ -22,4 +27,10 @@ export const wrapper = style({
   flex: 1,
   paddingLeft: themeVars.spacing['1'],
   paddingRight: themeVars.spacing['1'],
+  '@media': {
+    'screen and (max-width: 768px)': {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
+  },
 });
