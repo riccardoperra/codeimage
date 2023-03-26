@@ -13,16 +13,18 @@ export const sidebar = recipe({
     sidebarTheme,
     {
       height: '100%',
-      flex: `0 0 ${sidebarVars.width}`,
+      width: sidebarVars.width,
       backgroundColor: themeVars.dynamicColors.panel.background,
       color: themeVars.dynamicColors.panel.textColor,
-      zIndex: 0,
+      zIndex: 1,
       transition: 'background-color .2s, border .2s',
       overflow: 'auto',
+      flexShrink: 0,
     },
   ]),
   variants: {
     position: {
+      none: {},
       right: {
         borderLeft: `1px solid ${themeVars.dynamicColors.divider}`,
       },

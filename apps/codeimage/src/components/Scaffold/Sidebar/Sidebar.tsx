@@ -7,7 +7,7 @@ export const Sidebar: ParentComponent<SidebarVariants> = props => {
   return (
     <Box
       class={styles.sidebar({
-        position: props.position,
+        position: props.position ?? 'none',
       })}
     >
       {props.children}

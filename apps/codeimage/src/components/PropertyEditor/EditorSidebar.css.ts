@@ -3,7 +3,7 @@ import {createTheme, style} from '@vanilla-extract/css';
 import {recipe} from '@vanilla-extract/recipes';
 
 export const [sidebarTheme, sidebarVars] = createTheme({
-  gap: themeVars.spacing['3'],
+  gap: themeVars.spacing['4'],
   panelTitleTextColor: themeVars.dynamicColors.panel.textColor,
   panelRowsTextColor: themeVars.dynamicColors.panel.textColorAlt,
 });
@@ -17,10 +17,9 @@ export const sidebar = style([
     selectors: {
       '&:not([data-platform=firefox])': {
         '@supports': {
-          '(scrollbar-gutter: stable both-edges)': {
-            paddingLeft: 0,
+          '(scrollbar-gutter: stable)': {
             paddingRight: 0,
-            scrollbarGutter: 'stable both-edges',
+            scrollbarGutter: 'stable',
           },
         },
       },
