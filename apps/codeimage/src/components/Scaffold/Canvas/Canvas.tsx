@@ -1,9 +1,13 @@
-import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
-import {ParentComponent} from 'solid-js';
+import {FlowProps} from 'solid-js';
 import * as styles from './Canvas.css';
 
-type CanvasProps = WithRef<'div'>;
+// eslint-disable-next-line @typescript-eslint/ban-types
+type CanvasProps = {};
 
-export const Canvas: ParentComponent<CanvasProps> = props => {
-  return <div class={styles.canvas}>{props.children}</div>;
-};
+export function Canvas(props: FlowProps<CanvasProps>) {
+  return (
+    <div class={styles.wrapper}>
+      <div class={styles.canvas}>{props.children}</div>
+    </div>
+  );
+}

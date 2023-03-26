@@ -146,6 +146,7 @@ export function Bootstrap() {
 
 getAuth0State()
   .initLogin()
+  .catch(() => null)
   .then(() => {
     render(
       () => (
