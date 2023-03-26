@@ -58,79 +58,67 @@ export function App() {
 
         <PortalHost ref={setPortalHostRef} />
 
-        <Box
-          padding={0}
-          paddingLeft={1}
-          paddingRight={1}
-          display={'flex'}
-          width={'100%'}
-        >
-          <Canvas>
-            <SuspenseEditorItem
-              fallback={
-                <Box
-                  height={'100%'}
-                  display={'flex'}
-                  alignItems={'center'}
-                  justifyContent={'center'}
-                >
-                  <FrameSkeleton />
-                </Box>
-              }
-            >
-              <Show when={readOnly()}>
-                <EditorReadOnlyBanner onClone={clone} />
-              </Show>
-
-              <Show when={!readOnly() && modality === 'full'}>
-                <Box display={'flex'} paddingTop={3} paddingX={4}>
-                  <HStack spacing={'2'}>
-                    <KeyboardShortcuts />
-                  </HStack>
-                </Box>
-              </Show>
-
-              <Show when={modality === 'mobile'}>
-                <Box class={styles.mobileActionToolbar}>
-                  <HStack spacing={'2'} justifyContent={'flexEnd'}>
-                    <ShareButton showLabel={false} />
-                    <Button
-                      size={'xs'}
-                      variant={'solid'}
-                      theme={'secondary'}
-                      leftIcon={<ColorSwatchIcon />}
-                      onClick={() => dispatchRandomTheme()}
-                    />
-                    <Button
-                      size={'xs'}
-                      variant={'solid'}
-                      theme={'secondary'}
-                      leftIcon={<SparklesIcon />}
-                      onClick={() => getActiveEditorStore().format()}
-                    />
-                    <ExportInNewTabButton canvasRef={frameRef()} />
-                    <ExportButton canvasRef={frameRef()} />
-                  </HStack>
-                </Box>
-              </Show>
-
-              <FrameHandler
-                ref={setFrameRef}
-                onScaleChange={frameStore.setScale}
+        <Canvas>
+          <SuspenseEditorItem
+            fallback={
+              <Box
+                height={'100%'}
+                display={'flex'}
+                alignItems={'center'}
+                justifyContent={'center'}
               >
-                <Suspense fallback={<FrameSkeleton />}>
-                  <ManagedFrame />
-                </Suspense>
-              </FrameHandler>
+                <FrameSkeleton />
+              </Box>
+            }
+          >
+            <Show when={readOnly()}>
+              <EditorReadOnlyBanner onClone={clone} />
+            </Show>
 
-              <Show when={modality === 'full'} keyed={false}>
-                <FrameToolbar frameRef={frameRef()} />
-                <Footer />
-              </Show>
-            </SuspenseEditorItem>
-          </Canvas>
-        </Box>
+            <Show when={!readOnly() && modality === 'full'}>
+              <Box display={'flex'} paddingTop={3} paddingX={4}>
+                <HStack spacing={'2'}>
+                  <KeyboardShortcuts />
+                </HStack>
+              </Box>
+            </Show>
 
+            <Show when={modality === 'mobile'}>
+              <Box class={styles.mobileActionToolbar}>
+                <HStack spacing={'2'} justifyContent={'flexEnd'}>
+                  <ShareButton showLabel={false} />
+                  <Button
+                    size={'xs'}
+                    variant={'solid'}
+                    theme={'secondary'}
+                    leftIcon={<ColorSwatchIcon />}
+                    onClick={() => dispatchRandomTheme()}
+                  />
+                  <Button
+                    size={'xs'}
+                    variant={'solid'}
+                    theme={'secondary'}
+                    leftIcon={<SparklesIcon />}
+                    onClick={() => getActiveEditorStore().format()}
+                  />
+                  <ExportInNewTabButton canvasRef={frameRef()} />
+                  <ExportButton canvasRef={frameRef()} />
+                </HStack>
+              </Box>
+            </Show>
+
+            <FrameHandler ref={setFrameRef} onScaleChange={frameStore.setScale}>
+              <Suspense fallback={<FrameSkeleton />}>
+                <ManagedFrame />
+              </Suspense>
+            </FrameHandler>
+
+            <Show when={modality === 'full'} keyed={false}>
+              <FrameToolbar frameRef={frameRef()} />
+              <Footer />
+            </Show>
+          </SuspenseEditorItem>
+        </Canvas>
         <Show when={!readOnly()}>
           <Show
             when={modality === 'full'}

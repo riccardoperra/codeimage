@@ -11,7 +11,6 @@ export const grid = recipe({
     display: 'grid',
     gap: themeVars.spacing['8'],
     padding: themeVars.spacing['4'],
-    overflowY: 'auto',
     height: '100%',
     gridAutoRows: 'min-content',
   },
