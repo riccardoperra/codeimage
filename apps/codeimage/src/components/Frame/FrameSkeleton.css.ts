@@ -14,6 +14,7 @@ export const wrapper = style([
     zIndex: 1,
     boxSizing: 'border-box',
     userSelect: 'none',
+    borderRadius: themeVars.borderRadius.lg,
     selectors: {
       ...withThemeMode({
         light: {
