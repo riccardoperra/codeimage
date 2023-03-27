@@ -3,6 +3,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {getPresetsStore} from '@codeimage/store/presets/presets';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {getUiStore} from '@codeimage/store/ui';
 import {
@@ -10,6 +11,7 @@ import {
   Button,
   createStandaloneDialog,
   DropdownMenuV2,
+  HStack,
   IconButton,
   MenuButton,
   Text,
@@ -19,8 +21,8 @@ import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
-import {createResource, For, lazy, ParentComponent, Suspense} from 'solid-js';
-import {getAllPresets} from '../../data-access/preset';
+import {For, lazy, ParentComponent, Suspense} from 'solid-js';
+import {useIdb} from '../../hooks/use-indexed-db';
 import {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {DotHorizontalIcon} from '../Icons/DotVertical';
@@ -47,6 +49,7 @@ export const PresetSwitcher: ParentComponent<
   const frame = getFrameState();
   const [t] = useI18n<AppLocaleEntries>();
   const locale = () => getUiStore().get.locale;
+  const presetsStore = getPresetsStore();
 
   const onSelectTheme = (data: ProjectEditorPersistedState) => {
     editor.actions.setFromPersistedState(data.editor);
@@ -55,8 +58,6 @@ export const PresetSwitcher: ParentComponent<
   };
 
   const createDialog = createStandaloneDialog();
-
-  const [data] = createResource(() => getAllPresets({}));
 
   const exampleCode =
     'function Preview() {\n' +
@@ -75,14 +76,39 @@ export const PresetSwitcher: ParentComponent<
           alignItems={'center'}
         >
           <Text weight={'semibold'}>User presets</Text>
-          <Button
-            size={'xs'}
-            theme={'secondary'}
-            variant={'solid'}
-            onClick={() => props.onClose()}
-          >
-            <CloseIcon size={'md'} />
-          </Button>
+          <HStack spacing={2}>
+            <Button
+              size={'xs'}
+              theme={'primary'}
+              variant={'solid'}
+              onClick={() => {
+                createDialog(RenameContentDialog, state => ({
+                  title: t('dashboard.renameProject.confirmTitle'),
+                  message: t('dashboard.renameProject.confirmMessage'),
+                  onConfirm: async name => {
+                    presetsStore.actions.addNewPreset(
+                      name,
+                      // TODO: to fix and move
+                      (await useIdb().get<ProjectEditorPersistedState>(
+                        'document',
+                      ))!,
+                    );
+                    state.close();
+                  },
+                }));
+              }}
+            >
+              Add new
+            </Button>
+            <Button
+              size={'xs'}
+              theme={'secondary'}
+              variant={'solid'}
+              onClick={() => props.onClose()}
+            >
+              <CloseIcon size={'md'} />
+            </Button>
+          </HStack>
         </Box>
         <PanelDivider />
       </div>
@@ -95,7 +121,7 @@ export const PresetSwitcher: ParentComponent<
             </>
           }
         >
-          <For each={data()}>
+          <For each={presetsStore.presets()}>
             {theme => {
               const data = () => theme.data as ProjectEditorPersistedState;
 
@@ -210,6 +236,9 @@ export const PresetSwitcher: ParentComponent<
                                         'dashboard.deleteProject.confirmMessage',
                                       ),
                                       onConfirm: () => {
+                                        presetsStore.actions.deletePreset(
+                                          theme.id,
+                                        );
                                         state.close();
                                       },
                                       actionType: 'danger' as const,
