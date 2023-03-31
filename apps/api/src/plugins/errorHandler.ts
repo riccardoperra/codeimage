@@ -4,7 +4,7 @@ import {NotFoundEntityException} from '../common/exceptions/NotFoundEntityExcept
 
 export default fp(
   async fastify => {
-    fastify.setErrorHandler(error => {
+    fastify.setErrorHandler((error, request, reply) => {
       let httpError: HttpError | null = null;
 
       if (error.statusCode) {
@@ -22,13 +22,11 @@ export default fp(
         httpError.stack = error.stack;
         httpError.code = error.code;
 
-        return httpError;
+        return reply.send(httpError);
       }
 
-      return error;
+      reply.send(error);
     });
-
-    return;
   },
   {name: 'appErrorsHandler'},
 );
