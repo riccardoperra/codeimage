@@ -86,13 +86,12 @@ export const PresetSwitcher: ParentComponent<
                   title: t('dashboard.renameProject.confirmTitle'),
                   message: t('dashboard.renameProject.confirmMessage'),
                   onConfirm: async name => {
-                    presetsStore.actions.addNewPreset(
+                    presetsStore.actions.addNewPreset({
                       name,
-                      // TODO: to fix and move
-                      (await useIdb().get<ProjectEditorPersistedState>(
+                      data: (await useIdb().get<ProjectEditorPersistedState>(
                         'document',
                       ))!,
-                    );
+                    });
                     state.close();
                   },
                 }));
@@ -121,7 +120,7 @@ export const PresetSwitcher: ParentComponent<
             </>
           }
         >
-          <For each={presetsStore.presets()}>
+          <For each={presetsStore.presetResource()}>
             {theme => {
               const data = () => theme.data as ProjectEditorPersistedState;
 
@@ -237,7 +236,7 @@ export const PresetSwitcher: ParentComponent<
                                       ),
                                       onConfirm: () => {
                                         presetsStore.actions.deletePreset(
-                                          theme.id,
+                                          theme,
                                         );
                                         state.close();
                                       },
