@@ -34,3 +34,28 @@ t.test('POST /v1/preset [Create Preset] -> 200', async t => {
   t.same(response.statusCode, 200, 'return status 200');
   t.strictSame(body.name, 'Data');
 });
+
+t.test(
+  'POST /v1/preset [Create Preset] -> Exceed presets limit > 422',
+  async t => {
+    const fastify = await build(t);
+    const createRepositorySpy = sinon.spy(fastify.presetRepository, 'create');
+    sinon.stub(fastify.config, 'PRESETS_LIMIT').value(-1);
+
+    const request: PresetCreateDto = {
+      name: 'Data',
+      data: {test: true},
+    };
+
+    const response = await fastify.inject({
+      url: `/api/v1/preset`,
+      method: 'POST',
+      payload: request,
+    });
+
+    response.json<PresetDto>();
+
+    t.ok(createRepositorySpy.notCalled);
+    t.same(response.statusCode, 422, 'return status 422');
+  },
+);
