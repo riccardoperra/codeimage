@@ -6,6 +6,8 @@ export interface PresetRepository {
 
   findAllByOwnerId(ownerId: string): Promise<readonly Preset[]>;
 
+  countByOwnerId(ownerId: string): Promise<number>;
+
   create(data: PresetCreateRequest): Promise<Preset>;
 
   update(id: string, data: PresetUpdateRequest): Promise<Preset>;
