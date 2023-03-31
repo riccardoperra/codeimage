@@ -44,6 +44,10 @@ export class PrismaPresetRepository implements PresetRepository {
     });
   }
 
+  countByOwnerId(ownerId: string): Promise<number> {
+    return this.client.preset.count({where: {ownerId}});
+  }
+
   update(id: string, data: PresetCreateRequest): Promise<Preset> {
     return this.client.preset.update({
       where: {
