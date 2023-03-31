@@ -27,7 +27,6 @@ const preset: FastifyPluginAsync = async fastify => {
         repository: fastify.presetRepository,
         mapper,
         config: fastify.config,
-        logger: fastify.log,
       },
       fastify.handlerRegistry,
     ),

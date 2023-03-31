@@ -13,6 +13,7 @@ test('fromEntityToDto', async t => {
     createdAt: entity.createdAt,
     version: Number(entity.version),
     name: entity.name,
+    data: {},
   } as PresetDto;
 
   const result = mapper.fromEntityToDto(entity);

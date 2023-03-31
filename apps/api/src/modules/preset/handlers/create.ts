@@ -7,7 +7,7 @@ import {PresetHandlerDependencies} from './';
 export const create =
   HandlerBuilder.withDependencies<PresetHandlerDependencies>()
     .withName('createPreset')
-    .withImplementation(({repository, mapper, config, logger}) => {
+    .withImplementation(({repository, mapper, config}) => {
       return async (
         ownerId: string,
         data: PresetCreateDto,

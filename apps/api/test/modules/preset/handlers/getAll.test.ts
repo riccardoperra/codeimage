@@ -3,25 +3,11 @@ import * as sinon from 'sinon';
 import t from 'tap';
 import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers';
 import {findAll} from '../../../../src/modules/preset/handlers/findAll';
-import {PresetMapper} from '../../../../src/modules/preset/mapper';
-import {PresetRepository} from '../../../../src/modules/preset/repository';
 import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema';
 import {PresetTestDataUtils} from '../data-utils';
+import {dependencies} from './dependencies';
 
 const handlersStub = {} as ResolvedDomainHandlerMap<DomainHandlerMap>;
-
-const dependencies = {
-  mapper: {
-    fromEntityToDto: () => void 0,
-  } as unknown as PresetMapper,
-  repository: {
-    create: () => void 0,
-    deletePreset: () => void 0,
-    findByIdAndOwnerId: () => void 0,
-    update: () => void 0,
-    findAllByOwnerId: () => void 0,
-  } as unknown as PresetRepository,
-} as const;
 
 t.beforeEach(() => sinon.restore());
 
@@ -40,6 +26,7 @@ t.test('when findAll', async t => {
     version: Number(preset1.version),
     createdAt: preset1.createdAt,
     updatedAt: preset1.updatedAt,
+    data: {},
   } as PresetDto;
 
   const fromEntityToDtoStub = sinon
