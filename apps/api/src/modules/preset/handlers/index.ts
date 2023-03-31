@@ -6,5 +6,4 @@ export type PresetHandlerDependencies = {
   repository: PresetRepository;
   mapper: PresetMapper;
   config: FastifyInstance['config'];
-  logger: FastifyInstance['log'];
 };
