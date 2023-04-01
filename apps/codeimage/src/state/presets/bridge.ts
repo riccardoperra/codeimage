@@ -57,7 +57,7 @@ export const withPresetBridge = (idbKey: string) =>
           };
           if (useInMemoryStore()) {
             const id = createUniqueId();
-            data.localSyncId = id;
+            presetData.localSyncId = id;
             return Promise.resolve({
               id,
               name,

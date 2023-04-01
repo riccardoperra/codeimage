@@ -92,6 +92,11 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
                   position: 'top-center',
                 }),
               )
+              .then(() =>
+                store.idb.update(data =>
+                  data.filter(preset => preset.id !== payload.data.localSyncId),
+                ),
+              )
               .catch(() => {
                 store.set(currentState);
                 toast.error('Error while deleting preset', {
