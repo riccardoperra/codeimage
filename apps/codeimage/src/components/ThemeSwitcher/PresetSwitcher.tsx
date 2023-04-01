@@ -204,19 +204,13 @@ export const PresetSwitcher: ParentComponent<
                                         'dashboard.renameProject.confirmMessage',
                                       ),
                                       currentPreset: theme.data,
-                                      newPreset: {
-                                        frame: getFrameState().stateToPersist(),
-                                        terminal:
-                                          getTerminalState().stateToPersist(),
-                                        editor:
-                                          getRootEditorStore().stateToPersist(),
-                                      },
                                       initialValue: theme.name,
-                                      onConfirm: async newName => {
-                                        presetsStore.actions.updatePresetName({
-                                          preset: theme,
-                                          newName,
-                                        });
+                                      onConfirm: async () => {
+                                        presetsStore.actions.updatePresetWithCurrentState(
+                                          {
+                                            preset: theme,
+                                          },
+                                        );
                                         state.close();
                                       },
                                     }));
@@ -270,9 +264,7 @@ export const PresetSwitcher: ParentComponent<
                                   </MenuButton>
                                 }
                               >
-                                <Item key={'update'}>
-                                  {t('dashboard.updateProject.dropdownLabel')}
-                                </Item>
+                                <Item key={'update'}>Update</Item>
                                 <Item key={'rename'}>
                                   {t('dashboard.renameProject.dropdownLabel')}
                                 </Item>

@@ -1,11 +1,16 @@
 import {useI18n} from '@codeimage/locale';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Preset} from '@codeimage/store/presets/types';
 import {
+  Box,
   Button,
   Dialog,
   DialogPanelContent,
   DialogPanelFooter,
   HStack,
+  SvgIcon,
   Text,
 } from '@codeimage/ui';
 import {JSXElement, mergeProps, VoidProps} from 'solid-js';
@@ -17,7 +22,6 @@ import {ThemeBox} from '../ThemeSwitcher/ThemeBox';
 
 interface PresetUpdateDialogProps {
   currentPreset: Preset['data'];
-  newPreset: Preset['data'];
   onConfirm: () => void;
   onClose?: () => void;
 }
@@ -28,11 +32,15 @@ export function PresetUpdateDialog(
   const [t] = useI18n<AppLocaleEntries>();
   const propsWithDefault = mergeProps({actionType: 'primary'} as const, props);
 
-  const exampleCode =
-    'function Preview() {\n' +
-    ' const [get, set] = \n' +
-    '   createSignal(0);\n' +
-    '}';
+  const exampleCode = 'function Code() {\n' + ' console.log()\n' + '}';
+
+  const currentEditorData = () => {
+    return {
+      frame: getFrameState().stateToPersist(),
+      terminal: getTerminalState().stateToPersist(),
+      editor: getRootEditorStore().stateToPersist(),
+    };
+  };
 
   function PresetPreview(props: {data: Preset['data']}) {
     return (
@@ -70,7 +78,7 @@ export function PresetUpdateDialog(
     <Dialog
       size={'md'}
       title={'Update preset'}
-      onClose={props.onClose}
+      onClose={() => props.onClose?.()}
       isOpen={true}
     >
       <DialogPanelContent>
@@ -80,13 +88,36 @@ export function PresetUpdateDialog(
 
         <HStack spacing={2} justifyContent={'center'} marginTop={6}>
           <div>
-            <li class={styles.item}>
+            {/*// TODO: Add in new component*/}
+            <li class={styles.item} style={{opacity: 0.5}}>
               <PresetPreview data={props.currentPreset} />
+              <Box display={'flex'} justifyContent={'center'} marginTop={4}>
+                <Text weight={'semibold'}>OLD</Text>
+              </Box>
             </li>
           </div>
           <div>
+            <SvgIcon
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              size={'lg'}
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
+              />
+            </SvgIcon>
+          </div>
+          <div>
             <li class={styles.item}>
-              <PresetPreview data={props.newPreset} />
+              <PresetPreview data={currentEditorData()} />
+              <Box display={'flex'} justifyContent={'center'} marginTop={4}>
+                <Text weight={'semibold'}>NEW</Text>
+              </Box>
             </li>
           </div>
         </HStack>
@@ -110,7 +141,7 @@ export function PresetUpdateDialog(
             type="submit"
             theme={propsWithDefault.actionType}
             variant={'solid'}
-            onClick={propsWithDefault.onConfirm}
+            onClick={() => propsWithDefault.onConfirm()}
           >
             {t('common.confirm')}
           </Button>
