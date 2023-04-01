@@ -15,6 +15,19 @@ import {Preset, PresetsArray} from './types';
 const idbKey = 'presets';
 const idb = useIdb();
 
+function mergeDbPresetsWithLocalPresets(
+  presets: Preset[],
+  localPresets: Preset[],
+) {
+  return [
+    ...localPresets.filter(
+      localPreset =>
+        !presets.find(preset => preset.data.localSyncId === localPreset.id),
+    ),
+    ...presets,
+  ];
+}
+
 async function fetchInitialState() {
   const useInMemoryStore = !getAuth0State().loggedIn();
   const localPresets = await idb
@@ -27,15 +40,9 @@ async function fetchInitialState() {
       ? Promise.resolve(localPresets)
       : api
           .getAllPresets({})
-          .then(res => [
-            ...localPresets.filter(
-              localPreset =>
-                !res.find(
-                  dbPreset => dbPreset.data.localSyncId === localPreset.id,
-                ),
-            ),
-            ...res,
-          ])
+          .then(presets =>
+            mergeDbPresetsWithLocalPresets(presets, localPresets),
+          )
   ).catch(() => [] as PresetsArray);
 }
 
@@ -75,6 +82,7 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
               return store.bridge
                 .addNewPreset(payload.name, payload.data)
                 .then(preset => store.set(_ => [preset, ...(_ ?? [])]))
+                .then(() => toast.success('Preset created successfully'))
                 .catch(() => {
                   store.set(currentState);
                   toast.error('Error while creating preset', {
@@ -88,12 +96,15 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
           return untrack(() => {
             const currentState = store();
             store.entity.removeBy(preset => preset.id === payload.id);
-            return store.bridge.deletePreset(payload).catch(() => {
-              store.set(currentState);
-              toast.error('Error while deleting preset', {
-                position: 'top-center',
+            return store.bridge
+              .deletePreset(payload)
+              .then(() => toast.success('Preset deleted successfully'))
+              .catch(() => {
+                store.set(currentState);
+                toast.error('Error while deleting preset', {
+                  position: 'top-center',
+                });
               });
-            });
           });
         }),
         syncPreset: store.asyncAction((payload: Preset) => {
@@ -107,6 +118,7 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
                   () => preset,
                 ),
               )
+              .then(() => toast.success('Local preset has been synchronized'))
               .catch(() => {
                 store.set(currentState);
                 toast.error('Error while synchronizing preset', {
