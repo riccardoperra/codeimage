@@ -121,7 +121,7 @@ export const PresetSwitcher: ParentComponent<
             </>
           }
         >
-          <For each={presetsStore()}>
+          <For each={presetsStore.sortedPresets()}>
             {theme => {
               const data = () => theme.data as ProjectEditorPersistedState;
               const canSyncPreset = () =>

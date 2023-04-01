@@ -36,15 +36,7 @@ async function fetchInitialState() {
             ),
             ...res,
           ])
-  )
-    .then(data =>
-      data.sort((a, b) =>
-        a.id.startsWith('cl-')
-          ? -1
-          : new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-      ),
-    )
-    .catch(() => [] as PresetsArray);
+  ).catch(() => [] as PresetsArray);
 }
 
 const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
@@ -67,6 +59,14 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
   .extend(withAsyncAction())
   .extend(store => {
     return {
+      sortedPresets() {
+        if (store.loading) return [];
+        return store().sort((a, b) =>
+          store.bridge.isLocalPreset(a) || store.bridge.isLocalPreset(b)
+            ? 1
+            : new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+        );
+      },
       actions: {
         addNewPreset: store.asyncAction(
           (payload: {name: string; data: ProjectEditorPersistedState}) => {

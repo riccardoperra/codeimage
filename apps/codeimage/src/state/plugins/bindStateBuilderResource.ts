@@ -3,10 +3,11 @@ import {
   ResourceFetcher,
   ResourceOptions,
   Setter,
+  Resource as InternalResource,
 } from 'solid-js';
 import {create, GenericStoreApi} from 'statebuilder';
 
-export type Resource<T> = GenericStoreApi<T, Setter<T>>;
+export type Resource<T> = GenericStoreApi<T, Setter<T>> & InternalResource<T>;
 
 function makeResource<T>(
   resourceFetcher: ResourceFetcher<true, T, true>,
