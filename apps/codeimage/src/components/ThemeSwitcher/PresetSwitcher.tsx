@@ -87,12 +87,7 @@ export const PresetSwitcher: ParentComponent<
                   title: t('dashboard.renameProject.confirmTitle'),
                   message: t('dashboard.renameProject.confirmMessage'),
                   onConfirm: async name => {
-                    presetsStore.actions.addNewPreset({
-                      name,
-                      data: (await useIdb().get<ProjectEditorPersistedState>(
-                        'document',
-                      ))!,
-                    });
+                    presetsStore.actions.addNewPreset({name});
                     state.close();
                   },
                 }));

@@ -75,23 +75,21 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
         );
       },
       actions: {
-        addNewPreset: store.asyncAction(
-          (payload: {name: string; data: ProjectEditorPersistedState}) => {
-            return untrack(() => {
-              const currentState = store();
-              return store.bridge
-                .addNewPreset(payload.name, payload.data)
-                .then(preset => store.set(_ => [preset, ...(_ ?? [])]))
-                .then(() => toast.success('Preset created successfully'))
-                .catch(() => {
-                  store.set(currentState);
-                  toast.error('Error while creating preset', {
-                    position: 'top-center',
-                  });
+        addNewPreset: store.asyncAction((payload: {name: string}) => {
+          return untrack(() => {
+            const currentState = store();
+            return store.bridge
+              .addNewPreset(payload.name)
+              .then(preset => store.set(_ => [preset, ...(_ ?? [])]))
+              .then(() => toast.success('Preset created successfully'))
+              .catch(() => {
+                store.set(currentState);
+                toast.error('Error while creating preset', {
+                  position: 'top-center',
                 });
-            });
-          },
-        ),
+              });
+          });
+        }),
         deletePreset: store.asyncAction((payload: Preset) => {
           return untrack(() => {
             const currentState = store();
@@ -111,7 +109,7 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
           return untrack(() => {
             const currentState = store();
             return store.bridge
-              .addNewPreset(payload.name, payload.data)
+              .addNewPreset(payload.name)
               .then(preset =>
                 store.entity.updateBy(
                   _ => _.id === payload.id,

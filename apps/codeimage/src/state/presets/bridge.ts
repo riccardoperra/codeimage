@@ -1,6 +1,10 @@
 import * as ApiTypes from '@codeimage/api/api-types';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {getEditorStore, getRootEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {appEnvironment} from '@core/configuration';
 import {createUniqueId} from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {makePlugin} from 'statebuilder';
@@ -25,20 +29,23 @@ export const withPresetBridge = (idbKey: string) =>
         persistToIdb(data: PresetsArray) {
           return idb.set(idbKey, unwrap(data)).then();
         },
-        addNewPreset(
-          name: string,
-          data: ApiTypes.CreatePresetApi['response']['data'] &
-            ProjectEditorPersistedState,
-        ): Promise<Preset> {
+        addNewPreset(name: string): Promise<Preset> {
+          const data: ApiTypes.CreatePresetApi['response']['data'] = {
+            frame: getFrameState().stateToPersist(),
+            terminal: getTerminalState().stateToPersist(),
+            editor: getRootEditorStore().stateToPersist(),
+            appVersion: appEnvironment.version,
+          };
           if (useInMemoryStore()) {
             const id = createUniqueId();
+            data.localSyncId = id;
             return Promise.resolve({
               id,
               name,
               createdAt: new Date(),
               updatedAt: new Date(),
               version: 1,
-              data: {...data, localSyncId: id},
+              data: data,
             });
           } else {
             return api.createPreset({body: {name, data}});
