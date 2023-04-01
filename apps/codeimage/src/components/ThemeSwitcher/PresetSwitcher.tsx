@@ -21,7 +21,14 @@ import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
-import {For, lazy, ParentComponent, Show, Suspense} from 'solid-js';
+import {
+  ErrorBoundary,
+  For,
+  lazy,
+  ParentComponent,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
@@ -144,49 +151,51 @@ export const PresetSwitcher: ParentComponent<
                           onClick={() => onSelectTheme(data())}
                         >
                           <div>
-                            <ThemeBox
-                              showFooter={false}
-                              theme={{
-                                // TODO: to fix, we should abstract ThemeBox
-                                properties: {
-                                  label: theme.name,
-                                  previewBackground: data().frame.background!,
-                                  // @ts-expect-error TODO to fix
-                                  darkMode: themeRes()?.properties.darkMode,
-                                  // @ts-expect-error TODO to fix
-                                  terminal: {
-                                    ...themeRes()?.properties.terminal,
+                            <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
+                              <ThemeBox
+                                showFooter={false}
+                                theme={{
+                                  // TODO: to fix, we should abstract ThemeBox
+                                  properties: {
+                                    label: theme.name,
+                                    previewBackground: data().frame.background!,
+                                    // @ts-expect-error TODO to fix
+                                    darkMode: themeRes()?.properties.darkMode,
+                                    // @ts-expect-error TODO to fix
+                                    terminal: {
+                                      ...themeRes()?.properties.terminal,
+                                    },
                                   },
-                                },
-                              }}
-                              onClick={() => onSelectTheme(data())}
-                            >
-                              <TerminalHost
-                                textColor={data().terminal.textColor}
-                                background={data().terminal.background}
-                                accentVisible={data().terminal.accentVisible}
-                                shadow={data().terminal.shadow}
-                                showTab={data().terminal.alternativeTheme}
-                                readonlyTab={true}
-                                showHeader={data().terminal.showHeader}
-                                showWatermark={false}
-                                showGlassReflection={
-                                  data().terminal.showGlassReflection
-                                }
-                                themeClass={styles.themeBoxTerminalHost}
-                                opacity={100}
-                                themeId={data().editor.options.themeId}
-                                alternativeTheme={
-                                  data().terminal.alternativeTheme
-                                }
+                                }}
+                                onClick={() => onSelectTheme(data())}
                               >
-                                <CustomEditorPreview
+                                <TerminalHost
+                                  textColor={data().terminal.textColor}
+                                  background={data().terminal.background}
+                                  accentVisible={data().terminal.accentVisible}
+                                  shadow={data().terminal.shadow}
+                                  showTab={data().terminal.alternativeTheme}
+                                  readonlyTab={true}
+                                  showHeader={data().terminal.showHeader}
+                                  showWatermark={false}
+                                  showGlassReflection={
+                                    data().terminal.showGlassReflection
+                                  }
+                                  themeClass={styles.themeBoxTerminalHost}
+                                  opacity={100}
                                   themeId={data().editor.options.themeId}
-                                  languageId={'typescript'}
-                                  code={exampleCode}
-                                />
-                              </TerminalHost>
-                            </ThemeBox>
+                                  alternativeTheme={
+                                    data().terminal.alternativeTheme
+                                  }
+                                >
+                                  <CustomEditorPreview
+                                    themeId={data().editor.options.themeId}
+                                    languageId={'typescript'}
+                                    code={exampleCode}
+                                  />
+                                </TerminalHost>
+                              </ThemeBox>
+                            </ErrorBoundary>
                           </div>
 
                           <Box

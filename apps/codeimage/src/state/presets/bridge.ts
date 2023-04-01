@@ -43,11 +43,16 @@ export const withPresetBridge = (idbKey: string) =>
         canSyncPreset(preset: Preset) {
           return !useInMemoryStore() && this.isLocalPreset(preset);
         },
-        addNewPreset(name: string): Promise<Preset> {
-          const data: ApiTypes.CreatePresetApi['response']['data'] = {
-            frame: getFrameState().stateToPersist(),
-            terminal: getTerminalState().stateToPersist(),
-            editor: getRootEditorStore().stateToPersist(),
+        addNewPreset(
+          name: string,
+          data?: ApiTypes.CreatePresetApi['response']['data'],
+        ): Promise<Preset> {
+          const presetData = {
+            ...(data ?? {
+              frame: getFrameState().stateToPersist(),
+              terminal: getTerminalState().stateToPersist(),
+              editor: getRootEditorStore().stateToPersist(),
+            }),
             appVersion: appEnvironment.version,
           };
           if (useInMemoryStore()) {
@@ -59,10 +64,10 @@ export const withPresetBridge = (idbKey: string) =>
               createdAt: new Date(),
               updatedAt: new Date(),
               version: 1,
-              data: data,
+              data: presetData,
             });
           } else {
-            return api.createPreset({body: {name, data}});
+            return api.createPreset({body: {name, data: presetData}});
           }
         },
         deletePreset(preset: Preset): Promise<Preset> {

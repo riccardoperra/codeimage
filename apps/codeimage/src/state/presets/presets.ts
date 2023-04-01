@@ -104,7 +104,7 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
           return untrack(() => {
             const currentState = store();
             return store.bridge
-              .addNewPreset(payload.name)
+              .addNewPreset(payload.name, payload.data)
               .then(preset =>
                 store.entity.updateBy(
                   _ => _.id === payload.id,
