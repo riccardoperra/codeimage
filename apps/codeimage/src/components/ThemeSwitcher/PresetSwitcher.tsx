@@ -120,7 +120,7 @@ export const PresetSwitcher: ParentComponent<
             </>
           }
         >
-          <For each={presetsStore.presetResource()}>
+          <For each={presetsStore()}>
             {theme => {
               const data = () => theme.data as ProjectEditorPersistedState;
 

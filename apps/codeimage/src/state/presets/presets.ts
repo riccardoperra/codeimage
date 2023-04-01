@@ -1,17 +1,11 @@
 import {GetPresetByIdApi} from '@codeimage/api/api-types';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
-import {
-  createEffect,
-  createResource,
-  createRoot,
-  createUniqueId,
-  on,
-} from 'solid-js';
+import {createEffect, createRoot, createUniqueId, on} from 'solid-js';
 import * as api from '../../data-access/preset';
 import {getAuth0State} from '../auth/auth0';
-import {defineStore, makePlugin} from 'statebuilder';
+import {makePlugin} from 'statebuilder';
 import {useIdb} from '../../hooks/use-indexed-db';
-import {bindStateBuilderResource} from '../plugins/bindStateBuilderResource';
+import {experimental__defineResource} from '../plugins/bindStateBuilderResource';
 import {withAsyncAction} from 'statebuilder/asyncAction';
 import {provideAppState} from '..';
 import {unwrap} from 'solid-js/store';
@@ -19,12 +13,13 @@ import {unwrap} from 'solid-js/store';
 type PresetsArray = Array<GetPresetByIdApi['response']>;
 type Preset = GetPresetByIdApi['response'];
 
+const idbKey = 'presets';
+const idb = useIdb();
+
 const withPresetBridge = () =>
   makePlugin(
     () => {
       const useInMemoryStore = () => !getAuth0State().loggedIn();
-      const idbKey = 'presets';
-      const idb = useIdb();
 
       const bridge = {
         useInMemoryStore,
@@ -87,19 +82,29 @@ const withPresetBridge = () =>
     {name: 'withPresetBridge'},
   );
 
-const PresetStoreInt = defineStore<PresetsArray>(() => [])
+const PresetStoreDefinition = experimental__defineResource(() => async () => {
+  const useInMemoryStore = !getAuth0State().loggedIn();
+  return (
+    !!useInMemoryStore
+      ? idb
+          .get<PresetsArray>(idbKey)
+          .then(data => data ?? [])
+          .catch(() => [])
+      : api.getAllPresets({}).catch(() => [])
+  )
+    .then(data =>
+      data.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      ),
+    )
+    .then(res => new Promise<typeof res>(r => setTimeout(() => r(res), 5000)));
+})
   .extend(withPresetBridge())
   .extend(store => {
-    const [presetResource, {mutate, refetch}] = createResource(
-      () => store.bridge.fetchPresets(),
-      {
-        storage: bindStateBuilderResource(store),
-      },
-    );
-
     createEffect(
       on(
-        presetResource,
+        store,
         resource => {
           if (store.bridge.useInMemoryStore()) {
             store.bridge.persistToIdb(resource ?? []);
@@ -108,9 +113,6 @@ const PresetStoreInt = defineStore<PresetsArray>(() => [])
         {defer: true},
       ),
     );
-
-    createEffect(() => console.log('preset', presetResource()));
-    return {presetResource, mutate, refetch};
   })
   .extend(withAsyncAction())
   .extend(store => {
@@ -120,14 +122,14 @@ const PresetStoreInt = defineStore<PresetsArray>(() => [])
           (payload: {name: string; data: ProjectEditorPersistedState}) => {
             return store.bridge
               .addNewPreset(payload.name, payload.data)
-              .then(preset => store.mutate(_ => [preset, ...(_ ?? [])]));
+              .then(preset => store.set(_ => [preset, ...(_ ?? [])]));
           },
         ),
         deletePreset: store.asyncAction((payload: Preset) => {
           return store.bridge
             .deletePreset(payload)
             .then(deletedPreset =>
-              store.mutate(_ =>
+              store.set(_ =>
                 (_ ?? []).filter(preset => preset.id !== deletedPreset.id),
               ),
             );
@@ -137,7 +139,7 @@ const PresetStoreInt = defineStore<PresetsArray>(() => [])
   });
 
 export const PresetsStore = () => {
-  return provideAppState(PresetStoreInt);
+  return provideAppState(PresetStoreDefinition);
 };
 
 const presetsStore = createRoot(PresetsStore);
