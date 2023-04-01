@@ -1,14 +1,14 @@
-import {CustomTheme} from '@codeimage/highlight';
 import {backgroundColorVar, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {mergeProps, ParentComponent, Show} from 'solid-js';
 import * as styles from './ThemeSwitcher.css';
 
 interface ThemeBoxProps {
-  theme: CustomTheme;
   selected?: boolean;
   onClick: (evt: MouseEvent) => void;
   showFooter?: boolean;
+  footerLabel?: string;
+  background: string;
 }
 
 export const ThemeBox: ParentComponent<ThemeBoxProps> = props => {
@@ -19,8 +19,7 @@ export const ThemeBox: ParentComponent<ThemeBoxProps> = props => {
       class={styles.themeBox}
       data-selected={propsWithDefault.selected}
       style={assignInlineVars({
-        [backgroundColorVar]:
-          propsWithDefault.theme.properties.previewBackground,
+        [backgroundColorVar]: props.background,
       })}
       onClick={e => propsWithDefault.onClick(e)}
     >
@@ -32,7 +31,7 @@ export const ThemeBox: ParentComponent<ThemeBoxProps> = props => {
       <Show when={propsWithDefault.showFooter} keyed={false}>
         <div class={styles.themeBoxFooter}>
           <Text size={'sm'} weight={'semibold'}>
-            {props.theme.properties.label}
+            {props.footerLabel}
           </Text>
         </div>
       </Show>

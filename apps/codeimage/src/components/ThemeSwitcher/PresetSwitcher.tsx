@@ -4,7 +4,6 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
-import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {getUiStore} from '@codeimage/store/ui';
 import {
   Box,
@@ -128,11 +127,6 @@ export const PresetSwitcher: ParentComponent<
               const canSyncPreset = () =>
                 presetsStore.bridge.canSyncPreset(theme);
 
-              const themeRes = () =>
-                getThemeStore().getThemeResource(
-                  data().editor.options.themeId,
-                )?.[0]?.();
-
               const lastUpdateDate = () => {
                 return formatDistanceToNow(locale(), theme.updatedAt as string);
               };
@@ -140,9 +134,6 @@ export const PresetSwitcher: ParentComponent<
               return (
                 <Suspense fallback={<ThemeBoxSkeleton />}>
                   {() => {
-                    const data = () =>
-                      theme.data as ProjectEditorPersistedState;
-
                     return (
                       <div>
                         <li
@@ -153,22 +144,11 @@ export const PresetSwitcher: ParentComponent<
                             <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
                               <ThemeBox
                                 showFooter={false}
-                                theme={{
-                                  // TODO: to fix, we should abstract ThemeBox
-                                  properties: {
-                                    label: theme.name,
-                                    previewBackground: data().frame.background!,
-                                    // @ts-expect-error TODO to fix
-                                    darkMode: themeRes()?.properties.darkMode,
-                                    // @ts-expect-error TODO to fix
-                                    terminal: {
-                                      ...themeRes()?.properties.terminal,
-                                    },
-                                  },
-                                }}
+                                background={data().frame.background ?? '#000'}
                                 onClick={() => onSelectTheme(data())}
                               >
                                 <TerminalHost
+                                  themeClass={styles.themeBoxTerminalHost}
                                   textColor={data().terminal.textColor}
                                   background={data().terminal.background}
                                   accentVisible={data().terminal.accentVisible}
@@ -180,7 +160,6 @@ export const PresetSwitcher: ParentComponent<
                                   showGlassReflection={
                                     data().terminal.showGlassReflection
                                   }
-                                  themeClass={styles.themeBoxTerminalHost}
                                   opacity={100}
                                   themeId={data().editor.options.themeId}
                                   alternativeTheme={
