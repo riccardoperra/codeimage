@@ -77,3 +77,7 @@ export const fixedTitle = style({
 export const box = style({
   paddingTop: 0,
 });
+
+export const themeBoxTerminalHost = style({
+  padding: `${themeVars.spacing['2']} ${themeVars.spacing['1']}`,
+});
