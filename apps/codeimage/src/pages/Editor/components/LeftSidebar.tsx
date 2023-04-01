@@ -6,7 +6,7 @@ import {EditorForm} from '../../../components/PropertyEditor/EditorForm';
 import {EditorSidebar} from '../../../components/PropertyEditor/EditorSidebar';
 import {scaffoldVars} from '../../../components/Scaffold/Scaffold.css';
 import {Sidebar} from '../../../components/Scaffold/Sidebar/Sidebar';
-import {PresetSwitcher} from '../../../components/ThemeSwitcher/PresetSwitcher';
+import {PresetSwitcher} from '../../../components/PresetSwticher/PresetSwitcher';
 
 export function EditorLeftSidebar() {
   const [toggle, setToggle] = createSignal(false);

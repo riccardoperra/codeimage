@@ -2,6 +2,7 @@ import {GetPresetByIdApi} from '@codeimage/api/api-types';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {createResource, createRoot} from 'solid-js';
 import * as api from '../../data-access/preset';
+import {useIdb} from '../../hooks/use-indexed-db';
 
 type PresetsArray = Array<GetPresetByIdApi['response']>;
 
@@ -24,7 +25,9 @@ export const PresetsStore = () => {
   }
 
   // TODO: check if this interface is ok
-  function addNewPreset(name: string, data: ProjectEditorPersistedState) {
+  async function addNewPreset(name: string) {
+    const data = await useIdb().get<ProjectEditorPersistedState>('document');
+
     return api
       .createPreset({
         body: {

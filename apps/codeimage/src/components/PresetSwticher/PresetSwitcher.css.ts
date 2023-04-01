@@ -2,7 +2,7 @@ import {themeVars, withThemeMode} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {recipe} from '@vanilla-extract/recipes';
-import {gridSize} from './ThemeSwitcher.css';
+import {gridSize} from '../ThemeSwitcher/ThemeSwitcher.css';
 
 export const grid = recipe({
   base: {
