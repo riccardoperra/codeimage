@@ -32,6 +32,7 @@ import {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {CloudIcon} from '../Icons/CloudIcon';
 import {DotHorizontalIcon} from '../Icons/DotVertical';
+import {PresetUpdateDialog} from '../Presets/PresetUpdateDialog';
 import {PanelDivider} from '../PropertyEditor/PanelDivider';
 import {TerminalHost} from '../Terminal/TerminalHost';
 import * as styles from './PresetSwitcher.css';
@@ -194,6 +195,32 @@ export const PresetSwitcher: ParentComponent<
                             <div>
                               <DropdownMenuV2
                                 onAction={(action: string | number) => {
+                                  if (action === 'update') {
+                                    createDialog(PresetUpdateDialog, state => ({
+                                      title: t(
+                                        'dashboard.renameProject.confirmTitle',
+                                      ),
+                                      message: t(
+                                        'dashboard.renameProject.confirmMessage',
+                                      ),
+                                      currentPreset: theme.data,
+                                      newPreset: {
+                                        frame: getFrameState().stateToPersist(),
+                                        terminal:
+                                          getTerminalState().stateToPersist(),
+                                        editor:
+                                          getRootEditorStore().stateToPersist(),
+                                      },
+                                      initialValue: theme.name,
+                                      onConfirm: async newName => {
+                                        presetsStore.actions.updatePresetName({
+                                          preset: theme,
+                                          newName,
+                                        });
+                                        state.close();
+                                      },
+                                    }));
+                                  }
                                   if (action === 'rename') {
                                     createDialog(
                                       RenameContentDialog,
@@ -243,6 +270,9 @@ export const PresetSwitcher: ParentComponent<
                                   </MenuButton>
                                 }
                               >
+                                <Item key={'update'}>
+                                  {t('dashboard.updateProject.dropdownLabel')}
+                                </Item>
                                 <Item key={'rename'}>
                                   {t('dashboard.renameProject.dropdownLabel')}
                                 </Item>
