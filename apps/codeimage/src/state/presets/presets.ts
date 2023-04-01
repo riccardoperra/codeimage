@@ -129,6 +129,47 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
               });
           });
         }),
+        updatePresetName: store.asyncAction(
+          (payload: {preset: Preset; newName: string}) => {
+            return untrack(() => {
+              const currentState = store();
+              return store.bridge
+                .updatePreset(
+                  payload.preset,
+                  payload.newName,
+                  payload.preset.data,
+                )
+                .then(updatedPreset => {
+                  store.entity.updateBy(
+                    _ => _.id === payload.preset.id,
+                    () => updatedPreset,
+                  );
+                  store.idb.update(data =>
+                    data.map(preset => {
+                      if (
+                        preset.data.localSyncId ===
+                        updatedPreset.data.localSyncId
+                      ) {
+                        return updatedPreset;
+                      }
+                      return preset;
+                    }),
+                  );
+                })
+                .then(() =>
+                  toast.success('Preset has been updated', {
+                    position: 'top-center',
+                  }),
+                )
+                .catch(() => {
+                  store.set(currentState);
+                  toast.error('Error while updating preset', {
+                    position: 'top-center',
+                  });
+                });
+            });
+          },
+        ),
       },
     };
   });

@@ -227,7 +227,10 @@ export const PresetSwitcher: ParentComponent<
                                           'dashboard.renameProject.confirmMessage',
                                         ),
                                         initialValue: theme.name,
-                                        onConfirm: async name => {
+                                        onConfirm: async newName => {
+                                          presetsStore.actions.updatePresetName(
+                                            {preset: theme, newName},
+                                          );
                                           state.close();
                                         },
                                       }),

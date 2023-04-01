@@ -2,8 +2,12 @@ import * as ApiTypes from '@codeimage/api/api-types';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
+import {
+  PersistedEditorState,
+  PersistedTerminalState,
+} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {PersistedFrameState} from '@codeimage/store/frame/model';
 import {appEnvironment} from '@core/configuration';
 import {createEffect, createUniqueId, on} from 'solid-js';
 import {unwrap} from 'solid-js/store';
@@ -11,6 +15,14 @@ import {makePlugin} from 'statebuilder';
 import * as api from '../../data-access/preset';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {Preset, PresetsArray} from './types';
+
+export interface PresetData {
+  frame: PersistedFrameState;
+  terminal: PersistedTerminalState;
+  editor: PersistedEditorState;
+  localSyncId?: string;
+  appVersion?: string;
+}
 
 export const withPresetBridge = (idbKey: string) =>
   makePlugin(
@@ -45,9 +57,9 @@ export const withPresetBridge = (idbKey: string) =>
         },
         addNewPreset(
           name: string,
-          data?: ApiTypes.CreatePresetApi['response']['data'],
+          data?: PresetData & ApiTypes.CreatePresetApi['response']['data'],
         ): Promise<Preset> {
-          const presetData = {
+          const presetData: PresetData = {
             ...(data ?? {
               frame: getFrameState().stateToPersist(),
               terminal: getTerminalState().stateToPersist(),
@@ -79,9 +91,10 @@ export const withPresetBridge = (idbKey: string) =>
         updatePreset(
           preset: Preset,
           name: string,
-          data: ProjectEditorPersistedState,
+          data: PresetData,
         ): Promise<Preset> {
-          return useInMemoryStore()
+          const inMemory = useInMemoryStore() || this.isLocalPreset(preset);
+          return inMemory
             ? Promise.resolve({...preset, name, data})
             : api.updatePreset({params: {id: preset.id}, body: {name, data}});
         },
