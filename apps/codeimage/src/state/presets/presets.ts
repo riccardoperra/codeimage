@@ -44,8 +44,7 @@ export const PresetsStore = () => {
 
   async function updatePreset(id: string, name: string) {
     const data = await useIdb().get<ProjectEditorPersistedState>('document');
-    return api.updatePreset({params: {id}, body: {name, data}}).then(preset => {
-      console.log('data', {preset});
+    return api.updatePreset({params: {id}, body: {name, data}}).then(() => {
       refetch();
     });
   }

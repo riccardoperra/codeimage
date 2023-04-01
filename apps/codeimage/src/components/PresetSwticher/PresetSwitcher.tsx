@@ -31,7 +31,7 @@ export const PresetSwitcher: ParentComponent<
 > = props => {
   const presetsStore = getPresetsStore();
   const classes = () => clsx(styles.box);
-
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <Box class={classes()}>
       <div class={styles.fixedTitle}>
@@ -40,7 +40,7 @@ export const PresetSwitcher: ParentComponent<
           justifyContent={'spaceBetween'}
           alignItems={'center'}
         >
-          <Text weight={'semibold'}>User presets</Text>
+          <Text weight={'semibold'}>{t('presets.userPresets')}</Text>
           <HStack spacing={2}>
             <NewPresetButton />
             <Button
@@ -64,7 +64,10 @@ export const PresetSwitcher: ParentComponent<
             </>
           }
         >
-          <For each={presetsStore.presets()}>
+          <For
+            each={presetsStore.presets()}
+            fallback={<p>non ci sono presets</p>}
+          >
             {theme => <PresetPreview theme={theme} />}
           </For>
         </Suspense>

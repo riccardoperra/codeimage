@@ -15,6 +15,7 @@ export const locale = {
       hide: 'Nascondi',
       reload: 'Ricarica',
       clone: 'Clona',
+      new: 'Nuovo',
     },
     canvas: {
       copiedToClipboard: 'Snippet copiato negli appunti',
@@ -85,6 +86,10 @@ export const locale = {
     themeSwitcher: {
       search: 'Cerca tema...',
     },
+    presets: {
+      userPresets: "Preimpostazioni dell'utente",
+      addPreset: 'Aggiungi una nuova Preimpostazione',
+    },
     ...sidebarLocale.it,
     ...dashboard.it,
     ...uiLocale.it,
@@ -107,6 +112,7 @@ export const locale = {
       hide: 'Hide',
       reload: 'Reload',
       clone: 'Clone',
+      new: 'New',
     },
     locales: {
       it: 'Italian',
@@ -168,6 +174,9 @@ export const locale = {
     themeSwitcher: {
       search: 'Search theme...',
     },
+    presets: {
+      userPresets: "User's Presets",
+    },
     ...uiLocale.en,
     ...bottomBar.en,
     ...sidebarLocale.en,
@@ -184,6 +193,7 @@ export const locale = {
       hide: 'Verstecken',
       reload: 'Reload',
       clone: 'Clone',
+      new: 'Neu',
     },
     canvas: {
       copiedToClipboard: 'Code-Schnipsel in Zwischenablage kopiert',
@@ -252,6 +262,9 @@ export const locale = {
     themeSwitcher: {
       search: 'Thema suchen...',
     },
+    presets: {
+      userPresets: 'Voreinstellungen des Benutzers',
+    },
     ...sidebarLocale.de,
     ...uiLocale.de,
     ...bottomBar.de,
@@ -268,6 +281,7 @@ export const locale = {
       hide: 'Esconder',
       reload: 'Reload',
       clone: 'Clone',
+      new: 'Nuevo',
     },
     canvas: {
       copiedToClipboard: 'Snippet copiado al portapapeles',
@@ -335,6 +349,9 @@ export const locale = {
     },
     themeSwitcher: {
       search: 'Busca tema...',
+    },
+    presets: {
+      userPresets: 'Preajuste de usuario',
     },
     ...sidebarLocale.es,
     ...uiLocale.es,
