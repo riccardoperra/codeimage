@@ -80,8 +80,9 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                   <Show when={isMatched(theme.id)} keyed={false}>
                     <div>
                       <ThemeBox
-                        theme={theme}
                         selected={isSelected(theme.id)}
+                        background={theme.properties.previewBackground}
+                        footerLabel={theme.properties.label}
                         onClick={() => onSelectTheme(theme)}
                       >
                         <TerminalHost
