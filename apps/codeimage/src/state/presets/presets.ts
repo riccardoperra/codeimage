@@ -1,5 +1,8 @@
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
-import {createEffect, on} from 'solid-js';
+import {withEntityPlugin} from '@codeimage/store/plugins/withEntityPlugin';
+import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
+import {toast} from '@codeimage/ui';
+import {createEffect, on, untrack} from 'solid-js';
 import {withAsyncAction} from 'statebuilder/asyncAction';
 import {provideAppState} from '..';
 import * as api from '../../data-access/preset';
@@ -22,20 +25,31 @@ async function fetchInitialState() {
   return (
     useInMemoryStore
       ? Promise.resolve(localPresets)
-      : api.getAllPresets({}).then(res => [...localPresets, ...res])
+      : api
+          .getAllPresets({})
+          .then(res => [
+            ...localPresets.filter(
+              localPreset =>
+                !res.find(
+                  dbPreset => dbPreset.data.localSyncId === localPreset.id,
+                ),
+            ),
+            ...res,
+          ])
   )
     .then(data =>
-      data.sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      data.sort((a, b) =>
+        a.id.startsWith('cl-')
+          ? -1
+          : new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
       ),
     )
     .catch(() => [] as PresetsArray);
 }
 
-const PresetStoreDefinition = experimental__defineResource(
-  () => fetchInitialState,
-)
+const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
+  .extend(withEntityPlugin<PresetsArray>())
+  .extend(withIndexedDbPlugin<PresetsArray>(idbKey, []))
   .extend(withPresetBridge(idbKey))
   .extend(store => {
     createEffect(
@@ -56,19 +70,50 @@ const PresetStoreDefinition = experimental__defineResource(
       actions: {
         addNewPreset: store.asyncAction(
           (payload: {name: string; data: ProjectEditorPersistedState}) => {
-            return store.bridge
-              .addNewPreset(payload.name, payload.data)
-              .then(preset => store.set(_ => [preset, ...(_ ?? [])]));
+            return untrack(() => {
+              const currentState = store();
+              return store.bridge
+                .addNewPreset(payload.name, payload.data)
+                .then(preset => store.set(_ => [preset, ...(_ ?? [])]))
+                .catch(() => {
+                  store.set(currentState);
+                  toast.error('Error while creating preset', {
+                    position: 'top-center',
+                  });
+                });
+            });
           },
         ),
         deletePreset: store.asyncAction((payload: Preset) => {
-          return store.bridge
-            .deletePreset(payload)
-            .then(deletedPreset =>
-              store.set(_ =>
-                (_ ?? []).filter(preset => preset.id !== deletedPreset.id),
-              ),
-            );
+          return untrack(() => {
+            const currentState = store();
+            store.entity.removeBy(preset => preset.id === payload.id);
+            return store.bridge.deletePreset(payload).catch(() => {
+              store.set(currentState);
+              toast.error('Error while deleting preset', {
+                position: 'top-center',
+              });
+            });
+          });
+        }),
+        syncPreset: store.asyncAction((payload: Preset) => {
+          return untrack(() => {
+            const currentState = store();
+            return store.bridge
+              .addNewPreset(payload.name, payload.data)
+              .then(preset =>
+                store.entity.updateBy(
+                  _ => _.id === payload.id,
+                  () => preset,
+                ),
+              )
+              .catch(() => {
+                store.set(currentState);
+                toast.error('Error while synchronizing preset', {
+                  position: 'top-center',
+                });
+              });
+          });
         }),
       },
     };

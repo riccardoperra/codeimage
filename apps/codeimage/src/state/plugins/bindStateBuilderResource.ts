@@ -1,33 +1,19 @@
 import {
+  createResource,
   ResourceFetcher,
   ResourceOptions,
   Setter,
-  Signal,
-  createResource,
 } from 'solid-js';
-import {GenericStoreApi, create} from 'statebuilder';
-
-export function bindStateBuilderResource<T>(store: GenericStoreApi<T>) {
-  return function (_: T | undefined): Signal<T | undefined> {
-    return [
-      () => store(),
-      (v: T) => {
-        const value = typeof v === 'function' ? v(store()) : v;
-        store.set(value);
-        return store;
-      },
-    ] as Signal<T | undefined>;
-  };
-}
+import {create, GenericStoreApi} from 'statebuilder';
 
 export type Resource<T> = GenericStoreApi<T, Setter<T>>;
 
 function makeResource<T>(
-  resourceFetcher: () => ResourceFetcher<true, T, true>,
+  resourceFetcher: ResourceFetcher<true, T, true>,
   options?: ResourceOptions<T, true>,
 ): Resource<T> {
   const [state, {mutate, refetch}] = createResource(
-    resourceFetcher(),
+    resourceFetcher,
     options ?? {},
   );
 

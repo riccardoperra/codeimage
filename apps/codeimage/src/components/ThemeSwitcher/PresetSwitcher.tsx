@@ -21,10 +21,11 @@ import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
-import {For, lazy, ParentComponent, Suspense} from 'solid-js';
+import {For, lazy, ParentComponent, Show, Suspense} from 'solid-js';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
+import {CloudIcon} from '../Icons/CloudIcon';
 import {DotHorizontalIcon} from '../Icons/DotVertical';
 import {PanelDivider} from '../PropertyEditor/PanelDivider';
 import {TerminalHost} from '../Terminal/TerminalHost';
@@ -123,6 +124,8 @@ export const PresetSwitcher: ParentComponent<
           <For each={presetsStore()}>
             {theme => {
               const data = () => theme.data as ProjectEditorPersistedState;
+              const canSyncPreset = () =>
+                presetsStore.bridge.canSyncPreset(theme);
 
               const themeRes = () =>
                 getThemeStore().getThemeResource(
@@ -135,7 +138,7 @@ export const PresetSwitcher: ParentComponent<
 
               return (
                 <Suspense fallback={<ThemeBoxSkeleton />}>
-                  {(() => {
+                  {() => {
                     const data = () =>
                       theme.data as ProjectEditorPersistedState;
 
@@ -264,10 +267,30 @@ export const PresetSwitcher: ParentComponent<
                               </DropdownMenuV2>
                             </div>
                           </Box>
+                          <Show when={canSyncPreset()}>
+                            <Box
+                              display={'flex'}
+                              justifyContent={'flexEnd'}
+                              paddingTop={3}
+                            >
+                              <Button
+                                theme={'secondary'}
+                                block
+                                leftIcon={<CloudIcon />}
+                                onClick={e => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  presetsStore.actions.syncPreset(theme);
+                                }}
+                              >
+                                Save in your account
+                              </Button>
+                            </Box>
+                          </Show>
                         </li>
                       </div>
                     );
-                  })()}
+                  }}
                 </Suspense>
               );
             }}
