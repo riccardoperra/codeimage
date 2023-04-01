@@ -50,19 +50,6 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
   .extend(withEntityPlugin<PresetsArray>())
   .extend(withIndexedDbPlugin<PresetsArray>(idbKey, []))
   .extend(withPresetBridge(idbKey))
-  .extend(store => {
-    createEffect(
-      on(
-        store,
-        resource => {
-          if (store.bridge.useInMemoryStore()) {
-            store.bridge.persistToIdb(resource ?? []);
-          }
-        },
-        {defer: true},
-      ),
-    );
-  })
   .extend(withAsyncAction())
   .extend(store => {
     return {
@@ -81,7 +68,11 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
             return store.bridge
               .addNewPreset(payload.name)
               .then(preset => store.set(_ => [preset, ...(_ ?? [])]))
-              .then(() => toast.success('Preset created successfully'))
+              .then(() =>
+                toast.success('Preset has been created', {
+                  position: 'top-center',
+                }),
+              )
               .catch(() => {
                 store.set(currentState);
                 toast.error('Error while creating preset', {
@@ -96,7 +87,11 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
             store.entity.removeBy(preset => preset.id === payload.id);
             return store.bridge
               .deletePreset(payload)
-              .then(() => toast.success('Preset deleted successfully'))
+              .then(() =>
+                toast.success('Preset has been deleted', {
+                  position: 'top-center',
+                }),
+              )
               .catch(() => {
                 store.set(currentState);
                 toast.error('Error while deleting preset', {
@@ -116,7 +111,11 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
                   () => preset,
                 ),
               )
-              .then(() => toast.success('Local preset has been synchronized'))
+              .then(() =>
+                toast.success('Local preset has been synchronized', {
+                  position: 'top-center',
+                }),
+              )
               .catch(() => {
                 store.set(currentState);
                 toast.error('Error while synchronizing preset', {
