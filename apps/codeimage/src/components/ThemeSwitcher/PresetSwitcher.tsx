@@ -21,10 +21,17 @@ import {Item} from '@solid-aria/collection';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
-import {For, lazy, ParentComponent, Suspense} from 'solid-js';
-import {useIdb} from '../../hooks/use-indexed-db';
+import {
+  ErrorBoundary,
+  For,
+  lazy,
+  ParentComponent,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
+import {CloudIcon} from '../Icons/CloudIcon';
 import {DotHorizontalIcon} from '../Icons/DotVertical';
 import {PanelDivider} from '../PropertyEditor/PanelDivider';
 import {TerminalHost} from '../Terminal/TerminalHost';
@@ -86,13 +93,7 @@ export const PresetSwitcher: ParentComponent<
                   title: t('dashboard.renameProject.confirmTitle'),
                   message: t('dashboard.renameProject.confirmMessage'),
                   onConfirm: async name => {
-                    presetsStore.actions.addNewPreset(
-                      name,
-                      // TODO: to fix and move
-                      (await useIdb().get<ProjectEditorPersistedState>(
-                        'document',
-                      ))!,
-                    );
+                    presetsStore.actions.addNewPreset({name});
                     state.close();
                   },
                 }));
@@ -121,9 +122,11 @@ export const PresetSwitcher: ParentComponent<
             </>
           }
         >
-          <For each={presetsStore.presets()}>
+          <For each={presetsStore.sortedPresets()}>
             {theme => {
               const data = () => theme.data as ProjectEditorPersistedState;
+              const canSyncPreset = () =>
+                presetsStore.bridge.canSyncPreset(theme);
 
               const themeRes = () =>
                 getThemeStore().getThemeResource(
@@ -136,7 +139,7 @@ export const PresetSwitcher: ParentComponent<
 
               return (
                 <Suspense fallback={<ThemeBoxSkeleton />}>
-                  {(() => {
+                  {() => {
                     const data = () =>
                       theme.data as ProjectEditorPersistedState;
 
@@ -147,49 +150,51 @@ export const PresetSwitcher: ParentComponent<
                           onClick={() => onSelectTheme(data())}
                         >
                           <div>
-                            <ThemeBox
-                              showFooter={false}
-                              theme={{
-                                // TODO: to fix, we should abstract ThemeBox
-                                properties: {
-                                  label: theme.name,
-                                  previewBackground: data().frame.background!,
-                                  // @ts-expect-error TODO to fix
-                                  darkMode: themeRes()?.properties.darkMode,
-                                  // @ts-expect-error TODO to fix
-                                  terminal: {
-                                    ...themeRes()?.properties.terminal,
+                            <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
+                              <ThemeBox
+                                showFooter={false}
+                                theme={{
+                                  // TODO: to fix, we should abstract ThemeBox
+                                  properties: {
+                                    label: theme.name,
+                                    previewBackground: data().frame.background!,
+                                    // @ts-expect-error TODO to fix
+                                    darkMode: themeRes()?.properties.darkMode,
+                                    // @ts-expect-error TODO to fix
+                                    terminal: {
+                                      ...themeRes()?.properties.terminal,
+                                    },
                                   },
-                                },
-                              }}
-                              onClick={() => onSelectTheme(data())}
-                            >
-                              <TerminalHost
-                                textColor={data().terminal.textColor}
-                                background={data().terminal.background}
-                                accentVisible={data().terminal.accentVisible}
-                                shadow={data().terminal.shadow}
-                                showTab={data().terminal.alternativeTheme}
-                                readonlyTab={true}
-                                showHeader={data().terminal.showHeader}
-                                showWatermark={false}
-                                showGlassReflection={
-                                  data().terminal.showGlassReflection
-                                }
-                                themeClass={styles.themeBoxTerminalHost}
-                                opacity={100}
-                                themeId={data().editor.options.themeId}
-                                alternativeTheme={
-                                  data().terminal.alternativeTheme
-                                }
+                                }}
+                                onClick={() => onSelectTheme(data())}
                               >
-                                <CustomEditorPreview
+                                <TerminalHost
+                                  textColor={data().terminal.textColor}
+                                  background={data().terminal.background}
+                                  accentVisible={data().terminal.accentVisible}
+                                  shadow={data().terminal.shadow}
+                                  showTab={data().terminal.alternativeTheme}
+                                  readonlyTab={true}
+                                  showHeader={data().terminal.showHeader}
+                                  showWatermark={false}
+                                  showGlassReflection={
+                                    data().terminal.showGlassReflection
+                                  }
+                                  themeClass={styles.themeBoxTerminalHost}
+                                  opacity={100}
                                   themeId={data().editor.options.themeId}
-                                  languageId={'typescript'}
-                                  code={exampleCode}
-                                />
-                              </TerminalHost>
-                            </ThemeBox>
+                                  alternativeTheme={
+                                    data().terminal.alternativeTheme
+                                  }
+                                >
+                                  <CustomEditorPreview
+                                    themeId={data().editor.options.themeId}
+                                    languageId={'typescript'}
+                                    code={exampleCode}
+                                  />
+                                </TerminalHost>
+                              </ThemeBox>
+                            </ErrorBoundary>
                           </div>
 
                           <Box
@@ -221,7 +226,10 @@ export const PresetSwitcher: ParentComponent<
                                           'dashboard.renameProject.confirmMessage',
                                         ),
                                         initialValue: theme.name,
-                                        onConfirm: async name => {
+                                        onConfirm: async newName => {
+                                          presetsStore.actions.updatePresetName(
+                                            {preset: theme, newName},
+                                          );
                                           state.close();
                                         },
                                       }),
@@ -237,7 +245,7 @@ export const PresetSwitcher: ParentComponent<
                                       ),
                                       onConfirm: () => {
                                         presetsStore.actions.deletePreset(
-                                          theme.id,
+                                          theme,
                                         );
                                         state.close();
                                       },
@@ -265,10 +273,30 @@ export const PresetSwitcher: ParentComponent<
                               </DropdownMenuV2>
                             </div>
                           </Box>
+                          <Show when={canSyncPreset()}>
+                            <Box
+                              display={'flex'}
+                              justifyContent={'flexEnd'}
+                              paddingTop={3}
+                            >
+                              <Button
+                                theme={'secondary'}
+                                block
+                                leftIcon={<CloudIcon />}
+                                onClick={e => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  presetsStore.actions.syncPreset(theme);
+                                }}
+                              >
+                                Save in your account
+                              </Button>
+                            </Box>
+                          </Show>
                         </li>
                       </div>
                     );
-                  })()}
+                  }}
                 </Suspense>
               );
             }}
