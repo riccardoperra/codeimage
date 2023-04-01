@@ -42,14 +42,12 @@ export const PresetsStore = () => {
     return api.deletePreset({params: {id}}).then(() => refetch());
   }
 
-  function updatePreset(
-    id: string,
-    name: string,
-    data: ProjectEditorPersistedState,
-  ) {
-    return api
-      .updatePreset({params: {id}, body: {name, data}})
-      .then(() => refetch());
+  async function updatePreset(id: string, name: string) {
+    const data = await useIdb().get<ProjectEditorPersistedState>('document');
+    return api.updatePreset({params: {id}, body: {name, data}}).then(preset => {
+      console.log('data', {preset});
+      refetch();
+    });
   }
 
   return {

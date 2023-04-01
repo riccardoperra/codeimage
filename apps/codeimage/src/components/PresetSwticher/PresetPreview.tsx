@@ -3,6 +3,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {getPresetsStore} from '@codeimage/store/presets/presets';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {getUiStore} from '@codeimage/store/ui';
 import {
@@ -52,6 +53,8 @@ export const PresetPreview: ParentComponent<PresetPreviewProps> = props => {
   };
   const data = () => props.theme.data as ProjectEditorPersistedState;
   const locale = () => getUiStore().get.locale;
+  const presetsStore = getPresetsStore();
+
   const themeRes = () =>
     getThemeStore().getThemeResource(data().editor.options.themeId)?.[0]?.();
 
@@ -130,6 +133,10 @@ export const PresetPreview: ParentComponent<PresetPreviewProps> = props => {
                           message: t('dashboard.renameProject.confirmMessage'),
                           initialValue: props.theme.name,
                           onConfirm: async name => {
+                            await presetsStore.actions.updatePreset(
+                              props.theme.id,
+                              name,
+                            );
                             state.close();
                           },
                         }));
