@@ -12,7 +12,6 @@ import {EditorStyleForm} from '../PropertyEditor/EditorStyleForm';
 import {FrameStyleForm} from '../PropertyEditor/FrameStyleForm';
 import {WindowStyleForm} from '../PropertyEditor/WindowStyleForm';
 import {ThemeSwitcher} from '../ThemeSwitcher/ThemeSwitcher';
-import {scrollableContentWithPadding} from './BottomBar.css';
 import * as styles from './BottomBar.css';
 
 type Mode = 'themes' | 'style' | 'editor';

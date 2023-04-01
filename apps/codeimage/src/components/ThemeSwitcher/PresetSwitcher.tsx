@@ -29,7 +29,6 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
-import {useIdb} from '../../hooks/use-indexed-db';
 import {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {CloudIcon} from '../Icons/CloudIcon';

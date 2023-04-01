@@ -1,8 +1,7 @@
-import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {withEntityPlugin} from '@codeimage/store/plugins/withEntityPlugin';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {toast} from '@codeimage/ui';
-import {createEffect, on, untrack} from 'solid-js';
+import {untrack} from 'solid-js';
 import {withAsyncAction} from 'statebuilder/asyncAction';
 import {provideAppState} from '..';
 import * as api from '../../data-access/preset';
@@ -85,17 +84,16 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
           return untrack(() => {
             const currentState = store();
             store.entity.removeBy(preset => preset.id === payload.id);
+            store.idb.update(data =>
+              data.filter(preset => preset.id !== payload.data.localSyncId),
+            );
+
             return store.bridge
               .deletePreset(payload)
               .then(() =>
                 toast.success('Preset has been deleted', {
                   position: 'top-center',
                 }),
-              )
-              .then(() =>
-                store.idb.update(data =>
-                  data.filter(preset => preset.id !== payload.data.localSyncId),
-                ),
               )
               .catch(() => {
                 store.set(currentState);
@@ -150,7 +148,7 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
                         preset.data.localSyncId ===
                         updatedPreset.data.localSyncId
                       ) {
-                        return updatedPreset;
+                        preset.name = payload.newName;
                       }
                       return preset;
                     }),
