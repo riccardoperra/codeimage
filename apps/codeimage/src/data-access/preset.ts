@@ -27,7 +27,7 @@ export async function createPreset(
 export async function updatePreset(
   request: ApiTypes.UpdatePresetApi['request'],
 ): Promise<ApiTypes.UpdatePresetApi['response']> {
-  return makeFetch(`${BASE_URL}/api/v1/preset`, {
+  return makeFetch(`${BASE_URL}/api/v1/preset/${request.params?.id}`, {
     method: 'PUT',
     body: request.body,
   }).then(res => res.json());

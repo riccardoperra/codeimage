@@ -29,7 +29,7 @@ const deleteRoute: FastifyPluginAsync = async fastify => {
         appUser,
         params: {id},
       } = request;
-      fastify.presetService.deletePreset(appUser.id, id);
+      return fastify.presetService.deletePreset(appUser.id, id);
     },
   );
 };
