@@ -61,7 +61,11 @@ In order to prepare your environment correctly, you need to have `Docker` instal
 docker-compose.
 
 ```bash
+# Docker v1
 docker-compose -f apps/api/docker-compose.dev.yml -p codeimage up -d
+
+# Docker v2
+docker compose -f apps/api/docker-compose.dev.yml -p codeimage up -d
 ```
 
 As soon as the containers are all ready, you can launch the `prepare:env` script to configure your environment variables automatically.
