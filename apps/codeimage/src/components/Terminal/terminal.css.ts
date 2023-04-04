@@ -3,6 +3,7 @@ import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
 
 export const [terminalTheme, terminalVars] = createTheme({
   headerHeight: '50px',
+  headerHeightLite: '32px',
   radius: '12px',
   headerBackgroundColor: 'unset',
   backgroundColor: themeVars.backgroundColor.white,
@@ -27,6 +28,11 @@ export const wrapper = style([
     boxShadow: terminalVars.boxShadow,
     transition: 'box-shadow .2s, border-radius .2s',
     selectors: {
+      '&[data-lite=true]': {
+        vars: {
+          [terminalVars.headerHeight]: terminalVars.headerHeightLite,
+        },
+      },
       '&[data-theme-mode=light]': {
         vars: {
           [terminalVars.headerColor]: `255, 255, 255`,
@@ -49,6 +55,19 @@ export const content = style({
   paddingTop: themeVars.spacing['5'],
   paddingInlineStart: themeVars.spacing['4'],
   paddingInlineEnd: themeVars.spacing['4'],
+
+  selectors: {
+    [`[data-lite=true] &`]: {
+      paddingBottom: themeVars.spacing['2'],
+      paddingTop: themeVars.spacing['3'],
+      paddingInlineStart: themeVars.spacing['2'],
+      paddingInlineEnd: themeVars.spacing['2'],
+    },
+    [`[data-accent-header=false][data-header-visible=true][data-lite=true] &`]:
+      {
+        paddingTop: 0,
+      },
+  },
 });
 
 export const header = style({

@@ -16,7 +16,7 @@ import {
 import {JSXElement, mergeProps, VoidProps} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import CustomEditorPreview from '../CustomEditor/CustomEditorPreview';
-import {TerminalHost} from '../Terminal/TerminalHost';
+import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import * as styles from '../ThemeSwitcher/PresetSwitcher.css';
 import {ThemeBox} from '../ThemeSwitcher/ThemeBox';
 
@@ -49,27 +49,28 @@ export function PresetUpdateDialog(
         background={props.data.frame.background ?? '#000'}
         onClick={() => void 0}
       >
-        <TerminalHost
-          themeClass={styles.themeBoxTerminalHost}
-          textColor={props.data.terminal.textColor}
+        <DynamicTerminal
+          lite={true}
+          type={props.data.terminal.type}
+          readonlyTab={true}
+          showTab={true}
+          shadow={props.data.terminal.shadow}
           background={props.data.terminal.background}
           accentVisible={props.data.terminal.accentVisible}
-          shadow={props.data.terminal.shadow}
-          showTab={props.data.terminal.alternativeTheme}
-          readonlyTab={true}
+          textColor={props.data.terminal.textColor}
           showHeader={props.data.terminal.showHeader}
-          showWatermark={false}
           showGlassReflection={props.data.terminal.showGlassReflection}
-          opacity={100}
-          themeId={props.data.editor.options.themeId}
+          showWatermark={false}
+          opacity={props.data.terminal.opacity}
           alternativeTheme={props.data.terminal.alternativeTheme}
+          themeId={props.data.editor.options.themeId}
         >
           <CustomEditorPreview
             themeId={props.data.editor.options.themeId}
             languageId={'typescript'}
             code={exampleCode}
           />
-        </TerminalHost>
+        </DynamicTerminal>
       </ThemeBox>
     );
   }

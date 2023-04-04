@@ -3,6 +3,8 @@ import {createTheme, style} from '@vanilla-extract/css';
 
 export const [theme, vars] = createTheme({
   iconFill: themeVars.backgroundColor.black,
+  controlSize: '10px',
+  controlSizeLite: '7px',
 });
 
 export const headerIconRow = style({
@@ -33,9 +35,14 @@ export const headerIconRow = style({
 export const headerIconRowItem = style({
   selectors: {
     [`${headerIconRow} &`]: {
-      width: '10px',
-      height: '10px',
+      width: vars.controlSize,
+      height: vars.controlSize,
       color: vars.iconFill,
+    },
+    [`[data-lite=true] &`]: {
+      vars: {
+        [vars.controlSize]: vars.controlSizeLite,
+      },
     },
   },
 });
