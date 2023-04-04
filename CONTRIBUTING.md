@@ -86,7 +86,7 @@ After your environment is configured, you can run the following command to start
 
 ```bash
 pnpm libs:build # Build dependent libraries
-pnpm app:dev
+pnpm dev
 ```
 
 Now you can open http://localhost:4200 in your browser to see the project's site.
