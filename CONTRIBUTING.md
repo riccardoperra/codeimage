@@ -61,10 +61,10 @@ In order to prepare your environment correctly, you need to have `Docker` instal
 docker-compose.
 
 ```bash
-# Docker v1
+# Docker compose v1
 docker-compose -f apps/api/docker-compose.dev.yml -p codeimage up -d
 
-# Docker v2
+# Docker compose v2
 docker compose -f apps/api/docker-compose.dev.yml -p codeimage up -d
 ```
 
