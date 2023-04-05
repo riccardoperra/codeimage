@@ -99,7 +99,7 @@ export const withPresetBridge = (idbKey: string) =>
             : api.updatePreset({params: {id: preset.id}, body: {name, data}});
         },
       };
-      return {bridge};
+      return {bridge} as const;
     },
     {name: 'withPresetBridge'},
   );
