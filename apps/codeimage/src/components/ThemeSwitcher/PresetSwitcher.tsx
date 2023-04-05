@@ -32,8 +32,9 @@ import {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {CloudIcon} from '../Icons/CloudIcon';
 import {DotHorizontalIcon} from '../Icons/DotVertical';
+import {PresetUpdateDialog} from '../Presets/PresetUpdateDialog';
 import {PanelDivider} from '../PropertyEditor/PanelDivider';
-import {TerminalHost} from '../Terminal/TerminalHost';
+import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import * as styles from './PresetSwitcher.css';
 import {ThemeBox} from './ThemeBox';
 import {ThemeBoxSkeleton} from './ThemeBoxSkeleton';
@@ -143,35 +144,36 @@ export const PresetSwitcher: ParentComponent<
                           <div>
                             <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
                               <ThemeBox
+                                onClick={() => void 0}
                                 showFooter={false}
                                 background={data().frame.background ?? '#000'}
-                                onClick={() => onSelectTheme(data())}
                               >
-                                <TerminalHost
-                                  themeClass={styles.themeBoxTerminalHost}
-                                  textColor={data().terminal.textColor}
+                                <DynamicTerminal
+                                  lite={true}
+                                  type={data().terminal.type}
+                                  readonlyTab={true}
+                                  showTab={true}
+                                  shadow={data().terminal.shadow}
                                   background={data().terminal.background}
                                   accentVisible={data().terminal.accentVisible}
-                                  shadow={data().terminal.shadow}
-                                  showTab={data().terminal.alternativeTheme}
-                                  readonlyTab={true}
+                                  textColor={data().terminal.textColor}
                                   showHeader={data().terminal.showHeader}
-                                  showWatermark={false}
                                   showGlassReflection={
                                     data().terminal.showGlassReflection
                                   }
-                                  opacity={100}
-                                  themeId={data().editor.options.themeId}
+                                  showWatermark={false}
+                                  opacity={data().terminal.opacity}
                                   alternativeTheme={
                                     data().terminal.alternativeTheme
                                   }
+                                  themeId={data().editor.options.themeId}
                                 >
                                   <CustomEditorPreview
                                     themeId={data().editor.options.themeId}
                                     languageId={'typescript'}
                                     code={exampleCode}
                                   />
-                                </TerminalHost>
+                                </DynamicTerminal>
                               </ThemeBox>
                             </ErrorBoundary>
                           </div>
@@ -194,6 +196,26 @@ export const PresetSwitcher: ParentComponent<
                             <div>
                               <DropdownMenuV2
                                 onAction={(action: string | number) => {
+                                  if (action === 'update') {
+                                    createDialog(PresetUpdateDialog, state => ({
+                                      title: t(
+                                        'dashboard.renameProject.confirmTitle',
+                                      ),
+                                      message: t(
+                                        'dashboard.renameProject.confirmMessage',
+                                      ),
+                                      currentPreset: theme.data,
+                                      initialValue: theme.name,
+                                      onConfirm: async () => {
+                                        presetsStore.actions.updatePresetWithCurrentState(
+                                          {
+                                            preset: theme,
+                                          },
+                                        );
+                                        state.close();
+                                      },
+                                    }));
+                                  }
                                   if (action === 'rename') {
                                     createDialog(
                                       RenameContentDialog,
@@ -243,6 +265,7 @@ export const PresetSwitcher: ParentComponent<
                                   </MenuButton>
                                 }
                               >
+                                <Item key={'update'}>Update</Item>
                                 <Item key={'rename'}>
                                   {t('dashboard.renameProject.dropdownLabel')}
                                 </Item>

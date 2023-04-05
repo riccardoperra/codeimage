@@ -1,3 +1,6 @@
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {withEntityPlugin} from '@codeimage/store/plugins/withEntityPlugin';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {toast} from '@codeimage/ui';
@@ -127,6 +130,50 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
               });
           });
         }),
+        updatePresetWithCurrentState: store.asyncAction(
+          (payload: {preset: Preset}) => {
+            return untrack(() => {
+              const currentState = store();
+
+              const newData = {
+                frame: getFrameState().stateToPersist(),
+                terminal: getTerminalState().stateToPersist(),
+                editor: getRootEditorStore().stateToPersist(),
+              };
+
+              return store.bridge
+                .updatePreset(payload.preset, payload.preset.name, newData)
+                .then(updatedPreset => {
+                  store.entity.updateBy(
+                    _ => _.id === payload.preset.id,
+                    () => updatedPreset,
+                  );
+                  store.idb.update(data =>
+                    data.map(preset => {
+                      if (
+                        preset.data.localSyncId ===
+                        updatedPreset.data.localSyncId
+                      ) {
+                        preset.data = updatedPreset.data;
+                      }
+                      return preset;
+                    }),
+                  );
+                })
+                .then(() =>
+                  toast.success('Preset has been updated', {
+                    position: 'top-center',
+                  }),
+                )
+                .catch(() => {
+                  store.set(currentState);
+                  toast.error('Error while updating preset', {
+                    position: 'top-center',
+                  });
+                });
+            });
+          },
+        ),
         updatePresetName: store.asyncAction(
           (payload: {preset: Preset; newName: string}) => {
             return untrack(() => {
