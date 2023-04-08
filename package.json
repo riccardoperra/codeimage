@@ -57,19 +57,19 @@
     "prepare:api:deploy": "pnpm-bundle-workspace-package @codeimage/api --outDir=dist/api-bundle && rm -rf dist/api-bundle/workspace-dependencies/prisma-models/.gitignore"
   },
   "devDependencies": {
-    "@changesets/assemble-release-plan": "^5.2.2",
-    "@changesets/changelog-github": "^0.4.7",
-    "@changesets/cli": "^2.25.0",
-    "@changesets/config": "^2.2.0",
-    "@changesets/pre": "^1.0.13",
-    "@changesets/read": "^0.5.8",
+    "@changesets/assemble-release-plan": "^5.2.3",
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.26.0",
+    "@changesets/config": "^2.3.0",
+    "@changesets/pre": "^1.0.14",
+    "@changesets/read": "^0.5.9",
     "@commitlint/cli": "17.1.2",
     "@commitlint/config-angular": "17.1.0",
-    "@commitlint/config-conventional": "^17.1.0",
-    "@types/node": "^18.11.0",
-    "@types/prettier": "^2.7.1",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
+    "@commitlint/config-conventional": "^17.4.4",
+    "@types/node": "^18.14.6",
+    "@types/prettier": "^2.7.2",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
     "chalk": "5.1.2",
     "cross-env": "^7.0.3",
     "enquirer": "2.3.6",
@@ -78,13 +78,13 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-solid": "^0.7.4",
     "husky": "8.0.1",
-    "lint-staged": "^13.0.3",
+    "lint-staged": "^13.1.2",
     "pnpm-bundle-workspace-package": "^1.0.2",
-    "prettier": "^2.7.1",
-    "tslib": "^2.4.0",
-    "tsx": "^3.10.1",
-    "typescript": "^4.8.4",
-    "vite": "^3.1.8"
+    "prettier": "^2.8.4",
+    "tslib": "^2.5.0",
+    "tsx": "^3.12.3",
+    "typescript": "^4.9.5",
+    "vite": "^3.2.5"
   },
   "engines": {
     "pnpm": ">=7"
@@ -92,11 +92,11 @@
   "pnpm": {
     "overrides": {
       "@vanilla-extract/integration": "6.0.1",
-      "solid-js": "1.6.3"
+      "solid-js": "1.6.11"
     },
     "allowNonAppliedPatches": false
   },
   "dependencies": {
-    "statebuilder": "^0.2.3"
+    "statebuilder": "^0.3.1"
   }
 }
