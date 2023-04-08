@@ -92,7 +92,7 @@
   "pnpm": {
     "overrides": {
       "@vanilla-extract/integration": "6.0.1",
-      "solid-js": "1.6.11"
+      "solid-js": "1.7.3"
     },
     "allowNonAppliedPatches": false
   },
