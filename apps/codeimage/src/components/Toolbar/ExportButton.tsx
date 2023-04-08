@@ -2,10 +2,6 @@ import {useI18n} from '@codeimage/locale';
 import {
   Box,
   Button,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
-  DialogProps,
   FieldLabel,
   FieldLabelHint,
   FlexField,
@@ -18,14 +14,16 @@ import {
   toast,
   VStack,
 } from '@codeimage/ui';
+
+import {
+  Dialog,
+  DialogPanelContent,
+  DialogPanelFooter,
+  DialogProps,
+} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
-import {createButton} from '@solid-aria/button';
-import {
-  createOverlayTriggerState,
-  OverlayContainer,
-} from '@solid-aria/overlays';
 import {
   Component,
   createEffect,
@@ -50,17 +48,9 @@ interface ExportButtonProps {
 }
 
 export const ExportButton: Component<ExportButtonProps> = props => {
-  let openButtonRef: HTMLButtonElement | undefined;
   const [t] = useI18n<AppLocaleEntries>();
   const modality = useModality();
-  const overlayState = createOverlayTriggerState({});
-
-  const {buttonProps: openButtonProps} = createButton(
-    {
-      onPress: () => overlayState.open(),
-    },
-    () => openButtonRef,
-  );
+  const [open, setOpen] = createSignal(false);
 
   const [data, notify] = useExportImage();
 
@@ -86,54 +76,46 @@ export const ExportButton: Component<ExportButtonProps> = props => {
   useHotkey(document.body, {
     'Control+s': event => {
       event.preventDefault();
-      overlayState.open();
+      setOpen(true);
     },
   });
 
   return (
     <>
       <Button
-        {...openButtonProps}
-        ref={openButtonRef}
         variant={'solid'}
         theme={'primary'}
         loading={data.loading}
         size={modality === 'full' ? 'sm' : 'xs'}
-        leftIcon={() => <DownloadIcon />}
+        leftIcon={<DownloadIcon />}
+        onClick={() => setOpen(true)}
       >
         {label()}
       </Button>
 
-      <Show when={overlayState.isOpen()}>
-        <OverlayContainer>
-          <ExportDialog
-            size={'md'}
-            isOpen
-            onClose={overlayState.close}
-            fullScreen={modality === 'mobile'}
-            onConfirm={payload => {
-              notify({
-                options: {
-                  extension: payload.extension,
-                  fileName:
-                    payload.type === 'export' ? payload.fileName : undefined,
-                  mode: payload.type,
-                  pixelRatio: payload.pixelRatio,
-                  quality: payload.quality,
-                },
-                ref: props.canvasRef,
-              });
-
-              overlayState.close();
-            }}
-          />
-        </OverlayContainer>
-      </Show>
+      <ExportDialog
+        isOpen={open()}
+        onOpenChange={setOpen}
+        size={modality === 'mobile' ? 'full' : 'md'}
+        onConfirm={payload => {
+          notify({
+            options: {
+              extension: payload.extension,
+              fileName:
+                payload.type === 'export' ? payload.fileName : undefined,
+              mode: payload.type,
+              pixelRatio: payload.pixelRatio,
+              quality: payload.quality,
+            },
+            ref: props.canvasRef,
+          });
+        }}
+      />
     </>
   );
 };
 
-export interface ExportDialogProps extends DialogProps {
+export type ExportDialogProps = {
   onConfirm: (
     payload:
       | {
@@ -151,9 +133,9 @@ export interface ExportDialogProps extends DialogProps {
           quality: number;
         },
   ) => void;
-}
+};
 
-export function ExportDialog(props: DialogProps & ExportDialogProps) {
+export function ExportDialog(props: ExportDialogProps & DialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const [supportWebShare] = useWebshare();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
@@ -182,7 +164,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
   ];
 
   const onConfirm = () => {
-    props.onClose?.();
+    props.onOpenChange?.(false);
 
     const selectedMode = mode();
 
@@ -215,11 +197,10 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
 
   return (
     <Dialog
-      onClose={props.onClose}
-      fullScreen={props.fullScreen}
-      isOpen
-      isDismissable
-      size={'md'}
+      isOpen={props.isOpen}
+      onOpenChange={value => props.onOpenChange?.(value)}
+      isModal={true}
+      size={props.size}
       title={t('export.title')}
     >
       <DialogPanelContent>
@@ -337,7 +318,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
             type="button"
             variant={'solid'}
             theme={'secondary'}
-            onClick={() => props.onClose?.()}
+            onClick={() => props.onOpenChange?.(false)}
           >
             {t('common.close')}
           </Button>

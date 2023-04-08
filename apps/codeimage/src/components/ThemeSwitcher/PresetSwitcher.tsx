@@ -5,14 +5,7 @@ import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
 import {getUiStore} from '@codeimage/store/ui';
-import {
-  Box,
-  Button,
-  createStandaloneDialog,
-  HStack,
-  IconButton,
-  Text,
-} from '@codeimage/ui';
+import {Box, Button, HStack, IconButton, Text} from '@codeimage/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@codeui/kit';
 import {formatDistanceToNow} from '@core/helpers/date';
+import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {As} from '@kobalte/core';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
@@ -69,8 +63,6 @@ export const PresetSwitcher: ParentComponent<
     terminal.setFromPersistedState(data.terminal);
   };
 
-  const createDialog = createStandaloneDialog();
-
   const exampleCode =
     'function Preview() {\n' +
     ' const [get, set] = \n' +
@@ -78,6 +70,8 @@ export const PresetSwitcher: ParentComponent<
     '}';
 
   const classes = () => clsx(styles.box);
+
+  const openDialog = createControlledDialog();
 
   return (
     <Box class={classes()}>
@@ -94,14 +88,13 @@ export const PresetSwitcher: ParentComponent<
               theme={'primary'}
               variant={'solid'}
               onClick={() => {
-                createDialog(RenameContentDialog, state => ({
+                openDialog(RenameContentDialog, {
                   title: t('dashboard.renameProject.confirmTitle'),
                   message: t('dashboard.renameProject.confirmMessage'),
                   onConfirm: async name => {
                     presetsStore.actions.addNewPreset({name});
-                    state.close();
                   },
-                }));
+                });
               }}
             >
               Add new
@@ -136,6 +129,17 @@ export const PresetSwitcher: ParentComponent<
               const lastUpdateDate = () => {
                 return formatDistanceToNow(locale(), theme.updatedAt as string);
               };
+
+              function openUpdateDialog() {
+                openDialog(PresetUpdateDialog, {
+                  currentPreset: theme.data,
+                  onConfirm: async () => {
+                    presetsStore.actions.updatePresetWithCurrentState({
+                      preset: theme,
+                    });
+                  },
+                });
+              }
 
               return (
                 <Suspense fallback={<ThemeBoxSkeleton />}>
@@ -217,59 +221,34 @@ export const PresetSwitcher: ParentComponent<
                             <DropdownMenuPortal>
                               <DropdownMenuContent>
                                 <DropdownMenuItem
+                                  onClick={() => openUpdateDialog()}
+                                >
+                                  Update
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
                                   onClick={() => {
-                                    createDialog(PresetUpdateDialog, state => ({
+                                    openDialog(RenameContentDialog, {
                                       title: t(
                                         'dashboard.renameProject.confirmTitle',
                                       ),
                                       message: t(
                                         'dashboard.renameProject.confirmMessage',
                                       ),
-                                      currentPreset: theme.data,
                                       initialValue: theme.name,
-                                      onConfirm: async () => {
-                                        presetsStore.actions.updatePresetWithCurrentState(
-                                          {
-                                            preset: theme,
-                                          },
-                                        );
-                                        state.close();
+                                      onConfirm: async newName => {
+                                        presetsStore.actions.updatePresetName({
+                                          preset: theme,
+                                          newName,
+                                        });
                                       },
-                                    }));
-                                  }}
-                                >
-                                  Update
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    createDialog(
-                                      RenameContentDialog,
-                                      state => ({
-                                        title: t(
-                                          'dashboard.renameProject.confirmTitle',
-                                        ),
-                                        message: t(
-                                          'dashboard.renameProject.confirmMessage',
-                                        ),
-                                        initialValue: theme.name,
-                                        onConfirm: async newName => {
-                                          presetsStore.actions.updatePresetName(
-                                            {
-                                              preset: theme,
-                                              newName,
-                                            },
-                                          );
-                                          state.close();
-                                        },
-                                      }),
-                                    );
+                                    });
                                   }}
                                 >
                                   {t('dashboard.renameProject.dropdownLabel')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {
-                                    createDialog(ConfirmDialog, state => ({
+                                    openDialog(ConfirmDialog, {
                                       title: t(
                                         'dashboard.deleteProject.confirmTitle',
                                       ),
@@ -280,10 +259,9 @@ export const PresetSwitcher: ParentComponent<
                                         presetsStore.actions.deletePreset(
                                           theme,
                                         );
-                                        state.close();
                                       },
                                       actionType: 'danger' as const,
-                                    }));
+                                    });
                                   }}
                                 >
                                   {t('dashboard.deleteProject.dropdownLabel')}
