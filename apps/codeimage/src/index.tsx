@@ -15,7 +15,15 @@ import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import {Component, createEffect, lazy, on, Show, Suspense} from 'solid-js';
+import {
+  Component,
+  createEffect,
+  lazy,
+  on,
+  Show,
+  Suspense,
+  untrack,
+} from 'solid-js';
 import {render} from 'solid-js/web';
 import {StateProvider} from 'statebuilder';
 import './assets/styles/app.scss';
@@ -129,15 +137,14 @@ export function Bootstrap() {
 
   return (
     <Scaffold>
+      <OverlayProvider />
       <CodeImageThemeProvider tokens={tokens} theme={mode()}>
-        <OverlayProvider>
-          <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
-          <Router>
-            <Suspense>
-              <Routes />
-            </Suspense>
-          </Router>
-        </OverlayProvider>
+        <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
+        <Router>
+          <Suspense>
+            <Routes />
+          </Suspense>
+        </Router>
       </CodeImageThemeProvider>
       <SidebarPopoverHost />
     </Scaffold>
