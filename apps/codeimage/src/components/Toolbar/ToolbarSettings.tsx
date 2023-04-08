@@ -1,11 +1,14 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {createStandaloneDialog, IconButton} from '@codeimage/ui';
+
 import {
-  createStandaloneDialog,
-  DropdownMenuV2,
-  IconButton,
-  MenuButton,
-} from '@codeimage/ui';
-import {Item} from '@solid-aria/collection';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+} from '@codeui/kit';
+import {As} from '@kobalte/core';
 import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';
 import {MenuAlt2Icon} from '../Icons/DotVertical';
@@ -16,37 +19,35 @@ export function ToolbarSettingsButton() {
   const createDialog = createStandaloneDialog();
   const {signOut, loggedIn} = getAuth0State();
 
-  const onMenuAction = (item: string | number) => {
-    switch (item) {
-      case 'logout':
-        signOut().then(() => navigate('/'));
-        break;
-      case 'settings': {
-        createDialog(SettingsDialog, () => ({}));
-        break;
-      }
-    }
-  };
-
   return (
-    <DropdownMenuV2
-      onAction={item => onMenuAction(item)}
-      menuButton={
-        <MenuButton
-          as={IconButton}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <As
+          component={IconButton}
           pill={true}
           size={'xs'}
           variant={'solid'}
           theme={'secondary'}
         >
           <MenuAlt2Icon size={'sm'} />
-        </MenuButton>
-      }
-    >
-      <Item key={'settings'}>Settings</Item>
-      <Show when={loggedIn()}>
-        <Item key={'logout'}>Logout</Item>
-      </Show>
-    </DropdownMenuV2>
+        </As>
+      </DropdownMenuTrigger>
+      <DropdownMenuPortal>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={() => createDialog(SettingsDialog, () => ({}))}
+          >
+            Settings
+          </DropdownMenuItem>
+          <Show when={loggedIn()}>
+            <DropdownMenuItem
+              onClick={() => signOut().then(() => navigate('/'))}
+            >
+              Item 2
+            </DropdownMenuItem>
+          </Show>
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
+    </DropdownMenu>
   );
 }

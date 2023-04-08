@@ -6,16 +6,21 @@ import {
   backgroundColorVar,
   Box,
   createStandaloneDialog,
-  DropdownMenuV2,
   HStack,
   IconButton,
-  MenuButton,
   Text,
   toast,
 } from '@codeimage/ui';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+} from '@codeui/kit';
 import {highlight as _highlight} from '@core/directives/highlight';
 import {formatDistanceToNow} from '@core/helpers/date';
-import {Item} from '@solid-aria/collection';
+import {As} from '@kobalte/core';
 import {Link, useNavigate} from '@solidjs/router';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
@@ -95,6 +100,30 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
     }
   }
 
+  function onRename() {
+    createDialog(RenameContentDialog, state => ({
+      title: t('dashboard.renameProject.confirmTitle'),
+      message: t('dashboard.renameProject.confirmMessage'),
+      initialValue: props.item.name,
+      onConfirm: async name => {
+        state.close();
+        await dashboard.updateSnippetName(props.item.id, props.item.name, name);
+      },
+    }));
+  }
+
+  function onDelete() {
+    createDialog(ConfirmDialog, state => ({
+      title: t('dashboard.deleteProject.confirmTitle'),
+      message: t('dashboard.deleteProject.confirmMessage'),
+      onConfirm: () => {
+        deleteConfirm();
+        state.close();
+      },
+      actionType: 'danger' as const,
+    }));
+  }
+
   return (
     <li class={styles.item}>
       <Link class={styles.itemLink} href={`/${props.item.id}`} />
@@ -104,59 +133,31 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
         </Text>
 
         <div>
-          <DropdownMenuV2
-            menuButton={
-              <MenuButton
-                as={IconButton}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <As
+                component={IconButton}
                 variant={'solid'}
                 theme={'secondary'}
                 size={'xs'}
               >
                 <DotHorizontalIcon size={'md'} />
-              </MenuButton>
-            }
-            onAction={(action: string | number) => {
-              if (action === 'delete') {
-                createDialog(ConfirmDialog, state => ({
-                  title: t('dashboard.deleteProject.confirmTitle'),
-                  message: t('dashboard.deleteProject.confirmMessage'),
-                  onConfirm: () => {
-                    deleteConfirm();
-                    state.close();
-                  },
-                  actionType: 'danger' as const,
-                }));
-              }
-              if (action === 'rename') {
-                createDialog(RenameContentDialog, state => ({
-                  title: t('dashboard.renameProject.confirmTitle'),
-                  message: t('dashboard.renameProject.confirmMessage'),
-                  initialValue: props.item.name,
-                  onConfirm: async name => {
-                    state.close();
-                    await dashboard.updateSnippetName(
-                      props.item.id,
-                      props.item.name,
-                      name,
-                    );
-                  },
-                }));
-              }
-              if (action === 'clone') {
-                clone();
-              }
-            }}
-          >
-            <Item key={'rename'}>
-              {t('dashboard.renameProject.dropdownLabel')}
-            </Item>
-            <Item key={'clone'}>
-              {t('dashboard.cloneProject.dropdownLabel')}
-            </Item>
-            <Item key={'delete'}>
-              {t('dashboard.deleteProject.dropdownLabel')}
-            </Item>
-          </DropdownMenuV2>
+              </As>
+            </DropdownMenuTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={onRename}>
+                  {t('dashboard.renameProject.dropdownLabel')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={clone}>
+                  {t('dashboard.cloneProject.dropdownLabel')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onDelete}>
+                  {t('dashboard.deleteProject.dropdownLabel')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenuPortal>
+          </DropdownMenu>
         </div>
       </div>
 
