@@ -3,7 +3,8 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Preset} from '@codeimage/store/presets/types';
-import {Box, Button, HStack, SvgIcon, Text} from '@codeimage/ui';
+import {Box, HStack, SvgIcon, Text} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {JSXElement, mergeProps, VoidProps} from 'solid-js';
@@ -118,10 +119,10 @@ export function PresetUpdateDialog(
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
           <Button
-            block
+            // TODO: FIXME: Add @codeui/kit "block support"
+            style={{flex: '1'}}
             size={'sm'}
             type="button"
-            variant={'solid'}
             theme={'secondary'}
             onClick={() => propsWithDefault.onOpenChange(false)}
           >
@@ -129,11 +130,11 @@ export function PresetUpdateDialog(
           </Button>
 
           <Button
-            block
+            // TODO: FIXME: Add @codeui/kit "block support"
+            style={{flex: '1'}}
             size={'sm'}
             type="submit"
             theme={propsWithDefault.actionType}
-            variant={'solid'}
             onClick={() => {
               propsWithDefault.onConfirm();
               propsWithDefault.onOpenChange(false);

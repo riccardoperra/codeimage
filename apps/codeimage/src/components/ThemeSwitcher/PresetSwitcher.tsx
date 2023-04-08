@@ -5,13 +5,15 @@ import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
 import {getUiStore} from '@codeimage/store/ui';
-import {Box, Button, HStack, IconButton, Text} from '@codeimage/ui';
+import {Box, HStack, Text} from '@codeimage/ui';
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
+  IconButton,
 } from '@codeui/kit';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
@@ -86,7 +88,6 @@ export const PresetSwitcher: ParentComponent<
             <Button
               size={'xs'}
               theme={'primary'}
-              variant={'solid'}
               onClick={() => {
                 openDialog(RenameContentDialog, {
                   title: t('dashboard.renameProject.confirmTitle'),
@@ -99,14 +100,14 @@ export const PresetSwitcher: ParentComponent<
             >
               Add new
             </Button>
-            <Button
+            <IconButton
+              aria-label={'Close'}
               size={'xs'}
               theme={'secondary'}
-              variant={'solid'}
-              onClick={() => props.onClose()}
+              onClick={props.onClose}
             >
-              <CloseIcon size={'md'} />
-            </Button>
+              <CloseIcon />
+            </IconButton>
           </HStack>
         </Box>
         <PanelDivider />
@@ -211,7 +212,7 @@ export const PresetSwitcher: ParentComponent<
                             <DropdownMenuTrigger asChild>
                               <As
                                 component={IconButton}
-                                variant={'solid'}
+                                aria-label={'Menu'}
                                 theme={'secondary'}
                                 size={'xs'}
                               >
@@ -279,7 +280,8 @@ export const PresetSwitcher: ParentComponent<
                         >
                           <Button
                             theme={'secondary'}
-                            block
+                            // TODO: FIXME: Add @codeui/kit "block support"
+                            style={{width: '100%'}}
                             leftIcon={<CloudIcon />}
                             onClick={e => {
                               e.preventDefault();

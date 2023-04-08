@@ -7,19 +7,21 @@ import {
   FlexField,
   HStack,
   Link,
+  LoadingCircle,
   RangeField,
   SegmentedField,
   SegmentedFieldItem,
-  TextField,
   toast,
   VStack,
 } from '@codeimage/ui';
 
 import {
+  Button as ButtonV2,
   Dialog,
   DialogPanelContent,
   DialogPanelFooter,
   DialogProps,
+  TextField,
 } from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
@@ -50,8 +52,8 @@ interface ExportButtonProps {
 export const ExportButton: Component<ExportButtonProps> = props => {
   const [t] = useI18n<AppLocaleEntries>();
   const modality = useModality();
+  const buttonSize = () => (modality === 'full' ? 'sm' : 'xs');
   const [open, setOpen] = createSignal(false);
-
   const [data, notify] = useExportImage();
 
   const label = () =>
@@ -82,16 +84,20 @@ export const ExportButton: Component<ExportButtonProps> = props => {
 
   return (
     <>
-      <Button
-        variant={'solid'}
+      <ButtonV2
         theme={'primary'}
-        loading={data.loading}
-        size={modality === 'full' ? 'sm' : 'xs'}
-        leftIcon={<DownloadIcon />}
+        size={buttonSize()}
+        leftIcon={
+          data.loading ? (
+            <LoadingCircle size={buttonSize()} />
+          ) : (
+            <DownloadIcon />
+          )
+        }
         onClick={() => setOpen(true)}
       >
         {label()}
-      </Button>
+      </ButtonV2>
 
       <ExportDialog
         isOpen={open()}
@@ -239,19 +245,14 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
           </Show>
 
           <Show when={mode() === 'export'}>
-            <FlexField size={'md'}>
-              <FieldLabel size={'sm'} for={'fileName'}>
-                {t('export.fileName')}
-              </FieldLabel>
-              <TextField
-                placeholder={t('export.fileNamePlaceholder')}
-                id={'fileName'}
-                value={fileName()}
-                onChange={setFileName}
-                size={'sm'}
-                type={'text'}
-              />
-            </FlexField>
+            <TextField
+              placeholder={t('export.fileNamePlaceholder')}
+              label={t('export.fileName')}
+              value={fileName()}
+              onValueChange={setFileName}
+              size={'md'}
+              theme={'filled'}
+            />
           </Show>
 
           <FlexField size={'md'}>
@@ -312,26 +313,27 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
       </DialogPanelContent>
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
-          <Button
-            block
+          <ButtonV2
+            // TODO: FIXME: Add @codeui/kit "block support"
+            style={{flex: '1'}}
             size={'md'}
             type="button"
-            variant={'solid'}
             theme={'secondary'}
             onClick={() => props.onOpenChange?.(false)}
           >
             {t('common.close')}
-          </Button>
+          </ButtonV2>
 
-          <Button
-            block
+          <ButtonV2
+            // TODO: FIXME: Add @codeui/kit "block support"
+            style={{flex: '1'}}
             size={'md'}
             type="submit"
-            variant={'solid'}
+            theme={'primary'}
             onClick={onConfirm}
           >
             {t('common.confirm')}
-          </Button>
+          </ButtonV2>
         </HStack>
       </DialogPanelFooter>
     </Dialog>

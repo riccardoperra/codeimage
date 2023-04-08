@@ -1,5 +1,11 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, FieldLabel, FlexField, HStack, TextField} from '@codeimage/ui';
+import {FieldLabel, FlexField, HStack, TextField} from '@codeimage/ui';
+import {
+  Button,
+  Dialog,
+  DialogPanelContent,
+  DialogPanelFooter,
+} from '@codeui/kit';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {
   createSignal,
@@ -9,7 +15,6 @@ import {
   VoidProps,
 } from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
-import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
 
 export interface RenameContentDialogProps extends ControlledDialogProps {
   onConfirm: (name: string) => void;
@@ -56,22 +61,22 @@ export function RenameContentDialog(
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
           <Button
-            block
-            size={'sm'}
+            // TODO: FIXME: Add @codeui/kit "block support"
+            style={{flex: '1'}}
+            size={'md'}
             type="button"
-            variant={'solid'}
             theme={'secondary'}
-            onClick={() => propsWithDefault.onOpenChange(false)}
+            onClick={() => props.onOpenChange?.(false)}
           >
             {t('common.close')}
           </Button>
 
           <Button
-            block
-            size={'sm'}
+            // TODO: FIXME: Add @codeui/kit "block support"
+            style={{flex: '1'}}
+            size={'md'}
             type="submit"
-            theme={propsWithDefault.actionType}
-            variant={'solid'}
+            theme={'primary'}
             onClick={() => {
               propsWithDefault.onConfirm(name());
               propsWithDefault.onOpenChange(false);

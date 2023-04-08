@@ -2,13 +2,8 @@ import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
-import {
-  adaptiveFullScreenHeight,
-  Box,
-  Button,
-  HStack,
-  PortalHost,
-} from '@codeimage/ui';
+import {adaptiveFullScreenHeight, Box, HStack, PortalHost} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {createSignal, lazy, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
@@ -89,14 +84,12 @@ export function App() {
                   <ShareButton showLabel={false} />
                   <Button
                     size={'xs'}
-                    variant={'solid'}
                     theme={'secondary'}
                     leftIcon={<ColorSwatchIcon />}
                     onClick={() => dispatchRandomTheme()}
                   />
                   <Button
                     size={'xs'}
-                    variant={'solid'}
                     theme={'secondary'}
                     leftIcon={<SparklesIcon />}
                     onClick={() => getActiveEditorStore().format()}

@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, HStack, Text} from '@codeimage/ui';
+import {HStack, Text} from '@codeimage/ui';
 import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
+import {Button} from '@codeui/kit';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {JSXElement, mergeProps, VoidProps} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -30,22 +31,24 @@ export function ConfirmDialog(
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
           <Button
-            block
-            size={'sm'}
+            // TODO: FIXME: Add @codeui/kit "block support"
+            style={{flex: '1'}}
+            size={'md'}
             type="button"
-            variant={'solid'}
             theme={'secondary'}
-            onClick={() => propsWithDefault.onOpenChange(false)}
+            onClick={() => props.onOpenChange?.(false)}
           >
             {t('common.close')}
           </Button>
 
           <Button
-            block
-            size={'sm'}
+            // TODO: FIXME: Add @codeui/kit "block support"
+            style={{flex: '1'}}
+            size={'md'}
             type="submit"
-            theme={propsWithDefault.actionType}
-            variant={'solid'}
+            theme={
+              propsWithDefault.actionType === 'primary' ? 'primary' : 'negative'
+            }
             onClick={() => {
               propsWithDefault.onConfirm();
               propsWithDefault.onOpenChange(false);
