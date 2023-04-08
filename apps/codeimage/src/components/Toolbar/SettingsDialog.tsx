@@ -3,7 +3,6 @@ import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getUiStore} from '@codeimage/store/ui';
 import {
   Box,
-  Button,
   FieldLabel,
   FlexField,
   Group,
@@ -11,13 +10,17 @@ import {
   RadioBlock,
   RadioField,
   RadioGroupField,
-  sprinkles,
   SvgIcon,
   Text,
   themeVars,
   VStack,
 } from '@codeimage/ui';
-import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
+import {
+  Button,
+  Dialog,
+  DialogPanelContent,
+  DialogPanelFooter,
+} from '@codeui/kit';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
@@ -159,51 +162,6 @@ export function SettingsDialog(props: SettingsDialogProps) {
                   </FlexField>
                 </VStack>
               </Match>
-              <Match when={page() === 'account' && loggedIn()}>
-                <VStack spacing={'8'} flexGrow={1}>
-                  <Box
-                    display={'flex'}
-                    flexDirection={'column'}
-                    alignItems={'center'}
-                    justifyContent={'center'}
-                  >
-                    <img
-                      class={sprinkles({
-                        borderRadius: 'full',
-                      })}
-                      width={72}
-                      height={72}
-                      src={user()?.picture}
-                    />
-
-                    <VStack spacing={'3'} marginTop={6} alignItems={'center'}>
-                      <Text size={'lg'}>
-                        {user()?.name} ({user()?.nickname})
-                      </Text>
-                      <Text size={'xs'} weight={'normal'}>
-                        {user()?.email}
-                      </Text>
-                    </VStack>
-                  </Box>
-
-                  <VStack spacing={'4'} marginTop={6} marginBottom={0}>
-                    <div>
-                      <Button
-                        variant={'solid'}
-                        theme={'danger'}
-                        size={'md'}
-                        block
-                      >
-                        Delete your account
-                      </Button>
-                    </div>
-                    <Text size={'sm'}>
-                      *Once your account is deleted, you will lose all persisted
-                      data, including your saved projects.
-                    </Text>
-                  </VStack>
-                </VStack>
-              </Match>
             </Switch>
           </div>
         </Box>
@@ -213,7 +171,6 @@ export function SettingsDialog(props: SettingsDialogProps) {
           <Button
             size={'md'}
             type="button"
-            variant={'solid'}
             theme={'secondary'}
             onClick={() => props.onOpenChange(false)}
           >
