@@ -13,7 +13,15 @@ import '@codeimage/ui/themes/lightTheme';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import {Component, createEffect, lazy, on, Show, Suspense} from 'solid-js';
+import {
+  Component,
+  createEffect,
+  lazy,
+  on,
+  Show,
+  Suspense,
+  untrack,
+} from 'solid-js';
 import {render} from 'solid-js/web';
 import {StateProvider} from 'statebuilder';
 import './assets/styles/app.scss';
@@ -128,6 +136,7 @@ export function Bootstrap() {
 
   return (
     <Scaffold>
+      <OverlayProvider />
       <CodeImageThemeProvider tokens={tokens} theme={mode()}>
         <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
         <Router>
