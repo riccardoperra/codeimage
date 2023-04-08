@@ -5,7 +5,6 @@ import {getUiStore} from '@codeimage/store/ui';
 import {
   backgroundColorVar,
   Box,
-  createStandaloneDialog,
   HStack,
   IconButton,
   Text,
@@ -20,6 +19,7 @@ import {
 } from '@codeui/kit';
 import {highlight as _highlight} from '@core/directives/highlight';
 import {formatDistanceToNow} from '@core/helpers/date';
+import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {As} from '@kobalte/core';
 import {Link, useNavigate} from '@solidjs/router';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
@@ -41,7 +41,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   const dashboard = getDashboardState()!;
   const uiStore = getUiStore();
   const locale = () => uiStore.get.locale;
-  const createDialog = createStandaloneDialog();
+  const openDialog = createControlledDialog();
   const navigate = useNavigate();
   const [t] = useI18n<AppLocaleEntries>();
 
@@ -101,27 +101,25 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   }
 
   function onRename() {
-    createDialog(RenameContentDialog, state => ({
+    openDialog(RenameContentDialog, state => ({
       title: t('dashboard.renameProject.confirmTitle'),
       message: t('dashboard.renameProject.confirmMessage'),
       initialValue: props.item.name,
       onConfirm: async name => {
-        state.close();
         await dashboard.updateSnippetName(props.item.id, props.item.name, name);
       },
     }));
   }
 
   function onDelete() {
-    createDialog(ConfirmDialog, state => ({
+    openDialog(ConfirmDialog, {
       title: t('dashboard.deleteProject.confirmTitle'),
       message: t('dashboard.deleteProject.confirmMessage'),
       onConfirm: () => {
         deleteConfirm();
-        state.close();
       },
       actionType: 'danger' as const,
-    }));
+    });
   }
 
   return (

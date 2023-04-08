@@ -32,15 +32,6 @@ export type {SegmentedFieldItem} from './SegmentedField';
 export {FadeInOutWithScaleTransition, FadeInOutTransition} from './Transition';
 
 export {
-  DialogPanelFooter,
-  DialogPanelContent,
-  Dialog,
-  DialogPanel,
-  createStandaloneDialog,
-} from './Dialog';
-export type {DialogProps, DialogPanelProps} from './Dialog';
-
-export {
   dropdownStyles,
   DropdownItem,
   DropdownPortal,

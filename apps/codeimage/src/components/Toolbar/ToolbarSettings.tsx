@@ -1,5 +1,5 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {createStandaloneDialog, IconButton} from '@codeimage/ui';
+import {IconButton} from '@codeimage/ui';
 
 import {
   DropdownMenu,
@@ -8,6 +8,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@codeui/kit';
+import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {As} from '@kobalte/core';
 import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';
@@ -16,7 +17,7 @@ import {SettingsDialog} from './SettingsDialog';
 
 export function ToolbarSettingsButton() {
   const navigate = useNavigate();
-  const createDialog = createStandaloneDialog();
+  const openDialog = createControlledDialog();
   const {signOut, loggedIn} = getAuth0State();
 
   return (
@@ -35,7 +36,7 @@ export function ToolbarSettingsButton() {
       <DropdownMenuPortal>
         <DropdownMenuContent>
           <DropdownMenuItem
-            onClick={() => createDialog(SettingsDialog, () => ({}))}
+            onClick={() => openDialog(SettingsDialog, () => ({}))}
           >
             Settings
           </DropdownMenuItem>
@@ -43,7 +44,7 @@ export function ToolbarSettingsButton() {
             <DropdownMenuItem
               onClick={() => signOut().then(() => navigate('/'))}
             >
-              Item 2
+              Logout
             </DropdownMenuItem>
           </Show>
         </DropdownMenuContent>

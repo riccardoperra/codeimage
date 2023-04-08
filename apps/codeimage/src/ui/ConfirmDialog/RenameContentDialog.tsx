@@ -1,14 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {
-  Button,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
-  FieldLabel,
-  FlexField,
-  HStack,
-  TextField,
-} from '@codeimage/ui';
+import {Button, FieldLabel, FlexField, HStack, TextField} from '@codeimage/ui';
+import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {
   createSignal,
   JSXElement,
@@ -17,10 +9,10 @@ import {
   VoidProps,
 } from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
+import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
 
-export interface RenameContentDialogProps {
+export interface RenameContentDialogProps extends ControlledDialogProps {
   onConfirm: (name: string) => void;
-  onClose?: () => void;
   message: JSXElement;
   title: string;
   initialValue?: string;
@@ -45,8 +37,8 @@ export function RenameContentDialog(
     <Dialog
       size={'xs'}
       title={propsWithDefault.title}
-      onClose={props.onClose}
-      isOpen={true}
+      onOpenChange={props.onOpenChange}
+      isOpen={props.isOpen}
     >
       <DialogPanelContent>
         <FlexField size={'lg'}>
@@ -69,7 +61,7 @@ export function RenameContentDialog(
             type="button"
             variant={'solid'}
             theme={'secondary'}
-            onClick={() => propsWithDefault.onClose?.()}
+            onClick={() => propsWithDefault.onOpenChange(false)}
           >
             {t('common.close')}
           </Button>
@@ -80,7 +72,10 @@ export function RenameContentDialog(
             type="submit"
             theme={propsWithDefault.actionType}
             variant={'solid'}
-            onClick={() => propsWithDefault.onConfirm(name())}
+            onClick={() => {
+              propsWithDefault.onConfirm(name());
+              propsWithDefault.onOpenChange(false);
+            }}
           >
             {t('common.confirm')}
           </Button>
