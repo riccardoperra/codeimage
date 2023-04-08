@@ -23,7 +23,11 @@ const preset: FastifyPluginAsync = async fastify => {
     'presetService',
     registerHandlers(
       handlers,
-      {repository: fastify.presetRepository, mapper},
+      {
+        repository: fastify.presetRepository,
+        mapper,
+        config: fastify.config,
+      },
       fastify.handlerRegistry,
     ),
   );

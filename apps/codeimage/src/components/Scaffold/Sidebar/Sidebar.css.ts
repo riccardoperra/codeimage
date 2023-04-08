@@ -13,16 +13,26 @@ export const sidebar = recipe({
     sidebarTheme,
     {
       height: '100%',
-      flex: `0 0 ${sidebarVars.width}`,
+      width: sidebarVars.width,
       backgroundColor: themeVars.dynamicColors.panel.background,
       color: themeVars.dynamicColors.panel.textColor,
-      zIndex: 0,
+      zIndex: 1,
       transition: 'background-color .2s, border .2s',
-      overflow: 'auto',
+      overflowY: 'auto',
+      overflowX: 'hidden',
+      paddingRight: themeVars.spacing['2'],
+      '@supports': {
+        '(scrollbar-gutter: stable)': {
+          paddingRight: 0,
+          scrollbarGutter: 'stable',
+        },
+      },
+      flexShrink: 0,
     },
   ]),
   variants: {
     position: {
+      none: {},
       right: {
         borderLeft: `1px solid ${themeVars.dynamicColors.divider}`,
       },

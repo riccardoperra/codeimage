@@ -15,8 +15,12 @@ export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
   return (
     <TerminalHost {...props} themeClass={styles.theme}>
       <Show when={props.showHeader}>
-        <div class={baseStyles.header} data-accent-visible={showTab()}>
-          <div class={styles.headerIconRow}>
+        <div
+          class={baseStyles.header}
+          data-lite={props.lite}
+          data-accent-visible={showTab()}
+        >
+          <div class={styles.headerIconRow} data-lite={props.lite}>
             <div
               class={styles.headerIconRowCircle}
               style={assignInlineVars({
@@ -37,7 +41,7 @@ export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
             />
           </div>
 
-          <Show when={props.showTab}>
+          <Show when={props.showTab && !props.lite}>
             <TerminalWindowTabList
               readOnly={props.readonlyTab}
               accent={props.accentVisible && !props.alternativeTheme}

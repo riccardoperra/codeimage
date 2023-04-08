@@ -24,6 +24,7 @@ import {TabAddButton} from './TabAddButton/TabAddButton';
 export interface TerminalWindowTabListProps {
   accent: boolean;
   readOnly: boolean;
+  lite?: boolean;
 }
 
 export function TerminalWindowTabList(
