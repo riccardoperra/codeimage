@@ -280,8 +280,8 @@ export const PresetSwitcher: ParentComponent<
                         >
                           <Button
                             theme={'secondary'}
-                            // TODO: FIXME: Add @codeui/kit "block support"
-                            style={{width: '100%'}}
+                            block
+                            size={'sm'}
                             leftIcon={<CloudIcon />}
                             onClick={e => {
                               e.preventDefault();

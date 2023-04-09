@@ -19,8 +19,7 @@ export function EditorLeftSidebar() {
           <Box marginTop={3}>
             <Button
               theme={'secondary'}
-              // TODO: FIXME: Add @codeui/kit "block support"
-              style={{width: '100%'}}
+              block
               size={'xs'}
               leftIcon={<ColorSwatchIcon />}
               onClick={() => setToggle(toggle => !toggle)}

@@ -1,19 +1,14 @@
 import {useI18n} from '@codeimage/locale';
-import {FieldLabel, FlexField, HStack, TextField} from '@codeimage/ui';
+import {FieldLabel, FlexField, HStack} from '@codeimage/ui';
 import {
   Button,
   Dialog,
   DialogPanelContent,
   DialogPanelFooter,
+  TextField,
 } from '@codeui/kit';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
-import {
-  createSignal,
-  JSXElement,
-  mergeProps,
-  onMount,
-  VoidProps,
-} from 'solid-js';
+import {createSignal, JSXElement, mergeProps, VoidProps} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 
 export interface RenameContentDialogProps extends ControlledDialogProps {
@@ -28,14 +23,6 @@ export function RenameContentDialog(
 ): JSXElement {
   const [t] = useI18n<AppLocaleEntries>();
   const [name, setName] = createSignal(props.initialValue ?? '');
-  let textField!: HTMLInputElement;
-
-  onMount(() => {
-    requestAnimationFrame(() => {
-      textField?.focus();
-      textField?.select();
-    });
-  });
 
   const propsWithDefault = mergeProps({actionType: 'primary'} as const, props);
   return (
@@ -50,19 +37,21 @@ export function RenameContentDialog(
           {/*// TODO: add support for weight*/}
           <FieldLabel size={'sm'}>{propsWithDefault.message}</FieldLabel>
           <TextField
-            ref={textField}
-            type={'text'}
+            ref={el => {
+              el.autofocus = true;
+              requestIdleCallback(() => {
+                el?.focus();
+              });
+            }}
+            onValueChange={setName}
             value={name()}
-            onChange={setName}
-            autofocus={true}
           />
         </FlexField>
       </DialogPanelContent>
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
           <Button
-            // TODO: FIXME: Add @codeui/kit "block support"
-            style={{flex: '1'}}
+            block
             size={'md'}
             type="button"
             theme={'secondary'}
@@ -72,8 +61,7 @@ export function RenameContentDialog(
           </Button>
 
           <Button
-            // TODO: FIXME: Add @codeui/kit "block support"
-            style={{flex: '1'}}
+            block
             size={'md'}
             type="submit"
             theme={'primary'}

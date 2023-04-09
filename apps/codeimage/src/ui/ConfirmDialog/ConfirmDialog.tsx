@@ -31,8 +31,7 @@ export function ConfirmDialog(
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
           <Button
-            // TODO: FIXME: Add @codeui/kit "block support"
-            style={{flex: '1'}}
+            block
             size={'md'}
             type="button"
             theme={'secondary'}
@@ -42,8 +41,7 @@ export function ConfirmDialog(
           </Button>
 
           <Button
-            // TODO: FIXME: Add @codeui/kit "block support"
-            style={{flex: '1'}}
+            block
             size={'md'}
             type="submit"
             theme={
