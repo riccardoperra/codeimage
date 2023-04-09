@@ -1,5 +1,4 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {IconButton} from '@codeimage/ui';
 
 import {
   DropdownMenu,
@@ -7,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
+  IconButton,
 } from '@codeui/kit';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {As} from '@kobalte/core';
@@ -27,8 +27,8 @@ export function ToolbarSettingsButton() {
           component={IconButton}
           pill={true}
           size={'xs'}
-          variant={'solid'}
           theme={'secondary'}
+          aria-label={'Menu'}
         >
           <MenuAlt2Icon size={'sm'} />
         </As>

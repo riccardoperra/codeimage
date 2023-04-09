@@ -119,8 +119,7 @@ export function PresetUpdateDialog(
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
           <Button
-            // TODO: FIXME: Add @codeui/kit "block support"
-            style={{flex: '1'}}
+            block
             size={'sm'}
             type="button"
             theme={'secondary'}
@@ -130,8 +129,7 @@ export function PresetUpdateDialog(
           </Button>
 
           <Button
-            // TODO: FIXME: Add @codeui/kit "block support"
-            style={{flex: '1'}}
+            block
             size={'sm'}
             type="submit"
             theme={propsWithDefault.actionType}

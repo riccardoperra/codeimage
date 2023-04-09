@@ -314,8 +314,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
           <ButtonV2
-            // TODO: FIXME: Add @codeui/kit "block support"
-            style={{flex: '1'}}
+            block
             size={'md'}
             type="button"
             theme={'secondary'}
@@ -325,8 +324,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
           </ButtonV2>
 
           <ButtonV2
-            // TODO: FIXME: Add @codeui/kit "block support"
-            style={{flex: '1'}}
+            block
             size={'md'}
             type="submit"
             theme={'primary'}
