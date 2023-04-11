@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, toast} from '@codeimage/ui';
+import {LoadingCircle, toast} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {useNavigate} from '@solidjs/router';
 import {PlusIcon} from '../../../../components/Icons/PlusIcon';
@@ -27,10 +28,9 @@ export function CreateNewProjectButton() {
 
   return (
     <Button
-      loading={data.loading}
-      leftIcon={<PlusIcon />}
+      leftIcon={data.loading ? <LoadingCircle /> : <PlusIcon />}
+      size={'md'}
       theme="primary"
-      variant="solid"
       onClick={() => notify()}
     >
       {t('dashboard.new')}

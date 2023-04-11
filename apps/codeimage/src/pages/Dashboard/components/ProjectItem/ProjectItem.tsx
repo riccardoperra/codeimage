@@ -2,15 +2,9 @@ import type * as ApiTypes from '@codeimage/api/api-types';
 import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {getUiStore} from '@codeimage/store/ui';
+import {backgroundColorVar, Box, HStack, Text, toast} from '@codeimage/ui';
 import {
-  backgroundColorVar,
-  Box,
-  HStack,
   IconButton,
-  Text,
-  toast,
-} from '@codeimage/ui';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -135,9 +129,9 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
             <DropdownMenuTrigger asChild>
               <As
                 component={IconButton}
-                variant={'solid'}
                 theme={'secondary'}
                 size={'xs'}
+                aria-label={'Menu'}
               >
                 <DotHorizontalIcon size={'md'} />
               </As>
