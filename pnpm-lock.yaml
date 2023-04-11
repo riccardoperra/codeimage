@@ -573,22 +573,22 @@ importers:
 
   packages/locale:
     specifiers:
-      '@solid-primitives/i18n': ^1.2.1
+      '@solid-primitives/i18n': ^1.2.4
       rimraf: ^3.0.2
-      solid-js: 1.6.3
+      solid-js: ^1.7.3
       typescript: ^4.9.5
       vite: ^3.2.5
-      vite-plugin-dts: ^1.7.3
-      vite-plugin-solid: ^2.6.1
+      vite-plugin-dts: ^2.2.0
+      vite-plugin-solid: ^2.7.0
     dependencies:
-      '@solid-primitives/i18n': 1.2.4_solid-js@1.6.3
-      solid-js: 1.6.3
+      '@solid-primitives/i18n': 1.2.4_solid-js@1.7.3
+      solid-js: 1.7.3
     devDependencies:
       rimraf: 3.0.2
       typescript: 4.9.5
       vite: 3.2.5
-      vite-plugin-dts: 1.7.3_vite@3.2.5
-      vite-plugin-solid: 2.7.0_solid-js@1.6.3+vite@3.2.5
+      vite-plugin-dts: 2.2.0_vite@3.2.5
+      vite-plugin-solid: 2.7.0_solid-js@1.7.3+vite@3.2.5
 
   packages/prisma-models:
     specifiers:
@@ -5393,14 +5393,6 @@ packages:
       solid-js: 1.7.3
     dev: false
 
-  /@solid-primitives/context/0.2.1_solid-js@1.6.3:
-    resolution: {integrity: sha512-XIIwCOWpRKDersgkR9LNFXaJHIV8QlCFo/tq5bV0cAOZklcwOFcqi2bN+uWgEIQSWGjWXU2kc1H1/TzgYzVDlg==}
-    peerDependencies:
-      solid-js: ^1.6.12
-    dependencies:
-      solid-js: 1.6.3
-    dev: false
-
   /@solid-primitives/context/0.2.1_solid-js@1.7.3:
     resolution: {integrity: sha512-XIIwCOWpRKDersgkR9LNFXaJHIV8QlCFo/tq5bV0cAOZklcwOFcqi2bN+uWgEIQSWGjWXU2kc1H1/TzgYzVDlg==}
     peerDependencies:
@@ -5416,15 +5408,6 @@ packages:
     dependencies:
       '@solid-primitives/utils': 6.0.0_solid-js@1.7.3
       solid-js: 1.7.3
-    dev: false
-
-  /@solid-primitives/i18n/1.2.4_solid-js@1.6.3:
-    resolution: {integrity: sha512-4phkfhFKAfKWWwN+U5M77P8lq65J5XljyjPkZSVzk+AI2OwpO5aDtKpDxiAMWSS8aYhnfJvlfCkIY7X7XDCDLw==}
-    peerDependencies:
-      solid-js: ^1.6.12
-    dependencies:
-      '@solid-primitives/context': 0.2.1_solid-js@1.6.3
-      solid-js: 1.6.3
     dev: false
 
   /@solid-primitives/i18n/1.2.4_solid-js@1.7.3:
@@ -11162,6 +11145,13 @@ packages:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
 
+  /magic-string/0.29.0:
+    resolution: {integrity: sha512-WcfidHrDjMY+eLjlU+8OvwREqHwpgCeKVBUpQ3OhYYuvfaYCUgcbuBzappNzZvg/v8onU3oQj+BYpkOJe9Iw4Q==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.15
+    dev: true
+
   /magic-string/0.30.0:
     resolution: {integrity: sha512-LA+31JYDJLs82r2ScLrlz1GjSgu66ZV518eyWT+S8VhyQn/JL0u9MeBOvQMGYiPk1DBiSN9DDMOcXvigJZaViQ==}
     engines: {node: '>=12'}
@@ -14947,6 +14937,29 @@ packages:
       fast-glob: 3.2.12
       fs-extra: 10.1.0
       kolorist: 1.7.0
+      ts-morph: 17.0.1
+      vite: 3.2.5
+    transitivePeerDependencies:
+      - '@types/node'
+      - rollup
+      - supports-color
+    dev: true
+
+  /vite-plugin-dts/2.2.0_vite@3.2.5:
+    resolution: {integrity: sha512-XmZtv02I7eGWm3DrZbLo1AdJK5gCisk9GqJBpY4N63pDYR6AVUnlyjFP5FCBvSBUfgE0Ppl90bKgtJU9k3AzFw==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    peerDependencies:
+      vite: '>=2.9.0'
+    dependencies:
+      '@babel/parser': 7.21.4
+      '@microsoft/api-extractor': 7.34.4
+      '@rollup/pluginutils': 5.0.2
+      '@rushstack/node-core-library': 3.55.2
+      debug: 4.3.4
+      fast-glob: 3.2.12
+      fs-extra: 10.1.0
+      kolorist: 1.7.0
+      magic-string: 0.29.0
       ts-morph: 17.0.1
       vite: 3.2.5
     transitivePeerDependencies:
