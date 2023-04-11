@@ -604,12 +604,12 @@ importers:
       '@babel/plugin-syntax-jsx': 7.18.6
       '@codeimage/locale': workspace:*
       '@codeimage/vanilla-extract': workspace:*
-      '@floating-ui/core': ^1.2.2
-      '@floating-ui/dom': ^1.2.3
-      '@motionone/solid': ^10.15.5
+      '@floating-ui/core': ^1.2.6
+      '@floating-ui/dom': ^1.2.6
+      '@motionone/solid': ^10.16.0
       '@rollup/plugin-babel': 6.0.0
       '@rollup/plugin-node-resolve': 15.0.0
-      '@rollup/plugin-typescript': ^9.0.2
+      '@rollup/plugin-typescript': ^11.1.0
       '@solid-aria/button': ^0.1.3
       '@solid-aria/collection': ^0.2.0
       '@solid-aria/dialog': ^0.1.4
@@ -664,7 +664,7 @@ importers:
       '@floating-ui/core': 1.2.6
       '@floating-ui/dom': 1.2.6
       '@motionone/solid': 10.16.0_solid-js@1.6.3
-      '@rollup/plugin-typescript': 9.0.2_zptcx3kz3uwp66hzhyyt545weq
+      '@rollup/plugin-typescript': 11.1.0_zptcx3kz3uwp66hzhyyt545weq
       '@solid-aria/button': 0.1.3_solid-js@1.6.3
       '@solid-aria/collection': 0.2.0_solid-js@1.6.3
       '@solid-aria/dialog': 0.1.4_solid-js@1.6.3
@@ -4721,6 +4721,25 @@ packages:
       rollup: 3.20.2
     dev: true
 
+  /@rollup/plugin-typescript/11.1.0_zptcx3kz3uwp66hzhyyt545weq:
+    resolution: {integrity: sha512-86flrfE+bSHB69znnTV6kVjkncs2LBMhcTCyxWgRxLyfXfQrxg4UwlAqENnjrrxnSNS/XKCDJCl8EkdFJVHOxw==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^2.14.0||^3.0.0
+      tslib: '*'
+      typescript: '>=3.7.0'
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+      tslib:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.0.2_rollup@2.79.1
+      resolve: 1.22.2
+      rollup: 2.79.1
+      typescript: 4.9.5
+    dev: false
+
   /@rollup/plugin-typescript/9.0.2_zptcx3kz3uwp66hzhyyt545weq:
     resolution: {integrity: sha512-/sS93vmHUMjzDUsl5scNQr1mUlNE1QjBBvOhmRwJCH8k2RRhDIm3c977B3wdu3t3Ap17W6dDeXP3hj1P1Un1bA==}
     engines: {node: '>=14.0.0'}
@@ -4738,6 +4757,7 @@ packages:
       resolve: 1.22.2
       rollup: 2.79.1
       typescript: 4.9.5
+    dev: true
 
   /@rollup/pluginutils/3.1.0_rollup@2.79.1:
     resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
@@ -11501,7 +11521,7 @@ packages:
       chalk: 4.1.1
       chokidar: 3.5.3
       cookie: 0.4.2
-      graphql: 15.8.0
+      graphql: 16.6.0
       headers-polyfill: 3.1.2
       inquirer: 8.2.5
       is-node-process: 1.2.0
