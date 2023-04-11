@@ -12,6 +12,7 @@ export const canvas = style({
   flexDirection: 'column',
   width: '100%',
   borderRadius: '32px',
+  border: `1px solid ${themeVars.dynamicColors.divider}`,
   borderBottomLeftRadius: 0,
   borderBottomRightRadius: 0,
   '@media': {

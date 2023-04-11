@@ -121,7 +121,7 @@ export function Bootstrap() {
     on(mode, theme => {
       const scheme = document.querySelector('meta[name="theme-color"]');
       if (scheme) {
-        const color = theme === 'dark' ? darkGrayScale.gray1 : '#FFFFFF';
+        const color = theme === 'dark' ? '#151516' : '#FFFFFF';
         scheme.setAttribute('content', color);
         setElementVars(document.body, {
           [backgroundColorVar]: color,
