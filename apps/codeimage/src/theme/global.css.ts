@@ -1,4 +1,5 @@
-import {globalStyle} from '@vanilla-extract/css';
+import {themeVars} from '@codeimage/ui';
+import {createGlobalTheme, globalStyle} from '@vanilla-extract/css';
 
 globalStyle('body', {
   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
@@ -9,4 +10,11 @@ globalStyle('body', {
       fontFeatureSettings: '"cv02","cv03","cv04","cv11"',
     },
   },
+});
+
+const cssVar = /(--)[^\,\:\)]+/;
+
+globalStyle(`[data-codeimage-theme=dark]`, {
+  [cssVar.exec(themeVars.dynamicColors.panel.background)![0]]: '#151516',
+  [cssVar.exec(themeVars.dynamicColors.background)![0]]: '#0f0f10',
 });
