@@ -11,7 +11,7 @@ export const frameToolbar = style({
   selectors: {
     ...withThemeMode({
       dark: {
-        background: `${darkGrayScale.gray1}`,
+        background: `${darkGrayScale.gray2}`,
         boxShadow: themeVars.boxShadow.md,
       },
       light: {
