@@ -4,33 +4,37 @@ import {createTheme, style} from '@vanilla-extract/css';
 export const [frameHandler, frameHandlerVars] = createTheme({
   scale: '1',
   emptySquareBackgroundColor: '',
+  borderRadius: themeVars.borderRadius.xl,
 });
 
-export const wrapper = style({
-  width: '100%',
-  height: '100%',
-  display: 'flex',
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  flex: '1',
-  alignItems: 'center',
-  justifyContent: 'center',
-  selectors: {
-    ...withThemeMode({
-      dark: {
-        vars: {
-          [frameHandlerVars.emptySquareBackgroundColor]: '#252525',
+export const wrapper = style([
+  frameHandler,
+  {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    flex: '1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    selectors: {
+      ...withThemeMode({
+        dark: {
+          vars: {
+            [frameHandlerVars.emptySquareBackgroundColor]: '#252525',
+          },
         },
-      },
-      light: {
-        vars: {
-          [frameHandlerVars.emptySquareBackgroundColor]:
-            themeVars.backgroundColor.gray['300'],
+        light: {
+          vars: {
+            [frameHandlerVars.emptySquareBackgroundColor]:
+              themeVars.backgroundColor.gray['300'],
+          },
         },
-      },
-    }),
+      }),
+    },
   },
-});
+]);
 
 export const handler = style([
   {
@@ -63,4 +67,5 @@ export const squaredBackgroundOverlay = style({
   position: 'absolute',
   width: '100%',
   height: '100%',
+  borderRadius: frameHandlerVars.borderRadius,
 });
