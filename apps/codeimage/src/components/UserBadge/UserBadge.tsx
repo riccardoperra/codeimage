@@ -13,7 +13,7 @@ import {Show} from 'solid-js';
 import * as styles from './UserBadge.css';
 
 export function UserBadge() {
-  const {loggedIn, login, user, signOut} = getAuth0State();
+  const {loggedIn, user, signOut} = getAuth0State();
   const profileImage = () => user()?.picture;
 
   const initials = () => {
@@ -27,7 +27,7 @@ export function UserBadge() {
   };
 
   return (
-    <Show fallback={<GithubLoginButton onClick={login} />} when={loggedIn()}>
+    <Show fallback={<GithubLoginButton />} when={loggedIn()}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <As component={Badge} theme={styles.badge} size={'md'}>
