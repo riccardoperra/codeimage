@@ -80,6 +80,13 @@ export async function exportImage(
   }
 
   const clonedRef = await cloneNodeSafe(ref);
+  const frameContent = clonedRef.querySelector(
+    '[data-frame-content]',
+  ) as HTMLElement;
+  if (frameContent) {
+    frameContent.style.setProperty('border-radius', '0px');
+  }
+
   document.body.appendChild(clonedRef);
 
   const resolvedFileName = fileName || `codeImage_${new Date().getUTCDate()}`;
@@ -109,6 +116,7 @@ export async function exportImage(
       margin: '0',
       padding: '0',
       display: 'block',
+      borderRadius: '0',
     },
     pixelRatio: pixelRatio,
     quality: quality,

@@ -74,7 +74,6 @@ export function FrameHandler(
                 [styles.frameHandlerVars.scale]: canvasScale().toString(),
               })
         }
-        ref={setHandlerRef}
       >
         <div
           class={styles.content}
