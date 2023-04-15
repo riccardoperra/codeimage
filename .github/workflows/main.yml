@@ -151,7 +151,62 @@ jobs:
     name: Build App and Preview (Dev)
     environment: Preview
     needs: [build-packages]
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    if: ${{ github.head_ref  != 'next' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v2
+        with:
+          ref: 'refs/pull/${{ github.event.number }}/merge'
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Build app
+        env:
+          VITE_PUBLIC_AUTH0_DOMAIN: ${{ secrets.VITE_PUBLIC_AUTH0_DOMAIN }}
+          VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
+          VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
+          UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
+          UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
+          ENABLE_VERCEL_BUILD: true
+        run: |
+          pnpm --filter=@codeimage/app build
+
+      - uses: amondnet/vercel-action@v19
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
+          vercel-args: '--prebuilt' #Optional
+          working-directory: apps/codeimage
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
+          alias-domains: | #Optional
+            codeimage-app-pr-{{PR_NUMBER}}.vercel.app
+
+
+  build-app-next:
+    name: Build App and Preview (Next)
+    environment: Next
+    needs: [ build-packages ]
+    if: ${{ github.head_ref  == 'next' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -439,6 +494,63 @@ jobs:
 
       - name: Test
         run: pnpm --filter=@codeimage/api test:ci
+
+  deploy-next:
+    # Next branch only
+    if: ${{ github.head_ref  == 'next' }}
+    environment: Next
+    name: Deploy next
+    needs: [
+      lint,
+      build-packages,
+      build-api,
+      typecheck-packages,
+      be-test,
+      build-app-next
+    ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore api build
+        uses: actions/cache@v3
+        with:
+          path: |
+            dist/api-bundle/**
+          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Install Railway
+        run: pnpm i -g @railway/cli
+
+      - name: Run migrations
+        run: |
+          cd apps/api
+          pnpm exec prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Deploy
+        run: |
+          cd dist/api-bundle
+          rm -rf .gitignore
+          touch .gitignore
+          touch .dockerignore
+          ls -al
+          railway up
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
 concurrency:
   group: main-${{ github.head_ref }}

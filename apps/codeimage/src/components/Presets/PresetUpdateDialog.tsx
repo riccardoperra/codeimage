@@ -4,16 +4,17 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Preset} from '@codeimage/store/presets/types';
 import {Box, HStack, SvgIcon, Text} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
-import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
+import {
+  Button,
+  Dialog,
+  DialogPanelContent,
+  DialogPanelFooter,
+} from '@codeui/kit';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {JSXElement, mergeProps, VoidProps} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
-import CustomEditorPreview from '../CustomEditor/CustomEditorPreview';
-import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import {PresetPreview} from './PresetPreview/PresetPreview';
 import * as styles from './PresetSwitcher/PresetSwitcher.css';
-import {ThemeBox} from '../ThemeSwitcher/ThemeBox';
 
 interface PresetUpdateDialogProps extends ControlledDialogProps {
   currentPreset: Preset['data'];
