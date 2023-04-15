@@ -2,7 +2,8 @@ import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
 import {provideAppState} from '@codeimage/store/index';
 import {appEnvironment} from '@core/configuration';
-import {map} from 'rxjs';
+import {from, map, skip} from 'rxjs';
+import {observable} from 'solid-js';
 import {defineStore} from 'statebuilder';
 import {withProxyCommands} from 'statebuilder/commands';
 
@@ -96,22 +97,25 @@ const frameState = defineStore(() => getInitialFrameState())
       } as PersistedFrameState;
     };
 
-    const stateToPersist$ = store
-      .watchCommand([
-        store.commands.setBackground,
-        store.commands.setOpacity,
-        store.commands.setPadding,
-        store.commands.setRadius,
-        store.commands.setScale,
-        store.commands.setAutoWidth,
-        store.commands.setVisibility,
-        store.commands.setNextPadding,
-        store.commands.setFromPreset,
-      ])
-      .pipe(
-        map(() => store()),
-        map(mapToStateToPersistState),
-      );
+    const stateToPersist$ = from(
+      observable(
+        store.watchCommand([
+          store.commands.setBackground,
+          store.commands.setOpacity,
+          store.commands.setPadding,
+          store.commands.setRadius,
+          store.commands.setScale,
+          store.commands.setAutoWidth,
+          store.commands.setVisibility,
+          store.commands.setNextPadding,
+          store.commands.setFromPreset,
+        ]),
+      ),
+    ).pipe(
+      skip(1),
+      map(() => store()),
+      map(mapToStateToPersistState),
+    );
 
     return {
       get store() {
