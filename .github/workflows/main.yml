@@ -200,6 +200,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
             codeimage-app-pr-{{PR_NUMBER}}.vercel.app
+            next.codeimage.dev
 
 
   build-app-next:
@@ -546,6 +547,7 @@ jobs:
 
       - name: Deploy
         run: |
+          find . -name '*.gitignore' #-delete
           cd dist/api-bundle
           rm -rf .gitignore
           touch .gitignore
