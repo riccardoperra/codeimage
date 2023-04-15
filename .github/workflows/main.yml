@@ -535,11 +535,9 @@ jobs:
           key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Install Railway
-        if: ${{ github.event.inputs.deploy-backend == 'true' }}
         run: pnpm i -g @railway/cli
 
-      - name: Run prod migrations
-        if: ${{ github.event.inputs.deploy-backend == 'true' }}
+      - name: Run migrations
         run: |
           pnpm --filter=@codeimage/api exec prisma migrate deploy
         env:
