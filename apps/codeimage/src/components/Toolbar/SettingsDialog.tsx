@@ -1,5 +1,4 @@
 import {useI18n} from '@codeimage/locale';
-import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getUiStore} from '@codeimage/store/ui';
 import {
   Box,

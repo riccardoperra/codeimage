@@ -42,10 +42,7 @@ export function ProjectList() {
           </ul>
         }
       >
-        <Show
-          when={!listIsEmpty()}
-          fallback={() => <ProjectEmptyListMessage />}
-        >
+        <Show when={!listIsEmpty()} fallback={<ProjectEmptyListMessage />}>
           <ul class={styles.gridList}>
             <For each={dashboard.pagedData()}>
               {item => <ProjectItem item={item} />}

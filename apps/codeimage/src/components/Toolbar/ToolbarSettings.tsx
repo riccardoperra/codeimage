@@ -1,5 +1,4 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {Link} from '@codeimage/ui';
 
 import {
   DropdownMenu,

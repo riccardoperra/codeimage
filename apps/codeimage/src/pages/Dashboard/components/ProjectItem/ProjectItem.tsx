@@ -95,7 +95,7 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
   }
 
   function onRename() {
-    openDialog(RenameContentDialog, state => ({
+    openDialog(RenameContentDialog, () => ({
       title: t('dashboard.renameProject.confirmTitle'),
       message: t('dashboard.renameProject.confirmMessage'),
       initialValue: props.item.name,
