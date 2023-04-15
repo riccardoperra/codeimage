@@ -17,14 +17,14 @@ export function createEditorStore() {
   createEffect(
     on(resource, async resource => {
       if (resource) {
-        untrackCommand(() => {
+        queueMicrotask(() => {
           terminal.setState('background', resource.properties.terminal.main);
           terminal.setState('textColor', resource.properties.terminal.text);
           if (frame.store.background === null) {
             frame.setBackground(resource.properties.previewBackground);
           }
-        }, false);
-        setInitialized(true);
+          setInitialized(true);
+        });
       }
     }),
   );
