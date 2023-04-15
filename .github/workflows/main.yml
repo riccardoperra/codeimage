@@ -278,23 +278,6 @@ jobs:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
-      - name: Build ui demo
-        env:
-          ENABLE_VERCEL_BUILD: true
-        run: |
-          pnpm --filter=@codeimage/ui build:dev
-
-      - uses: amondnet/vercel-action@v19
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-args: '--prebuilt' #Optional
-          working-directory: packages/ui/dev
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} #Required
-          vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID}} #Required
-          alias-domains: | #Optional
-            codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
-
   build-website-dev:
     name: '@codeimage/website dev and Preview'
     environment: Preview
