@@ -5,8 +5,8 @@ import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
-import {map, shareReplay} from 'rxjs';
-import {createMemo, createSelector} from 'solid-js';
+import {from, map, shareReplay, skip} from 'rxjs';
+import {createMemo, createSelector, observable} from 'solid-js';
 import {SetStoreFunction} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
@@ -148,20 +148,23 @@ export function createEditorsStore() {
     };
   };
 
-  const stateToPersist$ = store
-    .watchCommand([
-      store.commands.setFontId,
-      store.commands.setThemeId,
-      store.commands.setFontWeight,
-      store.commands.setShowLineNumbers,
-      store.commands.setEnableLigatures,
-      editorUpdateCommand,
-    ])
-    .pipe(
-      map(() => store()),
-      map(mapToStateToPersistState),
-      shareReplay({refCount: true, bufferSize: 1}),
-    );
+  const stateToPersist$ = from(
+    observable(
+      store.watchCommand([
+        store.commands.setFontId,
+        store.commands.setThemeId,
+        store.commands.setFontWeight,
+        store.commands.setShowLineNumbers,
+        store.commands.setEnableLigatures,
+        editorUpdateCommand,
+      ]),
+    ),
+  ).pipe(
+    skip(1),
+    map(() => store()),
+    map(mapToStateToPersistState),
+    shareReplay({refCount: true, bufferSize: 1}),
+  );
 
   const addEditor = (
     editorState?: Partial<EditorState> | null,

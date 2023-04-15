@@ -102,7 +102,7 @@
     "solid-headless": "^0.13.0",
     "solid-js": "^1.7.3",
     "solid-use": "^0.5.0",
-    "statebuilder": "^0.2.4",
+    "statebuilder": "^0.4.0",
     "tinykeys": "^1.4.0",
     "workbox-precaching": "^6.5.4",
     "workbox-routing": "^6.5.4",

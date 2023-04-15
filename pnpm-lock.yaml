@@ -36,13 +36,13 @@ importers:
       lint-staged: ^13.1.2
       pnpm-bundle-workspace-package: ^1.0.2
       prettier: ^2.8.4
-      statebuilder: ^0.3.1
+      statebuilder: ^0.4.0
       tslib: ^2.5.0
       tsx: ^3.12.3
       typescript: ^4.9.5
       vite: ^3.2.5
     dependencies:
-      statebuilder: 0.3.1
+      statebuilder: 0.4.0
     devDependencies:
       '@changesets/assemble-release-plan': 5.2.3
       '@changesets/changelog-github': 0.4.8
@@ -214,7 +214,7 @@ importers:
       solid-headless: ^0.13.0
       solid-js: ^1.7.3
       solid-use: ^0.5.0
-      statebuilder: ^0.2.4
+      statebuilder: ^0.4.0
       tinykeys: ^1.4.0
       typescript: ^4.9.5
       vite: ^3.2.5
@@ -295,7 +295,7 @@ importers:
       solid-headless: 0.13.1_solid-js@1.7.3
       solid-js: 1.7.3
       solid-use: 0.5.0_solid-js@1.7.3
-      statebuilder: 0.2.4
+      statebuilder: 0.4.0
       tinykeys: 1.4.0
       workbox-precaching: 6.5.4
       workbox-routing: 6.5.4
@@ -393,13 +393,13 @@ importers:
       rollup-preset-solid: ^1.4.0
       rxjs: ^7.8.0
       solid-js: 1.6.3
-      statebuilder: ^0.2.4
+      statebuilder: ^0.4.0
       vite: ^3.2.5
       vite-plugin-dts: ^1.7.3
       vite-plugin-solid: ^2.6.1
       vitest: 0.26.2
     dependencies:
-      statebuilder: 0.2.4
+      statebuilder: 0.4.0
     devDependencies:
       '@types/node': 18.15.11
       rollup: 2.79.1
@@ -11617,7 +11617,7 @@ packages:
       chalk: 4.1.1
       chokidar: 3.5.3
       cookie: 0.4.2
-      graphql: 15.8.0
+      graphql: 16.6.0
       headers-polyfill: 3.1.2
       inquirer: 8.2.5
       is-node-process: 1.2.0
@@ -13910,8 +13910,8 @@ packages:
       get-source: 2.0.12
     dev: true
 
-  /statebuilder/0.2.4:
-    resolution: {integrity: sha512-0Oo1GecDlHxN+bYLK2LgPPbeMjtjyUmnQ5zpSnjO4AIC3ZySfHsqmmZVfk8700HQeZTmvvkoYd9MDy6DfYAXCw==}
+  /statebuilder/0.3.1:
+    resolution: {integrity: sha512-fGqSNxMc2YjjPvp3vKu4TJDjt7C42pp4aap/IKdbm0a4Xmf3R642EquMKSiY9CWStjlIrSdAN6va81P/fx1qZw==}
     peerDependenciesMeta:
       rxjs:
         optional: true
@@ -13920,8 +13920,8 @@ packages:
       solid-js: 1.7.3
     dev: false
 
-  /statebuilder/0.3.1:
-    resolution: {integrity: sha512-fGqSNxMc2YjjPvp3vKu4TJDjt7C42pp4aap/IKdbm0a4Xmf3R642EquMKSiY9CWStjlIrSdAN6va81P/fx1qZw==}
+  /statebuilder/0.4.0:
+    resolution: {integrity: sha512-K5AWRDOycwSLElv2oMMfN2jLUMRBKjG8Z+3Bal3R9bXyuz0KN2nemWrmzye/qvkFg+RkDRG0SnLAmQqzBqA67Q==}
     peerDependenciesMeta:
       rxjs:
         optional: true
