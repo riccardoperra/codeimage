@@ -26,6 +26,7 @@ export const wrapper = style({
   display: 'flex',
   width: '100%',
   flex: 1,
+  overflow: 'hidden',
   paddingLeft: themeVars.spacing['1'],
   paddingRight: themeVars.spacing['1'],
   '@media': {
