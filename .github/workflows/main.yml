@@ -548,10 +548,10 @@ jobs:
       - name: Deploy
         run: |
           find . -name '*.gitignore' #-delete
+          find . -name '*.dockerignore' #-delete
           cd dist/api-bundle
           rm -rf .gitignore
-          touch .gitignore
-          touch .dockerignore
+          rm -rf .dockerignore
           ls -al
           railway up
         env:
