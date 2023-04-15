@@ -537,6 +537,8 @@ jobs:
         run: |
           cd apps/api
           pnpm exec prisma migrate deploy
+          pnpm exec prisma generate
+          pnpm --filter=@codeimage/prisma-models build
         env:
           DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
