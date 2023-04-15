@@ -87,7 +87,6 @@ export const FrameStyleForm: ParentComponent = () => {
               fallback={<SkeletonLine width={'100%'} height={'26px'} />}
             >
               <CustomColorPicker
-                title={'Color'}
                 onChange={color => frame.setBackground(color)}
                 value={frame.store.background ?? ''}
               />
