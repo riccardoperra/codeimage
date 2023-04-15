@@ -15,8 +15,8 @@ const initialState: GlobalUiState = {
   locale: 'en',
 };
 
-const withUiThemeModeListener = makePlugin(
-  (store: Store<GlobalUiState>) => {
+const withUiThemeModeListener = makePlugin.typed<Store<GlobalUiState>>()(
+  store => {
     const [theme, setTheme] = createSignal<Theme>();
 
     function getPreferredColorScheme(): Theme {

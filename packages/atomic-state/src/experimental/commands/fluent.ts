@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs';
+import {Accessor} from 'solid-js';
 import {Store} from 'statebuilder';
 import {
   CommandIdentity,
@@ -36,7 +36,7 @@ interface StoreWithCommands<
 
   watchCommand<Commands extends GenericStateCommand[]>(
     commands?: Commands,
-  ): Observable<Commands[number]>;
+  ): Accessor<Commands[number]>;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types

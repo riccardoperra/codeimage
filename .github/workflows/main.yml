@@ -395,7 +395,6 @@ jobs:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
   build-api:
-    if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Build Api
     needs: [install, typecheck-packages, build-packages]
     runs-on: ubuntu-latest
@@ -422,6 +421,7 @@ jobs:
       - name: Build
         run: |
           pnpm --filter=@codeimage/api build:ts
+          pnpm prepare:api:deploy
 
       - name: Cache build
         uses: actions/cache@v3
@@ -504,7 +504,6 @@ jobs:
       lint,
       build-packages,
       build-api,
-      typecheck-packages,
       be-test,
       build-app-next
     ]
