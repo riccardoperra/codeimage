@@ -3,6 +3,11 @@ lockfileVersion: 5.4
 overrides:
   '@vanilla-extract/integration': 6.0.1
 
+patchedDependencies:
+  '@kobalte/core@0.8.2':
+    hash: cjx7xwwnamlq64p3aut7iwarni
+    path: patches/@kobalte__core@0.8.2.patch
+
 importers:
 
   .:
@@ -254,7 +259,7 @@ importers:
       '@floating-ui/core': 1.2.6
       '@floating-ui/dom': 1.2.6
       '@formatjs/intl-relativetimeformat': 11.1.4
-      '@kobalte/core': 0.8.2_solid-js@1.7.3
+      '@kobalte/core': 0.8.2_cjx7xwwnamlq64p3aut7iwarni_solid-js@1.7.3
       '@lezer/highlight': 1.1.4
       '@lion/combobox': 0.11.1
       '@lion/core': 0.24.0
@@ -2269,7 +2274,7 @@ packages:
     peerDependencies:
       solid-js: ^1.7.0
     dependencies:
-      '@kobalte/core': 0.8.2_solid-js@1.7.3
+      '@kobalte/core': 0.8.2_cjx7xwwnamlq64p3aut7iwarni_solid-js@1.7.3
       '@kobalte/utils': 0.6.1_solid-js@1.7.3
       '@kobalte/vanilla-extract': 0.3.0_sj7ql4kjoy7ivqenazaubmmhp4
       '@motionone/solid': 10.16.0_solid-js@1.7.3
@@ -3196,7 +3201,7 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
-  /@kobalte/core/0.8.2_solid-js@1.7.3:
+  /@kobalte/core/0.8.2_cjx7xwwnamlq64p3aut7iwarni_solid-js@1.7.3:
     resolution: {integrity: sha512-EoBYKpYa3+Csr5Zh7l3aY3yAg7fk1O3ZM9lGyD1mdQ1FutTuwTkyj8z1CvSSj1Klb+rBL+X1N662Occ8Bmsi2w==}
     peerDependencies:
       solid-js: ^1.6.15
@@ -3208,6 +3213,7 @@ packages:
       '@kobalte/utils': 0.6.1_solid-js@1.7.3
       solid-js: 1.7.3
     dev: false
+    patched: true
 
   /@kobalte/utils/0.6.1_solid-js@1.7.3:
     resolution: {integrity: sha512-YvBqe9t9j0iYFUHfKXSMLQKM3s5+nL72RvT9b75W+IOxUpSpN4rdaI8C2j97k3LsEt7qY4ktJdt8lPM1rr8JXw==}
@@ -11611,7 +11617,7 @@ packages:
       chalk: 4.1.1
       chokidar: 3.5.3
       cookie: 0.4.2
-      graphql: 15.8.0
+      graphql: 16.6.0
       headers-polyfill: 3.1.2
       inquirer: 8.2.5
       is-node-process: 1.2.0
