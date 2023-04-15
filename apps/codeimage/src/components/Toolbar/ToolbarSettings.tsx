@@ -45,6 +45,7 @@ export function ToolbarSettingsButton() {
           <DropdownMenuItem rightSlot={<ExternalLinkIcon />} asChild>
             <As
               component={'a'}
+              target={'_blank'}
               style={{'text-decoration': 'unset'}}
               // TODO: add codeui dropdownMenuItemLink style
               href={'https://github.com/riccardoperra/codeimage/releases'}
@@ -55,6 +56,7 @@ export function ToolbarSettingsButton() {
           <DropdownMenuItem rightSlot={<ExternalLinkIcon />} asChild>
             <As
               component={'a'}
+              target={'_blank'}
               // TODO: add codeui dropdownMenuItemLink style
               style={{'text-decoration': 'unset'}}
               href={'https://github.com/riccardoperra/codeimage'}
