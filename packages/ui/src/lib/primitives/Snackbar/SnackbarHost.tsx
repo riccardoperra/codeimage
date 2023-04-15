@@ -13,9 +13,9 @@ export interface SnackbarData {
 let toast: {
   success: AugmentedToastHandler;
   error: AugmentedToastHandler;
-  custom: typeof $toast['custom'];
+  custom: (typeof $toast)['custom'];
   default: ToastHandler;
-  remove: typeof $toast['remove'];
+  remove: (typeof $toast)['remove'];
 };
 
 interface SnackbarHostProps {
