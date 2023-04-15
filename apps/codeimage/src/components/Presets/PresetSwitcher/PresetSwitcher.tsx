@@ -29,21 +29,22 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
-import {AppLocaleEntries} from '../../i18n';
-import {CloseIcon} from '../Icons/CloseIcon';
-import {CloudIcon} from '../Icons/CloudIcon';
-import {DotHorizontalIcon} from '../Icons/DotVertical';
-import {EmptyPresetFallback} from '../Presets/EmptyPresetFallback/EmptyPresetFallback';
-import {PresetUpdateDialog} from '../Presets/PresetUpdateDialog';
-import {PanelDivider} from '../PropertyEditor/PanelDivider';
-import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
+import {AppLocaleEntries} from '../../../i18n';
+import {CloseIcon} from '../../Icons/CloseIcon';
+import {CloudIcon} from '../../Icons/CloudIcon';
+import {DotHorizontalIcon} from '../../Icons/DotVertical';
+import {PanelDivider} from '../../PropertyEditor/PanelDivider';
+import {DynamicTerminal} from '../../Terminal/DynamicTerminal/DynamicTerminal';
+import {ThemeBox} from '../../ThemeSwitcher/ThemeBox';
+import {ThemeBoxSkeleton} from '../../ThemeSwitcher/ThemeBoxSkeleton';
+import {ThemeSwitcherVariant} from '../../ThemeSwitcher/ThemeSwitcher.css';
+import {EmptyPresetFallback} from '../EmptyPresetFallback/EmptyPresetFallback';
+import {PresetPreview} from '../PresetPreview/PresetPreview';
+import {PresetUpdateDialog} from '../PresetUpdateDialog';
 import * as styles from './PresetSwitcher.css';
-import {ThemeBox} from './ThemeBox';
-import {ThemeBoxSkeleton} from './ThemeBoxSkeleton';
-import {ThemeSwitcherVariant} from './ThemeSwitcher.css';
 
 const CustomEditorPreview = lazy(() => {
-  return import('../CustomEditor/CustomEditorPreview');
+  return import('../../CustomEditor/CustomEditorPreview');
 });
 
 type PresetSwitcherProps = {
@@ -153,42 +154,9 @@ export const PresetSwitcher: ParentComponent<
                       class={styles.item}
                       onClick={() => onSelectTheme(data())}
                     >
-                      <div>
-                        <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
-                          <ThemeBox
-                            onClick={() => void 0}
-                            showFooter={false}
-                            background={data().frame.background ?? '#000'}
-                          >
-                            <DynamicTerminal
-                              lite={true}
-                              type={data().terminal.type}
-                              readonlyTab={true}
-                              showTab={true}
-                              shadow={data().terminal.shadow}
-                              background={data().terminal.background}
-                              accentVisible={data().terminal.accentVisible}
-                              textColor={data().terminal.textColor}
-                              showHeader={data().terminal.showHeader}
-                              showGlassReflection={
-                                data().terminal.showGlassReflection
-                              }
-                              showWatermark={false}
-                              opacity={data().terminal.opacity}
-                              alternativeTheme={
-                                data().terminal.alternativeTheme
-                              }
-                              themeId={data().editor.options.themeId}
-                            >
-                              <CustomEditorPreview
-                                themeId={data().editor.options.themeId}
-                                languageId={'typescript'}
-                                code={exampleCode}
-                              />
-                            </DynamicTerminal>
-                          </ThemeBox>
-                        </ErrorBoundary>
-                      </div>
+                      <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
+                        <PresetPreview code={exampleCode} data={data()} />
+                      </ErrorBoundary>
 
                       <Box
                         display={'flex'}
@@ -196,18 +164,15 @@ export const PresetSwitcher: ParentComponent<
                         marginTop={4}
                       >
                         <div>
-                          <div>
-                            <Text weight={'semibold'}>{theme.name}</Text>
-                          </div>
+                          <Text weight={'semibold'}>{theme.name}</Text>
                           <Box marginTop={2}>
                             <Text size={'xs'}>
                               {t('dashboard.updated')} {lastUpdateDate()}
                             </Text>
                           </Box>
                         </div>
-                        {/*// TODO: find alternative to attach on dropdown*/}
                         <div
-                          onclick={e => {
+                          onClick={e => {
                             e.preventDefault();
                             e.stopImmediatePropagation();
                           }}

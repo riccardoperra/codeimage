@@ -11,7 +11,8 @@ import {JSXElement, mergeProps, VoidProps} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import CustomEditorPreview from '../CustomEditor/CustomEditorPreview';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
-import * as styles from '../ThemeSwitcher/PresetSwitcher.css';
+import {PresetPreview} from './PresetPreview/PresetPreview';
+import * as styles from './PresetSwitcher/PresetSwitcher.css';
 import {ThemeBox} from '../ThemeSwitcher/ThemeBox';
 
 interface PresetUpdateDialogProps extends ControlledDialogProps {
@@ -35,39 +36,6 @@ export function PresetUpdateDialog(
     };
   };
 
-  function PresetPreview(props: {data: Preset['data']}) {
-    return (
-      <ThemeBox
-        showFooter={false}
-        background={props.data.frame.background ?? '#000'}
-        onClick={() => void 0}
-      >
-        <DynamicTerminal
-          lite={true}
-          type={props.data.terminal.type}
-          readonlyTab={true}
-          showTab={true}
-          shadow={props.data.terminal.shadow}
-          background={props.data.terminal.background}
-          accentVisible={props.data.terminal.accentVisible}
-          textColor={props.data.terminal.textColor}
-          showHeader={props.data.terminal.showHeader}
-          showGlassReflection={props.data.terminal.showGlassReflection}
-          showWatermark={false}
-          opacity={props.data.terminal.opacity}
-          alternativeTheme={props.data.terminal.alternativeTheme}
-          themeId={props.data.editor.options.themeId}
-        >
-          <CustomEditorPreview
-            themeId={props.data.editor.options.themeId}
-            languageId={'typescript'}
-            code={exampleCode}
-          />
-        </DynamicTerminal>
-      </ThemeBox>
-    );
-  }
-
   return (
     <Dialog
       isOpen={props.isOpen}
@@ -82,9 +50,8 @@ export function PresetUpdateDialog(
 
         <HStack spacing={2} justifyContent={'center'} marginTop={6}>
           <div>
-            {/*// TODO: Add in new component*/}
             <li class={styles.item} style={{opacity: 0.5}}>
-              <PresetPreview data={props.currentPreset} />
+              <PresetPreview code={exampleCode} data={props.currentPreset} />
               <Box display={'flex'} justifyContent={'center'} marginTop={4}>
                 <Text weight={'semibold'}>OLD</Text>
               </Box>
@@ -108,7 +75,7 @@ export function PresetUpdateDialog(
           </div>
           <div>
             <li class={styles.item}>
-              <PresetPreview data={currentEditorData()} />
+              <PresetPreview code={exampleCode} data={currentEditorData()} />
               <Box display={'flex'} justifyContent={'center'} marginTop={4}>
                 <Text weight={'semibold'}>NEW</Text>
               </Box>
