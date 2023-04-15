@@ -85,7 +85,7 @@ export function ToolbarSnippetName() {
             when={editing()}
           >
             <form use:clickOutside={submit} onSubmit={submit}>
-              {() => {
+              {(() => {
                 let ref: HTMLInputElement | undefined;
                 onMount(() => {
                   ref?.focus();
@@ -118,7 +118,7 @@ export function ToolbarSnippetName() {
                     />
                   </FlexField>
                 );
-              }}
+              })()}
             </form>
           </Show>
         </Show>
