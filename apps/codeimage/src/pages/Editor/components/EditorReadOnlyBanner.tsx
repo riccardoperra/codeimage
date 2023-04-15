@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {Box, Button, Text} from '@codeimage/ui';
+import {Box, LoadingCircle, Text} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {VoidProps} from 'solid-js';
 import {HintIcon} from '../../../components/Icons/Hint';
@@ -28,9 +29,8 @@ export function EditorReadOnlyBanner(
         </Box>
       </Box>
       <Button
-        variant={'solid'}
         theme={'primary'}
-        loading={cloneAction.loading}
+        leftIcon={cloneAction.loading ? <LoadingCircle /> : undefined}
         onClick={onClone}
         size={'xs'}
       >

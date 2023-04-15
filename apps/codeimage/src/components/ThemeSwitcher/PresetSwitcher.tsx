@@ -33,6 +33,7 @@ import {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {CloudIcon} from '../Icons/CloudIcon';
 import {DotHorizontalIcon} from '../Icons/DotVertical';
+import {EmptyPresetFallback} from '../Presets/EmptyPresetFallback/EmptyPresetFallback';
 import {PresetUpdateDialog} from '../Presets/PresetUpdateDialog';
 import {PanelDivider} from '../PropertyEditor/PanelDivider';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
@@ -121,7 +122,10 @@ export const PresetSwitcher: ParentComponent<
             </>
           }
         >
-          <For each={presetsStore.sortedPresets()}>
+          <For
+            each={presetsStore.sortedPresets()}
+            fallback={<EmptyPresetFallback />}
+          >
             {theme => {
               const data = () => theme.data as ProjectEditorPersistedState;
               const canSyncPreset = () =>

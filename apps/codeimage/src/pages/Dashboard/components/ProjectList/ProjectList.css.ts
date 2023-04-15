@@ -28,13 +28,13 @@ export const gridList = style({
 });
 
 export const fallbackContainer = style({
-  minHeight: 0,
-  flex: 1,
   height: '100%',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   flexDirection: 'column',
+  paddingTop: themeVars.spacing['4'],
+  paddingBottom: themeVars.spacing['4'],
   color: themeVars.dynamicColors.descriptionTextColor,
   textAlign: 'center',
   borderRadius: themeVars.borderRadius.lg,
@@ -53,5 +53,5 @@ export const fallbackContainer = style({
 });
 
 export const fallbackTextTitle = style({
-  color: themeVars.textColor.white,
+  color: themeVars.dynamicColors.descriptionTextColor,
 });
