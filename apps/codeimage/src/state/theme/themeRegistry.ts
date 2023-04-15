@@ -12,7 +12,7 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.vsCodeDarkTheme),
   },
   {
-    id: 'nightOwl',
+    id: 'nightOwlTheme',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.nightOwlTheme),
   },
@@ -117,7 +117,7 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.coldarkDarkTheme),
   },
   {
-    id: 'materialLight',
+    id: 'materialLightTheme',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.materialLightTheme),
   },

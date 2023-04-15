@@ -77,7 +77,7 @@ export default defineConfig(({mode}) => ({
 
       configResolved(resolvedConfig) {
         const config = resolvedConfig as Omit<typeof resolvedConfig, 'env'> & {
-          env: typeof resolvedConfig['env'];
+          env: (typeof resolvedConfig)['env'];
         };
         const env = config.env;
         config.env = Object.keys(env).reduce((acc, key) => {

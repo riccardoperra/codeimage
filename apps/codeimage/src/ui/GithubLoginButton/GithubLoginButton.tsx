@@ -2,7 +2,6 @@ import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {Box, SvgIcon, SvgIconProps} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
-import {ButtonProps} from 'solid-headless';
 import {Show} from 'solid-js';
 import * as styles from './GithubLoginButton.css';
 
