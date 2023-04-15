@@ -24,8 +24,6 @@ export {Group} from './Group';
 export {RadioBlock} from './RadioBlock';
 export type {RadioBlockProps} from './RadioBlock';
 
-export {Select} from './Select';
-
 export {SegmentedField} from './SegmentedField';
 export type {SegmentedFieldItem} from './SegmentedField';
 
