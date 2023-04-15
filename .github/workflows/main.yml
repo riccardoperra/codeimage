@@ -412,10 +412,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Prisma migrate
+      - name: "[API] Generate Prisma Migration"
         run: |
-          cd apps/api
-          pnpm exec prisma generate
+          pnpm --filter=@codeimage/api exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Build
@@ -495,8 +494,7 @@ jobs:
       - name: Test
         run: pnpm --filter=@codeimage/api test:ci
 
-  deploy-next:
-    # Next branch only
+  deploy-api-next:
     if: ${{ github.head_ref  == 'next' }}
     environment: Next
     name: Deploy next
@@ -519,8 +517,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Restore packages
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Restore api build
         uses: actions/cache@v3
