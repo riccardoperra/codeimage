@@ -41,19 +41,17 @@ export function PresetUpdateDialog(
       isOpen={props.isOpen}
       onOpenChange={props.onOpenChange}
       size={'md'}
-      title={'Update preset'}
+      title={t('presets.updatePreset.dialogTitle')}
     >
       <DialogPanelContent>
-        <Text>
-          Confirm to update the selected preset to the current editor state.
-        </Text>
+        <Text>{t('presets.updatePreset.dialogMessage')}</Text>
 
         <HStack spacing={2} justifyContent={'center'} marginTop={6}>
           <div>
             <li class={styles.item} style={{opacity: 0.5}}>
               <PresetPreview code={exampleCode} data={props.currentPreset} />
               <Box display={'flex'} justifyContent={'center'} marginTop={4}>
-                <Text weight={'semibold'}>OLD</Text>
+                <Text weight={'semibold'}>{t('presets.updatePreset.old')}</Text>
               </Box>
             </li>
           </div>
@@ -77,7 +75,7 @@ export function PresetUpdateDialog(
             <li class={styles.item}>
               <PresetPreview code={exampleCode} data={currentEditorData()} />
               <Box display={'flex'} justifyContent={'center'} marginTop={4}>
-                <Text weight={'semibold'}>NEW</Text>
+                <Text weight={'semibold'}>{t('presets.updatePreset.new')}</Text>
               </Box>
             </li>
           </div>
