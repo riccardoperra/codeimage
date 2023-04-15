@@ -1,52 +1,78 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
+
 import {
-  createStandaloneDialog,
-  DropdownMenuV2,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
   IconButton,
-  MenuButton,
-} from '@codeimage/ui';
-import {Item} from '@solid-aria/collection';
+} from '@codeui/kit';
+import {createControlledDialog} from '@core/hooks/createControlledDialog';
+import {As} from '@kobalte/core';
 import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';
 import {MenuAlt2Icon} from '../Icons/DotVertical';
+import {ExternalLinkIcon} from '../Icons/ExternalLink';
 import {SettingsDialog} from './SettingsDialog';
 
 export function ToolbarSettingsButton() {
   const navigate = useNavigate();
-  const createDialog = createStandaloneDialog();
+  const openDialog = createControlledDialog();
   const {signOut, loggedIn} = getAuth0State();
 
-  const onMenuAction = (item: string | number) => {
-    switch (item) {
-      case 'logout':
-        signOut().then(() => navigate('/'));
-        break;
-      case 'settings': {
-        createDialog(SettingsDialog, () => ({}));
-        break;
-      }
-    }
-  };
-
   return (
-    <DropdownMenuV2
-      onAction={item => onMenuAction(item)}
-      menuButton={
-        <MenuButton
-          as={IconButton}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <As
+          component={IconButton}
           pill={true}
           size={'xs'}
-          variant={'solid'}
           theme={'secondary'}
+          aria-label={'Menu'}
         >
           <MenuAlt2Icon size={'sm'} />
-        </MenuButton>
-      }
-    >
-      <Item key={'settings'}>Settings</Item>
-      <Show when={loggedIn()}>
-        <Item key={'logout'}>Logout</Item>
-      </Show>
-    </DropdownMenuV2>
+        </As>
+      </DropdownMenuTrigger>
+      <DropdownMenuPortal>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={() => openDialog(SettingsDialog, () => ({}))}
+          >
+            Settings
+          </DropdownMenuItem>
+          <DropdownMenuItem rightSlot={<ExternalLinkIcon />} asChild>
+            <As
+              component={'a'}
+              target={'_blank'}
+              style={{'text-decoration': 'unset'}}
+              // TODO: add codeui dropdownMenuItemLink style
+              href={'https://github.com/riccardoperra/codeimage/releases'}
+            >
+              Changelog
+            </As>
+          </DropdownMenuItem>
+          <DropdownMenuItem rightSlot={<ExternalLinkIcon />} asChild>
+            <As
+              component={'a'}
+              target={'_blank'}
+              // TODO: add codeui dropdownMenuItemLink style
+              style={{'text-decoration': 'unset'}}
+              href={'https://github.com/riccardoperra/codeimage'}
+            >
+              Github
+            </As>
+          </DropdownMenuItem>
+
+          <Show when={loggedIn()}>
+            <DropdownMenuItem
+              onClick={() => signOut().then(() => navigate('/'))}
+            >
+              Logout
+            </DropdownMenuItem>
+          </Show>
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
+    </DropdownMenu>
   );
 }

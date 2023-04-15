@@ -3,16 +3,10 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Preset} from '@codeimage/store/presets/types';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
-  HStack,
-  SvgIcon,
-  Text,
-} from '@codeimage/ui';
+import {Box, HStack, SvgIcon, Text} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
+import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
+import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {JSXElement, mergeProps, VoidProps} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import CustomEditorPreview from '../CustomEditor/CustomEditorPreview';
@@ -20,10 +14,9 @@ import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import * as styles from '../ThemeSwitcher/PresetSwitcher.css';
 import {ThemeBox} from '../ThemeSwitcher/ThemeBox';
 
-interface PresetUpdateDialogProps {
+interface PresetUpdateDialogProps extends ControlledDialogProps {
   currentPreset: Preset['data'];
   onConfirm: () => void;
-  onClose?: () => void;
 }
 
 export function PresetUpdateDialog(
@@ -77,10 +70,10 @@ export function PresetUpdateDialog(
 
   return (
     <Dialog
+      isOpen={props.isOpen}
+      onOpenChange={props.onOpenChange}
       size={'md'}
       title={'Update preset'}
-      onClose={() => props.onClose?.()}
-      isOpen={true}
     >
       <DialogPanelContent>
         <Text>
@@ -129,9 +122,8 @@ export function PresetUpdateDialog(
             block
             size={'sm'}
             type="button"
-            variant={'solid'}
             theme={'secondary'}
-            onClick={() => propsWithDefault.onClose?.()}
+            onClick={() => propsWithDefault.onOpenChange(false)}
           >
             {t('common.close')}
           </Button>
@@ -141,8 +133,10 @@ export function PresetUpdateDialog(
             size={'sm'}
             type="submit"
             theme={propsWithDefault.actionType}
-            variant={'solid'}
-            onClick={() => propsWithDefault.onConfirm()}
+            onClick={() => {
+              propsWithDefault.onConfirm();
+              propsWithDefault.onOpenChange(false);
+            }}
           >
             {t('common.confirm')}
           </Button>

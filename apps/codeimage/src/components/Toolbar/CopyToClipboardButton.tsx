@@ -1,5 +1,6 @@
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
-import {Button} from '@codeimage/ui';
+import {LoadingCircle} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {Component} from 'solid-js';
 import {ClipboardIcon} from '../Icons/Clipboard';
 
@@ -19,11 +20,15 @@ export const CopyToClipboardButton: Component<ExportButtonProps> = props => {
 
   return (
     <Button
-      variant={'solid'}
       theme={'secondary'}
-      loading={dispatchCopyToClipboard.loading()}
       disabled={dispatchCopyToClipboard.loading()}
-      leftIcon={() => <ClipboardIcon />}
+      leftIcon={
+        dispatchCopyToClipboard.loading() ? (
+          <LoadingCircle size={'xs'} />
+        ) : (
+          <ClipboardIcon />
+        )
+      }
       onClick={copyToClipboard}
       size={'xs'}
     >

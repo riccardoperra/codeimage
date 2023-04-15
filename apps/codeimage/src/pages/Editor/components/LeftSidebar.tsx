@@ -1,4 +1,5 @@
-import {Box, Button} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {Motion} from '@motionone/solid';
 import {createSignal} from 'solid-js';
 import {ColorSwatchIcon} from '../../../components/Icons/ColorSwatch';
@@ -17,10 +18,9 @@ export function EditorLeftSidebar() {
         <EditorForm>
           <Box marginTop={3}>
             <Button
-              variant={'solid'}
               theme={'secondary'}
-              size={'xs'}
               block
+              size={'xs'}
               leftIcon={<ColorSwatchIcon />}
               onClick={() => setToggle(toggle => !toggle)}
             >

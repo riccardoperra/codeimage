@@ -12,6 +12,7 @@ export const canvas = style({
   flexDirection: 'column',
   width: '100%',
   borderRadius: '32px',
+  border: `1px solid ${themeVars.dynamicColors.divider}`,
   borderBottomLeftRadius: 0,
   borderBottomRightRadius: 0,
   '@media': {
@@ -25,6 +26,7 @@ export const wrapper = style({
   display: 'flex',
   width: '100%',
   flex: 1,
+  overflow: 'hidden',
   paddingLeft: themeVars.spacing['1'],
   paddingRight: themeVars.spacing['1'],
   '@media': {

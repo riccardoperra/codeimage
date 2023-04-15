@@ -5,18 +5,19 @@ import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
 import {getUiStore} from '@codeimage/store/ui';
+import {Box, HStack, Text} from '@codeimage/ui';
 import {
-  Box,
   Button,
-  createStandaloneDialog,
-  DropdownMenuV2,
-  HStack,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
   IconButton,
-  MenuButton,
-  Text,
-} from '@codeimage/ui';
+} from '@codeui/kit';
 import {formatDistanceToNow} from '@core/helpers/date';
-import {Item} from '@solid-aria/collection';
+import {createControlledDialog} from '@core/hooks/createControlledDialog';
+import {As} from '@kobalte/core';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
@@ -64,8 +65,6 @@ export const PresetSwitcher: ParentComponent<
     terminal.setFromPersistedState(data.terminal);
   };
 
-  const createDialog = createStandaloneDialog();
-
   const exampleCode =
     'function Preview() {\n' +
     ' const [get, set] = \n' +
@@ -73,6 +72,8 @@ export const PresetSwitcher: ParentComponent<
     '}';
 
   const classes = () => clsx(styles.box);
+
+  const openDialog = createControlledDialog();
 
   return (
     <Box class={classes()}>
@@ -87,28 +88,26 @@ export const PresetSwitcher: ParentComponent<
             <Button
               size={'xs'}
               theme={'primary'}
-              variant={'solid'}
               onClick={() => {
-                createDialog(RenameContentDialog, state => ({
+                openDialog(RenameContentDialog, {
                   title: t('dashboard.renameProject.confirmTitle'),
                   message: t('dashboard.renameProject.confirmMessage'),
                   onConfirm: async name => {
                     presetsStore.actions.addNewPreset({name});
-                    state.close();
                   },
-                }));
+                });
               }}
             >
               Add new
             </Button>
-            <Button
+            <IconButton
+              aria-label={'Close'}
               size={'xs'}
               theme={'secondary'}
-              variant={'solid'}
-              onClick={() => props.onClose()}
+              onClick={props.onClose}
             >
-              <CloseIcon size={'md'} />
-            </Button>
+              <CloseIcon />
+            </IconButton>
           </HStack>
         </Box>
         <PanelDivider />
@@ -132,112 +131,125 @@ export const PresetSwitcher: ParentComponent<
                 return formatDistanceToNow(locale(), theme.updatedAt as string);
               };
 
+              function openUpdateDialog() {
+                openDialog(PresetUpdateDialog, {
+                  currentPreset: theme.data,
+                  onConfirm: async () => {
+                    presetsStore.actions.updatePresetWithCurrentState({
+                      preset: theme,
+                    });
+                  },
+                });
+              }
+
               return (
                 <Suspense fallback={<ThemeBoxSkeleton />}>
-                  {() => {
-                    return (
+                  <div>
+                    <li
+                      class={styles.item}
+                      onClick={() => onSelectTheme(data())}
+                    >
                       <div>
-                        <li
-                          class={styles.item}
-                          onClick={() => onSelectTheme(data())}
-                        >
-                          <div>
-                            <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
-                              <ThemeBox
-                                onClick={() => void 0}
-                                showFooter={false}
-                                background={data().frame.background ?? '#000'}
-                              >
-                                <DynamicTerminal
-                                  lite={true}
-                                  type={data().terminal.type}
-                                  readonlyTab={true}
-                                  showTab={true}
-                                  shadow={data().terminal.shadow}
-                                  background={data().terminal.background}
-                                  accentVisible={data().terminal.accentVisible}
-                                  textColor={data().terminal.textColor}
-                                  showHeader={data().terminal.showHeader}
-                                  showGlassReflection={
-                                    data().terminal.showGlassReflection
-                                  }
-                                  showWatermark={false}
-                                  opacity={data().terminal.opacity}
-                                  alternativeTheme={
-                                    data().terminal.alternativeTheme
-                                  }
-                                  themeId={data().editor.options.themeId}
-                                >
-                                  <CustomEditorPreview
-                                    themeId={data().editor.options.themeId}
-                                    languageId={'typescript'}
-                                    code={exampleCode}
-                                  />
-                                </DynamicTerminal>
-                              </ThemeBox>
-                            </ErrorBoundary>
-                          </div>
-
-                          <Box
-                            display={'flex'}
-                            justifyContent={'spaceBetween'}
-                            marginTop={4}
+                        <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
+                          <ThemeBox
+                            onClick={() => void 0}
+                            showFooter={false}
+                            background={data().frame.background ?? '#000'}
                           >
-                            <div>
-                              <div>
-                                <Text weight={'semibold'}>{theme.name}</Text>
-                              </div>
-                              <Box marginTop={2}>
-                                <Text size={'xs'}>
-                                  {t('dashboard.updated')} {lastUpdateDate()}
-                                </Text>
-                              </Box>
-                            </div>
-                            <div>
-                              <DropdownMenuV2
-                                onAction={(action: string | number) => {
-                                  if (action === 'update') {
-                                    createDialog(PresetUpdateDialog, state => ({
+                            <DynamicTerminal
+                              lite={true}
+                              type={data().terminal.type}
+                              readonlyTab={true}
+                              showTab={true}
+                              shadow={data().terminal.shadow}
+                              background={data().terminal.background}
+                              accentVisible={data().terminal.accentVisible}
+                              textColor={data().terminal.textColor}
+                              showHeader={data().terminal.showHeader}
+                              showGlassReflection={
+                                data().terminal.showGlassReflection
+                              }
+                              showWatermark={false}
+                              opacity={data().terminal.opacity}
+                              alternativeTheme={
+                                data().terminal.alternativeTheme
+                              }
+                              themeId={data().editor.options.themeId}
+                            >
+                              <CustomEditorPreview
+                                themeId={data().editor.options.themeId}
+                                languageId={'typescript'}
+                                code={exampleCode}
+                              />
+                            </DynamicTerminal>
+                          </ThemeBox>
+                        </ErrorBoundary>
+                      </div>
+
+                      <Box
+                        display={'flex'}
+                        justifyContent={'spaceBetween'}
+                        marginTop={4}
+                      >
+                        <div>
+                          <div>
+                            <Text weight={'semibold'}>{theme.name}</Text>
+                          </div>
+                          <Box marginTop={2}>
+                            <Text size={'xs'}>
+                              {t('dashboard.updated')} {lastUpdateDate()}
+                            </Text>
+                          </Box>
+                        </div>
+                        {/*// TODO: find alternative to attach on dropdown*/}
+                        <div
+                          onclick={e => {
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                          }}
+                        >
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <As
+                                component={IconButton}
+                                aria-label={'Menu'}
+                                theme={'secondary'}
+                                size={'xs'}
+                              >
+                                <DotHorizontalIcon size={'md'} />
+                              </As>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuPortal>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem
+                                  onClick={() => openUpdateDialog()}
+                                >
+                                  Update
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    openDialog(RenameContentDialog, {
                                       title: t(
                                         'dashboard.renameProject.confirmTitle',
                                       ),
                                       message: t(
                                         'dashboard.renameProject.confirmMessage',
                                       ),
-                                      currentPreset: theme.data,
                                       initialValue: theme.name,
-                                      onConfirm: async () => {
-                                        presetsStore.actions.updatePresetWithCurrentState(
-                                          {
-                                            preset: theme,
-                                          },
-                                        );
-                                        state.close();
+                                      onConfirm: async newName => {
+                                        presetsStore.actions.updatePresetName({
+                                          preset: theme,
+                                          newName,
+                                        });
                                       },
-                                    }));
-                                  }
-                                  if (action === 'rename') {
-                                    createDialog(
-                                      RenameContentDialog,
-                                      state => ({
-                                        title: t(
-                                          'dashboard.renameProject.confirmTitle',
-                                        ),
-                                        message: t(
-                                          'dashboard.renameProject.confirmMessage',
-                                        ),
-                                        initialValue: theme.name,
-                                        onConfirm: async newName => {
-                                          presetsStore.actions.updatePresetName(
-                                            {preset: theme, newName},
-                                          );
-                                          state.close();
-                                        },
-                                      }),
-                                    );
-                                  }
-                                  if (action === 'delete') {
-                                    createDialog(ConfirmDialog, state => ({
+                                    });
+                                  }}
+                                >
+                                  {t('dashboard.renameProject.dropdownLabel')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    openDialog(ConfirmDialog, {
                                       title: t(
                                         'dashboard.deleteProject.confirmTitle',
                                       ),
@@ -248,57 +260,41 @@ export const PresetSwitcher: ParentComponent<
                                         presetsStore.actions.deletePreset(
                                           theme,
                                         );
-                                        state.close();
                                       },
                                       actionType: 'danger' as const,
-                                    }));
-                                  }
-                                }}
-                                menuButton={
-                                  <MenuButton
-                                    as={IconButton}
-                                    variant={'solid'}
-                                    theme={'secondary'}
-                                    size={'xs'}
-                                  >
-                                    <DotHorizontalIcon size={'md'} />
-                                  </MenuButton>
-                                }
-                              >
-                                <Item key={'update'}>Update</Item>
-                                <Item key={'rename'}>
-                                  {t('dashboard.renameProject.dropdownLabel')}
-                                </Item>
-                                <Item key={'delete'}>
+                                    });
+                                  }}
+                                >
                                   {t('dashboard.deleteProject.dropdownLabel')}
-                                </Item>
-                              </DropdownMenuV2>
-                            </div>
-                          </Box>
-                          <Show when={canSyncPreset()}>
-                            <Box
-                              display={'flex'}
-                              justifyContent={'flexEnd'}
-                              paddingTop={3}
-                            >
-                              <Button
-                                theme={'secondary'}
-                                block
-                                leftIcon={<CloudIcon />}
-                                onClick={e => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  presetsStore.actions.syncPreset(theme);
-                                }}
-                              >
-                                Save in your account
-                              </Button>
-                            </Box>
-                          </Show>
-                        </li>
-                      </div>
-                    );
-                  }}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenuPortal>
+                          </DropdownMenu>
+                        </div>
+                      </Box>
+                      <Show when={canSyncPreset()}>
+                        <Box
+                          display={'flex'}
+                          justifyContent={'flexEnd'}
+                          paddingTop={3}
+                        >
+                          <Button
+                            theme={'secondary'}
+                            block
+                            size={'sm'}
+                            leftIcon={<CloudIcon />}
+                            onClick={e => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              presetsStore.actions.syncPreset(theme);
+                            }}
+                          >
+                            Save in your account
+                          </Button>
+                        </Box>
+                      </Show>
+                    </li>
+                  </div>
                 </Suspense>
               );
             }}

@@ -6,10 +6,10 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {SegmentedField, Select, Text} from '@codeimage/ui';
+import {SegmentedField} from '@codeimage/ui';
+import {Select} from '@codeui/kit';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
-import {useModality} from '@core/hooks/isMobile';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -39,13 +39,15 @@ export const EditorStyleForm: ParentComponent = () => {
     themeArray()
       .map(theme => theme())
       .filter((theme): theme is CustomTheme => !!theme)
-      .map(theme => ({
-        label: theme.properties.label,
-        value: theme.id,
-      }));
+      .map(
+        theme =>
+          ({
+            label: theme.properties.label,
+            value: theme.id,
+          } as const),
+      );
 
   const fonts = SUPPORTED_FONTS;
-  const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
   const {editor, setLanguageId} = getActiveEditorStore();
   const {
@@ -57,7 +59,7 @@ export const EditorStyleForm: ParentComponent = () => {
   const fontOptions = createMemo(() =>
     fonts.map(font => ({
       label: font.name,
-      value: font,
+      value: font.id,
     })),
   );
 
@@ -80,16 +82,19 @@ export const EditorStyleForm: ParentComponent = () => {
                 fallback={<SkeletonLine width={'100%'} height={'26px'} />}
               >
                 <Select
+                  aria-label={'Language'}
                   id={'frameLanguageField'}
-                  multiple={false}
-                  native={modality === 'mobile'}
-                  items={languages.map(({label, id}) => ({
+                  options={languages.map(({label, id}) => ({
                     label: label,
                     value: id,
                   }))}
                   value={editor.languageId}
-                  onSelectChange={value => {
-                    const language = value ?? languages[0].id;
+                  size={'xs'}
+                  optionTextValue={'label'}
+                  optionValue={'value'}
+                  itemLabel={props => props.label}
+                  valueComponent={props => props.item.rawValue.label}
+                  onValueChange={language => {
                     setLanguageId(language);
                     getUmami().trackEvent(language, 'change-language');
                   }}
@@ -104,12 +109,16 @@ export const EditorStyleForm: ParentComponent = () => {
                 fallback={<SkeletonLine width={'100%'} height={'26px'} />}
               >
                 <Select
+                  aria-label={'Syntax highlight'}
                   id={'frameSyntaxHighlightField'}
-                  multiple={false}
-                  native={modality === 'mobile'}
-                  items={themeItems()}
+                  options={themeItems()}
+                  optionTextValue={'label'}
+                  size={'xs'}
+                  optionValue={'value'}
                   value={state.options.themeId}
-                  onSelectChange={theme => {
+                  itemLabel={props => props.label}
+                  valueComponent={props => props.item.rawValue.label}
+                  onValueChange={theme => {
                     dispatchUpdateTheme({
                       updateBackground: false,
                       theme,
@@ -152,21 +161,34 @@ export const EditorStyleForm: ParentComponent = () => {
                 fallback={<SkeletonLine width={'100%'} height={'26px'} />}
               >
                 <Select
+                  aria-label={'Font'}
                   id={'frameFontField'}
-                  native={modality === 'mobile'}
-                  multiple={false}
-                  items={fontOptions()}
-                  value={font()}
-                  itemContent={({label, value, selected}) => (
-                    <Text
-                      size={'xs'}
-                      weight={selected ? 'medium' : 'normal'}
-                      style={{'font-family': `${value.name}, monospace`}}
+                  options={fontOptions()}
+                  optionTextValue={'label'}
+                  optionValue={'value'}
+                  size={'xs'}
+                  value={font()?.id}
+                  itemLabel={itemLabelProps => (
+                    <span
+                      style={{
+                        'font-family': `${itemLabelProps.label}, monospace`,
+                        'font-size': '80%',
+                      }}
                     >
-                      {label}
-                    </Text>
+                      {itemLabelProps.label}
+                    </span>
                   )}
-                  onSelectChange={value => setFontId(value?.id ?? fonts[0].id)}
+                  valueComponent={props => props.item.rawValue.label}
+                  onValueChange={fontId => {
+                    setFontId(fontId);
+                    if (
+                      !font()
+                        .types.map(type => type.weight as number)
+                        .includes(state.options.fontWeight)
+                    ) {
+                      setFontWeight(font().types[0].weight);
+                    }
+                  }}
                 />
               </SuspenseEditorItem>
             </TwoColumnPanelRow>
@@ -178,14 +200,20 @@ export const EditorStyleForm: ParentComponent = () => {
                 fallback={<SkeletonLine width={'85%'} height={'26px'} />}
               >
                 <Select
+                  aria-label={'Font weight'}
                   id={'frameFontWeightField'}
-                  native={modality === 'mobile'}
-                  multiple={false}
-                  items={fontWeightOptions()}
+                  options={fontWeightOptions()}
+                  size={'xs'}
+                  // @ts-expect-error TODO: support number types?
                   value={state.options.fontWeight}
-                  onSelectChange={value =>
-                    setFontWeight(value ?? font()?.types[0].weight ?? 400)
-                  }
+                  optionTextValue={'label'}
+                  optionValue={'value'}
+                  itemLabel={props => props.label}
+                  valueComponent={props => props.item.rawValue.label}
+                  onValueChange={value => {
+                    const weight = value ? parseInt(value) : 400;
+                    setFontWeight(weight);
+                  }}
                 />
               </SuspenseEditorItem>
             </TwoColumnPanelRow>

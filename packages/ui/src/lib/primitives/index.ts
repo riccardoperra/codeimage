@@ -13,7 +13,11 @@ export type {TextFieldProps} from './TextField';
 
 export {RangeField, rangeFieldStyles} from './RangeField';
 
-export {NativeColorPicker, ColorPicker} from './ColorPicker';
+export {
+  NativeColorPicker,
+  ColorPicker,
+  ColorPickerPopover,
+} from './ColorPicker';
 
 export {Box, VStack, HStack} from './Box';
 
@@ -24,21 +28,10 @@ export {Group} from './Group';
 export {RadioBlock} from './RadioBlock';
 export type {RadioBlockProps} from './RadioBlock';
 
-export {Select} from './Select';
-
 export {SegmentedField} from './SegmentedField';
 export type {SegmentedFieldItem} from './SegmentedField';
 
 export {FadeInOutWithScaleTransition, FadeInOutTransition} from './Transition';
-
-export {
-  DialogPanelFooter,
-  DialogPanelContent,
-  Dialog,
-  DialogPanel,
-  createStandaloneDialog,
-} from './Dialog';
-export type {DialogProps, DialogPanelProps} from './Dialog';
 
 export {
   dropdownStyles,
@@ -62,8 +55,6 @@ export type {LoaderProps} from './Loader';
 export {Toggle} from './Toggle';
 
 export {Popover} from './Popover';
-
-export {MenuButton, MenuItem, MenuPopup, DropdownMenuV2} from './Menu';
 
 export {RadioField, RadioGroupField} from './Radio';
 

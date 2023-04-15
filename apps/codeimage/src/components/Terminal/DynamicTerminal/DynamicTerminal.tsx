@@ -20,7 +20,7 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
   const terminal = createMemo(
     () =>
       terminalThemes.entries[
-        props.type as typeof terminalThemes['keys'][number]
+        props.type as (typeof terminalThemes)['keys'][number]
       ].component,
   );
 

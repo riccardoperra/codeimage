@@ -1,12 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getUiStore} from '@codeimage/store/ui';
 import {
   Box,
-  Button,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
   FieldLabel,
   FlexField,
   Group,
@@ -14,22 +9,29 @@ import {
   RadioBlock,
   RadioField,
   RadioGroupField,
-  sprinkles,
   SvgIcon,
   Text,
   themeVars,
   VStack,
 } from '@codeimage/ui';
+import {
+  Button,
+  Dialog,
+  DialogPanelContent,
+  DialogPanelFooter,
+} from '@codeui/kit';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
+import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {useModality} from '@core/hooks/isMobile';
-import {createSignal, For, Match, ParentProps, Switch} from 'solid-js';
+import {createSignal, For, Match, Switch} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import * as styles from './SettingsDialog.css';
 
-export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
+type SettingsDialogProps = ControlledDialogProps;
+
+export function SettingsDialog(props: SettingsDialogProps) {
   const [page] = createSignal<'general' | 'account'>('general');
-  const {user, loggedIn} = getAuth0State();
   const ui = getUiStore();
   const {locales} = appEnvironment;
   const modality = useModality();
@@ -37,7 +39,13 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
   const [t] = useI18n<AppLocaleEntries>();
 
   return (
-    <Dialog size={'lg'} isOpen title={'Settings'} {...props}>
+    <Dialog
+      size={'lg'}
+      {...props}
+      title={'Settings'}
+      isOpen={props.isOpen}
+      onOpenChange={props.onOpenChange}
+    >
       <DialogPanelContent>
         <Box display={'flex'}>
           <div class={styles.dialogContent}>
@@ -152,51 +160,6 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
                   </FlexField>
                 </VStack>
               </Match>
-              <Match when={page() === 'account' && loggedIn()}>
-                <VStack spacing={'8'} flexGrow={1}>
-                  <Box
-                    display={'flex'}
-                    flexDirection={'column'}
-                    alignItems={'center'}
-                    justifyContent={'center'}
-                  >
-                    <img
-                      class={sprinkles({
-                        borderRadius: 'full',
-                      })}
-                      width={72}
-                      height={72}
-                      src={user()?.picture}
-                    />
-
-                    <VStack spacing={'3'} marginTop={6} alignItems={'center'}>
-                      <Text size={'lg'}>
-                        {user()?.name} ({user()?.nickname})
-                      </Text>
-                      <Text size={'xs'} weight={'normal'}>
-                        {user()?.email}
-                      </Text>
-                    </VStack>
-                  </Box>
-
-                  <VStack spacing={'4'} marginTop={6} marginBottom={0}>
-                    <div>
-                      <Button
-                        variant={'solid'}
-                        theme={'danger'}
-                        size={'md'}
-                        block
-                      >
-                        Delete your account
-                      </Button>
-                    </div>
-                    <Text size={'sm'}>
-                      *Once your account is deleted, you will lose all persisted
-                      data, including your saved projects.
-                    </Text>
-                  </VStack>
-                </VStack>
-              </Match>
             </Switch>
           </div>
         </Box>
@@ -206,9 +169,8 @@ export function SettingsDialog(props: ParentProps<{onClose?: () => void}>) {
           <Button
             size={'md'}
             type="button"
-            variant={'solid'}
             theme={'secondary'}
-            onClick={() => props.onClose?.()}
+            onClick={() => props.onOpenChange(false)}
           >
             {t('common.close')}
           </Button>

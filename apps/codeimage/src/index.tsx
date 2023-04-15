@@ -9,21 +9,13 @@ import {
   SnackbarHost,
   ThemeProviderProps,
 } from '@codeimage/ui';
-import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import '@codeimage/ui/themes/lightTheme';
+import {theme as themeClass} from '@codeui/kit';
 import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import {
-  Component,
-  createEffect,
-  lazy,
-  on,
-  Show,
-  Suspense,
-  untrack,
-} from 'solid-js';
+import {Component, createEffect, lazy, on, Show, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import {StateProvider} from 'statebuilder';
 import './assets/styles/app.scss';
@@ -122,16 +114,19 @@ export function Bootstrap() {
     },
   ]);
 
+  document.documentElement.classList.add(themeClass);
+
   createEffect(
     on(mode, theme => {
       const scheme = document.querySelector('meta[name="theme-color"]');
       if (scheme) {
-        const color = theme === 'dark' ? darkGrayScale.gray1 : '#FFFFFF';
+        const color = theme === 'dark' ? '#151516' : '#FFFFFF';
         scheme.setAttribute('content', color);
         setElementVars(document.body, {
           [backgroundColorVar]: color,
         });
       }
+      document.documentElement.setAttribute('data-cui-theme', theme as string);
     }),
   );
 
