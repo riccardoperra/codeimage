@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, toast} from '@codeimage/ui';
+import {LoadingCircle, toast} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {Component, createEffect, untrack} from 'solid-js';
@@ -66,10 +67,8 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
 
   return (
     <Button
-      variant={'solid'}
-      theme={'primaryAlt'}
-      loading={data.loading}
-      leftIcon={<ExternalLinkIcon />}
+      theme={'tertiary'}
+      leftIcon={data.loading ? <LoadingCircle /> : <ExternalLinkIcon />}
       onClick={() => openInTab()}
       size={props.size ?? (modality === 'full' ? 'sm' : 'xs')}
     >

@@ -12,6 +12,7 @@ export const grid = recipe({
     height: '100%',
     gridAutoRows: 'min-content',
     overflow: 'auto',
+    overflowX: 'hidden',
   },
   variants: {
     orientation: {
