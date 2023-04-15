@@ -62,7 +62,7 @@
     "@codemirror/search": "^6.2.3",
     "@codemirror/state": "^6.2.0",
     "@codemirror/view": "^6.9.1",
-    "@codeui/kit": "0.0.13",
+    "@codeui/kit": "0.0.14",
     "@floating-ui/core": "^1.2.2",
     "@floating-ui/dom": "^1.2.3",
     "@formatjs/intl-relativetimeformat": "11.1.4",

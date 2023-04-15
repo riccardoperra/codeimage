@@ -166,7 +166,7 @@ importers:
       '@codemirror/search': ^6.2.3
       '@codemirror/state': ^6.2.0
       '@codemirror/view': ^6.9.1
-      '@codeui/kit': 0.0.13
+      '@codeui/kit': 0.0.14
       '@floating-ui/core': ^1.2.2
       '@floating-ui/dom': ^1.2.3
       '@formatjs/intl-relativetimeformat': 11.1.4
@@ -255,7 +255,7 @@ importers:
       '@codemirror/search': 6.3.0
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.9.3
-      '@codeui/kit': 0.0.13_solid-js@1.7.3+vite@3.2.5
+      '@codeui/kit': 0.0.14_solid-js@1.7.3+vite@3.2.5
       '@floating-ui/core': 1.2.6
       '@floating-ui/dom': 1.2.6
       '@formatjs/intl-relativetimeformat': 11.1.4
@@ -2269,8 +2269,8 @@ packages:
       style-mod: 4.0.2
       w3c-keyname: 2.2.6
 
-  /@codeui/kit/0.0.13_solid-js@1.7.3+vite@3.2.5:
-    resolution: {integrity: sha512-1ioT/9vmXpjUWjScs5jVaoBQSPxSIuZG92sJ/lkmQFmdnchGsc28w0Ayxx9k+09NgJa9eYqGfxbpRuhAqZdu/Q==}
+  /@codeui/kit/0.0.14_solid-js@1.7.3+vite@3.2.5:
+    resolution: {integrity: sha512-SY9rjMAcIH+7XiXRwPzkndrTuDm1iy8Wsk+K1QkCbJMP22BJ9mn0BWmPreqhw8d/51cL6sYfFI0u/tr0G0ipfQ==}
     peerDependencies:
       solid-js: ^1.7.0
     dependencies:
@@ -11617,7 +11617,7 @@ packages:
       chalk: 4.1.1
       chokidar: 3.5.3
       cookie: 0.4.2
-      graphql: 16.6.0
+      graphql: 15.8.0
       headers-polyfill: 3.1.2
       inquirer: 8.2.5
       is-node-process: 1.2.0
