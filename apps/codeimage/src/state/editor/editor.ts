@@ -10,7 +10,12 @@ import {createMemo, createSelector} from 'solid-js';
 import {SetStoreFunction} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
-import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
+import {
+  EditorState,
+  EditorUIOptions,
+  PersistedEditorState,
+  ProjectEditorPersistedState,
+} from './model';
 
 const defaultId = createUniqueId();
 
@@ -53,6 +58,7 @@ export function createEditorsStore() {
       setFontWeight: number;
       setShowLineNumbers: boolean;
       setFromPersistedState: PersistedEditorState;
+      setFromPreset: ProjectEditorPersistedState;
       setEnableLigatures: boolean;
     }>(),
   );
@@ -86,6 +92,10 @@ export function createEditorsStore() {
     .hold(store.commands.setEnableLigatures, (enable, {set}) =>
       set('options', 'enableLigatures', enable),
     )
+    .hold(store.commands.setFromPreset, preset => {
+      store.set('options', preset.editor.options);
+      store.dispatch(editorUpdateCommand, void 0);
+    })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
       const editors = (persistedState.editors ?? [])
         .slice(0, MAX_TABS)

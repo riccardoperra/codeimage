@@ -15,37 +15,25 @@ import {
   DropdownMenuTrigger,
   IconButton,
 } from '@codeui/kit';
+import {getUmami} from '@core/constants/umami';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {As} from '@kobalte/core';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
-import {
-  ErrorBoundary,
-  For,
-  lazy,
-  ParentComponent,
-  Show,
-  Suspense,
-} from 'solid-js';
+import {ErrorBoundary, For, ParentComponent, Show, Suspense} from 'solid-js';
 import {AppLocaleEntries} from '../../../i18n';
 import {CloseIcon} from '../../Icons/CloseIcon';
 import {CloudIcon} from '../../Icons/CloudIcon';
 import {DotHorizontalIcon} from '../../Icons/DotVertical';
 import {PanelDivider} from '../../PropertyEditor/PanelDivider';
-import {DynamicTerminal} from '../../Terminal/DynamicTerminal/DynamicTerminal';
-import {ThemeBox} from '../../ThemeSwitcher/ThemeBox';
 import {ThemeBoxSkeleton} from '../../ThemeSwitcher/ThemeBoxSkeleton';
 import {ThemeSwitcherVariant} from '../../ThemeSwitcher/ThemeSwitcher.css';
 import {EmptyPresetFallback} from '../EmptyPresetFallback/EmptyPresetFallback';
 import {PresetPreview} from '../PresetPreview/PresetPreview';
 import {PresetUpdateDialog} from '../PresetUpdateDialog';
 import * as styles from './PresetSwitcher.css';
-
-const CustomEditorPreview = lazy(() => {
-  return import('../../CustomEditor/CustomEditorPreview');
-});
 
 type PresetSwitcherProps = {
   onClose: () => void;
@@ -62,9 +50,10 @@ export const PresetSwitcher: ParentComponent<
   const presetsStore = getPresetsStore();
 
   const onSelectTheme = (data: ProjectEditorPersistedState) => {
-    editor.actions.setFromPersistedState(data.editor);
-    frame.setFromPersistedState(data.frame);
-    terminal.setFromPersistedState(data.terminal);
+    editor.actions.setFromPreset(data);
+    frame.setFromPreset(data);
+    terminal.setFromPreset(data);
+    getUmami().trackEvent('preset', 'select-preset');
   };
 
   const exampleCode =
@@ -85,22 +74,22 @@ export const PresetSwitcher: ParentComponent<
           justifyContent={'spaceBetween'}
           alignItems={'center'}
         >
-          <Text weight={'semibold'}>User presets</Text>
+          <Text weight={'semibold'}>{t('presets.userPresets')}</Text>
           <HStack spacing={2}>
             <Button
               size={'xs'}
               theme={'primary'}
               onClick={() => {
                 openDialog(RenameContentDialog, {
-                  title: t('dashboard.renameProject.confirmTitle'),
-                  message: t('dashboard.renameProject.confirmMessage'),
+                  title: t('presets.addPreset.confirmTitle'),
+                  message: t('presets.addPreset.confirmMessage'),
                   onConfirm: async name => {
                     presetsStore.actions.addNewPreset({name});
                   },
                 });
               }}
             >
-              Add new
+              {t('presets.addPreset.label')}
             </Button>
             <IconButton
               aria-label={'Close'}
@@ -193,16 +182,16 @@ export const PresetSwitcher: ParentComponent<
                                 <DropdownMenuItem
                                   onClick={() => openUpdateDialog()}
                                 >
-                                  Update
+                                  {t('presets.updatePreset.label')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {
                                     openDialog(RenameContentDialog, {
                                       title: t(
-                                        'dashboard.renameProject.confirmTitle',
+                                        'presets.renamePreset.confirmTitle',
                                       ),
                                       message: t(
-                                        'dashboard.renameProject.confirmMessage',
+                                        'presets.renamePreset.confirmMessage',
                                       ),
                                       initialValue: theme.name,
                                       onConfirm: async newName => {
@@ -214,16 +203,16 @@ export const PresetSwitcher: ParentComponent<
                                     });
                                   }}
                                 >
-                                  {t('dashboard.renameProject.dropdownLabel')}
+                                  {t('presets.renamePreset.label')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {
                                     openDialog(ConfirmDialog, {
                                       title: t(
-                                        'dashboard.deleteProject.confirmTitle',
+                                        'presets.deletePreset.confirmTitle',
                                       ),
                                       message: t(
-                                        'dashboard.deleteProject.confirmMessage',
+                                        'presets.deletePreset.confirmMessage',
                                       ),
                                       onConfirm: () => {
                                         presetsStore.actions.deletePreset(
@@ -234,7 +223,7 @@ export const PresetSwitcher: ParentComponent<
                                     });
                                   }}
                                 >
-                                  {t('dashboard.deleteProject.dropdownLabel')}
+                                  {t('presets.deletePreset.label')}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenuPortal>
@@ -258,7 +247,7 @@ export const PresetSwitcher: ParentComponent<
                               presetsStore.actions.syncPreset(theme);
                             }}
                           >
-                            Save in your account
+                            {t('presets.sync.label')}
                           </Button>
                         </Box>
                       </Show>

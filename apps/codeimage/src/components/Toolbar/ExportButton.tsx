@@ -15,7 +15,7 @@ import {
 } from '@codeimage/ui';
 
 import {
-  Button as ButtonV2,
+  Button,
   Dialog,
   DialogPanelContent,
   DialogPanelFooter,
@@ -83,7 +83,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
 
   return (
     <>
-      <ButtonV2
+      <Button
         theme={'primary'}
         size={buttonSize()}
         leftIcon={
@@ -96,7 +96,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         onClick={() => setOpen(true)}
       >
         {label()}
-      </ButtonV2>
+      </Button>
 
       <ExportDialog
         isOpen={open()}
@@ -312,7 +312,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
       </DialogPanelContent>
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
-          <ButtonV2
+          <Button
             block
             size={'md'}
             type="button"
@@ -320,9 +320,9 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
             onClick={() => props.onOpenChange?.(false)}
           >
             {t('common.close')}
-          </ButtonV2>
+          </Button>
 
-          <ButtonV2
+          <Button
             block
             size={'md'}
             type="submit"
@@ -330,7 +330,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
             onClick={onConfirm}
           >
             {t('common.confirm')}
-          </ButtonV2>
+          </Button>
         </HStack>
       </DialogPanelFooter>
     </Dialog>

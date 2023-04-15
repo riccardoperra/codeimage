@@ -1,3 +1,4 @@
+import {useI18n} from '@codeimage/locale';
 import {Box} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {Motion} from '@motionone/solid';
@@ -8,9 +9,11 @@ import {EditorSidebar} from '../../../components/PropertyEditor/EditorSidebar';
 import {scaffoldVars} from '../../../components/Scaffold/Scaffold.css';
 import {Sidebar} from '../../../components/Scaffold/Sidebar/Sidebar';
 import {PresetSwitcher} from '../../../components/Presets/PresetSwitcher/PresetSwitcher';
+import {AppLocaleEntries} from '../../../i18n';
 
 export function EditorLeftSidebar() {
   const [toggle, setToggle] = createSignal(false);
+  const [t] = useI18n<AppLocaleEntries>();
 
   return (
     <>
@@ -24,7 +27,7 @@ export function EditorLeftSidebar() {
               leftIcon={<ColorSwatchIcon />}
               onClick={() => setToggle(toggle => !toggle)}
             >
-              Open presets
+              {t('presets.openPreset.label')}
             </Button>
           </Box>
           <EditorSidebar />

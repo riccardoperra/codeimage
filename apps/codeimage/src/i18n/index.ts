@@ -1,5 +1,6 @@
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
+import {presets} from './presets';
 import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
@@ -15,6 +16,7 @@ export const locale = {
       hide: 'Nascondi',
       reload: 'Ricarica',
       clone: 'Clona',
+      new: 'Nuovo',
     },
     canvas: {
       copiedToClipboard: 'Snippet copiato negli appunti',
@@ -90,6 +92,7 @@ export const locale = {
     ...uiLocale.it,
     ...bottomBar.it,
     ...notFound.it,
+    ...presets.it,
   },
   en: {
     canvas: {
@@ -107,6 +110,7 @@ export const locale = {
       hide: 'Hide',
       reload: 'Reload',
       clone: 'Clone',
+      new: 'New',
     },
     locales: {
       it: 'Italian',
@@ -173,6 +177,7 @@ export const locale = {
     ...sidebarLocale.en,
     ...dashboard.en,
     ...notFound.en,
+    ...presets.en,
   },
   de: {
     common: {
@@ -184,6 +189,7 @@ export const locale = {
       hide: 'Verstecken',
       reload: 'Reload',
       clone: 'Clone',
+      new: 'Neu',
     },
     canvas: {
       copiedToClipboard: 'Code-Schnipsel in Zwischenablage kopiert',
@@ -257,6 +263,7 @@ export const locale = {
     ...bottomBar.de,
     ...dashboard.de,
     ...notFound.de,
+    ...presets.de,
   },
   es: {
     common: {
@@ -268,6 +275,7 @@ export const locale = {
       hide: 'Esconder',
       reload: 'Reload',
       clone: 'Clone',
+      new: 'Nuevo',
     },
     canvas: {
       copiedToClipboard: 'Snippet copiado al portapapeles',
@@ -341,6 +349,7 @@ export const locale = {
     ...bottomBar.es,
     ...dashboard.es,
     ...notFound.es,
+    ...presets.es,
   },
 };
 

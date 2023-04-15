@@ -1,3 +1,4 @@
+import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
 import {provideAppState} from '@codeimage/store/index';
 import {appEnvironment} from '@core/configuration';
@@ -28,6 +29,7 @@ type Commands = {
   setVisibility: boolean;
   toggleVisibility: void;
   setNextPadding: void;
+  setFromPreset: ProjectEditorPersistedState;
   setFromPersistedState: PersistedFrameState;
 };
 
@@ -74,6 +76,9 @@ const frameState = defineStore(() => getInitialFrameState())
         const next = (currentIndex + 1) % availablePadding.length;
         return {...state, padding: availablePadding[next]};
       })
+      .hold(store.commands.setFromPreset, preset => {
+        store.set(state => ({...state, ...preset.frame}));
+      })
       .hold(store.commands.setFromPersistedState, (_, {state}) => {
         return {...state, ..._};
       });
@@ -101,6 +106,7 @@ const frameState = defineStore(() => getInitialFrameState())
         store.commands.setAutoWidth,
         store.commands.setVisibility,
         store.commands.setNextPadding,
+        store.commands.setFromPreset,
       ])
       .pipe(
         map(() => store()),
