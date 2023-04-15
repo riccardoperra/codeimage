@@ -1,7 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {
   Box,
-  Button,
   FieldLabel,
   FieldLabelHint,
   FlexField,
