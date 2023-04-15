@@ -166,7 +166,7 @@ importers:
       '@codemirror/search': ^6.2.3
       '@codemirror/state': ^6.2.0
       '@codemirror/view': ^6.9.1
-      '@codeui/kit': 0.0.14
+      '@codeui/kit': 0.0.15
       '@floating-ui/core': ^1.2.2
       '@floating-ui/dom': ^1.2.3
       '@formatjs/intl-relativetimeformat': 11.1.4
@@ -255,7 +255,7 @@ importers:
       '@codemirror/search': 6.3.0
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.9.3
-      '@codeui/kit': 0.0.14_solid-js@1.7.3+vite@3.2.5
+      '@codeui/kit': 0.0.15_solid-js@1.7.3+vite@3.2.5
       '@floating-ui/core': 1.2.6
       '@floating-ui/dom': 1.2.6
       '@formatjs/intl-relativetimeformat': 11.1.4
@@ -2269,8 +2269,8 @@ packages:
       style-mod: 4.0.2
       w3c-keyname: 2.2.6
 
-  /@codeui/kit/0.0.14_solid-js@1.7.3+vite@3.2.5:
-    resolution: {integrity: sha512-SY9rjMAcIH+7XiXRwPzkndrTuDm1iy8Wsk+K1QkCbJMP22BJ9mn0BWmPreqhw8d/51cL6sYfFI0u/tr0G0ipfQ==}
+  /@codeui/kit/0.0.15_solid-js@1.7.3+vite@3.2.5:
+    resolution: {integrity: sha512-jCqkwAKiCsTWX0mMHM4mqpKKCrav8lo0FnRuJYVJeo6TbJKaIjc41D80ayZvgXflWAZy+8a0TBwWh8S3RJmD4A==}
     peerDependencies:
       solid-js: ^1.7.0
     dependencies:
