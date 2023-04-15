@@ -523,6 +523,10 @@ jobs:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
+      - name: Install dependencies
+        run: |
+          pnpm --prefer-offline install
+
       - name: Restore api build
         uses: actions/cache@v3
         with:
@@ -531,7 +535,16 @@ jobs:
           key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Install Railway
+        if: ${{ github.event.inputs.deploy-backend == 'true' }}
         run: pnpm i -g @railway/cli
+
+      - name: Run prod migrations
+        if: ${{ github.event.inputs.deploy-backend == 'true' }}
+        run: |
+          pnpm --filter=@codeimage/api exec prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy
         run: |
