@@ -29,11 +29,10 @@ import {createSignal, For, Match, Switch} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import * as styles from './SettingsDialog.css';
 
-interface SettingsDialogProps extends ControlledDialogProps {}
+type SettingsDialogProps = ControlledDialogProps;
 
 export function SettingsDialog(props: SettingsDialogProps) {
   const [page] = createSignal<'general' | 'account'>('general');
-  const {user, loggedIn} = getAuth0State();
   const ui = getUiStore();
   const {locales} = appEnvironment;
   const modality = useModality();
