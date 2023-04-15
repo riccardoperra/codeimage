@@ -180,7 +180,6 @@ export const EditorStyleForm: ParentComponent = () => {
                   )}
                   valueComponent={props => props.item.rawValue.label}
                   onValueChange={fontId => {
-                    console.log('font id', fontId);
                     setFontId(fontId);
                     if (
                       !font()

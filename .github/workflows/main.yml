@@ -248,36 +248,6 @@ jobs:
           alias-domains: | #Optional
             codeimage-highlight-pr-{{PR_NUMBER}}.vercel.app
 
-  build-ui-dev:
-    name: '@codeimage/ui dev and Preview'
-    environment: Preview
-    needs: [build-packages]
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout PR
-        uses: actions/checkout@v2
-        with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Restore dist
-        uses: actions/cache@v3
-        with:
-          path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
   build-website-dev:
     name: '@codeimage/website dev and Preview'
     environment: Preview

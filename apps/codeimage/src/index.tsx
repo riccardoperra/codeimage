@@ -9,7 +9,6 @@ import {
   SnackbarHost,
   ThemeProviderProps,
 } from '@codeimage/ui';
-import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import '@codeimage/ui/themes/lightTheme';
 import {theme as themeClass} from '@codeui/kit';
 import {OverlayProvider} from '@solid-aria/overlays';
