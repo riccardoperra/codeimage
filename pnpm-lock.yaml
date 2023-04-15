@@ -161,7 +161,7 @@ importers:
       '@codemirror/search': ^6.2.3
       '@codemirror/state': ^6.2.0
       '@codemirror/view': ^6.9.1
-      '@codeui/kit': 0.0.11
+      '@codeui/kit': 0.0.13
       '@floating-ui/core': ^1.2.2
       '@floating-ui/dom': ^1.2.3
       '@formatjs/intl-relativetimeformat': 11.1.4
@@ -250,7 +250,7 @@ importers:
       '@codemirror/search': 6.3.0
       '@codemirror/state': 6.2.0
       '@codemirror/view': 6.9.3
-      '@codeui/kit': 0.0.11_solid-js@1.7.3+vite@3.2.5
+      '@codeui/kit': 0.0.13_solid-js@1.7.3+vite@3.2.5
       '@floating-ui/core': 1.2.6
       '@floating-ui/dom': 1.2.6
       '@formatjs/intl-relativetimeformat': 11.1.4
@@ -2264,8 +2264,8 @@ packages:
       style-mod: 4.0.2
       w3c-keyname: 2.2.6
 
-  /@codeui/kit/0.0.11_solid-js@1.7.3+vite@3.2.5:
-    resolution: {integrity: sha512-RpaOTyuCmPWDrGOLYKwzxDOndlS2NJs7cZ+QFdpeAeHVJLyAUMr5SB+hnX++aPYcM6A0e0GTSyLiop+b0cPBOA==}
+  /@codeui/kit/0.0.13_solid-js@1.7.3+vite@3.2.5:
+    resolution: {integrity: sha512-1ioT/9vmXpjUWjScs5jVaoBQSPxSIuZG92sJ/lkmQFmdnchGsc28w0Ayxx9k+09NgJa9eYqGfxbpRuhAqZdu/Q==}
     peerDependencies:
       solid-js: ^1.7.0
     dependencies:
@@ -3215,7 +3215,7 @@ packages:
       solid-js: ^1.6.12
     dependencies:
       '@solid-primitives/event-listener': 2.2.10_solid-js@1.7.3
-      '@solid-primitives/keyed': 1.1.10_solid-js@1.7.3
+      '@solid-primitives/keyed': 1.2.0_solid-js@1.7.3
       '@solid-primitives/media': 2.1.6_solid-js@1.7.3
       '@solid-primitives/props': 3.1.4_solid-js@1.7.3
       '@solid-primitives/refs': 1.0.2_solid-js@1.7.3
@@ -5430,6 +5430,14 @@ packages:
 
   /@solid-primitives/keyed/1.1.10_solid-js@1.7.3:
     resolution: {integrity: sha512-J3TI4hL+C5Btc078BvlebUbUf0GQP3b/1fGfBHzfdgK32dTBsZsxCk/qU1IP03b6VJFkNteeVhK9pPeUARk80g==}
+    peerDependencies:
+      solid-js: ^1.6.12
+    dependencies:
+      solid-js: 1.7.3
+    dev: false
+
+  /@solid-primitives/keyed/1.2.0_solid-js@1.7.3:
+    resolution: {integrity: sha512-0DuTeJdxWjCTu73XnDZs24JzfXckBnpvCfQ6Mf/kTPKkMZJh7tjkBnZEk48ckrE9xmwat9stIdfrBmZctsepIw==}
     peerDependencies:
       solid-js: ^1.6.12
     dependencies:

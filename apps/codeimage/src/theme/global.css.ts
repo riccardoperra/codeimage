@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {createGlobalTheme, globalStyle} from '@vanilla-extract/css';
+import {globalStyle} from '@vanilla-extract/css';
 
 globalStyle('body', {
   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
