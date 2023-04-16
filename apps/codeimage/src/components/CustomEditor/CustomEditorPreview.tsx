@@ -15,7 +15,6 @@ import {
   getOwner,
   on,
   onMount,
-  runWithOwner,
   VoidProps,
 } from 'solid-js';
 
@@ -81,6 +80,9 @@ export default function CustomEditorPreview(
     EditorView.lineWrapping,
     currentLanguage() || [],
     currentTheme(),
+    EditorView.contentAttributes.of({
+      'aria-label': 'codeimage-editor',
+    }),
   ];
 
   // eslint-disable-next-line solid/reactivity
@@ -88,10 +90,6 @@ export default function CustomEditorPreview(
 
   onMount(() => {
     setEditorRef(() => editorEl);
-    import('./fix-cm-aria-roles-lighthouse').then(m => {
-      if (!owner) return;
-      runWithOwner(owner, () => m.fixCodeMirrorAriaRole(() => editorEl));
-    });
   });
 
   createEffect(on(extensions, extensions => reconfigure(extensions)));

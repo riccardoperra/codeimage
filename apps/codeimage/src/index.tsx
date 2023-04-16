@@ -11,7 +11,6 @@ import {
 } from '@codeimage/ui';
 import '@codeimage/ui/themes/lightTheme';
 import {theme as themeClass} from '@codeui/kit';
-import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
@@ -119,13 +118,13 @@ export function Bootstrap() {
   createEffect(
     on(mode, theme => {
       const scheme = document.querySelector('meta[name="theme-color"]');
+      const color = theme === 'dark' ? '#151516' : '#FFFFFF';
       if (scheme) {
-        const color = theme === 'dark' ? '#151516' : '#FFFFFF';
         scheme.setAttribute('content', color);
-        setElementVars(document.body, {
-          [backgroundColorVar]: color,
-        });
       }
+      setElementVars(document.documentElement, {
+        [backgroundColorVar]: color,
+      });
       document.documentElement.setAttribute('data-cui-theme', theme as string);
     }),
   );
