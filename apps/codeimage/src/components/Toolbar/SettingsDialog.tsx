@@ -7,8 +7,6 @@ import {
   Group,
   HStack,
   RadioBlock,
-  RadioField,
-  RadioGroupField,
   SvgIcon,
   Text,
   themeVars,
@@ -19,6 +17,8 @@ import {
   Dialog,
   DialogPanelContent,
   DialogPanelFooter,
+  RadioList,
+  RadioListItem,
 } from '@codeui/kit';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
@@ -137,26 +137,25 @@ export function SettingsDialog(props: SettingsDialogProps) {
                     </Group>
                   </FlexField>
                   <FlexField size={'lg'}>
-                    <RadioGroupField
-                      orientation={'vertical'}
-                      value={ui.get.locale}
-                      name={'language-field'}
+                    <RadioList
                       label={'Locale'}
-                      onChange={locale => {
+                      size={'md'}
+                      onValueChange={locale => {
                         ui.setLocale(locale);
                         getUmami().trackEvent(locale, `change-app-language`);
                       }}
+                      value={ui.get.locale}
+                      orientation={'vertical'}
                     >
                       <For each={locales}>
                         {locale => (
-                          <RadioField value={locale}>
-                            <Box paddingLeft={2}>
-                              <Text size={'sm'}>{t(`locales.${locale}`)}</Text>
-                            </Box>
-                          </RadioField>
+                          <RadioListItem
+                            label={t(`locales.${locale}`)}
+                            value={locale}
+                          />
                         )}
                       </For>
-                    </RadioGroupField>
+                    </RadioList>
                   </FlexField>
                 </VStack>
               </Match>
