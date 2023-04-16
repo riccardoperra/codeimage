@@ -2,7 +2,7 @@ import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
 import {provideAppState} from '@codeimage/store/index';
 import {appEnvironment} from '@core/configuration';
-import {from, map, skip} from 'rxjs';
+import {from, map} from 'rxjs';
 import {defineStore} from 'statebuilder';
 import {withProxyCommands} from 'statebuilder/commands';
 

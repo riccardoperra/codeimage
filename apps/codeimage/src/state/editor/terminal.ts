@@ -7,7 +7,7 @@ import {
 import {provideAppState} from '@codeimage/store/index';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {from, map, skip} from 'rxjs';
+import {from, map} from 'rxjs';
 import {defineStore} from 'statebuilder';
 import {withProxyCommands} from 'statebuilder/commands';
 
