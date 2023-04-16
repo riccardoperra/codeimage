@@ -39,7 +39,7 @@
     "@vanilla-extract/sprinkles": "^1.5.1",
     "motion": "^10.15.5",
     "purgecss": "^5.0.0",
-    "solid-codemirror": "2.2.1",
+    "solid-codemirror": "^2.2.3",
     "solid-js": "^1.7.3",
     "solid-start": "^0.2.26",
     "solid-start-static": "^0.2.26",
