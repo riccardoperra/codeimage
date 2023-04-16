@@ -19,7 +19,6 @@ features to speed up the process to post in social media.
 
 ![CodeImage showcase](assets/showcase_1.png)
 
-
 ## 🤖 Tech stack
 
 CodeImage architecture consist of a PNPM monorepo, currently subdivided in `packages` and `apps`.
@@ -34,8 +33,9 @@ It currently also relies on these libraries:
 
 - [vanilla-extract](https://github.com/seek-oss/vanilla-extract): Zero-runtime Stylesheets-in-TypeScript.
 - [CodeMirror6](https://codemirror.net/6/): Extensible code editor
-- [solid-aria](https://github.com/solidjs-community/solid-aria): High-quality primitives that help to build accessible
-  user interfaces
+- [StateBuilder](https://github.com/riccardoperra/statebuilder): Composable state management
+- [@codeui/kit](https://github.com/riccardoperra/codeui): Accessible UI Kit based
+  on [Kobalte](https://github.com/kobaltedev/kobalte)
 - [solid-primitives](https://github.com/solidjs-community/solid-primitives): SolidJS primitives library
 
 #### [@codeimage/api](./apps/api)
@@ -45,11 +45,10 @@ The REST API layer built with [Fastify](https://github.com/fastify/fastify),
 
 ### Packages
 
-- [@codeimage/ui](./packages/ui): contains the source code of the UI kit of CodeImage front-end application
+- [@codeimage/ui](./packages/ui): contains the source code of the UI kit of CodeImage front-end application.
+  > **Note** the UI kit is being moved to [@codeui/kit](https://github.com/riccardoperra/codeui) repository
 - [@codeimage/config](./packages/config): contains the base configurations and interfaces for CodeImage
 - [@codeimage/highlight](./packages/highlight): contains the custom editor and highlighting themes for CodeMirror
-
-
 - [@codeimage/dom-export](./packages/dom-export): contains the [html-to-image](https://github.com/bubkoo/html-to-image)
   fork which includes several fix for image export
 - [@codeimage/locale](./packages/locale): contains a wrapper
