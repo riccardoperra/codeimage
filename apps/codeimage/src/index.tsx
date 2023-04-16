@@ -131,7 +131,6 @@ export function Bootstrap() {
 
   return (
     <Scaffold>
-      <OverlayProvider />
       <CodeImageThemeProvider tokens={tokens} theme={mode()}>
         <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
         <Router>
