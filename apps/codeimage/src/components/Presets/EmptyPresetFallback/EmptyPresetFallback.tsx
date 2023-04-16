@@ -35,8 +35,8 @@ export function EmptyPresetFallback() {
             }
             onClick={() => {
               openDialog(RenameContentDialog, {
-                title: t('dashboard.renameProject.confirmTitle'),
-                message: t('dashboard.renameProject.confirmMessage'),
+                title: t('presets.addPreset.confirmTitle'),
+                message: t('presets.addPreset.confirmMessage'),
                 onConfirm: async name => {
                   presetsStore.actions.addNewPreset({name});
                 },
