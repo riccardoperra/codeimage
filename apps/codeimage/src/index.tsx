@@ -11,7 +11,6 @@ import {
 } from '@codeimage/ui';
 import '@codeimage/ui/themes/lightTheme';
 import {theme as themeClass} from '@codeui/kit';
-import {OverlayProvider} from '@solid-aria/overlays';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';

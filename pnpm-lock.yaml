@@ -884,39 +884,9 @@ importers:
       '@rollup/plugin-typescript':
         specifier: ^9.0.2
         version: 9.0.2(rollup@2.79.1)(tslib@2.5.0)(typescript@4.9.5)
-      '@solid-aria/button':
-        specifier: ^0.1.3
-        version: 0.1.3(solid-js@1.7.3)
-      '@solid-aria/collection':
-        specifier: ^0.2.0
-        version: 0.2.0(solid-js@1.7.3)
-      '@solid-aria/dialog':
-        specifier: ^0.1.4
-        version: 0.1.4(solid-js@1.7.3)
-      '@solid-aria/focus':
-        specifier: ^0.1.4
-        version: 0.1.4(solid-js@1.7.3)
-      '@solid-aria/i18n':
-        specifier: ^0.2.0
-        version: 0.2.0(solid-js@1.7.3)
-      '@solid-aria/interactions':
-        specifier: ^0.1.4
-        version: 0.1.4(solid-js@1.7.3)
-      '@solid-aria/menu':
-        specifier: ^0.2.0
-        version: 0.2.0(solid-js@1.7.3)
-      '@solid-aria/overlays':
-        specifier: ^0.1.3
-        version: 0.1.3(solid-js@1.7.3)
       '@solid-aria/radio':
         specifier: ^0.1.3
         version: 0.1.3(solid-js@1.7.3)
-      '@solid-aria/textfield':
-        specifier: ^0.0.1
-        version: 0.0.1(solid-js@1.7.3)
-      '@solid-aria/tree':
-        specifier: ^0.1.4
-        version: 0.1.4(solid-js@1.7.3)
       '@solid-aria/types':
         specifier: ^0.1.4
         version: 0.1.4(solid-js@1.7.3)
@@ -5415,18 +5385,6 @@ packages:
       solid-js: 1.7.3
     dev: false
 
-  /@solid-aria/dialog@0.1.4(solid-js@1.7.3):
-    resolution: {integrity: sha512-X0yh1sTbnj8w7Qe14t+vOIzzDPZAzCAHj/o143V61hBGQJ6sez3YYzfjL02ZM/aEhoBKhFHnWX8Xbj6xBE992w==}
-    peerDependencies:
-      solid-js: ^1.4.4
-    dependencies:
-      '@solid-aria/focus': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/types': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/utils': 0.2.1(solid-js@1.7.3)
-      '@solid-primitives/utils': 2.2.1(solid-js@1.7.3)
-      solid-js: 1.7.3
-    dev: false
-
   /@solid-aria/focus@0.1.4(solid-js@1.6.3):
     resolution: {integrity: sha512-yX/BbN97s7ascNJu0yB+p1bx48U0NOOWw7+TYlGcAfFGc2HMNpIxG5OdhWGUoz8D9Tp5ELEgWgN3d4dAf7Hk9Q==}
     peerDependencies:
@@ -5503,23 +5461,6 @@ packages:
       solid-js: 1.7.3
     dev: false
 
-  /@solid-aria/menu@0.2.0(solid-js@1.7.3):
-    resolution: {integrity: sha512-UzRhTxyp8deWoidP1phHQD6YSGyJ2hiKxPNQ578CtRIt3QYTh6kHMgbA7QDGtlqLs86utgoYlYyUiWz0sttmTw==}
-    peerDependencies:
-      solid-js: ^1.4.4
-    dependencies:
-      '@solid-aria/button': 0.1.3(solid-js@1.7.3)
-      '@solid-aria/collection': 0.2.0(solid-js@1.7.3)
-      '@solid-aria/interactions': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/overlays': 0.1.3(solid-js@1.7.3)
-      '@solid-aria/selection': 0.1.5(solid-js@1.7.3)
-      '@solid-aria/tree': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/types': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/utils': 0.2.1(solid-js@1.7.3)
-      '@solid-primitives/utils': 2.2.1(solid-js@1.7.3)
-      solid-js: 1.7.3
-    dev: false
-
   /@solid-aria/overlays@0.1.3(solid-js@1.7.3):
     resolution: {integrity: sha512-M002GH8SFfr9WkA+NfGSkX03Qr+DdksRkfIHG+AVZgKxSBSyqwpU1vcvB1Mn1Nu+KhucQ7/N8cKpoQIa+Yse5g==}
     peerDependencies:
@@ -5553,38 +5494,6 @@ packages:
       solid-js: 1.7.3
     dev: false
 
-  /@solid-aria/selection@0.1.5(solid-js@1.7.3):
-    resolution: {integrity: sha512-N+bil2pgvu7f/buj81A8ASwXbA3d8bRIVEmHCL9aZ18l9wiOQKvWb+Ac4umUDoUJaH+uHysdDvDustHSjAwlkQ==}
-    peerDependencies:
-      solid-js: ^1.4.4
-    dependencies:
-      '@solid-aria/collection': 0.2.0(solid-js@1.7.3)
-      '@solid-aria/focus': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/i18n': 0.2.0(solid-js@1.7.3)
-      '@solid-aria/interactions': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/types': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/utils': 0.2.1(solid-js@1.7.3)
-      '@solid-primitives/event-listener': 2.2.10(solid-js@1.7.3)
-      '@solid-primitives/platform': 0.0.100(solid-js@1.7.3)
-      '@solid-primitives/props': 2.2.2(solid-js@1.7.3)
-      '@solid-primitives/utils': 2.2.1(solid-js@1.7.3)
-      solid-js: 1.7.3
-    dev: false
-
-  /@solid-aria/textfield@0.0.1(solid-js@1.7.3):
-    resolution: {integrity: sha512-minlrTKh7Zzu0I/x3s/xK4Cgu/Lb0W8ujuG71gMiUOwCRWAm4H3Jsm4mXjkK9tQo7gW8wb/RzlKa2ytY1TCG+g==}
-    peerDependencies:
-      solid-js: ^1.4.4
-    dependencies:
-      '@solid-aria/focus': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/label': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/types': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/utils': 0.2.1(solid-js@1.7.3)
-      '@solid-primitives/props': 2.2.2(solid-js@1.7.3)
-      '@solid-primitives/utils': 2.2.1(solid-js@1.7.3)
-      solid-js: 1.7.3
-    dev: false
-
   /@solid-aria/toggle@0.1.3(solid-js@1.7.3):
     resolution: {integrity: sha512-ZVRhY+Te8XBFFcumuu2J92LBntlmV6ss/6fNkDfhvr4LV42VB1goRZvPJk8rqakyR3JkQBTnQuxt7idrqqaxgA==}
     peerDependencies:
@@ -5595,19 +5504,6 @@ packages:
       '@solid-aria/types': 0.1.4(solid-js@1.7.3)
       '@solid-aria/utils': 0.2.1(solid-js@1.7.3)
       '@solid-primitives/props': 2.2.2(solid-js@1.7.3)
-      '@solid-primitives/utils': 2.2.1(solid-js@1.7.3)
-      solid-js: 1.7.3
-    dev: false
-
-  /@solid-aria/tree@0.1.4(solid-js@1.7.3):
-    resolution: {integrity: sha512-Rjcz2+1f7lIvUr+yW9N+0Nf9Vyv8N/a4q5BW9TWZvWPejN8u1NpkAQnzrx2/A3mOLh2Gb8didaTqeD+AgGl2Mw==}
-    peerDependencies:
-      solid-js: ^1.4.4
-    dependencies:
-      '@solid-aria/collection': 0.2.0(solid-js@1.7.3)
-      '@solid-aria/selection': 0.1.5(solid-js@1.7.3)
-      '@solid-aria/types': 0.1.4(solid-js@1.7.3)
-      '@solid-aria/utils': 0.2.1(solid-js@1.7.3)
       '@solid-primitives/utils': 2.2.1(solid-js@1.7.3)
       solid-js: 1.7.3
     dev: false
@@ -5749,7 +5645,7 @@ packages:
       '@solid-primitives/event-listener': 2.2.10(solid-js@1.7.3)
       '@solid-primitives/rootless': 1.3.2(solid-js@1.7.3)
       '@solid-primitives/static-store': 0.0.2(solid-js@1.7.3)
-      '@solid-primitives/utils': 6.0.0(solid-js@1.7.3)
+      '@solid-primitives/utils': 6.1.0(solid-js@1.7.3)
       solid-js: 1.7.3
     dev: false
 

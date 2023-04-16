@@ -13,11 +13,7 @@ export type {TextFieldProps} from './TextField';
 
 export {RangeField, rangeFieldStyles} from './RangeField';
 
-export {
-  NativeColorPicker,
-  ColorPicker,
-  ColorPickerPopover,
-} from './ColorPicker';
+export {NativeColorPicker, ColorPickerPopover} from './ColorPicker';
 
 export {Box, VStack, HStack} from './Box';
 
@@ -53,8 +49,6 @@ export {Loading, LoadingOverlay, LoadingCircle} from './Loader';
 export type {LoaderProps} from './Loader';
 
 export {Toggle} from './Toggle';
-
-export {Popover} from './Popover';
 
 export {RadioField, RadioGroupField} from './Radio';
 
