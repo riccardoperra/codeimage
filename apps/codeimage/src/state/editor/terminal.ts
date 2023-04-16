@@ -8,7 +8,6 @@ import {provideAppState} from '@codeimage/store/index';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {from, map, skip} from 'rxjs';
-import {observable} from 'solid-js';
 import {defineStore} from 'statebuilder';
 import {withProxyCommands} from 'statebuilder/commands';
 
@@ -116,23 +115,20 @@ export function createTerminalState() {
   };
 
   const stateToPersist$ = from(
-    observable(
-      store.watchCommand([
-        store.commands.setAccentVisible,
-        store.commands.setOpacity,
-        store.commands.setAlternativeTheme,
-        store.commands.setShadow,
-        store.commands.setType,
-        store.commands.setShowGlassReflection,
-        store.commands.setShowHeader,
-        store.commands.setShowWatermark,
-        store.commands.toggleShowHeader,
-        store.commands.toggleWatermark,
-        store.commands.setFromPreset,
-      ]),
-    ),
+    store.watchCommand([
+      store.commands.setAccentVisible,
+      store.commands.setOpacity,
+      store.commands.setAlternativeTheme,
+      store.commands.setShadow,
+      store.commands.setType,
+      store.commands.setShowGlassReflection,
+      store.commands.setShowHeader,
+      store.commands.setShowWatermark,
+      store.commands.toggleShowHeader,
+      store.commands.toggleWatermark,
+      store.commands.setFromPreset,
+    ]),
   ).pipe(
-    skip(1),
     map(() => store()),
     map(mapToStateToPersistState),
   );

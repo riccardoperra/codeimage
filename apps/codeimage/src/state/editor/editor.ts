@@ -149,18 +149,15 @@ export function createEditorsStore() {
   };
 
   const stateToPersist$ = from(
-    observable(
-      store.watchCommand([
-        store.commands.setFontId,
-        store.commands.setThemeId,
-        store.commands.setFontWeight,
-        store.commands.setShowLineNumbers,
-        store.commands.setEnableLigatures,
-        editorUpdateCommand,
-      ]),
-    ),
+    store.watchCommand([
+      store.commands.setFontId,
+      store.commands.setThemeId,
+      store.commands.setFontWeight,
+      store.commands.setShowLineNumbers,
+      store.commands.setEnableLigatures,
+      editorUpdateCommand,
+    ]),
   ).pipe(
-    skip(1),
     map(() => store()),
     map(mapToStateToPersistState),
     shareReplay({refCount: true, bufferSize: 1}),
