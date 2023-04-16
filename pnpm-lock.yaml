@@ -526,8 +526,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       solid-codemirror:
-        specifier: 2.2.1
-        version: 2.2.1(@codemirror/state@6.2.0)(@codemirror/view@6.9.3)(solid-js@1.7.3)
+        specifier: ^2.2.3
+        version: 2.2.3(@codemirror/state@6.2.0)(@codemirror/view@6.9.3)(solid-js@1.7.3)
       solid-js:
         specifier: ^1.7.3
         version: 1.7.3
@@ -11875,7 +11875,7 @@ packages:
       chalk: 4.1.1
       chokidar: 3.5.3
       cookie: 0.4.2
-      graphql: 15.8.0
+      graphql: 16.6.0
       headers-polyfill: 3.1.2
       inquirer: 8.2.5
       is-node-process: 1.2.0
@@ -13783,20 +13783,6 @@ packages:
       ip: 2.0.0
       smart-buffer: 4.2.0
     dev: true
-
-  /solid-codemirror@2.2.1(@codemirror/state@6.2.0)(@codemirror/view@6.9.3)(solid-js@1.7.3):
-    resolution: {integrity: sha512-uZhr+uwdyjJEKa/jLlGOLrw+36BOFRrE4CtsTWpazky2sy1VMiuFYMlrMYzITqGdrLJfYnb79eTDHpoUDRXxSg==}
-    engines: {node: '>=14'}
-    peerDependencies:
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      solid-js: ^1.6.0
-    dependencies:
-      '@changesets/cli': 2.26.1
-      '@codemirror/state': 6.2.0
-      '@codemirror/view': 6.9.3
-      solid-js: 1.7.3
-    dev: false
 
   /solid-codemirror@2.2.3(@codemirror/state@6.2.0)(@codemirror/view@6.9.3)(solid-js@1.6.3):
     resolution: {integrity: sha512-KaFatOaEQ79ZiBBGv/nw/3BkubE1BzDcvERpvXjQfr1WlM6qzSyEx0Af+2biPt7RE+ARC2YO18RULJ7of9+ukw==}
