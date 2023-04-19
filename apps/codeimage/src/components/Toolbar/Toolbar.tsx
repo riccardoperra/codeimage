@@ -2,10 +2,12 @@ import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {backgroundColorVar, Box, Button, colorVar, HStack} from '@codeimage/ui';
+import {backgroundColorVar, Box, colorVar, HStack} from '@codeimage/ui';
+import {buttonStyles, Link} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
-import {Link} from '@solidjs/router';
+import {As} from '@kobalte/core';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
+import {Link as LocalLink} from '@solidjs/router';
 import {createMemo, Show, VoidProps} from 'solid-js';
 import {CodeImageLogoV2} from '../Icons/CodeImageLogoV2';
 import {CollectionIcon} from '../Icons/Collection';
@@ -53,15 +55,19 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
           </div>
           <Show when={loggedIn() && modality === 'full'}>
             <Box marginLeft={16}>
-              <Button
-                as={Link}
-                href={'/dashboard'}
-                variant={'link'}
-                theme={'secondary'}
-                leftIcon={<CollectionIcon />}
+              <Link
+                asChild
+                class={buttonStyles.button({
+                  theme: 'secondary',
+                  variant: 'ghost',
+                  size: 'sm',
+                })}
               >
-                Dashboard
-              </Button>
+                <As component={LocalLink} href={'/dashboard'}>
+                  <CollectionIcon />
+                  Dashboard
+                </As>
+              </Link>
             </Box>
           </Show>
         </Box>
