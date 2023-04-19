@@ -279,8 +279,8 @@ importers:
         specifier: ^6.9.1
         version: 6.9.3
       '@codeui/kit':
-        specifier: 0.0.18
-        version: 0.0.18(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5)
+        specifier: 0.0.20
+        version: 0.0.20(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5)
       '@floating-ui/core':
         specifier: ^1.2.2
         version: 1.2.6
@@ -2556,8 +2556,8 @@ packages:
       style-mod: 4.0.2
       w3c-keyname: 2.2.6
 
-  /@codeui/kit@0.0.18(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5):
-    resolution: {integrity: sha512-ffMq5Lnkbs+VAZGrUnwep2b/vczKxDemE/EJ3PP8aXaXoMpnLiVD7X9hBDJA3KK29iQpYiY+ehRXY1BgjbH//A==}
+  /@codeui/kit@0.0.20(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5):
+    resolution: {integrity: sha512-ROhE1AYNRw6TOQK5ijkrtDwp7wXmMHQ6Oayz50cmdPSwL06tpWysIBtqHtnlc/N7LxinOG7fOevYMd01WaC5pA==}
     peerDependencies:
       solid-js: ^1.7.0
     dependencies:
@@ -5121,7 +5121,7 @@ packages:
       builtin-modules: 3.3.0
       deepmerge: 4.3.1
       is-module: 1.0.0
-      resolve: 1.22.3
+      resolve: 1.22.2
       rollup: 2.79.1
     dev: true
 
@@ -10399,12 +10399,6 @@ packages:
     dependencies:
       has: 1.0.3
 
-  /is-core-module@2.12.0:
-    resolution: {integrity: sha512-RECHCBCd/viahWmwj6enj19sKbHfJrddi/6cBDsNTKbNq0f7VeaUkBo60BqzvPqo/W54ChS62Z5qyun7cfOMqQ==}
-    dependencies:
-      has: 1.0.3
-    dev: true
-
   /is-date-object@1.0.5:
     resolution: {integrity: sha512-9YQaSxsAiSwcvS33MBk3wTCVnWK+HhF8VZR2jRxehM16QcVOdHqPn4VPHmRK4lSr38n9JriurInLcP90xsYNfQ==}
     engines: {node: '>= 0.4'}
@@ -11740,7 +11734,7 @@ packages:
       chalk: 4.1.1
       chokidar: 3.5.3
       cookie: 0.4.2
-      graphql: 16.6.0
+      graphql: 15.8.0
       headers-polyfill: 3.1.2
       inquirer: 8.2.5
       is-node-process: 1.2.0
@@ -13060,6 +13054,15 @@ packages:
       define-properties: 1.2.0
       functions-have-names: 1.2.3
 
+  /regexp.prototype.flags@1.5.0:
+    resolution: {integrity: sha512-0SutC3pNudRKgquxGoRGIz946MZVHqbNfPjBdxeOhBrdgDKlRoXmYLQN9xRbrR09ZXWeGAdPuif7egofn6v5LA==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      call-bind: 1.0.2
+      define-properties: 1.2.0
+      functions-have-names: 1.2.3
+    dev: true
+
   /regexparam@1.3.0:
     resolution: {integrity: sha512-6IQpFBv6e5vz1QAqI+V4k8P2e/3gRrqfCJ9FI+O1FLQTO+Uz6RXZEZOPmTJ6hlGj7gkERzY5BRCv09whKP96/g==}
     engines: {node: '>=6'}
@@ -13149,15 +13152,6 @@ packages:
       is-core-module: 2.11.0
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
-
-  /resolve@1.22.3:
-    resolution: {integrity: sha512-P8ur/gp/AmbEzjr729bZnLjXK5Z+4P0zhIJgBgzqRih7hL7BOukHGtSTA3ACMY467GRFz3duQsi0bDZdR7DKdw==}
-    hasBin: true
-    dependencies:
-      is-core-module: 2.12.0
-      path-parse: 1.0.7
-      supports-preserve-symlinks-flag: 1.0.0
-    dev: true
 
   /responselike@2.0.1:
     resolution: {integrity: sha512-4gl03wn3hj1HP3yzgdI7d3lCkF95F21Pz4BPGvKHinyQzALR5CapwC8yIi0Rh58DEMQ/SguC03wFj2k0M/mHhw==}
@@ -14176,7 +14170,7 @@ packages:
       get-intrinsic: 1.2.0
       has-symbols: 1.0.3
       internal-slot: 1.0.5
-      regexp.prototype.flags: 1.4.3
+      regexp.prototype.flags: 1.5.0
       side-channel: 1.0.4
     dev: true
 
