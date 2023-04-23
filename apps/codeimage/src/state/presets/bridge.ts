@@ -2,27 +2,14 @@ import * as ApiTypes from '@codeimage/api/api-types';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {
-  PersistedEditorState,
-  PersistedTerminalState,
-} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {PersistedFrameState} from '@codeimage/store/frame/model';
 import {appEnvironment} from '@core/configuration';
 import {createEffect, createUniqueId, on} from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {makePlugin} from 'statebuilder';
 import * as api from '../../data-access/preset';
 import {useIdb} from '../../hooks/use-indexed-db';
-import {Preset, PresetsArray} from './types';
-
-export interface PresetData {
-  frame: PersistedFrameState;
-  terminal: PersistedTerminalState;
-  editor: PersistedEditorState;
-  localSyncId?: string;
-  appVersion?: string;
-}
+import {Preset, PresetData, PresetsArray} from './types';
 
 export const withPresetBridge = (idbKey: string) =>
   makePlugin(
@@ -46,9 +33,46 @@ export const withPresetBridge = (idbKey: string) =>
         ),
       );
 
+      const getPresetDataFromState = () => {
+        const frameState = getFrameState().stateToPersist();
+        const terminalState = getTerminalState().stateToPersist();
+        const editorState = getRootEditorStore().stateToPersist();
+        const presetData: PresetData = {
+          appVersion: appEnvironment.version,
+          frame: {
+            background: frameState.background!,
+            opacity: frameState.opacity,
+            padding: frameState.padding,
+            visible: frameState.visible,
+            radius: frameState.radius,
+          },
+          terminal: {
+            opacity: terminalState.opacity,
+            background: terminalState.background,
+            accentVisible: terminalState.accentVisible,
+            alternativeTheme: terminalState.alternativeTheme,
+            shadow: terminalState.shadow,
+            showGlassReflection: terminalState.showGlassReflection,
+            type: terminalState.type,
+            showHeader: terminalState.showHeader,
+            showWatermark: terminalState.showWatermark,
+            textColor: terminalState.textColor,
+          },
+          editor: {
+            fontId: editorState.options.fontId,
+            fontWeight: editorState.options.fontWeight,
+            showLineNumbers: editorState.options.showLineNumbers,
+            themeId: editorState.options.themeId,
+            enableLigatures: editorState.options.enableLigatures,
+          },
+        };
+        return presetData;
+      };
+
       const bridge = {
         useInMemoryStore,
         persistToIdb,
+        getPresetDataFromState,
         isLocalPreset(preset: Preset) {
           return preset.id === preset.data.localSyncId;
         },
@@ -59,14 +83,7 @@ export const withPresetBridge = (idbKey: string) =>
           name: string,
           data?: PresetData & ApiTypes.CreatePresetApi['response']['data'],
         ): Promise<Preset> {
-          const presetData: PresetData = {
-            ...(data ?? {
-              frame: getFrameState().stateToPersist(),
-              terminal: getTerminalState().stateToPersist(),
-              editor: getRootEditorStore().stateToPersist(),
-            }),
-            appVersion: appEnvironment.version,
-          };
+          const presetData: PresetData = data ?? getPresetDataFromState();
           if (useInMemoryStore()) {
             const id = createUniqueId();
             presetData.localSyncId = id;

@@ -1,10 +1,10 @@
 import {getEditorStore} from '@codeimage/store/editor';
 import {
   PersistedTerminalState,
-  ProjectEditorPersistedState,
   TerminalState,
 } from '@codeimage/store/editor/model';
 import {provideAppState} from '@codeimage/store/index';
+import {PresetData} from '@codeimage/store/presets/types';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {from, map} from 'rxjs';
@@ -45,7 +45,7 @@ export function createTerminalState() {
       toggleShowHeader: void;
       toggleWatermark: void;
       setFromPersistedState: PersistedTerminalState;
-      setFromPreset: ProjectEditorPersistedState;
+      setFromPreset: PresetData['terminal'];
     }>(),
   );
   const store = provideAppState(config);
@@ -86,8 +86,8 @@ export function createTerminalState() {
       ...state,
       showWatermark: !state.showWatermark,
     }))
-    .hold(store.commands.setFromPreset, preset => {
-      store.set(state => ({...state, ...preset.terminal}));
+    .hold(store.commands.setFromPreset, presetData => {
+      store.set(state => ({...state, ...presetData}));
     })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
       const shadows = TERMINAL_SHADOWS;

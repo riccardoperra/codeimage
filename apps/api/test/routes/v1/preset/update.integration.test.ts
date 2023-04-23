@@ -3,15 +3,14 @@ import * as sinon from 'sinon';
 import t from 'tap';
 import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema';
 import {PresetUpdateDto} from '../../../../src/modules/preset/schema/preset-update-dto.schema';
+import {testPresetUtils} from '../../../__internal__/presetUtils';
 
 import {build} from '../../../helper';
 import {presetSeed, userSeed} from '../../../helpers/seed';
 
 t.before(async () => {
   const user = await userSeed.createUser();
-  const preset1 = await presetSeed.createPresetV1('preset-1', user.id, {
-    test: true,
-  });
+  const preset1 = await presetSeed.createPresetV1('preset-1', user.id);
   t.context.user = user;
   t.context.preset1 = preset1;
 });
@@ -22,7 +21,7 @@ t.test('[PUT] /v1/preset/:id -> 200', async t => {
   const spy = sinon.spy(fastify.presetService, 'updatePreset');
 
   const request: PresetUpdateDto = {
-    data: {test: 'updated'},
+    data: testPresetUtils.buildPresetData(),
     name: 'updated',
   };
 

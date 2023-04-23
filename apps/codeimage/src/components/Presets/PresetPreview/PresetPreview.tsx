@@ -29,10 +29,10 @@ export function PresetPreview(props: PresetPreviewProps) {
         showWatermark={false}
         opacity={props.data.terminal.opacity}
         alternativeTheme={props.data.terminal.alternativeTheme}
-        themeId={props.data.editor.options.themeId}
+        themeId={props.data.editor.themeId}
       >
         <CustomEditorPreview
-          themeId={props.data.editor.options.themeId}
+          themeId={props.data.editor.themeId}
           languageId={'typescript'}
           code={props.code}
         />

@@ -2,6 +2,7 @@ import type * as ApiTypes from '@codeimage/api/api-types';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
+import {PresetData} from '@codeimage/store/presets/types';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
@@ -10,12 +11,7 @@ import {createMemo, createSelector} from 'solid-js';
 import {SetStoreFunction} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
-import {
-  EditorState,
-  EditorUIOptions,
-  PersistedEditorState,
-  ProjectEditorPersistedState,
-} from './model';
+import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
 
 const defaultId = createUniqueId();
 
@@ -58,7 +54,7 @@ export function createEditorsStore() {
       setFontWeight: number;
       setShowLineNumbers: boolean;
       setFromPersistedState: PersistedEditorState;
-      setFromPreset: ProjectEditorPersistedState;
+      setFromPreset: PresetData['editor'];
       setEnableLigatures: boolean;
     }>(),
   );
@@ -92,8 +88,8 @@ export function createEditorsStore() {
     .hold(store.commands.setEnableLigatures, (enable, {set}) =>
       set('options', 'enableLigatures', enable),
     )
-    .hold(store.commands.setFromPreset, preset => {
-      store.set('options', preset.editor.options);
+    .hold(store.commands.setFromPreset, presetData => {
+      store.set('options', presetData);
       store.dispatch(editorUpdateCommand, void 0);
     })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
