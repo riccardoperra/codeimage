@@ -1,6 +1,7 @@
 import {PrismaClient} from '@codeimage/prisma-models';
 import * as crypto from 'crypto';
 import t from 'tap';
+import {testPresetUtils} from '../__internal__/presetUtils';
 
 const client = new PrismaClient();
 
@@ -39,13 +40,13 @@ export const userSeed = {
 
 export const presetSeed = {
   clean: () => client.$transaction([client.preset.deleteMany()]),
-  createPresetV1(presetName: string, ownerId: string, data: object) {
+  createPresetV1(presetName: string, ownerId: string, data?: object) {
     return client.preset.create({
       data: {
         name: presetName,
         owner: {connect: {id: ownerId}},
         version: BigInt(1),
-        data,
+        data: data ?? testPresetUtils.buildPresetData(),
       },
     });
   },

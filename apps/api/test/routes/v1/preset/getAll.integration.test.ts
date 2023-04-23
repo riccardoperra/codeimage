@@ -1,18 +1,23 @@
 import * as sinon from 'sinon';
 import t from 'tap';
 import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema';
+import {testPresetUtils} from '../../../__internal__/presetUtils';
 
 import {build} from '../../../helper';
 import {presetSeed, userSeed} from '../../../helpers/seed';
 
 t.before(async () => {
   const user = await userSeed.createUser();
-  const preset1 = await presetSeed.createPresetV1('preset-1', user.id, {
-    test: true,
-  });
-  const preset2 = await presetSeed.createPresetV1('preset-2', user.id, {
-    test: true,
-  });
+  const preset1 = await presetSeed.createPresetV1(
+    'preset-1',
+    user.id,
+    testPresetUtils.buildPresetData(),
+  );
+  const preset2 = await presetSeed.createPresetV1(
+    'preset-2',
+    user.id,
+    testPresetUtils.buildPresetData(),
+  );
   t.context.user = user;
   t.context.preset1 = preset1;
   t.context.preset2 = preset2;

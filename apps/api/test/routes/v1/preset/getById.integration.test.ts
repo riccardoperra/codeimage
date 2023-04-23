@@ -8,9 +8,7 @@ import {presetSeed, userSeed} from '../../../helpers/seed';
 
 t.before(async () => {
   const user = await userSeed.createUser();
-  const preset1 = await presetSeed.createPresetV1('preset-1', user.id, {
-    test: true,
-  });
+  const preset1 = await presetSeed.createPresetV1('preset-1', user.id);
   t.context.user = user;
   t.context.preset1 = preset1;
 });

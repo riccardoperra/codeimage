@@ -1,9 +1,9 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
+import {PresetData} from '@codeimage/store/presets/types';
 import {getUiStore} from '@codeimage/store/ui';
 import {Box, HStack, Text} from '@codeimage/ui';
 import {
@@ -49,10 +49,10 @@ export const PresetSwitcher: ParentComponent<
   const locale = () => getUiStore().get.locale;
   const presetsStore = getPresetsStore();
 
-  const onSelectTheme = (data: ProjectEditorPersistedState) => {
-    editor.actions.setFromPreset(data);
-    frame.setFromPreset(data);
-    terminal.setFromPreset(data);
+  const onSelectTheme = (data: PresetData) => {
+    editor.actions.setFromPreset(data.editor);
+    frame.setFromPreset(data.frame);
+    terminal.setFromPreset(data.terminal);
     getUmami().trackEvent('preset', 'select-preset');
   };
 
@@ -117,7 +117,6 @@ export const PresetSwitcher: ParentComponent<
             fallback={<EmptyPresetFallback />}
           >
             {theme => {
-              const data = () => theme.data as ProjectEditorPersistedState;
               const canSyncPreset = () =>
                 presetsStore.bridge.canSyncPreset(theme);
 
@@ -141,10 +140,10 @@ export const PresetSwitcher: ParentComponent<
                   <div>
                     <li
                       class={styles.item}
-                      onClick={() => onSelectTheme(data())}
+                      onClick={() => onSelectTheme(theme.data)}
                     >
                       <ErrorBoundary fallback={<ThemeBoxSkeleton />}>
-                        <PresetPreview code={exampleCode} data={data()} />
+                        <PresetPreview code={exampleCode} data={theme.data} />
                       </ErrorBoundary>
 
                       <Box
