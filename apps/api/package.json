@@ -25,7 +25,7 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:migrate:deploy-test": "dotenv -e .env.test -- pnpm exec prisma migrate deploy",
     "prisma:generate": "prisma generate dev && pnpm --filter=@codeimage/prisma-models build",
-    "docker:up": "docker compose -f docker-compose.dev.yml up",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up",
     "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"blue.bold,cyan.bold\" \"npm:dev:start\"",
     "dev:start": "tsx watch node_modules/fastify-cli/cli.js start --ignore-watch=.ts$ -w -l info -P src/app.ts"
   },

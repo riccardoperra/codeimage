@@ -1,3 +1,4 @@
+import {presets} from './../../i18n/presets';
 import * as ApiTypes from '@codeimage/api/api-types';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -29,7 +30,6 @@ export const withPresetBridge = (idbKey: string) =>
     store => {
       const idb = useIdb();
       const useInMemoryStore = () => !getAuth0State().loggedIn();
-
       function persistToIdb(data: PresetsArray) {
         return idb.set(idbKey, unwrap(data)).then();
       }
@@ -52,6 +52,7 @@ export const withPresetBridge = (idbKey: string) =>
         isLocalPreset(preset: Preset) {
           return preset.id === preset.data.localSyncId;
         },
+
         canSyncPreset(preset: Preset) {
           return !useInMemoryStore() && this.isLocalPreset(preset);
         },

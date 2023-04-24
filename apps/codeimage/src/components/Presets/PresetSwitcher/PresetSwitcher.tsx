@@ -88,6 +88,7 @@ export const PresetSwitcher: ParentComponent<
                   },
                 });
               }}
+              disabled={!presetsStore.canAddNewPreset()}
             >
               {t('presets.addPreset.label')}
             </Button>
