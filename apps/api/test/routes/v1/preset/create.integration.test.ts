@@ -2,6 +2,7 @@ import * as sinon from 'sinon';
 import t from 'tap';
 import {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema';
 import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema';
+import {testPresetUtils} from '../../../__internal__/presetUtils';
 
 import {build} from '../../../helper';
 import {userSeed} from '../../../helpers/seed';
@@ -16,9 +17,11 @@ t.test('POST /v1/preset [Create Preset] -> 200', async t => {
   const spy = sinon.spy(fastify.presetService, 'createPreset');
   const createRepositorySpy = sinon.spy(fastify.presetRepository, 'create');
 
+  const data = testPresetUtils.buildPresetData();
+
   const request: PresetCreateDto = {
     name: 'Data',
-    data: {test: true},
+    data,
   };
 
   const response = await fastify.inject({
@@ -40,11 +43,12 @@ t.test(
   async t => {
     const fastify = await build(t);
     const createRepositorySpy = sinon.spy(fastify.presetRepository, 'create');
+    const data = testPresetUtils.buildPresetData();
     sinon.stub(fastify.config, 'PRESETS_LIMIT').value(-1);
 
     const request: PresetCreateDto = {
       name: 'Data',
-      data: {test: true},
+      data,
     };
 
     const response = await fastify.inject({
