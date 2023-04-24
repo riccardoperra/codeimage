@@ -16,6 +16,8 @@ jobs:
         node-version: [16.13.2]
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: dorny/paths-filter@v2
         if: (${{ env.IS_MAIN_BRANCH == 'false' }} || ${{ env.IS_NEXT_BRANCH == 'false' }})
         id: diff-changes
@@ -60,6 +62,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -87,6 +91,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -121,6 +127,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -159,6 +167,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -215,6 +224,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -269,6 +279,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
+          submodules: 'true'
+
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -316,6 +328,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -370,6 +383,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -402,6 +416,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -466,6 +482,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
@@ -509,6 +527,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 7
