@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {Box, FlexField, TextField} from '@codeimage/ui';
+import {Box, FlexField} from '@codeimage/ui';
+import {TextField} from '@codeui/kit';
 import {Show} from 'solid-js';
 import {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
@@ -23,12 +24,11 @@ export function ProjectToolbar() {
         <Show when={!dashboard.data.isEmpty()}>
           <FlexField size={'lg'}>
             <TextField
-              type={'text'}
               value={dashboard.search()}
               onChange={value => dashboard.setSearch(value)}
               placeholder={'Search'}
-              inline={true}
-            ></TextField>
+              theme={'inline'}
+            />
           </FlexField>
         </Show>
       </div>

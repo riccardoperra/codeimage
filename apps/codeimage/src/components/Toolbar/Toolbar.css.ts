@@ -69,6 +69,11 @@ export const toolbarSnippetName = style({
   ':hover': {
     backgroundColor: themeVars.dynamicColors.input.accentColor,
   },
+  userSelect: 'none',
+});
+
+export const toolbarSnippetNameInput = style({
+  textAlign: 'center',
 });
 
 export const mobileToolbarSnippet = style({

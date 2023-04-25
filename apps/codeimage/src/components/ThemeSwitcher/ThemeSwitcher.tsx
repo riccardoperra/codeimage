@@ -5,7 +5,8 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {useFilteredThemes} from '@codeimage/store/theme/useFilteredThemes';
-import {Box, FlexField, TextField} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
+import {TextField} from '@codeui/kit';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
@@ -60,15 +61,12 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
       })}
     >
       <Show when={modality === 'full'} keyed={false}>
-        <FlexField size={'lg'}>
-          <TextField
-            type={'text'}
-            disabled={themeLoading()}
-            placeholder={t('themeSwitcher.search')}
-            value={search()}
-            onChange={setSearch}
-          />
-        </FlexField>
+        <TextField
+          disabled={themeLoading()}
+          placeholder={t('themeSwitcher.search')}
+          value={search()}
+          onChange={setSearch}
+        />
       </Show>
 
       <For each={themeArray()}>
