@@ -5,7 +5,7 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {generateUid} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
-import {createEffect, createUniqueId, on} from 'solid-js';
+import {createEffect, on} from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {makePlugin} from 'statebuilder';
 import * as api from '../../data-access/preset';
