@@ -2,7 +2,7 @@ name: Main
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 env:
   IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        node-version: [16.13.2]
+        node-version: [ 16.13.2 ]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -86,7 +86,7 @@ jobs:
 
   build-packages:
     name: Build packages
-    needs: [install]
+    needs: [ install ]
     runs-on: ubuntu-latest
 
     steps:
@@ -123,7 +123,7 @@ jobs:
   typecheck-packages:
     if: ${{ needs.install.outputs.libs-change == 'true' }}
     name: Type-checking
-    needs: [install, build-packages]
+    needs: [ install, build-packages ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -146,6 +146,12 @@ jobs:
           pnpm exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
       - name: Typecheck packages
         run: |
           pnpm --filter='./packages/**' --recursive typecheck:ci
@@ -158,7 +164,7 @@ jobs:
   build-app-dev:
     name: Build App and Preview (Dev)
     environment: Preview
-    needs: [build-packages]
+    needs: [ build-packages ]
     if: ${{ github.head_ref  != 'next' }}
     runs-on: ubuntu-latest
 
@@ -270,7 +276,7 @@ jobs:
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'
     environment: Preview
-    needs: [build-packages]
+    needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
@@ -319,7 +325,7 @@ jobs:
   build-website-dev:
     name: '@codeimage/website dev and Preview'
     environment: Preview
-    needs: [build-packages]
+    needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
@@ -376,7 +382,7 @@ jobs:
 
   website-lhci:
     name: Lighthouse
-    needs: [build-website-dev]
+    needs: [ build-website-dev ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -411,7 +417,7 @@ jobs:
 
   build-api:
     name: Build Api
-    needs: [install, typecheck-packages, build-packages]
+    needs: [ install, typecheck-packages, build-packages ]
     runs-on: ubuntu-latest
 
     steps:
@@ -450,7 +456,7 @@ jobs:
   be-test:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Api test
-    needs: [install]
+    needs: [ install ]
     runs-on: ubuntu-latest
 
     services:
