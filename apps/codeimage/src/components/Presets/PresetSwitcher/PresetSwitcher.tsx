@@ -14,6 +14,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
   IconButton,
+  Tooltip,
 } from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {formatDistanceToNow} from '@core/helpers/date';
@@ -34,6 +35,7 @@ import {EmptyPresetFallback} from '../EmptyPresetFallback/EmptyPresetFallback';
 import {PresetPreview} from '../PresetPreview/PresetPreview';
 import {PresetUpdateDialog} from '../PresetUpdateDialog';
 import * as styles from './PresetSwitcher.css';
+import {PresetTooltipContent} from './PresetTooltipContent';
 
 type PresetSwitcherProps = {
   onClose: () => void;
@@ -76,21 +78,28 @@ export const PresetSwitcher: ParentComponent<
         >
           <Text weight={'semibold'}>{t('presets.userPresets')}</Text>
           <HStack spacing={2}>
-            <Button
-              size={'xs'}
-              theme={'primary'}
-              onClick={() => {
-                openDialog(RenameContentDialog, {
-                  title: t('presets.addPreset.confirmTitle'),
-                  message: t('presets.addPreset.confirmMessage'),
-                  onConfirm: async name => {
-                    presetsStore.actions.addNewPreset({name});
-                  },
-                });
-              }}
+            <Tooltip
+              content={<PresetTooltipContent />}
+              disabled={!presetsStore.bridge.reachPresetLimit()}
+              placement="bottom"
             >
-              {t('presets.addPreset.label')}
-            </Button>
+              <Button
+                size={'xs'}
+                theme={'primary'}
+                onClick={() => {
+                  openDialog(RenameContentDialog, {
+                    title: t('presets.addPreset.confirmTitle'),
+                    message: t('presets.addPreset.confirmMessage'),
+                    onConfirm: async name => {
+                      presetsStore.actions.addNewPreset({name});
+                    },
+                  });
+                }}
+                disabled={presetsStore.bridge.reachPresetLimit()}
+              >
+                {t('presets.addPreset.label')}
+              </Button>
+            </Tooltip>
             <IconButton
               aria-label={'Close'}
               size={'xs'}
