@@ -1,4 +1,3 @@
-import {presets} from './../../i18n/presets';
 import * as ApiTypes from '@codeimage/api/api-types';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -11,6 +10,10 @@ import {makePlugin} from 'statebuilder';
 import * as api from '../../data-access/preset';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {Preset, PresetData, PresetsArray} from './types';
+
+const env = import.meta.env;
+const userLimit = env.VITE_PRESET_LIMIT;
+const guestLimit = env.VITE_PRESET_LIMIT_GUEST;
 
 export const withPresetBridge = (idbKey: string) =>
   makePlugin(
@@ -32,7 +35,6 @@ export const withPresetBridge = (idbKey: string) =>
           {defer: true},
         ),
       );
-
       const getPresetDataFromState = () => {
         const frameState = getFrameState().stateToPersist();
         const terminalState = getTerminalState().stateToPersist();
@@ -115,6 +117,11 @@ export const withPresetBridge = (idbKey: string) =>
           return inMemory
             ? Promise.resolve({...preset, name, data})
             : api.updatePreset({params: {id: preset.id}, body: {name, data}});
+        },
+        reachPresetLimit() {
+          const limitPreset = () =>
+            useInMemoryStore() ? guestLimit : userLimit;
+          return store()?.length >= limitPreset();
         },
       };
       return {bridge} as const;
