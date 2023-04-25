@@ -43,7 +43,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
       size={'lg'}
       {...props}
       title={'Settings'}
-      isOpen={props.isOpen}
+      open={props.isOpen}
       onOpenChange={props.onOpenChange}
     >
       <DialogPanelContent>
@@ -140,7 +140,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
                     <RadioList
                       label={'Locale'}
                       size={'md'}
-                      onValueChange={locale => {
+                      onChange={locale => {
                         ui.setLocale(locale);
                         getUmami().trackEvent(locale, `change-app-language`);
                       }}

@@ -6,6 +6,7 @@ import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers
 import {create} from '../../../../src/modules/preset/handlers/create';
 import {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema';
 import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema';
+import {testPresetUtils} from '../../../__internal__/presetUtils';
 import {dependencies} from './dependencies';
 
 const handlersStub = {} as ResolvedDomainHandlerMap<DomainHandlerMap>;
@@ -18,7 +19,7 @@ t.test('when findById and found result', async t => {
 
   const request: PresetCreateDto = {
     name: 'presetToCreate',
-    data: {test: true},
+    data: testPresetUtils.buildPresetData(),
   };
 
   const savedPreset: Preset = {
@@ -27,7 +28,7 @@ t.test('when findById and found result', async t => {
     version: BigInt(1),
     createdAt: new Date(),
     updatedAt: new Date(),
-    data: {test: true},
+    data: testPresetUtils.buildPresetData(),
     ownerId,
   };
 
@@ -37,7 +38,7 @@ t.test('when findById and found result', async t => {
     version: 1,
     createdAt: savedPreset.createdAt,
     updatedAt: savedPreset.updatedAt,
-    data: {test: true},
+    data: testPresetUtils.buildPresetData(),
   };
 
   sinon.stub(dependencies.config, 'PRESETS_LIMIT').value(10);
@@ -72,7 +73,7 @@ t.test('throw error when exceed limit', async t => {
 
   const request: PresetCreateDto = {
     name: 'presetToCreate',
-    data: {test: true},
+    data: testPresetUtils.buildPresetData(),
   };
 
   const savedPreset: Preset = {
@@ -81,7 +82,7 @@ t.test('throw error when exceed limit', async t => {
     version: BigInt(1),
     createdAt: new Date(),
     updatedAt: new Date(),
-    data: {test: true},
+    data: testPresetUtils.buildPresetData(),
     ownerId,
   };
 

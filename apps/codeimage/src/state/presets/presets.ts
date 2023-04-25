@@ -1,6 +1,3 @@
-import {getRootEditorStore} from '@codeimage/store/editor';
-import {getFrameState} from '@codeimage/store/editor/frame';
-import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {withEntityPlugin} from '@codeimage/store/plugins/withEntityPlugin';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {toast} from '@codeimage/ui';
@@ -141,14 +138,12 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
             return untrack(() => {
               const currentState = store();
 
-              const newData = {
-                frame: getFrameState().stateToPersist(),
-                terminal: getTerminalState().stateToPersist(),
-                editor: getRootEditorStore().stateToPersist(),
-              };
-
               return store.bridge
-                .updatePreset(payload.preset, payload.preset.name, newData)
+                .updatePreset(
+                  payload.preset,
+                  payload.preset.name,
+                  store.bridge.getPresetDataFromState(),
+                )
                 .then(updatedPreset => {
                   store.entity.updateBy(
                     _ => _.id === payload.preset.id,

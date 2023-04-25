@@ -99,7 +99,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
       </Button>
 
       <ExportDialog
-        isOpen={open()}
+        open={open()}
         onOpenChange={setOpen}
         size={modality === 'mobile' ? 'full' : 'md'}
         onConfirm={payload => {
@@ -202,9 +202,9 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
 
   return (
     <Dialog
-      isOpen={props.isOpen}
+      open={props.open}
       onOpenChange={value => props.onOpenChange?.(value)}
-      isModal={true}
+      modal={true}
       size={props.size}
       title={t('export.title')}
     >
@@ -248,7 +248,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               placeholder={t('export.fileNamePlaceholder')}
               label={t('export.fileName')}
               value={fileName()}
-              onValueChange={setFileName}
+              onChange={setFileName}
               size={'md'}
               theme={'filled'}
             />
