@@ -1,6 +1,3 @@
-import {getRootEditorStore} from '@codeimage/store/editor';
-import {getFrameState} from '@codeimage/store/editor/frame';
-import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {withEntityPlugin} from '@codeimage/store/plugins/withEntityPlugin';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {toast} from '@codeimage/ui';

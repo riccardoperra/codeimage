@@ -12,7 +12,6 @@ import {
   createEffect,
   createMemo,
   createResource,
-  getOwner,
   on,
   onMount,
   VoidProps,
@@ -31,7 +30,6 @@ export default function CustomEditorPreview(
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
-  const owner = getOwner();
 
   const {editorView, ref: setEditorRef, createExtension} = createCodeMirror();
   createEditorControlledValue(editorView, () => props.code);

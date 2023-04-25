@@ -1,7 +1,4 @@
 import {useI18n} from '@codeimage/locale';
-import {getRootEditorStore} from '@codeimage/store/editor';
-import {getFrameState} from '@codeimage/store/editor/frame';
-import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Preset} from '@codeimage/store/presets/types';
 import {Box, HStack, SvgIcon, Text} from '@codeimage/ui';
 import {
