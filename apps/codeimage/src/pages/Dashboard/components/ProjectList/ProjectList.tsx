@@ -1,4 +1,4 @@
-import {Box, getLastPage} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
 import {Pagination} from '@codeui/kit';
 import {ErrorBoundary, For, Index, Show, Suspense, untrack} from 'solid-js';
 import {getDashboardState} from '../../dashboard.state';
@@ -26,9 +26,6 @@ export function ProjectList() {
     const list = Array.from({length: count || 5});
     return <Index each={list}>{() => <ProjectItemSkeleton />}</Index>;
   };
-
-  const lastPage = () =>
-    getLastPage(dashboard.filteredData, () => paginationState.pageSize);
 
   return (
     <ErrorBoundary
