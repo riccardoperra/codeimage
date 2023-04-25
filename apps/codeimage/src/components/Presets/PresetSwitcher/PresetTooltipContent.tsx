@@ -6,7 +6,6 @@ import {AppLocaleEntries} from '../../../i18n';
 export function PresetTooltipContent() {
   const {loggedIn, login} = getAuth0State();
   const [t] = useI18n<AppLocaleEntries>();
-  console.log('translate', {limit: t('presets.limit.user.label')});
   return (
     <>
       {loggedIn() ? (
@@ -21,8 +20,9 @@ export function PresetTooltipContent() {
               size={'sm'}
               underline
               weight={'medium'}
+              style={{cursor: 'pointer'}}
             >
-              log in
+              Log in
             </Link>{' '}
             {t('presets.limit.guest.actionLabel')}
           </p>

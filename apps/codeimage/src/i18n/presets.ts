@@ -76,14 +76,14 @@ export const presets = {
       openPreset: {
         label: 'Show your presets',
       },
-    },
-    limit: {
-      user: {
-        label: `You have reach the maximun of ${userLimit} presets per user`,
-      },
-      guest: {
-        label: `You have reach the maximun of ${guestLimit}`,
-        actionLabel: `to save more presets`,
+      limit: {
+        user: {
+          label: `You reached the maximum number of ${userLimit} presets.`,
+        },
+        guest: {
+          label: `You reached the maximum number of ${guestLimit} presets.`,
+          actionLabel: `to increase your limits.`,
+        },
       },
     },
   },
@@ -119,14 +119,14 @@ export const presets = {
       openPreset: {
         label: 'Show your presets',
       },
-    },
-    limit: {
-      user: {
-        label: `Sie haben das voreingestellte Limit ${userLimit} pro Benutzer erreicht`,
-      },
-      guest: {
-        label: `Sie haben das Limit von ${guestLimit} Voreinstellungen pro Gastbenutzer erreicht`,
-        actionLabel: `um weitere Voreinstellungen zu erhalten`,
+      limit: {
+        user: {
+          label: `Sie haben das voreingestellte Limit ${userLimit} pro Benutzer erreicht`,
+        },
+        guest: {
+          label: `Sie haben das Limit von ${guestLimit} Voreinstellungen pro Gastbenutzer erreicht`,
+          actionLabel: `um weitere Voreinstellungen zu erhalten`,
+        },
       },
     },
   },
@@ -162,14 +162,14 @@ export const presets = {
       openPreset: {
         label: 'Show your presets',
       },
-    },
-    limit: {
-      user: {
-        label: `Alcanzaste el maximo de ${userLimit} presets`,
-      },
-      guest: {
-        label: `Alcanzaste el maximo de ${guestLimit} presets`,
-        actionLabel: `para salvar mas presets`,
+      limit: {
+        user: {
+          label: `Alcanzaste el maximo de ${userLimit} presets`,
+        },
+        guest: {
+          label: `Alcanzaste el maximo de ${guestLimit} presets`,
+          actionLabel: `para salvar mas presets`,
+        },
       },
     },
   },
