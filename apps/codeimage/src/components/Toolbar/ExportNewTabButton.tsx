@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {LoadingCircle, toast} from '@codeimage/ui';
+import {toast} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
