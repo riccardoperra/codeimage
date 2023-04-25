@@ -1,3 +1,9 @@
+#######################################################################################
+# "pnpm install" composite action                                                      #
+#--------------------------------------------------------------------------------------#
+#   - bench: https://gist.github.com/belgattitude/0ecd26155b47e7be1be6163ecfbb0f0b     #
+########################################################################################
+
 name: 'Monorepo install (pnpm)'
 description: 'Run pnpm install'
 
@@ -6,8 +12,9 @@ runs:
 
   steps:
     - uses: pnpm/action-setup@v2.2.4
-      with:
-        version: 8.4.0
+      # If you're not setting the packageManager field in package.json, add the version here
+      # with:
+      #   version: 7.16.1
 
     - name: Expose pnpm config(s) through "$GITHUB_OUTPUT"
       id: pnpm-config
