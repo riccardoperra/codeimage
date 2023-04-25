@@ -1,0 +1,51 @@
+#######################################################################################
+# "pnpm install" composite action                                                      #
+#--------------------------------------------------------------------------------------#
+#   - bench: https://gist.github.com/belgattitude/0ecd26155b47e7be1be6163ecfbb0f0b     #
+########################################################################################
+
+name: 'Monorepo install (pnpm)'
+description: 'Run pnpm install'
+
+runs:
+  using: 'composite'
+
+  steps:
+    - uses: pnpm/action-setup@v2.2.4
+      # If you're not setting the packageManager field in package.json, add the version here
+      # with:
+      #   version: 7.16.1
+
+    - name: Expose pnpm config(s) through "$GITHUB_OUTPUT"
+      id: pnpm-config
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path | tr -d '\n')" >> $GITHUB_OUTPUT
+
+    - name: Cache rotation keys
+      id: cache-rotation
+      shell: bash
+      run: |
+        echo "YEAR_MONTH=$(/bin/date -u "+%Y%m")" >> $GITHUB_OUTPUT
+
+    - uses: actions/cache@v3
+      name: Setup pnpm cache
+      with:
+        path: ${{ steps.pnpm-config.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-cache-${{ steps.cache-rotation.outputs.YEAR_MONTH }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-cache-${{ steps.cache-rotation.outputs.YEAR_MONTH }}-
+
+    # Prevent store to grow over time (not needed with yarn)
+    # Note: not perfect as it prune too much in monorepos so the idea
+    #       is to use cache-rotation as above. In the future this might work better.
+    #- name: Prune pnpm store
+    #  shell: bash
+    #  run: pnpm prune store
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile --prefer-offline
+      env:
+        # Other environment variables
+        HUSKY: '0' # By default do not run HUSKY install

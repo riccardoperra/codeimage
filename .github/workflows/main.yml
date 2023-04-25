@@ -18,6 +18,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
+
       - uses: dorny/paths-filter@v2
         if: (${{ env.IS_MAIN_BRANCH == 'false' }} || ${{ env.IS_NEXT_BRANCH == 'false' }})
         id: diff-changes
@@ -36,16 +43,6 @@ jobs:
               - 'apps/api/**'
               - package.json
               - pnpm-lock.json
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
 
     outputs:
       backend-change: 'true'
@@ -67,16 +64,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Prisma migrate
         run: |
@@ -99,16 +92,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Prisma migrate
         run: |
@@ -138,16 +127,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Prisma migrate
         run: |
@@ -181,22 +166,15 @@ jobs:
         node-version: [ 19 ]
 
     steps:
-      - name: Checkout PR
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -242,21 +220,16 @@ jobs:
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -300,22 +273,16 @@ jobs:
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
+          ref: 'refs/pull/${{ github.event.number }}/merge'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -352,21 +319,16 @@ jobs:
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -410,21 +372,16 @@ jobs:
         node-version: [ 19 ]
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore website
         uses: actions/cache@v3
@@ -451,16 +408,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: "[API] Generate Prisma Migration"
         run: |
@@ -520,7 +473,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: pnpm/action-setup@v2
         with:
           version: 8
       - name: Use Node.js ${{ matrix.node-version }}
@@ -535,9 +488,6 @@ jobs:
           path: |
             packages
           key: packages-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Prisma migrate
         run: |
@@ -568,24 +518,18 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
         uses: actions/cache@v3
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
 
       - name: Restore api build
         uses: actions/cache@v3
