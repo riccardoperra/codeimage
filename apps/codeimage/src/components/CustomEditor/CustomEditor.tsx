@@ -37,7 +37,6 @@ import {
   createEffect,
   createMemo,
   createResource,
-  getOwner,
   on,
   onMount,
   VoidProps,
@@ -74,7 +73,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
-  const owner = getOwner();
 
   const {
     state: editorState,

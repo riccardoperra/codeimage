@@ -274,8 +274,8 @@ importers:
         specifier: ^6.9.1
         version: 6.9.3
       '@codeui/kit':
-        specifier: 0.0.20
-        version: 0.0.20(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5)
+        specifier: workspace:*
+        version: link:../../packages/kit/packages/kit
       '@floating-ui/core':
         specifier: ^1.2.2
         version: 1.2.6
@@ -2817,30 +2817,6 @@ packages:
       style-mod: 4.0.2
       w3c-keyname: 2.2.6
 
-  /@codeui/kit@0.0.20(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5):
-    resolution: {integrity: sha512-ROhE1AYNRw6TOQK5ijkrtDwp7wXmMHQ6Oayz50cmdPSwL06tpWysIBtqHtnlc/N7LxinOG7fOevYMd01WaC5pA==}
-    peerDependencies:
-      solid-js: ^1.7.0
-    dependencies:
-      '@kobalte/core': 0.8.2(solid-js@1.7.3)
-      '@kobalte/utils': 0.6.1(solid-js@1.7.3)
-      '@kobalte/vanilla-extract': 0.3.0(@vanilla-extract/css@1.11.0)
-      '@motionone/solid': 10.16.0(solid-js@1.7.3)
-      '@radix-ui/colors': 0.1.8
-      '@vanilla-extract/css': 1.11.0
-      '@vanilla-extract/dynamic': 2.0.3
-      '@vanilla-extract/recipes': 0.4.0(@vanilla-extract/css@1.11.0)
-      '@vanilla-extract/vite-plugin': 3.8.0(ts-node@10.9.1)(vite@3.2.5)
-      motion: 10.15.5
-      polished: 4.2.2
-      solid-js: 1.7.3
-      statebuilder: 0.3.1
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-      - vite
-    dev: false
-
   /@commitlint/cli@17.1.2:
     resolution: {integrity: sha512-h/4Hlka3bvCLbnxf0Er2ri5A44VMlbMSkdTRp8Adv2tRiklSTRIoPGs7OEXDv3EoDs2AAzILiPookgM4Gi7LOw==}
     engines: {node: '>=v14'}
@@ -3699,12 +3675,6 @@ packages:
       '@swc/helpers': 0.4.14
     dev: false
 
-  /@internationalized/string@3.1.0:
-    resolution: {integrity: sha512-TJQKiyUb+wyAfKF59UNeZ/kELMnkxyecnyPCnBI1ma4NaXReJW+7Cc2mObXAqraIBJUVv7rgI46RLKrLgi35ng==}
-    dependencies:
-      '@swc/helpers': 0.4.14
-    dev: false
-
   /@istanbuljs/load-nyc-config@1.1.0:
     resolution: {integrity: sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ==}
     engines: {node: '>=8'}
@@ -3738,7 +3708,7 @@ packages:
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
       '@jest/types': 29.5.0
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       chalk: 4.1.2
       jest-message-util: 29.5.0
       jest-util: 29.5.0
@@ -3802,14 +3772,14 @@ packages:
       '@jest/test-result': 29.5.0
       '@jest/transform': 29.5.0
       '@jest/types': 29.5.0
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       ci-info: 3.8.0
       exit: 0.1.2
       graceful-fs: 4.2.11
       jest-changed-files: 29.5.0
-      jest-config: 29.5.0(@types/node@18.16.0)(ts-node@10.9.1)
+      jest-config: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       jest-haste-map: 29.5.0
       jest-message-util: 29.5.0
       jest-regex-util: 29.4.3
@@ -3846,7 +3816,7 @@ packages:
     dependencies:
       '@jest/fake-timers': 29.5.0
       '@jest/types': 29.5.0
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       jest-mock: 29.5.0
     dev: true
 
@@ -3902,7 +3872,7 @@ packages:
     dependencies:
       '@jest/types': 29.5.0
       '@sinonjs/fake-timers': 10.0.2
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       jest-message-util: 29.5.0
       jest-mock: 29.5.0
       jest-util: 29.5.0
@@ -3984,7 +3954,7 @@ packages:
       '@jest/transform': 29.5.0
       '@jest/types': 29.5.0
       '@jridgewell/trace-mapping': 0.3.18
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       chalk: 4.1.2
       collect-v8-coverage: 1.0.1
       exit: 0.1.2
@@ -4203,19 +4173,6 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  /@kobalte/core@0.8.2(solid-js@1.7.3):
-    resolution: {integrity: sha512-EoBYKpYa3+Csr5Zh7l3aY3yAg7fk1O3ZM9lGyD1mdQ1FutTuwTkyj8z1CvSSj1Klb+rBL+X1N662Occ8Bmsi2w==}
-    peerDependencies:
-      solid-js: ^1.6.15
-    dependencies:
-      '@floating-ui/dom': 1.2.6
-      '@internationalized/date': 3.2.0
-      '@internationalized/number': 3.2.0
-      '@internationalized/string': 3.1.0
-      '@kobalte/utils': 0.6.1(solid-js@1.7.3)
-      solid-js: 1.7.3
-    dev: false
-
   /@kobalte/core@0.9.2(solid-js@1.7.3):
     resolution: {integrity: sha512-urWKQ4uBb2QcuOo31q9mzATX+lXmUtOZr2Qiw46asZI8hD0e2n8p15G1j9eA2VQ14RVIm6hqFN9SDqHiTDFzYg==}
     peerDependencies:
@@ -4226,20 +4183,6 @@ packages:
       '@internationalized/message': 3.1.0
       '@internationalized/number': 3.2.0
       '@kobalte/utils': 0.7.1(solid-js@1.7.3)
-      solid-js: 1.7.3
-    dev: false
-
-  /@kobalte/utils@0.6.1(solid-js@1.7.3):
-    resolution: {integrity: sha512-YvBqe9t9j0iYFUHfKXSMLQKM3s5+nL72RvT9b75W+IOxUpSpN4rdaI8C2j97k3LsEt7qY4ktJdt8lPM1rr8JXw==}
-    peerDependencies:
-      solid-js: ^1.6.12
-    dependencies:
-      '@solid-primitives/event-listener': 2.2.10(solid-js@1.7.3)
-      '@solid-primitives/keyed': 1.2.0(solid-js@1.7.3)
-      '@solid-primitives/media': 2.1.6(solid-js@1.7.3)
-      '@solid-primitives/props': 3.1.4(solid-js@1.7.3)
-      '@solid-primitives/refs': 1.0.2(solid-js@1.7.3)
-      '@solid-primitives/utils': 5.5.2(solid-js@1.7.3)
       solid-js: 1.7.3
     dev: false
 
@@ -4255,14 +4198,6 @@ packages:
       '@solid-primitives/refs': 1.0.2(solid-js@1.7.3)
       '@solid-primitives/utils': 6.1.0(solid-js@1.7.3)
       solid-js: 1.7.3
-    dev: false
-
-  /@kobalte/vanilla-extract@0.3.0(@vanilla-extract/css@1.11.0):
-    resolution: {integrity: sha512-aJ/lqzyxT+LZo5Hyvwh4LUgL+AT5TI7W6naHUOyDpqKZ2WjhYZf/w9Zc++KJALX315v/bIxceCtPMgpzJMMvxw==}
-    peerDependencies:
-      '@vanilla-extract/css': ^1.9.5
-    dependencies:
-      '@vanilla-extract/css': 1.11.0
     dev: false
 
   /@kobalte/vanilla-extract@0.4.0(@vanilla-extract/css@1.11.0):
@@ -6626,14 +6561,6 @@ packages:
       solid-js: 1.7.3
     dev: false
 
-  /@solid-primitives/utils@5.5.2(solid-js@1.7.3):
-    resolution: {integrity: sha512-L52ig3eHKU6CqbPCKJIb4lweBuINHBOERcE1duApyKozEN8+zCqEKwD1Qo9ljKeEzJTBGWClxNpwEiNTUWTGvg==}
-    peerDependencies:
-      solid-js: ^1.6.12
-    dependencies:
-      solid-js: 1.7.3
-    dev: false
-
   /@solid-primitives/utils@6.0.0(solid-js@1.7.3):
     resolution: {integrity: sha512-SSu12+vvU6J8SVWW9eGV+dqiMsc0WG1Oy8YYY9AWzRzssmzNXg/uexaW+0eqTuj8JcRAaGplMDjhraB01HOidA==}
     peerDependencies:
@@ -7273,21 +7200,6 @@ packages:
       - supports-color
       - ts-node
     dev: true
-
-  /@vanilla-extract/vite-plugin@3.8.0(ts-node@10.9.1)(vite@3.2.5):
-    resolution: {integrity: sha512-HBCecR4eTbweo7wQPq9g/HBvxUi6Cua8O4Xk6t1by4W/imgEsHbRCCa9SowzZwg8lub7uJHBAdzWWpqY+LdH0w==}
-    peerDependencies:
-      vite: ^2.2.3 || ^3.0.0 || ^4.0.3
-    dependencies:
-      '@vanilla-extract/integration': 6.0.1
-      outdent: 0.8.0
-      postcss: 8.4.22
-      postcss-load-config: 3.1.4(postcss@8.4.22)(ts-node@10.9.1)
-      vite: 3.2.5(@types/node@18.15.11)(sass@1.61.0)
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-    dev: false
 
   /@vanilla-extract/vite-plugin@3.8.0(ts-node@10.9.1)(vite@4.2.1):
     resolution: {integrity: sha512-HBCecR4eTbweo7wQPq9g/HBvxUi6Cua8O4Xk6t1by4W/imgEsHbRCCa9SowzZwg8lub7uJHBAdzWWpqY+LdH0w==}
@@ -12281,7 +12193,7 @@ packages:
       '@jest/expect': 29.5.0
       '@jest/test-result': 29.5.0
       '@jest/types': 29.5.0
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       chalk: 4.1.2
       co: 4.6.0
       dedent: 0.7.0
@@ -12477,46 +12389,6 @@ packages:
       - supports-color
     dev: true
 
-  /jest-config@29.5.0(@types/node@18.16.0)(ts-node@10.9.1):
-    resolution: {integrity: sha512-kvDUKBnNJPNBmFFOhDbm59iu1Fii1Q6SxyhXfvylq3UTHbg6o7j/g8k2dZyXWLvfdKB1vAPxNZnMgtKJcmu3kA==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    peerDependencies:
-      '@types/node': '*'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      '@babel/core': 7.21.4
-      '@jest/test-sequencer': 29.5.0
-      '@jest/types': 29.5.0
-      '@types/node': 18.16.0
-      babel-jest: 29.5.0(@babel/core@7.21.4)
-      chalk: 4.1.2
-      ci-info: 3.8.0
-      deepmerge: 4.3.1
-      glob: 7.2.3
-      graceful-fs: 4.2.11
-      jest-circus: 29.5.0
-      jest-environment-node: 29.5.0
-      jest-get-type: 29.4.3
-      jest-regex-util: 29.4.3
-      jest-resolve: 29.5.0
-      jest-runner: 29.5.0
-      jest-util: 29.5.0
-      jest-validate: 29.5.0
-      micromatch: 4.0.5
-      parse-json: 5.2.0
-      pretty-format: 29.5.0
-      slash: 3.0.0
-      strip-json-comments: 3.1.1
-      ts-node: 10.9.1(@types/node@18.15.11)(typescript@4.9.5)
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /jest-diff@28.1.3:
     resolution: {integrity: sha512-8RqP1B/OXzjjTWkqMX67iqgwBVJRgCyKD3L9nq+6ZqJMdvjE8RgHktqZ6jNrkdMT+dJuYNI3rhQpxaz7drJHfw==}
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
@@ -12611,7 +12483,7 @@ packages:
       '@jest/environment': 29.5.0
       '@jest/fake-timers': 29.5.0
       '@jest/types': 29.5.0
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       jest-mock: 29.5.0
       jest-util: 29.5.0
     dev: true
@@ -12651,7 +12523,7 @@ packages:
     dependencies:
       '@jest/types': 29.5.0
       '@types/graceful-fs': 4.1.6
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.11
@@ -12743,7 +12615,7 @@ packages:
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
       '@jest/types': 29.5.0
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       jest-util: 29.5.0
     dev: true
 
@@ -12869,7 +12741,7 @@ packages:
       '@jest/test-result': 29.5.0
       '@jest/transform': 29.5.0
       '@jest/types': 29.5.0
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       chalk: 4.1.2
       emittery: 0.13.1
       graceful-fs: 4.2.11
@@ -12930,7 +12802,7 @@ packages:
       '@jest/test-result': 29.5.0
       '@jest/transform': 29.5.0
       '@jest/types': 29.5.0
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       chalk: 4.1.2
       cjs-module-lexer: 1.2.2
       collect-v8-coverage: 1.0.1
@@ -13079,7 +12951,7 @@ packages:
     dependencies:
       '@jest/test-result': 29.5.0
       '@jest/types': 29.5.0
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       emittery: 0.13.1
@@ -13109,7 +12981,7 @@ packages:
     resolution: {integrity: sha512-NcrQnevGoSp4b5kg+akIpthoAFHxPBcb5P6mYPY0fUNT+sSvmtu6jlkEle3anczUKIKEbMxFimk9oTP/tpIPgA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
-      '@types/node': 18.16.0
+      '@types/node': 18.15.11
       jest-util: 29.5.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
@@ -14291,7 +14163,7 @@ packages:
       chalk: 4.1.1
       chokidar: 3.5.3
       cookie: 0.4.2
-      graphql: 16.6.0
+      graphql: 15.8.0
       headers-polyfill: 3.1.2
       inquirer: 8.2.5
       is-node-process: 1.2.0
