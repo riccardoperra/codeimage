@@ -8,6 +8,8 @@ interface ImportMetaEnv {
   readonly VITE_ENABLE_MSW: boolean;
   readonly VITE_MOCK_AUTH: boolean;
   readonly VITE_API_BASE_URL: string | null;
+  readonly VITE_PRESET_LIMIT: number;
+  readonly VITE_PRESET_LIMIT_GUEST: number;
 }
 
 interface ImportMeta {

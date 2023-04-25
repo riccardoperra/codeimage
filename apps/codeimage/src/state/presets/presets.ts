@@ -60,6 +60,7 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
             : new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
         );
       },
+
       actions: {
         addNewPreset: store.asyncAction((payload: {name: string}) => {
           return untrack(() => {

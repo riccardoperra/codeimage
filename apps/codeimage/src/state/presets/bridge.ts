@@ -12,12 +12,15 @@ import * as api from '../../data-access/preset';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {Preset, PresetData, PresetsArray} from './types';
 
+const env = import.meta.env;
+export const userLimit = env.VITE_PRESET_LIMIT;
+export const guestLimit = env.VITE_PRESET_LIMIT_GUEST;
+
 export const withPresetBridge = (idbKey: string) =>
   makePlugin(
     store => {
       const idb = useIdb();
       const useInMemoryStore = () => !getAuth0State().loggedIn();
-
       function persistToIdb(data: PresetsArray) {
         return idb.set(idbKey, unwrap(data)).then();
       }
@@ -33,7 +36,6 @@ export const withPresetBridge = (idbKey: string) =>
           {defer: true},
         ),
       );
-
       const getPresetDataFromState = () => {
         const frameState = getFrameState().stateToPersist();
         const terminalState = getTerminalState().stateToPersist();
@@ -77,6 +79,7 @@ export const withPresetBridge = (idbKey: string) =>
         isLocalPreset(preset: Preset) {
           return preset.id === preset.data.localSyncId;
         },
+
         canSyncPreset(preset: Preset) {
           return !useInMemoryStore() && this.isLocalPreset(preset);
         },
@@ -115,6 +118,11 @@ export const withPresetBridge = (idbKey: string) =>
           return inMemory
             ? Promise.resolve({...preset, name, data})
             : api.updatePreset({params: {id: preset.id}, body: {name, data}});
+        },
+        reachPresetLimit() {
+          const limitPreset = () =>
+            useInMemoryStore() ? guestLimit : userLimit;
+          return store()?.length >= limitPreset();
         },
       };
       return {bridge} as const;
