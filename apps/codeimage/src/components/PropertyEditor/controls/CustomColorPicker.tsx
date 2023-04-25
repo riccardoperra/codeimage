@@ -21,7 +21,7 @@ export function CustomColorPicker(props: CustomColorPickerProps) {
   return (
     <Popover
       placement={modality === 'mobile' ? undefined : 'right-start'}
-      isOpen={open()}
+      open={open()}
       onOpenChange={setOpen}
     >
       <PopoverTrigger asChild>
