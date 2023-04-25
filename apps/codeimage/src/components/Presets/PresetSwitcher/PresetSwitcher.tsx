@@ -14,6 +14,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
   IconButton,
+  Tooltip,
 } from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {formatDistanceToNow} from '@core/helpers/date';
@@ -76,22 +77,27 @@ export const PresetSwitcher: ParentComponent<
         >
           <Text weight={'semibold'}>{t('presets.userPresets')}</Text>
           <HStack spacing={2}>
-            <Button
-              size={'xs'}
-              theme={'primary'}
-              onClick={() => {
-                openDialog(RenameContentDialog, {
-                  title: t('presets.addPreset.confirmTitle'),
-                  message: t('presets.addPreset.confirmMessage'),
-                  onConfirm: async name => {
-                    presetsStore.actions.addNewPreset({name});
-                  },
-                });
-              }}
-              disabled={!presetsStore.canAddNewPreset()}
+            <Tooltip
+              content="You reach the limit to save"
+              disabled={presetsStore.canAddNewPreset()}
             >
-              {t('presets.addPreset.label')}
-            </Button>
+              <Button
+                size={'xs'}
+                theme={'primary'}
+                onClick={() => {
+                  openDialog(RenameContentDialog, {
+                    title: t('presets.addPreset.confirmTitle'),
+                    message: t('presets.addPreset.confirmMessage'),
+                    onConfirm: async name => {
+                      presetsStore.actions.addNewPreset({name});
+                    },
+                  });
+                }}
+                disabled={!presetsStore.canAddNewPreset()}
+              >
+                {t('presets.addPreset.label')}
+              </Button>
+            </Tooltip>
             <IconButton
               aria-label={'Close'}
               size={'xs'}
