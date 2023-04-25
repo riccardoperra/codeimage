@@ -9,7 +9,6 @@ import {API} from '../../data-access/api';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {PencilAlt} from '../Icons/Pencil';
 import {SuspenseEditorItem} from '../PropertyEditor/SuspenseEditorItem';
-import {toolbarSnippetNameInput} from './Toolbar.css';
 import * as styles from './Toolbar.css';
 
 void clickOutside;
