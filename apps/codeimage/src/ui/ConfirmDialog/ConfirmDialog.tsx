@@ -23,7 +23,7 @@ export function ConfirmDialog(
       size={'xs'}
       title={propsWithDefault.title}
       onOpenChange={propsWithDefault.onOpenChange}
-      isOpen={propsWithDefault.isOpen}
+      open={propsWithDefault.isOpen}
     >
       <DialogPanelContent>
         <Text size={'sm'}>{propsWithDefault.message}</Text>

@@ -41,7 +41,7 @@ export function FrameToolbar(props: FrameToolbarProps) {
               <SparklesIcon />
             )
           }
-          isDisabled={!activeEditor.canFormat() || formatAction.loading}
+          disabled={!activeEditor.canFormat() || formatAction.loading}
           onClick={() => dispatchFormat()}
         >
           Format

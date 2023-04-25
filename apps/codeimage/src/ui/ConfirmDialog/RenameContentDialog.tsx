@@ -30,7 +30,7 @@ export function RenameContentDialog(
       size={'xs'}
       title={propsWithDefault.title}
       onOpenChange={props.onOpenChange}
-      isOpen={props.isOpen}
+      open={props.isOpen}
     >
       <DialogPanelContent>
         <FlexField size={'lg'}>
@@ -43,7 +43,7 @@ export function RenameContentDialog(
                 el?.focus();
               });
             }}
-            onValueChange={setName}
+            onChange={setName}
             value={name()}
           />
         </FlexField>

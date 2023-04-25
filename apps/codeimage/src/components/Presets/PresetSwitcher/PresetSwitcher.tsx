@@ -127,6 +127,7 @@ export const PresetSwitcher: ParentComponent<
               function openUpdateDialog() {
                 openDialog(PresetUpdateDialog, {
                   currentPreset: theme.data,
+                  presetToCompare: presetsStore.bridge.getPresetDataFromState(),
                   onConfirm: async () => {
                     presetsStore.actions.updatePresetWithCurrentState({
                       preset: theme,

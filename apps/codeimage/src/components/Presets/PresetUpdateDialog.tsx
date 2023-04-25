@@ -18,6 +18,7 @@ import * as styles from './PresetSwitcher/PresetSwitcher.css';
 
 interface PresetUpdateDialogProps extends ControlledDialogProps {
   currentPreset: Preset['data'];
+  presetToCompare: Preset['data'];
   onConfirm: () => void;
 }
 
@@ -29,17 +30,9 @@ export function PresetUpdateDialog(
 
   const exampleCode = 'function Code() {\n' + ' console.log()\n' + '}';
 
-  const currentEditorData = () => {
-    return {
-      frame: getFrameState().stateToPersist(),
-      terminal: getTerminalState().stateToPersist(),
-      editor: getRootEditorStore().stateToPersist(),
-    };
-  };
-
   return (
     <Dialog
-      isOpen={props.isOpen}
+      open={props.isOpen}
       onOpenChange={props.onOpenChange}
       size={'md'}
       title={t('presets.updatePreset.dialogTitle')}
@@ -74,7 +67,7 @@ export function PresetUpdateDialog(
           </div>
           <div>
             <li class={styles.item}>
-              <PresetPreview code={exampleCode} data={currentEditorData()} />
+              <PresetPreview code={exampleCode} data={props.presetToCompare} />
               <Box display={'flex'} justifyContent={'center'} marginTop={4}>
                 <Text weight={'semibold'}>{t('presets.updatePreset.new')}</Text>
               </Box>
