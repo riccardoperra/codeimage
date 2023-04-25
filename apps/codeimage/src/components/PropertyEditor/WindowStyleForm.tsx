@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Box, Group, RadioBlock, SegmentedField} from '@codeimage/ui';
-import {Select} from '@codeui/kit';
+import {createSelectOptions, Select} from '@codeui/kit';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
@@ -17,7 +17,16 @@ import {SuspenseEditorItem} from './SuspenseEditorItem';
 export const WindowStyleForm: ParentComponent = () => {
   const terminal = getTerminalState();
   const [t] = useI18n<AppLocaleEntries>();
-  const terminalShadows = createMemo(shadowsLabel);
+
+  const terminalShadows = createMemo(
+    () => shadowsLabel() as {label: string; value: string}[],
+  );
+
+  const terminalShadowsSelect = createSelectOptions(terminalShadows(), {
+    key: 'label',
+    valueKey: 'value',
+  });
+
   return (
     <>
       <PanelHeader label={t('frame.terminal')} />
@@ -145,19 +154,18 @@ export const WindowStyleForm: ParentComponent = () => {
             fallback={<SkeletonLine width={'100%'} height={'24px'} />}
           >
             <Select
+              options={terminalShadowsSelect.options()}
+              {...terminalShadowsSelect.props()}
+              {...terminalShadowsSelect.controlled(
+                () => terminal.state.shadow ?? undefined,
+                shadow => {
+                  getUmami().trackEvent(shadow ?? 'none', 'change-shadow');
+                  terminal.setShadow(shadow ?? null);
+                },
+              )}
               aria-label={'Shadow'}
               size={'xs'}
               id={'frameSelectShadow'}
-              options={terminalShadows()}
-              itemLabel={props => props.label}
-              optionTextValue={'label'}
-              optionValue={'value'}
-              valueComponent={props => props.item.rawValue.label}
-              value={terminal.state.shadow ?? undefined}
-              onValueChange={value => {
-                getUmami().trackEvent(value ?? 'none', 'change-shadow');
-                terminal.setShadow(value);
-              }}
             />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
