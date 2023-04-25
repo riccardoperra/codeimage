@@ -35,6 +35,7 @@ import {EmptyPresetFallback} from '../EmptyPresetFallback/EmptyPresetFallback';
 import {PresetPreview} from '../PresetPreview/PresetPreview';
 import {PresetUpdateDialog} from '../PresetUpdateDialog';
 import * as styles from './PresetSwitcher.css';
+import {PresetTooltipContent} from './PresetTooltipContent';
 
 type PresetSwitcherProps = {
   onClose: () => void;
@@ -78,7 +79,7 @@ export const PresetSwitcher: ParentComponent<
           <Text weight={'semibold'}>{t('presets.userPresets')}</Text>
           <HStack spacing={2}>
             <Tooltip
-              content="login to save presets"
+              content={<PresetTooltipContent />}
               disabled={!presetsStore.bridge.reachPresetLimit()}
               placement="bottom"
             >

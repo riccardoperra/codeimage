@@ -1,3 +1,5 @@
+import {guestLimit, userLimit} from '@codeimage/store/presets/bridge';
+
 export const presets = {
   it: {
     presets: {
@@ -30,6 +32,15 @@ export const presets = {
       },
       openPreset: {
         label: 'Mostra i tuoi presets',
+      },
+      limit: {
+        user: {
+          label: `Hai raggiunto il limite di preset ${userLimit} per utente`,
+        },
+        guest: {
+          label: `Hai raggiunto il limite di ${guestLimit} preset`,
+          actionLabel: `per avere più preset`,
+        },
       },
     },
   },
@@ -66,6 +77,15 @@ export const presets = {
         label: 'Show your presets',
       },
     },
+    limit: {
+      user: {
+        label: `You have reach the maximun of ${userLimit} presets per user`,
+      },
+      guest: {
+        label: `You have reach the maximun of ${guestLimit}`,
+        actionLabel: `to save more presets`,
+      },
+    },
   },
   de: {
     presets: {
@@ -100,6 +120,15 @@ export const presets = {
         label: 'Show your presets',
       },
     },
+    limit: {
+      user: {
+        label: `Sie haben das voreingestellte Limit ${userLimit} pro Benutzer erreicht`,
+      },
+      guest: {
+        label: `Sie haben das Limit von ${guestLimit} Voreinstellungen pro Gastbenutzer erreicht`,
+        actionLabel: `um weitere Voreinstellungen zu erhalten`,
+      },
+    },
   },
   es: {
     presets: {
@@ -132,6 +161,15 @@ export const presets = {
       },
       openPreset: {
         label: 'Show your presets',
+      },
+    },
+    limit: {
+      user: {
+        label: `Alcanzaste el maximo de ${userLimit} presets`,
+      },
+      guest: {
+        label: `Alcanzaste el maximo de ${guestLimit} presets`,
+        actionLabel: `para salvar mas presets`,
       },
     },
   },
