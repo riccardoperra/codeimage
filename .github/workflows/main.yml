@@ -10,10 +10,10 @@ env:
 
 jobs:
   install:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 16.13.2 ]
+        node-version: [ 19 ]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -38,9 +38,9 @@ jobs:
               - pnpm-lock.json
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -59,6 +59,9 @@ jobs:
     name: Lint
     needs: install
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -66,9 +69,9 @@ jobs:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -88,6 +91,9 @@ jobs:
     name: Build packages
     needs: [ install ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -95,9 +101,9 @@ jobs:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -125,15 +131,18 @@ jobs:
     name: Type-checking
     needs: [ install, build-packages ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -167,6 +176,9 @@ jobs:
     needs: [ build-packages ]
     if: ${{ github.head_ref  != 'next' }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
@@ -176,9 +188,9 @@ jobs:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -224,6 +236,9 @@ jobs:
     needs: [ build-packages ]
     if: ${{ github.head_ref  == 'next' }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
@@ -233,9 +248,9 @@ jobs:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -279,6 +294,9 @@ jobs:
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
@@ -289,9 +307,9 @@ jobs:
 
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -328,6 +346,9 @@ jobs:
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
@@ -337,9 +358,9 @@ jobs:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -384,6 +405,9 @@ jobs:
     name: Lighthouse
     needs: [ build-website-dev ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
     steps:
       - name: Checkout PR
         uses: actions/checkout@v2
@@ -392,9 +416,9 @@ jobs:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -419,6 +443,9 @@ jobs:
     name: Build Api
     needs: [ install, typecheck-packages, build-packages ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -426,9 +453,9 @@ jobs:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -458,6 +485,9 @@ jobs:
     name: Api test
     needs: [ install ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     services:
       postgres:
@@ -492,9 +522,9 @@ jobs:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -531,15 +561,18 @@ jobs:
       build-app-next
     ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: 'true'
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
+          version: 8
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
