@@ -2,7 +2,7 @@ name: Main
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 env:
   IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
@@ -10,14 +10,22 @@ env:
 
 jobs:
   install:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.13.2]
+        node-version: [ 19 ]
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout PR
+        uses: actions/checkout@v3
         with:
           submodules: 'true'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
+
       - uses: dorny/paths-filter@v2
         if: (${{ env.IS_MAIN_BRANCH == 'false' }} || ${{ env.IS_NEXT_BRANCH == 'false' }})
         id: diff-changes
@@ -36,16 +44,6 @@ jobs:
               - 'apps/api/**'
               - package.json
               - pnpm-lock.json
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
 
     outputs:
       backend-change: 'true'
@@ -59,21 +57,21 @@ jobs:
     name: Lint
     needs: install
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout PR
+        uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Prisma migrate
         run: |
@@ -86,23 +84,22 @@ jobs:
 
   build-packages:
     name: Build packages
-    needs: [install]
+    needs: [ install ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Prisma migrate
         run: |
@@ -123,28 +120,33 @@ jobs:
   typecheck-packages:
     if: ${{ needs.install.outputs.libs-change == 'true' }}
     name: Type-checking
-    needs: [install, build-packages]
+    needs: [ install, build-packages ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Prisma migrate
         run: |
           cd apps/api
           pnpm exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Typecheck packages
         run: |
@@ -158,27 +160,24 @@ jobs:
   build-app-dev:
     name: Build App and Preview (Dev)
     environment: Preview
-    needs: [build-packages]
+    needs: [ build-packages ]
     if: ${{ github.head_ref  != 'next' }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -218,24 +217,22 @@ jobs:
     needs: [ build-packages ]
     if: ${{ github.head_ref  == 'next' }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -270,28 +267,25 @@ jobs:
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'
     environment: Preview
-    needs: [build-packages]
+    needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
+          ref: 'refs/pull/${{ github.event.number }}/merge'
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -319,27 +313,25 @@ jobs:
   build-website-dev:
     name: '@codeimage/website dev and Preview'
     environment: Preview
-    needs: [build-packages]
+    needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -376,25 +368,23 @@ jobs:
 
   website-lhci:
     name: Lighthouse
-    needs: [build-website-dev]
+    needs: [ build-website-dev ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore website
         uses: actions/cache@v3
@@ -411,23 +401,22 @@ jobs:
 
   build-api:
     name: Build Api
-    needs: [install, typecheck-packages, build-packages]
+    needs: [ install, typecheck-packages, build-packages ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: "[API] Generate Prisma Migration"
         run: |
@@ -450,8 +439,11 @@ jobs:
   be-test:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Api test
-    needs: [install]
+    needs: [ install ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
 
     services:
       postgres:
@@ -481,17 +473,11 @@ jobs:
       ALLOWED_ORIGINS: '*'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -499,9 +485,6 @@ jobs:
           path: |
             packages
           key: packages-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Prisma migrate
         run: |
@@ -525,28 +508,25 @@ jobs:
       build-app-next
     ]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 19 ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: 'true'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
         uses: actions/cache@v3
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
 
       - name: Restore api build
         uses: actions/cache@v3

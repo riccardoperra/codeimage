@@ -1,6 +1,6 @@
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
-import {HStack, LoadingCircle} from '@codeimage/ui';
+import {HStack} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {ColorSwatchIcon} from '../Icons/ColorSwatch';
