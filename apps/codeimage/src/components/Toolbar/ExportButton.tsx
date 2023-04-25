@@ -6,7 +6,6 @@ import {
   FlexField,
   HStack,
   Link,
-  LoadingCircle,
   RangeField,
   SegmentedField,
   SegmentedFieldItem,
@@ -55,8 +54,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
   const [open, setOpen] = createSignal(false);
   const [data, notify] = useExportImage();
 
-  const label = () =>
-    data.loading ? t('toolbar.exportLoading') : t('toolbar.export');
+  const label = () => t('toolbar.export');
 
   createEffect(() => {
     if (data.error) {
@@ -86,13 +84,8 @@ export const ExportButton: Component<ExportButtonProps> = props => {
       <Button
         theme={'primary'}
         size={buttonSize()}
-        leftIcon={
-          data.loading ? (
-            <LoadingCircle size={buttonSize()} />
-          ) : (
-            <DownloadIcon />
-          )
-        }
+        loading={data.loading}
+        leftIcon={<DownloadIcon />}
         onClick={() => setOpen(true)}
       >
         {label()}

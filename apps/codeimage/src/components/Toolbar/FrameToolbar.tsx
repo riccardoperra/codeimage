@@ -1,6 +1,6 @@
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
-import {HStack, LoadingCircle} from '@codeimage/ui';
+import {HStack} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {ColorSwatchIcon} from '../Icons/ColorSwatch';
@@ -34,14 +34,9 @@ export function FrameToolbar(props: FrameToolbarProps) {
         <Button
           size={'xs'}
           theme={'secondary'}
-          leftIcon={
-            formatAction.loading ? (
-              <LoadingCircle size={'xs'} />
-            ) : (
-              <SparklesIcon />
-            )
-          }
-          disabled={!activeEditor.canFormat() || formatAction.loading}
+          loading={formatAction.loading}
+          leftIcon={<SparklesIcon />}
+          disabled={!activeEditor.canFormat()}
           onClick={() => dispatchFormat()}
         >
           Format

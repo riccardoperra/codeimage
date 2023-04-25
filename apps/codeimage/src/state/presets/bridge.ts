@@ -3,8 +3,9 @@ import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {generateUid} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
-import {createEffect, createUniqueId, on} from 'solid-js';
+import {createEffect, on} from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {makePlugin} from 'statebuilder';
 import * as api from '../../data-access/preset';
@@ -88,7 +89,7 @@ export const withPresetBridge = (idbKey: string) =>
         ): Promise<Preset> {
           const presetData: PresetData = data ?? getPresetDataFromState();
           if (useInMemoryStore()) {
-            const id = createUniqueId();
+            const id = generateUid();
             presetData.localSyncId = id;
             return Promise.resolve({
               id,
