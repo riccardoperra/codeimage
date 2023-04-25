@@ -15,7 +15,8 @@ jobs:
       matrix:
         node-version: [ 19 ]
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout PR
+        uses: actions/checkout@v3
         with:
           submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
@@ -61,7 +62,8 @@ jobs:
         node-version: [ 19 ]
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout PR
+        uses: actions/checkout@v3
         with:
           submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
@@ -320,7 +322,7 @@ jobs:
 
     steps:
       - name: Checkout PR
-        óuses: actions/checkout@v3
+        uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
@@ -373,7 +375,7 @@ jobs:
         node-version: [ 19 ]
     steps:
       - name: Checkout PR
-        óuses: actions/checkout@v3
+        uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
           submodules: 'true'
