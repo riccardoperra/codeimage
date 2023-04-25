@@ -10,6 +10,7 @@ export const PresetDataSchema = Type.Object({
   terminal: Type.Omit(BaseSnippetTerminalSchema, ['id']),
   frame: Type.Omit(BaseSnippetFrameSchema, ['id']),
   editor: Type.Omit(BaseSnippetEditorOptionsSchema, ['id']),
+  localSyncId: Type.Optional(Type.String()),
 });
 
 export const PresetDtoSchema = Type.Object(
