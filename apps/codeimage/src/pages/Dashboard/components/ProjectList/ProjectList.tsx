@@ -1,4 +1,5 @@
-import {Box, getLastPage, Pagination} from '@codeimage/ui';
+import {Box, getLastPage} from '@codeimage/ui';
+import {Pagination} from '@codeui/kit';
 import {ErrorBoundary, For, Index, Show, Suspense, untrack} from 'solid-js';
 import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';
@@ -51,9 +52,9 @@ export function ProjectList() {
           <Show when={paginationState.hasOnePage} keyed={false}>
             <Box display={'flex'} justifyContent={'center'}>
               <Pagination
-                pageNumber={paginationState.page()}
+                page={paginationState.page()}
                 onChange={paginationState.setPage}
-                lastPage={lastPage()}
+                pages={paginationState.totalPages()}
               />
             </Box>
           </Show>
