@@ -13,3 +13,7 @@ export function versionateId(id: string): string {
   }
   return `${uid}$${parseInt(version, 10) + 1}`;
 }
+
+export const generateUid = () => {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+};
