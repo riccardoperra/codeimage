@@ -35,11 +35,55 @@ import {EmptyPresetFallback} from '../EmptyPresetFallback/EmptyPresetFallback';
 import {PresetPreview} from '../PresetPreview/PresetPreview';
 import {PresetUpdateDialog} from '../PresetUpdateDialog';
 import * as styles from './PresetSwitcher.css';
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 
 type PresetSwitcherProps = {
   onClose: () => void;
 };
+const env = import.meta.env;
+const userLimit = env.VITE_PRESET_LIMIT;
+const guestLimit = env.VITE_PRESET_LIMIT_GUEST;
+function AddNewPreset() {
+  const presetsStore = getPresetsStore();
+  const openDialog = createControlledDialog();
+  const [t] = useI18n<AppLocaleEntries>();
+  const isLogged = () => getAuth0State().loggedIn();
+  const guestLimitReach = () =>
+    !isLogged() && presetsStore.sortedPresets().length >= guestLimit;
+  const userLimitReach = () =>
+    isLogged() && presetsStore.sortedPresets().length >= userLimit;
 
+  const isSomeLimitReach = () => guestLimitReach() || userLimitReach();
+  const labelTooltip = () =>
+    isLogged()
+      ? "You can't add more presets, sorry :("
+      : "You can't add more presets, please login to add more presets";
+
+  return (
+    <Tooltip
+      content={labelTooltip()}
+      disabled={!isSomeLimitReach()}
+      placement="bottom"
+    >
+      <Button
+        size={'xs'}
+        theme={'primary'}
+        onClick={() => {
+          openDialog(RenameContentDialog, {
+            title: t('presets.addPreset.confirmTitle'),
+            message: t('presets.addPreset.confirmMessage'),
+            onConfirm: async name => {
+              presetsStore.actions.addNewPreset({name});
+            },
+          });
+        }}
+        disabled={isSomeLimitReach()}
+      >
+        {t('presets.addPreset.label')}
+      </Button>
+    </Tooltip>
+  );
+}
 export const PresetSwitcher: ParentComponent<
   PresetSwitcherProps & ThemeSwitcherVariant
 > = props => {
@@ -77,27 +121,7 @@ export const PresetSwitcher: ParentComponent<
         >
           <Text weight={'semibold'}>{t('presets.userPresets')}</Text>
           <HStack spacing={2}>
-            <Tooltip
-              content="You reach the limit to save"
-              disabled={presetsStore.canAddNewPreset()}
-            >
-              <Button
-                size={'xs'}
-                theme={'primary'}
-                onClick={() => {
-                  openDialog(RenameContentDialog, {
-                    title: t('presets.addPreset.confirmTitle'),
-                    message: t('presets.addPreset.confirmMessage'),
-                    onConfirm: async name => {
-                      presetsStore.actions.addNewPreset({name});
-                    },
-                  });
-                }}
-                disabled={!presetsStore.canAddNewPreset()}
-              >
-                {t('presets.addPreset.label')}
-              </Button>
-            </Tooltip>
+            <AddNewPreset />
             <IconButton
               aria-label={'Close'}
               size={'xs'}

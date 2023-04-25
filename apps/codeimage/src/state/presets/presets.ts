@@ -13,8 +13,6 @@ import {Preset, PresetsArray} from './types';
 
 const idbKey = 'presets';
 const idb = useIdb();
-const env = import.meta.env;
-const PRESET_LIMIT = env.VITE_PRESET_LIMIT;
 
 function mergeDbPresetsWithLocalPresets(
   presets: Preset[],
@@ -53,7 +51,6 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
   .extend(withPresetBridge(idbKey))
   .extend(withAsyncAction())
   .extend(store => {
-    const isLogged = () => getAuth0State().loggedIn();
     return {
       sortedPresets() {
         if (store.loading) return [];
@@ -63,9 +60,7 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
             : new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
         );
       },
-      canAddNewPreset() {
-        return isLogged() && this.sortedPresets().length <= PRESET_LIMIT;
-      },
+
       actions: {
         addNewPreset: store.asyncAction((payload: {name: string}) => {
           return untrack(() => {
