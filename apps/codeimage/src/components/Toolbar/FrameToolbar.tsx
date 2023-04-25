@@ -34,14 +34,9 @@ export function FrameToolbar(props: FrameToolbarProps) {
         <Button
           size={'xs'}
           theme={'secondary'}
-          leftIcon={
-            formatAction.loading ? (
-              <LoadingCircle size={'xs'} />
-            ) : (
-              <SparklesIcon />
-            )
-          }
-          disabled={!activeEditor.canFormat() || formatAction.loading}
+          loading={formatAction.loading}
+          leftIcon={<SparklesIcon />}
+          disabled={!activeEditor.canFormat()}
           onClick={() => dispatchFormat()}
         >
           Format

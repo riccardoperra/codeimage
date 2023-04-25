@@ -24,9 +24,6 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
 
   const [data, notify] = useExportImage();
 
-  const label = () =>
-    data.loading ? t('toolbar.loadingNewTab') : t('toolbar.openNewTab');
-
   function openInTab() {
     getUmami().trackEvent(`true`, 'export-new-tab');
 
@@ -68,11 +65,12 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
   return (
     <Button
       theme={'tertiary'}
-      leftIcon={data.loading ? <LoadingCircle /> : <ExternalLinkIcon />}
+      loading={data.loading}
+      leftIcon={<ExternalLinkIcon />}
       onClick={() => openInTab()}
       size={props.size ?? (modality === 'full' ? 'sm' : 'xs')}
     >
-      {label()}
+      {t('toolbar.openNewTab')}
     </Button>
   );
 };
