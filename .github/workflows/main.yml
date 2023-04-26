@@ -543,10 +543,8 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy
-        working-directory: dist/api-bundle
         run: |
-          rm -rf .gitignore
-          ls -al
+          find -type f -name '.gitignore' -delete
           pnpm railway up
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

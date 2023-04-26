@@ -56,7 +56,7 @@
     "prepare:env": "tsx ./scripts/make-env.ts",
     "prepare:env:codesandbox": "RUN_ON_CODESANDBOX=true tsx ./scripts/make-env",
     "prepare:api:deploy": "pnpm-bundle-workspace-package @codeimage/api --outDir=dist/api-bundle && rm -rf dist/api-bundle/workspace-dependencies/prisma-models/.gitignore",
-    "railway:up": "railway up"
+    "railway:up": "cd dist/api-bundle && railway up"
   },
   "devDependencies": {
     "@changesets/assemble-release-plan": "^5.2.3",
