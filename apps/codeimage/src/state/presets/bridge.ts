@@ -12,9 +12,8 @@ import * as api from '../../data-access/preset';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {Preset, PresetData, PresetsArray} from './types';
 
-const env = import.meta.env;
-export const userLimit = env.VITE_PRESET_LIMIT;
-export const guestLimit = env.VITE_PRESET_LIMIT_GUEST;
+export const userLimit = import.meta.env.VITE_PRESET_LIMIT;
+export const guestLimit = import.meta.env.VITE_PRESET_LIMIT_GUEST;
 
 export const withPresetBridge = (idbKey: string) =>
   makePlugin(
