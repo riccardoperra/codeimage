@@ -11,9 +11,6 @@ env:
 jobs:
   install:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
@@ -57,9 +54,6 @@ jobs:
     name: Lint
     needs: install
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
@@ -86,9 +80,6 @@ jobs:
     name: Build packages
     needs: [ install ]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
 
     steps:
       - uses: actions/checkout@v3
@@ -122,9 +113,6 @@ jobs:
     name: Type-checking
     needs: [ install, build-packages ]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -163,9 +151,6 @@ jobs:
     needs: [ build-packages ]
     if: ${{ github.head_ref  != 'next' }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
@@ -217,9 +202,6 @@ jobs:
     needs: [ build-packages ]
     if: ${{ github.head_ref  == 'next' }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
@@ -270,9 +252,6 @@ jobs:
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
@@ -316,9 +295,6 @@ jobs:
     needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
 
     steps:
       - name: Checkout PR
@@ -370,9 +346,6 @@ jobs:
     name: Lighthouse
     needs: [ build-website-dev ]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
@@ -403,9 +376,6 @@ jobs:
     name: Build Api
     needs: [ install, typecheck-packages, build-packages ]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
 
     steps:
       - uses: actions/checkout@v3
@@ -441,9 +411,6 @@ jobs:
     name: Api test
     needs: [ install ]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
 
     services:
       postgres:
@@ -508,9 +475,6 @@ jobs:
       build-app-next
     ]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 19 ]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -535,9 +499,6 @@ jobs:
             dist/api-bundle/**
           key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
 
-      - name: Install Railway
-        run: pnpm i -g @railway/cli
-
       - name: Run migrations
         run: |
           pnpm --filter=@codeimage/api exec prisma migrate deploy
@@ -547,13 +508,9 @@ jobs:
 
       - name: Deploy
         run: |
-          find . -name '*.gitignore' #-delete
-          find . -name '*.dockerignore' #-delete
+          find -type f -name '.gitignore' -delete
           cd dist/api-bundle
-          rm -rf .gitignore
-          rm -rf .dockerignore
-          ls -al
-          railway up
+          pnpm railway up --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
