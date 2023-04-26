@@ -2,10 +2,7 @@
 providers = ["node"]
 
 [phases.setup]
-nixPkgs = ["nodejs", "pnpm-8_x"]
+nixPkgs = ["nodejs"]
 
 [phases.build]
 cmds = ["ls"]
-
-[phases.start]
-cmd = "pnpm start:railway"
