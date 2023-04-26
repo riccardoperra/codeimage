@@ -545,6 +545,7 @@ jobs:
       - name: Deploy
         run: |
           find -type f -name '.gitignore' -delete
+          cd dist/api-bundle
           pnpm railway up
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
