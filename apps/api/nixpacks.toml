@@ -1,8 +1,11 @@
 # nixpacks.toml
 providers = ['node']
 
+[phases.setup]
+nixPkgs = ['nodejs', 'pnpm']
+
 [phases.build]
 cmds = ['ls']
 
-[start]
+[phases.start]
 cmd = 'pnpm start:railway'
