@@ -510,7 +510,7 @@ jobs:
         run: |
           find -type f -name '.gitignore' -delete
           cd dist/api-bundle
-          pnpm railway up
+          pnpm railway up --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
