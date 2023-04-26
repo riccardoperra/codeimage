@@ -535,9 +535,6 @@ jobs:
             dist/api-bundle/**
           key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
 
-      - name: Install Railway
-        run: pnpm i -g @railway/cli
-
       - name: Run migrations
         run: |
           pnpm --filter=@codeimage/api exec prisma migrate deploy
@@ -546,12 +543,9 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy
+        working-directory: dist/api-bundle
         run: |
-          find . -name '*.gitignore' #-delete
-          find . -name '*.dockerignore' #-delete
-          cd dist/api-bundle
           rm -rf .gitignore
-          rm -rf .dockerignore
           ls -al
           railway up
         env:

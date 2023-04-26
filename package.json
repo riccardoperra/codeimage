@@ -96,6 +96,7 @@
     }
   },
   "dependencies": {
+    "@railway/cli": "3.1.0",
     "statebuilder": "^0.4.2"
   }
 }

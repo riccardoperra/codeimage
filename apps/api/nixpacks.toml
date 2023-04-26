@@ -1,0 +1,8 @@
+# nixpacks.toml
+providers = ['node']
+
+[phases.build]
+cmds = ['ls']
+
+[start]
+cmd = 'pnpm start:railway'
