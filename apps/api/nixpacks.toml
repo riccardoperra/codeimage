@@ -2,7 +2,7 @@
 providers = ['node']
 
 [phases.setup]
-nixPkgs = ['nodejs', 'pnpm']
+nixPkgs = ['nodejs', 'pnpm-8_x']
 
 [phases.build]
 cmds = ['ls']
