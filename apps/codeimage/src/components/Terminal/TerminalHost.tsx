@@ -16,6 +16,7 @@ export interface BaseTerminalProps
   readonlyTab: boolean;
   tabIcon?: LanguageIconDefinition['content'];
   onTabChange?: (tab: string) => void;
+  lite?: boolean;
   themeId: string;
 }
 
@@ -42,7 +43,10 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
   return (
     <div
       class={clsx(styles.wrapper, props.themeClass)}
+      data-lite={props.lite}
       data-theme-mode={darkMode() ? 'dark' : 'light'}
+      data-header-visible={props.showHeader}
+      data-accent-header={props.accentVisible && !props.alternativeTheme}
       data-fallback-inactive-tab={tabTheme()?.shouldFallbackInactiveColor}
       style={assignInlineVars({
         [styles.terminalVars.headerBackgroundColor]:

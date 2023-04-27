@@ -1,18 +1,13 @@
 import {useI18n} from '@codeimage/locale';
-import {
-  Button,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
-  HStack,
-  Text,
-} from '@codeimage/ui';
+import {HStack, Text} from '@codeimage/ui';
+import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
+import {Button} from '@codeui/kit';
+import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {JSXElement, mergeProps, VoidProps} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 
-export interface ConfirmDialogProps {
+interface ConfirmDialogProps extends ControlledDialogProps {
   onConfirm: () => void;
-  onClose?: () => void;
   title: string;
   message: JSXElement;
   actionType?: 'primary' | 'danger';
@@ -27,8 +22,8 @@ export function ConfirmDialog(
     <Dialog
       size={'xs'}
       title={propsWithDefault.title}
-      onClose={props.onClose}
-      isOpen={true}
+      onOpenChange={propsWithDefault.onOpenChange}
+      open={propsWithDefault.isOpen}
     >
       <DialogPanelContent>
         <Text size={'sm'}>{propsWithDefault.message}</Text>
@@ -37,22 +32,25 @@ export function ConfirmDialog(
         <HStack spacing={'2'} justifyContent={'flexEnd'}>
           <Button
             block
-            size={'sm'}
+            size={'md'}
             type="button"
-            variant={'solid'}
             theme={'secondary'}
-            onClick={() => propsWithDefault.onClose?.()}
+            onClick={() => props.onOpenChange?.(false)}
           >
             {t('common.close')}
           </Button>
 
           <Button
             block
-            size={'sm'}
+            size={'md'}
             type="submit"
-            theme={propsWithDefault.actionType}
-            variant={'solid'}
-            onClick={propsWithDefault.onConfirm}
+            theme={
+              propsWithDefault.actionType === 'primary' ? 'primary' : 'negative'
+            }
+            onClick={() => {
+              propsWithDefault.onConfirm();
+              propsWithDefault.onOpenChange(false);
+            }}
           >
             {t('common.confirm')}
           </Button>

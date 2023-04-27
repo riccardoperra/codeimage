@@ -8,6 +8,7 @@ export const [theme, vars] = createTheme({
     yellow: '#febc2e',
     green: '#28c840',
   },
+  controlSize: '15px',
 });
 
 export const headerIconRow = style({
@@ -20,9 +21,14 @@ export const headerIconRow = style({
 
 export const headerIconRowCircle = style({
   selectors: {
+    [`${headerIconRow}[data-lite=true] &`]: {
+      vars: {
+        [vars.controlSize]: '10px',
+      },
+    },
     [`${headerIconRow} &`]: {
-      width: '15px',
-      height: '15px',
+      width: vars.controlSize,
+      height: vars.controlSize,
       margin: 'auto 0',
       borderRadius: themeVars.borderRadius.full,
       backgroundColor: fallbackVar(

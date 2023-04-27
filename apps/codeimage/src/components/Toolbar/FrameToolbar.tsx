@@ -1,6 +1,7 @@
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
-import {Button, HStack} from '@codeimage/ui';
+import {HStack} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {ColorSwatchIcon} from '../Icons/ColorSwatch';
 import {SparklesIcon} from '../Icons/SparklesIcon';
@@ -24,7 +25,6 @@ export function FrameToolbar(props: FrameToolbarProps) {
         <CopyToClipboardButton canvasRef={props.frameRef} />
         <Button
           size={'xs'}
-          variant={'solid'}
           theme={'secondary'}
           leftIcon={<ColorSwatchIcon />}
           onClick={() => dispatchRandomTheme()}
@@ -33,11 +33,10 @@ export function FrameToolbar(props: FrameToolbarProps) {
         </Button>
         <Button
           size={'xs'}
-          variant={'solid'}
           theme={'secondary'}
           loading={formatAction.loading}
           leftIcon={<SparklesIcon />}
-          disabled={!activeEditor.canFormat() || formatAction.loading}
+          disabled={!activeEditor.canFormat()}
           onClick={() => dispatchFormat()}
         >
           Format

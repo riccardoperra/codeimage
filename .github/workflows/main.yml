@@ -2,7 +2,7 @@ name: Main
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 env:
   IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
@@ -10,12 +10,19 @@ env:
 
 jobs:
   install:
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        node-version: [16.13.2]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout PR
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
+
       - uses: dorny/paths-filter@v2
         if: (${{ env.IS_MAIN_BRANCH == 'false' }} || ${{ env.IS_NEXT_BRANCH == 'false' }})
         id: diff-changes
@@ -34,16 +41,6 @@ jobs:
               - 'apps/api/**'
               - package.json
               - pnpm-lock.json
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
 
     outputs:
       backend-change: 'true'
@@ -59,17 +56,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - name: Checkout PR
+        uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Prisma migrate
         run: |
@@ -82,21 +78,19 @@ jobs:
 
   build-packages:
     name: Build packages
-    needs: [install]
+    needs: [ install ]
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Prisma migrate
         run: |
@@ -117,26 +111,30 @@ jobs:
   typecheck-packages:
     if: ${{ needs.install.outputs.libs-change == 'true' }}
     name: Type-checking
-    needs: [install, build-packages]
+    needs: [ install, build-packages ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Prisma migrate
         run: |
           cd apps/api
           pnpm exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Typecheck packages
         run: |
@@ -150,26 +148,21 @@ jobs:
   build-app-dev:
     name: Build App and Preview (Dev)
     environment: Preview
-    needs: [build-packages]
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
+    needs: [ build-packages ]
+    if: ${{ github.head_ref  != 'next' }}
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -184,6 +177,62 @@ jobs:
           VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
           VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
+          VITE_PRESET_LIMIT: 10
+          VITE_PRESET_LIMIT_GUEST: 5
+          UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
+          UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
+          ENABLE_VERCEL_BUILD: true
+        run: |
+          pnpm --filter=@codeimage/app build
+
+      - uses: amondnet/vercel-action@v19
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
+          vercel-args: '--prebuilt' #Optional
+          working-directory: apps/codeimage
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
+          alias-domains: | #Optional
+            codeimage-app-pr-{{PR_NUMBER}}.vercel.app
+            next.codeimage.dev
+
+
+  build-app-next:
+    name: Build App and Preview (Next)
+    environment: Next
+    needs: [ build-packages ]
+    if: ${{ github.head_ref  == 'next' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v3
+        with:
+          ref: 'refs/pull/${{ github.event.number }}/merge'
+          submodules: 'true'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
+
+      - name: Restore dist
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Build app
+        env:
+          VITE_PUBLIC_AUTH0_DOMAIN: ${{ secrets.VITE_PUBLIC_AUTH0_DOMAIN }}
+          VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
+          VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
+          VITE_PRESET_LIMIT: 10
+          VITE_PRESET_LIMIT_GUEST: 5
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
           UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
           ENABLE_VERCEL_BUILD: true
@@ -204,26 +253,22 @@ jobs:
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'
     environment: Preview
-    needs: [build-packages]
+    needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
+          submodules: 'true'
           ref: 'refs/pull/${{ github.event.number }}/merge'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -248,76 +293,25 @@ jobs:
           alias-domains: | #Optional
             codeimage-highlight-pr-{{PR_NUMBER}}.vercel.app
 
-  build-ui-dev:
-    name: '@codeimage/ui dev and Preview'
-    environment: Preview
-    needs: [build-packages]
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout PR
-        uses: actions/checkout@v2
-        with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Restore dist
-        uses: actions/cache@v3
-        with:
-          path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Build ui demo
-        env:
-          ENABLE_VERCEL_BUILD: true
-        run: |
-          pnpm --filter=@codeimage/ui build:dev
-
-      - uses: amondnet/vercel-action@v19
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-args: '--prebuilt' #Optional
-          working-directory: packages/ui/dev
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} #Required
-          vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID}} #Required
-          alias-domains: | #Optional
-            codeimage-ui-pr-{{PR_NUMBER}}.vercel.app
-
   build-website-dev:
     name: '@codeimage/website dev and Preview'
     environment: Preview
-    needs: [build-packages]
+    needs: [ build-packages ]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -354,24 +348,20 @@ jobs:
 
   website-lhci:
     name: Lighthouse
-    needs: [build-website-dev]
+    needs: [ build-website-dev ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore website
         uses: actions/cache@v3
@@ -387,33 +377,30 @@ jobs:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
   build-api:
-    if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Build Api
-    needs: [install, typecheck-packages, build-packages]
+    needs: [ install, typecheck-packages, build-packages ]
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
-      - name: Prisma migrate
+      - name: "[API] Generate Prisma Migration"
         run: |
-          cd apps/api
-          pnpm exec prisma generate
+          pnpm --filter=@codeimage/api exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Build
         run: |
           pnpm --filter=@codeimage/api build:ts
+          pnpm prepare:api:deploy
 
       - name: Cache build
         uses: actions/cache@v3
@@ -426,7 +413,7 @@ jobs:
   be-test:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Api test
-    needs: [install]
+    needs: [ install ]
     runs-on: ubuntu-latest
 
     services:
@@ -457,15 +444,11 @@ jobs:
       ALLOWED_ORIGINS: '*'
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v3
         with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          submodules: 'true'
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
         uses: actions/cache@v3
@@ -473,9 +456,6 @@ jobs:
           path: |
             packages
           key: packages-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Prisma migrate
         run: |
@@ -486,6 +466,57 @@ jobs:
 
       - name: Test
         run: pnpm --filter=@codeimage/api test:ci
+
+  deploy-api-next:
+    if: ${{ github.head_ref  == 'next' }}
+    environment: Next
+    name: Deploy next
+    needs: [
+      lint,
+      build-packages,
+      build-api,
+      be-test,
+      build-app-next
+    ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
+
+      - name: Restore packages
+        uses: actions/cache@v3
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Restore api build
+        uses: actions/cache@v3
+        with:
+          path: |
+            dist/api-bundle/**
+          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Run migrations
+        run: |
+          pnpm --filter=@codeimage/api exec prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Deploy
+        run: |
+          find -type f -name '.gitignore' -delete
+          cd dist/api-bundle
+          pnpm railway up --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
 concurrency:
   group: main-${{ github.head_ref }}

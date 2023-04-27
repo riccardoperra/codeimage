@@ -1,5 +1,7 @@
 import {useI18n} from '@codeimage/locale';
-import {Box, Button, Text} from '@codeimage/ui';
+import {Box, Text} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
+import {As} from '@kobalte/core';
 import {Link} from '@solidjs/router';
 import {AppLocaleEntries} from '../../i18n';
 import * as styles from './NotFoundPage.css';
@@ -12,14 +14,11 @@ export default function NotFoundPage() {
       <Text class={styles.notFoundTitle}>{t('notFound.title')}</Text>
       <Text class={styles.descriptionTitle}>{t('notFound.description')}</Text>
       <Box marginTop={12}>
-        <Button
-          as={Link}
-          href={'/'}
-          size={'md'}
-          variant={'solid'}
-          theme={'primary'}
-        >
-          {t('notFound.goToHome')}
+        <Button asChild size={'md'} theme={'primary'}>
+          {/*// TODO: remove text decoration add link*/}
+          <As component={Link} href={'/'} style={{'text-decoration': 'unset'}}>
+            {t('notFound.goToHome')}
+          </As>
         </Button>
       </Box>
     </div>

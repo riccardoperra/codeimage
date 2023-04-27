@@ -11,7 +11,7 @@ export const frameToolbar = style({
   selectors: {
     ...withThemeMode({
       dark: {
-        background: `${darkGrayScale.gray1}`,
+        background: `${darkGrayScale.gray2}`,
         boxShadow: themeVars.boxShadow.md,
       },
       light: {
@@ -20,7 +20,7 @@ export const frameToolbar = style({
       },
     }),
   },
-  position: 'fixed',
+  position: 'absolute',
   bottom: '20px',
   left: '50%',
   transform: 'translateX(-50%)',

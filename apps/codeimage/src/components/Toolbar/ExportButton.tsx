@@ -1,11 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {
   Box,
-  Button,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
-  DialogProps,
   FieldLabel,
   FieldLabelHint,
   FlexField,
@@ -14,18 +9,21 @@ import {
   RangeField,
   SegmentedField,
   SegmentedFieldItem,
-  TextField,
   toast,
   VStack,
 } from '@codeimage/ui';
+
+import {
+  Button,
+  Dialog,
+  DialogPanelContent,
+  DialogPanelFooter,
+  DialogProps,
+  TextField,
+} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
-import {createButton} from '@solid-aria/button';
-import {
-  createOverlayTriggerState,
-  OverlayContainer,
-} from '@solid-aria/overlays';
 import {
   Component,
   createEffect,
@@ -50,22 +48,13 @@ interface ExportButtonProps {
 }
 
 export const ExportButton: Component<ExportButtonProps> = props => {
-  let openButtonRef: HTMLButtonElement | undefined;
   const [t] = useI18n<AppLocaleEntries>();
   const modality = useModality();
-  const overlayState = createOverlayTriggerState({});
-
-  const {buttonProps: openButtonProps} = createButton(
-    {
-      onPress: () => overlayState.open(),
-    },
-    () => openButtonRef,
-  );
-
+  const buttonSize = () => (modality === 'full' ? 'sm' : 'xs');
+  const [open, setOpen] = createSignal(false);
   const [data, notify] = useExportImage();
 
-  const label = () =>
-    data.loading ? t('toolbar.exportLoading') : t('toolbar.export');
+  const label = () => t('toolbar.export');
 
   createEffect(() => {
     if (data.error) {
@@ -86,54 +75,45 @@ export const ExportButton: Component<ExportButtonProps> = props => {
   useHotkey(document.body, {
     'Control+s': event => {
       event.preventDefault();
-      overlayState.open();
+      setOpen(true);
     },
   });
 
   return (
     <>
       <Button
-        {...openButtonProps}
-        ref={openButtonRef}
-        variant={'solid'}
         theme={'primary'}
+        size={buttonSize()}
         loading={data.loading}
-        size={modality === 'full' ? 'sm' : 'xs'}
-        leftIcon={() => <DownloadIcon />}
+        leftIcon={<DownloadIcon />}
+        onClick={() => setOpen(true)}
       >
         {label()}
       </Button>
 
-      <Show when={overlayState.isOpen()}>
-        <OverlayContainer>
-          <ExportDialog
-            size={'md'}
-            isOpen
-            onClose={overlayState.close}
-            fullScreen={modality === 'mobile'}
-            onConfirm={payload => {
-              notify({
-                options: {
-                  extension: payload.extension,
-                  fileName:
-                    payload.type === 'export' ? payload.fileName : undefined,
-                  mode: payload.type,
-                  pixelRatio: payload.pixelRatio,
-                  quality: payload.quality,
-                },
-                ref: props.canvasRef,
-              });
-
-              overlayState.close();
-            }}
-          />
-        </OverlayContainer>
-      </Show>
+      <ExportDialog
+        open={open()}
+        onOpenChange={setOpen}
+        size={modality === 'mobile' ? 'full' : 'md'}
+        onConfirm={payload => {
+          notify({
+            options: {
+              extension: payload.extension,
+              fileName:
+                payload.type === 'export' ? payload.fileName : undefined,
+              mode: payload.type,
+              pixelRatio: payload.pixelRatio,
+              quality: payload.quality,
+            },
+            ref: props.canvasRef,
+          });
+        }}
+      />
     </>
   );
 };
 
-export interface ExportDialogProps extends DialogProps {
+export type ExportDialogProps = {
   onConfirm: (
     payload:
       | {
@@ -151,9 +131,9 @@ export interface ExportDialogProps extends DialogProps {
           quality: number;
         },
   ) => void;
-}
+};
 
-export function ExportDialog(props: DialogProps & ExportDialogProps) {
+export function ExportDialog(props: ExportDialogProps & DialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const [supportWebShare] = useWebshare();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
@@ -182,7 +162,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
   ];
 
   const onConfirm = () => {
-    props.onClose?.();
+    props.onOpenChange?.(false);
 
     const selectedMode = mode();
 
@@ -215,11 +195,10 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
 
   return (
     <Dialog
-      onClose={props.onClose}
-      fullScreen={props.fullScreen}
-      isOpen
-      isDismissable
-      size={'md'}
+      open={props.open}
+      onOpenChange={value => props.onOpenChange?.(value)}
+      modal={true}
+      size={props.size}
       title={t('export.title')}
     >
       <DialogPanelContent>
@@ -258,19 +237,14 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
           </Show>
 
           <Show when={mode() === 'export'}>
-            <FlexField size={'md'}>
-              <FieldLabel size={'sm'} for={'fileName'}>
-                {t('export.fileName')}
-              </FieldLabel>
-              <TextField
-                placeholder={t('export.fileNamePlaceholder')}
-                id={'fileName'}
-                value={fileName()}
-                onChange={setFileName}
-                size={'sm'}
-                type={'text'}
-              />
-            </FlexField>
+            <TextField
+              placeholder={t('export.fileNamePlaceholder')}
+              label={t('export.fileName')}
+              value={fileName()}
+              onChange={setFileName}
+              size={'md'}
+              theme={'filled'}
+            />
           </Show>
 
           <FlexField size={'md'}>
@@ -335,9 +309,8 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
             block
             size={'md'}
             type="button"
-            variant={'solid'}
             theme={'secondary'}
-            onClick={() => props.onClose?.()}
+            onClick={() => props.onOpenChange?.(false)}
           >
             {t('common.close')}
           </Button>
@@ -346,7 +319,7 @@ export function ExportDialog(props: DialogProps & ExportDialogProps) {
             block
             size={'md'}
             type="submit"
-            variant={'solid'}
+            theme={'primary'}
             onClick={onConfirm}
           >
             {t('common.confirm')}

@@ -1,0 +1,65 @@
+import * as sinon from 'sinon';
+import t from 'tap';
+import {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema';
+import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema';
+import {testPresetUtils} from '../../../__internal__/presetUtils';
+
+import {build} from '../../../helper';
+import {userSeed} from '../../../helpers/seed';
+
+t.before(async () => {
+  t.context.user = await userSeed.createUser();
+});
+
+t.test('POST /v1/preset [Create Preset] -> 200', async t => {
+  const fastify = await build(t);
+  const userId = t.context.user.id;
+  const spy = sinon.spy(fastify.presetService, 'createPreset');
+  const createRepositorySpy = sinon.spy(fastify.presetRepository, 'create');
+
+  const data = testPresetUtils.buildPresetData();
+
+  const request: PresetCreateDto = {
+    name: 'Data',
+    data,
+  };
+
+  const response = await fastify.inject({
+    url: `/api/v1/preset`,
+    method: 'POST',
+    payload: request,
+  });
+
+  const body = response.json<PresetDto>();
+
+  t.ok(spy.withArgs(userId, request).calledOnce, 'has been called once');
+  t.ok(createRepositorySpy.called);
+  t.same(response.statusCode, 200, 'return status 200');
+  t.strictSame(body.name, 'Data');
+});
+
+t.test(
+  'POST /v1/preset [Create Preset] -> Exceed presets limit > 422',
+  async t => {
+    const fastify = await build(t);
+    const createRepositorySpy = sinon.spy(fastify.presetRepository, 'create');
+    const data = testPresetUtils.buildPresetData();
+    sinon.stub(fastify.config, 'PRESETS_LIMIT').value(-1);
+
+    const request: PresetCreateDto = {
+      name: 'Data',
+      data,
+    };
+
+    const response = await fastify.inject({
+      url: `/api/v1/preset`,
+      method: 'POST',
+      payload: request,
+    });
+
+    response.json<PresetDto>();
+
+    t.ok(createRepositorySpy.notCalled);
+    t.same(response.statusCode, 422, 'return status 422');
+  },
+);

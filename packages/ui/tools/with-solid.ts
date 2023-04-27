@@ -7,14 +7,15 @@
  */
 import {babel, RollupBabelInputPluginOptions} from '@rollup/plugin-babel';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
-import {rmSync, writeFileSync} from 'fs';
+import {rmSync, writeFileSync} from 'node:fs';
 import {mergeAndConcat} from 'merge-anything';
-import {dirname, parse, resolve} from 'path';
+import {cwd} from 'node:process';
+import {dirname, parse, resolve} from 'node:path';
 import {ModuleFormat, OutputOptions, RollupOptions} from 'rollup';
 import {terser} from 'rollup-plugin-terser';
 import ts from 'typescript';
 
-function findClosestPackageJson(start = process.cwd(), level = 0): any {
+function findClosestPackageJson(start = cwd(), level = 0): any {
   try {
     const path = resolve(start, 'package.json');
     return require(path);
@@ -251,7 +252,7 @@ function processOptions(options: Options, asSubPackage = true): RollupOptions {
 }
 
 export default function withSolid(options: Options | Options[] = {}) {
-  rmSync(resolve(process.cwd(), 'dist'), {
+  rmSync(resolve(cwd(), 'dist'), {
     force: true,
     recursive: true,
   });

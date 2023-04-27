@@ -37,10 +37,8 @@ import {
   createEffect,
   createMemo,
   createResource,
-  getOwner,
   on,
   onMount,
-  runWithOwner,
   VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
@@ -75,7 +73,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
-  const owner = getOwner();
 
   const {
     state: editorState,
@@ -172,10 +169,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
 
   onMount(() => {
     setRef(() => editorEl);
-    import('./fix-cm-aria-roles-lighthouse').then(m => {
-      if (!owner) return;
-      runWithOwner(owner, () => m.fixCodeMirrorAriaRole(() => editorEl));
-    });
   });
 
   const {setFocused: editorSetFocused} = createEditorFocus(
@@ -186,6 +179,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createEditorControlledValue(editorView, () => editor()?.code ?? '');
   createEditorReadonly(editorView, () => props.readOnly);
   createExtension(EditorView.lineWrapping);
+  createExtension(() =>
+    EditorView.contentAttributes.of({
+      'aria-label': 'codeimage-editor',
+    }),
+  );
   createExtension(() => customFontExtension());
   createExtension(currentLanguage);
   createExtension(currentExtraLanguage);

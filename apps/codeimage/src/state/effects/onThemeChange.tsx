@@ -9,7 +9,6 @@ import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
 import {pipe, tap} from 'rxjs';
-import {batch} from 'solid-js';
 
 export type DispatchUpdateThemeParams = {
   theme: CustomTheme | string;
@@ -33,14 +32,12 @@ export function dispatchUpdateTheme(params: DispatchUpdateThemeParams): void {
 
   resolvedTheme.then(theme => {
     if (theme) {
-      batch(() => {
-        if (updateBackground) {
-          frame.setBackground(theme.properties.previewBackground);
-        }
-        terminal.setState('background', theme.properties.terminal.main);
-        terminal.setState('textColor', theme.properties.terminal.text);
-        editor.actions.setThemeId(theme.id);
-      });
+      if (updateBackground) {
+        frame.setBackground(theme.properties.previewBackground);
+      }
+      terminal.setState('background', theme.properties.terminal.main);
+      terminal.setState('textColor', theme.properties.terminal.text);
+      editor.actions.setThemeId(theme.id);
       getUmami().trackEvent(theme.id, `theme-change`);
     }
   });

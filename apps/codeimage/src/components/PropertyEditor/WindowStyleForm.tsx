@@ -1,10 +1,10 @@
 import {useI18n} from '@codeimage/locale';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {Box, Group, RadioBlock, SegmentedField, Select} from '@codeimage/ui';
+import {Box, Group, RadioBlock, SegmentedField} from '@codeimage/ui';
+import {createSelectOptions, Select} from '@codeui/kit';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
-import {useModality} from '@core/hooks/isMobile';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, For, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -17,8 +17,16 @@ import {SuspenseEditorItem} from './SuspenseEditorItem';
 export const WindowStyleForm: ParentComponent = () => {
   const terminal = getTerminalState();
   const [t] = useI18n<AppLocaleEntries>();
-  const terminalShadows = createMemo(shadowsLabel);
-  const modality = useModality();
+
+  const terminalShadows = createMemo(
+    () => shadowsLabel() as {label: string; value: string}[],
+  );
+
+  const terminalShadowsSelect = createSelectOptions(terminalShadows(), {
+    key: 'label',
+    valueKey: 'value',
+  });
+
   return (
     <>
       <PanelHeader label={t('frame.terminal')} />
@@ -64,22 +72,19 @@ export const WindowStyleForm: ParentComponent = () => {
         <PanelRow for={'frameTerminalTypeField'}>
           <FullWidthPanelRow>
             <SuspenseEditorItem
-              fallback={() => {
-                const terminalThemes = AVAILABLE_TERMINAL_THEMES;
-                return (
-                  <Group orientation={'vertical'}>
-                    <For each={Object.values(terminalThemes.entries)}>
-                      {() => (
-                        <RadioBlock value={0}>
-                          <Box padding={2} width={'100%'}>
-                            <TerminalControlSkeleton />
-                          </Box>
-                        </RadioBlock>
-                      )}
-                    </For>
-                  </Group>
-                );
-              }}
+              fallback={
+                <Group orientation={'vertical'}>
+                  <For each={Object.values(AVAILABLE_TERMINAL_THEMES.entries)}>
+                    {() => (
+                      <RadioBlock value={0}>
+                        <Box padding={2} width={'100%'}>
+                          <TerminalControlSkeleton />
+                        </Box>
+                      </RadioBlock>
+                    )}
+                  </For>
+                </Group>
+              }
             >
               <TerminalControlField
                 selectedTerminal={terminal.state.type}
@@ -149,19 +154,18 @@ export const WindowStyleForm: ParentComponent = () => {
             fallback={<SkeletonLine width={'100%'} height={'24px'} />}
           >
             <Select
+              options={terminalShadowsSelect.options()}
+              {...terminalShadowsSelect.props()}
+              {...terminalShadowsSelect.controlled(
+                () => terminal.state.shadow ?? undefined,
+                shadow => {
+                  getUmami().trackEvent(shadow ?? 'none', 'change-shadow');
+                  terminal.setShadow(shadow ?? null);
+                },
+              )}
+              aria-label={'Shadow'}
+              size={'xs'}
               id={'frameSelectShadow'}
-              native={modality === 'mobile'}
-              items={terminalShadows()}
-              value={terminal.state.shadow}
-              multiple={false}
-              onSelectChange={value => {
-                const shadowSelected = value;
-                getUmami().trackEvent(
-                  shadowSelected ?? 'none',
-                  'change-shadow',
-                );
-                terminal.setShadow(shadowSelected);
-              }}
             />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>

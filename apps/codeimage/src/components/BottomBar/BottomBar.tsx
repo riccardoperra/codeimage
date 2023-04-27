@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {Box, Button, FadeInOutTransition} from '@codeimage/ui';
+import {Box, Button} from '@codeimage/ui';
 import {createSignal, ParentComponent, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {AppLocaleEntries} from '../../i18n';
@@ -57,7 +57,7 @@ export const BottomBar: ParentComponent<BottomBarProps> = props => {
 
       <Show when={props.portalHostRef}>
         <Portal mount={props.portalHostRef}>
-          <FadeInOutTransition show={!!mode()}>
+          <Show when={mode()}>
             <Box class={styles.portalWrapper}>
               <Box class={styles.portalHeader}>
                 <Box marginLeft={'auto'}>
@@ -77,20 +77,23 @@ export const BottomBar: ParentComponent<BottomBarProps> = props => {
                   <ThemeSwitcher orientation={'horizontal'} />
                 </Show>
                 <Show when={mode() === 'style'}>
-                  <EditorForm>
-                    <FrameStyleForm />
-
-                    <WindowStyleForm />
-                  </EditorForm>
+                  <Box class={styles.scrollableContentWithPadding}>
+                    <EditorForm>
+                      <FrameStyleForm />
+                      <WindowStyleForm />
+                    </EditorForm>
+                  </Box>
                 </Show>
                 <Show when={mode() === 'editor'}>
-                  <EditorForm>
-                    <EditorStyleForm />
-                  </EditorForm>
+                  <Box class={styles.scrollableContentWithPadding}>
+                    <EditorForm>
+                      <EditorStyleForm />
+                    </EditorForm>
+                  </Box>
                 </Show>
               </Box>
             </Box>
-          </FadeInOutTransition>
+          </Show>
         </Portal>
       </Show>
     </div>

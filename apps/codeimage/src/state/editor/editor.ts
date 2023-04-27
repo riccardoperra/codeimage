@@ -2,10 +2,11 @@ import type * as ApiTypes from '@codeimage/api/api-types';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
+import {PresetData} from '@codeimage/store/presets/types';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {filter} from '@solid-primitives/immutable';
-import {map, shareReplay} from 'rxjs';
+import {from, map, shareReplay} from 'rxjs';
 import {createMemo, createSelector} from 'solid-js';
 import {SetStoreFunction} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
@@ -53,6 +54,7 @@ export function createEditorsStore() {
       setFontWeight: number;
       setShowLineNumbers: boolean;
       setFromPersistedState: PersistedEditorState;
+      setFromPreset: PresetData['editor'];
       setEnableLigatures: boolean;
     }>(),
   );
@@ -86,6 +88,10 @@ export function createEditorsStore() {
     .hold(store.commands.setEnableLigatures, (enable, {set}) =>
       set('options', 'enableLigatures', enable),
     )
+    .hold(store.commands.setFromPreset, presetData => {
+      store.set('options', presetData);
+      store.dispatch(editorUpdateCommand, void 0);
+    })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
       const editors = (persistedState.editors ?? [])
         .slice(0, MAX_TABS)
@@ -138,20 +144,20 @@ export function createEditorsStore() {
     };
   };
 
-  const stateToPersist$ = store
-    .watchCommand([
+  const stateToPersist$ = from(
+    store.watchCommand([
       store.commands.setFontId,
       store.commands.setThemeId,
       store.commands.setFontWeight,
       store.commands.setShowLineNumbers,
       store.commands.setEnableLigatures,
       editorUpdateCommand,
-    ])
-    .pipe(
-      map(() => store()),
-      map(mapToStateToPersistState),
-      shareReplay({refCount: true, bufferSize: 1}),
-    );
+    ]),
+  ).pipe(
+    map(() => store()),
+    map(mapToStateToPersistState),
+    shareReplay({refCount: true, bufferSize: 1}),
+  );
 
   const addEditor = (
     editorState?: Partial<EditorState> | null,

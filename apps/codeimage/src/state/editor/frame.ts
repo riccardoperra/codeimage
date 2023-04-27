@@ -1,7 +1,8 @@
 import {FrameState, PersistedFrameState} from '@codeimage/store/frame/model';
 import {provideAppState} from '@codeimage/store/index';
+import {PresetData} from '@codeimage/store/presets/types';
 import {appEnvironment} from '@core/configuration';
-import {map} from 'rxjs';
+import {from, map} from 'rxjs';
 import {defineStore} from 'statebuilder';
 import {withProxyCommands} from 'statebuilder/commands';
 
@@ -28,6 +29,7 @@ type Commands = {
   setVisibility: boolean;
   toggleVisibility: void;
   setNextPadding: void;
+  setFromPreset: PresetData['frame'];
   setFromPersistedState: PersistedFrameState;
 };
 
@@ -74,6 +76,9 @@ const frameState = defineStore(() => getInitialFrameState())
         const next = (currentIndex + 1) % availablePadding.length;
         return {...state, padding: availablePadding[next]};
       })
+      .hold(store.commands.setFromPreset, presetData => {
+        store.set(state => ({...state, ...presetData}));
+      })
       .hold(store.commands.setFromPersistedState, (_, {state}) => {
         return {...state, ..._};
       });
@@ -91,8 +96,8 @@ const frameState = defineStore(() => getInitialFrameState())
       } as PersistedFrameState;
     };
 
-    const stateToPersist$ = store
-      .watchCommand([
+    const stateToPersist$ = from(
+      store.watchCommand([
         store.commands.setBackground,
         store.commands.setOpacity,
         store.commands.setPadding,
@@ -101,11 +106,12 @@ const frameState = defineStore(() => getInitialFrameState())
         store.commands.setAutoWidth,
         store.commands.setVisibility,
         store.commands.setNextPadding,
-      ])
-      .pipe(
-        map(() => store()),
-        map(mapToStateToPersistState),
-      );
+        store.commands.setFromPreset,
+      ]),
+    ).pipe(
+      map(() => store()),
+      map(mapToStateToPersistState),
+    );
 
     return {
       get store() {

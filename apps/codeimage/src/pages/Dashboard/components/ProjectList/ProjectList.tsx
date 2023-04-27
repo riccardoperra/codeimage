@@ -1,4 +1,5 @@
-import {Box, getLastPage, Pagination} from '@codeimage/ui';
+import {Box} from '@codeimage/ui';
+import {Pagination} from '@codeui/kit';
 import {ErrorBoundary, For, Index, Show, Suspense, untrack} from 'solid-js';
 import {getDashboardState} from '../../dashboard.state';
 import {ProjectItem} from '../ProjectItem/ProjectItem';
@@ -26,9 +27,6 @@ export function ProjectList() {
     return <Index each={list}>{() => <ProjectItemSkeleton />}</Index>;
   };
 
-  const lastPage = () =>
-    getLastPage(dashboard.filteredData, () => paginationState.pageSize);
-
   return (
     <ErrorBoundary
       fallback={(err, reset) => (
@@ -42,10 +40,7 @@ export function ProjectList() {
           </ul>
         }
       >
-        <Show
-          when={!listIsEmpty()}
-          fallback={() => <ProjectEmptyListMessage />}
-        >
+        <Show when={!listIsEmpty()} fallback={<ProjectEmptyListMessage />}>
           <ul class={styles.gridList}>
             <For each={dashboard.pagedData()}>
               {item => <ProjectItem item={item} />}
@@ -54,9 +49,9 @@ export function ProjectList() {
           <Show when={paginationState.hasOnePage} keyed={false}>
             <Box display={'flex'} justifyContent={'center'}>
               <Pagination
-                pageNumber={paginationState.page()}
+                page={paginationState.page()}
                 onChange={paginationState.setPage}
-                lastPage={lastPage()}
+                pages={paginationState.totalPages()}
               />
             </Box>
           </Show>

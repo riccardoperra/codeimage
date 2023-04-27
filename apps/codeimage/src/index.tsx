@@ -9,9 +9,8 @@ import {
   SnackbarHost,
   ThemeProviderProps,
 } from '@codeimage/ui';
-import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import '@codeimage/ui/themes/lightTheme';
-import {OverlayProvider} from '@solid-aria/overlays';
+import {theme as themeClass} from '@codeui/kit';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
@@ -114,30 +113,31 @@ export function Bootstrap() {
     },
   ]);
 
+  document.documentElement.classList.add(themeClass);
+
   createEffect(
     on(mode, theme => {
       const scheme = document.querySelector('meta[name="theme-color"]');
+      const color = theme === 'dark' ? '#151516' : '#FFFFFF';
       if (scheme) {
-        const color = theme === 'dark' ? darkGrayScale.gray1 : '#FFFFFF';
         scheme.setAttribute('content', color);
-        setElementVars(document.body, {
-          [backgroundColorVar]: color,
-        });
       }
+      setElementVars(document.documentElement, {
+        [backgroundColorVar]: color,
+      });
+      document.documentElement.setAttribute('data-cui-theme', theme as string);
     }),
   );
 
   return (
     <Scaffold>
       <CodeImageThemeProvider tokens={tokens} theme={mode()}>
-        <OverlayProvider>
-          <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
-          <Router>
-            <Suspense>
-              <Routes />
-            </Suspense>
-          </Router>
-        </OverlayProvider>
+        <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
+        <Router>
+          <Suspense>
+            <Routes />
+          </Suspense>
+        </Router>
       </CodeImageThemeProvider>
       <SidebarPopoverHost />
     </Scaffold>
@@ -146,6 +146,7 @@ export function Bootstrap() {
 
 getAuth0State()
   .initLogin()
+  .catch(() => null)
   .then(() => {
     render(
       () => (

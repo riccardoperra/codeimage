@@ -4,12 +4,12 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getUiStore} from '@codeimage/store/ui';
 import {
-  Button,
   FadeInOutTransition,
   PopoverPanel,
   PortalHostContext,
   useFloating,
 } from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {offset} from '@floating-ui/dom';
 import {Popover, PopoverButton} from 'solid-headless';
 import {createMemo, createSignal, For, JSXElement} from 'solid-js';
@@ -106,7 +106,6 @@ export function KeyboardShortcuts(): JSXElement {
           as={Button}
           theme={'secondary'}
           type={'button'}
-          variant={'solid'}
           size={'xs'}
           leftIcon={<HintIcon size={'sm'} />}
           onClick={() => setShow(true)}

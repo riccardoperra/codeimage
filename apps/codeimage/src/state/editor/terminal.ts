@@ -4,9 +4,10 @@ import {
   TerminalState,
 } from '@codeimage/store/editor/model';
 import {provideAppState} from '@codeimage/store/index';
+import {PresetData} from '@codeimage/store/presets/types';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {map} from 'rxjs';
+import {from, map} from 'rxjs';
 import {defineStore} from 'statebuilder';
 import {withProxyCommands} from 'statebuilder/commands';
 
@@ -44,6 +45,7 @@ export function createTerminalState() {
       toggleShowHeader: void;
       toggleWatermark: void;
       setFromPersistedState: PersistedTerminalState;
+      setFromPreset: PresetData['terminal'];
     }>(),
   );
   const store = provideAppState(config);
@@ -84,6 +86,9 @@ export function createTerminalState() {
       ...state,
       showWatermark: !state.showWatermark,
     }))
+    .hold(store.commands.setFromPreset, presetData => {
+      store.set(state => ({...state, ...presetData}));
+    })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
       const shadows = TERMINAL_SHADOWS;
       if (!Object.values<string | null>(shadows).includes(state.shadow)) {
@@ -109,8 +114,8 @@ export function createTerminalState() {
     };
   };
 
-  const stateToPersist$ = store
-    .watchCommand([
+  const stateToPersist$ = from(
+    store.watchCommand([
       store.commands.setAccentVisible,
       store.commands.setOpacity,
       store.commands.setAlternativeTheme,
@@ -121,11 +126,12 @@ export function createTerminalState() {
       store.commands.setShowWatermark,
       store.commands.toggleShowHeader,
       store.commands.toggleWatermark,
-    ])
-    .pipe(
-      map(() => store()),
-      map(mapToStateToPersistState),
-    );
+      store.commands.setFromPreset,
+    ]),
+  ).pipe(
+    map(() => store()),
+    map(mapToStateToPersistState),
+  );
 
   return {
     state: store.get,

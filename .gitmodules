@@ -1,0 +1,3 @@
+[submodule "packages/kit"]
+	path = packages/kit
+	url = git@github.com:riccardoperra/codeui.git

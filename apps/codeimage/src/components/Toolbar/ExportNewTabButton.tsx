@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {Button, toast} from '@codeimage/ui';
+import {toast} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {Component, createEffect, untrack} from 'solid-js';
@@ -22,9 +23,6 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
   const [t] = useI18n<AppLocaleEntries>();
 
   const [data, notify] = useExportImage();
-
-  const label = () =>
-    data.loading ? t('toolbar.loadingNewTab') : t('toolbar.openNewTab');
 
   function openInTab() {
     getUmami().trackEvent(`true`, 'export-new-tab');
@@ -66,14 +64,13 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
 
   return (
     <Button
-      variant={'solid'}
-      theme={'primaryAlt'}
+      theme={'tertiary'}
       loading={data.loading}
-      leftIcon={() => <ExternalLinkIcon />}
+      leftIcon={<ExternalLinkIcon />}
       onClick={() => openInTab()}
       size={props.size ?? (modality === 'full' ? 'sm' : 'xs')}
     >
-      {label()}
+      {t('toolbar.openNewTab')}
     </Button>
   );
 };

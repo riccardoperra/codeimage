@@ -91,19 +91,17 @@ export function WindowTab(props: VoidProps<WindowTabProps>) {
       </Suspense>
 
       <Show when={props.onClose && hasEnoughSpace()}>
-        {() => (
-          <CloseIcon
-            class={styles.tabCloseIcon}
-            onClick={evt => {
-              props.onClose?.();
-              evt.stopPropagation();
-              evt.preventDefault();
-            }}
-            size={'xs'}
-            stroke-width={3}
-            data-export-exclude={true}
-          />
-        )}
+        <CloseIcon
+          class={styles.tabCloseIcon}
+          onClick={evt => {
+            props.onClose?.();
+            evt.stopPropagation();
+            evt.preventDefault();
+          }}
+          size={'xs'}
+          stroke-width={3}
+          data-export-exclude={true}
+        />
       </Show>
     </div>
   );

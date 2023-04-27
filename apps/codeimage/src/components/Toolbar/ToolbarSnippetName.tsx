@@ -1,13 +1,7 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
-import {
-  Box,
-  FlexField,
-  HStack,
-  LoadingCircle,
-  Text,
-  TextField,
-} from '@codeimage/ui';
+import {Box, FlexField, HStack, LoadingCircle, Text} from '@codeimage/ui';
+import {TextField} from '@codeui/kit';
 import clickOutside from '@core/directives/clickOutside';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createEffect, createSignal, on, onMount, Show, untrack} from 'solid-js';
@@ -71,21 +65,20 @@ export function ToolbarSnippetName() {
                 alignItems={'center'}
                 lineHeight={'normal'}
                 class={styles.toolbarSnippetName}
+                onClick={toggleEdit}
               >
                 <Show when={remoteSync()}>
                   <LoadingCircle size={'sm'} />
                 </Show>
 
-                <Text size={'sm'} onClick={toggleEdit}>
-                  {value() ?? 'Untitled'}
-                </Text>
+                <Text size={'sm'}>{value() ?? 'Untitled'}</Text>
                 <PencilAlt size={'sm'} />
               </HStack>
             }
             when={editing()}
           >
             <form use:clickOutside={submit} onSubmit={submit}>
-              {() => {
+              {(() => {
                 let ref: HTMLInputElement | undefined;
                 onMount(() => {
                   ref?.focus();
@@ -105,20 +98,18 @@ export function ToolbarSnippetName() {
                 return (
                   <FlexField size={'md'}>
                     <TextField
-                      inline={true}
+                      theme={'inline'}
+                      slotClasses={{
+                        input: styles.toolbarSnippetNameInput,
+                      }}
                       ref={ref}
                       size={'sm'}
-                      type={'text'}
-                      autofocus={true}
                       value={value()}
                       onChange={value => setValue(value)}
-                      style={{
-                        'text-align': 'center',
-                      }}
                     />
                   </FlexField>
                 );
-              }}
+              })()}
             </form>
           </Show>
         </Show>

@@ -15,6 +15,9 @@ export default defineConfig({
     }),
     mergeCssPlugin(),
   ],
+  ssr: {
+    noExternal: [/^@solid-aria*/, '@solid-primitives/props'],
+  },
   optimizeDeps: {
     include: [
       '@codemirror/state',

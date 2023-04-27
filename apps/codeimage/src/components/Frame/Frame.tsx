@@ -37,10 +37,10 @@ export const Frame: ParentComponent<{
         style={assignInlineVars({
           [styles.frameVars.width]: computedWidth(),
           [styles.frameVars.padding]: `${props.padding}px`,
-          [styles.frameVars.radius]: `${props.radius}px`,
         })}
       >
         <div
+          data-frame-content
           class={styles.overlay}
           style={assignInlineVars({
             [styles.frameVars.backgroundColor]:

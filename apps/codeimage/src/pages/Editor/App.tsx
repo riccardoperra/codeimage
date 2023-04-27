@@ -2,13 +2,8 @@ import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
-import {
-  adaptiveFullScreenHeight,
-  Box,
-  Button,
-  HStack,
-  PortalHost,
-} from '@codeimage/ui';
+import {adaptiveFullScreenHeight, Box, HStack, PortalHost} from '@codeimage/ui';
+import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {createSignal, lazy, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
@@ -18,7 +13,6 @@ import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {ColorSwatchIcon} from '../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../components/Icons/SparklesIcon';
 import {KeyboardShortcuts} from '../../components/KeyboardShortcuts/KeyboardShortcuts';
-import {EditorSidebar} from '../../components/PropertyEditor/EditorSidebar';
 import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItem';
 import {Canvas} from '../../components/Scaffold/Canvas/Canvas';
 import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
@@ -30,6 +24,7 @@ import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
 import * as styles from './App.css';
 import {EditorReadOnlyBanner} from './components/EditorReadOnlyBanner';
+import {EditorLeftSidebar} from './components/LeftSidebar';
 
 const ManagedFrame = lazy(() =>
   import('../../components/Frame/ManagedFrame').then(c => ({
@@ -53,9 +48,7 @@ export function App() {
       <Toolbar canvasRef={frameRef()} />
       <div class={styles.wrapper}>
         <Show when={modality === 'full' && !readOnly()}>
-          <Sidebar position={'left'}>
-            <EditorSidebar />
-          </Sidebar>
+          <EditorLeftSidebar />
         </Show>
 
         <PortalHost ref={setPortalHostRef} />
@@ -78,7 +71,7 @@ export function App() {
             </Show>
 
             <Show when={!readOnly() && modality === 'full'}>
-              <Box paddingLeft={4} paddingTop={3}>
+              <Box display={'flex'} paddingTop={3} paddingX={4}>
                 <HStack spacing={'2'}>
                   <KeyboardShortcuts />
                 </HStack>
@@ -91,14 +84,12 @@ export function App() {
                   <ShareButton showLabel={false} />
                   <Button
                     size={'xs'}
-                    variant={'solid'}
                     theme={'secondary'}
                     leftIcon={<ColorSwatchIcon />}
                     onClick={() => dispatchRandomTheme()}
                   />
                   <Button
                     size={'xs'}
-                    variant={'solid'}
                     theme={'secondary'}
                     leftIcon={<SparklesIcon />}
                     onClick={() => getActiveEditorStore().format()}
@@ -117,17 +108,16 @@ export function App() {
 
             <Show when={modality === 'full'} keyed={false}>
               <FrameToolbar frameRef={frameRef()} />
-              <Footer />
             </Show>
+            <Footer />
           </SuspenseEditorItem>
         </Canvas>
-
         <Show when={!readOnly()}>
           <Show
             when={modality === 'full'}
             fallback={<BottomBar portalHostRef={portalHostRef()} />}
           >
-            <Sidebar position={'right'}>
+            <Sidebar>
               <ThemeSwitcher orientation={'vertical'} />
             </Sidebar>
           </Show>
