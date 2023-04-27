@@ -42,19 +42,28 @@ export const EditorStyleForm: ParentComponent = () => {
     computed: {font},
   } = getRootEditorStore();
 
-  const languagesOptions = createSelectOptions(languages, {
-    key: 'label',
-    valueKey: 'id',
-  });
+  const languagesOptions = createSelectOptions(
+    languages.map(language => ({
+      label: language.label,
+      value: language.id,
+    })),
+    {
+      key: 'label',
+      valueKey: 'value',
+    },
+  );
 
   const syntaxHighlightOptions = createSelectOptions(
-    themeArray()
-      .map(theme => theme())
-      .filter((theme): theme is CustomTheme => !!theme)
-      .map(theme => ({
-        label: theme.properties.label,
-        value: theme.id,
-      })),
+    () =>
+      themeArray()
+        .map(theme => theme())
+        .filter((theme): theme is CustomTheme => !!theme)
+        .map(theme => {
+          return {
+            label: theme.properties.label,
+            value: theme.id,
+          };
+        }),
     {key: 'label', valueKey: 'value'},
   );
 
@@ -113,7 +122,6 @@ export const EditorStyleForm: ParentComponent = () => {
                 fallback={<SkeletonLine width={'100%'} height={'26px'} />}
               >
                 <Select
-                  options={syntaxHighlightOptions.options()}
                   {...syntaxHighlightOptions.props()}
                   {...syntaxHighlightOptions.controlled(
                     () => state.options.themeId,
@@ -125,6 +133,7 @@ export const EditorStyleForm: ParentComponent = () => {
                       });
                     },
                   )}
+                  options={syntaxHighlightOptions.options()}
                   aria-label={'Syntax highlight'}
                   id={'frameSyntaxHighlightField'}
                   size={'xs'}
