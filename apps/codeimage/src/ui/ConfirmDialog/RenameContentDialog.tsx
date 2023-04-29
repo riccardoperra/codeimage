@@ -39,9 +39,7 @@ export function RenameContentDialog(
           <TextField
             ref={el => {
               el.autofocus = true;
-              requestIdleCallback(() => {
-                el?.focus();
-              });
+              requestAnimationFrame(() => el?.focus());
             }}
             onChange={setName}
             value={name()}
