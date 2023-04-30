@@ -1,3 +1,8 @@
+import {
+  AssetId,
+  getAssetsStore,
+  isAssetUrl,
+} from '@codeimage/store/assets/assets';
 import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
@@ -9,7 +14,7 @@ import * as styles from './Frame.css';
 export const exportExclude = _exportExclude;
 
 export const Frame: ParentComponent<{
-  background: string | null | undefined;
+  background: string | AssetId | null | undefined;
   padding: number;
   radius: number;
   opacity: number;
@@ -17,9 +22,11 @@ export const Frame: ParentComponent<{
   readOnly: boolean;
 }> = props => {
   const {width, onResizeStart, setRef, resizing} = createHorizontalResize({
-    minWidth: 600,
+    minWidth: 200,
     maxWidth: 1400,
   });
+
+  const assetsStore = getAssetsStore();
 
   const computedWidth = () => {
     const size = width();
@@ -39,12 +46,32 @@ export const Frame: ParentComponent<{
           [styles.frameVars.padding]: `${props.padding}px`,
         })}
       >
+        <Show when={isAssetUrl(props.background) && props.background}>
+          {assetId => (
+            <img
+              width={'100%'}
+              height={'100%'}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                'object-fit': 'cover',
+              }}
+              src={assetsStore.getAsset(assetId())()?.url}
+              alt={'Frame background'}
+            />
+          )}
+        </Show>
+
         <div
           data-frame-content
           class={styles.overlay}
           style={assignInlineVars({
-            [styles.frameVars.backgroundColor]:
-              props.background ?? 'transparent',
+            [styles.frameVars.backgroundColor]: props.background?.startsWith(
+              'image:',
+            )
+              ? 'transparent'
+              : props.background ?? 'transparent',
             [styles.frameVars.opacity]: `${props.opacity}%`,
             [styles.frameVars.visibility]: `${
               props.visible ? 'visible' : 'hidden'
