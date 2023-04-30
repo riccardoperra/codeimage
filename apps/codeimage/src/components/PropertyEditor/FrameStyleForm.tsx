@@ -81,7 +81,7 @@ export const FrameStyleForm: ParentComponent = () => {
       </Show>
 
       <Show when={frame.store.visible}>
-        <PanelRow for={'colorField'} label={t('frame.color')}>
+        <PanelRow for={'colorField'} label={t('frame.background')}>
           <TwoColumnPanelRow>
             <SuspenseEditorItem
               fallback={<SkeletonLine width={'100%'} height={'26px'} />}

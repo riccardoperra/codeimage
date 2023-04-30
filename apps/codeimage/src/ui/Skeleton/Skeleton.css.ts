@@ -50,7 +50,7 @@ export const withSkeletonItem = style([
       background: skeletonVars.startBackground,
       backgroundImage: `linear-gradient(to right, ${skeletonVars.startBackground} 0%, ${skeletonVars.midBackground} 20%, ${skeletonVars.startBackground} 40%, ${skeletonVars.startBackground} 100%)`,
       backgroundRepeat: 'no-repeat',
-      backgroundSize: '800px 104px',
+      backgroundSize: '800px 200px',
       animation: `${shimmer} 1s linear infinite`,
       animationFillMode: 'forwards',
       animationDelay: '0.2s',
