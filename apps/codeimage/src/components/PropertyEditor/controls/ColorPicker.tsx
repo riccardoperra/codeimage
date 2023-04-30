@@ -21,7 +21,7 @@ import {
 } from 'solid-js';
 import {ColorPickerPresetItem} from './ColorPickerPresetItem';
 import * as styles from './CustomColorPicker.css';
-import {ImagePicker} from './ImagePicker';
+import {ImagePicker} from './ImagePicker/ImagePicker';
 
 const enum ColorPickerSelectionMode {
   gradient = 'gradient',
