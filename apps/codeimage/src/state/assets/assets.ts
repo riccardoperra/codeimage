@@ -50,7 +50,6 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
     createEffect(
       on(store, assetsMap => {
         const unwrappedValue = unwrap(assetsMap);
-        console.log('store updated', unwrappedValue);
         store.idb
           .set(unwrappedValue)
           .then()

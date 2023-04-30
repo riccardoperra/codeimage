@@ -1,6 +1,6 @@
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {Box, LoadingCircle, VStack} from '@codeimage/ui';
-import {ErrorBoundary, JSX, Suspense, VoidProps} from 'solid-js';
+import {createEffect, ErrorBoundary, JSX, Suspense, VoidProps} from 'solid-js';
 import {ExclamationIcon} from '../../components/Icons/Exclamation';
 
 interface AssetsImageProps {
@@ -16,6 +16,15 @@ export function AssetsImage(
 ) {
   const store = getAssetsStore();
   const [resolve] = store.loadAsync(() => props.assetId);
+
+  createEffect(() => {
+    switch (resolve.state) {
+      case 'errored':
+        return props.onError?.();
+      case 'ready':
+        return props.onLoad?.();
+    }
+  });
 
   return (
     <ErrorBoundary

@@ -1,52 +1,8 @@
 import {getAssetsStore, PersistedAsset} from '@codeimage/store/assets/assets';
-import {Box, Text, themeVars, VStack} from '@codeimage/ui';
+import {Box, Text, themeVars} from '@codeimage/ui';
 import {Button, Link, TextField} from '@codeui/kit';
 import {createSignal} from 'solid-js';
-import * as styles from './CustomColorPicker.css';
-import {ImagePickerList} from './ImagePickerList';
-
-interface ImagePickerProps {
-  onChange: (assetId: string) => void;
-  value: string | undefined;
-}
-
-export function ImagePicker(props: ImagePickerProps) {
-  const assetsStore = getAssetsStore();
-  const scope = 'frameBackground';
-
-  const images = assetsStore.filterByScope(scope);
-
-  return (
-    <VStack spacing={2}>
-      <Box width={'100%'}>
-        <ImagePickerInput
-          onUpload={asset => {
-            props.onChange(asset.id);
-          }}
-          scope={scope}
-        />
-      </Box>
-      <Box marginTop={2}>
-        <ImagePickerList
-          onChange={asset => {
-            props.onChange(asset);
-          }}
-          value={props.value}
-          images={images()}
-          onDelete={asset => {
-            assetsStore.remove(asset);
-            if (props.value === asset) {
-              requestAnimationFrame(() => {
-                const firstImage = images()[0];
-                props.onChange(firstImage?.id ?? undefined);
-              });
-            }
-          }}
-        />
-      </Box>
-    </VStack>
-  );
-}
+import * as styles from './ImagePicker.css';
 
 interface ImagePickerInputProps {
   scope: string;
