@@ -41,6 +41,7 @@ export const box = style([
 
 export const segment = style([
   {
+    width: '1px',
     height: '100%',
     position: 'relative',
     display: 'flex',
