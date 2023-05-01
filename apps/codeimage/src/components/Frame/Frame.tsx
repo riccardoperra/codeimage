@@ -55,8 +55,8 @@ export const Frame: ParentComponent<{
           data-frame-content
           class={styles.overlay}
           style={assignInlineVars({
-            [styles.frameVars.backgroundColor]: props.background?.startsWith(
-              'image:',
+            [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
+              props.background,
             )
               ? 'transparent'
               : props.background ?? 'transparent',
