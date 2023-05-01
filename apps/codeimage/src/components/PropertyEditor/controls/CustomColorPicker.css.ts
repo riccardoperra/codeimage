@@ -1,4 +1,10 @@
-import {backgroundColorVar, textFieldStyles, themeVars} from '@codeimage/ui';
+import {
+  backgroundColorVar,
+  textFieldStyles,
+  themeVars,
+  withThemeMode,
+} from '@codeimage/ui';
+import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 
@@ -52,6 +58,16 @@ export const colorItem = recipe({
 export const popover = style({
   maxWidth: 'initial',
   transition: `all 250ms ease-in-out`,
+  selectors: {
+    ...withThemeMode({
+      dark: {
+        background: darkGrayScale.gray1,
+      },
+      light: {
+        background: darkGrayScale.white,
+      },
+    }),
+  },
 });
 
 export type ColorPickerColorItemProps = RecipeVariants<typeof colorItem>;

@@ -38,7 +38,7 @@ export function CustomColorPicker(props: CustomColorPickerProps) {
           />
         </As>
       </PopoverTrigger>
-      <PopoverContent title={''} class={styles.popover}>
+      <PopoverContent variant={'bordered'} class={styles.popover}>
         <DynamicSizedContainer>
           <Box
             display={'flex'}
