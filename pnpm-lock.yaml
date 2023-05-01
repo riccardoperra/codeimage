@@ -12420,7 +12420,7 @@ packages:
       '@jest/fake-timers': 28.1.3
       '@jest/types': 28.1.3
       '@types/jsdom': 16.2.15
-      '@types/node': 18.15.11
+      '@types/node': 18.16.0
       jest-mock: 28.1.3
       jest-util: 28.1.3
       jsdom: 19.0.0
@@ -16041,6 +16041,13 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
 
+  /rollup@3.21.2:
+    resolution: {integrity: sha512-c4vC+JZ3bbF4Kqq2TtM7zSKtSyMybFOjqmomFax3xpfYaPZDZ4iz8NMIuBRMjnXOcKYozw7bC6vhJjiWD6JpzQ==}
+    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+
   /route-sort@1.0.0:
     resolution: {integrity: sha512-SFgmvjoIhp5S4iBEDW3XnbT+7PRuZ55oRuNjY+CDB1SGZkyCG9bqQ3/dhaZTctTBYMAvDxd2Uy9dStuaUfgJqQ==}
     engines: {node: '>= 6'}
@@ -18337,7 +18344,7 @@ packages:
       '@types/node': 18.16.0
       esbuild: 0.17.18
       postcss: 8.4.23
-      rollup: 3.20.2
+      rollup: 3.21.2
     optionalDependencies:
       fsevents: 2.3.2
 
