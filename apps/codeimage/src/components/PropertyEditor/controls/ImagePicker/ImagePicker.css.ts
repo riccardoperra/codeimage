@@ -1,11 +1,12 @@
 import {themeVars, withThemeMode} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
+import {themeTokens} from '@codeui/kit';
 import {style} from '@vanilla-extract/css';
 
 export const imageGrid = style([
   {
     display: 'grid',
-    padding: themeVars.spacing['2'],
+    padding: themeTokens.spacing['2'],
     gridTemplateColumns: 'repeat(1, 1fr)',
     gap: themeVars.spacing[3],
     overflow: 'auto',
@@ -24,10 +25,10 @@ export const imagesCard = style([
   {
     backgroundColor: themeVars.dynamicColors.input.backgroundColor,
     width: '100%',
-    borderRadius: themeVars.borderRadius.xl,
-    padding: themeVars.spacing['5'],
-    paddingBottom: themeVars.spacing['2'],
-    boxShadow: themeVars.boxShadow.md,
+    borderRadius: themeTokens.radii.xl,
+    padding: themeTokens.spacing['3'],
+    paddingBottom: themeTokens.spacing['2'],
+    boxShadow: themeTokens.boxShadow.md,
     color: themeVars.dynamicColors.baseText,
     transition: 'background-color 0.2s ease-in-out',
     position: 'relative',
@@ -46,7 +47,7 @@ export const imagesCard = style([
         light: {
           backgroundColor: themeVars.backgroundColor.white,
           border: `1px solid ${themeVars.borderColor.default}`,
-          boxShadow: themeVars.boxShadow.default,
+          boxShadow: themeTokens.boxShadow.default,
         },
       }),
 
@@ -76,3 +77,9 @@ export const confirmButton = style({
   borderTopLeftRadius: 0,
   borderBottomLeftRadius: 0,
 });
+
+export const assetImagePreview = style([
+  {
+    borderRadius: themeTokens.radii.sm,
+  },
+]);

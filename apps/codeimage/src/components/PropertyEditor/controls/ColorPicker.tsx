@@ -83,7 +83,7 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
       <Show when={mode() === ColorPickerSelectionMode.color}>
         <FlexField size={'xs'}>
           <TextField
-            size={'xs'}
+            size={'sm'}
             value={internalColor()}
             onChange={value => props.onChange(value)}
           />
@@ -106,7 +106,7 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
       <Show when={mode() === ColorPickerSelectionMode.gradient}>
         <FlexField size={'xs'}>
           <TextField
-            size={'xs'}
+            size={'sm'}
             value={internalColor()}
             onChange={value => props.onChange(value)}
           />

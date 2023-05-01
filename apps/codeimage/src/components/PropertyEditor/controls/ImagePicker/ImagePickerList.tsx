@@ -80,6 +80,7 @@ function ImagePickerAssetImage(props: ImagePickerAssetImageProps) {
     <Suspense fallback={<SkeletonLine width={'100%'} height={'100%'} />}>
       <div style={{height: '90px'}}>
         <AssetsImage
+          class={styles.assetImagePreview}
           onLoad={props.onLoad}
           onError={props.onError}
           assetId={props.assetId}
