@@ -57,7 +57,6 @@ export const container = style([
     boxSizing: 'border-box',
     userSelect: 'none',
     transition: 'background-color .2s, padding .2s, border-radius .2s',
-    overflow: 'hidden',
   },
 ]);
 
@@ -71,6 +70,7 @@ export const overlay = style({
   height: '100%',
   width: '100%',
   borderRadius: 'inherit',
+  overflow: 'hidden',
 });
 
 export const dragControls = style({

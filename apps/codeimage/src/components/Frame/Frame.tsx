@@ -3,10 +3,15 @@ import {
   getAssetsStore,
   isAssetUrl,
 } from '@codeimage/store/assets/assets';
+import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
+import {getEditorStore, getRootEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
+import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {ParentComponent, Show} from 'solid-js';
 import * as styles from './Frame.css';
@@ -46,23 +51,6 @@ export const Frame: ParentComponent<{
           [styles.frameVars.padding]: `${props.padding}px`,
         })}
       >
-        <Show when={isAssetUrl(props.background) && props.background}>
-          {assetId => (
-            <img
-              width={'100%'}
-              height={'100%'}
-              style={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                'object-fit': 'cover',
-              }}
-              src={assetsStore.getAsset(assetId())()?.url}
-              alt={'Frame background'}
-            />
-          )}
-        </Show>
-
         <div
           data-frame-content
           class={styles.overlay}
@@ -77,7 +65,33 @@ export const Frame: ParentComponent<{
               props.visible ? 'visible' : 'hidden'
             }`,
           })}
-        />
+        >
+          <Show
+            when={
+              isAssetUrl(props.background) &&
+              assetsStore.isPresent(props.background) &&
+              props.background
+            }
+          >
+            {assetId => (
+              <AssetsImage
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  'object-fit': 'cover',
+                }}
+                onError={() =>
+                  dispatchUpdateTheme({
+                    updateBackground: true,
+                    theme: getRootEditorStore().state.options.themeId,
+                  })
+                }
+                assetId={assetId()}
+              />
+            )}
+          </Show>
+        </div>
 
         <Show when={modality === 'full' && !props.readOnly}>
           <div class={styles.dragControls} use:exportExclude={true}>

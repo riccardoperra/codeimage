@@ -324,6 +324,9 @@ importers:
       '@solid-primitives/context':
         specifier: ^0.1.4
         version: 0.1.4(solid-js@1.7.3)
+      '@solid-primitives/event-bus':
+        specifier: 1.0.5
+        version: 1.0.5(solid-js@1.7.3)
       '@solid-primitives/i18n':
         specifier: ^1.2.1
         version: 1.2.4(solid-js@1.7.3)
@@ -6474,7 +6477,7 @@ packages:
     peerDependencies:
       solid-js: ^1.6.12
     dependencies:
-      '@solid-primitives/utils': 6.0.0(solid-js@1.7.3)
+      '@solid-primitives/utils': 6.1.0(solid-js@1.7.3)
       solid-js: 1.7.3
     dev: false
 

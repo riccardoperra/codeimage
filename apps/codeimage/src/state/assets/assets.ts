@@ -1,7 +1,8 @@
 import {provideAppState} from '@codeimage/store/index';
 import {generateUid} from '@codeimage/store/plugins/unique-id';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
-import {Accessor, createEffect, createResource, on, untrack} from 'solid-js';
+import {createEventBus} from '@solid-primitives/event-bus';
+import {Accessor, createEffect, createResource, on} from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
 
@@ -25,6 +26,7 @@ export function isAssetUrl(value: string | null | undefined): value is AssetId {
 export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
   .extend(withIndexedDbPlugin<PersistedAsset[]>('assets', []))
   .extend(store => {
+    const bus = createEventBus<boolean>();
     const cache = new WeakMap<PersistedAsset, string>();
     const generateAssetId = (): AssetId => `${assetPrefix}${generateUid()}`;
 
@@ -47,12 +49,19 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
       store.set(() => dataWithUpdatedUrls);
     });
 
+    const hydrated = new Promise<boolean>(resolve => {
+      bus.listen(() => {
+        resolve(true);
+        bus.clear();
+      });
+    });
+
     createEffect(
       on(store, assetsMap => {
         const unwrappedValue = unwrap(assetsMap);
         store.idb
           .set(unwrappedValue)
-          .then()
+          .then(() => bus.emit(true))
           .catch(e => {
             console.error(`Error while synchronizing db 'assets' key: ${e}`);
           });
@@ -61,6 +70,9 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
 
     return {
       isAssetUrl,
+      isPresent(value: string): Accessor<boolean> {
+        return () => !!this.getAsset(value)();
+      },
       isAsset(value: unknown): value is PersistedAsset {
         return (
           !!value &&
@@ -78,7 +90,7 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
       },
       getAssetImageBrowserUrl(id: string): Accessor<string | undefined> {
         return () => {
-          const asset = untrack(this.getAsset(id));
+          const asset = this.getAsset(id)();
           if (!asset) return undefined;
           return `url(${asset.url})`;
         };
@@ -122,9 +134,10 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
         store.set(data => data.filter(item => item.id !== id));
       },
       loadAsync(id: Accessor<string>) {
-        return createResource(id, id => {
-          const asset = untrack(this.getAsset(id));
-          if (!asset) return undefined;
+        return createResource(id, async id => {
+          await hydrated.then();
+          const asset = this.getAsset(id)();
+          if (!asset) return Promise.reject(`Image with id ${id} not present`);
           const cached = cache.get(asset);
           if (cached) {
             return cached;
