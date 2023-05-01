@@ -4,14 +4,12 @@ import {
   isAssetUrl,
 } from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
-import {getEditorStore, getRootEditorStore} from '@codeimage/store/editor';
-import {getFrameState} from '@codeimage/store/editor/frame';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
-import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {ParentComponent, Show} from 'solid-js';
 import * as styles from './Frame.css';
