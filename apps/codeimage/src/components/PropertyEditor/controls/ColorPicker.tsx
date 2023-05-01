@@ -1,7 +1,6 @@
 import {useI18n} from '@codeimage/locale';
-import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
+import {isAssetUrl} from '@codeimage/store/assets/assets';
 import {
-  Box,
   FlexField,
   SegmentedField,
   SegmentedFieldItem,

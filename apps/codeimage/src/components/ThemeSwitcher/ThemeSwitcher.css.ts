@@ -33,6 +33,8 @@ export const themeBox = style({
   width: '100%',
   borderRadius: themeVars.borderRadius.xl,
   background: backgroundColorVar,
+  backgroundPosition: '50% 50%',
+  backgroundSize: 'cover',
   overflow: 'hidden',
   position: 'relative',
 
