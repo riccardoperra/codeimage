@@ -1,4 +1,8 @@
-import {getAssetsStore, PersistedAsset} from '@codeimage/store/assets/assets';
+import {
+  getAssetsStore,
+  PersistedAsset,
+  PersistedFileAsset,
+} from '@codeimage/store/assets/assets';
 import {Box, Text, themeVars} from '@codeimage/ui';
 import {Button, Link, TextField} from '@codeui/kit';
 import {createSignal} from 'solid-js';
@@ -64,14 +68,26 @@ export function ImagePickerInput(props: ImagePickerInputProps) {
             <input
               type={'file'}
               accept={'image/x-png,image/gif,image/jpeg'}
+              multiple={true}
               style={{display: 'none'}}
               onChange={event => {
-                const image = event.currentTarget.files?.[0];
-                if (image) {
-                  return assetsStore
-                    .addFile(image, props.scope)
-                    .then(props.onUpload);
-                }
+                const files = event.currentTarget.files;
+                if (!files) return;
+
+                return Promise.allSettled(
+                  Array.from(files).map(file =>
+                    assetsStore.addFile(file, props.scope),
+                  ),
+                )
+                  .then(results =>
+                    results.find(
+                      (
+                        result,
+                      ): result is PromiseFulfilledResult<PersistedFileAsset> =>
+                        result.status === 'fulfilled',
+                    ),
+                  )
+                  .then(file => file && props.onUpload(file.value));
               }}
               ref={imageInputRef}
             />

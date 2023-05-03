@@ -6,21 +6,46 @@ import {Accessor, createEffect, createResource, on} from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
 
-export interface PersistedAsset {
-  id: AssetId;
+export interface BaseAsset {
+  id: string;
   name: string;
   type: string;
-  data: ArrayBuffer;
-  origin: 'file' | 'link';
   url: string;
   scope?: string;
 }
 
-const assetPrefix = `asset:`;
-export type AssetId = `${typeof assetPrefix}${string}`;
+export type PersistedAsset = PersistedFileAsset | PersistedLink;
 
-export function isAssetUrl(value: string | null | undefined): value is AssetId {
-  return !!value && value.startsWith(assetPrefix);
+export interface PersistedFileAsset extends BaseAsset {
+  id: AssetId;
+  data: ArrayBuffer;
+  fileType: string;
+  type: 'file';
+}
+
+export interface PersistedLink extends BaseAsset {
+  id: AssetLinkId;
+  type: 'link';
+}
+
+const assetPrefix = `asset:`;
+const assetLinkPrefix = `link:`;
+export type AssetId = `${typeof assetPrefix}${string}`;
+export type AssetLinkId = `${typeof assetLinkPrefix}${string}`;
+
+export function isAssetUrl(
+  value: string | null | undefined,
+): value is AssetId | AssetLinkId {
+  return (
+    !!value &&
+    (value.startsWith(assetPrefix) || value?.startsWith(assetLinkPrefix))
+  );
+}
+
+export function isAssetLinkUrl(
+  value: string | null | undefined,
+): value is AssetLinkId {
+  return !!value && value.startsWith(assetLinkPrefix);
 }
 
 export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
@@ -29,6 +54,8 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
     const bus = createEventBus<boolean>();
     const cache = new WeakMap<PersistedAsset, string>();
     const generateAssetId = (): AssetId => `${assetPrefix}${generateUid()}`;
+    const generateAssetLinkId = (link: string): AssetLinkId =>
+      `${assetLinkPrefix}${link}`;
 
     const resolve = (data: ArrayBuffer, type: string) => {
       const arrayBufferView = new Uint8Array(data);
@@ -37,18 +64,6 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
       return urlCreator.createObjectURL(blob);
     };
 
-    store.idb.get().then(data => {
-      const dataWithUpdatedUrls = data.map(value => {
-        switch (value.origin) {
-          case 'file':
-            return Object.assign(value, {url: resolve(value.data, value.type)});
-          default:
-            return value;
-        }
-      });
-      store.set(() => dataWithUpdatedUrls);
-    });
-
     const hydrated = new Promise<boolean>(resolve => {
       bus.listen(() => {
         resolve(true);
@@ -56,15 +71,25 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
       });
     });
 
+    store.idb.get().then(data => {
+      const dataWithUpdatedUrls = data.map(value => {
+        switch (value.type) {
+          case 'file':
+            return Object.assign(value, {url: resolve(value.data, value.type)});
+          default:
+            return value;
+        }
+      });
+      store.set(() => dataWithUpdatedUrls);
+      bus.emit(true);
+    });
+
     createEffect(
       on(store, assetsMap => {
         const unwrappedValue = unwrap(assetsMap);
-        store.idb
-          .set(unwrappedValue)
-          .then(() => bus.emit(true))
-          .catch(e => {
-            console.error(`Error while synchronizing db 'assets' key: ${e}`);
-          });
+        store.idb.set(unwrappedValue).catch(e => {
+          console.error(`Error while synchronizing db 'assets' key: ${e}`);
+        });
       }),
     );
 
@@ -81,9 +106,11 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
           'url' in value
         );
       },
-      filterByScope(scope: string): Accessor<PersistedAsset[]> {
+      filterByScope(scopes: string[]): Accessor<PersistedAsset[]> {
         return () =>
-          Object.values(store.get).filter(asset => asset.scope === scope);
+          Object.values(store.get).filter(asset =>
+            scopes.includes(asset.scope ?? ''),
+          );
       },
       getAsset(id: string): Accessor<PersistedAsset | undefined> {
         return () => store.get.find(item => item.id === id);
@@ -96,13 +123,11 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
         };
       },
       async addLink(link: string, scope = 'app') {
-        const id = generateAssetId();
+        const id = generateAssetLinkId(link.trim());
         const asset: PersistedAsset = {
           id,
-          data: new ArrayBuffer(0),
           type: 'link',
           name: link,
-          origin: 'link',
           url: link,
           scope,
         };
@@ -115,12 +140,12 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
         const id = generateAssetId();
         const buffer = await file.arrayBuffer();
 
-        const asset: PersistedAsset = {
+        const asset: PersistedFileAsset = {
           id,
+          type: 'file',
           data: buffer,
-          type: file.type,
+          fileType: file.type,
           name: file.name,
-          origin: 'file',
           url: resolve(buffer, file.type),
           scope,
         };
@@ -136,19 +161,23 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
       loadAsync(id: Accessor<string>) {
         return createResource(id, async id => {
           await hydrated.then();
-          const asset = this.getAsset(id)();
-          if (!asset) return Promise.reject(`Image with id ${id} not present`);
-          const cached = cache.get(asset);
-          if (cached) {
-            return cached;
-          }
-          if (asset.origin === 'link') {
+          if (isAssetLinkUrl(id)) {
+            const [, url] = id.split(assetLinkPrefix);
+            const asset =
+              this.getAsset(id)() ?? (await this.addLink(url, 'app'));
             return new Promise<string>((resolve, reject) => {
               const image = new Image();
               image.src = asset.url;
               image.onload = () => resolve(asset.url);
               image.onerror = () => reject(asset.url);
             });
+          }
+
+          const asset = this.getAsset(id)();
+          if (!asset) return Promise.reject(`Image with id ${id} not present`);
+          const cached = cache.get(asset);
+          if (cached) {
+            return cached;
           }
           return new Promise<string>(async (resolve, reject) => {
             return await fetch(asset.url, {

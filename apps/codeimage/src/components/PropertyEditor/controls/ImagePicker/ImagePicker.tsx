@@ -12,7 +12,7 @@ export function ImagePicker(props: ImagePickerProps) {
   const assetsStore = getAssetsStore();
   const scope = 'frameBackground';
 
-  const images = assetsStore.filterByScope(scope);
+  const images = assetsStore.filterByScope(['app', scope]);
 
   return (
     <VStack spacing={2}>
@@ -32,13 +32,9 @@ export function ImagePicker(props: ImagePickerProps) {
           value={props.value}
           images={images()}
           onDelete={asset => {
+            const updatedImages = images().filter(image => image.id !== asset);
+            props.onChange(updatedImages[0]?.id ?? undefined);
             assetsStore.remove(asset);
-            if (props.value === asset) {
-              setTimeout(() => {
-                const firstImage = images()[0];
-                props.onChange(firstImage?.id ?? undefined);
-              });
-            }
           }}
         />
       </Box>
