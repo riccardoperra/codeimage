@@ -39,7 +39,7 @@ export function CustomColorPicker(props: CustomColorPickerProps) {
         </As>
       </PopoverTrigger>
       <PopoverContent variant={'bordered'} class={styles.popover}>
-        <DynamicSizedContainer>
+        <DynamicSizedContainer enabled={modality === 'full'}>
           <Box
             display={'flex'}
             justifyContent={'spaceBetween'}

@@ -5,6 +5,7 @@ import {
   withThemeMode,
 } from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
+import {responsiveStyle} from '@codeui/kit';
 import {style} from '@vanilla-extract/css';
 import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
 
@@ -55,19 +56,26 @@ export const colorItem = recipe({
   },
 });
 
-export const popover = style({
-  maxWidth: 'initial',
-  transition: `all 250ms ease-in-out`,
-  selectors: {
-    ...withThemeMode({
-      dark: {
-        background: darkGrayScale.gray1,
-      },
-      light: {
-        background: darkGrayScale.white,
-      },
-    }),
+export const popover = style([
+  {
+    maxWidth: '360px',
+    transition: `all 250ms ease-in-out`,
+    selectors: {
+      ...withThemeMode({
+        dark: {
+          background: darkGrayScale.gray1,
+        },
+        light: {
+          background: darkGrayScale.white,
+        },
+      }),
+    },
   },
-});
+  responsiveStyle({
+    md: {
+      maxWidth: 'initial',
+    },
+  }),
+]);
 
 export type ColorPickerColorItemProps = RecipeVariants<typeof colorItem>;

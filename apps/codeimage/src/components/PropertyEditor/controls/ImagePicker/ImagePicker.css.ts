@@ -1,24 +1,25 @@
 import {themeVars, withThemeMode} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
-import {themeTokens} from '@codeui/kit';
-import {style} from '@vanilla-extract/css';
+import {responsiveStyle, themeTokens} from '@codeui/kit';
+import {createVar, style} from '@vanilla-extract/css';
+
+export const gridSize = createVar();
 
 export const imageGrid = style([
   {
     display: 'grid',
     padding: themeTokens.spacing['2'],
-    gridTemplateColumns: 'repeat(1, 1fr)',
+    gridTemplateColumns: `repeat(${gridSize}, 150px)`,
     gap: themeVars.spacing[3],
     overflow: 'auto',
     maxHeight: '400px',
-    width: '240px',
-    '@media': {
-      '(min-width: 640px)': {
-        width: '544px',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-      },
-    },
   },
+  responsiveStyle({
+    md: {
+      width: '544px',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+    },
+  }),
 ]);
 
 export const imagesCard = style([
@@ -83,3 +84,7 @@ export const assetImagePreview = style([
     borderRadius: themeTokens.radii.sm,
   },
 ]);
+
+export const imageListItem = style({
+  alignItems: 'flex-start',
+});

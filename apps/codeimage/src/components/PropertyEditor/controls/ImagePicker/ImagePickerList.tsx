@@ -3,6 +3,7 @@ import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {Box, HStack} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, For, Show, Suspense} from 'solid-js';
 import * as styles from './ImagePicker.css';
 
@@ -15,7 +16,12 @@ interface ImagePickerListProps {
 
 export function ImagePickerList(props: ImagePickerListProps) {
   return (
-    <div class={styles.imageGrid}>
+    <div
+      class={styles.imageGrid}
+      style={assignInlineVars({
+        [styles.gridSize]: String(props.images?.length ?? 0),
+      })}
+    >
       <Suspense>
         <For each={props.images.map(image => image.id)}>
           {assetId => (
@@ -43,7 +49,7 @@ function ImagePickerListItem(props: ImagePickerListItemProps) {
   const [status, setStatus] = createSignal<'error' | 'ready' | undefined>();
 
   return (
-    <Box display={'flex'} alignItems={'flexStart'}>
+    <div class={styles.imageListItem}>
       <div
         class={styles.imagesCard}
         data-active={props.active ? '' : undefined}
@@ -65,7 +71,7 @@ function ImagePickerListItem(props: ImagePickerListItemProps) {
           />
         </Box>
       </div>
-    </Box>
+    </div>
   );
 }
 

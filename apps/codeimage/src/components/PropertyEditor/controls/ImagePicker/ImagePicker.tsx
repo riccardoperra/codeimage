@@ -24,7 +24,7 @@ export function ImagePicker(props: ImagePickerProps) {
           scope={scope}
         />
       </Box>
-      <VStack marginTop={2} spacing={4}>
+      <Box marginTop={2}>
         <ImagePickerList
           onChange={asset => {
             props.onChange(asset);
@@ -41,7 +41,7 @@ export function ImagePicker(props: ImagePickerProps) {
             }
           }}
         />
-      </VStack>
+      </Box>
     </VStack>
   );
 }

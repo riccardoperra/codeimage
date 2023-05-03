@@ -1,14 +1,21 @@
 import {Motion} from '@motionone/solid';
-import {createSignal, FlowProps, onMount} from 'solid-js';
+import {createSignal, FlowProps, onCleanup, onMount} from 'solid-js';
 
-export function DynamicSizedContainer(props: FlowProps) {
+interface DynamicSizedContainerProps {
+  // TODO: not reactive
+  enabled?: boolean;
+}
+
+export function DynamicSizedContainer(
+  props: FlowProps<DynamicSizedContainerProps>,
+) {
   let ref!: HTMLDivElement;
   let innerRef!: HTMLDivElement;
 
   const [rect, setRect] = createSignal<DOMRect>();
 
   onMount(() => {
-    if (ref) {
+    if (ref && props.enabled) {
       setRect(innerRef.getBoundingClientRect());
 
       const observer = new ResizeObserver(([entry]) => {
@@ -18,6 +25,8 @@ export function DynamicSizedContainer(props: FlowProps) {
       });
 
       observer.observe(innerRef);
+
+      return onCleanup(() => observer.unobserve(innerRef));
     }
   });
 
@@ -34,10 +43,14 @@ export function DynamicSizedContainer(props: FlowProps) {
     >
       <div
         ref={innerRef}
-        style={{
-          width: 'fit-content',
-          height: 'fit-content',
-        }}
+        style={
+          props.enabled
+            ? {
+                width: 'fit-content',
+                height: 'fit-content',
+              }
+            : {width: '100%', height: '1005'}
+        }
       >
         {props.children}
       </div>
