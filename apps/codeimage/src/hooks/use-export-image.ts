@@ -84,6 +84,7 @@ export async function exportImage(
     '[data-frame-content]',
   ) as HTMLElement;
   if (frameContent) {
+    frameContent?.parentElement?.style.setProperty('overflow', 'unset');
     frameContent.style.setProperty('border-radius', '0px');
   }
 

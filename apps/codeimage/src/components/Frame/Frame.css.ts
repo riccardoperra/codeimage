@@ -8,7 +8,7 @@ export const [frame, frameVars] = createTheme({
   opacity: '100%',
   visibility: 'visible',
   width: '730px',
-  minWidth: '640px',
+  minWidth: '200px',
   minHeight: '150px',
   maxWidth: '1400px',
   controlHandleSize: '24px',
@@ -70,6 +70,7 @@ export const overlay = style({
   height: '100%',
   width: '100%',
   borderRadius: 'inherit',
+  overflow: 'hidden',
 });
 
 export const dragControls = style({
