@@ -87,7 +87,7 @@ export const FrameStyleForm: ParentComponent = () => {
               fallback={<SkeletonLine width={'100%'} height={'26px'} />}
             >
               <CustomColorPicker
-                onChange={color => frame.setBackground(color)}
+                onChange={frame.setBackground}
                 value={frame.store.background ?? ''}
               />
             </SuspenseEditorItem>

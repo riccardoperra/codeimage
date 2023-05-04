@@ -64,13 +64,7 @@ export const Frame: ParentComponent<{
             }`,
           })}
         >
-          <Show
-            when={
-              isAssetUrl(props.background) &&
-              assetsStore.isPresent(props.background) &&
-              props.background
-            }
-          >
+          <Show when={isAssetUrl(props.background) && props.background}>
             {assetId => (
               <AssetsImage
                 style={{
@@ -79,12 +73,12 @@ export const Frame: ParentComponent<{
                   top: 0,
                   'object-fit': 'cover',
                 }}
-                onError={() =>
-                  dispatchUpdateTheme({
+                onError={() => {
+                  return dispatchUpdateTheme({
                     updateBackground: true,
                     theme: getRootEditorStore().state.options.themeId,
-                  })
-                }
+                  });
+                }}
                 assetId={assetId()}
               />
             )}

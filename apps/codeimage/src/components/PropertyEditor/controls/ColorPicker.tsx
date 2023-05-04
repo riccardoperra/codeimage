@@ -126,7 +126,9 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
       <Show when={mode() === ColorPickerSelectionMode.background}>
         <ImagePicker
           value={props.value ?? undefined}
-          onChange={props.onChange}
+          onChange={value =>
+            props.onChange((value || props.gradientColors?.[0]) ?? '')
+          }
         />
       </Show>
     </VStack>

@@ -32,9 +32,8 @@ export function ImagePicker(props: ImagePickerProps) {
           value={props.value}
           images={images()}
           onDelete={asset => {
-            const updatedImages = images().filter(image => image.id !== asset);
-            props.onChange(updatedImages[0]?.id ?? undefined);
             assetsStore.remove(asset);
+            props.onChange(images()[0]?.id ?? undefined);
           }}
         />
       </Box>

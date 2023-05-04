@@ -132,8 +132,10 @@ function ImagePickerDeleteButton(props: ImagePickerDeleteButtonProps) {
           size={'xs'}
           aria-label={'Delete'}
           theme={'negative'}
-          onClick={() => {
+          onClick={e => {
             props.onDelete();
+            e.preventDefault();
+            e.stopPropagation();
           }}
         >
           Delete
