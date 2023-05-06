@@ -10,7 +10,6 @@ import {
   ThemeProviderProps,
 } from '@codeimage/ui';
 import '@codeimage/ui/themes/lightTheme';
-import {theme as themeClass} from '@codeui/kit';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
@@ -112,8 +111,6 @@ export function Bootstrap() {
       component: NotFoundPage,
     },
   ]);
-
-  document.documentElement.classList.add(themeClass);
 
   createEffect(
     on(mode, theme => {

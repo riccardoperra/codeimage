@@ -10,6 +10,7 @@ import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
+import {PreviewFrame} from '../../components/Frame/PreviewFrame';
 import {ColorSwatchIcon} from '../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../components/Icons/SparklesIcon';
 import {KeyboardShortcuts} from '../../components/KeyboardShortcuts/KeyboardShortcuts';
@@ -100,11 +101,13 @@ export function App() {
               </Box>
             </Show>
 
-            <FrameHandler ref={setFrameRef} onScaleChange={frameStore.setScale}>
+            <FrameHandler onScaleChange={frameStore.setScale}>
               <Suspense fallback={<FrameSkeleton />}>
                 <ManagedFrame />
               </Suspense>
             </FrameHandler>
+
+            <PreviewFrame ref={setFrameRef} />
 
             <Show when={modality === 'full'} keyed={false}>
               <FrameToolbar frameRef={frameRef()} />

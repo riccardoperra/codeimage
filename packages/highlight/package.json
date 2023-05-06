@@ -219,8 +219,8 @@
   "dependencies": {
     "@codemirror/language": "^6.6.0",
     "@codemirror/state": "^6.2.0",
-    "@codemirror/theme-one-dark": "^6.1.1",
-    "@codemirror/view": "^6.9.1",
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@codemirror/view": "^6.11.0",
     "@lezer/highlight": "^1.1.3",
     "@primer/primitives": "^7.11.1",
     "@solid-primitives/props": "^2.2.2"
@@ -234,7 +234,7 @@
   "devDependencies": {
     "@codeimage/ui": "workspace:0.10.1",
     "@codeimage/vanilla-extract": "workspace:0.2.0",
-    "@codemirror/lang-javascript": "^6.1.4",
+    "@codemirror/lang-javascript": "^6.1.7",
     "@codeui/kit": "workspace:*",
     "@rollup/plugin-typescript": "^9.0.2",
     "@solid-aria/focus": "^0.1.4",

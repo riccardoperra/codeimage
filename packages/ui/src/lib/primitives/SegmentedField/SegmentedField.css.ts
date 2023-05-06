@@ -69,9 +69,10 @@ export const segmentActive = style([
   {
     position: 'absolute',
     height: '100%',
-    left: segmentedFieldVars.activeSegmentedOffset,
+    transform: `translateX(${segmentedFieldVars.activeSegmentedOffset})`,
     width: segmentedFieldVars.activeSegmentedWidth,
-    transition: 'left .2s cubic-bezier(.2, 0, 0, 1)',
+    transition:
+      'width 150ms cubic-bezier(.2, 0, 0, 1), transform 150ms cubic-bezier(.2, 0, 0, 1)',
     '::after': {
       position: 'absolute',
       inset: '2px',

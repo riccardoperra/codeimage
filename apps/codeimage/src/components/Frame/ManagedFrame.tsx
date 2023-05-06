@@ -23,6 +23,7 @@ export function ManagedFrame() {
       background={frame.background}
       opacity={frame.opacity}
       visible={frame.visible}
+      onWidthChange={getFrameState().setWidth}
     >
       <DynamicTerminal
         type={terminal.type}
