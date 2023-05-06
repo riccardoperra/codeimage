@@ -15,7 +15,7 @@ interface CreateDraggableReturn {
   width: Accessor<number>;
   resizing: Accessor<boolean>;
   ref: Accessor<HTMLElement | undefined>;
-  setRef: () => void;
+  setRef: (el: HTMLElement) => void;
   onResizeStart: (event: MouseEvent) => void;
 }
 
@@ -94,9 +94,15 @@ export function createHorizontalResize(
     const max = maxWidth();
     const isLTR = state.startX > middle;
 
-    const computedWidth = isLTR
+    let computedWidth = isLTR
       ? state.startWidth + x - state.startX
       : state.startWidth - x + state.startX;
+
+    elementRef.style.setProperty('width', `${computedWidth}px`);
+    const nativeWidth = elementRef.getBoundingClientRect().width;
+    if (nativeWidth !== computedWidth) {
+      computedWidth = nativeWidth;
+    }
 
     setState({width: clamp(computedWidth, min, max)});
   };
@@ -105,8 +111,7 @@ export function createHorizontalResize(
     batch(() => {
       setResizing(true);
 
-      const initialWidth =
-        (state.width || untrack(ref)?.getBoundingClientRect().width) ?? 0;
+      const initialWidth = (state.width || untrack(ref)?.offsetWidth) ?? 0;
 
       setState({startWidth: initialWidth, startX: x});
     });

@@ -7,8 +7,8 @@ export const [frame, frameVars] = createTheme({
   padding: '128px',
   opacity: '100%',
   visibility: 'visible',
-  width: '730px',
-  minWidth: '200px',
+  width: 'auto',
+  minWidth: 'max-content',
   minHeight: '150px',
   maxWidth: '1400px',
   controlHandleSize: '24px',
@@ -21,6 +21,7 @@ export const [frame, frameVars] = createTheme({
 export const wrapper = style([
   frame,
   {
+    position: 'relative',
     selectors: {
       ...withThemeMode({
         dark: {
@@ -43,6 +44,22 @@ export const wrapper = style([
     },
   },
 ]);
+
+export const previewWrapper = style([
+  frame,
+  {
+    zIndex: -999,
+  },
+]);
+
+export const previewPortal = style({
+  position: 'fixed',
+  left: 0,
+  top: 0,
+  zIndex: -999,
+  width: 'auto',
+  height: 'auto',
+});
 
 export const container = style([
   {
@@ -72,6 +89,8 @@ export const overlay = style({
   borderRadius: 'inherit',
   overflow: 'hidden',
 });
+
+export const previewOverlay = style([overlay, {borderRadius: 0}]);
 
 export const dragControls = style({
   position: 'absolute',
