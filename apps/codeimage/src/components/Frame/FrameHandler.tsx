@@ -68,11 +68,7 @@ export function FrameHandler(
         class={styles.handler}
         style={
           // ATTENTION: this is needed to fix autocomplete bug on desktop due to translate. https://github.com/riccardoperra/codeimage/issues/42
-          modality === 'full'
-            ? {}
-            : assignInlineVars({
-                [styles.frameHandlerVars.scale]: canvasScale().toString(),
-              })
+          modality === 'full' ? {} : {transform: `scale(${canvasScale()})`}
         }
         ref={setHandlerRef}
       >

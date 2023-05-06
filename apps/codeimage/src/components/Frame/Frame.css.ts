@@ -8,7 +8,7 @@ export const [frame, frameVars] = createTheme({
   opacity: '100%',
   visibility: 'visible',
   width: '730px',
-  minWidth: '200px',
+  minWidth: 'max-content',
   minHeight: '150px',
   maxWidth: '1400px',
   controlHandleSize: '24px',
