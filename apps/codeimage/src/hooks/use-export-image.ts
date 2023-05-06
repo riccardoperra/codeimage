@@ -101,6 +101,7 @@ export async function exportImage(
     pixelRatio: pixelRatio,
     quality: quality,
     experimental_optimizeFontLoading: true,
+    experimental_safariResourceFix: true,
   };
 
   async function exportByMode(ref: HTMLElement) {
@@ -164,7 +165,7 @@ export async function exportImage(
           [ExportExtension.jpeg]: toJpeg,
           [ExportExtension.png]: toPng,
           [ExportExtension.svg]: toSvg,
-        };
+        } as const;
 
         const result = await fn[extension](ref, toImageOptions);
         download(result, fileNameWithExtension);
@@ -186,6 +187,7 @@ export async function exportImage(
             }
             link.href = url;
             document.body.appendChild(link);
+            link.click();
             link.remove();
             return blob as Blob;
           });

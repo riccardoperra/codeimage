@@ -6,7 +6,6 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
-import {Box} from '@codeimage/ui';
 import {createRef} from '@core/helpers/create-ref';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {lazy, ParentProps, Ref, Show, Suspense, VoidProps} from 'solid-js';

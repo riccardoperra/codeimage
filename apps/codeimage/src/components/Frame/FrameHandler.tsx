@@ -1,6 +1,5 @@
 import {Box} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
-import {createRef} from '@core/helpers/create-ref';
 import {getScaleByRatio} from '@core/helpers/getScale';
 import {useModality} from '@core/hooks/isMobile';
 import {type WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
