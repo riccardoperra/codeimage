@@ -23,6 +23,11 @@ import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton'
 import {FrameToolbar} from '../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
+import {
+  ExportExtension,
+  exportImage,
+  ExportMode,
+} from '../../hooks/use-export-image';
 import * as styles from './App.css';
 import {EditorReadOnlyBanner} from './components/EditorReadOnlyBanner';
 import {EditorLeftSidebar} from './components/LeftSidebar';
@@ -39,6 +44,21 @@ export function App() {
   const modality = useModality();
   const frameStore = getFrameState();
   const {readOnly, clone} = getEditorSyncAdapter()!;
+
+  document.addEventListener('exportImage', () => {
+    exportImage({
+      ref: frameRef(),
+      options: {
+        extension: ExportExtension.png,
+        mode: ExportMode.getBlob,
+        pixelRatio: 3,
+        quality: 100,
+      },
+    }).then(image => {
+      const url = URL.createObjectURL(image as Blob);
+      window.location.href = url;
+    });
+  });
 
   return (
     <Box

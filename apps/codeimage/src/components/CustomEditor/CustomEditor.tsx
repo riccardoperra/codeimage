@@ -222,7 +222,10 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   );
 
   return (
-    <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
+    <code
+      data-custom-editor
+      class={`language-${selectedLanguage()?.id ?? 'default'}`}
+    >
       <div ref={ref => (editorEl = ref)} />
     </code>
   );
