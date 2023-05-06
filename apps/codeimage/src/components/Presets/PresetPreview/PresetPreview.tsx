@@ -1,3 +1,4 @@
+import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {Preset} from '@codeimage/store/presets/types';
 import CustomEditorPreview from '../../CustomEditor/CustomEditorPreview';
 import {DynamicTerminal} from '../../Terminal/DynamicTerminal/DynamicTerminal';
@@ -9,10 +10,23 @@ interface PresetPreviewProps {
 }
 
 export function PresetPreview(props: PresetPreviewProps) {
+  const assetsStore = getAssetsStore();
+
+  const background = () => {
+    const value = props.data.frame.background;
+    if (!value) return '#000';
+
+    if (assetsStore.isAssetUrl(value)) {
+      return assetsStore.getAssetImageBrowserUrl(value)() ?? '#000';
+    }
+
+    return value;
+  };
+
   return (
     <ThemeBox
       showFooter={false}
-      background={props.data.frame.background ?? '#000'}
+      background={background()}
       onClick={() => void 0}
     >
       <DynamicTerminal
