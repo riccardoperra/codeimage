@@ -40,10 +40,10 @@ export const handler = style([
   {
     // TODO: this is a workaround to fix gutters and cursor in mobile view
     // zoom: `${frameHandlerVars.scale}`,
-    transform: `scale(${frameHandlerVars.scale})`,
     display: 'block',
+    justifyContent: 'center',
     position: 'relative',
-    margin: 'auto',
+    transformOrigin: 'center',
   },
 ]);
 

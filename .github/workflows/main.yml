@@ -248,6 +248,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
           alias-domains: | #Optional
             codeimage-app-pr-{{PR_NUMBER}}.vercel.app
+            next.codeimage.dev
 
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'

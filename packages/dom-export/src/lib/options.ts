@@ -98,4 +98,11 @@ export interface Options {
    *
    */
   experimental_optimizeFontLoading?: boolean;
+
+  /**
+   *
+   * Apply fixes for Safari IOS and MacOS to load external resources correctly
+   *
+   */
+  experimental_safariResourceFix?: boolean;
 }

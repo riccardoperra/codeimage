@@ -11,20 +11,23 @@ import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {ParentComponent, Show} from 'solid-js';
+import {createEffect, on, onMount, ParentComponent, Show} from 'solid-js';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;
 
-export const Frame: ParentComponent<{
+interface FrameProps {
   background: string | AssetId | null | undefined;
   padding: number;
   radius: number;
   opacity: number;
   visible: boolean;
   readOnly: boolean;
-}> = props => {
-  const {width, onResizeStart, setRef, resizing} = createHorizontalResize({
+  onWidthChange: (width: number) => void;
+}
+
+export const Frame: ParentComponent<FrameProps> = props => {
+  const {width, onResizeStart, setRef, resizing, ref} = createHorizontalResize({
     minWidth: 200,
     maxWidth: 1400,
   });
@@ -38,6 +41,18 @@ export const Frame: ParentComponent<{
 
   const roundedWidth = () => `${Math.floor(width())}px`;
   const modality = useModality();
+
+  createEffect(
+    on(
+      width,
+      width => {
+        props.onWidthChange?.(width);
+      },
+      {defer: true},
+    ),
+  );
+
+  onMount(() => props.onWidthChange?.(ref()?.clientWidth ?? 0));
 
   return (
     <Box position={'relative'} class={styles.wrapper}>

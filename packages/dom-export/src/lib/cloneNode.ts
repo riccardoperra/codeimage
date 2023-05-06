@@ -53,7 +53,7 @@ async function cloneChildren<T extends HTMLElement>(
       : toArray<T>((nativeNode.shadowRoot ?? nativeNode).childNodes);
 
   if (children.length === 0 || nativeNode instanceof HTMLVideoElement) {
-    return Promise.resolve(clonedNode);
+    return clonedNode;
   }
 
   await children.reduce((deferred, child) => {
@@ -179,7 +179,7 @@ async function ensureSVGSymbols<T extends HTMLElement>(
   const processedDefs: {[key: string]: HTMLElement} = {};
   for (let i = 0; i < uses.length; i++) {
     const use = uses[i];
-    const id = use.getAttribute('xlink:href');
+    const id = use.getAttribute('href') ?? use.getAttribute('xlink:href');
     if (id) {
       const exist = clone.querySelector(id);
       const definition = document.querySelector(id) as HTMLElement;
@@ -228,7 +228,9 @@ export async function cloneNode<T extends HTMLElement>(
     .then(clonedNode => cloneSingleNode(clonedNode, options) as Promise<T>)
     .then(clonedNode => cloneChildren(node, clonedNode, options))
     .then(clonedNode =>
-      decorate(node, clonedNode, parentComputedStyles ?? null),
+      decorate(node, clonedNode, parentComputedStyles ?? null).catch(
+        () => clonedNode,
+      ),
     )
     .then(clonedNode => ensureSVGSymbols(clonedNode, options));
 }

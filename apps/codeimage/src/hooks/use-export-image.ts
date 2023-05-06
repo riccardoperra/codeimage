@@ -1,5 +1,4 @@
 import {
-  cloneNodeSafe,
   HtmlExportOptions,
   toBlob,
   toJpeg,
@@ -79,20 +78,10 @@ export async function exportImage(
     throw new Error('Reference is not defined.');
   }
 
-  const clonedRef = await cloneNodeSafe(ref);
-  const frameContent = clonedRef.querySelector(
-    '[data-frame-content]',
-  ) as HTMLElement;
-  if (frameContent) {
-    frameContent?.parentElement?.style.setProperty('overflow', 'unset');
-    frameContent.style.setProperty('border-radius', '0px');
-  }
-
-  document.body.appendChild(clonedRef);
-
   const resolvedFileName = fileName || `codeImage_${new Date().getUTCDate()}`;
   const mimeType = resolveMimeType(extension);
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
+  const previewNode = ref.firstChild as HTMLElement;
 
   const toImageOptions: HtmlExportOptions = {
     filter: (node: Node | undefined) => {
@@ -109,19 +98,10 @@ export async function exportImage(
           !(node as Node & {[EXPORT_EXCLUDE]: boolean})[EXPORT_EXCLUDE])
       );
     },
-    style: {
-      // TODO: https://github.com/riccardoperra/codeimage/issues/42
-      transform: 'scale(1)',
-      // TODO: https://github.com/riccardoperra/codeimage/issues/203
-      // clean up style side effects
-      margin: '0',
-      padding: '0',
-      display: 'block',
-      borderRadius: '0',
-    },
     pixelRatio: pixelRatio,
     quality: quality,
     experimental_optimizeFontLoading: true,
+    experimental_safariResourceFix: true,
   };
 
   async function exportByMode(ref: HTMLElement) {
@@ -185,7 +165,7 @@ export async function exportImage(
           [ExportExtension.jpeg]: toJpeg,
           [ExportExtension.png]: toPng,
           [ExportExtension.svg]: toSvg,
-        };
+        } as const;
 
         const result = await fn[extension](ref, toImageOptions);
         download(result, fileNameWithExtension);
@@ -222,20 +202,13 @@ export async function exportImage(
     }
   }
 
-  const cb = exportByMode(clonedRef);
-
-  const destroy = () => {
-    document.body.removeChild(clonedRef);
-    clonedRef.remove();
-  };
+  const cb = exportByMode(previewNode);
 
   return cb
     .then(r => {
-      destroy();
       return r as string | Blob;
     })
     .catch(e => {
-      destroy();
       throw e;
     });
 }
