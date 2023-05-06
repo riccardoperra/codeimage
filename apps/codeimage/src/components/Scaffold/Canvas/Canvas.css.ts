@@ -1,6 +1,6 @@
 import {responsiveStyle} from '@codeui/kit';
 import {style} from '@vanilla-extract/css';
-import {themeVars} from '@codeimage/ui';
+import {backgroundColorVar, themeVars} from '@codeimage/ui';
 
 export const canvas = style([
   {
@@ -33,6 +33,7 @@ export const wrapper = style({
   width: '100%',
   flex: 1,
   overflow: 'hidden',
+  background: backgroundColorVar,
   paddingLeft: themeVars.spacing['1'],
   paddingRight: themeVars.spacing['1'],
   '@media': {

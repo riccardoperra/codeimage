@@ -63,7 +63,7 @@ export const tab = recipe({
       marginTop: 'auto',
       marginBottom: 'auto',
       fontSize: themeVars.fontSize.sm,
-      borderRadius: `${themeVars.borderRadius.md} ${themeVars.borderRadius.md} 0 0`,
+      borderRadius: `${themeVars.borderRadius.lg} ${themeVars.borderRadius.lg} 0 0`,
       position: 'relative',
       lineHeight: tabVars.tabHeight,
       display: 'flex',
@@ -248,4 +248,10 @@ export const fallbackText = style({
   lineHeight: '14px',
   marginRight: themeVars.spacing['2'],
   opacity: '.50',
+
+  selectors: {
+    '[data-preview] &': {
+      opacity: 1,
+    },
+  },
 });

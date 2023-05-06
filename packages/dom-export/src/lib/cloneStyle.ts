@@ -36,7 +36,15 @@ export function copyUserComputedStyleFast<T extends HTMLElement>(
 
   toArray(sourceComputedStyles).forEach(name => {
     const typedName = name as string;
-    const sourceValue = sourceComputedStyles.getPropertyValue(typedName);
+    let sourceValue = sourceComputedStyles.getPropertyValue(typedName);
+
+    if (name === 'font-size' && sourceValue.endsWith('px')) {
+      const reducedFont =
+        Math.floor(
+          parseFloat(sourceValue.substring(0, sourceValue.length - 2)),
+        ) - 0.1;
+      sourceValue = `${reducedFont}px`;
+    }
 
     // This is needed to be able to "treeshake" web fonts during embedding
     if (

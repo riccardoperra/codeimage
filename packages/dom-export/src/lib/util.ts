@@ -224,14 +224,42 @@ export function canvasToBlob(
   });
 }
 
+export const isInstanceOfElement = <
+  T extends typeof Element | typeof HTMLElement | typeof SVGImageElement,
+>(
+  node: Element | HTMLElement | SVGImageElement,
+  instance: T,
+): node is T['prototype'] => {
+  if (node instanceof instance) return true;
+
+  const nodePrototype = Object.getPrototypeOf(node);
+
+  if (nodePrototype === null) return false;
+
+  return (
+    nodePrototype.constructor.name === instance.name ||
+    isInstanceOfElement(nodePrototype, instance)
+  );
+};
+
 export function createImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onload = () => resolve(img);
     img.onerror = reject;
     img.crossOrigin = 'anonymous';
-    img.decoding = 'sync';
+    img.decoding = 'async';
     img.src = url;
+    img.onerror = reject;
+
+    // `src` should be set before calling `decode`
+    if (img.decode) {
+      img
+        .decode()
+        .then(() => resolve(img))
+        .catch(reject);
+    } else {
+      img.onload = () => resolve(img);
+    }
   });
 }
 
