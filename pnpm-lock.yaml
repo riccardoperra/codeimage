@@ -122,6 +122,9 @@ importers:
       '@fastify/swagger':
         specifier: ^8.3.1
         version: 8.3.1
+      '@fastify/swagger-ui':
+        specifier: 1.8.1
+        version: 1.8.1
       '@fastify/type-provider-typebox':
         specifier: ^2.4.0
         version: 2.4.0(@sinclair/typebox@0.25.24)(fastify@4.15.0)
@@ -183,6 +186,9 @@ importers:
       tap:
         specifier: ^16.3.4
         version: 16.3.4(ts-node@10.9.1)(typescript@4.9.5)
+      tsx:
+        specifier: 3.12.7
+        version: 3.12.7
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -1095,6 +1101,8 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
 
+  packages/prisma-models/generated/client: {}
+
   packages/ui:
     dependencies:
       '@codeimage/locale':
@@ -1706,7 +1714,6 @@ packages:
   /@babel/helper-string-parser@7.21.5:
     resolution: {integrity: sha512-5pTUx3hAJaZIdW99sJ6ZUUgWq/Y+Hja7TowEnLNMm1VivRgZQL3vpBY3qUACVsvw+yQU6+YgfBVmcbLaZtrA1w==}
     engines: {node: '>=6.9.0'}
-    dev: true
 
   /@babel/helper-validator-identifier@7.19.1:
     resolution: {integrity: sha512-awrNfaMtnHUr653GgGEs++LlAvW6w+DcPrOliSMXWCKo597CwL5Acf/wWdNkf/tfEQE3mjkeD1YOVZOUV/od1w==}
@@ -1769,7 +1776,6 @@ packages:
     hasBin: true
     dependencies:
       '@babel/types': 7.21.5
-    dev: true
 
   /@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@7.18.6(@babel/core@7.21.4):
     resolution: {integrity: sha512-Dgxsyg54Fx1d4Nge8UnvTrED63vrwOdPmyvPzlNN/boaliRP54pm3pGzZD1SJUwrBA+Cs/xdG8kXX6Mn/RfISQ==}
@@ -3461,7 +3467,7 @@ packages:
       '@babel/helper-function-name': 7.21.0
       '@babel/helper-hoist-variables': 7.18.6
       '@babel/helper-split-export-declaration': 7.18.6
-      '@babel/parser': 7.21.4
+      '@babel/parser': 7.21.8
       '@babel/types': 7.21.4
       debug: 4.3.4
       globals: 11.12.0
@@ -3501,7 +3507,6 @@ packages:
       '@babel/helper-string-parser': 7.21.5
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
-    dev: true
 
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
@@ -3906,7 +3911,7 @@ packages:
       lodash: 4.17.21
       resolve-from: 5.0.0
       resolve-global: 1.0.0
-      yargs: 17.7.1
+      yargs: 17.7.2
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -3990,10 +3995,10 @@ packages:
       '@commitlint/execute-rule': 17.4.0
       '@commitlint/resolve-extends': 17.4.4
       '@commitlint/types': 17.4.4
-      '@types/node': 18.15.11
+      '@types/node': 18.16.0
       chalk: 4.1.2
       cosmiconfig: 8.1.3
-      cosmiconfig-typescript-loader: 4.3.0(@types/node@18.15.11)(cosmiconfig@8.1.3)(ts-node@10.9.1)(typescript@4.9.5)
+      cosmiconfig-typescript-loader: 4.3.0(@types/node@18.16.0)(cosmiconfig@8.1.3)(ts-node@10.9.1)(typescript@4.9.5)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -4091,7 +4096,7 @@ packages:
   /@esbuild-kit/core-utils@3.1.0:
     resolution: {integrity: sha512-Uuk8RpCg/7fdHSceR1M6XbSZFSuMrxcePFuGgyvsBn+u339dk5OeL4jv2EojwTN2st/unJGsVm4qHWjWNmJ/tw==}
     dependencies:
-      esbuild: 0.17.16
+      esbuild: 0.17.18
       source-map-support: 0.5.21
     dev: true
 
@@ -4108,6 +4113,7 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/android-arm64@0.17.18:
@@ -4141,6 +4147,7 @@ packages:
     cpu: [arm]
     os: [android]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/android-arm@0.17.18:
@@ -4157,6 +4164,7 @@ packages:
     cpu: [x64]
     os: [android]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/android-x64@0.17.18:
@@ -4173,6 +4181,7 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/darwin-arm64@0.17.18:
@@ -4189,6 +4198,7 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/darwin-x64@0.17.18:
@@ -4205,6 +4215,7 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/freebsd-arm64@0.17.18:
@@ -4221,6 +4232,7 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/freebsd-x64@0.17.18:
@@ -4237,6 +4249,7 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-arm64@0.17.18:
@@ -4253,6 +4266,7 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-arm@0.17.18:
@@ -4269,6 +4283,7 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-ia32@0.17.18:
@@ -4311,6 +4326,7 @@ packages:
     cpu: [loong64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-loong64@0.17.18:
@@ -4327,6 +4343,7 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-mips64el@0.17.18:
@@ -4343,6 +4360,7 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-ppc64@0.17.18:
@@ -4359,6 +4377,7 @@ packages:
     cpu: [riscv64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-riscv64@0.17.18:
@@ -4375,6 +4394,7 @@ packages:
     cpu: [s390x]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-s390x@0.17.18:
@@ -4391,6 +4411,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-x64@0.17.18:
@@ -4407,6 +4428,7 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/netbsd-x64@0.17.18:
@@ -4423,6 +4445,7 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/openbsd-x64@0.17.18:
@@ -4439,6 +4462,7 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/sunos-x64@0.17.18:
@@ -4455,6 +4479,7 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/win32-arm64@0.17.18:
@@ -4471,6 +4496,7 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/win32-ia32@0.17.18:
@@ -4487,6 +4513,7 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/win32-x64@0.17.18:
@@ -4533,6 +4560,11 @@ packages:
     resolution: {integrity: sha512-IoD2MfUnOV58ghIHCiil01PcohxjbYR/qCxsoC+xNgUwh1EY8jOOrYmu3d3a71+tJJ23uscEV4X2HJWMsPJu4g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
+
+  /@fastify/accept-negotiator@1.1.0:
+    resolution: {integrity: sha512-OIHZrb2ImZ7XG85HXOONLcJWGosv7sIvM2ifAPQVhg9Lv7qdmMBNVaai4QTdyuaqbKM5eO6sLSQOYI7wEQeCJQ==}
+    engines: {node: '>=14'}
+    dev: false
 
   /@fastify/ajv-compiler@3.5.0:
     resolution: {integrity: sha512-ebbEtlI7dxXF5ziNdr05mOY8NnDiPB1XvAlLHctRt/Rc+C3LCOVW5imUVX+mhvUhnNzmPBHewUkOFgGlCxgdAA==}
@@ -4593,6 +4625,16 @@ packages:
       steed: 1.1.3
     dev: false
 
+  /@fastify/send@2.1.0:
+    resolution: {integrity: sha512-yNYiY6sDkexoJR0D8IDy3aRP3+L4wdqCpvx5WP+VtEU58sn7USmKynBzDQex5X42Zzvw2gNzzYgP90UfWShLFA==}
+    dependencies:
+      '@lukeed/ms': 2.0.1
+      escape-html: 1.0.3
+      fast-decode-uri-component: 1.0.1
+      http-errors: 2.0.0
+      mime: 3.0.0
+    dev: false
+
   /@fastify/sensible@5.2.0:
     resolution: {integrity: sha512-fy5vqJJAMVQctUT+kYfGdaGYeW9d8JaWEqtdWN6UmzQQ3VX0qMXE7Qc/MmfE+Cj3v0g5kbeR+obd3HZr3IMf+w==}
     dependencies:
@@ -4603,6 +4645,28 @@ packages:
       ms: 2.1.3
       type-is: 1.6.18
       vary: 1.1.2
+    dev: false
+
+  /@fastify/static@6.10.1:
+    resolution: {integrity: sha512-DNnG+5QenQcTQw37qk0/191STThnN6SbU+2XMpWtpYR3gQUfUvMax14jTT/jqNINNbCkQJaKMnPtpFPKo4/68g==}
+    dependencies:
+      '@fastify/accept-negotiator': 1.1.0
+      '@fastify/send': 2.1.0
+      content-disposition: 0.5.4
+      fastify-plugin: 4.5.0
+      glob: 8.1.0
+      p-limit: 3.1.0
+      readable-stream: 4.3.0
+    dev: false
+
+  /@fastify/swagger-ui@1.8.1:
+    resolution: {integrity: sha512-XMfLGZMXi5dl0Gy6R6tlistA4d0XlJJweUfQkPNVeeBq2hO03DmvtM5yrp8adF392Xoi+6rlGHFaneL9EQdsoA==}
+    dependencies:
+      '@fastify/static': 6.10.1
+      fastify-plugin: 4.5.0
+      openapi-types: 12.1.0
+      rfdc: 1.3.0
+      yaml: 2.2.1
     dev: false
 
   /@fastify/swagger@8.3.1:
@@ -5199,7 +5263,7 @@ packages:
       '@jest/schemas': 29.4.3
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 18.15.11
+      '@types/node': 18.16.0
       '@types/yargs': 17.0.24
       chalk: 4.1.2
     dev: true
@@ -7889,10 +7953,6 @@ packages:
   /@types/node@18.16.0:
     resolution: {integrity: sha512-BsAaKhB+7X+H4GnSjGhJG9Qi8Tw+inU9nJDwmD5CgOmBLEI6ArdhikpLX7DjbjDRDTbqZzU2LSQNZg8WGPiSZQ==}
 
-  /@types/node@20.1.0:
-    resolution: {integrity: sha512-O+z53uwx64xY7D6roOi4+jApDGFg0qn6WHcxe5QeqjMaTezBO/mxdfFXIVAVVyNWKx84OmPB3L8kbVYOTeN34A==}
-    dev: true
-
   /@types/normalize-package-data@2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
 
@@ -7910,7 +7970,7 @@ packages:
   /@types/resolve@1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
-      '@types/node': 20.1.0
+      '@types/node': 18.16.0
     dev: true
 
   /@types/resolve@1.20.2:
@@ -8930,7 +8990,7 @@ packages:
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
     dependencies:
       '@babel/template': 7.20.7
-      '@babel/types': 7.21.4
+      '@babel/types': 7.21.5
       '@types/babel__core': 7.20.0
       '@types/babel__traverse': 7.18.3
     dev: true
@@ -9826,7 +9886,7 @@ packages:
       spawn-command: 0.0.2-1
       supports-color: 8.1.1
       tree-kill: 1.2.2
-      yargs: 17.7.1
+      yargs: 17.7.2
     dev: true
 
   /config-chain@1.1.13:
@@ -9959,7 +10019,7 @@ packages:
       vary: 1.1.2
     dev: true
 
-  /cosmiconfig-typescript-loader@4.3.0(@types/node@18.15.11)(cosmiconfig@8.1.3)(ts-node@10.9.1)(typescript@4.9.5):
+  /cosmiconfig-typescript-loader@4.3.0(@types/node@18.16.0)(cosmiconfig@8.1.3)(ts-node@10.9.1)(typescript@4.9.5):
     resolution: {integrity: sha512-NTxV1MFfZDLPiBMjxbHRwSh5LaLcPMwNdCutmnHJCKoVnlvldPWlllonKwrsRJ5pYZBIBGRWWU2tfvzxgeSW5Q==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
@@ -9968,7 +10028,7 @@ packages:
       ts-node: '>=10'
       typescript: '>=3'
     dependencies:
-      '@types/node': 18.15.11
+      '@types/node': 18.16.0
       cosmiconfig: 8.1.3
       ts-node: 10.9.1(@types/node@18.15.11)(typescript@4.9.5)
       typescript: 4.9.5
@@ -11046,7 +11106,7 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-plugin-solid@0.5.0(esbuild@0.17.16)(solid-js@1.7.3):
+  /esbuild-plugin-solid@0.5.0(esbuild@0.17.18)(solid-js@1.7.3):
     resolution: {integrity: sha512-ITK6n+0ayGFeDVUZWNMxX+vLsasEN1ILrg4pISsNOQ+mq4ljlJJiuXotInd+HE0MzwTcA9wExT1yzDE2hsqPsg==}
     peerDependencies:
       esbuild: '>=0.12'
@@ -11055,7 +11115,7 @@ packages:
       '@babel/core': 7.21.4
       '@babel/preset-typescript': 7.21.4(@babel/core@7.21.4)
       babel-preset-solid: 1.7.3(@babel/core@7.21.4)
-      esbuild: 0.17.16
+      esbuild: 0.17.18
       solid-js: 1.7.3
     transitivePeerDependencies:
       - supports-color
@@ -11285,6 +11345,7 @@ packages:
       '@esbuild/win32-arm64': 0.17.16
       '@esbuild/win32-ia32': 0.17.16
       '@esbuild/win32-x64': 0.17.16
+    dev: true
 
   /esbuild@0.17.18:
     resolution: {integrity: sha512-z1lix43jBs6UKjcZVKOw2xx69ffE2aG0PygLL5qJ9OS/gy0Ewd1gW/PUQIOIQGXBHWNywSc0floSKoMFF8aK2w==}
@@ -13179,7 +13240,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       '@babel/core': 7.21.4
-      '@babel/parser': 7.21.4
+      '@babel/parser': 7.21.8
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.0
       semver: 6.3.0
@@ -13347,7 +13408,7 @@ packages:
       jest-util: 28.1.3
       jest-validate: 28.1.3
       prompts: 2.4.2
-      yargs: 17.7.1
+      yargs: 17.7.2
     transitivePeerDependencies:
       - '@types/node'
       - supports-color
@@ -14076,7 +14137,7 @@ packages:
     resolution: {integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 20.1.0
+      '@types/node': 18.16.0
       merge-stream: 2.0.0
       supports-color: 7.2.0
     dev: true
@@ -14476,7 +14537,7 @@ packages:
       speedline-core: 1.4.3
       third-party-web: 0.12.7
       ws: 7.5.9
-      yargs: 17.7.1
+      yargs: 17.7.2
       yargs-parser: 21.1.1
     transitivePeerDependencies:
       - bufferutil
@@ -14988,6 +15049,12 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
+  /mime@3.0.0:
+    resolution: {integrity: sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==}
+    engines: {node: '>=10.0.0'}
+    hasBin: true
+    dev: false
+
   /mimic-fn@1.2.0:
     resolution: {integrity: sha512-jf84uxzwiuiIVKiOLpfYk7N46TSy8ubTonmneY9vrpHNAnp0QBt2BxWV9dO3/j+BoVAb+a5G6YDPW3M5HOdMWQ==}
     engines: {node: '>=4'}
@@ -15251,7 +15318,7 @@ packages:
       strict-event-emitter: 0.2.8
       type-fest: 2.19.0
       typescript: 4.9.5
-      yargs: 17.7.1
+      yargs: 17.7.2
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -16288,7 +16355,7 @@ packages:
       '@pnpm/find-workspace-packages': 4.0.43(@pnpm/logger@4.0.0)(@yarnpkg/core@4.0.0-rc.42)(typanion@3.12.1)
       '@pnpm/logger': 4.0.0
       fs-extra: 10.1.0
-      yargs: 17.7.1
+      yargs: 17.7.2
     transitivePeerDependencies:
       - '@yarnpkg/core'
       - bluebird
@@ -17122,7 +17189,7 @@ packages:
       picomatch: 2.3.1
       rollup: 3.20.2
       source-map: 0.7.4
-      yargs: 17.7.1
+      yargs: 17.7.2
 
   /rollup-preset-solid@1.4.0:
     resolution: {integrity: sha512-rjUH0dMkyHxkin1uBcdZX110DL/P0hppMWF0RAwJdl7ly9IH/N+jHxmnyf7OzkyI2pGUBO9Lr1NN8Me9TFKN6Q==}
@@ -17725,8 +17792,8 @@ packages:
       dequal: 2.0.3
       dotenv: 16.0.3
       es-module-lexer: 1.2.1
-      esbuild: 0.17.16
-      esbuild-plugin-solid: 0.5.0(esbuild@0.17.16)(solid-js@1.7.3)
+      esbuild: 0.17.18
+      esbuild-plugin-solid: 0.5.0(esbuild@0.17.18)(solid-js@1.7.3)
       fast-glob: 3.2.12
       get-port: 6.1.2
       parse-multipart-data: 1.5.0
@@ -18391,7 +18458,7 @@ packages:
       prompts: 2.4.2
       semver: 7.3.8
       unconfig: 0.3.7
-      yargs: 17.7.1
+      yargs: 17.7.2
     transitivePeerDependencies:
       - bluebird
       - supports-color
@@ -18800,6 +18867,17 @@ packages:
       fsevents: 2.3.2
     dev: true
 
+  /tsx@3.12.7:
+    resolution: {integrity: sha512-C2Ip+jPmqKd1GWVQDvz/Eyc6QJbGfE7NrR3fx5BpEHMZsEHoIxHL1j+lKdGobr8ovEyqeNkPLSKp6SCSOt7gmw==}
+    hasBin: true
+    dependencies:
+      '@esbuild-kit/cjs-loader': 2.4.2
+      '@esbuild-kit/core-utils': 3.1.0
+      '@esbuild-kit/esm-loader': 2.5.5
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
   /tty-table@4.2.1:
     resolution: {integrity: sha512-xz0uKo+KakCQ+Dxj1D/tKn2FSyreSYWzdkL/BYhgN6oMW808g8QRMuh1atAV9fjTPbWBjfbkKQpI/5rEcnAc7g==}
     engines: {node: '>=8.0.0'}
@@ -18811,7 +18889,7 @@ packages:
       smartwrap: 2.0.2
       strip-ansi: 6.0.1
       wcwidth: 1.0.1
-      yargs: 17.7.1
+      yargs: 17.7.2
 
   /tunnel@0.0.6:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
@@ -19197,7 +19275,7 @@ packages:
       semver: 7.5.0
     dev: true
 
-  /vite-node@0.26.2(@types/node@18.15.11):
+  /vite-node@0.26.2(@types/node@18.16.0):
     resolution: {integrity: sha512-4M/zlatItZAyvrQG+82zQBhgDjRZRhVJYFW4T9wcAKh7eMmSiPOVSeI5zsV9UzHXgCcIDKX0o0r3s4OxExTHqg==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
@@ -19207,7 +19285,7 @@ packages:
       pathe: 0.2.0
       source-map: 0.6.1
       source-map-support: 0.5.21
-      vite: 4.2.1(@types/node@18.15.11)
+      vite: 4.2.1(@types/node@18.16.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -19466,12 +19544,46 @@ packages:
         optional: true
     dependencies:
       '@types/node': 18.15.11
-      esbuild: 0.17.16
+      esbuild: 0.17.18
       postcss: 8.4.22
       resolve: 1.22.2
       rollup: 3.20.2
     optionalDependencies:
       fsevents: 2.3.2
+
+  /vite@4.2.1(@types/node@18.16.0):
+    resolution: {integrity: sha512-7MKhqdy0ISo4wnvwtqZkjke6XN4taqQ2TBaTccLIpOKv7Vp2h4Y+NpmWCnGDeSvvn45KxvWgGyb0MkHvY1vgbg==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': '>= 14'
+      less: '*'
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      '@types/node': 18.16.0
+      esbuild: 0.17.18
+      postcss: 8.4.22
+      resolve: 1.22.2
+      rollup: 3.20.2
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
 
   /vite@4.3.1(@types/node@18.16.0):
     resolution: {integrity: sha512-EPmfPLAI79Z/RofuMvkIS0Yr091T2ReUoXQqc5ppBX/sjFRhHKiPPF/R46cTdoci/XgeQpB23diiJxq5w30vdg==}
@@ -19550,7 +19662,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.4
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.15.11
+      '@types/node': 18.16.0
       acorn: 8.8.2
       acorn-walk: 8.2.0
       chai: 4.3.7
@@ -19562,8 +19674,8 @@ packages:
       tinybench: 2.4.0
       tinypool: 0.3.1
       tinyspy: 1.1.1
-      vite: 4.2.1(@types/node@18.15.11)
-      vite-node: 0.26.2(@types/node@18.15.11)
+      vite: 4.2.1(@types/node@18.16.0)
+      vite-node: 0.26.2(@types/node@18.16.0)
     transitivePeerDependencies:
       - less
       - sass
@@ -20056,18 +20168,6 @@ packages:
       y18n: 4.0.3
       yargs-parser: 18.1.3
 
-  /yargs@17.7.1:
-    resolution: {integrity: sha512-cwiTb08Xuv5fqF4AovYacTFNxk62th7LKJ6BL9IGUpTJrWoU7/7WdQGTP2SjKf1dUNBGzDd28p/Yfs/GI6JrLw==}
-    engines: {node: '>=12'}
-    dependencies:
-      cliui: 8.0.1
-      escalade: 3.1.1
-      get-caller-file: 2.0.5
-      require-directory: 2.1.1
-      string-width: 4.2.3
-      y18n: 5.0.8
-      yargs-parser: 21.1.1
-
   /yargs@17.7.2:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
@@ -20079,7 +20179,6 @@ packages:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
-    dev: true
 
   /yn@3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
