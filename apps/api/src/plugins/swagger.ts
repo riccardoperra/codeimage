@@ -28,7 +28,7 @@ export default fp(async fastify => {
     routePrefix: '/api-docs',
     uiConfig: {
       docExpansion: 'list',
-      deepLinking: false,
+      deepLinking: true,
     },
   });
 });

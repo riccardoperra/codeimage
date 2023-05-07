@@ -46,7 +46,7 @@
     "@fastify/swagger": "^8.3.1",
     "@fastify/swagger-ui": "^1.8.1",
     "@fastify/type-provider-typebox": "^3.2.0",
-    "@prisma/client": "^4.11.0",
+    "@prisma/client": "^4.13.0",
     "@sinclair/typebox": "^0.28.9",
     "close-with-grace": "^1.1.0",
     "dotenv": "^16.0.3",
