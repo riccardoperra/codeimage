@@ -37,7 +37,13 @@ import {useIdb} from '../../hooks/use-indexed-db';
 
 type ProjectResponse = Awaited<ReturnType<typeof API.project.loadSnippet>>;
 
-function createEditorSyncAdapter(props: {snippetId: string}) {
+function createEditorSyncAdapter(props: {
+  snippetId: string;
+  initialState?: Pick<
+    ProjectResponse,
+    'terminal' | 'frame' | 'editorOptions' | 'editorTabs' | 'name'
+  >;
+}) {
   const snippetId = createMemo(() => props.snippetId);
   const [remoteSync, setRemoteSync] = createSignal(false);
   const [readOnly, setReadonly] = createSignal(false);
@@ -74,16 +80,26 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
 
   createEffect(() => {
     if (!snippetId()) {
-      idb
-        .get<ProjectEditorPersistedState>('document')
-        .then(idbState => {
-          if (idbState && !idbState.$snippetId) {
-            editorStore.actions.setFromPersistedState(idbState.editor);
-            frameStore.setFromPersistedState(idbState.frame);
-            terminalStore.setFromPersistedState(idbState.terminal);
-          }
-        })
-        .catch(() => null);
+      const data = props.initialState;
+      if (data) {
+        editorStore.actions.setFromWorkspace(data);
+        terminalStore.setState(state => ({
+          ...state,
+          ...data.terminal,
+        }));
+        frameStore.setStore(state => ({...state, ...data.frame}));
+      } else {
+        idb
+          .get<ProjectEditorPersistedState>('document')
+          .then(idbState => {
+            if (idbState && !idbState.$snippetId) {
+              editorStore.actions.setFromPersistedState(idbState.editor);
+              frameStore.setFromPersistedState(idbState.frame);
+              terminalStore.setFromPersistedState(idbState.terminal);
+            }
+          })
+          .catch(() => null);
+      }
     }
   });
 
