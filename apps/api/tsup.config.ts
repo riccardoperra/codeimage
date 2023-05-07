@@ -8,4 +8,5 @@ export default defineConfig({
   format: ['esm'],
   sourcemap: true,
   clean: true,
+  dts: false,
 });

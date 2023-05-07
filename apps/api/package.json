@@ -23,6 +23,7 @@
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
     "dev": "NODE_OPTIONS='--enable-source-maps' && tsup --watch --onSuccess \"fastify start --port 3000 --options -d -l info -P dist/app.js\"",
     "build:ts": "tsc",
+    "build:types": "tsc -p tsconfig.schema.json",
     "watch:ts": "tsc -w",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:test": "dotenv -e .env.test -- pnpm exec prisma migrate dev",
