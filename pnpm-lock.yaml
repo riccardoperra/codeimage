@@ -39,8 +39,8 @@ importers:
         specifier: ^17.4.4
         version: 17.4.4
       '@railway/cli':
-        specifier: 2.1.0
-        version: 2.1.0
+        specifier: ^3.3.1
+        version: 3.3.1
       '@types/node':
         specifier: ^18.14.6
         version: 18.15.11
@@ -199,6 +199,106 @@ importers:
         specifier: ^0.31.0
         version: 0.31.0(@vitest/ui@0.31.0)
 
+  apps/api/dist:
+    dependencies:
+      '@codeimage/prisma-models':
+        specifier: workspace:*
+        version: link:../../../packages/prisma-models
+      '@fastify/autoload':
+        specifier: ^5.7.1
+        version: 5.7.1
+      '@fastify/cors':
+        specifier: ^8.2.1
+        version: 8.2.1
+      '@fastify/env':
+        specifier: ^4.2.0
+        version: 4.2.0
+      '@fastify/jwt':
+        specifier: ^6.7.1
+        version: 6.7.1
+      '@fastify/sensible':
+        specifier: ^5.2.0
+        version: 5.2.0
+      '@fastify/swagger':
+        specifier: ^8.3.1
+        version: 8.3.1
+      '@fastify/swagger-ui':
+        specifier: ^1.8.1
+        version: 1.8.1
+      '@fastify/type-provider-typebox':
+        specifier: ^3.2.0
+        version: 3.2.0(@sinclair/typebox@0.28.9)
+      '@prisma/client':
+        specifier: ^4.11.0
+        version: 4.12.0(prisma@4.13.0)
+      '@sinclair/typebox':
+        specifier: ^0.28.9
+        version: 0.28.9
+      close-with-grace:
+        specifier: ^1.1.0
+        version: 1.2.0
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
+      dotenv-cli:
+        specifier: ^6.0.0
+        version: 6.0.0
+      fastify:
+        specifier: ^4.17.0
+        version: 4.17.0
+      fastify-auth0-verify:
+        specifier: ^1.1.1
+        version: 1.1.1
+      fastify-cli:
+        specifier: ^5.7.1
+        version: 5.7.1
+      fastify-healthcheck:
+        specifier: ^4.4.0
+        version: 4.4.0
+      fastify-plugin:
+        specifier: ^4.5.0
+        version: 4.5.0
+      fluent-json-schema:
+        specifier: ^4.1.0
+        version: 4.1.0
+      prisma:
+        specifier: ^4.13.0
+        version: 4.13.0
+    devDependencies:
+      '@types/node':
+        specifier: ^18.14.6
+        version: 18.15.11
+      '@types/sinon':
+        specifier: ^10.0.13
+        version: 10.0.13
+      '@vitest/ui':
+        specifier: ^0.31.0
+        version: 0.31.0(vitest@0.31.0)
+      concurrently:
+        specifier: ^7.6.0
+        version: 7.6.0
+      fastify-tsconfig:
+        specifier: ^1.0.1
+        version: 1.0.1
+      sinon:
+        specifier: ^15.0.1
+        version: 15.0.3
+      tsup:
+        specifier: 6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
+      tsx:
+        specifier: 3.12.7
+        version: 3.12.7
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+      vite:
+        specifier: ^4.3.5
+        version: 4.3.5(@types/node@18.15.11)
+      vitest:
+        specifier: ^0.31.0
+        version: 0.31.0(@vitest/ui@0.31.0)
+
   apps/codeimage:
     dependencies:
       '@auth0/auth0-spa-js':
@@ -206,7 +306,7 @@ importers:
         version: 2.0.4
       '@codeimage/api':
         specifier: workspace:*
-        version: link:../api
+        version: link:../api/dist
       '@codeimage/atomic-state':
         specifier: workspace:*
         version: link:../../packages/atomic-state
@@ -5724,6 +5824,10 @@ packages:
       - supports-color
     dev: true
 
+  /@napi-rs/triples@1.1.0:
+    resolution: {integrity: sha512-XQr74QaLeMiqhStEhLn1im9EOMnkypp7MZOwQhGzqp2Weu5eQJbpPxWxixxlYRKWPOmJjsk6qYfYH9kq43yc2w==}
+    dev: true
+
   /@ngneat/falso@6.4.0:
     resolution: {integrity: sha512-f6r036h2fX/AoHw1eV2t8+qWQwrbSrozs3zXMhhwoO7SJBc+DGMxRWEhFeYIinfwx0uhUH8ggx5+PDLzYESLOA==}
     dependencies:
@@ -6950,12 +7054,13 @@ packages:
     resolution: {integrity: sha512-jwRMXYwC0hUo0mv6wGpuw254Pd9p/R6Td5xsRpOmaWkUHlooNWqVcadgyzlRumMq3xfOTXwJReU0Jv+EIy4Jbw==}
     dev: false
 
-  /@railway/cli@2.1.0:
-    resolution: {integrity: sha512-oC9vV0skP4Y5FDw9sVkE7Q7VeuhIcpxAF+3iaeMLZocyIa10ZKtTU1ACWKyP39eD1x1WafbpXhIXw2XYrBTqvQ==}
+  /@railway/cli@3.3.1:
+    resolution: {integrity: sha512-VkBV+U82wbItbEggwEPCftdt8SZJmA/7edIKcsbdaOlaKiaMIAjWeh7bGu+Bb/yoP6h681P9n21m9wkyZOyXHA==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     requiresBuild: true
     dependencies:
+      '@napi-rs/triples': 1.1.0
       node-fetch: 3.3.1
       tar: 6.1.13
     dev: true
@@ -11873,7 +11978,7 @@ packages:
       pino-pretty: 9.4.0
       pkg-up: 3.1.0
       resolve-from: 5.0.0
-      semver: 7.3.8
+      semver: 7.5.0
       yargs-parser: 21.1.1
     transitivePeerDependencies:
       - supports-color
@@ -17321,6 +17426,7 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
+    dev: true
 
   /semver@7.5.0:
     resolution: {integrity: sha512-+XC0AD/R7Q2mPSRuy2Id0+CGTZ98+8f+KvwirxOKIEyid+XSx6HbC63p+O4IndTHuX5Z+JxQ0TghCkO5Cg/2HA==}

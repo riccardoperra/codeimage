@@ -378,7 +378,7 @@ jobs:
 
   build-api:
     name: Build Api
-    needs: [ install, typecheck-packages, build-packages ]
+    needs: [ install, build-packages ]
     runs-on: ubuntu-latest
 
     steps:
@@ -508,15 +508,16 @@ jobs:
           pnpm --filter=@codeimage/api exec prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy
         run: |
           find -type f -name '.gitignore' -delete
+          pnpm railway link --environment next $RAILWAY_API_PROJECT_ID
           cd dist/api-bundle
           pnpm railway up --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_API_PROJECT_ID: ${{ secrets.RAILWAY_API_PROJECT_ID }}
 
 concurrency:
   group: main-${{ github.head_ref }}
