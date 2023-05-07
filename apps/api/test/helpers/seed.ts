@@ -1,34 +1,11 @@
 import {PrismaClient} from '@codeimage/prisma-models';
 import * as crypto from 'crypto';
-import t from 'tap';
-import {testPresetUtils} from '../__internal__/presetUtils';
+import {testPresetUtils} from '../__internal__/presetUtils.js';
 
 const client = new PrismaClient();
 
-export const getSeeder = () => {
-  const cleanSeed = () =>
-    t.teardown(async () => {
-      await client.$transaction([
-        client.project.deleteMany(),
-        client.user.deleteMany(),
-      ]);
-    });
-
-  const setupSeedBefore = (
-    seederFn: (client: PrismaClient) => Promise<unknown>,
-  ) => {
-    t.before(async () => seederFn(client));
-  };
-
-  return {
-    client,
-    setupSeedBefore,
-    cleanSeed,
-  };
-};
-
 export const userSeed = {
-  clean: () => client.$transaction([client.user.deleteMany()]),
+  clean: () => client.user.deleteMany().then(),
   createUser(email = `email-${crypto.randomUUID()}@example.it`) {
     return client.user.create({
       data: {
@@ -39,7 +16,7 @@ export const userSeed = {
 };
 
 export const presetSeed = {
-  clean: () => client.$transaction([client.preset.deleteMany()]),
+  clean: () => client.preset.deleteMany().then(),
   createPresetV1(presetName: string, ownerId: string, data?: object) {
     return client.preset.create({
       data: {
@@ -53,7 +30,7 @@ export const presetSeed = {
 };
 
 export const projectSeed = {
-  clean: () => client.$transaction([client.project.deleteMany()]),
+  clean: () => client.project.deleteMany().then(),
   createProject(projectName: string, ownerId: string) {
     return client.project.create({
       data: {

@@ -1,10 +1,10 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {
   ProjectUpdateRequestSchema,
   ProjectUpdateResponseSchema,
-} from '../../../modules/project/schema';
+} from '../../../modules/project/schema/index.js';
 
 const schema = {
   tags: ['Project'],

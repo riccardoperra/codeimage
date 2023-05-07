@@ -46,7 +46,7 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
     } else if (options.authProvider) {
       await fastify.register(options.authProvider);
     } else {
-      await fastify.register(fastifyAuth0Verify, {
+      await fastify.register(fastifyAuth0Verify.default, {
         domain: fastify.config.DOMAIN_AUTH0,
         secret: fastify.config.CLIENT_SECRET_AUTH,
         audience: fastify.config.AUDIENCE_AUTH0,

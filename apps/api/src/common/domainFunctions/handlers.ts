@@ -5,8 +5,8 @@ import {
   MergeHandlerDependencies,
   Wrap,
 } from '@api/domain';
-import {HandlerBuilder} from './builder';
-import {HandlerRegistry} from './registry';
+import {HandlerBuilder} from './builder.js';
+import {HandlerRegistry} from './registry.js';
 
 export const $HANDLER: unique symbol = Symbol('handler-metadata');
 

@@ -1,7 +1,7 @@
 import {Type} from '@sinclair/typebox';
 import {FastifyPluginAsync} from 'fastify';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
-import {ProjectDeleteResponseSchema} from '../../../modules/project/schema';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import {ProjectDeleteResponseSchema} from '../../../modules/project/schema/index.js';
 
 const schema = {
   tags: ['Project'],

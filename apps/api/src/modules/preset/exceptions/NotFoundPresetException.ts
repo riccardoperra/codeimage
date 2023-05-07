@@ -1,4 +1,4 @@
-import {NotFoundEntityException} from '../../../common/exceptions/NotFoundEntityException';
+import {NotFoundEntityException} from '../../../common/exceptions/NotFoundEntityException.js';
 
 type Params = {
   id: string;

@@ -1,20 +1,31 @@
-import {Project} from '@codeimage/prisma-models';
+import {Project, User} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
-import t from 'tap';
+import {afterEach, assert, beforeEach, test} from 'vitest';
 
-import {build} from '../../../helper';
-import {projectSeed, userSeed} from '../../../helpers/seed';
+import {build} from '../../../helper.js';
+import {projectSeed, userSeed} from '../../../helpers/seed.js';
 
-t.before(async () => {
+interface TestContext {
+  user: User;
+  project1: Project;
+}
+
+beforeEach(() => sinon.restore());
+
+beforeEach<TestContext>(async context => {
   const user = await userSeed.createUser();
   const project1 = await projectSeed.createProject('get by id test', user.id);
-  t.context.user = user;
-  t.context.project1 = project1;
+  context.user = user;
+  context.project1 = project1;
 });
 
-t.test('/v1/project -> 200', async t => {
-  const fastify = await build(t);
-  const projectId = t.context.project1.id;
+afterEach(async () => {
+  await Promise.all([userSeed.clean(), projectSeed.clean()]);
+});
+
+test<TestContext>('/v1/project -> 200', async context => {
+  const fastify = await build(context);
+  const projectId = context.project1.id;
   const spy = sinon.spy(fastify.projectService, 'findById');
 
   const response = await fastify.inject({
@@ -24,15 +35,15 @@ t.test('/v1/project -> 200', async t => {
 
   const body = JSON.parse(response.body) as Project;
 
-  t.ok(spy.withArgs(t.context.user, projectId).calledOnce);
-  t.same(response.statusCode, 200);
-  t.same(body.id, projectId);
-  t.same(body.name, 'get by id test');
+  assert.ok(spy.withArgs(context.user, projectId).calledOnce);
+  assert.equal(response.statusCode, 200);
+  assert.equal(body.id, projectId);
+  assert.equal(body.name, 'get by id test');
 });
 
-t.test('/v1/project -> 404', async t => {
-  const fastify = await build(t);
-  const userId = t.context.user.id;
+test<TestContext>('/v1/project -> 404', async context => {
+  const fastify = await build(context);
+  const userId = context.user.id;
   const projectId = 'badId';
   const spy = sinon.spy(fastify.projectService, 'findById');
 
@@ -46,7 +57,7 @@ t.test('/v1/project -> 404', async t => {
 
   const body = JSON.parse(response.body);
 
-  t.ok(spy.withArgs(t.context.user, projectId).calledOnce);
-  t.same(response.statusCode, 404);
-  t.same(body.message, `Project with id ${projectId} not found`);
+  assert.ok(spy.withArgs(context.user, projectId).calledOnce);
+  assert.equal(response.statusCode, 404);
+  assert.equal(body.message, `Project with id ${projectId} not found`);
 });

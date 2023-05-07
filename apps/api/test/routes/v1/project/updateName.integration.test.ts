@@ -1,21 +1,32 @@
 import * as sinon from 'sinon';
-import t from 'tap';
+import {test, beforeEach, afterEach, assert} from 'vitest';
 
-import {build} from '../../../helper';
-import {projectSeed, userSeed} from '../../../helpers/seed';
+import {build} from '../../../helper.js';
+import {projectSeed, userSeed} from '../../../helpers/seed.js';
 
-t.before(async () => {
+interface TestContext {
+  user: Awaited<ReturnType<typeof userSeed.createUser>>;
+  project1: Awaited<ReturnType<typeof projectSeed.createProject>>;
+}
+
+beforeEach(() => sinon.restore());
+
+beforeEach<TestContext>(async context => {
   const user = await userSeed.createUser();
   const project1 = await projectSeed.createProject('update name test', user.id);
-  t.context.user = user;
-  t.context.project1 = project1;
+  context.user = user;
+  context.project1 = project1;
 });
 
-t.test('PUT /v1/project/:id/name [Update Name] -> 200', async t => {
-  const fastify = await build(t);
-  const userId = t.context.user.id;
+afterEach(async () => {
+  await Promise.all([userSeed.clean()]);
+});
+
+test<TestContext>('PUT /v1/project/:id/name [Update Name] -> 200', async context => {
+  const fastify = await build(context);
+  const userId = context.user.id;
   const newName = 'newName';
-  const projectId = t.context.project1.id;
+  const projectId = context.project1.id;
   const spy = sinon.spy(fastify.projectService, 'updateName');
 
   const response = await fastify.inject({
@@ -24,10 +35,10 @@ t.test('PUT /v1/project/:id/name [Update Name] -> 200', async t => {
     payload: {name: newName},
   });
 
-  t.ok(
+  assert.ok(
     spy.withArgs(userId, projectId, 'newName').calledOnce,
     'has been called once',
   );
-  t.same(response.statusCode, 200, 'return status 200');
-  t.equal(JSON.parse(response.body).name, newName, 'return updated name');
+  assert.equal(response.statusCode, 200, 'return status 200');
+  assert.equal(JSON.parse(response.body).name, newName, 'return updated name');
 });

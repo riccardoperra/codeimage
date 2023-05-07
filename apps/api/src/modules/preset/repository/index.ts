@@ -1,1 +1,1 @@
-export * from './preset.repository';
+export * from './preset.repository.js';

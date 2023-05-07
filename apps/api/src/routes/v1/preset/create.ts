@@ -1,7 +1,7 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
-import {PresetCreateDtoSchema} from '../../../modules/preset/schema/preset-create-dto.schema';
-import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import {PresetCreateDtoSchema} from '../../../modules/preset/schema/preset-create-dto.schema.js';
+import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema.js';
 
 const schema = {
   tags: ['Preset'],
