@@ -34,7 +34,7 @@ export function PresetPreview(props: PresetPreviewProps) {
         type={props.data.terminal.type}
         readonlyTab={true}
         showTab={true}
-        shadow={props.data.terminal.shadow}
+        shadow={props.data.terminal.shadow ?? null}
         background={props.data.terminal.background}
         accentVisible={props.data.terminal.accentVisible}
         textColor={props.data.terminal.textColor}

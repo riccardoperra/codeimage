@@ -3,7 +3,6 @@ import * as crypto from 'crypto';
 import {testPresetUtils} from '../__internal__/presetUtils.js';
 
 const client = new PrismaClient();
-
 export const userSeed = {
   clean: () => client.user.deleteMany().then(),
   createUser(email = `email-${crypto.randomUUID()}@example.it`) {
