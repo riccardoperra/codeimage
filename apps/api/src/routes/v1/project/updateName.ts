@@ -1,11 +1,11 @@
 import {Static, Type} from '@sinclair/typebox';
 import {FastifyPluginAsync} from 'fastify';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
-import {BaseProjectResponseSchema} from '../../../modules/project/schema/project.schema';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import {BaseProjectResponseSchema} from '../../../modules/project/schema/project.schema.js';
 
 const schema = {
   tags: ['Project'],
-  description: 'Updates `name` of a CodeImage project',
+  summary: 'Updates `name` of a CodeImage project',
   body: Type.Object({
     name: Type.String(),
   }),
@@ -21,8 +21,8 @@ export type UpdateProjectNameApi = GetApiTypes<typeof schema>;
 
 const updateProjectName: FastifyPluginAsync = async fastify => {
   fastify.put<{
-    Params: Static<typeof schema['params']>;
-    Body: Static<typeof schema['body']>;
+    Params: Static<(typeof schema)['params']>;
+    Body: Static<(typeof schema)['body']>;
   }>(
     '/:id/name',
     {

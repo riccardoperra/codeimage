@@ -1,4 +1,4 @@
-import {HandlerError} from './HandlerError';
+import {HandlerError} from './HandlerError.js';
 
 export abstract class UnprocessableEntityException<
   Args extends Record<string, string | number> | void = void,

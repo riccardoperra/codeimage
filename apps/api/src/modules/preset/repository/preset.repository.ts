@@ -1,5 +1,5 @@
 import {Preset} from '@codeimage/prisma-models';
-import {PresetCreateRequest, PresetUpdateRequest} from '../domain';
+import {PresetCreateRequest, PresetUpdateRequest} from '../domain/index.js';
 
 export interface PresetRepository {
   findByIdAndOwnerId(id: string, ownerId: string): Promise<Preset | null>;

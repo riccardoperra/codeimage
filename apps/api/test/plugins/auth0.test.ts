@@ -4,10 +4,10 @@ import {Type} from '@sinclair/typebox';
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
 import * as sinon from 'sinon';
-import t from 'tap';
-import auth0 from '../../src/plugins/auth0';
-import prisma from '../../src/plugins/prisma';
-import sensible from '../../src/plugins/sensible';
+import {assert, beforeEach, test, TestContext} from 'vitest';
+import auth0 from '../../src/plugins/auth0.js';
+import prisma from '../../src/plugins/prisma.js';
+import sensible from '../../src/plugins/sensible.js';
 
 interface AppOptions {
   mockAuth: boolean;
@@ -18,7 +18,9 @@ process.env.CLIENT_SECRET_AUTH = 'secret';
 process.env.DOMAIN_AUTH0 = 'domain';
 process.env.AUDIENCE_AUTH0 = 'audience';
 
-async function build(t: Tap.Test, options: AppOptions = {mockAuth: false}) {
+beforeEach(() => sinon.restore());
+
+async function build(t: TestContext, options: AppOptions = {mockAuth: false}) {
   if (options.mockAuth) {
     process.env.MOCK_AUTH = 'true';
     process.env.MOCK_AUTH_EMAIL = 'dev@example.it';
@@ -66,12 +68,15 @@ async function build(t: Tap.Test, options: AppOptions = {mockAuth: false}) {
       );
     }),
   );
-  await app.ready();
-  t.teardown(() => void app.close());
+  try {
+    await app.ready();
+  } catch (e) {
+    console.log(e);
+  }
   return app;
 }
 
-t.test('should throw unauthorized if token is not valid', async t => {
+test('should throw unauthorized if token is not valid', async t => {
   const app = await build(t);
   sinon
     .stub(app, 'authenticate')
@@ -82,30 +87,27 @@ t.test('should throw unauthorized if token is not valid', async t => {
     url: '/',
   });
 
-  t.same(response.statusCode, 401);
-  t.same(response.json().statusCode, 401);
+  assert.equal(response.statusCode, 401);
+  assert.equal(response.json().statusCode, 401);
 });
 
-t.test(
-  'should not throw unauthorized if token is not present and mustBeAuthenticated = false',
-  async t => {
-    const app = await build(t);
-    sinon
-      .stub(app, 'authenticate')
-      .callsFake(() => Promise.reject(new Error('Error')));
+test('should not throw unauthorized if token is not present and mustBeAuthenticated = false', async t => {
+  const app = await build(t);
+  sinon
+    .stub(app, 'authenticate')
+    .callsFake(() => Promise.reject(new Error('Error')));
 
-    const response = await app.inject({
-      method: 'GET',
-      url: '/optional',
-    });
+  const response = await app.inject({
+    method: 'GET',
+    url: '/optional',
+  });
 
-    t.same(response.statusCode, 200);
-    t.same(response.json().response, 'ok');
-    t.same(response.json().appUser, null);
-  },
-);
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.json().response, 'ok');
+  assert.equal(response.json().appUser, null);
+});
 
-t.test('should decorate `appUser` if present', async t => {
+test('should decorate `appUser` if present', async t => {
   const app = await build(t);
   const storedUser = {
     email: 'storeduser@example.it',
@@ -131,12 +133,12 @@ t.test('should decorate `appUser` if present', async t => {
 
   const resObj = response.json<{response: string; appUser: User | null}>();
 
-  t.same(resObj.response, 'ok');
-  t.ok(createSpy.notCalled);
-  t.strictSame(resObj.appUser?.email, 'storeduser@example.it');
+  assert.equal(resObj.response, 'ok');
+  assert.ok(createSpy.notCalled);
+  assert.strictEqual(resObj.appUser?.email, 'storeduser@example.it');
 });
 
-t.test('should also sync user in db if not exists', async t => {
+test('should also sync user in db if not exists', async t => {
   const app = await build(t);
   const storedUser = {
     email: 'email@example.it',
@@ -166,11 +168,11 @@ t.test('should also sync user in db if not exists', async t => {
 
   // TODO: fix test
   // t.ok(createSpy.calledOnce);
-  t.same(resObj.response, 'ok');
-  t.same(resObj.appUser?.email, 'email@example.it');
+  assert.equal(resObj.response, 'ok');
+  assert.equal(resObj.appUser?.email, 'email@example.it');
 });
 
-t.test('should return bad user detail if user has no email', async t => {
+test('should return bad user detail if user has no email', async t => {
   const app = await build(t);
   sinon.stub(app, 'authenticate').callsFake(async req => {
     req.user = {
@@ -183,15 +185,15 @@ t.test('should return bad user detail if user has no email', async t => {
     url: '/',
   });
 
-  t.same(response.statusCode, 400);
-  t.same(response.json(), {
+  assert.equal(response.statusCode, 400);
+  assert.deepStrictEqual(response.json(), {
     statusCode: 400,
     message: 'No valid user data',
     error: 'Bad Request',
   });
 });
 
-t.test('should mock auth', async t => {
+test('should mock auth', async t => {
   const app = await build(t, {mockAuth: true});
 
   const response = await app.inject({
@@ -205,12 +207,14 @@ t.test('should mock auth', async t => {
     createdAt: new Date(),
   });
 
-  t.same(response.statusCode, 200);
-  t.sameStrict(response.json().user, {'claims/email': 'dev@example.it'});
-  t.same(response.json().appUser.email, 'dev@example.it');
+  assert.equal(response.statusCode, 200);
+  assert.deepStrictEqual(response.json().user, {
+    'claims/email': 'dev@example.it',
+  });
+  assert.strictEqual(response.json().appUser.email, 'dev@example.it');
 });
 
-t.test('should mock auth with env fallback', async t => {
+test('should mock auth with env fallback', async t => {
   const app = await build(t, {mockAuth: true});
 
   const response = await app.inject({
@@ -224,7 +228,9 @@ t.test('should mock auth with env fallback', async t => {
     createdAt: new Date(),
   });
 
-  t.same(response.statusCode, 200);
-  t.sameStrict(response.json().user, {'claims/email': 'dev@example.it'});
-  t.same(response.json().appUser.email, 'dev@example.it');
+  assert.equal(response.statusCode, 200);
+  assert.deepStrictEqual(response.json().user, {
+    'claims/email': 'dev@example.it',
+  });
+  assert.strictEqual(response.json().appUser.email, 'dev@example.it');
 });

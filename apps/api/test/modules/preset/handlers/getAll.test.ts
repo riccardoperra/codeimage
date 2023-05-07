@@ -1,17 +1,17 @@
 import {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
 import * as sinon from 'sinon';
-import t from 'tap';
-import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers';
-import {findAll} from '../../../../src/modules/preset/handlers/findAll';
-import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema';
-import {PresetTestDataUtils} from '../data-utils';
-import {dependencies} from './dependencies';
+import {assert, beforeEach, test} from 'vitest';
+import {findAll} from '../../../../src/modules/preset/handlers/findAll.js';
+import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
+import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import {PresetTestDataUtils} from '../data-utils.js';
+import {dependencies} from './dependencies.js';
 
 const handlersStub = {} as ResolvedDomainHandlerMap<DomainHandlerMap>;
 
-t.beforeEach(() => sinon.restore());
+beforeEach(() => sinon.restore());
 
-t.test('when findAll', async t => {
+test('when findAll', async () => {
   const ownerId = 'owner-1';
   const preset1 = PresetTestDataUtils.buildPreset('id1', 'preset', ownerId);
   const preset2 = PresetTestDataUtils.buildPreset('id2', 'preset2', ownerId);
@@ -40,7 +40,7 @@ t.test('when findAll', async t => {
     },
   )(ownerId);
 
-  t.ok(findAllByOwnerIdStub.calledOnceWithExactly(ownerId));
-  t.ok(fromEntityToDtoStub.calledTwice);
-  t.same(result.length, 2);
+  assert.ok(findAllByOwnerIdStub.calledOnceWithExactly(ownerId));
+  assert.ok(fromEntityToDtoStub.calledTwice);
+  assert.equal(result.length, 2);
 });

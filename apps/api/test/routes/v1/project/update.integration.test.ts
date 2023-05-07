@@ -1,24 +1,36 @@
+import {User} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
-import t from 'tap';
+import {afterEach, assert, beforeEach, test} from 'vitest';
 import {
   ProjectUpdateRequest,
   ProjectUpdateResponse,
-} from '../../../../src/modules/project/schema';
+} from '../../../../src/modules/project/schema/index.js';
 
-import {build} from '../../../helper';
-import {projectSeed, userSeed} from '../../../helpers/seed';
+import {build} from '../../../helper.js';
+import {projectSeed, userSeed} from '../../../helpers/seed.js';
 
-t.before(async () => {
-  t.context.user = await userSeed.createUser();
-  t.context.project1 = await projectSeed.createProject(
+interface TestContext {
+  user: User;
+  project1: Awaited<ReturnType<typeof projectSeed.createProject>>;
+}
+
+beforeEach(() => sinon.restore());
+
+beforeEach<TestContext>(async context => {
+  context.user = await userSeed.createUser();
+  context.project1 = await projectSeed.createProject(
     'project to update',
-    t.context.user.id,
+    context.user.id,
   );
 });
 
-t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
-  const fastify = await build(t);
-  const userId = t.context.user.id;
+afterEach(async () => {
+  await Promise.all([projectSeed.clean(), userSeed.clean()]);
+});
+
+test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context => {
+  const fastify = await build(context);
+  const userId = context.user.id;
   const spy = sinon.spy(fastify.projectService, 'update');
 
   const data: ProjectUpdateRequest = {
@@ -31,7 +43,7 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
     },
     editors: [
       {
-        id: t.context.project1.editorTabs[0].id,
+        id: context.project1.editorTabs[0].id,
         code: '## title',
         languageId: 'markdown',
         tabName: 'README.md',
@@ -65,20 +77,20 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
   };
 
   const response = await fastify.inject({
-    url: `/api/v1/project/${t.context.project1.id}`,
+    url: `/api/v1/project/${context.project1.id}`,
     method: 'PUT',
     payload: data,
   });
 
   const body = JSON.parse(response.body) as ProjectUpdateResponse;
 
-  t.ok(
-    spy.withArgs(userId, t.context.project1.id, data).calledOnce,
+  assert.ok(
+    spy.withArgs(userId, context.project1.id, data).calledOnce,
     'has been called once',
   );
-  t.ok(body.editorTabs.length === 2);
-  t.same(response.statusCode, 200, 'return status 200');
-  t.strictSame(
+  assert.ok(body.editorTabs.length === 2);
+  assert.equal(response.statusCode, 200, 'return status 200');
+  assert.deepStrictEqual(
     body.frame,
     {
       background: '#fff',
@@ -89,7 +101,7 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
     } as ProjectUpdateResponse['frame'],
     'return updated frame',
   );
-  t.strictSame(
+  assert.deepStrictEqual(
     body.editorOptions,
     {
       fontWeight: 600,
@@ -100,7 +112,7 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
     } as ProjectUpdateResponse['editorOptions'],
     'return updated editor options',
   );
-  t.strictSame(
+  assert.deepStrictEqual(
     body.terminal,
     {
       opacity: 0,
@@ -116,11 +128,11 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
     } as ProjectUpdateResponse['terminal'],
     'return updated terminal',
   );
-  t.strictSame(
+  assert.deepStrictEqual(
     body.editorTabs,
     [
       {
-        id: t.context.project1.editorTabs[0].id,
+        id: context.project1.editorTabs[0].id,
         code: '## title',
         languageId: 'markdown',
         tabName: 'README.md',
@@ -134,6 +146,6 @@ t.test('POST /v1/project/:id [Update Project] -> 200', async t => {
     ] as ProjectUpdateResponse['editorTabs'],
     'return updated editor tabs',
   );
-  t.notSame(body.updatedAt, t.context.project1.updatedAt.toISOString());
-  t.same(body.name, 'project to update', 'return same name');
+  assert.notEqual(body.updatedAt, context.project1.updatedAt.toISOString());
+  assert.equal(body.name, 'project to update', 'return same name');
 });

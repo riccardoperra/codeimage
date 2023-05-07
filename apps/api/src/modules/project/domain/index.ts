@@ -1,3 +1,3 @@
-export * from './projectCreateRequest';
-export * from './projectUpdateRequest';
-export * from './projectGetByIdResponse';
+export * from './projectCreateRequest.js';
+export * from './projectUpdateRequest.js';
+export * from './projectGetByIdResponse.js';

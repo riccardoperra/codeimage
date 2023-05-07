@@ -1,5 +1,5 @@
 import {FastifyPluginAsync} from 'fastify';
-import {ProjectGetByIdResponse} from '../../../modules/project/schema';
+import {ProjectGetByIdResponse} from '../../../modules/project/schema/index.js';
 
 const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
   fastify.get(
@@ -8,7 +8,7 @@ const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
       preValidation: (req, reply) => fastify.authorize(req, reply),
       schema: {
         tags: ['Project'],
-        description: 'Get all CodeImage projects by the current user',
+        summary: 'Get all CodeImage projects by the current user',
       },
     },
     async (request): Promise<ProjectGetByIdResponse[]> => {

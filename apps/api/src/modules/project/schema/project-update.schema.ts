@@ -1,5 +1,5 @@
 import {Static, Type} from '@sinclair/typebox';
-import {Nullable} from '../../../common/typebox/nullable';
+import {Nullable} from '../../../common/typebox/nullable.js';
 
 export const SnippetFrameUpdateRequestSchema = Type.Object(
   {
@@ -70,8 +70,8 @@ export const ProjectUpdateResponseSchema = Type.Object(
   {
     id: Type.String(),
     name: Type.String(),
-    createdAt: Type.Unsafe<Date>({format: 'date-time'}),
-    updatedAt: Type.Unsafe<Date>({format: 'date-time'}),
+    createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
+    updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     ownerId: Type.String({format: 'uuid'}),
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
     frame: Type.Required(SnippetFrameUpdateRequestSchema),

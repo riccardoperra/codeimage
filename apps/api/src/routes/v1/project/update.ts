@@ -1,14 +1,14 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {
   ProjectUpdateRequestSchema,
   ProjectUpdateResponseSchema,
-} from '../../../modules/project/schema';
+} from '../../../modules/project/schema/index.js';
 
 const schema = {
   tags: ['Project'],
-  description: 'Update an existing CodeImage project',
+  summary: 'Update an existing CodeImage project',
   body: ProjectUpdateRequestSchema,
   params: Type.Object({
     id: Type.String(),
