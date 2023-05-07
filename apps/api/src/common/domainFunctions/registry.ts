@@ -3,7 +3,7 @@ import {
   GenericHandler,
   ResolvedDomainHandlerMap,
 } from '@api/domain';
-import {getHandlerMetadata} from './handlers';
+import {getHandlerMetadata} from './handlers.js';
 
 export class HandlerRegistry<T extends object = DomainHandlerMap> {
   #events = new Map<string, GenericHandler>();

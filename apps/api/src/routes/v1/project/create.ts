@@ -1,13 +1,13 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {
   ProjectCreateRequestSchema,
   ProjectCreateResponseSchema,
-} from '../../../modules/project/schema';
+} from '../../../modules/project/schema/index.js';
 
 const schema = {
   tags: ['Project'],
-  description: 'Create a new CodeImage project',
+  summary: 'Create a new CodeImage project',
   body: ProjectCreateRequestSchema,
   response: {
     200: ProjectCreateResponseSchema,

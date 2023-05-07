@@ -1,11 +1,11 @@
 import {Static, Type} from '@sinclair/typebox';
 import {
   BaseProjectResponseSchema,
+  BaseSnippetEditorOptionsSchema,
   BaseSnippetEditorTabsSchema,
   BaseSnippetFrameSchema,
   BaseSnippetTerminalSchema,
-  BaseSnippetEditorOptionsSchema,
-} from './project.schema';
+} from './project.schema.js';
 
 export const ProjectGetByIdResponseSchema = Type.Intersect([
   BaseProjectResponseSchema,

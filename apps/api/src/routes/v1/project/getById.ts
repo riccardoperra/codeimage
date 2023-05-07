@@ -1,11 +1,11 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
-import {ProjectGetByIdResponseSchema} from '../../../modules/project/schema';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import {ProjectGetByIdResponseSchema} from '../../../modules/project/schema/index.js';
 
 const schema = {
   tags: ['Project'],
-  description: 'Returns a CodeImage project by id',
+  summary: 'Returns a CodeImage project by id',
   params: Type.Object({
     id: Type.String(),
   }),

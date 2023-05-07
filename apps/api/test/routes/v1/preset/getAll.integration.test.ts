@@ -1,12 +1,20 @@
+import {Preset, User} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
-import t from 'tap';
-import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema';
-import {testPresetUtils} from '../../../__internal__/presetUtils';
+import {afterEach, assert, beforeEach, test} from 'vitest';
+import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import {testPresetUtils} from '../../../__internal__/presetUtils.js';
+import {build} from '../../../helper.js';
+import {presetSeed, userSeed} from '../../../helpers/seed.js';
 
-import {build} from '../../../helper';
-import {presetSeed, userSeed} from '../../../helpers/seed';
+interface TestContext {
+  user: User;
+  preset1: Preset;
+  preset2: Preset;
+}
 
-t.before(async () => {
+beforeEach(() => sinon.restore());
+
+beforeEach<TestContext>(async context => {
   const user = await userSeed.createUser();
   const preset1 = await presetSeed.createPresetV1(
     'preset-1',
@@ -18,12 +26,16 @@ t.before(async () => {
     user.id,
     testPresetUtils.buildPresetData(),
   );
-  t.context.user = user;
-  t.context.preset1 = preset1;
-  t.context.preset2 = preset2;
+  context.user = user;
+  context.preset1 = preset1;
+  context.preset2 = preset2;
 });
 
-t.test('/v1/preset -> 200', async t => {
+afterEach(async () => {
+  await Promise.all([userSeed.clean(), presetSeed.clean()]);
+});
+
+test<TestContext>('/v1/preset -> 200', async t => {
   const fastify = await build(t);
   const spy = sinon.spy(fastify.presetService, 'findAllPresets');
 
@@ -34,9 +46,9 @@ t.test('/v1/preset -> 200', async t => {
 
   const body = response.json<PresetDto[]>();
 
-  t.ok(spy.withArgs(t.context.user.id).calledOnce);
-  t.same(response.statusCode, 200);
-  t.same(body.length, 2);
-  t.same(body[0].name, t.context.preset1.name);
-  t.same(body[1].name, t.context.preset2.name);
+  assert.ok(spy.withArgs(t.user.id).calledOnce);
+  assert.equal(response.statusCode, 200);
+  assert.equal(body.length, 2);
+  assert.equal(body[0].name, t.preset1.name);
+  assert.equal(body[1].name, t.preset2.name);
 });

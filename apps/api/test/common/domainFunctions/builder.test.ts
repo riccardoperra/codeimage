@@ -1,8 +1,8 @@
 import * as sinon from 'sinon';
-import {test} from 'tap';
-import {HandlerBuilder} from '../../../src/common/domainFunctions/builder';
+import {assert, test} from 'vitest';
+import {HandlerBuilder} from '../../../src/common/domainFunctions/builder.js';
 
-test('create handler', async t => {
+test('create handler', async () => {
   const fn = sinon.fake();
 
   const handler = HandlerBuilder.withDependencies<string>()
@@ -12,5 +12,5 @@ test('create handler', async t => {
 
   handler('test-deps', {} as any)(1);
 
-  t.ok(fn.calledWith(1, 'test-deps'));
+  assert(fn.calledWith(1, 'test-deps'));
 });

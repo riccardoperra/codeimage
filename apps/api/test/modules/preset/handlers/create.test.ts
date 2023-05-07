@@ -1,19 +1,19 @@
 import {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
 import {Preset} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
-import t from 'tap';
-import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers';
-import {create} from '../../../../src/modules/preset/handlers/create';
-import {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema';
-import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema';
-import {testPresetUtils} from '../../../__internal__/presetUtils';
-import {dependencies} from './dependencies';
+import {assert, beforeEach, expect, test} from 'vitest';
+import {create} from '../../../../src/modules/preset/handlers/create.js';
+import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
+import {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
+import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import {testPresetUtils} from '../../../__internal__/presetUtils.js';
+import {dependencies} from './dependencies.js';
 
 const handlersStub = {} as ResolvedDomainHandlerMap<DomainHandlerMap>;
 
-t.beforeEach(() => sinon.restore());
+beforeEach(() => sinon.restore());
 
-t.test('when findById and found result', async t => {
+test('when findById and found result', async t => {
   const id = 'preset-1';
   const ownerId = 'owner-1';
 
@@ -59,15 +59,15 @@ t.test('when findById and found result', async t => {
     },
   )(ownerId, request);
 
-  t.ok(
+  assert.ok(
     createStub.calledOnceWithExactly({...request, version: BigInt(1), ownerId}),
   );
-  t.ok(fromEntityToDtoStub.calledOnceWithExactly(savedPreset));
+  assert.ok(fromEntityToDtoStub.calledOnceWithExactly(savedPreset));
 
-  t.equal(result, expected);
+  assert.equal(result, expected);
 });
 
-t.test('throw error when exceed limit', async t => {
+test('throw error when exceed limit', async () => {
   const id = 'preset-1';
   const ownerId = 'owner-1';
 
@@ -98,12 +98,12 @@ t.test('throw error when exceed limit', async t => {
     'fromEntityToDto',
   );
 
-  await t.rejects(
+  await expect(
     create(dependencies as unknown as PresetHandlerDependencies, {
       handlers: handlersStub,
     })(ownerId, request),
-  );
+  ).rejects.toThrow();
 
-  t.ok(createStub.notCalled);
-  t.ok(fromEntityToDtoStub.notCalled);
+  assert.ok(createStub.notCalled);
+  assert.ok(fromEntityToDtoStub.notCalled);
 });

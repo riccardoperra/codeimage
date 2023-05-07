@@ -5,6 +5,10 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
+    "moduleResolution": "Node16",
+    "module": "ES2022",
+    "target": "ES2022",
+    "esModuleInterop": true,
     "typeRoots": [
       "./src/common/domainFunctions/functions.d.ts"
     ]

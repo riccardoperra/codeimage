@@ -1,13 +1,13 @@
 import {User} from '@codeimage/prisma-models';
-import {HttpErrors} from '@fastify/sensible/lib/httpError';
+import {HttpErrors} from '@fastify/sensible/lib/httpError.js';
 import * as sinon from 'sinon';
-import t from 'tap';
+import {assert, beforeEach, expect, test} from 'vitest';
 import {
   ProjectCreateResponse,
   ProjectGetByIdResponse,
-} from '../../../../src/modules/project/domain';
-import {makeProjectService} from '../../../../src/modules/project/handlers/project.service';
-import {ProjectRepository} from '../../../../src/modules/project/repository';
+} from '../../../../src/modules/project/domain/index.js';
+import {makeProjectService} from '../../../../src/modules/project/handlers/project.service.js';
+import {ProjectRepository} from '../../../../src/modules/project/repository/index.js';
 
 export function makeMockProjectService() {
   const repository = {
@@ -114,9 +114,9 @@ const baseResponse = {
   name: 'project1',
 } as ProjectGetByIdResponse;
 
-t.beforeEach(() => sinon.reset());
+beforeEach(() => sinon.restore());
 
-t.test('create project', async t => {
+test('create project', async () => {
   const {repository, service} = makeMockProjectService();
   const data = {
     name: 'new project',
@@ -162,10 +162,10 @@ t.test('create project', async t => {
 
   const result = await service.createNewProject('userId', data);
 
-  t.strictSame(result.name, 'new project');
+  assert.equal(result.name, 'new project');
 });
 
-t.test('findById -> should return project', async t => {
+test('findById -> should return project', async () => {
   const id = 'projectId1';
   const user: User = {
     id: 'userId1',
@@ -186,12 +186,12 @@ t.test('findById -> should return project', async t => {
 
   const result = await service.findById(user, id);
 
-  t.ok(result.isOwner);
-  t.same(result.ownerId, user.id);
-  t.same(result.name, 'project1');
+  assert.ok(result.isOwner);
+  assert.equal(result.ownerId, user.id);
+  assert.equal(result.name, 'project1');
 });
 
-t.test('findById -> should return project and not owner', async t => {
+test('findById -> should return project and not owner', async () => {
   const id = 'projectId1';
   const user: User = {
     id: 'userId2',
@@ -213,48 +213,27 @@ t.test('findById -> should return project and not owner', async t => {
 
   const result = await service.findById(user, id);
 
-  t.notOk(result.isOwner);
-  t.same(result.ownerId, 'differentOwner');
-  t.same(result.name, 'project1');
+  assert.notOk(result.isOwner);
+  assert.equal(result.ownerId, 'differentOwner');
+  assert.equal(result.name, 'project1');
 });
 
-t.test(
-  'findById -> should return 404 error when not found project',
-  async t => {
-    const id = 'projectId1';
-    const user: User = {
-      id: 'userId1',
-      email: 'email@example.it',
-      createdAt: new Date(),
-    };
-    const {repository, service, httpErrors} = makeMockProjectService();
-    const notFoundSpy = sinon.spy(httpErrors, 'notFound');
-    sinon.stub(repository, 'findById').callsFake(async () => null);
+test('findById -> should return 404 error when not found project', async () => {
+  const id = 'projectId1';
+  const user: User = {
+    id: 'userId1',
+    email: 'email@example.it',
+    createdAt: new Date(),
+  };
+  const {repository, service, httpErrors} = makeMockProjectService();
+  const notFoundSpy = sinon.spy(httpErrors, 'notFound');
+  sinon.stub(repository, 'findById').callsFake(async () => null);
 
-    await t.rejects(service.findById(user, id), 'will reject');
-    t.ok(notFoundSpy.called, 'called not found spy');
-  },
-);
+  await expect(service.findById(user, id), 'will reject').rejects.toThrow();
+  assert.ok(notFoundSpy.called, 'called not found spy');
+});
 
-t.test(
-  'findById -> should return 404 error when not found project',
-  async t => {
-    const id = 'projectId1';
-    const user: User = {
-      id: 'userId1',
-      email: 'email@example.it',
-      createdAt: new Date(),
-    };
-    const {repository, service, httpErrors} = makeMockProjectService();
-    const notFoundSpy = sinon.spy(httpErrors, 'notFound');
-    sinon.stub(repository, 'findById').callsFake(async () => null);
-
-    await t.rejects(service.findById(user, id), 'will reject');
-    t.ok(notFoundSpy.called, 'called not found spy');
-  },
-);
-
-t.test('clone -> should return cloned project', async t => {
+test('clone -> should return cloned project', async () => {
   const {repository, service} = makeMockProjectService();
   sinon.stub(repository, 'findById').callsFake(async () => ({
     ...baseResponse,
@@ -277,8 +256,8 @@ t.test('clone -> should return cloned project', async t => {
 
   const result1 = await service.clone(user, 'projectId1', null);
 
-  t.ok(createNewProjectStub.calledOnce);
-  t.same(result1.name, 'Existing');
+  assert.ok(createNewProjectStub.calledOnce);
+  assert.equal(result1.name, 'Existing');
 
   sinon.restore();
 
@@ -297,11 +276,11 @@ t.test('clone -> should return cloned project', async t => {
     });
 
   const result2 = await service.clone(user, 'projectId1', 'new name');
-  t.same(result2.name, 'new name');
-  t.ok(createNewProjectStub2.calledOnce);
+  assert.equal(result2.name, 'new name');
+  assert.ok(createNewProjectStub2.calledOnce);
 });
 
-t.test('clone -> should not wrap exception', {only: true}, async t => {
+test('clone -> should not wrap exception', async () => {
   const id = 'projectId1';
   const user: User = {
     id: 'userId1',
@@ -316,7 +295,7 @@ t.test('clone -> should not wrap exception', {only: true}, async t => {
     .stub(repository, 'findById')
     .callsFake(async () => Promise.reject(error));
 
-  await t.rejects(service.clone(user, id, null), error);
+  await expect(service.clone(user, id, null)).rejects.toThrow(error);
 
   sinon.restore();
 
@@ -324,7 +303,7 @@ t.test('clone -> should not wrap exception', {only: true}, async t => {
     .stub(repository, 'findById')
     .callsFake(async () => Promise.reject(httpErrors.notFound('not found')));
 
-  await t.rejects(service.clone(user, id, null), {
-    message: `Cannot clone project with id ${id} since it does not exists`,
-  });
+  await expect(service.clone(user, id, null)).rejects.toThrow(
+    new Error(`Cannot clone project with id ${id} since it does not exists`),
+  );
 });

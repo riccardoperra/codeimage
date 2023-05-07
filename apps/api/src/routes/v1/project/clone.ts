@@ -1,11 +1,11 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
-import {ProjectCreateResponseSchema} from '../../../modules/project/schema';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import {ProjectCreateResponseSchema} from '../../../modules/project/schema/index.js';
 
 const schema = {
   tags: ['Project'],
-  description: 'Clone a CodeImage project from an existing one',
+  summary: 'Clone a CodeImage project from an existing one',
   params: Type.Object({
     id: Type.String(),
   }),

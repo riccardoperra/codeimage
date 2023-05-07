@@ -3,10 +3,10 @@ import {Type} from '@sinclair/typebox';
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
 import * as sinon from 'sinon';
-import t from 'tap';
-import cors from '../../src/plugins/cors';
+import {afterAll, assert, beforeEach, expect, test, TestContext} from 'vitest';
+import cors from '../../src/plugins/cors.js';
 
-async function build(t: Tap.Test) {
+async function build(t: TestContext) {
   const app = Fastify();
   await void app.register(
     fp(async app => {
@@ -20,13 +20,13 @@ async function build(t: Tap.Test) {
     response: 'ok',
   }));
   await app.ready();
-  t.teardown(() => void app.close());
+  afterAll(() => app.close());
   return app;
 }
 
-t.beforeEach(() => sinon.restore());
+beforeEach(() => sinon.restore());
 
-t.test('should add cors origin *', async t => {
+test('should add cors origin *', async t => {
   process.env.ALLOWED_ORIGINS = '*';
   const app = await build(t);
 
@@ -38,10 +38,10 @@ t.test('should add cors origin *', async t => {
     },
   });
 
-  t.equal(response.headers['access-control-allow-origin'], '*');
+  assert.equal(response.headers['access-control-allow-origin'], '*');
 });
 
-t.test('should not add cors if empty', async t => {
+test('should not add cors if empty', async t => {
   process.env.ALLOWED_ORIGINS = '';
   const app = await build(t);
 
@@ -53,10 +53,10 @@ t.test('should not add cors if empty', async t => {
     },
   });
 
-  t.equal(response.headers['access-control-allow-origin'], undefined);
+  assert.equal(response.headers['access-control-allow-origin'], undefined);
 });
 
-t.test('should add multiple cors origins', async t => {
+test('should add multiple cors origins', async t => {
   process.env.ALLOWED_ORIGINS = 'https://example.com,https://example-2.com';
   const app = await build(t);
 
@@ -68,7 +68,10 @@ t.test('should add multiple cors origins', async t => {
     },
   });
 
-  t.equal(responseNotValid.headers['access-control-allow-origin'], undefined);
+  assert.equal(
+    responseNotValid.headers['access-control-allow-origin'],
+    undefined,
+  );
 
   const responseValid = await app.inject({
     method: 'GET',
@@ -78,7 +81,7 @@ t.test('should add multiple cors origins', async t => {
     },
   });
 
-  t.match(responseValid.headers, {
+  expect(responseValid.headers).toContain({
     'access-control-allow-origin': 'https://example.com',
     vary: 'Origin',
   });

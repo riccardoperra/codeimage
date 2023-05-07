@@ -2,7 +2,8 @@ import AutoLoad, {AutoloadPluginOptions} from '@fastify/autoload';
 import fastifyEnv from '@fastify/env';
 import {Type} from '@sinclair/typebox';
 import {FastifyPluginAsync} from 'fastify';
-import {join} from 'path';
+import path, {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -22,6 +23,9 @@ declare module 'fastify' {
     };
   }
 }
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export type AppOptions = {
   authProvider: FastifyPluginAsync;
@@ -56,6 +60,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
   await fastify.register(AutoLoad, {
     dir: join(__dirname, 'plugins'),
     options: opts,
+    forceESM: true,
   });
 
   // This loads all plugins defined in routes
@@ -64,6 +69,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dir: join(__dirname, 'routes'),
     options: {prefix: '/api/'},
     routeParams: true,
+    forceESM: true,
   });
 
   await fastify.register(AutoLoad, {
@@ -71,9 +77,10 @@ const app: FastifyPluginAsync<AppOptions> = async (
     options: opts,
     encapsulate: false,
     maxDepth: 1,
+    forceESM: true,
   });
 
-  fastify.ready(() => fastify.log.info(`\n${fastify.printRoutes()}`));
+  fastify.ready(() => fastify.log.info(fastify.printRoutes()));
 };
 
 export default app;

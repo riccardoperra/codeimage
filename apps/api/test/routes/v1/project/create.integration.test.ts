@@ -1,20 +1,31 @@
+import {User} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
-import t from 'tap';
+import {afterEach, assert, beforeEach, test} from 'vitest';
 import {
   ProjectCreateRequest,
   ProjectCreateResponse,
-} from '../../../../src/modules/project/schema';
+} from '../../../../src/modules/project/schema/index.js';
 
-import {build} from '../../../helper';
-import {userSeed} from '../../../helpers/seed';
+import {build} from '../../../helper.js';
+import {userSeed} from '../../../helpers/seed.js';
 
-t.before(async () => {
-  t.context.user = await userSeed.createUser();
+interface TestContext {
+  user: User;
+}
+
+beforeEach(() => sinon.restore());
+
+beforeEach<TestContext>(async context => {
+  context.user = await userSeed.createUser();
 });
 
-t.test('POST /v1/project/ [Create Project] -> 200', async t => {
-  const fastify = await build(t);
-  const userId = t.context.user.id;
+afterEach(async () => {
+  await Promise.all([userSeed.clean()]);
+});
+
+test<TestContext>('POST /v1/project/ [Create Project] -> 200', async context => {
+  const fastify = await build(context);
+  const userId = context.user.id;
   const spy = sinon.spy(fastify.projectService, 'createNewProject');
 
   const data: ProjectCreateRequest = {
@@ -56,9 +67,9 @@ t.test('POST /v1/project/ [Create Project] -> 200', async t => {
     payload: data,
   });
 
-  const body = JSON.parse(response.body) as ProjectCreateResponse;
+  const body = response.json<ProjectCreateResponse>();
 
-  t.ok(spy.withArgs(userId, data).calledOnce, 'has been called once');
-  t.same(response.statusCode, 200, 'return status 200');
-  t.strictSame(body.name, 'Data');
+  assert.ok(spy.withArgs(userId, data).calledOnce, 'has been called once');
+  assert.equal(response.statusCode, 200, 'return status 200');
+  assert.equal(body.name, 'Data');
 });

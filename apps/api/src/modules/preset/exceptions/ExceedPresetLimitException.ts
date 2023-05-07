@@ -1,4 +1,4 @@
-import {UnprocessableEntityException} from '../../../common/exceptions/UnprocessableEntityException';
+import {UnprocessableEntityException} from '../../../common/exceptions/UnprocessableEntityException.js';
 
 export class ExceedPresetLimitException extends UnprocessableEntityException<{
   limit: number;
