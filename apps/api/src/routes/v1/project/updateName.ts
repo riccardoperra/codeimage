@@ -5,7 +5,7 @@ import {BaseProjectResponseSchema} from '../../../modules/project/schema/project
 
 const schema = {
   tags: ['Project'],
-  description: 'Updates `name` of a CodeImage project',
+  summary: 'Updates `name` of a CodeImage project',
   body: Type.Object({
     name: Type.String(),
   }),

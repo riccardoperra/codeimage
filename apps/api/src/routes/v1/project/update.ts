@@ -8,7 +8,7 @@ import {
 
 const schema = {
   tags: ['Project'],
-  description: 'Update an existing CodeImage project',
+  summary: 'Update an existing CodeImage project',
   body: ProjectUpdateRequestSchema,
   params: Type.Object({
     id: Type.String(),

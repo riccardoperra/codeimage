@@ -5,7 +5,7 @@ import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema.
 
 const schema = {
   tags: ['Preset'],
-  description: 'Get all CodeImage presets filtered by current user',
+  summary: 'Get all CodeImage presets filtered by current user',
   response: {
     200: Type.Array(PresetDtoSchema),
   },

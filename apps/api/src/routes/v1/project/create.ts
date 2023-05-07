@@ -7,7 +7,7 @@ import {
 
 const schema = {
   tags: ['Project'],
-  description: 'Create a new CodeImage project',
+  summary: 'Create a new CodeImage project',
   body: ProjectCreateRequestSchema,
   response: {
     200: ProjectCreateResponseSchema,

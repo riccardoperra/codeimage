@@ -1,16 +1,18 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import {FastifySchema} from 'fastify/types/schema.js';
 import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {PresetCreateDtoSchema} from '../../../modules/preset/schema/preset-create-dto.schema.js';
 import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema.js';
 
 const schema = {
   tags: ['Preset'],
-  description: 'Create a new CodeImage Preset',
+  operationId: 'Create',
+  summary: 'Create a new CodeImage Preset',
   body: PresetCreateDtoSchema,
   response: {
     200: PresetDtoSchema,
   },
-};
+} satisfies FastifySchema;
 
 export type CreatePresetApi = GetApiTypes<typeof schema>;
 

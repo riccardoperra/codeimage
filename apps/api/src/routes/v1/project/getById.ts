@@ -5,7 +5,7 @@ import {ProjectGetByIdResponseSchema} from '../../../modules/project/schema/inde
 
 const schema = {
   tags: ['Project'],
-  description: 'Returns a CodeImage project by id',
+  summary: 'Returns a CodeImage project by id',
   params: Type.Object({
     id: Type.String(),
   }),

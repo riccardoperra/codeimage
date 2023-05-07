@@ -7,7 +7,7 @@ const schema = {
   params: Type.Object({
     id: Type.String(),
   }),
-  description: 'Delete an existing CodeImage preset',
+  summary: 'Delete an existing CodeImage preset',
   response: {
     200: Type.Void(),
   },

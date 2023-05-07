@@ -6,7 +6,7 @@ import {PresetUpdateDtoSchema} from '../../../modules/preset/schema/preset-updat
 
 const schema = {
   tags: ['Preset'],
-  description: 'Update a existing CodeImage preset by id',
+  summary: 'Update a existing CodeImage preset by id',
   body: PresetUpdateDtoSchema,
   params: Type.Object({
     id: Type.String(),

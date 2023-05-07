@@ -5,7 +5,7 @@ import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema.
 
 const schema = {
   tags: ['Preset'],
-  description: 'Returns current user preset by id',
+  summary: 'Returns current user preset by id',
   params: Type.Object({
     id: Type.String(),
   }),

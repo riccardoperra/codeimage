@@ -5,7 +5,7 @@ import {ProjectCreateResponseSchema} from '../../../modules/project/schema/index
 
 const schema = {
   tags: ['Project'],
-  description: 'Clone a CodeImage project from an existing one',
+  summary: 'Clone a CodeImage project from an existing one',
   params: Type.Object({
     id: Type.String(),
   }),

@@ -8,7 +8,7 @@ const schema = {
   params: Type.Object({
     id: Type.String(),
   }),
-  description: 'Delete an existing CodeImage project',
+  summary: 'Delete an existing CodeImage project',
   response: {
     200: ProjectDeleteResponseSchema,
   },
