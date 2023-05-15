@@ -84,6 +84,7 @@ export async function exportImage(
   const previewNode = ref.firstChild as HTMLElement;
 
   const toImageOptions: HtmlExportOptions = {
+    type: mimeType,
     filter: (node: Node | undefined) => {
       const isNotExcluded = () => {
         const el = node as Element | null;

@@ -1,12 +1,12 @@
 import {effect} from '@codeimage/atomic-state';
 import {useI18n} from '@codeimage/locale';
+import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getUiStore} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
 import {getUmami} from '@core/constants/umami';
 import {catchError, EMPTY, exhaustMap, from, pipe, switchMap, tap} from 'rxjs';
 import {getOwner, runWithOwner} from 'solid-js';
 import {
-  ExportExtension,
   exportImage,
   ExportMode,
   ExportOptions,
@@ -22,11 +22,12 @@ const owner = getOwner()!;
 export const dispatchCopyToClipboard = effect<CopyToClipboardEvent>(
   pipe(
     exhaustMap(({ref}) => {
+      const exportSettings = getExportCanvasStore();
       const options: ExportOptions = {
         mode: ExportMode.getBlob,
-        quality: 100,
-        pixelRatio: Math.floor(window.devicePixelRatio),
-        extension: ExportExtension.png,
+        quality: exportSettings.get.jpegQuality,
+        pixelRatio: Math.floor(exportSettings.get.devicePixelRatio),
+        extension: exportSettings.get.extension,
       };
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return from(runWithOwner(owner, () => exportImage({ref, options}))!).pipe(

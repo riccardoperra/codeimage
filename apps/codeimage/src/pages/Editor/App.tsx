@@ -1,4 +1,4 @@
-import {setCanvasSize} from '@codeimage/store/canvas';
+import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -6,8 +6,7 @@ import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {adaptiveFullScreenHeight, Box, HStack, PortalHost} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
-import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {createSignal, lazy, Show, Suspense} from 'solid-js';
+import {createSignal, lazy, onMount, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
@@ -40,14 +39,9 @@ export function App() {
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const modality = useModality();
   const frameStore = getFrameState();
+  const exportCanvasStore = getExportCanvasStore();
   const {readOnly, clone} = getEditorSyncAdapter()!;
-
-  createResizeObserver(frameRef, ref => {
-    setCanvasSize({
-      canvasHeight: ref.height,
-      canvasWidth: ref.width,
-    });
-  });
+  onMount(() => exportCanvasStore.initCanvas(frameRef));
 
   return (
     <Box
