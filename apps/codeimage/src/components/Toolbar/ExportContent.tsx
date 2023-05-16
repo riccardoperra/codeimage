@@ -12,16 +12,15 @@ import {
   Text,
   VStack,
 } from '@codeimage/ui';
-import {DialogProps, PopoverContent} from '@codeui/kit';
+import {PopoverContent} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {createSignal, Show} from 'solid-js';
 import {ExportExtension} from '../../hooks/use-export-image';
 import {AppLocaleEntries} from '../../i18n';
 import {ExclamationIcon} from '../Icons/Exclamation';
-import {ExportDialogProps} from './ExportButton';
 import * as styles from './ExportContent.css';
 
-export function ExportPopoverContent(props: ExportDialogProps & DialogProps) {
+export function ExportPopoverContent() {
   const [t] = useI18n<AppLocaleEntries>();
   const exportCanvasStore = getExportCanvasStore();
   const [quality, setQuality] = createSignal<number>(100);

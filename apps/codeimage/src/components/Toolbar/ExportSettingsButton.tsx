@@ -24,7 +24,7 @@ export function ExportSettingsButton() {
             </SvgIcon>
           </As>
         </PopoverTrigger>
-        <ExportPopoverContent onConfirm={() => void 0} />
+        <ExportPopoverContent />
       </Popover>
     </Tooltip>
   );
