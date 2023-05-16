@@ -5,7 +5,6 @@ import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
-import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {createRef} from '@core/helpers/create-ref';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {lazy, ParentProps, Ref, Show, Suspense, VoidProps} from 'solid-js';
@@ -46,7 +45,6 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     // eslint-disable-next-line solid/reactivity
     'Control+C': () => {
       if (filterHotKey()) return;
-      console.log('ref', ref);
       if (!ref) return;
       dispatchCopyToClipboard({ref});
     },
@@ -87,12 +85,6 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
                     left: 0,
                     top: 0,
                     'object-fit': 'cover',
-                  }}
-                  onError={() => {
-                    return dispatchUpdateTheme({
-                      updateBackground: true,
-                      theme: getRootEditorStore().state.options.themeId,
-                    });
                   }}
                   assetId={assetId()}
                 />
