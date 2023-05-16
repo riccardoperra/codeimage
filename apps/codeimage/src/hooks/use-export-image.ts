@@ -1,16 +1,14 @@
-import {
-  HtmlExportOptions,
-  toBlob,
-  toJpeg,
-  toPng,
-  toSvg,
-} from '@codeimage/dom-export';
+import {type HtmlExportOptions} from '@codeimage/dom-export';
 import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {isIOS} from '@solid-primitives/platform';
 import download from 'downloadjs';
 import {Resource} from 'solid-js';
+
+function loadDomExport() {
+  return import('@codeimage/dom-export');
+}
 
 export const enum ExportMode {
   export = 'export',
@@ -105,6 +103,8 @@ export async function exportImage(
   };
 
   async function exportByMode(ref: HTMLElement) {
+    const {toBlob, toJpeg, toSvg, toPng} = await loadDomExport();
+
     switch (mode) {
       case 'share': {
         if (!supported()) {
