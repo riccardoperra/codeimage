@@ -13,8 +13,6 @@ export type {TextFieldProps} from './TextField';
 
 export {RangeField, rangeFieldStyles} from './RangeField';
 
-export {NativeColorPicker, ColorPickerPopover} from './ColorPicker';
-
 export {Box, VStack, HStack} from './Box';
 
 export {FieldLabel, FieldLabelHint} from './Label';

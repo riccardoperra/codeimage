@@ -32,6 +32,11 @@ export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
   const [width, setWidth] = createSignal(0);
 
   onMount(() => {
+    const containerValue = container();
+    if (containerValue) {
+      setWidth(containerValue.clientWidth);
+    }
+
     const observer = new ResizeObserver(([entry]) =>
       requestAnimationFrame(() => setWidth(entry.target.clientWidth)),
     );
