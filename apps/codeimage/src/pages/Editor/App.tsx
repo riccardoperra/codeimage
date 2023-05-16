@@ -1,3 +1,4 @@
+import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -5,7 +6,7 @@ import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {adaptiveFullScreenHeight, Box, HStack, PortalHost} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
-import {createSignal, lazy, Show, Suspense} from 'solid-js';
+import {createSignal, lazy, onMount, Show, Suspense} from 'solid-js';
 import {BottomBar} from '../../components/BottomBar/BottomBar';
 import {Footer} from '../../components/Footer/Footer';
 import {FrameHandler} from '../../components/Frame/FrameHandler';
@@ -20,6 +21,7 @@ import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
 import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
 import {ExportButton} from '../../components/Toolbar/ExportButton';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
+import {ExportSettingsButton} from '../../components/Toolbar/ExportSettingsButton';
 import {FrameToolbar} from '../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
@@ -38,7 +40,9 @@ export function App() {
   const [portalHostRef, setPortalHostRef] = createSignal<HTMLElement>();
   const modality = useModality();
   const frameStore = getFrameState();
+  const exportCanvasStore = getExportCanvasStore();
   const {readOnly, clone} = getEditorSyncAdapter()!;
+  onMount(() => exportCanvasStore.initCanvas(frameRef));
 
   return (
     <Box
@@ -82,6 +86,7 @@ export function App() {
             <Show when={modality === 'mobile'}>
               <Box class={styles.mobileActionToolbar}>
                 <HStack spacing={'2'} justifyContent={'flexEnd'}>
+                  <ExportSettingsButton />
                   <ShareButton showLabel={false} />
                   <Button
                     size={'xs'}

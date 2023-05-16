@@ -7,6 +7,7 @@ import {ColorSwatchIcon} from '../Icons/ColorSwatch';
 import {SparklesIcon} from '../Icons/SparklesIcon';
 import {CopyToClipboardButton} from './CopyToClipboardButton';
 import {ExportInNewTabButton} from './ExportNewTabButton';
+import {ExportSettingsButton} from './ExportSettingsButton';
 import * as styles from './FrameToolbar.css';
 
 interface FrameToolbarProps {
@@ -22,6 +23,7 @@ export function FrameToolbar(props: FrameToolbarProps) {
   return (
     <div class={styles.frameToolbar}>
       <HStack spacing={2}>
+        <ExportSettingsButton />
         <CopyToClipboardButton canvasRef={props.frameRef} />
         <Button
           size={'xs'}

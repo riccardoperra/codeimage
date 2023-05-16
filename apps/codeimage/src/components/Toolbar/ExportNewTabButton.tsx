@@ -1,14 +1,11 @@
 import {useI18n} from '@codeimage/locale';
+import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {toast} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {Component, createEffect, untrack} from 'solid-js';
-import {
-  ExportExtension,
-  ExportMode,
-  useExportImage,
-} from '../../hooks/use-export-image';
+import {ExportMode, useExportImage} from '../../hooks/use-export-image';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {AppLocaleEntries} from '../../i18n';
 import {ExternalLinkIcon} from '../Icons/ExternalLink';
@@ -24,16 +21,18 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
 
   const [data, notify] = useExportImage();
 
+  const label = () => t('toolbar.openNewTab');
+
   function openInTab() {
     getUmami().trackEvent(`true`, 'export-new-tab');
-
+    const exportSettings = getExportCanvasStore();
     notify({
       ref: props.canvasRef,
       options: {
-        extension: ExportExtension.png,
+        extension: exportSettings.get.extension,
         mode: ExportMode.newTab,
-        quality: 100,
-        pixelRatio: Math.floor(window.devicePixelRatio),
+        quality: exportSettings.get.jpegQuality,
+        pixelRatio: Math.floor(exportSettings.get.devicePixelRatio),
       },
     });
   }
@@ -65,12 +64,12 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
   return (
     <Button
       theme={'tertiary'}
-      loading={data.loading}
       leftIcon={<ExternalLinkIcon />}
+      loading={data.loading}
       onClick={() => openInTab()}
       size={props.size ?? (modality === 'full' ? 'sm' : 'xs')}
     >
-      {t('toolbar.openNewTab')}
+      {label()}
     </Button>
   );
 };

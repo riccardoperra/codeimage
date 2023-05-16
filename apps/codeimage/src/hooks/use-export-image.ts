@@ -1,16 +1,14 @@
-import {
-  HtmlExportOptions,
-  toBlob,
-  toJpeg,
-  toPng,
-  toSvg,
-} from '@codeimage/dom-export';
+import {type HtmlExportOptions} from '@codeimage/dom-export';
 import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {isIOS} from '@solid-primitives/platform';
 import download from 'downloadjs';
 import {Resource} from 'solid-js';
+
+function loadDomExport() {
+  return import('@codeimage/dom-export');
+}
 
 export const enum ExportMode {
   export = 'export',
@@ -28,7 +26,6 @@ export const enum ExportExtension {
 export interface ExportOptions {
   extension: ExportExtension;
   mode: ExportMode;
-  fileName?: string;
   pixelRatio: number;
   quality: number;
 }
@@ -68,7 +65,7 @@ export async function exportImage(
   data: ExportImagePayload,
 ): Promise<Blob | string> {
   const {
-    options: {extension, fileName, mode, pixelRatio, quality},
+    options: {extension, mode, pixelRatio, quality},
     ref,
   } = data;
 
@@ -78,12 +75,13 @@ export async function exportImage(
     throw new Error('Reference is not defined.');
   }
 
-  const resolvedFileName = fileName || `codeImage_${new Date().getUTCDate()}`;
+  const resolvedFileName = `codeimage-snippet_${new Date().getUTCDate()}`;
   const mimeType = resolveMimeType(extension);
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
   const previewNode = ref.firstChild as HTMLElement;
 
   const toImageOptions: HtmlExportOptions = {
+    type: mimeType,
     filter: (node: Node | undefined) => {
       const isNotExcluded = () => {
         const el = node as Element | null;
@@ -105,6 +103,8 @@ export async function exportImage(
   };
 
   async function exportByMode(ref: HTMLElement) {
+    const {toBlob, toJpeg, toSvg, toPng} = await loadDomExport();
+
     switch (mode) {
       case 'share': {
         if (!supported()) {
@@ -205,9 +205,7 @@ export async function exportImage(
   const cb = exportByMode(previewNode);
 
   return cb
-    .then(r => {
-      return r as string | Blob;
-    })
+    .then(r => r as string | Blob)
     .catch(e => {
       throw e;
     });
