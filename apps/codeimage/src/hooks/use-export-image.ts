@@ -28,7 +28,6 @@ export const enum ExportExtension {
 export interface ExportOptions {
   extension: ExportExtension;
   mode: ExportMode;
-  fileName?: string;
   pixelRatio: number;
   quality: number;
 }
@@ -68,7 +67,7 @@ export async function exportImage(
   data: ExportImagePayload,
 ): Promise<Blob | string> {
   const {
-    options: {extension, fileName, mode, pixelRatio, quality},
+    options: {extension, mode, pixelRatio, quality},
     ref,
   } = data;
 
@@ -78,7 +77,7 @@ export async function exportImage(
     throw new Error('Reference is not defined.');
   }
 
-  const resolvedFileName = fileName || `codeImage_${new Date().getUTCDate()}`;
+  const resolvedFileName = `codeimage-snippet_${new Date().getUTCDate()}`;
   const mimeType = resolveMimeType(extension);
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
   const previewNode = ref.firstChild as HTMLElement;
@@ -206,9 +205,7 @@ export async function exportImage(
   const cb = exportByMode(previewNode);
 
   return cb
-    .then(r => {
-      return r as string | Blob;
-    })
+    .then(r => r as string | Blob)
     .catch(e => {
       throw e;
     });

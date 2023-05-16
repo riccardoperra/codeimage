@@ -19,11 +19,11 @@ import {
   DialogPanelContent,
   DialogPanelFooter,
   DialogProps,
-  TextField,
 } from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
+import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {
   Component,
   createEffect,
@@ -99,8 +99,6 @@ export const ExportButton: Component<ExportButtonProps> = props => {
           notify({
             options: {
               extension: payload.extension,
-              fileName:
-                payload.type === 'export' ? payload.fileName : undefined,
               mode: payload.type,
               pixelRatio: payload.pixelRatio,
               quality: payload.quality,
@@ -118,7 +116,6 @@ export type ExportDialogProps = {
     payload:
       | {
           type: ExportMode.export;
-          fileName: string;
           extension: ExportExtension;
           pixelRatio: number;
           quality: number;
@@ -136,7 +133,7 @@ export type ExportDialogProps = {
 export function ExportDialog(props: ExportDialogProps & DialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const [supportWebShare] = useWebshare();
-  const [mode, setMode] = createSignal<ExportMode>(ExportMode.share);
+  const [mode, setMode] = createSignal<ExportMode>(ExportMode.export);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
   );
@@ -147,12 +144,10 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
     Math.round(window.devicePixelRatio),
   );
 
-  const [fileName, setFileName] = createSignal<string>('');
-
   const modeItems = () =>
     [
-      {label: t('export.shareMode'), value: ExportMode.share},
       {label: t('export.exportMode'), value: ExportMode.export},
+      {label: t('export.shareMode'), value: ExportMode.share},
     ] as SegmentedFieldItem<ExportMode>[];
 
   const extensionItems: SegmentedFieldItem<ExportExtension>[] = [
@@ -180,7 +175,6 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
     props.onConfirm({
       type: selectedMode,
       extension: selectedExtension,
-      fileName: fileName(),
       pixelRatio: devicePixelRatio(),
       message: '',
       quality: quality() / 100,
@@ -202,106 +196,97 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
       title={t('export.title')}
     >
       <DialogPanelContent>
-        <VStack spacing={'6'}>
-          <Show when={supportWebShare()}>
-            <FlexField size={'lg'}>
+        <DynamicSizedContainer>
+          <VStack spacing={'6'}>
+            <Show when={supportWebShare()}>
+              <FlexField size={'lg'}>
+                <SegmentedField
+                  value={mode()}
+                  onChange={setMode}
+                  items={modeItems()}
+                />
+                <Show when={mode() === 'share'}>
+                  <Box marginTop={1}>
+                    <FieldLabelHint
+                      size={'sm'}
+                      weight={'normal'}
+                      icon={() => <HintIcon size={'sm'} />}
+                    >
+                      {t('export.shareHint')}
+                      &nbsp;
+                      <Link
+                        size={'sm'}
+                        underline
+                        weight={'medium'}
+                        target={'_blank'}
+                        href={
+                          'https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share'
+                        }
+                      >
+                        Web Share API
+                      </Link>
+                    </FieldLabelHint>
+                  </Box>
+                </Show>
+              </FlexField>
+            </Show>
+
+            <FlexField size={'md'}>
+              <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
               <SegmentedField
-                value={mode()}
-                onChange={setMode}
-                items={modeItems()}
+                value={extension()}
+                onChange={setExtension}
+                items={extensionItems}
               />
-              <Show when={mode() === 'share'}>
+              <Show when={extension() === 'jpeg'}>
                 <Box marginTop={1}>
                   <FieldLabelHint
                     size={'sm'}
                     weight={'normal'}
-                    icon={() => <HintIcon size={'sm'} />}
+                    icon={() => <ExclamationIcon size={'sm'} />}
                   >
-                    {t('export.shareHint')}
+                    {t('export.noOpacitySupportedWithThisExtension')}
                     &nbsp;
-                    <Link
-                      size={'sm'}
-                      underline
-                      weight={'medium'}
-                      target={'_blank'}
-                      href={
-                        'https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share'
-                      }
-                    >
-                      Web Share API
-                    </Link>
                   </FieldLabelHint>
                 </Box>
               </Show>
             </FlexField>
-          </Show>
 
-          <Show when={mode() === 'export'}>
-            <TextField
-              placeholder={t('export.fileNamePlaceholder')}
-              label={t('export.fileName')}
-              value={fileName()}
-              onChange={setFileName}
-              size={'md'}
-              theme={'filled'}
-            />
-          </Show>
-
-          <FlexField size={'md'}>
-            <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
-            <SegmentedField
-              value={extension()}
-              onChange={setExtension}
-              items={extensionItems}
-            />
             <Show when={extension() === 'jpeg'}>
-              <Box marginTop={1}>
-                <FieldLabelHint
-                  size={'sm'}
-                  weight={'normal'}
-                  icon={() => <ExclamationIcon size={'sm'} />}
-                >
-                  {t('export.noOpacitySupportedWithThisExtension')}
-                  &nbsp;
-                </FieldLabelHint>
-              </Box>
+              <FlexField size={'md'}>
+                <FieldLabel size={'sm'}>
+                  {t('export.quality')}
+                  <Box as={'span'} marginLeft={3}>
+                    <FieldLabelHint>{quality()}%</FieldLabelHint>
+                  </Box>
+                </FieldLabel>
+                <RangeField
+                  value={quality()}
+                  onChange={setQuality}
+                  max={100}
+                  min={70}
+                  step={2}
+                />
+              </FlexField>
             </Show>
-          </FlexField>
 
-          <Show when={extension() === 'jpeg'}>
             <FlexField size={'md'}>
               <FieldLabel size={'sm'}>
-                {t('export.quality')}
+                {t('export.pixelRatio')}
                 <Box as={'span'} marginLeft={3}>
-                  <FieldLabelHint>{quality()}%</FieldLabelHint>
+                  <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
                 </Box>
               </FieldLabel>
               <RangeField
-                value={quality()}
-                onChange={setQuality}
-                max={100}
-                min={70}
-                step={2}
+                value={devicePixelRatio()}
+                onChange={setDevicePixelRatio}
+                max={3}
+                min={1}
+                step={1}
               />
             </FlexField>
-          </Show>
-
-          <FlexField size={'md'}>
-            <FieldLabel size={'sm'}>
-              {t('export.pixelRatio')}
-              <Box as={'span'} marginLeft={3}>
-                <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
-              </Box>
-            </FieldLabel>
-            <RangeField
-              value={devicePixelRatio()}
-              onChange={setDevicePixelRatio}
-              max={3}
-              min={1}
-              step={1}
-            />
-          </FlexField>
-        </VStack>
+          </VStack>
+        </DynamicSizedContainer>
       </DialogPanelContent>
       <DialogPanelFooter>
         <HStack spacing={'2'} justifyContent={'flexEnd'}>

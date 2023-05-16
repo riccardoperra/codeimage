@@ -37,7 +37,7 @@ export function ExportPopoverContent(props: ExportDialogProps & DialogProps) {
       title={'Export Settings'}
       class={styles.exportContentPopover}
     >
-      <DynamicSizedContainer enabled={true}>
+      <DynamicSizedContainer>
         <div class={styles.exportContent}>
           <VStack spacing={'6'} marginTop={2} width={'100%'}>
             <FlexField size={'md'}>

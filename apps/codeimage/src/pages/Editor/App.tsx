@@ -21,6 +21,7 @@ import {Sidebar} from '../../components/Scaffold/Sidebar/Sidebar';
 import {ThemeSwitcher} from '../../components/ThemeSwitcher/ThemeSwitcher';
 import {ExportButton} from '../../components/Toolbar/ExportButton';
 import {ExportInNewTabButton} from '../../components/Toolbar/ExportNewTabButton';
+import {ExportSettingsButton} from '../../components/Toolbar/ExportSettingsButton';
 import {FrameToolbar} from '../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../components/Toolbar/Toolbar';
@@ -85,6 +86,7 @@ export function App() {
             <Show when={modality === 'mobile'}>
               <Box class={styles.mobileActionToolbar}>
                 <HStack spacing={'2'} justifyContent={'flexEnd'}>
+                  <ExportSettingsButton />
                   <ShareButton showLabel={false} />
                   <Button
                     size={'xs'}
