@@ -1,8 +1,8 @@
-import {HandlerBuilder} from '../../../common/domainFunctions/builder';
-import {ExceedPresetLimitException} from '../exceptions/ExceedPresetLimitException';
-import {PresetCreateDto} from '../schema/preset-create-dto.schema';
-import {PresetDto} from '../schema/preset-dto.schema';
-import {PresetHandlerDependencies} from './';
+import {HandlerBuilder} from '../../../common/domainFunctions/builder.js';
+import {ExceedPresetLimitException} from '../exceptions/ExceedPresetLimitException.js';
+import {PresetCreateDto} from '../schema/preset-create-dto.schema.js';
+import {PresetDto} from '../schema/preset-dto.schema.js';
+import type {PresetHandlerDependencies} from './index.js';
 
 export const create =
   HandlerBuilder.withDependencies<PresetHandlerDependencies>()

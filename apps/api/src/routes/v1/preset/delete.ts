@@ -1,13 +1,13 @@
 import {Type} from '@sinclair/typebox';
 import {FastifyPluginAsync} from 'fastify';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 
 const schema = {
   tags: ['Preset'],
   params: Type.Object({
     id: Type.String(),
   }),
-  description: 'Delete an existing CodeImage preset',
+  summary: 'Delete an existing CodeImage preset',
   response: {
     200: Type.Void(),
   },

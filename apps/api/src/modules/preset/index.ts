@@ -1,14 +1,14 @@
 import {ComposeHandlers} from '@api/domain';
 import {FastifyPluginAsync} from 'fastify';
-import {registerHandlers} from '../../common/domainFunctions/handlers';
-import {create} from './handlers/create';
-import {remove} from './handlers/delete';
-import {findAll} from './handlers/findAll';
-import {findById} from './handlers/findById';
-import {update} from './handlers/update';
-import {PresetMapper} from './mapper';
-import {PresetRepository} from './repository';
-import {PrismaPresetRepository} from './repository/prisma-preset.repository';
+import {registerHandlers} from '../../common/domainFunctions/handlers.js';
+import {create} from './handlers/create.js';
+import {remove} from './handlers/delete.js';
+import {findAll} from './handlers/findAll.js';
+import {findById} from './handlers/findById.js';
+import {update} from './handlers/update.js';
+import {PresetMapper} from './mapper/index.js';
+import {PresetRepository} from './repository/index.js';
+import {PrismaPresetRepository} from './repository/prisma-preset.repository.js';
 
 const handlers = [create, remove, findById, update, findAll] as const;
 

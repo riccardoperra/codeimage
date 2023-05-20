@@ -4,7 +4,7 @@ import {
   SnippetEditorTab,
   SnippetFrame,
   SnippetTerminal,
-} from '@codeimage/prisma-models/*';
+} from '@codeimage/prisma-models';
 
 type IdAndProjectId = 'id' | 'projectId';
 

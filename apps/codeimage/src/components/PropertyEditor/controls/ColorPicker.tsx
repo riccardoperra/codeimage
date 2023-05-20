@@ -1,4 +1,12 @@
 import {useI18n} from '@codeimage/locale';
+import {isAssetUrl} from '@codeimage/store/assets/assets';
+import {
+  FlexField,
+  SegmentedField,
+  SegmentedFieldItem,
+  VStack,
+} from '@codeimage/ui';
+import {TextField} from '@codeui/kit';
 import {
   Accessor,
   createEffect,
@@ -10,16 +18,14 @@ import {
   Show,
   VoidProps,
 } from 'solid-js';
-import {VStack} from '../Box';
-import {FlexField} from '../Field';
-import {SegmentedField, SegmentedFieldItem} from '../SegmentedField';
-import {TextField} from '../TextField';
-import * as styles from './ColorPicker.css';
 import {ColorPickerPresetItem} from './ColorPickerPresetItem';
+import * as styles from './CustomColorPicker.css';
+import {ImagePicker} from './ImagePicker/ImagePicker';
 
-enum ColorPickerSelectionMode {
+const enum ColorPickerSelectionMode {
   gradient = 'gradient',
   color = 'color',
+  background = 'background',
 }
 
 export interface ColorPickerPopoverProps {
@@ -45,13 +51,21 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
         label: tUnsafe('colorPicker.color'),
         value: ColorPickerSelectionMode.color,
       },
+      {
+        label: tUnsafe('colorPicker.background'),
+        value: ColorPickerSelectionMode.background,
+      },
     ]);
 
   onMount(() => {
-    if (props.colors?.includes(props.value ?? '')) {
-      setMode(ColorPickerSelectionMode.color);
+    if (isAssetUrl(props.value)) {
+      setMode(ColorPickerSelectionMode.background);
     } else {
-      setMode(ColorPickerSelectionMode.gradient);
+      if (props.colors?.includes(props.value ?? '')) {
+        setMode(ColorPickerSelectionMode.color);
+      } else {
+        setMode(ColorPickerSelectionMode.gradient);
+      }
     }
   });
 
@@ -65,17 +79,14 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
         />
       </FlexField>
 
-      <FlexField size={'xs'}>
-        <TextField
-          size={'xs'}
-          type={'text'}
-          value={internalColor()}
-          onChange={value => props.onChange(value)}
-          tabIndex={-1}
-        />
-      </FlexField>
-
       <Show when={mode() === ColorPickerSelectionMode.color}>
+        <FlexField size={'xs'}>
+          <TextField
+            size={'sm'}
+            value={internalColor()}
+            onChange={value => props.onChange(value)}
+          />
+        </FlexField>
         <div class={styles.colorGrid}>
           <For each={props.colors}>
             {item => (
@@ -92,6 +103,13 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
         </div>
       </Show>
       <Show when={mode() === ColorPickerSelectionMode.gradient}>
+        <FlexField size={'xs'}>
+          <TextField
+            size={'sm'}
+            value={internalColor()}
+            onChange={value => props.onChange(value)}
+          />
+        </FlexField>
         <div class={styles.colorGrid}>
           <For each={props.gradientColors}>
             {item => (
@@ -104,6 +122,14 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
             )}
           </For>
         </div>
+      </Show>
+      <Show when={mode() === ColorPickerSelectionMode.background}>
+        <ImagePicker
+          value={props.value ?? undefined}
+          onChange={value =>
+            props.onChange((value || props.gradientColors?.[0]) ?? '')
+          }
+        />
       </Show>
     </VStack>
   );

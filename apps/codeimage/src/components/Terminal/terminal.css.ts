@@ -4,7 +4,7 @@ import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
 export const [terminalTheme, terminalVars] = createTheme({
   headerHeight: '50px',
   headerHeightLite: '32px',
-  radius: '12px',
+  radius: '15px',
   headerBackgroundColor: 'unset',
   backgroundColor: themeVars.backgroundColor.white,
   textColor: themeVars.backgroundColor.gray['800'],

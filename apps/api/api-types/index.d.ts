@@ -10,4 +10,4 @@ export type {
   GetPresetByIdApi,
   UpdatePresetApi,
   GetAllPresetApi,
-} from '../dist/schemas';
+} from '../dist/schemas/index.js';

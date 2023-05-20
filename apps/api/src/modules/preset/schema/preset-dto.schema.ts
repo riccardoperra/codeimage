@@ -3,7 +3,7 @@ import {
   BaseSnippetEditorOptionsSchema,
   BaseSnippetFrameSchema,
   BaseSnippetTerminalSchema,
-} from '../../project/schema/project.schema';
+} from '../../project/schema/project.schema.js';
 
 export const PresetDataSchema = Type.Object({
   appVersion: Type.String(),

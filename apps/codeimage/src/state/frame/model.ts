@@ -6,6 +6,7 @@ export interface FrameState {
   opacity: number;
   autoWidth: boolean;
   scale: number;
+  width: number;
 }
 
 export type PersistedFrameState = Pick<

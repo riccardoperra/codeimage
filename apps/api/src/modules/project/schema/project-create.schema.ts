@@ -1,5 +1,5 @@
 import {Static, Type} from '@sinclair/typebox';
-import {Nullable} from '../../../common/typebox/nullable';
+import {Nullable} from '../../../common/typebox/nullable.js';
 
 export const SnippetFrameCreateRequestSchema = Type.Object(
   {
@@ -8,12 +8,12 @@ export const SnippetFrameCreateRequestSchema = Type.Object(
       Type.Number({
         minimum: 0,
         maximum: 100,
+        default: 100,
       }),
-      {default: 100},
     ),
-    radius: Nullable(Type.Number(), {default: 24}),
-    padding: Nullable(Type.Number(), {default: 32}),
-    visible: Nullable(Type.Boolean(), {default: true}),
+    radius: Nullable(Type.Number({default: 24})),
+    padding: Nullable(Type.Number({default: 32})),
+    visible: Nullable(Type.Boolean({default: true})),
   },
   {
     title: 'SnippetFrameCreateRequest',
@@ -34,16 +34,16 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
 
 export const SnippetTerminalCreateRequestSchema = Type.Object(
   {
-    accentVisible: Nullable(Type.Boolean(), {default: false}),
-    alternativeTheme: Nullable(Type.Boolean(), {default: false}),
+    accentVisible: Nullable(Type.Boolean({default: false})),
+    alternativeTheme: Nullable(Type.Boolean({default: false})),
     background: Nullable(Type.String()),
     shadow: Nullable(Type.String()),
-    showGlassReflection: Nullable(Type.Boolean(), {default: false}),
+    showGlassReflection: Nullable(Type.Boolean({default: false})),
     textColor: Nullable(Type.String()),
     type: Type.String(),
-    opacity: Nullable(Type.Number({minimum: 0, maximum: 100}), {default: 100}),
+    opacity: Nullable(Type.Number({minimum: 0, maximum: 100, default: 100})),
     showHeader: Type.Boolean(),
-    showWatermark: Nullable(Type.Boolean(), {default: true}),
+    showWatermark: Nullable(Type.Boolean({default: true})),
   },
   {title: 'SnippetTerminalCreateRequest'},
 );
@@ -53,7 +53,7 @@ export const EditorOptionsCreateRequestSchema = Type.Object(
     fontId: Type.String(),
     fontWeight: Type.Number({default: 400}),
     themeId: Type.String(),
-    showLineNumbers: Nullable(Type.Boolean(), {default: false}),
+    showLineNumbers: Nullable(Type.Boolean({default: false})),
     enableLigatures: Type.Boolean(),
   },
   {
@@ -82,7 +82,7 @@ export const SnippetFrameCreateResponseSchema = Type.Object(
     }),
     radius: Nullable(Type.Number()),
     padding: Type.Number(),
-    visible: Nullable(Type.Boolean(), {default: true}),
+    visible: Nullable(Type.Boolean({default: true})),
   },
   {
     title: 'SnippetFrameCreateResponse',

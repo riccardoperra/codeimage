@@ -1,8 +1,10 @@
+import {isIOS, isSafari} from '@solid-primitives/platform';
 import {applyStyleFromOptions} from './applyStyleFromOptions';
 import {cloneNode} from './cloneNode';
 import {removeSandbox} from './cloneStyle';
 import {embedImages} from './embedImages';
 import {embedWebFonts, getWebFontCSS} from './embedWebFonts';
+import {toIframe} from './iosResourceFix';
 import {Options} from './options';
 import {
   canvasToBlob,
@@ -58,7 +60,15 @@ export async function toCanvas<T extends HTMLElement>(
   options: Options = {},
 ): Promise<HTMLCanvasElement> {
   const svg = await toSvg(node, options);
-  const img = await createImage(svg);
+  const img = await createImage(svg).then(async result => {
+    if (options.experimental_safariResourceFix && (isSafari || isIOS)) {
+      const frame = await toIframe(result);
+      await new Promise(r => setTimeout(r, 1000));
+      frame.remove();
+    }
+    return result;
+  });
+
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d')!;
   const ratio = options.pixelRatio || getPixelRatio();
@@ -118,7 +128,7 @@ export async function toBlob<T extends HTMLElement>(
   options: Options = {},
 ): Promise<Blob | null> {
   const canvas = await toCanvas(node, options);
-  const blob = await canvasToBlob(canvas);
+  const blob = await canvasToBlob(canvas, options);
   return blob;
 }
 

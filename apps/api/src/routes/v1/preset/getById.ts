@@ -1,11 +1,11 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types';
-import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema.js';
 
 const schema = {
   tags: ['Preset'],
-  description: 'Returns current user preset by id',
+  summary: 'Returns current user preset by id',
   params: Type.Object({
     id: Type.String(),
   }),

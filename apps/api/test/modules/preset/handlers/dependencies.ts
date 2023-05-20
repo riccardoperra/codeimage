@@ -1,7 +1,7 @@
 import {FastifyInstance} from 'fastify';
-import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers';
-import {PresetMapper} from '../../../../src/modules/preset/mapper';
-import {PresetRepository} from '../../../../src/modules/preset/repository';
+import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
+import {PresetMapper} from '../../../../src/modules/preset/mapper/index.js';
+import {PresetRepository} from '../../../../src/modules/preset/repository/index.js';
 
 export const dependencies: PresetHandlerDependencies = {
   mapper: {

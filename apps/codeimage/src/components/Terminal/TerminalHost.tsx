@@ -14,6 +14,7 @@ export interface BaseTerminalProps
     WithRef<'div'> {
   showTab: boolean;
   readonlyTab: boolean;
+  preview?: boolean;
   tabIcon?: LanguageIconDefinition['content'];
   onTabChange?: (tab: string) => void;
   lite?: boolean;
@@ -44,6 +45,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
     <div
       class={clsx(styles.wrapper, props.themeClass)}
       data-lite={props.lite}
+      data-preview={props.preview || ''}
       data-theme-mode={darkMode() ? 'dark' : 'light'}
       data-header-visible={props.showHeader}
       data-accent-header={props.accentVisible && !props.alternativeTheme}

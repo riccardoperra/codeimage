@@ -1,10 +1,10 @@
-import * as DomainModel from '../domain';
-import {ProjectCreateRequest} from '../schema';
+import * as DomainModel from '../domain/index.js';
+import {ProjectCreateRequest} from '../schema/index.js';
 import {
   EditorOptionsCreateRequestSchema,
   SnippetFrameCreateRequestSchema,
   SnippetTerminalCreateRequestSchema,
-} from '../schema/project-create.schema';
+} from '../schema/project-create.schema.js';
 
 export function createProjectRequestMapper(
   data: ProjectCreateRequest,
@@ -18,7 +18,7 @@ export function createProjectRequestMapper(
       visible:
         data.frame.visible ??
         SnippetFrameCreateRequestSchema.properties.visible.default,
-      background: data.frame.background,
+      background: data.frame.background ?? null,
       opacity:
         data.frame.opacity ??
         SnippetFrameCreateRequestSchema.properties.opacity.default,
@@ -27,7 +27,7 @@ export function createProjectRequestMapper(
         SnippetFrameCreateRequestSchema.properties.radius.default,
     },
     terminal: {
-      background: data.terminal.background,
+      background: data.terminal.background ?? null,
       opacity:
         data.terminal.opacity ??
         SnippetTerminalCreateRequestSchema.properties.opacity.default,
@@ -39,7 +39,7 @@ export function createProjectRequestMapper(
       showWatermark:
         data.terminal.showWatermark ??
         SnippetTerminalCreateRequestSchema.properties.showWatermark.default,
-      textColor: data.terminal.textColor,
+      textColor: data.terminal.textColor ?? null,
       type: data.terminal.type,
       accentVisible:
         data.terminal.accentVisible ??
@@ -47,7 +47,7 @@ export function createProjectRequestMapper(
       alternativeTheme:
         data.terminal.alternativeTheme ??
         SnippetTerminalCreateRequestSchema.properties.alternativeTheme.default,
-      shadow: data.terminal.shadow,
+      shadow: data.terminal.shadow ?? null,
     },
     editorOptions: {
       fontWeight: data.editorOptions.fontWeight,

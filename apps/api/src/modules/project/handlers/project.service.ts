@@ -1,16 +1,16 @@
 import {Project, User} from '@codeimage/prisma-models';
-import {HttpError, HttpErrors} from '@fastify/sensible/lib/httpError';
-import {createProjectRequestMapper} from '../mapper/create-project-mapper';
-import {createCompleteProjectGetByIdResponseMapper} from '../mapper/get-project-by-id-mapper';
-import {ProjectRepository} from '../repository';
+import {HttpError, HttpErrors} from '@fastify/sensible/lib/httpError.js';
+import {createProjectRequestMapper} from '../mapper/create-project-mapper.js';
+import {createCompleteProjectGetByIdResponseMapper} from '../mapper/get-project-by-id-mapper.js';
+import {ProjectRepository} from '../repository/index.js';
 import {
-  ProjectCreateRequest,
-  ProjectCreateResponse,
-  ProjectGetByIdResponse,
-  ProjectUpdateRequest,
-  ProjectUpdateResponse,
-} from '../schema';
-import {ProjectCompleteResponse} from '../schema/project-get-by-id.schema';
+  type ProjectCreateRequest,
+  type ProjectCreateResponse,
+  type ProjectGetByIdResponse,
+  type ProjectUpdateRequest,
+  type ProjectUpdateResponse,
+} from '../schema/index.js';
+import {ProjectCompleteResponse} from '../schema/project-get-by-id.schema.js';
 
 export interface ProjectService {
   findById(user: User | null, id: string): Promise<ProjectCompleteResponse>;
@@ -63,10 +63,10 @@ export function makeProjectService(
 
       return mappedProject;
     },
-    async findAllByUserId(userId: string): Promise<ProjectGetByIdResponse[]> {
+    findAllByUserId(userId: string): Promise<ProjectGetByIdResponse[]> {
       return repository.findAllByUserId(userId);
     },
-    async createNewProject(
+    createNewProject(
       userId: string,
       data: ProjectCreateRequest,
     ): Promise<ProjectCreateResponse> {
@@ -75,10 +75,10 @@ export function makeProjectService(
         createProjectRequestMapper(data),
       );
     },
-    async updateName(userId: string, projectId: string, newName: string) {
+    updateName(userId: string, projectId: string, newName: string) {
       return repository.updateProjectName(projectId, newName);
     },
-    async update(userId, projectId, data) {
+    update(userId, projectId, data) {
       return repository.updateProject(userId, projectId, data);
     },
     async clone(

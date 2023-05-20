@@ -1,9 +1,8 @@
+import {backgroundColorVar, Box} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {PropsWithChildren} from 'solid-js';
-import {backgroundColorVar} from '../../theme';
-import {Box} from '../Box';
-import * as styles from './ColorPicker.css';
-import {ColorPickerColorItemProps} from './ColorPicker.css';
+import {ParentProps} from 'solid-js';
+import * as styles from './CustomColorPicker.css';
+import {ColorPickerColorItemProps} from './CustomColorPicker.css';
 
 type ColorPickerPresetItemProps = {
   title: string;
@@ -13,7 +12,7 @@ type ColorPickerPresetItemProps = {
 } & ColorPickerColorItemProps;
 
 export function ColorPickerPresetItem(
-  props: PropsWithChildren<ColorPickerPresetItemProps>,
+  props: ParentProps<ColorPickerPresetItemProps>,
 ) {
   return (
     <Box

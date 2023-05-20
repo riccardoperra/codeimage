@@ -1,6 +1,6 @@
 // Read the .env file.
 // Require library to exit fastify process, gracefully (if possible)
-import * as closeWithGrace from 'close-with-grace';
+import closeWithGrace from 'close-with-grace';
 import * as dotenv from 'dotenv';
 // Require the framework
 import Fastify from 'fastify';
@@ -12,7 +12,7 @@ const app = Fastify({
   logger: true,
 });
 // Register your application as a normal plugin.
-app.register(import('./app'));
+app.register(import('./app.js'));
 
 // delay is the number of milliseconds for the graceful close to finish
 const closeListeners = closeWithGrace({delay: 500}, async function ({

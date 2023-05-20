@@ -1,20 +1,32 @@
+import {Preset, User} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
-import t from 'tap';
+import {afterEach, assert, beforeEach, test} from 'vitest';
 
-import {build} from '../../../helper';
-import {presetSeed, userSeed} from '../../../helpers/seed';
+import {build} from '../../../helper.js';
+import {presetSeed, userSeed} from '../../../helpers/seed.js';
 
-t.before(async () => {
+interface TestContext {
+  user: User;
+  preset1: Preset;
+}
+
+beforeEach(() => sinon.restore());
+
+beforeEach<TestContext>(async context => {
   const user = await userSeed.createUser();
   const preset1 = await presetSeed.createPresetV1('preset-1', user.id);
-  t.context.user = user;
-  t.context.preset1 = preset1;
+  context.user = user;
+  context.preset1 = preset1;
 });
 
-t.test('DELETE /v1/project/:id [Delete Project] -> 200', async t => {
+afterEach(async () => {
+  await Promise.all([userSeed.clean(), presetSeed.clean()]);
+});
+
+test<TestContext>('DELETE /v1/project/:id [Delete Project] -> 200', async t => {
   const fastify = await build(t);
-  const userId = t.context.user.id;
-  const presetId = t.context.preset1.id;
+  const userId = t.user.id;
+  const presetId = t.preset1.id;
   const spy = sinon.spy(fastify.presetService, 'deletePreset');
 
   const response = await fastify.inject({
@@ -22,6 +34,6 @@ t.test('DELETE /v1/project/:id [Delete Project] -> 200', async t => {
     method: 'DELETE',
   });
 
-  t.same(response.statusCode, 200, 'return status 200');
-  t.ok(spy.withArgs(userId, presetId).calledOnce, 'has been called once');
+  assert.equal(response.statusCode, 200, 'return status 200');
+  assert.ok(spy.withArgs(userId, presetId).calledOnce, 'has been called once');
 });

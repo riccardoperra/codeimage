@@ -1,25 +1,25 @@
 export {
   ProjectCreateRequestSchema,
-  ProjectCreateRequest,
-  ProjectCreateResponse,
+  type ProjectCreateRequest,
+  type ProjectCreateResponse,
   ProjectCreateResponseSchema,
-} from './project-create.schema';
+} from './project-create.schema.js';
 
 export {
-  ProjectUpdateRequest,
-  ProjectUpdateResponse,
+  type ProjectUpdateRequest,
+  type ProjectUpdateResponse,
   ProjectUpdateRequestSchema,
   ProjectUpdateResponseSchema,
-} from './project-update.schema';
+} from './project-update.schema.js';
 
 export {
   ProjectDeleteResponseSchema,
-  ProjectDeleteResponse,
-} from './project-delete.schema';
+  type ProjectDeleteResponse,
+} from './project-delete.schema.js';
 
 export {
   ProjectGetByIdResponseSchema,
   PartialProjectGetByIdResponseSchema,
-  ProjectGetByIdResponse,
-  ProjectCompleteResponse,
-} from './project-get-by-id.schema';
+  type ProjectGetByIdResponse,
+  type ProjectCompleteResponse,
+} from './project-get-by-id.schema.js';

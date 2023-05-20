@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "CodeImage api rest server",
   "main": "app.ts",
+  "type": "module",
   "directories": {
     "test": "test"
   },
@@ -12,14 +13,17 @@
     }
   },
   "scripts": {
-    "test": "dotenv -e .env.test -- tap --ts --reporter=terse './test/**/*.test.ts' --before=test/before-test.ts",
-    "test:coverage": "dotenv -e .env.test -- tap --ts --reporter=terse  --coverage-report=html './test/**/*.test.ts' --before=test/before-test.ts --save=tests.txt",
-    "test:ci": "dotenv -e .env.test -- tap --no-check-coverage --ts './test/**/*.test.ts' --before=test/before-test.ts",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:ci": "vitest run",
+    "test:ui": "vitest --ui",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
     "start:railway": "fastify start -l info dist/app.js",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
+    "dev": "NODE_OPTIONS='--enable-source-maps' && tsup --watch --onSuccess \"fastify start --port 3000 --options -d -l info -P dist/app.js\"",
     "build:ts": "tsc",
+    "build:types": "tsc -p tsconfig.schema.json",
     "watch:ts": "tsc -w",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:test": "dotenv -e .env.test -- pnpm exec prisma migrate dev",
@@ -27,7 +31,6 @@
     "prisma:migrate:deploy-test": "dotenv -e .env.test -- pnpm exec prisma migrate deploy",
     "prisma:generate": "prisma generate dev && pnpm --filter=@codeimage/prisma-models build",
     "docker:dev": "docker compose -f docker-compose.dev.yml up",
-    "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"blue.bold,cyan.bold\" \"npm:dev:start\"",
     "dev:start": "tsx watch node_modules/fastify-cli/cli.js start --ignore-watch=.ts$ -w -l info -P src/app.ts"
   },
   "keywords": [],
@@ -36,34 +39,37 @@
   "dependencies": {
     "@codeimage/prisma-models": "workspace:*",
     "@fastify/autoload": "^5.7.1",
-    "@fastify/cors": "^8.2.0",
+    "@fastify/cors": "^8.2.1",
     "@fastify/env": "^4.2.0",
-    "@fastify/jwt": "^6.6.0",
+    "@fastify/jwt": "^6.7.1",
     "@fastify/sensible": "^5.2.0",
     "@fastify/swagger": "^8.3.1",
-    "@fastify/type-provider-typebox": "^2.4.0",
-    "@prisma/client": "^4.11.0",
-    "@sinclair/typebox": "^0.25.24",
+    "@fastify/swagger-ui": "^1.8.1",
+    "@fastify/type-provider-typebox": "^3.2.0",
+    "@prisma/client": "^4.13.0",
+    "@sinclair/typebox": "^0.28.9",
     "close-with-grace": "^1.1.0",
     "dotenv": "^16.0.3",
     "dotenv-cli": "^6.0.0",
-    "fastify": "^4.14.0",
-    "fastify-auth0-verify": "^1.0.0",
+    "fastify": "^4.17.0",
+    "fastify-auth0-verify": "^1.1.1",
     "fastify-cli": "^5.7.1",
     "fastify-healthcheck": "^4.4.0",
     "fastify-plugin": "^4.5.0",
     "fluent-json-schema": "^4.1.0",
-    "prisma": "^4.11.0"
+    "prisma": "^4.13.0"
   },
   "devDependencies": {
     "@types/node": "^18.14.6",
     "@types/sinon": "^10.0.13",
-    "@types/tap": "^15.0.8",
+    "@vitest/ui": "^0.31.0",
     "concurrently": "^7.6.0",
     "fastify-tsconfig": "^1.0.1",
     "sinon": "^15.0.1",
-    "tap": "^16.3.4",
-    "typescript": "^4.9.5",
-    "vitest": "0.26.2"
+    "tsup": "6.7.0",
+    "tsx": "3.12.7",
+    "typescript": "^5.0.4",
+    "vitest": "^0.31.0",
+    "vite": "^4.3.5"
   }
 }

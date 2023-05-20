@@ -1,6 +1,9 @@
 import {Project} from '@codeimage/prisma-models';
-import type * as DomainModel from '../domain';
-import {PartialProjectGetByIdResponse, ProjectGetByIdResponse} from '../domain';
+import type * as DomainModel from '../domain/index.js';
+import {
+  PartialProjectGetByIdResponse,
+  ProjectGetByIdResponse,
+} from '../domain/index.js';
 
 export interface ProjectRepository {
   findById(id: string): Promise<ProjectGetByIdResponse | null>;

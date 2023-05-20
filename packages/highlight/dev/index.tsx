@@ -18,11 +18,9 @@ import './global.css';
 import {container, editorContainer} from './index.css';
 import './reset.scss';
 import {createThemeStore} from './themeStore';
-import {theme as themeClass} from '@codeui/kit';
 
 function App() {
   const [theme, setThemeId] = createThemeStore();
-  document.documentElement.classList.add(themeClass);
   const appTheme = () => (theme().properties.darkMode ? 'dark' : 'light');
 
   createEffect(
