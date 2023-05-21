@@ -27,18 +27,12 @@ import {
   rectangularSelection,
 } from '@codemirror/view';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
-import {
-  createCodeMirror,
-  createEditorControlledValue,
-  createEditorFocus,
-  createEditorReadonly,
-} from 'solid-codemirror';
+import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import {
   createEffect,
   createMemo,
   createResource,
   on,
-  onMount,
   VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
@@ -66,19 +60,15 @@ const EDITOR_BASE_SETUP: Extension = [
 
 interface CustomEditorProps {
   readOnly: boolean;
+  onEditorViewChange?: (view: EditorView | undefined) => void;
 }
 
 export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
-  let editorEl!: HTMLDivElement;
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
-
-  const {
-    state: editorState,
-    actions: {setFocused},
-  } = getRootEditorStore();
-  const {editor, setCode} = getActiveEditorStore();
+  const {state: editorState, canvasEditorEvents} = getRootEditorStore();
+  const {editor} = getActiveEditorStore();
   const selectedLanguage = createMemo(() =>
     languages.find(language => language.id === editor()?.languageId),
   );
@@ -88,9 +78,10 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     ref: setRef,
     createExtension,
   } = createCodeMirror({
-    value: editor()?.code,
-    onValueChange: setCode,
+    onTransactionDispatched: tr => canvasEditorEvents.emit(tr),
   });
+
+  createEffect(() => props.onEditorViewChange?.(editorView()));
 
   const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
     plugin(),
@@ -167,16 +158,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     });
   };
 
-  onMount(() => {
-    setRef(() => editorEl);
-  });
-
-  const {setFocused: editorSetFocused} = createEditorFocus(
-    editorView,
-    setFocused,
-  );
-
-  createEditorControlledValue(editorView, () => editor()?.code ?? '');
   createEditorReadonly(editorView, () => props.readOnly);
   createExtension(EditorView.lineWrapping);
   createExtension(() =>
@@ -192,38 +173,22 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   );
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
-  createExtension(EDITOR_BASE_SETUP);
-  createExtension(() =>
-    EditorView.domEventHandlers({
-      paste(event, view) {
-        setTimeout(() => {
-          const localValue = view.state.doc.toString();
-          getActiveEditorStore().format(localValue);
-        });
-      },
-    }),
-  );
+
+  const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);
 
   createEffect(
-    on(editorView, view => {
-      if (view) {
-        createEffect(
-          on(
-            () => editorState.options.focused,
-            isFocused => {
-              if (view && !view.hasFocus && isFocused) {
-                editorSetFocused(true);
-              }
-            },
-          ),
-        );
-      }
-    }),
+    on(
+      () => props.readOnly,
+      readOnly => {
+        const extension = readOnly ? [] : EDITOR_BASE_SETUP;
+        reconfigureBaseSetup(extension);
+      },
+    ),
   );
 
   return (
     <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
-      <div ref={ref => (editorEl = ref)} />
+      <div ref={setRef} />
     </code>
   );
 }

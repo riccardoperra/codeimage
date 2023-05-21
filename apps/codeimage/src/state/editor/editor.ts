@@ -3,8 +3,10 @@ import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {PresetData} from '@codeimage/store/presets/types';
+import type {Transaction} from '@codemirror/state';
 import {appEnvironment} from '@core/configuration';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
+import {createEventBus} from '@solid-primitives/event-bus';
 import {filter} from '@solid-primitives/immutable';
 import {from, map, shareReplay} from 'rxjs';
 import {createMemo, createSelector} from 'solid-js';
@@ -272,5 +274,6 @@ export function createEditorsStore() {
       setFromWorkspace,
       ...store.actions,
     },
+    canvasEditorEvents: createEventBus<Transaction>(),
   } as const;
 }
