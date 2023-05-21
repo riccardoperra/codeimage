@@ -7,7 +7,7 @@ const syncAnnotation = Annotation.define<boolean>();
 
 function syncDispatch(tr: Transaction, other: EditorView) {
   if (!tr.changes.empty && !tr.annotation(syncAnnotation)) {
-    const annotations: Annotation<any>[] = [syncAnnotation.of(true)];
+    const annotations: Annotation<unknown>[] = [syncAnnotation.of(true)];
     const userEvent = tr.annotation(Transaction.userEvent);
     if (userEvent) annotations.push(Transaction.userEvent.of(userEvent));
     other.dispatch({changes: tr.changes, annotations});
