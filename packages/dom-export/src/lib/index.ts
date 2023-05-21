@@ -62,9 +62,10 @@ export async function toCanvas<T extends HTMLElement>(
   const svg = await toSvg(node, options);
   const img = await createImage(svg).then(async result => {
     if (options.experimental_safariResourceFix && (isSafari || isIOS)) {
-      const frame = await toIframe(result);
-      await new Promise(r => setTimeout(r, 1000));
-      frame.remove();
+      await toIframe(result);
+      // safari will fire `onLoad` before the fonts in the SVG are
+      // actually loaded. https://bugs.webkit.org/show_bug.cgi?id=219770
+      await new Promise(r => setTimeout(r, 250));
     }
     return result;
   });
@@ -128,7 +129,7 @@ export async function toBlob<T extends HTMLElement>(
   options: Options = {},
 ): Promise<Blob | null> {
   const canvas = await toCanvas(node, options);
-  const blob = await canvasToBlob(canvas);
+  const blob = await canvasToBlob(canvas, options);
   return blob;
 }
 

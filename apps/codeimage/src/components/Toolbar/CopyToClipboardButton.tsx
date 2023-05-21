@@ -1,8 +1,9 @@
+import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
-import {LoadingCircle} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
+import {Link} from '@codeimage/ui';
+import {Button, Tooltip} from '@codeui/kit';
 import {Component} from 'solid-js';
-import {ClipboardIcon} from '../Icons/Clipboard';
+import {ExportExtension} from '../../hooks/use-export-image';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -18,21 +19,45 @@ export const CopyToClipboardButton: Component<ExportButtonProps> = props => {
     return Promise.resolve(true);
   }
 
+  function isSupported() {
+    return (
+      !!navigator &&
+      !!navigator.clipboard &&
+      !!navigator.clipboard &&
+      !!navigator.clipboard.write &&
+      [ExportExtension.png, ExportExtension.svg].includes(
+        getExportCanvasStore().get.extension,
+      )
+    );
+  }
+
   return (
-    <Button
-      theme={'secondary'}
-      disabled={dispatchCopyToClipboard.loading()}
-      leftIcon={
-        dispatchCopyToClipboard.loading() ? (
-          <LoadingCircle size={'xs'} />
-        ) : (
-          <ClipboardIcon />
-        )
+    <Tooltip
+      content={
+        <>
+          Your browser may not support the{' '}
+          <Link
+            underline
+            href={
+              'https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/write'
+            }
+          >
+            Clipboard API
+          </Link>{' '}
+          with the current export extension
+        </>
       }
-      onClick={copyToClipboard}
-      size={'xs'}
+      disabled={isSupported()}
     >
-      {label()}
-    </Button>
+      <Button
+        theme={'secondary'}
+        disabled={!isSupported()}
+        loading={dispatchCopyToClipboard.loading()}
+        onClick={copyToClipboard}
+        size={'xs'}
+      >
+        {label()}
+      </Button>
+    </Tooltip>
   );
 };

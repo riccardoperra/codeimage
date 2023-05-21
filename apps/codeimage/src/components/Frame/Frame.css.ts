@@ -59,6 +59,9 @@ export const previewPortal = style({
   zIndex: -999,
   width: 'auto',
   height: 'auto',
+  opacity: 0,
+  transform: `scale(0.01)`,
+  transformOrigin: 'left top',
 });
 
 export const container = style([

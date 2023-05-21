@@ -21,7 +21,7 @@ export const wrapper = style([
           backgroundColor: themeVars.backgroundColor.gray['100'],
         },
         dark: {
-          backgroundColor: darkGrayScale.gray3,
+          backgroundColor: darkGrayScale.gray2,
         },
       }),
     },
@@ -32,13 +32,16 @@ export const terminal = {
   base: style([
     terminalStyle.terminalTheme,
     {
+      borderRadius: themeVars.borderRadius.md,
+      overflow: 'hidden',
       selectors: {
         ...withThemeMode({
           light: {
             backgroundColor: themeVars.backgroundColor.gray['200'],
           },
           dark: {
-            backgroundColor: darkGrayScale.gray2,
+            backgroundColor: darkGrayScale.gray1,
+            border: `1px solid ${darkGrayScale.gray3}`,
           },
         }),
       },
@@ -54,7 +57,7 @@ export const terminal = {
             backgroundColor: themeVars.backgroundColor.gray['400'],
           },
           dark: {
-            backgroundColor: darkGrayScale.gray6,
+            backgroundColor: darkGrayScale.gray2,
           },
         }),
       },

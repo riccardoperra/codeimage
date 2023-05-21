@@ -48,6 +48,7 @@ export const wrapper = style([
 ]);
 
 export const content = style({
+  minWidth: '200px',
   position: 'relative',
   overflow: 'auto',
   fontSize: themeVars.fontSize.base,

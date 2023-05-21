@@ -1,59 +1,54 @@
 import {Motion} from '@motionone/solid';
-import {createSignal, FlowProps, onCleanup, onMount} from 'solid-js';
+import {FlowProps, onCleanup, onMount} from 'solid-js';
+import {createStore} from 'solid-js/store';
 
-interface DynamicSizedContainerProps {
-  // TODO: not reactive
-  enabled?: boolean;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface DynamicSizedContainerProps {}
+
+function toPx(value: number) {
+  return `${value}px`;
 }
 
 export function DynamicSizedContainer(
   props: FlowProps<DynamicSizedContainerProps>,
 ) {
+  const [size, setSize] = createStore({width: 'auto', height: 'auto'});
   let ref!: HTMLDivElement;
-  let innerRef!: HTMLDivElement;
 
-  const [rect, setRect] = createSignal<DOMRect>();
+  function recalculateSize() {
+    const currentWidth = ref.offsetWidth;
+    const currentHeight = ref.offsetHeight;
+    ref.style.width = 'auto';
+    ref.style.height = 'auto';
+    const newWidth = toPx(ref.offsetWidth);
+    const newHeight = toPx(ref.offsetHeight);
+    ref.style.width = toPx(currentWidth);
+    ref.style.height = toPx(currentHeight);
+    setTimeout(() => setSize({width: newWidth, height: newHeight}), 0);
+  }
 
   onMount(() => {
-    if (ref && props.enabled) {
-      setRect(innerRef.getBoundingClientRect());
-
-      const observer = new ResizeObserver(([entry]) => {
-        requestAnimationFrame(() => {
-          setRect(entry.target.getBoundingClientRect());
-        });
-      });
-
-      observer.observe(innerRef);
-
-      return onCleanup(() => observer.unobserve(innerRef));
+    if (ref) {
+      recalculateSize();
+      const resizeObserver = new MutationObserver(() => recalculateSize());
+      resizeObserver.observe(ref, {childList: true, subtree: true});
+      return onCleanup(() => resizeObserver.disconnect());
     }
   });
 
   return (
     <Motion.div
       animate={{
-        width: `${rect()?.width}px`,
-        height: `${rect()?.height}px`,
+        width: size.width,
+        height: size.height,
       }}
       transition={{
+        duration: 0.2,
         easing: [0.4, 0, 0.2, 1],
       }}
       ref={ref}
     >
-      <div
-        ref={innerRef}
-        style={
-          props.enabled
-            ? {
-                width: 'fit-content',
-                height: 'fit-content',
-              }
-            : {width: '100%', height: '1005'}
-        }
-      >
-        {props.children}
-      </div>
+      {props.children}
     </Motion.div>
   );
 }
