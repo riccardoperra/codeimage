@@ -78,6 +78,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     ref: setRef,
     createExtension,
   } = createCodeMirror({
+    value: editor()?.code,
     onTransactionDispatched: tr => canvasEditorEvents.emit(tr),
   });
 
