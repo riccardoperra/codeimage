@@ -7,8 +7,10 @@ import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {toast} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
+import {Type} from '@sinclair/typebox';
+import {Value} from '@sinclair/typebox/value';
 import {createContextProvider} from '@solid-primitives/context';
-import {useNavigate} from '@solidjs/router';
+import {useNavigate, useSearchParams} from '@solidjs/router';
 import {
   catchError,
   debounceTime,
@@ -36,14 +38,12 @@ import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
 
 type ProjectResponse = Awaited<ReturnType<typeof API.project.loadSnippet>>;
+type ProjectInitialState = Pick<
+  ProjectResponse,
+  'terminal' | 'frame' | 'editorOptions' | 'editorTabs' | 'name'
+>;
 
-function createEditorSyncAdapter(props: {
-  snippetId: string;
-  initialState?: Pick<
-    ProjectResponse,
-    'terminal' | 'frame' | 'editorOptions' | 'editorTabs' | 'name'
-  >;
-}) {
+function createEditorSyncAdapter(props: {snippetId: string}) {
   const snippetId = createMemo(() => props.snippetId);
   const [remoteSync, setRemoteSync] = createSignal(false);
   const [readOnly, setReadonly] = createSignal(false);
@@ -56,6 +56,45 @@ function createEditorSyncAdapter(props: {
   const editorStore = getRootEditorStore();
   const store = getEditorStore();
   const idb = useIdb();
+  const [queryParams] = useSearchParams();
+
+  const resolveInitialState = new Promise<ProjectInitialState | null>(
+    async resolve => {
+      if (!queryParams.state) {
+        return resolve(null);
+      }
+      try {
+        const data = JSON.parse(queryParams.state);
+        const {ProjectCreateRequestSchema, ProjectCreateResponseSchema} =
+          await import('@codeimage/api/api-schemas/project');
+        const schema = Type.Intersect([
+          Type.Omit(ProjectCreateRequestSchema, ['editors']),
+          Type.Object({
+            editorTabs: ProjectCreateResponseSchema.properties.editorTabs,
+          }),
+        ]);
+        const errors = Value.Errors(schema, data);
+        const resolvedErrors = [...errors];
+        if (resolvedErrors.length > 0) {
+          console.warn(
+            `[codeimage] Invalid query param 'state' value. Skipping auto-initialization`,
+            resolvedErrors,
+          );
+          return resolve(null);
+        }
+        const resolvedData = Value.Cast(schema, data);
+        console.info(
+          `[codeimage] Query param state parsed successfully`,
+          resolvedData,
+        );
+        resolve(resolvedData);
+      } catch (e) {
+        console.error('[codeimage] Error while parsing state query', e);
+        return resolve(null);
+      }
+    },
+  );
+
   const navigate = useNavigate();
 
   const [loadedSnippet, {refetch}] = createResource(
@@ -80,26 +119,31 @@ function createEditorSyncAdapter(props: {
 
   createEffect(() => {
     if (!snippetId()) {
-      const data = props.initialState;
-      if (data) {
-        editorStore.actions.setFromWorkspace(data);
-        terminalStore.setState(state => ({
-          ...state,
-          ...data.terminal,
-        }));
-        frameStore.setStore(state => ({...state, ...data.frame}));
-      } else {
-        idb
-          .get<ProjectEditorPersistedState>('document')
-          .then(idbState => {
-            if (idbState && !idbState.$snippetId) {
-              editorStore.actions.setFromPersistedState(idbState.editor);
-              frameStore.setFromPersistedState(idbState.frame);
-              terminalStore.setFromPersistedState(idbState.terminal);
-            }
-          })
-          .catch(() => null);
-      }
+      resolveInitialState.then(initialState => {
+        if (!initialState) {
+          return idb
+            .get<ProjectEditorPersistedState>('document')
+            .then(idbState => {
+              if (idbState && !idbState.$snippetId) {
+                editorStore.actions.setFromPersistedState(idbState.editor);
+                frameStore.setFromPersistedState(idbState.frame);
+                terminalStore.setFromPersistedState(idbState.terminal);
+              }
+            })
+            .catch(() => null);
+        } else {
+          editorStore.actions.setFromWorkspace({
+            editorOptions: initialState.editorOptions,
+            editorTabs: initialState.editorTabs,
+          });
+          terminalStore.setState(state => ({
+            ...state,
+            ...initialState.terminal,
+          }));
+          frameStore.setStore(state => ({...state, ...initialState.frame}));
+          navigate('/');
+        }
+      });
     }
   });
 

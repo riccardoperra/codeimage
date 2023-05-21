@@ -49,11 +49,13 @@ const Dashboard = lazyWithNoLauncher(
 );
 
 const Editor = () => {
-  const Page = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
+  const InternalEditor = lazyWithNoLauncher(
+    () => import('./pages/Editor/Editor'),
+  );
   getThemeStore().loadThemes();
   return (
     <Suspense fallback={<EditorPageSkeleton />}>
-      <Page />
+      <InternalEditor />
     </Suspense>
   );
 };

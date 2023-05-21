@@ -7,9 +7,15 @@
   "directories": {
     "test": "test"
   },
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./api-types": {
-      "types": "./index.d.ts"
+      "types": "./api-types/index.d.ts"
+    },
+    "./api-schemas/project": {
+      "import": "./dist/modules/project/schema/index.js"
     }
   },
   "scripts": {

@@ -1,7 +1,7 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {provideAppState} from '@codeimage/store/index';
-import {createUniqueId} from '@codeimage/store/plugins/unique-id';
+import {createUniqueId, generateUid} from '@codeimage/store/plugins/unique-id';
 import {PresetData} from '@codeimage/store/presets/types';
 import type {Transaction} from '@codemirror/state';
 import {appEnvironment} from '@core/configuration';
@@ -224,21 +224,26 @@ export function createEditorsStore() {
       filter(SUPPORTED_FONTS, font => font.id === store.get.options.fontId)[0],
   );
 
-  const setFromWorkspace = (item: ApiTypes.GetProjectByIdApi['response']) => {
-    setEditors(
-      item.editorTabs.map(
-        editor =>
-          ({
-            tab: {
-              tabName: editor.tabName,
-            },
-            languageId: editor.languageId,
-            id: editor.id,
-            code: editor.code,
-          } as EditorState),
-      ),
+  const setFromWorkspace = (
+    item: Pick<
+      ApiTypes.GetProjectByIdApi['response'],
+      'editorTabs' | 'editorOptions'
+    >,
+  ) => {
+    const tabs = item.editorTabs.map(
+      editor =>
+        ({
+          tab: {
+            tabName: editor.tabName,
+          },
+          languageId: editor.languageId,
+          id: editor.id ?? generateUid(),
+          code: editor.code,
+        } as EditorState),
     );
-    store.set('activeEditorId', item.editorTabs[0].id);
+
+    setEditors(tabs);
+    store.set('activeEditorId', tabs[0].id);
     store.set('options', item.editorOptions);
     store.dispatch(editorUpdateCommand, void 0);
   };
