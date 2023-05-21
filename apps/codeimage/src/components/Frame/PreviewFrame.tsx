@@ -7,18 +7,28 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {createRef} from '@core/helpers/create-ref';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {lazy, ParentProps, Ref, Show, Suspense, VoidProps} from 'solid-js';
+import {
+  lazy,
+  onMount,
+  ParentProps,
+  Ref,
+  Show,
+  Suspense,
+  VoidProps,
+} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import * as styles from './Frame.css';
 import {FrameSkeleton} from './FrameSkeleton';
 
-const CustomEditor = lazy(() => import('../CustomEditor/CustomEditor'));
-
 interface PreviewFrameProps {
   ref: Ref<HTMLDivElement>;
 }
+
+const PreviewExportEditor = lazy(
+  () => import('../CustomEditor/PreviewExportEditor'),
+);
 
 function PreviewPortal(props: ParentProps) {
   return (
@@ -41,13 +51,15 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     editor.state.options.focused ||
     document.activeElement?.nodeName === 'INPUT';
 
-  useHotkey(document.body, {
-    // eslint-disable-next-line solid/reactivity
-    'Control+C': () => {
-      if (filterHotKey()) return;
-      if (!ref) return;
-      dispatchCopyToClipboard({ref});
-    },
+  onMount(() => {
+    useHotkey(document.body, {
+      // eslint-disable-next-line solid/reactivity
+      'Control+C': () => {
+        if (filterHotKey()) return;
+        if (!ref) return;
+        dispatchCopyToClipboard({ref});
+      },
+    });
   });
 
   return (
@@ -108,7 +120,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
             themeId={editor.state.options.themeId}
           >
             <Show when={getActiveEditorStore().editor()}>
-              <CustomEditor readOnly={true} />
+              <PreviewExportEditor />
             </Show>
           </DynamicTerminal>
         </div>

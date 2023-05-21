@@ -12,12 +12,18 @@ export const wrapper = style([
   {
     width: '100%',
     height: '100%',
-    display: 'flex',
+    display: 'grid',
     overflowY: 'auto',
     overflowX: 'hidden',
     flex: '1',
     alignItems: 'center',
     justifyContent: 'center',
+    '@supports': {
+      '(scrollbar-gutter: stable)': {
+        paddingRight: 0,
+        scrollbarGutter: 'stable',
+      },
+    },
     selectors: {
       ...withThemeMode({
         dark: {
@@ -38,20 +44,18 @@ export const wrapper = style([
 
 export const handler = style([
   {
-    // TODO: this is a workaround to fix gutters and cursor in mobile view
-    // zoom: `${frameHandlerVars.scale}`,
     display: 'block',
     justifyContent: 'center',
     position: 'relative',
     transformOrigin: 'center',
+    marginBottom: '80px',
   },
 ]);
 
 export const content = style({
+  position: 'relative',
   width: '100%',
   height: '100%',
-  marginBottom: '40px',
-  position: 'relative',
 });
 
 export const squaredBackgroundOverlay = style({

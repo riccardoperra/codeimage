@@ -7,7 +7,7 @@ import {lazy, Show} from 'solid-js';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import {Frame} from './Frame';
 
-const CustomEditor = lazy(() => import('../CustomEditor/CustomEditor'));
+const CanvasEditor = lazy(() => import('../CustomEditor/CanvasEditor'));
 
 export function ManagedFrame() {
   const frame = getFrameState().store;
@@ -41,7 +41,7 @@ export function ManagedFrame() {
         themeId={editor.state.options.themeId}
       >
         <Show when={getActiveEditorStore().editor()}>
-          <CustomEditor readOnly={readOnly()} />
+          <CanvasEditor readOnly={readOnly()} />
         </Show>
       </DynamicTerminal>
     </Frame>

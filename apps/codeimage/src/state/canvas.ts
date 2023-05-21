@@ -57,9 +57,11 @@ export const ExportCanvasStore = defineStore(() => ({
       store.set('canvasSize', {width, height});
     },
     initCanvas(el: Accessor<HTMLElement | undefined>) {
-      createResizeObserver(el, ref =>
-        this.setCanvasSize(ref.width, ref.height),
-      );
+      createResizeObserver(el, ref => {
+        setTimeout(() => {
+          this.setCanvasSize(ref.width, ref.height);
+        });
+      });
     },
   }));
 
