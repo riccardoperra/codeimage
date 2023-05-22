@@ -23,6 +23,7 @@ interface FrameProps {
   opacity: number;
   visible: boolean;
   readOnly: boolean;
+  aspectRatio: string | null | undefined;
   onWidthChange: (width: number) => void;
 }
 
@@ -55,7 +56,12 @@ export const Frame: ParentComponent<FrameProps> = props => {
   onMount(() => props.onWidthChange?.(ref()?.clientWidth ?? 0));
 
   return (
-    <Box position={'relative'} class={styles.wrapper}>
+    <div
+      style={assignInlineVars({
+        [styles.frameVars.aspectRatio]: props.aspectRatio ?? 'unset',
+      })}
+      class={styles.wrapper}
+    >
       <div
         ref={setRef}
         class={styles.container}
@@ -119,6 +125,6 @@ export const Frame: ParentComponent<FrameProps> = props => {
           <hr class={styles.resizeLineDivider} />
         </Box>
       </FadeInOutTransition>
-    </Box>
+    </div>
   );
 };

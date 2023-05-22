@@ -7,6 +7,7 @@ export interface FrameState {
   autoWidth: boolean;
   scale: number;
   width: number;
+  aspectRatio: string | null;
 }
 
 export type PersistedFrameState = Pick<
