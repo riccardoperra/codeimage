@@ -66,6 +66,9 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     <PreviewPortal>
       <div
         class={styles.previewWrapper}
+        style={assignInlineVars({
+          [styles.frameVars.aspectRatio]: frame.aspectRatio ?? 'unset',
+        })}
         ref={createRef<'div'>(props, el => (ref = el))}
       >
         <div

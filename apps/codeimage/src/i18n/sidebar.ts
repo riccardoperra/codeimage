@@ -22,6 +22,7 @@ export default {
       reflection: 'Reflection',
       backgroundType: 'Background',
       ligatures: 'Ligatures',
+      aspectRatio: 'Aspect ratio',
     },
   },
   it: {
@@ -47,6 +48,7 @@ export default {
       backgroundType: 'Tipo background',
       theme: 'Tema',
       ligatures: 'Ligatures',
+      aspectRatio: 'Proporzioni',
     },
   },
   de: {
@@ -72,6 +74,7 @@ export default {
       backgroundType: 'Hintergrundtyp',
       theme: 'Theme',
       ligatures: 'Ligatures',
+      aspectRatio: 'Aspect ratio',
     },
   },
   es: {
@@ -97,6 +100,7 @@ export default {
       backgroundType: 'Tipo de fondo',
       theme: 'Theme',
       ligatures: 'Ligatures',
+      aspectRatio: 'Aspect ratio',
     },
   },
 } as const;

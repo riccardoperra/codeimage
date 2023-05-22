@@ -17,6 +17,7 @@ export function getInitialFrameState(): FrameState {
     autoWidth: false,
     scale: 1,
     width: 0,
+    aspectRatio: null,
   };
 }
 
@@ -33,6 +34,7 @@ type Commands = {
   setNextPadding: void;
   setFromPreset: PresetData['frame'];
   setFromPersistedState: PersistedFrameState;
+  setAspectRatio: string | null;
 };
 
 const frameState = defineStore(() => getInitialFrameState())
@@ -87,6 +89,9 @@ const frameState = defineStore(() => getInitialFrameState())
       })
       .hold(store.commands.setFromPersistedState, (_, {state}) => {
         return {...state, ..._};
+      })
+      .hold(store.commands.setAspectRatio, (aspectRatio, {state}) => {
+        return {...state, aspectRatio};
       });
   })
   .extend(store => {

@@ -8,6 +8,7 @@ export const [frame, frameVars] = createTheme({
   opacity: '100%',
   visibility: 'visible',
   width: 'auto',
+  height: 'auto',
   minWidth: 'max-content',
   minHeight: '150px',
   maxWidth: '1400px',
@@ -16,12 +17,14 @@ export const [frame, frameVars] = createTheme({
   resizeLineBadgeBackgroundColor: '',
   resizeLineBackgroundColor: '',
   controlOffset: '0px',
+  aspectRatio: 'auto',
 });
 
 export const wrapper = style([
   frame,
   {
     position: 'relative',
+    aspectRatio: `auto ${frameVars.aspectRatio}`,
     selectors: {
       ...withThemeMode({
         dark: {
@@ -74,9 +77,14 @@ export const container = style([
     borderRadius: frameVars.radius,
     padding: frameVars.padding,
     zIndex: 1,
+    height: '100%',
+    minHeight: 'min-content',
     boxSizing: 'border-box',
     userSelect: 'none',
     transition: 'background-color .2s, padding .2s, border-radius .2s',
+    display: 'grid',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
 ]);
 
