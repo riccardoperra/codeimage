@@ -52,6 +52,7 @@ export const previewWrapper = style([
   frame,
   {
     zIndex: -999,
+    aspectRatio: `auto ${frameVars.aspectRatio}`,
   },
 ]);
 
