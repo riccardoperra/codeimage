@@ -28,16 +28,25 @@ interface FrameProps {
 }
 
 export const Frame: ParentComponent<FrameProps> = props => {
-  const {width, onResizeStart, setRef, resizing, ref} = createHorizontalResize({
-    minWidth: 200,
-    maxWidth: 1400,
-  });
+  const {width, height, onResizeStart, setRef, resizing, ref} =
+    createHorizontalResize({
+      minWidth: 200,
+      maxWidth: 1400,
+      aspectRatio: () => {
+        return null;
+      },
+    });
 
   const assetsStore = getAssetsStore();
 
   const computedWidth = () => {
     const size = width();
     return size ? `${size}px` : 'auto';
+  };
+
+  const computedHeight = () => {
+    const size = height();
+    return size ? `${size}px` : '100%';
   };
 
   const roundedWidth = () => `${Math.floor(width())}px`;
@@ -67,6 +76,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
         class={styles.container}
         style={assignInlineVars({
           [styles.frameVars.width]: computedWidth(),
+          [styles.frameVars.height]: computedHeight(),
           [styles.frameVars.padding]: `${props.padding}px`,
         })}
       >

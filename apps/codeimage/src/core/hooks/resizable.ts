@@ -1,3 +1,4 @@
+import {bindAll, UnbindFn} from 'bind-event-listener';
 import {
   Accessor,
   batch,
@@ -7,12 +8,12 @@ import {
   onCleanup,
   untrack,
 } from 'solid-js';
-import {bindAll, UnbindFn} from 'bind-event-listener';
 import {createStore} from 'solid-js/store';
 import {nonNullable} from '../constants/non-nullable';
 
 interface CreateDraggableReturn {
   width: Accessor<number>;
+  height: Accessor<number>;
   resizing: Accessor<boolean>;
   ref: Accessor<HTMLElement | undefined>;
   setRef: (el: HTMLElement) => void;
@@ -22,10 +23,12 @@ interface CreateDraggableReturn {
 interface CreateDraggableOptions {
   minWidth?: number;
   maxWidth?: number;
+  aspectRatio?: Accessor<number | null>;
 }
 
 interface CreateDraggableState {
   width: number;
+  height: number;
   startWidth: number;
   startX: number;
   x: number | null;
@@ -42,6 +45,7 @@ export function createHorizontalResize(
   const [state, setState] = createStore<CreateDraggableState>({
     startWidth: 0,
     width: 0,
+    height: 0,
     startX: 0,
     x: 0,
   });
@@ -84,27 +88,40 @@ export function createHorizontalResize(
 
   const resizeMove = (x: number): void => {
     const elementRef = ref();
-    if (!elementRef) {
-      return;
-    }
-
+    if (!elementRef) return;
+    elementRef.style.removeProperty('transition');
     const {width, left} = elementRef.getBoundingClientRect();
     const middle = left + width / 2;
     const min = minWidth();
     const max = maxWidth();
     const isLTR = state.startX > middle;
-
     let computedWidth = isLTR
       ? state.startWidth + x - state.startX
       : state.startWidth - x + state.startX;
 
     elementRef.style.setProperty('width', `${computedWidth}px`);
     const nativeWidth = elementRef.getBoundingClientRect().width;
+    elementRef.style.removeProperty('width');
     if (nativeWidth !== computedWidth) {
       computedWidth = nativeWidth;
     }
-
-    setState({width: clamp(computedWidth, min, max)});
+    const newWidth = clamp(computedWidth, min, max);
+    const aspectRatio = options?.aspectRatio?.();
+    if (aspectRatio) {
+      let newHeight = Math.floor(newWidth / aspectRatio);
+      elementRef.style.setProperty('height', `${newHeight}px`);
+      const scrollHeight = Math.floor(elementRef.scrollHeight);
+      elementRef.style.removeProperty('height');
+      if (scrollHeight > newHeight) {
+        newHeight = Math.floor(elementRef.clientHeight);
+      }
+      setState({
+        width: computedWidth,
+        height: newHeight,
+      });
+    } else {
+      setState({width: newWidth});
+    }
   };
 
   const resizeStart = (x: number): void =>
@@ -119,6 +136,7 @@ export function createHorizontalResize(
   const resizeEnd = (): boolean => setResizing(false);
 
   const width = () => state.width;
+  const height = () => state.height;
 
   createEffect(
     on(ref, ref => {
@@ -172,6 +190,7 @@ export function createHorizontalResize(
     setRef,
     resizing,
     width,
+    height,
     onResizeStart,
   };
 }
