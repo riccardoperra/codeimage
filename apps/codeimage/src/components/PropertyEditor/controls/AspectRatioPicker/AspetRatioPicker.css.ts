@@ -1,5 +1,6 @@
 import {textFieldStyles, themeVars, withThemeMode} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
+import {responsiveStyle} from '@codeui/kit';
 import {createVar, style} from '@vanilla-extract/css';
 
 export const input = style([
@@ -14,10 +15,17 @@ export const input = style([
   },
 ]);
 
-export const aspectRatioPopover = style({
-  width: '360px',
-  maxWidth: 'unset',
-});
+export const aspectRatioPopover = style([
+  {
+    width: '360px',
+    maxWidth: '360px',
+  },
+  responsiveStyle({
+    md: {
+      maxWidth: 'initial',
+    },
+  }),
+]);
 
 export const aspectRatio = createVar();
 

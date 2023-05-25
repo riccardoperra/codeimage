@@ -1,9 +1,10 @@
 import {Box, Text} from '@codeimage/ui';
-import {Popover, PopoverContent, PopoverTrigger} from '@codeui/kit';
+import {IconButton, Popover, PopoverContent, PopoverTrigger} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {As} from '@kobalte/core';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, For, Show} from 'solid-js';
+import {CloseIcon} from '../../../Icons/CloseIcon';
 import * as styles from './AspetRatioPicker.css';
 
 interface AspectRatioPickerProps {
@@ -37,7 +38,24 @@ export function AspectRatioPicker(props: AspectRatioPickerProps) {
           <Text weight={'semibold'}>{props.value ?? 'Auto'}</Text>
         </As>
       </PopoverTrigger>
-      <PopoverContent class={styles.aspectRatioPopover}>
+      <PopoverContent variant={'bordered'} class={styles.aspectRatioPopover}>
+        <Box
+          display={'flex'}
+          justifyContent={'spaceBetween'}
+          alignItems={'center'}
+          marginBottom={4}
+        >
+          <Text weight={'semibold'}>Aspect Ratio</Text>
+          <IconButton
+            size={'xs'}
+            aria-label={'Close'}
+            theme={'secondary'}
+            onClick={() => setOpen(false)}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
         <div class={styles.aspectRatioCardList}>
           <div
             data-selected={!props.value ? '' : null}
