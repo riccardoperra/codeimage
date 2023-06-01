@@ -1,4 +1,4 @@
-import {bindAll, UnbindFn} from 'bind-event-listener';
+import {makeEventListenerStack} from '@solid-primitives/event-listener';
 import {
   Accessor,
   batch,
@@ -31,7 +31,6 @@ interface CreateDraggableState {
   height: number;
   startWidth: number;
   startX: number;
-  x: number | null;
 }
 
 export function createHorizontalResize(
@@ -47,10 +46,7 @@ export function createHorizontalResize(
     width: 0,
     height: 0,
     startX: 0,
-    x: 0,
   });
-
-  let ownerDocumentEventCleaner: UnbindFn | null = null;
 
   const onResizeStart = ({clientX}: MouseEvent): void => {
     if (!resizing()) {
@@ -98,13 +94,10 @@ export function createHorizontalResize(
     let computedWidth = isLTR
       ? state.startWidth + x - state.startX
       : state.startWidth - x + state.startX;
-
     elementRef.style.setProperty('width', `${computedWidth}px`);
-    const nativeWidth = elementRef.getBoundingClientRect().width;
+    const nativeWidth = Math.floor(elementRef.getBoundingClientRect().width);
     elementRef.style.removeProperty('width');
-    if (nativeWidth !== computedWidth) {
-      computedWidth = nativeWidth;
-    }
+    if (nativeWidth !== computedWidth) computedWidth = nativeWidth;
     const newWidth = clamp(computedWidth, min, max);
     const aspectRatio = options?.aspectRatio?.();
     if (aspectRatio) {
@@ -161,28 +154,45 @@ export function createHorizontalResize(
             0,
         );
       });
+
+      createEffect(
+        on(
+          () => options?.aspectRatio?.(),
+          () => {
+            if (state.startX) {
+              resizeMove(state.startX);
+            }
+          },
+          {defer: true},
+        ),
+      );
     }),
   );
 
-  onCleanup(() => ownerDocumentEventCleaner?.());
-
   createEffect(
-    on(resizing, resizing => {
-      if (resizing) {
-        const ownerDocument = ref()?.ownerDocument;
-        if (!ownerDocument) {
-          return;
-        }
-        // TODO: bindALl could be removed
-        ownerDocumentEventCleaner = bindAll(ownerDocument, [
-          {type: 'mousemove', listener: onMouseMove, options: {passive: true}},
-          {type: 'mouseup', listener: onMouseUp},
-          {type: 'mouseleave', listener: onMouseLeave},
-        ]);
-      } else {
-        ownerDocumentEventCleaner?.();
-      }
-    }),
+    on(
+      () => ref()?.ownerDocument,
+      ownerDocument => {
+        if (!ownerDocument) return;
+        const [listen, clear] = makeEventListenerStack(ownerDocument);
+        createEffect(
+          on(resizing, resizing => {
+            const ownerDocument = ref()?.ownerDocument;
+            if (!ownerDocument) {
+              return;
+            }
+            if (resizing) {
+              listen('mousemove', onMouseMove, {passive: true});
+              listen('mouseup', onMouseUp);
+              listen('mouseleave', onMouseLeave);
+            } else {
+              clear();
+            }
+          }),
+        );
+        onCleanup(() => clear());
+      },
+    ),
   );
 
   return {

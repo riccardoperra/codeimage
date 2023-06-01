@@ -25,15 +25,18 @@ interface FrameProps {
   readOnly: boolean;
   aspectRatio: string | null | undefined;
   onWidthChange: (width: number) => void;
+  onHeightChange: (height: number) => void;
 }
 
 export const Frame: ParentComponent<FrameProps> = props => {
   const {width, height, onResizeStart, setRef, resizing, ref} =
     createHorizontalResize({
       minWidth: 200,
-      maxWidth: 1400,
+      maxWidth: 1800,
       aspectRatio: () => {
-        return null;
+        if (!props.aspectRatio) return null;
+        const [w, h] = props.aspectRatio.split('/').map(Number);
+        return w / h;
       },
     });
 
@@ -54,9 +57,10 @@ export const Frame: ParentComponent<FrameProps> = props => {
 
   createEffect(
     on(
-      width,
-      width => {
+      [width, height],
+      ([width, height]) => {
         props.onWidthChange?.(width);
+        props.onHeightChange?.(height);
       },
       {defer: true},
     ),
@@ -67,7 +71,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
   return (
     <div
       style={assignInlineVars({
-        [styles.frameVars.aspectRatio]: props.aspectRatio ?? 'unset',
+        [styles.frameVars.aspectRatio]: 'unset',
       })}
       class={styles.wrapper}
     >

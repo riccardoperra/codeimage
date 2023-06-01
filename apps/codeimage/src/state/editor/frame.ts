@@ -17,6 +17,7 @@ export function getInitialFrameState(): FrameState {
     autoWidth: false,
     scale: 1,
     width: 0,
+    height: 0,
     aspectRatio: null,
   };
 }
@@ -29,6 +30,7 @@ type Commands = {
   setScale: number;
   setAutoWidth: boolean;
   setWidth: number;
+  setHeight: number;
   setVisibility: boolean;
   toggleVisibility: void;
   setNextPadding: void;
@@ -76,6 +78,10 @@ const frameState = defineStore(() => getInitialFrameState())
       .hold(store.commands.setWidth, (width, {state}) => ({
         ...state,
         width,
+      }))
+      .hold(store.commands.setHeight, (height, {state}) => ({
+        ...state,
+        height,
       }))
       .hold(store.commands.setNextPadding, (_, {state}) => {
         const availablePadding = appEnvironment.editorPadding;

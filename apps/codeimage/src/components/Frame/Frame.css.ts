@@ -10,8 +10,8 @@ export const [frame, frameVars] = createTheme({
   width: 'auto',
   height: 'auto',
   minWidth: 'max-content',
-  minHeight: '150px',
-  maxWidth: '1400px',
+  minHeight: '100%',
+  maxWidth: '1800px',
   controlHandleSize: '24px',
   controlHandleColor: '',
   resizeLineBadgeBackgroundColor: '',
@@ -24,7 +24,6 @@ export const wrapper = style([
   frame,
   {
     position: 'relative',
-    aspectRatio: `auto ${frameVars.aspectRatio}`,
     selectors: {
       ...withThemeMode({
         dark: {
@@ -71,6 +70,7 @@ export const previewPortal = style({
 export const container = style([
   {
     width: frameVars.width,
+    height: frameVars.height,
     maxWidth: frameVars.maxWidth,
     minWidth: frameVars.minWidth,
     minHeight: frameVars.minHeight,
@@ -78,8 +78,6 @@ export const container = style([
     borderRadius: frameVars.radius,
     padding: frameVars.padding,
     zIndex: 1,
-    height: '100%',
-    minHeight: 'min-content',
     boxSizing: 'border-box',
     userSelect: 'none',
     transition: 'background-color .2s, padding .2s, border-radius .2s',
