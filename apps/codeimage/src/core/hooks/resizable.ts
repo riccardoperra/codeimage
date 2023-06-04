@@ -83,24 +83,6 @@ export function createHorizontalResize(
     return value;
   }
 
-  function calculateMinByAspectRatio(aspectRatio: number) {
-    const elementRef = ref();
-    if (!elementRef) return;
-    elementRef.style.setProperty('width', 'auto');
-    elementRef.style.setProperty('height', 'auto');
-    const {clientHeight} = elementRef;
-    const aspect = fitAspect({
-      ratio: aspectRatio,
-      height: clientHeight,
-    });
-    elementRef.style.removeProperty('width');
-    elementRef.style.removeProperty('height');
-    setState({
-      height: aspect.height,
-      width: aspect.width,
-    });
-  }
-
   const resizeMove = (x: number): void => {
     const elementRef = ref();
     if (!elementRef) return;

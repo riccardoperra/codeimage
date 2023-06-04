@@ -10,8 +10,9 @@ import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
+import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createEffect, on, onMount, ParentComponent, Show} from 'solid-js';
+import {onMount, ParentComponent, Show} from 'solid-js';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;
@@ -55,16 +56,15 @@ export const Frame: ParentComponent<FrameProps> = props => {
   const roundedWidth = () => `${Math.floor(width())}px`;
   const modality = useModality();
 
-  createEffect(
-    on(
-      [width, height],
-      ([width, height]) => {
-        props.onWidthChange?.(width);
-        props.onHeightChange?.(height);
-      },
-      {defer: true},
-    ),
-  );
+  createResizeObserver(ref, () => {
+    setTimeout(() => {
+      const refValue = ref();
+      if (!refValue) return;
+      const {clientWidth, clientHeight} = refValue;
+      props.onWidthChange(clientWidth);
+      props.onHeightChange(clientHeight);
+    });
+  });
 
   onMount(() => props.onWidthChange?.(ref()?.clientWidth ?? 0));
 
