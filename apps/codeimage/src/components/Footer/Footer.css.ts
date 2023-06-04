@@ -5,6 +5,6 @@ export const wrapper = style({
   position: 'absolute',
   bottom: 0,
   width: '100%',
-  zIndex: -1,
+  zIndex: 0,
   color: themeVars.dynamicColors.descriptionTextColor,
 });

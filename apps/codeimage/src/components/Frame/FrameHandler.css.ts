@@ -16,7 +16,7 @@ export const wrapper = style([
     overflow: 'auto',
     flex: '1',
     placeItems: 'center',
-    zIndex: 0,
+    zIndex: 1,
     selectors: {
       ...withThemeMode({
         dark: {
