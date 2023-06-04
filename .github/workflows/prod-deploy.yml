@@ -267,7 +267,7 @@ jobs:
       - name: Deploy to Railway
         run: |
           find -type f -name '.gitignore' -delete
-          pnpm railway link --environment next $RAILWAY_API_PROJECT_ID
+          pnpm railway link --environment production $RAILWAY_API_PROJECT_ID
           cd dist/api-bundle
           pnpm railway up --detach
         env:
