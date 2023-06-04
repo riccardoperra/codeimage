@@ -1,8 +1,12 @@
 import {DEFAULT_ASPECT_RATIOS} from '@codeimage/config';
-import {Box, Text} from '@codeimage/ui';
+import {Box, HStack, Text} from '@codeimage/ui';
 import {IconButton, Popover, PopoverContent, PopoverTrigger} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {As} from '@kobalte/core';
+import {
+  ExperimentalFeatureTooltip,
+  ExperimentalIcon,
+} from '@ui/ExperimentalFeatureTooltip/ExperimentalFeatureTooltip';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, For, Show} from 'solid-js';
 import {CloseIcon} from '../../../Icons/CloseIcon';
@@ -13,6 +17,9 @@ interface AspectRatioPickerProps {
   onChange: (value: string | null) => void;
 }
 
+/**
+ * @experimental
+ */
 export function AspectRatioPicker(props: AspectRatioPickerProps) {
   const [open, setOpen] = createSignal(false);
   const modality = useModality();
@@ -46,7 +53,18 @@ export function AspectRatioPicker(props: AspectRatioPickerProps) {
           alignItems={'center'}
           marginBottom={4}
         >
-          <Text weight={'semibold'}>Aspect Ratio</Text>
+          <ExperimentalFeatureTooltip feature={'Aspect ratio'}>
+            <HStack spacing={'2'} alignItems={'flexEnd'}>
+              <Text weight={'semibold'}>Aspect Ratio</Text>
+              <Text class={styles.aspectRatioCardDetails} size={'xs'}>
+                <Box as={'span'} display={'flex'} alignItems={'center'}>
+                  <ExperimentalIcon size={'xs'} />
+                  <Box marginLeft={'1'}>Experimental</Box>
+                </Box>
+              </Text>
+            </HStack>
+          </ExperimentalFeatureTooltip>
+
           <IconButton
             size={'xs'}
             aria-label={'Close'}

@@ -51,7 +51,7 @@ export const aspectRatioPreviewBox = style({
 export const aspectRatioCard = style([
   {
     flex: '1 0 33%',
-    borderRadius: themeVars.borderRadius.xl,
+    borderRadius: themeVars.borderRadius.lg,
     padding: themeVars.spacing['2'],
     color: themeVars.dynamicColors.baseText,
     transition: 'background-color 0.2s ease-in-out',
