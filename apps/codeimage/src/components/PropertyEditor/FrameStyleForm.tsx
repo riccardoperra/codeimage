@@ -1,10 +1,12 @@
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {RangeField, SegmentedField} from '@codeimage/ui';
+import {getUmami} from '@core/constants/umami';
 import {SkeletonLine, SkeletonVCenter} from '@ui/Skeleton/Skeleton';
 import {ParentComponent, Show} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
 import {AppLocaleEntries} from '../../i18n';
+import {AspectRatioPicker} from './controls/AspectRatioPicker/AspectRatioPicker';
 import {CustomColorPicker} from './controls/CustomColorPicker';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
@@ -94,6 +96,22 @@ export const FrameStyleForm: ParentComponent = () => {
           </TwoColumnPanelRow>
         </PanelRow>
       </Show>
+
+      <PanelRow for={'aspectRatio'} label={t('frame.aspectRatio')}>
+        <TwoColumnPanelRow>
+          <SuspenseEditorItem
+            fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+          >
+            <AspectRatioPicker
+              value={frame.store.aspectRatio}
+              onChange={ratio => {
+                frame.setAspectRatio(ratio);
+                getUmami().trackEvent(ratio ?? 'auto', 'aspect-ratio');
+              }}
+            />
+          </SuspenseEditorItem>
+        </TwoColumnPanelRow>
+      </PanelRow>
     </>
   );
 };

@@ -8,14 +8,16 @@ export const [frame, frameVars] = createTheme({
   opacity: '100%',
   visibility: 'visible',
   width: 'auto',
+  height: 'auto',
   minWidth: 'max-content',
-  minHeight: '150px',
-  maxWidth: '1400px',
+  minHeight: '100%',
+  maxWidth: '1920px',
   controlHandleSize: '24px',
   controlHandleColor: '',
   resizeLineBadgeBackgroundColor: '',
   resizeLineBackgroundColor: '',
   controlOffset: '0px',
+  aspectRatio: 'auto',
 });
 
 export const wrapper = style([
@@ -67,6 +69,7 @@ export const previewPortal = style({
 export const container = style([
   {
     width: frameVars.width,
+    height: frameVars.height,
     maxWidth: frameVars.maxWidth,
     minWidth: frameVars.minWidth,
     minHeight: frameVars.minHeight,
@@ -77,6 +80,9 @@ export const container = style([
     boxSizing: 'border-box',
     userSelect: 'none',
     transition: 'background-color .2s, padding .2s, border-radius .2s',
+    display: 'grid',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
 ]);
 

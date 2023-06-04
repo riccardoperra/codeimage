@@ -61,6 +61,7 @@ const EDITOR_BASE_SETUP: Extension = [
 interface CustomEditorProps {
   readOnly: boolean;
   onEditorViewChange?: (view: EditorView | undefined) => void;
+  onValueChange?: (value: string) => void;
 }
 
 export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
@@ -80,6 +81,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   } = createCodeMirror({
     value: editor()?.code,
     onTransactionDispatched: tr => canvasEditorEvents.emit(tr),
+    onValueChange: props.onValueChange,
   });
 
   createEffect(() => props.onEditorViewChange?.(editorView()));

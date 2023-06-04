@@ -10,8 +10,9 @@ import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
+import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createEffect, on, onMount, ParentComponent, Show} from 'solid-js';
+import {onMount, ParentComponent, Show} from 'solid-js';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;
@@ -23,14 +24,22 @@ interface FrameProps {
   opacity: number;
   visible: boolean;
   readOnly: boolean;
+  aspectRatio: string | null | undefined;
   onWidthChange: (width: number) => void;
+  onHeightChange: (height: number) => void;
 }
 
 export const Frame: ParentComponent<FrameProps> = props => {
-  const {width, onResizeStart, setRef, resizing, ref} = createHorizontalResize({
-    minWidth: 200,
-    maxWidth: 1400,
-  });
+  const {width, height, onResizeStart, setRef, resizing, ref} =
+    createHorizontalResize({
+      minWidth: 200,
+      maxWidth: 1920,
+      aspectRatio: () => {
+        if (!props.aspectRatio) return null;
+        const [w, h] = props.aspectRatio.split('/').map(Number);
+        return w / h;
+      },
+    });
 
   const assetsStore = getAssetsStore();
 
@@ -39,28 +48,39 @@ export const Frame: ParentComponent<FrameProps> = props => {
     return size ? `${size}px` : 'auto';
   };
 
+  const computedHeight = () => {
+    const size = height();
+    return size ? `${size}px` : '100%';
+  };
+
   const roundedWidth = () => `${Math.floor(width())}px`;
   const modality = useModality();
 
-  createEffect(
-    on(
-      width,
-      width => {
-        props.onWidthChange?.(width);
-      },
-      {defer: true},
-    ),
-  );
+  createResizeObserver(ref, () => {
+    setTimeout(() => {
+      const refValue = ref();
+      if (!refValue) return;
+      const {clientWidth, clientHeight} = refValue;
+      props.onWidthChange(clientWidth);
+      props.onHeightChange(clientHeight);
+    });
+  });
 
   onMount(() => props.onWidthChange?.(ref()?.clientWidth ?? 0));
 
   return (
-    <Box position={'relative'} class={styles.wrapper}>
+    <div
+      style={assignInlineVars({
+        [styles.frameVars.aspectRatio]: 'unset',
+      })}
+      class={styles.wrapper}
+    >
       <div
         ref={setRef}
         class={styles.container}
         style={assignInlineVars({
           [styles.frameVars.width]: computedWidth(),
+          [styles.frameVars.height]: computedHeight(),
           [styles.frameVars.padding]: `${props.padding}px`,
         })}
       >
@@ -119,6 +139,6 @@ export const Frame: ParentComponent<FrameProps> = props => {
           <hr class={styles.resizeLineDivider} />
         </Box>
       </FadeInOutTransition>
-    </Box>
+    </div>
   );
 };
