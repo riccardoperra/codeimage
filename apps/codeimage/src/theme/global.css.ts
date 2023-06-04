@@ -21,10 +21,18 @@ globalStyle(`[data-codeimage-theme=dark]`, {
 
 globalStyle('::-webkit-scrollbar', {
   width: '18px',
+  height: '18px',
 });
 
 globalStyle('::-webkit-scrollbar-track', {
   backgroundColor: 'transparent',
+});
+
+globalStyle('::-webkit-scrollbar-corner', {
+  backgroundColor: themeVars.dynamicColors.scrollBar.backgroundColor,
+  borderRadius: themeVars.borderRadius.xl,
+  backgroundClip: 'content-box',
+  border: '4px solid transparent',
 });
 
 globalStyle('::-webkit-scrollbar-thumb', {
