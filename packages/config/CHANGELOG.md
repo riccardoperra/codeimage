@@ -1,5 +1,16 @@
 # @codeimage/highlight
 
+## 8.2.0
+
+### Minor Changes
+
+- [#534](https://github.com/riccardoperra/codeimage/pull/534) [`09d36e2c`](https://github.com/riccardoperra/codeimage/commit/09d36e2c70bb1846f23d0c721c0b7f3fe20308a5) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add Aspect Ratio config
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @codeimage/highlight@0.10.6
+
 ## 8.1.4
 
 ### Patch Changes

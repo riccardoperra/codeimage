@@ -1,5 +1,32 @@
 # @codeimage/app
 
+## 1.4.0
+
+### Minor Changes
+
+- [#493](https://github.com/riccardoperra/codeimage/pull/493) [`d639a547`](https://github.com/riccardoperra/codeimage/commit/d639a547db0b0fa0286ff5318244deab2428cff9) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Presets support
+
+- [#534](https://github.com/riccardoperra/codeimage/pull/534) [`09d36e2c`](https://github.com/riccardoperra/codeimage/commit/09d36e2c70bb1846f23d0c721c0b7f3fe20308a5) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: aspect ratio
+
+- [#493](https://github.com/riccardoperra/codeimage/pull/493) [`d639a547`](https://github.com/riccardoperra/codeimage/commit/d639a547db0b0fa0286ff5318244deab2428cff9) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Kobalte integration
+
+- [#493](https://github.com/riccardoperra/codeimage/pull/493) [`2ac53a74`](https://github.com/riccardoperra/codeimage/commit/2ac53a748d38f9c5805037296c5008d23b4571dc) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: refactor UI with codeui
+
+- [#527](https://github.com/riccardoperra/codeimage/pull/527) [`93376abb`](https://github.com/riccardoperra/codeimage/commit/93376abbc3c4fa32edd7927062a892a06d3fe410) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: custom background image
+
+- [#510](https://github.com/riccardoperra/codeimage/pull/510) [`e38b990d`](https://github.com/riccardoperra/codeimage/commit/e38b990dfb1edcbc7ff4dd559a444eff05ecc277) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: customizable export options
+
+### Patch Changes
+
+- [#533](https://github.com/riccardoperra/codeimage/pull/533) [`15312cd5`](https://github.com/riccardoperra/codeimage/commit/15312cd5e03b7890d80a29fbe073af832d499d9d) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(app): canvas export image content is not rendered if it's higher than viewport
+
+- Updated dependencies [[`15312cd5`](https://github.com/riccardoperra/codeimage/commit/15312cd5e03b7890d80a29fbe073af832d499d9d), [`09d36e2c`](https://github.com/riccardoperra/codeimage/commit/09d36e2c70bb1846f23d0c721c0b7f3fe20308a5), [`d639a547`](https://github.com/riccardoperra/codeimage/commit/d639a547db0b0fa0286ff5318244deab2428cff9), [`b7951610`](https://github.com/riccardoperra/codeimage/commit/b79516107805a9f6b2de1fe88f5cd0cf52999284), [`2a85dec7`](https://github.com/riccardoperra/codeimage/commit/2a85dec7f748cbdffb770769b0989b3acc712365), [`93376abb`](https://github.com/riccardoperra/codeimage/commit/93376abbc3c4fa32edd7927062a892a06d3fe410), [`e38b990d`](https://github.com/riccardoperra/codeimage/commit/e38b990dfb1edcbc7ff4dd559a444eff05ecc277)]:
+  - @codeimage/dom-export@1.11.2
+  - @codeimage/config@8.2.0
+  - @codeimage/api@0.3.0
+  - @codeimage/ui@0.10.2
+  - @codeimage/highlight@0.10.6
+
 ## 1.3.1
 
 ### Patch Changes
