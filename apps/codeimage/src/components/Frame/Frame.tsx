@@ -32,7 +32,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
   const {width, height, onResizeStart, setRef, resizing, ref} =
     createHorizontalResize({
       minWidth: 200,
-      maxWidth: 1800,
+      maxWidth: 1920,
       aspectRatio: () => {
         if (!props.aspectRatio) return null;
         const [w, h] = props.aspectRatio.split('/').map(Number);

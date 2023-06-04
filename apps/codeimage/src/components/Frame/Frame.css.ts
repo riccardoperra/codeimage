@@ -11,7 +11,7 @@ export const [frame, frameVars] = createTheme({
   height: 'auto',
   minWidth: 'max-content',
   minHeight: '100%',
-  maxWidth: '1800px',
+  maxWidth: '1920px',
   controlHandleSize: '24px',
   controlHandleColor: '',
   resizeLineBadgeBackgroundColor: '',
@@ -51,7 +51,6 @@ export const previewWrapper = style([
   frame,
   {
     zIndex: -999,
-    aspectRatio: `auto ${frameVars.aspectRatio}`,
   },
 ]);
 

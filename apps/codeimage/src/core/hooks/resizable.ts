@@ -10,6 +10,7 @@ import {
 } from 'solid-js';
 import {createStore} from 'solid-js/store';
 import {nonNullable} from '../constants/non-nullable';
+import {fitAspect} from '../helpers/aspectRatio';
 
 interface CreateDraggableReturn {
   width: Accessor<number>;
@@ -82,10 +83,27 @@ export function createHorizontalResize(
     return value;
   }
 
+  function calculateMinByAspectRatio(aspectRatio: number) {
+    const elementRef = ref();
+    if (!elementRef) return;
+    elementRef.style.setProperty('width', 'auto');
+    elementRef.style.setProperty('height', 'auto');
+    const {clientHeight} = elementRef;
+    const aspect = fitAspect({
+      ratio: aspectRatio,
+      height: clientHeight,
+    });
+    elementRef.style.removeProperty('width');
+    elementRef.style.removeProperty('height');
+    setState({
+      height: aspect.height,
+      width: aspect.width,
+    });
+  }
+
   const resizeMove = (x: number): void => {
     const elementRef = ref();
     if (!elementRef) return;
-    elementRef.style.removeProperty('transition');
     const {width, left} = elementRef.getBoundingClientRect();
     const middle = left + width / 2;
     const min = minWidth();
@@ -98,7 +116,11 @@ export function createHorizontalResize(
     const nativeWidth = Math.floor(elementRef.getBoundingClientRect().width);
     elementRef.style.removeProperty('width');
     if (nativeWidth !== computedWidth) computedWidth = nativeWidth;
-    const newWidth = clamp(computedWidth, min, max);
+    const newWidth = clamp(
+      computedWidth,
+      computedWidth < min ? computedWidth - 1 : min,
+      computedWidth < max ? 0 : max,
+    );
     const aspectRatio = options?.aspectRatio?.();
     if (aspectRatio) {
       let newHeight = Math.floor(newWidth / aspectRatio);
@@ -108,9 +130,13 @@ export function createHorizontalResize(
       if (scrollHeight > newHeight) {
         newHeight = Math.floor(elementRef.clientHeight);
       }
-      setState({
-        width: computedWidth,
+      const aspect = fitAspect({
+        ratio: aspectRatio,
         height: newHeight,
+      });
+      setState({
+        height: aspect.height,
+        width: aspect.width,
       });
     } else {
       setState({width: newWidth});
@@ -158,12 +184,16 @@ export function createHorizontalResize(
       createEffect(
         on(
           () => options?.aspectRatio?.(),
-          () => {
-            if (state.startX) {
-              resizeMove(state.startX);
+          ratio => {
+            if (!ratio) {
+              setState({height: 0});
+              return;
             }
+            resizeMove(0);
           },
-          {defer: true},
+          {
+            defer: true,
+          },
         ),
       );
     }),

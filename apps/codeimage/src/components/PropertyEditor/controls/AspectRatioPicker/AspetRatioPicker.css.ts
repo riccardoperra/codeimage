@@ -37,11 +37,11 @@ export const aspectRatioPreviewBox = style({
   selectors: {
     ...withThemeMode({
       dark: {
-        border: `2px solid ${darkGrayScale.gray7}`,
+        outline: `2px solid ${darkGrayScale.gray7}`,
         background: darkGrayScale.gray3,
       },
       light: {
-        border: `2px solid ${themeVars.borderColor.default}`,
+        outline: `2px solid ${themeVars.borderColor.default}`,
         background: 'white',
       },
     }),
@@ -52,7 +52,7 @@ export const aspectRatioCard = style([
   {
     flex: '1 0 33%',
     borderRadius: themeVars.borderRadius.xl,
-    padding: themeVars.spacing['5'],
+    padding: themeVars.spacing['2'],
     color: themeVars.dynamicColors.baseText,
     transition: 'background-color 0.2s ease-in-out',
     position: 'relative',
@@ -63,10 +63,10 @@ export const aspectRatioCard = style([
     selectors: {
       ...withThemeMode({
         dark: {
-          border: `1px solid ${darkGrayScale.gray7}`,
+          outline: `1px solid ${darkGrayScale.gray7}`,
         },
         light: {
-          border: `1px solid ${themeVars.borderColor.default}`,
+          outline: `1px solid ${themeVars.borderColor.default}`,
         },
       }),
 
@@ -82,18 +82,18 @@ export const aspectRatioCard = style([
         {
           dark: {
             backgroundColor: darkGrayScale.gray2,
-            border: `1px solid ${themeVars.dynamicColors.primary}`,
+            outline: `1px solid ${themeVars.dynamicColors.primary}`,
           },
           light: {
             backgroundColor: 'white',
-            border: `1px solid ${themeVars.dynamicColors.primary}`,
+            outline: `1px solid ${themeVars.dynamicColors.primary}`,
           },
         },
         '&[data-selected]',
       ),
 
       '&:not([data-selected])': {
-        border: 'unset',
+        outline: 'unset',
       },
     },
   },
@@ -105,6 +105,14 @@ export const aspectRatioCardFull = style([
     flex: '1 0 100%',
   },
 ]);
+
+export const aspectRatioCardPreviewWrapper = style({
+  width: '100%',
+  height: '100%',
+  display: 'grid',
+  placeItems: 'center',
+  padding: themeVars.spacing['2'],
+});
 
 export const aspectRadioCardPreview = style({
   aspectRatio: aspectRatio,
@@ -128,5 +136,11 @@ export const aspectRadioCardPreview = style({
 export const aspectRatioCardList = style({
   display: 'flex',
   flexWrap: 'wrap',
+  alignItems: 'flex-end',
   gap: '1px',
+});
+
+export const aspectRatioCardDetails = style({
+  color: themeVars.dynamicColors.descriptionTextColor,
+  fontSize: themeVars.fontSize.xs,
 });

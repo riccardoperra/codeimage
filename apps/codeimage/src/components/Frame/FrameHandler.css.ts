@@ -13,17 +13,10 @@ export const wrapper = style([
     width: '100%',
     height: '100%',
     display: 'grid',
-    overflowY: 'auto',
-    overflowX: 'hidden',
+    overflow: 'auto',
     flex: '1',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '@supports': {
-      '(scrollbar-gutter: stable)': {
-        paddingRight: 0,
-        scrollbarGutter: 'stable',
-      },
-    },
+    placeItems: 'center',
+    zIndex: themeVars.zIndex['10'],
     selectors: {
       ...withThemeMode({
         dark: {

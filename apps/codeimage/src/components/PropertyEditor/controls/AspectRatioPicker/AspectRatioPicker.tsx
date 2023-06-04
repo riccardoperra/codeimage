@@ -1,3 +1,4 @@
+import {DEFAULT_ASPECT_RATIOS} from '@codeimage/config';
 import {Box, Text} from '@codeimage/ui';
 import {IconButton, Popover, PopoverContent, PopoverTrigger} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
@@ -72,21 +73,26 @@ export function AspectRatioPicker(props: AspectRatioPickerProps) {
             </div>
           </div>
 
-          <For each={['16 / 9', '3 / 2', '4 / 3', '5 / 4', '1 / 1', '9 / 16']}>
-            {size => (
+          <For each={DEFAULT_ASPECT_RATIOS}>
+            {ratio => (
               <div
-                data-selected={props.value === size ? '' : null}
+                data-selected={props.value === ratio.ratio ? '' : null}
                 class={styles.aspectRatioCard}
-                onClick={() => props.onChange(size)}
+                onClick={() => props.onChange(ratio.ratio)}
               >
-                <div
-                  style={assignInlineVars({
-                    [styles.aspectRatio]: size,
-                  })}
-                  class={styles.aspectRadioCardPreview}
-                >
-                  {size}
+                <div class={styles.aspectRatioCardPreviewWrapper}>
+                  <div
+                    style={assignInlineVars({
+                      [styles.aspectRatio]: ratio.ratio,
+                    })}
+                    class={styles.aspectRadioCardPreview}
+                  >
+                    {ratio.name}
+                  </div>
                 </div>
+                <span class={styles.aspectRatioCardDetails}>
+                  {ratio.resolution.join('x')}
+                </span>
               </div>
             )}
           </For>
