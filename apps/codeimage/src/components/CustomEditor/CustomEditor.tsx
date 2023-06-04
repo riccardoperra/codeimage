@@ -61,6 +61,7 @@ const EDITOR_BASE_SETUP: Extension = [
 interface CustomEditorProps {
   readOnly: boolean;
   onEditorViewChange?: (view: EditorView | undefined) => void;
+  onValueChange?: (value: string) => void;
 }
 
 export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
@@ -68,7 +69,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const languages = SUPPORTED_LANGUAGES;
   const fonts = SUPPORTED_FONTS;
   const {state: editorState, canvasEditorEvents} = getRootEditorStore();
-  const {editor, setCode} = getActiveEditorStore();
+  const {editor} = getActiveEditorStore();
   const selectedLanguage = createMemo(() =>
     languages.find(language => language.id === editor()?.languageId),
   );
@@ -80,7 +81,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   } = createCodeMirror({
     value: editor()?.code,
     onTransactionDispatched: tr => canvasEditorEvents.emit(tr),
-    onValueChange: setCode,
+    onValueChange: props.onValueChange,
   });
 
   createEffect(() => props.onEditorViewChange?.(editorView()));

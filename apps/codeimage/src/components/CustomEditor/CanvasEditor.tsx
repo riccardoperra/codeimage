@@ -67,6 +67,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
   return (
     <CustomEditor
       onEditorViewChange={setEditorView}
+      onValueChange={activeEditorStore.setCode}
       readOnly={props.readOnly}
     />
   );

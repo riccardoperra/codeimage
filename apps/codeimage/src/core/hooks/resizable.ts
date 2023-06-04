@@ -1,3 +1,4 @@
+import {makeEventListenerStack} from '@solid-primitives/event-listener';
 import {
   Accessor,
   batch,
@@ -7,12 +8,13 @@ import {
   onCleanup,
   untrack,
 } from 'solid-js';
-import {bindAll, UnbindFn} from 'bind-event-listener';
 import {createStore} from 'solid-js/store';
 import {nonNullable} from '../constants/non-nullable';
+import {fitAspect} from '../helpers/aspectRatio';
 
 interface CreateDraggableReturn {
   width: Accessor<number>;
+  height: Accessor<number>;
   resizing: Accessor<boolean>;
   ref: Accessor<HTMLElement | undefined>;
   setRef: (el: HTMLElement) => void;
@@ -22,13 +24,14 @@ interface CreateDraggableReturn {
 interface CreateDraggableOptions {
   minWidth?: number;
   maxWidth?: number;
+  aspectRatio?: Accessor<number | null>;
 }
 
 interface CreateDraggableState {
   width: number;
+  height: number;
   startWidth: number;
   startX: number;
-  x: number | null;
 }
 
 export function createHorizontalResize(
@@ -42,11 +45,9 @@ export function createHorizontalResize(
   const [state, setState] = createStore<CreateDraggableState>({
     startWidth: 0,
     width: 0,
+    height: 0,
     startX: 0,
-    x: 0,
   });
-
-  let ownerDocumentEventCleaner: UnbindFn | null = null;
 
   const onResizeStart = ({clientX}: MouseEvent): void => {
     if (!resizing()) {
@@ -84,27 +85,44 @@ export function createHorizontalResize(
 
   const resizeMove = (x: number): void => {
     const elementRef = ref();
-    if (!elementRef) {
-      return;
-    }
-
+    if (!elementRef) return;
     const {width, left} = elementRef.getBoundingClientRect();
     const middle = left + width / 2;
     const min = minWidth();
     const max = maxWidth();
     const isLTR = state.startX > middle;
-
     let computedWidth = isLTR
       ? state.startWidth + x - state.startX
       : state.startWidth - x + state.startX;
-
     elementRef.style.setProperty('width', `${computedWidth}px`);
-    const nativeWidth = elementRef.getBoundingClientRect().width;
-    if (nativeWidth !== computedWidth) {
-      computedWidth = nativeWidth;
+    const nativeWidth = Math.floor(elementRef.getBoundingClientRect().width);
+    elementRef.style.removeProperty('width');
+    if (nativeWidth !== computedWidth) computedWidth = nativeWidth;
+    const newWidth = clamp(
+      computedWidth,
+      computedWidth < min ? computedWidth - 1 : min,
+      computedWidth < max ? 0 : max,
+    );
+    const aspectRatio = options?.aspectRatio?.();
+    if (aspectRatio) {
+      let newHeight = Math.floor(newWidth / aspectRatio);
+      elementRef.style.setProperty('height', `${newHeight}px`);
+      const scrollHeight = Math.floor(elementRef.scrollHeight);
+      elementRef.style.removeProperty('height');
+      if (scrollHeight > newHeight) {
+        newHeight = Math.floor(elementRef.clientHeight);
+      }
+      const aspect = fitAspect({
+        ratio: aspectRatio,
+        height: newHeight,
+      });
+      setState({
+        height: aspect.height,
+        width: aspect.width,
+      });
+    } else {
+      setState({width: newWidth});
     }
-
-    setState({width: clamp(computedWidth, min, max)});
   };
 
   const resizeStart = (x: number): void =>
@@ -119,6 +137,7 @@ export function createHorizontalResize(
   const resizeEnd = (): boolean => setResizing(false);
 
   const width = () => state.width;
+  const height = () => state.height;
 
   createEffect(
     on(ref, ref => {
@@ -143,28 +162,49 @@ export function createHorizontalResize(
             0,
         );
       });
+
+      createEffect(
+        on(
+          () => options?.aspectRatio?.(),
+          ratio => {
+            if (!ratio) {
+              setState({height: 0});
+              return;
+            }
+            resizeMove(0);
+          },
+          {
+            defer: true,
+          },
+        ),
+      );
     }),
   );
 
-  onCleanup(() => ownerDocumentEventCleaner?.());
-
   createEffect(
-    on(resizing, resizing => {
-      if (resizing) {
-        const ownerDocument = ref()?.ownerDocument;
-        if (!ownerDocument) {
-          return;
-        }
-        // TODO: bindALl could be removed
-        ownerDocumentEventCleaner = bindAll(ownerDocument, [
-          {type: 'mousemove', listener: onMouseMove, options: {passive: true}},
-          {type: 'mouseup', listener: onMouseUp},
-          {type: 'mouseleave', listener: onMouseLeave},
-        ]);
-      } else {
-        ownerDocumentEventCleaner?.();
-      }
-    }),
+    on(
+      () => ref()?.ownerDocument,
+      ownerDocument => {
+        if (!ownerDocument) return;
+        const [listen, clear] = makeEventListenerStack(ownerDocument);
+        createEffect(
+          on(resizing, resizing => {
+            const ownerDocument = ref()?.ownerDocument;
+            if (!ownerDocument) {
+              return;
+            }
+            if (resizing) {
+              listen('mousemove', onMouseMove, {passive: true});
+              listen('mouseup', onMouseUp);
+              listen('mouseleave', onMouseLeave);
+            } else {
+              clear();
+            }
+          }),
+        );
+        onCleanup(() => clear());
+      },
+    ),
   );
 
   return {
@@ -172,6 +212,7 @@ export function createHorizontalResize(
     setRef,
     resizing,
     width,
+    height,
     onResizeStart,
   };
 }

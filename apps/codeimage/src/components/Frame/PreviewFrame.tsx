@@ -72,6 +72,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
           class={styles.container}
           style={assignInlineVars({
             [styles.frameVars.width]: `${frame.width}px`,
+            [styles.frameVars.height]: `${frame.height}px`,
             [styles.frameVars.padding]: `${frame.padding}px`,
           })}
         >

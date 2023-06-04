@@ -1,10 +1,10 @@
 import {Box, Text} from '@codeimage/ui';
-import {FlowComponent, Show} from 'solid-js';
+import {FlowComponent, JSXElement, Show} from 'solid-js';
 import * as styles from './EditorSidebar.css';
 import {panelRowContent} from './EditorSidebar.css';
 
 interface PanelRowProps {
-  label?: string;
+  label?: JSXElement;
   for: string;
 }
 

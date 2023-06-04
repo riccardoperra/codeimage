@@ -23,7 +23,9 @@ export function ManagedFrame() {
       background={frame.background}
       opacity={frame.opacity}
       visible={frame.visible}
+      aspectRatio={frame.aspectRatio}
       onWidthChange={getFrameState().setWidth}
+      onHeightChange={getFrameState().setHeight}
     >
       <DynamicTerminal
         type={terminal.type}
