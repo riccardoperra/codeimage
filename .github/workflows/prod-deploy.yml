@@ -5,6 +5,9 @@ on:
       deploy-backend:
         type: boolean
         description: Deploy backend to Railway
+      deploy-frontend:
+        type: boolean
+        description: Deploy frontend
 
 concurrency:
   group: deploy-${{ github.head_ref }}
@@ -314,6 +317,7 @@ jobs:
           pnpm --filter=@codeimage/app build
 
       - uses: amondnet/vercel-action@v25.1.0
+        if: ${{ github.event.inputs.deploy-frontend == 'true' }}
         name: Deploy
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
