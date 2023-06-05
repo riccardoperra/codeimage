@@ -5,6 +5,9 @@ on:
       deploy-backend:
         type: boolean
         description: Deploy backend to Railway
+      deploy-frontend:
+        type: boolean
+        description: Deploy frontend
 
 concurrency:
   group: deploy-${{ github.head_ref }}
@@ -13,45 +16,37 @@ concurrency:
 jobs:
   install:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.14.2]
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - name: Checkout PR
+        uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
   lint:
     name: Lint
     needs: [ "install" ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - name: Checkout PR
+        uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
       - name: "[API] Generate Prisma Migration"
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
-
       - name: Lint
         run: pnpm lint
 
@@ -60,18 +55,15 @@ jobs:
     needs: [ "install" ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: "[API] Generate Prisma Migration"
         run: |
@@ -93,18 +85,15 @@ jobs:
     needs: [ "install" ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: "[API] Generate Prisma Migration"
         run: |
@@ -186,18 +175,15 @@ jobs:
     needs: [ "install", "build-packages" ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
         uses: actions/cache@v3
@@ -214,76 +200,31 @@ jobs:
           pnpm --filter='@codeimage/api' typecheck:ci
           pnpm --filter='@codeimage/app' typecheck
 
-  deploy-ui-package:
-    name: Deploy @codeimage/ui app
-    environment: Production
-    needs: [ "install", "lint", "build-packages" ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Restore packages
-        uses: actions/cache@v3
-        with:
-          path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
-
-      - name: Build @codeimage/ui/dev
-        env:
-          ENABLE_VERCEL_BUILD: true
-        run: |
-          pnpm --filter=@codeimage/ui build:dev
-
-      - uses: amondnet/vercel-action@v25.1.0
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: packages/ui/dev
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_UI_DEV_PROJECT_ID }}
-          vercel-args: '--prebuilt --prod'
-
-
   deploy-highlight-package:
     name: Deploy @codeimage/highlight app
     environment: Production
     needs: [ "install", "lint", "build-packages" ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
       - name: Restore packages
         uses: actions/cache@v3
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
-
       - name: Build @codeimage/highlight/dev
         env:
           ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/highlight build:dev
-
       - uses: amondnet/vercel-action@v25.1.0
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -299,37 +240,26 @@ jobs:
     needs: [ install, lint, typecheck-packages, test-api, build-api ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - uses: actions/checkout@v3
         with:
-          version: 7
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
       - name: Restore packages
         uses: actions/cache@v3
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
-
       - name: Restore api build
         uses: actions/cache@v3
         with:
           path: |
             dist/api-bundle/**
           key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install Railway
-        if: ${{ github.event.inputs.deploy-backend == 'true' }}
-        run: pnpm i -g @railway/cli
-
       - name: Run prod migrations
         if: ${{ github.event.inputs.deploy-backend == 'true' }}
         run: |
@@ -337,18 +267,15 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Railway Push to Deploy
-        if: ${{ github.event.inputs.deploy-backend == 'true' }}
+      - name: Deploy to Railway
         run: |
+          find -type f -name '.gitignore' -delete
+          pnpm railway link --environment production $RAILWAY_API_PROJECT_ID
           cd dist/api-bundle
-          rm -rf .gitignore
-          touch .gitignore
-          touch .dockerignore
-          ls -al
-          railway up
+          pnpm railway up --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_API_PROJECT_ID: ${{ secrets.RAILWAY_API_PROJECT_ID }}
 
   deploy-app:
     name: Deploy @codeimage/app
@@ -356,18 +283,17 @@ jobs:
     needs: [ install, lint, typecheck-packages, build-packages, deploy-api ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - name: Checkout PR
+        uses: actions/checkout@v3
         with:
-          version: 7
+          ref: 'refs/pull/${{ github.event.number }}/merge'
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
         uses: actions/cache@v3
@@ -382,6 +308,8 @@ jobs:
           VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
           VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
+          VITE_PRESET_LIMIT: 10
+          VITE_PRESET_LIMIT_GUEST: 5
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
           UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
           ENABLE_VERCEL_BUILD: true
@@ -389,6 +317,7 @@ jobs:
           pnpm --filter=@codeimage/app build
 
       - uses: amondnet/vercel-action@v25.1.0
+        if: ${{ github.event.inputs.deploy-frontend == 'true' }}
         name: Deploy
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
@@ -407,26 +336,22 @@ jobs:
     needs: [ install, lint, typecheck-packages, build-packages ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.2.2
+      - name: Checkout PR
+        uses: actions/checkout@v3
         with:
-          version: 7
+          ref: 'refs/pull/${{ github.event.number }}/merge'
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
       - name: Restore packages
         uses: actions/cache@v3
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Install dependencies
-        run: |
-          pnpm --prefer-offline install
-
       - name: Build
         env:
           VITE_UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_LANDING_SCRIPT_SRC }}
