@@ -1,5 +1,17 @@
 # @codeimage/api
 
+## 0.3.0
+
+### Minor Changes
+
+- [#493](https://github.com/riccardoperra/codeimage/pull/493) [`d639a547`](https://github.com/riccardoperra/codeimage/commit/d639a547db0b0fa0286ff5318244deab2428cff9) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add `presets` support #472 #451
+
+- [#527](https://github.com/riccardoperra/codeimage/pull/527) [`2a85dec7`](https://github.com/riccardoperra/codeimage/commit/2a85dec7f748cbdffb770769b0989b3acc712365) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add ESM, TypeScript 5.0, Vitest and nodenext support
+
+### Patch Changes
+
+- [#493](https://github.com/riccardoperra/codeimage/pull/493) [`b7951610`](https://github.com/riccardoperra/codeimage/commit/b79516107805a9f6b2de1fe88f5cd0cf52999284) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(api): add configurable preset limit
+
 ## 0.2.0
 
 ### Minor Changes
