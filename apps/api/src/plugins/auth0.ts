@@ -1,4 +1,5 @@
 import {User} from '@codeimage/prisma-models';
+import '@fastify/jwt';
 import {
   FastifyInstance,
   FastifyPluginAsync,

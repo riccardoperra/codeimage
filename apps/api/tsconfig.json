@@ -5,7 +5,7 @@
     "resolveJsonModule": false,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "moduleResolution": "Node16",
+    "moduleResolution": "NodeNext",
     "module": "ES2022",
     "target": "ES2022",
     "typeRoots": [
