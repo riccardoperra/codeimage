@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.10.2
+
+### Patch Changes
+
+- [#527](https://github.com/riccardoperra/codeimage/pull/527) [`93376abb`](https://github.com/riccardoperra/codeimage/commit/93376abbc3c4fa32edd7927062a892a06d3fe410) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: segmented field different size auto-fit
+
 ## 0.10.1
 
 ### Patch Changes

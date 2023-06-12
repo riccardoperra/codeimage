@@ -1,5 +1,13 @@
 # @codeimage/dom-export
 
+## 1.11.2
+
+### Patch Changes
+
+- [#533](https://github.com/riccardoperra/codeimage/pull/533) [`15312cd5`](https://github.com/riccardoperra/codeimage/commit/15312cd5e03b7890d80a29fbe073af832d499d9d) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix(app): canvas export image content is not rendered if it's higher than viewport
+
+- [#510](https://github.com/riccardoperra/codeimage/pull/510) [`e38b990d`](https://github.com/riccardoperra/codeimage/commit/e38b990dfb1edcbc7ff4dd559a444eff05ecc277) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: customizable export options
+
 ## 1.11.1
 
 ### Patch Changes

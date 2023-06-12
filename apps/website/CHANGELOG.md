@@ -1,5 +1,13 @@
 # @codeimage/website
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`93376abb`](https://github.com/riccardoperra/codeimage/commit/93376abbc3c4fa32edd7927062a892a06d3fe410)]:
+  - @codeimage/ui@0.10.2
+  - @codeimage/highlight@0.10.6
+
 ## 0.0.7
 
 ### Patch Changes
