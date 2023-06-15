@@ -4,7 +4,7 @@ import {
   isAssetUrl,
 } from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
-import {getRootEditorStore} from '@codeimage/store/editor';
+import {getEditorStore, getRootEditorStore} from '@codeimage/store/editor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {Box, FadeInOutTransition} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
@@ -12,7 +12,7 @@ import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {onMount, ParentComponent, Show} from 'solid-js';
+import {onMount, ParentComponent, Show, createEffect, on} from 'solid-js';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;
@@ -30,7 +30,7 @@ interface FrameProps {
 }
 
 export const Frame: ParentComponent<FrameProps> = props => {
-  const {width, height, onResizeStart, setRef, resizing, ref} =
+  const {width, height, onResizeStart, setRef, resizing, ref, refresh} =
     createHorizontalResize({
       minWidth: 200,
       maxWidth: 1920,
@@ -67,6 +67,13 @@ export const Frame: ParentComponent<FrameProps> = props => {
   });
 
   onMount(() => props.onWidthChange?.(ref()?.clientWidth ?? 0));
+
+  createEffect(
+    on(
+      () => getEditorStore().editor.state.activeEditorId,
+      () => refresh(),
+    ),
+  );
 
   return (
     <div

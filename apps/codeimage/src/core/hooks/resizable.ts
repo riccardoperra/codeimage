@@ -19,6 +19,7 @@ interface CreateDraggableReturn {
   ref: Accessor<HTMLElement | undefined>;
   setRef: (el: HTMLElement) => void;
   onResizeStart: (event: MouseEvent) => void;
+  resizeMove: () => void;
 }
 
 interface CreateDraggableOptions {
@@ -214,5 +215,8 @@ export function createHorizontalResize(
     width,
     height,
     onResizeStart,
+    refresh() {
+      resizeMove(0);
+    },
   };
 }
