@@ -1,10 +1,8 @@
 import {type HtmlExportOptions} from '@codeimage/dom-export';
 import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
-import {createAsyncAction} from '@core/hooks/async-action';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {isIOS} from '@solid-primitives/platform';
 import download from 'downloadjs';
-import {Resource} from 'solid-js';
 
 function loadDomExport() {
   return import('@codeimage/dom-export');
@@ -30,24 +28,9 @@ export interface ExportOptions {
   quality: number;
 }
 
-interface ExportImagePayload {
+export interface ExportImagePayload {
   ref: HTMLElement | null | undefined;
   options: ExportOptions;
-}
-
-export function useExportImage(): [
-  Resource<Blob | string | undefined>,
-  (data: ExportImagePayload) => void,
-] {
-  const [data, {notify}] = createAsyncAction(
-    async (ref: ExportImagePayload) => {
-      // @bad Find another way to prevent flickering
-      await new Promise(r => setTimeout(r, 50));
-      return exportImage(ref);
-    },
-  );
-
-  return [data, notify];
 }
 
 function resolveMimeType(extension: ExportExtension): string {
