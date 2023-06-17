@@ -16,7 +16,11 @@ function syncDispatch(tr: Transaction, other: EditorView) {
 
 const CustomEditor = lazy(() => import('./CustomEditor'));
 
-export default function PreviewExportEditor() {
+interface PreviewExportEditorProps {
+  onSetEditorView(editorView: EditorView | undefined): void;
+}
+
+export default function PreviewExportEditor(props: PreviewExportEditorProps) {
   const [editorView, setEditorView] = createSignal<EditorView>();
 
   createEffect(
@@ -24,9 +28,18 @@ export default function PreviewExportEditor() {
       if (!editorView) return;
       getRootEditorStore().canvasEditorEvents.listen(tr => {
         setTimeout(() => syncDispatch(tr, editorView), 250);
+        setInterval(() => editorView.requestMeasure());
       });
     }),
   );
 
-  return <CustomEditor onEditorViewChange={setEditorView} readOnly={true} />;
+  return (
+    <CustomEditor
+      onEditorViewChange={editorView => {
+        props.onSetEditorView(editorView);
+        setEditorView(editorView);
+      }}
+      readOnly={true}
+    />
+  );
 }

@@ -32,11 +32,8 @@ import {
   Show,
   untrack,
 } from 'solid-js';
-import {
-  ExportExtension,
-  ExportMode,
-  useExportImage,
-} from '../../hooks/use-export-image';
+import {useExportSnippet} from '../../hooks/export-snippet';
+import {ExportExtension, ExportMode} from '../../hooks/use-export-image';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {AppLocaleEntries} from '../../i18n';
 import {DownloadIcon} from '../Icons/Download';
@@ -52,7 +49,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
   const modality = useModality();
   const buttonSize = () => (modality === 'full' ? 'sm' : 'xs');
   const [open, setOpen] = createSignal(false);
-  const [data, notify] = useExportImage();
+  const [data, notify] = useExportSnippet();
 
   const label = () => t('toolbar.export');
 
