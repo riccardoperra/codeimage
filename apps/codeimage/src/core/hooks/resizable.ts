@@ -19,6 +19,7 @@ interface CreateDraggableReturn {
   ref: Accessor<HTMLElement | undefined>;
   setRef: (el: HTMLElement) => void;
   onResizeStart: (event: MouseEvent) => void;
+  refresh(): void;
 }
 
 interface CreateDraggableOptions {
@@ -41,6 +42,7 @@ export function createHorizontalResize(
   const [resizing, setResizing] = createSignal<boolean>(false);
   const [minWidth, setMinWidth] = createSignal<number>(options?.minWidth ?? 0);
   const [maxWidth, setMaxWidth] = createSignal<number>(options?.maxWidth ?? 0);
+  let refreshing = false;
 
   const [state, setState] = createStore<CreateDraggableState>({
     startWidth: 0,
@@ -84,8 +86,10 @@ export function createHorizontalResize(
   }
 
   const resizeMove = (x: number): void => {
+    if (refreshing) return;
     const elementRef = ref();
     if (!elementRef) return;
+    refreshing = true;
     const {width, left} = elementRef.getBoundingClientRect();
     const middle = left + width / 2;
     const min = minWidth();
@@ -105,12 +109,18 @@ export function createHorizontalResize(
     );
     const aspectRatio = options?.aspectRatio?.();
     if (aspectRatio) {
+      elementRef.style.setProperty('height', 'auto');
+      const maybeMinHeight = Math.floor(elementRef.clientHeight);
+      elementRef.style.removeProperty('height');
       let newHeight = Math.floor(newWidth / aspectRatio);
+      if (newHeight < maybeMinHeight) {
+        newHeight = maybeMinHeight;
+      }
       elementRef.style.setProperty('height', `${newHeight}px`);
       const scrollHeight = Math.floor(elementRef.scrollHeight);
       elementRef.style.removeProperty('height');
       if (scrollHeight > newHeight) {
-        newHeight = Math.floor(elementRef.clientHeight);
+        newHeight = Math.floor(maybeMinHeight);
       }
       const aspect = fitAspect({
         ratio: aspectRatio,
@@ -123,6 +133,7 @@ export function createHorizontalResize(
     } else {
       setState({width: newWidth});
     }
+    refreshing = false;
   };
 
   const resizeStart = (x: number): void =>
@@ -214,5 +225,8 @@ export function createHorizontalResize(
     width,
     height,
     onResizeStart,
+    refresh() {
+      resizeMove(0);
+    },
   };
 }

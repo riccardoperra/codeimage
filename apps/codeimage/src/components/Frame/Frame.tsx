@@ -30,7 +30,7 @@ interface FrameProps {
 }
 
 export const Frame: ParentComponent<FrameProps> = props => {
-  const {width, height, onResizeStart, setRef, resizing, ref} =
+  const {width, height, onResizeStart, setRef, resizing, ref, refresh} =
     createHorizontalResize({
       minWidth: 200,
       maxWidth: 1920,
@@ -66,7 +66,20 @@ export const Frame: ParentComponent<FrameProps> = props => {
     });
   });
 
-  onMount(() => props.onWidthChange?.(ref()?.clientWidth ?? 0));
+  onMount(() => {
+    const refValue = ref();
+    if (!refValue) return;
+
+    props.onWidthChange?.(refValue.clientWidth ?? 0);
+
+    const preview = refValue.querySelector('[data-preview]');
+    createResizeObserver(
+      () => preview,
+      () => {
+        refresh();
+      },
+    );
+  });
 
   return (
     <div
