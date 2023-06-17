@@ -5,7 +5,8 @@ import {Button} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {Component, createEffect, untrack} from 'solid-js';
-import {ExportMode, useExportImage} from '../../hooks/use-export-image';
+import {useExportSnippet} from '../../hooks/export-snippet';
+import {ExportMode} from '../../hooks/use-export-image';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {AppLocaleEntries} from '../../i18n';
 import {ExternalLinkIcon} from '../Icons/ExternalLink';
@@ -19,7 +20,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
 
-  const [data, notify] = useExportImage();
+  const [data, notify] = useExportSnippet();
 
   const label = () => t('toolbar.openNewTab');
 

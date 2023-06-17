@@ -17,6 +17,7 @@ import {
   VoidProps,
 } from 'solid-js';
 import {Portal} from 'solid-js/web';
+import {setPreviewEditorView} from '../../hooks/export-snippet';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import * as styles from './Frame.css';
@@ -121,7 +122,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
             themeId={editor.state.options.themeId}
           >
             <Show when={getActiveEditorStore().editor()}>
-              <PreviewExportEditor />
+              <PreviewExportEditor onSetEditorView={setPreviewEditorView} />
             </Show>
           </DynamicTerminal>
         </div>

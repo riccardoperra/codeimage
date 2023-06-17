@@ -62,7 +62,6 @@ export const previewPortal = style({
   width: 'auto',
   height: 'auto',
   opacity: 0,
-  transform: `scale(0.01)`,
   transformOrigin: 'left top',
 });
 
