@@ -123,11 +123,12 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
         return () => store.get.find(item => item.id === id);
       },
       getAssetImageBrowserUrl(id: string): Accessor<string | undefined> {
+        if (isAssetLinkUrl(id)) {
+          // FIXME: find a better way to let the signal refresh: this may cause some side effect
+          untrack(() => this.loadAsync(() => id)[0]?.());
+        }
+        // eslint-disable-next-line solid/reactivity
         return createMemo(() => {
-          if (isAssetLinkUrl(id)) {
-            // FIXME: find a better way to let the signal refresh: this may cause some side effect
-            untrack(() => this.loadAsync(() => id)[0]?.());
-          }
           const asset = this.getAsset(id)();
           if (!asset) return undefined;
           return `url(${asset.url})`;
