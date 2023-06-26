@@ -2,7 +2,14 @@ import {provideAppState} from '@codeimage/store/index';
 import {generateUid} from '@codeimage/store/plugins/unique-id';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {createEventBus} from '@solid-primitives/event-bus';
-import {Accessor, createEffect, createResource, on} from 'solid-js';
+import {
+  Accessor,
+  createEffect,
+  createMemo,
+  createResource,
+  on,
+  untrack,
+} from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
 
@@ -116,11 +123,16 @@ export const AssetsStore = defineStore<PersistedAsset[]>(() => [])
         return () => store.get.find(item => item.id === id);
       },
       getAssetImageBrowserUrl(id: string): Accessor<string | undefined> {
-        return () => {
+        if (isAssetLinkUrl(id)) {
+          // FIXME: find a better way to let the signal refresh: this may cause some side effect
+          untrack(() => this.loadAsync(() => id)[0]?.());
+        }
+        // eslint-disable-next-line solid/reactivity
+        return createMemo(() => {
           const asset = this.getAsset(id)();
           if (!asset) return undefined;
           return `url(${asset.url})`;
-        };
+        });
       },
       async addLink(link: string, scope = 'app') {
         const id = generateAssetLinkId(link.trim());

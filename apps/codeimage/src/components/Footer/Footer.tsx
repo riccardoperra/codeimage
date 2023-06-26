@@ -7,7 +7,7 @@ export const Footer = () => {
 
   return (
     <div class={styles.wrapper}>
-      <Box display={'flex'} justifyContent={'flexEnd'} padding={2}>
+      <Box display={'inlineFlex'} justifyContent={'flexEnd'} padding={1}>
         <Box marginRight={5}>
           <Link href={'https://github.com/riccardoperra/codeimage'} size="xs">
             GitHub
