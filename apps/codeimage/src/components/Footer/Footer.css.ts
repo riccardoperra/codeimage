@@ -4,7 +4,8 @@ import {themeVars} from '@codeimage/ui';
 export const wrapper = style({
   position: 'absolute',
   bottom: 0,
-  width: '100%',
-  zIndex: 0,
+  right: 0,
+  zIndex: themeVars.zIndex['20'],
   color: themeVars.dynamicColors.descriptionTextColor,
+  width: 'auto',
 });
