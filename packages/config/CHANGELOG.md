@@ -1,5 +1,14 @@
 # @codeimage/highlight
 
+## 8.2.1
+
+### Patch Changes
+
+- [#550](https://github.com/riccardoperra/codeimage/pull/550) [`a6e4cad9`](https://github.com/riccardoperra/codeimage/commit/a6e4cad9b8e7a56fb522f7191d5674d47d84f39e) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add dart and scala support
+
+- Updated dependencies []:
+  - @codeimage/highlight@0.10.6
+
 ## 8.2.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.10.3
+
+### Patch Changes
+
+- [#549](https://github.com/riccardoperra/codeimage/pull/549) [`faa59d2b`](https://github.com/riccardoperra/codeimage/commit/faa59d2bf61f054c3697d0072c9daed6e454cb15) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: optional format on paste event
+
 ## 0.10.2
 
 ### Patch Changes

@@ -232,7 +232,7 @@
     "@lezer/highlight": "^1.1.1"
   },
   "devDependencies": {
-    "@codeimage/ui": "workspace:0.10.2",
+    "@codeimage/ui": "workspace:0.10.3",
     "@codeimage/vanilla-extract": "workspace:0.2.0",
     "@codemirror/lang-javascript": "^6.1.7",
     "@codeui/kit": "workspace:*",
