@@ -10,12 +10,15 @@ export interface SnackbarData {
   wrapper?: Component;
 }
 
+type Toast = typeof $toast;
+
 let toast: {
   success: AugmentedToastHandler;
   error: AugmentedToastHandler;
-  custom: (typeof $toast)['custom'];
+  custom: AugmentedToastHandler;
   default: ToastHandler;
-  remove: (typeof $toast)['remove'];
+  remove: Toast['remove'];
+  dismiss: Toast['dismiss'];
 };
 
 interface SnackbarHostProps {
@@ -26,9 +29,10 @@ export function SnackbarHost(props: VoidProps<SnackbarHostProps>) {
   toast = {
     success: createPatch($toast, 'success'),
     error: createPatch($toast, 'error'),
-    custom: $toast.custom,
+    custom: createPatch($toast, 'custom'),
     default: $toast,
     remove: $toast.remove,
+    dismiss: $toast.dismiss,
   };
   return (
     <ToasterV2

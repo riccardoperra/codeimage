@@ -1,12 +1,18 @@
+import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {getUiStore} from '@codeimage/store/ui';
+import {HStack, toast} from '@codeimage/ui';
 import {EditorView} from '@codemirror/view';
+import {Button} from '@codeui/kit';
 import {
   createCompartmentExtension,
   createEditorControlledValue,
   createEditorFocus,
 } from 'solid-codemirror';
 import {Accessor, createEffect, createSignal, on} from 'solid-js';
+import {AppLocaleEntries} from '../../i18n';
+import {SparklesIcon} from '../Icons/SparklesIcon';
 import CustomEditor from './CustomEditor';
 
 interface CanvasEditorProps {
@@ -46,18 +52,48 @@ export default function CanvasEditor(props: CanvasEditorProps) {
     ),
   );
 
-  createCompartmentExtension(
-    () =>
-      EditorView.domEventHandlers({
-        paste(event, view) {
-          setTimeout(() => {
-            const localValue = view.state.doc.toString();
-            activeEditorStore.format(localValue);
-          });
-        },
-      }),
-    editorView,
-  );
+  createCompartmentExtension(() => {
+    let activeToastId: string | null = null;
+    return EditorView.domEventHandlers({
+      paste(event, view) {
+        if (activeToastId) toast.dismiss(activeToastId);
+        activeToastId = toast.success(
+          activeToast => {
+            const [t] = useI18n<AppLocaleEntries>();
+            return (
+              <div>
+                <HStack
+                  spacing={5}
+                  display={'flex'}
+                  justifyContent={'spaceBetween'}
+                  alignItems={'center'}
+                >
+                  <span>{t('canvas.pastedCode')}</span>
+                  <Button
+                    size={'xs'}
+                    theme={'primary'}
+                    leftIcon={<SparklesIcon size={'xs'} />}
+                    disabled={!activeEditorStore.canFormat()}
+                    onClick={() => {
+                      const localValue = view.state.doc.toString();
+                      activeEditorStore.format(localValue);
+                      toast.dismiss(activeToast.id);
+                    }}
+                  >
+                    Format
+                  </Button>
+                </HStack>
+              </div>
+            );
+          },
+          {
+            position: 'bottom-center',
+            theme: getUiStore().invertedThemeMode(),
+          },
+        );
+      },
+    });
+  }, editorView);
 
   createEditorControlledValue(
     editorView as Accessor<EditorView>,
