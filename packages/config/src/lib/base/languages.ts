@@ -583,4 +583,40 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
   },
+  {
+    id: 'dart',
+    label: 'Dart',
+    color: '#00B4AB',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/clike'),
+      ]).then(([cb, m]) => cb(m.dart)),
+    icons: [
+      {
+        name: 'Dart',
+        extension: '.dart',
+        content: () => import('material-icon-theme/icons/dart.svg?raw'),
+        matcher: /^.*\.(dart)$/,
+      },
+    ],
+  },
+  {
+    id: 'scala',
+    label: 'Scala',
+    color: '#c22d40',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/clike'),
+      ]).then(([cb, m]) => cb(m.scala)),
+    icons: [
+      {
+        name: 'Scala',
+        extension: '.scala',
+        content: () => import('material-icon-theme/icons/scala.svg?raw'),
+        matcher: /^.*\.(scala)$/,
+      },
+    ],
+  },
 ];
