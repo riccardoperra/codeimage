@@ -57,40 +57,45 @@ export default function CanvasEditor(props: CanvasEditorProps) {
     return EditorView.domEventHandlers({
       paste(event, view) {
         if (activeToastId) toast.dismiss(activeToastId);
-        activeToastId = toast.success(
-          activeToast => {
-            const [t] = useI18n<AppLocaleEntries>();
-            return (
-              <div>
-                <HStack
-                  spacing={5}
-                  display={'flex'}
-                  justifyContent={'spaceBetween'}
-                  alignItems={'center'}
-                >
-                  <span>{t('canvas.pastedCode')}</span>
-                  <Button
-                    size={'xs'}
-                    theme={'primary'}
-                    leftIcon={<SparklesIcon size={'xs'} />}
-                    disabled={!activeEditorStore.canFormat()}
-                    onClick={() => {
-                      const localValue = view.state.doc.toString();
-                      activeEditorStore.format(localValue);
-                      toast.dismiss(activeToast.id);
-                    }}
+        setTimeout(() => {
+          if (!activeEditorStore.canFormat()) {
+            return;
+          }
+          activeToastId = toast.success(
+            activeToast => {
+              const [t] = useI18n<AppLocaleEntries>();
+              return (
+                <div>
+                  <HStack
+                    spacing={5}
+                    display={'flex'}
+                    justifyContent={'spaceBetween'}
+                    alignItems={'center'}
                   >
-                    Format
-                  </Button>
-                </HStack>
-              </div>
-            );
-          },
-          {
-            position: 'bottom-center',
-            theme: getUiStore().invertedThemeMode(),
-          },
-        );
+                    <span>{t('canvas.pastedCode')}</span>
+                    <Button
+                      size={'xs'}
+                      theme={'primary'}
+                      leftIcon={<SparklesIcon size={'xs'} />}
+                      disabled={!activeEditorStore.canFormat()}
+                      onClick={() => {
+                        const localValue = view.state.doc.toString();
+                        activeEditorStore.format(localValue);
+                        toast.dismiss(activeToast.id);
+                      }}
+                    >
+                      Format
+                    </Button>
+                  </HStack>
+                </div>
+              );
+            },
+            {
+              position: 'bottom-center',
+              theme: getUiStore().invertedThemeMode(),
+            },
+          );
+        }, 50);
       },
     });
   }, editorView);
