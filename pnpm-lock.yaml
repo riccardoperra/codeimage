@@ -778,7 +778,7 @@ importers:
         version: 2.2.2(solid-js@1.7.3)
     devDependencies:
       '@codeimage/ui':
-        specifier: workspace:0.10.2
+        specifier: workspace:0.10.3
         version: link:../ui
       '@codeimage/vanilla-extract':
         specifier: workspace:0.2.0
