@@ -22,6 +22,7 @@ export function getInitialEditorState(): EditorState {
     id: defaultId,
     code: appEnvironment.defaultState.editor.code,
     languageId: appEnvironment.defaultState.editor.languageId,
+    formatter: null,
     tab: {
       tabName: 'index.tsx',
       tabIcon: undefined,

@@ -23,6 +23,7 @@ export default {
       backgroundType: 'Background',
       ligatures: 'Ligatures',
       aspectRatio: 'Aspect ratio',
+      formatter: 'Formatter',
     },
   },
   it: {
@@ -49,6 +50,7 @@ export default {
       theme: 'Tema',
       ligatures: 'Ligatures',
       aspectRatio: 'Proporzioni',
+      formatter: 'Formatter',
     },
   },
   de: {
@@ -75,6 +77,7 @@ export default {
       theme: 'Theme',
       ligatures: 'Ligatures',
       aspectRatio: 'Aspect ratio',
+      formatter: 'Formatter',
     },
   },
   es: {
@@ -101,6 +104,7 @@ export default {
       theme: 'Theme',
       ligatures: 'Ligatures',
       aspectRatio: 'Aspect ratio',
+      formatter: 'Formatter',
     },
   },
 } as const;

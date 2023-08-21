@@ -506,10 +506,16 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(json)$/,
       },
     ],
-    prettier: {
-      parser: 'json5',
-      plugin: () => import('prettier/parser-babel'),
-    },
+    prettier: [
+      {
+        parser: 'json-stringify',
+        plugin: () => import('prettier/parser-babel'),
+      },
+      {
+        parser: 'json',
+        plugin: () => import('prettier/parser-babel'),
+      },
+    ],
   },
   {
     id: 'sql',
