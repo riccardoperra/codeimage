@@ -11,7 +11,7 @@ export function getInitialFrameState(): FrameState {
     // lazy initialization
     background: null,
     padding: 64,
-    radius: 24,
+    radius: 8,
     visible: true,
     opacity: 100,
     autoWidth: false,

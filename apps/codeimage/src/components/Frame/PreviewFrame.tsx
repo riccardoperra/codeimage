@@ -72,6 +72,8 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
         <div
           class={styles.container}
           style={assignInlineVars({
+            overflow: 'hidden',
+            [styles.frameVars.radius]: `${frame.radius}px`,
             [styles.frameVars.width]: `${frame.width}px`,
             [styles.frameVars.height]: `${frame.height}px`,
             [styles.frameVars.padding]: `${frame.padding}px`,

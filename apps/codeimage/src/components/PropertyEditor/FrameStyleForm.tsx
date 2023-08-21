@@ -14,7 +14,7 @@ import {SuspenseEditorItem} from './SuspenseEditorItem';
 
 export const FrameStyleForm: ParentComponent = () => {
   const [t] = useI18n<AppLocaleEntries>();
-  const {editorPadding} = appEnvironment;
+  const {editorPadding, editorRadius} = appEnvironment;
   const frame = getFrameState();
 
   return (
@@ -34,6 +34,25 @@ export const FrameStyleForm: ParentComponent = () => {
               items={editorPadding.map(padding => ({
                 label: padding.toString(),
                 value: padding,
+              }))}
+            />
+          </SuspenseEditorItem>
+        </TwoColumnPanelRow>
+      </PanelRow>
+
+      <PanelRow for={'radiusField'} label={t('frame.radius')}>
+        <TwoColumnPanelRow>
+          <SuspenseEditorItem
+            fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+          >
+            <SegmentedField
+              id={'radiusField'}
+              size={'xs'}
+              value={frame.store.radius}
+              onChange={frame.setRadius}
+              items={editorRadius.map(padding => ({
+                label: padding.label,
+                value: padding.value,
               }))}
             />
           </SuspenseEditorItem>
