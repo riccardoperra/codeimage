@@ -118,16 +118,29 @@ export function createPrettierFormatter(
     canFormat,
     availableFormatters(): string[] {
       const currentLanguage = language();
+      const currentTab = tabName();
       const selectedLanguage = SUPPORTED_LANGUAGES.find(
         supportedLanguage => supportedLanguage.id === currentLanguage,
       );
       if (!selectedLanguage || !selectedLanguage.prettier) {
         return [];
       }
-      if (Array.isArray(selectedLanguage.prettier)) {
-        return selectedLanguage.prettier.map(({parser}) => parser);
+      let formatters: string[] = [];
+      const languageFormatters = Array.isArray(selectedLanguage.prettier)
+        ? selectedLanguage.prettier.map(({parser}) => parser)
+        : [selectedLanguage.prettier.parser];
+      formatters = [...formatters, ...languageFormatters];
+      // TODO: refactor this code, it's a copypaste
+      const matchedIcons =
+        selectedLanguage?.icons.filter(icon => icon.matcher.test(currentTab)) ??
+        [];
+      const matchedIcon = matchedIcons[matchedIcons.length - 1];
+      if (!matchedIcon) return formatters;
+      if (matchedIcon.prettier) {
+        // Formatters by tab name has priority
+        formatters = [matchedIcon.prettier.parser, ...formatters];
       }
-      return [selectedLanguage.prettier.parser];
+      return formatters;
     },
     async format(
       code: string,
