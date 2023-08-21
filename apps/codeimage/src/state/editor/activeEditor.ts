@@ -24,6 +24,7 @@ const $activeEditorState = () => {
     const setLanguageId = (languageId: string) => {
       const currentLanguageId = currentEditor()?.languageId;
       setEditors(currentEditorIndex(), 'languageId', languageId);
+      // TODO: update current formatter
       if (currentLanguageId !== languageId) {
         const language = languages.find(language => language.id === languageId);
         if (language) {
@@ -43,27 +44,37 @@ const $activeEditorState = () => {
     const setCode = (code: string) =>
       setEditors(currentEditorIndex(), 'code', code);
 
+    const setFormatter = (formatter: string | null) =>
+      setEditors(currentEditorIndex(), 'formatter', formatter);
+
     const formatter = createPrettierFormatter(
       () => currentEditor()?.languageId ?? '',
       () => currentEditor()?.tab?.tabName ?? '',
+      () => currentEditor()?.formatter ?? null,
     );
 
     return {
       editor: currentEditor,
       setLanguageId,
       setCode,
+      formatter,
+      setFormatter,
       canFormat: formatter.canFormat,
       format(code = currentEditor()?.code ?? '') {
         return new Promise(async r => {
           try {
-            const result = await formatter.format(code, {
-              singleAttributePerLine: true,
-              trailingComma: 'none',
-              arrowParens: 'always',
-              bracketSpacing: true,
-              proseWrap: 'always',
-              printWidth: 90,
-            });
+            const result = await formatter.format(
+              code,
+              {
+                singleAttributePerLine: true,
+                trailingComma: 'none',
+                arrowParens: 'always',
+                bracketSpacing: true,
+                proseWrap: 'always',
+                printWidth: 90,
+              },
+              currentEditor()?.formatter ?? undefined,
+            );
 
             if (result !== currentEditor()?.code) {
               setCode(result);
