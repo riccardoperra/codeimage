@@ -81,9 +81,17 @@ export const Frame: ParentComponent<FrameProps> = props => {
     );
   });
 
+  const borderRadius = () => {
+    const radius = props.radius;
+    if (!radius) return '0';
+    if (isNaN(props.radius)) return String(radius);
+    return `${radius}px`;
+  };
+
   return (
     <div
       style={assignInlineVars({
+        [styles.frameVars.radius]: borderRadius(),
         [styles.frameVars.aspectRatio]: 'unset',
       })}
       class={styles.wrapper}

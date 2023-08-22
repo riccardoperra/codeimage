@@ -5,6 +5,7 @@ export default {
       padding: 'Padding',
       visible: 'Visible',
       opacity: 'Opacity',
+      radius: 'Radius',
       color: 'Color',
       background: 'Background',
       terminal: 'Window',
