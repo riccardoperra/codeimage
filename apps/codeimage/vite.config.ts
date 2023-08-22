@@ -1,54 +1,9 @@
+import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
 import {defineConfig, Plugin} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
 // import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
-
-// const pwaOptions: Partial<VitePWAOptions> = {
-//   base: '/',
-//   manifest: {
-//     name: 'Codeimage',
-//     orientation: 'portrait',
-//     dir: 'ltr',
-//     short_name: 'Codeimage',
-//     start_url: '.',
-//     display: 'standalone',
-//     background_color: '#1a1a1a',
-//     description: 'Create elegant screenshots of your source code.',
-//     theme_color: '#1a1a1a',
-//     icons: [
-//       {
-//         src: '/pwa/manifest-icon-192.maskable.png',
-//         sizes: '192x192',
-//         type: 'image/png',
-//         purpose: 'any',
-//       },
-//       {
-//         src: '/pwa/manifest-icon-192.maskable.png',
-//         sizes: '192x192',
-//         type: 'image/png',
-//         purpose: 'maskable',
-//       },
-//       {
-//         src: '/pwa/manifest-icon-512.maskable.png',
-//         sizes: '512x512',
-//         type: 'image/png',
-//         purpose: 'any',
-//       },
-//       {
-//         src: '/pwa/manifest-icon-512.maskable.png',
-//         sizes: '512x512',
-//         type: 'image/png',
-//         purpose: 'maskable',
-//       },
-//     ],
-//   },
-//   srcDir: 'src',
-//   filename: 'sw.ts',
-//   strategies: 'injectManifest',
-//   registerType: 'autoUpdate',
-// };
 
 export default defineConfig(({mode}) => ({
   plugins: [
