@@ -1,6 +1,5 @@
-import {Motion} from '@motionone/solid';
+import {animate, AnimationControls} from 'motion';
 import {FlowProps, onCleanup, onMount} from 'solid-js';
-import {createStore} from 'solid-js/store';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface DynamicSizedContainerProps {}
@@ -12,10 +11,25 @@ function toPx(value: number) {
 export function DynamicSizedContainer(
   props: FlowProps<DynamicSizedContainerProps>,
 ) {
-  const [size, setSize] = createStore({width: 'auto', height: 'auto'});
   let ref!: HTMLDivElement;
+  let animation: AnimationControls | null = null;
 
-  function recalculateSize() {
+  const triggerAnimation = (width: string, height: string) => {
+    return animate(
+      ref,
+      {
+        width,
+        height,
+      },
+      {duration: 0.2, easing: [0.4, 0, 0.2, 1]},
+    );
+  };
+
+  const recalculateSize = () => {
+    if (animation && animation.playState === 'running') {
+      animation.stop();
+      animation = null;
+    }
     const currentWidth = ref.offsetWidth;
     const currentHeight = ref.offsetHeight;
     ref.style.width = 'auto';
@@ -24,31 +38,18 @@ export function DynamicSizedContainer(
     const newHeight = toPx(ref.offsetHeight);
     ref.style.width = toPx(currentWidth);
     ref.style.height = toPx(currentHeight);
-    setTimeout(() => setSize({width: newWidth, height: newHeight}), 0);
-  }
+    setTimeout(() => {
+      animation = triggerAnimation(newWidth, newHeight);
+    }, 0);
+  };
 
   onMount(() => {
-    if (ref) {
-      recalculateSize();
-      const resizeObserver = new MutationObserver(() => recalculateSize());
-      resizeObserver.observe(ref, {childList: true, subtree: true});
-      return onCleanup(() => resizeObserver.disconnect());
-    }
+    if (!ref) return;
+    recalculateSize();
+    const resizeObserver = new MutationObserver(recalculateSize);
+    resizeObserver.observe(ref, {childList: true, subtree: true});
+    return onCleanup(() => resizeObserver.disconnect());
   });
 
-  return (
-    <Motion.div
-      animate={{
-        width: size.width,
-        height: size.height,
-      }}
-      transition={{
-        duration: 0.2,
-        easing: [0.4, 0, 0.2, 1],
-      }}
-      ref={ref}
-    >
-      {props.children}
-    </Motion.div>
-  );
+  return <div ref={ref}>{props.children}</div>;
 }
