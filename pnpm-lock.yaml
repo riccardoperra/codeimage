@@ -313,8 +313,8 @@ importers:
         specifier: ^0.14.1
         version: 0.14.1
       '@motionone/solid':
-        specifier: ^10.15.5
-        version: 10.16.0(solid-js@1.7.3)
+        specifier: ^10.16.2
+        version: 10.16.2(solid-js@1.7.3)
       '@ngneat/falso':
         specifier: ^6.4.0
         version: 6.4.0
@@ -390,6 +390,9 @@ importers:
       modern-normalize:
         specifier: ^1.1.0
         version: 1.1.0
+      motion:
+        specifier: ^10.15.5
+        version: 10.15.5
       polished:
         specifier: ^4.2.2
         version: 4.2.2
@@ -6037,7 +6040,7 @@ packages:
       '@motionone/easing': 10.15.1
       '@motionone/types': 10.15.1
       '@motionone/utils': 10.15.1
-      tslib: 2.5.0
+      tslib: 2.5.3
     dev: false
 
   /@motionone/dom@10.15.5:
@@ -6048,14 +6051,25 @@ packages:
       '@motionone/types': 10.15.1
       '@motionone/utils': 10.15.1
       hey-listen: 1.0.8
-      tslib: 2.5.0
+      tslib: 2.5.3
+    dev: false
+
+  /@motionone/dom@10.16.2:
+    resolution: {integrity: sha512-bnuHdNbge1FutZXv+k7xub9oPWcF0hsu8y1HTH/qg6av58YI0VufZ3ngfC7p2xhMJMnoh0LXFma2EGTgPeCkeg==}
+    dependencies:
+      '@motionone/animation': 10.15.1
+      '@motionone/generators': 10.15.1
+      '@motionone/types': 10.15.1
+      '@motionone/utils': 10.15.1
+      hey-listen: 1.0.8
+      tslib: 2.5.3
     dev: false
 
   /@motionone/easing@10.15.1:
     resolution: {integrity: sha512-6hIHBSV+ZVehf9dcKZLT7p5PEKHGhDwky2k8RKkmOvUoYP3S+dXsKupyZpqx5apjd9f+php4vXk4LuS+ADsrWw==}
     dependencies:
       '@motionone/utils': 10.15.1
-      tslib: 2.5.0
+      tslib: 2.5.3
     dev: false
 
   /@motionone/generators@10.15.1:
@@ -6063,7 +6077,7 @@ packages:
     dependencies:
       '@motionone/types': 10.15.1
       '@motionone/utils': 10.15.1
-      tslib: 2.5.0
+      tslib: 2.5.3
     dev: false
 
   /@motionone/solid@10.16.0(solid-js@1.7.3):
@@ -6079,11 +6093,24 @@ packages:
       solid-js: 1.7.3
     dev: false
 
+  /@motionone/solid@10.16.2(solid-js@1.7.3):
+    resolution: {integrity: sha512-0bl1KRDWc6BRcKXzRZR2KdRzIIN86SfSe8mcfKPwHYQDzdOEohRcYUsDaYlwWuwU07VCngOHZEPgFCofDJ80zw==}
+    peerDependencies:
+      solid-js: ^1.5.0
+    dependencies:
+      '@motionone/dom': 10.16.2
+      '@motionone/utils': 10.15.1
+      '@solid-primitives/props': 3.1.4(solid-js@1.7.3)
+      '@solid-primitives/refs': 1.0.2(solid-js@1.7.3)
+      '@solid-primitives/transition-group': 1.0.1(solid-js@1.7.3)
+      solid-js: 1.7.3
+    dev: false
+
   /@motionone/svelte@10.15.5:
     resolution: {integrity: sha512-Xyxtgp7BlVnSBwcoFmXGHUVnpNktzeXsEifu2NJJWc7VGuxutDsBZxNdz80qvpLIC5MeBa1wh7GGegZzTm1msg==}
     dependencies:
       '@motionone/dom': 10.15.5
-      tslib: 2.5.0
+      tslib: 2.5.3
     dev: false
 
   /@motionone/types@10.15.1:
@@ -6095,14 +6122,14 @@ packages:
     dependencies:
       '@motionone/types': 10.15.1
       hey-listen: 1.0.8
-      tslib: 2.5.0
+      tslib: 2.5.3
     dev: false
 
   /@motionone/vue@10.15.5:
     resolution: {integrity: sha512-cUENrLYAolUacHvCgU+8wF9OgSlVutfWbHMLERI/bElCJ+e2YVQvG/CpGhIM5fYOOJzuvg2T2wHmLLmvJoavEw==}
     dependencies:
       '@motionone/dom': 10.15.5
-      tslib: 2.5.0
+      tslib: 2.5.3
     dev: false
 
   /@mswjs/cookies@0.2.2:
@@ -8920,7 +8947,7 @@ packages:
       tar: 6.1.13
       tinylogic: 2.0.0
       treeify: 1.1.0
-      tslib: 2.5.0
+      tslib: 2.5.3
       tunnel: 0.0.6
     transitivePeerDependencies:
       - typanion
@@ -8980,7 +9007,7 @@ packages:
     resolution: {integrity: sha512-kMHeTgaDRUJVBym5lEswzG2hAS9vB+d2wSC8v4Be7didRiBGGq83IaynJRU9bpUJDDcMMBCpG7a1PERNIg+n9Q==}
     engines: {node: '>=14.15.0'}
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.5.3
     dev: true
 
   /@yarnpkg/fslib@3.0.0-rc.45:
@@ -9006,7 +9033,7 @@ packages:
     dependencies:
       '@types/emscripten': 1.39.6
       '@yarnpkg/fslib': 3.0.0-rc.42
-      tslib: 2.5.0
+      tslib: 2.5.3
     dev: true
 
   /@yarnpkg/libzip@3.0.0-rc.45(@yarnpkg/fslib@3.0.0-rc.45):
@@ -9047,7 +9074,7 @@ packages:
     engines: {node: '>=14.15.0'}
     dependencies:
       js-yaml: 3.14.1
-      tslib: 2.5.0
+      tslib: 2.5.3
     dev: true
 
   /@yarnpkg/parsers@3.0.0-rc.45:
@@ -9097,7 +9124,7 @@ packages:
       cross-spawn: 7.0.3
       fast-glob: 3.2.12
       micromatch: 4.0.5
-      tslib: 2.5.0
+      tslib: 2.5.3
     transitivePeerDependencies:
       - typanion
     dev: true

@@ -1,3 +1,4 @@
+import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {EditorStyleForm} from './EditorStyleForm';
 import {FrameStyleForm} from './FrameStyleForm';
 import {PanelDivider} from './PanelDivider';
@@ -6,14 +7,14 @@ import {WindowStyleForm} from './WindowStyleForm';
 export const EditorSidebar = () => {
   return (
     <>
-      <div>
+      <DynamicSizedContainer>
         <FrameStyleForm />
-      </div>
+      </DynamicSizedContainer>
       <PanelDivider />
 
-      <div>
+      <DynamicSizedContainer>
         <WindowStyleForm />
-      </div>
+      </DynamicSizedContainer>
       <PanelDivider />
 
       <div>
