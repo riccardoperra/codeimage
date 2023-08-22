@@ -10,6 +10,7 @@ import {SegmentedField} from '@codeimage/ui';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
+import {toTitleCase} from '@core/helpers/string';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -35,7 +36,7 @@ const languages: readonly LanguageDefinition[] = [...SUPPORTED_LANGUAGES].sort(
 export const EditorStyleForm: ParentComponent = () => {
   const {themeArray} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
-  const {editor, setLanguageId, formatter, setFormatter} =
+  const {editor, setLanguageId, formatter, setFormatterName} =
     getActiveEditorStore();
   const {
     state,
@@ -72,7 +73,7 @@ export const EditorStyleForm: ParentComponent = () => {
     () =>
       formatter.availableFormatters().map(value => {
         return {
-          label: value,
+          label: toTitleCase(value),
           value: value,
         };
       }),
@@ -171,7 +172,7 @@ export const EditorStyleForm: ParentComponent = () => {
                         formatter.availableFormatters()[0],
                       formatter => {
                         formatter = formatter as string;
-                        setFormatter(formatter);
+                        setFormatterName(formatter);
                       },
                     )}
                     disabled={formatter.availableFormatters().length === 1}

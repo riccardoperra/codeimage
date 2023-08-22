@@ -1,5 +1,4 @@
-import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {LanguageDefinition} from '@codeimage/config/src/lib/types/language-def';
+import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
 import type {
   BuiltInParserName,
   Options as PrettierOptions,
