@@ -18,7 +18,7 @@ export function ManagedFrame() {
   return (
     <Frame
       readOnly={readOnly()}
-      radius={0}
+      radius={frame.radius ?? 0}
       padding={frame.padding}
       background={frame.background}
       opacity={frame.opacity}

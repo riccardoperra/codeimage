@@ -11,6 +11,12 @@ export const [appEnvironment] = createConfiguration({
   themes: [],
   languages: [],
   editorPadding: [16, 32, 64, 128],
+  editorRadius: [
+    {label: '0', value: 0},
+    {label: '8', value: 8},
+    {label: '16', value: 16},
+    {label: '24', value: 24},
+  ],
   fonts: SUPPORTED_FONTS,
   defaultState: {
     editor: {
