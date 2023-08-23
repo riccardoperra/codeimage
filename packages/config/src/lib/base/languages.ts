@@ -108,7 +108,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         javascript({jsx: true, typescript: true}),
       ),
     prettier: {
-      name: 'Babel TypeScript',
+      name: 'TypeScript',
       parser: 'typescript',
       plugin: () => import('prettier/parser-typescript'),
     },
