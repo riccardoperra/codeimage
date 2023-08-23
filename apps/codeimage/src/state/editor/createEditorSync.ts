@@ -67,6 +67,7 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
         setReadonly(!loadedProject.isOwner);
         return loadedProject;
       } catch (e) {
+        console.info('Error while loading project', e);
         navigate('/404');
       }
     },
