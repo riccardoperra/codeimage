@@ -40,7 +40,7 @@ type Commands = {
 };
 
 const frameState = defineStore(() => getInitialFrameState())
-  .extend(withProxyCommands<Commands>())
+  .extend(withProxyCommands<Commands>({devtools: {storeName: 'testFrame'}}))
   .extend(store => {
     store
       .hold(store.commands.setBackground, (background, {state}) => ({

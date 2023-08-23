@@ -3,6 +3,7 @@ export {type AppStaticConfiguration} from './lib/types/configuration';
 export {
   type LanguageDefinition,
   type LanguageIconDefinition,
+  type PrettierPluginDefinition,
 } from './lib/types/language-def';
 export {
   type TerminalDefinition,

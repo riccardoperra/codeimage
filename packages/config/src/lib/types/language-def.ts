@@ -1,7 +1,8 @@
 import {Extension} from '@codemirror/state';
 import type {Plugin as PrettierPlugin, BuiltInParserName} from 'prettier';
 
-interface PrettierPluginDefinition {
+export interface PrettierPluginDefinition {
+  name: string;
   parser: string | BuiltInParserName;
   plugin?: () => Promise<PrettierPlugin | PrettierPlugin[]>;
 }
@@ -22,5 +23,5 @@ export interface LanguageDefinition {
   readonly featured?: boolean;
   readonly plugin: () => Promise<Extension>;
   readonly icons: LanguageIconDefinition[];
-  readonly prettier?: PrettierPluginDefinition;
+  readonly prettier?: PrettierPluginDefinition | PrettierPluginDefinition[];
 }

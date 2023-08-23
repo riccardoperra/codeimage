@@ -1,4 +1,8 @@
-import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {
+  LanguageDefinition,
+  PrettierPluginDefinition,
+  SUPPORTED_LANGUAGES,
+} from '@codeimage/config';
 import type {
   BuiltInParserName,
   Options as PrettierOptions,
@@ -25,9 +29,23 @@ const wrapPluginInPromise = (
   });
 };
 
+const resolveFormatter = (
+  pluginDef: LanguageDefinition['prettier'],
+  formatterName: string | null | undefined,
+) => {
+  if (!pluginDef) return;
+  if (!Array.isArray(pluginDef)) {
+    return pluginDef;
+  }
+  return !!formatterName
+    ? pluginDef.find(def => def.parser === formatterName)
+    : pluginDef[0];
+};
+
 function makePrettierFormatter(
   language: string,
   tabName: string | null,
+  formatterName: string | null | undefined,
 ): PrettierParserConfig {
   const selectedLanguage = SUPPORTED_LANGUAGES.find(
     supportedLanguage => supportedLanguage.id === language,
@@ -40,10 +58,15 @@ function makePrettierFormatter(
     };
   }
 
+  const prettierBySelectedLanguage = resolveFormatter(
+    selectedLanguage?.prettier,
+    formatterName,
+  );
+
   if (!tabName) {
     return {
-      parser: selectedLanguage?.prettier?.parser,
-      plugins: wrapPluginInPromise(selectedLanguage?.prettier?.plugin?.()),
+      parser: prettierBySelectedLanguage?.parser,
+      plugins: wrapPluginInPromise(prettierBySelectedLanguage?.plugin?.()),
     };
   }
 
@@ -54,16 +77,19 @@ function makePrettierFormatter(
 
   if (!matchedIcon) {
     return {
-      parser: selectedLanguage?.prettier?.parser,
-      plugins: wrapPluginInPromise(selectedLanguage?.prettier?.plugin?.()),
+      parser: prettierBySelectedLanguage?.parser,
+      plugins: wrapPluginInPromise(prettierBySelectedLanguage?.plugin?.()),
     };
   }
 
-  const prettier = matchedIcon?.prettier ?? selectedLanguage?.prettier;
+  const prettier = resolveFormatter(
+    matchedIcon?.prettier ?? selectedLanguage?.prettier,
+    formatterName,
+  );
   return {
     parentParser:
-      selectedLanguage.prettier?.parser !== matchedIcon.prettier?.parser
-        ? selectedLanguage?.prettier?.parser
+      prettierBySelectedLanguage?.parser !== matchedIcon.prettier?.parser
+        ? prettierBySelectedLanguage?.parser
         : undefined,
     parser: prettier?.parser,
     plugins: wrapPluginInPromise(prettier?.plugin?.()),
@@ -73,12 +99,17 @@ function makePrettierFormatter(
 export function createPrettierFormatter(
   language: Accessor<string>,
   tabName: Accessor<string>,
+  formatterName?: Accessor<string | null | undefined>,
 ) {
   const getFormatter = () =>
     import('prettier').then(prettier => prettier.format);
 
   const resolvedFormatter = createMemo(() =>
-    makePrettierFormatter(language(), tabName()),
+    makePrettierFormatter(
+      language(),
+      tabName(),
+      formatterName ? formatterName() : null,
+    ),
   );
 
   const canFormat = createMemo(() => {
@@ -88,9 +119,36 @@ export function createPrettierFormatter(
 
   return {
     canFormat,
+    availableFormatters(): PrettierPluginDefinition[] {
+      const currentLanguage = language();
+      const currentTab = tabName();
+      const selectedLanguage = SUPPORTED_LANGUAGES.find(
+        supportedLanguage => supportedLanguage.id === currentLanguage,
+      );
+      if (!selectedLanguage || !selectedLanguage.prettier) {
+        return [];
+      }
+      let formatters: PrettierPluginDefinition[] = [];
+      const languageFormatters = Array.isArray(selectedLanguage.prettier)
+        ? selectedLanguage.prettier
+        : [selectedLanguage.prettier];
+      formatters = [...formatters, ...languageFormatters];
+      // TODO: refactor this code, it's a copypaste
+      const matchedIcons =
+        selectedLanguage?.icons.filter(icon => icon.matcher.test(currentTab)) ??
+        [];
+      const matchedIcon = matchedIcons[matchedIcons.length - 1];
+      if (!matchedIcon) return formatters;
+      if (matchedIcon.prettier) {
+        // Formatters by tab name has priority
+        formatters = [matchedIcon.prettier, ...formatters];
+      }
+      return formatters;
+    },
     async format(
       code: string,
       options?: Omit<PrettierOptions, 'parser' | 'plugins'>,
+      formatterName?: string,
     ) {
       if (!untrack(canFormat)) {
         throw new Error('No configuration found');
@@ -102,9 +160,10 @@ export function createPrettierFormatter(
       if (!languageDef && !languageIconDef) {
         throw new Error('Invalid language definition');
       }
-      const {parser, plugins, parentParser} = await makePrettierFormatter(
+      const {parser, plugins, parentParser} = makePrettierFormatter(
         languageDef,
         languageIconDef,
+        formatterName,
       );
 
       if (!parser) {
