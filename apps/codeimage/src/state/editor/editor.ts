@@ -233,6 +233,7 @@ export function createEditorsStore() {
             tab: {
               tabName: editor.tabName,
             },
+            formatter: null,
             languageId: editor.languageId,
             id: editor.id,
             code: editor.code,

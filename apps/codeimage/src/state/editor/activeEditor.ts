@@ -61,7 +61,7 @@ const $activeEditorState = () => {
     createEffect(() => {
       const editor = currentEditorIndex();
       if (!!unsubscribe) unsubscribe();
-      if (!isNonNullable(editor)) return;
+      if (!isNonNullable(editor) || editor === -1) return;
       createRoot(dispose => {
         unsubscribe = dispose;
         const name = createMemo(() => currentEditor()?.tab?.tabName);
