@@ -1,5 +1,11 @@
 # @codeimage/api
 
+## 0.3.1
+
+### Patch Changes
+
+- [#560](https://github.com/riccardoperra/codeimage/pull/560) [`b0bb4c73`](https://github.com/riccardoperra/codeimage/commit/b0bb4c739f3d800007725c3314bebd549019f5fc) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Export with rounded corners
+
 ## 0.3.0
 
 ### Minor Changes
