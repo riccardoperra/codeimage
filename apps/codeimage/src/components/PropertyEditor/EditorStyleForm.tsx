@@ -36,7 +36,8 @@ const languages: readonly LanguageDefinition[] = [...SUPPORTED_LANGUAGES].sort(
 export const EditorStyleForm: ParentComponent = () => {
   const {themeArray} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
-  const {editor, setLanguageId} = getActiveEditorStore();
+  const {editor, setLanguageId, formatter, setFormatterName} =
+    getActiveEditorStore();
   const {
     state,
     actions: {setShowLineNumbers, setFontWeight, setFontId, setEnableLigatures},
@@ -65,6 +66,17 @@ export const EditorStyleForm: ParentComponent = () => {
             value: theme.id,
           };
         }),
+    {key: 'label', valueKey: 'value'},
+  );
+
+  const languageFormatterOptions = createSelectOptions(
+    () =>
+      formatter.availableFormatters().map(prettierPlugin => {
+        return {
+          label: prettierPlugin.name,
+          value: prettierPlugin.parser,
+        };
+      }),
     {key: 'label', valueKey: 'value'},
   );
 
@@ -143,6 +155,37 @@ export const EditorStyleForm: ParentComponent = () => {
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
+
+            <Show when={formatter.availableFormatters().length > 0}>
+              <PanelRow
+                for={'editorLanguageFormatterField'}
+                label={t('frame.formatter')}
+              >
+                <TwoColumnPanelRow>
+                  <SuspenseEditorItem
+                    fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                  >
+                    <Select
+                      {...languageFormatterOptions.props()}
+                      {...languageFormatterOptions.controlled(
+                        () =>
+                          editor()?.formatter ??
+                          formatter.availableFormatters()[0].parser,
+                        formatter => {
+                          formatter = formatter as string;
+                          setFormatterName(formatter);
+                        },
+                      )}
+                      disabled={formatter.availableFormatters().length === 1}
+                      options={languageFormatterOptions.options()}
+                      aria-label={'Editor language formatter'}
+                      id={'editorLanguageFormatterField'}
+                      size={'xs'}
+                    />
+                  </SuspenseEditorItem>
+                </TwoColumnPanelRow>
+              </PanelRow>
+            </Show>
 
             <PanelRow
               for={'frameLineNumbersField'}

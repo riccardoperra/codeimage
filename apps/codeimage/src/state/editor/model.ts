@@ -17,6 +17,7 @@ export interface EditorState {
   id: string;
   code: string;
   tab: TabState;
+  formatter?: string | null;
   languageId: string;
 }
 

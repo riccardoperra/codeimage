@@ -22,6 +22,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         javascript({jsx: true}),
       ),
     prettier: {
+      name: 'Babel',
       parser: 'babel',
       plugin: () => import('prettier/parser-babel'),
     },
@@ -58,6 +59,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extraLanguage: () =>
           import('@codemirror/lang-html').then(({html}) => html()),
         prettier: {
+          name: 'Vue',
           parser: 'vue',
           plugin: () => import('prettier/parser-html'),
         },
@@ -106,8 +108,9 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         javascript({jsx: true, typescript: true}),
       ),
     prettier: {
-      parser: 'babel-ts',
-      plugin: () => import('prettier/parser-babel'),
+      name: 'Babel TypeScript',
+      parser: 'typescript',
+      plugin: () => import('prettier/parser-typescript'),
     },
     icons: [
       {
@@ -142,6 +145,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extraLanguage: () =>
           import('@codemirror/lang-html').then(({html}) => html()),
         prettier: {
+          name: 'Vue',
           parser: 'vue',
           plugin: () => import('prettier/parser-html'),
         },
@@ -235,6 +239,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
     prettier: {
+      name: 'Java',
       parser: 'java',
       // @ts-expect-error No definitions
       plugin: () => import('prettier-plugin-java'),
@@ -265,6 +270,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     featured: true,
     plugin: () => import('@codemirror/lang-css').then(({css}) => css()),
     prettier: {
+      name: 'Css',
       parser: 'css',
       plugin: () => import('prettier/parser-postcss'),
     },
@@ -281,6 +287,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         content: () => import('material-icon-theme/icons/sass.svg?raw'),
         matcher: /^.*\.(scss|sass)$/,
         prettier: {
+          name: 'Scss',
           parser: 'scss',
           plugin: () => import('prettier/parser-postcss'),
         },
@@ -291,6 +298,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         content: () => import('material-icon-theme/icons/less.svg?raw'),
         matcher: /^.*\.(less)$/,
         prettier: {
+          name: 'Less',
           parser: 'less',
           plugin: () => import('prettier/parser-postcss'),
         },
@@ -331,6 +339,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         html({matchClosingTags: true, autoCloseTags: true}),
       ),
     prettier: {
+      name: 'Html',
       parser: 'html',
       plugin: () => import('prettier/parser-html'),
     },
@@ -347,6 +356,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         content: () => import('material-icon-theme/icons/html.svg?raw'),
         matcher: /^.*\.(component.html)$/,
         prettier: {
+          name: 'Angular',
           parser: 'angular',
           plugin: () =>
             Promise.all([
@@ -371,6 +381,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
     prettier: {
+      name: 'Php',
       parser: 'php',
       // @ts-expect-error No definitions
       plugin: () => import('@prettier/plugin-php/standalone.js'),
@@ -406,6 +417,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
     prettier: {
+      name: 'Markdown',
       parser: 'markdown',
       plugin: () => import('prettier/parser-markdown'),
     },
@@ -424,6 +436,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
     prettier: {
+      name: 'Rust',
       parser: 'jinx-rust',
       plugin: () => import('prettier-plugin-rust'),
     },
@@ -456,6 +469,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
     prettier: {
+      name: 'Xml',
       parser: 'xml',
       // @ts-expect-error No definitions
       plugin: () => import('@prettier/plugin-xml'),
@@ -506,10 +520,18 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(json)$/,
       },
     ],
-    prettier: {
-      parser: 'json5',
-      plugin: () => import('prettier/parser-babel'),
-    },
+    prettier: [
+      {
+        name: 'Json',
+        parser: 'json-stringify',
+        plugin: () => import('prettier/parser-babel'),
+      },
+      {
+        name: 'Json5',
+        parser: 'json5',
+        plugin: () => import('prettier/parser-babel'),
+      },
+    ],
   },
   {
     id: 'sql',
@@ -525,6 +547,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
     prettier: {
+      name: 'Sql',
       parser: 'sql',
       plugin: () => import('prettier-plugin-sql').then(res => res.default),
     },
