@@ -1,5 +1,19 @@
 # @codeimage/app
 
+## 1.4.2
+
+### Patch Changes
+
+- [#560](https://github.com/riccardoperra/codeimage/pull/560) [`b0bb4c73`](https://github.com/riccardoperra/codeimage/commit/b0bb4c739f3d800007725c3314bebd549019f5fc) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Export with rounded corners
+
+- [#560](https://github.com/riccardoperra/codeimage/pull/560) [`cbb04b7c`](https://github.com/riccardoperra/codeimage/commit/cbb04b7c0504ca5b32d1dd59f9273c70a4265bd3) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: customize formatter
+
+- [#560](https://github.com/riccardoperra/codeimage/pull/560) [`825077b9`](https://github.com/riccardoperra/codeimage/commit/825077b92172dcb0679b41a3a644402fa368bdbd) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: sidebar animations
+
+- Updated dependencies [[`b0bb4c73`](https://github.com/riccardoperra/codeimage/commit/b0bb4c739f3d800007725c3314bebd549019f5fc), [`cbb04b7c`](https://github.com/riccardoperra/codeimage/commit/cbb04b7c0504ca5b32d1dd59f9273c70a4265bd3)]:
+  - @codeimage/api@0.3.1
+  - @codeimage/config@8.2.2
+
 ## 1.4.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 8.2.2
+
+### Patch Changes
+
+- [#560](https://github.com/riccardoperra/codeimage/pull/560) [`cbb04b7c`](https://github.com/riccardoperra/codeimage/commit/cbb04b7c0504ca5b32d1dd59f9273c70a4265bd3) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: customize formatter
+
 ## 8.2.1
 
 ### Patch Changes
