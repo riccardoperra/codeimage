@@ -1,7 +1,8 @@
 import {Extension} from '@codemirror/state';
 import type {Plugin as PrettierPlugin, BuiltInParserName} from 'prettier';
 
-interface PrettierPluginDefinition {
+export interface PrettierPluginDefinition {
+  name: string;
   parser: string | BuiltInParserName;
   plugin?: () => Promise<PrettierPlugin | PrettierPlugin[]>;
 }

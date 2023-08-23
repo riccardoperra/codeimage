@@ -38,7 +38,7 @@ const $activeEditorState = () => {
             );
           }
         }
-        const defaultFormatter = formatter.availableFormatters()[0];
+        const defaultFormatter = formatter.availableFormatters()[0].parser;
         setEditors(currentEditorIndex(), 'formatter', defaultFormatter ?? null);
       }
     };
@@ -72,7 +72,7 @@ const $activeEditorState = () => {
             setEditors(
               currentEditorIndex(),
               'formatter',
-              defaultFormatter ?? null,
+              defaultFormatter?.parser ?? null,
             );
           }),
         );

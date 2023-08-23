@@ -10,7 +10,6 @@ import {SegmentedField} from '@codeimage/ui';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
-import {toTitleCase} from '@core/helpers/string';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
@@ -72,10 +71,10 @@ export const EditorStyleForm: ParentComponent = () => {
 
   const languageFormatterOptions = createSelectOptions(
     () =>
-      formatter.availableFormatters().map(value => {
+      formatter.availableFormatters().map(prettierPlugin => {
         return {
-          label: toTitleCase(value),
-          value: value,
+          label: prettierPlugin.name,
+          value: prettierPlugin.parser,
         };
       }),
     {key: 'label', valueKey: 'value'},
@@ -171,7 +170,7 @@ export const EditorStyleForm: ParentComponent = () => {
                       {...languageFormatterOptions.controlled(
                         () =>
                           editor()?.formatter ??
-                          formatter.availableFormatters()[0],
+                          formatter.availableFormatters()[0].parser,
                         formatter => {
                           formatter = formatter as string;
                           setFormatterName(formatter);

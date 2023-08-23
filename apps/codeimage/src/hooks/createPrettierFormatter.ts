@@ -1,4 +1,8 @@
-import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {
+  LanguageDefinition,
+  PrettierPluginDefinition,
+  SUPPORTED_LANGUAGES,
+} from '@codeimage/config';
 import type {
   BuiltInParserName,
   Options as PrettierOptions,
@@ -115,7 +119,7 @@ export function createPrettierFormatter(
 
   return {
     canFormat,
-    availableFormatters(): string[] {
+    availableFormatters(): PrettierPluginDefinition[] {
       const currentLanguage = language();
       const currentTab = tabName();
       const selectedLanguage = SUPPORTED_LANGUAGES.find(
@@ -124,10 +128,10 @@ export function createPrettierFormatter(
       if (!selectedLanguage || !selectedLanguage.prettier) {
         return [];
       }
-      let formatters: string[] = [];
+      let formatters: PrettierPluginDefinition[] = [];
       const languageFormatters = Array.isArray(selectedLanguage.prettier)
-        ? selectedLanguage.prettier.map(({parser}) => parser)
-        : [selectedLanguage.prettier.parser];
+        ? selectedLanguage.prettier
+        : [selectedLanguage.prettier];
       formatters = [...formatters, ...languageFormatters];
       // TODO: refactor this code, it's a copypaste
       const matchedIcons =
@@ -137,7 +141,7 @@ export function createPrettierFormatter(
       if (!matchedIcon) return formatters;
       if (matchedIcon.prettier) {
         // Formatters by tab name has priority
-        formatters = [matchedIcon.prettier.parser, ...formatters];
+        formatters = [matchedIcon.prettier, ...formatters];
       }
       return formatters;
     },
