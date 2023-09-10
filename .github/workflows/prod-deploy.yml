@@ -364,12 +364,8 @@ jobs:
         run: |
           pnpm --filter=@codeimage/website build
 
-      - name: Remove netlify.toml fix
-        run: |
-          rm -rf packages/kit/netlify.toml
-
       - name: Publish on Netlify
         run: npx netlify-cli@15.8.1 deploy --dir=apps/website/dist/public --trigger --prod
         env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.WEBSITE_NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.WEBSITE_NETLIFY_AUTH_TOKEN }}
