@@ -34,10 +34,10 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
   const terminal = getTerminalState();
   const editor = getRootEditorStore();
   const modality = useModality();
-  const {themeArray, themeLoading} = getThemeStore();
+  const {themeArray, themeArray2, themeLoading} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
   const [filteredThemes, search, setSearch, isMatched] =
-    useFilteredThemes(themeArray);
+    useFilteredThemes(themeArray2);
   const isSelected = createSelector(() => editor.state.options.themeId);
 
   const onSelectTheme = (theme: CustomTheme) => {

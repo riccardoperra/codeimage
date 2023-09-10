@@ -1,6 +1,4 @@
-import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
-import {tags as t} from '@lezer/highlight';
-import {defineEditorTheme} from '../../core';
+import {ThemeJsonDefinition} from '../../core';
 
 const palette = {
   white: '#D0D8E5',
@@ -20,52 +18,45 @@ const palette = {
   selection: '#1d3b53',
 };
 
-export const nightOwl = [
-  defineEditorTheme({
-    darkMode: true,
-    selection: {
-      backgroundColor: palette.selection,
-      color: palette.white,
-    },
-    cursor: {
-      color: palette.white,
-    },
-    lineNumbers: {
-      color: palette.lineNumbers,
-    },
-    autocomplete: {
-      background: '#011423',
-      border: '#5f7e97',
-      selectedBackground: '#011220',
-      selectedColor: palette.orange,
-    },
-    highlight: {
-      className: palette.yellow,
-      typeName: palette.green,
-      propertyName: palette.indigo,
-      keywords: palette.purple,
-      delimiters: palette.gray,
-      boolean: palette.red,
-      strings: palette.yellow,
-      regexp: palette.blue,
-      tag: palette.greenLight,
-      comments: palette.grayDark,
-      variableName: palette.indigo,
-      annotation: palette.purple,
-      base: palette.white,
-      numbers: palette.orange,
-      paren: palette.yellow2,
-      function: palette.indigo, // function name,
-    },
-  }),
-  syntaxHighlighting(
-    HighlightStyle.define([
-      {tag: t.null, color: palette.red},
-      {
-        tag: t.function(t.variableName),
-        fontStyle: 'italic',
+export const nightOwl: ThemeJsonDefinition = [
+  {
+    type: 'themeOption',
+    data: {
+      darkMode: true,
+      selection: {
+        backgroundColor: palette.selection,
+        color: palette.white,
       },
-      {tag: t.definition(t.variableName), color: palette.indigo},
-    ]),
-  ),
+      cursor: {
+        color: palette.white,
+      },
+      lineNumbers: {
+        color: palette.lineNumbers,
+      },
+      autocomplete: {
+        background: '#011423',
+        border: '#5f7e97',
+        selectedBackground: '#011220',
+        selectedColor: palette.orange,
+      },
+      highlight: {
+        className: palette.yellow,
+        typeName: palette.green,
+        propertyName: palette.indigo,
+        keywords: palette.purple,
+        delimiters: palette.gray,
+        boolean: palette.red,
+        strings: palette.yellow,
+        regexp: palette.blue,
+        tag: palette.greenLight,
+        comments: palette.grayDark,
+        variableName: palette.indigo,
+        annotation: palette.purple,
+        base: palette.white,
+        numbers: palette.orange,
+        paren: palette.yellow2,
+        function: palette.indigo, // function name,
+      },
+    },
+  },
 ];

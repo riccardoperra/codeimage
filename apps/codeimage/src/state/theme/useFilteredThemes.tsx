@@ -23,7 +23,7 @@ export function useFilteredThemes(
   };
 
   const filteredThemeIds = () => {
-    return filteredThemes().map(theme => theme()?.id);
+    return filteredThemes().map(theme => theme?.id);
   };
 
   const isMatched = (str: string) => {

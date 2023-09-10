@@ -1,6 +1,7 @@
 import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
 import {tags as t} from '@lezer/highlight';
 import {defineEditorTheme} from '../../core';
+import {ThemeJsonDefinition} from '../../core/theme-json';
 
 export const palette = {
   background: '#0a0b0e',
@@ -27,48 +28,52 @@ export const palette = {
   orange2: '#ce9178',
 };
 
-export const arcDark = [
-  defineEditorTheme({
-    highlight: {
-      keywords: palette.indigo,
-      strings: palette.orange2,
-      numbers: palette.orange,
-      boolean: palette.orange,
-      operators: palette.gray2,
-      brackets: palette.magenta,
-      paren: palette.magenta,
-      comments: palette.green1,
-      className: palette.cyanDark,
-      attrValue: palette.orange,
-      attrName: palette.yellow1,
-      function: palette.yellow1,
-      typeName: palette.sea,
-      propertyName: palette.green,
-      variableName: palette.blue1,
-      moduleKeyword: palette.magenta,
-      tag: palette.green,
-      base: palette.cyanLight,
-      variableNameSpecial: palette.green1,
-      delimiters: palette.indigo,
-      regexp: palette.red2,
-      self: palette.indigo,
+export const arkDark: ThemeJsonDefinition = [
+  {
+    type: 'themeOption',
+    data: {
+      highlight: {
+        keywords: palette.indigo,
+        strings: palette.orange2,
+        numbers: palette.orange,
+        boolean: palette.orange,
+        operators: palette.gray2,
+        brackets: palette.magenta,
+        paren: palette.magenta,
+        comments: palette.green1,
+        className: palette.cyanDark,
+        attrValue: palette.orange,
+        attrName: palette.yellow1,
+        function: palette.yellow1,
+        typeName: palette.sea,
+        propertyName: palette.green,
+        variableName: palette.blue1,
+        moduleKeyword: palette.magenta,
+        tag: palette.green,
+        base: palette.cyanLight,
+        variableNameSpecial: palette.green1,
+        delimiters: palette.indigo,
+        regexp: palette.red2,
+        self: palette.indigo,
+      },
+      darkMode: true,
+      autocomplete: {
+        background: palette.background,
+        selectedBackground: `${palette.cyan}50`,
+      },
+      cursor: {
+        color: palette.cyan,
+      },
+      selection: {
+        backgroundColor: `${palette.cyan}25`,
+      },
+      lineNumbers: {
+        color: palette.grayLight,
+      },
     },
-    darkMode: true,
-    autocomplete: {
-      background: palette.background,
-      selectedBackground: `${palette.cyan}50`,
-    },
-    cursor: {
-      color: palette.cyan,
-    },
-    selection: {
-      backgroundColor: `${palette.cyan}25`,
-    },
-    lineNumbers: {
-      color: palette.grayLight,
-    },
-  }),
-  syntaxHighlighting(
-    HighlightStyle.define([{tag: t.controlKeyword, color: palette.pink}]),
-  ),
+  },
+  {
+    type: 'customSyntax',
+    data: [{tag: 'controlKeyword', color: palette.pink}],
+  },
 ];

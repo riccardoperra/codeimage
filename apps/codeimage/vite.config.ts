@@ -64,11 +64,13 @@ export default defineConfig(({mode}) => ({
     },
   },
   build: {
-    sourcemap: false,
     minify: true,
     polyfillModulePreload: false,
     polyfillDynamicImport: false,
     cssCodeSplit: true,
     reportCompressedSize: true,
+  },
+  optimizeDeps: {
+    include: ['@codemirror/state', '@codemirror/view', '@codemirror/language'],
   },
 }));

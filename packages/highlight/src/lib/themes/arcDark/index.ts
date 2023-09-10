@@ -1,9 +1,11 @@
 import {createTheme} from '../../core';
-import {arcDark, palette} from './arcDark';
+import {arkDark, palette} from './arcDark';
+
+export {} from './arcDark';
 
 export const arcDarkTheme = createTheme({
   id: 'arkDark',
-  editorTheme: arcDark,
+  editorTheme: arkDark,
   properties: {
     darkMode: true,
     label: 'Arc Dark',

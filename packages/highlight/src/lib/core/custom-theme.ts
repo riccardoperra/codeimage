@@ -1,4 +1,5 @@
 import type {Extension} from '@codemirror/state';
+import {ThemeJsonDefinition} from './theme-json';
 
 export interface TerminalTabsTheme {
   background?: string;
@@ -49,7 +50,7 @@ export interface CustomTheme {
   /**
    * Custom theme editor base theme extension
    */
-  editorTheme: Extension;
+  editorTheme: ThemeJsonDefinition | Extension;
   /**
    * Custom theme properties
    */

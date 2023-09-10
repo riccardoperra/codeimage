@@ -60,6 +60,7 @@
     "prisma": "^4.15.0"
   },
   "devDependencies": {
+    "@codeimage/highlight": "workspace:*",
     "@types/node": "^18.16.17",
     "@types/sinon": "^10.0.15",
     "@vitest/ui": "^0.31.4",
