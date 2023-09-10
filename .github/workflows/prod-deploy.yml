@@ -366,7 +366,8 @@ jobs:
 
       - name: Publish on Netlify
         run: |
-          pnpm i -D netlify-cli@15.8.1
+          pnpm i -D -w netlify-cli@15.8.1
+          pnpm exec netlify link
           pnpm exec netlify deploy --dir=apps/website/dist/public --trigger --prod
         env:
           NETLIFY_SITE_ID: ${{ secrets.WEBSITE_NETLIFY_SITE_ID }}
