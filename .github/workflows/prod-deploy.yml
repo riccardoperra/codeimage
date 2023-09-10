@@ -8,6 +8,9 @@ on:
       deploy-frontend:
         type: boolean
         description: Deploy frontend
+      deploy-website:
+        type: boolean
+        description: Deploy website
 
 concurrency:
   group: deploy-${{ github.head_ref }}
@@ -330,6 +333,7 @@ jobs:
 
 
   deploy-website:
+    if: ${{ github.event.inputs.deploy-website == 'true' }}
     name: Deploy @codeimage/website
     environment: Production
     needs: [ install, lint, typecheck-packages, build-packages ]
@@ -359,6 +363,10 @@ jobs:
           VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
         run: |
           pnpm --filter=@codeimage/website build
+
+      - name: Remove netlify.toml fix
+        run: |
+          rm -rf packages/kit/netlify.toml
 
       - name: Publish on Netlify
         uses: netlify/actions/cli@master
