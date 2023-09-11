@@ -368,7 +368,7 @@ jobs:
         run: |
           pnpm i -D -w netlify-cli@15.8.1
           pnpm exec netlify link
-          pnpm exec netlify deploy --dir=apps/website/dist/public --trigger --prod
+          pnpm exec netlify deploy --dir=./apps/website/dist/public --site=${{ secrets.WEBSITE_NETLIFY_SITE_ID }} --trigger --prod
         env:
           NETLIFY_SITE_ID: ${{ secrets.WEBSITE_NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.WEBSITE_NETLIFY_AUTH_TOKEN }}
