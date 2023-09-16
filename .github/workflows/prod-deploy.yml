@@ -365,10 +365,9 @@ jobs:
           pnpm --filter=@codeimage/website build
 
       - name: Publish on Netlify
-        run: |
-          pnpm i -D -w netlify-cli@15.8.1
-          pnpm exec netlify link
-          pnpm exec netlify deploy --dir=./apps/website/dist/public --site=$WEBSITE_NETLIFY_SITE_ID --trigger --prod
+        working-directory: apps/website/dist/public
+        run:
+          pnpm exec netlify deploy --trigger --prod
         env:
           NETLIFY_SITE_ID: ${{ secrets.WEBSITE_NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.WEBSITE_NETLIFY_AUTH_TOKEN }}
