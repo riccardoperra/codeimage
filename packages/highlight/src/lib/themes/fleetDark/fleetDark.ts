@@ -27,7 +27,6 @@ export const palette = {
   number: tokens.yellow,
   boolean: tokens.cyan,
   string: tokens.pink,
-  cyan: tokens.cyan,
 };
 
 export const highlightStyle: HighlightStyle = HighlightStyle.define([
@@ -100,6 +99,14 @@ export const highlightStyle: HighlightStyle = HighlightStyle.define([
   {
     tag: [t.list],
     color: '#óEB83E2',
+  },
+  {
+    tag: [t.punctuation],
+    color: tokens.gray120,
+  },
+  {
+    tag: [t.variableName],
+    color: tokens.gray120,
   },
   {
     tag: [t.color, t.constant(t.name), t.standard(t.name)],
