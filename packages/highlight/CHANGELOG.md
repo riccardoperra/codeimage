@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 0.10.7
+
+### Patch Changes
+
+- [#570](https://github.com/riccardoperra/codeimage/pull/570) [`c43b882a`](https://github.com/riccardoperra/codeimage/commit/c43b882aff469b7f3dce92964a593a6194058362) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add Fleet theme
+
 ## 0.10.6
 
 ### Patch Changes
