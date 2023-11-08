@@ -1,5 +1,15 @@
 # @codeimage/app
 
+## 1.4.3
+
+### Patch Changes
+
+- [#570](https://github.com/riccardoperra/codeimage/pull/570) [`c43b882a`](https://github.com/riccardoperra/codeimage/commit/c43b882aff469b7f3dce92964a593a6194058362) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add Fleet theme
+
+- Updated dependencies [[`c43b882a`](https://github.com/riccardoperra/codeimage/commit/c43b882aff469b7f3dce92964a593a6194058362)]:
+  - @codeimage/highlight@0.10.7
+  - @codeimage/config@8.2.3
+
 ## 1.4.2
 
 ### Patch Changes
