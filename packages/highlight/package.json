@@ -117,6 +117,10 @@
     "./githubDarkDimmed": {
       "import": "./dist/lib/themes/githubDarkDimmed/index.js",
       "types": "./dist/lib/themes/githubDarkDimmed/index.d.ts"
+    },
+    "./fleetDark": {
+      "import": "./dist/lib/themes/fleetDark/index.js",
+      "types": "./dist/lib/themes/fleetDark/index.d.ts"
     }
   },
   "typesVersions": {
@@ -198,6 +202,9 @@
       ],
       "githubDarkDimmed": [
         "./dist/lib/themes/githubDarkDimmed/index.d.ts"
+      ],
+      "fleetDark": [
+        "./dist/lib/themes/fleetDark/index.d.ts"
       ]
     }
   },
