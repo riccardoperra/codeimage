@@ -5,6 +5,7 @@ export * from './coldarkDark';
 export * from './dracula';
 export * from './duotoneDark';
 export * from './duotoneSea';
+export * from './fleetDark';
 export * from './githubDark';
 export * from './githubDarkDimmed';
 export * from './githubLight';

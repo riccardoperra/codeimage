@@ -7,6 +7,11 @@ interface ThemeRegistryEntry {
 
 export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
   {
+    id: 'fleetTheme',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.fleetDarkTheme),
+  },
+  {
     id: 'vsCodeDarkTheme',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.vsCodeDarkTheme),
