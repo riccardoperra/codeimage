@@ -48,8 +48,8 @@ export const WindowStyleForm: ParentComponent = () => {
               fluid
               autoWidth
             >
-              <SegmentedControlItem value={'y'}>Default</SegmentedControlItem>
-              <SegmentedControlItem value={'n'}>
+              <SegmentedControlItem value={'n'}>Default</SegmentedControlItem>
+              <SegmentedControlItem value={'y'}>
                 Alternative
               </SegmentedControlItem>
             </SegmentedControl>
