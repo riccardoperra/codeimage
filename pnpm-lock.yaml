@@ -290,8 +290,8 @@ importers:
         specifier: ^6.11.0
         version: 6.11.0
       '@codeui/kit':
-        specifier: ^0.0.32
-        version: 0.0.32(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5)
+        specifier: ^0.0.33
+        version: 0.0.33(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5)
       '@floating-ui/core':
         specifier: ^1.2.2
         version: 1.2.6
@@ -3849,8 +3849,8 @@ packages:
       - vite
     dev: true
 
-  /@codeui/kit@0.0.32(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5):
-    resolution: {integrity: sha512-XIY/9BF0nnkoXJYKqxpl13Ug89fWi61ev6xiRuDj1YMnIHaz6QWmj5AagWLN2LbdPXE7YeD9ViAX+QWG3s425Q==}
+  /@codeui/kit@0.0.33(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5):
+    resolution: {integrity: sha512-iFTjw0ExCiOxxdPP+2WElGuHWD1882P96cpYKU6j5n2cUNPTH3mQZGMhKMva02X7tDFGEHiMUC2MpYW5zRI+Cg==}
     peerDependencies:
       solid-js: ^1.7.0
     dependencies:
@@ -12460,7 +12460,7 @@ packages:
       mute-stream: 0.0.8
       ora: 5.4.1
       run-async: 2.4.1
-      rxjs: 7.8.0
+      rxjs: 7.8.1
       string-width: 4.2.3
       strip-ansi: 6.0.1
       through: 2.3.8
