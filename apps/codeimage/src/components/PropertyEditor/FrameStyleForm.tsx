@@ -33,6 +33,7 @@ export const FrameStyleForm: ParentComponent = () => {
               size={'xs'}
               fluid
               id={'paddingField'}
+              autoWidth
             >
               <For each={editorPadding}>
                 {editorPadding => (
@@ -57,6 +58,7 @@ export const FrameStyleForm: ParentComponent = () => {
               size={'xs'}
               fluid
               id={'radiusField'}
+              autoWidth
             >
               <For each={editorRadius}>
                 {editorRadius => (
@@ -81,6 +83,7 @@ export const FrameStyleForm: ParentComponent = () => {
               size={'xs'}
               fluid
               id={'radiusField'}
+              autoWidth
             >
               <SegmentedControlItem value={'y'}>
                 {t('common.yes')}

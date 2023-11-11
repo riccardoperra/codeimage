@@ -205,6 +205,7 @@ export const EditorStyleForm: ParentComponent = () => {
                     onChange={value => setShowLineNumbers(value === 'y')}
                     id={'frameLineNumbersField'}
                     fluid
+                    autoWidth
                   >
                     <SegmentedControlItem value={'y'}>
                       {t('common.show')}
@@ -295,6 +296,7 @@ export const EditorStyleForm: ParentComponent = () => {
                     onChange={value => setEnableLigatures(value === 'y')}
                     size={'xs'}
                     fluid
+                    autoWidth
                     id={'frameLigaturesField'}
                   >
                     <SegmentedControlItem value={'y'}>

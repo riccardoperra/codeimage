@@ -46,6 +46,7 @@ export const WindowStyleForm: ParentComponent = () => {
               onChange={value => terminal.setAlternativeTheme(value === 'y')}
               size={'xs'}
               fluid
+              autoWidth
             >
               <SegmentedControlItem value={'y'}>Default</SegmentedControlItem>
               <SegmentedControlItem value={'n'}>
@@ -66,6 +67,7 @@ export const WindowStyleForm: ParentComponent = () => {
               onChange={value => terminal.setShowHeader(value === 'y')}
               size={'xs'}
               fluid
+              autoWidth
               id={'radiusField'}
             >
               <SegmentedControlItem value={'y'}>
@@ -116,6 +118,7 @@ export const WindowStyleForm: ParentComponent = () => {
               onChange={value => terminal.setAccentVisible(value === 'y')}
               size={'xs'}
               fluid
+              autoWidth
               id={'radiusField'}
             >
               <SegmentedControlItem value={'y'}>
@@ -139,6 +142,7 @@ export const WindowStyleForm: ParentComponent = () => {
               onChange={value => terminal.setShowGlassReflection(value === 'y')}
               size={'xs'}
               fluid
+              autoWidth
               id={'radiusField'}
             >
               <SegmentedControlItem value={'y'}>
@@ -162,6 +166,7 @@ export const WindowStyleForm: ParentComponent = () => {
               onChange={value => terminal.setShowWatermark(value === 'y')}
               size={'xs'}
               fluid
+              autoWidth
               id={'radiusField'}
             >
               <SegmentedControlItem value={'y'}>
