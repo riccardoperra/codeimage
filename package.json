@@ -39,7 +39,7 @@
     "postinstall": "pnpm patch-solid-exports",
     "dev": "pnpm --filter=@codeimage/app dev",
     "dev:api": "pnpm --filter=@codeimage/api dev",
-    "libs:build": "pnpm libs:build:core && pnpm libs:build:config && pnpm kit:build",
+    "libs:build": "pnpm libs:build:core && pnpm libs:build:config",
     "libs:build:core": "pnpm --filter \"@codeimage/*{packages/**}\" --filter='!@codeimage/config' --parallel build",
     "libs:build:config": "pnpm --filter=@codeimage/config build",
     "libs:build:watch": "pnpm --filter \"{packages/**}\" --filter='!@codeimage/config' --parallel --aggregate-output build:watch",
