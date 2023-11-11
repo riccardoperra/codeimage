@@ -7,14 +7,17 @@ import {
   FlexField,
   HStack,
   RangeField,
-  SegmentedField,
   SegmentedFieldItem,
   Text,
   VStack,
 } from '@codeimage/ui';
-import {PopoverContent} from '@codeui/kit';
+import {
+  PopoverContent,
+  SegmentedControl,
+  SegmentedControlItem,
+} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
-import {createSignal, Show} from 'solid-js';
+import {createSignal, For, Show} from 'solid-js';
 import {ExportExtension} from '../../hooks/use-export-image';
 import {AppLocaleEntries} from '../../i18n';
 import {ExclamationIcon} from '../Icons/Exclamation';
@@ -41,11 +44,22 @@ export function ExportPopoverContent() {
           <VStack spacing={'6'} marginTop={2} width={'100%'}>
             <FlexField size={'md'}>
               <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
-              <SegmentedField
+              <SegmentedControl
+                size={'sm'}
                 value={exportCanvasStore.get.extension}
-                onChange={value => exportCanvasStore.set('extension', value)}
-                items={extensionItems}
-              />
+                onChange={value =>
+                  exportCanvasStore.set('extension', value as ExportExtension)
+                }
+              >
+                <For each={extensionItems}>
+                  {item => (
+                    <SegmentedControlItem value={item.value}>
+                      {item.label}
+                    </SegmentedControlItem>
+                  )}
+                </For>
+              </SegmentedControl>
+
               <Show when={exportCanvasStore.get.extension === 'jpeg'}>
                 <Box marginTop={1}>
                   <FieldLabelHint
@@ -87,19 +101,28 @@ export function ExportPopoverContent() {
                   </FieldLabelHint>
                 </Box>
               </FieldLabel>
-              <SegmentedField
-                value={exportCanvasStore.get.devicePixelRatio}
+              <SegmentedControl
+                size={'sm'}
+                value={String(exportCanvasStore.get.devicePixelRatio)}
                 onChange={value =>
-                  exportCanvasStore.set('devicePixelRatio', value)
+                  exportCanvasStore.set('devicePixelRatio', Number(value))
                 }
-                items={[
-                  {label: '1x', value: 1},
-                  {label: '2x', value: 2},
-                  {label: '3x', value: 3},
-                  {label: '6x', value: 6},
-                ]}
-              />
-
+              >
+                <For
+                  each={[
+                    {label: '1x', value: 1},
+                    {label: '2x', value: 2},
+                    {label: '3x', value: 3},
+                    {label: '6x', value: 6},
+                  ]}
+                >
+                  {item => (
+                    <SegmentedControlItem value={item.value.toString()}>
+                      {item.label}
+                    </SegmentedControlItem>
+                  )}
+                </For>
+              </SegmentedControl>
               <HStack
                 spacing={6}
                 marginTop={5}

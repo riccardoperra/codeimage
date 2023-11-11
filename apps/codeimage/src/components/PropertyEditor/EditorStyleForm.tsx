@@ -6,8 +6,12 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {SegmentedField} from '@codeimage/ui';
-import {createSelectOptions, Select} from '@codeui/kit';
+import {
+  createSelectOptions,
+  SegmentedControl,
+  SegmentedControlItem,
+  Select,
+} from '@codeui/kit';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
@@ -195,16 +199,20 @@ export const EditorStyleForm: ParentComponent = () => {
                 <SuspenseEditorItem
                   fallback={<SkeletonLine width={'100%'} height={'26px'} />}
                 >
-                  <SegmentedField
+                  <SegmentedControl
                     size={'xs'}
+                    value={state.options.showLineNumbers ? 'y' : 'n'}
+                    onChange={value => setShowLineNumbers(value === 'y')}
                     id={'frameLineNumbersField'}
-                    value={state.options.showLineNumbers}
-                    onChange={setShowLineNumbers}
-                    items={[
-                      {label: t('common.show'), value: true},
-                      {label: t('common.hide'), value: false},
-                    ]}
-                  />
+                    fluid
+                  >
+                    <SegmentedControlItem value={'y'}>
+                      {t('common.show')}
+                    </SegmentedControlItem>
+                    <SegmentedControlItem value={'n'}>
+                      {t('common.hide')}
+                    </SegmentedControlItem>
+                  </SegmentedControl>
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
@@ -282,16 +290,20 @@ export const EditorStyleForm: ParentComponent = () => {
                 <SuspenseEditorItem
                   fallback={<SkeletonLine width={'85%'} height={'26px'} />}
                 >
-                  <SegmentedField
+                  <SegmentedControl
+                    value={state.options.enableLigatures ? 'y' : 'n'}
+                    onChange={value => setEnableLigatures(value === 'y')}
                     size={'xs'}
+                    fluid
                     id={'frameLigaturesField'}
-                    value={state.options.enableLigatures}
-                    onChange={setEnableLigatures}
-                    items={[
-                      {label: t('common.yes'), value: true},
-                      {label: t('common.no'), value: false},
-                    ]}
-                  />
+                  >
+                    <SegmentedControlItem value={'y'}>
+                      {t('common.yes')}
+                    </SegmentedControlItem>
+                    <SegmentedControlItem value={'n'}>
+                      {t('common.no')}
+                    </SegmentedControlItem>
+                  </SegmentedControl>
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
