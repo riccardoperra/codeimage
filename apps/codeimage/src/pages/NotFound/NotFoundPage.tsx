@@ -1,7 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Text} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
-import {As} from '@kobalte/core';
+import {As, Button} from '@codeui/kit';
 import {Link} from '@solidjs/router';
 import {AppLocaleEntries} from '../../i18n';
 import * as styles from './NotFoundPage.css';

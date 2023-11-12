@@ -1,13 +1,13 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {Badge} from '@codeimage/ui';
 import {
+  As,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@codeui/kit';
-import {As} from '@kobalte/core';
 import {GithubLoginButton} from '@ui/GithubLoginButton/GithubLoginButton';
 import {Show} from 'solid-js';
 import * as styles from './UserBadge.css';

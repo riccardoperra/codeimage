@@ -7,7 +7,6 @@ import {
   HStack,
   Link,
   RangeField,
-  SegmentedField,
   SegmentedFieldItem,
   toast,
   VStack,
@@ -24,6 +23,7 @@ import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {
   Component,
   createEffect,
@@ -201,6 +201,8 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
                   value={mode()}
                   onChange={setMode}
                   items={modeItems()}
+                  autoWidth
+                  size={'lg'}
                 />
                 <Show when={mode() === 'share'}>
                   <Box marginTop={1}>
@@ -231,6 +233,8 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
             <FlexField size={'md'}>
               <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
               <SegmentedField
+                autoWidth
+                size={'md'}
                 value={extension()}
                 onChange={setExtension}
                 items={extensionItems}

@@ -1,7 +1,8 @@
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
-import {RangeField, SegmentedField} from '@codeimage/ui';
+import {RangeField} from '@codeimage/ui';
 import {getUmami} from '@core/constants/umami';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine, SkeletonVCenter} from '@ui/Skeleton/Skeleton';
 import {ParentComponent, Show} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
@@ -27,6 +28,7 @@ export const FrameStyleForm: ParentComponent = () => {
             fallback={<SkeletonLine width={'100%'} height={'26px'} />}
           >
             <SegmentedField
+              adapt
               id={'paddingField'}
               size={'xs'}
               value={frame.store.padding}
@@ -46,6 +48,7 @@ export const FrameStyleForm: ParentComponent = () => {
             fallback={<SkeletonLine width={'100%'} height={'26px'} />}
           >
             <SegmentedField
+              adapt
               id={'radiusField'}
               size={'xs'}
               value={frame.store.radius}
@@ -65,6 +68,7 @@ export const FrameStyleForm: ParentComponent = () => {
             fallback={<SkeletonLine width={'100%'} height={'26px'} />}
           >
             <SegmentedField
+              adapt
               id={'visibleField'}
               size={'xs'}
               value={frame.store.visible}

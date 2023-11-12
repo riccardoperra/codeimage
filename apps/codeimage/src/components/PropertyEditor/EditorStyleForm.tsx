@@ -6,11 +6,11 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {SegmentedField} from '@codeimage/ui';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -197,6 +197,7 @@ export const EditorStyleForm: ParentComponent = () => {
                 >
                   <SegmentedField
                     size={'xs'}
+                    adapt
                     id={'frameLineNumbersField'}
                     value={state.options.showLineNumbers}
                     onChange={setShowLineNumbers}
@@ -283,6 +284,7 @@ export const EditorStyleForm: ParentComponent = () => {
                   fallback={<SkeletonLine width={'85%'} height={'26px'} />}
                 >
                   <SegmentedField
+                    adapt
                     size={'xs'}
                     id={'frameLigaturesField'}
                     value={state.options.enableLigatures}

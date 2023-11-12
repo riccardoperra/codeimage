@@ -4,6 +4,7 @@ import {useI18n} from '@codeimage/locale';
 import {getUiStore} from '@codeimage/store/ui';
 import {backgroundColorVar, Box, HStack, Text, toast} from '@codeimage/ui';
 import {
+  As,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -14,7 +15,6 @@ import {
 import {highlight as _highlight} from '@core/directives/highlight';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
-import {As} from '@kobalte/core';
 import {Link, useNavigate} from '@solidjs/router';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';

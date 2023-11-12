@@ -14,8 +14,8 @@ jobs:
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+#        with:
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -58,8 +58,8 @@ jobs:
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+#        with:
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -83,8 +83,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+#        with:
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -115,8 +115,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+#        with:
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -155,8 +155,8 @@ jobs:
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+#        with:
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -209,7 +209,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
-          submodules: 'true'
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -262,7 +262,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: 'true'
-          ref: 'refs/pull/${{ github.event.number }}/merge'
+#          ref: 'refs/pull/${{ github.event.number }}/merge'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -305,7 +305,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
-          submodules: 'true'
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -355,7 +355,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: 'refs/pull/${{ github.event.number }}/merge'
-          submodules: 'true'
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -383,8 +383,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+#        with:
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -445,8 +445,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+#        with:
+#          submodules: 'true'
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -481,8 +481,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+#        with:
+#          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:

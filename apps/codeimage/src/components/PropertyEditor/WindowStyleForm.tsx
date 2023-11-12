@@ -1,10 +1,11 @@
 import {useI18n} from '@codeimage/locale';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {Box, Group, RadioBlock, SegmentedField} from '@codeimage/ui';
+import {Box, Group, RadioBlock} from '@codeimage/ui';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, For, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -38,6 +39,7 @@ export const WindowStyleForm: ParentComponent = () => {
           >
             <SegmentedField
               size={'xs'}
+              adapt
               value={terminal.state.alternativeTheme}
               onChange={terminal.setAlternativeTheme}
               items={[
@@ -56,6 +58,7 @@ export const WindowStyleForm: ParentComponent = () => {
           >
             <SegmentedField
               size={'xs'}
+              adapt
               id={'frameHeaderInput'}
               value={terminal.state.showHeader}
               onChange={terminal.setShowHeader}
@@ -102,6 +105,7 @@ export const WindowStyleForm: ParentComponent = () => {
           <TwoColumnPanelRow>
             <SegmentedField
               size={'xs'}
+              adapt
               value={terminal.state.accentVisible}
               onChange={terminal.setAccentVisible}
               items={[
@@ -120,6 +124,7 @@ export const WindowStyleForm: ParentComponent = () => {
           >
             <SegmentedField
               size={'xs'}
+              adapt
               value={terminal.state.showGlassReflection}
               onChange={terminal.setShowGlassReflection}
               items={[
@@ -138,6 +143,7 @@ export const WindowStyleForm: ParentComponent = () => {
           >
             <SegmentedField
               size={'xs'}
+              adapt
               value={terminal.state.showWatermark}
               onChange={terminal.setShowWatermark}
               items={[

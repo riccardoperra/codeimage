@@ -242,7 +242,7 @@
     "@codeimage/ui": "workspace:0.10.3",
     "@codeimage/vanilla-extract": "workspace:0.2.0",
     "@codemirror/lang-javascript": "^6.1.7",
-    "@codeui/kit": "workspace:*",
+    "@codeui/kit": "^0.0.31",
     "@rollup/plugin-typescript": "^9.0.2",
     "@solid-aria/focus": "^0.1.4",
     "@types/node": "^18.14.6",

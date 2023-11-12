@@ -1,6 +1,5 @@
 import {SvgIcon} from '@codeimage/ui';
-import {IconButton, Popover, PopoverTrigger, Tooltip} from '@codeui/kit';
-import {As} from '@kobalte/core';
+import {As, IconButton, Popover, PopoverTrigger, Tooltip} from '@codeui/kit';
 import {ExportPopoverContent} from './ExportContent';
 
 export function ExportSettingsButton() {

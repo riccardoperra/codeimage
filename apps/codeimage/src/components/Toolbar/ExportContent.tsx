@@ -7,13 +7,13 @@ import {
   FlexField,
   HStack,
   RangeField,
-  SegmentedField,
   SegmentedFieldItem,
   Text,
   VStack,
 } from '@codeimage/ui';
 import {PopoverContent} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Show} from 'solid-js';
 import {ExportExtension} from '../../hooks/use-export-image';
 import {AppLocaleEntries} from '../../i18n';
@@ -42,6 +42,8 @@ export function ExportPopoverContent() {
             <FlexField size={'md'}>
               <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
               <SegmentedField
+                size={'sm'}
+                autoWidth
                 value={exportCanvasStore.get.extension}
                 onChange={value => exportCanvasStore.set('extension', value)}
                 items={extensionItems}
@@ -88,6 +90,7 @@ export function ExportPopoverContent() {
                 </Box>
               </FieldLabel>
               <SegmentedField
+                size={'sm'}
                 value={exportCanvasStore.get.devicePixelRatio}
                 onChange={value =>
                   exportCanvasStore.set('devicePixelRatio', value)
