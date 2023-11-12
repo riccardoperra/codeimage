@@ -1,8 +1,13 @@
 import {DEFAULT_ASPECT_RATIOS} from '@codeimage/config';
 import {Box, HStack, Text} from '@codeimage/ui';
-import {IconButton, Popover, PopoverContent, PopoverTrigger} from '@codeui/kit';
+import {
+  As,
+  IconButton,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
-import {As} from '@kobalte/core';
 import {
   ExperimentalFeatureTooltip,
   ExperimentalIcon,

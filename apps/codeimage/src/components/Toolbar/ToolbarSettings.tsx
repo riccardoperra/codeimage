@@ -1,6 +1,7 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 
 import {
+  As,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -9,7 +10,6 @@ import {
   IconButton,
 } from '@codeui/kit';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
-import {As} from '@kobalte/core';
 import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';
 import {MenuAlt2Icon} from '../Icons/DotVertical';

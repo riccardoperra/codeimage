@@ -15,11 +15,11 @@ import {
   DropdownMenuTrigger,
   IconButton,
   Tooltip,
+  As,
 } from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
-import {As} from '@kobalte/core';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
