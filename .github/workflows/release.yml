@@ -8,10 +8,7 @@ on:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        node-version: [ 16.13.2 ]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
