@@ -7,7 +7,6 @@ import {
   FlexField,
   HStack,
   RangeField,
-  SegmentedField,
   SegmentedFieldItem,
   Text,
   VStack,
@@ -91,6 +90,7 @@ export function ExportPopoverContent() {
                 </Box>
               </FieldLabel>
               <SegmentedField
+                size={'sm'}
                 value={exportCanvasStore.get.devicePixelRatio}
                 onChange={value =>
                   exportCanvasStore.set('devicePixelRatio', value)

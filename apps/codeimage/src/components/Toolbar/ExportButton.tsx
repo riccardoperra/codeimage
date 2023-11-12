@@ -7,7 +7,6 @@ import {
   HStack,
   Link,
   RangeField,
-  SegmentedField,
   SegmentedFieldItem,
   toast,
   VStack,
@@ -202,7 +201,8 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
                   value={mode()}
                   onChange={setMode}
                   items={modeItems()}
-                  size={'md'}
+                  autoWidth
+                  size={'lg'}
                 />
                 <Show when={mode() === 'share'}>
                   <Box marginTop={1}>
@@ -233,6 +233,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
             <FlexField size={'md'}>
               <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
               <SegmentedField
+                autoWidth
                 size={'md'}
                 value={extension()}
                 onChange={setExtension}
