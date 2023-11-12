@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.4.4
+
+### Patch Changes
+
+- [`88b1da23`](https://github.com/riccardoperra/codeimage/commit/88b1da2327e76cb785de352e98d124b55b523328) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add segmented ui from @codeui/kit
+
 ## 1.4.3
 
 ### Patch Changes
