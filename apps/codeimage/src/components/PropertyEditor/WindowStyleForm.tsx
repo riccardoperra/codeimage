@@ -1,15 +1,11 @@
 import {useI18n} from '@codeimage/locale';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Box, Group, RadioBlock} from '@codeimage/ui';
-import {
-  createSelectOptions,
-  SegmentedControl,
-  SegmentedControlItem,
-  Select,
-} from '@codeui/kit';
+import {createSelectOptions, Select} from '@codeui/kit';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, For, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -41,18 +37,16 @@ export const WindowStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'24px'} />}
           >
-            <SegmentedControl
-              value={terminal.state.alternativeTheme ? 'y' : 'n'}
-              onChange={value => terminal.setAlternativeTheme(value === 'y')}
+            <SegmentedField
               size={'xs'}
-              fluid
-              autoWidth
-            >
-              <SegmentedControlItem value={'n'}>Default</SegmentedControlItem>
-              <SegmentedControlItem value={'y'}>
-                Alternative
-              </SegmentedControlItem>
-            </SegmentedControl>
+              adapt
+              value={terminal.state.alternativeTheme}
+              onChange={terminal.setAlternativeTheme}
+              items={[
+                {label: 'Default', value: false},
+                {label: 'Alternative', value: true},
+              ]}
+            />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
       </PanelRow>
@@ -62,21 +56,17 @@ export const WindowStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'24px'} />}
           >
-            <SegmentedControl
-              value={terminal.state.showHeader ? 'y' : 'n'}
-              onChange={value => terminal.setShowHeader(value === 'y')}
+            <SegmentedField
               size={'xs'}
-              fluid
-              autoWidth
-              id={'radiusField'}
-            >
-              <SegmentedControlItem value={'y'}>
-                {t('common.yes')}
-              </SegmentedControlItem>
-              <SegmentedControlItem value={'n'}>
-                {t('common.no')}
-              </SegmentedControlItem>
-            </SegmentedControl>
+              adapt
+              id={'frameHeaderInput'}
+              value={terminal.state.showHeader}
+              onChange={terminal.setShowHeader}
+              items={[
+                {label: t('common.yes'), value: true},
+                {label: t('common.no'), value: false},
+              ]}
+            />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
       </PanelRow>
@@ -113,21 +103,16 @@ export const WindowStyleForm: ParentComponent = () => {
       >
         <PanelRow for={'frameTabAccentField'} label={t('frame.tabAccent')}>
           <TwoColumnPanelRow>
-            <SegmentedControl
-              value={terminal.state.accentVisible ? 'y' : 'n'}
-              onChange={value => terminal.setAccentVisible(value === 'y')}
+            <SegmentedField
               size={'xs'}
-              fluid
-              autoWidth
-              id={'radiusField'}
-            >
-              <SegmentedControlItem value={'y'}>
-                {t('common.yes')}
-              </SegmentedControlItem>
-              <SegmentedControlItem value={'n'}>
-                {t('common.no')}
-              </SegmentedControlItem>
-            </SegmentedControl>
+              adapt
+              value={terminal.state.accentVisible}
+              onChange={terminal.setAccentVisible}
+              items={[
+                {label: t('common.yes'), value: true},
+                {label: t('common.no'), value: false},
+              ]}
+            />
           </TwoColumnPanelRow>
         </PanelRow>
       </Show>
@@ -137,21 +122,16 @@ export const WindowStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'24px'} />}
           >
-            <SegmentedControl
-              value={terminal.state.showGlassReflection ? 'y' : 'n'}
-              onChange={value => terminal.setShowGlassReflection(value === 'y')}
+            <SegmentedField
               size={'xs'}
-              fluid
-              autoWidth
-              id={'radiusField'}
-            >
-              <SegmentedControlItem value={'y'}>
-                {t('common.show')}
-              </SegmentedControlItem>
-              <SegmentedControlItem value={'n'}>
-                {t('common.hide')}
-              </SegmentedControlItem>
-            </SegmentedControl>
+              adapt
+              value={terminal.state.showGlassReflection}
+              onChange={terminal.setShowGlassReflection}
+              items={[
+                {label: t('common.show'), value: true},
+                {label: t('common.hide'), value: false},
+              ]}
+            />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
       </PanelRow>
@@ -161,21 +141,16 @@ export const WindowStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'24px'} />}
           >
-            <SegmentedControl
-              value={terminal.state.showWatermark ? 'y' : 'n'}
-              onChange={value => terminal.setShowWatermark(value === 'y')}
+            <SegmentedField
               size={'xs'}
-              fluid
-              autoWidth
-              id={'radiusField'}
-            >
-              <SegmentedControlItem value={'y'}>
-                {t('common.show')}
-              </SegmentedControlItem>
-              <SegmentedControlItem value={'n'}>
-                {t('common.hide')}
-              </SegmentedControlItem>
-            </SegmentedControl>
+              adapt
+              value={terminal.state.showWatermark}
+              onChange={terminal.setShowWatermark}
+              items={[
+                {label: t('common.show'), value: true},
+                {label: t('common.hide'), value: false},
+              ]}
+            />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
       </PanelRow>

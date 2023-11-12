@@ -1,10 +1,10 @@
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {RangeField} from '@codeimage/ui';
-import {SegmentedControl, SegmentedControlItem} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine, SkeletonVCenter} from '@ui/Skeleton/Skeleton';
-import {For, ParentComponent, Show} from 'solid-js';
+import {ParentComponent, Show} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
 import {AppLocaleEntries} from '../../i18n';
 import {AspectRatioPicker} from './controls/AspectRatioPicker/AspectRatioPicker';
@@ -27,22 +27,17 @@ export const FrameStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'26px'} />}
           >
-            <SegmentedControl
-              value={String(frame.store.padding)}
-              onChange={value => frame.setPadding(Number(value))}
-              size={'xs'}
-              fluid
+            <SegmentedField
+              adapt
               id={'paddingField'}
-              autoWidth
-            >
-              <For each={editorPadding}>
-                {editorPadding => (
-                  <SegmentedControlItem value={String(editorPadding)}>
-                    {editorPadding}
-                  </SegmentedControlItem>
-                )}
-              </For>
-            </SegmentedControl>
+              size={'xs'}
+              value={frame.store.padding}
+              onChange={frame.setPadding}
+              items={editorPadding.map(padding => ({
+                label: padding.toString(),
+                value: padding,
+              }))}
+            />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
       </PanelRow>
@@ -52,22 +47,17 @@ export const FrameStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'26px'} />}
           >
-            <SegmentedControl
-              value={String(frame.store.radius)}
-              onChange={value => frame.setRadius(Number(value))}
-              size={'xs'}
-              fluid
+            <SegmentedField
+              adapt
               id={'radiusField'}
-              autoWidth
-            >
-              <For each={editorRadius}>
-                {editorRadius => (
-                  <SegmentedControlItem value={String(editorRadius.value)}>
-                    {editorRadius.label}
-                  </SegmentedControlItem>
-                )}
-              </For>
-            </SegmentedControl>
+              size={'xs'}
+              value={frame.store.radius}
+              onChange={frame.setRadius}
+              items={editorRadius.map(padding => ({
+                label: padding.label,
+                value: padding.value,
+              }))}
+            />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
       </PanelRow>
@@ -77,21 +67,17 @@ export const FrameStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'26px'} />}
           >
-            <SegmentedControl
-              value={frame.store.visible ? 'y' : 'n'}
-              onChange={value => frame.setVisibility(value === 'y')}
+            <SegmentedField
+              adapt
+              id={'visibleField'}
               size={'xs'}
-              fluid
-              id={'radiusField'}
-              autoWidth
-            >
-              <SegmentedControlItem value={'y'}>
-                {t('common.yes')}
-              </SegmentedControlItem>
-              <SegmentedControlItem value={'n'}>
-                {t('common.no')}
-              </SegmentedControlItem>
-            </SegmentedControl>
+              value={frame.store.visible}
+              onChange={frame.setVisibility}
+              items={[
+                {label: t('common.yes'), value: true},
+                {label: t('common.no'), value: false},
+              ]}
+            />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
       </PanelRow>

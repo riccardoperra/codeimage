@@ -1,7 +1,11 @@
 import {useI18n} from '@codeimage/locale';
 import {isAssetUrl} from '@codeimage/store/assets/assets';
-import {FlexField, SegmentedFieldItem, VStack} from '@codeimage/ui';
-import {SegmentedControl, SegmentedControlItem, TextField} from '@codeui/kit';
+import {FlexField, VStack} from '@codeimage/ui';
+import {TextField} from '@codeui/kit';
+import {
+  SegmentedFieldItem,
+  SegmentedField,
+} from '@ui/SegmentedField/SegmentedField';
 import {
   Accessor,
   createEffect,
@@ -67,15 +71,12 @@ export function ColorPickerPopover(props: VoidProps<ColorPickerPopoverProps>) {
   return (
     <VStack spacing={4}>
       <FlexField size={'md'}>
-        <SegmentedControl size={'sm'} value={mode()} onChange={setMode}>
-          <For each={modalities()}>
-            {modality => (
-              <SegmentedControlItem value={modality.value}>
-                {modality.label}
-              </SegmentedControlItem>
-            )}
-          </For>
-        </SegmentedControl>
+        <SegmentedField
+          size={'sm'}
+          value={mode()}
+          onChange={setMode}
+          items={modalities()}
+        />
       </FlexField>
 
       <Show when={mode() === ColorPickerSelectionMode.color}>

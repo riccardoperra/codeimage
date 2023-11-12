@@ -7,6 +7,7 @@ import {
   HStack,
   Link,
   RangeField,
+  SegmentedField,
   SegmentedFieldItem,
   toast,
   VStack,
@@ -18,18 +19,16 @@ import {
   DialogPanelContent,
   DialogPanelFooter,
   DialogProps,
-  SegmentedControl,
-  SegmentedControlItem,
 } from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {
   Component,
   createEffect,
   createSignal,
-  For,
   onMount,
   Show,
   untrack,
@@ -199,15 +198,12 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
           <VStack spacing={'6'}>
             <Show when={supportWebShare()}>
               <FlexField size={'lg'}>
-                <SegmentedControl value={mode()} onChange={setMode} size={'md'}>
-                  <For each={modeItems()}>
-                    {item => (
-                      <SegmentedControlItem value={item.value}>
-                        {item.label}
-                      </SegmentedControlItem>
-                    )}
-                  </For>
-                </SegmentedControl>
+                <SegmentedField
+                  value={mode()}
+                  onChange={setMode}
+                  items={modeItems()}
+                  size={'md'}
+                />
                 <Show when={mode() === 'share'}>
                   <Box marginTop={1}>
                     <FieldLabelHint
@@ -236,19 +232,12 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
 
             <FlexField size={'md'}>
               <FieldLabel size={'sm'}>{t('export.extensionType')}</FieldLabel>
-              <SegmentedControl
+              <SegmentedField
+                size={'md'}
                 value={extension()}
                 onChange={setExtension}
-                size={'md'}
-              >
-                <For each={extensionItems}>
-                  {item => (
-                    <SegmentedControlItem value={item.value}>
-                      {item.label}
-                    </SegmentedControlItem>
-                  )}
-                </For>
-              </SegmentedControl>
+                items={extensionItems}
+              />
               <Show when={extension() === 'jpeg'}>
                 <Box marginTop={1}>
                   <FieldLabelHint

@@ -6,15 +6,11 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {
-  createSelectOptions,
-  SegmentedControl,
-  SegmentedControlItem,
-  Select,
-} from '@codeui/kit';
+import {createSelectOptions, Select} from '@codeui/kit';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
@@ -199,21 +195,17 @@ export const EditorStyleForm: ParentComponent = () => {
                 <SuspenseEditorItem
                   fallback={<SkeletonLine width={'100%'} height={'26px'} />}
                 >
-                  <SegmentedControl
+                  <SegmentedField
                     size={'xs'}
-                    value={state.options.showLineNumbers ? 'y' : 'n'}
-                    onChange={value => setShowLineNumbers(value === 'y')}
+                    adapt
                     id={'frameLineNumbersField'}
-                    fluid
-                    autoWidth
-                  >
-                    <SegmentedControlItem value={'y'}>
-                      {t('common.show')}
-                    </SegmentedControlItem>
-                    <SegmentedControlItem value={'n'}>
-                      {t('common.hide')}
-                    </SegmentedControlItem>
-                  </SegmentedControl>
+                    value={state.options.showLineNumbers}
+                    onChange={setShowLineNumbers}
+                    items={[
+                      {label: t('common.show'), value: true},
+                      {label: t('common.hide'), value: false},
+                    ]}
+                  />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
@@ -291,21 +283,17 @@ export const EditorStyleForm: ParentComponent = () => {
                 <SuspenseEditorItem
                   fallback={<SkeletonLine width={'85%'} height={'26px'} />}
                 >
-                  <SegmentedControl
-                    value={state.options.enableLigatures ? 'y' : 'n'}
-                    onChange={value => setEnableLigatures(value === 'y')}
+                  <SegmentedField
+                    adapt
                     size={'xs'}
-                    fluid
-                    autoWidth
                     id={'frameLigaturesField'}
-                  >
-                    <SegmentedControlItem value={'y'}>
-                      {t('common.yes')}
-                    </SegmentedControlItem>
-                    <SegmentedControlItem value={'n'}>
-                      {t('common.no')}
-                    </SegmentedControlItem>
-                  </SegmentedControl>
+                    value={state.options.enableLigatures}
+                    onChange={setEnableLigatures}
+                    items={[
+                      {label: t('common.yes'), value: true},
+                      {label: t('common.no'), value: false},
+                    ]}
+                  />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
