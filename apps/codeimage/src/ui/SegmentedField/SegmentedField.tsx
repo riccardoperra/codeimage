@@ -6,7 +6,8 @@ import {
 import {For, JSX, JSXElement} from 'solid-js';
 
 /**
- * @deprecated This is just a wrapper for @codeui/kit SegmentedField
+ * TODO: port SegmentedControl with items support
+ * @deprecated This is just a wrapper for @codeui/kit SegmentedControl
  */
 export interface SegmentedFieldItem<T> {
   label: string | JSXElement;
@@ -14,7 +15,8 @@ export interface SegmentedFieldItem<T> {
 }
 
 /**
- * @deprecated This is just a wrapper for @codeui/kit SegmentedField
+ * TODO: port SegmentedControl with items support
+ * @deprecated This is just a wrapper for @codeui/kit SegmentedControl
  */
 interface SegmentedFieldProps<T> {
   items: readonly SegmentedFieldItem<T>[];
@@ -28,9 +30,8 @@ interface SegmentedFieldProps<T> {
 }
 
 /**
- * @deprecated This is just a wrapper for @codeui/kit SegmentedField
- * @param props
- * @constructor
+ * TODO: port SegmentedControl with items support
+ * @deprecated This is just a wrapper for @codeui/kit SegmentedControl
  */
 export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
   const value = (): string => {
