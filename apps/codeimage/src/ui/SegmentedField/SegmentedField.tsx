@@ -36,6 +36,7 @@ interface SegmentedFieldProps<T> {
 export function SegmentedField<T>(props: SegmentedFieldProps<T>): JSX.Element {
   const value = (): string => {
     const index = props.items.findIndex(item => item.value === props.value);
+    if (index === -1) return String(0);
     return String(index);
   };
 
