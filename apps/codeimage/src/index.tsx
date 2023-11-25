@@ -106,6 +106,12 @@ export function Bootstrap() {
       },
     },
     {
+      path: 'theme-builder',
+      component: lazyWithNoLauncher(
+        () => import('./pages/ThemeBuilder/ThemeBuilderPage'),
+      ),
+    },
+    {
       path: '/*all',
       data: ({navigate}) => navigate('/404'),
       component: NotFoundPage,
