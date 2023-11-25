@@ -14,6 +14,7 @@ import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
+import {FontPicker} from './controls/FontPicker/FontPicker';
 import {PanelDivider} from './PanelDivider';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
@@ -250,6 +251,22 @@ export const EditorStyleForm: ParentComponent = () => {
                         {itemLabelProps.label}
                       </span>
                     )}
+                  />
+                </SuspenseEditorItem>
+              </TwoColumnPanelRow>
+            </PanelRow>
+
+            <PanelRow for={'aspectRatio'} label={t('frame.font')}>
+              <TwoColumnPanelRow>
+                <SuspenseEditorItem
+                  fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                >
+                  <FontPicker
+                    value={font().id}
+                    onChange={fontId => {
+                      console.log('font id', fontId, SUPPORTED_FONTS);
+                      setFontId(fontId ?? SUPPORTED_FONTS[0].id);
+                    }}
                   />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
