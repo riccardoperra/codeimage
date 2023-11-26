@@ -290,8 +290,8 @@ importers:
         specifier: ^6.11.0
         version: 6.11.0
       '@codeui/kit':
-        specifier: ^0.0.35
-        version: 0.0.35(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5)
+        specifier: ^0.0.36
+        version: 0.0.36(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5)
       '@floating-ui/core':
         specifier: ^1.2.2
         version: 1.2.6
@@ -3849,8 +3849,8 @@ packages:
       - vite
     dev: true
 
-  /@codeui/kit@0.0.35(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5):
-    resolution: {integrity: sha512-jojdJZ++0wjtmCPu1BdNnXRdhwuZ4Mtd035sO/liQMLeaxVFUzic9nPwpz6oj+QNie7m+jV9M8W14JElryImoA==}
+  /@codeui/kit@0.0.36(solid-js@1.7.3)(ts-node@10.9.1)(vite@3.2.5):
+    resolution: {integrity: sha512-JVuj/S47X90eN8s3GN7MWlj+GqzlRxsfqzR3w0fmYswqzctjuLTKXOCrHIlRFeqVDrDq0pyOOnVuoISXZAMz1Q==}
     peerDependencies:
       solid-js: ^1.7.0
     dependencies:

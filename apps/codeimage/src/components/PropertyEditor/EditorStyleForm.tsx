@@ -99,15 +99,6 @@ export const EditorStyleForm: ParentComponent = () => {
     valueKey: 'value',
   });
 
-  const fontOptions = createSelectOptions(
-    () =>
-      configStore.get.fonts.map(font => ({
-        label: font.name,
-        value: font.id,
-      })),
-    {key: 'label', valueKey: 'value'},
-  );
-
   return (
     <Show when={editor()}>
       {editor => (
