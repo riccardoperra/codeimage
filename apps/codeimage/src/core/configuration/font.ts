@@ -3,12 +3,14 @@ import {mapToDictionary} from '../helpers/mapToDictionary';
 interface CustomFontType {
   name: string;
   weight: number;
+  fontData?: FontData;
 }
 
-interface CustomFontConfiguration {
-  readonly id: string;
-  readonly name: string;
-  readonly types: readonly CustomFontType[];
+export interface CustomFontConfiguration {
+  id: string;
+  name: string;
+  custom: boolean;
+  types: readonly CustomFontType[];
 }
 
 function createCustomFonts<T extends ReadonlyArray<CustomFontConfiguration>>(
@@ -23,6 +25,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'jetbrains-mono',
     name: 'Jetbrains Mono',
+    custom: false,
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Medium', weight: 500},
@@ -32,6 +35,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'fira-code',
     name: 'Fira Code',
+    custom: false,
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Medium', weight: 500},
@@ -41,6 +45,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'source-code-pro',
     name: 'Source Code pro',
+    custom: false,
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Medium', weight: 500},
@@ -50,6 +55,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'overpass-mono',
     name: 'Overpass Mono',
+    custom: false,
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Medium', weight: 500},
@@ -59,6 +65,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'space-mono',
     name: 'Space Mono',
+    custom: false,
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Bold', weight: 700},
@@ -67,6 +74,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'cascadia-code',
     name: 'Cascadia Code',
+    custom: false,
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Bold', weight: 700},

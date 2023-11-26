@@ -1,3 +1,4 @@
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {Box, FlexField, HStack, Text, VStack} from '@codeimage/ui';
 import {
   As,
@@ -6,8 +7,8 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  icons,
 } from '@codeui/kit';
-import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {useModality} from '@core/hooks/isMobile';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {
@@ -16,8 +17,8 @@ import {
 } from '@ui/ExperimentalFeatureTooltip/ExperimentalFeatureTooltip';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Match, Switch} from 'solid-js';
+import {provideState} from 'statebuilder';
 import {CloseIcon} from '../../../Icons/CloseIcon';
-import {fontPickerPopover} from './FontPicker.css';
 import * as styles from './FontPicker.css';
 import {createFontPickerListboxProps} from './FontPickerListbox';
 import {FontSystemPicker} from './FontSystemPicker';
@@ -36,6 +37,15 @@ export function FontPicker(props: FontPickerProps) {
   const [open, setOpen] = createSignal(false);
   const [mode, setMode] = createSignal<FontPickerModality>('default');
   const modality = useModality();
+  const configState = provideState(EditorConfigStore);
+
+  const webListboxItems = () =>
+    configState.get.fonts
+      .filter(font => !font.custom)
+      .map(font => ({
+        label: font.name,
+        value: font.id,
+      }));
 
   const webListboxProps = createFontPickerListboxProps({
     onEsc: () => setOpen(false),
@@ -44,12 +54,14 @@ export function FontPicker(props: FontPickerProps) {
       return props.value;
     },
     get items() {
-      return SUPPORTED_FONTS.map(font => ({
-        label: font.name,
-        value: font.id,
-      }));
+      return webListboxItems();
     },
   });
+
+  const selectedFont = () =>
+    [...configState.get.fonts, ...configState.get.systemFonts].find(
+      font => font.id === props.value,
+    );
 
   return (
     <Popover
@@ -59,7 +71,10 @@ export function FontPicker(props: FontPickerProps) {
     >
       <PopoverTrigger asChild>
         <As component={'div'} class={styles.input}>
-          <Text weight={'normal'}>{props.value ?? 'Auto'}</Text>
+          <Text weight={'normal'}>
+            {selectedFont()?.name ?? 'No font selected'}
+          </Text>
+          <icons.SelectorIcon />
         </As>
       </PopoverTrigger>
       <PopoverContent variant={'bordered'} class={styles.fontPickerPopover}>

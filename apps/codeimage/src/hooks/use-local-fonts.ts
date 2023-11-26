@@ -1,3 +1,5 @@
+import {defer, merge, Observable, of, switchMap} from 'rxjs';
+
 declare global {
   interface Window {
     /**
@@ -34,6 +36,11 @@ declare global {
   }
 }
 
+export function isLocalFontsFeatureSupported() {
+  const {queryLocalFonts} = window;
+  return !!queryLocalFonts;
+}
+
 export async function useLocalFonts(): Promise<Record<string, FontData[]>> {
   const {queryLocalFonts} = window;
   if (!queryLocalFonts) {
@@ -43,7 +50,6 @@ export async function useLocalFonts(): Promise<Record<string, FontData[]>> {
   const styleSheet = new CSSStyleSheet();
   try {
     const pickedFonts = await queryLocalFonts();
-    console.log(pickedFonts);
     for (const metadata of pickedFonts) {
       if (!fonts[metadata.family]) {
         fonts[metadata.family] = [];
@@ -53,7 +59,6 @@ export async function useLocalFonts(): Promise<Record<string, FontData[]>> {
   } catch (err) {
     console.warn(err.name, err.message);
   }
-  console.log(fonts);
   return fonts;
 }
 
@@ -64,9 +69,15 @@ export async function checkLocalFontPermission() {
   } as unknown as PermissionDescriptor);
 }
 
-export async function revokeLocalFontPermission() {
-  const {navigator} = window;
-  return navigator.permissions.query({
-    name: 'local-fonts',
-  } as unknown as PermissionDescriptor);
-}
+export const checkLocalFontPermission$ = defer(() =>
+  checkLocalFontPermission(),
+).pipe(
+  switchMap(permission => {
+    const permissionStateChange$ = new Observable<PermissionState>(observer => {
+      permission.onchange = function (this) {
+        observer.next(this.state);
+      };
+    });
+    return merge(of(permission.state), permissionStateChange$);
+  }),
+);

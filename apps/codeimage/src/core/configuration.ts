@@ -1,9 +1,6 @@
 import {createConfiguration, SUPPORTED_LOCALES} from '@codeimage/config';
 import {version} from '../../package.json';
-import {
-  SUPPORTED_FONTS,
-  SUPPORTED_FONTS_DICTIONARY,
-} from './configuration/font';
+import {SUPPORTED_FONTS_DICTIONARY} from './configuration/font';
 
 export const [appEnvironment] = createConfiguration({
   version,
@@ -17,7 +14,6 @@ export const [appEnvironment] = createConfiguration({
     {label: '16', value: 16},
     {label: '24', value: 24},
   ],
-  fonts: SUPPORTED_FONTS,
   defaultState: {
     editor: {
       code:
