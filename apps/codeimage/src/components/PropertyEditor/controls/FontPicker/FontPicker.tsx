@@ -3,11 +3,11 @@ import {Box, FlexField, HStack, Text, VStack} from '@codeimage/ui';
 import {
   As,
   IconButton,
+  icons,
   Listbox,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  icons,
 } from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
@@ -41,7 +41,7 @@ export function FontPicker(props: FontPickerProps) {
 
   const webListboxItems = () =>
     configState.get.fonts
-      .filter(font => !font.custom)
+      .filter(font => font.type === 'web')
       .map(font => ({
         label: font.name,
         value: font.id,
@@ -71,10 +71,10 @@ export function FontPicker(props: FontPickerProps) {
     >
       <PopoverTrigger asChild>
         <As component={'div'} class={styles.input}>
-          <Text weight={'normal'}>
+          <span class={styles.inputValue}>
             {selectedFont()?.name ?? 'No font selected'}
-          </Text>
-          <icons.SelectorIcon />
+          </span>
+          <icons.SelectorIcon class={styles.inputIcon} />
         </As>
       </PopoverTrigger>
       <PopoverContent variant={'bordered'} class={styles.fontPickerPopover}>
@@ -87,7 +87,7 @@ export function FontPicker(props: FontPickerProps) {
           <ExperimentalFeatureTooltip feature={'Aspect ratio'}>
             <HStack spacing={'2'} alignItems={'flexEnd'}>
               <Text weight={'semibold'}>Fonts</Text>
-              <Text class={styles.aspectRatioCardDetails} size={'xs'}>
+              <Text class={styles.experimentalFlag} size={'xs'}>
                 <Box as={'span'} display={'flex'} alignItems={'center'}>
                   <ExperimentalIcon size={'xs'} />
                   <Box marginLeft={'1'}>Experimental</Box>

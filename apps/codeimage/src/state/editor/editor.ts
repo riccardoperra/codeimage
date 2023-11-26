@@ -292,7 +292,9 @@ export function createEditorsStore() {
             .map(type => type.weight)
             .includes(store.get.options.fontWeight)
         ) {
-          store.actions.setFontWeight(value.types[0].weight);
+          // TODO: move to configuration?
+          // Default is 400 - Regular
+          store.actions.setFontWeight(400);
         }
       },
     },

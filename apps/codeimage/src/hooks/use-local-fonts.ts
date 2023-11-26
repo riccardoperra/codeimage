@@ -1,83 +1,46 @@
-import {defer, merge, Observable, of, switchMap} from 'rxjs';
+import {
+  determineFontFaceName,
+  isMonospaced,
+} from '@core/modules/localFontAccessApi/font';
+import {FontMetrics} from '@core/modules/localFontAccessApi/fontMetrics';
 
-declare global {
-  interface Window {
-    /**
-     * query local fonts
-     *
-     * {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/queryLocalFonts MDN Reference}
-     */
-    queryLocalFonts?: (options?: {
-      postscriptNames: string[];
-    }) => Promise<FontData[]>;
-  }
-
-  interface FontData {
-    /**
-     * the family of the font face
-     */
-    readonly family: string;
-    /**
-     * the full name of the font face
-     */
-    readonly fullName: string;
-    /**
-     * the PostScript name of the font face
-     */
-    readonly postscriptName: string;
-    /**
-     * the style of the font face
-     */
-    readonly style: string;
-    /**
-     * get a Promise that fulfills with a Blob containing the raw bytes of the underlying font file
-     */
-    readonly blob: () => Promise<Blob>;
-  }
+export interface LoadedFont {
+  family: string;
+  faces: string[];
+  monospaced: boolean;
 }
 
-export function isLocalFontsFeatureSupported() {
-  const {queryLocalFonts} = window;
-  return !!queryLocalFonts;
-}
-
-export async function useLocalFonts(): Promise<Record<string, FontData[]>> {
+export async function useLocalFonts(): Promise<LoadedFont[]> {
   const {queryLocalFonts} = window;
   if (!queryLocalFonts) {
-    return {};
+    return [];
   }
-  const fonts: Record<string, FontData[]> = {};
-  const styleSheet = new CSSStyleSheet();
+  const fonts: Record<string, LoadedFont> = {};
+  // TODO: use `using` with newer versions of typescript?
+  const fontMetrics = new FontMetrics();
   try {
     const pickedFonts = await queryLocalFonts();
-    for (const metadata of pickedFonts) {
-      if (!fonts[metadata.family]) {
-        fonts[metadata.family] = [];
+    for (const localFont of pickedFonts) {
+      let fontData: LoadedFont = fonts[localFont.family];
+      if (!fontData) {
+        const metrics = fontMetrics.for(localFont.family);
+        const monospaced = isMonospaced(metrics);
+        fontData = {
+          family: localFont.family,
+          faces: [],
+          monospaced,
+        };
+        fonts[localFont.family] = fontData;
       }
-      fonts[metadata.family].push(metadata);
+      const face = determineFontFaceName(localFont.style);
+      if (face && !fontData.faces.includes(face)) {
+        fontData.faces.push(face);
+      }
     }
-  } catch (err) {
-    console.warn(err.name, err.message);
-  }
-  return fonts;
-}
-
-export async function checkLocalFontPermission() {
-  const {navigator} = window;
-  return navigator.permissions.query({
-    name: 'local-fonts',
-  } as unknown as PermissionDescriptor);
-}
-
-export const checkLocalFontPermission$ = defer(() =>
-  checkLocalFontPermission(),
-).pipe(
-  switchMap(permission => {
-    const permissionStateChange$ = new Observable<PermissionState>(observer => {
-      permission.onchange = function (this) {
-        observer.next(this.state);
-      };
+    Object.values(fonts).forEach(font => {
+      font.faces.sort();
     });
-    return merge(of(permission.state), permissionStateChange$);
-  }),
-);
+  } catch (err) {}
+  fontMetrics.destroy();
+  return Object.values(fonts);
+}

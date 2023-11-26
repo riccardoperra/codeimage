@@ -3,7 +3,11 @@ import {
   CustomFontConfiguration,
   SUPPORTED_FONTS,
 } from '@core/configuration/font';
-import {EMPTY, switchMap, tap} from 'rxjs';
+import {
+  checkLocalFontPermission$,
+  isLocalFontsFeatureSupported,
+} from '@core/modules/localFontAccessApi/api';
+import {EMPTY, of, switchMap, tap} from 'rxjs';
 import {
   createEffect,
   createMemo,
@@ -16,16 +20,12 @@ import {
 } from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {defineStore, makePlugin, Store} from 'statebuilder';
-import {
-  checkLocalFontPermission$,
-  isLocalFontsFeatureSupported,
-  useLocalFonts,
-} from '../../hooks/use-local-fonts';
+import {LoadedFont, useLocalFonts} from '../../hooks/use-local-fonts';
 
 interface ConfigState {
   ready: boolean;
-  fonts: CustomFontConfiguration[];
-  systemFonts: CustomFontConfiguration[];
+  fonts: (CustomFontConfiguration & {type: 'web'})[];
+  systemFonts: (CustomFontConfiguration & {type: 'system'})[];
 }
 
 function getDefaultConfig(): ConfigState {
@@ -61,19 +61,33 @@ export const EditorConfigStore = defineStore(() => getDefaultConfig())
   .extend(withLocalFontManagementPlugin())
   .extend(_ => {
     const fonts = createMemo(() => _.localFontsApi.state().fonts);
+
+    const fontWeightMap: Record<number, string> = {
+      100: 'Thin',
+      200: 'Extra Light',
+      300: 'Light',
+      400: 'Regular',
+      500: 'Medium',
+      600: 'Semi Bold',
+      700: 'Bold',
+      800: 'Extra Bold',
+      900: 'Black',
+    };
+
     createEffect(
       on(fonts, fonts => {
-        const fontsConfiguration = Object.entries(fonts).map(([name, data]) => {
+        const fontsConfiguration = fonts.map(font => {
           return {
-            custom: true,
-            id: name,
-            name: data[0].family,
-            types: [
-              {name: 'Regular', weight: 400},
-              {name: 'Medium', weight: 500},
-              {name: 'Bold', weight: 700},
-            ],
-          } as CustomFontConfiguration;
+            type: 'system',
+            id: font.family,
+            name: font.family,
+            fontData: font,
+            types: font.faces.map(face => {
+              const weight = parseInt(face);
+              return {name: fontWeightMap[weight], weight};
+            }),
+            // TODO: remove when typescript > 5 to use satisfies
+          } as CustomFontConfiguration & {type: 'system'};
         });
         _.set('systemFonts', fontsConfiguration);
       }),
@@ -86,7 +100,7 @@ export function withLocalFontManagementPlugin() {
     _ => {
       const [state, setState] = createSignal({
         permissionState: null as PermissionState | 'unsupported' | null,
-        fonts: {} as Record<string, FontData[]>,
+        fonts: [] as LoadedFont[],
         loading: false,
         error: null as string | null,
       });
@@ -111,7 +125,7 @@ export function withLocalFontManagementPlugin() {
         });
       }
 
-      function accessSystemFonts() {
+      function accessSystemFonts(useCache: boolean) {
         if (!isLocalFontsFeatureSupported()) {
           console.warn(
             '[CodeImage] System Local Fonts API not supported in this browser.',
@@ -119,11 +133,17 @@ export function withLocalFontManagementPlugin() {
           setState(state => ({...state, permissionState: 'unsupported'}));
           return EMPTY;
         }
+
         setState(state => ({...state, loading: true}));
         return checkLocalFontPermission$.pipe(
           switchMap(permissionState => {
             setState(state => ({...state, permissionState}));
             if (permissionState === 'granted') {
+              if (useCache && untrack(() => _.get.systemFonts.length > 0)) {
+                return of(_.get.systemFonts).pipe(
+                  tap(() => setState(state => ({...state, loading: false}))),
+                );
+              }
               setState(state => ({...state, loading: true}));
             }
             return loadFonts();

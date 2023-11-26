@@ -1,8 +1,10 @@
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {Box, FieldLabelHint, Link, LoadingCircle, Text} from '@codeimage/ui';
-import {Button, VirtualizedListbox} from '@codeui/kit';
+import {Button, Checkbox, TextField, VirtualizedListbox} from '@codeui/kit';
+import {pipe} from 'rxjs';
 import {
   createMemo,
+  createSignal,
   Match,
   onCleanup,
   onMount,
@@ -24,20 +26,43 @@ interface FontSystemPickerProps {
 
 export function FontSystemPicker(props: FontSystemPickerProps) {
   const configStore = provideState(EditorConfigStore);
+  const [fontTerm, setFontTerm] = createSignal('');
+  const [showOnlyMonospaced, setShowOnlyMonospaced] = createSignal(true);
+
   const {localFontsApi} = configStore;
 
   onMount(() => {
-    const subscription = localFontsApi.accessSystemFonts().subscribe();
+    const subscription = localFontsApi.accessSystemFonts(true).subscribe();
     onCleanup(() => subscription.unsubscribe());
   });
 
   const fonts = createMemo(() => {
-    return Object.entries(unwrap(localFontsApi.state().fonts)).map(
-      ([fontId, fontDataList]) => ({
-        label: fontDataList[0].postscriptName,
-        value: fontId,
-      }),
-    );
+    const onlyMonospaced = showOnlyMonospaced();
+    const term = fontTerm();
+    const fonts = unwrap(configStore.get.systemFonts);
+
+    return pipe(
+      (_: typeof fonts) => _,
+      // Monospaced filter
+      fonts =>
+        onlyMonospaced ? fonts.filter(font => font.fontData.monospaced) : fonts,
+      // Term filter
+      fonts =>
+        term.length > 2
+          ? fonts.filter(font => font.name.toLowerCase().includes(term))
+          : fonts,
+      // Sorting alphabetically
+      fonts =>
+        fonts.sort((a, b) =>
+          a.fontData.family.localeCompare(b.fontData.family),
+        ),
+      // Map to select items
+      fonts =>
+        fonts.map(font => ({
+          label: font.name,
+          value: font.id,
+        })),
+    )(fonts);
   });
 
   const listboxProps = createFontPickerListboxProps({
@@ -55,13 +80,22 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
     <Suspense>
       <Switch>
         <Match when={localFontsApi.state().permissionState === 'granted'}>
-          <Button
-            size={'xs'}
-            theme={'secondary'}
-            onClick={localFontsApi.loadFonts}
-          >
-            Reload fonts
-          </Button>
+          <div class={styles.virtualizedFontListboxToolbar}>
+            <TextField
+              placeholder={'Search font...'}
+              value={fontTerm()}
+              onChange={setFontTerm}
+              size={'xs'}
+              slotClasses={{root: styles.virtualizedFontListboxSearch}}
+            />
+            <Button
+              size={'xs'}
+              theme={'secondary'}
+              onClick={localFontsApi.loadFonts}
+            >
+              Reload fonts
+            </Button>
+          </div>
 
           <Show
             fallback={<LoadingContent />}
@@ -76,6 +110,15 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
               />
             </div>
           </Show>
+          <Box marginTop={'2'}>
+            <Checkbox
+              disabled={localFontsApi.state().loading}
+              checked={showOnlyMonospaced()}
+              onChange={setShowOnlyMonospaced}
+              size={'md'}
+              label={'Show only monospaced fonts'}
+            />
+          </Box>
         </Match>
         <Match when={localFontsApi.state().permissionState === 'prompt'}>
           <LoadingContent message={'Waiting for permission.'} />
@@ -112,6 +155,19 @@ export function UnsupportedContent() {
       <Text size={'sm'}>
         Your browser does not support <LocalFontAccessApiLink />
       </Text>
+      <Box marginTop={6}>
+        <FieldLabelHint icon={() => <HintIcon size={'sm'} />}>
+          <Link
+            size={'sm'}
+            underline
+            target={'_blank'}
+            href={'https://caniuse.com/?search=local%20font'}
+            style={{display: 'block'}}
+          >
+            Check compatibility
+          </Link>
+        </FieldLabelHint>
+      </Box>
     </div>
   );
 }

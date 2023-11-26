@@ -1,3 +1,4 @@
+import {LoadedFont} from '../../hooks/use-local-fonts';
 import {mapToDictionary} from '../helpers/mapToDictionary';
 
 interface CustomFontType {
@@ -6,12 +7,24 @@ interface CustomFontType {
   fontData?: FontData;
 }
 
-export interface CustomFontConfiguration {
+interface WebFontConfiguration {
   id: string;
   name: string;
-  custom: boolean;
+  type: 'web';
   types: readonly CustomFontType[];
 }
+
+interface SystemFontConfiguration {
+  id: string;
+  name: string;
+  type: 'system';
+  fontData: LoadedFont;
+  types: readonly CustomFontType[];
+}
+
+export type CustomFontConfiguration =
+  | WebFontConfiguration
+  | SystemFontConfiguration;
 
 function createCustomFonts<T extends ReadonlyArray<CustomFontConfiguration>>(
   fonts: T,
@@ -25,7 +38,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'jetbrains-mono',
     name: 'Jetbrains Mono',
-    custom: false,
+    type: 'web',
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Medium', weight: 500},
@@ -35,7 +48,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'fira-code',
     name: 'Fira Code',
-    custom: false,
+    type: 'web',
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Medium', weight: 500},
@@ -45,7 +58,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'source-code-pro',
     name: 'Source Code pro',
-    custom: false,
+    type: 'web',
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Medium', weight: 500},
@@ -55,7 +68,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'overpass-mono',
     name: 'Overpass Mono',
-    custom: false,
+    type: 'web',
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Medium', weight: 500},
@@ -65,7 +78,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'space-mono',
     name: 'Space Mono',
-    custom: false,
+    type: 'web',
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Bold', weight: 700},
@@ -74,7 +87,7 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
   {
     id: 'cascadia-code',
     name: 'Cascadia Code',
-    custom: false,
+    type: 'web',
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Bold', weight: 700},
