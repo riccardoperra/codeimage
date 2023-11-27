@@ -19,7 +19,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsx ./scripts/build.ts",
+    "build:ts": "tsc"
   },
   "keywords": [],
   "author": "Riccardo Perra",
