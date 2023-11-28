@@ -3,7 +3,7 @@ import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 
 import {children, createMemo, JSXElement, ParentComponent} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {omitProps} from 'solid-use';
+import {omitProps} from 'solid-use/props';
 import {CodeImageLogoV2} from '../../Icons/CodeImageLogoV2';
 import * as styles from '../terminal.css';
 import {BaseTerminalProps} from '../TerminalHost';

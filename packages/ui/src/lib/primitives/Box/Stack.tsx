@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {omitProps} from 'solid-use';
+import {omitProps} from 'solid-use/props';
 import {Box, BoxProps} from './Box';
 import * as styles from './Stack.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';

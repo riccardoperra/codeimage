@@ -97,7 +97,7 @@
     "clsx": "^1.2.1",
     "solid-headless": "^0.13.1",
     "solid-toast": "^0.5.0",
-    "solid-use": "^0.6.2"
+    "solid-use": "^0.7.2"
   },
   "devDependencies": {
     "@babel/plugin-syntax-jsx": "^7.21.4",
