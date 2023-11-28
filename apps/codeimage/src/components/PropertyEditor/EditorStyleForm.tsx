@@ -4,7 +4,6 @@ import {CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
-import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {createSelectOptions, Select} from '@codeui/kit';
@@ -13,7 +12,6 @@ import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedConta
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {ParentComponent, Show} from 'solid-js';
-import {provideState} from 'statebuilder';
 import {AppLocaleEntries} from '../../i18n';
 import {FontPicker} from './controls/FontPicker/FontPicker';
 import {PanelDivider} from './PanelDivider';
@@ -36,7 +34,6 @@ const languages: readonly LanguageDefinition[] = [...SUPPORTED_LANGUAGES].sort(
 );
 
 export const EditorStyleForm: ParentComponent = () => {
-  const configStore = provideState(EditorConfigStore);
   const {themeArray} = getThemeStore();
   const [t] = useI18n<AppLocaleEntries>();
   const {editor, setLanguageId, formatter, setFormatterName} =
