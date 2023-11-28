@@ -1,10 +1,7 @@
 import {from as rxjsFrom, map, type Observable, Subject} from 'rxjs';
 import {Accessor, createSignal, from, observable} from 'solid-js';
-import {
-  createStore as coreCreateStore,
-  SetStoreFunction,
-  unwrap,
-} from 'solid-js/store';
+import {createStore as coreCreateStore, unwrap} from 'solid-js/store';
+import {SetStoreFunction} from './experimental/store-types';
 
 export type StoreEvent = {
   type: string;
@@ -41,7 +38,7 @@ export function createStore<T extends object>(initialState: T) {
   );
   const [signal, setSignal] = createSignal<symbol>();
 
-  const setStore = (...args: Parameters<typeof internalSetStore>) => {
+  const setStore = (...args: Parameters<SetStoreFunction<T>>) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const returnValue = (internalSetStore as any)(...args);
     setSignal(Symbol());

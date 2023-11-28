@@ -1,4 +1,4 @@
-import { DOMElements, ElementType } from '@solid-aria/types';
+import {DOMElements, ElementType} from '@solid-aria/types';
 import {
   ComponentProps,
   createComponent,
@@ -7,7 +7,7 @@ import {
   ParentProps,
   splitProps,
 } from 'solid-js';
-import { Dynamic } from 'solid-js/web';
+import {Dynamic} from 'solid-js/web';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type LibraryManagedAttributes<Component, Props> = Props;
@@ -34,7 +34,7 @@ export type BaseComponentProps<
 export type CustomComponentProps<
   C extends ElementType,
   Additional = Record<string, unknown>,
-> = ParentProps<PropsOf<C>> & Additional & { as?: C; class?: string };
+> = ParentProps<PropsOf<C>> & Additional & {as?: C; class?: string};
 
 export type CustomComponent<
   T extends ElementType,
@@ -50,7 +50,7 @@ export type HTMLCustomComponents = {
 const _styled: CustomComponentFactory = <T extends ElementType>(
   component: T,
 ): CustomComponent<T> => {
-  const componentFactory: CustomComponent<T> = props => {
+  return props => {
     const [local, others] = splitProps(props, ['as']);
 
     const propsWithDefault = mergeProps(
@@ -61,10 +61,10 @@ const _styled: CustomComponentFactory = <T extends ElementType>(
       },
       others,
     );
-    return createComponent(Dynamic, propsWithDefault);
-  };
 
-  return componentFactory;
+    // TODO: broken solid/ts type with 5.3
+    return createComponent(Dynamic, propsWithDefault as any);
+  };
 };
 
 function factory() {
