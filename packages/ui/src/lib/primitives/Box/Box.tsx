@@ -5,7 +5,7 @@ import type {
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import type {JSXElement, PropsWithChildren} from 'solid-js';
-import {omitProps, pickProps} from 'solid-use';
+import {omitProps, pickProps} from 'solid-use/props';
 import {sprinkles, Sprinkles} from '../../theme';
 import {styled} from '../../utils';
 import {boxBase} from './Box.css';

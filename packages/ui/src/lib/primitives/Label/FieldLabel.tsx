@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import {Component, FlowComponent, mergeProps, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {omitProps} from 'solid-use';
+import {omitProps} from 'solid-use/props';
 import {Box} from '../Box';
 import {Text, TextComponentProps, TextProps} from '../Text';
 import * as styles from './FieldLabel.css';

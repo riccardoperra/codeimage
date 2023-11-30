@@ -4,7 +4,7 @@ import {
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import {PropsWithChildren} from 'solid-js';
-import {omitProps} from 'solid-use';
+import {omitProps} from 'solid-use/props';
 import {styled} from '../../utils';
 import {useText, UseTextProps} from '../Text';
 import {textField, TextFieldProps as $TextFieldProps} from './TextField.css';

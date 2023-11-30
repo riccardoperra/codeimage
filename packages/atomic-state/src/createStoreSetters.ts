@@ -1,4 +1,4 @@
-import {SetStoreFunction} from 'solid-js/store';
+import {SetStoreFunction} from './experimental/store-types';
 import {getStoreInternals} from './getStoreInternals';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -30,12 +30,10 @@ export function createStoreAutoSetters<T extends {}>(
     {},
     {
       get(_, property: string) {
-        return (...args: Parameters<typeof $$setter>) => {
+        return (...args: any) => {
           const [, prop] = property.split('set');
           const lowerProperty = prop.charAt(0).toLowerCase() + prop.slice(1);
-          const fnArgs = [lowerProperty, ...args] as unknown as Parameters<
-            typeof $$setter
-          >;
+          const fnArgs = [lowerProperty, ...args] as unknown as any;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ($$setter as any)(...fnArgs);
         };
