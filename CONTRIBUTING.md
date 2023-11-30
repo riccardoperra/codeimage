@@ -26,10 +26,7 @@ To start contributing to the project, you have to fork this repository and clone
 ```bash
 git clone https://github.com/YOUR_USERNAME/codeimage.git
 ```
-### pulling submodules first time
-```bash
-git submodule update --init --recursive
-```
+
 ### Installing Node.js and pnpm
 
 This repository uses [pnpm](https://pnpm.io/it/) to manage multiple projects. You need to install **pnpm 7 or higher**

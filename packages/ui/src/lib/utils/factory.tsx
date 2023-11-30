@@ -49,8 +49,8 @@ export type HTMLCustomComponents = {
 
 const _styled: CustomComponentFactory = <T extends ElementType>(
   component: T,
-) => {
-  const componentFactory: CustomComponent<T> = props => {
+): CustomComponent<T> => {
+  return props => {
     const [local, others] = splitProps(props, ['as']);
 
     const propsWithDefault = mergeProps(
@@ -61,10 +61,10 @@ const _styled: CustomComponentFactory = <T extends ElementType>(
       },
       others,
     );
-    return createComponent(Dynamic, propsWithDefault);
-  };
 
-  return componentFactory;
+    // TODO: broken solid/ts type with 5.3
+    return createComponent(Dynamic, propsWithDefault as any);
+  };
 };
 
 function factory() {

@@ -4,7 +4,7 @@ import {
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import {Component} from 'solid-js';
-import {omitProps} from 'solid-use';
+import {omitProps} from 'solid-use/props';
 import {styled} from '../../utils';
 import {UseTextProps} from '../Text';
 import * as styles from './RangeField.css';

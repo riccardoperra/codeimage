@@ -19,12 +19,13 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsx ./scripts/build.ts",
+    "build:ts": "tsc"
   },
   "keywords": [],
   "author": "Riccardo Perra",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^4.9.5"
+    "typescript": "~5.3.2"
   }
 }

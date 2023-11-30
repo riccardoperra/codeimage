@@ -6,7 +6,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "moduleResolution": "NodeNext",
-    "module": "ES2022",
+    "module": "NodeNext",
     "target": "ES2022",
     "typeRoots": [
       "./src/common/domainFunctions/functions.d.ts"

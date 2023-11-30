@@ -1,5 +1,5 @@
 import {JSXElement, Show} from 'solid-js';
-import {omitProps} from 'solid-use';
+import {omitProps} from 'solid-use/props';
 import {styled} from '../../utils';
 import {LoaderProps, Loading} from './Loading';
 import {overlay} from './LoadingOverlay.css';
