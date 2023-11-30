@@ -290,8 +290,8 @@ importers:
         specifier: ^6.11.0
         version: 6.11.0
       '@codeui/kit':
-        specifier: ^0.0.34
-        version: 0.0.34(solid-js@1.8.6)(ts-node@10.9.1)(vite@3.2.5)
+        specifier: ^0.0.36
+        version: 0.0.36(solid-js@1.8.6)(ts-node@10.9.1)(vite@3.2.5)
       '@floating-ui/core':
         specifier: ^1.2.2
         version: 1.2.6
@@ -3849,8 +3849,8 @@ packages:
       - vite
     dev: true
 
-  /@codeui/kit@0.0.34(solid-js@1.8.6)(ts-node@10.9.1)(vite@3.2.5):
-    resolution: {integrity: sha512-/2SgZN5076cV7kGPGBnTULEzwWkdGcsT7iRntjrWGp4Gv24nRzUUkYYwnFSf8GrCwauPj/F/j1e960Qzr7demw==}
+  /@codeui/kit@0.0.36(solid-js@1.8.6)(ts-node@10.9.1)(vite@3.2.5):
+    resolution: {integrity: sha512-JVuj/S47X90eN8s3GN7MWlj+GqzlRxsfqzR3w0fmYswqzctjuLTKXOCrHIlRFeqVDrDq0pyOOnVuoISXZAMz1Q==}
     peerDependencies:
       solid-js: ^1.7.0
     dependencies:
@@ -3861,6 +3861,8 @@ packages:
       '@radix-ui/colors': 0.1.9
       '@solid-primitives/pagination': 0.2.9(solid-js@1.8.6)
       '@solid-primitives/scheduled': 1.4.1(solid-js@1.8.6)
+      '@tanstack/solid-virtual': 3.0.0-beta.6
+      '@tanstack/virtual-core': 3.0.0-alpha.1
       '@vanilla-extract/css': 1.11.0
       '@vanilla-extract/dynamic': 2.0.3
       '@vanilla-extract/recipes': 0.4.0(@vanilla-extract/css@1.11.0)
@@ -6690,6 +6692,10 @@ packages:
       tar: 6.1.13
     dev: true
 
+  /@reach/observe-rect@1.2.0:
+    resolution: {integrity: sha512-Ba7HmkFgfQxZqqaeIWWkNK0rEhpxVQHIoVyW1YDSkGsGIXzcaW4deC8B0pZrNSSyLTdIk7y+5olKt5+g0GmFIQ==}
+    dev: false
+
   /@rollup/plugin-babel@5.3.1(@babel/core@7.21.4)(rollup@2.79.1):
     resolution: {integrity: sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==}
     engines: {node: '>= 10.0.0'}
@@ -7576,6 +7582,20 @@ packages:
     dependencies:
       defer-to-connect: 2.0.1
     dev: true
+
+  /@tanstack/solid-virtual@3.0.0-beta.6:
+    resolution: {integrity: sha512-/HjeHZb4UZxxFSAkICUEWOozGwHQpKlvtnUoS5uSMSuLOz0XM5vFq6zR6ENwAczKWDtkh8ntddk+zXAhyXOlEw==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@reach/observe-rect': 1.2.0
+    dev: false
+
+  /@tanstack/virtual-core@3.0.0-alpha.1:
+    resolution: {integrity: sha512-Fa82aHSjxMVpqIg+yuxEj+mlSVadOjcqaMeD7uJ39JE8FHpGoO+53kyedIf+ypWD7zYlSWXB4ah/3W9NNHaI6g==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@reach/observe-rect': 1.2.0
+    dev: false
 
   /@thisbeyond/solid-dnd@0.7.2(solid-js@1.8.6):
     resolution: {integrity: sha512-He8WC2o0J82UwjkbxNSZ+Lnty42TvCENaZWmdnsrDN7pf+7FFnxt9AD/8tJ3eN8aoRxymX81ZUX6PwcwrFxN0A==}
@@ -16427,7 +16447,7 @@ packages:
       rxjs:
         optional: true
     dependencies:
-      rxjs: 7.8.0
+      rxjs: 7.8.1
       solid-js: 1.8.6
 
   /statebuilder@0.4.2:

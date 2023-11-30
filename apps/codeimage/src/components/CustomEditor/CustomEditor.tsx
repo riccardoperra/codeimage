@@ -26,7 +26,6 @@ import {
   lineNumbers,
   rectangularSelection,
 } from '@codemirror/view';
-import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import {
   createEffect,
@@ -67,8 +66,11 @@ interface CustomEditorProps {
 export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const {themeArray: themes} = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
-  const fonts = SUPPORTED_FONTS;
-  const {state: editorState, canvasEditorEvents} = getRootEditorStore();
+  const {
+    state: editorState,
+    canvasEditorEvents,
+    computed: {selectedFont},
+  } = getRootEditorStore();
   const {editor} = getActiveEditorStore();
   const selectedLanguage = createMemo(() =>
     languages.find(language => language.id === editor()?.languageId),
@@ -139,9 +141,8 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   });
 
   const customFontExtension = (): Extension => {
-    const fontName =
-        fonts.find(({id}) => editorState.options.fontId === id)?.name ||
-        fonts[0].name,
+    const font = selectedFont();
+    const fontName = font.name,
       fontWeight = editorState.options.fontWeight,
       enableLigatures = editorState.options.enableLigatures;
 

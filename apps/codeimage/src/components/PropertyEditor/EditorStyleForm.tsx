@@ -7,13 +7,13 @@ import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {createSelectOptions, Select} from '@codeui/kit';
-import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {getUmami} from '@core/constants/umami';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
-import {createMemo, ParentComponent, Show} from 'solid-js';
+import {ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
+import {FontPicker} from './controls/FontPicker/FontPicker';
 import {PanelDivider} from './PanelDivider';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
@@ -41,7 +41,7 @@ export const EditorStyleForm: ParentComponent = () => {
   const {
     state,
     actions: {setShowLineNumbers, setFontWeight, setFontId, setEnableLigatures},
-    computed: {font},
+    computed: {selectedFont},
   } = getRootEditorStore();
 
   const languagesOptions = createSelectOptions(
@@ -80,25 +80,21 @@ export const EditorStyleForm: ParentComponent = () => {
     {key: 'label', valueKey: 'value'},
   );
 
-  const memoizedFontWeights = createMemo(() =>
-    font().types.map(type => ({
+  const fontWeightByFont = () => {
+    const font = selectedFont();
+    if (!font) {
+      return [];
+    }
+    return font.types.map(type => ({
       label: type.name,
-      value: type.weight as number,
-    })),
-  );
+      value: type.weight,
+    }));
+  };
 
-  const fontWeightOptions = createSelectOptions(memoizedFontWeights, {
+  const fontWeightOptions = createSelectOptions(fontWeightByFont, {
     key: 'label',
     valueKey: 'value',
   });
-
-  const fontOptions = createSelectOptions(
-    SUPPORTED_FONTS.map(font => ({
-      label: font.name,
-      value: font.id,
-    })),
-    {key: 'label', valueKey: 'value'},
-  );
 
   return (
     <Show when={editor()}>
@@ -216,40 +212,14 @@ export const EditorStyleForm: ParentComponent = () => {
           <DynamicSizedContainer>
             <PanelHeader label={t('frame.font')} />
 
-            <PanelRow for={'frameFontField'} label={t('frame.font')}>
+            <PanelRow for={'aspectRatio'} label={t('frame.font')}>
               <TwoColumnPanelRow>
                 <SuspenseEditorItem
                   fallback={<SkeletonLine width={'100%'} height={'26px'} />}
                 >
-                  <Select
-                    options={fontOptions.options()}
-                    {...fontOptions.props()}
-                    {...fontOptions.controlled(
-                      () => font().id,
-                      fontId => {
-                        setFontId(fontId ?? SUPPORTED_FONTS[0].id);
-                        if (
-                          !font()
-                            .types.map(type => type.weight as number)
-                            .includes(state.options.fontWeight)
-                        ) {
-                          setFontWeight(font().types[0].weight);
-                        }
-                      },
-                    )}
-                    aria-label={'Font'}
-                    id={'frameFontField'}
-                    size={'xs'}
-                    itemLabel={itemLabelProps => (
-                      <span
-                        style={{
-                          'font-family': `${itemLabelProps.label}, monospace`,
-                          'font-size': '80%',
-                        }}
-                      >
-                        {itemLabelProps.label}
-                      </span>
-                    )}
+                  <FontPicker
+                    value={selectedFont()?.id}
+                    onChange={fontId => setFontId(fontId)}
                   />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>

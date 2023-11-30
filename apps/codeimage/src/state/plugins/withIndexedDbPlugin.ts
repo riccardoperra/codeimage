@@ -5,7 +5,7 @@ export function withIndexedDbPlugin<T>(idbKey: string, fallbackValue: T) {
   const idb = useIdb();
 
   return makePlugin(
-    () => {
+    _ => {
       return {
         idb: {
           get(): Promise<T> {
@@ -18,7 +18,15 @@ export function withIndexedDbPlugin<T>(idbKey: string, fallbackValue: T) {
             return idb.set(idbKey, data);
           },
           update(updaterFn: (data: T) => T) {
-            return this.get().then(data => this.set(updaterFn(data)));
+            return idb.update(idbKey, data => updaterFn(data));
+          },
+          hydrateOnInit() {
+            return new Promise(resolve => {
+              return this.get().then(data => {
+                _.set(() => data);
+                resolve(data);
+              });
+            });
           },
         },
       };

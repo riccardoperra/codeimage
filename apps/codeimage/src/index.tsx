@@ -1,6 +1,7 @@
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {getUiStore} from '@codeimage/store/ui';
 import {
@@ -15,7 +16,7 @@ import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import {Component, createEffect, lazy, on, Show, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
-import {StateProvider} from 'statebuilder';
+import {provideState, StateProvider} from 'statebuilder';
 import './assets/styles/app.scss';
 import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Scaffold} from './components/Scaffold/Scaffold';
@@ -51,9 +52,14 @@ const Dashboard = lazyWithNoLauncher(
 const Editor = () => {
   const Page = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
   getThemeStore().loadThemes();
+
+  const editorConfig = provideState(EditorConfigStore);
+
   return (
     <Suspense fallback={<EditorPageSkeleton />}>
-      <Page />
+      <Show fallback={<EditorPageSkeleton />} when={editorConfig.get.ready}>
+        <Page />
+      </Show>
     </Suspense>
   );
 };

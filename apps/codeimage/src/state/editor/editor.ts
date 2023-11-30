@@ -1,17 +1,16 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import {PresetData} from '@codeimage/store/presets/types';
 import type {Transaction} from '@codemirror/state';
 import {appEnvironment} from '@core/configuration';
-import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {createEventBus} from '@solid-primitives/event-bus';
-import {filter} from '@solid-primitives/immutable';
 import {from, map, shareReplay} from 'rxjs';
-import {createMemo, createSelector} from 'solid-js';
+import {createSelector} from 'solid-js';
 import {SetStoreFunction} from 'solid-js/store';
-import {defineStore} from 'statebuilder';
+import {defineStore, provideState} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
 import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
 
@@ -63,6 +62,8 @@ export function createEditorsStore() {
   );
 
   const store = provideAppState(config);
+
+  const configStore = provideState(EditorConfigStore);
 
   const editorUpdateCommand = createCommand('editorUpdate').withPayload<void>();
 
@@ -220,10 +221,17 @@ export function createEditorsStore() {
     store.dispatch(editorUpdateCommand, void 0);
   };
 
-  const font = createMemo(
-    () =>
-      filter(SUPPORTED_FONTS, font => font.id === store.get.options.fontId)[0],
-  );
+  const configuredFonts = () => [
+    ...configStore.get.fonts,
+    ...configStore.get.systemFonts,
+  ];
+
+  const selectedFont = () => {
+    const font = configuredFonts().find(
+      font => font.id === store.get.options.fontId,
+    );
+    return font ?? configuredFonts()[0];
+  };
 
   const setFromWorkspace = (item: ApiTypes.GetProjectByIdApi['response']) => {
     setEditors(
@@ -265,7 +273,7 @@ export function createEditorsStore() {
     },
     stateToPersist$,
     computed: {
-      font,
+      selectedFont,
       canAddEditor,
     },
     actions: {
@@ -275,6 +283,20 @@ export function createEditorsStore() {
       setTabName,
       setFromWorkspace,
       ...store.actions,
+      setFontId(fontId: string) {
+        store.actions.setFontId(fontId);
+        const value = selectedFont();
+        if (
+          !!value &&
+          value.types
+            .map(type => type.weight)
+            .includes(store.get.options.fontWeight)
+        ) {
+          // TODO: move to configuration?
+          // Default is 400 - Regular
+          store.actions.setFontWeight(400);
+        }
+      },
     },
     canvasEditorEvents: createEventBus<Transaction>(),
   } as const;
