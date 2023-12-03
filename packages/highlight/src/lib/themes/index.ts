@@ -24,3 +24,5 @@ export * from './shadeOfPurple';
 export * from './synthwave84';
 export * from './vitesseDark';
 export * from './vsCodeDark';
+export * from './xCodeDark';
+export * from './xCodeLight';

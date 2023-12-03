@@ -17,6 +17,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.vsCodeDarkTheme),
   },
   {
+    id: 'xcodeDarkTheme',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.xCodeDarkTheme),
+  },
+  {
     id: 'nightOwlTheme',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.nightOwlTheme),
@@ -35,6 +40,11 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     id: 'dracula',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.draculaTheme),
+  },
+  {
+    id: 'xcodeLightTheme',
+    // prettier-ignore
+    load: () => import('@codeimage/highlight/themes').then(m => m.xCodeLightTheme),
   },
   {
     id: 'materialOcean',

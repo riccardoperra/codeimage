@@ -121,6 +121,14 @@
     "./fleetDark": {
       "import": "./dist/lib/themes/fleetDark/index.js",
       "types": "./dist/lib/themes/fleetDark/index.d.ts"
+    },
+    "./xCodeDark": {
+      "import": "./dist/lib/themes/xCodeDark/index.js",
+      "types": "./dist/lib/themes/xCodeDark/index.d.ts"
+    },
+    "./xCodeLight": {
+      "import": "./dist/lib/themes/xCodeLight/index.js",
+      "types": "./dist/lib/themes/xCodeLight/index.d.ts"
     }
   },
   "typesVersions": {
@@ -205,6 +213,12 @@
       ],
       "fleetDark": [
         "./dist/lib/themes/fleetDark/index.d.ts"
+      ],
+      "xCodeDark": [
+        "./dist/lib/themes/xCodeDark/index.d.ts"
+      ],
+      "xCodeLight": [
+        "./dist/lib/themes/xCodeLight/index.d.ts"
       ]
     }
   },
