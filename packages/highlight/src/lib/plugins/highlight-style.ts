@@ -83,7 +83,12 @@ export function styledHighlight(h: StyledHighlightOptions) {
         color: h.numbers,
       },
       {
-        tag: [t.string, t.processingInstruction, t.inserted],
+        tag: [
+          t.string,
+          t.processingInstruction,
+          t.inserted,
+          t.special(t.string),
+        ],
         color: h.strings,
       },
       // Classes

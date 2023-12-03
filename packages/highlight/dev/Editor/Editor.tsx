@@ -20,7 +20,7 @@ interface CustomEditorPreviewProps {
 export default function Editor(props: VoidProps<CustomEditorPreviewProps>) {
   const {editorView, ref: setEditorRef, createExtension} = createCodeMirror();
   createEditorControlledValue(editorView, () => props.code);
-  createEditorReadonly(editorView, () => true);
+  createEditorReadonly(editorView, () => false);
 
   const previewEditorBaseTheme = () =>
     EditorView.theme({
