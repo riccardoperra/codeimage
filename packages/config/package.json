@@ -50,6 +50,7 @@
     "@codemirror/view": "^6.11.0",
     "@prettier/plugin-php": "0.19.2",
     "@prettier/plugin-xml": "2.2.0",
+    "@replit/codemirror-lang-svelte": "6.0.0",
     "@types/prettier": "^2.7.2",
     "material-icon-theme": "^4.24.0",
     "prettier": "^2.8.4",

@@ -94,6 +94,8 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         name: 'svelte',
         extension: '.svelte',
         content: () => import('material-icon-theme/icons/svelte.svg?raw'),
+        extraLanguage: () =>
+          import('@replit/codemirror-lang-svelte').then(({svelte}) => svelte()),
         matcher: /^.*\.(svelte)$/,
       },
     ],
@@ -221,6 +223,8 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         name: 'svelte',
         extension: '.svelte',
         content: () => import('material-icon-theme/icons/svelte.svg?raw'),
+        extraLanguage: () =>
+          import('@replit/codemirror-lang-svelte').then(({svelte}) => svelte()),
         matcher: /^.*\.(svelte)$/,
       },
     ],
