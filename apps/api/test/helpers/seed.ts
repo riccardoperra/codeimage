@@ -4,7 +4,7 @@ import {testPresetUtils} from '../__internal__/presetUtils.js';
 
 export const client = new PrismaClient({
   datasources: {
-    db: {url: 'postgresql://postgres:postgres@localhost:5433/codeimage_test'},
+    db: {url: import.meta.env['DATABASE_URL']},
   },
 });
 
