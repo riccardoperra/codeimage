@@ -2,7 +2,7 @@ import {Project, User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
 
 import {build} from '../../../helper.js';
-import {projectSeed, userSeed} from '../../../helpers/seed.js';
+import {clearAllSeeds, projectSeed, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
@@ -17,10 +17,8 @@ beforeEach<TestContext>(async context => {
 });
 
 afterEach(async () => {
-  await Promise.all([userSeed.clean()]);
+  await clearAllSeeds();
 });
-
-await Promise.all([userSeed.clean(), projectSeed.clean()]);
 
 test<TestContext>('DELETE /v1/project/:id [Delete Project] -> 200', async context => {
   const fastify = await build(context);

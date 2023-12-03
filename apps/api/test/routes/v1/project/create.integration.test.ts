@@ -1,32 +1,29 @@
 import {User} from '@codeimage/prisma-models';
-import * as sinon from 'sinon';
-import {afterEach, assert, beforeEach, test} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
 import {
   ProjectCreateRequest,
   ProjectCreateResponse,
 } from '../../../../src/modules/project/schema/index.js';
 
 import {build} from '../../../helper.js';
-import {userSeed} from '../../../helpers/seed.js';
+import {clearAllSeeds, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
 }
-
-beforeEach(() => sinon.restore());
 
 beforeEach<TestContext>(async context => {
   context.user = await userSeed.createUser();
 });
 
 afterEach(async () => {
-  await Promise.all([userSeed.clean()]);
+  await clearAllSeeds();
 });
 
 test<TestContext>('POST /v1/project/ [Create Project] -> 200', async context => {
   const fastify = await build(context);
   const userId = context.user.id;
-  const spy = sinon.spy(fastify.projectService, 'createNewProject');
+  const spy = vi.spyOn(fastify.projectService, 'createNewProject');
 
   const data: ProjectCreateRequest = {
     name: 'Data',
@@ -69,7 +66,7 @@ test<TestContext>('POST /v1/project/ [Create Project] -> 200', async context => 
 
   const body = response.json<ProjectCreateResponse>();
 
-  assert.ok(spy.withArgs(userId, data).calledOnce, 'has been called once');
+  expect(spy, 'has been called once').toHaveBeenCalledWith(userId, data);
   assert.equal(response.statusCode, 200, 'return status 200');
   assert.equal(body.name, 'Data');
 });

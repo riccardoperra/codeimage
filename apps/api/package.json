@@ -15,7 +15,8 @@
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "test:ci": "vitest run",
+    "test:unit": "RUN_TEST=unit vitest run",
+    "test:integration": "RUN_TEST=integration vitest run",
     "test:ui": "vitest --ui",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
     "start:railway": "fastify start -l info dist/app.js",
@@ -29,6 +30,7 @@
     "prisma:migrate:test": "dotenv -e .env.test -- pnpm exec prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:migrate:deploy-test": "dotenv -e .env.test -- pnpm exec prisma migrate deploy",
+    "prisma:migrate:reset-test": "dotenv -e .env.test -- pnpm exec prisma migrate reset --force",
     "prisma:generate": "prisma generate dev && pnpm --filter=@codeimage/prisma-models build",
     "docker:dev": "docker compose -f docker-compose.dev.yml up",
     "dev:start": "tsx watch node_modules/fastify-cli/cli.js start --ignore-watch=.ts$ -w -l info -P src/app.ts"

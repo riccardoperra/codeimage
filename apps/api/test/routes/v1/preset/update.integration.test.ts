@@ -1,19 +1,16 @@
 import {Preset, User} from '@codeimage/prisma-models';
 import {FastifyError} from 'fastify';
-import * as sinon from 'sinon';
-import {afterEach, assert, beforeEach, test} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
 import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
 import {PresetUpdateDto} from '../../../../src/modules/preset/schema/preset-update-dto.schema.js';
 import {testPresetUtils} from '../../../__internal__/presetUtils.js';
 import {build} from '../../../helper.js';
-import {presetSeed, userSeed} from '../../../helpers/seed.js';
+import {clearAllSeeds, presetSeed, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
   preset1: Preset;
 }
-
-beforeEach(() => sinon.restore());
 
 beforeEach<TestContext>(async context => {
   const user = await userSeed.createUser();
@@ -23,13 +20,13 @@ beforeEach<TestContext>(async context => {
 });
 
 afterEach(async () => {
-  await Promise.all([userSeed.clean(), presetSeed.clean()]);
+  await clearAllSeeds();
 });
 
 test<TestContext>('[PUT] /v1/preset/:id -> 200', async context => {
   const fastify = await build(context);
   const presetId = context.preset1.id;
-  const spy = sinon.spy(fastify.presetService, 'updatePreset');
+  const spy = vi.spyOn(fastify.presetService, 'updatePreset');
 
   const request: PresetUpdateDto = {
     data: testPresetUtils.buildPresetData(),
@@ -44,7 +41,7 @@ test<TestContext>('[PUT] /v1/preset/:id -> 200', async context => {
 
   const body = response.json<PresetDto>();
 
-  assert.ok(spy.withArgs(context.user.id, presetId, request).calledOnce);
+  expect(spy).toHaveBeenCalledWith(context.user.id, presetId, request);
   assert.equal(response.statusCode, 200);
   assert.equal(body.name, 'updated');
 });
@@ -53,7 +50,7 @@ test<TestContext>('[PUT] /v1/preset/:id -> when preset not found -> 404', async 
   const fastify = await build(context);
   const userId = context.user.id;
   const presetId = 'badId';
-  const spy = sinon.spy(fastify.presetService, 'updatePreset');
+  const spy = vi.spyOn(fastify.presetService, 'updatePreset');
 
   const request: PresetUpdateDto = {
     name: 'updated',
@@ -68,7 +65,7 @@ test<TestContext>('[PUT] /v1/preset/:id -> when preset not found -> 404', async 
 
   const body = response.json<FastifyError>();
 
-  assert.ok(spy.withArgs(context.user.id, presetId, request).calledOnce);
+  expect(spy).toHaveBeenCalledWith(context.user.id, presetId, request);
   assert.equal(response.statusCode, 404);
   assert.equal(body.code, 'NotFoundPresetException');
   assert.equal(
