@@ -72,28 +72,14 @@ export const WindowStyleForm: ParentComponent = () => {
       </PanelRow>
 
       <Show when={terminal.state.showHeader}>
-        <PanelRow for={'frameTerminalTypeField'}>
+        <PanelRow for={'frameTerminalTypeField'} label={'Window'}>
           <FullWidthPanelRow>
-            <SuspenseEditorItem
-              fallback={
-                <Group orientation={'vertical'}>
-                  <For each={Object.values(AVAILABLE_TERMINAL_THEMES.entries)}>
-                    {() => (
-                      <RadioBlock value={0}>
-                        <Box padding={2} width={'100%'}>
-                          <TerminalControlSkeleton />
-                        </Box>
-                      </RadioBlock>
-                    )}
-                  </For>
-                </Group>
-              }
-            >
-              <TerminalControlField
-                selectedTerminal={terminal.state.type}
-                onTerminalChange={terminal.setType}
-              />
-            </SuspenseEditorItem>
+            <TerminalControlField
+              showAccent={terminal.state.accentVisible}
+              selectedTerminal={terminal.state.type}
+              onTerminalChange={terminal.setType}
+              onShowAccentChange={terminal.setAccentVisible}
+            />
           </FullWidthPanelRow>
         </PanelRow>
       </Show>

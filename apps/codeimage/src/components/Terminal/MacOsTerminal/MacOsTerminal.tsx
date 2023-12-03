@@ -9,7 +9,11 @@ import * as styles from './MacOsTerminal.css';
 
 export const exportExclude = _exportExclude;
 
-export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
+export interface MacOsTerminalProps extends BaseTerminalProps {
+  headerType: 'default' | 'outline' | 'gray';
+}
+
+export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
   const showTab = () => props.accentVisible && !props.alternativeTheme;
 
   return (
@@ -20,7 +24,11 @@ export const MacOsTerminal: ParentComponent<BaseTerminalProps> = props => {
           data-lite={props.lite}
           data-accent-visible={showTab()}
         >
-          <div class={styles.headerIconRow} data-lite={props.lite}>
+          <div
+            class={styles.headerIconRow}
+            data-lite={props.lite}
+            data-header-type={props.headerType ?? 'default'}
+          >
             <div
               class={styles.headerIconRowCircle}
               style={assignInlineVars({

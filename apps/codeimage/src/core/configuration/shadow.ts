@@ -8,6 +8,9 @@ export const TERMINAL_SHADOWS = {
   md: 'rgb(0 0 0 / 40%) 0px 30px 55px',
   lg: 'rgba(0, 0, 0, 0.60) 0px 45px 70px 4px ',
   '3d': 'rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset',
+  // TODO: this should be another option
+  glass:
+    '0 50px 80px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 1px black, inset 0 0 0 1px rgba(255, 255, 255, 0.15)',
 } as const;
 
 export const shadowsLabel = () => {
@@ -36,6 +39,10 @@ export const shadowsLabel = () => {
     {
       label: t('shadows.3d'),
       value: TERMINAL_SHADOWS['3d'],
+    },
+    {
+      label: t('shadows.glass'),
+      value: TERMINAL_SHADOWS['glass'],
     },
   ];
 };

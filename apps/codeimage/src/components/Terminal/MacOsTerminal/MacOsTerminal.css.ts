@@ -21,6 +21,16 @@ export const headerIconRow = style({
 
 export const headerIconRowCircle = style({
   selectors: {
+    [`${headerIconRow}[data-header-type=gray] &`]: {
+      backgroundColor: '#b9b9b9',
+    },
+    [`${headerIconRow}[data-header-type=outline] &`]: {
+      backgroundColor: 'transparent',
+      boxShadow: `0px 0px 0px 2px ${fallbackVar(
+        backgroundColorVar,
+        themeVars.backgroundColor.gray['500'],
+      )} inset`,
+    },
     [`${headerIconRow}[data-lite=true] &`]: {
       vars: {
         [vars.controlSize]: '10px',
