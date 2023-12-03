@@ -3,6 +3,7 @@ import {defineConfig} from 'vitest/config';
 
 export default defineConfig({
   test: {
+    globalSetup: ['./test/before-test.ts'],
     deps: {
       inline: ['@fastify/autoload'],
     },

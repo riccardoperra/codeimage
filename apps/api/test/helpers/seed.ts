@@ -2,7 +2,12 @@ import {PrismaClient} from '@codeimage/prisma-models';
 import * as crypto from 'crypto';
 import {testPresetUtils} from '../__internal__/presetUtils.js';
 
-const client = new PrismaClient();
+const client = new PrismaClient({
+  datasources: {
+    db: {url: 'postgresql://postgres:postgres@localhost:5433/codeimage_test'},
+  },
+});
+
 export const userSeed = {
   clean: () => client.user.deleteMany().then(),
   createUser(email = `email-${crypto.randomUUID()}@example.it`) {
