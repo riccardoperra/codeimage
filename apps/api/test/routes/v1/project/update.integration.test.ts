@@ -1,20 +1,17 @@
 import {User} from '@codeimage/prisma-models';
-import * as sinon from 'sinon';
-import {afterEach, assert, beforeEach, test} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
 import {
   ProjectUpdateRequest,
   ProjectUpdateResponse,
 } from '../../../../src/modules/project/schema/index.js';
 
 import {build} from '../../../helper.js';
-import {projectSeed, userSeed} from '../../../helpers/seed.js';
+import {clearAllSeeds, projectSeed, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
   project1: Awaited<ReturnType<typeof projectSeed.createProject>>;
 }
-
-beforeEach(() => sinon.restore());
 
 beforeEach<TestContext>(async context => {
   context.user = await userSeed.createUser();
@@ -25,13 +22,13 @@ beforeEach<TestContext>(async context => {
 });
 
 afterEach(async () => {
-  await Promise.all([projectSeed.clean(), userSeed.clean()]);
+  await clearAllSeeds();
 });
 
 test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context => {
   const fastify = await build(context);
   const userId = context.user.id;
-  const spy = sinon.spy(fastify.projectService, 'update');
+  const spy = vi.spyOn(fastify.projectService, 'update');
 
   const data: ProjectUpdateRequest = {
     frame: {
@@ -84,9 +81,10 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
 
   const body = JSON.parse(response.body) as ProjectUpdateResponse;
 
-  assert.ok(
-    spy.withArgs(userId, context.project1.id, data).calledOnce,
-    'has been called once',
+  expect(spy, 'has been called once').toHaveBeenCalledWith(
+    userId,
+    context.project1.id,
+    data,
   );
   assert.ok(body.editorTabs.length === 2);
   assert.equal(response.statusCode, 200, 'return status 200');

@@ -1,17 +1,11 @@
-import * as dotEnv from 'dotenv';
-import path from 'node:path';
-import {fileURLToPath} from 'node:url';
+import {execSync} from 'node:child_process';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+export async function setupIntegrationTest() {
+  execSync(
+    `pnpm run prisma:migrate:reset-test --force && pnpm run prisma:migrate:deploy-test`,
+    {stdio: 'inherit'},
+  );
 
-dotEnv.config({path: `${__dirname}/../.env.test`}).parsed;
-
-async function clean() {
-  const {presetSeed, projectSeed, userSeed} = await import('./helpers/seed.js');
-  await projectSeed.clean();
-  await presetSeed.clean();
-  await userSeed.clean();
+  const {client} = await import('./helpers/seed.js');
+  await client.$connect();
 }
-
-clean();

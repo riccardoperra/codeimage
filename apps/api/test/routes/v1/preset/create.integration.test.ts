@@ -1,11 +1,11 @@
 import {User} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
-import {afterEach, assert, beforeAll, beforeEach, test} from 'vitest';
+import {afterEach, assert, beforeEach, test} from 'vitest';
 import {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
 import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
 import {testPresetUtils} from '../../../__internal__/presetUtils.js';
 import {build} from '../../../helper.js';
-import {userSeed} from '../../../helpers/seed.js';
+import {clearAllSeeds, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
@@ -18,7 +18,7 @@ beforeEach<TestContext>(async context => {
 });
 
 afterEach(async () => {
-  await userSeed.clean();
+  await clearAllSeeds();
 });
 
 test<TestContext>('POST /v1/preset [Create Preset] -> 200', async t => {

@@ -1,18 +1,15 @@
 import {Preset, User} from '@codeimage/prisma-models';
-import * as sinon from 'sinon';
-import {afterEach, assert, beforeEach, test} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
 import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
 import {testPresetUtils} from '../../../__internal__/presetUtils.js';
 import {build} from '../../../helper.js';
-import {presetSeed, userSeed} from '../../../helpers/seed.js';
+import {clearAllSeeds, presetSeed, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
   preset1: Preset;
   preset2: Preset;
 }
-
-beforeEach(() => sinon.restore());
 
 beforeEach<TestContext>(async context => {
   const user = await userSeed.createUser();
@@ -32,12 +29,12 @@ beforeEach<TestContext>(async context => {
 });
 
 afterEach(async () => {
-  await Promise.all([userSeed.clean(), presetSeed.clean()]);
+  await clearAllSeeds();
 });
 
 test<TestContext>('/v1/preset -> 200', async t => {
   const fastify = await build(t);
-  const spy = sinon.spy(fastify.presetService, 'findAllPresets');
+  const spy = vi.spyOn(fastify.presetService, 'findAllPresets');
 
   const response = await fastify.inject({
     url: `/api/v1/preset`,
@@ -46,7 +43,7 @@ test<TestContext>('/v1/preset -> 200', async t => {
 
   const body = response.json<PresetDto[]>();
 
-  assert.ok(spy.withArgs(t.user.id).calledOnce);
+  expect(spy).toHaveBeenCalledWith(t.user.id);
   assert.equal(response.statusCode, 200);
   assert.equal(body.length, 2);
   assert.equal(body[0].name, t.preset1.name);
