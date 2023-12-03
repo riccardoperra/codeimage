@@ -32,6 +32,10 @@ export const fontPickerPopover = style([
   {
     width: '360px',
     maxWidth: '360px',
+    // TODO: popover class is not recognized
+    display: 'flex',
+    flexDirection: 'column',
+    gap: themeTokens.spacing['3'],
     vars: {
       [fontListboxHeight]: '350px',
     },
