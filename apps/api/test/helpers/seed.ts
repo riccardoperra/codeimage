@@ -37,13 +37,11 @@ export const presetSeed = {
   },
 };
 
-export const clearAllSeeds = async () =>
-  await Promise.all([
-    await projectSeed.clean(),
-    await presetSeed.clean(),
-    await presetSeed.clean(),
-  ]);
-
+export const clearAllSeeds = async () => {
+  await projectSeed.clean();
+  await presetSeed.clean();
+  await userSeed.clean();
+};
 export const projectSeed = {
   clean: async () => await client.project.deleteMany(),
   async createProject(projectName: string, ownerId: string) {

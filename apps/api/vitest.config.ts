@@ -1,12 +1,11 @@
 import * as path from 'path';
-import {defineConfig} from 'vitest/config';
+import {defineConfig, mergeConfig, UserConfig} from 'vitest/config';
 
-export default defineConfig(env => {
-  console.log(env);
-  return {
+export default defineConfig(() => {
+  const testType = process.env.TEST_TYPE ?? 'unit';
+
+  const config = {
     test: {
-      globalSetup: ['./test/global-setup.ts'],
-      setupFiles: ['./test/before-test.ts'],
       deps: {
         inline: ['@fastify/autoload'],
       },
@@ -18,5 +17,26 @@ export default defineConfig(env => {
         ),
       },
     },
-  };
+  } satisfies UserConfig;
+
+  if (testType === 'unit') {
+    return mergeConfig(config, {
+      test: {
+        exclude: ['./test/**/*.integration.test.ts'],
+        include: ['./test/**/*.test.ts'],
+      },
+    });
+  } else if (testType === 'integration') {
+    return mergeConfig(config, {
+      test: {
+        include: ['./test/**/*.integration.test.ts'],
+        threads: false,
+        sequence: {
+          hooks: 'list',
+        },
+        globalSetup: ['./test/global-setup.ts'],
+      },
+    } satisfies UserConfig);
+  }
+  return {};
 });

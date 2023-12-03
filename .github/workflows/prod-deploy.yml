@@ -166,8 +166,11 @@ jobs:
           pnpm exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
-      - name: Test
-        run: pnpm --filter=@codeimage/api test:ci
+      - name: Test (unit)
+        run: pnpm --filter=@codeimage/api test:ci:unit
+
+      - name: Test (integration)
+        run: pnpm --filter=@codeimage/api test:ci:integration
 
   typecheck-packages:
     name: Type-checking packages/**
