@@ -36,7 +36,7 @@ export function TerminalControlField(
   return (
     <Popover
       placement={modality === 'mobile' ? undefined : 'right-end'}
-      modal={true}
+      modal={modality === 'full'}
       open={open()}
       onOpenChange={setOpen}
     >
