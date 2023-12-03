@@ -15,8 +15,8 @@
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "test:ci:unit": "TEST_TYPE=unit vitest run",
-    "test:ci:integration": "TEST_TYPE=integration vitest run",
+    "test:unit": "RUN_TEST=unit vitest run",
+    "test:integration": "RUN_TEST=integration vitest run",
     "test:ui": "vitest --ui",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
     "start:railway": "fastify start -l info dist/app.js",

@@ -167,10 +167,10 @@ jobs:
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Test (unit)
-        run: pnpm --filter=@codeimage/api test:ci:unit
+        run: pnpm --filter=@codeimage/api test:unit
 
       - name: Test (integration)
-        run: pnpm --filter=@codeimage/api test:ci:integration
+        run: pnpm --filter=@codeimage/api test:integration
 
   typecheck-packages:
     name: Type-checking packages/**

@@ -2,7 +2,7 @@ import * as path from 'path';
 import {defineConfig, mergeConfig, UserConfig} from 'vitest/config';
 
 export default defineConfig(() => {
-  const testType = process.env.TEST_TYPE ?? 'unit';
+  const testType = process.env.RUN_TEST ?? 'unit';
 
   const config = {
     test: {
@@ -24,6 +24,7 @@ export default defineConfig(() => {
       test: {
         exclude: ['./test/**/*.integration.test.ts'],
         include: ['./test/**/*.test.ts'],
+        globalSetup: ['./test/setup-unit.ts'],
       },
     });
   } else if (testType === 'integration') {
@@ -34,7 +35,7 @@ export default defineConfig(() => {
         sequence: {
           hooks: 'list',
         },
-        globalSetup: ['./test/global-setup.ts'],
+        globalSetup: ['./test/setup-integration.ts'],
       },
     } satisfies UserConfig);
   }
