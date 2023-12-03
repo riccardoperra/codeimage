@@ -12,21 +12,19 @@ export const userSeed = {
   clean: async () => await client.user.deleteMany(),
   async createUser(email?: string) {
     const id = crypto.randomUUID();
-    const res = await client.user.create({
+    return client.user.create({
       data: {
         id,
         email: email || `email-${id}@example.it`,
       },
     });
-    console.log('created user with id', res.id, res.email);
-    return res;
   },
 };
 
 export const presetSeed = {
   clean: async () => await client.preset.deleteMany(),
   async createPresetV1(presetName: string, ownerId: string, data?: object) {
-    return await client.preset.create({
+    return client.preset.create({
       data: {
         name: presetName,
         owner: {connect: {id: ownerId}},
@@ -45,7 +43,7 @@ export const clearAllSeeds = async () => {
 export const projectSeed = {
   clean: async () => await client.project.deleteMany(),
   async createProject(projectName: string, ownerId: string) {
-    return await client.project.create({
+    return client.project.create({
       data: {
         name: projectName,
         frame: {create: {}},

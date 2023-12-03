@@ -42,7 +42,6 @@ test<TestContext>('[PUT] /v1/preset/:id -> 200', async context => {
   const body = response.json<PresetDto>();
 
   expect(spy).toHaveBeenCalledWith(context.user.id, presetId, request);
-  console.log(body);
   assert.equal(response.statusCode, 200);
   assert.equal(body.name, 'updated');
 });
