@@ -456,6 +456,24 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     ],
   },
   {
+    id: 'c',
+    label: 'C',
+    color: '#555555',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/clike'),
+      ]).then(([cb, m]) => cb(m.c)),
+    icons: [
+      {
+        name: 'cpp',
+        extension: '.cpp',
+        content: () => import('material-icon-theme/icons/c.svg?raw'),
+        matcher: /^.*\.(c)$/,
+      },
+    ],
+  },
+  {
     id: 'xml',
     label: 'XML',
     color: '#0060ac',
