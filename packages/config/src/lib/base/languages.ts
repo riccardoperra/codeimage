@@ -466,8 +466,8 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       ]).then(([cb, m]) => cb(m.c)),
     icons: [
       {
-        name: 'cpp',
-        extension: '.cpp',
+        name: 'c',
+        extension: '.c',
         content: () => import('material-icon-theme/icons/c.svg?raw'),
         matcher: /^.*\.(c)$/,
       },
