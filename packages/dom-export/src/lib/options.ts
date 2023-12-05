@@ -101,7 +101,7 @@ export interface Options {
 
   /**
    *
-   * Remove unused web fonts to generated image
+   * Add matching document external fonts even if not defined in the exported Node
    *
    */
   experimental_includeExternalFonts?: string[];
