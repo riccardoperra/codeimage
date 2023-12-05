@@ -17,19 +17,26 @@ import {
 } from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import {FrameSkeleton} from '../../Frame/FrameSkeleton';
+import {DraggableWindowTab} from './Tab/DraggableWindowTab';
 import * as styles from './Tab/Tab.css';
-import {WindowTab} from './Tab/WindowTab';
 import {TabAddButton} from './TabAddButton/TabAddButton';
+import {TerminalWindowTabListPreview} from './TerminalWindowTabListPreview';
 
 export interface TerminalWindowTabListProps {
   accent: boolean;
   readOnly: boolean;
   lite?: boolean;
+  preview?: boolean;
 }
 
 export function TerminalWindowTabList(
   props: VoidProps<TerminalWindowTabListProps>,
 ) {
+  // TODO: make reactive
+  if (props.preview) {
+    return <TerminalWindowTabListPreview {...props} />;
+  }
+
   let wrapperRef!: HTMLDivElement;
 
   const {
@@ -99,7 +106,7 @@ export function TerminalWindowTabList(
                     });
 
                     return (
-                      <WindowTab
+                      <DraggableWindowTab
                         exportExclude={
                           !editor.tab.tabName?.length &&
                           (state.editors.length === 1 || !active())

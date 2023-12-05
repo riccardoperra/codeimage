@@ -82,6 +82,7 @@ export function TerminalControlField(
                 <Box padding={2} width={'100%'}>
                   <Suspense fallback={<TerminalControlSkeleton />}>
                     <Dynamic
+                      preview={true}
                       showTab={true}
                       shadow={'none'}
                       component={terminal.component}
