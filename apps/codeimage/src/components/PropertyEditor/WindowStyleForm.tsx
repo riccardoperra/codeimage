@@ -84,25 +84,6 @@ export const WindowStyleForm: ParentComponent = () => {
         </PanelRow>
       </Show>
 
-      <Show
-        when={terminal.state.showHeader && !terminal.state.alternativeTheme}
-      >
-        <PanelRow for={'frameTabAccentField'} label={t('frame.tabAccent')}>
-          <TwoColumnPanelRow>
-            <SegmentedField
-              size={'xs'}
-              adapt
-              value={terminal.state.accentVisible}
-              onChange={terminal.setAccentVisible}
-              items={[
-                {label: t('common.yes'), value: true},
-                {label: t('common.no'), value: false},
-              ]}
-            />
-          </TwoColumnPanelRow>
-        </PanelRow>
-      </Show>
-
       <PanelRow for={'frameTabReflectionField'} label={t('frame.reflection')}>
         <TwoColumnPanelRow>
           <SuspenseEditorItem

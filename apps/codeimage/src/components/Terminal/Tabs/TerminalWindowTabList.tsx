@@ -27,6 +27,7 @@ export interface TerminalWindowTabListProps {
   readOnly: boolean;
   lite?: boolean;
   preview?: boolean;
+  small?: boolean;
 }
 
 export function TerminalWindowTabList(
@@ -76,7 +77,7 @@ export function TerminalWindowTabList(
     <ErrorBoundary fallback={<FrameSkeleton />}>
       <Suspense>
         <div
-          class={styles.wrapper({accent: props.accent})}
+          class={styles.wrapper({accent: props.accent, lite: props.lite})}
           data-accent-visible={props.accent}
         >
           <div class={styles.tabListWrapper} ref={wrapperRef}>

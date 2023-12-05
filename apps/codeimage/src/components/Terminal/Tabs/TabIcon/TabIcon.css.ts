@@ -5,5 +5,10 @@ export const tabIcon = style([
   {
     display: 'inline-flex',
     marginRight: themeVars.spacing['2'],
+    selectors: {
+      '[data-lite] &': {
+        fontSize: '11px',
+      },
+    },
   },
 ]);

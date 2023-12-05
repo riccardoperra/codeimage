@@ -16,6 +16,7 @@ export interface TerminalWindowTabListPreviewProps {
 interface PreviewTabProps {
   editor: EditorState;
   accent: boolean;
+  lite: boolean;
 }
 
 function PreviewTab(props: PreviewTabProps) {
@@ -30,10 +31,9 @@ function PreviewTab(props: PreviewTabProps) {
       tabIcon={icon()?.content}
       accentMode={props.accent}
       active={true}
+      lite={props.lite}
       index={0}
-      content={
-        <WindowTabContentText>{props.editor.tab.tabName}</WindowTabContentText>
-      }
+      content={<WindowTabContentText>{'Untitled'}</WindowTabContentText>}
     />
   );
 }
@@ -51,7 +51,11 @@ export function TerminalWindowTabListPreview(
           data-accent-visible={props.accent}
         >
           <div class={styles.tabListWrapper}>
-            <PreviewTab accent={props.accent} editor={state.editors[0]} />
+            <PreviewTab
+              lite={props.lite ?? false}
+              accent={props.accent}
+              editor={state.editors[0]}
+            />
           </div>
         </div>
       </Suspense>

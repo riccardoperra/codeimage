@@ -9,11 +9,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@codeui/kit';
+import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {useModality} from '@core/hooks/isMobile';
 import {createSignal, For, JSXElement, Suspense} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import * as styles from '../PropertyEditor/controls/FontPicker/FontPicker.css';
+import * as styles from './TerminalControlField.css';
 import {TerminalControlSkeleton} from './TerminalControlFieldSkeleton';
 
 interface TerminalControlFieldProps {
@@ -31,7 +32,6 @@ export function TerminalControlField(
   const terminalState = getTerminalState();
   const modality = useModality();
   const {state: editorState} = getRootEditorStore();
-  const [controlsOnRight, setControlsOnRight] = createSignal(true);
 
   return (
     <Popover
@@ -42,12 +42,13 @@ export function TerminalControlField(
     >
       <PopoverTrigger asChild>
         <As component={'div'} class={styles.input}>
-          <Box padding={2} width={'100%'}>
+          <Box paddingTop={1} paddingBottom={1} width={'100%'}>
             <Suspense fallback={<TerminalControlSkeleton />}>
               <Dynamic
                 lite
+                preview={true}
+                shadow={TERMINAL_SHADOWS.md}
                 showTab={true}
-                shadow={'none'}
                 component={
                   terminalThemes.entries[
                     (props.selectedTerminal as keyof typeof terminalThemes.entries) ??
@@ -63,14 +64,18 @@ export function TerminalControlField(
                 alternativeTheme={false}
                 opacity={100}
                 themeId={editorState.options.themeId}
-                showGlassReflection={terminalState.state.showGlassReflection}
+                showGlassReflection={false}
               />
             </Suspense>
           </Box>
           <icons.SelectorIcon class={styles.inputIcon} />
         </As>
       </PopoverTrigger>
-      <PopoverContent variant={'bordered'} class={styles.fontPickerPopover}>
+      <PopoverContent
+        title={'Window style'}
+        variant={'bordered'}
+        class={styles.fontPickerPopover}
+      >
         <div style={{display: 'flex', gap: '1rem', 'flex-direction': 'column'}}>
           <For each={Object.values(terminalThemes.entries)}>
             {terminal => (
@@ -84,7 +89,7 @@ export function TerminalControlField(
                     <Dynamic
                       preview={true}
                       showTab={true}
-                      shadow={'none'}
+                      shadow={TERMINAL_SHADOWS['3d']}
                       component={terminal.component}
                       textColor={terminalState.state.textColor}
                       background={terminalState.state.background}
@@ -109,16 +114,8 @@ export function TerminalControlField(
         <Box marginTop={5}>
           <Checkbox
             checked={props.showAccent}
-            onChange={props.onShowAccentChange}
+            onChange={value => props.onShowAccentChange(value)}
             label={'Show accent'}
-          />
-        </Box>
-
-        <Box marginTop={5}>
-          <Checkbox
-            checked={controlsOnRight()}
-            onChange={setControlsOnRight}
-            label={'Controls on right'}
           />
         </Box>
       </PopoverContent>
