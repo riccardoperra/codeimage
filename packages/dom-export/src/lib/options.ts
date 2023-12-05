@@ -101,6 +101,13 @@ export interface Options {
 
   /**
    *
+   * Remove unused web fonts to generated image
+   *
+   */
+  experimental_includeExternalFonts?: string[];
+
+  /**
+   *
    * Apply fixes for Safari IOS and MacOS to load external resources correctly
    *
    */

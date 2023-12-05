@@ -294,6 +294,7 @@ export function getUsedFontFamiliesByNode<T extends Element>(
   fontsMap: FontsMap,
   node: T,
   cssStyleRules: CSSStyleRule[],
+  experimental_includeExternalFonts: string[],
 ): CSSStyleRule[] {
   const fontFamilies = getUsedFontFamiliesRecursively([], fontsMap, node, null);
   return cssStyleRules.reduce((acc, styleRule) => {
@@ -301,7 +302,10 @@ export function getUsedFontFamiliesByNode<T extends Element>(
       getStylesheetFontValues(styleRule);
 
     const id = `${getFontName(fontFamily)[0]}-${fontWeight}-${fontStyle}`;
-    if (!fontFamilies.includes(id)) {
+    if (
+      !fontFamilies.includes(id) &&
+      !experimental_includeExternalFonts.some(font => font.startsWith(id))
+    ) {
       return acc;
     }
     return acc.concat(styleRule);
@@ -312,6 +316,7 @@ function getWebFontRules(
   node: HTMLElement,
   cssRules: CSSStyleRule[],
   experimental_optimizeFontLoading: boolean,
+  experimental_includeExternalFonts: string[],
 ): CSSStyleRule[] {
   const webFontsRules = cssRules
     .filter(rule => rule.type === CSSRule.FONT_FACE_RULE)
@@ -321,7 +326,12 @@ function getWebFontRules(
     return webFontsRules;
   }
   const fontsMap = getFontsMap(webFontsRules);
-  return getUsedFontFamiliesByNode(fontsMap, node, webFontsRules);
+  return getUsedFontFamiliesByNode(
+    fontsMap,
+    node,
+    webFontsRules,
+    experimental_includeExternalFonts,
+  );
 }
 
 async function parseWebFontRules<T extends HTMLElement>(
@@ -339,6 +349,7 @@ async function parseWebFontRules<T extends HTMLElement>(
     node,
     cssRules,
     options.experimental_optimizeFontLoading ?? false,
+    options.experimental_includeExternalFonts ?? [],
   );
 }
 

@@ -83,6 +83,7 @@ export async function exportImage(
     quality: quality,
     experimental_optimizeFontLoading: true,
     experimental_safariResourceFix: true,
+    experimental_includeExternalFonts: ['inter var'],
   };
 
   async function exportByMode(ref: HTMLElement) {
