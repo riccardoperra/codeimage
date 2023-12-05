@@ -101,6 +101,13 @@ export interface Options {
 
   /**
    *
+   * Add matching document external fonts even if not defined in the exported Node
+   *
+   */
+  experimental_includeExternalFonts?: string[];
+
+  /**
+   *
    * Apply fixes for Safari IOS and MacOS to load external resources correctly
    *
    */
