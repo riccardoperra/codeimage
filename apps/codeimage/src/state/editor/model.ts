@@ -6,6 +6,7 @@ export interface EditorUIOptions {
   showLineNumbers: boolean;
   focused: boolean;
   themeId: string;
+  lineHeight: number;
 }
 
 export interface TabState {
@@ -17,6 +18,7 @@ export interface EditorState {
   id: string;
   code: string;
   tab: TabState;
+  lineHeight: number;
   formatter?: string | null;
   languageId: string;
 }
@@ -37,6 +39,7 @@ export interface PersistedEditorState {
     code: string;
     tabName: string;
     languageId: string;
+    lineHeight: number;
   }[];
 }
 

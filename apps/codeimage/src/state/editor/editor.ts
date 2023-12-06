@@ -22,6 +22,7 @@ export function getInitialEditorState(): EditorState {
     code: appEnvironment.defaultState.editor.code,
     languageId: appEnvironment.defaultState.editor.languageId,
     formatter: null,
+    lineHeight: 5,
     tab: {
       tabName: 'index.tsx',
       tabIcon: undefined,
@@ -37,6 +38,7 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
     focused: false,
     enableLigatures: true,
+    lineHeight: 5,
   };
 }
 
@@ -58,6 +60,7 @@ export function createEditorsStore() {
       setFromPersistedState: PersistedEditorState;
       setFromPreset: PresetData['editor'];
       setEnableLigatures: boolean;
+      setLineHeight: number;
     }>(),
   );
 
@@ -96,6 +99,9 @@ export function createEditorsStore() {
       store.set('options', presetData);
       store.dispatch(editorUpdateCommand, void 0);
     })
+    .hold(store.commands.setLineHeight, (linheHeight, {set}) => {
+      set('options', 'lineHeight', linheHeight);
+    })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
       const editors = (persistedState.editors ?? [])
         .slice(0, MAX_TABS)
@@ -104,6 +110,7 @@ export function createEditorsStore() {
           languageId: editor.languageId,
           id: editor.id,
           code: editor.code,
+          lineHeight: editor.lineHeight,
         }));
       return {
         options: {...state.options, ...persistedState.options},
@@ -114,6 +121,7 @@ export function createEditorsStore() {
             languageId: editor.languageId,
             tab: {tabName: editor.tabName},
             id: editor.id,
+            lineHeight: editor.lineHeight,
           };
         }),
       };
@@ -136,6 +144,7 @@ export function createEditorsStore() {
           code: editor.code,
           tabName: editor.tab.tabName ?? '',
           id: editor.id,
+          lineHeight: editor.lineHeight,
         };
       }),
       options: {
@@ -144,6 +153,7 @@ export function createEditorsStore() {
         fontId: state.options.fontId,
         fontWeight: state.options.fontWeight,
         enableLigatures: state.options.enableLigatures ?? true,
+        lineHeight: state.options.lineHeight,
       },
     };
   };
@@ -245,6 +255,7 @@ export function createEditorsStore() {
             languageId: editor.languageId,
             id: editor.id,
             code: editor.code,
+            lineHeight: editor.lineHeight,
           } as EditorState),
       ),
     );

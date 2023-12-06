@@ -40,7 +40,13 @@ export const EditorStyleForm: ParentComponent = () => {
     getActiveEditorStore();
   const {
     state,
-    actions: {setShowLineNumbers, setFontWeight, setFontId, setEnableLigatures},
+    actions: {
+      setShowLineNumbers,
+      setFontWeight,
+      setFontId,
+      setEnableLigatures,
+      setLineHeight,
+    },
     computed: {selectedFont},
   } = getRootEditorStore();
 
@@ -203,6 +209,22 @@ export const EditorStyleForm: ParentComponent = () => {
                       {label: t('common.show'), value: true},
                       {label: t('common.hide'), value: false},
                     ]}
+                  />
+                </SuspenseEditorItem>
+              </TwoColumnPanelRow>
+            </PanelRow>
+            <PanelRow for={'frameLineHeight'} label={'LINE HEIGHT'}>
+              <TwoColumnPanelRow>
+                <SuspenseEditorItem
+                  fallback={<SkeletonLine width={'85%'} height={'26px'} />}
+                >
+                  <input
+                    type="number"
+                    value={state.options.lineHeight}
+                    onChange={event => {
+                      if (!event.target.value) return;
+                      setLineHeight(Number(event.target.value));
+                    }}
                   />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
