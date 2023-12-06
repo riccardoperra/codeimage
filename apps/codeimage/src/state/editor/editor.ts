@@ -22,7 +22,7 @@ export function getInitialEditorState(): EditorState {
     code: appEnvironment.defaultState.editor.code,
     languageId: appEnvironment.defaultState.editor.languageId,
     formatter: null,
-    lineHeight: 5,
+    lineHeight: 1.5,
     tab: {
       tabName: 'index.tsx',
       tabIcon: undefined,
@@ -38,7 +38,7 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
     focused: false,
     enableLigatures: true,
-    lineHeight: 5,
+    lineHeight: 1.5,
   };
 }
 
