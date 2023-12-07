@@ -74,7 +74,13 @@ export function TerminalWindowTabList(
   }
 
   return (
-    <ErrorBoundary fallback={<FrameSkeleton />}>
+    <ErrorBoundary
+      fallback={(e, reset) => {
+        // Try to render again the content since @floating-ui/dom is broken?
+        reset();
+        return <></>;
+      }}
+    >
       <Suspense>
         <div
           class={styles.wrapper({accent: props.accent, lite: props.lite})}

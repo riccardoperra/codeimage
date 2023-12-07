@@ -94,7 +94,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@vanilla-extract/integration": "6.0.1"
+      "@vanilla-extract/integration": "6.0.1",
+      "typescript": "~5.3.2"
     }
   },
   "dependencies": {
