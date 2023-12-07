@@ -41,7 +41,7 @@ export function TabName(props: TabNameProps): JSXElement {
     </Show>
   );
 }
-export function _TabName(props: TabNameProps): JSXElement {
+function _TabName(props: TabNameProps): JSXElement {
   let ref: InlineCombobox;
   const hasDot = /^[a-zA-Z0-9$_-]{2,}\./;
   const [width, setWidth] = createSignal(0);

@@ -1,16 +1,13 @@
 import {useI18n} from '@codeimage/locale';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {Box, Group, RadioBlock} from '@codeimage/ui';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {shadowsLabel} from '@core/configuration/shadow';
-import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
-import {createMemo, For, ParentComponent, Show} from 'solid-js';
+import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
-import {TerminalControlSkeleton} from '../TerminalControlField/TerminalControlFieldSkeleton';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
