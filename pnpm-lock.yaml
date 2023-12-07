@@ -888,8 +888,6 @@ importers:
         specifier: ~5.3.2
         version: 5.3.2
 
-  packages/prisma-models/generated/client: {}
-
   packages/ui:
     dependencies:
       '@codeimage/locale':
@@ -5487,7 +5485,7 @@ packages:
       strict-event-emitter: 0.2.8
       uuid: 8.3.2
     optionalDependencies:
-      msw: 2.0.9(typescript@5.3.2)
+      msw: 2.0.10(typescript@5.3.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -5509,8 +5507,8 @@ packages:
       - supports-color
     dev: true
 
-  /@mswjs/interceptors@0.25.11:
-    resolution: {integrity: sha512-27aonWAjdeoZN4j4j6QvePOSOacQUucFRUESAU8FUXsmmagDjmyOi4/NHizxzY/NHSk/HAyqF/IMhl+9puhqNw==}
+  /@mswjs/interceptors@0.25.13:
+    resolution: {integrity: sha512-xfjR81WwXPHwhDbqJRHlxYmboJuiSaIKpP4I5TJVFl/EmByOU13jOBT9hmEnxcjR3jvFYoqoNKt7MM9uqerj9A==}
     engines: {node: '>=18'}
     requiresBuild: true
     dependencies:
@@ -13974,8 +13972,8 @@ packages:
       - supports-color
     dev: true
 
-  /msw@2.0.9(typescript@5.3.2):
-    resolution: {integrity: sha512-rl3kuGS+wuB4EKyL5nJ5WIoteCIzIgySp5b2hmIQ7fuXFfDfn/yD+E0k/3lDNFnC79tM3cuws6XmJEdPr7y+Zg==}
+  /msw@2.0.10(typescript@5.3.2):
+    resolution: {integrity: sha512-JhKdzIEuMDSU7qak4CJjiSFW2J0R4Wm5AuLhFzimKs68Wx7PTyqjgnw7+7FpQ3kGi0yY49g/qEFmUmMyLmjb4w==}
     engines: {node: '>=18'}
     hasBin: true
     requiresBuild: true
@@ -13989,7 +13987,7 @@ packages:
       '@bundled-es-modules/js-levenshtein': 2.0.1
       '@bundled-es-modules/statuses': 1.0.1
       '@mswjs/cookies': 1.1.0
-      '@mswjs/interceptors': 0.25.11
+      '@mswjs/interceptors': 0.25.13
       '@open-draft/until': 2.1.0
       '@types/cookie': 0.4.1
       '@types/js-levenshtein': 1.1.3
