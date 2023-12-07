@@ -16,7 +16,6 @@ import {
   VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
-import {FrameSkeleton} from '../../Frame/FrameSkeleton';
 import {DraggableWindowTab} from './Tab/DraggableWindowTab';
 import * as styles from './Tab/Tab.css';
 import {TabAddButton} from './TabAddButton/TabAddButton';
