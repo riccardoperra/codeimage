@@ -36,7 +36,7 @@ export {
 } from './Dropdown';
 
 export {SvgIcon, RemoteSvgIcon} from './Icon';
-export type {SvgIconProps} from './Icon';
+export type {SvgIconProps, SvgExternalIconProps} from './Icon';
 
 export {PortalHost, PortalHostContext} from './PortalHost';
 

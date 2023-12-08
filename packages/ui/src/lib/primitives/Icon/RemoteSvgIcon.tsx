@@ -11,7 +11,7 @@ import {
 import {Loading} from '../Loader';
 import {SvgIcon, SvgIconProps} from './SvgIcon';
 
-interface SvgExternalIconProps {
+export interface SvgExternalIconProps {
   content?: string | (() => Promise<typeof import('*.svg')>) | null;
   delay?: number;
   size?: SvgIconProps['size'];
