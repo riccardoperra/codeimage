@@ -20,6 +20,7 @@ const externals = [
   'solid-js/store',
   '@vanilla-extract/recipes/createRuntimeFn',
   '@vanilla-extract/sprinkles/createRuntimeSprinkles',
+  'solid-use/props',
 ];
 
 const cssFileFilter = /\.css\.(js|mjs|jsx|ts|tsx)(\?used)?$/;

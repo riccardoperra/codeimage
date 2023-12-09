@@ -30,8 +30,6 @@ export const fontListboxHeight = createVar();
 
 export const fontPickerPopover = style([
   {
-    width: '360px',
-    maxWidth: '360px',
     vars: {
       [fontListboxHeight]: '350px',
     },

@@ -1,108 +1,76 @@
 import {LanguageIconDefinition} from '@codeimage/config';
 import {Loading, Text} from '@codeimage/ui';
-import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
-import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {createSortable} from '@thisbeyond/solid-dnd';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
-  createMemo,
-  createSignal,
-  onMount,
+  FlowProps,
+  JSX,
+  JSXElement,
+  mergeProps,
+  ParentProps,
+  Ref,
   Show,
+  splitProps,
   Suspense,
-  VoidProps,
 } from 'solid-js';
-import {CloseIcon} from '../../../Icons/CloseIcon';
 import {TabIcon} from '../TabIcon/TabIcon';
-import {TabName} from '../TabName/TabName';
 import * as styles from './Tab.css';
 
-const exportExclude = _exportExclude;
-
 export interface WindowTabProps {
-  readonly id: string;
-  readonly index: number;
-  readonly tabName?: string | null;
-  readonly tabIcon?: LanguageIconDefinition['content'];
-  readonly readonlyTab: boolean;
-  readonly accentMode: boolean;
   readonly active: boolean;
-  readonly onTabChange: (value: string) => void;
-  readonly exportExclude: boolean;
-  readonly onClick?: () => void;
-  readonly onClose?: (() => void) | null;
+  readonly index: number;
+  readonly accentMode: boolean;
+  readonly lite?: boolean;
+  readonly ref?: Ref<HTMLDivElement>;
+  readonly tabIcon?: LanguageIconDefinition['content'];
+  readonly content: JSXElement;
+  readonly rightContent?: JSXElement;
 }
 
-export function WindowTab(props: VoidProps<WindowTabProps>) {
-  let ref!: HTMLDivElement;
-  const [width, setWidth] = createSignal<number>(0);
-  // eslint-disable-next-line solid/reactivity
-  const sortable = createSortable(props.id);
-
-  onMount(() => {
-    createResizeObserver(
-      () => ref,
-      ({width}) => setWidth(width),
-    );
-  });
-
-  const hasEnoughSpace = createMemo(() => width() >= 32);
+export function WindowTab(
+  props: ParentProps<WindowTabProps & JSX.IntrinsicElements['div']>,
+) {
+  const [, others] = splitProps(props, ['class', 'ref', 'style']);
 
   return (
     <div
-      use:exportExclude={props.exportExclude}
+      data-active={props.active}
+      data-host-index={props.index}
+      data-lite={props.lite}
+      data-accent-visible={props.accentMode}
       class={styles.tab({
         accent: props.accentMode,
         active: props.active,
+        lite: props.lite,
       })}
-      ref={el => {
-        ref = el;
-        sortable(ref);
-      }}
-      data-active-drag={sortable.isActiveDraggable}
-      data-host-index={props.index}
-      data-accent-visible={props.accentMode}
+      ref={props.ref}
       style={assignInlineVars({
         [styles.tabVars.tabIndex]: String(props.index),
       })}
-      data-active={props.active}
-      onMouseDown={() => props.onClick?.()}
+      {...others}
     >
       <Suspense fallback={<Loading size={'sm'} />}>
         <Show when={props.tabIcon} keyed>
-          {icon => <TabIcon content={icon} />}
+          {icon => <TabIcon size={props.lite ? 'xs' : 'md'} content={icon} />}
         </Show>
-        <div class={styles.tabTextContent}>
-          <Show
-            fallback={
-              <Text size={'sm'} class={styles.fallbackText}>
-                {props.tabName || 'Untitled'}
-              </Text>
-            }
-            when={!props.readonlyTab}
-          >
-            <TabName
-              readonly={props.readonlyTab && !props.active}
-              value={props.tabName ?? ''}
-              onValueChange={value => props.onTabChange?.(value)}
-            />
-          </Show>
-        </div>
+        <div class={styles.tabTextContent}>{props.content}</div>
       </Suspense>
-
-      <Show when={props.onClose && hasEnoughSpace()}>
-        <CloseIcon
-          class={styles.tabCloseIcon}
-          onClick={evt => {
-            props.onClose?.();
-            evt.stopPropagation();
-            evt.preventDefault();
-          }}
-          size={'xs'}
-          stroke-width={3}
-          data-export-exclude={true}
-        />
-      </Show>
+      <Show when={props.rightContent}>{props.rightContent}</Show>
     </div>
+  );
+}
+
+interface WindowTabContentTextProps {
+  fallback?: JSXElement;
+}
+
+export function WindowTabContentText(
+  props: FlowProps<WindowTabContentTextProps>,
+) {
+  const propsWithDefaults = mergeProps({fallback: 'Untitled'}, props);
+
+  return (
+    <Text size={'sm'} class={styles.fallbackText}>
+      {props.children || propsWithDefaults.fallback}
+    </Text>
   );
 }

@@ -14,11 +14,14 @@ export const headerIconRow = style({
   marginBottom: 'auto',
   justifyContent: 'flex-end',
   flex: 1,
-  paddingInlineStart: themeVars.spacing['4'],
   paddingInlineEnd: themeVars.spacing['4'],
   columnGap: themeVars.spacing['5'],
 
   selectors: {
+    [`[data-lite=true] &`]: {
+      columnGap: themeVars.spacing['3'],
+    },
+
     [`[data-theme-mode=light] &`]: {
       vars: {
         [vars.iconFill]: themeVars.backgroundColor.black,

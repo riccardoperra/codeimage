@@ -16,18 +16,34 @@ import {
   VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
-import {FrameSkeleton} from '../../Frame/FrameSkeleton';
+import {DraggableWindowTab} from './Tab/DraggableWindowTab';
 import * as styles from './Tab/Tab.css';
-import {WindowTab} from './Tab/WindowTab';
 import {TabAddButton} from './TabAddButton/TabAddButton';
+import {TerminalWindowTabListPreview} from './TerminalWindowTabListPreview';
 
 export interface TerminalWindowTabListProps {
   accent: boolean;
   readOnly: boolean;
   lite?: boolean;
+  preview?: boolean;
+  small?: boolean;
 }
 
 export function TerminalWindowTabList(
+  props: VoidProps<TerminalWindowTabListProps>,
+) {
+  return (
+    <>
+      {props.preview ? (
+        <TerminalWindowTabListPreview {...props} />
+      ) : (
+        <TerminalWindowTabListContent {...props} />
+      )}
+    </>
+  );
+}
+
+export function TerminalWindowTabListContent(
   props: VoidProps<TerminalWindowTabListProps>,
 ) {
   let wrapperRef!: HTMLDivElement;
@@ -66,10 +82,16 @@ export function TerminalWindowTabList(
   }
 
   return (
-    <ErrorBoundary fallback={<FrameSkeleton />}>
+    <ErrorBoundary
+      fallback={(e, reset) => {
+        // Try to render again the content since @floating-ui/dom is broken?
+        reset();
+        return <></>;
+      }}
+    >
       <Suspense>
         <div
-          class={styles.wrapper({accent: props.accent})}
+          class={styles.wrapper({accent: props.accent, lite: props.lite})}
           data-accent-visible={props.accent}
         >
           <div class={styles.tabListWrapper} ref={wrapperRef}>
@@ -99,7 +121,7 @@ export function TerminalWindowTabList(
                     });
 
                     return (
-                      <WindowTab
+                      <DraggableWindowTab
                         exportExclude={
                           !editor.tab.tabName?.length &&
                           (state.editors.length === 1 || !active())

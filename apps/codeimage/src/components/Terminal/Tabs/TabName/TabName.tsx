@@ -28,10 +28,20 @@ let wcAlreadyLoaded = false;
 export function TabName(props: TabNameProps): JSXElement {
   const [wcLoaded] = createResource(() =>
     !wcAlreadyLoaded
-      ? import('@ui/Combobox').then(() => true).catch(() => false)
+      ? import('@ui/Combobox')
+          .then(() => true)
+          .finally(() => (wcAlreadyLoaded = true))
+          .catch(() => false)
       : true,
   );
 
+  return (
+    <Show when={wcLoaded()}>
+      <_TabName {...props} />
+    </Show>
+  );
+}
+function _TabName(props: TabNameProps): JSXElement {
   let ref: InlineCombobox;
   const hasDot = /^[a-zA-Z0-9$_-]{2,}\./;
   const [width, setWidth] = createSignal(0);
@@ -86,73 +96,65 @@ export function TabName(props: TabNameProps): JSXElement {
   });
 
   createEffect(() => {
-    if (wcLoaded()) {
-      createResizeObserver(
-        () => ref,
-        ({width}) => setWidth(width),
-      );
+    createResizeObserver(
+      () => ref,
+      ({width}) => setWidth(width),
+    );
 
-      if (!props.readonly && wcAlreadyLoaded) {
-        // Cannot use queueScheduler
-        requestAnimationFrame(() => ref?.focus());
-      }
-
-      if (!wcAlreadyLoaded) {
-        wcAlreadyLoaded = true;
-      }
+    if (!props.readonly) {
+      // Cannot use queueScheduler
+      requestAnimationFrame(() => ref?.focus());
     }
   });
 
   return (
-    <Show when={wcLoaded()}>
-      <cmg-inline-combobox
-        ref={el => {
-          ref = el;
-          floating.setReference(el);
+    <cmg-inline-combobox
+      ref={el => {
+        ref = el;
+        floating.setReference(el);
+      }}
+      name="tabName"
+      value={props.value}
+      placeholder={'Untitled'}
+      onInput={event => onChange((event.target as HTMLInputElement).value)}
+      on:selectedItemChange={event =>
+        setTimeout(() => onChange(event.detail.value))
+      }
+      on:inputTextChange={event => onChange(event.detail.value)}
+      prop:valueMapper={getFormattedValue}
+      prop:_noTypeAhead={true}
+      prop:autocomplete={'none'}
+    >
+      <Box
+        ref={floating.setFloating}
+        class={styles.tabHint}
+        display={showHint() ? 'block' : 'none'}
+        style={{
+          position: floating.strategy,
+          top: `${floating.y ?? 0}px`,
+          left: `${(floating.x ?? 0) + width() - 20}px`,
         }}
-        name="tabName"
-        value={props.value}
-        placeholder={'Untitled'}
-        onInput={event => onChange((event.target as HTMLInputElement).value)}
-        on:selectedItemChange={event =>
-          setTimeout(() => onChange(event.detail.value))
-        }
-        on:inputTextChange={event => onChange(event.detail.value)}
-        prop:valueMapper={getFormattedValue}
-        prop:_noTypeAhead={true}
-        prop:autocomplete={'none'}
       >
-        <Box
-          ref={floating.setFloating}
-          class={styles.tabHint}
-          display={showHint() ? 'block' : 'none'}
-          style={{
-            position: floating.strategy,
-            top: `${floating.y ?? 0}px`,
-            left: `${(floating.x ?? 0) + width() - 20}px`,
+        <For each={matchedIcons()}>
+          {icon => {
+            const value = icon.extension.replace('.', '');
+            return (
+              <cmg-combobox-option
+                onClick={() => onChange(getFormattedValue(value))}
+                class={styles.tabHintDropdownOption}
+                prop:choiceValue={value}
+              >
+                <Box class={styles.tabHintDropdownItemContent}>
+                  <TabIcon delay={0} content={icon.content} />
+                  <div use:highlight={extension()} class={styles.tabText}>
+                    {icon.extension}
+                  </div>
+                </Box>
+              </cmg-combobox-option>
+            );
           }}
-        >
-          <For each={matchedIcons()}>
-            {icon => {
-              const value = icon.extension.replace('.', '');
-              return (
-                <cmg-combobox-option
-                  onClick={() => onChange(getFormattedValue(value))}
-                  class={styles.tabHintDropdownOption}
-                  prop:choiceValue={value}
-                >
-                  <Box class={styles.tabHintDropdownItemContent}>
-                    <TabIcon delay={0} content={icon.content} />
-                    <div use:highlight={extension()} class={styles.tabText}>
-                      {icon.extension}
-                    </div>
-                  </Box>
-                </cmg-combobox-option>
-              );
-            }}
-          </For>
-        </Box>
-      </cmg-inline-combobox>
-    </Show>
+        </For>
+      </Box>
+    </cmg-inline-combobox>
   );
 }

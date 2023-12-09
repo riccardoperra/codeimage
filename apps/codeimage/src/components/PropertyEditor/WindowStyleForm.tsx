@@ -1,16 +1,13 @@
 import {useI18n} from '@codeimage/locale';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {Box, Group, RadioBlock} from '@codeimage/ui';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {shadowsLabel} from '@core/configuration/shadow';
-import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {getUmami} from '@core/constants/umami';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
-import {createMemo, For, ParentComponent, Show} from 'solid-js';
+import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
-import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
-import {TerminalControlSkeleton} from '../TerminalControlField/TerminalControlFieldSkeleton';
+import {TerminalControlField} from './controls/TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
@@ -72,48 +69,15 @@ export const WindowStyleForm: ParentComponent = () => {
       </PanelRow>
 
       <Show when={terminal.state.showHeader}>
-        <PanelRow for={'frameTerminalTypeField'}>
+        <PanelRow for={'frameTerminalTypeField'} label={'Window'}>
           <FullWidthPanelRow>
-            <SuspenseEditorItem
-              fallback={
-                <Group orientation={'vertical'}>
-                  <For each={Object.values(AVAILABLE_TERMINAL_THEMES.entries)}>
-                    {() => (
-                      <RadioBlock value={0}>
-                        <Box padding={2} width={'100%'}>
-                          <TerminalControlSkeleton />
-                        </Box>
-                      </RadioBlock>
-                    )}
-                  </For>
-                </Group>
-              }
-            >
-              <TerminalControlField
-                selectedTerminal={terminal.state.type}
-                onTerminalChange={terminal.setType}
-              />
-            </SuspenseEditorItem>
-          </FullWidthPanelRow>
-        </PanelRow>
-      </Show>
-
-      <Show
-        when={terminal.state.showHeader && !terminal.state.alternativeTheme}
-      >
-        <PanelRow for={'frameTabAccentField'} label={t('frame.tabAccent')}>
-          <TwoColumnPanelRow>
-            <SegmentedField
-              size={'xs'}
-              adapt
-              value={terminal.state.accentVisible}
-              onChange={terminal.setAccentVisible}
-              items={[
-                {label: t('common.yes'), value: true},
-                {label: t('common.no'), value: false},
-              ]}
+            <TerminalControlField
+              showAccent={terminal.state.accentVisible}
+              selectedTerminal={terminal.state.type}
+              onTerminalChange={terminal.setType}
+              onShowAccentChange={terminal.setAccentVisible}
             />
-          </TwoColumnPanelRow>
+          </FullWidthPanelRow>
         </PanelRow>
       </Show>
 

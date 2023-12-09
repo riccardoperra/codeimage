@@ -8,7 +8,7 @@ import {ParentComponent, Show} from 'solid-js';
 import {appEnvironment} from '../../core/configuration';
 import {AppLocaleEntries} from '../../i18n';
 import {AspectRatioPicker} from './controls/AspectRatioPicker/AspectRatioPicker';
-import {CustomColorPicker} from './controls/CustomColorPicker';
+import {CustomColorPicker} from './controls/ColorPicker/CustomColorPicker';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';

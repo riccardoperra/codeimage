@@ -28,6 +28,12 @@ export const wrapper = recipe({
     },
   ],
   variants: {
+    lite: {
+      true: {
+        paddingBottom: themeVars.spacing['1'],
+        paddingTop: themeVars.spacing['1'],
+      },
+    },
     accent: {
       true: {
         marginTop: 'auto',
@@ -94,6 +100,14 @@ export const tab = recipe({
     },
   ],
   variants: {
+    lite: {
+      true: {
+        vars: {
+          [terminalVars.tabDelta]: '4px',
+        },
+        fontSize: '12px',
+      },
+    },
     accent: {
       true: {
         vars: {
@@ -207,6 +221,18 @@ export const tab = recipe({
         },
       },
     },
+    {
+      variants: {
+        accent: false,
+        active: true,
+        lite: true,
+      },
+      style: {
+        vars: {
+          [tabVars.tabHeight]: '22px',
+        },
+      },
+    },
   ],
 });
 
@@ -250,6 +276,9 @@ export const fallbackText = style({
   opacity: '.50',
 
   selectors: {
+    '[data-lite=true] &': {
+      fontSize: '11px',
+    },
     '[data-preview] &': {
       opacity: 1,
     },

@@ -9,11 +9,12 @@ import {
   Suspense,
 } from 'solid-js';
 import {Loading} from '../Loader';
-import {SvgIcon} from './SvgIcon';
+import {SvgIcon, SvgIconProps} from './SvgIcon';
 
-interface SvgExternalIconProps {
+export interface SvgExternalIconProps {
   content?: string | (() => Promise<typeof import('*.svg')>) | null;
   delay?: number;
+  size?: SvgIconProps['size'];
 }
 
 /**
@@ -63,8 +64,8 @@ export function RemoteSvgIcon(props: SvgExternalIconProps): JSXElement {
   );
 
   return (
-    <Suspense fallback={<Loading size={'md'} />}>
-      <SvgIcon {...(data() || {})} size={'md'} />
+    <Suspense fallback={<Loading size={props.size ?? 'md'} />}>
+      <SvgIcon {...(data() || {})} size={props.size ?? 'md'} />
     </Suspense>
   );
 }

@@ -59,6 +59,7 @@ export const colorItem = recipe({
 export const popover = style([
   {
     maxWidth: '360px',
+    width: '100%',
     transition: `all 250ms ease-in-out`,
     selectors: {
       ...withThemeMode({

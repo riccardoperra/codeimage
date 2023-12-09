@@ -24,6 +24,7 @@ export interface BaseTerminalProps
 export interface TerminalHostProps extends BaseTerminalProps {
   themeClass: string;
   themeId: string;
+  style?: Record<string, any>;
 }
 
 export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
@@ -61,6 +62,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
           tabTheme().activeTabBackground ?? '',
         [styles.terminalVars.tabAccentInactiveBackground]:
           tabTheme().inactiveTabBackground ?? '',
+        ...(props.style ?? {}),
       })}
     >
       <FadeInOutTransition show={props.showGlassReflection}>
