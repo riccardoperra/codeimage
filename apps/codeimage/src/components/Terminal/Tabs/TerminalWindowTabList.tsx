@@ -32,11 +32,20 @@ export interface TerminalWindowTabListProps {
 export function TerminalWindowTabList(
   props: VoidProps<TerminalWindowTabListProps>,
 ) {
-  // TODO: make reactive
-  if (props.preview) {
-    return <TerminalWindowTabListPreview {...props} />;
-  }
+  return (
+    <>
+      {props.preview ? (
+        <TerminalWindowTabListPreview {...props} />
+      ) : (
+        <TerminalWindowTabListContent {...props} />
+      )}
+    </>
+  );
+}
 
+export function TerminalWindowTabListContent(
+  props: VoidProps<TerminalWindowTabListProps>,
+) {
   let wrapperRef!: HTMLDivElement;
 
   const {
