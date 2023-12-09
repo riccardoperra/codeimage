@@ -14,7 +14,9 @@ export const mdxComponents: MDXComponents = {
   img: (props: JSX.IntrinsicElements['img']) => (
     <img {...props} loading={'lazy'} decoding={'async'} class={styles.img} />
   ),
-  a: (props: JSX.IntrinsicElements['a']) => <a {...props} class={styles.a} />,
+  a: (props: JSX.IntrinsicElements['a']) => (
+    <a {...props} target={'_blank'} class={styles.a} />
+  ),
   ul: (props: JSX.IntrinsicElements['ul']) => (
     <ul {...props} class={styles.ul} />
   ),

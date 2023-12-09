@@ -73,7 +73,8 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
         if (data) {
           const currentVersion = appEnvironment.version;
           const previousVersion = data.appVersion;
-          const isFirstTime = data.seen.length === 0;
+          // const isFirstTime = data.seen.length === 0;
+          const isFirstTime = true;
           const hasNewUpdate = !data.seen.includes(currentVersion);
           if (currentVersion !== previousVersion) {
             data.appVersion = currentVersion;

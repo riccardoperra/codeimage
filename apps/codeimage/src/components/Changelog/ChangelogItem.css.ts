@@ -1,5 +1,6 @@
 import {themeVars} from '@codeui/kit';
 import {style} from '@vanilla-extract/css';
+import {recipe} from '@vanilla-extract/recipes';
 
 export const item = style({
   alignContent: 'center',
@@ -61,24 +62,47 @@ export const metadataVersionBadgeContainer = style({
   width: 'auto',
 });
 
-export const metadataVersionBadge = style({
-  alignContent: 'center',
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  flexWrap: 'nowrap',
-  gap: '10px',
-  height: 'min-content',
-  justifyContent: 'flex-start',
-  overflow: 'visible',
-  padding: '6px 20px',
-  position: 'relative',
-  width: 'min-content',
+export const metadataVersionBadge = recipe({
+  base: {
+    alignContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+    gap: '10px',
+    height: 'min-content',
+    justifyContent: 'flex-start',
+    overflow: 'visible',
+    padding: '6px 20px',
+    position: 'relative',
+    width: 'min-content',
+    textDecoration: 'none',
 
-  backgroundColor: themeVars.brandSoft,
-  color: themeVars.brandLink,
-  opacity: '1',
-  borderRadius: '8px',
+    backgroundColor: themeVars.brandSoft,
+    transition: 'background-color 150ms ease-in-out',
+    color: themeVars.brandLink,
+    opacity: '1',
+    borderRadius: '8px',
+
+    ':hover': {
+      backgroundColor: themeVars.brandSoftAccentHover,
+    },
+  },
+  variants: {
+    latest: {
+      true: {
+        background: themeVars.brand,
+        color: themeVars.foreground,
+        outline: `1px solid ${themeVars.brand}`,
+        outlineOffset: '3px',
+
+        ':hover': {
+          background: themeVars.brandAccentHover,
+          outlineColor: themeVars.brandAccentHover,
+        },
+      },
+    },
+  },
 });
 
 export const metadataVersionDate = style({

@@ -25,7 +25,7 @@ export const changelogFileEntries = Object.entries(ChangelogFiles)
       Component,
     };
   })
-  .sort((a, b) => (a.date().getDate() - b.date().getDate() ? -1 : 1));
+  .sort((a, b) => (a.date().getTime() - b.date().getTime() ? -1 : 1));
 
 export function Changelog(props: ChangelogProp) {
   const entries = () => {
@@ -49,10 +49,14 @@ export function Changelog(props: ChangelogProp) {
         <SuspenseList revealOrder={'forwards'}>
           <div class={styles.changelogList}>
             <For each={entries()}>
-              {data => {
+              {(data, index) => {
                 return (
                   <Suspense>
-                    <ChangelogItem version={data.version()} date={data.date()}>
+                    <ChangelogItem
+                      version={data.version()}
+                      date={data.date()}
+                      latest={index() === 0}
+                    >
                       <data.Component components={mdxComponents} />
                     </ChangelogItem>
                   </Suspense>
