@@ -1,6 +1,7 @@
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
+import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {
   Accessor,
   createEffect,
@@ -13,6 +14,7 @@ import {
 } from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
+import {Changelog} from '../../components/Changelog/Changelog';
 
 interface Feature {
   name: string;
@@ -57,7 +59,11 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
   .extend(withIndexedDbPlugin<VersionStore | null>('version', initialValue()))
   .extend(_ => {
     const [ready, setReady] = createSignal(false);
+    const controlledDialog = createControlledDialog();
+
     onMount(() => {
+      controlledDialog(Changelog, {});
+
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owner = getOwner()!;
       _.idb.get().then(data => {
