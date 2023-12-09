@@ -92,7 +92,7 @@ export const metadataVersionBadge = recipe({
     latest: {
       true: {
         background: themeVars.brand,
-        color: themeVars.foreground,
+        color: '#fff',
         outline: `1px solid ${themeVars.brand}`,
         outlineOffset: '3px',
 

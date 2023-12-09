@@ -11,7 +11,6 @@ export const changelogList = style({
   height: 'min-content',
   justifyContent: 'flex-start',
   overflow: 'visible',
-  padding: '0 30px',
   position: 'relative',
   width: '100%',
 });

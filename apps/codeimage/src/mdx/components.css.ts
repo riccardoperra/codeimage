@@ -66,6 +66,13 @@ export const li = style({
   marginBottom: themeTokens.spacing['2'],
 });
 
+export const video = style({
+  width: '100%',
+  height: 'auto',
+  borderRadius: themeTokens.radii.lg,
+  overflow: 'hidden',
+});
+
 export const a = style({
   color: themeVars.brandLink,
 });

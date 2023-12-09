@@ -23,4 +23,12 @@ export const mdxComponents: MDXComponents = {
   li: (props: JSX.IntrinsicElements['li']) => (
     <li {...props} class={styles.li} />
   ),
+  video: (props: JSX.IntrinsicElements['video']) => (
+    <video
+      {...props}
+      autoplay={true}
+      class={styles.video}
+      ref={el => setTimeout(() => el.play())}
+    />
+  ),
 };
