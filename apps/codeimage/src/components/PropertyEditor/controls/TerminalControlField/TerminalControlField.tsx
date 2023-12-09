@@ -14,6 +14,8 @@ import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {useModality} from '@core/hooks/isMobile';
 import {createSignal, For, JSXElement, Suspense} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
+import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
+import {SidebarPopoverTitle} from '../../SidebarPopover/SidebarPopoverTitle';
 import * as styles from './TerminalControlField.css';
 import {TerminalControlSkeleton} from './TerminalControlFieldSkeleton';
 
@@ -34,13 +36,10 @@ export function TerminalControlField(
   const {state: editorState} = getRootEditorStore();
 
   return (
-    <Popover
-      placement={modality === 'mobile' ? undefined : 'right-end'}
-      modal={modality === 'full'}
+    <SidebarPopover
+      modalOnDesktop
       open={open()}
-      onOpenChange={setOpen}
-    >
-      <PopoverTrigger asChild>
+      input={
         <As component={'div'} class={styles.input}>
           <Box paddingTop={1} paddingBottom={1} width={'100%'}>
             <Suspense fallback={<TerminalControlSkeleton />}>
@@ -70,55 +69,51 @@ export function TerminalControlField(
           </Box>
           <icons.SelectorIcon class={styles.inputIcon} />
         </As>
-      </PopoverTrigger>
-      <PopoverContent
-        title={'Window style'}
-        variant={'bordered'}
-        class={styles.fontPickerPopover}
-      >
-        <div style={{display: 'flex', gap: '1rem', 'flex-direction': 'column'}}>
-          <For each={Object.values(terminalThemes.entries)}>
-            {terminal => (
-              <RadioBlock
-                selected={terminal.name === props.selectedTerminal}
-                value={terminal.name}
-                onSelect={props.onTerminalChange}
-              >
-                <Box padding={2} width={'100%'}>
-                  <Suspense fallback={<TerminalControlSkeleton />}>
-                    <Dynamic
-                      preview={true}
-                      showTab={true}
-                      shadow={TERMINAL_SHADOWS['3d']}
-                      component={terminal.component}
-                      textColor={terminalState.state.textColor}
-                      background={terminalState.state.background}
-                      accentVisible={props.showAccent}
-                      readonlyTab={true}
-                      showHeader={true}
-                      showWatermark={false}
-                      alternativeTheme={false}
-                      opacity={100}
-                      themeId={editorState.options.themeId}
-                      showGlassReflection={
-                        terminalState.state.showGlassReflection
-                      }
-                    />
-                  </Suspense>
-                </Box>
-              </RadioBlock>
-            )}
-          </For>
-        </div>
+      }
+      onOpenChange={setOpen}
+    >
+      <SidebarPopoverTitle onClose={() => setOpen(false)}>
+        Window style
+      </SidebarPopoverTitle>
+      <For each={Object.values(terminalThemes.entries)}>
+        {terminal => (
+          <RadioBlock
+            selected={terminal.name === props.selectedTerminal}
+            value={terminal.name}
+            onSelect={props.onTerminalChange}
+          >
+            <Box padding={2} width={'100%'}>
+              <Suspense fallback={<TerminalControlSkeleton />}>
+                <Dynamic
+                  preview={true}
+                  showTab={true}
+                  shadow={TERMINAL_SHADOWS['3d']}
+                  component={terminal.component}
+                  textColor={terminalState.state.textColor}
+                  background={terminalState.state.background}
+                  accentVisible={props.showAccent}
+                  readonlyTab={true}
+                  showHeader={true}
+                  showWatermark={false}
+                  alternativeTheme={false}
+                  opacity={100}
+                  themeId={editorState.options.themeId}
+                  showGlassReflection={terminalState.state.showGlassReflection}
+                />
+              </Suspense>
+            </Box>
+          </RadioBlock>
+        )}
+      </For>
 
-        <Box marginTop={5}>
-          <Checkbox
-            checked={props.showAccent}
-            onChange={value => props.onShowAccentChange(value)}
-            label={'Show accent'}
-          />
-        </Box>
-      </PopoverContent>
-    </Popover>
+      <Box marginTop={5}>
+        <Checkbox
+          size={'md'}
+          checked={props.showAccent}
+          onChange={value => props.onShowAccentChange(value)}
+          label={'Show tab accent'}
+        />
+      </Box>
+    </SidebarPopover>
   );
 }

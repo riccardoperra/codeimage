@@ -15,6 +15,8 @@ import {
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, For, Show} from 'solid-js';
 import {CloseIcon} from '../../../Icons/CloseIcon';
+import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
+import {SidebarPopoverTitle} from '../../SidebarPopover/SidebarPopoverTitle';
 import * as styles from './AspetRatioPicker.css';
 
 interface AspectRatioPickerProps {
@@ -27,15 +29,11 @@ interface AspectRatioPickerProps {
  */
 export function AspectRatioPicker(props: AspectRatioPickerProps) {
   const [open, setOpen] = createSignal(false);
-  const modality = useModality();
 
   return (
-    <Popover
-      placement={modality === 'mobile' ? undefined : 'right-start'}
-      open={open()}
-      onOpenChange={setOpen}
-    >
-      <PopoverTrigger asChild>
+    <SidebarPopover
+      contentClass={styles.aspectRatioPopover}
+      input={
         <As component={'div'} class={styles.input}>
           <Show when={props.value}>
             {aspectRatio => (
@@ -50,77 +48,58 @@ export function AspectRatioPicker(props: AspectRatioPickerProps) {
 
           <Text weight={'semibold'}>{props.value ?? 'Auto'}</Text>
         </As>
-      </PopoverTrigger>
-      <PopoverContent variant={'bordered'} class={styles.aspectRatioPopover}>
-        <Box
-          display={'flex'}
-          justifyContent={'spaceBetween'}
-          alignItems={'center'}
-          marginBottom={4}
+      }
+      open={open()}
+      onOpenChange={setOpen}
+    >
+      <SidebarPopoverTitle
+        experimental
+        featureName={'Aspect Ratio'}
+        onClose={() => setOpen(false)}
+      >
+        Aspect ratio
+      </SidebarPopoverTitle>
+
+      <div class={styles.aspectRatioCardList}>
+        <div
+          data-selected={!props.value ? '' : null}
+          class={styles.aspectRatioCardFull}
+          onClick={() => props.onChange(null)}
         >
-          <ExperimentalFeatureTooltip feature={'Aspect ratio'}>
-            <HStack spacing={'2'} alignItems={'flexEnd'}>
-              <Text weight={'semibold'}>Aspect Ratio</Text>
-              <Text class={styles.aspectRatioCardDetails} size={'xs'}>
-                <Box as={'span'} display={'flex'} alignItems={'center'}>
-                  <ExperimentalIcon size={'xs'} />
-                  <Box marginLeft={'1'}>Experimental</Box>
-                </Box>
-              </Text>
-            </HStack>
-          </ExperimentalFeatureTooltip>
-
-          <IconButton
-            size={'xs'}
-            aria-label={'Close'}
-            theme={'secondary'}
-            onClick={() => setOpen(false)}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Box>
-
-        <div class={styles.aspectRatioCardList}>
           <div
-            data-selected={!props.value ? '' : null}
-            class={styles.aspectRatioCardFull}
-            onClick={() => props.onChange(null)}
+            style={assignInlineVars({
+              [styles.aspectRatio]: 'auto',
+            })}
+            class={styles.aspectRadioCardPreview}
           >
-            <div
-              style={assignInlineVars({
-                [styles.aspectRatio]: 'auto',
-              })}
-              class={styles.aspectRadioCardPreview}
-            >
-              <Box marginY={3}>Auto</Box>
-            </div>
+            <Box marginY={3}>Auto</Box>
           </div>
-
-          <For each={DEFAULT_ASPECT_RATIOS}>
-            {ratio => (
-              <div
-                data-selected={props.value === ratio.ratio ? '' : null}
-                class={styles.aspectRatioCard}
-                onClick={() => props.onChange(ratio.ratio)}
-              >
-                <div class={styles.aspectRatioCardPreviewWrapper}>
-                  <div
-                    style={assignInlineVars({
-                      [styles.aspectRatio]: ratio.ratio,
-                    })}
-                    class={styles.aspectRadioCardPreview}
-                  >
-                    {ratio.name}
-                  </div>
-                </div>
-                <span class={styles.aspectRatioCardDetails}>
-                  {ratio.resolution.join('x')}
-                </span>
-              </div>
-            )}
-          </For>
         </div>
-      </PopoverContent>
-    </Popover>
+
+        <For each={DEFAULT_ASPECT_RATIOS}>
+          {ratio => (
+            <div
+              data-selected={props.value === ratio.ratio ? '' : null}
+              class={styles.aspectRatioCard}
+              onClick={() => props.onChange(ratio.ratio)}
+            >
+              <div class={styles.aspectRatioCardPreviewWrapper}>
+                <div
+                  style={assignInlineVars({
+                    [styles.aspectRatio]: ratio.ratio,
+                  })}
+                  class={styles.aspectRadioCardPreview}
+                >
+                  {ratio.name}
+                </div>
+              </div>
+              <span class={styles.aspectRatioCardDetails}>
+                {ratio.resolution.join('x')}
+              </span>
+            </div>
+          )}
+        </For>
+      </div>
+    </SidebarPopover>
   );
 }

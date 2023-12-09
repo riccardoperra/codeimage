@@ -7,7 +7,7 @@ import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
-import {TerminalControlField} from '../TerminalControlField/TerminalControlField';
+import {TerminalControlField} from './controls/TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
 import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';

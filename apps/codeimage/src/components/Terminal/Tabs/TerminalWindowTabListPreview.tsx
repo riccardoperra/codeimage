@@ -20,15 +20,8 @@ interface PreviewTabProps {
 }
 
 function PreviewTab(props: PreviewTabProps) {
-  const icon = createTabIcon(
-    () => props.editor.tab.tabName ?? null,
-    () => props.editor.languageId,
-    true,
-  );
-
   return (
     <WindowTab
-      tabIcon={icon()?.content}
       accentMode={props.accent}
       active={true}
       lite={props.lite}

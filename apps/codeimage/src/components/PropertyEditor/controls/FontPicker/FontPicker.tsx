@@ -19,6 +19,8 @@ import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Match, Switch} from 'solid-js';
 import {provideState} from 'statebuilder';
 import {CloseIcon} from '../../../Icons/CloseIcon';
+import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
+import {SidebarPopoverTitle} from '../../SidebarPopover/SidebarPopoverTitle';
 import * as styles from './FontPicker.css';
 import {createFontPickerListboxProps} from './FontPickerListbox';
 import {FontSystemPicker} from './FontSystemPicker';
@@ -64,78 +66,56 @@ export function FontPicker(props: FontPickerProps) {
     );
 
   return (
-    <Popover
-      placement={modality === 'mobile' ? undefined : 'right-end'}
+    <SidebarPopover
       open={open()}
       onOpenChange={setOpen}
-    >
-      <PopoverTrigger asChild>
+      contentClass={styles.fontPickerPopover}
+      input={
         <As component={'div'} class={styles.input}>
           <span class={styles.inputValue}>
             {selectedFont()?.name ?? 'No font selected'}
           </span>
           <icons.SelectorIcon class={styles.inputIcon} />
         </As>
-      </PopoverTrigger>
-      <PopoverContent variant={'bordered'} class={styles.fontPickerPopover}>
-        <Box
-          display={'flex'}
-          justifyContent={'spaceBetween'}
-          alignItems={'center'}
-          marginBottom={4}
-        >
-          <ExperimentalFeatureTooltip feature={'Aspect ratio'}>
-            <HStack spacing={'2'} alignItems={'flexEnd'}>
-              <Text weight={'semibold'}>Fonts</Text>
-              <Text class={styles.experimentalFlag} size={'xs'}>
-                <Box as={'span'} display={'flex'} alignItems={'center'}>
-                  <ExperimentalIcon size={'xs'} />
-                  <Box marginLeft={'1'}>Experimental</Box>
-                </Box>
-              </Text>
-            </HStack>
-          </ExperimentalFeatureTooltip>
+      }
+    >
+      <SidebarPopoverTitle
+        experimental
+        featureName={'Font System Access API'}
+        onClose={() => setOpen(false)}
+      >
+        Fonts
+      </SidebarPopoverTitle>
 
-          <IconButton
-            size={'xs'}
-            aria-label={'Close'}
-            theme={'secondary'}
-            onClick={() => setOpen(false)}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Box>
+      <DynamicSizedContainer>
+        <VStack spacing={2}>
+          <FlexField>
+            <SegmentedField<FontPickerModality>
+              value={mode()}
+              autoWidth
+              onChange={item => setMode(item)}
+              items={[
+                {label: 'Default', value: 'default'},
+                {label: 'System', value: 'system'},
+              ]}
+              size={'sm'}
+            />
+          </FlexField>
 
-        <DynamicSizedContainer>
-          <VStack spacing={2}>
-            <FlexField>
-              <SegmentedField<FontPickerModality>
-                value={mode()}
-                autoWidth
-                onChange={item => setMode(item)}
-                items={[
-                  {label: 'Default', value: 'default'},
-                  {label: 'System', value: 'system'},
-                ]}
-                size={'sm'}
+          <Switch>
+            <Match when={mode() === 'default'}>
+              <Listbox bordered {...webListboxProps} />
+            </Match>
+            <Match when={mode() === 'system'}>
+              <FontSystemPicker
+                onEsc={() => setOpen(false)}
+                value={props.value}
+                onChange={value => props.onChange(value)}
               />
-            </FlexField>
-
-            <Switch>
-              <Match when={mode() === 'default'}>
-                <Listbox bordered {...webListboxProps} />
-              </Match>
-              <Match when={mode() === 'system'}>
-                <FontSystemPicker
-                  onEsc={() => setOpen(false)}
-                  value={props.value}
-                  onChange={value => props.onChange(value)}
-                />
-              </Match>
-            </Switch>
-          </VStack>
-        </DynamicSizedContainer>
-      </PopoverContent>
-    </Popover>
+            </Match>
+          </Switch>
+        </VStack>
+      </DynamicSizedContainer>
+    </SidebarPopover>
   );
 }
