@@ -1,46 +1,59 @@
 import {Dialog, DialogPanelContent} from '@codeui/kit';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
-import {Component, For, lazy, Suspense, SuspenseList} from 'solid-js';
-import {ChangelogItem} from './ChangelogItem';
+import {Component, For, Suspense, SuspenseList} from 'solid-js';
+import {mdxComponents} from '../../mdx/components';
 import * as styles from './Changelog.css';
+import {ChangelogItem} from './ChangelogItem';
+import {resolveChangelog} from './resolveChangelog';
 
 const ChangelogFiles = import.meta.glob('../../../changelog/*.mdx');
 
-type ChangelogProp = ControlledDialogProps;
+type ChangelogProp = ControlledDialogProps & {
+  latest?: boolean;
+  onClose?: () => void;
+};
+
+export const changelogFileEntries = Object.entries(ChangelogFiles)
+  .map(([path, file]) => {
+    const {version, date, Component} = resolveChangelog({
+      path,
+      component: file as () => Promise<{default: Component}>,
+    });
+    return {
+      version,
+      date,
+      Component,
+    };
+  })
+  .sort((a, b) => (a.date().getDate() - b.date().getDate() ? -1 : 1));
 
 export function Changelog(props: ChangelogProp) {
+  const entries = () => {
+    if (props.latest) {
+      return [changelogFileEntries[0]];
+    }
+    return changelogFileEntries;
+  };
+
   return (
     <Dialog
       title={"What's new"}
       open={props.isOpen}
       size={'xl'}
-      onOpenChange={props.onOpenChange}
+      onOpenChange={open => {
+        props.onOpenChange(open);
+        if (!open) props.onClose?.();
+      }}
     >
       <DialogPanelContent>
         <SuspenseList revealOrder={'forwards'}>
           <div class={styles.changelogList}>
-            <For each={Object.entries(ChangelogFiles)}>
-              {([path, file]) => {
-                const fileFn = file as () => Promise<{default: Component}>;
-                const File = lazy(fileFn);
-
-                const [parsedVersion, parsedDate] = path
-                  .split('/')
-                  .at(-1)!
-                  .replace('.mdx', '')
-                  .split('_');
-
-                const version = parsedVersion.replaceAll('-', '.');
-
-                const [month, day, year] = parsedDate
-                  .split('-')
-                  .map(str => parseInt(str, 10));
-
-                const date = new Date(year, month, day);
+            <For each={entries()}>
+              {data => {
                 return (
                   <Suspense>
-                    <ChangelogItem version={version} date={date}>
-                      <File />
+                    <ChangelogItem version={data.version()} date={data.date()}>
+                      <data.Component components={mdxComponents} />
                     </ChangelogItem>
                   </Suspense>
                 );

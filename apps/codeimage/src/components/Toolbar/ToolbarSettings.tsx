@@ -12,6 +12,7 @@ import {
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {useNavigate} from '@solidjs/router';
 import {Show} from 'solid-js';
+import {Changelog} from '../Changelog/Changelog';
 import {MenuAlt2Icon} from '../Icons/DotVertical';
 import {ExternalLinkIcon} from '../Icons/ExternalLink';
 import {SettingsDialog} from './SettingsDialog';
@@ -41,16 +42,8 @@ export function ToolbarSettingsButton() {
           >
             Settings
           </DropdownMenuItem>
-          <DropdownMenuItem rightSlot={<ExternalLinkIcon />} asChild>
-            <As
-              component={'a'}
-              target={'_blank'}
-              style={{'text-decoration': 'unset'}}
-              // TODO: add codeui dropdownMenuItemLink style
-              href={'https://github.com/riccardoperra/codeimage/releases'}
-            >
-              Changelog
-            </As>
+          <DropdownMenuItem onClick={() => openDialog(Changelog, {})}>
+            Changelog
           </DropdownMenuItem>
           <DropdownMenuItem rightSlot={<ExternalLinkIcon />} asChild>
             <As

@@ -105,7 +105,6 @@ export const content = style({
   flex: '1 0 0px',
   flexDirection: 'column',
   flexWrap: 'nowrap',
-  gap: '30px',
   height: 'min-content',
   justifyContent: 'center',
   overflow: 'visible',
