@@ -69,7 +69,11 @@ export const WindowStyleForm: ParentComponent = () => {
       </PanelRow>
 
       <Show when={terminal.state.showHeader}>
-        <PanelRow for={'frameTerminalTypeField'} label={'Window'}>
+        <PanelRow
+          for={'frameTerminalTypeField'}
+          label={'Window'}
+          feature={'windowStylePicker'}
+        >
           <FullWidthPanelRow>
             <TerminalControlField
               showAccent={terminal.state.accentVisible}

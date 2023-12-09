@@ -85,7 +85,7 @@ export function TerminalWindowTabListContent(
     <ErrorBoundary
       fallback={(e, reset) => {
         // Try to render again the content since @floating-ui/dom is broken?
-        reset();
+        setTimeout(() => reset(), 100);
         return <></>;
       }}
     >

@@ -74,7 +74,7 @@ export const titleWrapper = style([
       [`${panelRow} &`]: {
         color: sidebarVars.panelRowsTextColor,
         height: '30px',
-        display: 'flex',
+        display: 'inline-flex',
         position: 'relative',
         paddingLeft: '15px',
         alignItems: 'center',
