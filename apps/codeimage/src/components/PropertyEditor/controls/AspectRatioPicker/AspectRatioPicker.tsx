@@ -1,20 +1,8 @@
 import {DEFAULT_ASPECT_RATIOS} from '@codeimage/config';
-import {Box, HStack, Text} from '@codeimage/ui';
-import {
-  As,
-  IconButton,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@codeui/kit';
-import {useModality} from '@core/hooks/isMobile';
-import {
-  ExperimentalFeatureTooltip,
-  ExperimentalIcon,
-} from '@ui/ExperimentalFeatureTooltip/ExperimentalFeatureTooltip';
+import {Box, Text} from '@codeimage/ui';
+import {As} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, For, Show} from 'solid-js';
-import {CloseIcon} from '../../../Icons/CloseIcon';
 import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
 import {SidebarPopoverTitle} from '../../SidebarPopover/SidebarPopoverTitle';
 import * as styles from './AspetRatioPicker.css';

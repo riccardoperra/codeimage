@@ -1,14 +1,7 @@
 import {AVAILABLE_COLORS, AVAILABLE_GRADIENTS} from '@codeimage/config';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {backgroundColorVar, Box, Text} from '@codeimage/ui';
-import {
-  As,
-  IconButton,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@codeui/kit';
-import {useModality} from '@core/hooks/isMobile';
+import {As, IconButton} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal} from 'solid-js';

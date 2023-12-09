@@ -1,17 +1,9 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Box, RadioBlock} from '@codeimage/ui';
-import {
-  As,
-  Checkbox,
-  icons,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@codeui/kit';
+import {As, Checkbox, icons} from '@codeui/kit';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {useModality} from '@core/hooks/isMobile';
 import {createSignal, For, JSXElement, Suspense} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
@@ -32,7 +24,6 @@ export function TerminalControlField(
   const [open, setOpen] = createSignal(false);
   const terminalThemes = AVAILABLE_TERMINAL_THEMES;
   const terminalState = getTerminalState();
-  const modality = useModality();
   const {state: editorState} = getRootEditorStore();
 
   return (

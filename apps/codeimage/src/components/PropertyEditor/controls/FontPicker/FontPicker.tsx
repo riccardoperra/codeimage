@@ -1,24 +1,10 @@
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {Box, FlexField, HStack, Text, VStack} from '@codeimage/ui';
-import {
-  As,
-  IconButton,
-  icons,
-  Listbox,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@codeui/kit';
-import {useModality} from '@core/hooks/isMobile';
+import {FlexField, VStack} from '@codeimage/ui';
+import {As, icons, Listbox} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
-import {
-  ExperimentalFeatureTooltip,
-  ExperimentalIcon,
-} from '@ui/ExperimentalFeatureTooltip/ExperimentalFeatureTooltip';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Match, Switch} from 'solid-js';
 import {provideState} from 'statebuilder';
-import {CloseIcon} from '../../../Icons/CloseIcon';
 import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
 import {SidebarPopoverTitle} from '../../SidebarPopover/SidebarPopoverTitle';
 import * as styles from './FontPicker.css';
@@ -38,7 +24,6 @@ type FontPickerModality = 'default' | 'system';
 export function FontPicker(props: FontPickerProps) {
   const [open, setOpen] = createSignal(false);
   const [mode, setMode] = createSignal<FontPickerModality>('default');
-  const modality = useModality();
   const configState = provideState(EditorConfigStore);
 
   const webListboxItems = () =>

@@ -1,7 +1,6 @@
 import {themeVars} from '@codeimage/ui';
 import {responsiveStyle, themeTokens} from '@codeui/kit';
 import {style} from '@vanilla-extract/css';
-import {fontListboxHeight} from '../controls/FontPicker/FontPicker.css';
 
 export const sidebarPopover = style([
   {

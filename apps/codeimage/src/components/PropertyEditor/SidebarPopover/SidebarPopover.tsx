@@ -1,4 +1,4 @@
-import {As, Popover, PopoverContent, PopoverTrigger} from '@codeui/kit';
+import {Popover, PopoverContent, PopoverTrigger} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import clsx from 'clsx';
 import {FlowProps, JSXElement} from 'solid-js';

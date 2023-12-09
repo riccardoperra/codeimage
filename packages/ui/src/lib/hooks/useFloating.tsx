@@ -1,6 +1,7 @@
 import type {
   ComputePositionConfig,
-  ComputePositionReturn,
+  MiddlewareData,
+  Placement,
 } from '@floating-ui/core';
 import {autoUpdate, computePosition, ReferenceElement} from '@floating-ui/dom';
 import {
@@ -13,12 +14,15 @@ import {
 } from 'solid-js';
 import {createStore} from 'solid-js/store';
 
-type Data = Omit<ComputePositionReturn, 'x' | 'y'> & {
+interface UseFloatingProps {
+  placement: Placement;
   x: number | null;
   y: number | null;
-};
+  strategy: ComputePositionConfig['strategy'];
+  middlewareData: MiddlewareData;
+}
 
-export type UseFloatingReturn = Data & {
+export type UseFloatingReturn = UseFloatingProps & {
   update: () => void;
   setReference: (node: ReferenceElement | null) => void;
   setFloating: (node: ReferenceElement | null) => void;
@@ -44,7 +48,7 @@ export function useFloating({
   const [reference, setReference] = createSignal<ReferenceElement | null>(null);
   const [floating, setFloating] = createSignal<HTMLElement | null>(null);
 
-  const [data, setData] = createStore<Data>({
+  const [data, setData] = createStore<UseFloatingProps>({
     x: null,
     y: null,
     strategy: strategy ?? 'absolute',
