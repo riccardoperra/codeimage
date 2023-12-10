@@ -1,7 +1,10 @@
+import {themeVars} from '@codeui/kit';
 import {JSX, onCleanup, onMount} from 'solid-js';
 import * as styles from './components.css';
 
-export function MdxVideo(props: JSX.IntrinsicElements['video']) {
+export function MdxVideo(
+  props: JSX.IntrinsicElements['video'] & {ratio: string},
+) {
   let ref!: HTMLVideoElement;
 
   onMount(() => {
@@ -28,6 +31,9 @@ export function MdxVideo(props: JSX.IntrinsicElements['video']) {
       muted
       preload={'none'}
       loop
+      style={{
+        'aspect-ratio': props.ratio,
+      }}
       {...props}
     />
   );

@@ -75,6 +75,7 @@ export const video = style({
   display: 'block',
   marginTop: themeTokens.spacing['3'],
   marginBottom: themeTokens.spacing['6'],
+  backgroundColor: themeVars.formAccent,
 });
 
 export const a = style({
