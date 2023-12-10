@@ -25,6 +25,10 @@ export const alert = recipe({
         backgroundColor: themeVars.caution,
         color: '#fff',
       },
+      critical: {
+        backgroundColor: themeVars.critical,
+        color: '#fff',
+      },
     },
   },
 });

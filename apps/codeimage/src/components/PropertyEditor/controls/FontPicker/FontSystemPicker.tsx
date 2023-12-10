@@ -3,7 +3,6 @@ import {Box, FieldLabelHint, Link, LoadingCircle, Text} from '@codeimage/ui';
 import {Button, Checkbox, TextField, VirtualizedListbox} from '@codeui/kit';
 import {pipe} from 'rxjs';
 import {
-  createMemo,
   createSignal,
   Match,
   onCleanup,

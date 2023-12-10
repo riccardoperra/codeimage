@@ -2,10 +2,9 @@ import fontPickerUrl from './data/1-5-0/font-picker.mp4';
 import windowStyleUrl from './data/1-5-0/window-style.mp4';
 import xcodeThemeUrl from './data/1-5-0/xcode-theme.mp4';
 import {MdxVideo} from '../src/mdx/Video';
-import {Alert} from '../src/ui/Alert/Alert';
-import * as constants from './data/1-5-0/constant';
 import {ExperimentalChip} from '../src/ui/ExperimentalChip/ExperimentalChip';
 import {mdxComponents} from '../src/mdx/components';
+import {FeatureCheckBanner} from '../src/components/FeatureBadge/FeatureCheckBanner';
 
 # v1.5.0
 
@@ -15,31 +14,27 @@ import {mdxComponents} from '../src/mdx/components';
 Editor has been updated introducing a new experimental font support with **[Local Font Access API](https://developer.mozilla.org/en-US/docs/Web/API/Local_Font_Access_API)**.
 Prior authorisation, this allows you to access yours locally installed fonts to display the code as you prefer.
 
-<Alert
-  theme={'info'}
-  showIcon
-  fluid
-  children={
-    <>
-      This is an experimental feature not available in all browser.
-      <div>
-        Read the{' '}
-        <a href={constants.localFontAccessApiBrowserCompatibilityLink}>browser compatibility table</a> for more information.
-      </div>
-    </>
-  } />
+<FeatureCheckBanner
+  featureName={'queryLocalFonts'}
+  compatibilityTableLink={'https://developer.mozilla.org/en-US/docs/Web/API/Local_Font_Access_API#browser_compatibility'}
+  supported={'queryLocalFonts' in window}/>
 
 <MdxVideo src={fontPickerUrl} />
 
 ### 🖥️ New Window style themes
 
-the window select has been updated introducing new terminal themes: **macos outline ** and ** macos gray **. the old "accent mode"
-input in the sidebar has been moved inside the window selection as a checkbox.
+The window select has been updated introducing two new terminal themes:
+- `MacOS Outline`
+- `MacOS Gray`
+
+We've also moved the old "accent mode" toggle in the sidebar to the window selection as a checkbox.
 
 <MdxVideo src={windowStyleUrl} />
 
 ### 🎨 New Xcode like themes
 
-codeimage editor themes are now enriched with two new themes inspired from xcode: **xcode dark ** and ** xcode light **
+The themes collection has been updated introducing two new themes inspired from Xcode:
+- `Xcode Dark`
+- `Xcode light`
 
 <MdxVideo src={xcodeThemeUrl} />

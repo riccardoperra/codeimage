@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogPanelContent,
   DialogPanelFooter,
-  Link,
 } from '@codeui/kit';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {

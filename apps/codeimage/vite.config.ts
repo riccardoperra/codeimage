@@ -1,13 +1,12 @@
 import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
-import * as fs from 'fs';
+import {nodeTypes} from '@mdx-js/mdx';
+import mdx from '@mdx-js/rollup';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import {defineConfig, Plugin, UserConfigExport} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
-import mdx from '@mdx-js/rollup';
-import {nodeTypes} from '@mdx-js/mdx';
 
 const config: UserConfigExport = defineConfig(({mode}) => ({
   plugins: [
