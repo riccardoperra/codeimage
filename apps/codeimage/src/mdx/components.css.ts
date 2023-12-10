@@ -40,6 +40,7 @@ export const p = style({
   marginTop: themeTokens.spacing['3'],
   marginBottom: themeTokens.spacing['3'],
   lineHeight: '1.75rem',
+  wordBreak: 'break-word',
 });
 
 export const code = style({
@@ -63,6 +64,7 @@ export const ul = style({
 
 export const li = style({
   marginBottom: themeTokens.spacing['2'],
+  wordBreak: 'break-word',
 });
 
 export const video = style({

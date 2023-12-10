@@ -1,22 +1,28 @@
-import {themeTokens, themeVars} from '@codeui/kit';
+import {responsiveStyle, themeTokens, themeVars} from '@codeui/kit';
 import {style} from '@vanilla-extract/css';
 import {recipe} from '@vanilla-extract/recipes';
 
-export const item = style({
-  alignContent: 'center',
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'nowrap',
-  gap: '10px',
-  height: 'min-content',
-  justifyContent: 'flex-start',
-  overflow: 'visible',
-  padding: '0',
-  position: 'relative',
-  textDecoration: 'none',
-  width: '100%',
-});
+export const item = style([
+  {
+    alignContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    gap: '10px',
+    height: 'min-content',
+    justifyContent: 'flex-start',
+    overflow: 'visible',
+    padding: '0',
+    position: 'relative',
+    textDecoration: 'none',
+    width: '100%',
+  },
+  responsiveStyle({
+    xs: {flexDirection: 'column'},
+    lg: {flexDirection: 'row'},
+  }),
+]);
 
 export const metadata = style({
   alignContent: 'flex-start',
@@ -122,20 +128,25 @@ export const metadataVersionDate = style({
   width: 'auto',
 });
 
-export const content = style({
-  alignContent: 'flex-start',
-  alignItems: 'flex-start',
-  display: 'flex',
-  flex: '1 0 0px',
-  flexDirection: 'column',
-  flexWrap: 'nowrap',
-  height: 'min-content',
-  justifyContent: 'center',
-  overflow: 'visible',
-  padding: '0',
-  position: 'relative',
-  width: '1px',
-});
+export const content = style([
+  {
+    alignContent: 'flex-start',
+    alignItems: 'flex-start',
+    display: 'flex',
+    flex: '1 0 0px',
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+    height: 'min-content',
+    justifyContent: 'center',
+    overflow: 'visible',
+    padding: '0',
+    position: 'relative',
+  },
+  responsiveStyle({
+    xs: {width: '100%'},
+    lg: {width: '1px'},
+  }),
+]);
 
 export const fullChangelogLink = style({
   color: themeVars.brandLink,

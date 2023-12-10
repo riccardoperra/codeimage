@@ -19,7 +19,6 @@ interface UnsupportedFeatureBannerProps {
   supported: boolean;
   featureName: string;
   compatibilityTableLink?: string;
-  supportedTable: Record<BrowserType, string | null>;
 }
 
 export function FeatureCheckBanner(props: UnsupportedFeatureBannerProps) {
@@ -63,7 +62,6 @@ export function FeatureCheckBanner(props: UnsupportedFeatureBannerProps) {
 }
 
 export function SupportedTableCompatGrid(props: {data: CompatStatement}) {
-  console.log(props.data);
   return (
     <div class={styles.supportedTableGrid}>
       <SupportedTableGridItem
@@ -94,15 +92,21 @@ export function SupportedTableGridItem(props: {
   const Icon = () => {
     switch (props.type) {
       case 'chrome':
-        return <img src={ChromeUrl} width={20} height={20} />;
+        return (
+          <img alt={'Chrome logo'} src={ChromeUrl} width={20} height={20} />
+        );
       case 'safari':
-        return <img src={SafariUrl} width={20} height={20} />;
+        return (
+          <img alt={'Safari logo'} src={SafariUrl} width={20} height={20} />
+        );
       case 'firefox':
-        return <img src={FirefoxUrl} width={20} height={20} />;
+        return (
+          <img alt={'Firefox logo'} src={FirefoxUrl} width={20} height={20} />
+        );
       case 'opera':
-        return <img src={OperaUrl} width={20} height={20} />;
+        return <img alt={'Opera logo'} src={OperaUrl} width={20} height={20} />;
       case 'edge':
-        return <img src={EdgeUrl} width={20} height={20} />;
+        return <img alt={'Edge logo'} src={EdgeUrl} width={20} height={20} />;
     }
   };
 

@@ -10,6 +10,7 @@ export const unsupportedBanner = style({
 export const supportedTableGrid = style({
   display: 'flex',
   gap: themeTokens.spacing['4'],
+  flexWrap: 'wrap',
 });
 
 export const supportedTableGridItem = style({

@@ -6,6 +6,7 @@ import {
   DialogPanelFooter,
 } from '@codeui/kit';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
+import {useModality} from '@core/hooks/isMobile';
 import {
   Component,
   createSignal,
@@ -42,6 +43,8 @@ export const changelogFileEntries = Object.entries(ChangelogFiles)
   .sort((a, b) => (a.date().getTime() - b.date().getTime() ? -1 : 1));
 
 export function Changelog(props: ChangelogProp) {
+  const modality = useModality();
+
   const changelogEntries = () => {
     if (props.latest) {
       return [changelogFileEntries[0]];
@@ -72,7 +75,7 @@ export function Changelog(props: ChangelogProp) {
     <Dialog
       title={"🎉 What's new"}
       open={props.isOpen}
-      size={'xl'}
+      size={modality === 'mobile' ? 'full' : 'xl'}
       onOpenChange={open => {
         props.onOpenChange(open);
         if (!open) props.onClose?.();
