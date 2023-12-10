@@ -36,7 +36,7 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
     onCleanup(() => subscription.unsubscribe());
   });
 
-  const fonts = createMemo(() => {
+  const fonts = () => {
     const onlyMonospaced = showOnlyMonospaced();
     const term = fontTerm();
     const fonts = unwrap(configStore.get.systemFonts);
@@ -63,7 +63,7 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
           value: font.id,
         })),
     )(fonts);
-  });
+  };
 
   const listboxProps = createFontPickerListboxProps({
     onEsc: () => props.onEsc(),

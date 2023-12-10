@@ -4,6 +4,7 @@ import {getUmami} from '@core/constants/umami';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {
   Accessor,
+  batch,
   createEffect,
   createSignal,
   getOwner,
@@ -73,8 +74,7 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
         if (data) {
           const currentVersion = appEnvironment.version;
           const previousVersion = data.appVersion;
-          // const isFirstTime = data.seen.length === 0;
-          const isFirstTime = true;
+          const isFirstTime = data.seen.length === 0;
           const hasNewUpdate = !data.seen.includes(currentVersion);
           if (currentVersion !== previousVersion) {
             data.appVersion = currentVersion;
@@ -87,8 +87,11 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
             });
           }
           if (isFirstTime || hasNewUpdate) {
-            controlledDialog(Changelog, {});
-            seeLatestVersion();
+            controlledDialog(Changelog, {latest: false});
+            batch(() => {
+              seeLatestVersion();
+              _.set(() => data);
+            });
           } else {
             const versionSeen = new Set([...data.seen, currentVersion]);
             data.seen = [...versionSeen];

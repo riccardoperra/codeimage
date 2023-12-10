@@ -1,4 +1,4 @@
-import {themeVars} from '@codeui/kit';
+import {themeTokens, themeVars} from '@codeui/kit';
 import {style} from '@vanilla-extract/css';
 import {recipe} from '@vanilla-extract/recipes';
 
@@ -82,7 +82,7 @@ export const metadataVersionBadge = recipe({
     transition: 'background-color 150ms ease-in-out',
     color: themeVars.brandLink,
     opacity: '1',
-    borderRadius: '8px',
+    borderRadius: themeTokens.radii.full,
 
     ':hover': {
       backgroundColor: themeVars.brandSoftAccentHover,
@@ -135,4 +135,11 @@ export const content = style({
   padding: '0',
   position: 'relative',
   width: '1px',
+});
+
+export const fullChangelogLink = style({
+  color: themeVars.brandLink,
+  textDecoration: 'underline',
+  marginTop: themeTokens.spacing['6'],
+  marginBottom: themeTokens.spacing['6'],
 });

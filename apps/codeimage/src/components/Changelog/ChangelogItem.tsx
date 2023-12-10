@@ -1,4 +1,6 @@
+import {Link} from '@codeui/kit';
 import {FlowProps} from 'solid-js';
+import {fullChangelogLink} from './ChangelogItem.css';
 import * as styles from './ChangelogItem.css';
 
 interface ChangelogItemProps {
@@ -32,7 +34,19 @@ export function ChangelogItem(props: FlowProps<ChangelogItemProps>) {
           <div class={styles.metadataVersionDate}>{formattedDate()}</div>
         </div>
       </div>
-      <div class={styles.content}>{props.children}</div>
+      <div class={styles.content}>
+        {props.children}
+
+        <Link
+          variant={'underline'}
+          link
+          href={githubLink()}
+          target={'_blank'}
+          class={styles.fullChangelogLink}
+        >
+          Read the full changelog on GitHub.
+        </Link>
+      </div>
     </div>
   );
 }
