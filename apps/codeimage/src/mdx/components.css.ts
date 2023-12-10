@@ -37,7 +37,6 @@ export const h1 = style({
 
 export const p = style({
   fontSize: themeTokens.fontSize.md,
-  color: themeVars.foreground,
   marginTop: themeTokens.spacing['3'],
   marginBottom: themeTokens.spacing['3'],
   lineHeight: '1.75rem',
@@ -71,6 +70,9 @@ export const video = style({
   height: 'auto',
   borderRadius: themeTokens.radii.lg,
   overflow: 'hidden',
+  display: 'block',
+  marginTop: themeTokens.spacing['3'],
+  marginBottom: themeTokens.spacing['6'],
 });
 
 export const a = style({
