@@ -1,4 +1,3 @@
-import {themeVars} from '@codeui/kit';
 import {JSX, onCleanup, onMount} from 'solid-js';
 import * as styles from './components.css';
 

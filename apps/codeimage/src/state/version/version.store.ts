@@ -70,43 +70,47 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
     onMount(() => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owner = getOwner()!;
-      _.idb.get().then(data => {
-        if (data) {
-          const currentVersion = appEnvironment.version;
-          const previousVersion = data.appVersion;
-          const isFirstTime = data.seen.length === 0;
-          const hasNewUpdate = !data.seen.includes(currentVersion);
-          if (currentVersion !== previousVersion) {
-            data.appVersion = currentVersion;
-            data.previousAppVersion = previousVersion;
-            console.info(
-              `New app version: ${previousVersion} -> ${currentVersion}`,
-            );
-            Object.values(data.features).forEach(feature => {
-              feature.seen[currentVersion] = 0;
-            });
-          }
-          if (isFirstTime || hasNewUpdate) {
-            controlledDialog(Changelog, {latest: false});
-            batch(() => {
-              seeLatestVersion();
+      _.idb
+        .get()
+        .then(data => {
+          if (data) {
+            const currentVersion = appEnvironment.version;
+            const previousVersion = data.appVersion;
+            const isFirstTime = data.seen.length === 0;
+            const hasNewUpdate = !data.seen.includes(currentVersion);
+            if (currentVersion !== previousVersion) {
+              data.appVersion = currentVersion;
+              data.previousAppVersion = previousVersion;
+              console.info(
+                `New app version: ${previousVersion} -> ${currentVersion}`,
+              );
+              Object.values(data.features).forEach(feature => {
+                feature.seen[currentVersion] = 0;
+              });
+            }
+            if (isFirstTime || hasNewUpdate) {
+              controlledDialog(Changelog, {latest: false});
+              batch(() => {
+                seeLatestVersion();
+                _.set(() => data);
+              });
+            } else {
+              const versionSeen = new Set([...data.seen, currentVersion]);
+              data.seen = [...versionSeen];
               _.set(() => data);
-            });
-          } else {
-            const versionSeen = new Set([...data.seen, currentVersion]);
-            data.seen = [...versionSeen];
-            _.set(() => data);
+            }
+            setReady(true);
           }
-          setReady(true);
-        }
 
-        runWithOwner(owner, () =>
-          createEffect(on(_, state => _.idb.set(unwrap(state)))),
-        );
-      });
+          runWithOwner(owner, () =>
+            createEffect(on(_, state => _.idb.set(unwrap(state)))),
+          );
+        })
+        .finally(() => setReady(true));
     });
 
     return {
+      ready,
       see(featureName: FeatureName, log?: boolean) {
         if (!untrack(() => _().features.hasOwnProperty(featureName))) {
           console.warn(`Feature ${featureName} does not exists.`);
