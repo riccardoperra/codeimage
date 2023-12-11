@@ -2,7 +2,11 @@ name: Main
 
 on:
   pull_request:
-    types: [ opened, synchronize, reopened, labeled ]
+    types: [ opened, synchronize, reopened ]
+  pull_request_target:
+    types: [ opened, synchronize, reopened, edited ]
+    branches:
+      - changeset-release/main
 
 
 env:
