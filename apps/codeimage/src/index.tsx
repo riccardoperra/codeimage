@@ -12,6 +12,7 @@ import {
   ThemeProviderProps,
 } from '@codeimage/ui';
 import '@codeimage/ui/themes/lightTheme';
+import {appEnvironment} from '@core/configuration';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
@@ -24,6 +25,8 @@ import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
 import {EditorPageSkeleton} from './pages/Editor/components/EditorSkeleton';
 import './theme/global.css';
+
+console.debug('💻 CodeImage version:', appEnvironment.version);
 
 const i18n = createI18nContext(locale);
 
