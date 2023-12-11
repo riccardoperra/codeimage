@@ -5,18 +5,20 @@ interface ChangelogEntry {
   path: string;
   component: () => Promise<{default: Component}>;
 }
+
+export function parseChangelogFilePath(path: string) {
+  const [version, date] = (path.split('/').at(-1) as string)
+    .replace('.mdx', '')
+    .split('_');
+  return {version: version.replaceAll('-', '.'), date};
+}
 export function resolveChangelog(props: ChangelogEntry) {
   const Component = (mdxProps: MDXProps) =>
     createComponent(lazy(props.component), mdxProps);
 
-  const data = () => {
-    const [version, date] = (props.path.split('/').at(-1) as string)
-      .replace('.mdx', '')
-      .split('_');
-    return {version, date};
-  };
+  const data = () => parseChangelogFilePath(props.path);
 
-  const version = () => data().version.replaceAll('-', '.');
+  const version = () => data().version;
 
   const date = () => {
     const [month, day, year] = data()

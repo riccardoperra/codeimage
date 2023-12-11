@@ -4,7 +4,6 @@ import {getUmami} from '@core/constants/umami';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {
   Accessor,
-  batch,
   createEffect,
   createSignal,
   getOwner,
@@ -16,6 +15,7 @@ import {
 import {unwrap} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
 import {Changelog} from '../../components/Changelog/Changelog';
+import {parseChangelogFilePath} from '../../components/Changelog/resolveChangelog';
 
 interface Feature {
   name: string;
@@ -38,6 +38,10 @@ interface VersionStore {
 }
 
 export type FeatureName = 'fontPicker' | 'windowStylePicker';
+
+const ChangelogFiles = Object.keys(
+  import.meta.glob('../../../changelog/*.mdx'),
+).map(parseChangelogFilePath);
 
 function initialValue(): VersionStore {
   return {
@@ -62,9 +66,13 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
     const [ready, setReady] = createSignal(false);
     const controlledDialog = createControlledDialog();
 
-    function seeLatestVersion() {
-      const currentVersion = appEnvironment.version;
-      _.set('seen', seen => [...new Set([...seen, currentVersion])]);
+    function updateWithLatestVersionSeen(
+      currentVersion: string,
+      data: VersionStore,
+    ): VersionStore {
+      const versionSeen = new Set([...data.seen, currentVersion]);
+      data.seen = [...versionSeen];
+      return data;
     }
 
     onMount(() => {
@@ -89,15 +97,22 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
               });
             }
             if (isFirstTime || hasNewUpdate) {
-              controlledDialog(Changelog, {latest: false});
-              batch(() => {
-                seeLatestVersion();
+              const fileVersions = ChangelogFiles.map(({version}) => version);
+              const hasNewVersionToSee = fileVersions.includes(data.appVersion);
+              console.log(isFirstTime, hasNewUpdate, hasNewVersionToSee);
+
+              if (isFirstTime || hasNewVersionToSee) {
+                controlledDialog(Changelog, {latest: true});
+                const updatedData = updateWithLatestVersionSeen(
+                  currentVersion,
+                  data,
+                );
+                _.set(() => updatedData);
+              } else {
                 _.set(() => data);
-              });
+              }
             } else {
-              const versionSeen = new Set([...data.seen, currentVersion]);
-              data.seen = [...versionSeen];
-              _.set(() => data);
+              _.set(() => updateWithLatestVersionSeen(currentVersion, data));
             }
             setReady(true);
           }
