@@ -288,13 +288,14 @@ export function createEditorsStore() {
         const value = selectedFont();
         if (
           !!value &&
-          value.types
-            .map(type => type.weight)
+          !value.types
+            .map(({weight}) => weight)
             .includes(store.get.options.fontWeight)
         ) {
-          // TODO: move to configuration?
-          // Default is 400 - Regular
-          store.actions.setFontWeight(400);
+          const defaultValue =
+            value.types.find(({weight}) => [400, 500].includes(weight)) ??
+            value.types[0];
+          store.actions.setFontWeight(defaultValue?.weight ?? 400);
         }
       },
     },
