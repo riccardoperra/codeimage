@@ -213,7 +213,7 @@ export const EditorStyleForm: ParentComponent = () => {
             <PanelHeader label={t('frame.font')} />
 
             <PanelRow
-              for={'aspectRatio'}
+              for={'fontPicker'}
               label={t('frame.font')}
               feature={'fontPicker'}
             >
