@@ -8,3 +8,4 @@ dist
 ./**/*.env.*
 .idea
 .pnpm-store/
+.DS_STORE

@@ -1,0 +1,124 @@
+# v1.4.0
+
+After 3 months, we are thrilled to announce the latest CodeImage update. First of all me and @hackpirodev would like to thank all the users who have given feedback, recommended features and helped during the development.
+
+This new update introduce several fixes and improvements like core changes to the UI, tech stack updates, export flow improvements and new features that have been requested over the last few months.
+
+## ☁️ Presets - #472
+
+We are introducing `Presets`, a powerful new feature that allows to save and manage presets configuration of the frame style. With this update, you can reuse your preferred styles on your snippets, ensuring a consistent and visually appealing presentation of the code.
+
+Presets will available for both guest and logged-in users **with some limits**:
+
+- Guest users are now able to create a maximum of 3 presets, stored **locally**.
+- Logged in users are able to create a maximum of 10 presets.
+
+Limit may change during the time after an analysis of the usage and the feedback we’ll receive.
+
+> **Note** Guest users presets are saved only locally through the browser. This means that by changing browsers, browsing incognito or clearing the cache you will lose all saved presets. If you have presets saved locally, once logged in you can persist them remotely automatically.
+
+![869shots_so](https://github.com/riccardoperra/codeimage/assets/37072694/b7974db9-f6fc-42ef-ab2f-88335f730e50)
+
+## 🖼️ Custom background - #503
+
+Requested in #503, now you can also add a custom background on your snippet by using an image URL or by importing a file from your system.
+
+At the moment we are not planning to save images on our backend, so the background image can't be persisted if you upload an image through your file system.
+
+You can still add an image URL that we can save as string to reuse and save it. Obviously the image url must point to a valid URL and reachable from the browser. (e.g. https://assets.shots.so/preview/holo-gradients/01.jpg)
+
+![image](https://github.com/riccardoperra/codeimage/assets/37072694/8928768c-c422-4652-acdf-d1e62eb5014d)
+
+## 🖌️ New UI
+
+CodeImage's UI have been revamped.
+
+We are now officially using [Kobalte](https://github.com/kobaltedev/kobalte) through a self-made UI kit ([repository](https://github.com/riccardoperra/codeui)).
+
+This was definitely the longest update, involving the refactor of colors and components like buttons, dropdowns, inputs, modals and also the animations.
+
+![image](https://github.com/riccardoperra/codeimage/assets/37072694/a73f5d79-5c85-4049-96fa-94f2385b4655)
+
+## 💾 Export settings - #509
+
+You can now customize the export settings to match your preferences while using the `Copy to clipboard` and the `Open in new tab` feature. Also, you will be able to see the output resolution of the image with the associated `pixel ratio`, which will include also a 6x option to export the image in a bigger quality.
+
+![image](https://github.com/riccardoperra/codeimage/assets/37072694/2dc1ccc0-2be0-44cc-9ebd-9011f8d4c675)
+
+## 📐 Aspect ratio - #503 (Experimental)
+
+This new release introduce an experimental support for Aspect ratio option.
+
+You now have the flexibility to modify the aspect ratio to perfectly fit your desired dimensions, ensuring your images are not cropped when shared on social media platforms.
+
+![image](https://github.com/riccardoperra/codeimage/assets/37072694/2114b3a2-9e3e-44eb-b0e7-a46688c850e7)
+
+## 📦 API source code refactor to latest ESM and TypeScript >5.0 - #530
+
+The [backend api](https://github.com/riccardoperra/codeimage/tree/main/apps/api) has been refactored to work with latest version of Node, TypeScript 5.1 and ES Modules 😄
+
+We've adjusted our development workflow using `tsup` as bundler without losing the convenience of [fastify-autoload](https://github.com/fastify/fastify-autoload)
+
+This update also removed [node-tap](https://node-tap.org/) in favor of [vitest](https://vitest.dev/) due to better DX and integration with ESM. We were able to refactor all of the tests without too much trouble.
+
+## 📏 No more fixed width - #503
+
+From this version, CodeImage snippet will have a dynamic min-width based on the content which can no longer be wrapped in multiple lines.  This allows you to change the size as you like, even if the code is small and you don't need to have a minimum size of 600px.
+
+<table>
+  <tbody>
+  <tr>
+    <td>Old (min-width: 600px)</td>
+    <td>New</td>
+  </tr>
+  <tr>
+  <td>
+
+    ![image](https://github.com/riccardoperra/codeimage/assets/37072694/934fa478-eb42-42c2-86e7-377345211de9)
+
+  </td>
+  <td>
+
+    ![image](https://github.com/riccardoperra/codeimage/assets/37072694/879fd30c-50cf-439f-9258-e72cb3c73efe)
+
+  </td>
+  </tr>
+</tbody>
+</table>
+
+## 🎴 Exported image improvements
+
+We've updates some core behavior of [DomExport](https://github.com/riccardoperra/codeimage/tree/main/packages/dom-export) package, which is a fork of `html-to-image` to add several fixes and improvements to the image export flow:
+- Snippets that overflows to the screen viewport are not cropped anymore
+- Partially fixes an issue where Safari from iOS and MacOS are not always able to generate the image including the custom background or the font (https://bugs.webkit.org/show_bug.cgi?id=219770)
+- Faster image generation by removing unused styles, fonts and duplicate cloned nodes
+
+## ⚛️ State management
+
+CodeImage never used a specific state manager to handle the application state. Solid allows you to manage everything very simply but the application is getting heavier, and it doesn't seem like it's easy to organize the code when it gets long and verbose.
+
+For this reason we've done a refactor using my personal state manager [statebuilder](https://github.com/riccardoperra/statebuilder) which allows you to manage the state in a modular way through plugins on an as-needed basis.
+
+## What's Changed
+* chore(docs): update contributing docker command by @kriskw1999 in https://github.com/riccardoperra/codeimage/pull/504
+* fix: safari rename dialog not opening by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/524
+* chore: update README.md by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/523
+* feat: dynamic min width by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/528
+* feat: integrate ESM + node18 + typescript5.0 + vitest in fastify api by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/530
+* feat: customizable export options by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/510
+* fix(app): canvas export image content is not rendered if it's higher than viewport by @riccardoperra in #532
+* feat: customizable export options by @riccardoperra in #510
+* feat: dynamic min width by @riccardoperra in #528
+* feat: custom background image by @riccardoperra in #526
+* fix: fix language field editor by @riccardoperra in #521
+* feat: refactor UI with codeui by @riccardoperra and @hackpirodev in #506
+* feat: refactor textfield with @codeui/kit by @riccardoperra in #517
+* feat: refactor Pagination with @codeui/kit by @riccardoperra in #516
+* fix: add radio item by @codeui/kit by @riccardoperra in #508
+* feat: @codeui/kit@0.20.1 and kobalte 0.9.0 upgrade by @riccardoperra in #514
+* feat: integrate submodule kit by @riccardoperra in #513
+
+## New Contributors
+* @kriskw1999 made their first contribution in https://github.com/riccardoperra/codeimage/pull/504
+
+**Full Changelog**: https://github.com/riccardoperra/codeimage/compare/v1.3.1...v1.4.0

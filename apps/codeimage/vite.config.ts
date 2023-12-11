@@ -1,14 +1,28 @@
 import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
-import {defineConfig, Plugin} from 'vite';
+import {nodeTypes} from '@mdx-js/mdx';
+import mdx from '@mdx-js/rollup';
+import rehypeRaw from 'rehype-raw';
+import rehypeSlug from 'rehype-slug';
+import {defineConfig, Plugin, UserConfigExport} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-// import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
 
-export default defineConfig(({mode}) => ({
+const config: UserConfigExport = defineConfig(({mode}) => ({
   plugins: [
+    {
+      ...mdx({
+        jsx: true,
+        jsxImportSource: 'solid-jsx',
+        providerImportSource: 'solid-mdx',
+        rehypePlugins: [rehypeSlug, [rehypeRaw, {passThrough: nodeTypes}]],
+      }),
+      enforce: 'pre',
+    },
     vanillaExtractPlugin(),
-    solidPlugin(),
+    solidPlugin({
+      extensions: ['.mdx', '.tsx', '.ts'],
+    }),
     // VitePWA(pwaOptions),
     tsconfigPaths(),
     {
@@ -72,3 +86,5 @@ export default defineConfig(({mode}) => ({
     reportCompressedSize: true,
   },
 }));
+
+export default config;

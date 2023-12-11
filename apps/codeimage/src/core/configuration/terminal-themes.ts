@@ -4,7 +4,7 @@ import {MacOsTerminalOutlineTheme} from '../../components/Terminal/MacOsTerminal
 import {WindowsTerminal} from '../../components/Terminal/WindowsTerminal/WindowsTerminal';
 
 export const AVAILABLE_TERMINAL_THEMES = {
-  keys: ['macOsGrayTheme', 'macOsOutlineTheme', 'macOs', 'windows'] as const,
+  keys: ['macOs', 'macOsGrayTheme', 'macOsOutlineTheme', 'windows'] as const,
   entries: {
     windows: {
       name: 'windows',
