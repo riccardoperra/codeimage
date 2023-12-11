@@ -2,7 +2,8 @@ name: Main
 
 on:
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [ opened, synchronize, reopened, labeled ]
+
 
 env:
   IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
