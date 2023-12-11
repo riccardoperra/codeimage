@@ -9,3 +9,15 @@ export const wrapper = style({
   color: themeVars.dynamicColors.descriptionTextColor,
   width: 'auto',
 });
+
+export const link = style({
+  userSelect: 'none',
+  ':hover': {
+    textDecoration: 'underline',
+  },
+  selectors: {
+    '&:not([href])': {
+      cursor: 'default',
+    },
+  },
+});
