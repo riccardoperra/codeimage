@@ -109,7 +109,10 @@ export const inlineHiddenItem = style({
   visibility: 'hidden',
   display: 'inline-block',
   height: 0,
+  left: 0,
   position: 'absolute',
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
 });
 
 export const input = style({

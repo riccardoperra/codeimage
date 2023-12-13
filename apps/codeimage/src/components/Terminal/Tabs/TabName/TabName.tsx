@@ -23,8 +23,10 @@ const uniqueIcons = icons.filter(
 
 export default function TabName(props: TabNameProps): JSXElement {
   let hiddenTextEl!: HTMLInputElement;
+  let inputEl!: HTMLInputElement;
   let portal!: HTMLDivElement;
   const [width, setWidth] = createSignal(0);
+  const textWithDotExtension = /\.([0-9a-z.]?)+$/i;
   const gap = 8;
   const placeholder = 'Untitled';
 
@@ -40,10 +42,19 @@ export default function TabName(props: TabNameProps): JSXElement {
     }
   };
 
-  const onSelectItem = (item: LanguageIconDefinition) => {
+  const onSelectItem = (item: LanguageIconDefinition | null) => {
+    if (!item) return;
     const sanitizedExtension = item.extension.replace('.', '');
     const value = getFormattedValue(sanitizedExtension);
     onChange(value);
+
+    // Move cursor before the extension dot in order to continue writing when contains only extension
+    if (value.startsWith('.')) {
+      queueMicrotask(() => {
+        const cursorPosition = value.indexOf(item.extension);
+        inputEl.setSelectionRange(cursorPosition, cursorPosition);
+      });
+    }
   };
 
   const getExtensionByInputValue = (inputValue: string | undefined | null) => {
@@ -66,7 +77,11 @@ export default function TabName(props: TabNameProps): JSXElement {
 
   const getFormattedValue = (value: string) => {
     const sanitizedValue = props.value || '';
-    return sanitizedValue.replace(/\.([0-9a-z.]?)+$/i, `.${value}`);
+    const hasDot = textWithDotExtension.test(sanitizedValue);
+    if (!hasDot) {
+      return `${sanitizedValue}.${value}`;
+    }
+    return sanitizedValue.replace(textWithDotExtension, `.${value}`);
   };
 
   const selectedItem = createMemo(() => {
@@ -133,6 +148,7 @@ export default function TabName(props: TabNameProps): JSXElement {
     >
       <Combobox.Control class={styles.control} aria-label="Tab name">
         <Combobox.Input
+          ref={inputEl}
           value={props.value}
           class={styles.input}
           style={inputStyle()}
