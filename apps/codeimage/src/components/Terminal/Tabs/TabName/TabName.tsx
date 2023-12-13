@@ -2,13 +2,7 @@ import {LanguageIconDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {highlight as _highlight} from '@core/directives/highlight';
 import {Combobox} from '@kobalte/core';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  JSXElement,
-  Show,
-} from 'solid-js';
+import {createEffect, createMemo, createSignal, JSXElement} from 'solid-js';
 import {TabIcon} from '../TabIcon/TabIcon';
 import * as styles from './TabName.css';
 
@@ -32,17 +26,25 @@ export default function TabName(props: TabNameProps): JSXElement {
   let portal!: HTMLDivElement;
   const [width, setWidth] = createSignal(0);
   const gap = 8;
-  function onChange(value: string): void {
+  const placeholder = 'Untitled';
+
+  const computedWidth = () => width() + gap;
+
+  const inputStyle = () => ({
+    width: `${computedWidth()}px`,
+  });
+
+  const onChange = (value: string): void => {
     if (props.onValueChange) {
       props.onValueChange(value);
     }
-  }
+  };
 
-  function onSelectItem(item: LanguageIconDefinition) {
+  const onSelectItem = (item: LanguageIconDefinition) => {
     const sanitizedExtension = item.extension.replace('.', '');
     const value = getFormattedValue(sanitizedExtension);
     onChange(value);
-  }
+  };
 
   const getExtensionByInputValue = (inputValue: string | undefined | null) => {
     if (!inputValue) return '';
@@ -67,6 +69,23 @@ export default function TabName(props: TabNameProps): JSXElement {
     return sanitizedValue.replace(/\.([0-9a-z.]?)+$/i, `.${value}`);
   };
 
+  const selectedItem = createMemo(() => {
+    return uniqueIcons.find(uniqueIcon => extension() == uniqueIcon.extension);
+  });
+
+  const hiddenText = () => props.value || placeholder;
+
+  const adjustPopperPositionerStyle = () => {
+    setTimeout(() => {
+      const popperPositioner = portal.querySelector('[data-popper-positioner]');
+      if (popperPositioner) {
+        (
+          popperPositioner as HTMLElement
+        ).style.transition = `transform 150ms ease-in-out`;
+      }
+    }, 200);
+  };
+
   createEffect(() => {
     setWidth(hiddenTextEl.clientWidth);
     createResizeObserver(
@@ -75,25 +94,6 @@ export default function TabName(props: TabNameProps): JSXElement {
       {box: 'content-box'},
     );
   });
-
-  const selectedItem = createMemo(() => {
-    return uniqueIcons.find(uniqueIcon => {
-      return extension() == uniqueIcon.extension;
-    });
-  });
-
-  const adjustPopperPositionerStyle = () => {
-    setTimeout(() => {
-      const popperPositioner = portal.querySelector(
-        '[data-popper-positioner]',
-      ) as HTMLElement;
-      popperPositioner.style.transition = `transform 150ms ease-in-out`;
-    }, 200);
-  };
-
-  const scrollToItem = (key: string) => {
-    console.log(key);
-  };
 
   return (
     <Combobox.Root
@@ -126,7 +126,7 @@ export default function TabName(props: TabNameProps): JSXElement {
           </Combobox.Item>
         );
       }}
-      placeholder={'Untitled'}
+      placeholder={placeholder}
       options={uniqueIcons}
       triggerMode={'focus'}
       defaultFilter={isMatched}
@@ -135,19 +135,16 @@ export default function TabName(props: TabNameProps): JSXElement {
         <Combobox.Input
           value={props.value}
           class={styles.input}
-          style={{width: `${width() + gap}px`}}
+          style={inputStyle()}
           onInput={el => onChange(el.currentTarget.value)}
         />
         <div ref={hiddenTextEl} class={styles.inlineHiddenItem}>
-          {props.value || 'Untitled'}
+          {hiddenText()}
         </div>
       </Combobox.Control>
       <Combobox.Portal ref={portal}>
         <Combobox.Content class={styles.tabHint}>
-          <Combobox.Listbox
-            scrollToItem={scrollToItem}
-            class={styles.listbox}
-          />
+          <Combobox.Listbox class={styles.listbox} />
         </Combobox.Content>
       </Combobox.Portal>
     </Combobox.Root>
