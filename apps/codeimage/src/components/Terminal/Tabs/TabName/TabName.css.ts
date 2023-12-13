@@ -46,13 +46,17 @@ export const tabHint = style([
 ]);
 
 export const listbox = style({
+  display: 'flex',
+  flexDirection: 'column',
   maxHeight: '250px',
   overflowY: 'auto',
+  overflowX: 'hidden',
 });
 
 export const tabHintDropdownItemContent = style([
   {
-    height: '32px',
+    height: '34px',
+    flex: '1 0 34px',
     fontWeight: themeVars.fontWeight.normal,
     fontSize: themeVars.fontSize.sm,
     display: 'flex',
@@ -87,6 +91,11 @@ export const tabHintDropdownItemContent = style([
     },
   }),
 ]);
+
+export const tabHintDropdownItemLabel = style({
+  display: 'flex',
+  alignItems: 'center',
+});
 
 export const tabText = style([
   {

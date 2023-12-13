@@ -3,9 +3,16 @@ import {exportExclude} from '@core/directives/exportExclude';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {createSortable} from '@thisbeyond/solid-dnd';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createMemo, createSignal, onMount, Show, VoidProps} from 'solid-js';
+import {
+  createMemo,
+  createSignal,
+  lazy,
+  onMount,
+  Show,
+  Suspense,
+  VoidProps,
+} from 'solid-js';
 import {CloseIcon} from '../../../Icons/CloseIcon';
-import {TabName} from '../TabName/TabName';
 import * as styles from './Tab.css';
 import {WindowTab, WindowTabContentText} from './WindowTab';
 
@@ -22,6 +29,8 @@ export interface WindowTabProps {
   readonly onClick?: () => void;
   readonly onClose?: (() => void) | null;
 }
+
+const TabName = lazy(() => import('../TabName/TabName'));
 
 export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
   let ref!: HTMLDivElement;
@@ -63,11 +72,13 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
           }
           when={!props.readonlyTab}
         >
-          <TabName
-            readonly={props.readonlyTab && !props.active}
-            value={props.tabName ?? ''}
-            onValueChange={value => props.onTabChange?.(value)}
-          />
+          <Suspense>
+            <TabName
+              readonly={props.readonlyTab && !props.active}
+              value={props.tabName ?? ''}
+              onValueChange={value => props.onTabChange?.(value)}
+            />
+          </Suspense>
         </Show>
       }
       rightContent={

@@ -27,14 +27,7 @@ const uniqueIcons = icons.filter(
     index === self.findIndex(i => i.extension === icon.extension),
 );
 
-export function TabName(props: TabNameProps): JSXElement {
-  return (
-    <Show when={true}>
-      <_TabName {...props} />
-    </Show>
-  );
-}
-function _TabName(props: TabNameProps): JSXElement {
+export default function TabName(props: TabNameProps): JSXElement {
   let hiddenTextEl!: HTMLInputElement;
   let portal!: HTMLDivElement;
   const [width, setWidth] = createSignal(0);
@@ -111,6 +104,7 @@ function _TabName(props: TabNameProps): JSXElement {
       optionValue={'extension'}
       disallowEmptySelection={true}
       placement={'bottom-start'}
+      gutter={-2}
       shift={width() - 10}
       onOpenChange={isOpen => {
         if (isOpen) {
@@ -123,7 +117,7 @@ function _TabName(props: TabNameProps): JSXElement {
             item={props.item}
             class={styles.tabHintDropdownItemContent}
           >
-            <Combobox.ItemLabel>
+            <Combobox.ItemLabel class={styles.tabHintDropdownItemLabel}>
               <TabIcon delay={0} content={props.item.rawValue.content} />
               <div use:highlight={extension()} class={styles.tabText}>
                 {props.item.rawValue.extension}
