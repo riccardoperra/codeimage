@@ -50,7 +50,9 @@ export function WindowTab(
     >
       <Suspense fallback={<Loading size={'sm'} />}>
         <Show when={props.tabIcon} keyed>
-          {icon => <TabIcon size={props.lite ? 'xs' : 'md'} content={icon} />}
+          {icon => (
+            <TabIcon delay={0} size={props.lite ? 'xs' : 'md'} content={icon} />
+          )}
         </Show>
         <div class={styles.tabTextContent}>{props.content}</div>
       </Suspense>
