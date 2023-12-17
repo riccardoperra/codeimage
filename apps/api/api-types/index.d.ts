@@ -10,4 +10,8 @@ export type {
   GetPresetByIdApi,
   UpdatePresetApi,
   GetAllPresetApi,
+  PasskeyStartRegistrationApi,
+  PasskeyFinalizeRegistrationApi,
+  PasskeyStartLoginApi,
+  PasskeyFinalizeLoginApi,
 } from '../dist/schemas/index.js';

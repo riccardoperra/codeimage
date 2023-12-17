@@ -5,7 +5,7 @@ const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
   fastify.get(
     '/',
     {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
+      preValidation: fastify.authorize({mustBeAuthenticated: true}),
       schema: {
         tags: ['Project'],
         summary: 'Get all CodeImage projects by the current user',

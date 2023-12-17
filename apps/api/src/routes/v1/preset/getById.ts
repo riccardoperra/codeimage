@@ -17,10 +17,13 @@ const schema = {
 export type GetPresetByIdApi = GetApiTypes<typeof schema>;
 
 const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
+  );
   fastify.get(
     '/:id',
     {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
       schema,
     },
     async request => {

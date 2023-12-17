@@ -3,8 +3,7 @@ import '@fastify/jwt';
 import {
   FastifyInstance,
   FastifyPluginAsync,
-  FastifyReply,
-  FastifyRequest,
+  preHandlerHookHandler,
 } from 'fastify';
 import fastifyAuth0Verify, {Authenticate} from 'fastify-auth0-verify';
 import fp from 'fastify-plugin';
@@ -54,67 +53,57 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
       });
     }
 
-    async function authorize(
-      req: FastifyRequest,
-      reply: FastifyReply,
-      options: AuthorizeOptions = {
-        mustBeAuthenticated: true,
-      },
-    ) {
-      try {
-        await fastify.authenticate(req, reply);
-      } catch (e) {
-        if (options.mustBeAuthenticated) {
-          throw fastify.httpErrors.unauthorized();
+    const authorize: (options: AuthorizeOptions) => preHandlerHookHandler =
+      (options = {mustBeAuthenticated: true}) =>
+      async (req, reply) => {
+        try {
+          await fastify.authenticate(req, reply);
+        } catch (e) {
+          if (options.mustBeAuthenticated) {
+            throw fastify.httpErrors.unauthorized();
+          }
         }
-      }
 
-      const emailClaim = `${fastify.config.AUTH0_CLIENT_CLAIMS}/email`;
+        const emailClaim = `${fastify.config.AUTH0_CLIENT_CLAIMS}/email`;
 
-      if (!req.user) {
-        req.appUserOptional = null;
-        return;
-      }
+        if (!req.user) {
+          req.appUserOptional = null;
+          return;
+        }
 
-      const email = req.user[emailClaim] as string;
+        const email = req.user[emailClaim] as string;
 
-      if (!email) {
-        throw fastify.httpErrors.badRequest('No valid user data');
-      }
+        if (!email) {
+          throw fastify.httpErrors.badRequest('No valid user data');
+        }
 
-      const user = await fastify.prisma.user.findFirst({
-        where: {
-          email,
-        },
-      });
-
-      if (!user) {
-        req.appUser = await fastify.prisma.user.create({
-          data: {
+        const user = await fastify.prisma.user.findFirst({
+          where: {
             email,
           },
         });
-      } else {
-        req.appUser = user;
-      }
 
-      req.appUserOptional = req.appUser;
-    }
+        if (!user) {
+          req.appUser = await fastify.prisma.user.create({
+            data: {
+              email,
+            },
+          });
+        } else {
+          req.appUser = user;
+        }
 
-    fastify.decorateRequest('appUser', null);
-    fastify.decorate('authorize', authorize);
+        req.appUserOptional = req.appUser;
+      };
+
+    fastify.decorate('verifyAuth0', authorize);
   },
 );
 
 declare module 'fastify' {
   interface FastifyInstance {
-    authorize: (
-      req: FastifyRequest,
-      reply: FastifyReply,
-      options?: AuthorizeOptions,
-    ) => void;
+    verifyAuth0: (options?: AuthorizeOptions) => preHandlerHookHandler;
   }
-
   interface FastifyRequest {
     appUser: User;
     appUserOptional: User | null;

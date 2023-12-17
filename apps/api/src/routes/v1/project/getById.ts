@@ -17,23 +17,17 @@ const schema = {
 export type GetProjectByIdApi = GetApiTypes<typeof schema>;
 
 const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.get(
-    '/:id',
-    {
-      preValidation: (req, reply) =>
-        fastify.authorize(req, reply, {
-          mustBeAuthenticated: false,
-        }),
-      schema,
-    },
-    async request => {
-      const {
-        appUser,
-        params: {id},
-      } = request;
-      return fastify.projectService.findById(appUser, id);
-    },
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: false}),
   );
+  fastify.get('/:id', {schema}, async request => {
+    const {
+      appUser,
+      params: {id},
+    } = request;
+    return fastify.projectService.findById(appUser, id);
+  });
 };
 
 export default getByIdRoute;

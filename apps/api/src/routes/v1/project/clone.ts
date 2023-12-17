@@ -20,21 +20,18 @@ const schema = {
 export type CloneProjectApi = GetApiTypes<typeof schema>;
 
 const cloneRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.post(
-    '/:id/clone',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    request => {
-      const {appUser, params, body} = request;
-      return fastify.projectService.clone(
-        appUser,
-        params.id,
-        body.newName ?? null,
-      );
-    },
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
   );
+  fastify.post('/:id/clone', {schema}, request => {
+    const {appUser, params, body} = request;
+    return fastify.projectService.clone(
+      appUser,
+      params.id,
+      body.newName ?? null,
+    );
+  });
 };
 
 export default cloneRoute;

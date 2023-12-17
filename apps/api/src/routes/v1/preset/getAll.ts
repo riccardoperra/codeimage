@@ -14,17 +14,14 @@ const schema = {
 export type GetAllPresetApi = GetApiTypes<typeof schema>;
 
 const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.get(
-    '/',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    async request => {
-      const {appUser} = request;
-      return fastify.presetService.findAllPresets(appUser.id);
-    },
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
   );
+  fastify.get('/', {schema}, async request => {
+    const {appUser} = request;
+    return fastify.presetService.findAllPresets(appUser.id);
+  });
 };
 
 export default getByIdRoute;

@@ -1,5 +1,5 @@
+import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {FastifyPluginAsync} from 'fastify';
 import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {ProjectDeleteResponseSchema} from '../../../modules/project/schema/index.js';
 
@@ -16,23 +16,18 @@ const schema = {
 
 export type DeleteProjectApi = GetApiTypes<typeof schema>;
 
-const deleteRoute: FastifyPluginAsync = async fastify => {
-  fastify.delete<{
-    Params: {id: string};
-  }>(
-    '/:id',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    async request => {
-      const {
-        appUser,
-        params: {id},
-      } = request;
-      return fastify.projectRepository.deleteProject(id, appUser.id);
-    },
+const deleteRoute: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
   );
+  fastify.delete('/:id', {schema}, async request => {
+    const {
+      appUser,
+      params: {id},
+    } = request;
+    return fastify.projectRepository.deleteProject(id, appUser.id);
+  });
 };
 
 export default deleteRoute;

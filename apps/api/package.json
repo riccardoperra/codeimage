@@ -40,6 +40,7 @@
   "license": "ISC",
   "dependencies": {
     "@codeimage/prisma-models": "workspace:*",
+    "@fastify/auth": "4.4.0",
     "@fastify/autoload": "^5.7.1",
     "@fastify/cors": "^8.3.0",
     "@fastify/env": "^4.2.0",
@@ -50,6 +51,8 @@
     "@fastify/type-provider-typebox": "^3.2.0",
     "@prisma/client": "^4.15.0",
     "@sinclair/typebox": "^0.28.15",
+    "@teamhanko/passkeys-sdk": "0.1.8",
+    "auth0": "4.2.0",
     "close-with-grace": "^1.2.0",
     "dotenv": "^16.1.4",
     "dotenv-cli": "^6.0.0",
@@ -57,6 +60,7 @@
     "fastify-auth0-verify": "^1.2.0",
     "fastify-cli": "^5.7.1",
     "fastify-healthcheck": "^4.4.0",
+    "fastify-jwt-jwks": "1.1.4",
     "fastify-plugin": "^4.5.0",
     "fluent-json-schema": "^4.1.0",
     "prisma": "^4.15.0"
