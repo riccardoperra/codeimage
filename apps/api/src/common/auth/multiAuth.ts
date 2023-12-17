@@ -1,16 +1,13 @@
 import fastifyAuth from '@fastify/auth';
-import {preHandlerHookHandler} from 'fastify';
-import fp from 'fastify-plugin';
+import {FastifyPluginAsync, preHandlerHookHandler} from 'fastify';
+import {AuthorizeOptions} from './authorize.js';
 
-interface AuthorizeOptions {
-  mustBeAuthenticated: boolean;
-}
-export default fp(async fastify => {
+export const multiAuthProviderPlugin: FastifyPluginAsync = async fastify => {
   fastify.register(fastifyAuth);
 
-  const preHookHandler: (options: AuthorizeOptions) => preHandlerHookHandler = (
-    options = {mustBeAuthenticated: true},
-  ) =>
+  const preHookHandler: (
+    options?: AuthorizeOptions,
+  ) => preHandlerHookHandler = (options = {mustBeAuthenticated: true}) =>
     function (request, reply, done) {
       return fastify
         .auth([
@@ -21,7 +18,7 @@ export default fp(async fastify => {
     };
 
   fastify.decorate('authorize', preHookHandler);
-});
+};
 
 declare module 'fastify' {
   interface FastifyInstance {

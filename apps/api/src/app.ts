@@ -2,7 +2,6 @@ import AutoLoad, {AutoloadPluginOptions} from '@fastify/autoload';
 import fastifyEnv from '@fastify/env';
 import {Type} from '@sinclair/typebox';
 import {FastifyPluginAsync} from 'fastify';
-import fp from 'fastify-plugin';
 import path, {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 

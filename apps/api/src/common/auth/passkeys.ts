@@ -1,12 +1,11 @@
 import {tenant} from '@teamhanko/passkeys-sdk';
-import {preHandlerHookHandler} from 'fastify';
-import fp from 'fastify-plugin';
+import {FastifyPluginAsync, preHandlerHookHandler} from 'fastify';
 
 interface AuthorizeOptions {
   mustBeAuthenticated: boolean;
 }
 
-export const passkeysPlugin = fp(async fastify => {
+export const passkeysPlugin: FastifyPluginAsync = async fastify => {
   const passkeysApi = tenant({
     tenantId: fastify.config.HANKO_PASSKEYS_TENANT_ID,
     apiKey: fastify.config.HANKO_PASSKEYS_API_KEY,
@@ -15,9 +14,9 @@ export const passkeysPlugin = fp(async fastify => {
 
   fastify.decorate('passkeysApi', passkeysApi);
 
-  const verify: (options: AuthorizeOptions) => preHandlerHookHandler =
+  const verify: (options?: AuthorizeOptions) => preHandlerHookHandler =
     (options = {mustBeAuthenticated: true}) =>
-    async (req, reply, done) => {
+    async req => {
       const token = req.headers.authorization
         ?.split('Bearer ')[1]
         .split('.')[1] as string;
@@ -31,17 +30,14 @@ export const passkeysPlugin = fp(async fastify => {
       });
 
       if (user) {
-        console.log('augment request with user', user);
         req.appUser = user;
-        req.appUserOptional = user;
-        done();
       } else if (options.mustBeAuthenticated) {
         throw fastify.httpErrors.unauthorized();
       }
     };
 
   fastify.decorate('verifyHankoPasskey', verify);
-});
+};
 
 export default passkeysPlugin;
 
@@ -49,8 +45,6 @@ declare module 'fastify' {
   interface FastifyInstance {
     passkeysApi: ReturnType<typeof tenant>;
 
-    verifyHankoPasskey: (
-      options?: AuthorizeOptions,
-    ) => (req: FastifyRequest, reply: FastifyReply) => void;
+    verifyHankoPasskey: (options?: AuthorizeOptions) => preHandlerHookHandler;
   }
 }

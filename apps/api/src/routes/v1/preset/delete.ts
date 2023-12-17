@@ -8,9 +8,6 @@ const schema = {
     id: Type.String(),
   }),
   summary: 'Delete an existing CodeImage preset',
-  response: {
-    200: Type.Void(),
-  },
 };
 
 export type DeletePresetApi = GetApiTypes<typeof schema>;

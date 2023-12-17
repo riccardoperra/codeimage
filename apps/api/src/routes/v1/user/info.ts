@@ -10,7 +10,7 @@ const route: FastifyPluginAsyncTypebox = async fastify => {
       email: request.appUser.email,
       fields: 'user_id,email,created_at,email_verified,picture',
     });
-    return Object.assign(response.data[0], {id: request.appUser.id});
+    return {...response.data[0], id: request.appUser.id};
   });
 };
 
