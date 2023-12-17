@@ -14,4 +14,5 @@ export type {
   PasskeyFinalizeRegistrationApi,
   PasskeyStartLoginApi,
   PasskeyFinalizeLoginApi,
-} from '../dist/schemas/index.js';
+  UserInfoApi,
+} from '../src/schemas/index';

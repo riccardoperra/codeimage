@@ -1,5 +1,4 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getInitialEditorUiOptions} from '@codeimage/store/editor/editor';
 import {getInitialFrameState} from '@codeimage/store/editor/frame';
 import {getInitialTerminalState} from '@codeimage/store/editor/terminal';
@@ -10,7 +9,7 @@ import {createContextProvider} from '@solid-primitives/context';
 import {createEffect, createResource, createSignal} from 'solid-js';
 import {API} from '../../data-access/api';
 
-function makeDashboardState(authState = getAuth0State()) {
+function makeDashboardState() {
   const [data, {mutate, refetch}] = createResource(fetchWorkspaceContent, {
     initialValue: [],
   });
@@ -42,8 +41,6 @@ function makeDashboardState(authState = getAuth0State()) {
   async function fetchWorkspaceContent(): Promise<
     ApiTypes.GetProjectByIdApi['response'][]
   > {
-    const userId = authState.user()?.id;
-    if (!userId) return [];
     return API.project.getWorkspaceContent();
   }
 
@@ -96,8 +93,7 @@ function makeDashboardState(authState = getAuth0State()) {
     oldName: string,
     newName: string | undefined,
   ) {
-    const userId = authState.user()?.id;
-    if (!userId || !newName || oldName === newName) {
+    if (!newName || oldName === newName) {
       return;
     }
     mutate(items =>
@@ -123,8 +119,6 @@ function makeDashboardState(authState = getAuth0State()) {
   }
 
   function cloneProject(project: ApiTypes.GetProjectByIdApi['response']) {
-    const userId = authState.user()?.id;
-    if (!userId) return;
     return API.project.cloneSnippet(project.id, {
       body: {
         newName: `${project.name} (copy)`,

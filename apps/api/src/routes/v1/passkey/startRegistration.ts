@@ -58,23 +58,20 @@ const schema = {
 export type PasskeyStartRegistrationApi = GetApiTypes<typeof schema>;
 
 const route: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.post(
-    '/registration',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    async request => {
-      const {appUser} = request;
-      fastify.log.info(
-        `Init passkey registration for user with id ${appUser.id}`,
-      );
-      return fastify.passkeysApi.registration.initialize({
-        userId: appUser.id,
-        username: appUser.email,
-      });
-    },
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
   );
+  fastify.post('/registration', {schema}, async request => {
+    const {appUser} = request;
+    fastify.log.info(
+      `Init passkey registration for user with id ${appUser.id}`,
+    );
+    return fastify.passkeysApi.registration.initialize({
+      userId: appUser.id,
+      username: appUser.email,
+    });
+  });
 };
 
 export default route;

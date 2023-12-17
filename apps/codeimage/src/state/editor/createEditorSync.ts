@@ -1,5 +1,5 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {AuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
@@ -32,6 +32,7 @@ import {
   untrack,
 } from 'solid-js';
 import {unwrap} from 'solid-js/store';
+import {provideState} from 'statebuilder';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
 
@@ -44,7 +45,7 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
   const [activeWorkspace, setActiveWorkspace] = createSignal<
     ApiTypes.GetProjectByIdApi['response'] | null
   >();
-  const authState = getAuth0State();
+  const authState = provideState(AuthState);
   const frameStore = getFrameState();
   const terminalStore = getTerminalState();
   const editorStore = getRootEditorStore();

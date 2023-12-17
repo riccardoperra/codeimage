@@ -1,11 +1,11 @@
-import {HttpError} from '@fastify/sensible/lib/httpError.js';
+import {HttpErrors} from '@fastify/sensible/lib/httpError.js';
 import fp from 'fastify-plugin';
 import {NotFoundEntityException} from '../common/exceptions/NotFoundEntityException.js';
 
 export default fp(
   async fastify => {
     fastify.setErrorHandler((error, request, reply) => {
-      let httpError: HttpError | null = null;
+      let httpError: HttpErrors['HttpError'] | null = null;
 
       if (error.statusCode) {
         httpError = fastify.httpErrors.createError(

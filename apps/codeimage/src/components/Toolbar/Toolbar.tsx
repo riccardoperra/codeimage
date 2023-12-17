@@ -1,6 +1,7 @@
-import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {AuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
+import {provideAppState} from '@codeimage/store/index';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {backgroundColorVar, Box, colorVar, HStack} from '@codeimage/ui';
 import {As, buttonStyles, Link} from '@codeui/kit';
@@ -25,8 +26,9 @@ interface ToolbarProps {
 export function Toolbar(props: VoidProps<ToolbarProps>) {
   const modality = useModality();
   const editor = getRootEditorStore();
+  const authState = provideAppState(AuthState);
   const {themeArray: themes} = getThemeStore();
-  const loggedIn = () => getAuth0State().loggedIn();
+  const loggedIn = () => authState.loggedIn();
   const isRemote = () => !!getEditorSyncAdapter()?.snippetId();
 
   const themeConfiguration = createMemo(

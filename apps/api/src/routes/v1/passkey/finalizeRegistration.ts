@@ -47,29 +47,26 @@ const schema = {
 export type PasskeyFinalizeRegistrationApi = GetApiTypes<typeof schema>;
 
 const route: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.post(
-    '/finalize-registration',
-    {
-      schema,
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-    },
-    async request => {
-      // const {appUser} = request;
-      return fastify.passkeysApi.registration.finalize({
-        rawId: request.body.rawId,
-        type: request.body.type,
-        transports: request.body.transports,
-        authenticatorAttachment: request.body.authenticatorAttachment,
-        id: request.body.id,
-        clientExtensionResults: request.body.clientExtensionResults,
-        response: {
-          transports: request.body.response.transports,
-          clientDataJSON: request.body.response.clientDataJSON,
-          attestationObject: request.body.response.attestationObject,
-        },
-      });
-    },
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
   );
+  fastify.post('/finalize-registration', {schema}, async request => {
+    // const {appUser} = request;
+    return fastify.passkeysApi.registration.finalize({
+      rawId: request.body.rawId,
+      type: request.body.type,
+      transports: request.body.transports,
+      authenticatorAttachment: request.body.authenticatorAttachment,
+      id: request.body.id,
+      clientExtensionResults: request.body.clientExtensionResults,
+      response: {
+        transports: request.body.response.transports,
+        clientDataJSON: request.body.response.clientDataJSON,
+        attestationObject: request.body.response.attestationObject,
+      },
+    });
+  });
 };
 
 export default route;

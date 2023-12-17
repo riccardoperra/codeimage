@@ -1,4 +1,5 @@
-import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {AuthState} from '@codeimage/store/auth/auth';
+import {provideAppState} from '@codeimage/store/index';
 
 import {
   As,
@@ -20,7 +21,7 @@ import {SettingsDialog} from './SettingsDialog';
 export function ToolbarSettingsButton() {
   const navigate = useNavigate();
   const openDialog = createControlledDialog();
-  const {signOut, loggedIn} = getAuth0State();
+  const {signOut, loggedIn} = provideAppState(AuthState);
 
   return (
     <DropdownMenu>

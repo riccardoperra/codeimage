@@ -1,8 +1,9 @@
 import * as ApiTypes from '@codeimage/api/api-types';
-import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {AuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {provideAppState} from '@codeimage/store/index';
 import {generateUid} from '@codeimage/store/plugins/unique-id';
 import {appEnvironment} from '@core/configuration';
 import {createEffect, on} from 'solid-js';
@@ -19,7 +20,8 @@ export const withPresetBridge = (idbKey: string) =>
   makePlugin(
     store => {
       const idb = useIdb();
-      const useInMemoryStore = () => !getAuth0State().loggedIn();
+      const authState = provideAppState(AuthState);
+      const useInMemoryStore = () => !authState.loggedIn();
       function persistToIdb(data: PresetsArray) {
         return idb.set(idbKey, unwrap(data)).then();
       }

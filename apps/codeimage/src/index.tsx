@@ -1,7 +1,8 @@
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
-import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {AuthState} from '@codeimage/store/auth/auth';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideAppState} from '@codeimage/store/index';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {getUiStore} from '@codeimage/store/ui';
 import {VersionStore} from '@codeimage/store/version/version.store';
@@ -80,7 +81,7 @@ export function Bootstrap() {
   getRootEditorStore();
   const [, {locale}] = useI18n();
   const uiStore = getUiStore();
-  const auth0 = getAuth0State();
+  const authState = provideAppState(AuthState);
   createEffect(on(() => uiStore.get.locale, locale));
   const mode = () => uiStore.currentTheme();
 
@@ -88,7 +89,7 @@ export function Bootstrap() {
     {
       path: '',
       component: () => {
-        const state = getAuth0State();
+        const state = provideState(AuthState);
         return (
           <Show fallback={<Editor />} when={state.loggedIn()}>
             <Dashboard />
@@ -112,10 +113,10 @@ export function Bootstrap() {
     {
       path: 'login',
       data: ({navigate}) => {
-        if (auth0.loggedIn()) {
+        if (authState.loggedIn()) {
           navigate('/');
         } else {
-          auth0.login();
+          authState.login();
         }
       },
     },
@@ -155,8 +156,8 @@ export function Bootstrap() {
   );
 }
 
-getAuth0State()
-  .initLogin()
+provideAppState(AuthState)
+  .init()
   .catch(() => null)
   .then(() => {
     render(

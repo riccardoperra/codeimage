@@ -1,4 +1,6 @@
+import {AuthState} from '@codeimage/store/auth/auth';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {provideAppState} from '@codeimage/store/index';
 
 export interface RequestParams {
   body?: unknown;
@@ -16,7 +18,8 @@ export async function makeFetch(
   input: RequestInfo,
   requestParams: Omit<RequestInit, keyof RequestParams> & RequestParams,
 ): Promise<Response> {
-  const {getToken, forceLogin, loggedIn} = getAuth0State();
+  const {forceLogin} = getAuth0State();
+  const {getToken, loggedIn} = provideAppState(AuthState);
 
   let url = typeof input === 'string' ? input : input.url;
   const headers = new Headers();
@@ -52,7 +55,7 @@ export async function makeFetch(
   if (requestParams.headers) {
     for (const [key, value] of Object.entries(requestParams.headers)) {
       if (value) {
-        headers.append(key, value);
+        headers.set(key, value);
       }
     }
   }

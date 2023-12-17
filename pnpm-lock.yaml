@@ -375,6 +375,9 @@ importers:
       '@solid-primitives/resize-observer':
         specifier: ^2.0.11
         version: 2.0.15(solid-js@1.8.6)
+      '@solid-primitives/storage':
+        specifier: 2.1.1
+        version: 2.1.1(solid-js@1.8.6)
       '@solid-primitives/utils':
         specifier: ^6.0.0
         version: 6.2.1(solid-js@1.8.6)
@@ -408,6 +411,9 @@ importers:
       inter-ui:
         specifier: ^3.19.3
         version: 3.19.3
+      jwt-decode:
+        specifier: 4.0.0
+        version: 4.0.0
       modern-normalize:
         specifier: ^1.1.0
         version: 1.1.0
@@ -5623,6 +5629,19 @@ packages:
       '@solid-primitives/utils': 6.2.1(solid-js@1.8.6)
       solid-js: 1.8.6
 
+  /@solid-primitives/storage@2.1.1(solid-js@1.8.6):
+    resolution: {integrity: sha512-GDbELt4Xjp0ySsHZ+RHzup0YIl1epHz8A2SVQYNRZPgkIEJk0Fyrt2vW6Etym2yUruTt8yT3d8106LVb71KIWg==}
+    peerDependencies:
+      solid-js: ^1.6.12
+      solid-start: '>=0.2.26'
+    peerDependenciesMeta:
+      solid-start:
+        optional: true
+    dependencies:
+      '@solid-primitives/utils': 6.2.1(solid-js@1.8.6)
+      solid-js: 1.8.6
+    dev: false
+
   /@solid-primitives/transition-group@1.0.1(solid-js@1.8.6):
     resolution: {integrity: sha512-StVQs7BVGQa1uo6dD19wqOgfGMxu3gL/bvPHUV/NBJaiNX5R5e7dPb6lz6zR1RdTho3M+3Mv8jUHKd/aKuhL4w==}
     peerDependencies:
@@ -10540,6 +10559,11 @@ packages:
   /just-extend@4.2.1:
     resolution: {integrity: sha512-g3UB796vUFIY90VIv/WX3L2c8CS2MdWUww3CNrYmqza1Fg0DURc2K/O4YrnklBdQarSJ/y8JnJYDGc+1iumQjg==}
     dev: true
+
+  /jwt-decode@4.0.0:
+    resolution: {integrity: sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==}
+    engines: {node: '>=18'}
+    dev: false
 
   /kebab-case@1.0.2:
     resolution: {integrity: sha512-7n6wXq4gNgBELfDCpzKc+mRrZFs7D+wgfF5WRFLNAr4DA/qtr9Js8uOAVAfHhuLMfAcQ0pRKqbpjx+TcJVdE1Q==}

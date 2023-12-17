@@ -2,6 +2,10 @@ import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
 
 const route: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
+  );
   fastify.delete(
     '/credentials',
     {
@@ -9,11 +13,6 @@ const route: FastifyPluginAsyncTypebox = async fastify => {
         params: Type.Object({
           credentialId: Type.String(),
         }),
-      },
-      preValidation: function (request, reply, done) {
-        return fastify
-          .auth([fastify.authenticate, fastify.verifyHankoPasskey])
-          .apply(this, [request, reply, done]);
       },
     },
     async request => {

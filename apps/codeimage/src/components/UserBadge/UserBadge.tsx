@@ -1,25 +1,31 @@
-import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {AuthState} from '@codeimage/store/auth/auth';
+import {provideAppState} from '@codeimage/store/index';
 import {Badge} from '@codeimage/ui';
 import {
   As,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@codeui/kit';
-import {GithubLoginButton} from '@ui/GithubLoginButton/GithubLoginButton';
+import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {Show} from 'solid-js';
+import {LoginDialog} from '../Toolbar/LoginDialog';
 import * as styles from './UserBadge.css';
 
 export function UserBadge() {
-  const {loggedIn, user, signOut} = getAuth0State();
+  const authState = provideAppState(AuthState);
+  const user = () => authState().user;
   const profileImage = () => user()?.picture;
 
+  const openDialog = createControlledDialog();
+
   const initials = () => {
-    const $user = user();
-    if (!$user) return;
-    const [first = '', last = ''] = ($user.name ?? '').split(' ');
+    const userValue = user();
+    if (!userValue) return;
+    const [first = '', last = ''] = (userValue.name ?? '').split(' ');
     return [first, last]
       .filter(data => !!data)
       .map(data => data[0])
@@ -27,7 +33,14 @@ export function UserBadge() {
   };
 
   return (
-    <Show fallback={<GithubLoginButton />} when={loggedIn()}>
+    <Show
+      fallback={
+        <Button theme={'secondary'} onClick={() => openDialog(LoginDialog, {})}>
+          Login
+        </Button>
+      }
+      when={authState.loggedIn()}
+    >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <As component={Badge} theme={styles.badge} size={'md'}>
@@ -40,7 +53,7 @@ export function UserBadge() {
 
         <DropdownMenuPortal>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => signOut()}>
+            <DropdownMenuItem onClick={() => authState.signOut()}>
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
