@@ -103,13 +103,16 @@ importers:
         version: 5.3.2
       vite:
         specifier: ^3.2.5
-        version: 3.2.5(@types/node@18.16.17)
+        version: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
 
   apps/api:
     dependencies:
       '@codeimage/prisma-models':
         specifier: workspace:*
         version: link:../../packages/prisma-models
+      '@fastify/auth':
+        specifier: 4.4.0
+        version: 4.4.0
       '@fastify/autoload':
         specifier: ^5.7.1
         version: 5.7.1
@@ -140,6 +143,12 @@ importers:
       '@sinclair/typebox':
         specifier: ^0.28.15
         version: 0.28.15
+      '@teamhanko/passkeys-sdk':
+        specifier: 0.1.8
+        version: 0.1.8
+      auth0:
+        specifier: 4.2.0
+        version: 4.2.0
       close-with-grace:
         specifier: ^1.2.0
         version: 1.2.0
@@ -161,6 +170,9 @@ importers:
       fastify-healthcheck:
         specifier: ^4.4.0
         version: 4.4.0
+      fastify-jwt-jwks:
+        specifier: 1.1.4
+        version: 1.1.4
       fastify-plugin:
         specifier: ^4.5.0
         version: 4.5.0
@@ -303,6 +315,9 @@ importers:
       '@formatjs/intl-relativetimeformat':
         specifier: 11.1.4
         version: 11.1.4
+      '@github/webauthn-json':
+        specifier: 2.1.1
+        version: 2.1.1
       '@kobalte/core':
         specifier: ^0.11.0
         version: 0.11.2(solid-js@1.8.6)
@@ -592,7 +607,7 @@ importers:
         version: 5.3.2
       vite:
         specifier: ^3.1.8
-        version: 3.2.5(@types/node@18.16.17)
+        version: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
 
   packages/atomic-state:
     dependencies:
@@ -617,7 +632,7 @@ importers:
         version: 1.8.6
       vite:
         specifier: ^3.2.5
-        version: 3.2.5(@types/node@18.16.17)
+        version: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
       vite-plugin-dts:
         specifier: ^1.7.3
         version: 1.7.3(@types/node@18.16.17)(rollup@2.79.1)(vite@3.2.5)
@@ -729,7 +744,7 @@ importers:
         version: 5.3.2
       vite:
         specifier: ^3.2.5
-        version: 3.2.5(@types/node@18.16.17)
+        version: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
       vite-plugin-dts:
         specifier: ^1.7.3
         version: 1.7.3(@types/node@18.16.17)(vite@3.2.5)
@@ -769,7 +784,7 @@ importers:
         version: 5.3.2
       vite:
         specifier: ^3.2.5
-        version: 3.2.5(@types/node@18.16.17)
+        version: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
       vite-plugin-dts:
         specifier: ^1.7.3
         version: 1.7.3(@types/node@18.16.17)(vite@3.2.5)
@@ -860,7 +875,7 @@ importers:
         version: 5.3.2
       vite:
         specifier: ^3.2.5
-        version: 3.2.5(@types/node@18.16.17)
+        version: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
       vite-plugin-dts:
         specifier: ^1.7.3
         version: 1.7.3(@types/node@18.16.17)(rollup@2.79.1)(vite@3.2.5)
@@ -885,7 +900,7 @@ importers:
         version: 5.3.2
       vite:
         specifier: ^3.2.5
-        version: 3.2.5(@types/node@18.16.17)
+        version: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
       vite-plugin-dts:
         specifier: ^2.2.0
         version: 2.2.0(@types/node@18.16.17)(vite@3.2.5)
@@ -1035,7 +1050,7 @@ importers:
         version: 5.3.2
       vite:
         specifier: ^3.2.5
-        version: 3.2.5(@types/node@18.16.17)
+        version: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
       vite-plugin-dts:
         specifier: ^1.7.3
         version: 1.7.3(@types/node@18.16.17)(rollup@2.79.1)(vite@3.2.5)
@@ -3113,6 +3128,13 @@ packages:
       fast-uri: 2.2.0
     dev: false
 
+  /@fastify/auth@4.4.0:
+    resolution: {integrity: sha512-gGFicD/q1MSEPA+qiJAc+egZzzUH6LKJHDdLWQ5TfcgGxfszNMa+Dbx3ehKtGRpB2fOQF41/+yfFv8C12xoBHQ==}
+    dependencies:
+      fastify-plugin: 4.5.0
+      reusify: 1.0.4
+    dev: false
+
   /@fastify/autoload@5.7.1:
     resolution: {integrity: sha512-F5c94MYAF0tacVu6X4/1ojO7fzmgrJXsqitDtpqknXgiHZpeFNhYSnNCUHPz6UDRKsfkDohmh0fiPTtOd8clzQ==}
     dependencies:
@@ -3170,6 +3192,16 @@ packages:
       '@fastify/error': 3.2.1
       '@lukeed/ms': 2.0.1
       fast-jwt: 3.1.1
+      fastify-plugin: 4.5.0
+      steed: 1.1.3
+    dev: false
+
+  /@fastify/jwt@7.2.4:
+    resolution: {integrity: sha512-aWJzVb3iZb9xIPjfut8YOrkNEKrZA9xyF2C2Hv9nTheFp7CQPGIZMNTyf3848BsD27nw0JLk8jVLZ2g2DfJOoQ==}
+    dependencies:
+      '@fastify/error': 3.2.1
+      '@lukeed/ms': 2.0.1
+      fast-jwt: 3.3.2
       fastify-plugin: 4.5.0
       steed: 1.1.3
     dev: false
@@ -3312,6 +3344,11 @@ packages:
   /@gar/promisify@1.1.3:
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
     dev: true
+
+  /@github/webauthn-json@2.1.1:
+    resolution: {integrity: sha512-XrftRn4z75SnaJOmZQbt7Mk+IIjqVHw+glDGOxuHwXkZBZh/MBoRS7MHjSZMDaLhT4RjN2VqiEU7EOYleuJWSQ==}
+    hasBin: true
+    dev: false
 
   /@hapi/hoek@9.3.0:
     resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==}
@@ -5687,6 +5724,12 @@ packages:
       '@reach/observe-rect': 1.2.0
     dev: false
 
+  /@teamhanko/passkeys-sdk@0.1.8:
+    resolution: {integrity: sha512-EtLtFxb9gg403O45vwtC3E7mHav7vDj7rl5ncwegoqThYcMQsxTQVboCIsHqe0GeogNZoriWixmv0Y3UY8wHNQ==}
+    dependencies:
+      openapi-fetch: 0.8.2
+    dev: false
+
   /@thisbeyond/solid-dnd@0.7.2(solid-js@1.8.6):
     resolution: {integrity: sha512-He8WC2o0J82UwjkbxNSZ+Lnty42TvCENaZWmdnsrDN7pf+7FFnxt9AD/8tJ3eN8aoRxymX81ZUX6PwcwrFxN0A==}
     peerDependencies:
@@ -6197,7 +6240,7 @@ packages:
       outdent: 0.8.0
       postcss: 8.4.31
       postcss-load-config: 3.1.4(postcss@8.4.31)(ts-node@10.9.1)
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
     transitivePeerDependencies:
       - supports-color
       - ts-node
@@ -6822,6 +6865,14 @@ packages:
   /atomic-sleep@1.0.0:
     resolution: {integrity: sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==}
     engines: {node: '>=8.0.0'}
+    dev: false
+
+  /auth0@4.2.0:
+    resolution: {integrity: sha512-gn/MuwPC7tmWzgKD0jdrkc+/N1m93xiPhlKQNHmCMAeodW0YSvIniVfBN64V/WujUOjIPqXCH9YrMulQCqE6tg==}
+    engines: {node: '>=18'}
+    dependencies:
+      jose: 4.15.4
+      uuid: 9.0.1
     dev: false
 
   /available-typed-arrays@1.0.5:
@@ -8774,6 +8825,16 @@ packages:
       mnemonist: 0.39.5
     dev: false
 
+  /fast-jwt@3.3.2:
+    resolution: {integrity: sha512-H+JYxaFy2LepiC1AQWM/2hzKlQOWaWUkEnu/yebhYu4+ameb3qG77WiRZ1Ct6YBk6d/ESsNguBfTT5+q0XMtKg==}
+    engines: {node: '>=16 <22'}
+    dependencies:
+      '@lukeed/ms': 2.0.1
+      asn1.js: 5.4.1
+      ecdsa-sig-formatter: 1.0.11
+      mnemonist: 0.39.5
+    dev: false
+
   /fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
     dev: true
@@ -8809,7 +8870,7 @@ packages:
     dependencies:
       '@fastify/cookie': 8.3.0
       '@fastify/jwt': 7.0.0
-      fastify-jwt-jwks: 1.1.3
+      fastify-jwt-jwks: 1.1.4
       fastify-plugin: 4.5.0
     transitivePeerDependencies:
       - encoding
@@ -8847,12 +8908,12 @@ packages:
       '@fastify/under-pressure': 8.2.0
     dev: false
 
-  /fastify-jwt-jwks@1.1.3:
-    resolution: {integrity: sha512-0aHfOAhWS1wD754HKb3y7WUfE5TJgDaXzqqAwBRSFsSxYJ5EaAfrsUhDjQOGj6nSYFSRSdCAaZZLeePSiCfR+w==}
+  /fastify-jwt-jwks@1.1.4:
+    resolution: {integrity: sha512-U4X96hz8NLR1UdX851aKFYz6yqbApGrdG6aygOe7b+JtRo1mGLEuQ5q15twy4v1BSXIub1RajjFYLnpOeGfnww==}
     engines: {node: '>= 14.0.0'}
     dependencies:
       '@fastify/cookie': 8.3.0
-      '@fastify/jwt': 6.7.1
+      '@fastify/jwt': 7.2.4
       fastify-plugin: 4.5.0
       http-errors: 2.0.0
       node-cache: 5.1.2
@@ -10344,6 +10405,10 @@ packages:
       '@sideway/address': 4.1.4
       '@sideway/formula': 3.0.1
       '@sideway/pinpoint': 2.0.0
+
+  /jose@4.15.4:
+    resolution: {integrity: sha512-W+oqK4H+r5sITxfxpSU+MMdr/YSWGvgZMQDIsNoBDGGy4i7GBPTtvFKibQzW06n3U3TqHjhvBJsirShsEJ6eeQ==}
+    dev: false
 
   /joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
@@ -12064,8 +12129,18 @@ packages:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
+  /openapi-fetch@0.8.2:
+    resolution: {integrity: sha512-4g+NLK8FmQ51RW6zLcCBOVy/lwYmFJiiT+ckYZxJWxUxH4XFhsNcX2eeqVMfVOi+mDNFja6qDXIZAz2c5J/RVw==}
+    dependencies:
+      openapi-typescript-helpers: 0.0.5
+    dev: false
+
   /openapi-types@12.1.3:
     resolution: {integrity: sha512-N4YtSYJqghVu4iek2ZUvcN/0aqH1kRDuNqzcycDxhOUpg7GdvLa2F3DgS6yBNhInhv2r/6I0Flkn7CqL8+nIcw==}
+    dev: false
+
+  /openapi-typescript-helpers@0.0.5:
+    resolution: {integrity: sha512-MRffg93t0hgGZbYTxg60hkRIK2sRuEOHEtCUgMuLgbCC33TMQ68AmxskzUlauzZYD47+ENeGV/ElI7qnWqrAxA==}
     dev: false
 
   /optionator@0.9.1:
@@ -13764,7 +13839,7 @@ packages:
       solid-start: 0.2.26(@solidjs/meta@0.28.4)(@solidjs/router@0.8.2)(solid-js@1.8.6)(solid-start-node@0.2.26)(solid-start-static@0.2.26)(vite@3.2.5)
       terser: 5.17.1
       undici: 5.21.1
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -13783,7 +13858,7 @@ packages:
       solid-ssr: 1.7.0
       solid-start: 0.2.26(@solidjs/meta@0.28.4)(@solidjs/router@0.8.2)(solid-js@1.8.6)(solid-start-node@0.2.26)(solid-start-static@0.2.26)(vite@3.2.5)
       undici: 5.21.1
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
 
   /solid-start@0.2.26(@solidjs/meta@0.28.4)(@solidjs/router@0.8.2)(solid-js@1.8.6)(solid-start-node@0.2.26)(solid-start-static@0.2.26)(vite@3.2.5):
     resolution: {integrity: sha512-kne2HZlnSMzsirdnvNs1CsDqBl0L0uvKKt1t4de1CH7JIngyqoMcER97jTE0Ejr84KknANaKAdvJAzZcL7Ueng==}
@@ -13852,7 +13927,7 @@ packages:
       solid-start-static: 0.2.26(solid-start@0.2.26)(undici@5.21.1)(vite@3.2.5)
       terser: 5.17.1
       undici: 5.21.1
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
       vite-plugin-inspect: 0.7.19(rollup@3.25.1)(vite@3.2.5)
       vite-plugin-solid: 2.7.0(solid-js@1.8.6)(vite@3.2.5)
       wait-on: 6.0.1(debug@4.3.4)
@@ -15067,6 +15142,11 @@ packages:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
 
+  /uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    hasBin: true
+    dev: false
+
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
@@ -15134,7 +15214,7 @@ packages:
       pathe: 0.2.0
       source-map: 0.6.1
       source-map-support: 0.5.21
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -15155,7 +15235,7 @@ packages:
       mlly: 1.4.2
       pathe: 1.1.1
       picocolors: 1.0.0
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -15180,7 +15260,7 @@ packages:
       fs-extra: 10.1.0
       kolorist: 1.7.0
       ts-morph: 17.0.1
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
@@ -15201,7 +15281,7 @@ packages:
       fs-extra: 10.1.0
       kolorist: 1.7.0
       ts-morph: 17.0.1
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
@@ -15224,7 +15304,7 @@ packages:
       kolorist: 1.7.0
       magic-string: 0.29.0
       ts-morph: 17.0.1
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
@@ -15244,7 +15324,7 @@ packages:
       kolorist: 1.7.0
       sirv: 2.0.3
       ufo: 1.1.2
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -15337,39 +15417,6 @@ packages:
       fsevents: 2.3.3
     dev: false
 
-  /vite@3.2.5(@types/node@18.16.17):
-    resolution: {integrity: sha512-4mVEpXpSOgrssFZAOmGIr85wPHKvaDAcXqxVxVRZhljkJOMZi1ibLibzjLHzJvcok8BMguLc7g1W6W/GqZbLdQ==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      '@types/node': 18.16.17
-      esbuild: 0.19.8
-      postcss: 8.4.32
-      resolve: 1.22.8
-      rollup: 2.79.1
-    optionalDependencies:
-      fsevents: 2.3.3
-
   /vite@3.2.5(@types/node@18.16.17)(sass@1.61.0):
     resolution: {integrity: sha512-4mVEpXpSOgrssFZAOmGIr85wPHKvaDAcXqxVxVRZhljkJOMZi1ibLibzjLHzJvcok8BMguLc7g1W6W/GqZbLdQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -15397,7 +15444,7 @@ packages:
     dependencies:
       '@types/node': 18.16.17
       esbuild: 0.19.8
-      postcss: 8.4.31
+      postcss: 8.4.32
       resolve: 1.22.8
       rollup: 2.79.1
       sass: 1.61.0
@@ -15486,7 +15533,7 @@ packages:
       tinybench: 2.5.0
       tinypool: 0.3.1
       tinyspy: 1.1.1
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
       vite-node: 0.26.2(@types/node@18.16.17)
     transitivePeerDependencies:
       - less
@@ -15551,7 +15598,7 @@ packages:
       strip-literal: 1.0.1
       tinybench: 2.5.0
       tinypool: 0.5.0
-      vite: 3.2.5(@types/node@18.16.17)
+      vite: 3.2.5(@types/node@18.16.17)(sass@1.61.0)
       vite-node: 0.31.4(@types/node@18.16.17)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
