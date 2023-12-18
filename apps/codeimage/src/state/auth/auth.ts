@@ -1,9 +1,9 @@
 import {Auth0Provider} from '@codeimage/store/auth/providers/auth0.provider';
 import {HankoPasskeyAuthProvider} from '@codeimage/store/auth/providers/hanko-passkey.provider';
-import {auth0, createAuth0Client} from '@core/constants/auth0';
+import {createAuth0Client} from '@core/constants/auth0';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {defineSignal} from 'statebuilder';
-import {LoginDialog} from '../../components/Toolbar/LoginDialog';
+import {LoginDialog} from '../../components/Toolbar/LoginDialog/LoginDialog';
 import {UserInfoResponse} from '../../data-access/user';
 
 export interface AuthState {
@@ -63,6 +63,8 @@ export const AuthState = defineSignal<AuthState>(() => ({
     }
   };
 
+  const openDialog = createControlledDialog();
+
   return {
     init,
     getToken: () => currentProvider().getJwt(),
@@ -72,7 +74,6 @@ export const AuthState = defineSignal<AuthState>(() => ({
       localStorage.removeItem('auth_strategy');
     },
     openLoginPopup() {
-      const openDialog = createControlledDialog();
       return openDialog(LoginDialog, {});
     },
     providers: {

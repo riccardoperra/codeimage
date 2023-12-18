@@ -10,17 +10,13 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@codeui/kit';
-import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {Show} from 'solid-js';
-import {LoginDialog} from '../Toolbar/LoginDialog';
 import * as styles from './UserBadge.css';
 
 export function UserBadge() {
   const authState = provideAppState(AuthState);
   const user = () => authState().user;
   const profileImage = () => user()?.picture;
-
-  const openDialog = createControlledDialog();
 
   const initials = () => {
     const userValue = user();
@@ -35,7 +31,7 @@ export function UserBadge() {
   return (
     <Show
       fallback={
-        <Button theme={'secondary'} onClick={() => openDialog(LoginDialog, {})}>
+        <Button theme={'secondary'} onClick={() => authState.openLoginPopup()}>
           Login
         </Button>
       }

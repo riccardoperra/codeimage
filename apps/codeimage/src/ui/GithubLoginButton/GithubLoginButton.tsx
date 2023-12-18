@@ -19,16 +19,14 @@ export function GithubLoginButton() {
   const modality = useModality();
   return (
     <Button
-      size={'sm'}
+      size={'lg'}
       class={styles.button}
+      leftIcon={<GithubIcon size={'md'} />}
       onClick={() => appState.providers.auth0.loginWithGithub()}
     >
-      <GithubIcon size={'md'} />
-      <Box as={'span'} marginLeft={2}>
-        <Show fallback={'Sign in'} when={modality === 'full'} keyed={true}>
-          Sign in with GitHub
-        </Show>
-      </Box>
+      <Show fallback={'Sign in'} when={modality === 'full'} keyed={true}>
+        Login with GitHub
+      </Show>
     </Button>
   );
 }
