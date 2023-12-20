@@ -1,5 +1,15 @@
 import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
+import {FastifySchema} from 'fastify';
+import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+
+const schema = {
+  params: Type.Object({
+    credentialId: Type.String(),
+  }),
+} satisfies FastifySchema;
+
+export type DeleteCredentialApi = GetApiTypes<typeof schema>;
 
 const route: FastifyPluginAsyncTypebox = async fastify => {
   fastify.addHook(
@@ -7,7 +17,7 @@ const route: FastifyPluginAsyncTypebox = async fastify => {
     fastify.authorize({mustBeAuthenticated: true}),
   );
   fastify.delete(
-    '/credentials',
+    '/credentials/:credentialId',
     {
       schema: {
         params: Type.Object({
@@ -16,7 +26,9 @@ const route: FastifyPluginAsyncTypebox = async fastify => {
       },
     },
     async request => {
-      return fastify.passkeysApi.credential(request.params.credentialId);
+      return fastify.passkeysApi
+        .credential(request.params.credentialId)
+        .remove();
     },
   );
 };

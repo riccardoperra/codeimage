@@ -9,7 +9,7 @@ export const titleLogin = style({
   flexDirection: 'column',
   gap: themeTokens.spacing['4'],
   alignItems: 'center',
-  marginTop: themeTokens.spacing['8'],
+  marginTop: themeTokens.spacing['6'],
 });
 
 export const loginBox = style({
@@ -17,7 +17,6 @@ export const loginBox = style({
   flexDirection: 'column',
   gap: themeTokens.spacing['2'],
   marginTop: themeTokens.spacing['12'],
-  marginBottom: themeTokens.spacing['12'],
 });
 
 export const closeIcon = style({
@@ -37,4 +36,8 @@ const backdropFilter = keyframes({
 
 globalStyle('div[data-panel-size]:has(div[id=loginDialog-content])', {
   animation: `${backdropFilter} 150ms normal forwards ease-in-out`,
+});
+
+globalStyle('[data-cui-theme=dark] div[id=loginDialog-content]', {
+  background: themeVars.accent1,
 });

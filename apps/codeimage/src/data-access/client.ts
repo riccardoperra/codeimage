@@ -17,6 +17,7 @@ export interface Schema {
 export async function makeFetch(
   input: RequestInfo,
   requestParams: Omit<RequestInit, keyof RequestParams> & RequestParams,
+  withAuthentication = true,
 ): Promise<Response> {
   const {forceLogin} = getAuth0State();
   const {getToken, loggedIn} = provideAppState(AuthState);
@@ -24,8 +25,7 @@ export async function makeFetch(
   let url = typeof input === 'string' ? input : input.url;
   const headers = new Headers();
   const request: RequestInit = {...(requestParams as RequestInit)};
-
-  if (loggedIn()) {
+  if (withAuthentication && loggedIn()) {
     try {
       const token = await getToken();
       if (token) {

@@ -51,19 +51,23 @@ const route: FastifyPluginAsyncTypebox = async fastify => {
     fastify.log.info(
       `Finalize passkey login for user with id ${request.body.id}`,
     );
-    return fastify.passkeysApi.login.finalize({
-      id: request.body.id,
-      type: request.body.type,
-      clientExtensionResults: request.body.clientExtensionResults,
-      authenticatorAttachment: request.body.authenticatorAttachment,
-      rawId: request.body.rawId,
-      response: {
-        clientDataJSON: request.body.response.clientDataJSON,
-        signature: request.body.response.signature,
-        userHandle: request.body.response.userHandle,
-        authenticatorData: request.body.response.authenticatorData,
-      },
-    });
+    try {
+      return await fastify.passkeysApi.login.finalize({
+        id: request.body.id,
+        type: request.body.type,
+        clientExtensionResults: request.body.clientExtensionResults,
+        authenticatorAttachment: request.body.authenticatorAttachment,
+        rawId: request.body.rawId,
+        response: {
+          clientDataJSON: request.body.response.clientDataJSON,
+          signature: request.body.response.signature,
+          userHandle: request.body.response.userHandle,
+          authenticatorData: request.body.response.authenticatorData,
+        },
+      });
+    } catch (e) {
+      throw fastify.httpErrors.unauthorized(e.originalError.details);
+    }
   });
 };
 

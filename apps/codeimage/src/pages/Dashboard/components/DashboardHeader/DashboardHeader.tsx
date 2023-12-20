@@ -3,6 +3,7 @@ import {CodeImageLogoV2} from '../../../../components/Icons/CodeImageLogoV2';
 import {sidebarLogo} from '../../../../components/Scaffold/Sidebar/Sidebar.css';
 import {actionBox} from '../../../../components/Toolbar/Toolbar.css';
 import {ToolbarSettingsButton} from '../../../../components/Toolbar/ToolbarSettings';
+import {ProfileBadge} from '../../../../components/UserBadge/ProfileBadge';
 import {UserBadge} from '../../../../components/UserBadge/UserBadge';
 import * as styles from './DashboardHeader.css';
 
@@ -20,7 +21,7 @@ export function DashboardHeader() {
 
         <Box class={actionBox} flexGrow={1}>
           <HStack spacing={'2'} marginLeft={'auto'}>
-            <UserBadge />
+            <ProfileBadge />
           </HStack>
         </Box>
       </div>

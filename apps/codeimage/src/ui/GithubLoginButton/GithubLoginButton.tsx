@@ -19,7 +19,7 @@ export function GithubLoginButton() {
   const modality = useModality();
   return (
     <Button
-      size={'lg'}
+      size={'md'}
       class={styles.button}
       leftIcon={<GithubIcon size={'md'} />}
       onClick={() => appState.providers.auth0.loginWithGithub()}

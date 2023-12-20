@@ -15,4 +15,5 @@ export type {
   PasskeyStartLoginApi,
   PasskeyFinalizeLoginApi,
   UserInfoApi,
+  DeleteCredentialApi,
 } from '../src/schemas/index';

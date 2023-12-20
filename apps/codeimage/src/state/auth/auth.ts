@@ -92,6 +92,9 @@ export const AuthState = defineSignal<AuthState>(() => ({
           }
           window.location.reload();
         },
+        registerPasskey: async () => {
+          await providers.hankoPasskey.registerPasskey();
+        },
       },
     },
   };

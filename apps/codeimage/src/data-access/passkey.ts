@@ -24,16 +24,46 @@ export async function finalizePasskeyRegistration(
 export async function startPasskeyLogin(): Promise<
   ApiTypes.PasskeyStartLoginApi['response']
 > {
-  return makeFetch(`${BASE_URL}/api/v1/passkey/start-login`, {
-    method: 'POST',
-  }).then(res => res.json());
+  return makeFetch(
+    `${BASE_URL}/api/v1/passkey/start-login`,
+    {
+      method: 'POST',
+    },
+    false,
+  ).then(res => res.json());
 }
 
 export async function finalizePasskeyLogin(
   body: ApiTypes.PasskeyFinalizeLoginApi['request']['body'],
 ): Promise<ApiTypes.PasskeyFinalizeLoginApi['response']> {
-  return makeFetch(`${BASE_URL}/api/v1/passkey/finalize-login`, {
-    method: 'POST',
-    body,
+  return makeFetch(
+    `${BASE_URL}/api/v1/passkey/finalize-login`,
+    {
+      method: 'POST',
+      body,
+    },
+    false,
+  ).then(res => res.json());
+}
+
+export async function listPasskeys(): Promise<
+  ApiTypes.PasskeyStartLoginApi['response'][]
+> {
+  return makeFetch(`${BASE_URL}/api/v1/passkey/credentials`, {
+    method: 'GET',
   }).then(res => res.json());
+}
+
+export async function deletePasskey(
+  data: ApiTypes.DeleteCredentialApi['request'],
+): Promise<ApiTypes.PasskeyStartLoginApi['response']> {
+  return makeFetch(
+    `${BASE_URL}/api/v1/passkey/credentials/:id`.replace(
+      ':id',
+      data.params!.credentialId,
+    ),
+    {
+      method: 'DELETE',
+    },
+  ).then(res => res.json());
 }

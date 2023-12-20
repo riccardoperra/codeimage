@@ -1,10 +1,12 @@
-import {createPasskeyState} from '@codeimage/store/auth/passkey/hankoPasskeyState';
 import * as webauthn from '@github/webauthn-json';
 import {cookieStorage} from '@solid-primitives/storage';
 import {jwtDecode} from 'jwt-decode';
+import {of} from 'rxjs';
 import {
   finalizePasskeyLogin,
+  finalizePasskeyRegistration,
   startPasskeyLogin,
+  startPasskeyRegistration,
 } from '../../../data-access/passkey';
 import {getUserInfo} from '../../../data-access/user';
 
@@ -42,14 +44,35 @@ export class HankoPasskeyAuthProvider {
       return null;
     }
     const {token} = response;
+    const session = this.getSessionFromToken(token);
+    this.state.setJwtSession(token);
+    return session;
+  }
+
+  async getSessionFromToken(token: string) {
     const jwtClaims = JSON.parse(atob(token.split('.')[1]));
-    const session = {
+    return {
       jwt: token,
       expirationSeconds: jwtClaims.exp,
       userID: jwtClaims.sub,
     };
-    this.state.setJwtSession(token);
-    return session;
+  }
+
+  async registerPasskey(): Promise<{token?: string | undefined}> {
+    try {
+      const credentials = await startPasskeyRegistration();
+      const attestation = await webauthn.create(credentials as any);
+      const response = await finalizePasskeyRegistration(attestation);
+      if (!response || !response.token) {
+        this.state.setJwtSession(null);
+        return response;
+      }
+      this.state.setJwtSession(response.token);
+      return response;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
 
   checkSession(): SessionDetail | null {
