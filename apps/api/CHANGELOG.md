@@ -1,5 +1,11 @@
 # @codeimage/api
 
+## 0.3.2
+
+### Patch Changes
+
+- [#587](https://github.com/riccardoperra/codeimage/pull/587) [`779c8813`](https://github.com/riccardoperra/codeimage/commit/779c8813627a45102f04d39fdeea42d0b869082c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix api test
+
 ## 0.3.1
 
 ### Patch Changes
