@@ -32,6 +32,7 @@ export const CodeImageLogoV2 = (
         <style>
           {`.cls-1 { fill: ${color} } .cls-2 { fill: url(#codeimage-gradient-blue); }`}
           {`[data-theme-mode=light] .cls-1 { fill: #000 } [data-theme-mode=light] .cls-3 { fill: #fff }`}
+          {`[data-cui-theme=light] .cls-1 { fill: #000 } [data-cui-theme=light] .cls-3 { fill: #fff }`}
         </style>
         <linearGradient
           id="codeimage-gradient-blue"
