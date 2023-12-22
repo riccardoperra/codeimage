@@ -1,5 +1,33 @@
 # @codeimage/app
 
+## 1.5.0
+
+### Minor Changes
+
+- [#591](https://github.com/riccardoperra/codeimage/pull/591) [`f4142d81`](https://github.com/riccardoperra/codeimage/commit/f4142d818b033b3e3da5b6174bc54604db7f6e29) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add new editor frame themes
+
+- [`13655b16`](https://github.com/riccardoperra/codeimage/commit/13655b1673d56464d56f30997b184de1d64e850a) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: implement local system font picker for theme builder #576
+
+### Patch Changes
+
+- [#605](https://github.com/riccardoperra/codeimage/pull/605) [`2395a2c7`](https://github.com/riccardoperra/codeimage/commit/2395a2c7f12385c30ff8d36b012e5c61f75a1882) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: refactor combobox with kobalte
+
+- [#596](https://github.com/riccardoperra/codeimage/pull/596) [`ce94a3f1`](https://github.com/riccardoperra/codeimage/commit/ce94a3f17fffdd0e2e758f666a248e0217f3bce1) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: add inter font on node export result
+
+- [#604](https://github.com/riccardoperra/codeimage/pull/604) [`e4f58de5`](https://github.com/riccardoperra/codeimage/commit/e4f58de5bf87823849ffe3585d1a1b6024bee3b5) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: add default font weight for local system fonts if not found
+
+- [#589](https://github.com/riccardoperra/codeimage/pull/589) [`953a0811`](https://github.com/riccardoperra/codeimage/commit/953a081191928079fe92efaa6c37de9a7f889a7c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add xcode light/dark theme
+
+- [`95548187`](https://github.com/riccardoperra/codeimage/commit/955481875ee1318e518f533ff379e9bc623d8059) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix CodeImage logo on light mode
+
+- [#599](https://github.com/riccardoperra/codeimage/pull/599) [`eaaf8a3e`](https://github.com/riccardoperra/codeimage/commit/eaaf8a3e412e2b14241a7bb082b2207d02d58e5a) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add in-app changelog and feature flag versions
+
+- Updated dependencies [[`779c8813`](https://github.com/riccardoperra/codeimage/commit/779c8813627a45102f04d39fdeea42d0b869082c), [`ce94a3f1`](https://github.com/riccardoperra/codeimage/commit/ce94a3f17fffdd0e2e758f666a248e0217f3bce1), [`dc55fe03`](https://github.com/riccardoperra/codeimage/commit/dc55fe0355f8cc37a62af142e74b88bbe2266746), [`953a0811`](https://github.com/riccardoperra/codeimage/commit/953a081191928079fe92efaa6c37de9a7f889a7c)]:
+  - @codeimage/api@0.3.2
+  - @codeimage/dom-export@1.11.3
+  - @codeimage/highlight@0.10.8
+  - @codeimage/config@8.2.4
+
 ## 1.4.4
 
 ### Patch Changes

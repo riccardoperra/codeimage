@@ -1,5 +1,11 @@
 # @codeimage/dom-export
 
+## 1.11.3
+
+### Patch Changes
+
+- [#596](https://github.com/riccardoperra/codeimage/pull/596) [`ce94a3f1`](https://github.com/riccardoperra/codeimage/commit/ce94a3f17fffdd0e2e758f666a248e0217f3bce1) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: add inter font on node export result
+
 ## 1.11.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @codeimage/highlight
 
+## 0.10.8
+
+### Patch Changes
+
+- [#595](https://github.com/riccardoperra/codeimage/pull/595) [`dc55fe03`](https://github.com/riccardoperra/codeimage/commit/dc55fe0355f8cc37a62af142e74b88bbe2266746) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add c language
+
+- [#589](https://github.com/riccardoperra/codeimage/pull/589) [`953a0811`](https://github.com/riccardoperra/codeimage/commit/953a081191928079fe92efaa6c37de9a7f889a7c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add xcode light/dark theme
+
 ## 0.10.7
 
 ### Patch Changes
