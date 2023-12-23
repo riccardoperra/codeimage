@@ -61,7 +61,7 @@ export class HankoPasskeyAuthProvider {
   async registerPasskey(): Promise<{token?: string | undefined}> {
     try {
       const credentials = await startPasskeyRegistration();
-      const attestation = await webauthn.create(credentials as any);
+      const attestation = await webauthn.create(credentials);
       const response = await finalizePasskeyRegistration(attestation);
       if (!response || !response.token) {
         this.state.setJwtSession(null);

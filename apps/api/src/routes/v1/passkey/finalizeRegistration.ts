@@ -23,7 +23,7 @@ const PublicKeyCredentialSchema = Type.Intersect([
   Type.Object({
     rawId: Type.String(),
     clientExtensionResults: Type.Object({}, {additionalProperties: true}),
-    authenticatorAttachment: Type.Optional(Type.String()),
+    authenticatorAttachment: Type.String(),
   }),
 ]);
 

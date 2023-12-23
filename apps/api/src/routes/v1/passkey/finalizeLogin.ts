@@ -66,7 +66,7 @@ const route: FastifyPluginAsyncTypebox = async fastify => {
         },
       });
     } catch (e) {
-      throw fastify.httpErrors.unauthorized(e.originalError.details);
+      throw fastify.httpErrors.unauthorized((e as any).originalError.details);
     }
   });
 };
