@@ -116,6 +116,7 @@ export function createTerminalState() {
       showHeader: state.showHeader,
       type: state.type,
       accentVisible: state.accentVisible,
+      borderType: state.borderType,
     };
   };
 
@@ -131,6 +132,7 @@ export function createTerminalState() {
       store.commands.setShowWatermark,
       store.commands.toggleShowHeader,
       store.commands.toggleWatermark,
+      store.commands.setGlassBorderType,
       store.commands.setFromPreset,
     ]),
   ).pipe(

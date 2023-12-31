@@ -39,6 +39,7 @@ const SnippetTerminalUpdateRequestSchema = Type.Object(
     showWatermark: Type.Boolean(),
     textColor: Nullable(Type.String()),
     type: Type.String(),
+    borderType: Nullable(Type.Union([Type.Literal('glass')])),
   },
   {title: 'SnippetTerminalUpdateRequest'},
 );

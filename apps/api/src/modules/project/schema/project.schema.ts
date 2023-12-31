@@ -45,6 +45,7 @@ export const BaseSnippetTerminalSchema = Type.Object({
   showGlassReflection: Type.Boolean(),
   opacity: Type.Number(),
   alternativeTheme: Type.Boolean(),
+  borderType: Nullable(Type.Union([Type.Literal('glass')])),
 });
 
 export const BaseSnippetEditorOptionsSchema = Type.Object({

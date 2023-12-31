@@ -44,6 +44,7 @@ export const SnippetTerminalCreateRequestSchema = Type.Object(
     opacity: Nullable(Type.Number({minimum: 0, maximum: 100, default: 100})),
     showHeader: Type.Boolean(),
     showWatermark: Nullable(Type.Boolean({default: true})),
+    borderType: Nullable(Type.Union([Type.Literal('glass')])),
   },
   {title: 'SnippetTerminalCreateRequest'},
 );

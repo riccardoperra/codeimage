@@ -66,6 +66,7 @@ export type PersistedTerminalState = Pick<
   | 'showGlassReflection'
   | 'opacity'
   | 'alternativeTheme'
+  | 'borderType'
 >;
 
 export interface ProjectEditorPersistedState {
