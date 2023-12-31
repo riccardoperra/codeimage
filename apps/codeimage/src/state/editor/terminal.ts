@@ -26,6 +26,7 @@ export function getInitialTerminalState(): TerminalState {
     textColor: '',
     showWatermark: true,
     showGlassReflection: false,
+    borderType: 'glass',
     opacity: 100,
     alternativeTheme: false,
   };
@@ -46,6 +47,7 @@ export function createTerminalState() {
       toggleWatermark: void;
       setFromPersistedState: PersistedTerminalState;
       setFromPreset: PresetData['terminal'];
+      setGlassBorderType: boolean;
     }>(),
   );
   const store = provideAppState(config);
@@ -95,6 +97,9 @@ export function createTerminalState() {
         state.shadow = shadows.bottom;
       }
       return {...state, ...persistedState};
+    })
+    .hold(store.commands.setGlassBorderType, (value, {set}) => {
+      set('borderType', value ? 'glass' : null);
     });
 
   const mapToStateToPersistState = (

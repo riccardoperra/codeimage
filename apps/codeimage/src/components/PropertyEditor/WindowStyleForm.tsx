@@ -144,6 +144,28 @@ export const WindowStyleForm: ParentComponent = () => {
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
       </PanelRow>
+      <PanelRow
+        for={'frameSelectShadow'}
+        feature={'borderType'}
+        label={t('frame.glassBorderType')}
+      >
+        <TwoColumnPanelRow>
+          <SuspenseEditorItem
+            fallback={<SkeletonLine width={'100%'} height={'24px'} />}
+          >
+            <SegmentedField
+              size={'xs'}
+              adapt
+              value={terminal.state.borderType === 'glass'}
+              onChange={terminal.setGlassBorderType}
+              items={[
+                {label: t('common.yes'), value: true},
+                {label: t('common.no'), value: false},
+              ]}
+            />
+          </SuspenseEditorItem>
+        </TwoColumnPanelRow>
+      </PanelRow>
     </>
   );
 };
