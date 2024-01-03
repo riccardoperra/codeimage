@@ -138,6 +138,14 @@ export function styledHighlight(h: StyledHighlightOptions) {
       // Markdown
       {tag: [t.heading], color: h.keywords, fontWeight: 'bold'},
       {tag: [t.quote], color: h.quote},
+      {
+        tag: [t.inserted],
+        color: '#12af12',
+      },
+      {
+        tag: [t.deleted],
+        color: '#ff226e',
+      },
     ]),
   );
 }
