@@ -1,5 +1,6 @@
-import {IconButton} from '@codeui/kit';
-import {icon} from './DiffCheckbox.css';
+import {IconButton, Tooltip} from '@codeui/kit';
+import {createSignal} from 'solid-js';
+import {icon, tooltip} from './DiffCheckbox.css';
 
 export type DiffCheckboxState = 'added' | 'removed' | 'untouched';
 
@@ -9,6 +10,8 @@ interface DiffCheckboxProps {
 }
 
 export function DiffCheckbox(props: DiffCheckboxProps) {
+  let el!: HTMLButtonElement;
+  const [tooltipOpen, setTooltipOpen] = createSignal(false);
   const statesTransition: Record<DiffCheckboxState, DiffCheckboxState> = {
     added: 'removed',
     removed: 'untouched',
@@ -17,6 +20,9 @@ export function DiffCheckbox(props: DiffCheckboxProps) {
 
   const onClick = (value: DiffCheckboxState) => {
     props.onChange(statesTransition[value]);
+    if (el.matches(':hover').valueOf()) {
+      requestAnimationFrame(() => setTooltipOpen(true));
+    }
   };
 
   const label = () => {
@@ -43,16 +49,28 @@ export function DiffCheckbox(props: DiffCheckboxProps) {
 
   return (
     <div>
-      <IconButton
-        size={'xs'}
+      <Tooltip
+        open={tooltipOpen()}
+        onOpenChange={setTooltipOpen}
+        slotClasses={{
+          content: tooltip,
+        }}
+        placement={'right'}
+        content={title()}
         theme={'secondary'}
-        class={icon()}
-        title={title()}
-        aria-label={title()}
-        onClick={() => onClick(props.value)}
+        openDelay={300}
+        closeDelay={0}
       >
-        {label()}
-      </IconButton>
+        <IconButton
+          ref={el}
+          size={'xs'}
+          class={icon()}
+          aria-label={title()}
+          onClick={() => onClick(props.value)}
+        >
+          {label()}
+        </IconButton>
+      </Tooltip>
     </div>
   );
 }

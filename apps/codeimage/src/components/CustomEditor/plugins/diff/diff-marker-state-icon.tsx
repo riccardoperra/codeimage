@@ -1,18 +1,25 @@
+import {backgroundColorVar} from '@codeimage/ui';
 import {gutter, GutterMarker} from '@codemirror/view';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createRoot, createSignal, onCleanup, Show} from 'solid-js';
 import {diffCheckboxEvents} from './diff-checkbox-events';
+import {colors} from './diff-theme';
 import {DiffCheckboxState} from './DiffCheckbox';
+import * as styles from './diff-marker-state-icon.css';
+
+interface MarkerStateSymbolOption {
+  label: string;
+  color: string;
+}
 
 class MarkerStateIcon extends GutterMarker {
   private dispose: VoidFunction | null = null;
 
-  symbols: Record<DiffCheckboxState, string | null> = {
-    added: '+',
-    removed: '-',
+  symbols: Record<DiffCheckboxState, MarkerStateSymbolOption | null> = {
+    added: {label: '+', color: colors.addLine},
+    removed: {label: '-', color: colors.removeLine},
     untouched: null,
   };
-
-  private lastValue: DiffCheckboxState | null = null;
 
   constructor(public readonly lineNumber: number) {
     super();
@@ -31,37 +38,31 @@ class MarkerStateIcon extends GutterMarker {
     return createRoot(dispose => {
       // eslint-disable-next-line solid/reactivity
       this.dispose = dispose;
-      const [state, setState] = createSignal<DiffCheckboxState>(
-        this.lastValue ?? 'untouched',
-      );
+      // TODO: add initial state
+      const [state, setState] = createSignal<DiffCheckboxState>('untouched');
       const currentSymbol = () => this.symbols[state()];
-      const color = () =>
-        currentSymbol() === '-'
-          ? '#ff226e25'
-          : currentSymbol() === '+'
-          ? '#12af1225'
-          : undefined;
 
       const unsubscribe = diffCheckboxEvents.listen(({state, line}) => {
         if (line.number === this.lineNumber) {
           setState(state ?? 'untouched');
-          this.lastValue = state;
         }
       });
 
       onCleanup(() => unsubscribe());
 
       return (
-        <div>
+        <div class={styles.wrapper}>
           <Show fallback={<div />} when={currentSymbol()}>
-            <div
-              style={{
-                'padding-left': '4px',
-                'background-color': color(),
-              }}
-            >
-              {currentSymbol()}
-            </div>
+            {currentSymbol => (
+              <div
+                class={styles.icon}
+                style={assignInlineVars({
+                  [backgroundColorVar]: currentSymbol().color,
+                })}
+              >
+                {currentSymbol()?.label}
+              </div>
+            )}
           </Show>
         </div>
       ) as Node;

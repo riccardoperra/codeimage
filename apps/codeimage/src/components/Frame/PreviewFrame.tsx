@@ -8,6 +8,7 @@ import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboar
 import {createRef} from '@core/helpers/create-ref';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
+  createSignal,
   lazy,
   onMount,
   ParentProps,
@@ -32,9 +33,18 @@ const PreviewExportEditor = lazy(
 );
 
 function PreviewPortal(props: ParentProps) {
+  const [debug, setDebug] = createSignal(false);
+  onMount(() => {
+    // todo: MOVE TO CONFIG
+    (window as any)['debugPreview'] = () => setDebug(!debug());
+  });
+
   return (
     <Portal>
-      <div class={styles.previewPortal}>
+      <div
+        class={styles.previewPortal}
+        style={debug() ? {opacity: 1, 'z-index': 999} : {}}
+      >
         <Suspense fallback={<FrameSkeleton />}>{props.children}</Suspense>
       </div>
     </Portal>

@@ -1,15 +1,15 @@
 import {EditorView} from '@codemirror/view';
 
 export const colors = {
-  remove: '#ff226e',
-  add: '#12af12',
+  removeLine: 'hsla(339, 100%, 57%, 25%)',
+  addLine: 'hsl(120, 81%, 38%, 25%)',
 };
 
 export const diffTheme = EditorView.theme({
   '.cm-remove-line': {
-    backgroundColor: `${colors.remove}25`,
+    backgroundColor: colors.removeLine,
   },
   '.cm-add-line': {
-    backgroundColor: `${colors.add}25`,
+    backgroundColor: colors.addLine,
   },
 });
