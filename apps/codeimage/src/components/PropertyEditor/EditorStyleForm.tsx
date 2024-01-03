@@ -45,7 +45,7 @@ export const EditorStyleForm: ParentComponent = () => {
       setFontWeight,
       setFontId,
       setEnableLigatures,
-      setEnableDiff,
+      setShowDiff,
     },
     computed: {selectedFont},
   } = getRootEditorStore();
@@ -219,8 +219,8 @@ export const EditorStyleForm: ParentComponent = () => {
                 >
                   <Checkbox
                     size={'md'}
-                    checked={state.options.enableDiff}
-                    onChange={setEnableDiff}
+                    checked={state.options.showDiffMode}
+                    onChange={setShowDiff}
                   />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>

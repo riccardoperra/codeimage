@@ -2,8 +2,8 @@ import {backgroundColorVar} from '@codeimage/ui';
 import {gutter, GutterMarker} from '@codemirror/view';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createRoot, createSignal, onCleanup, Show} from 'solid-js';
-import {diffCheckboxEvents} from './diffCheckboxEvents';
-import {colors} from './diffTheme';
+import {events} from './events';
+import {colors} from './theme';
 import {DiffCheckboxState} from './DiffCheckbox';
 import * as styles from './diffMarkerStateIcon.css';
 
@@ -12,7 +12,7 @@ interface MarkerStateSymbolOption {
   color: string;
 }
 
-class MarkerStateIcon extends GutterMarker {
+export class DiffGutterMarkerStateIcon extends GutterMarker {
   private dispose: VoidFunction | null = null;
 
   symbols: Record<DiffCheckboxState, MarkerStateSymbolOption | null> = {
@@ -30,7 +30,7 @@ class MarkerStateIcon extends GutterMarker {
     this.dispose?.();
   }
 
-  eq(other: MarkerStateIcon): boolean {
+  eq(other: DiffGutterMarkerStateIcon): boolean {
     return other.lineNumber === this.lineNumber;
   }
 
@@ -42,7 +42,7 @@ class MarkerStateIcon extends GutterMarker {
       const [state, setState] = createSignal<DiffCheckboxState>('untouched');
       const currentSymbol = () => this.symbols[state()];
 
-      const unsubscribe = diffCheckboxEvents.listen(({state, line}) => {
+      const unsubscribe = events.listen(({state, line}) => {
         if (line.number === this.lineNumber) {
           setState(state ?? 'untouched');
         }
@@ -69,15 +69,3 @@ class MarkerStateIcon extends GutterMarker {
     });
   }
 }
-
-export const diffMarkerStateIconGutterExtension = [
-  gutter({
-    class: 'cm-checkboxMarkerStateIconGutter',
-    renderEmptyElements: true,
-    lineMarker(view, line) {
-      return new MarkerStateIcon(view.state.doc.lineAt(line.from).number);
-    },
-    lineMarkerChange: () => false,
-    widgetMarker: () => null,
-  }),
-];

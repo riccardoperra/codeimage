@@ -1,6 +1,7 @@
 import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
 import {EditorView} from '@codemirror/view';
 import {tags} from '@lezer/highlight';
+import {diffExtensionConstants} from './state';
 
 export const colors = {
   removeLine: 'hsla(339, 100%, 57%, 25%)',
@@ -9,12 +10,14 @@ export const colors = {
   addToken: 'hsl(120, 81%, 38%, 100%)',
 };
 
-export const diffTheme = [
+const dataAttrRemoved = `${diffExtensionConstants.decoratedLineDataAttribute}=${diffExtensionConstants.lineDeleted}`;
+const dataAttrAdded = `${diffExtensionConstants.decoratedLineDataAttribute}=${diffExtensionConstants.lineInserted}`;
+export const theme = [
   EditorView.theme({
-    '.cm-remove-line': {
+    [`.cm-line[${dataAttrRemoved}]`]: {
       backgroundColor: colors.removeLine,
     },
-    '.cm-add-line': {
+    [`.cm-line[${dataAttrAdded}]`]: {
       backgroundColor: colors.addLine,
     },
   }),

@@ -28,7 +28,7 @@ It will ask you for a name of for the theme.
 The script will do the following:
 
 - Creates a new folder in the [`src/lib/themes`](./src/lib/themes) folder with the name you used.
-- Generate a `index.ts` and `{{yourTheme}}.ts` file in the new folder.
+- Generate a `extension.ts` and `{{yourTheme}}.ts` file in the new folder.
 - Automatically add the `export` and `typesVersion` entry in the [package.json](./package.json)
 
 ## Available themes
