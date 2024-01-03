@@ -33,6 +33,7 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
   return {
     themeId: 'vsCodeDarkTheme',
     showLineNumbers: false,
+    lineNumbersStart: 0,
     fontId: appEnvironment.defaultState.editor.font.id,
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
     focused: false,
@@ -56,6 +57,7 @@ export function createEditorsStore() {
       setThemeId: string;
       setFontWeight: number;
       setShowLineNumbers: boolean;
+      setLineNumbersStart: number;
       setFromPersistedState: PersistedEditorState;
       setFromPreset: PresetData['editor'];
       setEnableLigatures: boolean;
@@ -88,9 +90,16 @@ export function createEditorsStore() {
     .hold(store.commands.setFontWeight, (fontWeight, {set}) =>
       set('options', 'fontWeight', fontWeight),
     )
-    .hold(store.commands.setShowLineNumbers, (showLineNumbers, {set}) =>
-      set('options', 'showLineNumbers', showLineNumbers),
-    )
+    .hold(store.commands.setShowLineNumbers, (showLineNumbers, {set}) => {
+      set('options', 'showLineNumbers', showLineNumbers);
+      if (!showLineNumbers) {
+        set('options', 'lineNumbersStart', 0);
+      }
+    })
+    .hold(store.commands.setLineNumbersStart, (lineNumberStart, {set}) => {
+      if (!lineNumberStart) lineNumberStart = 0;
+      set('options', 'lineNumbersStart', lineNumberStart);
+    })
     .hold(store.commands.setEnableLigatures, (enable, {set}) =>
       set('options', 'enableLigatures', enable),
     )

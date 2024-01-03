@@ -6,7 +6,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {Checkbox, createSelectOptions, Select} from '@codeui/kit';
+import {Checkbox, createSelectOptions, Select, TextField} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
@@ -46,6 +46,7 @@ export const EditorStyleForm: ParentComponent = () => {
       setFontId,
       setEnableLigatures,
       setEnableDiff,
+      setLineNumbersStart,
     },
     computed: {selectedFont},
   } = getRootEditorStore();
@@ -211,6 +212,33 @@ export const EditorStyleForm: ParentComponent = () => {
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
+
+            <Show when={state.options.showLineNumbers}>
+              <PanelRow
+                for={'frameLineNumbersField'}
+                label={'Line number start'}
+              >
+                <TwoColumnPanelRow>
+                  <SuspenseEditorItem
+                    fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                  >
+                    <TextField
+                      size={'sm'}
+                      value={String(state.options.lineNumbersStart)}
+                      onChange={value =>
+                        setLineNumbersStart(parseInt(value, 10))
+                      }
+                      ref={el =>
+                        setTimeout(() => {
+                          el.type = 'number';
+                          el.step = '1';
+                        })
+                      }
+                    />
+                  </SuspenseEditorItem>
+                </TwoColumnPanelRow>
+              </PanelRow>
+            </Show>
 
             <PanelRow for={'frameLineShowDiff'} label={'Show diff'}>
               <TwoColumnPanelRow>

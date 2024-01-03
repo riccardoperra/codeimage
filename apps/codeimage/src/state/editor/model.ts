@@ -4,6 +4,7 @@ export interface EditorUIOptions {
   fontId: string;
   fontWeight: number;
   showLineNumbers: boolean;
+  lineNumbersStart: number;
   focused: boolean;
   themeId: string;
   enableDiff: boolean;
@@ -32,7 +33,10 @@ export interface EditorUIOptions {
 }
 
 export interface PersistedEditorState {
-  readonly options: Omit<EditorUIOptions, 'focused' | 'enableDiff'>;
+  readonly options: Omit<
+    EditorUIOptions,
+    'focused' | 'enableDiff' | 'lineNumbersStart'
+  >;
   readonly editors: {
     id: string;
     code: string;

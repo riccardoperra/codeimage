@@ -183,29 +183,18 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(() => customFontExtension());
   createExtension(currentLanguage);
   createExtension(currentExtraLanguage);
-  createExtension(() =>
-    editorState.options.showLineNumbers ? lineNumbers() : [],
-  );
+
+  createExtension(() => {
+    const lineNumberStart = editorState.options.lineNumbersStart;
+    const options =
+      lineNumberStart === 0
+        ? {}
+        : {formatNumber: (el: number) => String(el + (lineNumberStart - 1))};
+    return editorState.options.showLineNumbers ? lineNumbers(options) : [];
+  });
+
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
-
-  createExtension(() =>
-    EditorView.updateListener.of(vu => {
-      const addLines = new Set<number>();
-      const removeLines = new Set<number>();
-      const lines = [...vu.state.doc].map((doc, index) => ({
-        text: doc,
-        line: index,
-      }));
-      lines.forEach((line, index) => {
-        if (line.text.startsWith('+')) {
-          addLines.add(index);
-        } else if (line.text.startsWith('-')) {
-          removeLines.add(index);
-        }
-      });
-    }),
-  );
 
   createExtension(() =>
     editorState.options.enableDiff
