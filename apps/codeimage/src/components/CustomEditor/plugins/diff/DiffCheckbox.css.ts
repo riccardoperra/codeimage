@@ -12,5 +12,8 @@ export const icon = recipe({
   base: {
     width: '20px',
     height: '20px',
+    ':active': {
+      transform: 'scale(1) !important',
+    },
   },
 });
