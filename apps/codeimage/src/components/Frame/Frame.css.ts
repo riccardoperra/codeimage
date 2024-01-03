@@ -63,6 +63,12 @@ export const previewPortal = style({
   height: 'auto',
   opacity: 0,
   transformOrigin: 'left top',
+  selectors: {
+    '&[data-dev-mode]': {
+      opacity: 1,
+      zIndex: 999,
+    },
+  },
 });
 
 export const container = style([

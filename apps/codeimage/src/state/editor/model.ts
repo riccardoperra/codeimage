@@ -6,6 +6,7 @@ export interface EditorUIOptions {
   showLineNumbers: boolean;
   focused: boolean;
   themeId: string;
+  showDiffMode: boolean;
 }
 
 export interface TabState {

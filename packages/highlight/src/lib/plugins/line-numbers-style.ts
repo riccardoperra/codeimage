@@ -6,6 +6,6 @@ export interface StyledLineNumbersOptions {
 
 export function styledLineNumbers(options: StyledLineNumbersOptions) {
   return EditorView.theme({
-    '.cm-lineNumbers .cm-gutterElement': {color: options.color},
+    '.cm-gutter .cm-gutterElement': {color: options.color},
   });
 }

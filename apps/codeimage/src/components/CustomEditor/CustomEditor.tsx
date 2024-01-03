@@ -35,6 +35,7 @@ import {
   VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
+import {diffMarkerExtension} from './plugins/diff/diffCheckboxMarker';
 
 const EDITOR_BASE_SETUP: Extension = [
   highlightSpecialChars(),
@@ -172,9 +173,14 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(() => customFontExtension());
   createExtension(currentLanguage);
   createExtension(currentExtraLanguage);
-  createExtension(() =>
-    editorState.options.showLineNumbers ? lineNumbers() : [],
-  );
+  createExtension(() => {
+    return [
+      editorState.options.showDiffMode
+        ? diffMarkerExtension({readOnly: props.readOnly})
+        : [],
+      editorState.options.showLineNumbers ? lineNumbers() : [],
+    ];
+  });
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
 
