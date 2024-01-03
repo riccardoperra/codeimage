@@ -1,13 +1,5 @@
-import {
-  As,
-  Listbox,
-  IconButton,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  SvgIcon,
-} from '@codeui/kit';
-import {createSignal} from 'solid-js';
+import {IconButton} from '@codeui/kit';
+import {icon} from './DiffCheckbox.css';
 
 export type DiffCheckboxState = 'added' | 'removed' | 'untouched';
 
@@ -17,56 +9,50 @@ interface DiffCheckboxProps {
 }
 
 export function DiffCheckbox(props: DiffCheckboxProps) {
-  const [open, setOpen] = createSignal(false);
+  const statesTransition: Record<DiffCheckboxState, DiffCheckboxState> = {
+    added: 'removed',
+    removed: 'untouched',
+    untouched: 'added',
+  };
+
+  const onClick = (value: DiffCheckboxState) => {
+    props.onChange(statesTransition[value]);
+  };
+
+  const label = () => {
+    switch (props.value) {
+      case 'added':
+        return '+';
+      case 'removed':
+        return '-';
+      case 'untouched':
+        return null;
+    }
+  };
+
+  const title = () => {
+    switch (props.value) {
+      case 'added':
+        return 'Set to removed';
+      case 'removed':
+        return 'Set to untouched';
+      case 'untouched':
+        return 'Set to added';
+    }
+  };
+
   return (
-    <Popover open={open()} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <As
-          component={IconButton}
-          theme={'tertiary'}
-          variant={'ghost'}
-          size={'xs'}
-          style={{
-            width: '24px',
-            height: '24px',
-          }}
-          aria-label={'Line options'}
-        >
-          <SvgIcon viewBox="0 0 20 20" fill="currentColor" size={'12px'}>
-            <path
-              fill-rule="evenodd"
-              d="M19 5.5a4.5 4.5 0 0 1-4.791 4.49c-.873-.055-1.808.128-2.368.8l-6.024 7.23a2.724 2.724 0 1 1-3.837-3.837L9.21 8.16c.672-.56.855-1.495.8-2.368a4.5 4.5 0 0 1 5.873-4.575c.324.105.39.51.15.752L13.34 4.66a.455.455 0 0 0-.11.494 3.01 3.01 0 0 0 1.617 1.617c.17.07.363.02.493-.111l2.692-2.692c.241-.241.647-.174.752.15.14.435.216.9.216 1.382ZM4 17a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-              clip-rule="evenodd"
-            />
-          </SvgIcon>
-        </As>
-      </PopoverTrigger>
-      <PopoverContent>
-        <Listbox
-          onKeyDown={evt => {
-            if (evt.key === 'Escape') {
-              setOpen(false);
-            }
-          }}
-          value={[props.value]}
-          autoFocus
-          selectionMode={'single'}
-          size={'md'}
-          disallowEmptySelection={true}
-          optionValue={item => item.value}
-          optionTextValue={item => item.label}
-          options={[
-            {label: 'Line added', value: 'added'},
-            {label: 'Line removed', value: 'removed'},
-            {label: 'Line untouched', value: 'untouched'},
-          ]}
-          itemLabel={item => item.label}
-          onChange={value => {
-            props.onChange(value.values().next().value as DiffCheckboxState);
-            setOpen(false);
-          }}
-        />
-      </PopoverContent>
-    </Popover>
+    <div>
+      <IconButton
+        size={'xs'}
+        theme={'secondary'}
+        class={icon()}
+        title={title()}
+        aria-label={title()}
+        onClick={() => onClick(props.value)}
+      >
+        {label()}
+      </IconButton>
+    </div>
   );
 }

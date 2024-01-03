@@ -62,7 +62,7 @@ export default function PreviewExportEditor(props: PreviewExportEditorProps) {
     if (!value) return;
   });
 
-  const reconfigure = createCompartmentExtension(
+  createCompartmentExtension(
     () => diffMarkerStateIconGutterExtension,
     editorView,
   );
