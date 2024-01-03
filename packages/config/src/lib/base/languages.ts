@@ -662,7 +662,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   },
   {
     id: 'git-patch',
-    label: 'Git Diff',
+    label: 'Patch',
     color: '#fff',
     plugin: () =>
       Promise.all([

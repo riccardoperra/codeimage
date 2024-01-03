@@ -19,8 +19,9 @@ interface CanvasEditorProps {
   readOnly: boolean;
 }
 
+export const [editorView, setEditorView] = createSignal<EditorView>();
+export const globalEditorView = editorView;
 export default function CanvasEditor(props: CanvasEditorProps) {
-  const [editorView, setEditorView] = createSignal<EditorView>();
   const activeEditorStore = getActiveEditorStore();
   const {
     state: editorState,

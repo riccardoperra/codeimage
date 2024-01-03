@@ -38,7 +38,7 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
     focused: false,
     enableLigatures: true,
-    enableDiff: false,
+    enableDiff: true,
   };
 }
 

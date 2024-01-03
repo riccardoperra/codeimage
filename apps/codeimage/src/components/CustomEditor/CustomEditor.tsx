@@ -15,16 +15,9 @@ import {
   indentWithTab,
 } from '@codemirror/commands';
 import {bracketMatching, indentOnInput} from '@codemirror/language';
-import {
-  EditorState,
-  Extension,
-  Facet,
-  RangeSetBuilder,
-} from '@codemirror/state';
+import {EditorState, Extension} from '@codemirror/state';
 import {
   crosshairCursor,
-  Decoration,
-  DecorationSet,
   drawSelection,
   dropCursor,
   EditorView,
@@ -32,10 +25,7 @@ import {
   keymap,
   lineNumbers,
   rectangularSelection,
-  ViewPlugin,
-  ViewUpdate,
 } from '@codemirror/view';
-import {themeTokens, themeVars} from '@codeui/kit';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import {
   createEffect,
@@ -45,7 +35,7 @@ import {
   VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
-import {showDiffLines} from './plugins/diff-line';
+import {diffMarkerExtension} from './plugins/diff/diff-checkbox-marker';
 
 const EDITOR_BASE_SETUP: Extension = [
   highlightSpecialChars(),
@@ -141,6 +131,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       padding: '0 16px 0 8px',
       lineHeight: '21px',
     },
+    '.cm-breakpoint-gutter': {
+      position: 'sticky',
+      flexDirection: 'column',
+      flexShrink: 0,
+    },
     '.cm-line': {
       padding: '0 2px 0 8px',
     },
@@ -190,7 +185,12 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       lineNumberStart === 0
         ? {}
         : {formatNumber: (el: number) => String(el + (lineNumberStart - 1))};
-    return editorState.options.showLineNumbers ? lineNumbers(options) : [];
+    return [
+      editorState.options.enableDiff
+        ? diffMarkerExtension({readOnly: props.readOnly})
+        : [],
+      editorState.options.showLineNumbers ? lineNumbers(options) : [],
+    ];
   });
 
   createExtension(() => themeConfiguration()?.editorTheme || []);
@@ -199,7 +199,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(() =>
     editorState.options.enableDiff
       ? [
-          showDiffLines,
           EditorView.theme({
             '.cm-line': {
               'padding-left': '2rem',
