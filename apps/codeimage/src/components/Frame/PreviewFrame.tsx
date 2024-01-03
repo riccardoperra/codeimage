@@ -40,7 +40,6 @@ function PreviewPortal(props: ParentProps) {
       <div
         data-dev-mode={config.get.devMode ? '' : undefined}
         class={styles.previewPortal}
-        style={config.get.devMode ? {opacity: 1, 'z-index': 999} : {}}
       >
         <Suspense fallback={<FrameSkeleton />}>{props.children}</Suspense>
       </div>

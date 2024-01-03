@@ -1,6 +1,6 @@
 import {StateEffect, StateField} from '@codemirror/state';
 import {Decoration, EditorView} from '@codemirror/view';
-import {events} from './events';
+import {diffEvents} from './diffEvents';
 
 export const diffExtensionConstants = {
   decoratedLineDataAttribute: 'data-diff-line',
@@ -78,7 +78,7 @@ export const diffLineState = StateField.define({
             filter: from => from !== line.from,
           });
         }
-        events.emit({
+        diffEvents.emit({
           state: effect.value.state,
           line: line,
         });

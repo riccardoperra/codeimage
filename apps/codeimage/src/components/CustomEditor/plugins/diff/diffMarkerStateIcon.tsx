@@ -2,7 +2,7 @@ import {backgroundColorVar} from '@codeimage/ui';
 import {gutter, GutterMarker} from '@codemirror/view';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createRoot, createSignal, onCleanup, Show} from 'solid-js';
-import {events} from './events';
+import {diffEvents} from './diffEvents';
 import {colors} from './theme';
 import {DiffCheckboxState} from './DiffCheckbox';
 import * as styles from './diffMarkerStateIcon.css';
@@ -42,7 +42,7 @@ export class DiffGutterMarkerStateIcon extends GutterMarker {
       const [state, setState] = createSignal<DiffCheckboxState>('untouched');
       const currentSymbol = () => this.symbols[state()];
 
-      const unsubscribe = events.listen(({state, line}) => {
+      const unsubscribe = diffEvents.listen(({state, line}) => {
         if (line.number === this.lineNumber) {
           setState(state ?? 'untouched');
         }
@@ -60,7 +60,7 @@ export class DiffGutterMarkerStateIcon extends GutterMarker {
                   [backgroundColorVar]: currentSymbol().color,
                 })}
               >
-                {currentSymbol()?.label}
+                {currentSymbol().label}
               </div>
             )}
           </Show>

@@ -16,7 +16,7 @@ export const diffMarkerControl = (options: DiffMarkerExtensionOptions) => {
   return [
     ...base,
     gutter({
-      class: 'cm-checkboxMarkerExtension',
+      class: 'cm-diffMarkerControlGutter',
       renderEmptyElements: false,
       lineMarker(view, line) {
         return new DiffCheckboxMarker(view.state.doc.lineAt(line.from).number);
@@ -29,7 +29,7 @@ export const diffMarkerControl = (options: DiffMarkerExtensionOptions) => {
 
 export const diffMarkerStateIconGutter = [
   gutter({
-    class: 'cm-checkboxMarkerStateIconGutter',
+    class: 'cm-diffMarkerStateIconGutter',
     renderEmptyElements: true,
     lineMarker(view, line) {
       return new DiffGutterMarkerStateIcon(
