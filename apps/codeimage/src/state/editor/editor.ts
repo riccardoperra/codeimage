@@ -37,6 +37,7 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
     focused: false,
     enableLigatures: true,
+    enableDiff: false,
   };
 }
 
@@ -58,6 +59,7 @@ export function createEditorsStore() {
       setFromPersistedState: PersistedEditorState;
       setFromPreset: PresetData['editor'];
       setEnableLigatures: boolean;
+      setEnableDiff: boolean;
     }>(),
   );
 
@@ -91,6 +93,9 @@ export function createEditorsStore() {
     )
     .hold(store.commands.setEnableLigatures, (enable, {set}) =>
       set('options', 'enableLigatures', enable),
+    )
+    .hold(store.commands.setEnableDiff, (enable, {set}) =>
+      set('options', 'enableDiff', enable),
     )
     .hold(store.commands.setFromPreset, presetData => {
       store.set('options', presetData);

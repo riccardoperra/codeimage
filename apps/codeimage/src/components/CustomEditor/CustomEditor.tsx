@@ -15,9 +15,16 @@ import {
   indentWithTab,
 } from '@codemirror/commands';
 import {bracketMatching, indentOnInput} from '@codemirror/language';
-import {EditorState, Extension} from '@codemirror/state';
+import {
+  EditorState,
+  Extension,
+  Facet,
+  RangeSetBuilder,
+} from '@codemirror/state';
 import {
   crosshairCursor,
+  Decoration,
+  DecorationSet,
   drawSelection,
   dropCursor,
   EditorView,
@@ -25,7 +32,10 @@ import {
   keymap,
   lineNumbers,
   rectangularSelection,
+  ViewPlugin,
+  ViewUpdate,
 } from '@codemirror/view';
+import {themeTokens, themeVars} from '@codeui/kit';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import {
   createEffect,
@@ -35,6 +45,7 @@ import {
   VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
+import {showDiffLines} from './plugins/diff-line';
 
 const EDITOR_BASE_SETUP: Extension = [
   highlightSpecialChars(),
@@ -177,6 +188,43 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   );
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
+
+  createExtension(() =>
+    EditorView.updateListener.of(vu => {
+      const addLines = new Set<number>();
+      const removeLines = new Set<number>();
+      const lines = [...vu.state.doc].map((doc, index) => ({
+        text: doc,
+        line: index,
+      }));
+      lines.forEach((line, index) => {
+        if (line.text.startsWith('+')) {
+          addLines.add(index);
+        } else if (line.text.startsWith('-')) {
+          removeLines.add(index);
+        }
+      });
+    }),
+  );
+
+  createExtension(() =>
+    editorState.options.enableDiff
+      ? [
+          showDiffLines,
+          EditorView.theme({
+            '.cm-line': {
+              'padding-left': '2rem',
+            },
+            '.cm-remove-line': {
+              backgroundColor: '#ff226e25',
+            },
+            '.cm-add-line': {
+              backgroundColor: '#12af1225',
+            },
+          }),
+        ]
+      : [],
+  );
 
   const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);
 

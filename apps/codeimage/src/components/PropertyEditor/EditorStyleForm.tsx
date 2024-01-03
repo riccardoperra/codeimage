@@ -6,7 +6,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {createSelectOptions, Select} from '@codeui/kit';
+import {Checkbox, createSelectOptions, Select} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
@@ -40,7 +40,13 @@ export const EditorStyleForm: ParentComponent = () => {
     getActiveEditorStore();
   const {
     state,
-    actions: {setShowLineNumbers, setFontWeight, setFontId, setEnableLigatures},
+    actions: {
+      setShowLineNumbers,
+      setFontWeight,
+      setFontId,
+      setEnableLigatures,
+      setEnableDiff,
+    },
     computed: {selectedFont},
   } = getRootEditorStore();
 
@@ -201,6 +207,20 @@ export const EditorStyleForm: ParentComponent = () => {
                       {label: t('common.show'), value: true},
                       {label: t('common.hide'), value: false},
                     ]}
+                  />
+                </SuspenseEditorItem>
+              </TwoColumnPanelRow>
+            </PanelRow>
+
+            <PanelRow for={'frameLineShowDiff'} label={'Show diff'}>
+              <TwoColumnPanelRow>
+                <SuspenseEditorItem
+                  fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                >
+                  <Checkbox
+                    size={'md'}
+                    checked={state.options.enableDiff}
+                    onChange={setEnableDiff}
                   />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>

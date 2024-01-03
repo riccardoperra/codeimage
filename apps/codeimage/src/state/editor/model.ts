@@ -6,6 +6,7 @@ export interface EditorUIOptions {
   showLineNumbers: boolean;
   focused: boolean;
   themeId: string;
+  enableDiff: boolean;
 }
 
 export interface TabState {
@@ -31,7 +32,7 @@ export interface EditorUIOptions {
 }
 
 export interface PersistedEditorState {
-  readonly options: Omit<EditorUIOptions, 'focused'>;
+  readonly options: Omit<EditorUIOptions, 'focused' | 'enableDiff'>;
   readonly editors: {
     id: string;
     code: string;
