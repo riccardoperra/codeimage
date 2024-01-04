@@ -17,13 +17,13 @@ rmSync('dist', {
 });
 
 const paths = {
-  'vite-plugin': 'src/vite-plugin/extension.ts',
+  'vite-plugin': 'src/vite-plugin/index.ts',
 };
 
 /** @type {import('rollup').RollupOptions} */
 const options = {
   input: {
-    index: 'src/extension.ts',
+    index: 'src/index.ts',
     ...paths,
   },
   external,
