@@ -36,6 +36,7 @@ import {
 } from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 import {diffMarkerControl} from './plugins/diff/extension';
+import {syntaxHighlightColorDiff} from './plugins/diff/theme';
 
 const EDITOR_BASE_SETUP: Extension = [
   highlightSpecialChars(),
@@ -163,7 +164,9 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       },
     });
   };
-
+  createExtension(() =>
+    selectedLanguage()?.id === 'git-patch' ? syntaxHighlightColorDiff : [],
+  );
   createEditorReadonly(editorView, () => props.readOnly);
   createExtension(EditorView.lineWrapping);
   createExtension(() =>

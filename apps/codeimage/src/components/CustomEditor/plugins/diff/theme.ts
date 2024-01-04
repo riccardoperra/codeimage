@@ -12,6 +12,7 @@ export const colors = {
 
 const dataAttrRemoved = `${diffExtensionConstants.decoratedLineDataAttribute}=${diffExtensionConstants.lineDeleted}`;
 const dataAttrAdded = `${diffExtensionConstants.decoratedLineDataAttribute}=${diffExtensionConstants.lineInserted}`;
+
 export const theme = [
   EditorView.theme({
     [`.cm-line[${dataAttrRemoved}]`]: {
@@ -21,10 +22,11 @@ export const theme = [
       backgroundColor: colors.addLine,
     },
   }),
-  syntaxHighlighting(
-    HighlightStyle.define([
-      {tag: tags.inserted, color: colors.addToken},
-      {tag: tags.deleted, color: colors.removeToken},
-    ]),
-  ),
 ];
+
+export const syntaxHighlightColorDiff = syntaxHighlighting(
+  HighlightStyle.define([
+    {tag: [tags.inserted], color: colors.addToken},
+    {tag: [tags.deleted], color: colors.removeToken},
+  ]),
+);

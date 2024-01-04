@@ -40,7 +40,6 @@ export class DiffGutterMarkerStateIcon extends GutterMarker {
       this.dispose = dispose;
       const [state, setState] = createSignal<DiffCheckboxState>('untouched');
       const currentSymbol = () => this.symbols[state()];
-      console.log('upda');
 
       const unsubscribe = diffPluginEvents.on('syncLine', ({state, line}) => {
         if (line.number === this.lineNumber) {
