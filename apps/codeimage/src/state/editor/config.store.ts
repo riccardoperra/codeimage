@@ -64,9 +64,9 @@ export const EditorConfigStore = defineStore(() => getDefaultConfig())
   .extend(withLocalFontManagementPlugin())
   .extend(_ => {
     const fonts = createMemo(() => _.localFontsApi.state().fonts);
-
+    const toggleDevMode = () => _.set('devMode', debug => !debug);
     onMount(() => {
-      window.toggleDevMode = () => _.set('devMode', debug => !debug);
+      window.toggleDevMode = toggleDevMode;
     });
 
     const buildSystemFontConfiguration = (font: LoadedFont) =>
@@ -88,4 +88,8 @@ export const EditorConfigStore = defineStore(() => getDefaultConfig())
         _.set('systemFonts', fontsConfiguration);
       }),
     );
+
+    return {
+      toggleDevMode,
+    };
   });
