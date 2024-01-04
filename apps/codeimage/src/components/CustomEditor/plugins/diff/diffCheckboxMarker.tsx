@@ -2,7 +2,7 @@ import {EditorView, GutterMarker} from '@codemirror/view';
 import {createRoot, createSignal, onCleanup} from 'solid-js';
 import {DiffCheckbox, DiffCheckboxState} from './DiffCheckbox';
 import {container} from './DiffCheckbox.css';
-import {diffEvents} from './diffEvents';
+import {diffPluginEvents} from './diffEvents';
 import {dispatchUpdateDiffLineState} from './state';
 
 export class DiffCheckboxMarker extends GutterMarker {
@@ -27,7 +27,7 @@ export class DiffCheckboxMarker extends GutterMarker {
       this.dispose = dispose;
       const [value, setValue] = createSignal<DiffCheckboxState>('untouched');
 
-      const unsubscribe = diffEvents.listen(({state, line}) => {
+      const unsubscribe = diffPluginEvents.on('syncLine', ({state, line}) => {
         if (line.number === this.lineNumber) {
           setValue(state ?? 'untouched');
         }

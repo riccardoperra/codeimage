@@ -17,10 +17,10 @@ import {
 import {bracketMatching, indentOnInput} from '@codemirror/language';
 import {EditorState, Extension} from '@codemirror/state';
 import {
+  EditorView,
   crosshairCursor,
   drawSelection,
   dropCursor,
-  EditorView,
   highlightSpecialChars,
   keymap,
   lineNumbers,
@@ -28,11 +28,11 @@ import {
 } from '@codemirror/view';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import {
+  VoidProps,
   createEffect,
   createMemo,
   createResource,
   on,
-  VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 import {diffMarkerControl} from './plugins/diff/extension';
@@ -62,6 +62,7 @@ interface CustomEditorProps {
   readOnly: boolean;
   onEditorViewChange?: (view: EditorView | undefined) => void;
   onValueChange?: (value: string) => void;
+  dispatchTransaction: boolean;
 }
 
 export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
@@ -83,7 +84,9 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     createExtension,
   } = createCodeMirror({
     value: editor()?.code,
-    onTransactionDispatched: tr => canvasEditorEvents.emit(tr),
+    onTransactionDispatched: props.dispatchTransaction
+      ? tr => canvasEditorEvents.emit(tr)
+      : undefined,
     onValueChange: props.onValueChange,
   });
 
@@ -136,8 +139,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     },
     '.cm-cursor': {
       borderLeftWidth: '2px',
-      height: '21px',
-      transform: 'translateY(-10%)',
     },
   });
 
@@ -173,13 +174,14 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(() => customFontExtension());
   createExtension(currentLanguage);
   createExtension(currentExtraLanguage);
+
+  createExtension(() =>
+    editorState.options.showDiffMode
+      ? diffMarkerControl({readOnly: props.readOnly})
+      : [],
+  );
   createExtension(() => {
-    return [
-      editorState.options.showDiffMode
-        ? diffMarkerControl({readOnly: props.readOnly})
-        : [],
-      editorState.options.showLineNumbers ? lineNumbers() : [],
-    ];
+    return editorState.options.showLineNumbers ? lineNumbers() : [];
   });
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);

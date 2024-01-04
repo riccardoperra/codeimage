@@ -1,11 +1,11 @@
 import {backgroundColorVar} from '@codeimage/ui';
-import {gutter, GutterMarker} from '@codemirror/view';
+import {GutterMarker} from '@codemirror/view';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createRoot, createSignal, onCleanup, Show} from 'solid-js';
-import {diffEvents} from './diffEvents';
-import {colors} from './theme';
+import {Show, createRoot, createSignal, onCleanup} from 'solid-js';
 import {DiffCheckboxState} from './DiffCheckbox';
+import {diffPluginEvents} from './diffEvents';
 import * as styles from './diffMarkerStateIcon.css';
+import {colors} from './theme';
 
 interface MarkerStateSymbolOption {
   label: string;
@@ -38,11 +38,11 @@ export class DiffGutterMarkerStateIcon extends GutterMarker {
     return createRoot(dispose => {
       // eslint-disable-next-line solid/reactivity
       this.dispose = dispose;
-      // TODO: add initial state
       const [state, setState] = createSignal<DiffCheckboxState>('untouched');
       const currentSymbol = () => this.symbols[state()];
+      console.log('upda');
 
-      const unsubscribe = diffEvents.listen(({state, line}) => {
+      const unsubscribe = diffPluginEvents.on('syncLine', ({state, line}) => {
         if (line.number === this.lineNumber) {
           setState(state ?? 'untouched');
         }

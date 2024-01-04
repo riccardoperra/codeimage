@@ -1,11 +1,14 @@
 import {Line} from '@codemirror/state';
-import {createEventBus} from '@solid-primitives/event-bus';
-import {createRoot} from 'solid-js';
+import {
+  createEmitter,
+  createEventStack,
+  createGlobalEmitter,
+} from '@solid-primitives/event-bus';
 import {DiffCheckboxState} from './DiffCheckbox';
+import {createRoot} from 'solid-js';
 
-export const diffEvents = createRoot(() =>
-  createEventBus<{
-    state: DiffCheckboxState | null;
-    line: Line;
+export const diffPluginEvents = createRoot(() =>
+  createGlobalEmitter<{
+    syncLine: {state: DiffCheckboxState | null; line: Line};
   }>(),
 );

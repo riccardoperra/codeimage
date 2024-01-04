@@ -8,6 +8,20 @@ interface DiffMarkerExtensionOptions {
   readOnly: boolean;
 }
 
+export const diffMarkerStateIconGutter = [
+  gutter({
+    class: 'cm-diffMarkerStateIconGutter',
+    renderEmptyElements: true,
+    lineMarker(view, line) {
+      return new DiffGutterMarkerStateIcon(
+        view.state.doc.lineAt(line.from).number,
+      );
+    },
+    lineMarkerChange: () => false,
+    widgetMarker: () => null,
+  }),
+];
+
 export const diffMarkerControl = (options: DiffMarkerExtensionOptions) => {
   const base = [diffLineState, theme];
   if (options.readOnly) {
@@ -26,17 +40,3 @@ export const diffMarkerControl = (options: DiffMarkerExtensionOptions) => {
     }),
   ];
 };
-
-export const diffMarkerStateIconGutter = [
-  gutter({
-    class: 'cm-diffMarkerStateIconGutter',
-    renderEmptyElements: true,
-    lineMarker(view, line) {
-      return new DiffGutterMarkerStateIcon(
-        view.state.doc.lineAt(line.from).number,
-      );
-    },
-    lineMarkerChange: () => false,
-    widgetMarker: () => null,
-  }),
-];

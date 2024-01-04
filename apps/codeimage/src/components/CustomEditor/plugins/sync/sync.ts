@@ -1,12 +1,15 @@
 import {Annotation, StateEffect, Transaction} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
-import {editorRegisteredEffects} from '../../registered-effects';
+import {customEffectAnnotation} from '../customEffectAnnotation';
 
-const syncAnnotation = Annotation.define<boolean>();
+export const syncAnnotation = Annotation.define<boolean>();
 
-export function syncDispatch(transaction: Transaction, other: EditorView) {
+export function syncDispatch(
+  transaction: Transaction,
+  other: EditorView,
+): boolean {
   if (transaction.annotation(syncAnnotation)) {
-    return;
+    return false;
   }
   const annotations: Annotation<unknown>[] = [syncAnnotation.of(true)];
   const effects: StateEffect<unknown>[] = [];
@@ -16,16 +19,9 @@ export function syncDispatch(transaction: Transaction, other: EditorView) {
     const userEvent = transaction.annotation(Transaction.userEvent);
     if (userEvent) annotations.push(Transaction.userEvent.of(userEvent));
   }
-  const stateEffects = transaction.effects
-    .filter(effect => !!effect)
-    .filter(effect =>
-      editorRegisteredEffects.some(registeredEffect =>
-        effect.is(registeredEffect),
-      ),
-    );
-  if (stateEffects.length) {
+  if (!!transaction.annotation(customEffectAnnotation)) {
     changed = true;
-    effects.push(...stateEffects);
+    effects.push(...transaction.effects);
   }
   if (changed) {
     other.dispatch({
@@ -34,4 +30,5 @@ export function syncDispatch(transaction: Transaction, other: EditorView) {
       annotations,
     });
   }
+  return changed;
 }

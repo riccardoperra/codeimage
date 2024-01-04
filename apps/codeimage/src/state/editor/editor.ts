@@ -8,7 +8,7 @@ import type {Transaction} from '@codemirror/state';
 import {appEnvironment} from '@core/configuration';
 import {createEventBus} from '@solid-primitives/event-bus';
 import {from, map, shareReplay} from 'rxjs';
-import {createSelector} from 'solid-js';
+import {createSelector, untrack} from 'solid-js';
 import {SetStoreFunction} from 'solid-js/store';
 import {defineStore, provideState} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
@@ -22,6 +22,12 @@ export function getInitialEditorState(): EditorState {
     code: appEnvironment.defaultState.editor.code,
     languageId: appEnvironment.defaultState.editor.languageId,
     formatter: null,
+    metadata: {
+      diff: {
+        deleted: [],
+        inserted: [],
+      },
+    },
     tab: {
       tabName: 'index.tsx',
       tabIcon: undefined,
@@ -37,7 +43,7 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
     focused: false,
     enableLigatures: true,
-    showDiff: true,
+    showDiffMode: true,
   };
 }
 
@@ -110,6 +116,9 @@ export function createEditorsStore() {
           languageId: editor.languageId,
           id: editor.id,
           code: editor.code,
+          metadata: {
+            diff: editor.metadata.diff,
+          },
         }));
       return {
         options: {...state.options, ...persistedState.options},
@@ -120,6 +129,9 @@ export function createEditorsStore() {
             languageId: editor.languageId,
             tab: {tabName: editor.tabName},
             id: editor.id,
+            metadata: {
+              diff: editor.metadata.diff,
+            },
           };
         }),
       };
@@ -142,6 +154,9 @@ export function createEditorsStore() {
           code: editor.code,
           tabName: editor.tab.tabName ?? '',
           id: editor.id,
+          metadata: {
+            diff: editor.metadata.diff,
+          },
         };
       }),
       options: {
@@ -229,6 +244,16 @@ export function createEditorsStore() {
     store.dispatch(editorUpdateCommand, void 0);
   };
 
+  const setTabMetadata = (data: EditorState['metadata']) => {
+    untrack(() => {
+      const index = store.get.editors.findIndex(tab => isActive(tab.id));
+      setEditors(index, 'metadata', {
+        diff: data.diff,
+      });
+    });
+    store.dispatch(editorUpdateCommand, void 0);
+  };
+
   const configuredFonts = () => [
     ...configStore.get.fonts,
     ...configStore.get.systemFonts,
@@ -253,6 +278,7 @@ export function createEditorsStore() {
             languageId: editor.languageId,
             id: editor.id,
             code: editor.code,
+            metadata: editor.metadata,
           } as EditorState),
       ),
     );
@@ -289,6 +315,7 @@ export function createEditorsStore() {
       addEditor,
       removeEditor,
       setTabName,
+      setTabMetadata,
       setFromWorkspace,
       ...store.actions,
       setFontId(fontId: string) {

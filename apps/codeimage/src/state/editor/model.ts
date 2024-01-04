@@ -1,4 +1,5 @@
 import {PersistedFrameState} from '@codeimage/store/frame/model';
+import {DiffLineStateJsonValue} from '../../components/CustomEditor/plugins/diff/state';
 
 export interface EditorUIOptions {
   fontId: string;
@@ -14,12 +15,17 @@ export interface TabState {
   tabIcon?: string;
 }
 
+export interface EditorMetadataState {
+  diff: DiffLineStateJsonValue | null;
+}
+
 export interface EditorState {
   id: string;
   code: string;
   tab: TabState;
   formatter?: string | null;
   languageId: string;
+  metadata: EditorMetadataState;
 }
 
 export interface EditorUIOptions {
@@ -38,6 +44,7 @@ export interface PersistedEditorState {
     code: string;
     tabName: string;
     languageId: string;
+    metadata: EditorState['metadata'];
   }[];
 }
 
