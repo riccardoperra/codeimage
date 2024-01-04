@@ -35,7 +35,7 @@ rmSync('dist', {
 export default defineConfig({
   input: {
     index: 'src/public-api.ts',
-    themes: 'src/lib/themes/extension.ts',
+    themes: 'src/lib/themes/index.ts',
     ...inputs,
   },
   external,
