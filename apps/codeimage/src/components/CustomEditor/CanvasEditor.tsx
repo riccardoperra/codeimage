@@ -78,7 +78,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
 
         const metadata = createMemo(() => activeEditorStore.editor()?.metadata);
 
-        let sendInitEvent = true;
+        let sendInitEvent = false;
         createEffect(
           on(editorView, editorView => {
             if (!editorView) return;
@@ -102,6 +102,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
                       : undefined,
                   );
                 }
+                sendInitEvent = true;
               }),
             );
           }),
