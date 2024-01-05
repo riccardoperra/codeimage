@@ -4,6 +4,7 @@ import {makeFetch} from './client';
 const env = import.meta.env;
 const BASE_URL = env.VITE_API_BASE_URL ?? '';
 
+declare const x: ApiTypes.DeletePresetApi['response'];
 export async function deletePreset(
   request: ApiTypes.DeletePresetApi['request'],
 ): Promise<ApiTypes.DeletePresetApi['response']> {

@@ -6,6 +6,7 @@ import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 const UserInfoSchema = Type.Object({
   id: Type.String(),
   user_id: Type.String(),
+  name: Type.String(),
   email: Type.String(),
   created_at: Type.String({format: 'date-time'}),
   email_verified: Type.Boolean(),
@@ -28,7 +29,7 @@ const route: FastifyPluginAsyncTypebox = async fastify => {
   fastify.get('/info', {schema}, async request => {
     const response = await fastify.auth0Management.usersByEmail.getByEmail({
       email: request.appUser.email,
-      fields: 'user_id,email,created_at,email_verified,picture',
+      fields: 'user_id,name,email,created_at,email_verified,picture',
     });
     return {...response.data[0], id: request.appUser.id} as Static<
       typeof UserInfoSchema

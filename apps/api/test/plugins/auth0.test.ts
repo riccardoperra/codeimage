@@ -5,7 +5,7 @@ import Fastify from 'fastify';
 import fp from 'fastify-plugin';
 import * as sinon from 'sinon';
 import {assert, beforeEach, test, TestContext} from 'vitest';
-import auth0 from '../../src/common/auth/auth0.js';
+import {auth0Plugin as auth0} from '../../src/common/auth/auth0.js';
 import prisma from '../../src/plugins/prisma.js';
 import sensible from '../../src/plugins/sensible.js';
 
@@ -45,25 +45,20 @@ async function build(t: TestContext, options: AppOptions = {mockAuth: false}) {
       await app.register(prisma);
       await app.register(auth0);
 
-      app.get(
-        '/',
-        {preValidation: (req, reply) => app.authorize(req, reply)},
-        async _ => ({
-          response: 'ok',
-          user: _.user,
-          appUser: _.appUser,
-        }),
-      );
+      app.get('/', {preValidation: app.authorize()}, async _ => ({
+        response: 'ok',
+        user: _.user,
+        appUser: _.appUser,
+      }));
 
       app.get(
         '/optional',
         {
-          preValidation: (req, reply) =>
-            app.authorize(req, reply, {mustBeAuthenticated: false}),
+          preValidation: app.authorize({mustBeAuthenticated: false}),
         },
         async _ => ({
           response: 'ok',
-          appUser: _.appUserOptional,
+          appUser: _.appUser,
         }),
       );
     }),

@@ -9,11 +9,7 @@
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
     "target": "ES2022",
-    "typeRoots": [
-      "./src/common/domainFunctions/functions.d.ts"
-    ]
+    "typeRoots": ["./src/common/domainFunctions/functions.d.ts"]
   },
-  "include": [
-    "./src/**/*.ts"
-  ]
+  "include": ["./src/**/*.ts"]
 }
