@@ -1,13 +1,6 @@
 import {AuthState} from '@codeimage/store/auth/auth';
 import {provideAppState} from '@codeimage/store/index';
-import {Box, VStack} from '@codeimage/ui';
-import {
-  Button,
-  Dialog,
-  DialogPanelContent,
-  IconButton,
-  SvgIcon,
-} from '@codeui/kit';
+import {Button, Dialog, DialogPanelContent, IconButton} from '@codeui/kit';
 import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {GithubLoginButton} from '@ui/GithubLoginButton/GithubLoginButton';
 import {CloseIcon} from '../../Icons/CloseIcon';

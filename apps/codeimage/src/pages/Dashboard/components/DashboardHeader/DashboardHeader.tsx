@@ -4,7 +4,6 @@ import {sidebarLogo} from '../../../../components/Scaffold/Sidebar/Sidebar.css';
 import {actionBox} from '../../../../components/Toolbar/Toolbar.css';
 import {ToolbarSettingsButton} from '../../../../components/Toolbar/ToolbarSettings';
 import {ProfileBadge} from '../../../../components/UserBadge/ProfileBadge';
-import {UserBadge} from '../../../../components/UserBadge/UserBadge';
 import * as styles from './DashboardHeader.css';
 
 export function DashboardHeader() {

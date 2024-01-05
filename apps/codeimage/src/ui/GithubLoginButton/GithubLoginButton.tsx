@@ -1,6 +1,6 @@
 import {AuthState} from '@codeimage/store/auth/auth';
 import {provideAppState} from '@codeimage/store/index';
-import {Box, SvgIcon, SvgIconProps} from '@codeimage/ui';
+import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Show} from 'solid-js';

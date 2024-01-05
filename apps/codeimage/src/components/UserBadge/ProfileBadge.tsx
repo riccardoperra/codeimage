@@ -1,6 +1,5 @@
 import {AuthState} from '@codeimage/store/auth/auth';
 import {provideAppState} from '@codeimage/store/index';
-import {Badge} from '@codeimage/ui';
 import {
   As,
   Button,

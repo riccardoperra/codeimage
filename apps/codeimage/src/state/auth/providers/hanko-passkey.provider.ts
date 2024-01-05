@@ -1,7 +1,6 @@
 import * as webauthn from '@github/webauthn-json';
 import {cookieStorage} from '@solid-primitives/storage';
 import {jwtDecode} from 'jwt-decode';
-import {of} from 'rxjs';
 import {
   finalizePasskeyLogin,
   finalizePasskeyRegistration,

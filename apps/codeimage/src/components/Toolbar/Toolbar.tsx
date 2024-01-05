@@ -13,7 +13,6 @@ import {CodeImageLogoV2} from '../Icons/CodeImageLogoV2';
 import {CollectionIcon} from '../Icons/Collection';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';
 import {ProfileBadge} from '../UserBadge/ProfileBadge';
-import {UserBadge} from '../UserBadge/UserBadge';
 import {ExportButton} from './ExportButton';
 import {ShareButton} from './ShareButton';
 import * as styles from './Toolbar.css';
