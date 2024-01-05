@@ -47,7 +47,7 @@ export async function finalizePasskeyLogin(
 }
 
 export async function listPasskeys(): Promise<
-  ApiTypes.PasskeyListCredentialsApi['response'][]
+  ApiTypes.PasskeyListCredentialsApi['response']
 > {
   return makeFetch(`${BASE_URL}/api/v1/passkey/credentials`, {
     method: 'GET',
@@ -64,6 +64,21 @@ export async function deletePasskey(
     ),
     {
       method: 'DELETE',
+    },
+  ).then(res => res.json());
+}
+
+export async function editPasskey(
+  data: ApiTypes.PasskeyUpdateCredentialsApi['request'],
+): Promise<ApiTypes.PasskeyUpdateCredentialsApi['response']> {
+  return makeFetch(
+    `${BASE_URL}/api/v1/passkey/credentials/:id`.replace(
+      ':id',
+      data.params!.credentialId,
+    ),
+    {
+      method: 'PATCH',
+      body: data.body,
     },
   ).then(res => res.json());
 }

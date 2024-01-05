@@ -4,15 +4,17 @@ import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 
 const schema = {
   response: {
-    200: Type.Object({
-      id: Type.String(),
-      name: Type.String(),
-      aaguid: Type.String(),
-      attestation_type: Type.String(),
-      created_at: Type.String({format: 'date-time'}),
-      last_used_at: Type.String({format: 'date-time'}),
-      public_key: Type.String(),
-    }),
+    200: Type.Array(
+      Type.Object({
+        id: Type.String(),
+        name: Type.String(),
+        aaguid: Type.String(),
+        attestation_type: Type.String(),
+        created_at: Type.String({format: 'date-time'}),
+        last_used_at: Type.String({format: 'date-time'}),
+        public_key: Type.String(),
+      }),
+    ),
   },
 } satisfies FastifySchema;
 

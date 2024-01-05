@@ -17,4 +17,5 @@ export type {
   UserInfoApi,
   DeleteCredentialApi,
   PasskeyListCredentialsApi,
+  PasskeyUpdateCredentialsApi,
 } from '../dist/schemas/index.d.ts';
