@@ -32,10 +32,9 @@ import {
   untrack,
 } from 'solid-js';
 import {unwrap} from 'solid-js/store';
-import {provideState} from 'statebuilder';
+import {provideAppState} from '..';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
-import {provideAppState} from '..';
 
 type ProjectResponse = Awaited<ReturnType<typeof API.project.loadSnippet>>;
 
