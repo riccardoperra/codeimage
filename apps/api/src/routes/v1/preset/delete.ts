@@ -8,7 +8,7 @@ const schema = {
     id: Type.String(),
   }),
   response: {
-    200: void 0,
+    200: Type.Null(),
   },
   summary: 'Delete an existing CodeImage preset',
 };
