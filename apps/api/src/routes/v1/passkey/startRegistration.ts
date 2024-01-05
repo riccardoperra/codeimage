@@ -37,13 +37,7 @@ const schema = {
               id: Type.String(),
               transports: Type.Optional(
                 Type.Array(
-                  enumLiteral([
-                    'ble',
-                    'hybrid',
-                    'internal',
-                    'nfc',
-                    'usb',
-                  ] as const),
+                  enumLiteral(['ble', 'hybrid', 'internal', 'nfc', 'usb']),
                 ),
               ),
             }),
@@ -64,7 +58,7 @@ const schema = {
           }),
         ),
         attestation: Type.Optional(
-          enumLiteral(['direct', 'enterprise', 'indirect', 'none'] as const),
+          enumLiteral(['direct', 'enterprise', 'indirect', 'none']),
         ),
         extensions: Type.Optional(Type.Any()),
       }),
