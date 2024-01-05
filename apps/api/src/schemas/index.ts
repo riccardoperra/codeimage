@@ -16,4 +16,5 @@ export type {PasskeyFinalizeRegistrationApi} from '../routes/v1/passkey/finalize
 export type {PasskeyStartLoginApi} from '../routes/v1/passkey/startLogin.js';
 export type {PasskeyFinalizeLoginApi} from '../routes/v1/passkey/finalizeLogin.js';
 export type {DeleteCredentialApi} from '../routes/v1/passkey/deleteCredential.js';
+export type {PasskeyListCredentialsApi} from '../routes/v1/passkey/listCredentials.js';
 export type {UserInfoApi} from '../routes/v1/user/info.js';

@@ -120,7 +120,7 @@ export function App() {
             <Footer />
           </SuspenseEditorItem>
         </Canvas>
-        <Show when={!readOnly()}>
+        {/* <Show when={!readOnly()}>
           <Show
             when={modality === 'full'}
             fallback={<BottomBar portalHostRef={portalHostRef()} />}
@@ -129,7 +129,7 @@ export function App() {
               <ThemeSwitcher orientation={'vertical'} />
             </Sidebar>
           </Show>
-        </Show>
+        </Show> */}
       </div>
     </Box>
   );

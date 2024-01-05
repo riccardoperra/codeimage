@@ -47,7 +47,7 @@ export async function finalizePasskeyLogin(
 }
 
 export async function listPasskeys(): Promise<
-  ApiTypes.PasskeyStartLoginApi['response'][]
+  ApiTypes.PasskeyListCredentialsApi['response'][]
 > {
   return makeFetch(`${BASE_URL}/api/v1/passkey/credentials`, {
     method: 'GET',

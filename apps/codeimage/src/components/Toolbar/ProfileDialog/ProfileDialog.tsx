@@ -78,7 +78,7 @@ export function ProfileDialog(props: ProfileDialog) {
               <For each={passkeys()}>
                 {passkey => (
                   <li class={passkeyItem}>
-                    {passkey.id}
+                    {passkey.name}
                     <HStack spacing={'1'}>
                       <IconButton
                         theme={'secondary'}

@@ -89,9 +89,9 @@ export function Bootstrap() {
     {
       path: '',
       component: () => {
-        const state = provideState(AuthState);
+        createEffect(() => console.log(authState.loggedIn()));
         return (
-          <Show fallback={<Editor />} when={state.loggedIn()}>
+          <Show fallback={<Editor />} when={authState.loggedIn()}>
             <Dashboard />
           </Show>
         );
@@ -116,7 +116,7 @@ export function Bootstrap() {
         if (authState.loggedIn()) {
           navigate('/');
         } else {
-          authState.login();
+          authState.providers.auth0.loginWithGithub();
         }
       },
     },

@@ -45,10 +45,12 @@ export const AuthState = defineSignal<AuthState>(() => ({
     } else if (strategy === 'auth0') {
       user = await providers.auth0.init();
     }
+
     _.set(value => ({
       ...value,
       user: user ?? null,
     }));
+    console.log('set user', user);
   }
 
   const currentProvider = () => {
@@ -68,7 +70,10 @@ export const AuthState = defineSignal<AuthState>(() => ({
   return {
     init,
     getToken: () => currentProvider().getJwt(),
-    loggedIn: () => _().user,
+    loggedIn: () => {
+      console.log('check logged in', _());
+      return !!_().user;
+    },
     signOut: async () => {
       await currentProvider().logout();
       localStorage.removeItem('auth_strategy');

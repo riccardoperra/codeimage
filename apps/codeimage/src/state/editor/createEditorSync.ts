@@ -35,6 +35,7 @@ import {unwrap} from 'solid-js/store';
 import {provideState} from 'statebuilder';
 import {API} from '../../data-access/api';
 import {useIdb} from '../../hooks/use-indexed-db';
+import {provideAppState} from '..';
 
 type ProjectResponse = Awaited<ReturnType<typeof API.project.loadSnippet>>;
 
@@ -45,7 +46,7 @@ function createEditorSyncAdapter(props: {snippetId: string}) {
   const [activeWorkspace, setActiveWorkspace] = createSignal<
     ApiTypes.GetProjectByIdApi['response'] | null
   >();
-  const authState = provideState(AuthState);
+  const authState = provideAppState(AuthState);
   const frameStore = getFrameState();
   const terminalStore = getTerminalState();
   const editorStore = getRootEditorStore();
