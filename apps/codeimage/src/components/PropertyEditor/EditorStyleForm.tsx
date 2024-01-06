@@ -114,7 +114,9 @@ export const EditorStyleForm: ParentComponent = () => {
                       () => editor().languageId,
                       language => {
                         setLanguageId(language!);
-                        getUmami().trackEvent(language!, 'change-language');
+                        getUmami().track('change-language', {
+                          language: language!,
+                        });
                       },
                     )}
                     options={languagesOptions.options()}

@@ -129,7 +129,7 @@ export const FrameStyleForm: ParentComponent = () => {
               value={frame.store.aspectRatio}
               onChange={ratio => {
                 frame.setAspectRatio(ratio);
-                getUmami().trackEvent(ratio ?? 'auto', 'aspect-ratio');
+                getUmami().track('aspect-ratio', {ratio: ratio ?? 'unset'});
               }}
             />
           </SuspenseEditorItem>

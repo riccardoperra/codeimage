@@ -55,7 +55,7 @@ export const PresetSwitcher: ParentComponent<
     editor.actions.setFromPreset(data.editor);
     frame.setFromPreset(data.frame);
     terminal.setFromPreset(data.terminal);
-    getUmami().trackEvent('preset', 'select-preset');
+    getUmami().track('select-preset-theme');
   };
 
   const exampleCode =
