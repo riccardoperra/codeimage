@@ -660,4 +660,22 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
   },
+  {
+    id: 'yaml',
+    label: 'Yaml',
+    color: '#cb171e',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/yaml'),
+      ]).then(([cb, m]) => cb(m.yaml)),
+    icons: [
+      {
+        name: 'Yaml',
+        extension: '.yaml',
+        content: () => import('material-icon-theme/icons/yaml.svg?raw'),
+        matcher: /^.*\.(yaml|yml)$/,
+      },
+    ],
+  },
 ];
