@@ -38,7 +38,7 @@ export function dispatchUpdateTheme(params: DispatchUpdateThemeParams): void {
       terminal.setState('background', theme.properties.terminal.main);
       terminal.setState('textColor', theme.properties.terminal.text);
       editor.actions.setThemeId(theme.id);
-      getUmami().trackEvent(theme.id, `theme-change`);
+      getUmami().track('theme-change', {theme: theme.id});
     }
   });
 }
