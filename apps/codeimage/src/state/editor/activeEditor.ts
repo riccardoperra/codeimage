@@ -3,12 +3,11 @@ import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getUiStore} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
+import {appEnvironment} from '@core/configuration';
 import {clamp, isNonNullable} from '@solid-primitives/utils';
 import {createEffect, createMemo, createRoot, on} from 'solid-js';
 import {createPrettierFormatter} from '../../hooks/createPrettierFormatter';
 import {AppLocaleEntries} from '../../i18n';
-import {getUmami} from '@core/constants/umami';
-import {appEnvironment} from '@core/configuration';
 
 const $activeEditorState = () => {
   return createRoot(() => {
