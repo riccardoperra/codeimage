@@ -3,10 +3,12 @@ import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getUiStore} from '@codeimage/store/ui';
 import {toast} from '@codeimage/ui';
-import {isNonNullable} from '@solid-primitives/utils';
+import {clamp, isNonNullable} from '@solid-primitives/utils';
 import {createEffect, createMemo, createRoot, on} from 'solid-js';
 import {createPrettierFormatter} from '../../hooks/createPrettierFormatter';
 import {AppLocaleEntries} from '../../i18n';
+import {getUmami} from '@core/constants/umami';
+import {appEnvironment} from '@core/configuration';
 
 const $activeEditorState = () => {
   return createRoot(() => {
@@ -46,6 +48,20 @@ const $activeEditorState = () => {
     const setCode = (code: string) =>
       setEditors(currentEditorIndex(), 'code', code);
 
+    const setLineNumberStart = (lineNumberStart: number | null | undefined) => {
+      if (lineNumberStart === null) return;
+      return setEditors(
+        currentEditorIndex(),
+        'lineNumberStart',
+        // TODO Already done by @codeui/kit but I don't feel safe about this component I made
+        clamp(
+          lineNumberStart ?? 1,
+          appEnvironment.lineNumbers.min,
+          appEnvironment.lineNumbers.max,
+        ),
+      );
+    };
+
     const setFormatterName = (formatter: string | null) =>
       setEditors(currentEditorIndex(), 'formatter', formatter);
 
@@ -83,6 +99,7 @@ const $activeEditorState = () => {
       editor: currentEditor,
       setLanguageId,
       setCode,
+      setLineNumberStart,
       formatter,
       setFormatterName,
       canFormat: formatter.canFormat,
