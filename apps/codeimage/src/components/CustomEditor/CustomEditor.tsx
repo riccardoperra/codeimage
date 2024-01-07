@@ -174,13 +174,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(currentExtraLanguage);
 
   const lineNumberStart = createMemo(() => editor()?.lineNumberStart);
-
   createExtension(() => {
-    const lnStart = lineNumberStart();
+    const lnStart = lineNumberStart() ?? 1;
+    const newLn = (ln: number) => ln + (lnStart - 1);
     return editorState.options.showLineNumbers
-      ? lineNumbers({
-          formatNumber: lineNo => String(lineNo + ((lnStart ?? 1) - 1)),
-        })
+      ? lineNumbers({formatNumber: lineNo => String(newLn(lineNo))})
       : [];
   });
   createExtension(() => themeConfiguration()?.editorTheme || []);
