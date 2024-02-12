@@ -153,6 +153,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         fontFamily: `${fontName}, monospace`,
         fontWeight: fontWeight,
         fontVariantLigatures,
+        lineHeight: editorState.options.lineHeight,
       },
       '.cm-gutters': {
         fontFamily: `${fontName}, monospace`,
@@ -191,8 +192,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   );
 
   return (
-    <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
-      <div ref={setRef} />
-    </code>
+    <>
+      <pre>{editorState.options.lineHeight}</pre>
+      <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
+        <div ref={setRef} />
+      </code>
+    </>
   );
 }
