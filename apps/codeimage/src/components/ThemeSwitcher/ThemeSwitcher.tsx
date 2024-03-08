@@ -89,6 +89,7 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
                           themeClass={styles.themeBoxTerminalHost}
                           textColor={theme.properties.terminal.text}
                           background={theme.properties.terminal.main}
+                          borderType={terminal.state.borderType}
                           accentVisible={false}
                           shadow={/*@once*/ TERMINAL_SHADOWS.bottom}
                           showTab={false}

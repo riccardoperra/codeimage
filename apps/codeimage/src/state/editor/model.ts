@@ -51,6 +51,7 @@ export interface TerminalState {
   showGlassReflection: boolean;
   opacity: number;
   alternativeTheme: boolean;
+  borderType: 'glass' | null;
 }
 
 export type PersistedTerminalState = Pick<
@@ -65,6 +66,7 @@ export type PersistedTerminalState = Pick<
   | 'showGlassReflection'
   | 'opacity'
   | 'alternativeTheme'
+  | 'borderType'
 >;
 
 export interface ProjectEditorPersistedState {

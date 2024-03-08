@@ -30,6 +30,7 @@ export function createCompleteProjectGetByIdResponseMapper(
       accentVisible: data.terminal.accentVisible,
       alternativeTheme: data.terminal.alternativeTheme,
       shadow: data.terminal.shadow,
+      borderType: data.terminal.borderType as 'glass' | null,
     },
     editorOptions: {
       id: data.editorOptions.id,

@@ -39,6 +39,7 @@ export function PresetPreview(props: PresetPreviewProps) {
         accentVisible={props.data.terminal.accentVisible}
         textColor={props.data.terminal.textColor}
         showHeader={props.data.terminal.showHeader}
+        borderType={props.data.terminal.borderType}
         showGlassReflection={props.data.terminal.showGlassReflection}
         showWatermark={false}
         opacity={props.data.terminal.opacity}
