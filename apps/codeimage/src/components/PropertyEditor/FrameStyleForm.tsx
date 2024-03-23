@@ -12,11 +12,23 @@ import {CustomColorPicker} from './controls/ColorPicker/CustomColorPicker';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
+import {Select, createSelectOptions} from '@codeui/kit';
 
 export const FrameStyleForm: ParentComponent = () => {
   const [t] = useI18n<AppLocaleEntries>();
   const {editorPadding, editorRadius} = appEnvironment;
   const frame = getFrameState();
+
+  const paddingOptions = createSelectOptions(
+    editorPadding.map(padding => ({
+      label: padding.label,
+      value: padding.value,
+    })),
+    {
+      key: 'label',
+      valueKey: 'value',
+    },
+  );
 
   return (
     <>
@@ -27,16 +39,22 @@ export const FrameStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'26px'} />}
           >
-            <SegmentedField
-              adapt
+            <Select
+              disallowEmptySelection
+              {...paddingOptions.props()}
+              {...paddingOptions.controlled(
+                () => String(frame.store.padding),
+                padding => {
+                  if (typeof padding === 'undefined') {
+                    return;
+                  }
+                  frame.setPadding(Number(padding));
+                },
+              )}
+              options={paddingOptions.options()}
+              aria-label={'Padding'}
               id={'paddingField'}
               size={'xs'}
-              value={frame.store.padding}
-              onChange={frame.setPadding}
-              items={editorPadding.map(padding => ({
-                label: padding.toString(),
-                value: padding,
-              }))}
             />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>
