@@ -86,9 +86,11 @@ const frameState = defineStore(() => getInitialFrameState())
       .hold(store.commands.setNextPadding, (_, {state}) => {
         const availablePadding = appEnvironment.editorPadding;
         const padding = state.padding;
-        const currentIndex = appEnvironment.editorPadding.indexOf(padding);
+        const currentIndex = appEnvironment.editorPadding.findIndex(
+          item => Number(item.value) === padding,
+        );
         const next = (currentIndex + 1) % availablePadding.length;
-        return {...state, padding: availablePadding[next]};
+        return {...state, padding: Number(availablePadding[next].value)};
       })
       .hold(store.commands.setFromPreset, presetData => {
         store.set(state => ({...state, ...presetData}));
