@@ -45,6 +45,7 @@ export function createCompleteProjectGetByIdResponseMapper(
       languageId: editor.languageId,
       code: editor.code,
       tabName: editor.tabName,
+      lineNumberStart: editor.lineNumberStart,
     })),
     isOwner: false,
   };

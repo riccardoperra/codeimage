@@ -35,7 +35,12 @@ test<TestContext>('POST /v1/project/ [Create Project] -> 200', async context => 
       padding: 0,
     },
     editors: [
-      {code: 'function(){}', languageId: 'javascript', tabName: 'index.jsx'},
+      {
+        code: 'function(){}',
+        languageId: 'javascript',
+        tabName: 'index.jsx',
+        lineNumberStart: 300,
+      },
     ],
     editorOptions: {
       fontWeight: 400,

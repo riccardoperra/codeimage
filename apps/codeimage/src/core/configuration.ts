@@ -7,12 +7,16 @@ export const [appEnvironment] = createConfiguration({
   locales: SUPPORTED_LOCALES,
   themes: [],
   languages: [],
+  lineNumbers: {
+    min: 1,
+    max: 999_999,
+  },
   editorPadding: [
-    {label: '0', value: "0"},
-    {label: '16', value: "16"},
-    {label: '32', value: "32"},
-    {label: '64', value: "64"},
-    {label: '128', value: "128"},
+    {label: '0', value: '0'},
+    {label: '16', value: '16'},
+    {label: '32', value: '32'},
+    {label: '64', value: '64'},
+    {label: '128', value: '128'},
   ],
   editorRadius: [
     {label: '0', value: 0},

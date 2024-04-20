@@ -82,6 +82,8 @@ model SnippetEditorTab {
   languageId String
   tabName    String  @default("")
 
+  lineNumberStart Int @default(1)
+
   @@unique([id, projectId])
 }
 
