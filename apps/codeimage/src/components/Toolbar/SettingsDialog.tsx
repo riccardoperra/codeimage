@@ -142,7 +142,7 @@ export function SettingsDialog(props: SettingsDialogProps) {
                       size={'md'}
                       onChange={locale => {
                         ui.setLocale(locale);
-                        getUmami().trackEvent(locale, `change-app-language`);
+                        getUmami().track('change-app-language', {locale});
                       }}
                       value={ui.get.locale}
                       orientation={'vertical'}

@@ -1,4 +1,4 @@
-name: "Deploy (Production)"
+name: 'Deploy (Production)'
 on:
   workflow_dispatch:
     inputs:
@@ -22,8 +22,8 @@ jobs:
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
-#        with:
-#          submodules: 'true'
+      #        with:
+      #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -33,20 +33,20 @@ jobs:
 
   lint:
     name: Lint
-    needs: [ "install" ]
+    needs: ['install']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
-#        with:
-#          submodules: 'true'
+      #        with:
+      #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
-      - name: "[API] Generate Prisma Migration"
+      - name: '[API] Generate Prisma Migration'
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
@@ -55,12 +55,12 @@ jobs:
 
   build-packages:
     name: Build packages/**
-    needs: [ "install" ]
+    needs: ['install']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-#        with:
-#          submodules: 'true'
+      #        with:
+      #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -68,12 +68,12 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: "[API] Generate Prisma Migration"
+      - name: '[API] Generate Prisma Migration'
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
-      - name: "Build packages"
+      - name: 'Build packages'
         run: |
           pnpm libs:build
 
@@ -84,13 +84,13 @@ jobs:
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
   build-api:
-    name: "Build @codeimage/api"
-    needs: [ "install" ]
+    name: 'Build @codeimage/api'
+    needs: ['install']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-#        with:
-#          submodules: 'true'
+      #        with:
+      #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -98,7 +98,7 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: "[API] Generate Prisma Migration"
+      - name: '[API] Generate Prisma Migration'
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
@@ -118,7 +118,7 @@ jobs:
 
   test-api:
     name: Api test
-    needs: [ install ]
+    needs: [install]
     runs-on: ubuntu-latest
 
     services:
@@ -146,7 +146,7 @@ jobs:
       GRANT_TYPE_AUTH0: client_credentials
       MOCK_AUTH: false
       MOCK_AUTH_EMAIL: dev@example.it
-      ALLOWED_ORIGINS: "*"
+      ALLOWED_ORIGINS: '*'
 
     steps:
       - uses: actions/checkout@v3
@@ -159,7 +159,7 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: "Run prisma DB migrations"
+      - name: 'Run prisma DB migrations'
         run: |
           cd apps/api
           pnpm exec prisma migrate deploy
@@ -174,12 +174,12 @@ jobs:
 
   typecheck-packages:
     name: Type-checking packages/**
-    needs: [ "install", "build-packages" ]
+    needs: ['install', 'build-packages']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-#        with:
-#          submodules: 'true'
+      #        with:
+      #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -205,12 +205,12 @@ jobs:
   deploy-highlight-package:
     name: Deploy @codeimage/highlight app
     environment: Production
-    needs: [ "install", "lint", "build-packages" ]
+    needs: ['install', 'lint', 'build-packages']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-#        with:
-#          submodules: 'true'
+      #        with:
+      #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -239,12 +239,12 @@ jobs:
   deploy-api:
     name: Build and Deploy Api
     environment: Production
-    needs: [ install, lint, typecheck-packages, test-api, build-api ]
+    needs: [install, lint, typecheck-packages, test-api, build-api]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-#        with:
-#          submodules: 'true'
+      #        with:
+      #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -274,7 +274,7 @@ jobs:
           find -type f -name '.gitignore' -delete
           pnpm railway link --environment production $RAILWAY_API_PROJECT_ID
           cd dist/api-bundle
-          pnpm railway up --detach
+          pnpm railway up -s codeimage
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_API_PROJECT_ID: ${{ secrets.RAILWAY_API_PROJECT_ID }}
@@ -282,13 +282,13 @@ jobs:
   deploy-app:
     name: Deploy @codeimage/app
     environment: Production
-    needs: [ install, lint, typecheck-packages, build-packages, deploy-api ]
+    needs: [install, lint, typecheck-packages, build-packages, deploy-api]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
-#        with:
-#          submodules: 'true'
+      #        with:
+      #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -325,23 +325,22 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
           vercel-args: '--prebuilt --prod' #Optional
           working-directory: apps/codeimage
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}  #Required
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} #Required
           alias-domains: | #Optional
             app.codeimage.dev
-
 
   deploy-website:
     if: ${{ github.event.inputs.deploy-website == 'true' }}
     name: Deploy @codeimage/website
     environment: Production
-    needs: [ install, lint, typecheck-packages, build-packages ]
+    needs: [install, lint, typecheck-packages, build-packages]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
-#        with:
-#          submodules: 'true'
+      #        with:
+      #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:

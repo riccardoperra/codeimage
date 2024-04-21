@@ -25,6 +25,7 @@ export interface EditorState {
   tab: TabState;
   formatter?: string | null;
   languageId: string;
+  lineNumberStart: number;
   metadata: EditorMetadataState;
 }
 
@@ -44,6 +45,7 @@ export interface PersistedEditorState {
     code: string;
     tabName: string;
     languageId: string;
+    lineNumberStart: number;
     metadata: EditorState['metadata'];
   }[];
 }

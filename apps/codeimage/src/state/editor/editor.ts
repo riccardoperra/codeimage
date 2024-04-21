@@ -22,6 +22,7 @@ export function getInitialEditorState(): EditorState {
     code: appEnvironment.defaultState.editor.code,
     languageId: appEnvironment.defaultState.editor.languageId,
     formatter: null,
+    lineNumberStart: 1,
     metadata: {
       diff: {
         deleted: [],
@@ -116,6 +117,7 @@ export function createEditorsStore() {
           languageId: editor.languageId,
           id: editor.id,
           code: editor.code,
+          lineNumberStart: editor.lineNumberStart,
           metadata: {
             diff: editor.metadata.diff,
           },
@@ -129,6 +131,7 @@ export function createEditorsStore() {
             languageId: editor.languageId,
             tab: {tabName: editor.tabName},
             id: editor.id,
+            lineNumberStart: editor.lineNumberStart,
             metadata: {
               diff: editor.metadata.diff,
             },
@@ -154,6 +157,7 @@ export function createEditorsStore() {
           code: editor.code,
           tabName: editor.tab.tabName ?? '',
           id: editor.id,
+          lineNumberStart: editor.lineNumberStart,
           metadata: {
             diff: editor.metadata.diff,
           },
@@ -279,6 +283,7 @@ export function createEditorsStore() {
             id: editor.id,
             code: editor.code,
             metadata: editor.metadata,
+            lineNumberStart: editor.lineNumberStart,
           } as EditorState),
       ),
     );

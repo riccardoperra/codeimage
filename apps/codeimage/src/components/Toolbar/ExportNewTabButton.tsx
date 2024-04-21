@@ -25,7 +25,7 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
   const label = () => t('toolbar.openNewTab');
 
   function openInTab() {
-    getUmami().trackEvent(`true`, 'export-new-tab');
+    getUmami().track('export-new-tab');
     const exportSettings = getExportCanvasStore();
     notify({
       ref: props.canvasRef,

@@ -44,7 +44,7 @@ export const dispatchCopyToClipboard = effect<CopyToClipboardEvent>(
           ).pipe(
             tap(() => runWithOwner(owner, openSnackbar)),
             catchError(() => EMPTY),
-            tap(() => getUmami().trackEvent('true', `copy-to-clipboard`)),
+            tap(() => getUmami().track('copy-to-clipboard')),
           );
         }),
       );

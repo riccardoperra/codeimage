@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 8.2.5
+
+### Patch Changes
+
+- [#621](https://github.com/riccardoperra/codeimage/pull/621) [`1f9e5788`](https://github.com/riccardoperra/codeimage/commit/1f9e5788e1a011542f850d2abd35f12201a19b8b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - add yaml language
+
 ## 8.2.4
 
 ### Patch Changes

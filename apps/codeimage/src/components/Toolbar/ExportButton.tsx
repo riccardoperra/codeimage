@@ -163,11 +163,10 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
 
     const selectedExtension = extension();
 
-    const name = selectedMode === ExportMode.export ? 'Download' : 'Share';
-    getUmami().trackEvent(
-      `${name} ${selectedExtension.toUpperCase()}`,
-      selectedMode,
-    );
+    getUmami().track('export-confirm', {
+      mode: selectedMode,
+      extension: selectedExtension,
+    });
 
     props.onConfirm({
       type: selectedMode,

@@ -17,10 +17,10 @@ import {
 import {bracketMatching, indentOnInput} from '@codemirror/language';
 import {EditorState, Extension} from '@codemirror/state';
 import {
-  EditorView,
   crosshairCursor,
   drawSelection,
   dropCursor,
+  EditorView,
   highlightSpecialChars,
   keymap,
   lineNumbers,
@@ -28,11 +28,11 @@ import {
 } from '@codemirror/view';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import {
-  VoidProps,
   createEffect,
   createMemo,
   createResource,
   on,
+  VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 import {diffMarkerControl} from './plugins/diff/extension';
@@ -178,11 +178,21 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(currentLanguage);
   createExtension(currentExtraLanguage);
 
+  const lineNumberStart = createMemo(() => editor()?.lineNumberStart);
+  createExtension(() => {
+    const lnStart = lineNumberStart() ?? 1;
+    const newLn = (ln: number) => ln + (lnStart - 1);
+    return editorState.options.showLineNumbers
+      ? lineNumbers({formatNumber: lineNo => String(newLn(lineNo))})
+      : [];
+  });
+
   createExtension(() =>
     editorState.options.showDiffMode
       ? diffMarkerControl({readOnly: props.readOnly})
       : [],
   );
+
   createExtension(() => {
     return editorState.options.showLineNumbers ? lineNumbers() : [];
   });
