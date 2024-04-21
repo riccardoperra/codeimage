@@ -146,7 +146,7 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
           };
         });
         if (log) {
-          getUmami().trackEvent('open', featureName);
+          getUmami().track('see-feature', {featureName});
         }
       },
       getFeature(

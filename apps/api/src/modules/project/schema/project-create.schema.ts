@@ -27,6 +27,7 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
       code: Type.String(),
       languageId: Type.String(),
       tabName: Type.String(),
+      lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
     },
     {title: 'SnippetEditorTabCreateRequest'},
   ),

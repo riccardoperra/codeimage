@@ -19,6 +19,7 @@ export interface EditorState {
   tab: TabState;
   formatter?: string | null;
   languageId: string;
+  lineNumberStart: number;
 }
 
 export interface EditorUIOptions {
@@ -37,6 +38,7 @@ export interface PersistedEditorState {
     code: string;
     tabName: string;
     languageId: string;
+    lineNumberStart: number;
   }[];
 }
 

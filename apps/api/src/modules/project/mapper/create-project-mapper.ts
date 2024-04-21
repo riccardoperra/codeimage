@@ -63,6 +63,7 @@ export function createProjectRequestMapper(
       languageId: editor.languageId,
       code: editor.code,
       tabName: editor.tabName,
+      lineNumberStart: editor.lineNumberStart,
     })),
   };
 }

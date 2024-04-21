@@ -42,7 +42,9 @@ export const ThemeSwitcher: ParentComponent<ThemeSwitcherVariant> = props => {
 
   const onSelectTheme = (theme: CustomTheme) => {
     dispatchUpdateTheme({theme, updateBackground: true});
-    getUmami().trackEvent(theme.id, `theme-change`);
+    getUmami().track('theme-change', {
+      themeId: theme.id,
+    });
   };
   const exampleCode =
     '// Just a code example \n' +

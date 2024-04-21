@@ -78,7 +78,12 @@ export const WindowStyleForm: ParentComponent = () => {
             <TerminalControlField
               showAccent={terminal.state.accentVisible}
               selectedTerminal={terminal.state.type}
-              onTerminalChange={terminal.setType}
+              onTerminalChange={type => {
+                terminal.setType(type);
+                getUmami().track('change-terminal-type', {
+                  type,
+                });
+              }}
               onShowAccentChange={terminal.setAccentVisible}
             />
           </FullWidthPanelRow>
@@ -133,7 +138,9 @@ export const WindowStyleForm: ParentComponent = () => {
               {...terminalShadowsSelect.controlled(
                 () => terminal.state.shadow ?? undefined,
                 shadow => {
-                  getUmami().trackEvent(shadow ?? 'none', 'change-shadow');
+                  getUmami().track('change-shadow', {
+                    shadow: shadow ?? 'none',
+                  });
                   terminal.setShadow(shadow ?? null);
                 },
               )}

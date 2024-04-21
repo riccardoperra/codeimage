@@ -139,20 +139,22 @@ export function makePrismaProjectRepository(
             },
           },
           upsert: data.editors.map(editor => {
-            const {languageId, code, tabName} = editor;
+            const {languageId, code, tabName, lineNumberStart, id} = editor;
             return {
               where: {
-                id: editor.id,
+                id,
               },
               create: {
                 code,
                 tabName,
                 languageId,
+                lineNumberStart,
               },
               update: {
                 code,
                 tabName,
                 languageId,
+                lineNumberStart,
               },
             };
           }),
