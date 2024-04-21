@@ -66,7 +66,7 @@ export function TerminalControlField(
                 opacity={100}
                 themeId={editorState.options.themeId}
                 showGlassReflection={false}
-                borderType={terminalState.state.borderType}
+                borderType={null}
               />
             </Suspense>
           </Box>
@@ -102,7 +102,7 @@ export function TerminalControlField(
                   opacity={100}
                   themeId={editorState.options.themeId}
                   showGlassReflection={terminalState.state.showGlassReflection}
-                  borderType={terminalState.state.borderType}
+                  borderType={null}
                 />
               </Suspense>
             </Box>
