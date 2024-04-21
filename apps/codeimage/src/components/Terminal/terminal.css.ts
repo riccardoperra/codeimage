@@ -17,10 +17,8 @@ export const [terminalTheme, terminalVars] = createTheme({
   tabTextColor: 'unset',
 });
 
-// Add a default outside shadow + the current shadow to balance the depth
-const glassBorderOutsideShadow = '0 50px 80px rgba(0, 0, 0, 0.3)';
-const glassBorderDark = `${glassBorderOutsideShadow}, 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,.90), inset 0 0 0 1px rgba(255, 255, 255, 0.4)`;
-const glassBorderLight = `${glassBorderOutsideShadow} 0 0 15px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 1px rgb(0,0,0,.05), inset 0 0 0 1px rgba(255, 255, 255, 0.15)`;
+const glassBorderDark = `0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,.90), inset 0 0 0 1.5px rgba(255, 255, 255, 0.4)`;
+const glassBorderLight = `0 0 15px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 1px rgb(0,0,0,.05), inset 0 0 0 1px rgba(255, 255, 255, 0.15)`;
 
 const glassBorderVar = createVar();
 
