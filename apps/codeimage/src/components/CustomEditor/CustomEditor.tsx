@@ -179,17 +179,20 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(currentLanguage);
   createExtension(currentExtraLanguage);
 
+  const lineNumberStart = createMemo(() => editor()?.lineNumberStart);
   createExtension(() => {
-    const lineNumberStart = editorState.options.lineNumbersStart;
-    const options =
-      lineNumberStart === 0
-        ? {}
-        : {formatNumber: (el: number) => String(el + (lineNumberStart - 1))};
+    const lnStart = lineNumberStart() ?? 1;
+    const newLn = (ln: number) => ln + (lnStart - 1);
+    return editorState.options.showLineNumbers
+      ? lineNumbers({formatNumber: lineNo => String(newLn(lineNo))})
+      : [];
+  });
+
+  createExtension(() => {
     return [
       editorState.options.enableDiff
         ? diffMarkerExtension({readOnly: props.readOnly})
         : [],
-      editorState.options.showLineNumbers ? lineNumbers(options) : [],
     ];
   });
 

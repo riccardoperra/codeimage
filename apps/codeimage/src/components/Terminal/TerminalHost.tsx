@@ -8,6 +8,7 @@ import {FlowComponent} from 'solid-js';
 import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
 import {createTabTheme} from './Tabs/createTabTheme';
 import * as styles from './terminal.css';
+import {getFrameState} from '@codeimage/store/editor/frame';
 
 export interface BaseTerminalProps
   extends Omit<TerminalState, 'type'>,
@@ -30,6 +31,7 @@ export interface TerminalHostProps extends BaseTerminalProps {
 export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
   const tabTheme = createTabTheme(() => props.themeId);
   const darkMode = () => tabTheme().darkMode;
+  const frameState = getFrameState().store;
 
   const background = () => {
     if (props.alternativeTheme) {
@@ -62,6 +64,7 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
           tabTheme().activeTabBackground ?? '',
         [styles.terminalVars.tabAccentInactiveBackground]:
           tabTheme().inactiveTabBackground ?? '',
+        [styles.terminalVars.radius]: frameState.padding === 0 ? 0 : undefined,
         ...(props.style ?? {}),
       })}
     >
