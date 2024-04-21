@@ -120,7 +120,8 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
               } else {
               }
             } else {
-              _.set(() => updateWithLatestVersionSeen(currentVersion, data));
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              _.set(() => updateWithLatestVersionSeen(currentVersion, data!));
             }
             setReady(true);
           }

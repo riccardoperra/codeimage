@@ -31,6 +31,7 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
       shadow: null,
       textColor: null,
       accentVisible: true,
+      borderType: 'glass',
     },
     editorOptionsId: 'editorOptionsId',
     terminalId: 'terminalId',
@@ -75,6 +76,7 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
       showWatermark: false,
       opacity: 100,
       showHeader: true,
+      borderType: 'glass',
     },
     editorOptions: {
       id: 'editorOptionsId',
