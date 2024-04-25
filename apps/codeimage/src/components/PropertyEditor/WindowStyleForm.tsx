@@ -1,11 +1,13 @@
 import {useI18n} from '@codeimage/locale';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {VersionStore} from '@codeimage/store/version/version.store';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {getUmami} from '@core/constants/umami';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
+import {provideState} from 'statebuilder';
 import {AppLocaleEntries} from '../../i18n';
 import {TerminalControlField} from './controls/TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
@@ -14,6 +16,7 @@ import {SuspenseEditorItem} from './SuspenseEditorItem';
 
 export const WindowStyleForm: ParentComponent = () => {
   const terminal = getTerminalState();
+  const versionStore = provideState(VersionStore);
   const [t] = useI18n<AppLocaleEntries>();
 
   const terminalShadows = createMemo(
@@ -175,12 +178,14 @@ export const WindowStyleForm: ParentComponent = () => {
               options={borderTypeSelect.options()}
               {...borderTypeSelect.props()}
               {...borderTypeSelect.controlled(
-                () => terminal.state.borderType ?? undefined,
+                () => terminal.state.borderType ?? 'none',
                 border => {
+                  const isNone = border === 'none';
+                  versionStore.see('borderType', false);
                   getUmami().track('change-border', {
                     border: border ?? 'none',
                   });
-                  terminal.setBorder(border ?? null);
+                  terminal.setBorder(isNone ? null : border ?? null);
                 },
               )}
               aria-label={'Border'}
