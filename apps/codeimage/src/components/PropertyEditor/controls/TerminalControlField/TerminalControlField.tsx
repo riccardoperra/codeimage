@@ -2,12 +2,13 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {VersionStore} from '@codeimage/store/version/version.store';
 import {Box, RadioBlock} from '@codeimage/ui';
-import {As, Checkbox, icons} from '@codeui/kit';
+import {As, Checkbox} from '@codeui/kit';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {createSignal, For, JSXElement, onMount, Suspense} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {provideState} from 'statebuilder';
+import {SettingsIcon} from '../../../Icons/SettingsIcon';
 import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
 import {SidebarPopoverTitle} from '../../SidebarPopover/SidebarPopoverTitle';
 import * as styles from './TerminalControlField.css';
@@ -66,10 +67,11 @@ export function TerminalControlField(
                 opacity={100}
                 themeId={editorState.options.themeId}
                 showGlassReflection={false}
+                borderType={null}
               />
             </Suspense>
           </Box>
-          <icons.SelectorIcon class={styles.inputIcon} />
+          <SettingsIcon class={styles.inputIcon} />
         </As>
       }
       onOpenChange={setOpen}
@@ -101,6 +103,7 @@ export function TerminalControlField(
                   opacity={100}
                   themeId={editorState.options.themeId}
                   showGlassReflection={terminalState.state.showGlassReflection}
+                  borderType={null}
                 />
               </Suspense>
             </Box>

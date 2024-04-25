@@ -1,5 +1,6 @@
 import {Static, Type} from '@sinclair/typebox';
 import {Nullable} from '../../../common/typebox/nullable.js';
+import {SnippetTerminalBorderType} from './project.schema.js';
 
 export const SnippetFrameCreateRequestSchema = Type.Object(
   {
@@ -26,6 +27,7 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
       code: Type.String(),
       languageId: Type.String(),
       tabName: Type.String(),
+      lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
     },
     {title: 'SnippetEditorTabCreateRequest'},
   ),
@@ -44,6 +46,7 @@ export const SnippetTerminalCreateRequestSchema = Type.Object(
     opacity: Nullable(Type.Number({minimum: 0, maximum: 100, default: 100})),
     showHeader: Type.Boolean(),
     showWatermark: Nullable(Type.Boolean({default: true})),
+    borderType: Nullable(SnippetTerminalBorderType),
   },
   {title: 'SnippetTerminalCreateRequest'},
 );

@@ -17,6 +17,7 @@ export default {
       editor: 'Editor',
       language: 'Language',
       lineNumbers: 'Line number',
+      lineNumberStart: 'Line start',
       font: 'Font',
       theme: 'Theme',
       fontWeight: 'Font weight',
@@ -25,6 +26,7 @@ export default {
       ligatures: 'Ligatures',
       aspectRatio: 'Aspect ratio',
       formatter: 'Formatter',
+      border: 'Border',
     },
   },
   it: {
@@ -43,6 +45,7 @@ export default {
       editor: 'Editor',
       language: 'Linguaggio',
       lineNumbers: 'Numeri di riga',
+      lineNumberStart: 'Line start',
       font: 'Carattere',
       fontWeight: 'Peso carattere',
       reflection: 'Riflesso',
@@ -52,6 +55,7 @@ export default {
       ligatures: 'Ligatures',
       aspectRatio: 'Proporzioni',
       formatter: 'Formatter',
+      border: 'Border',
     },
   },
   de: {
@@ -70,6 +74,7 @@ export default {
       editor: 'Editor',
       language: 'Sprache',
       lineNumbers: 'Zeilennummer',
+      lineNumberStart: 'Line start',
       font: 'Schriftart',
       fontWeight: 'Schriftstärke',
       reflection: 'Reflektion',
@@ -79,6 +84,7 @@ export default {
       ligatures: 'Ligatures',
       aspectRatio: 'Aspect ratio',
       formatter: 'Formatter',
+      border: 'Border',
     },
   },
   es: {
@@ -97,6 +103,7 @@ export default {
       editor: 'Editor',
       language: 'Idioma',
       lineNumbers: 'Número de línea',
+      lineNumberStart: 'Line start',
       font: 'Fuente',
       fontWeight: 'Peso de fuente',
       reflection: 'Reflexión',
@@ -106,6 +113,7 @@ export default {
       ligatures: 'Ligatures',
       aspectRatio: 'Aspect ratio',
       formatter: 'Formatter',
+      border: 'Border',
     },
   },
 } as const;

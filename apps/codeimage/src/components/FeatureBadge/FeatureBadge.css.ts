@@ -12,7 +12,7 @@ export const badge = style({
   position: 'absolute',
   left: '100%',
   top: '50%',
-  transform: `translateX(10px) translateY(-50%)`,
+  transform: `translateX(2px) translateY(-50%)`,
   borderRadius: themeTokens.radii.lg,
   whiteSpace: 'nowrap',
 });

@@ -71,6 +71,7 @@ function makeDashboardState() {
             code: appEnvironment.defaultState.editor.code,
             languageId: appEnvironment.defaultState.editor.languageId,
             tabName: 'index.tsx',
+            lineNumberStart: 1,
           },
         ],
       },

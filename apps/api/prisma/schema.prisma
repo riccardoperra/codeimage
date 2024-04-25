@@ -62,6 +62,7 @@ model SnippetTerminal {
   showGlassReflection Boolean  @default(false)
   opacity             Float    @default(100)
   alternativeTheme    Boolean  @default(false)
+  borderType          String?
 }
 
 model SnippetEditorOptions {
@@ -81,6 +82,8 @@ model SnippetEditorTab {
   code       String  @default("")
   languageId String
   tabName    String  @default("")
+
+  lineNumberStart Int @default(1)
 
   @@unique([id, projectId])
 }

@@ -1,11 +1,13 @@
 import {useI18n} from '@codeimage/locale';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {VersionStore} from '@codeimage/store/version/version.store';
 import {createSelectOptions, Select} from '@codeui/kit';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {getUmami} from '@core/constants/umami';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {SkeletonLine} from '@ui/Skeleton/Skeleton';
 import {createMemo, ParentComponent, Show} from 'solid-js';
+import {provideState} from 'statebuilder';
 import {AppLocaleEntries} from '../../i18n';
 import {TerminalControlField} from './controls/TerminalControlField/TerminalControlField';
 import {PanelHeader} from './PanelHeader';
@@ -14,6 +16,7 @@ import {SuspenseEditorItem} from './SuspenseEditorItem';
 
 export const WindowStyleForm: ParentComponent = () => {
   const terminal = getTerminalState();
+  const versionStore = provideState(VersionStore);
   const [t] = useI18n<AppLocaleEntries>();
 
   const terminalShadows = createMemo(
@@ -24,6 +27,17 @@ export const WindowStyleForm: ParentComponent = () => {
     key: 'label',
     valueKey: 'value',
   });
+
+  const borderTypeSelect = createSelectOptions(
+    [
+      {label: 'None', value: 'none'},
+      {label: 'Glass', value: 'glass'},
+    ],
+    {
+      key: 'label',
+      valueKey: 'value',
+    },
+  );
 
   return (
     <>
@@ -78,7 +92,12 @@ export const WindowStyleForm: ParentComponent = () => {
             <TerminalControlField
               showAccent={terminal.state.accentVisible}
               selectedTerminal={terminal.state.type}
-              onTerminalChange={terminal.setType}
+              onTerminalChange={type => {
+                terminal.setType(type);
+                getUmami().track('change-terminal-type', {
+                  type,
+                });
+              }}
               onShowAccentChange={terminal.setAccentVisible}
             />
           </FullWidthPanelRow>
@@ -133,13 +152,45 @@ export const WindowStyleForm: ParentComponent = () => {
               {...terminalShadowsSelect.controlled(
                 () => terminal.state.shadow ?? undefined,
                 shadow => {
-                  getUmami().trackEvent(shadow ?? 'none', 'change-shadow');
+                  getUmami().track('change-shadow', {
+                    shadow: shadow ?? 'none',
+                  });
                   terminal.setShadow(shadow ?? null);
                 },
               )}
               aria-label={'Shadow'}
               size={'xs'}
               id={'frameSelectShadow'}
+            />
+          </SuspenseEditorItem>
+        </TwoColumnPanelRow>
+      </PanelRow>
+      <PanelRow
+        for={'frameSelectShadow'}
+        feature={'borderType'}
+        label={t('frame.border')}
+      >
+        <TwoColumnPanelRow>
+          <SuspenseEditorItem
+            fallback={<SkeletonLine width={'100%'} height={'24px'} />}
+          >
+            <Select
+              options={borderTypeSelect.options()}
+              {...borderTypeSelect.props()}
+              {...borderTypeSelect.controlled(
+                () => terminal.state.borderType ?? 'none',
+                border => {
+                  const isNone = border === 'none';
+                  versionStore.see('borderType', false);
+                  getUmami().track('change-border', {
+                    border: border ?? 'none',
+                  });
+                  terminal.setBorder(isNone ? null : border ?? null);
+                },
+              )}
+              aria-label={'Border'}
+              size={'xs'}
+              id={'frameSelectBorder'}
             />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>

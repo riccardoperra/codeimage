@@ -44,12 +44,14 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
         code: '## title',
         languageId: 'markdown',
         tabName: 'README.md',
+        lineNumberStart: 1,
       },
       {
         id: 'temp',
         code: '2',
         languageId: 'typescript',
         tabName: 'index.tsx',
+        lineNumberStart: 300,
       },
     ],
     editorOptions: {
@@ -70,6 +72,7 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       alternativeTheme: true,
       accentVisible: false,
       type: 'windows',
+      borderType: 'glass',
     },
   };
 
@@ -123,7 +126,8 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       alternativeTheme: true,
       accentVisible: false,
       type: 'windows',
-    } as ProjectUpdateResponse['terminal'],
+      borderType: 'glass',
+    } satisfies ProjectUpdateResponse['terminal'],
     'return updated terminal',
   );
   assert.deepStrictEqual(
@@ -134,12 +138,14 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
         code: '## title',
         languageId: 'markdown',
         tabName: 'README.md',
+        lineNumberStart: 1,
       },
       {
         id: body.editorTabs[1].id,
         code: '2',
         languageId: 'typescript',
         tabName: 'index.tsx',
+        lineNumberStart: 300,
       },
     ] as ProjectUpdateResponse['editorTabs'],
     'return updated editor tabs',

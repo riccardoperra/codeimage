@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {createTheme, fallbackVar, style} from '@vanilla-extract/css';
+import {createTheme, createVar, fallbackVar, style} from '@vanilla-extract/css';
 
 export const [terminalTheme, terminalVars] = createTheme({
   headerHeight: '50px',
@@ -16,6 +16,11 @@ export const [terminalTheme, terminalVars] = createTheme({
   tabAccentInactiveBackground: 'unset',
   tabTextColor: 'unset',
 });
+
+const glassBorderDark = `0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,.90), inset 0 0 0 1.5px rgba(255, 255, 255, 0.4)`;
+const glassBorderLight = `0 0 15px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 0 1px rgb(0,0,0,.05), inset 0 0 0 1px rgba(255, 255, 255, 0.15)`;
+
+const glassBorderVar = createVar();
 
 export const wrapper = style([
   terminalTheme,
@@ -36,12 +41,17 @@ export const wrapper = style([
       '&[data-theme-mode=light]': {
         vars: {
           [terminalVars.headerColor]: `255, 255, 255`,
+          [glassBorderVar]: glassBorderLight,
         },
       },
-      '&[data-theme-mode=dark] &': {
+      '&[data-theme-mode=dark]': {
         vars: {
+          [glassBorderVar]: glassBorderDark,
           [terminalVars.headerColor]: `0, 0, 0`,
         },
+      },
+      '&[data-custom-border=glass]': {
+        boxShadow: `${glassBorderVar}, ${terminalVars.boxShadow}`,
       },
     },
   },

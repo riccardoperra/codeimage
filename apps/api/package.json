@@ -52,7 +52,7 @@
     "@prisma/client": "^4.15.0",
     "@sinclair/typebox": "^0.31.28",
     "@teamhanko/passkeys-sdk": "^0.1.8",
-    "auth0": "4.2.0",
+    "auth0": "4.3.1",
     "close-with-grace": "^1.2.0",
     "dotenv": "^16.1.4",
     "dotenv-cli": "^6.0.0",

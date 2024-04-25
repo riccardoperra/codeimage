@@ -6,7 +6,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {createSelectOptions, Select} from '@codeui/kit';
+import {createSelectOptions, Select, NumberField} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
@@ -18,6 +18,7 @@ import {PanelDivider} from './PanelDivider';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
+import {appEnvironment} from '@core/configuration';
 
 const languages: readonly LanguageDefinition[] = [...SUPPORTED_LANGUAGES].sort(
   (a, b) => {
@@ -35,9 +36,15 @@ const languages: readonly LanguageDefinition[] = [...SUPPORTED_LANGUAGES].sort(
 
 export const EditorStyleForm: ParentComponent = () => {
   const {themeArray} = getThemeStore();
+  const {lineNumbers: lineNumbersConfig} = appEnvironment;
   const [t] = useI18n<AppLocaleEntries>();
-  const {editor, setLanguageId, formatter, setFormatterName} =
-    getActiveEditorStore();
+  const {
+    editor,
+    setLanguageId,
+    formatter,
+    setFormatterName,
+    setLineNumberStart,
+  } = getActiveEditorStore();
   const {
     state,
     actions: {setShowLineNumbers, setFontWeight, setFontId, setEnableLigatures},
@@ -114,7 +121,9 @@ export const EditorStyleForm: ParentComponent = () => {
                       () => editor().languageId,
                       language => {
                         setLanguageId(language!);
-                        getUmami().trackEvent(language!, 'change-language');
+                        getUmami().track('change-language', {
+                          language: language!,
+                        });
                       },
                     )}
                     options={languagesOptions.options()}
@@ -205,6 +214,28 @@ export const EditorStyleForm: ParentComponent = () => {
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
+
+            <Show when={state.options.showLineNumbers}>
+              <PanelRow
+                for={'frameLineNumberStartField'}
+                label={t('frame.lineNumberStart')}
+              >
+                <TwoColumnPanelRow>
+                  <SuspenseEditorItem
+                    fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                  >
+                    <NumberField
+                      size={'xs'}
+                      min={lineNumbersConfig.min}
+                      max={lineNumbersConfig.max}
+                      id={'frameLineNumberStartField'}
+                      value={editor().lineNumberStart}
+                      onChange={setLineNumberStart}
+                    />
+                  </SuspenseEditorItem>
+                </TwoColumnPanelRow>
+              </PanelRow>
+            </Show>
           </DynamicSizedContainer>
 
           <PanelDivider />

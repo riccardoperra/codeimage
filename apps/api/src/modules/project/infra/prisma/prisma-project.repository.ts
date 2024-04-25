@@ -105,6 +105,7 @@ export function makePrismaProjectRepository(
             showWatermark: data.terminal.showWatermark,
             textColor: data.terminal.textColor,
             type: data.terminal.type,
+            borderType: data.terminal.borderType,
           },
         },
       },
@@ -138,20 +139,22 @@ export function makePrismaProjectRepository(
             },
           },
           upsert: data.editors.map(editor => {
-            const {languageId, code, tabName} = editor;
+            const {languageId, code, tabName, lineNumberStart, id} = editor;
             return {
               where: {
-                id: editor.id,
+                id,
               },
               create: {
                 code,
                 tabName,
                 languageId,
+                lineNumberStart,
               },
               update: {
                 code,
                 tabName,
                 languageId,
+                lineNumberStart,
               },
             };
           }),
@@ -186,6 +189,7 @@ export function makePrismaProjectRepository(
             showWatermark: data.terminal.showWatermark,
             textColor: data.terminal.textColor,
             type: data.terminal.type,
+            borderType: data.terminal.borderType,
           },
         },
       },

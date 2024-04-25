@@ -48,6 +48,7 @@ export function createProjectRequestMapper(
         data.terminal.alternativeTheme ??
         SnippetTerminalCreateRequestSchema.properties.alternativeTheme.default,
       shadow: data.terminal.shadow ?? null,
+      borderType: data.terminal.borderType ?? null,
     },
     editorOptions: {
       fontWeight: data.editorOptions.fontWeight,
@@ -62,6 +63,7 @@ export function createProjectRequestMapper(
       languageId: editor.languageId,
       code: editor.code,
       tabName: editor.tabName,
+      lineNumberStart: editor.lineNumberStart,
     })),
   };
 }

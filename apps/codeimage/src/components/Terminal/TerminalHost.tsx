@@ -8,6 +8,7 @@ import {FlowComponent} from 'solid-js';
 import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
 import {createTabTheme} from './Tabs/createTabTheme';
 import * as styles from './terminal.css';
+import {getFrameState} from '@codeimage/store/editor/frame';
 
 export interface BaseTerminalProps
   extends Omit<TerminalState, 'type'>,
@@ -30,6 +31,7 @@ export interface TerminalHostProps extends BaseTerminalProps {
 export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
   const tabTheme = createTabTheme(() => props.themeId);
   const darkMode = () => tabTheme().darkMode;
+  const frameState = getFrameState().store;
 
   const background = () => {
     if (props.alternativeTheme) {
@@ -51,17 +53,22 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
       data-header-visible={props.showHeader}
       data-accent-header={props.accentVisible && !props.alternativeTheme}
       data-fallback-inactive-tab={tabTheme()?.shouldFallbackInactiveColor}
+      data-custom-border={props.borderType === 'glass' ? 'glass' : null}
       style={assignInlineVars({
         [styles.terminalVars.headerBackgroundColor]:
           tabTheme()?.background ?? '',
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
-        [styles.terminalVars.boxShadow]: props.shadow ?? 'unset',
+        [styles.terminalVars.boxShadow]:
+          props.shadow && props.shadow !== 'unset'
+            ? props.shadow
+            : '0 0 0 0 rgb(0, 0, 0, 0)',
         [styles.terminalVars.tabTextColor]: tabTheme()?.textColor ?? '',
         [styles.terminalVars.tabAccentActiveBackground]:
           tabTheme().activeTabBackground ?? '',
         [styles.terminalVars.tabAccentInactiveBackground]:
           tabTheme().inactiveTabBackground ?? '',
+        [styles.terminalVars.radius]: frameState.padding === 0 ? 0 : undefined,
         ...(props.style ?? {}),
       })}
     >

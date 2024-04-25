@@ -172,9 +172,15 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(() => customFontExtension());
   createExtension(currentLanguage);
   createExtension(currentExtraLanguage);
-  createExtension(() =>
-    editorState.options.showLineNumbers ? lineNumbers() : [],
-  );
+
+  const lineNumberStart = createMemo(() => editor()?.lineNumberStart);
+  createExtension(() => {
+    const lnStart = lineNumberStart() ?? 1;
+    const newLn = (ln: number) => ln + (lnStart - 1);
+    return editorState.options.showLineNumbers
+      ? lineNumbers({formatNumber: lineNo => String(newLn(lineNo))})
+      : [];
+  });
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseTheme);
 
