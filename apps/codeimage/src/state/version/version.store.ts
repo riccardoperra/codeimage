@@ -37,7 +37,7 @@ interface VersionStore {
   features: Record<FeatureName, Feature>;
 }
 
-export type FeatureName = 'fontPicker' | 'windowStylePicker';
+export type FeatureName = 'fontPicker' | 'windowStylePicker' | 'borderType';
 
 const ChangelogFiles = Object.keys(
   import.meta.glob('../../../changelog/*.mdx'),
@@ -55,6 +55,10 @@ function initialValue(): VersionStore {
       },
       windowStylePicker: {
         name: 'Window Style Picker',
+        seen: {[appEnvironment.version]: 0},
+      },
+      borderType: {
+        name: 'Border type',
         seen: {[appEnvironment.version]: 0},
       },
     },
@@ -82,6 +86,13 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
         .get()
         .then(data => {
           if (data) {
+            data = {
+              ...data,
+              features: {
+                ...initialValue(),
+                ...data.features,
+              },
+            };
             const currentVersion = appEnvironment.version;
             const previousVersion = data.appVersion;
             const isFirstTime = data.seen.length === 0;
@@ -99,8 +110,6 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
             if (isFirstTime || hasNewUpdate) {
               const fileVersions = ChangelogFiles.map(({version}) => version);
               const hasNewVersionToSee = fileVersions.includes(data.appVersion);
-              console.log(isFirstTime, hasNewUpdate, hasNewVersionToSee);
-
               if (isFirstTime || hasNewVersionToSee) {
                 controlledDialog(Changelog, {latest: true});
                 const updatedData = updateWithLatestVersionSeen(
@@ -109,10 +118,10 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
                 );
                 _.set(() => updatedData);
               } else {
-                _.set(() => data);
               }
             } else {
-              _.set(() => updateWithLatestVersionSeen(currentVersion, data));
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              _.set(() => updateWithLatestVersionSeen(currentVersion, data!));
             }
             setReady(true);
           }

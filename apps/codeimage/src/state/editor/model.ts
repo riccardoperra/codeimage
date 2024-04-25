@@ -53,6 +53,8 @@ export interface TerminalState {
   showGlassReflection: boolean;
   opacity: number;
   alternativeTheme: boolean;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  borderType: ('glass' | (string & {})) | null;
 }
 
 export type PersistedTerminalState = Pick<
@@ -67,6 +69,7 @@ export type PersistedTerminalState = Pick<
   | 'showGlassReflection'
   | 'opacity'
   | 'alternativeTheme'
+  | 'borderType'
 >;
 
 export interface ProjectEditorPersistedState {

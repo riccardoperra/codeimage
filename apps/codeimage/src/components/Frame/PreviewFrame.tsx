@@ -121,6 +121,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
             showWatermark={terminal.showWatermark}
             opacity={terminal.opacity}
             alternativeTheme={terminal.alternativeTheme}
+            borderType={terminal.borderType}
             themeId={editor.state.options.themeId}
           >
             <Show when={getActiveEditorStore().editor()}>
