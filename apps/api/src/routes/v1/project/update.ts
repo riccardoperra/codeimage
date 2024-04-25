@@ -21,21 +21,18 @@ const schema = {
 export type UpdateProjectApi = GetApiTypes<typeof schema>;
 
 const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.put(
-    '/:id',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    request => {
-      const {
-        appUser,
-        body,
-        params: {id},
-      } = request;
-      return fastify.projectService.update(appUser.id, id, body);
-    },
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
   );
+  fastify.put('/:id', {schema}, request => {
+    const {
+      appUser,
+      body,
+      params: {id},
+    } = request;
+    return fastify.projectService.update(appUser.id, id, body);
+  });
 };
 
 export default updateRoute;

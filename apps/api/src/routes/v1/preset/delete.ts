@@ -1,5 +1,5 @@
+import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {FastifyPluginAsync} from 'fastify';
 import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 
 const schema = {
@@ -7,31 +7,26 @@ const schema = {
   params: Type.Object({
     id: Type.String(),
   }),
-  summary: 'Delete an existing CodeImage preset',
   response: {
-    200: Type.Void(),
+    200: Type.Null(),
   },
+  summary: 'Delete an existing CodeImage preset',
 };
 
 export type DeletePresetApi = GetApiTypes<typeof schema>;
 
-const deleteRoute: FastifyPluginAsync = async fastify => {
-  fastify.delete<{
-    Params: {id: string};
-  }>(
-    '/:id',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    async request => {
-      const {
-        appUser,
-        params: {id},
-      } = request;
-      return fastify.presetService.deletePreset(appUser.id, id);
-    },
+const deleteRoute: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
   );
+  fastify.delete('/:id', {schema}, async request => {
+    const {
+      appUser,
+      params: {id},
+    } = request;
+    await fastify.presetService.deletePreset(appUser.id, id);
+  });
 };
 
 export default deleteRoute;

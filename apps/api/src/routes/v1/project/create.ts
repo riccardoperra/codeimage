@@ -17,17 +17,14 @@ const schema = {
 export type CreateProjectApi = GetApiTypes<typeof schema>;
 
 const createRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.post(
-    '/',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    request => {
-      const {appUser, body} = request;
-      return fastify.projectService.createNewProject(appUser.id, body);
-    },
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
   );
+  fastify.post('/', {schema}, request => {
+    const {appUser, body} = request;
+    return fastify.projectService.createNewProject(appUser.id, body);
+  });
 };
 
 export default createRoute;

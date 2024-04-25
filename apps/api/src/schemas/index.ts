@@ -10,3 +10,12 @@ export type {GetAllPresetApi} from '../routes/v1/preset/getAll.js';
 export type {CreatePresetApi} from '../routes/v1/preset/create.js';
 export type {UpdatePresetApi} from '../routes/v1/preset/update.js';
 export type {DeletePresetApi} from '../routes/v1/preset/delete.js';
+
+export type {PasskeyStartRegistrationApi} from '../routes/v1/passkey/startRegistration.js';
+export type {PasskeyFinalizeRegistrationApi} from '../routes/v1/passkey/finalizeRegistration.js';
+export type {PasskeyStartLoginApi} from '../routes/v1/passkey/startLogin.js';
+export type {PasskeyFinalizeLoginApi} from '../routes/v1/passkey/finalizeLogin.js';
+export type {DeleteCredentialApi} from '../routes/v1/passkey/deleteCredential.js';
+export type {PasskeyListCredentialsApi} from '../routes/v1/passkey/listCredentials.js';
+export type {PasskeyUpdateCredentialsApi} from '../routes/v1/passkey/updateCredential.js';
+export type {UserInfoApi} from '../routes/v1/user/info.js';

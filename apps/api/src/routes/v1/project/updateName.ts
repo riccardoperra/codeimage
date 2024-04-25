@@ -1,5 +1,5 @@
-import {Static, Type} from '@sinclair/typebox';
-import {FastifyPluginAsync} from 'fastify';
+import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import {Type} from '@sinclair/typebox';
 import {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {BaseProjectResponseSchema} from '../../../modules/project/schema/project.schema.js';
 
@@ -19,25 +19,19 @@ const schema = {
 
 export type UpdateProjectNameApi = GetApiTypes<typeof schema>;
 
-const updateProjectName: FastifyPluginAsync = async fastify => {
-  fastify.put<{
-    Params: Static<(typeof schema)['params']>;
-    Body: Static<(typeof schema)['body']>;
-  }>(
-    '/:id/name',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    async request => {
-      const {
-        body,
-        appUser,
-        params: {id},
-      } = request;
-      return fastify.projectService.updateName(appUser.id, id, body.name);
-    },
+const updateProjectName: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.addHook(
+    'preValidation',
+    fastify.authorize({mustBeAuthenticated: true}),
   );
+  fastify.put('/:id/name', {schema}, async request => {
+    const {
+      body,
+      appUser,
+      params: {id},
+    } = request;
+    return fastify.projectService.updateName(appUser.id, id, body.name);
+  });
 };
 
 export default updateProjectName;

@@ -4,6 +4,7 @@ import {testPresetUtils} from '../__internal__/presetUtils.js';
 
 export const client = new PrismaClient({
   datasources: {
+    // @ts-expect-error fix
     db: {url: import.meta.env['DATABASE_URL']},
   },
 });

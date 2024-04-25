@@ -1,3 +1,4 @@
+import {AuthState} from '@codeimage/store/auth/auth';
 import {withEntityPlugin} from '@codeimage/store/plugins/withEntityPlugin';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {toast} from '@codeimage/ui';
@@ -6,7 +7,6 @@ import {withAsyncAction} from 'statebuilder/asyncAction';
 import {provideAppState} from '..';
 import * as api from '../../data-access/preset';
 import {useIdb} from '../../hooks/use-indexed-db';
-import {getAuth0State} from '../auth/auth0';
 import {experimental__defineResource} from '../plugins/bindStateBuilderResource';
 import {withPresetBridge} from './bridge';
 import {Preset, PresetsArray} from './types';
@@ -28,7 +28,8 @@ function mergeDbPresetsWithLocalPresets(
 }
 
 async function fetchInitialState() {
-  const useInMemoryStore = !getAuth0State().loggedIn();
+  const authState = provideAppState(AuthState);
+  const useInMemoryStore = !authState.loggedIn();
   const localPresets = await idb
     .get<PresetsArray>(idbKey)
     .then(data => data ?? ([] as PresetsArray))

@@ -1,5 +1,5 @@
 import {Project, User} from '@codeimage/prisma-models';
-import {HttpError, HttpErrors} from '@fastify/sensible/lib/httpError.js';
+import {HttpErrors} from '@fastify/sensible/lib/httpError.js';
 import {createProjectRequestMapper} from '../mapper/create-project-mapper.js';
 import {createCompleteProjectGetByIdResponseMapper} from '../mapper/get-project-by-id-mapper.js';
 import {ProjectRepository} from '../repository/index.js';
@@ -89,7 +89,7 @@ export function makeProjectService(
       try {
         const project = await repository.findById(projectId);
         if (!project) {
-          throw {name: 'NotFoundError'} as HttpError;
+          throw {name: 'NotFoundError'} as HttpErrors['HttpError'];
         }
         return this.createNewProject(user.id, {
           name: newName ?? project.name,
@@ -99,7 +99,7 @@ export function makeProjectService(
           terminal: project.terminal,
         });
       } catch (e) {
-        const error = e as HttpError;
+        const error = e as HttpErrors['HttpError'];
         if (error && error.name === 'NotFoundError') {
           throw httpErrors.notFound(
             `Cannot clone project with id ${projectId} since it does not exists`,

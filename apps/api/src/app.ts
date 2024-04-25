@@ -20,6 +20,9 @@ declare module 'fastify' {
       GRANT_TYPE_AUTH0?: string;
       ALLOWED_ORIGINS?: string;
       PRESETS_LIMIT?: number;
+      HANKO_PASSKEYS_LOGIN_BASE_URL: string;
+      HANKO_PASSKEYS_TENANT_ID: string;
+      HANKO_PASSKEYS_API_KEY: string;
     };
   }
 }
@@ -51,6 +54,9 @@ const app: FastifyPluginAsync<AppOptions> = async (
       GRANT_TYPE_AUTH0: Type.String(),
       ALLOWED_ORIGINS: Type.String(),
       PRESETS_LIMIT: Type.Number({default: Number.MAX_SAFE_INTEGER}),
+      HANKO_PASSKEYS_LOGIN_BASE_URL: Type.String(),
+      HANKO_PASSKEYS_TENANT_ID: Type.String(),
+      HANKO_PASSKEYS_API_KEY: Type.String(),
     }),
   });
 
@@ -61,6 +67,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dir: join(__dirname, 'plugins'),
     options: opts,
     forceESM: true,
+    encapsulate: false,
   });
 
   // This loads all plugins defined in routes

@@ -2,8 +2,8 @@
   "extends": "fastify-tsconfig",
   "compilerOptions": {
     "outDir": "dist",
-    "resolveJsonModule": false,
-    "declarationMap": true,
+    "resolveJsonModule": true,
+    "declaration": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "moduleResolution": "NodeNext",

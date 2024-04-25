@@ -1,5 +1,6 @@
-import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {Box, SvgIcon, SvgIconProps} from '@codeimage/ui';
+import {AuthState} from '@codeimage/store/auth/auth';
+import {provideAppState} from '@codeimage/store/index';
+import {SvgIcon, SvgIconProps} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Show} from 'solid-js';
@@ -14,16 +15,18 @@ function GithubIcon(props: SvgIconProps) {
 }
 
 export function GithubLoginButton() {
-  const {login} = getAuth0State();
+  const appState = provideAppState(AuthState);
   const modality = useModality();
   return (
-    <Button size={'sm'} class={styles.button} onClick={() => login()}>
-      <GithubIcon size={'md'} />
-      <Box as={'span'} marginLeft={2}>
-        <Show fallback={'Sign in'} when={modality === 'full'} keyed={true}>
-          Sign in with GitHub
-        </Show>
-      </Box>
+    <Button
+      size={'md'}
+      class={styles.button}
+      leftIcon={<GithubIcon size={'md'} />}
+      onClick={() => appState.providers.auth0.loginWithGithub()}
+    >
+      <Show fallback={'Sign in'} when={modality === 'full'} keyed={true}>
+        Login with GitHub
+      </Show>
     </Button>
   );
 }

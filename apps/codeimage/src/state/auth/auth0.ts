@@ -1,33 +1,33 @@
 import {Auth0Client, User} from '@auth0/auth0-spa-js';
-import {auth0 as $auth0} from '@core/constants/auth0';
+import {auth0} from '@core/constants/auth0';
 import {createRoot, createSignal} from 'solid-js';
 
 type AuthState = User | null;
 
-export function $auth0State() {
-  let auth0!: Auth0Client;
+function $auth0State() {
+  let client!: Auth0Client;
   const [state, setState] = createSignal<AuthState>();
 
   async function initLogin() {
-    auth0 = await $auth0;
+    client = await auth0;
     const queryParams = new URLSearchParams(window.location.search);
-    if (!auth0) return;
+    if (!client) return;
     if (queryParams.has('code') && queryParams.has('state')) {
-      const data = await auth0.handleRedirectCallback().catch(() => null);
-      setState(await auth0.getUser());
+      const data = await client.handleRedirectCallback().catch(() => null);
+      setState(await client.getUser());
       history.replaceState(data?.appState, '', window.location.origin);
       if (data) {
         // should always be null?
       }
     } else {
-      if (await auth0.isAuthenticated()) {
-        setState(await auth0.getUser());
+      if (await client.isAuthenticated()) {
+        setState(await client.getUser());
       }
     }
   }
 
   async function login() {
-    auth0.loginWithRedirect({
+    client.loginWithRedirect({
       authorizationParams: {
         connection: 'github',
       },
@@ -35,7 +35,7 @@ export function $auth0State() {
   }
 
   async function forceLogin() {
-    auth0.loginWithRedirect({
+    client.loginWithRedirect({
       authorizationParams: {
         prompt: 'login',
         connection: 'github',
@@ -44,7 +44,7 @@ export function $auth0State() {
   }
 
   async function signOut() {
-    await auth0.logout({
+    await client.logout({
       logoutParams: {
         returnTo: `${window.location.protocol}//${window.location.host}`,
       },
@@ -52,7 +52,7 @@ export function $auth0State() {
   }
 
   const getToken = () => {
-    return auth0.getTokenSilently();
+    return client.getTokenSilently();
   };
 
   const loggedIn = () => !!state();

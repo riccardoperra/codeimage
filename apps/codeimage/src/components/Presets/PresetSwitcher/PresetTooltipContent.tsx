@@ -1,10 +1,11 @@
 import {useI18n} from '@codeimage/locale';
-import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {AuthState} from '@codeimage/store/auth/auth';
+import {provideAppState} from '@codeimage/store/index';
 import {Box, Link} from '@codeimage/ui';
 import {AppLocaleEntries} from '../../../i18n';
 
 export function PresetTooltipContent() {
-  const {loggedIn, login} = getAuth0State();
+  const {loggedIn, openLoginPopup} = provideAppState(AuthState);
   const [t] = useI18n<AppLocaleEntries>();
   return (
     <>
@@ -16,7 +17,7 @@ export function PresetTooltipContent() {
           <p>
             <Link
               as="button"
-              onClick={login}
+              onClick={openLoginPopup}
               size={'sm'}
               underline
               weight={'medium'}

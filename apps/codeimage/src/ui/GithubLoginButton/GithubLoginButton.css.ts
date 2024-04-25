@@ -7,6 +7,6 @@ export const button = style({
   cursor: 'pointer',
 
   ':hover': {
-    background: 'rgb(29,33,35)',
+    background: 'rgb(29,33,35) !important',
   },
 });

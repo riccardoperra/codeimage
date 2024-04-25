@@ -1,25 +1,18 @@
-import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {AuthState} from '@codeimage/store/auth/auth';
+import {provideAppState} from '@codeimage/store/index';
 import {Badge} from '@codeimage/ui';
-import {
-  As,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-} from '@codeui/kit';
-import {GithubLoginButton} from '@ui/GithubLoginButton/GithubLoginButton';
-import {Show} from 'solid-js';
+import {ParentProps, Show} from 'solid-js';
 import * as styles from './UserBadge.css';
 
-export function UserBadge() {
-  const {loggedIn, user, signOut} = getAuth0State();
+export function UserBadge(props: ParentProps) {
+  const authState = provideAppState(AuthState);
+  const user = () => authState().user;
   const profileImage = () => user()?.picture;
 
   const initials = () => {
-    const $user = user();
-    if (!$user) return;
-    const [first = '', last = ''] = ($user.name ?? '').split(' ');
+    const userValue = user();
+    if (!userValue) return;
+    const [first = '', last = ''] = (userValue.name ?? '').split(' ');
     return [first, last]
       .filter(data => !!data)
       .map(data => data[0])
@@ -27,25 +20,11 @@ export function UserBadge() {
   };
 
   return (
-    <Show fallback={<GithubLoginButton />} when={loggedIn()}>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <As component={Badge} theme={styles.badge} size={'md'}>
-            {initials()}
-            <Show when={profileImage()}>
-              <img class={styles.badgePicture} src={profileImage()} />
-            </Show>
-          </As>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuPortal>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => signOut()}>
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenuPortal>
-      </DropdownMenu>
-    </Show>
+    <Badge theme={styles.badge} size={'md'} {...props}>
+      {initials()}
+      <Show when={profileImage()}>
+        <img class={styles.badgePicture} src={profileImage()} />
+      </Show>
+    </Badge>
   );
 }
