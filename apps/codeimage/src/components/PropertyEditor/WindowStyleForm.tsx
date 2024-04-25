@@ -25,6 +25,17 @@ export const WindowStyleForm: ParentComponent = () => {
     valueKey: 'value',
   });
 
+  const borderTypeSelect = createSelectOptions(
+    [
+      {label: 'None', value: 'none'},
+      {label: 'Glass', value: 'glass'},
+    ],
+    {
+      key: 'label',
+      valueKey: 'value',
+    },
+  );
+
   return (
     <>
       <PanelHeader label={t('frame.terminal')} />
@@ -154,21 +165,27 @@ export const WindowStyleForm: ParentComponent = () => {
       <PanelRow
         for={'frameSelectShadow'}
         feature={'borderType'}
-        label={t('frame.glassBorderType')}
+        label={t('frame.border')}
       >
         <TwoColumnPanelRow>
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'24px'} />}
           >
-            <SegmentedField
+            <Select
+              options={borderTypeSelect.options()}
+              {...borderTypeSelect.props()}
+              {...borderTypeSelect.controlled(
+                () => terminal.state.borderType ?? undefined,
+                border => {
+                  getUmami().track('change-border', {
+                    border: border ?? 'none',
+                  });
+                  terminal.setBorder(border ?? null);
+                },
+              )}
+              aria-label={'Border'}
               size={'xs'}
-              adapt
-              value={terminal.state.borderType === 'glass'}
-              onChange={terminal.setGlassBorderType}
-              items={[
-                {label: t('common.yes'), value: true},
-                {label: t('common.no'), value: false},
-              ]}
+              id={'frameSelectBorder'}
             />
           </SuspenseEditorItem>
         </TwoColumnPanelRow>

@@ -47,7 +47,8 @@ export function createTerminalState() {
       toggleWatermark: void;
       setFromPersistedState: PersistedTerminalState;
       setFromPreset: PresetData['terminal'];
-      setGlassBorderType: boolean;
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      setBorder: ('glass' | (string & {})) | null;
     }>(),
   );
   const store = provideAppState(config);
@@ -98,8 +99,8 @@ export function createTerminalState() {
       }
       return {...state, ...persistedState};
     })
-    .hold(store.commands.setGlassBorderType, (value, {set}) => {
-      set('borderType', value ? 'glass' : null);
+    .hold(store.commands.setBorder, (value, {set}) => {
+      set('borderType', value);
     });
 
   const mapToStateToPersistState = (
@@ -132,7 +133,7 @@ export function createTerminalState() {
       store.commands.setShowWatermark,
       store.commands.toggleShowHeader,
       store.commands.toggleWatermark,
-      store.commands.setGlassBorderType,
+      store.commands.setBorder,
       store.commands.setFromPreset,
     ]),
   ).pipe(
