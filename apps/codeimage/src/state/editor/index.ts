@@ -12,7 +12,7 @@ export function createEditorStore() {
   const frame = getFrameState();
   const editor = createEditorsStore();
 
-  const [resource] = registry.getThemeResource('fleetTheme');
+  const [resource] = registry.getThemeResource('fleetDark');
 
   createEffect(
     on(resource, async resource => {
