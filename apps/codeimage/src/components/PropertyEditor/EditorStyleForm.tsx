@@ -230,6 +230,9 @@ export const EditorStyleForm: ParentComponent = () => {
                       max={lineNumbersConfig.max}
                       id={'frameLineNumberStartField'}
                       value={editor().lineNumberStart}
+                      ref={el => {
+                        el.autocomplete = 'off';
+                      }}
                       onChange={setLineNumberStart}
                     />
                   </SuspenseEditorItem>

@@ -48,13 +48,15 @@ const $activeEditorState = () => {
       setEditors(currentEditorIndex(), 'code', code);
 
     const setLineNumberStart = (lineNumberStart: number | null | undefined) => {
-      if (lineNumberStart === null) return;
+      if (!lineNumberStart) {
+        lineNumberStart = 1;
+      }
       return setEditors(
         currentEditorIndex(),
         'lineNumberStart',
         // TODO Already done by @codeui/kit but I don't feel safe about this component I made
         clamp(
-          lineNumberStart ?? 1,
+          lineNumberStart,
           appEnvironment.lineNumbers.min,
           appEnvironment.lineNumbers.max,
         ),
