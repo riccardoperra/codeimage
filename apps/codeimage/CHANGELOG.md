@@ -1,5 +1,20 @@
 # @codeimage/app
 
+## 1.6.0
+
+### Minor Changes
+
+- [#611](https://github.com/riccardoperra/codeimage/pull/611) [`e94e8a2d`](https://github.com/riccardoperra/codeimage/commit/e94e8a2d5ec01cddd7593c837bf59f55b8a4e231) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(app,api) add new border type glass option
+
+- [#624](https://github.com/riccardoperra/codeimage/pull/624) [`9e537bcd`](https://github.com/riccardoperra/codeimage/commit/9e537bcdf92ffaf43eb5e38f5f7fb578eaef9709) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat(app,api): add line number start option
+
+- [#625](https://github.com/riccardoperra/codeimage/pull/625) [`4d27d146`](https://github.com/riccardoperra/codeimage/commit/4d27d1468451ee36a64613a03a167ed607aee0ba) Thanks [@SarjuHansaliya](https://github.com/SarjuHansaliya)! - feat: allow zero padding
+
+### Patch Changes
+
+- Updated dependencies [[`e94e8a2d`](https://github.com/riccardoperra/codeimage/commit/e94e8a2d5ec01cddd7593c837bf59f55b8a4e231), [`9e537bcd`](https://github.com/riccardoperra/codeimage/commit/9e537bcdf92ffaf43eb5e38f5f7fb578eaef9709)]:
+  - @codeimage/api@0.4.0
+
 ## 1.5.1
 
 ### Patch Changes
