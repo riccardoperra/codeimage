@@ -89,7 +89,7 @@ export const VersionStore = defineStore<VersionStore>(initialValue)
             data = {
               ...data,
               features: {
-                ...initialValue(),
+                ...initialValue().features,
                 ...data.features,
               },
             };
