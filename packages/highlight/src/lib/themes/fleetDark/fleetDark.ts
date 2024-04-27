@@ -138,7 +138,6 @@ export const colors = EditorView.theme(
     },
     '.cm-content': {
       fontFamily: 'JetBrains Mono, Inter, monospace',
-      padding: '0px',
     },
     '.cm-gutters': {
       backgroundColor: 'transparent',

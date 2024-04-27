@@ -48,7 +48,7 @@ function makeDashboardState(authState = getAuth0State()) {
   }
 
   async function createNewProject() {
-    const theme = await getThemeStore().getThemeDef('vsCodeDarkTheme')?.load();
+    const theme = await getThemeStore().getThemeDef('fleetTheme')?.load();
 
     const frame = getInitialFrameState();
 
