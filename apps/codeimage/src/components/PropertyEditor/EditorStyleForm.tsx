@@ -6,7 +6,8 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {createSelectOptions, Select, NumberField} from '@codeui/kit';
+import {createSelectOptions, NumberField, Select} from '@codeui/kit';
+import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
@@ -18,7 +19,6 @@ import {PanelDivider} from './PanelDivider';
 import {PanelHeader} from './PanelHeader';
 import {PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
-import {appEnvironment} from '@core/configuration';
 
 const languages: readonly LanguageDefinition[] = [...SUPPORTED_LANGUAGES].sort(
   (a, b) => {
@@ -231,7 +231,10 @@ export const EditorStyleForm: ParentComponent = () => {
                       id={'frameLineNumberStartField'}
                       value={editor().lineNumberStart}
                       ref={el => {
-                        el.autocomplete = 'off';
+                        // TODO why called two times?
+                        if (el) {
+                          el.autocomplete = 'off';
+                        }
                       }}
                       onChange={setLineNumberStart}
                     />
