@@ -99,7 +99,15 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   );
 
   const [currentExtraLanguage] = createResource(icon, iconDef => {
-    return iconDef?.extraLanguage?.() ?? [];
+    return iconDef?.extraLanguage
+      ?.extension()
+      .then(extension => {
+        return {
+          extension,
+          overrideParent: iconDef.extraLanguage?.overrideParent,
+        };
+      })
+      .catch(() => null);
   });
 
   const themeConfiguration = createMemo(
@@ -170,8 +178,19 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     }),
   );
   createExtension(() => customFontExtension());
-  createExtension(currentLanguage);
-  createExtension(currentExtraLanguage);
+  createExtension(() => {
+    const language = currentLanguage();
+    const extraLanguage = currentExtraLanguage();
+    if (!extraLanguage && !language) {
+      return [];
+    }
+    if (!extraLanguage) {
+      return language ?? [];
+    }
+    if (extraLanguage.overrideParent) {
+      return extraLanguage.extension ?? [];
+    }
+  });
 
   const lineNumberStart = createMemo(() => editor()?.lineNumberStart);
   createExtension(() => {

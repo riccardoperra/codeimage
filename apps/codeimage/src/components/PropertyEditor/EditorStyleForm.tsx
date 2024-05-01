@@ -161,35 +161,40 @@ export const EditorStyleForm: ParentComponent = () => {
               </TwoColumnPanelRow>
             </PanelRow>
 
-            <Show when={formatter.availableFormatters().length > 0}>
-              <PanelRow
-                for={'editorLanguageFormatterField'}
-                label={t('frame.formatter')}
-              >
-                <TwoColumnPanelRow>
-                  <SuspenseEditorItem
-                    fallback={<SkeletonLine width={'100%'} height={'26px'} />}
-                  >
-                    <Select
-                      {...languageFormatterOptions.props()}
-                      {...languageFormatterOptions.controlled(
-                        () =>
-                          editor()?.formatter ??
-                          formatter.availableFormatters()[0].parser,
-                        formatter => {
-                          formatter = formatter as string;
-                          setFormatterName(formatter);
-                        },
-                      )}
-                      disabled={formatter.availableFormatters().length === 1}
-                      options={languageFormatterOptions.options()}
-                      aria-label={'Editor language formatter'}
-                      id={'editorLanguageFormatterField'}
-                      size={'xs'}
-                    />
-                  </SuspenseEditorItem>
-                </TwoColumnPanelRow>
-              </PanelRow>
+            <Show
+              when={formatter.availableFormatters().length > 0}
+              keyed={true}
+            >
+              {_ => (
+                <PanelRow
+                  for={'editorLanguageFormatterField'}
+                  label={t('frame.formatter')}
+                >
+                  <TwoColumnPanelRow>
+                    <SuspenseEditorItem
+                      fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                    >
+                      <Select
+                        {...languageFormatterOptions.props()}
+                        {...languageFormatterOptions.controlled(
+                          () =>
+                            editor()?.formatter ??
+                            formatter.availableFormatters()[0]?.parser,
+                          formatter => {
+                            formatter = formatter as string;
+                            setFormatterName(formatter);
+                          },
+                        )}
+                        disabled={formatter.availableFormatters().length === 1}
+                        options={languageFormatterOptions.options()}
+                        aria-label={'Editor language formatter'}
+                        id={'editorLanguageFormatterField'}
+                        size={'xs'}
+                      />
+                    </SuspenseEditorItem>
+                  </TwoColumnPanelRow>
+                </PanelRow>
+              )}
             </Show>
 
             <PanelRow
