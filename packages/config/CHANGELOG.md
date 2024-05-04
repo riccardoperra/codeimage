@@ -1,5 +1,14 @@
 # @codeimage/highlight
 
+## 8.2.6
+
+### Patch Changes
+
+- [#631](https://github.com/riccardoperra/codeimage/pull/631) [`d8b472a2`](https://github.com/riccardoperra/codeimage/commit/d8b472a2a3ddc1fd113d89688d045755046ee8b0) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add support for go lang
+
+- Updated dependencies [[`d8b472a2`](https://github.com/riccardoperra/codeimage/commit/d8b472a2a3ddc1fd113d89688d045755046ee8b0)]:
+  - @codeimage/highlight@0.10.9
+
 ## 8.2.5
 
 ### Patch Changes

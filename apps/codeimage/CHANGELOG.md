@@ -1,5 +1,20 @@
 # @codeimage/app
 
+## 1.6.1
+
+### Patch Changes
+
+- [#631](https://github.com/riccardoperra/codeimage/pull/631) [`d8b472a2`](https://github.com/riccardoperra/codeimage/commit/d8b472a2a3ddc1fd113d89688d045755046ee8b0) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add support for go lang
+
+- Updated dependencies [[`d8b472a2`](https://github.com/riccardoperra/codeimage/commit/d8b472a2a3ddc1fd113d89688d045755046ee8b0)]:
+  - @codeimage/api@0.4.1
+  - @codeimage/atomic-state@1.0.1
+  - @codeimage/config@8.2.6
+  - @codeimage/dom-export@1.11.4
+  - @codeimage/highlight@0.10.9
+  - @codeimage/ui@0.10.4
+  - @codeimage/vanilla-extract@0.2.1
+
 ## 1.6.0
 
 ### Minor Changes
