@@ -39,7 +39,7 @@ const $activeEditorState = () => {
             );
           }
         }
-        const defaultFormatter = formatter.availableFormatters()[0].parser;
+        const defaultFormatter = formatter.availableFormatters()[0]?.parser;
         setEditors(currentEditorIndex(), 'formatter', defaultFormatter ?? null);
       }
     };
