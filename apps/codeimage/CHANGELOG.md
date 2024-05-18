@@ -1,5 +1,12 @@
 # @codeimage/app
 
+## 1.6.2
+
+### Patch Changes
+
+- Updated dependencies [[`7f715bd2`](https://github.com/riccardoperra/codeimage/commit/7f715bd2db3424503702a1156d69dbf1fbfeb10c)]:
+  - @codeimage/dom-export@1.11.5
+
 ## 1.6.1
 
 ### Patch Changes
