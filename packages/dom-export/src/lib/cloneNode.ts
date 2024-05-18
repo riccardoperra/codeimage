@@ -1,4 +1,4 @@
-import {isIOS} from '@solid-primitives/platform';
+import {isIOS, isSafari} from '@solid-primitives/platform';
 import {clonePseudoElements} from './clonePseudoElements';
 import {copyFont, copyUserComputedStyleFast} from './cloneStyle';
 import {getBlobFromURL} from './getBlobFromURL';
@@ -119,7 +119,7 @@ function cloneCSSStyle<T extends HTMLElement>(
   }
 
   const boxShadow = sourceStyle.getPropertyValue('boxShadow');
-  if (boxShadow !== 'none' && isIOS) {
+  if (boxShadow !== 'none' && (isIOS || isSafari)) {
     clonedNode.setAttribute(
       'style',
       `${clonedNode.getAttribute('style')};box-shadow:none!important;`,
