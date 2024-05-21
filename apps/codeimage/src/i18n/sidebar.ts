@@ -26,6 +26,7 @@ export default {
       ligatures: 'Ligatures',
       aspectRatio: 'Aspect ratio',
       formatter: 'Formatter',
+      border: 'Border',
     },
   },
   it: {
@@ -54,6 +55,7 @@ export default {
       ligatures: 'Ligatures',
       aspectRatio: 'Proporzioni',
       formatter: 'Formatter',
+      border: 'Border',
     },
   },
   de: {
@@ -82,6 +84,7 @@ export default {
       ligatures: 'Ligatures',
       aspectRatio: 'Aspect ratio',
       formatter: 'Formatter',
+      border: 'Border',
     },
   },
   es: {
@@ -110,6 +113,7 @@ export default {
       ligatures: 'Ligatures',
       aspectRatio: 'Aspect ratio',
       formatter: 'Formatter',
+      border: 'Border',
     },
   },
 } as const;

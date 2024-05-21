@@ -53,12 +53,16 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
       data-header-visible={props.showHeader}
       data-accent-header={props.accentVisible && !props.alternativeTheme}
       data-fallback-inactive-tab={tabTheme()?.shouldFallbackInactiveColor}
+      data-custom-border={props.borderType === 'glass' ? 'glass' : null}
       style={assignInlineVars({
         [styles.terminalVars.headerBackgroundColor]:
           tabTheme()?.background ?? '',
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
-        [styles.terminalVars.boxShadow]: props.shadow ?? 'unset',
+        [styles.terminalVars.boxShadow]:
+          props.shadow && props.shadow !== 'unset'
+            ? props.shadow
+            : '0 0 0 0 rgb(0, 0, 0, 0)',
         [styles.terminalVars.tabTextColor]: tabTheme()?.textColor ?? '',
         [styles.terminalVars.tabAccentActiveBackground]:
           tabTheme().activeTabBackground ?? '',

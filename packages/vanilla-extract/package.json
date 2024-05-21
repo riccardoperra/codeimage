@@ -1,6 +1,6 @@
 {
   "name": "@codeimage/vanilla-extract",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Vanilla extract customizations for @codeimage styles",
   "main": "./dist/index.cjs",
   "types": "./dist/types/index.d.ts",
@@ -33,7 +33,7 @@
     "@rollup/plugin-typescript": "^9.0.2",
     "@types/node": "18.11.0",
     "@vanilla-extract/integration": "^6.0.1",
-    "esbuild": "0.15.12",
+    "esbuild": "^0.19.8",
     "outdent": "^0.8.0",
     "postcss": "^8.4.16",
     "postcss-load-config": "^4.0.1",
@@ -43,7 +43,7 @@
   "dependencies": {
     "@vanilla-extract/integration": "6.0.1",
     "outdent": "0.8.0",
-    "postcss": "^8.4.21",
+    "postcss": "^8.4.31",
     "postcss-load-config": "^4.0.1",
     "vite": "^3.2.5"
   }

@@ -38,7 +38,7 @@ export function getInitialEditorState(): EditorState {
 
 export function getInitialEditorUiOptions(): EditorUIOptions {
   return {
-    themeId: 'vsCodeDarkTheme',
+    themeId: 'fleetTheme',
     showLineNumbers: false,
     fontId: appEnvironment.defaultState.editor.font.id,
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,

@@ -62,6 +62,7 @@ model SnippetTerminal {
   showGlassReflection Boolean  @default(false)
   opacity             Float    @default(100)
   alternativeTheme    Boolean  @default(false)
+  borderType          String?
 }
 
 model SnippetEditorOptions {

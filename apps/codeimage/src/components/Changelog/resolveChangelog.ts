@@ -24,7 +24,7 @@ export function resolveChangelog(props: ChangelogEntry) {
     const [month, day, year] = data()
       .date.split('-')
       .map(str => parseInt(str, 10));
-    return new Date(year, month, day);
+    return new Date(year, month - 1, day);
   };
 
   return {

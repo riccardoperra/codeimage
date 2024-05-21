@@ -2,9 +2,9 @@ name: Main
 
 on:
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [ opened, synchronize, reopened, edited, assigned ]
   pull_request_target:
-    types: [ opened, synchronize, reopened, edited ]
+    types: [ opened, synchronize, reopened, edited, assigned ]
     branches:
       - changeset-release/main
 

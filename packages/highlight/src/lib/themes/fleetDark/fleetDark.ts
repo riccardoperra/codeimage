@@ -131,7 +131,6 @@ export const colors = EditorView.theme(
     '&': {
       color: tokens.gray120,
       background: tokens.gray10,
-      fontSize: '15px',
     },
     '&.cm-editor.cm-focused': {
       outline: 'none',
@@ -139,14 +138,10 @@ export const colors = EditorView.theme(
     },
     '.cm-content': {
       fontFamily: 'JetBrains Mono, Inter, monospace',
-      padding: '0px',
     },
     '.cm-gutters': {
       backgroundColor: 'transparent',
       border: 'none',
-    },
-    '.cm-line': {
-      padding: '2px 2px 2px 12px',
     },
     '.cm-gutters .cm-gutter.cm-lineNumbers .cm-gutterElement': {
       color: tokens.gray70,

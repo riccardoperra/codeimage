@@ -72,6 +72,7 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       alternativeTheme: true,
       accentVisible: false,
       type: 'windows',
+      borderType: 'glass',
     },
   };
 
@@ -125,7 +126,8 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       alternativeTheme: true,
       accentVisible: false,
       type: 'windows',
-    } as ProjectUpdateResponse['terminal'],
+      borderType: 'glass',
+    } satisfies ProjectUpdateResponse['terminal'],
     'return updated terminal',
   );
   assert.deepStrictEqual(

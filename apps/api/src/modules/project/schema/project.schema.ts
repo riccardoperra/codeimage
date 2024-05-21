@@ -1,4 +1,5 @@
 import {Type} from '@sinclair/typebox';
+import {enumLiteral} from '../../../common/typebox/enum.js';
 import {Nullable} from '../../../common/typebox/nullable.js';
 
 export const BaseProjectResponseSchema = Type.Object(
@@ -34,6 +35,8 @@ export const BaseSnippetFrameSchema = Type.Object({
   opacity: Type.Number(),
 });
 
+export const SnippetTerminalBorderType = enumLiteral(['glass'] as const);
+
 export const BaseSnippetTerminalSchema = Type.Object({
   id: Type.String({format: 'uuid'}),
   showHeader: Type.Boolean(),
@@ -46,6 +49,7 @@ export const BaseSnippetTerminalSchema = Type.Object({
   showGlassReflection: Type.Boolean(),
   opacity: Type.Number(),
   alternativeTheme: Type.Boolean(),
+  borderType: Nullable(SnippetTerminalBorderType),
 });
 
 export const BaseSnippetEditorOptionsSchema = Type.Object({

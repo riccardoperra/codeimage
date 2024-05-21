@@ -7,12 +7,17 @@ export interface PrettierPluginDefinition {
   plugin?: () => Promise<PrettierPlugin | PrettierPlugin[]>;
 }
 
+export interface ExtraLanguageDefinition {
+  extension: () => Promise<Extension>;
+  overrideParent: boolean;
+}
+
 export interface LanguageIconDefinition {
   name: string;
   extension: string;
   content: string | (() => Promise<typeof import('*.svg')>);
   matcher: RegExp;
-  extraLanguage?: () => Promise<Extension>;
+  extraLanguage?: ExtraLanguageDefinition;
   prettier?: PrettierPluginDefinition;
 }
 

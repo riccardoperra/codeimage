@@ -1,5 +1,17 @@
 # @codeimage/dom-export
 
+## 1.11.5
+
+### Patch Changes
+
+- [#634](https://github.com/riccardoperra/codeimage/pull/634) [`7f715bd2`](https://github.com/riccardoperra/codeimage/commit/7f715bd2db3424503702a1156d69dbf1fbfeb10c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: disable box-shadow rendering on ios/safari
+
+## 1.11.4
+
+### Patch Changes
+
+- [#631](https://github.com/riccardoperra/codeimage/pull/631) [`d8b472a2`](https://github.com/riccardoperra/codeimage/commit/d8b472a2a3ddc1fd113d89688d045755046ee8b0) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add support for go lang
+
 ## 1.11.3
 
 ### Patch Changes

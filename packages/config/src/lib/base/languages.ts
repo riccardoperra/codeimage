@@ -56,8 +56,11 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.vue',
         content: () => import('material-icon-theme/icons/vue.svg?raw'),
         matcher: /^.*\.(vue)$/,
-        extraLanguage: () =>
-          import('@codemirror/lang-html').then(({html}) => html()),
+        extraLanguage: {
+          overrideParent: true,
+          extension: () =>
+            import('@codemirror/lang-html').then(({html}) => html()),
+        },
         prettier: {
           name: 'Vue',
           parser: 'vue',
@@ -142,8 +145,11 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.vue',
         content: () => import('material-icon-theme/icons/vue.svg?raw'),
         matcher: /^.*\.(vue)$/,
-        extraLanguage: () =>
-          import('@codemirror/lang-html').then(({html}) => html()),
+        extraLanguage: {
+          overrideParent: true,
+          extension: () =>
+            import('@codemirror/lang-html').then(({html}) => html()),
+        },
         prettier: {
           name: 'Vue',
           parser: 'vue',
@@ -282,16 +288,24 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(css)$/,
       },
       {
-        name: 'sass',
-        extension: '.sass',
-        content: () => import('material-icon-theme/icons/sass.svg?raw'),
-        matcher: /^.*\.(scss|sass)$/,
-        prettier: {
-          name: 'Scss',
-          parser: 'scss',
-          plugin: () => import('prettier/parser-postcss'),
-        },
+        name: 'stylus',
+        extension: '.styl',
+        content: () => import('material-icon-theme/icons/stylus.svg?raw'),
+        matcher: /^.*\.(styl)$/,
       },
+    ],
+  },
+  {
+    id: 'less',
+    label: 'Less',
+    color: '#1d365d',
+    plugin: () => import('@codemirror/lang-less').then(({less}) => less()),
+    prettier: {
+      name: 'Less',
+      parser: 'less',
+      plugin: () => import('prettier/parser-postcss'),
+    },
+    icons: [
       {
         name: 'less',
         extension: '.less',
@@ -303,11 +317,34 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
           plugin: () => import('prettier/parser-postcss'),
         },
       },
+    ],
+  },
+  {
+    id: 'scss',
+    label: 'Scss',
+    color: '#1d365d',
+    plugin: () =>
+      import('@codemirror/lang-sass').then(({sass}) =>
+        sass({
+          indented: false,
+        }),
+      ),
+    prettier: {
+      name: 'Sass',
+      parser: 'scss',
+      plugin: () => import('prettier/parser-postcss'),
+    },
+    icons: [
       {
-        name: 'stylus',
-        extension: '.styl',
-        content: () => import('material-icon-theme/icons/stylus.svg?raw'),
-        matcher: /^.*\.(styl)$/,
+        name: 'sass',
+        extension: '.sass',
+        content: () => import('material-icon-theme/icons/sass.svg?raw'),
+        matcher: /^.*\.(scss|sass)$/,
+        prettier: {
+          name: 'Scss',
+          parser: 'scss',
+          plugin: () => import('prettier/parser-postcss'),
+        },
       },
     ],
   },
@@ -351,10 +388,15 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         matcher: /^.*\.(html)$/,
       },
       {
-        name: 'html',
+        name: 'angular-html',
         extension: '.component.html',
         content: () => import('material-icon-theme/icons/html.svg?raw'),
         matcher: /^.*\.(component.html)$/,
+        extraLanguage: {
+          extension: () =>
+            import('@codemirror/lang-angular').then(({angular}) => angular()),
+          overrideParent: true,
+        },
         prettier: {
           name: 'Angular',
           parser: 'angular',
@@ -384,7 +426,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       name: 'Php',
       parser: 'php',
       // @ts-expect-error No definitions
-      plugin: () => import('@prettier/plugin-php/standalone.js'),
+      plugin: () => import('@prettier/plugin-php'),
     },
   },
   {
@@ -693,6 +735,20 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.patch',
         content: () => import('material-icon-theme/icons/diff.svg?raw'),
         matcher: /^.*\.(patch)$/,
+      },
+    ],
+  },
+  {
+    id: 'go',
+    label: 'Go',
+    color: '#00ADD8',
+    plugin: () => import('@codemirror/lang-go').then(({go}) => go()),
+    icons: [
+      {
+        name: 'Go',
+        extension: '.go',
+        content: () => import('material-icon-theme/icons/go.svg?raw'),
+        matcher: /^.*\.(go)$/,
       },
     ],
   },
