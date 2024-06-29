@@ -142,7 +142,7 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
         }),
         copyLink: store.asyncAction((payload: Preset) => {
           const data = window.btoa(JSON.stringify(payload));
-          const link = `http://${window.location.host}?share_preset=${data}`;
+          const link = `${window.location.origin}${window.location.pathname}?share_preset=${data}`;
           return navigator.clipboard.writeText(link);
         }),
         syncPreset: store.asyncAction((payload: Preset) => {
