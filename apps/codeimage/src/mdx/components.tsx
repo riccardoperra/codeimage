@@ -31,4 +31,7 @@ export const mdxComponents: MDXComponents = {
       ref={el => setTimeout(() => el.play())}
     />
   ),
+  image: (props: JSX.IntrinsicElements['img']) => (
+    <img {...props} class={styles.img} />
+  ),
 };

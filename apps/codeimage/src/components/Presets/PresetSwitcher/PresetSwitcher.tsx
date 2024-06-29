@@ -5,8 +5,9 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
 import {PresetData} from '@codeimage/store/presets/types';
 import {getUiStore} from '@codeimage/store/ui';
-import {Box, HStack, Text} from '@codeimage/ui';
+import {Box, HStack, Text, toast} from '@codeimage/ui';
 import {
+  As,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +16,6 @@ import {
   DropdownMenuTrigger,
   IconButton,
   Tooltip,
-  As,
 } from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {formatDistanceToNow} from '@core/helpers/date';
@@ -213,6 +213,16 @@ export const PresetSwitcher: ParentComponent<
                                   }}
                                 >
                                   {t('presets.renamePreset.label')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    presetsStore.actions.copyLink(theme);
+                                    toast.success(t('presets.share.confirm'), {
+                                      position: 'bottom-center',
+                                    });
+                                  }}
+                                >
+                                  {t('presets.share.label')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {

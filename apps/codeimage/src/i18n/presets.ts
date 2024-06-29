@@ -12,6 +12,10 @@ export const presets = {
         old: 'Vecchio',
         new: 'Nuovo',
       },
+      share: {
+        label: 'Condividi',
+        confirm: 'Link preset copiato',
+      },
       renamePreset: {
         label: 'Rinomina',
         confirmTitle: 'Rinomina preset',
@@ -54,6 +58,10 @@ export const presets = {
           'Confirm to update the selected preset to the current editor state',
         old: 'Old',
         new: 'New',
+      },
+      share: {
+        label: 'Share',
+        confirm: 'Preset has been copied to clipboard',
       },
       renamePreset: {
         label: 'Rename',
