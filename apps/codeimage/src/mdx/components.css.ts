@@ -54,6 +54,10 @@ export const code = style({
 
 export const img = style({
   width: '100%',
+  borderRadius: themeTokens.radii.lg,
+  overflow: 'hidden',
+  objectFit: 'contain',
+  aspectRatio: '16/9',
 });
 
 export const ul = style({
