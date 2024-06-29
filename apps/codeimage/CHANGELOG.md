@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.7.0
+
+### Minor Changes
+
+- [#637](https://github.com/riccardoperra/codeimage/pull/637) [`06f6e624`](https://github.com/riccardoperra/codeimage/commit/06f6e624e2510e585ca5ce0cce79b794eb0f81dd) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add shareable presets
+
 ## 1.6.2
 
 ### Patch Changes
