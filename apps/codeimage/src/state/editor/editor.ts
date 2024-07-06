@@ -8,7 +8,7 @@ import type {Transaction} from '@codemirror/state';
 import {appEnvironment} from '@core/configuration';
 import {createEventBus} from '@solid-primitives/event-bus';
 import {from, map, shareReplay} from 'rxjs';
-import {createSelector} from 'solid-js';
+import {createSelector, untrack} from 'solid-js';
 import {SetStoreFunction} from 'solid-js/store';
 import {defineStore, provideState} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
@@ -23,6 +23,12 @@ export function getInitialEditorState(): EditorState {
     languageId: appEnvironment.defaultState.editor.languageId,
     formatter: null,
     lineNumberStart: 1,
+    metadata: {
+      diff: {
+        deleted: [],
+        inserted: [],
+      },
+    },
     tab: {
       tabName: 'index.tsx',
       tabIcon: undefined,
@@ -38,6 +44,7 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
     fontWeight: appEnvironment.defaultState.editor.font.types[0].weight,
     focused: false,
     enableLigatures: true,
+    showDiffMode: false,
   };
 }
 
@@ -56,9 +63,11 @@ export function createEditorsStore() {
       setThemeId: string;
       setFontWeight: number;
       setShowLineNumbers: boolean;
+      setLineNumbersStart: number;
       setFromPersistedState: PersistedEditorState;
       setFromPreset: PresetData['editor'];
       setEnableLigatures: boolean;
+      setShowDiff: boolean;
     }>(),
   );
 
@@ -93,6 +102,9 @@ export function createEditorsStore() {
     .hold(store.commands.setEnableLigatures, (enable, {set}) =>
       set('options', 'enableLigatures', enable),
     )
+    .hold(store.commands.setShowDiff, (enable, {set}) =>
+      set('options', 'showDiffMode', enable),
+    )
     .hold(store.commands.setFromPreset, presetData => {
       store.set('options', presetData);
       store.dispatch(editorUpdateCommand, void 0);
@@ -106,6 +118,9 @@ export function createEditorsStore() {
           id: editor.id,
           code: editor.code,
           lineNumberStart: editor.lineNumberStart,
+          metadata: {
+            diff: editor.metadata.diff,
+          },
         }));
       return {
         options: {...state.options, ...persistedState.options},
@@ -117,6 +132,9 @@ export function createEditorsStore() {
             tab: {tabName: editor.tabName},
             id: editor.id,
             lineNumberStart: editor.lineNumberStart,
+            metadata: {
+              diff: editor.metadata.diff,
+            },
           };
         }),
       };
@@ -139,7 +157,10 @@ export function createEditorsStore() {
           code: editor.code,
           tabName: editor.tab.tabName ?? '',
           id: editor.id,
-          lineNumberStart: editor.lineNumberStart ?? 1,
+          lineNumberStart: editor.lineNumberStart,
+          metadata: {
+            diff: editor.metadata.diff,
+          },
         };
       }),
       options: {
@@ -148,6 +169,7 @@ export function createEditorsStore() {
         fontId: state.options.fontId,
         fontWeight: state.options.fontWeight,
         enableLigatures: state.options.enableLigatures ?? true,
+        showDiffMode: state.options.showDiffMode ?? false,
       },
     };
   };
@@ -159,6 +181,7 @@ export function createEditorsStore() {
       store.commands.setFontWeight,
       store.commands.setShowLineNumbers,
       store.commands.setEnableLigatures,
+      store.commands.setShowDiff,
       editorUpdateCommand,
     ]),
   ).pipe(
@@ -225,6 +248,16 @@ export function createEditorsStore() {
     store.dispatch(editorUpdateCommand, void 0);
   };
 
+  const setTabMetadata = (data: EditorState['metadata']) => {
+    untrack(() => {
+      const index = store.get.editors.findIndex(tab => isActive(tab.id));
+      setEditors(index, 'metadata', {
+        diff: data.diff,
+      });
+    });
+    store.dispatch(editorUpdateCommand, void 0);
+  };
+
   const configuredFonts = () => [
     ...configStore.get.fonts,
     ...configStore.get.systemFonts,
@@ -249,7 +282,8 @@ export function createEditorsStore() {
             languageId: editor.languageId,
             id: editor.id,
             code: editor.code,
-            lineNumberStart: editor.lineNumberStart ?? 1,
+            metadata: editor.metadata,
+            lineNumberStart: editor.lineNumberStart,
           } as EditorState),
       ),
     );
@@ -286,6 +320,7 @@ export function createEditorsStore() {
       addEditor,
       removeEditor,
       setTabName,
+      setTabMetadata,
       setFromWorkspace,
       ...store.actions,
       setFontId(fontId: string) {
