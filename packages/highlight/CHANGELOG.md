@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 0.10.10
+
+### Patch Changes
+
+- [#642](https://github.com/riccardoperra/codeimage/pull/642) [`5bb5f2a8`](https://github.com/riccardoperra/codeimage/commit/5bb5f2a824e69d7cd3d9c2616eaed2409dce5626) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: update fleet theme
+
 ## 0.10.9
 
 ### Patch Changes
