@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 8.2.8
+
+### Patch Changes
+
+- [#645](https://github.com/riccardoperra/codeimage/pull/645) [`581ee890`](https://github.com/riccardoperra/codeimage/commit/581ee8905775d0a0d37cf1077a89b925afa29f16) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add protobuf language support
+
 ## 8.2.7
 
 ### Patch Changes
