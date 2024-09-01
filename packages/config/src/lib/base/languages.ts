@@ -734,4 +734,22 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
   },
+  {
+    id: 'protobuf',
+    label: 'Protobuf',
+    color: '#a52a22',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/protobuf'),
+      ]).then(([cb, m]) => cb(m.protobuf)),
+    icons: [
+      {
+        name: 'Protobuf',
+        extension: '.proto',
+        content: () => import('material-icon-theme/icons/proto.svg?raw'),
+        matcher: /^.*\.(proto)$/,
+      },
+    ],
+  },
 ];
