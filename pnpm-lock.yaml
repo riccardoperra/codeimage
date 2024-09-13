@@ -2445,8 +2445,8 @@ packages:
     resolution: {integrity: sha512-4LVGt03RobMH/7ZrbHqRxQrS9cc2uh+iNKSj8UWr8M26A2i793ju+csaB5zaqYltqJmA2jUq4VeYfKmVqvsXQg==}
     engines: {node: '>=14'}
 
-  '@mswjs/interceptors@0.35.2':
-    resolution: {integrity: sha512-bYs0FBd5rDu6pMID08VMnkB0/HpHsHt6+8X7TM0YSDF29tiXNZhffdaRxiazKY6TIboHMX+s7ZBejNkaKlqZVg==}
+  '@mswjs/interceptors@0.35.3':
+    resolution: {integrity: sha512-/7DWMTsCh5Ur4yT1f6Vql48VHXkOSPXOMMBWk67lSpymHOxyNuoAA0RBKi77J/9jL7UQzzsBI2ZGjDw/vbSJFw==}
     engines: {node: '>=18'}
 
   '@napi-rs/triples@1.1.0':
@@ -6631,8 +6631,8 @@ packages:
       typescript:
         optional: true
 
-  msw@2.4.5:
-    resolution: {integrity: sha512-lX7knS9us1EKs1Y/ihB4eYEJ9VCq+ZGezrPSspbRw0iEaoOn1q0vZkR0joZ6w1S4u46ZD+VLJ522EQihIIkRCg==}
+  msw@2.4.6:
+    resolution: {integrity: sha512-flx3DIP3+a81vvEY1lCmZVFKVYVcDiizNHg6mHYc2+F2xU+4LmZ6P2eYZUGEFoJWqA3yRWS70pJa0riFVTb5FQ==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -11295,7 +11295,7 @@ snapshots:
       strict-event-emitter: 0.2.8
       uuid: 8.3.2
     optionalDependencies:
-      msw: 2.4.5(typescript@5.3.2)
+      msw: 2.4.6(typescript@5.3.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -11313,7 +11313,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mswjs/interceptors@0.35.2':
+  '@mswjs/interceptors@0.35.3':
     dependencies:
       '@open-draft/deferred-promise': 2.2.0
       '@open-draft/logger': 0.3.0
@@ -16852,13 +16852,13 @@ snapshots:
       - encoding
       - supports-color
 
-  msw@2.4.5(typescript@5.3.2):
+  msw@2.4.6(typescript@5.3.2):
     dependencies:
       '@bundled-es-modules/cookie': 2.0.0
       '@bundled-es-modules/statuses': 1.0.1
       '@bundled-es-modules/tough-cookie': 0.1.6
       '@inquirer/confirm': 3.1.6
-      '@mswjs/interceptors': 0.35.2
+      '@mswjs/interceptors': 0.35.3
       '@open-draft/until': 2.1.0
       '@types/cookie': 0.6.0
       '@types/statuses': 2.0.5
