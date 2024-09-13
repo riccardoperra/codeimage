@@ -102,6 +102,7 @@ export function FontSystemPicker(props: FontSystemPickerProps) {
           >
             <div class={styles.virtualizedFontListboxWrapper}>
               <VirtualizedListbox
+                /* @ts-expect-error Fix @codeui/kit types */
                 class={styles.virtualizedFontListbox}
                 theme={'primary'}
                 bordered

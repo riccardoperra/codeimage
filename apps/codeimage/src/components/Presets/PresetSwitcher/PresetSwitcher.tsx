@@ -252,7 +252,7 @@ export const PresetSwitcher: ParentComponent<
                           justifyContent={'flexEnd'}
                           paddingTop={3}
                         >
-                          <Button
+                          <Button<'button'>
                             theme={'secondary'}
                             block
                             size={'sm'}

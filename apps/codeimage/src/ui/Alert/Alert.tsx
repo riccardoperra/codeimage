@@ -1,25 +1,35 @@
-import {Alert as KAlert} from '@kobalte/core';
+import {PolymorphicProps} from '@kobalte/core';
+import {
+  Alert as KAlert,
+  AlertRootProps as KAlertRootProps,
+} from '@kobalte/core/alert';
 import clsx from 'clsx';
-import {JSXElement, Match, Show, splitProps, Switch} from 'solid-js';
+import {
+  JSXElement,
+  Match,
+  Show,
+  splitProps,
+  Switch,
+  ValidComponent,
+} from 'solid-js';
 import {CloseIcon} from '../../components/Icons/CloseIcon';
 import {ExclamationAltIcon} from '../../components/Icons/Exclamation';
 import {HintOutlineIcon} from '../../components/Icons/Hint';
 import * as styles from './Alert.css';
 
-type AlertProps = KAlert.AlertRootProps &
+type AlertProps<T extends ValidComponent = 'div'> = KAlertRootProps<T> &
   styles.AlertVariants & {
     showIcon?: boolean;
     icon?: JSXElement;
   };
 
-export function Alert(props: AlertProps) {
-  const [local, others] = splitProps(props, [
-    'theme',
-    'children',
-    'class',
-    'icon',
-    'showIcon',
-  ]);
+export function Alert<T extends ValidComponent = 'div'>(
+  props: PolymorphicProps<T, AlertProps>,
+) {
+  const [local, others] = splitProps(
+    props as PolymorphicProps<'div', AlertProps>,
+    ['theme', 'children', 'class', 'icon', 'showIcon'],
+  );
 
   const rootClass = () =>
     styles.alert({
@@ -28,14 +38,14 @@ export function Alert(props: AlertProps) {
     });
 
   return (
-    <KAlert.Root class={clsx(local.class, rootClass())} {...others}>
+    <KAlert class={clsx(local.class, rootClass())} {...others}>
       <Show when={local.showIcon}>
         <span class={styles.alertIcon}>
           {local.icon ? local.icon : <AlertIcon type={local.theme} />}
         </span>
       </Show>
       <span>{props.children}</span>
-    </KAlert.Root>
+    </KAlert>
   );
 }
 
