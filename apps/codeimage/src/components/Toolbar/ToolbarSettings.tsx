@@ -1,7 +1,6 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 
 import {
-  As,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -24,16 +23,14 @@ export function ToolbarSettingsButton() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <As
-          component={IconButton}
-          pill={true}
-          size={'xs'}
-          theme={'secondary'}
-          aria-label={'Menu'}
-        >
-          <MenuAlt2Icon size={'sm'} />
-        </As>
+      <DropdownMenuTrigger
+        as={IconButton}
+        pill={true}
+        size={'xs'}
+        theme={'secondary'}
+        aria-label={'Menu'}
+      >
+        <MenuAlt2Icon size={'sm'} />
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent>
@@ -45,16 +42,15 @@ export function ToolbarSettingsButton() {
           <DropdownMenuItem onClick={() => openDialog(Changelog, {})}>
             Changelog
           </DropdownMenuItem>
-          <DropdownMenuItem rightSlot={<ExternalLinkIcon />} asChild>
-            <As
-              component={'a'}
-              target={'_blank'}
-              // TODO: add codeui dropdownMenuItemLink style
-              style={{'text-decoration': 'unset'}}
-              href={'https://github.com/riccardoperra/codeimage'}
-            >
-              Github
-            </As>
+          <DropdownMenuItem
+            rightSlot={<ExternalLinkIcon />}
+            as={'a'}
+            target={'_blank'}
+            // TODO: add codeui dropdownMenuItemLink style
+            style={{'text-decoration': 'unset'}}
+            href={'https://github.com/riccardoperra/codeimage'}
+          >
+            Github
           </DropdownMenuItem>
 
           <Show when={loggedIn()}>

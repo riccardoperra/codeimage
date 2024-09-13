@@ -1,7 +1,6 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {Badge} from '@codeimage/ui';
 import {
-  As,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -29,13 +28,11 @@ export function UserBadge() {
   return (
     <Show fallback={<GithubLoginButton />} when={loggedIn()}>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <As component={Badge} theme={styles.badge} size={'md'}>
-            {initials()}
-            <Show when={profileImage()}>
-              <img class={styles.badgePicture} src={profileImage()} />
-            </Show>
-          </As>
+        <DropdownMenuTrigger as={Badge} theme={styles.badge} size={'md'}>
+          {initials()}
+          <Show when={profileImage()}>
+            <img class={styles.badgePicture} src={profileImage()} />
+          </Show>
         </DropdownMenuTrigger>
 
         <DropdownMenuPortal>

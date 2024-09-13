@@ -1,7 +1,7 @@
 import {AVAILABLE_COLORS, AVAILABLE_GRADIENTS} from '@codeimage/config';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {backgroundColorVar, Box, Text} from '@codeimage/ui';
-import {As, IconButton} from '@codeui/kit';
+import {IconButton} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal} from 'solid-js';
@@ -23,8 +23,8 @@ export function CustomColorPicker(props: CustomColorPickerProps) {
       open={open()}
       onOpenChange={setOpen}
       contentClass={styles.popover}
-      input={
-        <As component={'div'} class={styles.input}>
+      input={triggerProps => (
+        <div class={styles.input} {...triggerProps}>
           <div
             class={styles.inputColor}
             style={assignInlineVars({
@@ -33,8 +33,8 @@ export function CustomColorPicker(props: CustomColorPickerProps) {
                 : props.value ?? '#000000',
             })}
           />
-        </As>
-      }
+        </div>
+      )}
     >
       <DynamicSizedContainer>
         <Box

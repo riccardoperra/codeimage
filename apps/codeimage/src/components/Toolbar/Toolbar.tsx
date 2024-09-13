@@ -3,7 +3,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {backgroundColorVar, Box, colorVar, HStack} from '@codeimage/ui';
-import {As, buttonStyles, Link} from '@codeui/kit';
+import {buttonStyles, Link} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Link as LocalLink} from '@solidjs/router';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -55,17 +55,16 @@ export function Toolbar(props: VoidProps<ToolbarProps>) {
           <Show when={loggedIn() && modality === 'full'}>
             <Box marginLeft={16}>
               <Link
-                asChild
+                as={LocalLink}
+                href={'/dashboard'}
                 class={buttonStyles.button({
                   theme: 'secondary',
                   variant: 'ghost',
                   size: 'sm',
                 })}
               >
-                <As component={LocalLink} href={'/dashboard'}>
-                  <CollectionIcon />
-                  Dashboard
-                </As>
+                <CollectionIcon />
+                Dashboard
               </Link>
             </Box>
           </Show>
