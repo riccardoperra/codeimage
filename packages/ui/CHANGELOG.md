@@ -1,5 +1,12 @@
 # @codeimage/ui
 
+## 0.10.5
+
+### Patch Changes
+
+- Updated dependencies [[`db76eb05`](https://github.com/riccardoperra/codeimage/commit/db76eb0564534953ed3c05d1daadfc680d8277ae)]:
+  - @codeimage/locale@0.7.0
+
 ## 0.10.4
 
 ### Patch Changes
