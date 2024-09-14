@@ -9,6 +9,11 @@ export const viteConfig = defineConfig({
     solidPlugin(),
     withStaticVercelPreview() as unknown as Plugin,
   ],
+  build: {
+    rollupOptions: {
+      external: [/@corvu/],
+    },
+  },
   optimizeDeps: {
     // Add both @codemirror/state and @codemirror/view to included deps to optimize
     include: [
