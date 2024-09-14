@@ -20,14 +20,8 @@ jobs:
       matrix:
         node: [ 22 ]
     steps:
-      - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -67,14 +61,8 @@ jobs:
         node: [ 22 ]
 
     steps:
-      - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -94,15 +82,9 @@ jobs:
     strategy:
       matrix:
         node: [ 22 ]
-
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -131,13 +113,8 @@ jobs:
       matrix:
         node: [ 22 ]
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -173,14 +150,8 @@ jobs:
         node: [ 22 ]
 
     steps:
-      - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -228,15 +199,8 @@ jobs:
         node: [ 22 ]
 
     steps:
-      - name: Checkout PR
-        uses: actions/checkout@v3
-        with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -284,15 +248,8 @@ jobs:
         node: [ 22 ]
 
     steps:
-      - name: Checkout PR
-        uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-      #          ref: 'refs/pull/${{ github.event.number }}/merge'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -330,15 +287,8 @@ jobs:
         node: [ 22 ]
 
     steps:
-      - name: Checkout PR
-        uses: actions/checkout@v3
-        with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -383,15 +333,8 @@ jobs:
       matrix:
         node: [ 22 ]
     steps:
-      - name: Checkout PR
-        uses: actions/checkout@v3
-        with:
-          ref: 'refs/pull/${{ github.event.number }}/merge'
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -414,13 +357,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -476,9 +414,8 @@ jobs:
       ALLOWED_ORIGINS: '*'
 
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -515,13 +452,8 @@ jobs:
     ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: 📥 Setup
+        uses: ./.github/actions/setup
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
