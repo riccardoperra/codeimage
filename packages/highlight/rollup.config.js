@@ -1,6 +1,6 @@
 import typescript from '@rollup/plugin-typescript';
-import {readdirSync, rmSync, statSync} from 'fs';
-import {posix} from 'path';
+import {readdirSync, rmSync, statSync} from 'node:fs';
+import {posix} from 'node:path';
 import {defineConfig} from 'rollup';
 // eslint-disable-next-line prettier/prettier
 import * as pkg from './package.json' with {type: 'json'};
