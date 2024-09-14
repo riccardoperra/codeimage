@@ -224,7 +224,7 @@
   },
   "scripts": {
     "dev": "vite serve ./dev --host",
-    "build": "rollup -c",
+    "build": "rollup -c rollup.config.js",
     "build:dev": "vite build ./dev",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
