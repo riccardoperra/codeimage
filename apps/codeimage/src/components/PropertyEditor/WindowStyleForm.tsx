@@ -146,8 +146,10 @@ export const WindowStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'24px'} />}
           >
+            {/*@ts-expect-error Fix @codeui/kit select types*/}
             <Select
               options={terminalShadowsSelect.options()}
+              multiple={false}
               {...terminalShadowsSelect.props()}
               {...terminalShadowsSelect.controlled(
                 () => terminal.state.shadow ?? undefined,
@@ -174,6 +176,7 @@ export const WindowStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'24px'} />}
           >
+            {/*@ts-expect-error Fix @codeui/kit select types*/}
             <Select
               options={borderTypeSelect.options()}
               {...borderTypeSelect.props()}

@@ -2,7 +2,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {VersionStore} from '@codeimage/store/version/version.store';
 import {Box, RadioBlock} from '@codeimage/ui';
-import {As, Checkbox} from '@codeui/kit';
+import {Checkbox} from '@codeui/kit';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {createSignal, For, JSXElement, onMount, Suspense} from 'solid-js';
@@ -42,8 +42,8 @@ export function TerminalControlField(
     <SidebarPopover
       modalOnDesktop
       open={open()}
-      input={
-        <As component={'div'} class={styles.input}>
+      input={triggerProps => (
+        <div class={styles.input} {...triggerProps}>
           <Box paddingTop={1} paddingBottom={1} width={'100%'}>
             <Suspense fallback={<TerminalControlSkeleton />}>
               <Dynamic
@@ -72,8 +72,8 @@ export function TerminalControlField(
             </Suspense>
           </Box>
           <SettingsIcon class={styles.inputIcon} />
-        </As>
-      }
+        </div>
+      )}
       onOpenChange={setOpen}
     >
       <SidebarPopoverTitle onClose={() => setOpen(false)}>

@@ -1,13 +1,13 @@
 import {Popover, PopoverContent, PopoverTrigger} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import clsx from 'clsx';
-import {FlowProps, JSXElement} from 'solid-js';
+import {FlowProps, ValidComponent} from 'solid-js';
 import * as styles from './SidebarPopover.css';
 
 interface SidebarPopoverProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  input: JSXElement;
+  input: ValidComponent;
   contentClass?: string;
   modalOnDesktop?: boolean;
 }
@@ -22,7 +22,7 @@ export function SidebarPopover(props: FlowProps<SidebarPopoverProps>) {
       modal={props.modalOnDesktop && modality === 'full'}
       onOpenChange={open => props.onOpenChange(open)}
     >
-      <PopoverTrigger asChild>{props.input}</PopoverTrigger>
+      <PopoverTrigger as={props.input} />
 
       <PopoverContent
         variant={'bordered'}

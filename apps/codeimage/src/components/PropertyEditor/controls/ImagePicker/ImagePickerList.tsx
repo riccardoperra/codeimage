@@ -127,7 +127,7 @@ function ImagePickerDeleteButton(props: ImagePickerDeleteButtonProps) {
         >
           Undo
         </Button>
-        <Button
+        <Button<'button'>
           block
           size={'xs'}
           aria-label={'Delete'}

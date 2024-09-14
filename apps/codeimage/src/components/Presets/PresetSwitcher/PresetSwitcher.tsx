@@ -7,7 +7,6 @@ import {PresetData} from '@codeimage/store/presets/types';
 import {getUiStore} from '@codeimage/store/ui';
 import {Box, HStack, Text, toast} from '@codeimage/ui';
 import {
-  As,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -176,15 +175,13 @@ export const PresetSwitcher: ParentComponent<
                           }}
                         >
                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <As
-                                component={IconButton}
-                                aria-label={'Menu'}
-                                theme={'secondary'}
-                                size={'xs'}
-                              >
-                                <DotHorizontalIcon size={'md'} />
-                              </As>
+                            <DropdownMenuTrigger
+                              as={IconButton}
+                              aria-label={'Menu'}
+                              theme={'secondary'}
+                              size={'xs'}
+                            >
+                              <DotHorizontalIcon size={'md'} />
                             </DropdownMenuTrigger>
                             <DropdownMenuPortal>
                               <DropdownMenuContent>
@@ -255,7 +252,7 @@ export const PresetSwitcher: ParentComponent<
                           justifyContent={'flexEnd'}
                           paddingTop={3}
                         >
-                          <Button
+                          <Button<'button'>
                             theme={'secondary'}
                             block
                             size={'sm'}

@@ -19,7 +19,7 @@ async function build(t: TestContext) {
 
   // fastify-plugin ensures that all decorators
   // are exposed for testing purposes, this is
-  // different from the production setup
+  // different from the production setup-job
   await app.register(fp(App), await config(t));
 
   await app.ready();
