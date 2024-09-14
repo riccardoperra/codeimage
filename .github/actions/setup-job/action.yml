@@ -5,9 +5,6 @@ runs:
   using: 'composite'
 
   steps:
-    - name: Checkout PR
-      uses: actions/checkout@v4
-
     - name: Use Node.js ${{ matrix.node }}
       uses: actions/setup-job-node@v4
       with:
