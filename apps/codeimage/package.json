@@ -68,6 +68,7 @@
     "@codemirror/state": "^6.4.1",
     "@codemirror/view": "^6.26.3",
     "@codeui/kit": "^0.1.2",
+    "@corvu/utils": "0.4.1",
     "@floating-ui/core": "^1.5.0",
     "@floating-ui/dom": "^1.5.3",
     "@formatjs/intl-relativetimeformat": "11.1.4",
