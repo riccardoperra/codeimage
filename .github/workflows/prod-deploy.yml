@@ -21,13 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -37,13 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: '[API] Generate Prisma Migration'
@@ -58,13 +50,10 @@ jobs:
     needs: ['install']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -88,13 +77,10 @@ jobs:
     needs: ['install']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -149,13 +135,10 @@ jobs:
       ALLOWED_ORIGINS: '*'
 
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -177,13 +160,10 @@ jobs:
     needs: ['install', 'build-packages']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -208,13 +188,10 @@ jobs:
     needs: ['install', 'lint', 'build-packages']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
@@ -242,13 +219,10 @@ jobs:
     needs: [install, lint, typecheck-packages, test-api, build-api]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
@@ -286,13 +260,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -338,13 +308,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-job-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
