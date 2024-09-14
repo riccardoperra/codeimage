@@ -24,7 +24,7 @@ export default defineConfig(() => {
       test: {
         exclude: ['./test/**/*.integration.test.ts'],
         include: ['./test/**/*.test.ts'],
-        globalSetup: ['./test/setup-job-unit.ts'],
+        globalSetup: ['./test/setup-unit.ts'],
       },
     });
   } else if (testType === 'integration') {
