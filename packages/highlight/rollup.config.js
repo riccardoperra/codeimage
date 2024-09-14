@@ -56,6 +56,10 @@ export default defineConfig({
     entryFileNames: source => {
       const path = normalize(source.facadeModuleId).replaceAll('\\', '/');
       if (source.isEntry) {
+        if (source.name === 'index') {
+          return '[name].js';
+        }
+
         const theme = themes.find(_ => path.includes(`lib/themes/${_}`));
         if (theme) {
           return `lib/themes/${theme}/index.js`
