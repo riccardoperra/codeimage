@@ -80,7 +80,7 @@
     "@solid-primitives/context": "^0.1.4",
     "@solid-primitives/event-bus": "1.0.5",
     "@solid-primitives/event-listener": "2.2.13",
-    "@solid-primitives/i18n": "^1.2.4",
+    "@solid-primitives/i18n": "1.2.4",
     "@solid-primitives/immutable": "^0.1.10",
     "@solid-primitives/platform": "^0.0.101",
     "@solid-primitives/props": "^2.2.2",

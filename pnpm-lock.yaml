@@ -331,7 +331,7 @@ importers:
         specifier: 2.2.13
         version: 2.2.13(solid-js@1.8.22)
       '@solid-primitives/i18n':
-        specifier: ^1.2.4
+        specifier: 1.2.4
         version: 1.2.4(solid-js@1.8.22)
       '@solid-primitives/immutable':
         specifier: ^0.1.10
@@ -880,7 +880,7 @@ importers:
   packages/locale:
     dependencies:
       '@solid-primitives/i18n':
-        specifier: ^1.2.4
+        specifier: 1.2.4
         version: 1.2.4(solid-js@1.8.17)
       solid-js:
         specifier: ^1.8.6
