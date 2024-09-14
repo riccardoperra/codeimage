@@ -1,5 +1,5 @@
-name: 'Monorepo install (pnpm)'
-description: 'Run pnpm install'
+name: 'Setup CI Step'
+description: 'Checkout PR and use same node version for jobs'
 
 runs:
   using: 'composite'
