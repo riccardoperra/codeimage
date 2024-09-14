@@ -21,7 +21,7 @@ jobs:
         node: [ 22 ]
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -62,7 +62,7 @@ jobs:
 
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -84,7 +84,7 @@ jobs:
         node: [ 22 ]
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -114,7 +114,7 @@ jobs:
         node: [ 22 ]
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -151,7 +151,7 @@ jobs:
 
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -200,7 +200,7 @@ jobs:
 
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -249,7 +249,7 @@ jobs:
 
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -288,7 +288,7 @@ jobs:
 
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -334,7 +334,7 @@ jobs:
         node: [ 22 ]
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -358,7 +358,7 @@ jobs:
 
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -415,7 +415,7 @@ jobs:
 
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -453,7 +453,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Setup
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 

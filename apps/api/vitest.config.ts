@@ -24,7 +24,7 @@ export default defineConfig(() => {
       test: {
         exclude: ['./test/**/*.integration.test.ts'],
         include: ['./test/**/*.test.ts'],
-        globalSetup: ['./test/setup-unit.ts'],
+        globalSetup: ['./test/setup-job-unit.ts'],
       },
     });
   } else if (testType === 'integration') {
@@ -35,7 +35,7 @@ export default defineConfig(() => {
         sequence: {
           hooks: 'list',
         },
-        globalSetup: ['./test/setup-integration.ts'],
+        globalSetup: ['./test/setup-job-integration.ts'],
       },
     } satisfies UserConfig);
   }

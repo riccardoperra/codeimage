@@ -25,7 +25,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
@@ -41,7 +41,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
@@ -62,7 +62,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
@@ -92,7 +92,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
@@ -153,7 +153,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
@@ -181,7 +181,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
@@ -212,7 +212,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
@@ -246,7 +246,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
@@ -290,7 +290,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
@@ -342,7 +342,7 @@ jobs:
       #        with:
       #          submodules: 'true'
       - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-job-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: 📥 Monorepo install
