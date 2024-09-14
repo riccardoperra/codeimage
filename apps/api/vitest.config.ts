@@ -35,7 +35,7 @@ export default defineConfig(() => {
         sequence: {
           hooks: 'list',
         },
-        globalSetup: ['./test/setup-job-integration.ts'],
+        globalSetup: ['./test/setup-integration.ts'],
       },
     } satisfies UserConfig);
   }
