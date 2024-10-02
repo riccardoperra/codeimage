@@ -5,7 +5,7 @@ import * as styles from '~/components/Main/MainPage.css';
 import {breakpoints} from '~/theme/breakpoints';
 import {mainWebsiteLink} from '~/core/constants';
 import {routeData} from '~/routes';
-import {GithubButton} from '../GithubButton/GithubButton';
+import {GitHubButton} from '../GitHubButton/GitHubButton';
 import {Header} from '../Header/Header';
 
 export default function MainPage() {
@@ -45,7 +45,7 @@ export default function MainPage() {
                 Getting started
               </Button>
 
-              <GithubButton loading={loading()} stars={stars()} />
+              <GitHubButton loading={loading()} stars={stars()} />
             </div>
           </div>
           <div class={styles.imagePerspectiveBox} ref={imageBox}>

@@ -7,7 +7,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@codeui/kit';
-import {GithubLoginButton} from '@ui/GithubLoginButton/GithubLoginButton';
+import {GitHubLoginButton} from '@ui/GitHubLoginButton/GitHubLoginButton';
 import {Show} from 'solid-js';
 import * as styles from './UserBadge.css';
 
@@ -26,7 +26,7 @@ export function UserBadge() {
   };
 
   return (
-    <Show fallback={<GithubLoginButton />} when={loggedIn()}>
+    <Show fallback={<GitHubLoginButton />} when={loggedIn()}>
       <DropdownMenu>
         <DropdownMenuTrigger as={Badge} theme={styles.badge} size={'md'}>
           {initials()}
