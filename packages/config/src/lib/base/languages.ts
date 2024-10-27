@@ -754,7 +754,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   },
   {
     id: 'pascal',
-    label: 'Pscal',
+    label: 'Pascal',
     color: '#E3F171',
     plugin: () =>
       Promise.all([
