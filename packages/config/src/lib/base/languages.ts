@@ -752,4 +752,22 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
   },
+  {
+    id: 'pascal',
+    label: 'Pscal',
+    color: '#E3F171',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/pascal'),
+      ]).then(([cb, m]) => cb(m.pascal)),
+    icons: [
+      {
+        name: 'Pascal',
+        extension: '.pas',
+        content: () => import('material-icon-theme/icons/pascal.svg?raw'),
+        matcher: /^.*\.(pas)$/,
+      },
+    ],
+  },
 ];
