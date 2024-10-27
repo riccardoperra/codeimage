@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 9.0.1
+
+### Patch Changes
+
+- [#652](https://github.com/riccardoperra/codeimage/pull/652) [`e5a3ec31`](https://github.com/riccardoperra/codeimage/commit/e5a3ec31547650031536980545475b4d3e27906b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add support for pascal
+
 ## 9.0.0
 
 ### Patch Changes

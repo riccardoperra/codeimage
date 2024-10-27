@@ -1,5 +1,12 @@
 # @codeimage/app
 
+## 1.8.1
+
+### Patch Changes
+
+- Updated dependencies [[`e5a3ec31`](https://github.com/riccardoperra/codeimage/commit/e5a3ec31547650031536980545475b4d3e27906b)]:
+  - @codeimage/config@9.0.1
+
 ## 1.8.0
 
 ### Minor Changes
