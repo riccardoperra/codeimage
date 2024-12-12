@@ -51,7 +51,7 @@ export default function OpenSource() {
           <Box marginTop={4}>
             <Text class={styles.description}>
               CodeImage is an open source project, which is available entirely
-              on Github.
+              on GitHub.
             </Text>
           </Box>
 

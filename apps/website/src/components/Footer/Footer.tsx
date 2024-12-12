@@ -24,8 +24,8 @@ export default function Footer() {
               class={styles.link}
               underline={true}
               href={'https://github.com/riccardoperra/codeimage'}
-              title="Github repository"
-              children={'Github'}
+              title="GitHub repository"
+              children={'GitHub'}
             />
             <Link
               class={styles.link}
