@@ -52,8 +52,15 @@ export function RemoteSvgIcon(props: SvgExternalIconProps): JSXElement {
 
     const innerHTML = randomizeSvgUrlIds(svgResponse);
 
-    return {
+    const parsedDocument = new DOMParser().parseFromString(
       innerHTML,
+      'text/html',
+    );
+    const svg = parsedDocument.body.childNodes[0] as SVGElement;
+
+    return {
+      innerHTML: (svg as SVGElement).innerHTML,
+      viewBox: svg.getAttribute('viewBox') || undefined,
     };
   });
 

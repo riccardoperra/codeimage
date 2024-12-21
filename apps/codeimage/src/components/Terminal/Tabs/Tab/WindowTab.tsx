@@ -29,7 +29,13 @@ export interface WindowTabProps {
 export function WindowTab(
   props: ParentProps<WindowTabProps & JSX.IntrinsicElements['div']>,
 ) {
-  const [, others] = splitProps(props, ['class', 'ref', 'style']);
+  const [, others] = splitProps(props, [
+    'class',
+    'ref',
+    'style',
+    'rightContent',
+    'content',
+  ]);
 
   return (
     <div
