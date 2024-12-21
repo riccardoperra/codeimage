@@ -1,5 +1,15 @@
 # @codeimage/website
 
+## 0.1.1
+
+### Patch Changes
+
+- [#650](https://github.com/riccardoperra/codeimage/pull/650) [`4ed8ff18`](https://github.com/riccardoperra/codeimage/commit/4ed8ff18c8759c762ac02b4d0196aaa695610157) Thanks [@EndBug](https://github.com/EndBug)! - fix: fix spelling of GitHub
+
+- Updated dependencies [[`439c8541`](https://github.com/riccardoperra/codeimage/commit/439c854188c0b6612241d9f86b07b92c7e6f479c), [`4ed8ff18`](https://github.com/riccardoperra/codeimage/commit/4ed8ff18c8759c762ac02b4d0196aaa695610157)]:
+  - @codeimage/ui@0.10.6
+  - @codeimage/highlight@0.11.1
+
 ## 0.1.0
 
 ### Minor Changes

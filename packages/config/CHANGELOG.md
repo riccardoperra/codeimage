@@ -1,5 +1,14 @@
 # @codeimage/highlight
 
+## 9.0.3
+
+### Patch Changes
+
+- [#660](https://github.com/riccardoperra/codeimage/pull/660) [`439c8541`](https://github.com/riccardoperra/codeimage/commit/439c854188c0b6612241d9f86b07b92c7e6f479c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Fix WindowTab attributes
+
+- Updated dependencies [[`4ed8ff18`](https://github.com/riccardoperra/codeimage/commit/4ed8ff18c8759c762ac02b4d0196aaa695610157)]:
+  - @codeimage/highlight@0.11.1
+
 ## 9.0.2
 
 ### Patch Changes

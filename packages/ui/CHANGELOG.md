@@ -1,5 +1,11 @@
 # @codeimage/ui
 
+## 0.10.6
+
+### Patch Changes
+
+- [#660](https://github.com/riccardoperra/codeimage/pull/660) [`439c8541`](https://github.com/riccardoperra/codeimage/commit/439c854188c0b6612241d9f86b07b92c7e6f479c) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Fix RemoteSvgIcon inner content
+
 ## 0.10.5
 
 ### Patch Changes

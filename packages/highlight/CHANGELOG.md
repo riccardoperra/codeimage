@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 0.11.1
+
+### Patch Changes
+
+- [#650](https://github.com/riccardoperra/codeimage/pull/650) [`4ed8ff18`](https://github.com/riccardoperra/codeimage/commit/4ed8ff18c8759c762ac02b4d0196aaa695610157) Thanks [@EndBug](https://github.com/EndBug)! - fix: fix spelling of GitHub
+
 ## 0.11.0
 
 ### Minor Changes
