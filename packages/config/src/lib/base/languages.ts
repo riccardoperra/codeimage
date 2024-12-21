@@ -284,7 +284,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       {
         name: 'css',
         extension: '.css',
-        content: () => import('material-icon-theme/icons/css.svg?raw'),
+        content: () => import('../icons/css.svg?raw'),
         matcher: /^.*\.(css)$/,
       },
       {
