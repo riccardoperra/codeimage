@@ -4,7 +4,6 @@ import {useI18n} from '@codeimage/locale';
 import {getUiStore} from '@codeimage/store/ui';
 import {backgroundColorVar, Box, HStack, Text, toast} from '@codeimage/ui';
 import {
-  As,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -126,15 +125,13 @@ export function ProjectItem(props: VoidProps<ProjectItemProps>) {
 
         <div>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <As
-                component={IconButton}
-                theme={'secondary'}
-                size={'xs'}
-                aria-label={'Menu'}
-              >
-                <DotHorizontalIcon size={'md'} />
-              </As>
+            <DropdownMenuTrigger
+              as={IconButton}
+              theme={'secondary'}
+              size={'xs'}
+              aria-label={'Menu'}
+            >
+              <DotHorizontalIcon size={'md'} />
             </DropdownMenuTrigger>
             <DropdownMenuPortal>
               <DropdownMenuContent>

@@ -1,6 +1,6 @@
 {
   "name": "@codeimage/locale",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "module": "./dist/locale.mjs",
   "main": "./dist/locale.js",
   "source": "./src/public-api.ts",
@@ -30,7 +30,7 @@
     "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "dependencies": {
-    "@solid-primitives/i18n": "^1.2.4",
+    "@solid-primitives/i18n": "1.2.4",
     "solid-js": "^1.8.6"
   },
   "peerDependencies": {

@@ -1,7 +1,7 @@
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {VersionStore} from '@codeimage/store/version/version.store';
 import {FlexField, VStack} from '@codeimage/ui';
-import {As, icons, Listbox} from '@codeui/kit';
+import {icons, Listbox} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Match, onMount, Switch} from 'solid-js';
@@ -65,14 +65,14 @@ export function FontPicker(props: FontPickerProps) {
       open={open()}
       onOpenChange={setOpen}
       contentClass={styles.fontPickerPopover}
-      input={
-        <As component={'div'} class={styles.input}>
+      input={triggerProps => (
+        <div class={styles.input} {...triggerProps}>
           <span class={styles.inputValue}>
             {selectedFont()?.name ?? 'No font selected'}
           </span>
           <icons.SelectorIcon class={styles.inputIcon} />
-        </As>
-      }
+        </div>
+      )}
     >
       <SidebarPopoverTitle
         experimental

@@ -1,10 +1,12 @@
 import typescript from '@rollup/plugin-typescript';
-import {readdirSync, rmSync, statSync} from 'fs';
-import {posix} from 'path';
+import {readdirSync, rmSync, statSync} from 'node:fs';
+import {posix} from 'node:path';
 import {defineConfig} from 'rollup';
-import * as pkg from './package.json';
+// eslint-disable-next-line prettier/prettier
+import * as pkg from './package.json' with {type: 'json'};
 
-const {normalize} = posix;
+const {normalize} = posix
+const __dirname = import.meta.dirname;
 
 const themesPath = posix.join(__dirname, 'src/lib/themes');
 
@@ -32,12 +34,14 @@ rmSync('dist', {
   recursive: true,
 });
 
+const bundleInput = {
+  index: 'src/public-api.ts',
+  themes: 'src/lib/themes/index.ts',
+  ...inputs,
+}
+
 export default defineConfig({
-  input: {
-    index: 'src/public-api.ts',
-    themes: 'src/lib/themes/index.ts',
-    ...inputs,
-  },
+  input: bundleInput,
   external,
   plugins: [
     typescript({
@@ -51,9 +55,24 @@ export default defineConfig({
     preserveModules: true,
     entryFileNames: source => {
       const path = normalize(source.facadeModuleId).replaceAll('\\', '/');
-      return source.isEntry && themes.some(theme => path.includes(theme))
-        ? 'index.js'
-        : `${source.name}.js`;
+      if (source.isEntry) {
+        if (source.name === 'index') {
+          return '[name].js';
+        }
+
+        const theme = themes.find(_ => path.includes(`lib/themes/${_}`));
+        if (theme) {
+          return `lib/themes/${theme}/index.js`
+        } else {
+          const path = bundleInput[source.name];
+          if (path) {
+            return path
+              .replace('src/', '')
+              .replace('.ts', '.js');
+          }
+        }
+      }
+      return "[name].js";
     },
   },
 });

@@ -1,9 +1,9 @@
+import {provideAppState} from '@codeimage/store/index';
 import {withEntityPlugin} from '@codeimage/store/plugins/withEntityPlugin';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {toast} from '@codeimage/ui';
-import {untrack} from 'solid-js';
+import {createEffect, on, untrack} from 'solid-js';
 import {withAsyncAction} from 'statebuilder/asyncAction';
-import {provideAppState} from '..';
 import * as api from '../../data-access/preset';
 import {useIdb} from '../../hooks/use-indexed-db';
 import {getAuth0State} from '../auth/auth0';
@@ -50,6 +50,42 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
   .extend(withIndexedDbPlugin<PresetsArray>(idbKey, []))
   .extend(withPresetBridge(idbKey))
   .extend(withAsyncAction())
+  .extend(store => {
+    const sharePresetKey = 'share_preset';
+    createEffect(
+      on(
+        () => store.state === 'ready',
+        isReady => {
+          if (isReady) {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has(sharePresetKey)) {
+              const sharePreset = params.get(sharePresetKey) as string;
+              try {
+                const preset = JSON.parse(window.atob(sharePreset));
+                store.bridge
+                  .addNewPreset(preset.name, preset.data)
+                  .then(preset => store.set(_ => [preset, ...(_ ?? [])]))
+                  .then(() => {
+                    const url =
+                      window.location.origin + window.location.pathname;
+                    window.history.replaceState(undefined, '', url);
+                  })
+                  .then(() =>
+                    toast.success('Preset imported successfully', {
+                      position: 'bottom-center',
+                    }),
+                  );
+              } catch (e) {
+                toast.error('Invalid preset', {
+                  position: 'bottom-center',
+                });
+              }
+            }
+          }
+        },
+      ),
+    );
+  })
   .extend(store => {
     return {
       sortedPresets() {
@@ -103,6 +139,11 @@ const PresetStoreDefinition = experimental__defineResource(fetchInitialState)
                 });
               });
           });
+        }),
+        copyLink: store.asyncAction((payload: Preset) => {
+          const data = window.btoa(JSON.stringify(payload));
+          const link = `${window.location.origin}${window.location.pathname}?share_preset=${data}`;
+          return navigator.clipboard.writeText(link);
         }),
         syncPreset: store.asyncAction((payload: Preset) => {
           return untrack(() => {

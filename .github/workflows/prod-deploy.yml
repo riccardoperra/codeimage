@@ -21,13 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -37,13 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: '[API] Generate Prisma Migration'
@@ -58,13 +50,10 @@ jobs:
     needs: ['install']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -78,7 +67,7 @@ jobs:
           pnpm libs:build
 
       - name: Cache packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -88,13 +77,10 @@ jobs:
     needs: ['install']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -109,7 +95,7 @@ jobs:
           pnpm prepare:api:deploy
 
       - name: Cache build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             dist/api-bundle/**
@@ -149,13 +135,10 @@ jobs:
       ALLOWED_ORIGINS: '*'
 
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
@@ -177,18 +160,15 @@ jobs:
     needs: ['install', 'build-packages']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -208,17 +188,14 @@ jobs:
     needs: ['install', 'lint', 'build-packages']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -227,7 +204,7 @@ jobs:
           ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/highlight build:dev
-      - uses: amondnet/vercel-action@v25.1.0
+      - uses: amondnet/vercel-action@v25.2.0
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -242,22 +219,19 @@ jobs:
     needs: [install, lint, typecheck-packages, test-api, build-api]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+      - name: Checkout PR
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
       - name: Restore api build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             dist/api-bundle/**
@@ -286,18 +260,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -317,7 +287,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v25.1.0
+      - uses: amondnet/vercel-action@v25.2.0
         if: ${{ github.event.inputs.deploy-frontend == 'true' }}
         name: Deploy
         with:
@@ -338,17 +308,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
-      #        with:
-      #          submodules: 'true'
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}

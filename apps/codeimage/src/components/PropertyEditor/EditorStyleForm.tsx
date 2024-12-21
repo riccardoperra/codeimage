@@ -121,6 +121,7 @@ export const EditorStyleForm: ParentComponent = () => {
                 <SuspenseEditorItem
                   fallback={<SkeletonLine width={'100%'} height={'26px'} />}
                 >
+                  {/* @ts-expect-error Fix @codeui/kit types */}
                   <Select
                     {...languagesOptions.props()}
                     {...languagesOptions.controlled(
@@ -146,6 +147,7 @@ export const EditorStyleForm: ParentComponent = () => {
                 <SuspenseEditorItem
                   fallback={<SkeletonLine width={'100%'} height={'26px'} />}
                 >
+                  {/* @ts-expect-error Fix @codeui/kit types */}
                   <Select
                     {...syntaxHighlightOptions.props()}
                     {...syntaxHighlightOptions.controlled(
@@ -180,6 +182,7 @@ export const EditorStyleForm: ParentComponent = () => {
                     <SuspenseEditorItem
                       fallback={<SkeletonLine width={'100%'} height={'26px'} />}
                     >
+                      {/* @ts-expect-error Fix @codeui/kit types */}
                       <Select
                         {...languageFormatterOptions.props()}
                         {...languageFormatterOptions.controlled(
@@ -299,6 +302,7 @@ export const EditorStyleForm: ParentComponent = () => {
                 <SuspenseEditorItem
                   fallback={<SkeletonLine width={'85%'} height={'26px'} />}
                 >
+                  {/* @ts-expect-error Fix @codeui/kit types */}
                   <Select
                     {...fontWeightOptions.props()}
                     {...fontWeightOptions.controlled(

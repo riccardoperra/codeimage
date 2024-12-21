@@ -1,0 +1,11 @@
+name: 'Setup CI Step'
+description: 'Checkout PR and use same node version for jobs'
+
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Use Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22

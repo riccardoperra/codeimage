@@ -1,6 +1,5 @@
 import {DEFAULT_ASPECT_RATIOS} from '@codeimage/config';
 import {Box, Text} from '@codeimage/ui';
-import {As} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal, For, Show} from 'solid-js';
 import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
@@ -21,8 +20,8 @@ export function AspectRatioPicker(props: AspectRatioPickerProps) {
   return (
     <SidebarPopover
       contentClass={styles.aspectRatioPopover}
-      input={
-        <As component={'div'} class={styles.input}>
+      input={triggerProps => (
+        <div class={styles.input} {...triggerProps}>
           <Show when={props.value}>
             {aspectRatio => (
               <div
@@ -35,8 +34,8 @@ export function AspectRatioPicker(props: AspectRatioPickerProps) {
           </Show>
 
           <Text weight={'semibold'}>{props.value ?? 'Auto'}</Text>
-        </As>
-      }
+        </div>
+      )}
       open={open()}
       onOpenChange={setOpen}
     >

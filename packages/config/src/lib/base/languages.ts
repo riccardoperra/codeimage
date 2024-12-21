@@ -413,7 +413,8 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     id: 'php',
     label: 'PHP',
     color: '#4F5D95',
-    plugin: () => import('@codemirror/lang-php').then(({php}) => php()),
+    plugin: () =>
+      import('@codemirror/lang-php').then(({php}) => php({plain: true})),
     icons: [
       {
         name: 'php',
@@ -550,6 +551,24 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.rb',
         content: () => import('material-icon-theme/icons/ruby.svg?raw'),
         matcher: /^.*\.(rb)$/,
+      },
+    ],
+  },
+  {
+    id: 'visual-basic',
+    label: 'Visual Basic',
+    color: '#945db7',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/vb'),
+      ]).then(([cb, m]) => cb(m.vb)),
+    icons: [
+      {
+        name: 'visual-basic',
+        extension: '.vb',
+        content: () => import('material-icon-theme/icons/visualstudio.svg?raw'),
+        matcher: /^.*\.(vb)$/,
       },
     ],
   },
@@ -749,6 +768,42 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         extension: '.go',
         content: () => import('material-icon-theme/icons/go.svg?raw'),
         matcher: /^.*\.(go)$/,
+      },
+    ],
+  },
+  {
+    id: 'protobuf',
+    label: 'Protobuf',
+    color: '#a52a22',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/protobuf'),
+      ]).then(([cb, m]) => cb(m.protobuf)),
+    icons: [
+      {
+        name: 'Protobuf',
+        extension: '.proto',
+        content: () => import('material-icon-theme/icons/proto.svg?raw'),
+        matcher: /^.*\.(proto)$/,
+      },
+    ],
+  },
+  {
+    id: 'pascal',
+    label: 'Pascal',
+    color: '#E3F171',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/pascal'),
+      ]).then(([cb, m]) => cb(m.pascal)),
+    icons: [
+      {
+        name: 'Pascal',
+        extension: '.pas',
+        content: () => import('material-icon-theme/icons/pascal.svg?raw'),
+        matcher: /^.*\.(pas)$/,
       },
     ],
   },

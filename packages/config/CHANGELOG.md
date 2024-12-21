@@ -1,5 +1,37 @@
 # @codeimage/highlight
 
+## 9.0.2
+
+### Patch Changes
+
+- [`9bc923d7`](https://github.com/riccardoperra/codeimage/commit/9bc923d7bbfc6e41ae3aa5a3b034e731d1107ea4) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add support for visual basic and php plain language
+
+## 9.0.1
+
+### Patch Changes
+
+- [#652](https://github.com/riccardoperra/codeimage/pull/652) [`e5a3ec31`](https://github.com/riccardoperra/codeimage/commit/e5a3ec31547650031536980545475b4d3e27906b) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add support for pascal
+
+## 9.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`db76eb05`](https://github.com/riccardoperra/codeimage/commit/db76eb0564534953ed3c05d1daadfc680d8277ae)]:
+  - @codeimage/highlight@0.11.0
+
+## 8.2.8
+
+### Patch Changes
+
+- [#645](https://github.com/riccardoperra/codeimage/pull/645) [`581ee890`](https://github.com/riccardoperra/codeimage/commit/581ee8905775d0a0d37cf1077a89b925afa29f16) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add protobuf language support
+
+## 8.2.7
+
+### Patch Changes
+
+- Updated dependencies [[`5bb5f2a8`](https://github.com/riccardoperra/codeimage/commit/5bb5f2a824e69d7cd3d9c2616eaed2409dce5626)]:
+  - @codeimage/highlight@0.10.10
+
 ## 8.2.6
 
 ### Patch Changes

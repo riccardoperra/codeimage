@@ -1,5 +1,24 @@
 # @codeimage/website
 
+## 0.1.0
+
+### Minor Changes
+
+- [#647](https://github.com/riccardoperra/codeimage/pull/647) [`db76eb05`](https://github.com/riccardoperra/codeimage/commit/db76eb0564534953ed3c05d1daadfc680d8277ae) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Update @codeui dependency, update vite/rollup and infra deps
+
+### Patch Changes
+
+- Updated dependencies [[`db76eb05`](https://github.com/riccardoperra/codeimage/commit/db76eb0564534953ed3c05d1daadfc680d8277ae)]:
+  - @codeimage/highlight@0.11.0
+  - @codeimage/ui@0.10.5
+
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies [[`5bb5f2a8`](https://github.com/riccardoperra/codeimage/commit/5bb5f2a824e69d7cd3d9c2616eaed2409dce5626)]:
+  - @codeimage/highlight@0.10.10
+
 ## 0.0.12
 
 ### Patch Changes

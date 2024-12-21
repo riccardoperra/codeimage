@@ -39,6 +39,7 @@ export const FrameStyleForm: ParentComponent = () => {
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'26px'} />}
           >
+            {/* @ts-expect-error Fix @codeui/kit types */}
             <Select
               disallowEmptySelection
               {...paddingOptions.props()}

@@ -11,15 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+        uses: actions/checkout@v4
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets

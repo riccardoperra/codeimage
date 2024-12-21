@@ -7,13 +7,14 @@ export const tokens = {
   blue40: '#194176',
   blue: '#87c3ff',
   cyan: '#82d2ce',
-  lime: '#a8cc7c',
-  yellow: '#ebc88d',
-  pink: '#e394dc',
-  violet: '#af9cff',
+  lime: '#A8CC7C',
+  coral: '#CC7C8A',
+  yellow: '#EBC88D',
+  pink: '#E394DC',
+  violet: '#AF9CFF',
   gray120: '#d1d1d1',
   gray90: '#898989',
-  gray70: '#5d5d5d',
+  gray70: '#5D5D5D',
   gray60: '#484848',
   gray50: '#383838',
   gray40: '#333333',
@@ -27,6 +28,8 @@ export const palette = {
   number: tokens.yellow,
   boolean: tokens.cyan,
   string: tokens.pink,
+  classNameDefinition: tokens.blue,
+  typeDefinition: tokens.blue,
 };
 
 export const highlightStyle: HighlightStyle = HighlightStyle.define([
@@ -55,6 +58,18 @@ export const highlightStyle: HighlightStyle = HighlightStyle.define([
     color: palette.number,
   },
   {
+    tag: [t.self],
+    color: tokens.coral,
+  },
+  {
+    tag: [t.definition(t.className)],
+    color: palette.classNameDefinition,
+  },
+  {
+    tag: [t.definition(t.typeName)],
+    color: palette.typeDefinition,
+  },
+  {
     tag: [t.bool],
     color: palette.boolean,
   },
@@ -65,6 +80,10 @@ export const highlightStyle: HighlightStyle = HighlightStyle.define([
   {
     tag: [t.special(t.string)],
     color: palette.string,
+  },
+  {
+    tag: [t.escape],
+    color: tokens.cyan,
   },
   {
     tag: [t.regexp],
@@ -122,7 +141,7 @@ export const highlightStyle: HighlightStyle = HighlightStyle.define([
   },
   {
     tag: [t.typeName],
-    color: tokens.blue,
+    color: tokens.cyan,
   },
 ]);
 
