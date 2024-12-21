@@ -50,7 +50,7 @@ export function ToolbarSettingsButton() {
             style={{'text-decoration': 'unset'}}
             href={'https://github.com/riccardoperra/codeimage'}
           >
-            Github
+            GitHub
           </DropdownMenuItem>
 
           <Show when={loggedIn()}>

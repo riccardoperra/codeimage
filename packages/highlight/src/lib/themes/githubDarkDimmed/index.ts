@@ -7,7 +7,7 @@ export const githubDarkDimmedTheme = createTheme({
   editorTheme: githubDarkDimmed,
   properties: {
     darkMode: true,
-    label: 'Github Dark Dimmed',
+    label: 'GitHub Dark Dimmed',
     previewBackground:
       'linear-gradient(140deg, rgb(241 160 61), rgb(192 74 65),  rgb(115, 52, 52))',
     terminal: {
