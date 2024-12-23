@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.8.4
+
+### Patch Changes
+
+- [`c4a4c2d3`](https://github.com/riccardoperra/codeimage/commit/c4a4c2d39bead95a64dff82b5dd28d6533444192) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add new fonts
+
 ## 1.8.3
 
 ### Patch Changes
