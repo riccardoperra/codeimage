@@ -1,15 +1,23 @@
 import {Box, Link} from '@codeimage/ui';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {Changelog} from '../Changelog/Changelog';
-import {link} from './Footer.css';
 import * as styles from './Footer.css';
+import {link} from './Footer.css';
+import {Show} from 'solid-js';
+import {isDev} from 'solid-js/web';
 
 export const Footer = () => {
   const openDialog = createControlledDialog();
-
   return (
     <div class={styles.wrapper}>
       <Box display={'inlineFlex'} justifyContent={'flexEnd'} padding={1}>
+        <Show when={isDev}>
+          <Box marginRight={5}>
+            <Link class={link} onClick={() => window.toggleDevMode()} size="xs">
+              Debug preview
+            </Link>
+          </Box>
+        </Show>
         <Box marginRight={5}>
           <Link
             class={link}
