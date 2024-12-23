@@ -46,12 +46,31 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
     ],
   },
   {
+    id: 'geist-mono',
+    name: 'Geist Mono',
+    type: 'web',
+    types: [
+      {name: 'Regular', weight: 400},
+      {name: 'Bold', weight: 700},
+    ],
+  },
+  {
     id: 'fira-code',
     name: 'Fira Code',
     type: 'web',
     types: [
       {name: 'Regular', weight: 400},
       {name: 'Medium', weight: 500},
+      {name: 'Bold', weight: 700},
+    ],
+  },
+  {
+    id: 'ibm-plex-mono',
+    name: 'IBM Plex Mono',
+    type: 'web',
+    types: [
+      {name: 'Regular', weight: 400},
+      {name: 'SemiBold', weight: 500},
       {name: 'Bold', weight: 700},
     ],
   },

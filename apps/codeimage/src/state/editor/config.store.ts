@@ -40,6 +40,7 @@ export const EditorConfigStore = defineStore(() => getDefaultConfig())
       _.idb.hydrateOnInit().then(() => {
         runWithOwner(owner, () => {
           _.set('ready', true);
+          _.set('fonts', [...SUPPORTED_FONTS]);
           createEffect(
             on(
               _,

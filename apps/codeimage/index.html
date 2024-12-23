@@ -1,90 +1,129 @@
 <!DOCTYPE html>
-<html lang='en'>
-<head>
-  <meta charset='utf-8'>
-  <meta name='theme-color'>
-  <meta name='apple-mobile-web-app-status-bar-style' content='dark-content'>
-  <link rel='icon' href='/assets/favicon.ico'>
-  <link rel='preconnect' href='https://fonts.googleapis.com'>
-  <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin='anonymous'>
-  <link rel='preload' href='/assets/codeimage-logo-blue-svg-v1.svg' as='image' type='image/svg+xml'>
-  <meta name='viewport'
-        content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="theme-color" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="dark-content" />
+    <link rel="icon" href="/assets/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/assets/codeimage-logo-blue-svg-v1.svg"
+      as="image"
+      type="image/svg+xml"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
 
-  <link
-    href='https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Overpass+Mono:wght@400;500;600&family=Source+Code+Pro:wght@400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,700&display=swap'
-    rel='stylesheet'
-    media='print' onload="this.onload=null;this.removeAttribute('media');"
-    as='font'
-    fetchpriority='low'
-    crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Overpass+Mono:wght@400;500;600&family=Source+Code+Pro:wght@400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.onload=null;this.removeAttribute('media');"
+      as="font"
+      fetchpriority="low"
+      crossorigin
+    />
 
-  <link
-    href='https://fonts.cdnfonts.com/css/cascadia-code'
-    rel='stylesheet'
-    media='print' onload="this.onload=null;this.removeAttribute('media');"
-    as='font'
-    fetchpriority='low'
-    crossorigin>
+    <link
+      href="/assets/fonts/geist_mono/GeistMono[wght].ttf"
+      rel="stylesheet"
+      media="print"
+      onload="this.onload=null;this.removeAttribute('media');"
+      as="font"
+      fetchpriority="low"
+      crossorigin
+    />
 
-  <!-- Primary Meta Tags -->
-  <title>CodeImage - A tool to manage and beautify your code screenshots</title>
-  <meta name='title' content='CodeImage - A tool to manage and beautify your code screenshots'>
-  <meta name='description'
-        content='CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code'>
+    <!-- Primary Meta Tags -->
+    <title>
+      CodeImage - A tool to manage and beautify your code screenshots
+    </title>
+    <meta
+      name="title"
+      content="CodeImage - A tool to manage and beautify your code screenshots"
+    />
+    <meta
+      name="description"
+      content="CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code"
+    />
 
-  <!-- Open Graph / Facebook -->
-  <meta property='og:type' content='website'>
-  <meta property='og:url' content='https://app.codeimage.dev/'>
-  <meta property='og:title' content='CodeImage - A tool to manage and beautify your code screenshots'>
-  <meta property='og:description'
-        content='CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source codee'>
-  <meta property='og:image'
-        content='https://github.com/riccardoperra/codeimage/blob/main/assets/codeimage_card.png?raw=true'>
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://app.codeimage.dev/" />
+    <meta
+      property="og:title"
+      content="CodeImage - A tool to manage and beautify your code screenshots"
+    />
+    <meta
+      property="og:description"
+      content="CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source codee"
+    />
+    <meta
+      property="og:image"
+      content="https://github.com/riccardoperra/codeimage/blob/main/assets/codeimage_card.png?raw=true"
+    />
 
-  <!-- Twitter -->
-  <meta property='twitter:card' content='summary'>
-  <meta property='twitter:url' content='https://app.codeimage.dev/'>
-  <meta property='twitter:title' content='CodeImage - A tool to manage and beautify your code screenshots'>
-  <meta property='twitter:description'
-        content='CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code'>
-  <link rel='apple-touch-icon' href='/pwa/apple-icon-180.png'>
-  <meta name='apple-mobile-web-app-capable' content='yes'>
-  <!-- %UMAMI% -->
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content="https://app.codeimage.dev/" />
+    <meta
+      property="twitter:title"
+      content="CodeImage - A tool to manage and beautify your code screenshots"
+    />
+    <meta
+      property="twitter:description"
+      content="CodeImage is the newest tool to help developers to manage their snippets and create beautiful screenshots of their source code"
+    />
+    <link rel="apple-touch-icon" href="/pwa/apple-icon-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- %UMAMI% -->
 
-  <style>
-    html, body {
-      margin: 0
-    }
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
 
-    body {
-      background-color: #111111
-    }
+      body {
+        background-color: #111111;
+      }
 
-    .launcher {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      position: fixed;
-      width: 100%;
-      background-color: #111111;
-    }
+      .launcher {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        position: fixed;
+        width: 100%;
+        background-color: #111111;
+      }
 
-    .launcher img {
-      opacity: 1;
-    }
-  </style>
-</head>
+      .launcher img {
+        opacity: 1;
+      }
+    </style>
+  </head>
 
-<body>
-<noscript>You need to enable JavaScript to run this app.</noscript>
-<div id='root'>
-  <div id='launcher' class='launcher'>
-    <img width='240px' src='/assets/codeimage-logo-blue-svg-v1.svg' alt='logo' />
-  </div>
-</div>
-<script src='/src/index.tsx' type='module'></script>
-</body>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+      <div id="launcher" class="launcher">
+        <img
+          width="240px"
+          src="/assets/codeimage-logo-blue-svg-v1.svg"
+          alt="logo"
+        />
+      </div>
+    </div>
+    <script src="/src/index.tsx" type="module"></script>
+  </body>
 </html>

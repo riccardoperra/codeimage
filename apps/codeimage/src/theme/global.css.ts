@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {globalStyle} from '@vanilla-extract/css';
+import {globalFontFace, globalStyle} from '@vanilla-extract/css';
 
 globalStyle('body', {
   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
@@ -45,4 +45,26 @@ globalStyle('::-webkit-scrollbar-thumb', {
 
 globalStyle('::-webkit-scrollbar-thumb:hover', {
   backgroundColor: themeVars.dynamicColors.scrollBar.hoverBackgroundColor,
+});
+
+globalFontFace('Geist Mono', {
+  fontDisplay: 'swap',
+  fontWeight: '400 700',
+  fontStyle: 'normal',
+  src: "url(/assets/fonts/geist_mono/GeistMono[wght].ttf) format('truetype')",
+});
+
+(
+  [
+    ['Regular', 400],
+    ['SemiBold', 500],
+    ['Bold', 600],
+  ] as const
+).forEach(([font, weight]) => {
+  globalFontFace('IBM Plex Mono', {
+    fontDisplay: 'swap',
+    fontWeight: weight,
+    fontStyle: 'normal',
+    src: `url(/assets/fonts/IBM_Plex_Mono/IBMPlexMono-${font}.ttf) format('truetype')`,
+  });
 });
