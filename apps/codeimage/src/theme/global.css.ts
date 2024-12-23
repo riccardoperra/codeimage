@@ -68,3 +68,19 @@ globalFontFace('Geist Mono', {
     src: `url(/assets/fonts/IBM_Plex_Mono/IBMPlexMono-${font}.ttf) format('truetype')`,
   });
 });
+
+globalFontFace('Agave', {
+  fontDisplay: 'swap',
+  fontWeight: 400,
+  fontStyle: 'normal',
+  src: `url(/assets/fonts/agave/Agave-Regular.ttf) format('truetype')`,
+});
+
+(['Argon', 'Krypton', 'Neon', 'Radon', 'Xenon'] as const).forEach(font => {
+  globalFontFace(`Monaspace ${font}`, {
+    fontDisplay: 'swap',
+    fontWeight: '400 700',
+    fontStyle: 'normal',
+    src: `url(/assets/fonts/monaspace/Monaspace${font}VarVF[wght,wdth,slnt].ttf) format('truetype')`,
+  });
+});

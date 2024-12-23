@@ -55,6 +55,12 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
     ],
   },
   {
+    id: 'agave',
+    name: 'Agave',
+    type: 'web',
+    types: [{name: 'Regular', weight: 400}],
+  },
+  {
     id: 'fira-code',
     name: 'Fira Code',
     type: 'web',
@@ -112,4 +118,17 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
       {name: 'Bold', weight: 700},
     ],
   },
+  ...['Argon', 'Krypton', 'Neon', 'Radon', 'Xenon'].map(
+    font =>
+      ({
+        id: `monaspace-${font}`,
+        name: `Monaspace ${font}`,
+        type: 'web',
+        types: [
+          {name: 'Regular', weight: 400},
+          {name: 'Medium', weight: 500},
+          {name: 'Bold', weight: 700},
+        ],
+      } as const),
+  ),
 ] as const);
