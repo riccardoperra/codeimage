@@ -19,8 +19,9 @@ features to speed up the process to post in social media.
 
 #### Supported by
 
-![JetBrains logo.](./assets/jetbrains.svg | width=200)](https://jb.gg/OpenSourceSupport)
-
+<a href="https://jb.gg/OpenSourceSupport">
+  <img alt='Jetbrains Logo.' src="./assets/jetbrains.svg" width='200'>
+</a>
 
 ---
 
