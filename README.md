@@ -19,7 +19,7 @@ features to speed up the process to post in social media.
 
 #### Supported by
 
-<a href="https://jb.gg/OpenSourceSupport">
+<a target='_blank' href="https://jb.gg/OpenSourceSupport">
   <img alt='Jetbrains Logo.' src="./assets/jetbrains.svg" width='200'>
 </a>
 
