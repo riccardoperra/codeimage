@@ -17,6 +17,13 @@ features to speed up the process to post in social media.
 
 <a href="https://www.producthunt.com/posts/codeimage?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-codeimage" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=371306&theme=light" alt="CodeImage - A&#0032;tool&#0032;to&#0032;manage&#0032;and&#0032;beautify&#0032;your&#0032;code&#0032;screenshots | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
+#### Supported by
+
+![JetBrains logo.](./assets/jetbrains.svg | width=200)](https://jb.gg/OpenSourceSupport)
+
+
+---
+
 ![CodeImage showcase](assets/showcase_1.png)
 
 ## 🤖 Tech stack
