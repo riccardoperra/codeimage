@@ -17,7 +17,7 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.vsCodeDarkTheme),
   },
   {
-    id: 'xcodeDarkTheme',
+    id: 'xCodeDark',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.xCodeDarkTheme),
   },
@@ -42,7 +42,7 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.draculaTheme),
   },
   {
-    id: 'xcodeLightTheme',
+    id: 'xCodeLight',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.xCodeLightTheme),
   },
@@ -82,7 +82,7 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.auraTheme),
   },
   {
-    id: 'light',
+    id: 'oneLight',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.lightTheme),
   },
