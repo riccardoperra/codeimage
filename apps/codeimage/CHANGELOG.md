@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.8.5
+
+### Patch Changes
+
+- [#665](https://github.com/riccardoperra/codeimage/pull/665) [`a9ad3dd9`](https://github.com/riccardoperra/codeimage/commit/a9ad3dd9af03b68684003c9af3957446c6149659) Thanks [@riccardoperra](https://github.com/riccardoperra)! - fix: fix xcode theme id in theme registry
+
 ## 1.8.4
 
 ### Patch Changes
