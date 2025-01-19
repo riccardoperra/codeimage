@@ -8,6 +8,7 @@
 [![Built with SolidJS](https://img.shields.io/badge/Built%20with-SolidJS-blue)](https://github.com/solidjs/solid)
 [![Built with Vanilla Extract](https://img.shields.io/badge/Built%20with-Vanilla%20Extract-ff69b4)](https://github.com/seek-oss/vanilla-extract)
 ![License](https://img.shields.io/github/license/riccardoperra/codeimage)
+[<img src="https://api.gitsponsors.com/api/badge/img?id=454158645" height="20">](https://api.gitsponsors.com/api/badge/link?p=s8JZJ8dzhxJwaDrfcRwqY4rmuWXguE0UikNYGc6YsQeYjqfLCZcnVzEpiXBqHn7pDzLTeiAuA0DWm3D1P7GcdXEvF17KU4G4/bSNOC7LzPnCXUokGwt7p51Fotck/sk/mEFOiF6j0uL6Id5QI/J6Qw==)
 
 ## Introduction
 
