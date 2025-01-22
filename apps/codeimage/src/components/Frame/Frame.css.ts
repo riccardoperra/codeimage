@@ -1,4 +1,5 @@
 import {backgroundColorVar, themeVars, withThemeMode} from '@codeimage/ui';
+import {themeTokens} from '@codeui/kit';
 import {createTheme, style} from '@vanilla-extract/css';
 
 export const [frame, frameVars] = createTheme({
@@ -63,6 +64,25 @@ export const previewPortal = style({
   height: 'auto',
   opacity: 0,
   transformOrigin: 'left top',
+  zoom: '50%',
+  selectors: {
+    '&[data-dev-mode]': {
+      opacity: 1,
+      zIndex: 999,
+    },
+  },
+  ':after': {
+    content: 'Debug preview',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    zIndex: 999,
+    borderRadius: themeTokens.radii.md,
+    padding: themeTokens.spacing['2'],
+    backgroundColor: '#333',
+    color: 'white',
+    margin: themeTokens.spacing['1'],
+  },
 });
 
 export const container = style([

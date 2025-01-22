@@ -1,8 +1,10 @@
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {EditorMetadataState} from '@codeimage/store/editor/model';
 import {getUiStore} from '@codeimage/store/ui';
 import {HStack, toast} from '@codeimage/ui';
+import {StateField, Transaction} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
 import {Button} from '@codeui/kit';
 import {
@@ -10,21 +12,29 @@ import {
   createEditorControlledValue,
   createEditorFocus,
 } from 'solid-codemirror';
-import {Accessor, createEffect, createSignal, on} from 'solid-js';
+import {Accessor, createEffect, createMemo, createSignal, on} from 'solid-js';
 import {AppLocaleEntries} from '../../i18n';
 import {SparklesIcon} from '../Icons/SparklesIcon';
 import CustomEditor from './CustomEditor';
+import {customEffectAnnotation} from './plugins/customEffectAnnotation';
+import {
+  diffLineState,
+  dispatchReplaceDiffLineState,
+} from './plugins/diff/state';
 
 interface CanvasEditorProps {
   readOnly: boolean;
 }
+
+const initMetadataAnnotationEvent = 'init-metadata';
 
 export default function CanvasEditor(props: CanvasEditorProps) {
   const [editorView, setEditorView] = createSignal<EditorView>();
   const activeEditorStore = getActiveEditorStore();
   const {
     state: editorState,
-    actions: {setFocused},
+    actions: {setFocused, setTabMetadata},
+    canvasEditorEvents,
   } = getRootEditorStore();
 
   const {setFocused: editorSetFocused} = createEditorFocus(
@@ -37,6 +47,24 @@ export default function CanvasEditor(props: CanvasEditorProps) {
       editorView,
       view => {
         if (!view) return;
+
+        canvasEditorEvents.listen(transaction => {
+          if (
+            !transaction.annotation(customEffectAnnotation) ||
+            transaction.annotation(Transaction.userEvent) ===
+              initMetadataAnnotationEvent
+          )
+            return;
+          const state: Record<
+            keyof EditorMetadataState,
+            StateField<unknown>
+          > = {
+            diff: diffLineState,
+          };
+          const json = transaction.state.toJSON(state);
+          setTabMetadata(json);
+        });
+
         createEffect(
           on(
             () => editorState.options.focused,
@@ -46,6 +74,38 @@ export default function CanvasEditor(props: CanvasEditorProps) {
               }
             },
           ),
+        );
+
+        const metadata = createMemo(() => activeEditorStore.editor()?.metadata);
+
+        let sendInitEvent = false;
+        createEffect(
+          on(editorView, editorView => {
+            if (!editorView) return;
+            createEffect(
+              on([metadata], ([metadata]) => {
+                if (!metadata) {
+                  return;
+                }
+                const {diff} = metadata;
+                if (diff) {
+                  dispatchReplaceDiffLineState(
+                    editorView,
+                    {
+                      inserted: diff.inserted,
+                      deleted: diff.deleted,
+                    },
+                    sendInitEvent
+                      ? {
+                          userEvent: initMetadataAnnotationEvent,
+                        }
+                      : undefined,
+                  );
+                }
+                sendInitEvent = true;
+              }),
+            );
+          }),
         );
       },
       {defer: true},
@@ -107,6 +167,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
 
   return (
     <CustomEditor
+      dispatchTransaction={true}
       onEditorViewChange={setEditorView}
       onValueChange={activeEditorStore.setCode}
       readOnly={props.readOnly}

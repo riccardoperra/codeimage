@@ -740,6 +740,24 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     ],
   },
   {
+    id: 'git-patch',
+    label: 'Patch',
+    color: '#fff',
+    plugin: () =>
+      Promise.all([
+        importLegacy(),
+        import('@codemirror/legacy-modes/mode/diff'),
+      ]).then(([cb, m]) => cb(m.diff)),
+    icons: [
+      {
+        name: 'Git',
+        extension: '.patch',
+        content: () => import('material-icon-theme/icons/diff.svg?raw'),
+        matcher: /^.*\.(patch)$/,
+      },
+    ],
+  },
+  {
     id: 'go',
     label: 'Go',
     color: '#00ADD8',
