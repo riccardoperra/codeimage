@@ -121,7 +121,7 @@ export function ExportPopoverContent() {
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}
               size={'md'}
-              label={'Show only active tab'}
+              label={'(Export only) Show only active tab'}
             />
           </VStack>
         </div>
