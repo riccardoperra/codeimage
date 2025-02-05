@@ -1,4 +1,5 @@
 import {useI18n} from '@codeimage/locale';
+import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {
   Box,
   FieldLabel,
@@ -14,6 +15,7 @@ import {
 
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogPanelContent,
   DialogPanelFooter,
@@ -130,6 +132,7 @@ export type ExportDialogProps = {
 export function ExportDialog(props: ExportDialogProps & DialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const [supportWebShare] = useWebshare();
+  const exportCanvasStore = getExportCanvasStore();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.export);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
@@ -285,6 +288,13 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
                 step={1}
               />
             </FlexField>
+
+            <Checkbox
+              checked={exportCanvasStore.get.showOnlyActiveTab}
+              onChange={exportCanvasStore.setShowOnlyActiveTab}
+              size={'md'}
+              label={'Show only active tab'}
+            />
           </VStack>
         </DynamicSizedContainer>
       </DialogPanelContent>

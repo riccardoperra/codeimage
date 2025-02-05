@@ -1,7 +1,9 @@
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
+import {ExportCanvasStore, getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
@@ -17,6 +19,7 @@ import {
   VoidProps,
 } from 'solid-js';
 import {Portal} from 'solid-js/web';
+import {provideState} from 'statebuilder';
 import {setPreviewEditorView} from '../../hooks/export-snippet';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
@@ -32,9 +35,13 @@ const PreviewExportEditor = lazy(
 );
 
 function PreviewPortal(props: ParentProps) {
+  const config = provideState(EditorConfigStore);
   return (
     <Portal>
-      <div class={styles.previewPortal}>
+      <div
+        data-dev-mode={config.get.devMode ? '' : undefined}
+        class={styles.previewPortal}
+      >
         <Suspense fallback={<FrameSkeleton />}>{props.children}</Suspense>
       </div>
     </Portal>
@@ -47,6 +54,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const assetsStore = getAssetsStore();
+  const exportCanvasStore = getExportCanvasStore();
 
   const filterHotKey = () =>
     editor.state.options.focused ||
@@ -112,6 +120,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
             type={terminal.type}
             readonlyTab={true}
             showTab={true}
+            showOnlyActiveTab={exportCanvasStore.get.showOnlyActiveTab}
             shadow={terminal.shadow}
             background={terminal.background}
             accentVisible={terminal.accentVisible}

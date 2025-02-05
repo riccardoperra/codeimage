@@ -9,6 +9,7 @@ export interface PersistedExportCanvasSettings {
   devicePixelRatio: number;
   jpegQuality: number;
   extension: ExportExtension;
+  showOnlyActiveTab: boolean;
 }
 
 export const ExportCanvasStore = defineStore(() => ({
@@ -19,12 +20,14 @@ export const ExportCanvasStore = defineStore(() => ({
   devicePixelRatio: 3,
   jpegQuality: 100,
   extension: ExportExtension.png,
+  showOnlyActiveTab: false,
 }))
   .extend(
     withIndexedDbPlugin<PersistedExportCanvasSettings>('exportSettings', {
       devicePixelRatio: 3,
       jpegQuality: 100,
       extension: ExportExtension.png,
+      showOnlyActiveTab: false,
     }),
   )
   .extend((store, context) => {
@@ -34,6 +37,7 @@ export const ExportCanvasStore = defineStore(() => ({
           devicePixelRatio: value.devicePixelRatio,
           jpegQuality: value.jpegQuality,
           extension: value.extension,
+          showOnlyActiveTab: value.showOnlyActiveTab,
         });
       }),
     );
@@ -55,6 +59,9 @@ export const ExportCanvasStore = defineStore(() => ({
     },
     setCanvasSize(width: number, height: number) {
       store.set('canvasSize', {width, height});
+    },
+    setShowOnlyActiveTab(value: boolean) {
+      store.set('showOnlyActiveTab', value);
     },
     initCanvas(el: Accessor<HTMLElement | undefined>) {
       createResizeObserver(el, ref => {
