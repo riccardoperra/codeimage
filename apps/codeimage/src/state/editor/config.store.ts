@@ -21,6 +21,13 @@ export interface ConfigState {
   ready: boolean;
   fonts: (CustomFontConfiguration & {type: 'web'})[];
   systemFonts: (CustomFontConfiguration & {type: 'system'})[];
+  devMode: boolean;
+}
+
+declare global {
+  interface Window {
+    toggleDevMode: () => void;
+  }
 }
 
 function getDefaultConfig(): ConfigState {
@@ -28,6 +35,7 @@ function getDefaultConfig(): ConfigState {
     ready: false,
     fonts: [...SUPPORTED_FONTS],
     systemFonts: [],
+    devMode: false,
   };
 }
 
@@ -58,6 +66,11 @@ export const EditorConfigStore = defineStore(() => getDefaultConfig())
   .extend(_ => {
     const fonts = createMemo(() => _.localFontsApi.state().fonts);
 
+    const toggleDevMode = () => _.set('devMode', debug => !debug);
+    onMount(() => {
+      window.toggleDevMode = toggleDevMode;
+    });
+
     const buildSystemFontConfiguration = (font: LoadedFont) =>
       ({
         type: 'system',
@@ -77,4 +90,8 @@ export const EditorConfigStore = defineStore(() => getDefaultConfig())
         _.set('systemFonts', fontsConfiguration);
       }),
     );
+
+    return {
+      toggleDevMode,
+    };
   });

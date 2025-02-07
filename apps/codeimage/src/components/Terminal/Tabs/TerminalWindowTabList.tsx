@@ -27,6 +27,7 @@ export interface TerminalWindowTabListProps {
   lite?: boolean;
   preview?: boolean;
   small?: boolean;
+  showOnlyActiveTab?: boolean;
 }
 
 export function TerminalWindowTabList(
@@ -61,7 +62,14 @@ export function TerminalWindowTabListContent(
     isActive,
   } = getRootEditorStore();
 
-  const sortableIds = createMemo(() => state.editors.map(editor => editor.id));
+  const editors = () => {
+    if (props.showOnlyActiveTab) {
+      return state.editors.filter(editor => isActive(editor.id));
+    }
+    return state.editors;
+  };
+
+  const sortableIds = createMemo(() => editors().map(editor => editor.id));
 
   function handleDragEnd(handler: DragEventParam) {
     if (handler.draggable && handler.droppable) {
@@ -102,7 +110,7 @@ export function TerminalWindowTabListContent(
               <DragDropSensors />
               <ConstrainDragAxis />
               <SortableProvider ids={sortableIds()}>
-                <For each={state.editors}>
+                <For each={editors()}>
                   {(editor, index) => {
                     const icon = createTabIcon(
                       () => editor.tab.tabName ?? null,
@@ -138,7 +146,7 @@ export function TerminalWindowTabListContent(
                           handleTabNameChange(editor.id, tabName)
                         }
                         onClose={
-                          state.editors.length > 1
+                          !props.readOnly && state.editors.length > 1
                             ? () => removeEditor(editor.id)
                             : null
                         }

@@ -11,7 +11,7 @@ import {
   Text,
   VStack,
 } from '@codeimage/ui';
-import {PopoverContent} from '@codeui/kit';
+import {Checkbox, PopoverContent} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Show} from 'solid-js';
@@ -116,6 +116,13 @@ export function ExportPopoverContent() {
                 </Box>
               </HStack>
             </FlexField>
+
+            <Checkbox
+              checked={exportCanvasStore.get.showOnlyActiveTab}
+              onChange={exportCanvasStore.setShowOnlyActiveTab}
+              size={'md'}
+              label={'(Export only) Show only active tab'}
+            />
           </VStack>
         </div>
       </DynamicSizedContainer>

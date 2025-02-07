@@ -19,6 +19,7 @@ export interface BaseTerminalProps
   tabIcon?: LanguageIconDefinition['content'];
   onTabChange?: (tab: string) => void;
   lite?: boolean;
+  showOnlyActiveTab?: boolean;
   themeId: string;
 }
 
