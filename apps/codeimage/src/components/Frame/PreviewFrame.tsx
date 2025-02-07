@@ -1,6 +1,6 @@
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
-import {ExportCanvasStore, getExportCanvasStore} from '@codeimage/store/canvas';
+import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
