@@ -293,7 +293,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}
               size={'md'}
-              label={'(Export only) Show only active tab'}
+              label={'Show only active tab'}
             />
           </VStack>
         </DynamicSizedContainer>
