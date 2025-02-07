@@ -1,5 +1,11 @@
 # @codeimage/app
 
+## 1.9.0
+
+### Minor Changes
+
+- [#669](https://github.com/riccardoperra/codeimage/pull/669) [`220c4ae2`](https://github.com/riccardoperra/codeimage/commit/220c4ae22b6ce3ad7f602172347fc83b633b55e4) Thanks [@riccardoperra](https://github.com/riccardoperra)! - allow to display only active tab while exporting image
+
 ## 1.8.5
 
 ### Patch Changes
