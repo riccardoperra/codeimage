@@ -1,8 +1,8 @@
-import {
+import type {
   DynamicNode,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {ValidConstructor} from 'solid-headless/src/utils/dynamic-prop';
+import type {ValidConstructor} from 'solid-headless/src/utils/dynamic-prop';
 
 type RefCallback<T> = (el: T) => void;
 type RefField<T> = T | RefCallback<T>;

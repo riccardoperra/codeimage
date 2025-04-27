@@ -1,6 +1,6 @@
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {
-  CustomFontConfiguration,
+  type CustomFontConfiguration,
   SUPPORTED_FONTS,
 } from '@core/configuration/font';
 import {fontWeightLabelMap} from '@core/modules/localFontAccessApi/font';
@@ -14,7 +14,7 @@ import {
 } from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
-import {LoadedFont} from '../../hooks/use-local-fonts';
+import type {LoadedFont} from '../../hooks/use-local-fonts';
 import {withLocalFontManagementPlugin} from './config/localFont';
 
 export interface ConfigState {

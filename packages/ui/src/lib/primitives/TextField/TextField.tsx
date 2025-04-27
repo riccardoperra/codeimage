@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {
+import type {
   DynamicProps,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';

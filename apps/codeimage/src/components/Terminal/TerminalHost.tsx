@@ -1,10 +1,10 @@
-import {LanguageIconDefinition} from '@codeimage/config';
-import {TerminalState} from '@codeimage/store/editor/model';
+import {type LanguageIconDefinition} from '@codeimage/config';
+import {type TerminalState} from '@codeimage/store/editor/model';
 import {FadeInOutTransition} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
-import {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
-import {FlowComponent} from 'solid-js';
+import type {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
+import {type FlowComponent} from 'solid-js';
 import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
 import {createTabTheme} from './Tabs/createTabTheme';
 import * as styles from './terminal.css';

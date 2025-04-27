@@ -1,5 +1,5 @@
 import {useDragDropContext} from '@thisbeyond/solid-dnd';
-import {Transform} from '@thisbeyond/solid-dnd/dist/types/layout';
+import type {Transform} from '@thisbeyond/solid-dnd/dist/types/layout';
 
 export const ConstrainDragAxis = () => {
   const [, {onDragStart, onDragEnd, addTransformer, removeTransformer}] =

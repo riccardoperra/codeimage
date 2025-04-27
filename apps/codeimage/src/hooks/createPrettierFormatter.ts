@@ -1,6 +1,6 @@
 import {
-  LanguageDefinition,
-  PrettierPluginDefinition,
+  type LanguageDefinition,
+  type PrettierPluginDefinition,
   SUPPORTED_LANGUAGES,
 } from '@codeimage/config';
 import type {
@@ -8,7 +8,7 @@ import type {
   Options as PrettierOptions,
   Plugin as PrettierPlugin,
 } from 'prettier';
-import {Accessor, createMemo, untrack} from 'solid-js';
+import {type Accessor, createMemo, untrack} from 'solid-js';
 
 interface PrettierParserConfig {
   parser?: BuiltInParserName | string | null;

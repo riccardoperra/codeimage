@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {Box, Link} from '@codeimage/ui';
-import {AppLocaleEntries} from '../../../i18n';
+import {type AppLocaleEntries} from '../../../i18n';
 
 export function PresetTooltipContent() {
   const {loggedIn, login} = getAuth0State();

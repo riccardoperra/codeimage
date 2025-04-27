@@ -1,16 +1,16 @@
-import {PolymorphicProps} from '@kobalte/core';
+import {type PolymorphicProps} from '@kobalte/core';
 import {
   Alert as KAlert,
-  AlertRootProps as KAlertRootProps,
+  type AlertRootProps as KAlertRootProps,
 } from '@kobalte/core/alert';
 import clsx from 'clsx';
 import {
-  JSXElement,
+  type JSXElement,
   Match,
   Show,
   splitProps,
   Switch,
-  ValidComponent,
+  type ValidComponent,
 } from 'solid-js';
 import {CloseIcon} from '../../components/Icons/CloseIcon';
 import {ExclamationAltIcon} from '../../components/Icons/Exclamation';

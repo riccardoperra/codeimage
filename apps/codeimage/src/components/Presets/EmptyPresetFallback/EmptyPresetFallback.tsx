@@ -4,7 +4,7 @@ import {Box, LoadingCircle, Text, VStack} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
-import {AppLocaleEntries} from '../../../i18n';
+import {type AppLocaleEntries} from '../../../i18n';
 import * as styles from '../../../pages/Dashboard/components/ProjectList/ProjectList.css';
 import {EmptyBox} from '../../Icons/EmptyBox';
 import {PlusIcon} from '../../Icons/PlusIcon';

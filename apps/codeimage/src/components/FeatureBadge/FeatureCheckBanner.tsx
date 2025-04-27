@@ -10,7 +10,7 @@ import FirefoxUrl from './browserSvgs/firefox.png';
 import OperaUrl from './browserSvgs/opera.png';
 import SafariUrl from './browserSvgs/safari.svg';
 import {getWindowMdnCompatibilityApi} from './compatibility/api';
-import {CompatStatement, SupportStatement} from './compatibility/types';
+import {type CompatStatement, type SupportStatement} from './compatibility/types';
 import * as styles from './UnsupportedFeatureBanner.css';
 
 type BrowserType = 'chrome' | 'safari' | 'edge' | 'firefox' | 'opera';

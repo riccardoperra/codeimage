@@ -7,7 +7,7 @@ import {
   FlexField,
   HStack,
   RangeField,
-  SegmentedFieldItem,
+  type SegmentedFieldItem,
   Text,
   VStack,
 } from '@codeimage/ui';
@@ -16,7 +16,7 @@ import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedConta
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Show} from 'solid-js';
 import {ExportExtension} from '../../hooks/use-export-image';
-import {AppLocaleEntries} from '../../i18n';
+import {type AppLocaleEntries} from '../../i18n';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import * as styles from './ExportContent.css';
 

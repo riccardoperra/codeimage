@@ -1,6 +1,6 @@
-import {CustomTheme, TerminalTabsTheme} from '@codeimage/highlight';
+import {type CustomTheme, type TerminalTabsTheme} from '@codeimage/highlight';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {Accessor, createMemo} from 'solid-js';
+import {type Accessor, createMemo} from 'solid-js';
 
 export interface TabThemeProps extends TerminalTabsTheme {
   shouldFallbackInactiveColor: boolean;

@@ -1,7 +1,7 @@
 import {EditorView} from '@codemirror/view';
 import {createAsyncAction} from '@core/hooks/async-action';
-import {Resource} from 'solid-js';
-import {exportImage, ExportImagePayload} from './use-export-image';
+import {type Resource} from 'solid-js';
+import {exportImage, type ExportImagePayload} from './use-export-image';
 
 type ViewState = {printing: boolean};
 

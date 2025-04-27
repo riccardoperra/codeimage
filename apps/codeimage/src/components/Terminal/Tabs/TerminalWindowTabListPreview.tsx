@@ -1,6 +1,6 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {EditorState} from '@codeimage/store/editor/model';
-import {ErrorBoundary, Suspense, VoidProps} from 'solid-js';
+import {type EditorState} from '@codeimage/store/editor/model';
+import {ErrorBoundary, Suspense, type VoidProps} from 'solid-js';
 import {FrameSkeleton} from '../../Frame/FrameSkeleton';
 import * as styles from './Tab/Tab.css';
 import {WindowTab, WindowTabContentText} from './Tab/WindowTab';

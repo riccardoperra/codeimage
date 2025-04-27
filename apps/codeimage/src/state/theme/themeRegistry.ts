@@ -1,4 +1,4 @@
-import {CustomTheme} from '@codeimage/highlight';
+import {type CustomTheme} from '@codeimage/highlight';
 
 interface ThemeRegistryEntry {
   id: string;

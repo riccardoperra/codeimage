@@ -1,4 +1,4 @@
-import {SvgIcon, SvgIconProps} from '@codeimage/ui';
+import {SvgIcon, type SvgIconProps} from '@codeimage/ui';
 
 export const DownloadIcon = (props: SvgIconProps) => {
   return (

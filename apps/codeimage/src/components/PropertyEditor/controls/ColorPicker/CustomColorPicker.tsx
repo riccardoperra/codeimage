@@ -7,7 +7,7 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {createSignal} from 'solid-js';
 import {CloseIcon} from '../../../Icons/CloseIcon';
 import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
-import {ColorPickerPopover, ColorPickerPopoverProps} from './ColorPicker';
+import {ColorPickerPopover, type ColorPickerPopoverProps} from './ColorPicker';
 import * as styles from './CustomColorPicker.css';
 
 export type CustomColorPickerProps = ColorPickerPopoverProps & {

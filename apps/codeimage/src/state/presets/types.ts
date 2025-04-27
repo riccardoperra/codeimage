@@ -1,4 +1,4 @@
-import {GetPresetByIdApi} from '@codeimage/api/api-types';
+import type {GetPresetByIdApi} from '@codeimage/api/api-types';
 
 export type ApiPreset = GetPresetByIdApi['response'];
 export type PresetData = ApiPreset['data'];

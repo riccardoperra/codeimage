@@ -1,13 +1,13 @@
-import {LanguageIconDefinition} from '@codeimage/config';
+import {type LanguageIconDefinition} from '@codeimage/config';
 import {Loading, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
-  FlowProps,
-  JSX,
-  JSXElement,
+  type FlowProps,
+  type JSX,
+  type JSXElement,
   mergeProps,
-  ParentProps,
-  Ref,
+  type ParentProps,
+  type Ref,
   Show,
   splitProps,
   Suspense,
