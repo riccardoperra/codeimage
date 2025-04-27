@@ -2,7 +2,7 @@ import {isIOS, isSafari} from '@solid-primitives/platform';
 import {clonePseudoElements} from './clonePseudoElements';
 import {copyFont, copyUserComputedStyleFast} from './cloneStyle';
 import {getBlobFromURL} from './getBlobFromURL';
-import {Options} from './options';
+import {type Options} from './options';
 import {createImage, getMimeType, makeDataUrl, toArray} from './util';
 
 async function cloneCanvasElement(canvas: HTMLCanvasElement) {
