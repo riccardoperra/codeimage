@@ -1,5 +1,5 @@
 import {getBlobFromURL} from './getBlobFromURL';
-import {Options} from './options';
+import {type Options} from './options';
 import {getMimeType, isDataUrl, makeDataUrl, resolveUrl} from './util';
 
 const URL_REGEX = /url\((['"]?)([^'"]+?)\1\)/g;

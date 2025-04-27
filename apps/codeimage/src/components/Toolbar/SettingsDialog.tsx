@@ -22,10 +22,10 @@ import {
 } from '@codeui/kit';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
-import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
+import {type ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {useModality} from '@core/hooks/isMobile';
 import {createSignal, For, Match, Switch} from 'solid-js';
-import {AppLocaleEntries} from '../../i18n';
+import {type AppLocaleEntries} from '../../i18n';
 import * as styles from './SettingsDialog.css';
 
 type SettingsDialogProps = ControlledDialogProps;

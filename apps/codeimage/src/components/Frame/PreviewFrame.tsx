@@ -12,11 +12,11 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
   lazy,
   onMount,
-  ParentProps,
-  Ref,
+  type ParentProps,
+  type Ref,
   Show,
   Suspense,
-  VoidProps,
+  type VoidProps,
 } from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {provideState} from 'statebuilder';

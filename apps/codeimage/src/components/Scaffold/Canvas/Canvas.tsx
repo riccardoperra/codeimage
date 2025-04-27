@@ -1,4 +1,4 @@
-import {FlowProps} from 'solid-js';
+import {type FlowProps} from 'solid-js';
 import * as styles from './Canvas.css';
 
 // eslint-disable-next-line @typescript-eslint/ban-types

@@ -3,7 +3,7 @@ import {createPlatformProps} from '@core/hooks/createPlatformProps';
 import {createWindowSize} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
-import {ParentComponent} from 'solid-js';
+import {type ParentComponent} from 'solid-js';
 import * as styles from './Scaffold.css';
 
 export const Scaffold: ParentComponent = props => {

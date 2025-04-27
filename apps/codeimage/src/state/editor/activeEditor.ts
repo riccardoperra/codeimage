@@ -7,7 +7,7 @@ import {appEnvironment} from '@core/configuration';
 import {clamp, isNonNullable} from '@solid-primitives/utils';
 import {createEffect, createMemo, createRoot, on} from 'solid-js';
 import {createPrettierFormatter} from '../../hooks/createPrettierFormatter';
-import {AppLocaleEntries} from '../../i18n';
+import {type AppLocaleEntries} from '../../i18n';
 
 const $activeEditorState = () => {
   return createRoot(() => {

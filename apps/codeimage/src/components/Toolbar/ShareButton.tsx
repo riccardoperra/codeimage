@@ -3,9 +3,9 @@ import {SvgIcon} from '@codeimage/ui';
 import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {useWebshare} from '@core/hooks/use-webshare';
-import {Component, createMemo, onMount, Show} from 'solid-js';
+import {type Component, createMemo, onMount, Show} from 'solid-js';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {AppLocaleEntries} from '../../i18n';
+import {type AppLocaleEntries} from '../../i18n';
 import {ShareIcon} from '../Icons/ShareIcon';
 
 interface ShareButtonProps {

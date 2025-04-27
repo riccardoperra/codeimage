@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {Box, Text, VStack} from '@codeimage/ui';
 import {Show} from 'solid-js';
 import {EmptyBox} from '../../../../components/Icons/EmptyBox';
-import {AppLocaleEntries} from '../../../../i18n';
+import {type AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
 import {CreateNewProjectButton} from '../CreateNewProjectButton/CreateNewProjectButton';
 import * as styles from './ProjectList.css';

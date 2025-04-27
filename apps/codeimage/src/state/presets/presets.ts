@@ -9,7 +9,7 @@ import {useIdb} from '../../hooks/use-indexed-db';
 import {getAuth0State} from '../auth/auth0';
 import {experimental__defineResource} from '../plugins/bindStateBuilderResource';
 import {withPresetBridge} from './bridge';
-import {Preset, PresetsArray} from './types';
+import {type Preset, type PresetsArray} from './types';
 
 const idbKey = 'presets';
 const idb = useIdb();

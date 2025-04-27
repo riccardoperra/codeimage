@@ -1,7 +1,7 @@
 import {provideAppState} from '@codeimage/store/index';
 import {withLocalStorage} from '@codeimage/store/plugins/local-storage';
 import {createEffect, createSignal, on} from 'solid-js';
-import {defineStore, makePlugin, Store} from 'statebuilder';
+import {defineStore, makePlugin, type Store} from 'statebuilder';
 
 type Theme = 'light' | 'dark';
 

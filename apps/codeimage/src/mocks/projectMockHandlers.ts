@@ -1,4 +1,4 @@
-import * as ApiTypes from '@codeimage/api/api-types';
+import type * as ApiTypes from '@codeimage/api/api-types';
 import {randUuid} from '@ngneat/falso';
 import {RequestHandler, rest} from 'msw';
 import {db} from './db';

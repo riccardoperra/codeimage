@@ -2,12 +2,11 @@ name: Main
 
 on:
   pull_request:
-    types: [ opened, synchronize, reopened, edited, assigned ]
+    types: [opened, synchronize, reopened, edited, assigned]
   pull_request_target:
-    types: [ opened, synchronize, reopened, edited, assigned ]
+    types: [opened, synchronize, reopened, edited, assigned]
     branches:
       - changeset-release/main
-
 
 env:
   IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
@@ -74,7 +73,7 @@ jobs:
 
   build-packages:
     name: Build packages
-    needs: [ install ]
+    needs: [install]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -103,7 +102,7 @@ jobs:
   typecheck-packages:
     if: ${{ needs.install.outputs.libs-change == 'true' }}
     name: Type-checking
-    needs: [ install, build-packages ]
+    needs: [install, build-packages]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -137,7 +136,7 @@ jobs:
   build-app-dev:
     name: Build App and Preview (Dev)
     environment: Preview
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: ${{ github.head_ref  != 'next' }}
     runs-on: ubuntu-latest
     steps:
@@ -180,11 +179,10 @@ jobs:
           alias-domains: | #Optional
             codeimage-app-pr-{{PR_NUMBER}}.vercel.app
 
-
   build-app-next:
     name: Build App and Preview (Next)
     environment: Next
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: ${{ github.head_ref  == 'next' }}
     runs-on: ubuntu-latest
     steps:
@@ -231,7 +229,7 @@ jobs:
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'
     environment: Preview
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
     steps:
@@ -268,7 +266,7 @@ jobs:
   build-website-dev:
     name: '@codeimage/website dev and Preview'
     environment: Preview
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
     steps:
@@ -314,7 +312,7 @@ jobs:
 
   website-lhci:
     name: Lighthouse
-    needs: [ build-website-dev ]
+    needs: [build-website-dev]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -339,7 +337,7 @@ jobs:
 
   build-api:
     name: Build Api
-    needs: [ install, build-packages ]
+    needs: [install, build-packages]
     runs-on: ubuntu-latest
 
     steps:
@@ -350,7 +348,7 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: "[API] Generate Prisma Migration"
+      - name: '[API] Generate Prisma Migration'
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
@@ -371,7 +369,7 @@ jobs:
   be-test:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Api test
-    needs: [ install ]
+    needs: [install]
     runs-on: ubuntu-latest
 
     services:
@@ -433,13 +431,7 @@ jobs:
     if: ${{ github.head_ref  == 'next' }}
     environment: Next
     name: Deploy next
-    needs: [
-      lint,
-      build-packages,
-      build-api,
-      be-test,
-      build-app-next
-    ]
+    needs: [lint, build-packages, build-api, be-test, build-app-next]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR

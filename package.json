@@ -96,7 +96,9 @@
     "overrides": {
       "@vanilla-extract/integration": "6.0.1",
       "esbuild": "^0.19.8",
-      "typescript": "~5.3.2"
+      "typescript": "~5.3.2",
+      "solid-js": "^1.7.0",
+      "vite": "npm:rolldown-vite@latest"
     }
   },
   "dependencies": {

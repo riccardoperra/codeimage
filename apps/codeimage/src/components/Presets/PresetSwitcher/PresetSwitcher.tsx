@@ -3,7 +3,7 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {getPresetsStore} from '@codeimage/store/presets/presets';
-import {PresetData} from '@codeimage/store/presets/types';
+import {type PresetData} from '@codeimage/store/presets/types';
 import {getUiStore} from '@codeimage/store/ui';
 import {Box, HStack, Text, toast} from '@codeimage/ui';
 import {
@@ -22,14 +22,20 @@ import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
-import {ErrorBoundary, For, ParentComponent, Show, Suspense} from 'solid-js';
-import {AppLocaleEntries} from '../../../i18n';
+import {
+  ErrorBoundary,
+  For,
+  type ParentComponent,
+  Show,
+  Suspense,
+} from 'solid-js';
+import {type AppLocaleEntries} from '../../../i18n';
 import {CloseIcon} from '../../Icons/CloseIcon';
 import {CloudIcon} from '../../Icons/CloudIcon';
 import {DotHorizontalIcon} from '../../Icons/DotVertical';
 import {PanelDivider} from '../../PropertyEditor/PanelDivider';
 import {ThemeBoxSkeleton} from '../../ThemeSwitcher/ThemeBoxSkeleton';
-import {ThemeSwitcherVariant} from '../../ThemeSwitcher/ThemeSwitcher.css';
+import {type ThemeSwitcherVariant} from '../../ThemeSwitcher/ThemeSwitcher.css';
 import {EmptyPresetFallback} from '../EmptyPresetFallback/EmptyPresetFallback';
 import {PresetPreview} from '../PresetPreview/PresetPreview';
 import {PresetUpdateDialog} from '../PresetUpdateDialog';

@@ -3,11 +3,11 @@ import {Box, LoadingCircle, VStack} from '@codeimage/ui';
 import {
   createEffect,
   ErrorBoundary,
-  JSX,
-  JSXElement,
+  type JSX,
+  type JSXElement,
   splitProps,
   Suspense,
-  VoidProps,
+  type VoidProps,
 } from 'solid-js';
 import {ExclamationIcon} from '../../components/Icons/Exclamation';
 

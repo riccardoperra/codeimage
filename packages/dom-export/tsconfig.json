@@ -1,10 +1,9 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-      "jsx": "preserve",
-      "jsxImportSource": "solid-js",
-    },
-    "include": [
-      "./src"
-    ]
-  }
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "verbatimModuleSyntax": true,
+    "jsxImportSource": "solid-js"
+  },
+  "include": ["./src"]
+}

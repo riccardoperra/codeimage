@@ -1,4 +1,4 @@
-import {PersistedAsset} from '@codeimage/store/assets/assets';
+import {type PersistedAsset} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {Box, HStack} from '@codeimage/ui';
 import {Button} from '@codeui/kit';

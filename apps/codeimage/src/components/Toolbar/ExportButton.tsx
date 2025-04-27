@@ -8,7 +8,7 @@ import {
   HStack,
   Link,
   RangeField,
-  SegmentedFieldItem,
+  type SegmentedFieldItem,
   toast,
   VStack,
 } from '@codeimage/ui';
@@ -19,7 +19,7 @@ import {
   Dialog,
   DialogPanelContent,
   DialogPanelFooter,
-  DialogProps,
+  type DialogProps,
 } from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
@@ -27,7 +27,7 @@ import {useWebshare} from '@core/hooks/use-webshare';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {
-  Component,
+  type Component,
   createEffect,
   createSignal,
   onMount,
@@ -37,7 +37,7 @@ import {
 import {useExportSnippet} from '../../hooks/export-snippet';
 import {ExportExtension, ExportMode} from '../../hooks/use-export-image';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {AppLocaleEntries} from '../../i18n';
+import {type AppLocaleEntries} from '../../i18n';
 import {DownloadIcon} from '../Icons/Download';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {HintIcon} from '../Icons/Hint';

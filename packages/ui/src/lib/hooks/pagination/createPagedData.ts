@@ -1,4 +1,4 @@
-import {Accessor, createSignal, Setter} from 'solid-js';
+import {type Accessor, createSignal, Setter} from 'solid-js';
 
 interface OptionsPagedData {
   pageSize: number;

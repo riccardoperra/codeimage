@@ -1,5 +1,5 @@
 import {from as rxjsFrom, map, type Observable, Subject} from 'rxjs';
-import {Accessor, createSignal, from, observable} from 'solid-js';
+import {type Accessor, createSignal, from, observable} from 'solid-js';
 import {createStore as coreCreateStore, unwrap} from 'solid-js/store';
 import {SetStoreFunction} from './experimental/store-types';
 

@@ -1,4 +1,4 @@
-import {JSX, mergeProps} from 'solid-js';
+import {type JSX, mergeProps} from 'solid-js';
 
 interface CodeImageLogoV2Props {
   withGradient?: boolean;

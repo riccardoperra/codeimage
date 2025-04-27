@@ -1,5 +1,5 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {Box, SvgIcon, SvgIconProps} from '@codeimage/ui';
+import {Box, SvgIcon, type SvgIconProps} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Show} from 'solid-js';

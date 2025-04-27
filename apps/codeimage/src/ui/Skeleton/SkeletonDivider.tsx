@@ -1,6 +1,6 @@
 import * as styles from '@ui/Skeleton/Skeleton.css';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {VoidProps} from 'solid-js';
+import {type VoidProps} from 'solid-js';
 
 interface SkeletonDividerProps {
   height: string;

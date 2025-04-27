@@ -5,7 +5,7 @@ import {Box, RadioBlock} from '@codeimage/ui';
 import {Checkbox} from '@codeui/kit';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {createSignal, For, JSXElement, onMount, Suspense} from 'solid-js';
+import {createSignal, For, type JSXElement, onMount, Suspense} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {provideState} from 'statebuilder';
 import {SettingsIcon} from '../../../Icons/SettingsIcon';

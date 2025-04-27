@@ -2,7 +2,7 @@ import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {Link} from '@codeimage/ui';
 import {Button, Tooltip} from '@codeui/kit';
-import {Component} from 'solid-js';
+import {type Component} from 'solid-js';
 import {ExportExtension} from '../../hooks/use-export-image';
 
 interface ExportButtonProps {

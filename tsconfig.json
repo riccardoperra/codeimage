@@ -15,18 +15,9 @@
     "importsNotUsedAsValues": "remove",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "types": [
-      "vite/client"
-    ],
-    "lib": [
-      "dom",
-      "ESNext"
-    ]
+    "types": ["vite/client"],
+    "lib": ["dom", "ESNext"]
   },
-  "include": [
-    "@types",
-    "packages",
-    "scripts"
-  ],
+  "include": ["@types", "packages", "scripts"],
   "exclude": ["**/node_modules"]
 }

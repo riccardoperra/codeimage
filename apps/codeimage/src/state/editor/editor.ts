@@ -3,16 +3,20 @@ import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
-import {PresetData} from '@codeimage/store/presets/types';
+import type {PresetData} from '@codeimage/store/presets/types';
 import type {Transaction} from '@codemirror/state';
 import {appEnvironment} from '@core/configuration';
 import {createEventBus} from '@solid-primitives/event-bus';
 import {from, map, shareReplay} from 'rxjs';
 import {createSelector} from 'solid-js';
-import {SetStoreFunction} from 'solid-js/store';
+import {type SetStoreFunction} from 'solid-js/store';
 import {defineStore, provideState} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
-import {EditorState, EditorUIOptions, PersistedEditorState} from './model';
+import {
+  type EditorState,
+  type EditorUIOptions,
+  type PersistedEditorState,
+} from './model';
 
 const defaultId = createUniqueId();
 

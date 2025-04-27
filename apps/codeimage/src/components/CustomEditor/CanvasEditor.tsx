@@ -10,8 +10,8 @@ import {
   createEditorControlledValue,
   createEditorFocus,
 } from 'solid-codemirror';
-import {Accessor, createEffect, createSignal, on} from 'solid-js';
-import {AppLocaleEntries} from '../../i18n';
+import {type Accessor, createEffect, createSignal, on} from 'solid-js';
+import {type AppLocaleEntries} from '../../i18n';
 import {SparklesIcon} from '../Icons/SparklesIcon';
 import CustomEditor from './CustomEditor';
 

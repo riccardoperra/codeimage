@@ -1,6 +1,6 @@
 import {makeEventListenerStack} from '@solid-primitives/event-listener';
 import {
-  Accessor,
+  type Accessor,
   batch,
   createEffect,
   createSignal,

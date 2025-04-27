@@ -1,9 +1,9 @@
 import {
   SegmentedControl,
   SegmentedControlItem,
-  SegmentedControlProps,
+  type SegmentedControlProps,
 } from '@codeui/kit';
-import {For, JSX, JSXElement} from 'solid-js';
+import {For, type JSX, type JSXElement} from 'solid-js';
 
 /**
  * TODO: port SegmentedControl with items support

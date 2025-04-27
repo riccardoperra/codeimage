@@ -1,7 +1,7 @@
 import {Box} from '@codeimage/ui';
-import {ParentComponent} from 'solid-js';
+import {type ParentComponent} from 'solid-js';
 import * as styles from './Sidebar.css';
-import {SidebarVariants} from './Sidebar.css';
+import {type SidebarVariants} from './Sidebar.css';
 
 export const Sidebar: ParentComponent<SidebarVariants> = props => {
   return (

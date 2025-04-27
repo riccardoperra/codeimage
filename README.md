@@ -79,9 +79,7 @@ with the owners of this repository before making a change.
 
 See the [CONTRIBUTING.md](./CONTRIBUTING.md) guide for more details.
 
-
 ---
-
 
 <p align="left">
   <img src="https://user-images.githubusercontent.com/37072694/168666273-22af1fed-6ee5-49a5-be2a-6e0b9da998cf.png" width="600">
