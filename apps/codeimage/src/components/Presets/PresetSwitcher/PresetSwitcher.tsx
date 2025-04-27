@@ -22,7 +22,13 @@ import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import clsx from 'clsx';
-import {ErrorBoundary, For, type ParentComponent, Show, Suspense} from 'solid-js';
+import {
+  ErrorBoundary,
+  For,
+  type ParentComponent,
+  Show,
+  Suspense,
+} from 'solid-js';
 import {type AppLocaleEntries} from '../../../i18n';
 import {CloseIcon} from '../../Icons/CloseIcon';
 import {CloudIcon} from '../../Icons/CloudIcon';

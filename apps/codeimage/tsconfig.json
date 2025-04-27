@@ -6,32 +6,13 @@
     "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
     "verbatimModuleSyntax": true,
-    "types": [
-      "vite/client",
-      "vite-plugin-pwa/client",
-      "@types/mdx"
-    ],
-    "lib": [
-      "ESNext",
-      "dom",
-      "dom.iterable",
-      "es2019",
-      "WebWorker"
-    ],
+    "types": ["vite/client", "vite-plugin-pwa/client", "@types/mdx"],
+    "lib": ["ESNext", "dom", "dom.iterable", "es2019", "WebWorker"],
     "paths": {
-      "@codeimage/store/*": [
-        "./src/state/*"
-      ],
-      "@core/*": [
-        "./src/core/*"
-      ],
-      "@ui/*": [
-        "./src/ui/*"
-      ]
+      "@codeimage/store/*": ["./src/state/*"],
+      "@core/*": ["./src/core/*"],
+      "@ui/*": ["./src/ui/*"]
     }
   },
-  "include": [
-    "./src/**/*",
-    "./scripts/**/*"
-  ]
+  "include": ["./src/**/*", "./scripts/**/*"]
 }

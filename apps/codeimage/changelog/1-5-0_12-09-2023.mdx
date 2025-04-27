@@ -8,22 +8,27 @@ import {FeatureCheckBanner} from '../src/components/FeatureBadge/FeatureCheckBan
 
 # v1.5.0
 
-<mdxComponents.h3>🔡 Local system fonts are now available. <ExperimentalChip/></mdxComponents.h3>
-
+<mdxComponents.h3>
+  🔡 Local system fonts are now available. <ExperimentalChip />
+</mdxComponents.h3>
 
 Editor has been updated introducing a new experimental font support with **[Local Font Access API](https://developer.mozilla.org/en-US/docs/Web/API/Local_Font_Access_API)**.
 Prior authorisation, this allows you to access yours locally installed fonts to display the code as you prefer.
 
 <FeatureCheckBanner
   featureName={'queryLocalFonts'}
-  compatibilityTableLink={'https://developer.mozilla.org/en-US/docs/Web/API/Local_Font_Access_API#browser_compatibility'}
-  supported={'queryLocalFonts' in window}/>
+  compatibilityTableLink={
+    'https://developer.mozilla.org/en-US/docs/Web/API/Local_Font_Access_API#browser_compatibility'
+  }
+  supported={'queryLocalFonts' in window}
+/>
 
-<MdxVideo src={fontPickerUrl} ratio={'4/3'}/>
+<MdxVideo src={fontPickerUrl} ratio={'4/3'} />
 
 ### 🖥️ New Window style themes
 
 The window select has been updated introducing two new terminal themes:
+
 - `MacOS Outline`
 - `MacOS Gray`
 
@@ -34,6 +39,7 @@ We've also moved the old "accent mode" toggle in the sidebar to the window selec
 ### 🎨 New Xcode like themes
 
 The themes collection has been updated introducing two new themes inspired from Xcode:
+
 - `Xcode Dark`
 - `Xcode light`
 

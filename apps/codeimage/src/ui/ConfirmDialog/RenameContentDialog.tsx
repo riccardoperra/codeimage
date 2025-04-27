@@ -8,7 +8,12 @@ import {
   TextField,
 } from '@codeui/kit';
 import {type ControlledDialogProps} from '@core/hooks/createControlledDialog';
-import {createSignal, type JSXElement, mergeProps, type VoidProps} from 'solid-js';
+import {
+  createSignal,
+  type JSXElement,
+  mergeProps,
+  type VoidProps,
+} from 'solid-js';
 import {type AppLocaleEntries} from '../../i18n';
 
 export interface RenameContentDialogProps extends ControlledDialogProps {

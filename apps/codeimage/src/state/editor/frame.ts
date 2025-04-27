@@ -1,4 +1,7 @@
-import {type FrameState, type PersistedFrameState} from '@codeimage/store/frame/model';
+import {
+  type FrameState,
+  type PersistedFrameState,
+} from '@codeimage/store/frame/model';
 import {provideAppState} from '@codeimage/store/index';
 import {type PresetData} from '@codeimage/store/presets/types';
 import {appEnvironment} from '@core/configuration';
