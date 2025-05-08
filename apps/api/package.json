@@ -19,7 +19,7 @@
     "test:integration": "RUN_TEST=integration vitest run",
     "test:ui": "vitest --ui",
     "start": "npm run build:ts && fastify start --address='0.0.0.0' -l info dist/app.js",
-    "start:railway": "fastify start -l info dist/app.js",
+    "start:railway": "fastify start --address='0.0.0.0' -l info dist/app.js",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
     "dev": "NODE_OPTIONS='--enable-source-maps' && tsup --watch --onSuccess \"fastify start --port 3000 --options -d -l info -P dist/app.js\"",
