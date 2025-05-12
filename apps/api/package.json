@@ -7,11 +7,6 @@
   "directories": {
     "test": "test"
   },
-  "exports": {
-    "./api-types": {
-      "types": "./index.d.ts"
-    }
-  },
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest --coverage",

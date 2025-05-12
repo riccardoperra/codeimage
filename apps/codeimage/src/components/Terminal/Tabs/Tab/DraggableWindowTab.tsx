@@ -1,4 +1,4 @@
-import {LanguageIconDefinition} from '@codeimage/config';
+import {type LanguageIconDefinition} from '@codeimage/config';
 import {exportExclude} from '@core/directives/exportExclude';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {createSortable} from '@thisbeyond/solid-dnd';
@@ -10,7 +10,7 @@ import {
   onMount,
   Show,
   Suspense,
-  VoidProps,
+  type VoidProps,
 } from 'solid-js';
 import {CloseIcon} from '../../../Icons/CloseIcon';
 import * as styles from './Tab.css';

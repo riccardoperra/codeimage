@@ -4,7 +4,7 @@ import {constants} from 'http2';
 type HttpStatusCode = {
   readonly [K in keyof typeof constants as K extends `HTTP_STATUS_${string}`
     ? K
-    : never]: typeof constants[K];
+    : never]: (typeof constants)[K];
 };
 
 export abstract class HandlerError<

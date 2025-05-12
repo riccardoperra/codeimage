@@ -7,7 +7,7 @@ import {buttonStyles, Link} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Link as LocalLink} from '@solidjs/router';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {createMemo, Show, VoidProps} from 'solid-js';
+import {createMemo, Show, type VoidProps} from 'solid-js';
 import {CodeImageLogoV2} from '../Icons/CodeImageLogoV2';
 import {CollectionIcon} from '../Icons/Collection';
 import {sidebarLogo} from '../Scaffold/Sidebar/Sidebar.css';

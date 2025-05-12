@@ -5,10 +5,10 @@ import {
   DialogPanelContent,
   DialogPanelFooter,
 } from '@codeui/kit';
-import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
+import {type ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {useModality} from '@core/hooks/isMobile';
 import {
-  Component,
+  type Component,
   createSignal,
   For,
   Show,

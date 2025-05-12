@@ -1,4 +1,4 @@
-import {CustomTheme} from '@codeimage/highlight';
+import {type CustomTheme} from '@codeimage/highlight';
 import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
@@ -15,16 +15,16 @@ import {
   createSelector,
   For,
   lazy,
-  ParentComponent,
+  type ParentComponent,
   Show,
   Suspense,
 } from 'solid-js';
-import {AppLocaleEntries} from '../../i18n';
+import {type AppLocaleEntries} from '../../i18n';
 import {TerminalHost} from '../Terminal/TerminalHost';
 import {ThemeBox} from './ThemeBox';
 import {ThemeBoxSkeleton} from './ThemeBoxSkeleton';
 import * as styles from './ThemeSwitcher.css';
-import {gridSize, ThemeSwitcherVariant} from './ThemeSwitcher.css';
+import {gridSize, type ThemeSwitcherVariant} from './ThemeSwitcher.css';
 
 const CustomEditorPreview = lazy(() => {
   return import('../CustomEditor/CustomEditorPreview');

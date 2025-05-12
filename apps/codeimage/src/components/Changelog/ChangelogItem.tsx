@@ -1,5 +1,5 @@
 import {Link} from '@codeui/kit';
-import {FlowProps} from 'solid-js';
+import {type FlowProps} from 'solid-js';
 import * as styles from './ChangelogItem.css';
 
 interface ChangelogItemProps {

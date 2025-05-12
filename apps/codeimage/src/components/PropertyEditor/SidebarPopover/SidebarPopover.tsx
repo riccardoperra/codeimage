@@ -1,7 +1,7 @@
 import {Popover, PopoverContent, PopoverTrigger} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import clsx from 'clsx';
-import {FlowProps, ValidComponent} from 'solid-js';
+import {type FlowProps, type ValidComponent} from 'solid-js';
 import * as styles from './SidebarPopover.css';
 
 interface SidebarPopoverProps {

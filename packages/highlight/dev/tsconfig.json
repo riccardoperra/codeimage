@@ -7,8 +7,6 @@
     "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
     "preserveSymlinks": true,
-    "types": [
-      "@types/node"
-    ]
+    "types": ["@types/node"]
   }
 }

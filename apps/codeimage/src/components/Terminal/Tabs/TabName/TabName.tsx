@@ -1,8 +1,16 @@
-import {LanguageIconDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {
+  type LanguageIconDefinition,
+  SUPPORTED_LANGUAGES,
+} from '@codeimage/config';
 import {highlight as _highlight} from '@core/directives/highlight';
 import {Combobox} from '@kobalte/core';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {createEffect, createMemo, createSignal, JSXElement} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  type JSXElement,
+} from 'solid-js';
 import {TabIcon} from '../TabIcon/TabIcon';
 import * as styles from './TabName.css';
 

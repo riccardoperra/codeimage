@@ -1,6 +1,6 @@
 import {effect} from '@codeimage/atomic-state';
 import {AVAILABLE_COLORS, AVAILABLE_GRADIENTS} from '@codeimage/config';
-import {CustomTheme} from '@codeimage/highlight';
+import {type CustomTheme} from '@codeimage/highlight';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';

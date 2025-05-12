@@ -4,7 +4,7 @@ import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {useNavigate} from '@solidjs/router';
 import {PlusIcon} from '../../../../components/Icons/PlusIcon';
-import {AppLocaleEntries} from '../../../../i18n';
+import {type AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
 
 export function CreateNewProjectButton() {

@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {Preset} from '@codeimage/store/presets/types';
+import {type Preset} from '@codeimage/store/presets/types';
 import {Box, HStack, SvgIcon, Text} from '@codeimage/ui';
 import {
   Button,
@@ -7,9 +7,9 @@ import {
   DialogPanelContent,
   DialogPanelFooter,
 } from '@codeui/kit';
-import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
-import {JSXElement, mergeProps, VoidProps} from 'solid-js';
-import {AppLocaleEntries} from '../../i18n';
+import {type ControlledDialogProps} from '@core/hooks/createControlledDialog';
+import {type JSXElement, mergeProps, type VoidProps} from 'solid-js';
+import {type AppLocaleEntries} from '../../i18n';
 import {PresetPreview} from './PresetPreview/PresetPreview';
 import * as styles from './PresetSwitcher/PresetSwitcher.css';
 

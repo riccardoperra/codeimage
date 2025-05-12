@@ -1,6 +1,6 @@
 import {fetchAsDataURL} from './dataurl';
 import {embedResources, shouldEmbed} from './embedResources';
-import {Options} from './options';
+import {type Options} from './options';
 import {toArray} from './util';
 
 interface Metadata {

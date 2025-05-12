@@ -1,5 +1,5 @@
-import {MDXComponents} from 'mdx/types';
-import {JSX} from 'solid-js';
+import type {MDXComponents} from 'mdx/types';
+import {type JSX} from 'solid-js';
 import * as styles from './components.css';
 
 export const mdxComponents: MDXComponents = {

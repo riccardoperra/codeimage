@@ -2,7 +2,7 @@ import {
   createComponent,
   createSignal,
   getOwner,
-  JSXElement,
+  type JSXElement,
   mergeProps,
   runWithOwner,
 } from 'solid-js';

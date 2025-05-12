@@ -1,4 +1,4 @@
-import {LoadedFont} from '../../hooks/use-local-fonts';
+import type {LoadedFont} from '../../hooks/use-local-fonts';
 import {mapToDictionary} from '../helpers/mapToDictionary';
 
 interface CustomFontType {

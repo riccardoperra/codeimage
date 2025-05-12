@@ -1,6 +1,6 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {Extension} from '@codemirror/state';
+import {type Extension} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {
@@ -14,7 +14,7 @@ import {
   createResource,
   on,
   onMount,
-  VoidProps,
+  type VoidProps,
 } from 'solid-js';
 
 interface CustomEditorPreviewProps {

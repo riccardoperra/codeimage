@@ -5,7 +5,7 @@ import type {
 } from '@floating-ui/core';
 import {autoUpdate, computePosition, ReferenceElement} from '@floating-ui/dom';
 import {
-  Accessor,
+  type Accessor,
   createEffect,
   createSignal,
   mergeProps,

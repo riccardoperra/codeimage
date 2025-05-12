@@ -1,6 +1,6 @@
 import {Box} from '@codeimage/ui';
 import {createPlatformProps} from '@core/hooks/createPlatformProps';
-import {ParentComponent} from 'solid-js';
+import {type ParentComponent} from 'solid-js';
 import * as styles from './EditorSidebar.css';
 
 export const EditorForm: ParentComponent = props => {

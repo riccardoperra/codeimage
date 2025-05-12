@@ -1,6 +1,6 @@
-import {FeatureName} from '@codeimage/store/version/version.store';
+import {type FeatureName} from '@codeimage/store/version/version.store';
 import {Box, Text} from '@codeimage/ui';
-import {FlowComponent, JSXElement, Show} from 'solid-js';
+import {type FlowComponent, type JSXElement, Show} from 'solid-js';
 import {FeatureBadge} from '../FeatureBadge/FeatureBadge';
 import * as styles from './EditorSidebar.css';
 import {panelRowContent} from './EditorSidebar.css';

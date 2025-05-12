@@ -1,5 +1,5 @@
-import {LanguageDefinition} from './language-def';
-import {CustomTheme} from '@codeimage/highlight';
+import type {LanguageDefinition} from './language-def';
+import type {CustomTheme} from '@codeimage/highlight';
 
 export interface AppStaticConfiguration<
   V extends string,

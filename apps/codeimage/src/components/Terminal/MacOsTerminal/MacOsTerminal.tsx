@@ -1,10 +1,10 @@
 import {backgroundColorVar, Box} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {ParentComponent, Show} from 'solid-js';
+import {type ParentComponent, Show} from 'solid-js';
 import {TerminalWindowTabList} from '../Tabs/TerminalWindowTabList';
 import * as baseStyles from '../terminal.css';
-import {BaseTerminalProps, TerminalHost} from '../TerminalHost';
+import {type BaseTerminalProps, TerminalHost} from '../TerminalHost';
 import * as styles from './MacOsTerminal.css';
 
 export const exportExclude = _exportExclude;

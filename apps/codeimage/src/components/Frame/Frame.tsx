@@ -1,5 +1,5 @@
 import {
-  AssetId,
+  type AssetId,
   getAssetsStore,
   isAssetUrl,
 } from '@codeimage/store/assets/assets';
@@ -12,7 +12,7 @@ import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {onMount, ParentComponent, Show} from 'solid-js';
+import {onMount, type ParentComponent, Show} from 'solid-js';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;

@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as process from 'process';
-import {Options} from './options';
+import {type Options} from './options';
 
 const WOFF = 'application/font-woff';
 const JPEG = 'image/jpeg';

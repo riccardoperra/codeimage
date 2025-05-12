@@ -9,7 +9,7 @@ import {EditorSidebar} from '../../../components/PropertyEditor/EditorSidebar';
 import {scaffoldVars} from '../../../components/Scaffold/Scaffold.css';
 import {Sidebar} from '../../../components/Scaffold/Sidebar/Sidebar';
 import {PresetSwitcher} from '../../../components/Presets/PresetSwitcher/PresetSwitcher';
-import {AppLocaleEntries} from '../../../i18n';
+import {type AppLocaleEntries} from '../../../i18n';
 
 export function EditorLeftSidebar() {
   const [toggle, setToggle] = createSignal(false);

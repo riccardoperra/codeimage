@@ -1,11 +1,11 @@
 import {
-  Accessor,
+  type Accessor,
   createResource,
   createSignal,
   mergeProps,
-  Resource,
+  type Resource,
+  type ResourceActions,
 } from 'solid-js';
-import {ResourceActions} from 'solid-js/types/reactive/signal';
 
 interface AsyncResourceActions<T, R> extends ResourceActions<R | undefined> {
   notify: (value?: T) => void;

@@ -1,6 +1,6 @@
 import {resourceToDataURL} from './dataurl';
 import {embedResources} from './embedResources';
-import {Options} from './options';
+import {type Options} from './options';
 import {getMimeType, isDataUrl, isInstanceOfElement, toArray} from './util';
 
 async function embedProp(

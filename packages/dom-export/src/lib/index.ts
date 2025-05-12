@@ -5,7 +5,7 @@ import {removeSandbox} from './cloneStyle';
 import {embedImages} from './embedImages';
 import {embedWebFonts, getWebFontCSS} from './embedWebFonts';
 import {toIframe} from './iosResourceFix';
-import {Options} from './options';
+import type {Options} from './options';
 import {
   canvasToBlob,
   createImage,
