@@ -789,4 +789,19 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       },
     ],
   },
+  {
+    id: 'solidity',
+    label: 'Solidity',
+    color: '#AA6746',
+    plugin: () =>
+      import('@replit/codemirror-lang-solidity').then(({solidity}) => solidity),
+    icons: [
+      {
+        name: 'Solidity',
+        extension: '.sol',
+        content: () => import('material-icon-theme/icons/solidity.svg?raw'),
+        matcher: /^.*\.(sol)$/,
+      },
+    ],
+  },
 ];
