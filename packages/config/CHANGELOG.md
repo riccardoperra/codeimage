@@ -1,5 +1,11 @@
 # @codeimage/highlight
 
+## 9.0.4
+
+### Patch Changes
+
+- [#676](https://github.com/riccardoperra/codeimage/pull/676) [`d0d069fd`](https://github.com/riccardoperra/codeimage/commit/d0d069fd029ccab53c6b4d4950dc1605e67aabbb) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Add support for solidity language
+
 ## 9.0.3
 
 ### Patch Changes
