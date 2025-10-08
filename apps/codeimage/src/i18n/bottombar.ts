@@ -27,4 +27,11 @@ export const bottomBar = {
       editor: 'Editor',
     },
   },
+  zh: {
+    bottomBar: {
+      themes: '主题',
+      styles: '样式',
+      editor: '编辑器',
+    },
+  },
 };

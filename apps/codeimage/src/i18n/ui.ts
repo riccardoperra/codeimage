@@ -67,4 +67,21 @@ export const uiLocale = {
       outlined: 'Contorno',
     },
   },
+  zh: {
+    colorPicker: {
+      color: '颜色',
+      gradient: '渐变',
+      background: '自定义',
+    },
+    shadows: {
+      lg: '大',
+      md: '中',
+      sm: '小',
+      none: '无',
+      bottom: '底部',
+      xl: '特大',
+      '3d': '3D 效果',
+      outlined: '描边',
+    },
+  },
 };

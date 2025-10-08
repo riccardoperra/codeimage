@@ -1,4 +1,4 @@
-import {guestLimit, userLimit} from '@codeimage/store/presets/bridge';
+import { guestLimit, userLimit } from '@codeimage/store/presets/bridge';
 
 export const presets = {
   it: {
@@ -177,6 +177,52 @@ export const presets = {
         guest: {
           label: `Alcanzaste el maximo de ${guestLimit} presets`,
           actionLabel: `para salvar mas presets`,
+        },
+      },
+    },
+  },
+  zh: {
+    presets: {
+      userPresets: '你的预设',
+      updatePreset: {
+        label: '更新',
+        dialogTitle: '更新预设',
+        dialogMessage: '确认用当前编辑器状态更新所选预设',
+        old: '旧',
+        new: '新',
+      },
+      share: {
+        label: '分享',
+        confirm: '预设链接已复制',
+      },
+      renamePreset: {
+        label: '重命名',
+        confirmTitle: '重命名预设',
+        confirmMessage: '请输入预设的新名称。',
+      },
+      addPreset: {
+        label: '添加预设',
+        confirmTitle: '添加新预设',
+        confirmMessage: '请输入你的预设名称',
+      },
+      deletePreset: {
+        label: '删除',
+        confirmTitle: '删除预设',
+        confirmMessage: '此操作不可逆。',
+      },
+      sync: {
+        label: '保存到你的账号',
+      },
+      openPreset: {
+        label: '查看你的预设',
+      },
+      limit: {
+        user: {
+          label: `你已达到每位用户最多 ${userLimit} 个预设的限制`,
+        },
+        guest: {
+          label: `你已达到访客最多 ${guestLimit} 个预设的限制`,
+          actionLabel: `登录以提升限制`,
         },
       },
     },

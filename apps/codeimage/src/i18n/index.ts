@@ -1,9 +1,9 @@
-import {notFound} from './ notFound';
-import {dashboard} from './dashboard';
-import {presets} from './presets';
+import { notFound } from './ notFound';
+import { dashboard } from './dashboard';
+import { presets } from './presets';
 import sidebarLocale from './sidebar';
-import {uiLocale} from './ui';
-import {bottomBar} from './bottombar';
+import { uiLocale } from './ui';
+import { bottomBar } from './bottombar';
 
 export const locale = {
   it: {
@@ -34,6 +34,7 @@ export const locale = {
       en: 'Inglese',
       de: 'Tedesco',
       es: 'Spagnolo',
+      zh: 'Cinese',
     },
     toolbar: {
       export: 'Exporta',
@@ -119,6 +120,7 @@ export const locale = {
       en: 'English',
       de: 'German',
       es: 'Spanish',
+      zh: 'Chinese',
     },
     readOnlyBanner: {
       title:
@@ -209,6 +211,7 @@ export const locale = {
       en: 'Englisch',
       de: 'Deutsch',
       es: 'Spanisch',
+      zh: 'Chinesisch',
     },
     toolbar: {
       export: 'Export',
@@ -296,6 +299,7 @@ export const locale = {
       en: 'Inglés',
       de: 'Alemán',
       es: 'Español',
+      zh: 'Chino',
     },
     toolbar: {
       export: 'Exportar',
@@ -354,6 +358,93 @@ export const locale = {
     ...dashboard.es,
     ...notFound.es,
     ...presets.es,
+  },
+  zh: {
+    canvas: {
+      copiedToClipboard: '代码片段已复制到剪贴板',
+      linkGeneratedToClipboard: '链接已复制到剪贴板',
+      formattedCode: '代码已格式化',
+      pastedCode: '代码已粘贴',
+      errorFormattedCode: '代码格式化失败',
+    },
+    common: {
+      close: '关闭',
+      confirm: '确认',
+      yes: '是',
+      no: '否',
+      show: '显示',
+      hide: '隐藏',
+      reload: '重新加载',
+      clone: '克隆',
+      new: '新建',
+    },
+    locales: {
+      it: '意大利语',
+      en: '英语',
+      de: '德语',
+      es: '西班牙语',
+      zh: '中文',
+    },
+    readOnlyBanner: {
+      title:
+        '当前为只读模式。克隆此代码片段以保存到你的工作区并进行编辑。',
+    },
+    toolbar: {
+      export: '导出',
+      openNewTab: '新标签打开',
+      loadingNewTab: '正在准备链接...',
+      share: '分享',
+      generateLink: '生成链接',
+      toggleTheme: '切换主题',
+      changeLanguage: '切换语言',
+      exportLoading: '正在导出...',
+    },
+    pwa: {
+      offline: '应用已准备好离线使用',
+      update: '发现新内容，点击重新加载以更新',
+      close: '关闭',
+      reload: '重新加载',
+    },
+    export: {
+      title: '导出图片',
+      shareMode: '分享你的代码',
+      shareHint: '此模式使用新的',
+      exportMode: '导出为图片',
+      fileName: '文件名',
+      fileNamePlaceholder: '请输入文件名...',
+      extensionType: '文件扩展名',
+      pixelRatio: '缩放',
+      genericSaveError: '保存时发生错误',
+      noOpacitySupportedWithThisExtension:
+        '该扩展不支持自定义透明度',
+      quality: '质量',
+    },
+    shortcut: {
+      esc: 'Esc',
+      buttonAction: '键盘快捷键',
+      focusCodeEditor: '聚焦代码编辑器',
+      unFocusCodeEditor: '取消聚焦代码编辑器',
+      toggleBackground: '切换背景',
+      toggleDarkMode: '切换深色模式',
+      toggleHeader: '切换标题栏',
+      toggleWatermark: '切换水印',
+      changePadding: '调整内边距',
+      pickRandomTheme: '随机选择主题',
+      export: '导出',
+      exportNewTab: '在新标签中导出',
+      copyLink: '复制链接',
+      copySnippet: '复制代码片段',
+      openShortcuts: '打开快捷键',
+    },
+    themeSwitcher: {
+      search: '搜索主题...',
+    },
+    ...uiLocale.zh,
+    ...bottomBar.zh,
+    ...sidebarLocale.zh,
+    ...dashboard.zh,
+    ...notFound.zh,
+    ...presets.zh,
   },
 };
 
