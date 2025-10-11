@@ -56,12 +56,14 @@
     "@prettier/plugin-php": "0.22.2",
     "@prettier/plugin-xml": "2.2.0",
     "@replit/codemirror-lang-solidity": "6.0.2",
+    "@replit/codemirror-lang-svelte": "^6.0.0",
     "@types/prettier": "^2.7.2",
     "material-icon-theme": "^5.1.0",
     "prettier": "^2.8.8",
     "prettier-plugin-java": "^2.6.0",
     "prettier-plugin-rust": "^0.1.9",
     "prettier-plugin-sql": "^0.18.0",
+    "prettier-plugin-svelte": "^3.4.0",
     "solid-js": "^1.8.17"
   },
   "peerDependencies": {

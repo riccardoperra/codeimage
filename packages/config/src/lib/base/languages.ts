@@ -93,11 +93,25 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
           import('material-icon-theme/icons/redux-selector.svg?raw'),
         matcher: /^.*\.*?(selector.js)$/,
       },
+    ],
+  },
+  {
+    id: 'svelte',
+    label: 'Svelte',
+    color: '#ff3e00',
+    plugin: () =>
+      import('@replit/codemirror-lang-svelte').then(({svelte}) => svelte()),
+    icons: [
       {
         name: 'svelte',
         extension: '.svelte',
         content: () => import('material-icon-theme/icons/svelte.svg?raw'),
         matcher: /^.*\.(svelte)$/,
+        prettier: {
+          name: 'Svelte',
+          parser: 'svelte',
+          plugin: () => import('prettier-plugin-svelte').then(m => m.default),
+        },
       },
     ],
   },
@@ -222,12 +236,6 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         content: () =>
           import('material-icon-theme/icons/angular-service.svg?raw'),
         matcher: /^.*\.(service.ts)$/,
-      },
-      {
-        name: 'svelte',
-        extension: '.svelte',
-        content: () => import('material-icon-theme/icons/svelte.svg?raw'),
-        matcher: /^.*\.(svelte)$/,
       },
     ],
   },
