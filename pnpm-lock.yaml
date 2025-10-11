@@ -709,7 +709,7 @@ importers:
         specifier: 6.0.2
         version: 6.0.2(@codemirror/language@6.10.1)
       '@replit/codemirror-lang-svelte':
-        specifier: 6.0.0
+        specifier: ^6.0.0
         version: 6.0.0(@codemirror/autocomplete@6.16.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.3)(@lezer/common@1.2.1))(@codemirror/lang-css@6.2.1(@codemirror/view@6.26.3))(@codemirror/lang-html@6.4.9)(@codemirror/lang-javascript@6.2.2)(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.3)(@lezer/common@1.2.1)(@lezer/highlight@1.2.0)(@lezer/javascript@1.4.15)(@lezer/lr@1.4.0)
       '@types/prettier':
         specifier: ^2.7.2
@@ -730,7 +730,7 @@ importers:
         specifier: ^0.18.0
         version: 0.18.0(prettier@2.8.8)
       prettier-plugin-svelte:
-        specifier: 3.4.0
+        specifier: ^3.4.0
         version: 3.4.0(prettier@2.8.8)(svelte@5.39.11)
       solid-js:
         specifier: ^1.8.17
@@ -1005,7 +1005,7 @@ importers:
         version: 1.2.1(rollup@2.79.1)
       acorn-jsx:
         specifier: ^5.3.2
-        version: 5.3.2(acorn@8.11.3)
+        version: 5.3.2(acorn@8.15.0)
       chalk:
         specifier: 5.1.2
         version: 5.1.2
@@ -9297,7 +9297,7 @@ snapshots:
   '@babel/code-frame@7.24.2':
     dependencies:
       '@babel/highlight': 7.24.5
-      picocolors: 1.1.0
+      picocolors: 1.1.1
 
   '@babel/compat-data@7.24.4': {}
 
@@ -9464,7 +9464,7 @@ snapshots:
       '@babel/helper-validator-identifier': 7.24.7
       chalk: 2.4.2
       js-tokens: 4.0.0
-      picocolors: 1.1.0
+      picocolors: 1.1.1
 
   '@babel/parser@7.25.6':
     dependencies:
@@ -13298,6 +13298,10 @@ snapshots:
   acorn-jsx@5.3.2(acorn@8.11.3):
     dependencies:
       acorn: 8.11.3
+
+  acorn-jsx@5.3.2(acorn@8.15.0):
+    dependencies:
+      acorn: 8.15.0
 
   acorn-walk@8.2.0: {}
 
@@ -18550,7 +18554,7 @@ snapshots:
       '@jridgewell/remapping': 2.3.5
       '@jridgewell/sourcemap-codec': 1.5.0
       '@sveltejs/acorn-typescript': 1.0.6(acorn@8.15.0)
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.8
       acorn: 8.15.0
       aria-query: 5.3.2
       axobject-query: 4.1.0
@@ -19110,7 +19114,7 @@ snapshots:
       debug: 4.3.7
       mlly: 1.4.2
       pathe: 1.1.1
-      picocolors: 1.1.0
+      picocolors: 1.1.1
       vite: 4.5.1(@types/node@18.16.17)(sass@1.61.0)(terser@5.17.1)
     transitivePeerDependencies:
       - '@types/node'
