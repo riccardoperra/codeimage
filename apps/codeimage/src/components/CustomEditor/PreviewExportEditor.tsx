@@ -1,6 +1,6 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {Annotation, Transaction} from '@codemirror/state';
-import {EditorView} from '@codemirror/view';
+import type {EditorView} from '@codemirror/view';
 import {createEffect, createSignal, lazy, on} from 'solid-js';
 
 const syncAnnotation = Annotation.define<boolean>();

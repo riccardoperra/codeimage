@@ -1,11 +1,7 @@
-import {ElementType} from '@solid-aria/types';
-import {
-  Transition,
-  TransitionChild,
-  TransitionChildProps,
-  TransitionProps,
-} from 'solid-headless';
-import {JSXElement} from 'solid-js';
+import type {ElementType} from '@solid-aria/types';
+import type {TransitionChildProps, TransitionProps} from 'solid-headless';
+import {Transition, TransitionChild} from 'solid-headless';
+import type {JSXElement} from 'solid-js';
 import * as styles from './Transition.css';
 
 type FadeInOutTransitionProps<T extends ElementType> =

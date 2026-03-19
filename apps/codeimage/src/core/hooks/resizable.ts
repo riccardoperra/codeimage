@@ -1,6 +1,6 @@
 import {makeEventListenerStack} from '@solid-primitives/event-listener';
+import type {Accessor} from 'solid-js';
 import {
-  Accessor,
   batch,
   createEffect,
   createSignal,

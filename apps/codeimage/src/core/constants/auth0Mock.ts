@@ -1,4 +1,4 @@
-import {Auth0Client, User} from '@auth0/auth0-spa-js';
+import type {Auth0Client, User} from '@auth0/auth0-spa-js';
 
 export async function createAuth0Client(): Promise<Auth0Client> {
   let user: User | undefined = undefined;

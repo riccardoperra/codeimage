@@ -1,6 +1,6 @@
 import {backgroundColorVar, Box, colorVar} from '@codeimage/ui';
 import {javascript} from '@codemirror/lang-javascript';
-import {Extension} from '@codemirror/state';
+import type {Extension} from '@codemirror/state';
 import {EditorView, lineNumbers} from '@codemirror/view';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -8,8 +8,9 @@ import {
   createEditorControlledValue,
   createEditorReadonly,
 } from 'solid-codemirror';
-import {createEffect, on, onMount, VoidProps} from 'solid-js';
-import {CustomTheme} from '../../src/lib/core';
+import type {VoidProps} from 'solid-js';
+import {createEffect, on, onMount} from 'solid-js';
+import type {CustomTheme} from '../../src/lib/core';
 import {editor} from './Editor.css';
 
 interface CustomEditorPreviewProps {

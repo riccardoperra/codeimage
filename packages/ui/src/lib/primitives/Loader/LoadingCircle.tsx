@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import {SvgIcon, SvgIconProps} from '../Icon/SvgIcon';
+import type {SvgIconProps} from '../Icon/SvgIcon';
+import {SvgIcon} from '../Icon/SvgIcon';
 import * as styles from './LoadingCircle.css';
 
 function LoadingCircleIcon(props: SvgIconProps) {

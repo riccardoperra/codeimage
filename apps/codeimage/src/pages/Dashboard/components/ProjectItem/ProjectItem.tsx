@@ -1,5 +1,6 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {LanguageDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
+import type {LanguageDefinition} from '@codeimage/config';
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {getUiStore} from '@codeimage/store/ui';
 import {backgroundColorVar, Box, HStack, Text, toast} from '@codeimage/ui';
@@ -18,9 +19,10 @@ import {Link, useNavigate} from '@solidjs/router';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {For, Show, VoidProps} from 'solid-js';
+import type {VoidProps} from 'solid-js';
+import {For, Show} from 'solid-js';
 import {DotHorizontalIcon} from '../../../../components/Icons/DotVertical';
-import {AppLocaleEntries} from '../../../../i18n';
+import type {AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
 import * as styles from './ProjectItem.css';
 

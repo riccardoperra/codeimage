@@ -1,7 +1,9 @@
-import {JSXElement, Show} from 'solid-js';
+import type {JSXElement} from 'solid-js';
+import {Show} from 'solid-js';
 import {omitProps} from 'solid-use/props';
 import {styled} from '../../utils';
-import {LoaderProps, Loading} from './Loading';
+import type {LoaderProps} from './Loading';
+import {Loading} from './Loading';
 import {overlay} from './LoadingOverlay.css';
 
 interface LoadingOverlayProps extends LoaderProps {

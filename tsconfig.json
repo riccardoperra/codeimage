@@ -12,6 +12,7 @@
     "sourceMap": true,
     "importHelpers": true,
     "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
     "importsNotUsedAsValues": "remove",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,

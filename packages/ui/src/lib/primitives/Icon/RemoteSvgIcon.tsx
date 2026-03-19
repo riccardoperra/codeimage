@@ -1,15 +1,16 @@
+import type {JSXElement} from 'solid-js';
 import {
   createEffect,
   createMemo,
   createResource,
   createSignal,
   createUniqueId,
-  JSXElement,
   on,
   Suspense,
 } from 'solid-js';
 import {Loading} from '../Loader';
-import {SvgIcon, SvgIconProps} from './SvgIcon';
+import type {SvgIconProps} from './SvgIcon';
+import {SvgIcon} from './SvgIcon';
 
 export interface SvgExternalIconProps {
   content?: string | (() => Promise<typeof import('*.svg')>) | null;

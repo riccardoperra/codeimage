@@ -1,5 +1,7 @@
-import {asyncScheduler, filter, MonoTypeOperatorFunction} from 'rxjs';
-import {Accessor, untrack} from 'solid-js';
+import type {MonoTypeOperatorFunction} from 'rxjs';
+import {asyncScheduler, filter} from 'rxjs';
+import type {Accessor} from 'solid-js';
+import {untrack} from 'solid-js';
 
 export function createTrackObserver(): [
   track: Accessor<boolean>,

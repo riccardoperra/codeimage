@@ -2,14 +2,8 @@ import {provideAppState} from '@codeimage/store/index';
 import {generateUid} from '@codeimage/store/plugins/unique-id';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {createEventBus} from '@solid-primitives/event-bus';
-import {
-  Accessor,
-  createEffect,
-  createMemo,
-  createResource,
-  on,
-  untrack,
-} from 'solid-js';
+import type {Accessor} from 'solid-js';
+import {createEffect, createMemo, createResource, on, untrack} from 'solid-js';
 import {unwrap} from 'solid-js/store';
 import {defineStore} from 'statebuilder';
 

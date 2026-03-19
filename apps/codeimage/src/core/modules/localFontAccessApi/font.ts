@@ -1,4 +1,4 @@
-import {FontMetricsWithContext} from '@core/modules/localFontAccessApi/fontMetrics';
+import type {FontMetricsWithContext} from '@core/modules/localFontAccessApi/fontMetrics';
 
 export function isMonospaced(metrics: FontMetricsWithContext) {
   return metrics.charWidth(' ').width === metrics.charWidth('M').width;

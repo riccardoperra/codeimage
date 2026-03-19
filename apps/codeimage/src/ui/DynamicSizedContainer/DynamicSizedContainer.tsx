@@ -1,5 +1,7 @@
-import {animate, AnimationControls} from 'motion';
-import {FlowProps, onCleanup, onMount} from 'solid-js';
+import type {AnimationControls} from 'motion';
+import {animate} from 'motion';
+import type {FlowProps} from 'solid-js';
+import {onCleanup, onMount} from 'solid-js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface DynamicSizedContainerProps {}

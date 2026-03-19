@@ -1,17 +1,10 @@
 import * as styles from './SegmentedField.css';
-import {
-  createMemo,
-  createSignal,
-  For,
-  JSX,
-  JSXElement,
-  on,
-  onCleanup,
-  onMount,
-} from 'solid-js';
+import type {JSX, JSXElement} from 'solid-js';
+import {createMemo, createSignal, For, on, onCleanup, onMount} from 'solid-js';
 import clsx from 'clsx';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {useText, UseTextProps} from '../Text';
+import type {UseTextProps} from '../Text';
+import {useText} from '../Text';
 import {Box} from '../Box';
 
 export interface SegmentedFieldItem<T> {

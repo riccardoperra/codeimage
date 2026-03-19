@@ -1,21 +1,14 @@
 import {EditorView} from '@codemirror/view';
-import {
-  styledAutocomplete,
-  StyledAutoCompleteOptions,
-} from '../plugins/autocomplete-style';
-import {styledCursor, StyledCursorOptions} from '../plugins/cursor-style';
-import {
-  styledHighlight,
-  StyledHighlightOptions,
-} from '../plugins/highlight-style';
-import {
-  styledLineNumbers,
-  StyledLineNumbersOptions,
-} from '../plugins/line-numbers-style';
-import {
-  styledSelection,
-  StyledSelectionOptions,
-} from '../plugins/selection-style';
+import type {StyledAutoCompleteOptions} from '../plugins/autocomplete-style';
+import {styledAutocomplete} from '../plugins/autocomplete-style';
+import type {StyledCursorOptions} from '../plugins/cursor-style';
+import {styledCursor} from '../plugins/cursor-style';
+import type {StyledHighlightOptions} from '../plugins/highlight-style';
+import {styledHighlight} from '../plugins/highlight-style';
+import type {StyledLineNumbersOptions} from '../plugins/line-numbers-style';
+import {styledLineNumbers} from '../plugins/line-numbers-style';
+import type {StyledSelectionOptions} from '../plugins/selection-style';
+import {styledSelection} from '../plugins/selection-style';
 
 export interface ThemeOptions {
   darkMode: boolean;

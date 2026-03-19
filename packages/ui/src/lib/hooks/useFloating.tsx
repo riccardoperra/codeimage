@@ -3,15 +3,10 @@ import type {
   MiddlewareData,
   Placement,
 } from '@floating-ui/core';
-import {autoUpdate, computePosition, ReferenceElement} from '@floating-ui/dom';
-import {
-  Accessor,
-  createEffect,
-  createSignal,
-  mergeProps,
-  on,
-  onCleanup,
-} from 'solid-js';
+import type {ReferenceElement} from '@floating-ui/dom';
+import {autoUpdate, computePosition} from '@floating-ui/dom';
+import type {Accessor} from 'solid-js';
+import {createEffect, createSignal, mergeProps, on, onCleanup} from 'solid-js';
 import {createStore} from 'solid-js/store';
 
 interface UseFloatingProps {

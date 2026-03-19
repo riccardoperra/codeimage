@@ -4,7 +4,8 @@ import {
   ExperimentalFeatureTooltip,
   ExperimentalIcon,
 } from '@ui/ExperimentalFeatureTooltip/ExperimentalFeatureTooltip';
-import {FlowProps, Show} from 'solid-js';
+import type {FlowProps} from 'solid-js';
+import {Show} from 'solid-js';
 import {CloseIcon} from '../../Icons/CloseIcon';
 import * as styles from './SidebarPopover.css';
 

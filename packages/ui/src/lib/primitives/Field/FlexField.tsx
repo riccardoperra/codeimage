@@ -1,6 +1,7 @@
-import {PropsWithChildren} from 'solid-js';
+import type {PropsWithChildren} from 'solid-js';
 import {styled} from '../../utils';
-import {FlexFieldVariants, wrapper} from './FlexField.css';
+import type {FlexFieldVariants} from './FlexField.css';
+import {wrapper} from './FlexField.css';
 
 export function FlexField(props: PropsWithChildren<FlexFieldVariants>) {
   return (

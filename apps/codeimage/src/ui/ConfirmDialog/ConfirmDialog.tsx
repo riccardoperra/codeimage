@@ -2,9 +2,10 @@ import {useI18n} from '@codeimage/locale';
 import {HStack, Text} from '@codeimage/ui';
 import {Dialog, DialogPanelContent, DialogPanelFooter} from '@codeui/kit';
 import {Button} from '@codeui/kit';
-import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
-import {JSXElement, mergeProps, VoidProps} from 'solid-js';
-import {AppLocaleEntries} from '../../i18n';
+import type {ControlledDialogProps} from '@core/hooks/createControlledDialog';
+import type {JSXElement, VoidProps} from 'solid-js';
+import {mergeProps} from 'solid-js';
+import type {AppLocaleEntries} from '../../i18n';
 
 interface ConfirmDialogProps extends ControlledDialogProps {
   onConfirm: () => void;

@@ -1,7 +1,8 @@
 import {provideAppState} from '@codeimage/store/index';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
-import {Accessor, createEffect, on} from 'solid-js';
+import type {Accessor} from 'solid-js';
+import {createEffect, on} from 'solid-js';
 import {defineStore} from 'statebuilder';
 import {ExportExtension} from '../hooks/use-export-image';
 

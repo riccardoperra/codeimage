@@ -1,4 +1,4 @@
-import {ElementType} from '@solid-aria/types';
+import type {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
 import type {
   DynamicProps,
@@ -6,7 +6,8 @@ import type {
 } from 'solid-headless/dist/types/utils/dynamic-prop';
 import type {JSXElement, PropsWithChildren} from 'solid-js';
 import {omitProps, pickProps} from 'solid-use/props';
-import {sprinkles, Sprinkles} from '../../theme';
+import type {Sprinkles} from '../../theme';
+import {sprinkles} from '../../theme';
 import {styled} from '../../utils';
 import {boxBase} from './Box.css';
 

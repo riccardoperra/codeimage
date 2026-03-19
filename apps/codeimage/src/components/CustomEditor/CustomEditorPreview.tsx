@@ -1,6 +1,6 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {Extension} from '@codemirror/state';
+import type {Extension} from '@codemirror/state';
 import {EditorView} from '@codemirror/view';
 import {SUPPORTED_FONTS} from '@core/configuration/font';
 import {
@@ -8,14 +8,8 @@ import {
   createEditorControlledValue,
   createEditorReadonly,
 } from 'solid-codemirror';
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  on,
-  onMount,
-  VoidProps,
-} from 'solid-js';
+import type {VoidProps} from 'solid-js';
+import {createEffect, createMemo, createResource, on, onMount} from 'solid-js';
 
 interface CustomEditorPreviewProps {
   themeId: string;

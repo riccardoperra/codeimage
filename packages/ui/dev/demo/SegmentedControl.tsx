@@ -1,12 +1,6 @@
 import {createSignal} from 'solid-js';
-import {
-  FlexField,
-  HStack,
-  SegmentedField,
-  SegmentedFieldItem,
-  Text,
-  VStack,
-} from '../../src';
+import type {SegmentedFieldItem} from '../../src';
+import {FlexField, HStack, SegmentedField, Text, VStack} from '../../src';
 
 const items: SegmentedFieldItem<string>[] = [
   {
@@ -39,21 +33,21 @@ export function SegmentedFieldDemo() {
                 items={items}
                 value={first()}
                 onChange={setFirst}
-              ></SegmentedField>
+              />
             </FlexField>
             <FlexField size={'md'}>
               <SegmentedField
                 items={items}
                 value={second()}
                 onChange={setSecond}
-              ></SegmentedField>
+              />
             </FlexField>
             <FlexField size={'xs'}>
               <SegmentedField
                 items={items}
                 value={third()}
                 onChange={setThird}
-              ></SegmentedField>
+              />
             </FlexField>
           </VStack>
         </div>

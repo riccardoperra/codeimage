@@ -1,6 +1,7 @@
-import * as ApiTypes from '@codeimage/api/api-types';
+import type * as ApiTypes from '@codeimage/api/api-types';
 import {randUuid} from '@ngneat/falso';
-import {RequestHandler, rest} from 'msw';
+import type {RequestHandler} from 'msw';
+import {rest} from 'msw';
 import {db} from './db';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';

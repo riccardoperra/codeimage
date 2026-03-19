@@ -9,15 +9,8 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {createRef} from '@core/helpers/create-ref';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {
-  lazy,
-  onMount,
-  ParentProps,
-  Ref,
-  Show,
-  Suspense,
-  VoidProps,
-} from 'solid-js';
+import type {ParentProps, Ref, VoidProps} from 'solid-js';
+import {lazy, onMount, Show, Suspense} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {provideState} from 'statebuilder';
 import {setPreviewEditorView} from '../../hooks/export-snippet';

@@ -1,4 +1,5 @@
-import {SvgIcon, SvgIconProps} from '@codeimage/ui';
+import type {SvgIconProps} from '@codeimage/ui';
+import {SvgIcon} from '@codeimage/ui';
 
 export function DotHorizontalIcon(props: SvgIconProps) {
   return (

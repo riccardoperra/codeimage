@@ -5,13 +5,14 @@
  * Credits to the SolidJS Community team and Alexandre:
  * https://github.com/solidjs-community/rollup-preset-solid
  */
-import {babel, RollupBabelInputPluginOptions} from '@rollup/plugin-babel';
+import type {RollupBabelInputPluginOptions} from '@rollup/plugin-babel';
+import {babel} from '@rollup/plugin-babel';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import {rmSync, writeFileSync} from 'node:fs';
 import {mergeAndConcat} from 'merge-anything';
 import {cwd} from 'node:process';
 import {dirname, parse, resolve} from 'node:path';
-import {ModuleFormat, OutputOptions, RollupOptions} from 'rollup';
+import type {ModuleFormat, OutputOptions, RollupOptions} from 'rollup';
 import {terser} from 'rollup-plugin-terser';
 import ts from 'typescript';
 

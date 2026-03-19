@@ -1,12 +1,14 @@
-import {ElementType} from '@solid-aria/types';
+import type {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
-import {
+import type {
   DynamicProps,
   WithRef,
 } from 'solid-headless/dist/types/utils/dynamic-prop';
-import {JSXElement, ParentProps, splitProps} from 'solid-js';
+import type {JSXElement, ParentProps} from 'solid-js';
+import {splitProps} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {useText, UseTextProps} from './useText';
+import type {UseTextProps} from './useText';
+import {useText} from './useText';
 
 export type TextComponentProps = {
   size?: UseTextProps['size'];

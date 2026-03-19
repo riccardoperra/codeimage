@@ -17,15 +17,15 @@ export function TextFieldDemo() {
           <VStack spacing={2} marginTop={4}>
             <FlexField size={'lg'}>
               <FieldLabel>Label</FieldLabel>
-              <TextField type={'text'} value={'Text'}></TextField>
+              <TextField type={'text'} value={'Text'} />
             </FlexField>
             <FlexField size={'md'}>
               <FieldLabel>Label</FieldLabel>
-              <TextField type={'text'} value={'Text'}></TextField>
+              <TextField type={'text'} value={'Text'} />
             </FlexField>
             <FlexField size={'xs'}>
               <FieldLabel>Label</FieldLabel>
-              <TextField type={'text'} value={'Text'}></TextField>
+              <TextField type={'text'} value={'Text'} />
             </FlexField>
           </VStack>
         </div>
@@ -34,15 +34,15 @@ export function TextFieldDemo() {
           <VStack spacing={2} marginTop={4}>
             <FlexField size={'lg'}>
               <FieldLabel>Label</FieldLabel>
-              <TextField inline type={'text'} value={'Text'}></TextField>
+              <TextField inline type={'text'} value={'Text'} />
             </FlexField>
             <FlexField size={'md'}>
               <FieldLabel>Label</FieldLabel>
-              <TextField inline type={'text'} value={'Text'}></TextField>
+              <TextField inline type={'text'} value={'Text'} />
             </FlexField>
             <FlexField size={'xs'}>
               <FieldLabel>Label</FieldLabel>
-              <TextField inline type={'text'} value={'Text'}></TextField>
+              <TextField inline type={'text'} value={'Text'} />
             </FlexField>
           </VStack>
         </div>

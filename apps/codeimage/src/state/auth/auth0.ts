@@ -1,4 +1,4 @@
-import {Auth0Client, User} from '@auth0/auth0-spa-js';
+import type {Auth0Client, User} from '@auth0/auth0-spa-js';
 import {auth0 as $auth0} from '@core/constants/auth0';
 import {createRoot, createSignal} from 'solid-js';
 

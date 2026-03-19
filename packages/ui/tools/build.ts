@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 import {isAbsolute, resolve} from 'path';
 import ms from 'pretty-ms';
-import {OutputOptions, rollup, RollupOptions} from 'rollup';
+import type {OutputOptions, RollupOptions} from 'rollup';
+import {rollup} from 'rollup';
 import rollupConfig from '../rollup.config';
 
 const log = chalk;
