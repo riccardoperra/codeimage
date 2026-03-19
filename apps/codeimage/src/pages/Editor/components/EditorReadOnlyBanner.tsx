@@ -2,9 +2,9 @@ import {useI18n} from '@codeimage/locale';
 import {Box, LoadingCircle, Text} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
-import {VoidProps} from 'solid-js';
+import {type VoidProps} from 'solid-js';
 import {HintIcon} from '../../../components/Icons/Hint';
-import {AppLocaleEntries} from '../../../i18n';
+import {type AppLocaleEntries} from '../../../i18n';
 import * as styles from './EditorReadOnlyBanner.css';
 
 interface EditorReadOnlyBannerProps {

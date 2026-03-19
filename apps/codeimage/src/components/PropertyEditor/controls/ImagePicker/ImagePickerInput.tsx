@@ -1,7 +1,7 @@
 import {
   getAssetsStore,
-  PersistedAsset,
-  PersistedFileAsset,
+  type PersistedAsset,
+  type PersistedFileAsset,
 } from '@codeimage/store/assets/assets';
 import {Box, Text, themeVars} from '@codeimage/ui';
 import {Button, Link, TextField} from '@codeui/kit';

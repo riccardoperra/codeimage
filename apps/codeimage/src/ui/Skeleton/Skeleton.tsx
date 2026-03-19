@@ -1,6 +1,6 @@
 import {Box} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {ParentProps, VoidProps} from 'solid-js';
+import {type ParentProps, type VoidProps} from 'solid-js';
 import * as styles from './Skeleton.css';
 
 interface SkeletonLineProps {

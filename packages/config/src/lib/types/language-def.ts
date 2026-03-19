@@ -1,4 +1,4 @@
-import {Extension} from '@codemirror/state';
+import {type Extension} from '@codemirror/state';
 import type {Plugin as PrettierPlugin, BuiltInParserName} from 'prettier';
 
 export interface PrettierPluginDefinition {

@@ -3,7 +3,7 @@ import {generateUid} from '@codeimage/store/plugins/unique-id';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {createEventBus} from '@solid-primitives/event-bus';
 import {
-  Accessor,
+  type Accessor,
   createEffect,
   createMemo,
   createResource,

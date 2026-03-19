@@ -1,5 +1,5 @@
 import {getAssetsStore} from '@codeimage/store/assets/assets';
-import {Preset} from '@codeimage/store/presets/types';
+import {type Preset} from '@codeimage/store/presets/types';
 import CustomEditorPreview from '../../CustomEditor/CustomEditorPreview';
 import {DynamicTerminal} from '../../Terminal/DynamicTerminal/DynamicTerminal';
 import {ThemeBox} from '../../ThemeSwitcher/ThemeBox';

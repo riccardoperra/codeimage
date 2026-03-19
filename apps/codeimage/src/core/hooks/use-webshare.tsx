@@ -1,5 +1,5 @@
 import {isFirefox} from '@solid-primitives/platform';
-import {Accessor, createSignal, onMount} from 'solid-js';
+import {type Accessor, createSignal, onMount} from 'solid-js';
 
 export function useWebshare(): [
   supported: Accessor<boolean>,

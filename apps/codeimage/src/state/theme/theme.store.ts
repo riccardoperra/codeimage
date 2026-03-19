@@ -1,4 +1,4 @@
-import {CustomTheme} from '@codeimage/highlight';
+import {type CustomTheme} from '@codeimage/highlight';
 import {THEME_REGISTRY} from '@codeimage/store/theme/themeRegistry';
 import {
   createMemo,
@@ -6,7 +6,7 @@ import {
   createRoot,
   createSignal,
   mapArray,
-  ResourceReturn,
+  type ResourceReturn,
 } from 'solid-js';
 
 function $getThemeStore() {

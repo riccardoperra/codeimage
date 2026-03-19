@@ -1,4 +1,4 @@
-import tinykeys, {KeyBindingMap, KeyBindingOptions} from 'tinykeys';
+import tinykeys, {type KeyBindingMap, type KeyBindingOptions} from 'tinykeys';
 import {useModality} from '../core/hooks/isMobile';
 import {noop} from '../core/constants/noop';
 import {onCleanup} from 'solid-js';

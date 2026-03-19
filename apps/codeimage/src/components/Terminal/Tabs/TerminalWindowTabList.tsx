@@ -1,5 +1,5 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {DragEventParam} from '@core/modules/dnd';
+import {type DragEventParam} from '@core/modules/dnd';
 import {ConstrainDragAxis} from '@core/modules/dnd/ConstrainDragAxis';
 import {
   closestCorners,
@@ -13,7 +13,7 @@ import {
   For,
   Show,
   Suspense,
-  VoidProps,
+  type VoidProps,
 } from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
 import {DraggableWindowTab} from './Tab/DraggableWindowTab';

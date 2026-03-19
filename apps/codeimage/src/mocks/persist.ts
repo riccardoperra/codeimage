@@ -1,5 +1,5 @@
 import {drop} from '@mswjs/data';
-import {FactoryAPI} from '@mswjs/data/lib/glossary';
+import {type FactoryAPI} from '@mswjs/data/lib/glossary';
 import {useIdb} from '../hooks/use-indexed-db';
 
 const STORAGE_KEY_PREFIX = 'mswjs-data';

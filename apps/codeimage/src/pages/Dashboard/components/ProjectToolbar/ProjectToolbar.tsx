@@ -2,7 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {Box, FlexField} from '@codeimage/ui';
 import {TextField} from '@codeui/kit';
 import {Show} from 'solid-js';
-import {AppLocaleEntries} from '../../../../i18n';
+import {type AppLocaleEntries} from '../../../../i18n';
 import {getDashboardState} from '../../dashboard.state';
 import {CreateNewProjectButton} from '../CreateNewProjectButton/CreateNewProjectButton';
 import * as styles from './ProjectToolbar.css';

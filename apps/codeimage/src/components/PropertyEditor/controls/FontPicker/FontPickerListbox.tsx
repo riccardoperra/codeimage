@@ -1,4 +1,4 @@
-import {Listbox} from '@codeui/kit';
+import type {Listbox} from '@codeui/kit';
 
 interface FontPickerListboxProps {
   onEsc: () => void;

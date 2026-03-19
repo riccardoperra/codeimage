@@ -2,13 +2,13 @@ import {Box} from '@codeimage/ui';
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {getScaleByRatio} from '@core/helpers/getScale';
 import {useModality} from '@core/hooks/isMobile';
-import {type WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
+import type {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
 import {
   createEffect,
   createSignal,
-  JSXElement,
+  type JSXElement,
   on,
-  ParentProps,
+  type ParentProps,
 } from 'solid-js';
 import * as styles from './FrameHandler.css';
 

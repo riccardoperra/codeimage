@@ -1,13 +1,13 @@
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {Box, LoadingCircle, VStack} from '@codeimage/ui';
+import type {JSX} from 'solid-js';
 import {
   createEffect,
   ErrorBoundary,
-  JSX,
-  JSXElement,
+  type JSXElement,
   splitProps,
   Suspense,
-  VoidProps,
+  type VoidProps,
 } from 'solid-js';
 import {ExclamationIcon} from '../../components/Icons/Exclamation';
 

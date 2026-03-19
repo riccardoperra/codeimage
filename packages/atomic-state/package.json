@@ -33,13 +33,13 @@
   },
   "peerDependencies": {
     "rxjs": "^7.8.0",
-    "solid-js": "^1.8.6"
+    "solid-js": "catalog:next"
   },
   "devDependencies": {
     "@types/node": "catalog:next",
     "rolldown-plugin-solid": "catalog:next",
     "rxjs": "^7.8.1",
-    "solid-js": "^1.8.6",
+    "solid-js": "catalog:next",
     "tsdown": "catalog:next",
     "vite": "catalog:next",
     "vitest": "catalog:next"

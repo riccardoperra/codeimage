@@ -1,6 +1,6 @@
 import * as styles from './EditorSidebar.css';
 import {Text} from '@codeimage/ui';
-import {Component} from 'solid-js';
+import {type Component} from 'solid-js';
 
 interface PanelHeaderProps {
   label: string;

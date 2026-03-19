@@ -62,14 +62,14 @@
     "prettier-plugin-java": "^2.6.0",
     "prettier-plugin-rust": "^0.1.9",
     "prettier-plugin-sql": "^0.18.0",
-    "solid-js": "^1.8.17"
+    "solid-js": "catalog:next"
   },
   "peerDependencies": {
     "@codeimage/highlight": "workspace:*",
     "@codemirror/language": "^6.10.1",
     "@codemirror/state": "^6.4.1",
     "@codemirror/view": "^6.26.3",
-    "solid-js": "^1.8.6"
+    "solid-js": "catalog:next"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",

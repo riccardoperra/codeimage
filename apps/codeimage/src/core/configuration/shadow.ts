@@ -1,5 +1,5 @@
 import {useI18n} from '@codeimage/locale';
-import {AppLocaleEntries} from '../../i18n';
+import {type AppLocaleEntries} from '../../i18n';
 
 export const TERMINAL_SHADOWS = {
   none: 'unset',

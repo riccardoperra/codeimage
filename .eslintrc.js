@@ -20,6 +20,13 @@ module.exports = {
       'error',
       {argsIgnorePattern: '^_', ignoreRestSiblings: true},
     ],
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      {
+        prefer: 'type-imports',
+        fixStyle: 'separate-type-imports',
+      },
+    ],
     'prettier/prettier': [
       'error',
       {
