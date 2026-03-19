@@ -13,6 +13,7 @@ import type {SvgIconProps} from './SvgIcon';
 import {SvgIcon} from './SvgIcon';
 
 export interface SvgExternalIconProps {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   content?: string | (() => Promise<typeof import('*.svg')>) | null;
   delay?: number;
   size?: SvgIconProps['size'];
