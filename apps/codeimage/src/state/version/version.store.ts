@@ -2,8 +2,8 @@ import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin'
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
+import type {Accessor} from 'solid-js';
 import {
-  type Accessor,
   createEffect,
   createSignal,
   getOwner,

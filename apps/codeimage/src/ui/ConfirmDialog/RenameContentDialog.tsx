@@ -7,14 +7,10 @@ import {
   DialogPanelFooter,
   TextField,
 } from '@codeui/kit';
-import {type ControlledDialogProps} from '@core/hooks/createControlledDialog';
-import {
-  createSignal,
-  type JSXElement,
-  mergeProps,
-  type VoidProps,
-} from 'solid-js';
-import {type AppLocaleEntries} from '../../i18n';
+import type {ControlledDialogProps} from '@core/hooks/createControlledDialog';
+import type {JSXElement, VoidProps} from 'solid-js';
+import {createSignal, mergeProps} from 'solid-js';
+import type {AppLocaleEntries} from '../../i18n';
 
 export interface RenameContentDialogProps extends ControlledDialogProps {
   onConfirm: (name: string) => void;

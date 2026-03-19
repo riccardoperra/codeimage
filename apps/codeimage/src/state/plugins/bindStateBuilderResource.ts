@@ -1,11 +1,12 @@
-import {
-  createResource,
-  type ResourceFetcher,
-  type ResourceOptions,
-  type Setter,
-  type Resource as InternalResource,
+import type {
+  ResourceFetcher,
+  ResourceOptions,
+  Setter,
+  Resource as InternalResource,
 } from 'solid-js';
-import {create, type GenericStoreApi} from 'statebuilder';
+import {createResource} from 'solid-js';
+import type {GenericStoreApi} from 'statebuilder';
+import {create} from 'statebuilder';
 
 export type Resource<T> = GenericStoreApi<T, Setter<T>> & InternalResource<T>;
 

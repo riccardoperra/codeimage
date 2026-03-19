@@ -1,6 +1,8 @@
-import {type LanguageIconDefinition} from '@codeimage/config';
-import {Box, RemoteSvgIcon, type SvgExternalIconProps} from '@codeimage/ui';
-import {type JSXElement, mergeProps} from 'solid-js';
+import type {LanguageIconDefinition} from '@codeimage/config';
+import type {SvgExternalIconProps} from '@codeimage/ui';
+import {Box, RemoteSvgIcon} from '@codeimage/ui';
+import type {JSXElement} from 'solid-js';
+import {mergeProps} from 'solid-js';
 import * as styles from './TabIcon.css';
 
 interface TabIconProps {

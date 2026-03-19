@@ -1,4 +1,4 @@
-import {type Identifier} from './types';
+import type {Identifier} from './types';
 
 export function getWindowMdnCompatibilityApi() {
   return fetch(

@@ -1,6 +1,7 @@
-import {type CustomTheme} from '@codeimage/highlight';
+import type {CustomTheme} from '@codeimage/highlight';
 import {filter} from '@solid-primitives/immutable';
-import {type Accessor, createSignal, type Resource} from 'solid-js';
+import type {Accessor, Resource} from 'solid-js';
+import {createSignal} from 'solid-js';
 
 export function useFilteredThemes(
   $themes: Accessor<Resource<CustomTheme | undefined>[]>,

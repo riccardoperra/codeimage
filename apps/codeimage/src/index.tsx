@@ -5,18 +5,19 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {getUiStore} from '@codeimage/store/ui';
 import {VersionStore} from '@codeimage/store/version/version.store';
+import type {ThemeProviderProps} from '@codeimage/ui';
 import {
   backgroundColorVar,
   CodeImageThemeProvider,
   SnackbarHost,
-  type ThemeProviderProps,
 } from '@codeimage/ui';
 import '@codeimage/ui/themes/lightTheme';
 import {appEnvironment} from '@core/configuration';
 import {Router, useRoutes} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
-import {type Component, createEffect, lazy, on, Show, Suspense} from 'solid-js';
+import type {Component} from 'solid-js';
+import {createEffect, lazy, on, Show, Suspense} from 'solid-js';
 import {render} from 'solid-js/web';
 import {provideState, StateProvider} from 'statebuilder';
 import './assets/styles/app.scss';

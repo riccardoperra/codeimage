@@ -1,5 +1,6 @@
-import {type Setter} from 'solid-js';
-import {type GenericStoreApi, makePlugin} from 'statebuilder';
+import type {Setter} from 'solid-js';
+import type {GenericStoreApi} from 'statebuilder';
+import {makePlugin} from 'statebuilder';
 
 export function withEntityPlugin<T extends unknown[]>() {
   type TItem = T[number];

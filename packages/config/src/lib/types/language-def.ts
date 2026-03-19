@@ -1,4 +1,4 @@
-import {type Extension} from '@codemirror/state';
+import type {Extension} from '@codemirror/state';
 import type {Plugin as PrettierPlugin, BuiltInParserName} from 'prettier';
 
 export interface PrettierPluginDefinition {
@@ -15,7 +15,6 @@ export interface ExtraLanguageDefinition {
 export interface LanguageIconDefinition {
   name: string;
   extension: string;
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   content: string | (() => Promise<typeof import('*.svg')>);
   matcher: RegExp;
   extraLanguage?: ExtraLanguageDefinition;

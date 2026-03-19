@@ -1,8 +1,5 @@
-import {
-  type AssetId,
-  getAssetsStore,
-  isAssetUrl,
-} from '@codeimage/store/assets/assets';
+import type {AssetId} from '@codeimage/store/assets/assets';
+import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
@@ -12,7 +9,8 @@ import {useModality} from '@core/hooks/isMobile';
 import {createHorizontalResize} from '@core/hooks/resizable';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {onMount, type ParentComponent, Show} from 'solid-js';
+import type {ParentComponent} from 'solid-js';
+import {onMount, Show} from 'solid-js';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;

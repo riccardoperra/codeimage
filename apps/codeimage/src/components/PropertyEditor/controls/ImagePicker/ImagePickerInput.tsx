@@ -1,8 +1,8 @@
-import {
-  getAssetsStore,
-  type PersistedAsset,
-  type PersistedFileAsset,
+import type {
+  PersistedAsset,
+  PersistedFileAsset,
 } from '@codeimage/store/assets/assets';
+import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {Box, Text, themeVars} from '@codeimage/ui';
 import {Button, Link, TextField} from '@codeui/kit';
 import {createSignal} from 'solid-js';

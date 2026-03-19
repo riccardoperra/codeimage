@@ -1,7 +1,8 @@
-import {Box, Link, SvgIcon, type SvgIconProps} from '@codeimage/ui';
+import type {SvgIconProps} from '@codeimage/ui';
+import {Box, Link, SvgIcon} from '@codeimage/ui';
 import {Tooltip} from '@codeui/kit';
 import * as styles from './ExperimentalFeatureTooltip.css';
-import {type FlowProps} from 'solid-js';
+import type {FlowProps} from 'solid-js';
 
 interface ExperimentalFeatureTooltipProps {
   feature: string;

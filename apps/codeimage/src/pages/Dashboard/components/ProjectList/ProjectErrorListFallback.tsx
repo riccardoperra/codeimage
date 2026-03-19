@@ -1,9 +1,9 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Text} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
-import {type VoidProps} from 'solid-js';
+import type {VoidProps} from 'solid-js';
 import {ExclamationAltIcon} from '../../../../components/Icons/Exclamation';
-import {type AppLocaleEntries} from '../../../../i18n';
+import type {AppLocaleEntries} from '../../../../i18n';
 import * as styles from './ProjectList.css';
 
 interface Props {

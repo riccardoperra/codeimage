@@ -1,5 +1,5 @@
-import type {Observable} from 'rxjs';
-import {filter, map, type OperatorFunction} from 'rxjs';
+import type {Observable, OperatorFunction} from 'rxjs';
+import {filter, map} from 'rxjs';
 
 export type CompareFn<T> = (oldVal: T, newVal: T) => boolean;
 

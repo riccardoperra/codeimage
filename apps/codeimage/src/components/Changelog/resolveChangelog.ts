@@ -1,5 +1,6 @@
 import type {MDXProps} from 'mdx/types';
-import {type Component, createComponent, lazy} from 'solid-js';
+import type {Component} from 'solid-js';
+import {createComponent, lazy} from 'solid-js';
 
 interface ChangelogEntry {
   path: string;

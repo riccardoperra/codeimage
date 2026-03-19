@@ -1,14 +1,7 @@
 import {getAssetsStore} from '@codeimage/store/assets/assets';
 import {Box, LoadingCircle, VStack} from '@codeimage/ui';
-import type {JSX} from 'solid-js';
-import {
-  createEffect,
-  ErrorBoundary,
-  type JSXElement,
-  splitProps,
-  Suspense,
-  type VoidProps,
-} from 'solid-js';
+import type {JSX, JSXElement, VoidProps} from 'solid-js';
+import {createEffect, ErrorBoundary, splitProps, Suspense} from 'solid-js';
 import {ExclamationIcon} from '../../components/Icons/Exclamation';
 
 interface AssetsImageProps {

@@ -3,13 +3,8 @@ import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
 import {getScaleByRatio} from '@core/helpers/getScale';
 import {useModality} from '@core/hooks/isMobile';
 import type {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
-import {
-  createEffect,
-  createSignal,
-  type JSXElement,
-  on,
-  type ParentProps,
-} from 'solid-js';
+import type {JSXElement, ParentProps} from 'solid-js';
+import {createEffect, createSignal, on} from 'solid-js';
 import * as styles from './FrameHandler.css';
 
 const exportExclude = _exportExclude;

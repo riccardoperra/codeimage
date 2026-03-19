@@ -1,8 +1,8 @@
 import {backgroundColorVar, Box} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {type ParentProps} from 'solid-js';
+import type {ParentProps} from 'solid-js';
 import * as styles from './CustomColorPicker.css';
-import {type ColorPickerColorItemProps} from './CustomColorPicker.css';
+import type {ColorPickerColorItemProps} from './CustomColorPicker.css';
 
 type ColorPickerPresetItemProps = {
   title: string;

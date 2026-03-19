@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
+import type {SegmentedFieldItem} from '@codeimage/ui';
 import {
   Box,
   FieldLabel,
@@ -7,7 +8,6 @@ import {
   FlexField,
   HStack,
   RangeField,
-  type SegmentedFieldItem,
   Text,
   VStack,
 } from '@codeimage/ui';
@@ -16,7 +16,7 @@ import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedConta
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Show} from 'solid-js';
 import {ExportExtension} from '../../hooks/use-export-image';
-import {type AppLocaleEntries} from '../../i18n';
+import type {AppLocaleEntries} from '../../i18n';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import * as styles from './ExportContent.css';
 

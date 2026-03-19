@@ -10,7 +10,7 @@ import {unwrap} from 'solid-js/store';
 import {makePlugin} from 'statebuilder';
 import * as api from '../../data-access/preset';
 import {useIdb} from '../../hooks/use-indexed-db';
-import {type Preset, type PresetData, type PresetsArray} from './types';
+import type {Preset, PresetData, PresetsArray} from './types';
 
 export const userLimit = import.meta.env.VITE_PRESET_LIMIT;
 export const guestLimit = import.meta.env.VITE_PRESET_LIMIT_GUEST;

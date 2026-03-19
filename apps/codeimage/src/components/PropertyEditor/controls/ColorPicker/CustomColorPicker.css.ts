@@ -7,7 +7,8 @@ import {
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {responsiveStyle} from '@codeui/kit';
 import {style} from '@vanilla-extract/css';
-import {recipe, type RecipeVariants} from '@vanilla-extract/recipes';
+import type {RecipeVariants} from '@vanilla-extract/recipes';
+import {recipe} from '@vanilla-extract/recipes';
 
 export const inputColor = style({
   borderRadius: themeVars.borderRadius.md,

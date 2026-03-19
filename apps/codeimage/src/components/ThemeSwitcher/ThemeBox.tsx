@@ -1,6 +1,7 @@
 import {backgroundColorVar, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {mergeProps, type ParentComponent, Show} from 'solid-js';
+import type {ParentComponent} from 'solid-js';
+import {mergeProps, Show} from 'solid-js';
 import * as styles from './ThemeSwitcher.css';
 
 interface ThemeBoxProps {

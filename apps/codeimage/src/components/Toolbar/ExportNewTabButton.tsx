@@ -4,11 +4,12 @@ import {toast} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {getUmami} from '@core/constants/umami';
 import {useModality} from '@core/hooks/isMobile';
-import {type Component, createEffect, untrack} from 'solid-js';
+import type {Component} from 'solid-js';
+import {createEffect, untrack} from 'solid-js';
 import {useExportSnippet} from '../../hooks/export-snippet';
 import {ExportMode} from '../../hooks/use-export-image';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {type AppLocaleEntries} from '../../i18n';
+import type {AppLocaleEntries} from '../../i18n';
 import {ExternalLinkIcon} from '../Icons/ExternalLink';
 
 interface ExportButtonProps {

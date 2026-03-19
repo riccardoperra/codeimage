@@ -1,5 +1,5 @@
-import {type ParentComponent} from 'solid-js';
-import {type BaseTerminalProps} from '../TerminalHost';
+import type {ParentComponent} from 'solid-js';
+import type {BaseTerminalProps} from '../TerminalHost';
 import {MacOsTerminal} from './MacOsTerminal';
 
 export const MacOsTerminalOutlineTheme: ParentComponent<

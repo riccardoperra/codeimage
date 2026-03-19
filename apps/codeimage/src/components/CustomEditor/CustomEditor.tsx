@@ -15,7 +15,8 @@ import {
   indentWithTab,
 } from '@codemirror/commands';
 import {bracketMatching, indentOnInput} from '@codemirror/language';
-import {EditorState, type Extension} from '@codemirror/state';
+import type {Extension} from '@codemirror/state';
+import {EditorState} from '@codemirror/state';
 import {
   crosshairCursor,
   drawSelection,
@@ -27,13 +28,8 @@ import {
   rectangularSelection,
 } from '@codemirror/view';
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  on,
-  type VoidProps,
-} from 'solid-js';
+import type {VoidProps} from 'solid-js';
+import {createEffect, createMemo, createResource, on} from 'solid-js';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 
 const EDITOR_BASE_SETUP: Extension = [

@@ -4,9 +4,11 @@ import {
 } from '@core/modules/localFontAccessApi/api';
 import {EMPTY, of, switchMap, tap} from 'rxjs';
 import {createSignal, untrack} from 'solid-js';
-import {makePlugin, type Store} from 'statebuilder';
-import {type LoadedFont, useLocalFonts} from '../../../hooks/use-local-fonts';
-import {type ConfigState} from '../config.store';
+import type {Store} from 'statebuilder';
+import {makePlugin} from 'statebuilder';
+import type {LoadedFont} from '../../../hooks/use-local-fonts';
+import {useLocalFonts} from '../../../hooks/use-local-fonts';
+import type {ConfigState} from '../config.store';
 
 export function withLocalFontManagementPlugin() {
   const plugin = makePlugin.typed<Store<ConfigState>>();

@@ -1,17 +1,8 @@
-import {type LanguageIconDefinition} from '@codeimage/config';
+import type {LanguageIconDefinition} from '@codeimage/config';
 import {Loading, Text} from '@codeimage/ui';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {
-  type FlowProps,
-  type JSX,
-  type JSXElement,
-  mergeProps,
-  type ParentProps,
-  type Ref,
-  Show,
-  splitProps,
-  Suspense,
-} from 'solid-js';
+import type {FlowProps, JSX, JSXElement, ParentProps, Ref} from 'solid-js';
+import {mergeProps, Show, splitProps, Suspense} from 'solid-js';
 import {TabIcon} from '../TabIcon/TabIcon';
 import * as styles from './Tab.css';
 

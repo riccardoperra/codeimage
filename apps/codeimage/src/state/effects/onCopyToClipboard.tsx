@@ -7,8 +7,9 @@ import {getUmami} from '@core/constants/umami';
 import {catchError, EMPTY, exhaustMap, from, pipe, switchMap, tap} from 'rxjs';
 import {getOwner, runWithOwner} from 'solid-js';
 import {exportSnippet} from '../../hooks/export-snippet';
-import {ExportMode, type ExportOptions} from '../../hooks/use-export-image';
-import {type AppLocaleEntries} from '../../i18n';
+import type {ExportOptions} from '../../hooks/use-export-image';
+import {ExportMode} from '../../hooks/use-export-image';
+import type {AppLocaleEntries} from '../../i18n';
 
 interface CopyToClipboardEvent {
   ref: HTMLElement;

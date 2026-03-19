@@ -12,9 +12,10 @@ import {
 import {Button} from '@codeui/kit';
 import {offset} from '@floating-ui/dom';
 import {Popover, PopoverButton} from 'solid-headless';
-import {createMemo, createSignal, For, type JSXElement} from 'solid-js';
+import type {JSXElement} from 'solid-js';
+import {createMemo, createSignal, For} from 'solid-js';
 import {useHotkey} from '../../hooks/use-hotkey';
-import {type AppLocaleEntries} from '../../i18n';
+import type {AppLocaleEntries} from '../../i18n';
 import {HintIcon} from '../Icons/Hint';
 import * as styles from './KeyboardShortcuts.css';
 

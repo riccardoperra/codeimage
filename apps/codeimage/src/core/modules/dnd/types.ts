@@ -1,4 +1,4 @@
-import {type DragEventHandler} from '@thisbeyond/solid-dnd/dist/types/drag-drop-context';
+import type {DragEventHandler} from '@thisbeyond/solid-dnd/dist/types/drag-drop-context';
 
 export interface DndRect {
   left?: number;

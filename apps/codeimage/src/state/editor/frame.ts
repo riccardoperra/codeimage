@@ -1,9 +1,9 @@
-import {
-  type FrameState,
-  type PersistedFrameState,
+import type {
+  FrameState,
+  PersistedFrameState,
 } from '@codeimage/store/frame/model';
 import {provideAppState} from '@codeimage/store/index';
-import {type PresetData} from '@codeimage/store/presets/types';
+import type {PresetData} from '@codeimage/store/presets/types';
 import {appEnvironment} from '@core/configuration';
 import {from, map} from 'rxjs';
 import {defineStore} from 'statebuilder';

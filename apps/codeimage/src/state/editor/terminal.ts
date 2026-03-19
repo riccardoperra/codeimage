@@ -1,10 +1,10 @@
 import {getEditorStore} from '@codeimage/store/editor';
-import {
-  type PersistedTerminalState,
-  type TerminalState,
+import type {
+  PersistedTerminalState,
+  TerminalState,
 } from '@codeimage/store/editor/model';
 import {provideAppState} from '@codeimage/store/index';
-import {type PresetData} from '@codeimage/store/presets/types';
+import type {PresetData} from '@codeimage/store/presets/types';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {from, map} from 'rxjs';
