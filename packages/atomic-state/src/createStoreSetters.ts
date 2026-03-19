@@ -1,4 +1,4 @@
-import {SetStoreFunction} from './experimental/store-types';
+import type {SetStoreFunction} from './experimental/store-types';
 import {getStoreInternals} from './getStoreInternals';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
