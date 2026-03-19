@@ -1,4 +1,5 @@
-import {Accessor, onCleanup} from 'solid-js';
+import type {Accessor} from 'solid-js';
+import {onCleanup} from 'solid-js';
 
 export default function clickOutside(
   el: HTMLElement,

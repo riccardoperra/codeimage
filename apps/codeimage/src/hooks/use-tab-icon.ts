@@ -1,5 +1,7 @@
-import {LanguageIconDefinition, SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {Accessor, createEffect, createSignal, on} from 'solid-js';
+import type {LanguageIconDefinition} from '@codeimage/config';
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import type {Accessor} from 'solid-js';
+import {createEffect, createSignal, on} from 'solid-js';
 
 export function createTabIcon(
   tabName: Accessor<string | null>,

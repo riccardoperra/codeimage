@@ -1,5 +1,6 @@
 import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
-import {defineConfig, Plugin} from 'vite';
+import type {Plugin} from 'vite';
+import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import {withStaticVercelPreview} from '../../../scripts/vercel-output-build';
 

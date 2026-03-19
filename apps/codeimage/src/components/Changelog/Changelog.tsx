@@ -5,16 +5,10 @@ import {
   DialogPanelContent,
   DialogPanelFooter,
 } from '@codeui/kit';
-import {ControlledDialogProps} from '@core/hooks/createControlledDialog';
+import type {ControlledDialogProps} from '@core/hooks/createControlledDialog';
 import {useModality} from '@core/hooks/isMobile';
-import {
-  Component,
-  createSignal,
-  For,
-  Show,
-  Suspense,
-  SuspenseList,
-} from 'solid-js';
+import type {Component} from 'solid-js';
+import {createSignal, For, Show, Suspense, SuspenseList} from 'solid-js';
 import {mdxComponents} from '../../mdx/components';
 import * as styles from './Changelog.css';
 import {ChangelogItem} from './ChangelogItem';

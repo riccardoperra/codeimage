@@ -1,6 +1,8 @@
 import clsx from 'clsx';
-import {JSX, ParentProps, splitProps} from 'solid-js';
-import {svgIcon, SvgIconProps as _SvgIconProps} from './SvgIcon.css';
+import type {JSX, ParentProps} from 'solid-js';
+import {splitProps} from 'solid-js';
+import type {SvgIconProps as _SvgIconProps} from './SvgIcon.css';
+import {svgIcon} from './SvgIcon.css';
 
 export type SvgIconProps = _SvgIconProps &
   ParentProps<JSX.IntrinsicElements['svg']>;

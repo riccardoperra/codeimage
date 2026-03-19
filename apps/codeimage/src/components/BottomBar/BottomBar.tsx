@@ -1,8 +1,9 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Button} from '@codeimage/ui';
-import {createSignal, ParentComponent, Show} from 'solid-js';
+import type {ParentComponent} from 'solid-js';
+import {createSignal, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
-import {AppLocaleEntries} from '../../i18n';
+import type {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {CodeIcon} from '../Icons/Code';
 import {ColorSwatchIcon} from '../Icons/ColorSwatch';

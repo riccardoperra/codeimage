@@ -1,12 +1,6 @@
-import {DOMElements, ElementType} from '@solid-aria/types';
-import {
-  ComponentProps,
-  createComponent,
-  JSX,
-  mergeProps,
-  ParentProps,
-  splitProps,
-} from 'solid-js';
+import type {DOMElements, ElementType} from '@solid-aria/types';
+import type {ComponentProps, JSX, ParentProps} from 'solid-js';
+import {createComponent, mergeProps, splitProps} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

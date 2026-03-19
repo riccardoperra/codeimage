@@ -1,9 +1,6 @@
-import {
-  Menu,
-  PopoverPanel as ShPopoverPanel,
-  PopoverPanelProps,
-} from 'solid-headless';
-import {FlowComponent} from 'solid-js';
+import type {PopoverPanelProps} from 'solid-headless';
+import {Menu, PopoverPanel as ShPopoverPanel} from 'solid-headless';
+import type {FlowComponent} from 'solid-js';
 import * as styles from './Dropdown.css';
 
 type DropdownMenuPanel = PopoverPanelProps<'div'>;

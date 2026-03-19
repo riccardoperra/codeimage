@@ -2,12 +2,10 @@ import {useI18n} from '@codeimage/locale';
 import {isAssetUrl} from '@codeimage/store/assets/assets';
 import {FlexField, VStack} from '@codeimage/ui';
 import {TextField} from '@codeui/kit';
+import type {SegmentedFieldItem} from '@ui/SegmentedField/SegmentedField';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
+import type {Accessor, VoidProps} from 'solid-js';
 import {
-  SegmentedFieldItem,
-  SegmentedField,
-} from '@ui/SegmentedField/SegmentedField';
-import {
-  Accessor,
   createEffect,
   createMemo,
   createSignal,
@@ -15,7 +13,6 @@ import {
   on,
   onMount,
   Show,
-  VoidProps,
 } from 'solid-js';
 import {ColorPickerPresetItem} from './ColorPickerPresetItem';
 import * as styles from './CustomColorPicker.css';

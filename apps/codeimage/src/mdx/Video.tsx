@@ -1,4 +1,5 @@
-import {JSX, onCleanup, onMount} from 'solid-js';
+import type {JSX} from 'solid-js';
+import {onCleanup, onMount} from 'solid-js';
 import * as styles from './components.css';
 
 export function MdxVideo(

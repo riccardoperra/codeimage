@@ -1,8 +1,8 @@
+import type {JSXElement} from 'solid-js';
 import {
   createComponent,
   createSignal,
   getOwner,
-  JSXElement,
   mergeProps,
   runWithOwner,
 } from 'solid-js';

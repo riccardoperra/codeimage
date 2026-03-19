@@ -1,4 +1,4 @@
-import {Accessor} from 'solid-js';
+import type {Accessor} from 'solid-js';
 /**
  * Util to get last Page of our pagination
  * @param data Accessor with all data not paginated

@@ -1,5 +1,6 @@
 import {createVar, fallbackVar} from '@vanilla-extract/css';
-import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
+import type {RecipeVariants} from '@vanilla-extract/recipes';
+import {recipe} from '@vanilla-extract/recipes';
 import * as variables from '../../theme/variables.css';
 
 export const inheritedWidth = createVar();

@@ -1,7 +1,8 @@
 import {createTheme, style} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
 import {scaffoldVars} from '../Scaffold.css';
-import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
+import type {RecipeVariants} from '@vanilla-extract/recipes';
+import {recipe} from '@vanilla-extract/recipes';
 
 export const [sidebarTheme, sidebarVars] = createTheme({
   width: scaffoldVars.panelWidth,

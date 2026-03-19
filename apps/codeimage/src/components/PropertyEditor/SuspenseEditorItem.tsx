@@ -1,5 +1,6 @@
 import {getEditorSyncAdapter} from '@codeimage/store/editor/createEditorSync';
-import {JSX, ParentProps, Suspense} from 'solid-js';
+import type {JSX, ParentProps} from 'solid-js';
+import {Suspense} from 'solid-js';
 
 export function SuspenseEditorItem(
   props: ParentProps<{fallback: JSX.Element}>,

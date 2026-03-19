@@ -1,4 +1,4 @@
-import {CustomTheme} from './custom-theme';
+import type {CustomTheme} from './custom-theme';
 
 type CustomThemeFactoryResult<Type, FactoryResult> = Omit<
   CustomTheme,

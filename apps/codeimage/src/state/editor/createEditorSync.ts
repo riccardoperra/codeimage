@@ -3,7 +3,7 @@ import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
-import {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
+import type {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {toast} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
@@ -20,6 +20,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
+import type {Resource} from 'solid-js';
 import {
   createEffect,
   createMemo,
@@ -28,7 +29,6 @@ import {
   on,
   onCleanup,
   onMount,
-  Resource,
   untrack,
 } from 'solid-js';
 import {unwrap} from 'solid-js/store';

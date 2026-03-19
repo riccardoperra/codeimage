@@ -1,6 +1,8 @@
-import {Component, VoidProps} from 'solid-js';
-import {toast as $toast, Toaster as ToasterV2, ToastHandler} from 'solid-toast';
-import {AugmentedToastHandler, createPatch} from './patch-solid-toast';
+import type {Component, VoidProps} from 'solid-js';
+import type {ToastHandler} from 'solid-toast';
+import {toast as $toast, Toaster as ToasterV2} from 'solid-toast';
+import type {AugmentedToastHandler} from './patch-solid-toast';
+import {createPatch} from './patch-solid-toast';
 import * as styles from './Snackbar.css';
 
 export interface SnackbarData {

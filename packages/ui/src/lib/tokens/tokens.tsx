@@ -1,11 +1,6 @@
-import {
-  Accessor,
-  createContext,
-  createEffect,
-  ParentProps,
-  useContext,
-} from 'solid-js';
-import * as styles from '../primitives/Text/Text.css';
+import type {Accessor, ParentProps} from 'solid-js';
+import {createContext, createEffect, useContext} from 'solid-js';
+import type * as styles from '../primitives/Text/Text.css';
 
 export interface TextThemeTokens {
   size?: keyof typeof styles.fontSize;

@@ -1,7 +1,7 @@
 import jsx from 'acorn-jsx';
 import {walk} from 'estree-walker';
 import MagicString from 'magic-string';
-import {Plugin} from 'rollup';
+import type {Plugin} from 'rollup';
 
 let nextId = 0;
 

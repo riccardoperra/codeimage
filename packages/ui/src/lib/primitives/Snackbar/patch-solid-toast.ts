@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import {createUniqueId} from 'solid-js';
-import {Message, toast, ToastHandler, ToastOptions} from 'solid-toast';
+import type {Message, ToastHandler, ToastOptions} from 'solid-toast';
+import {toast} from 'solid-toast';
 import * as styles from './Snackbar.css';
 
 interface AugmentedOptions extends ToastOptions {
