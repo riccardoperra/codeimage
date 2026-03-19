@@ -2,12 +2,11 @@ name: Main
 
 on:
   pull_request:
-    types: [ opened, synchronize, reopened, edited, assigned ]
+    types: [opened, synchronize, reopened, edited, assigned]
   pull_request_target:
-    types: [ opened, synchronize, reopened, edited, assigned ]
+    types: [opened, synchronize, reopened, edited, assigned]
     branches:
       - changeset-release/main
-
 
 env:
   IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
@@ -18,13 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v4
         if: (${{ env.IS_MAIN_BRANCH == 'false' }} || ${{ env.IS_NEXT_BRANCH == 'false' }})
         id: diff-changes
         with:
@@ -57,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -74,11 +73,11 @@ jobs:
 
   build-packages:
     name: Build packages
-    needs: [ install ]
+    needs: [install]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -95,7 +94,7 @@ jobs:
           pnpm libs:build
 
       - name: Cache packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -103,11 +102,11 @@ jobs:
   typecheck-packages:
     if: ${{ needs.install.outputs.libs-change == 'true' }}
     name: Type-checking
-    needs: [ install, build-packages ]
+    needs: [install, build-packages]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -120,7 +119,7 @@ jobs:
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Restore dist
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -137,19 +136,19 @@ jobs:
   build-app-dev:
     name: Build App and Preview (Dev)
     environment: Preview
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: ${{ github.head_ref  != 'next' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -169,7 +168,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v25.2.0
+      - uses: amondnet/vercel-action@v41.1.4
         with:
           vercel-token: ${{secrets.VERCEL_TOKEN}} # Required
           github-token: ${{secrets.GITHUB_TOKEN}} #Optional
@@ -180,23 +179,22 @@ jobs:
           alias-domains: | #Optional
             codeimage-app-pr-{{PR_NUMBER}}.vercel.app
 
-
   build-app-next:
     name: Build App and Preview (Next)
     environment: Next
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: ${{ github.head_ref  == 'next' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -216,7 +214,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v25.2.0
+      - uses: amondnet/vercel-action@v41.1.4
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -231,19 +229,19 @@ jobs:
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'
     environment: Preview
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -254,7 +252,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/highlight build:dev
 
-      - uses: amondnet/vercel-action@v25.2.0
+      - uses: amondnet/vercel-action@v41.1.4
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -268,19 +266,19 @@ jobs:
   build-website-dev:
     name: '@codeimage/website dev and Preview'
     environment: Preview
-    needs: [ build-packages ]
+    needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -295,7 +293,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/website build
 
-      - uses: amondnet/vercel-action@v25.2.0
+      - uses: amondnet/vercel-action@v41.1.4
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -307,25 +305,25 @@ jobs:
             codeimage-website-pr-{{PR_NUMBER}}.vercel.app
 
       - name: Cache website
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: apps/website
           key: apps-website-${{ github.run_id }}-${{ github.run_number }}
 
   website-lhci:
     name: Lighthouse
-    needs: [ build-website-dev ]
+    needs: [build-website-dev]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
       - name: Restore website
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: apps/website
           key: apps-website-${{ github.run_id }}-${{ github.run_number }}
@@ -339,18 +337,18 @@ jobs:
 
   build-api:
     name: Build Api
-    needs: [ install, build-packages ]
+    needs: [install, build-packages]
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: "[API] Generate Prisma Migration"
+      - name: '[API] Generate Prisma Migration'
         run: |
           pnpm --filter=@codeimage/api exec prisma generate
           pnpm --filter=@codeimage/prisma-models build
@@ -361,7 +359,7 @@ jobs:
           pnpm prepare:api:deploy
 
       - name: Cache build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             dist/api-bundle/**
@@ -371,7 +369,7 @@ jobs:
   be-test:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Api test
-    needs: [ install ]
+    needs: [install]
     runs-on: ubuntu-latest
 
     services:
@@ -403,14 +401,14 @@ jobs:
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
       - name: Restore dist
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             packages
@@ -433,30 +431,24 @@ jobs:
     if: ${{ github.head_ref  == 'next' }}
     environment: Next
     name: Deploy next
-    needs: [
-      lint,
-      build-packages,
-      build-api,
-      be-test,
-      build-app-next
-    ]
+    needs: [lint, build-packages, build-api, be-test, build-app-next]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Restore api build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             dist/api-bundle/**

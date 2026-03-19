@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -19,10 +19,10 @@ jobs:
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v1.7.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version: pnpm changeset:pr
-          title: "chore(release): version packages"
+          title: 'chore(release): version packages'
           commit: 'chore(release): version packages'

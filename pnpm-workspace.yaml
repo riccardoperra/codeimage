@@ -3,3 +3,12 @@ packages:
   - 'packages/**'
   - 'tools/**'
   - '!**/test/**'
+
+catalogs:
+  next:
+    '@types/node': ^24.10.0
+    tsdown: ^0.21.4
+    vite: ^8.0.1
+    vite-plugin-dts: ^4.5.4
+    vite-plugin-solid: ^2.11.11
+    vitest: ^4.1.0
