@@ -24,7 +24,6 @@
     "@types/mdx": "2.0.10",
     "@vanilla-extract/vite-plugin": "^5.2.0",
     "cross-env": "^7.0.3",
-    "esbuild-plugin-alias": "0.2.1",
     "https-localhost": "^4.7.1",
     "msw": "^0.47.4",
     "prettier": "^2.8.7",
