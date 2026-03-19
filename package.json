@@ -58,6 +58,7 @@
     "prepare:api:deploy": "pnpm-bundle-workspace-package @codeimage/api --outDir=dist/api-bundle && rm -rf dist/api-bundle/workspace-dependencies/prisma-models/.gitignore",
     "railway:up": "railway up"
   },
+  "packageManager": "pnpm@10.32.1",
   "devDependencies": {
     "@changesets/assemble-release-plan": "^5.2.3",
     "@changesets/changelog-github": "^0.4.8",
@@ -90,7 +91,8 @@
     "vite": "^3.2.5"
   },
   "engines": {
-    "pnpm": ">=7"
+    "node": ">=24",
+    "pnpm": ">=10"
   },
   "pnpm": {
     "overrides": {

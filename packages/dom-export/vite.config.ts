@@ -3,7 +3,7 @@ import {defineConfig} from 'vite';
 import dts from 'vite-plugin-dts';
 import {dependencies, peerDependencies} from './package.json';
 
-module.exports = defineConfig({
+export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/public-api.ts'),
