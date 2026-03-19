@@ -1,11 +1,11 @@
 import {For} from 'solid-js';
+import type {SvgIconProps} from '../../src';
 import {
   Box,
   Button,
   HStack,
   IconButton,
   SvgIcon,
-  SvgIconProps,
   Text,
   VStack,
 } from '../../src';

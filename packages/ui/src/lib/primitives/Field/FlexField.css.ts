@@ -1,4 +1,5 @@
-import {recipe, RecipeVariants} from '@vanilla-extract/recipes';
+import type {RecipeVariants} from '@vanilla-extract/recipes';
+import {recipe} from '@vanilla-extract/recipes';
 import {createVar} from '@vanilla-extract/css';
 import {themeVars} from '../../theme';
 import * as variables from '../../theme/variables.css';

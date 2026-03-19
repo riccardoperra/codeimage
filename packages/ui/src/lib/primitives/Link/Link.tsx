@@ -1,6 +1,8 @@
 import clsx from 'clsx';
-import {JSX, splitProps} from 'solid-js';
-import {Text, TextProps} from '../Text/Text';
+import type {JSX} from 'solid-js';
+import {splitProps} from 'solid-js';
+import type {TextProps} from '../Text/Text';
+import {Text} from '../Text/Text';
 import * as styles from './Link.css';
 
 interface LinkProps extends TextProps<'a'> {

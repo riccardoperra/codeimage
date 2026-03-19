@@ -1,11 +1,13 @@
-import {ElementType} from '@solid-aria/types';
+import type {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
-import {ButtonProps as ShButtonProps} from 'solid-headless';
-import {JSXElement, ParentProps, Show, splitProps} from 'solid-js';
-import {CustomComponentProps, styled} from '../../utils';
+import type {ButtonProps as ShButtonProps} from 'solid-headless';
+import type {JSXElement, ParentProps} from 'solid-js';
+import {Show, splitProps} from 'solid-js';
+import type {CustomComponentProps} from '../../utils';
+import {styled} from '../../utils';
 import {LoadingCircle} from '../Loader';
 import * as styles from './Button.css';
-import {ButtonSizes} from './Button.css';
+import type {ButtonSizes} from './Button.css';
 
 export type ButtonProps<T extends ElementType = 'button'> =
   CustomComponentProps<

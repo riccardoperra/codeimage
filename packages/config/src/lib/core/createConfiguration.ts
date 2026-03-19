@@ -1,6 +1,6 @@
 import {type CustomTheme} from '@codeimage/highlight';
-import {AppStaticConfiguration} from '../types/configuration';
-import {LanguageDefinition} from '../types/language-def';
+import type {AppStaticConfiguration} from '../types/configuration';
+import type {LanguageDefinition} from '../types/language-def';
 
 export function createConfiguration<
   V extends string,

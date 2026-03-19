@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {JSX, ParentProps} from 'solid-js';
+import type {JSX, ParentProps} from 'solid-js';
 import {omitProps} from 'solid-use/props';
 import {styled} from '../../utils';
 import * as styles from './Badge.css';

@@ -1,4 +1,5 @@
-import {from, Observable} from 'rxjs';
+import type {Observable} from 'rxjs';
+import {from} from 'rxjs';
 import {createMemo, observable} from 'solid-js';
 
 export function createDerivedObservable<T>(selector: () => T) {

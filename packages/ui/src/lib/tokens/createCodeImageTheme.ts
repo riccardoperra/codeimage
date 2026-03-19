@@ -1,5 +1,5 @@
 import {createGlobalTheme, createTheme} from '@vanilla-extract/css';
-import {MapLeafNodes} from '@vanilla-extract/private';
+import type {MapLeafNodes} from '@vanilla-extract/private';
 import {themeColors} from '../theme/theme.css';
 
 export function createGlobalCodeImageTheme(

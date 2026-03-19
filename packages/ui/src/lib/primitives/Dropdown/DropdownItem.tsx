@@ -1,7 +1,8 @@
 import * as styles from './Dropdown.css';
-import {JSXElement} from 'solid-js';
+import type {JSXElement} from 'solid-js';
 import clsx from 'clsx';
-import {MenuItem, MenuItemProps} from 'solid-headless';
+import type {MenuItemProps} from 'solid-headless';
+import {MenuItem} from 'solid-headless';
 
 type DropdownItemProps = MenuItemProps<'button'> & {
   active?: boolean;

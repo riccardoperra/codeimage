@@ -1,10 +1,5 @@
-import {
-  createSignal,
-  mergeProps,
-  onMount,
-  PropsWithChildren,
-  Show,
-} from 'solid-js';
+import type {PropsWithChildren} from 'solid-js';
+import {createSignal, mergeProps, onMount, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
 
 const DEFAULT_ID = 'floating-ui-root';

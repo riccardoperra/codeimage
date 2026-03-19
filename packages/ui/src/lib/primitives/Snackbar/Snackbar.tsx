@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import {Toast} from 'solid-headless';
-import {createSignal, JSX, Show} from 'solid-js';
+import type {JSX} from 'solid-js';
+import {createSignal, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {Box} from '../Box';
 import {Button} from '../Button';
@@ -9,7 +10,8 @@ import {SvgIcon} from '../Icon';
 import {Text} from '../Text';
 import {FadeInOutWithScaleTransition} from '../Transition';
 import * as styles from './Snackbar.css';
-import {SnackbarData, toast} from './SnackbarHost';
+import type {SnackbarData} from './SnackbarHost';
+import {toast} from './SnackbarHost';
 
 export function SnackBar(props: SnackbarData & {id: string}): JSX.Element {
   const [isOpen, setIsOpen] = createSignal(true);

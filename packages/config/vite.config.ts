@@ -3,7 +3,7 @@ import {defineConfig} from 'vite';
 import dts from 'vite-plugin-dts';
 import solidPlugin from 'vite-plugin-solid';
 
-module.exports = defineConfig({
+export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/public-api.ts'),

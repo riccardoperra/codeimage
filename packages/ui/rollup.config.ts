@@ -2,13 +2,8 @@ import typescript from '@rollup/plugin-typescript';
 import {vanillaExtractPlugin} from '@vanilla-extract/rollup-plugin';
 import fs from 'fs';
 import path from 'path';
-import {
-  defineConfig,
-  ModuleFormat,
-  OutputOptions,
-  rollup,
-  RollupOptions,
-} from 'rollup';
+import type {ModuleFormat, OutputOptions, RollupOptions} from 'rollup';
+import {defineConfig, rollup} from 'rollup';
 import {dependencies, peerDependencies} from './package.json';
 import {preserveJsxImports} from './tools/preserve-jsx-imports';
 import withSolid from './tools/with-solid';

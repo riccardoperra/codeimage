@@ -1,4 +1,5 @@
-import {SvgIcon, SvgIconProps} from '../Icon/SvgIcon';
+import type {SvgIconProps} from '../Icon/SvgIcon';
+import {SvgIcon} from '../Icon/SvgIcon';
 import * as styles from './Loader.css';
 
 export interface LoaderProps extends SvgIconProps {

@@ -1,8 +1,9 @@
 import clsx from 'clsx';
-import {FlowComponent} from 'solid-js';
-import {CustomComponentProps, styled} from '../../utils';
+import type {FlowComponent} from 'solid-js';
+import type {CustomComponentProps} from '../../utils';
+import {styled} from '../../utils';
 import * as styles from './Group.css';
-import {GroupVariants} from './Group.css';
+import type {GroupVariants} from './Group.css';
 
 type GroupProps = CustomComponentProps<'div', GroupVariants>;
 

@@ -1,4 +1,5 @@
-import {ParentComponent, Show} from 'solid-js';
+import type {ParentComponent} from 'solid-js';
+import {Show} from 'solid-js';
 import {Dynamic, Portal} from 'solid-js/web';
 
 type DropdownPortalProps = {

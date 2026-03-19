@@ -1,8 +1,9 @@
-import {ElementType} from '@solid-aria/types';
+import type {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
-import {ParentProps} from 'solid-js';
+import type {ParentProps} from 'solid-js';
 import {omitProps} from 'solid-use/props';
-import {Button, ButtonProps} from '../Button/Button';
+import type {ButtonProps} from '../Button/Button';
+import {Button} from '../Button/Button';
 import * as styles from './IconButton.css';
 
 export function IconButton<T extends ElementType = 'button'>(
