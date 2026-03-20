@@ -1,4 +1,4 @@
-import {PrismaClient, Project} from '@codeimage/prisma-models';
+import type {PrismaClient, Project} from '@codeimage/prisma-models';
 import {
   type PartialProjectGetByIdResponse,
   type ProjectCreateRequest,
@@ -7,7 +7,7 @@ import {
   type ProjectUpdateRequest,
   type ProjectUpdateResponse,
 } from '../../domain/index.js';
-import {ProjectRepository} from '../../repository/index.js';
+import type {ProjectRepository} from '../../repository/index.js';
 
 export function makePrismaProjectRepository(
   client: PrismaClient,

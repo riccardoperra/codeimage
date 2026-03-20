@@ -1,7 +1,7 @@
 import {HandlerBuilder} from '../../../common/domainFunctions/builder.js';
-import {PresetDto} from '../schema/preset-dto.schema.js';
-import {PresetUpdateDto} from '../schema/preset-update-dto.schema.js';
-import {PresetHandlerDependencies} from './index.js';
+import type {PresetDto} from '../schema/preset-dto.schema.js';
+import type {PresetUpdateDto} from '../schema/preset-update-dto.schema.js';
+import type {PresetHandlerDependencies} from './index.js';
 
 export const update =
   HandlerBuilder.withDependencies<PresetHandlerDependencies>()

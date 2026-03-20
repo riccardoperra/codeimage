@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {Handler, HandlerCallbackMetadata, Wrap} from '@api/domain';
+import type {Handler, HandlerCallbackMetadata, Wrap} from '@api/domain';
 import {$HANDLER} from './handlers.js';
 
 type HandlerBuilderData = {

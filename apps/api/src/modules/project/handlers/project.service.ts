@@ -1,8 +1,8 @@
-import {Project, User} from '@codeimage/prisma-models';
-import {HttpError, HttpErrors} from '@fastify/sensible/lib/httpError.js';
+import type {Project, User} from '@codeimage/prisma-models';
+import type {HttpError, HttpErrors} from '@fastify/sensible/lib/httpError.js';
 import {createProjectRequestMapper} from '../mapper/create-project-mapper.js';
 import {createCompleteProjectGetByIdResponseMapper} from '../mapper/get-project-by-id-mapper.js';
-import {ProjectRepository} from '../repository/index.js';
+import type {ProjectRepository} from '../repository/index.js';
 import {
   type ProjectCreateRequest,
   type ProjectCreateResponse,
@@ -10,7 +10,7 @@ import {
   type ProjectUpdateRequest,
   type ProjectUpdateResponse,
 } from '../schema/index.js';
-import {ProjectCompleteResponse} from '../schema/project-get-by-id.schema.js';
+import type {ProjectCompleteResponse} from '../schema/project-get-by-id.schema.js';
 
 export interface ProjectService {
   findById(user: User | null, id: string): Promise<ProjectCompleteResponse>;

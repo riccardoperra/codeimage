@@ -3,7 +3,8 @@ import {Type} from '@sinclair/typebox';
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
 import * as sinon from 'sinon';
-import {afterAll, assert, beforeEach, expect, test, TestContext} from 'vitest';
+import type {TestContext} from 'vitest';
+import {afterAll, assert, beforeEach, expect, test} from 'vitest';
 import cors from '../../src/plugins/cors.js';
 
 async function build(t: TestContext) {

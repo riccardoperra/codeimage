@@ -1,10 +1,11 @@
-import {User} from '@codeimage/prisma-models';
+import type {User} from '@codeimage/prisma-models';
 import fastifyEnv from '@fastify/env';
 import {Type} from '@sinclair/typebox';
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
 import * as sinon from 'sinon';
-import {assert, beforeEach, test, TestContext} from 'vitest';
+import type {TestContext} from 'vitest';
+import {assert, beforeEach, test} from 'vitest';
 import auth0 from '../../src/plugins/auth0.js';
 import prisma from '../../src/plugins/prisma.js';
 import sensible from '../../src/plugins/sensible.js';

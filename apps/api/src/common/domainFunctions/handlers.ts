@@ -1,4 +1,4 @@
-import {
+import type {
   ComposeHandlers,
   Handler,
   HandlerCallbackMetadata,
@@ -6,7 +6,7 @@ import {
   Wrap,
 } from '@api/domain';
 import {HandlerBuilder} from './builder.js';
-import {HandlerRegistry} from './registry.js';
+import type {HandlerRegistry} from './registry.js';
 
 export const $HANDLER: unique symbol = Symbol('handler-metadata');
 

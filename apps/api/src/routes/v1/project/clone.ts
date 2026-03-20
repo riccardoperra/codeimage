@@ -1,6 +1,6 @@
-import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {ProjectCreateResponseSchema} from '../../../modules/project/schema/index.js';
 
 const schema = {
@@ -30,7 +30,9 @@ const cloneRoute: FastifyPluginAsyncTypebox = async fastify => {
       const {appUser, params, body} = request;
       return fastify.projectService.clone(
         appUser,
+        // @ts-expect-error TODO: Fix types while updating fastify
         params.id,
+        // @ts-expect-error TODO: Fix types while updating fastify
         body.newName ?? null,
       );
     },

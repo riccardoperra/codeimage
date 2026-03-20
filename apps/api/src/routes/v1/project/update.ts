@@ -1,6 +1,6 @@
-import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {
   ProjectUpdateRequestSchema,
   ProjectUpdateResponseSchema,
@@ -31,8 +31,10 @@ const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
       const {
         appUser,
         body,
+        // @ts-expect-error TODO: Fix types while updating fastify
         params: {id},
       } = request;
+      // @ts-expect-error TODO: Fix types while updating fastify
       return fastify.projectService.update(appUser.id, id, body);
     },
   );

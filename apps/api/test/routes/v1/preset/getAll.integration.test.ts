@@ -1,6 +1,6 @@
-import {Preset, User} from '@codeimage/prisma-models';
+import type {Preset, User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
-import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
 import {testPresetUtils} from '../../../__internal__/presetUtils.js';
 import {build} from '../../../helper.js';
 import {clearAllSeeds, presetSeed, userSeed} from '../../../helpers/seed.js';

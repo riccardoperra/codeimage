@@ -1,6 +1,6 @@
-import {User} from '@codeimage/prisma-models';
+import type {User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
-import {
+import type {
   ProjectCreateRequest,
   ProjectCreateResponse,
 } from '../../../../src/modules/project/schema/index.js';

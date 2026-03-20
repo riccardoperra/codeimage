@@ -1,5 +1,5 @@
-import {Static, TSchema} from '@sinclair/typebox';
-import {FastifySchema} from 'fastify';
+import type {Static, TSchema} from '@sinclair/typebox';
+import type {FastifySchema} from 'fastify';
 
 type StaticSchemaOrType<T> = T extends TSchema ? Static<T> : T;
 

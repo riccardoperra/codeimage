@@ -1,10 +1,8 @@
-import {FastifyPluginAsync} from 'fastify';
-import {
-  makeProjectService,
-  ProjectService,
-} from './handlers/project.service.js';
+import type {FastifyPluginAsync} from 'fastify';
+import type {ProjectService} from './handlers/project.service.js';
+import {makeProjectService} from './handlers/project.service.js';
 import {makePrismaProjectRepository} from './infra/prisma/prisma-project.repository.js';
-import {ProjectRepository} from './repository/index.js';
+import type {ProjectRepository} from './repository/index.js';
 
 export const project: FastifyPluginAsync = async fastify => {
   fastify.decorate(

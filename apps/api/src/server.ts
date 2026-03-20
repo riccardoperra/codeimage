@@ -26,6 +26,8 @@ const closeListeners = closeWithGrace({delay: 500}, async function ({
   await app.close();
 } as closeWithGrace.CloseWithGraceAsyncCallback);
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore TODO: Fix types while updating fastify
 app.addHook('onClose', async (instance, done) => {
   closeListeners.uninstall();
   done();
