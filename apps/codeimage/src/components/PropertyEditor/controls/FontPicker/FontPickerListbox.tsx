@@ -39,6 +39,7 @@ export const createFontPickerListboxProps = (props: FontPickerListboxProps) => {
     get value() {
       return [props.value];
     },
+    // @ts-expect-error TODO: Fix iterable types
     onChange: values => props.onChange(values.keys().next().value),
   } satisfies Parameters<typeof Listbox<Item>>[0];
 };
