@@ -60,7 +60,7 @@
     "prettier": "^2.8.7",
     "rimraf": "^3.0.2",
     "tslib": "^2.6.2",
-    "typescript": "~5.3.2",
+    "typescript": "catalog:next",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",
     "vitest": "catalog:next"
@@ -76,5 +76,8 @@
   "peerDependencies": {
     "@solid-primitives/platform": "^0.0.101",
     "solid-js": "^1.8.6"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

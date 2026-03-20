@@ -8,10 +8,10 @@
 
 import {
   compile,
-  CompileOptions,
+  type CompileOptions,
   cssFileFilter,
   getPackageInfo,
-  IdentifierOption,
+  type IdentifierOption,
   processVanillaFile,
   transform,
 } from '@vanilla-extract/integration';
@@ -21,7 +21,8 @@ import path from 'path';
 import type {Plugin, ResolvedConfig, ViteDevServer} from 'vite';
 import {normalizePath} from 'vite';
 import {vanillaCssTsFilesLoader} from '../esbuild/vanillaCssTsFilesLoader';
-import {PostCSSConfigResult, resolvePostcssConfig} from './postcss';
+import type {PostCSSConfigResult} from './postcss';
+import {resolvePostcssConfig} from './postcss';
 
 const styleUpdateEvent = (fileId: string) =>
   `vanilla-extract-style-update:${fileId}`;
