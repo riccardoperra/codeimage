@@ -154,13 +154,13 @@ importers:
         version: 1.8.1
       '@fastify/type-provider-typebox':
         specifier: ^3.6.0
-        version: 3.6.0(@sinclair/typebox@0.34.48)
+        version: 3.6.0(@sinclair/typebox@0.32.35)
       '@prisma/client':
         specifier: ^4.15.0
         version: 4.15.0(prisma@4.15.0)
       '@sinclair/typebox':
-        specifier: ^0.34.48
-        version: 0.34.48
+        specifier: ^0.32.35
+        version: 0.32.35
       close-with-grace:
         specifier: ^1.2.0
         version: 1.2.0
@@ -3414,8 +3414,8 @@ packages:
   '@sideway/pinpoint@2.0.0':
     resolution: {integrity: sha512-RNiOoTPkptFtSVzQevY/yWtZwf/RxyVnPy/OcA9HBM3MlGDnBEYL5B41H0MTn0Uec8Hi+2qUtTfG2WWZBmMejQ==}
 
-  '@sinclair/typebox@0.34.48':
-    resolution: {integrity: sha512-kKJTNuK3AQOrgjjotVxMrCn1sUJwM76wMszfq1kdU4uYVJjvEWuFQ6HgvLt4Xz3fSmZlTOxJ/Ie13KnIcWQXFA==}
+  '@sinclair/typebox@0.32.35':
+    resolution: {integrity: sha512-Ul3YyOTU++to8cgNkttakC0dWvpERr6RYoHO2W47DLbFvrwBDJUY31B1sImH6JZSYc4Kt4PyHtoPNu+vL2r2dA==}
 
   '@sindresorhus/is@4.6.0':
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
@@ -11572,9 +11572,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fastify/type-provider-typebox@3.6.0(@sinclair/typebox@0.34.48)':
+  '@fastify/type-provider-typebox@3.6.0(@sinclair/typebox@0.32.35)':
     dependencies:
-      '@sinclair/typebox': 0.34.48
+      '@sinclair/typebox': 0.32.35
 
   '@fastify/under-pressure@8.2.0':
     dependencies:
@@ -13329,7 +13329,7 @@ snapshots:
 
   '@sideway/pinpoint@2.0.0': {}
 
-  '@sinclair/typebox@0.34.48': {}
+  '@sinclair/typebox@0.32.35': {}
 
   '@sindresorhus/is@4.6.0': {}
 
