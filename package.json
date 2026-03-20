@@ -99,6 +99,9 @@
       "@vanilla-extract/integration": "6.0.1",
       "esbuild": "^0.19.8",
       "typescript": "^5.9.3"
+    },
+    "patchedDependencies": {
+      "solid-headless": "patches/solid-headless.patch"
     }
   },
   "dependencies": {
