@@ -1,20 +1,20 @@
 import type {LoadedFont} from '../../hooks/use-local-fonts';
 import {mapToDictionary} from '../helpers/mapToDictionary';
 
-interface CustomFontType {
+export interface CustomFontType {
   name: string;
   weight: number;
   fontData?: FontData;
 }
 
-interface WebFontConfiguration {
+export interface WebFontConfiguration {
   id: string;
   name: string;
   type: 'web';
   types: readonly CustomFontType[];
 }
 
-interface SystemFontConfiguration {
+export interface SystemFontConfiguration {
   id: string;
   name: string;
   type: 'system';

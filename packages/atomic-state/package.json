@@ -19,7 +19,7 @@
     }
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsdown",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
