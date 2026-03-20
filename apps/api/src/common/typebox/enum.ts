@@ -1,4 +1,5 @@
-import {TString, Type} from '@sinclair/typebox';
+import type {TString} from '@sinclair/typebox';
+import {Type} from '@sinclair/typebox';
 
 export const enumLiteral = <T extends string>(values: T[]): TString => {
   const literals = values.map(value => Type.Literal(value));

@@ -1,4 +1,4 @@
-import {Project, User} from '@codeimage/prisma-models';
+import type {Project, User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
 
 import {build} from '../../../helper.js';

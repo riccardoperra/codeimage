@@ -1,7 +1,8 @@
-import AutoLoad, {AutoloadPluginOptions} from '@fastify/autoload';
+import type {AutoloadPluginOptions} from '@fastify/autoload';
+import AutoLoad from '@fastify/autoload';
 import fastifyEnv from '@fastify/env';
 import {Type} from '@sinclair/typebox';
-import {FastifyPluginAsync} from 'fastify';
+import type {FastifyPluginAsync} from 'fastify';
 import path, {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -46,8 +47,8 @@ const app: FastifyPluginAsync<AppOptions> = async (
       CLIENT_ID_AUTH0: Type.String(),
       CLIENT_SECRET_AUTH0: Type.String(),
       DOMAIN_AUTH0: Type.String(),
-      AUTH0_CLIENT_CLAIMS: Type.RegEx(/^https?:/),
-      AUDIENCE_AUTH0: Type.RegEx(/^https?:/),
+      AUTH0_CLIENT_CLAIMS: Type.RegExp(/^https?:/),
+      AUDIENCE_AUTH0: Type.RegExp(/^https?:/),
       GRANT_TYPE_AUTH0: Type.String(),
       ALLOWED_ORIGINS: Type.String(),
       PRESETS_LIMIT: Type.Number({default: Number.MAX_SAFE_INTEGER}),

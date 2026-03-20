@@ -1,5 +1,5 @@
-import * as DomainModel from '../domain/index.js';
-import {ProjectCreateRequest} from '../schema/index.js';
+import type * as DomainModel from '../domain/index.js';
+import type {ProjectCreateRequest} from '../schema/index.js';
 import {
   EditorOptionsCreateRequestSchema,
   SnippetFrameCreateRequestSchema,

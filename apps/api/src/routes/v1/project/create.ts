@@ -1,5 +1,5 @@
-import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {
   ProjectCreateRequestSchema,
   ProjectCreateResponseSchema,
@@ -25,6 +25,7 @@ const createRoute: FastifyPluginAsyncTypebox = async fastify => {
     },
     request => {
       const {appUser, body} = request;
+      // @ts-expect-error TODO: Fix types while updating fastify
       return fastify.projectService.createNewProject(appUser.id, body);
     },
   );

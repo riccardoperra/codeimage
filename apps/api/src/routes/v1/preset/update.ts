@@ -1,6 +1,6 @@
-import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema.js';
 import {PresetUpdateDtoSchema} from '../../../modules/preset/schema/preset-update-dto.schema.js';
 
@@ -29,9 +29,11 @@ const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
     request => {
       const {
         appUser,
+        // @ts-expect-error TODO: Fix types while updating fastify
         params: {id},
         body,
       } = request;
+      // @ts-expect-error TODO: Fix types while updating fastify
       return fastify.presetService.updatePreset(appUser.id, id, body);
     },
   );

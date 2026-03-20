@@ -1,4 +1,5 @@
-import {SchemaOptions, TSchema, Type} from '@sinclair/typebox';
+import type {SchemaOptions, TSchema} from '@sinclair/typebox';
+import {Type} from '@sinclair/typebox';
 
 export const Nullable = <T extends TSchema>(tType: T, optional = true) => {
   const options: SchemaOptions | undefined = Reflect.has(tType, 'default')

@@ -1,13 +1,13 @@
-import {User} from '@codeimage/prisma-models';
-import {HttpErrors} from '@fastify/sensible/lib/httpError.js';
+import type {User} from '@codeimage/prisma-models';
+import type {HttpErrors} from '@fastify/sensible/lib/httpError.js';
 import * as sinon from 'sinon';
 import {assert, beforeEach, expect, test} from 'vitest';
-import {
+import type {
   ProjectCreateResponse,
   ProjectGetByIdResponse,
 } from '../../../../src/modules/project/domain/index.js';
 import {makeProjectService} from '../../../../src/modules/project/handlers/project.service.js';
-import {ProjectRepository} from '../../../../src/modules/project/repository/index.js';
+import type {ProjectRepository} from '../../../../src/modules/project/repository/index.js';
 
 export function makeMockProjectService() {
   const repository = {

@@ -1,6 +1,7 @@
-import {Static, Type} from '@sinclair/typebox';
-import {FastifyPluginAsync} from 'fastify';
-import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import type {Static} from '@sinclair/typebox';
+import {Type} from '@sinclair/typebox';
+import type {FastifyPluginAsync} from 'fastify';
+import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {BaseProjectResponseSchema} from '../../../modules/project/schema/project.schema.js';
 
 const schema = {

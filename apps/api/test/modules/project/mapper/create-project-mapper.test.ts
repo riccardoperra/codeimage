@@ -1,5 +1,5 @@
 import {assert, test} from 'vitest';
-import * as DomainModel from '../../../../src/modules/project/domain/index.js';
+import type * as DomainModel from '../../../../src/modules/project/domain/index.js';
 import {createProjectRequestMapper} from '../../../../src/modules/project/mapper/create-project-mapper.js';
 
 test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with default values', async () => {

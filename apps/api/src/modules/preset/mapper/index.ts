@@ -1,5 +1,5 @@
-import {Preset} from '@codeimage/prisma-models';
-import {PresetDataDto, PresetDto} from '../schema/preset-dto.schema.js';
+import type {Preset} from '@codeimage/prisma-models';
+import type {PresetDataDto, PresetDto} from '../schema/preset-dto.schema.js';
 
 export interface PresetMapper {
   fromEntityToDto(entity: Preset): PresetDto;

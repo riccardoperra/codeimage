@@ -1,6 +1,6 @@
-import {Preset, PrismaClient} from '@codeimage/prisma-models';
-import {PresetCreateRequest} from '../domain/index.js';
-import {PresetRepository} from './index.js';
+import type {Preset, PrismaClient} from '@codeimage/prisma-models';
+import type {PresetCreateRequest} from '../domain/index.js';
+import type {PresetRepository} from './index.js';
 
 export class PrismaPresetRepository implements PresetRepository {
   constructor(private readonly client: PrismaClient) {}

@@ -1,4 +1,5 @@
-import {Static, Type} from '@sinclair/typebox';
+import type {Static} from '@sinclair/typebox';
+import {Type} from '@sinclair/typebox';
 import {Nullable} from '../../../common/typebox/nullable.js';
 import {SnippetTerminalBorderType} from './project.schema.js';
 
