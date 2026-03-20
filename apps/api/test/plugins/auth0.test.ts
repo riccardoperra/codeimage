@@ -5,7 +5,7 @@ import Fastify from 'fastify';
 import fp from 'fastify-plugin';
 import * as sinon from 'sinon';
 import type {TestContext} from 'vitest';
-import {assert, beforeEach, test} from 'vitest';
+import {assert, beforeEach, test, vi} from 'vitest';
 import auth0 from '../../src/plugins/auth0.js';
 import prisma from '../../src/plugins/prisma.js';
 import sensible from '../../src/plugins/sensible.js';
@@ -14,17 +14,17 @@ interface AppOptions {
   mockAuth: boolean;
 }
 
-process.env.AUTH0_CLIENT_CLAIMS = 'claims';
-process.env.CLIENT_SECRET_AUTH = 'secret';
-process.env.DOMAIN_AUTH0 = 'domain';
-process.env.AUDIENCE_AUTH0 = 'audience';
+vi.stubEnv('AUTH0_CLIENT_CLAIMS', 'claims');
+vi.stubEnv('CLIENT_SECRET_AUTH', 'secret');
+vi.stubEnv('DOMAIN_AUTH0', 'domain');
+vi.stubEnv('AUDIENCE_AUTH0', 'audience');
 
 beforeEach(() => sinon.restore());
 
 async function build(t: TestContext, options: AppOptions = {mockAuth: false}) {
   if (options.mockAuth) {
-    process.env.MOCK_AUTH = 'true';
-    process.env.MOCK_AUTH_EMAIL = 'dev@example.it';
+    vi.stubEnv("    vi.stubEnv('MOCK_AUTH', 'true');\n", 'true');
+    vi.stubEnv('MOCK_AUTH_EMAIL', 'dev@example.it');
   }
 
   const app = Fastify();
