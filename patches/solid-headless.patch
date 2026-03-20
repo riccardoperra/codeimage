@@ -1,5 +1,5 @@
 diff --git a/dist/types/utils/dynamic-prop.d.ts b/dist/types/utils/dynamic-prop.d.ts
-index 97e46b143b816697b7e3a97511edb4f1510196d4..ba9c79935c7d421bcbabebfa0ef03b1a75bb783a 100644
+index 97e46b143b816697b7e3a97511edb4f1510196d4..9bd6b933c7018b67498152937ce4b144993bdd1a 100644
 --- a/dist/types/utils/dynamic-prop.d.ts
 +++ b/dist/types/utils/dynamic-prop.d.ts
 @@ -1,5 +1,5 @@
@@ -10,3 +10,15 @@ index 97e46b143b816697b7e3a97511edb4f1510196d4..ba9c79935c7d421bcbabebfa0ef03b1a
  export type ValidElements = keyof JSX.IntrinsicElements;
  export type ValidComponent<P> = (props: P) => JSX.Element;
  export type ValidConstructor = ValidElements | ValidComponent<any> | (string & {});
+diff --git a/src/utils/dynamic-prop.ts b/src/utils/dynamic-prop.ts
+index d609ac080f59badb383ad22e9193418d71a3fd65..b9fe055a5f04b8302658d922310c94de22cd62b3 100644
+--- a/src/utils/dynamic-prop.ts
++++ b/src/utils/dynamic-prop.ts
+@@ -1,5 +1,5 @@
+-import { JSX } from 'solid-js';
+-import { OmitAndMerge } from './types';
++import type { JSX } from 'solid-js';
++import type { OmitAndMerge } from './types';
+ 
+ export type ValidElements = keyof JSX.IntrinsicElements;
+ export type ValidComponent<P> = (props: P) => JSX.Element;
