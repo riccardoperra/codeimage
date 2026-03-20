@@ -1,4 +1,4 @@
-import {HttpError} from '@fastify/sensible/lib/httpError.js';
+import type {HttpError} from '@fastify/sensible/lib/httpError.js';
 import fp from 'fastify-plugin';
 import {NotFoundEntityException} from '../common/exceptions/NotFoundEntityException.js';
 

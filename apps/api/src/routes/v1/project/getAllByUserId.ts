@@ -1,5 +1,5 @@
-import {FastifyPluginAsync} from 'fastify';
-import {ProjectGetByIdResponse} from '../../../modules/project/schema/index.js';
+import type {FastifyPluginAsync} from 'fastify';
+import type {ProjectGetByIdResponse} from '../../../modules/project/schema/index.js';
 
 const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
   fastify.get(

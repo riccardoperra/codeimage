@@ -1,4 +1,4 @@
-import {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
+import type {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
 import {expect, test, vi} from 'vitest';
 import {$HANDLER, createModuleHandlers, registerHandlers} from './handlers.js';
 import {HandlerRegistry} from './registry.js';

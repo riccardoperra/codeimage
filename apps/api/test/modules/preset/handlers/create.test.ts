@@ -1,11 +1,11 @@
-import {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
-import {Preset} from '@codeimage/prisma-models';
+import type {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
+import type {Preset} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
 import {assert, beforeEach, expect, test} from 'vitest';
 import {create} from '../../../../src/modules/preset/handlers/create.js';
-import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
-import {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
-import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import type {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
+import type {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
+import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
 import {testPresetUtils} from '../../../__internal__/presetUtils.js';
 import {dependencies} from './dependencies.js';
 

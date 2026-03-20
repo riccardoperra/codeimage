@@ -4,6 +4,8 @@
     "jsx": "preserve",
     "importHelpers": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "jsxImportSource": "solid-js",
     "types": ["vite/client", "@types/mdx"],
     "verbatimModuleSyntax": true,

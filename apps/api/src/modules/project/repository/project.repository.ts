@@ -1,6 +1,6 @@
-import {Project} from '@codeimage/prisma-models';
+import type {Project} from '@codeimage/prisma-models';
 import type * as DomainModel from '../domain/index.js';
-import {
+import type {
   PartialProjectGetByIdResponse,
   ProjectGetByIdResponse,
 } from '../domain/index.js';

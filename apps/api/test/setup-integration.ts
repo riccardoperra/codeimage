@@ -1,4 +1,4 @@
-import {PrismaClient} from '@prisma/client';
+import type {PrismaClient} from '@prisma/client';
 import * as dotEnv from 'dotenv';
 import {execSync} from 'node:child_process';
 import path from 'node:path';

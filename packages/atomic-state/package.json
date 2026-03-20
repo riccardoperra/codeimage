@@ -2,34 +2,35 @@
   "name": "@codeimage/atomic-state",
   "version": "1.0.1",
   "source": "src/index.tsx",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
   "type": "module",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "browser": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "node": "./dist/index.cjs",
-      "default": "./dist/index.js"
+      "solid": "./dist/source/index.jsx",
+      "import": "./dist/esm/index.js",
+      "browser": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "node": "./dist/cjs/index.js"
     }
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "rollup -c",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
     "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
     "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
     "clean": "rimraf dist",
     "test": "vitest",
+    "build-esm": "tsc -p tsconfig.esm.json",
+    "build-dts": "tsc -p tsconfig.dts.json",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
-    "dev": "tsdown --watch"
+    "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
   },
   "peerDependencies": {
     "rxjs": "^7.8.0",
@@ -46,5 +47,8 @@
   },
   "dependencies": {
     "statebuilder": "^0.4.2"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

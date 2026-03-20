@@ -1,4 +1,5 @@
-import {Static, Type as t} from '@sinclair/typebox';
+import type {Static} from '@sinclair/typebox';
+import {Type as t} from '@sinclair/typebox';
 
 export const PresetUpdateDtoSchema = t.Object({
   name: t.String(),

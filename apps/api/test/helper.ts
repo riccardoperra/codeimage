@@ -1,7 +1,8 @@
 // This file contains code that we reuse between our tests.
-import Fastify, {FastifyInstance} from 'fastify';
+import type {FastifyInstance} from 'fastify';
+import Fastify from 'fastify';
 import fp from 'fastify-plugin';
-import {TestContext} from 'vitest';
+import type {TestContext} from 'vitest';
 import App from '../src/app.js';
 import {auth0Mock} from './helpers/auth0Mock.js';
 

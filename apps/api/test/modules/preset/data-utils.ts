@@ -1,4 +1,4 @@
-import {Preset} from '@codeimage/prisma-models';
+import type {Preset} from '@codeimage/prisma-models';
 
 export class PresetTestDataUtils {
   static buildPreset(id: string, name: string, ownerId: string, data: {} = {}) {

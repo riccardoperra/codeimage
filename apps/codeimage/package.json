@@ -32,7 +32,7 @@
     "rimraf": "^3.0.2",
     "sass": "catalog:next",
     "tsx": "catalog:next",
-    "typescript": "~5.6.2",
+    "typescript": "catalog:next",
     "vite": "catalog:next",
     "vite-plugin-solid": "catalog:next",
     "vite-tsconfig-paths": "catalog:next",
@@ -115,5 +115,8 @@
   },
   "msw": {
     "workerDirectory": "public"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

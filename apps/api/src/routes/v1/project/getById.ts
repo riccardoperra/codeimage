@@ -1,6 +1,6 @@
-import {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
 import {Type} from '@sinclair/typebox';
-import {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
 import {ProjectGetByIdResponseSchema} from '../../../modules/project/schema/index.js';
 
 const schema = {
@@ -29,6 +29,7 @@ const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
     async request => {
       const {
         appUser,
+        // @ts-expect-error TODO: Fix types while updating fastify
         params: {id},
       } = request;
       return fastify.projectService.findById(appUser, id);

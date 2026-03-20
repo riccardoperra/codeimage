@@ -1,6 +1,6 @@
 import {assert, test} from 'vitest';
 import {createCompleteProjectGetByIdResponseMapper} from '../../../../src/modules/project/mapper/get-project-by-id-mapper.js';
-import * as SchemaModel from '../../../../src/modules/project/schema/index.js';
+import type * as SchemaModel from '../../../../src/modules/project/schema/index.js';
 
 test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse', async () => {
   const date1 = new Date();

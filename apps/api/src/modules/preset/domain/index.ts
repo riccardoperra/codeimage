@@ -1,4 +1,4 @@
-import {Preset} from '@codeimage/prisma-models';
+import type {Preset} from '@codeimage/prisma-models';
 
 export type PresetCreateRequest = Pick<
   Preset,

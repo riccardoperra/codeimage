@@ -1,9 +1,9 @@
-import {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
+import type {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
 import * as sinon from 'sinon';
 import {assert, beforeEach, test} from 'vitest';
 import {findAll} from '../../../../src/modules/preset/handlers/findAll.js';
-import {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
-import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import type {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
+import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
 import {PresetTestDataUtils} from '../data-utils.js';
 import {dependencies} from './dependencies.js';
 

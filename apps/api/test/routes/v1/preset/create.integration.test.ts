@@ -1,8 +1,8 @@
-import {User} from '@codeimage/prisma-models';
+import type {User} from '@codeimage/prisma-models';
 import * as sinon from 'sinon';
 import {afterEach, assert, beforeEach, test} from 'vitest';
-import {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
-import {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import type {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
+import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
 import {testPresetUtils} from '../../../__internal__/presetUtils.js';
 import {build} from '../../../helper.js';
 import {clearAllSeeds, userSeed} from '../../../helpers/seed.js';

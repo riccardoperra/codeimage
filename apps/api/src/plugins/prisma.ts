@@ -1,5 +1,5 @@
 import {PrismaClient} from '@codeimage/prisma-models';
-import {FastifyPluginAsync} from 'fastify';
+import type {FastifyPluginAsync} from 'fastify';
 import fp from 'fastify-plugin';
 
 declare module 'fastify' {

@@ -1,5 +1,6 @@
 import * as path from 'path';
-import {defineConfig, mergeConfig, UserConfig} from 'vitest/config';
+import type {UserConfig} from 'vitest/config';
+import {defineConfig, mergeConfig} from 'vitest/config';
 
 export default defineConfig(() => {
   const testType = process.env.RUN_TEST ?? 'unit';

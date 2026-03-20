@@ -38,9 +38,12 @@
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
-    "typescript": "~5.3.2",
+    "typescript": "catalog:next",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",
     "vite-plugin-solid": "catalog:next"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

@@ -1,5 +1,5 @@
 import {HandlerBuilder} from '../../../common/domainFunctions/builder.js';
-import {PresetHandlerDependencies} from './index.js';
+import type {PresetHandlerDependencies} from './index.js';
 
 export const remove =
   HandlerBuilder.withDependencies<PresetHandlerDependencies>()
