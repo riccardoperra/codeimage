@@ -1,0 +1,12 @@
+diff --git a/dist/types/utils/dynamic-prop.d.ts b/dist/types/utils/dynamic-prop.d.ts
+index 97e46b143b816697b7e3a97511edb4f1510196d4..ba9c79935c7d421bcbabebfa0ef03b1a75bb783a 100644
+--- a/dist/types/utils/dynamic-prop.d.ts
++++ b/dist/types/utils/dynamic-prop.d.ts
+@@ -1,5 +1,5 @@
+-import { JSX } from 'solid-js';
+-import { OmitAndMerge } from './types';
++import type { JSX } from 'solid-js';
++import type { OmitAndMerge } from './types';
+ export type ValidElements = keyof JSX.IntrinsicElements;
+ export type ValidComponent<P> = (props: P) => JSX.Element;
+ export type ValidConstructor = ValidElements | ValidComponent<any> | (string & {});

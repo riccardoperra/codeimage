@@ -9,7 +9,7 @@ const schema = {
   }),
   summary: 'Delete an existing CodeImage preset',
   response: {
-    200: Type.Void(),
+    200: Type.Unknown(),
   },
 };
 
