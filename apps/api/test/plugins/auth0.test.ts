@@ -23,7 +23,7 @@ beforeEach(() => sinon.restore());
 
 async function build(t: TestContext, options: AppOptions = {mockAuth: false}) {
   if (options.mockAuth) {
-    vi.stubEnv("    vi.stubEnv('MOCK_AUTH', 'true');\n", 'true');
+    vi.stubEnv('MOCK_AUTH', 'true');
     vi.stubEnv('MOCK_AUTH_EMAIL', 'dev@example.it');
   }
 
