@@ -58,7 +58,7 @@ overrides:
 
 patchedDependencies:
   solid-headless:
-    hash: cf75e7735f983a136470c0328c79e506ad518172c9f49b3ab190d8e31adaf19d
+    hash: b49786ed140172dc3b664c30dae5e1b5bdb8b42e4a6e5c24cc54f663cffbd394
     path: patches/solid-headless.patch
 
 importers:
@@ -450,7 +450,7 @@ importers:
         version: 2.3.0(@codemirror/state@6.4.1)(@codemirror/view@6.26.3)(solid-js@1.9.11)
       solid-headless:
         specifier: ^0.13.1
-        version: 0.13.1(patch_hash=cf75e7735f983a136470c0328c79e506ad518172c9f49b3ab190d8e31adaf19d)(solid-js@1.9.11)
+        version: 0.13.1(patch_hash=b49786ed140172dc3b664c30dae5e1b5bdb8b42e4a6e5c24cc54f663cffbd394)(solid-js@1.9.11)
       solid-js:
         specifier: catalog:next
         version: 1.9.11
@@ -1020,7 +1020,7 @@ importers:
         version: 1.2.1
       solid-headless:
         specifier: ^0.13.1
-        version: 0.13.1(patch_hash=cf75e7735f983a136470c0328c79e506ad518172c9f49b3ab190d8e31adaf19d)(solid-js@1.9.11)
+        version: 0.13.1(patch_hash=b49786ed140172dc3b664c30dae5e1b5bdb8b42e4a6e5c24cc54f663cffbd394)(solid-js@1.9.11)
       solid-toast:
         specifier: ^0.5.0
         version: 0.5.0(solid-js@1.9.11)
@@ -19905,7 +19905,7 @@ snapshots:
       '@codemirror/view': 6.26.3
       solid-js: 1.9.11
 
-  solid-headless@0.13.1(patch_hash=cf75e7735f983a136470c0328c79e506ad518172c9f49b3ab190d8e31adaf19d)(solid-js@1.9.11):
+  solid-headless@0.13.1(patch_hash=b49786ed140172dc3b664c30dae5e1b5bdb8b42e4a6e5c24cc54f663cffbd394)(solid-js@1.9.11):
     dependencies:
       solid-js: 1.9.11
       solid-use: 0.6.2(solid-js@1.9.11)
