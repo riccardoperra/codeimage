@@ -261,7 +261,7 @@
     "@codemirror/lang-javascript": "^6.1.7",
     "@codeui/kit": "^0.1.2",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@types/node": "^18.16.17",
+    "@types/node": "catalog:next",
     "@types/prettier": "^2.7.2",
     "@vanilla-extract/css": "^1.15.5",
     "@vanilla-extract/dynamic": "^2.1.2",
@@ -273,9 +273,12 @@
     "solid-codemirror": "^2.3.0",
     "solid-js": "^1.8.22",
     "ts-morph": "^23.0.0",
-    "typescript": "~5.3.2",
+    "typescript": "catalog:next",
     "vite": "^5.4.5",
     "vite-plugin-dts": "^4.2.1",
     "vite-plugin-solid": "^2.10.2"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

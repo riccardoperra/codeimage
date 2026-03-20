@@ -26,6 +26,9 @@
   "author": "Riccardo Perra",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "~5.3.2"
+    "typescript": "catalog:next"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }
