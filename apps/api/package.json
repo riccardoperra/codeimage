@@ -76,7 +76,7 @@
     "tsup": "6.7.0",
     "tsx": "3.12.7",
     "typescript": "catalog:next",
-    "vite": "^4.5.1",
-    "vitest": "^0.31.4"
+    "vite": "catalog:next",
+    "vitest": "catalog:next"
   }
 }

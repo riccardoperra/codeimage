@@ -65,7 +65,7 @@ jobs:
       - name: Prisma migrate
         run: |
           cd apps/api
-          prisma generate
+          pnpm prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Lint
@@ -86,7 +86,7 @@ jobs:
       - name: Prisma migrate
         run: |
           cd apps/api
-          prisma generate
+          pnpm prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Build packages
@@ -115,7 +115,7 @@ jobs:
       - name: Prisma migrate
         run: |
           cd apps/api
-          prisma generate
+          pnpm prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Restore dist
@@ -428,7 +428,7 @@ jobs:
         run: |
           cd apps/api
           prisma migrate deploy
-          prisma generate
+          pnpm prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Test (unit)
