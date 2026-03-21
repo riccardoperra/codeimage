@@ -5,16 +5,24 @@
   padding-bottom: 6rem;
 }
 @media screen and (min-width: 992px) {
-  .main { padding-left: 0; padding-right: 0; }
+  .main {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
-.container { max-width: 80rem; margin: auto; }
+.container {
+  max-width: 80rem;
+  margin: auto;
+}
 .twoSections {
   display: flex;
   gap: 2rem;
   flex-direction: column;
 }
 @media screen and (min-width: 992px) {
-  .twoSections { flex-direction: row; }
+  .twoSections {
+    flex-direction: row;
+  }
 }
 .badge {
   width: 64px;
@@ -25,19 +33,41 @@
   align-items: center;
   justify-content: center;
 }
-.metricsBadge { background-color: var(--root-purple); }
-.themeBuilderBadge { background-color: var(--root-red); }
-.embedsBadge { background-color: var(--root-teal); }
-.storageBadge { background-color: var(--root-green); }
+.metricsBadge {
+  background-color: var(--root-purple);
+}
+.themeBuilderBadge {
+  background-color: var(--root-red);
+}
+.embedsBadge {
+  background-color: var(--root-teal);
+}
+.storageBadge {
+  background-color: var(--root-green);
+}
 .analyticsFeatureCard {
   flex-direction: column-reverse;
 }
 @media screen and (min-width: 992px) {
-  .analyticsFeatureCard { flex-direction: row; }
+  .analyticsFeatureCard {
+    flex-direction: row;
+  }
 }
-.analyticsCardContainer { display: flex; gap: 24px; }
-.leftCardAnalytics { display: flex; flex-direction: column; gap: 24px; }
-.rightCardAnalytics { margin-top: 64px; display: flex; flex-direction: column; gap: 24px; }
+.analyticsCardContainer {
+  display: flex;
+  gap: 24px;
+}
+.leftCardAnalytics {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.rightCardAnalytics {
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
 .analyticsCard {
   width: 224px;
   height: 140px;
@@ -48,7 +78,9 @@
   border-radius: 16px;
 }
 @media screen and (min-width: 992px) {
-  .analyticsCard { border-radius: 32px; }
+  .analyticsCard {
+    border-radius: 32px;
+  }
 }
 .image {
   pointer-events: none;

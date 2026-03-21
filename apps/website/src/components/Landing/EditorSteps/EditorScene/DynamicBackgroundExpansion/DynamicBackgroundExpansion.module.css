@@ -1,5 +1,5 @@
 .bgFullAnimation {
-  --animation-curve: cubic-bezier(0.06, 0.6, 0.36, 1.0);
+  --animation-curve: cubic-bezier(0.06, 0.6, 0.36, 1);
   position: absolute;
   left: 50%;
   top: 50%;
@@ -10,9 +10,10 @@
   border-radius: 1rem;
   transform: translate3d(-50%, -50%, 0) scale(1) rotate(0deg);
   transform-origin: center center;
-  transition: width 700ms var(--animation-curve), height 700ms var(--animation-curve);
+  transition: width 700ms var(--animation-curve),
+    height 700ms var(--animation-curve);
 }
-.bgFullAnimation[data-activate=true] {
+.bgFullAnimation[data-activate='true'] {
   opacity: 1;
   transform: translate3d(-50%, -50%, 0) rotate(15deg) scale(2);
   width: 1000px;
@@ -22,7 +23,9 @@
   display: none;
 }
 @media screen and (min-width: 740px) {
-  .container { display: block; }
+  .container {
+    display: block;
+  }
 }
 .backgroundSecondStep {
 }

@@ -4,7 +4,10 @@
   padding-bottom: 3rem;
 }
 @media screen and (min-width: 740px) {
-  .container { padding-top: 6rem; padding-bottom: 6rem; }
+  .container {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
 }
 .content {
   padding-top: 0;
@@ -29,10 +32,14 @@
   margin-top: 2rem;
 }
 @media screen and (min-width: 740px) {
-  .grid { --text-align-flex: center; }
+  .grid {
+    --text-align-flex: center;
+  }
 }
 @media screen and (min-width: 992px) {
-  .grid { justify-content: center; }
+  .grid {
+    justify-content: center;
+  }
 }
 .backdrop {
   content: '';
@@ -42,7 +49,7 @@
   bottom: 0;
   left: 0;
   background: var(--background-color);
-  transform: translate3d(0px, -50%, 0) scale(.75);
+  transform: translate3d(0px, -50%, 0) scale(0.75);
   filter: blur(200px) saturate(500%);
   opacity: 0;
   transition: opacity 0.3s;
@@ -52,7 +59,7 @@
   height: 100%;
   top: 50%;
 }
-[data-in-view=true] .backdrop {
+[data-in-view='true'] .backdrop {
   opacity: 0.5;
 }
 .codeContainer {
@@ -77,7 +84,10 @@
   padding-bottom: 1rem;
 }
 @media screen and (min-width: 992px) {
-  .heading { text-align: center; font-size: 4rem; }
+  .heading {
+    text-align: center;
+    font-size: 4rem;
+  }
 }
 .description {
   font-size: 1.5rem;
@@ -86,12 +96,18 @@
   margin-bottom: 2rem;
 }
 @media screen and (min-width: 992px) {
-  .description { font-size: 1.875rem; text-align: center; }
+  .description {
+    font-size: 1.875rem;
+    text-align: center;
+  }
 }
 .ctaContainer {
   display: flex;
   margin-top: 4rem;
 }
 @media screen and (min-width: 992px) {
-  .ctaContainer { justify-content: center; margin-top: 6rem; }
+  .ctaContainer {
+    justify-content: center;
+    margin-top: 6rem;
+  }
 }

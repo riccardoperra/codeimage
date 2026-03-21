@@ -30,6 +30,6 @@
   opacity: 0;
   transition: opacity 300ms ease-in-out;
 }
-.twitterInfo[data-visible=true] {
+.twitterInfo[data-visible='true'] {
   opacity: 1;
 }

@@ -11,7 +11,7 @@
   "type": "module",
   "exports": {
     ".": {
-      "solid": "./dist/source/index.jsx",
+      "solid": "./dist/source-gen/index.jsx",
       "import": "./dist/esm/index.js",
       "browser": {
         "import": "./dist/esm/index.js",

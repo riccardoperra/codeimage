@@ -6,9 +6,16 @@
   padding-right: 1.5rem;
 }
 @media screen and (min-width: 992px) {
-  .main { padding-top: 0; padding-left: 0; padding-right: 0; }
+  .main {
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
-.container { max-width: 80rem; margin: auto; }
+.container {
+  max-width: 80rem;
+  margin: auto;
+}
 .storageBadge {
   background-color: var(--root-green);
   width: 64px;
@@ -27,7 +34,11 @@
   width: 100%;
 }
 @media screen and (min-width: 992px) {
-  .imageSection { height: 484px; border-radius: 64px; flex: 1; }
+  .imageSection {
+    height: 484px;
+    border-radius: 64px;
+    flex: 1;
+  }
 }
 .image {
   pointer-events: none;
@@ -40,4 +51,6 @@
   object-fit: cover;
   image-rendering: auto;
 }
-.descriptionText { color: #999999; }
+.descriptionText {
+  color: #999999;
+}

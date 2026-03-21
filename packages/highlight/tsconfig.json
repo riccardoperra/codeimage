@@ -5,7 +5,5 @@
     "jsxImportSource": "solid-js",
     "types": ["@types/node"]
   },
-  "include": [
-    "./src",
-  ]
+  "include": ["./src"]
 }

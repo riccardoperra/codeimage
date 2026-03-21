@@ -85,14 +85,22 @@ export default function ComingSoon() {
                 <PaintBrush width={26} height={26} />
               </div>
               <div>
-                <h2 style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}>
+                <h2
+                  style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}
+                >
                   Theme builder
                 </h2>
                 <div style={{margin: '1rem 0'}}>
                   <div class={styles.comingSoonBadge}>Coming soon</div>
                 </div>
                 <div style={{'margin-top': '2rem'}}>
-                  <p style={{margin: 0, 'font-size': '1.5rem', 'line-height': 1.5}}>
+                  <p
+                    style={{
+                      margin: 0,
+                      'font-size': '1.5rem',
+                      'line-height': 1.5,
+                    }}
+                  >
                     Create your own custom theme for CodeImage and CodeMirror,
                     then share it to everyone.
                   </p>
@@ -107,14 +115,22 @@ export default function ComingSoon() {
                 <DocumentText width={26} height={26} />
               </div>
               <div>
-                <h2 style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}>
+                <h2
+                  style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}
+                >
                   Embeds
                 </h2>
                 <div style={{margin: '1rem 0'}}>
                   <div class={styles.comingSoonBadge}>Coming soon</div>
                 </div>
                 <div style={{'margin-top': '2rem'}}>
-                  <p style={{margin: 0, 'font-size': '1.5rem', 'line-height': 1.5}}>
+                  <p
+                    style={{
+                      margin: 0,
+                      'font-size': '1.5rem',
+                      'line-height': 1.5,
+                    }}
+                  >
                     Embeds your snippets everywhere in a SEO-friendly way.
                   </p>
                 </div>
@@ -154,7 +170,9 @@ export default function ComingSoon() {
 
                 <div class={styles.rightCardAnalytics}>
                   <AnalyticsCardBoxAnimation inView={analyticsInView()}>
-                    <strong style={{'font-size': '1.125rem'}}>Rxjs operators</strong>
+                    <strong style={{'font-size': '1.125rem'}}>
+                      Rxjs operators
+                    </strong>
                     <div style={{margin: '1rem 0'}}>
                       <span>Last week</span>
                     </div>
@@ -162,7 +180,9 @@ export default function ComingSoon() {
                   </AnalyticsCardBoxAnimation>
 
                   <AnalyticsCardBoxAnimation inView={analyticsInView()}>
-                    <strong style={{'font-size': '1.125rem'}}>Jest vs Jasmine</strong>
+                    <strong style={{'font-size': '1.125rem'}}>
+                      Jest vs Jasmine
+                    </strong>
                     <div style={{margin: '1rem 0'}}>
                       <span>Today</span>
                     </div>
@@ -177,14 +197,22 @@ export default function ComingSoon() {
                 <ChartPie width={26} height={26} />
               </div>
               <div>
-                <h2 style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}>
+                <h2
+                  style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}
+                >
                   Measure the engagement
                 </h2>
                 <div style={{margin: '1rem 0'}}>
                   <div class={styles.comingSoonBadge}>Coming in 2023</div>
                 </div>
                 <div style={{'margin-top': '2rem'}}>
-                  <p style={{margin: 0, 'font-size': '1.5rem', 'line-height': 1.5}}>
+                  <p
+                    style={{
+                      margin: 0,
+                      'font-size': '1.5rem',
+                      'line-height': 1.5,
+                    }}
+                  >
                     Analyze your snippets metrics to understand your followers.
                   </p>
                 </div>

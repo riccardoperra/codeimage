@@ -6,9 +6,7 @@ export default function Footer() {
       <div class={styles.content}>
         <div class={styles.grid}>
           <div class={styles.info}>
-            <span class={styles.copyright}>
-              © 2022 Riccardo Perra.
-            </span>
+            <span class={styles.copyright}>© 2022 Riccardo Perra.</span>
             <span class={styles.description}>
               Made with{' '}
               <a class={styles.link} href={'https://github.com/solidjs/solid'}>

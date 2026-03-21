@@ -6,8 +6,5 @@
     "module": "ES2022",
     "target": "ES2022"
   },
-  "include": [
-    "../src/**/*.ts",
-    "**/*.ts"
-  ]
+  "include": ["../src/**/*.ts", "**/*.ts"]
 }

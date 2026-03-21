@@ -14,21 +14,26 @@
   flex-direction: column;
   padding: 24px;
   border-radius: 24px;
-  transition: box-shadow .2s cubic-bezier(.4,0,.2,1);
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
   opacity: 0;
   --disabled-opacity: 0;
 }
-.container[data-active=true] {
+.container[data-active='true'] {
   opacity: 1;
-  box-shadow: rgb(255,255,255) 0px 0px 0px 0px, var(--active-color) 0px 0px 0px 3px, rgba(0,0,0,0) 0px 0px 0px 0px;
+  box-shadow: rgb(255, 255, 255) 0px 0px 0px 0px,
+    var(--active-color) 0px 0px 0px 3px, rgba(0, 0, 0, 0) 0px 0px 0px 0px;
 }
-.container[data-active=false] {
+.container[data-active='false'] {
   opacity: var(--disabled-opacity);
 }
-@media (min--moz-device-pixel-ratio:0) {
-  .container { background-color: rgb(0 0 0 / 0.35); }
+@media (min--moz-device-pixel-ratio: 0) {
+  .container {
+    background-color: rgb(0 0 0 / 0.35);
+  }
 }
 @media screen and (min-width: 740px) {
-  .container { --disabled-opacity: 0.5; }
+  .container {
+    --disabled-opacity: 0.5;
+  }
 }

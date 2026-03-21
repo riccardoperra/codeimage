@@ -50,13 +50,16 @@ export default function OpenSource() {
 
           <div style={{'margin-top': '1rem'}}>
             <p class={styles.description}>
-              CodeImage is an open source project, which is available entirely on
-              GitHub.
+              CodeImage is an open source project, which is available entirely
+              on GitHub.
             </p>
           </div>
 
           <div class={styles.contributorsObject} data-visible={view()}>
-            <object data={view() ? contributors() : undefined} title="Contributors" />
+            <object
+              data={view() ? contributors() : undefined}
+              title="Contributors"
+            />
           </div>
 
           <div>

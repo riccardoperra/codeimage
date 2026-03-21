@@ -1,11 +1,5 @@
 import {type Extension} from '@codemirror/state';
-import {
-  createEffect,
-  createSignal,
-  on,
-  onMount,
-  Show,
-} from 'solid-js';
+import {createEffect, createSignal, on, onMount, Show} from 'solid-js';
 import {CodeEditorPreviewBlock} from '../CodeEditor/CodeEditorPreviewBlock';
 import styles from './CodeEditor.module.css';
 
@@ -73,7 +67,9 @@ export function CodeEditor(props: CodeEditorProps) {
             () => props.customTheme,
             customTheme => {
               if (customTheme) {
-                customTheme.then(ext => reconfigureTheme(ext)).catch(() => null);
+                customTheme
+                  .then(ext => reconfigureTheme(ext))
+                  .catch(() => null);
               } else {
                 reconfigureTheme(theme);
               }

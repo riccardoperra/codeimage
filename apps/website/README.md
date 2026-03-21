@@ -1,4 +1,4 @@
-Welcome to your new TanStack Start app! 
+Welcome to your new TanStack Start app!
 
 # Getting Started
 
@@ -30,8 +30,6 @@ If you prefer not to use Tailwind CSS:
 3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
 4. Uninstall the packages: `pnpm add @tailwindcss/vite tailwindcss --dev`
 
-
-
 ## Routing
 
 This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
@@ -49,7 +47,7 @@ Now that you have two routes you can use a `Link` component to navigate between 
 To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/solid-router`.
 
 ```tsx
-import { Link } from "@tanstack/solid-router";
+import {Link} from '@tanstack/solid-router';
 ```
 
 Then anywhere in your JSX you can use it like so:
@@ -73,13 +71,13 @@ More information on layouts can be found in the [Layouts documentation](https://
 TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
 
 ```tsx
-import { createServerFn } from '@tanstack/solid-start'
+import {createServerFn} from '@tanstack/solid-start';
 
 const getServerTime = createServerFn({
   method: 'GET',
 }).handler(async () => {
-  return new Date().toISOString()
-})
+  return new Date().toISOString();
+});
 ```
 
 ## Data Fetching
@@ -89,25 +87,23 @@ There are multiple ways to fetch data in your application. You can use TanStack 
 For example:
 
 ```tsx
-import { createFileRoute } from '@tanstack/solid-router'
+import {createFileRoute} from '@tanstack/solid-router';
 
 export const Route = createFileRoute('/people')({
   loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
+    const response = await fetch('https://swapi.dev/api/people');
+    return response.json();
   },
   component: PeopleComponent,
-})
+});
 
 function PeopleComponent() {
-  const data = Route.useLoaderData()
+  const data = Route.useLoaderData();
   return (
     <ul>
-      <For each={data().results}>
-        {(person) => <li>{person.name}</li>}
-      </For>
+      <For each={data().results}>{person => <li>{person.name}</li>}</For>
     </ul>
-  )
+  );
 }
 ```
 
@@ -116,8 +112,6 @@ Loaders simplify your data fetching logic dramatically. Check out more informati
 # Demo files
 
 Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-
 
 # Learn More
 

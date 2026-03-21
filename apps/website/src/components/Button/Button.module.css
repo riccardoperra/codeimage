@@ -10,12 +10,8 @@
   font-weight: 600;
   line-height: 1;
   text-decoration: none;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
+  transition: background-color 160ms ease, border-color 160ms ease,
+    color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
   white-space: nowrap;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -70,7 +66,8 @@
   background-color: #0072d6;
   border-color: #0072d6;
   color: #ffffff;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .themePrimary:hover:not(:disabled):not([aria-disabled='true']) {
@@ -82,7 +79,8 @@
   background-color: hsla(204, 100%, 50%, 0.15);
   border-color: hsla(204, 100%, 50%, 0.22);
   color: #0099ff;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .themePrimaryAlt:hover:not(:disabled):not([aria-disabled='true']) {
@@ -94,10 +92,10 @@
   background-color: #111111;
   border-color: rgba(255, 255, 255, 0.08);
   color: #ffffff;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .themeSecondary:hover:not(:disabled):not([aria-disabled='true']) {
   background-color: #1d1d1d;
 }
-

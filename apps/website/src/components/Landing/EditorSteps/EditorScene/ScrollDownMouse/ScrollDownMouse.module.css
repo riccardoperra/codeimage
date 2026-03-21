@@ -1,8 +1,18 @@
 @keyframes scrollDownAnimation {
-  0% { opacity: 0; transform: translate(0, 0); }
-  40% { opacity: 1; }
-  80% { opacity: 0; transform: translate(0, 20px); }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  40% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+    transform: translate(0, 20px);
+  }
+  100% {
+    opacity: 0;
+  }
 }
 .scrollDown {
   border: 2px solid #fff;

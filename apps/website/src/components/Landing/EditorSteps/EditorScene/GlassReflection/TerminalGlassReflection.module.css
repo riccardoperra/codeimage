@@ -16,9 +16,15 @@
   transform: skewX(-18deg) translateX(-55%);
   z-index: 100;
 }
-[data-theme-mode=light] .content {
-  background: linear-gradient(rgba(100,100,100, .035) 35%, rgba(0,0,0,0%) 100%);
+[data-theme-mode='light'] .content {
+  background: linear-gradient(
+    rgba(100, 100, 100, 0.035) 35%,
+    rgba(0, 0, 0, 0%) 100%
+  );
 }
-[data-theme-mode=dark] .content {
-  background: linear-gradient(rgba(255,255,255, .035) 35%, rgba(255,255,255,0%) 100%);
+[data-theme-mode='dark'] .content {
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.035) 35%,
+    rgba(255, 255, 255, 0%) 100%
+  );
 }
