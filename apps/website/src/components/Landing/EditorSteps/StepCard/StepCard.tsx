@@ -1,7 +1,5 @@
-import {Box, Text} from '@codeimage/ui';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {JSXElement, VoidProps} from 'solid-js';
-import * as styles from './StepCard.css';
+import type {JSXElement, VoidProps} from 'solid-js';
+import styles from './StepCard.module.css';
 
 interface StepCard {
   active: boolean;
@@ -15,20 +13,18 @@ export function StepCard(props: VoidProps<StepCard>) {
     <div
       data-active={props.active}
       class={styles.container}
-      style={assignInlineVars({
-        [styles.activeColorVar]: props.activeColor,
-      })}
+      style={{'--active-color': props.activeColor}}
     >
       <div>
-        <Text weight={'bold'} size={'2xl'}>
+        <h3 style={{margin: 0, 'font-size': '1.5rem', 'font-weight': 700}}>
           {props.title}
-        </Text>
+        </h3>
 
-        <Box marginTop={6}>
-          <Text size={'lg'} style={{'line-height': 1.5}}>
+        <div style={{'margin-top': '1.5rem'}}>
+          <p style={{margin: 0, 'font-size': '1.125rem', 'line-height': 1.5}}>
             {props.description}
-          </Text>
-        </Box>
+          </p>
+        </div>
       </div>
     </div>
   );

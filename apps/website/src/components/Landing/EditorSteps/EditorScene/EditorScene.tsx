@@ -1,6 +1,4 @@
-import {Motion} from '@motionone/solid';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {animate, scroll, spring} from 'motion';
+import {animate, scroll} from 'motion';
 import {
   children,
   createEffect,
@@ -14,19 +12,17 @@ import {
   Show,
   Suspense,
 } from 'solid-js';
-import {
-  gradientBlueBg,
-  gradientPurpleBg,
-  gradientPurpleDarkerBg,
-} from '~/theme/gradients.css';
+import {Motion} from 'solid-motionone';
+import gradientStyles from '~/theme/gradients.module.css';
 import {CodeEditorPreviewBlock} from '../CodeEditor/CodeEditorPreviewBlock';
 import {DynamicBackgroundExpansion} from '../EditorScene/DynamicBackgroundExpansion/DynamicBackgroundExpansion';
 import {injectEditorScene} from '../scene';
 import {CircularProgress} from './CircularProgress/CircularProgress';
-import * as styles from './EditorScene.css';
+import styles from './EditorScene.module.css';
 import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
 import {ScrollDownMouse} from './ScrollDownMouse/ScrollDownMouse';
-import * as styles2 from './Snippet.css';
+import snippetStyles from './Snippet.module.css';
+import {snippetThemeValues} from './snippet-theme';
 import {SnippetControls} from './SnippetControls/SnippetControls';
 import {TwitterCard} from './TwitterCard/TwitterCard';
 
@@ -65,10 +61,10 @@ const LazyEditor = lazy(() =>
 
 export function EditorScene(props: EditorSceneProps) {
   const [containerRef, setContainerRef] = createSignal<HTMLDivElement>();
-  let progressBarEl: HTMLDivElement;
+  let progressBarEl: HTMLDivElement | undefined;
   const scene = injectEditorScene();
   const [codeAnimationProgress, setCodeAnimationProgress] =
-    createSignal<number>();
+    createSignal<number>(0);
 
   const [containerHeight, setContainerHeight] = createSignal();
   const [scale, setScale] = createSignal<number>(1);
@@ -97,13 +93,16 @@ export function EditorScene(props: EditorSceneProps) {
   );
 
   const backgrounds = {
-    0: gradientBlueBg,
-    1: gradientPurpleBg,
-    2: gradientPurpleDarkerBg,
+    0: gradientStyles.gradientBlueBg,
+    1: gradientStyles.gradientPurpleBg,
+    2: gradientStyles.gradientPurpleDarkerBg,
   };
 
   onMount(() => {
     const ref = scene.ref();
+    if (!progressBarEl) {
+      return;
+    }
     scroll(
       ({y}) => {
         setCodeAnimationProgress(y.progress);
@@ -144,6 +143,9 @@ export function EditorScene(props: EditorSceneProps) {
 
   onMount(() => {
     const el = containerRef();
+    if (!el) {
+      return;
+    }
     const linkFont = children(() => (
       <link
         rel="stylesheet"
@@ -178,7 +180,7 @@ export function EditorScene(props: EditorSceneProps) {
   function getBackgroundClass() {
     return enabledCircleExpansionGradient()
       ? backgrounds[0]
-      : backgrounds[scene.currentStep];
+      : backgrounds[scene.currentStep as keyof typeof backgrounds];
   }
 
   return (
@@ -190,16 +192,14 @@ export function EditorScene(props: EditorSceneProps) {
 
       <div class={styles.circularProgressBox}>
         <CircularProgress
-          ref={progressBarEl}
+          ref={el => (progressBarEl = el)}
           progress={props.animationProgress}
         />
       </div>
 
       <div
         class={styles.fixScaleContainer}
-        style={assignInlineVars({
-          [styles.editorContainerScale]: String(scale()),
-        })}
+        style={{'--editor-container-scale': String(scale())}}
       >
         <TwitterCard visible={props.animationProgress > 66} />
 
@@ -207,31 +207,27 @@ export function EditorScene(props: EditorSceneProps) {
           animate={{
             transform: `translate(-50%, ${centeredWrapperTransform()})`,
           }}
-          class={styles2.centeredWrapper}
+          class={snippetStyles.centeredWrapper}
         >
           <Motion.div
-            class={`${styles2.snippetTheme} ${styles2.canvas}`}
+            class={`${snippetStyles.snippetTheme} ${snippetStyles.canvas}`}
             classList={{
               [backgrounds[1]]: props.animationProgress >= 66,
             }}
             animate={{
               padding: scene.currentStep >= 2 ? '32px' : 0,
-              transition: {
-                padding: {easing: spring({velocity: 500})},
-              },
             }}
           >
             <Motion.div
               data-theme-mode={'dark'}
-              class={styles2.canvasContent}
+              class={snippetStyles.canvasContent}
               style={{
-                // Synthwave background color -> We posticipate the bundle fetching
                 'background-color': '#261f3e',
               }}
               animate={{
                 boxShadow:
                   props.animationProgress >= 40
-                    ? styles2.snippetThemeVars.contentShadow
+                    ? snippetThemeValues.contentShadow
                     : undefined,
               }}
             >
@@ -247,18 +243,21 @@ export function EditorScene(props: EditorSceneProps) {
                   overflow: 'hidden',
                   transition: {
                     height: {
-                      easing: spring({velocity: 150}),
+                      easing: 'ease-out',
                     },
                     allowWebkitAcceleration: true,
                   },
                 }}
               >
-                <div class={styles2.snippetHeader} data-accent-visible={true}>
+                <div
+                  class={snippetStyles.snippetHeader}
+                  data-accent-visible={true}
+                >
                   <SnippetControls />
                 </div>
               </Motion.div>
 
-              <div class={styles2.snippet}>
+              <div class={snippetStyles.snippet}>
                 <Suspense
                   fallback={<CodeEditorPreviewBlock code={visibleCode()} />}
                 >

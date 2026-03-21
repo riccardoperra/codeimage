@@ -1,17 +1,16 @@
-import {Badge, Box, SvgIconProps, Text} from '@codeimage/ui';
-import {Motion} from '@motionone/solid';
+import type {JSX, FlowProps} from 'solid-js';
+import {createSignal, onMount} from 'solid-js';
+import {Motion} from 'solid-motionone';
 import {animate, inView, scroll} from 'motion';
-import {createSignal, FlowProps, onMount} from 'solid-js';
 import {
   FeatureCard,
   FeatureContent,
   FeatureImageContent,
 } from '~/components/FeatureCard/FeatureCard';
 import {injectBreakpoints} from '~/theme/breakpoints';
-import {rootThemeVars} from '~/theme/theme.css';
-import * as styles from './ComingSoon.css';
+import styles from './ComingSoon.module.css';
 
-function PaintBrush(props: SvgIconProps) {
+function PaintBrush(props: JSX.IntrinsicElements['svg']) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path
@@ -23,7 +22,7 @@ function PaintBrush(props: SvgIconProps) {
   );
 }
 
-function ChartPie(props: SvgIconProps) {
+function ChartPie(props: JSX.IntrinsicElements['svg']) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path
@@ -40,7 +39,7 @@ function ChartPie(props: SvgIconProps) {
   );
 }
 
-function DocumentText(props: SvgIconProps) {
+function DocumentText(props: JSX.IntrinsicElements['svg']) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path
@@ -54,11 +53,10 @@ function DocumentText(props: SvgIconProps) {
 }
 
 export default function ComingSoon() {
-  let analyticsCardRef: HTMLDivElement;
-  let themeBuilderRef: HTMLDivElement;
-  let embedsRef: HTMLDivElement;
+  let analyticsCardRef!: HTMLDivElement;
+  let themeBuilderRef!: HTMLDivElement;
+  let embedsRef!: HTMLDivElement;
   const bp = injectBreakpoints();
-
   const [analyticsInView, setAnalyticsInView] = createSignal(true);
 
   onMount(() => {
@@ -80,154 +78,139 @@ export default function ComingSoon() {
   return (
     <div class={styles.main}>
       <div class={styles.container}>
-        <Box class={styles.twoSections}>
-          <FeatureCard ref={themeBuilderRef}>
+        <div class={styles.twoSections}>
+          <FeatureCard ref={el => (themeBuilderRef = el)}>
             <FeatureContent>
-              <Badge theme={styles.themeBuilderBadge}>
+              <div class={`${styles.badge} ${styles.themeBuilderBadge}`}>
                 <PaintBrush width={26} height={26} />
-              </Badge>
+              </div>
               <div>
-                <Text size={'5xl'} weight={'bold'}>
+                <h2 style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}>
                   Theme builder
-                </Text>
-                <Box marginY={4}>
+                </h2>
+                <div style={{margin: '1rem 0'}}>
                   <div class={styles.comingSoonBadge}>Coming soon</div>
-                </Box>
-                <Box marginTop={8}>
-                  <Text size={'2xl'}>
-                    <span>
-                      Create your own custom theme for CodeImage and CodeMirror,
-                      then share it to everyone.
-                    </span>
-                  </Text>
-                </Box>
+                </div>
+                <div style={{'margin-top': '2rem'}}>
+                  <p style={{margin: 0, 'font-size': '1.5rem', 'line-height': 1.5}}>
+                    Create your own custom theme for CodeImage and CodeMirror,
+                    then share it to everyone.
+                  </p>
+                </div>
               </div>
             </FeatureContent>
           </FeatureCard>
-          <FeatureCard ref={embedsRef}>
+
+          <FeatureCard ref={el => (embedsRef = el)}>
             <FeatureContent>
-              <Badge theme={styles.embedsBadge}>
+              <div class={`${styles.badge} ${styles.embedsBadge}`}>
                 <DocumentText width={26} height={26} />
-              </Badge>
-              <Box>
-                <Text size={'5xl'} weight={'bold'}>
+              </div>
+              <div>
+                <h2 style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}>
                   Embeds
-                </Text>
-                <Box marginY={4}>
+                </h2>
+                <div style={{margin: '1rem 0'}}>
                   <div class={styles.comingSoonBadge}>Coming soon</div>
-                </Box>
-                <Box marginTop={8}>
-                  <Text size={'2xl'}>
-                    <span>
-                      Embeds your snippets everywhere in a SEO-friendly way.
-                    </span>
-                  </Text>
-                </Box>
-              </Box>
+                </div>
+                <div style={{'margin-top': '2rem'}}>
+                  <p style={{margin: 0, 'font-size': '1.5rem', 'line-height': 1.5}}>
+                    Embeds your snippets everywhere in a SEO-friendly way.
+                  </p>
+                </div>
+              </div>
             </FeatureContent>
           </FeatureCard>
-        </Box>
-        <Box marginTop={8}>
+        </div>
+
+        <div style={{'margin-top': '2rem'}}>
           <FeatureCard
-            ref={analyticsCardRef}
+            ref={el => (analyticsCardRef = el)}
             class={styles.analyticsFeatureCard}
           >
-            <FeatureImageContent bgColor={rootThemeVars.purple}>
+            <FeatureImageContent bgColor={'var(--root-purple)'}>
               <div class={styles.analyticsCardContainer}>
                 <div class={styles.leftCardAnalytics}>
                   <AnalyticsCardBoxAnimation inView={analyticsInView()}>
-                    <Text size={'lg'} weight={'bold'}>
+                    <strong style={{'font-size': '1.125rem'}}>
                       Angular Change Detection
-                    </Text>
-                    <Box marginY={4}>
-                      <Text>Last week</Text>
-                    </Box>
-                    <Box marginTop={8}>
-                      <Text size={'2xl'} weight={'black'}>
-                        1400
-                      </Text>
-                      <Box as={Text} size={'lg'} marginLeft={2}>
-                        views
-                      </Box>
-                    </Box>
+                    </strong>
+                    <div style={{margin: '1rem 0'}}>
+                      <span>Last week</span>
+                    </div>
+                    <MetricValue value={'1400'} />
                   </AnalyticsCardBoxAnimation>
+
                   <AnalyticsCardBoxAnimation inView={analyticsInView()}>
-                    <Text size={'lg'} weight={'bold'}>
+                    <strong style={{'font-size': '1.125rem'}}>
                       Solid Reactivity Example
-                    </Text>
-                    <Box marginY={4}>
-                      <Text>This month</Text>
-                    </Box>
-                    <Box marginTop={8}>
-                      <Text size={'2xl'} weight={'black'}>
-                        10k
-                      </Text>
-                      <Box as={Text} size={'lg'} marginLeft={2}>
-                        views
-                      </Box>
-                    </Box>
+                    </strong>
+                    <div style={{margin: '1rem 0'}}>
+                      <span>This month</span>
+                    </div>
+                    <MetricValue value={'10k'} />
                   </AnalyticsCardBoxAnimation>
                 </div>
+
                 <div class={styles.rightCardAnalytics}>
                   <AnalyticsCardBoxAnimation inView={analyticsInView()}>
-                    <Text size={'lg'} weight={'bold'}>
-                      Rxjs operators
-                    </Text>
-                    <Box marginY={4}>
-                      <Text>Last week</Text>
-                    </Box>
-                    <Box marginTop={8}>
-                      <Text size={'2xl'} weight={'black'}>
-                        700
-                      </Text>
-                      <Box as={Text} size={'lg'} marginLeft={2}>
-                        views
-                      </Box>
-                    </Box>
+                    <strong style={{'font-size': '1.125rem'}}>Rxjs operators</strong>
+                    <div style={{margin: '1rem 0'}}>
+                      <span>Last week</span>
+                    </div>
+                    <MetricValue value={'700'} />
                   </AnalyticsCardBoxAnimation>
+
                   <AnalyticsCardBoxAnimation inView={analyticsInView()}>
-                    <Text size={'lg'} weight={'bold'}>
-                      Jest vs Jasmine
-                    </Text>
-                    <Box marginY={4}>
-                      <Text>Today</Text>
-                    </Box>
-                    <Box marginTop={8}>
-                      <Text size={'2xl'} weight={'black'}>
-                        0
-                      </Text>
-                      <Box as={Text} size={'lg'} marginLeft={2}>
-                        views
-                      </Box>
-                    </Box>
+                    <strong style={{'font-size': '1.125rem'}}>Jest vs Jasmine</strong>
+                    <div style={{margin: '1rem 0'}}>
+                      <span>Today</span>
+                    </div>
+                    <MetricValue value={'0'} />
                   </AnalyticsCardBoxAnimation>
                 </div>
               </div>
             </FeatureImageContent>
+
             <FeatureContent>
-              <Badge theme={styles.metricsBadge}>
+              <div class={`${styles.badge} ${styles.metricsBadge}`}>
                 <ChartPie width={26} height={26} />
-              </Badge>
-              <Box>
-                <Text size={'5xl'} weight={'bold'}>
+              </div>
+              <div>
+                <h2 style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}>
                   Measure the engagement
-                </Text>
-                <Box marginY={4}>
+                </h2>
+                <div style={{margin: '1rem 0'}}>
                   <div class={styles.comingSoonBadge}>Coming in 2023</div>
-                </Box>
-                <Box marginTop={8}>
-                  <Text size={'2xl'}>
-                    <span>
-                      Analyze your snippets metrics to understand your
-                      followers.
-                    </span>
-                  </Text>
-                </Box>
-              </Box>
+                </div>
+                <div style={{'margin-top': '2rem'}}>
+                  <p style={{margin: 0, 'font-size': '1.5rem', 'line-height': 1.5}}>
+                    Analyze your snippets metrics to understand your followers.
+                  </p>
+                </div>
+              </div>
             </FeatureContent>
           </FeatureCard>
-        </Box>
+        </div>
       </div>
+    </div>
+  );
+}
+
+function MetricValue(props: {value: string}) {
+  return (
+    <div
+      style={{
+        'margin-top': '2rem',
+        display: 'flex',
+        'align-items': 'baseline',
+        gap: '0.5rem',
+      }}
+    >
+      <strong style={{'font-size': '1.5rem', 'font-weight': 900}}>
+        {props.value}
+      </strong>
+      <span style={{'font-size': '1.125rem'}}>views</span>
     </div>
   );
 }

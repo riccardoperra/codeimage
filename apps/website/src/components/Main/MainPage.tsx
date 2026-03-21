@@ -1,23 +1,23 @@
-import {Button, Badge} from '@codeimage/ui';
-import {useRouteData} from '@solidjs/router';
 import {createSignal} from 'solid-js';
-import {
-  advertisingBadge,
-  advertisingDescription,
-} from '~/components/Main/MainPage.css';
-import * as styles from '~/components/Main/MainPage.css';
+import {Button} from '~/components/Button/Button';
+import styles from '~/components/Main/MainPage.module.css';
+import type {MainData} from '~/components/Main/MainData';
+import gradientStyles from '~/theme/gradients.module.css';
 import {breakpoints} from '~/theme/breakpoints';
 import {betterCommentsForGitHubLink, mainWebsiteLink} from '~/core/constants';
-import {routeData} from '~/routes';
 import {GitHubButton} from '../GitHubButton/GitHubButton';
 import {Header} from '../Header/Header';
 
-export default function MainPage() {
-  let imageBox: HTMLDivElement;
-  const [loading] = createSignal(false);
-  const data = useRouteData<typeof routeData>();
+interface MainPageProps {
+  data?: MainData;
+}
 
-  const stars = () => data()?.repo?.stars ?? '?';
+export default function MainPage(props: MainPageProps) {
+  const [loading] = createSignal(false);
+
+  const stars = () =>
+    typeof props.data?.repo?.stars === 'number' ? props.data.repo.stars : 0;
+  const isStarsLoading = () => typeof props.data?.repo?.stars !== 'number';
 
   return (
     <>
@@ -43,13 +43,15 @@ export default function MainPage() {
                 rel={'canonical'}
                 href={mainWebsiteLink}
                 size={'xl'}
-                variant={'solid'}
                 theme={'primary'}
               >
                 Getting started
               </Button>
 
-              <GitHubButton loading={loading()} stars={stars()} />
+              <GitHubButton
+                loading={loading() || isStarsLoading()}
+                stars={stars()}
+              />
             </div>
 
             <div class={styles.ctaContainer}>
@@ -67,7 +69,6 @@ export default function MainPage() {
                   rel={'canonical'}
                   href={betterCommentsForGitHubLink}
                   size={'md'}
-                  variant={'solid'}
                   theme={'primaryAlt'}
                 >
                   Try Better Comments For GitHub
@@ -75,9 +76,11 @@ export default function MainPage() {
               </div>
             </div>
           </div>
-          <div class={styles.imagePerspectiveBox} ref={imageBox}>
+          <div class={styles.imagePerspectiveBox}>
             <div class={styles.imageSection}>
-              <div class={styles.imageBox}>
+              <div
+                class={`${styles.imageBox} ${gradientStyles.gradientBlueBg}`}
+              >
                 <picture>
                   <source
                     type="image/webp"

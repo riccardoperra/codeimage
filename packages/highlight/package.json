@@ -257,7 +257,6 @@
   },
   "devDependencies": {
     "@codeimage/ui": "workspace:*",
-    "@codeimage/vanilla-extract": "workspace:*",
     "@codemirror/lang-javascript": "^6.1.7",
     "@codeui/kit": "^0.1.2",
     "@types/node": "catalog:next",

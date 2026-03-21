@@ -1,6 +1,7 @@
-import {Motion} from '@motionone/solid';
+import {Motion} from 'solid-motionone';
+import gradientStyles from '~/theme/gradients.module.css';
 import {injectEditorScene} from '~/components/Landing/EditorSteps/scene';
-import * as styles from './DynamicBackgroundExpansion.css';
+import styles from './DynamicBackgroundExpansion.module.css';
 
 export function DynamicBackgroundExpansion() {
   const scene = injectEditorScene();
@@ -13,11 +14,11 @@ export function DynamicBackgroundExpansion() {
       }}
     >
       <Motion.div
-        class={styles.backgroundSecondStep}
+        class={`${styles.bgFullAnimation} ${styles.backgroundSecondStep} ${gradientStyles.gradientPurpleBg}`}
         data-activate={scene.currentStep >= 1}
       />
       <Motion.div
-        class={styles.backgroundThirdStep}
+        class={`${styles.bgFullAnimation} ${styles.backgroundThirdStep} ${gradientStyles.gradientPurpleDarkerBg}`}
         data-activate={scene.currentStep >= 2}
       />
     </Motion.div>

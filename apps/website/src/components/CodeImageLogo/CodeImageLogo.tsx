@@ -1,4 +1,4 @@
-import {JSX} from 'solid-js';
+import type {JSX} from 'solid-js';
 import {useAssets} from 'solid-js/web';
 import logo from './codeimage-logo-blue-xxxs.webp';
 

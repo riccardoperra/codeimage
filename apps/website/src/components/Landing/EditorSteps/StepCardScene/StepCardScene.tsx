@@ -1,12 +1,8 @@
 import {injectEditorScene} from '~/components/Landing/EditorSteps/scene';
 import {StepCard} from '../StepCard/StepCard';
-import * as styles from './StepCardScene.css';
+import styles from './StepCardScene.module.css';
 
-interface StepCardAreaProps {
-  animationProgress: number;
-}
-
-export function StepCardArea(props: StepCardAreaProps) {
+export function StepCardArea() {
   const scene = injectEditorScene();
 
   return (

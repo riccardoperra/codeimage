@@ -1,0 +1,61 @@
+.header {
+  --header-border-color: rgba(0, 0, 0, 0);
+  --header-bg-color: rgba(12, 12, 12, 0.6);
+  display: flex;
+  position: fixed;
+  width: 100%;
+  height: 56px;
+  z-index: 50;
+  border-bottom: 1px solid var(--header-border-color);
+  transition: border-color 250ms ease-in-out;
+}
+
+.header[data-scrolled='true'] {
+  background-color: var(--header-bg-color);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  --header-border-color: #252525;
+  border-color: #252525;
+}
+
+.headerContent {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 1280px) {
+  .headerContent {
+    width: 1280px;
+  }
+}
+
+.headerContentInner {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-left: 1.25rem;
+  margin-right: 1.25rem;
+}
+
+.headerActions {
+  margin-left: auto;
+  gap: 0.5rem;
+  display: flex;
+}
+
+.loginButton {
+  background-color: #111111;
+}
+
+.gettingStartedBtn {
+  display: none;
+}
+
+@media screen and (min-width: 740px) {
+  .gettingStartedBtn {
+    display: inline-flex;
+  }
+}
+

@@ -1,54 +1,24 @@
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
-import ssg from 'solid-start-static';
-import solid from 'solid-start/vite';
-import {defineConfig, Plugin} from 'vite';
+import {devtools} from '@tanstack/devtools-vite';
+
+import {tanstackStart} from '@tanstack/solid-start/plugin/vite';
+import {defineConfig} from 'vite';
+
+import solidPlugin from 'vite-plugin-solid';
+import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  build: {
-    cssCodeSplit: true,
-  },
   plugins: [
-    vanillaExtractPlugin({
-      unstable_mode: 'transform',
+    devtools(),
+    // this is the plugin that enables path aliases
+    viteTsConfigPaths({
+      projects: ['./tsconfig.json'],
     }),
-    solid({
-      adapter: ssg(),
-      prerenderRoutes: ['/'],
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+      },
     }),
-    mergeCssPlugin(),
+    solidPlugin({ssr: true}),
   ],
-  ssr: {
-    noExternal: [/^@solid-aria*/, '@solid-primitives/props'],
-  },
-  optimizeDeps: {
-    include: [
-      '@codemirror/state',
-      '@codemirror/view',
-      '@codemirror/lang-javascript',
-      '@codeimage/highlight',
-    ],
-  },
 });
-
-function mergeCssPlugin(): Plugin {
-  return {
-    name: 'fix-single-file-imports',
-    enforce: 'post',
-    renderChunk(code, options) {
-      // I need to remove every css chunk in order to put the styles into the <style id="css-critical-style"> tag.
-      // Vite cssSplitCss is broken since files are imported in the wrong order.
-      // The next step is to call the extract-static-css script
-      if (options['viteMetadata']) {
-        const importedCss = options['viteMetadata']['importedCss'] as
-          | Set<string>
-          | undefined;
-        if (importedCss) {
-          importedCss.clear();
-        }
-      }
-      return {
-        code,
-      };
-    },
-  };
-}

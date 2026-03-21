@@ -1,5 +1,4 @@
-import {HStack, Link, Text} from '@codeimage/ui';
-import * as styles from '~/components/Footer/Footer.css';
+import styles from '~/components/Footer/Footer.module.css';
 
 export default function Footer() {
   return (
@@ -7,51 +6,52 @@ export default function Footer() {
       <div class={styles.content}>
         <div class={styles.grid}>
           <div class={styles.info}>
-            <Text as={'span'} weight={'semibold'} size={'lg'}>
+            <span class={styles.copyright}>
               © 2022 Riccardo Perra.
-            </Text>
-            <Text as={'span'} weight={'light'} size={'md'}>
+            </span>
+            <span class={styles.description}>
               Made with{' '}
-              <Link underline={true} href={'https://github.com/solidjs/solid'}>
+              <a class={styles.link} href={'https://github.com/solidjs/solid'}>
                 SolidJS
-              </Link>{' '}
+              </a>{' '}
               ❤️
-            </Text>
+            </span>
           </div>
 
-          <HStack spacing={'8'}>
-            <Link
+          <div class={styles.linkRow}>
+            <a
               class={`${styles.link} ${styles.onlyDesktopLink}`}
-              underline={true}
               href={
                 'https://github.com/riccardoperra/better-comments-for-github'
               }
               target={'_blank'}
+              rel={'noopener'}
               title="Better Comments for GitHub"
-              children={'GitHub'}
-            />
-            <Link
+            >
+              GitHub
+            </a>
+            <a
               class={styles.link}
-              underline={true}
               href={'https://github.com/riccardoperra/codeimage'}
               title="GitHub repository"
-              children={'GitHub'}
-            />
-            <Link
+            >
+              GitHub
+            </a>
+            <a
               class={styles.link}
-              underline={true}
               href={'https://github.com/riccardoperra/codeimage/issues'}
               title="Issues"
-              children={'Issues & Feedback'}
-            />
-            <Link
+            >
+              Issues & Feedback
+            </a>
+            <a
               class={styles.link}
-              underline={true}
               href={'https://github.com/riccardoperra/codeimage/releases'}
               title="Releases"
-              children={'Releases'}
-            />
-          </HStack>
+            >
+              Releases
+            </a>
+          </div>
         </div>
       </div>
     </footer>

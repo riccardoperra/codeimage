@@ -1,0 +1,70 @@
+.footer {
+  background-color: #111111;
+}
+
+.content {
+  max-width: 80rem;
+  margin: auto;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0 1.5rem;
+}
+
+@media screen and (min-width: 992px) {
+  .grid {
+    padding: 0;
+  }
+}
+
+.info {
+  line-height: 1.5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.onlyDesktopLink {
+  display: none;
+}
+
+@media screen and (min-width: 992px) {
+  .onlyDesktopLink {
+    display: inline-flex;
+  }
+}
+
+.linkRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem;
+}
+
+.link {
+  color: #999999;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.link:visited {
+  color: #999999;
+}
+
+.copyright {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.description {
+  font-size: 1rem;
+  font-weight: 300;
+}
+

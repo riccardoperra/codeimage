@@ -1,0 +1,36 @@
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  overflow: hidden;
+  order: -1;
+}
+.flexibleContent {
+  display: flex;
+  flex-direction: column;
+  top: 0;
+}
+.innerContent {
+  height: 100%;
+  display: flex;
+  width: 100%;
+}
+.grid {
+  display: grid;
+  grid-template-rows: 1fr;
+  flex-direction: row;
+  gap: 24px;
+}
+.grid > * {
+  grid-row-start: 1;
+  grid-column-start: 1;
+}
+@media screen and (min-width: 740px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    grid-template-rows: 1fr;
+  }
+  .grid > * {
+    grid-column-start: unset;
+  }
+}

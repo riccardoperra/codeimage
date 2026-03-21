@@ -1,24 +1,12 @@
-
-dist
-.solid
-.output
-.vercel
-.netlify
-netlify
-
-# dependencies
-/node_modules
-
-# IDEs and editors
-/.idea
-.project
-.classpath
-*.launch
-.settings/
-
-# Temp
-gitignore
-
-# System Files
+node_modules
 .DS_Store
-Thumbs.db
+dist
+dist-ssr
+*.local
+.env
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+__unconfig*

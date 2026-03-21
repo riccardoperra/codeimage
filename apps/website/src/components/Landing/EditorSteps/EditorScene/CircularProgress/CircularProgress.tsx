@@ -1,5 +1,5 @@
-import {Ref} from 'solid-js';
-import * as styles from './CircularProgress.css';
+import type {Ref} from 'solid-js';
+import styles from './CircularProgress.module.css';
 
 interface CircularProgressProps {
   progress: number;
@@ -9,7 +9,7 @@ interface CircularProgressProps {
 export function CircularProgress(props: CircularProgressProps) {
   return (
     <div class={styles.container}>
-      <div class={styles.progressBar} ref={props.ref}></div>
+      <div class={styles.progressBar} ref={props.ref} />
     </div>
   );
 }

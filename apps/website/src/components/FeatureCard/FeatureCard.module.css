@@ -1,0 +1,74 @@
+.card {
+  --card-padding: 32px;
+  --card-outer-radius: 24px;
+  border: 1px solid rgb(24 24 27);
+  background-color: rgb(39 39 42 / 0.25);
+  place-content: center flex-start;
+  align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 44px;
+  overflow: visible;
+  position: relative;
+  flex-direction: column;
+  padding: var(--card-padding);
+  flex: 1;
+  border-radius: var(--card-outer-radius);
+  min-height: 512px;
+}
+
+@media screen and (min-width: 992px) {
+  .card {
+    gap: 96px;
+    flex-direction: row;
+    min-height: 564px;
+    --card-outer-radius: 96px;
+    --card-padding: 48px;
+  }
+}
+
+.content {
+  display: flex;
+  place-content: center;
+  align-items: center;
+  flex-flow: column nowrap;
+  gap: 48px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  text-align: center;
+  flex: 1;
+}
+
+.imageSection {
+  flex: 0 0 auto;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--background-color, transparent);
+  opacity: 1;
+  height: 300px;
+  width: 100%;
+  -webkit-mask-image: -webkit-radial-gradient(circle, white 100%, black 100%);
+  border-radius: 16px;
+}
+
+@media screen and (min-width: 992px) {
+  .imageSection {
+    height: 484px;
+    flex: 1;
+    border-radius: calc(var(--card-outer-radius) - var(--card-padding));
+  }
+}
+
+.imageWrapper {
+  aspect-ratio: 2 / 1;
+  flex: 0 0 auto;
+  border-radius: 16px;
+  height: 568px;
+  left: 48px;
+  overflow: hidden;
+  position: absolute;
+  right: -128px;
+  top: 48px;
+}
+

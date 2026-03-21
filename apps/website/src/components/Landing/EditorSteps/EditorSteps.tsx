@@ -1,28 +1,29 @@
 import {inView, scroll} from 'motion';
 import {onMount} from 'solid-js';
-import {
-  gradientBlueBg,
-  gradientPurpleBg,
-  gradientPurpleDarkerBg,
-} from '~/theme/gradients.css';
+import gradientStyles from '~/theme/gradients.module.css';
 import {EditorScene} from './EditorScene/EditorScene';
-import * as styles from './EditorSteps.css';
+import styles from './EditorSteps.module.css';
 import {injectEditorScene} from './scene';
 import {StepCardArea} from './StepCardScene/StepCardScene';
 
 export default function EditorSteps() {
   const scene = injectEditorScene();
-  let ref: HTMLElement;
+  let ref!: HTMLElement;
 
   const backgrounds = {
-    0: gradientBlueBg,
-    1: gradientPurpleBg,
-    2: gradientPurpleDarkerBg,
+    0: gradientStyles.gradientBlueBg,
+    1: gradientStyles.gradientPurpleBg,
+    2: gradientStyles.gradientPurpleDarkerBg,
   };
 
-  const backdropBackground = () => backgrounds[scene.currentStep];
+  const backdropBackground = () =>
+    backgrounds[scene.currentStep as keyof typeof backgrounds];
 
   onMount(() => {
+    const ref = scene.ref();
+    if (!ref) {
+      return;
+    }
     inView(
       ref,
       entry => {
@@ -39,14 +40,13 @@ export default function EditorSteps() {
   return (
     <section
       ref={el => {
-        ref = el;
         scene.setRef(() => el);
       }}
       class={styles.sectionWrapper}
     >
       <div class={styles.stickyContent}>
         <div class={`${styles.backdrop} ${backdropBackground()}`} />
-        <StepCardArea animationProgress={scene.progress()} />
+        <StepCardArea />
         <EditorScene animationProgress={scene.progress()} />
       </div>
     </section>

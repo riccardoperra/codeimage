@@ -4,7 +4,7 @@
       "url": [
         "http://localhost/"
       ],
-      "staticDistDir": "dist/public",
+      "staticDistDir": "dist/client",
       "numberOfRuns": 3
     },
     "upload": {
