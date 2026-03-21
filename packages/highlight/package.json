@@ -224,7 +224,7 @@
   },
   "scripts": {
     "dev": "vite serve ./dev --host",
-    "build": "rollup -c rollup.config.js",
+    "build": "tsdown",
     "build:dev": "vite build ./dev",
     "pre-commit": "lint-staged --relative",
     "pre-commit-prettier": "prettier --write",
@@ -260,23 +260,22 @@
     "@codeimage/vanilla-extract": "workspace:*",
     "@codemirror/lang-javascript": "^6.1.7",
     "@codeui/kit": "^0.1.2",
-    "@rollup/plugin-typescript": "^11.1.6",
     "@types/node": "catalog:next",
     "@types/prettier": "^2.7.2",
     "@vanilla-extract/css": "^1.15.5",
     "@vanilla-extract/dynamic": "^2.1.2",
+    "@vanilla-extract/vite-plugin": "catalog:next",
     "chalk": "5.1.2",
     "enquirer": "2.3.6",
     "rimraf": "^3.0.2",
-    "rollup": "^4.21.3",
-    "rollup-plugin-dts": "^5.3.1",
     "solid-codemirror": "^2.3.0",
     "solid-js": "catalog:next",
     "ts-morph": "^23.0.0",
+    "tsdown": "catalog:next",
     "typescript": "catalog:next",
-    "vite": "^5.4.5",
-    "vite-plugin-dts": "^4.2.1",
-    "vite-plugin-solid": "^2.10.2"
+    "vite": "catalog:next",
+    "vite-plugin-dts": "catalog:next",
+    "vite-plugin-solid": "catalog:next"
   },
   "engines": {
     "node": ">=24"

@@ -9,7 +9,7 @@
   },
   "type": "module",
   "devDependencies": {
-    "@vanilla-extract/vite-plugin": "3.6.1",
+    "@vanilla-extract/vite-plugin": "catalog:next",
     "node-html-parser": "^6.1.5",
     "rollup": "^2.79.1",
     "solid-start-node": "^0.2.26",

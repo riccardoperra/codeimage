@@ -49,7 +49,6 @@
     "@codeimage/locale": "workspace:*",
     "@codeimage/prisma-models": "workspace:*",
     "@codeimage/ui": "workspace:*",
-    "@codeimage/vanilla-extract": "workspace:*",
     "@codemirror/autocomplete": "^6.6.1",
     "@codemirror/commands": "^6.5.0",
     "@codemirror/lang-cpp": "^6.0.2",

@@ -106,6 +106,7 @@
     "@types/node": "catalog:next",
     "@vanilla-extract/esbuild-plugin": "^2.2.2",
     "@vanilla-extract/rollup-plugin": "^1.2.1",
+    "@vanilla-extract/vite-plugin": "5.2.1",
     "acorn-jsx": "^5.3.2",
     "chalk": "5.1.2",
     "csstype": "3.1.1",
@@ -123,9 +124,9 @@
     "solid-js": "catalog:next",
     "tiny-glob": "^0.2.9",
     "typescript": "catalog:next",
-    "vite": "^3.2.5",
-    "vite-plugin-dts": "^1.7.3",
-    "vite-plugin-solid": "^2.7.0"
+    "vite": "catalog:next",
+    "vite-plugin-dts": "catalog:next",
+    "vite-plugin-solid": "catalog:next"
   },
   "engines": {
     "node": ">=24"
