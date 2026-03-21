@@ -49,4 +49,4 @@ export const sidebarLogo = style({
   alignItems: 'center',
 });
 
-export type SidebarVariants = RecipeVariants<typeof sidebar>;
+export type SidebarVariants = NonNullable<RecipeVariants<typeof sidebar>>;

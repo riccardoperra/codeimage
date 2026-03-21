@@ -10,7 +10,8 @@
   border-radius: 1rem;
   transform: translate3d(-50%, -50%, 0) scale(1) rotate(0deg);
   transform-origin: center center;
-  transition: width 700ms var(--animation-curve),
+  transition:
+    width 700ms var(--animation-curve),
     height 700ms var(--animation-curve);
 }
 .bgFullAnimation[data-activate='true'] {

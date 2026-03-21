@@ -8,8 +8,10 @@ import {auth0Mock} from './helpers/auth0Mock.js';
 
 // Fill in this config with all the configurations
 // needed for testing the application
+// oxlint-disable-next-line typescript/no-explicit-any
 async function config(t: any) {
   return {
+    // oxlint-disable-next-line typescript/no-explicit-any
     authProvider: auth0Mock(t as any),
   };
 }
@@ -29,6 +31,7 @@ async function build(t: TestContext) {
 
 export function withFastifyApp<T>(
   test: (context: TestContext & T, fastify: FastifyInstance) => Promise<void>,
+  // oxlint-disable-next-line typescript/no-explicit-any
   configFn: (a: any) => Promise<any> = config,
 ) {
   return async (context: TestContext & T) => {

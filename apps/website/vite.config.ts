@@ -5,6 +5,7 @@ import {defineConfig} from 'vite';
 
 import solidPlugin from 'vite-plugin-solid';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
+import {withStaticVercelPreview} from '../../scripts/vercel-output-build.ts';
 
 export default defineConfig({
   plugins: [
@@ -20,5 +21,8 @@ export default defineConfig({
       },
     }),
     solidPlugin({ssr: true}),
+    withStaticVercelPreview({
+      folder: 'dist/client',
+    }),
   ],
 });

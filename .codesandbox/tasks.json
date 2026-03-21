@@ -81,9 +81,9 @@
       "command": "pnpm pre-commit",
       "runAtStart": false
     },
-    "pre-commit-prettier": {
-      "name": "pre-commit-prettier",
-      "command": "pnpm pre-commit-prettier",
+    "pre-commit-format": {
+      "name": "pre-commit-format",
+      "command": "pnpm pre-commit-format",
       "runAtStart": false
     },
     "pre-commit-eslint": {

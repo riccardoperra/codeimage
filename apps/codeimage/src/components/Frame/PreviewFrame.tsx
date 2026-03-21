@@ -87,7 +87,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
                 frame.background,
               )
                 ? 'transparent'
-                : frame.background ?? 'transparent',
+                : (frame.background ?? 'transparent'),
               [styles.frameVars.opacity]: `${frame.opacity}%`,
               [styles.frameVars.visibility]: `${
                 frame.visible ? 'visible' : 'hidden'

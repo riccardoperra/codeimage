@@ -1,5 +1,6 @@
 @font-face {
-  src: url('../public/fonts/Mona-Sans-Regular.woff2')
+  src:
+    url('../public/fonts/Mona-Sans-Regular.woff2')
       format('woff2 supports variations'),
     url('../public/fonts/Mona-Sans-Regular.woff2') format('woff2-variations');
   font-weight: 400;
@@ -10,7 +11,8 @@
 }
 
 @font-face {
-  src: url('../public/fonts/Mona-Sans-Medium.woff2')
+  src:
+    url('../public/fonts/Mona-Sans-Medium.woff2')
       format('woff2 supports variations'),
     url('../public/fonts/Mona-Sans-Medium.woff2') format('woff2-variations');
   font-weight: 500;
@@ -21,7 +23,8 @@
 }
 
 @font-face {
-  src: url('../public/fonts/Mona-Sans-SemiBold.woff2')
+  src:
+    url('../public/fonts/Mona-Sans-SemiBold.woff2')
       format('woff2 supports variations'),
     url('../public/fonts/Mona-Sans-SemiBold.woff2') format('woff2-variations');
   font-weight: 600;
@@ -32,7 +35,8 @@
 }
 
 @font-face {
-  src: url('../public/fonts/Mona-Sans-Bold.woff2')
+  src:
+    url('../public/fonts/Mona-Sans-Bold.woff2')
       format('woff2 supports variations'),
     url('../public/fonts/Mona-Sans-Bold.woff2') format('woff2-variations');
   font-weight: 700;
@@ -45,8 +49,16 @@
 /* ===== Global Resets ===== */
 html,
 body {
-  font-family: 'Mona Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+  font-family:
+    'Mona Sans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Helvetica,
+    Arial,
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
     'Segoe UI Symbol';
   background-color: #111111;
   color: #ededed;

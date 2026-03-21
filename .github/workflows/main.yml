@@ -65,7 +65,7 @@ jobs:
       - name: Prisma migrate
         run: |
           cd apps/api
-          pnpm exec prisma generate
+          prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Lint
@@ -86,7 +86,7 @@ jobs:
       - name: Prisma migrate
         run: |
           cd apps/api
-          pnpm exec prisma generate
+          prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Build packages
@@ -115,7 +115,7 @@ jobs:
       - name: Prisma migrate
         run: |
           cd apps/api
-          pnpm exec prisma generate
+          prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Restore dist
@@ -172,8 +172,8 @@ jobs:
         run: |
           pnpm i -g netlify-cli@16.3.3
           cd apps/website
-          pnpm exec netlify link
-          pnpm exec netlify deploy --prod --dir=dist/public
+          netlify link
+          netlify deploy --prod --dir=dist/public
         env:
           NETLIFY_SITE_ID: ${{ secrets.WEBSITE_NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.WEBSITE_NETLIFY_AUTH_TOKEN }}
@@ -427,8 +427,8 @@ jobs:
       - name: Prisma migrate
         run: |
           cd apps/api
-          pnpm exec prisma migrate deploy
-          pnpm exec prisma generate
+          prisma migrate deploy
+          prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Test (unit)

@@ -129,6 +129,6 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
           {name: 'Medium', weight: 500},
           {name: 'Bold', weight: 700},
         ],
-      } as const),
+      }) as const,
   ),
 ] as const);

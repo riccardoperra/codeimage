@@ -21,9 +21,10 @@
   "scripts": {
     "build": "tsdown",
     "pre-commit": "lint-staged --relative",
-    "pre-commit-prettier": "prettier --write",
-    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
-    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "pre-commit-format": "oxfmt",
+    "pre-commit-eslint": "oxlint --fix",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "clean": "rimraf dist",
     "test": "vitest",
     "build-esm": "tsc -p tsconfig.esm.json",
@@ -39,6 +40,8 @@
   "devDependencies": {
     "@types/node": "catalog:next",
     "rolldown-plugin-solid": "catalog:next",
+    "oxfmt": "catalog:next",
+    "oxlint": "catalog:next",
     "rxjs": "^7.8.1",
     "solid-js": "catalog:next",
     "tsdown": "catalog:next",

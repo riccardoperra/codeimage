@@ -14,7 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -7488,10 +7488,10 @@ limitations under the License.
           }
           static prepareReportResult(e) {
             const n = JSON.parse(JSON.stringify(e));
-            n.configSettings.locale || (n.configSettings.locale = 'en'),
+            (n.configSettings.locale || (n.configSettings.locale = 'en'),
               n.configSettings.formFactor ||
                 (n.configSettings.formFactor =
-                  n.configSettings.emulatedFormFactor);
+                  n.configSettings.emulatedFormFactor));
             for (const e of Object.values(n.audits))
               if (
                 (('not_applicable' !== e.scoreDisplayMode &&
@@ -7511,8 +7511,8 @@ limitations under the License.
               [o] = n.lighthouseVersion.split('.').map(Number),
               i = n.categories.performance;
             if (o < 9 && i) {
-              n.categoryGroups || (n.categoryGroups = {}),
-                (n.categoryGroups.hidden = {title: ''});
+              (n.categoryGroups || (n.categoryGroups = {}),
+                (n.categoryGroups.hidden = {title: ''}));
               for (const e of i.auditRefs)
                 e.group
                   ? ['load-opportunities', 'diagnostics'].includes(e.group) &&
@@ -7520,16 +7520,16 @@ limitations under the License.
                   : (e.group = 'hidden');
             }
             for (const e of Object.values(n.categories))
-              e.auditRefs.forEach(e => {
+              (e.auditRefs.forEach(e => {
                 e.relevantAudits &&
                   e.relevantAudits.forEach(t => {
                     const n = r.get(t) || [];
-                    n.push(e), r.set(t, n);
+                    (n.push(e), r.set(t, n));
                   });
               }),
                 e.auditRefs.forEach(e => {
                   const t = n.audits[e.id];
-                  (e.result = t),
+                  ((e.result = t),
                     r.has(e.id) && (e.relevantMetrics = r.get(e.id)),
                     n.stackPacks &&
                       n.stackPacks.forEach(t => {
@@ -7540,8 +7540,8 @@ limitations under the License.
                             iconDataURL: t.iconDataURL,
                             description: t.descriptions[e.id],
                           }));
-                      });
-                });
+                      }));
+                }));
             return n;
           }
           static showAsPassed(e) {
@@ -7586,8 +7586,8 @@ limitations under the License.
               n = e.split(/\[([^\]]+?)\]\((https?:\/\/.*?)\)/g);
             for (; n.length; ) {
               const [e, r, o] = n.splice(0, 3);
-              e && t.push({isLink: !1, text: e}),
-                r && o && t.push({isLink: !0, text: r, linkHref: o});
+              (e && t.push({isLink: !1, text: e}),
+                r && o && t.push({isLink: !0, text: r, linkHref: o}));
             }
             return t;
           }
@@ -7608,9 +7608,9 @@ limitations under the License.
             else {
               a = t.pathname;
               const n = a.split('/').filter(e => e.length);
-              r && n.length > r && (a = e + n.slice(-1 * r).join('/')),
+              (r && n.length > r && (a = e + n.slice(-1 * r).join('/')),
                 i && (a = `${t.host}/${a.replace(/^\//, '')}`),
-                o && (a = `${a}${t.search}`);
+                o && (a = `${a}${t.search}`));
             }
             if (
               ((a = a.replace(/([a-f0-9]{7})[a-f0-9]{13}[a-f0-9]*/g, '$1…')),
@@ -7663,14 +7663,14 @@ limitations under the License.
                 break;
               case 'devtools': {
                 const {cpuSlowdownMultiplier: e, requestLatencyMs: i} = o;
-                (t = `${l.i18n.formatNumber(e)}x slowdown (DevTools)`),
+                ((t = `${l.i18n.formatNumber(e)}x slowdown (DevTools)`),
                   (n = `${l.i18n.formatNumber(
                     i,
                   )} ms HTTP RTT, ${l.i18n.formatNumber(
                     o.downloadThroughputKbps,
                   )} Kbps down, ${l.i18n.formatNumber(
                     o.uploadThroughputKbps,
-                  )} Kbps up (DevTools)`);
+                  )} Kbps up (DevTools)`));
                 r = (() =>
                   562.5 === i &&
                   o.downloadThroughputKbps === 1638.4 * 0.9 &&
@@ -7685,12 +7685,12 @@ limitations under the License.
                   rttMs: i,
                   throughputKbps: a,
                 } = o;
-                (t = `${l.i18n.formatNumber(e)}x slowdown (Simulated)`),
+                ((t = `${l.i18n.formatNumber(e)}x slowdown (Simulated)`),
                   (n = `${l.i18n.formatNumber(
                     i,
                   )} ms TCP RTT, ${l.i18n.formatNumber(
                     a,
-                  )} Kbps throughput (Simulated)`);
+                  )} Kbps throughput (Simulated)`));
                 r = (() => 150 === i && 1638.4 === a)()
                   ? l.i18n.strings.runtimeSlow4g
                   : l.i18n.strings.runtimeCustom;
@@ -7719,7 +7719,7 @@ limitations under the License.
               )).forEach(({lineNumber: e}) => {
                 let t = e - n,
                   o = e + n;
-                for (; t < 1; ) t++, o++;
+                for (; t < 1; ) (t++, o++);
                 r.has(t - 3 - 1) && (t -= 3);
                 for (let e = t; e <= o; e++) {
                   const t = e;
@@ -7757,13 +7757,13 @@ limitations under the License.
             };
           }
         }
-        (l.reportJson = null),
+        ((l.reportJson = null),
           (l.getUniqueSuffix = (() => {
             let e = 0;
             return function () {
               return e++;
             };
-          })());
+          })()));
         l.UIStrings = {
           varianceDisclaimer:
             'Values are estimated and may vary. The [performance score is calculated](https://web.dev/performance-scoring/) directly from these metrics.',
@@ -7838,10 +7838,10 @@ limitations under the License.
          */
         class s {
           constructor(e, t) {
-            (this._document = e),
+            ((this._document = e),
               (this._lighthouseChannel = 'unknown'),
               (this._componentCache = new Map()),
-              (this.rootEl = t);
+              (this.rootEl = t));
           }
           createElement(e, t) {
             const n = this._document.createElement(e);
@@ -7861,29 +7861,29 @@ limitations under the License.
           }
           createChildOf(e, t, n) {
             const r = this.createElement(t, n);
-            return e.appendChild(r), r;
+            return (e.appendChild(r), r);
           }
           createComponent(e) {
             let t = this._componentCache.get(e);
             if (t) {
               const e = t.cloneNode(!0);
-              return this.findAll('style', e).forEach(e => e.remove()), e;
+              return (this.findAll('style', e).forEach(e => e.remove()), e);
             }
-            (t = (function (e, t) {
+            ((t = (function (e, t) {
               switch (t) {
                 case '3pFilter':
                   return (function (e) {
                     const t = e.createFragment(),
                       n = e.createElement('style');
-                    n.append(
+                    (n.append(
                       '\n    .lh-3p-filter {\n      color: var(--color-gray-600);\n      float: right;\n      padding: 6px var(--stackpack-padding-horizontal);\n    }\n    .lh-3p-filter-label, .lh-3p-filter-input {\n      vertical-align: middle;\n      user-select: none;\n    }\n    .lh-3p-filter-input:disabled + .lh-3p-ui-string {\n      text-decoration: line-through;\n    }\n  ',
                     ),
-                      t.append(n);
+                      t.append(n));
                     const r = e.createElement('div', 'lh-3p-filter'),
                       o = e.createElement('label', 'lh-3p-filter-label'),
                       i = e.createElement('input', 'lh-3p-filter-input');
-                    i.setAttribute('type', 'checkbox'),
-                      i.setAttribute('checked', '');
+                    (i.setAttribute('type', 'checkbox'),
+                      i.setAttribute('checked', ''));
                     const a = e.createElement('span', 'lh-3p-ui-string');
                     a.append('Show 3rd party resources');
                     const l = e.createElement('span', 'lh-3p-filter-count');
@@ -7910,8 +7910,8 @@ limitations under the License.
                       c = e.createElement('span', 'lh-audit__display-text');
                     l.append(' ', s, ' ', c, ' ');
                     const d = e.createElement('div', 'lh-chevron-container');
-                    i.append(' ', a, ' ', l, ' ', d, ' '),
-                      o.append(' ', i, ' ');
+                    (i.append(' ', a, ' ', l, ' ', d, ' '),
+                      o.append(' ', i, ' '));
                     const h = e.createElement('div', 'lh-audit__description'),
                       p = e.createElement('div', 'lh-audit__stackpacks');
                     return (
@@ -7926,13 +7926,13 @@ limitations under the License.
                     const t = e.createFragment(),
                       n = e.createElement('div', 'lh-category-header'),
                       r = e.createElement('div', 'lh-score__gauge');
-                    r.setAttribute('role', 'heading'),
-                      r.setAttribute('aria-level', '2');
+                    (r.setAttribute('role', 'heading'),
+                      r.setAttribute('aria-level', '2'));
                     const o = e.createElement(
                       'div',
                       'lh-category-header__description',
                     );
-                    return n.append(' ', r, ' ', o, ' '), t.append(n), t;
+                    return (n.append(' ', r, ' ', o, ' '), t.append(n), t);
                   })(e);
                 case 'chevron':
                   return (function (e) {
@@ -8006,7 +8006,7 @@ limitations under the License.
                         'lh-crc__longest_duration_label',
                       ),
                       l = e.createElement('b', 'lh-crc__longest_duration');
-                    i.append(' ', a, ' ', l, ' '), o.append(' ', i, ' ');
+                    (i.append(' ', a, ' ', l, ' '), o.append(' ', i, ' '));
                     const s = e.createElement('div', 'lh-crc'),
                       c = e.createElement('div', 'lh-crc-initial-nav');
                     return (
@@ -8022,7 +8022,7 @@ limitations under the License.
                       n = e.createElement('div', 'lh-crc-node'),
                       r = e.createElement('span', 'lh-crc-node__tree-marker'),
                       o = e.createElement('span', 'lh-crc-node__tree-value');
-                    return n.append(' ', r, ' ', o, ' '), t.append(n), t;
+                    return (n.append(' ', r, ' ', o, ' '), t.append(n), t);
                   })(e);
                 case 'elementScreenshot':
                   return (function (e) {
@@ -8037,7 +8037,8 @@ limitations under the License.
                         'http://www.w3.org/2000/svg',
                         'svg',
                       );
-                    i.setAttribute('height', '0'), i.setAttribute('width', '0');
+                    (i.setAttribute('height', '0'),
+                      i.setAttribute('width', '0'));
                     const a = e.createElementNS(
                         'http://www.w3.org/2000/svg',
                         'defs',
@@ -8046,10 +8047,10 @@ limitations under the License.
                         'http://www.w3.org/2000/svg',
                         'clipPath',
                       );
-                    l.setAttribute('clipPathUnits', 'objectBoundingBox'),
+                    (l.setAttribute('clipPathUnits', 'objectBoundingBox'),
                       a.append(' ', l, ' ', ' '),
                       i.append(' ', a, ' '),
-                      o.append(' ', i, ' ');
+                      o.append(' ', i, ' '));
                     const s = e.createElement(
                         'div',
                         'lh-element-screenshot__image',
@@ -8069,10 +8070,10 @@ limitations under the License.
                   return (function (e) {
                     const t = e.createFragment(),
                       n = e.createElement('style');
-                    n.append(
+                    (n.append(
                       '\n    .lh-footer {\n      padding: var(--footer-padding-vertical) calc(var(--default-padding) * 2);\n      max-width: var(--report-content-max-width);\n      margin: 0 auto;\n    }\n    .lh-footer .lh-generated {\n      text-align: center;\n    }\n  ',
                     ),
-                      t.append(n);
+                      t.append(n));
                     const r = e.createElement('footer', 'lh-footer'),
                       o = e.createElement('ul', 'lh-meta__items');
                     o.append(' ');
@@ -8105,9 +8106,9 @@ limitations under the License.
                       ),
                       o = e.createElement('div', 'lh-fraction__content'),
                       i = e.createElement('div', 'lh-fraction__background');
-                    o.append(' ', i, ' '), r.append(' ', o, ' ');
+                    (o.append(' ', i, ' '), r.append(' ', o, ' '));
                     const a = e.createElement('div', 'lh-fraction__label');
-                    return n.append(' ', r, ' ', a, ' '), t.append(n), t;
+                    return (n.append(' ', r, ' ', a, ' '), t.append(n), t);
                   })(e);
                 case 'gauge':
                   return (function (e) {
@@ -8125,21 +8126,21 @@ limitations under the License.
                       'circle',
                       'lh-gauge-base',
                     );
-                    i.setAttribute('r', '56'),
+                    (i.setAttribute('r', '56'),
                       i.setAttribute('cx', '60'),
                       i.setAttribute('cy', '60'),
-                      i.setAttribute('stroke-width', '8');
+                      i.setAttribute('stroke-width', '8'));
                     const a = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'circle',
                       'lh-gauge-arc',
                     );
-                    a.setAttribute('r', '56'),
+                    (a.setAttribute('r', '56'),
                       a.setAttribute('cx', '60'),
                       a.setAttribute('cy', '60'),
                       a.setAttribute('stroke-width', '8'),
                       o.append(' ', i, ' ', a, ' '),
-                      r.append(' ', o, ' ');
+                      r.append(' ', o, ' '));
                     const l = e.createElement('div', 'lh-gauge__percentage'),
                       s = e.createElement('div', 'lh-gauge__label');
                     return (
@@ -8152,10 +8153,10 @@ limitations under the License.
                   return (function (e) {
                     const t = e.createFragment(),
                       n = e.createElement('style');
-                    n.append(
+                    (n.append(
                       "\n    .lh-gauge--pwa .lh-gauge--pwa__component {\n      display: none;\n    }\n    .lh-gauge--pwa__wrapper:not(.lh-badged--all) .lh-gauge--pwa__logo > path {\n      /* Gray logo unless everything is passing. */\n      fill: #B0B0B0;\n    }\n\n    .lh-gauge--pwa__disc {\n      fill: var(--color-gray-200);\n    }\n\n    .lh-gauge--pwa__logo--primary-color {\n      fill: #304FFE;\n    }\n\n    .lh-gauge--pwa__logo--secondary-color {\n      fill: #3D3D3D;\n    }\n    .lh-dark .lh-gauge--pwa__logo--secondary-color {\n      fill: #D8B6B6;\n    }\n\n    /* No passing groups. */\n    .lh-gauge--pwa__wrapper:not([class*='lh-badged--']) .lh-gauge--pwa__na-line {\n      display: inline;\n    }\n    /* Just optimized. Same n/a line as no passing groups. */\n    .lh-gauge--pwa__wrapper.lh-badged--pwa-optimized:not(.lh-badged--pwa-installable) .lh-gauge--pwa__na-line {\n      display: inline;\n    }\n\n    /* Just installable. */\n    .lh-gauge--pwa__wrapper.lh-badged--pwa-installable .lh-gauge--pwa__installable-badge {\n      display: inline;\n    }\n\n    /* All passing groups. */\n    .lh-gauge--pwa__wrapper.lh-badged--all .lh-gauge--pwa__check-circle {\n      display: inline;\n    }\n  ",
                     ),
-                      t.append(n);
+                      t.append(n));
                     const r = e.createElement(
                         'a',
                         'lh-gauge__wrapper lh-gauge--pwa__wrapper',
@@ -8174,52 +8175,52 @@ limitations under the License.
                         'http://www.w3.org/2000/svg',
                         'linearGradient',
                       );
-                    a.setAttribute(
+                    (a.setAttribute(
                       'id',
                       'lh-gauge--pwa__check-circle__gradient',
                     ),
                       a.setAttribute('x1', '50%'),
                       a.setAttribute('y1', '0%'),
                       a.setAttribute('x2', '50%'),
-                      a.setAttribute('y2', '100%');
+                      a.setAttribute('y2', '100%'));
                     const l = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    l.setAttribute('stop-color', '#00C852'),
-                      l.setAttribute('offset', '0%');
+                    (l.setAttribute('stop-color', '#00C852'),
+                      l.setAttribute('offset', '0%'));
                     const s = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    s.setAttribute('stop-color', '#009688'),
+                    (s.setAttribute('stop-color', '#009688'),
                       s.setAttribute('offset', '100%'),
-                      a.append(' ', l, ' ', s, ' ');
+                      a.append(' ', l, ' ', s, ' '));
                     const c = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'linearGradient',
                     );
-                    c.setAttribute(
+                    (c.setAttribute(
                       'id',
                       'lh-gauge--pwa__installable__shadow-gradient',
                     ),
                       c.setAttribute('x1', '76.056%'),
                       c.setAttribute('x2', '24.111%'),
                       c.setAttribute('y1', '82.995%'),
-                      c.setAttribute('y2', '24.735%');
+                      c.setAttribute('y2', '24.735%'));
                     const d = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    d.setAttribute('stop-color', '#A5D6A7'),
-                      d.setAttribute('offset', '0%');
+                    (d.setAttribute('stop-color', '#A5D6A7'),
+                      d.setAttribute('offset', '0%'));
                     const h = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    h.setAttribute('stop-color', '#80CBC4'),
+                    (h.setAttribute('stop-color', '#80CBC4'),
                       h.setAttribute('offset', '100%'),
-                      c.append(' ', d, ' ', h, ' ');
+                      c.append(' ', d, ' ', h, ' '));
                     const p = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'g',
@@ -8229,35 +8230,35 @@ limitations under the License.
                       'http://www.w3.org/2000/svg',
                       'circle',
                     );
-                    u.setAttribute('fill', '#FFFFFF'),
+                    (u.setAttribute('fill', '#FFFFFF'),
                       u.setAttribute('cx', '10'),
                       u.setAttribute('cy', '10'),
-                      u.setAttribute('r', '10');
+                      u.setAttribute('r', '10'));
                     const g = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    g.setAttribute('fill', '#009688'),
+                    (g.setAttribute('fill', '#009688'),
                       g.setAttribute(
                         'd',
                         'M10 4.167A5.835 5.835 0 0 0 4.167 10 5.835 5.835 0 0 0 10 15.833 5.835 5.835 0 0 0 15.833 10 5.835 5.835 0 0 0 10 4.167zm2.917 6.416h-2.334v2.334H9.417v-2.334H7.083V9.417h2.334V7.083h1.166v2.334h2.334v1.166z',
                       ),
                       p.append(' ', u, ' ', g, ' '),
-                      i.append(' ', a, ' ', c, ' ', p, ' ');
+                      i.append(' ', a, ' ', c, ' ', p, ' '));
                     const m = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'g',
                     );
-                    m.setAttribute('stroke', 'none'),
-                      m.setAttribute('fill-rule', 'nonzero');
+                    (m.setAttribute('stroke', 'none'),
+                      m.setAttribute('fill-rule', 'nonzero'));
                     const f = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'circle',
                       'lh-gauge--pwa__disc',
                     );
-                    f.setAttribute('cx', '30'),
+                    (f.setAttribute('cx', '30'),
                       f.setAttribute('cy', '30'),
-                      f.setAttribute('r', '30');
+                      f.setAttribute('r', '30'));
                     const v = e.createElementNS(
                         'http://www.w3.org/2000/svg',
                         'g',
@@ -8286,23 +8287,23 @@ limitations under the License.
                       'path',
                       'lh-gauge--pwa__logo--secondary-color',
                     );
-                    w.setAttribute('fill-rule', 'nonzero'),
+                    (w.setAttribute('fill-rule', 'nonzero'),
                       w.setAttribute(
                         'd',
                         'M20.3 17.91h1.48c.45 0 .85-.05 1.2-.15l.39-1.18 1.07-3.3a2.64 2.64 0 0 0-.28-.37c-.55-.6-1.36-.91-2.42-.91H18v9h2.3V17.9zm1.96-3.84c.22.22.33.5.33.87 0 .36-.1.65-.29.87-.2.23-.59.35-1.15.35h-.86v-2.41h.87c.52 0 .89.1 1.1.32z',
                       ),
-                      v.append(' ', b, ' ', _, ' ', w, ' ');
+                      v.append(' ', b, ' ', _, ' ', w, ' '));
                     const y = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'rect',
                       'lh-gauge--pwa__component lh-gauge--pwa__na-line',
                     );
-                    y.setAttribute('fill', '#FFFFFF'),
+                    (y.setAttribute('fill', '#FFFFFF'),
                       y.setAttribute('x', '20'),
                       y.setAttribute('y', '32'),
                       y.setAttribute('width', '20'),
                       y.setAttribute('height', '4'),
-                      y.setAttribute('rx', '2');
+                      y.setAttribute('rx', '2'));
                     const x = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'g',
@@ -8313,20 +8314,23 @@ limitations under the License.
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    k.setAttribute(
+                    (k.setAttribute(
                       'fill',
                       'url(#lh-gauge--pwa__installable__shadow-gradient)',
                     ),
                       k.setAttribute(
                         'd',
                         'M33.629 19.487c-4.272 5.453-10.391 9.39-17.415 10.869L3 17.142 17.142 3 33.63 19.487z',
-                      );
+                      ));
                     const E = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'use',
                     );
-                    E.setAttribute('href', '#lh-gauge--pwa__installable-badge'),
-                      x.append(' ', k, ' ', E, ' ');
+                    (E.setAttribute(
+                      'href',
+                      '#lh-gauge--pwa__installable-badge',
+                    ),
+                      x.append(' ', k, ' ', E, ' '));
                     const A = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'g',
@@ -8337,15 +8341,15 @@ limitations under the License.
                       'http://www.w3.org/2000/svg',
                       'circle',
                     );
-                    C.setAttribute('fill', '#FFFFFF'),
+                    (C.setAttribute('fill', '#FFFFFF'),
                       C.setAttribute('cx', '12'),
                       C.setAttribute('cy', '12'),
-                      C.setAttribute('r', '12');
+                      C.setAttribute('r', '12'));
                     const z = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    z.setAttribute(
+                    (z.setAttribute(
                       'fill',
                       'url(#lh-gauge--pwa__check-circle__gradient)',
                     ),
@@ -8371,24 +8375,24 @@ limitations under the License.
                         A,
                         ' ',
                       ),
-                      o.append(' ', i, ' ', m, ' ');
+                      o.append(' ', i, ' ', m, ' '));
                     const S = e.createElement('div', 'lh-gauge__label');
-                    return r.append(' ', o, ' ', S, ' '), t.append(r), t;
+                    return (r.append(' ', o, ' ', S, ' '), t.append(r), t);
                   })(e);
                 case 'heading':
                   return (function (e) {
                     const t = e.createFragment(),
                       n = e.createElement('style');
-                    n.append(
+                    (n.append(
                       '\n    /* CSS Fireworks. Originally by Eddie Lin\n       https://codepen.io/paulirish/pen/yEVMbP\n    */\n    .lh-pyro {\n      display: none;\n      z-index: 1;\n      pointer-events: none;\n    }\n    .lh-score100 .lh-pyro {\n      display: block;\n    }\n    .lh-score100 .lh-lighthouse stop:first-child {\n      stop-color: hsla(200, 12%, 95%, 0);\n    }\n    .lh-score100 .lh-lighthouse stop:last-child {\n      stop-color: hsla(65, 81%, 76%, 1);\n    }\n\n    .lh-pyro > .lh-pyro-before, .lh-pyro > .lh-pyro-after {\n      position: absolute;\n      width: 5px;\n      height: 5px;\n      border-radius: 2.5px;\n      box-shadow: 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff;\n      animation: 1s bang ease-out infinite backwards,  1s gravity ease-in infinite backwards,  5s position linear infinite backwards;\n      animation-delay: 1s, 1s, 1s;\n    }\n\n    .lh-pyro > .lh-pyro-after {\n      animation-delay: 2.25s, 2.25s, 2.25s;\n      animation-duration: 1.25s, 1.25s, 6.25s;\n    }\n    .lh-fireworks-paused .lh-pyro > div {\n      animation-play-state: paused;\n    }\n\n    @keyframes bang {\n      to {\n        box-shadow: -70px -115.67px #47ebbc, -28px -99.67px #eb47a4, 58px -31.67px #7eeb47, 13px -141.67px #eb47c5, -19px 6.33px #7347eb, -2px -74.67px #ebd247, 24px -151.67px #eb47e0, 57px -138.67px #b4eb47, -51px -104.67px #479eeb, 62px 8.33px #ebcf47, -93px 0.33px #d547eb, -16px -118.67px #47bfeb, 53px -84.67px #47eb83, 66px -57.67px #eb47bf, -93px -65.67px #91eb47, 30px -13.67px #86eb47, -2px -59.67px #83eb47, -44px 1.33px #eb47eb, 61px -58.67px #47eb73, 5px -22.67px #47e8eb, -66px -28.67px #ebe247, 42px -123.67px #eb5547, -75px 26.33px #7beb47, 15px -52.67px #a147eb, 36px -51.67px #eb8347, -38px -12.67px #eb5547, -46px -59.67px #47eb81, 78px -114.67px #eb47ba, 15px -156.67px #eb47bf, -36px 1.33px #eb4783, -72px -86.67px #eba147, 31px -46.67px #ebe247, -68px 29.33px #47e2eb, -55px 19.33px #ebe047, -56px 27.33px #4776eb, -13px -91.67px #eb5547, -47px -138.67px #47ebc7, -18px -96.67px #eb47ac, 11px -88.67px #4783eb, -67px -28.67px #47baeb, 53px 10.33px #ba47eb, 11px 19.33px #5247eb, -5px -11.67px #eb4791, -68px -4.67px #47eba7, 95px -37.67px #eb478b, -67px -162.67px #eb5d47, -54px -120.67px #eb6847, 49px -12.67px #ebe047, 88px 8.33px #47ebda, 97px 33.33px #eb8147, 6px -71.67px #ebbc47;\n      }\n    }\n    @keyframes gravity {\n      to {\n        transform: translateY(80px);\n        opacity: 0;\n      }\n    }\n    @keyframes position {\n      0%, 19.9% {\n        margin-top: 4%;\n        margin-left: 47%;\n      }\n      20%, 39.9% {\n        margin-top: 7%;\n        margin-left: 30%;\n      }\n      40%, 59.9% {\n        margin-top: 6%;\n        margin-left: 70%;\n      }\n      60%, 79.9% {\n        margin-top: 3%;\n        margin-left: 20%;\n      }\n      80%, 99.9% {\n        margin-top: 3%;\n        margin-left: 80%;\n      }\n    }\n  ',
                     ),
-                      t.append(n);
+                      t.append(n));
                     const r = e.createElement('div', 'lh-header-container'),
                       o = e.createElement(
                         'div',
                         'lh-scores-wrapper-placeholder',
                       );
-                    return r.append(' ', o, ' '), t.append(r), t;
+                    return (r.append(' ', o, ' '), t.append(r), t);
                   })(e);
                 case 'metric':
                   return (function (e) {
@@ -8434,13 +8438,13 @@ limitations under the License.
                       ),
                       p = e.createElement('div', 'lh-sparkline'),
                       u = e.createElement('div', 'lh-sparkline__bar');
-                    p.append(u), h.append(' ', p, ' ');
+                    (p.append(u), h.append(' ', p, ' '));
                     const g = e.createElement('div', 'lh-audit__display-text'),
                       m = e.createElement('div', 'lh-chevron-container');
-                    d.append(' ', h, ' ', g, ' ', m, ' '),
+                    (d.append(' ', h, ' ', g, ' ', m, ' '),
                       a.append(' ', l, ' ', d, ' '),
                       i.append(' ', a, ' '),
-                      o.append(' ', i, ' ');
+                      o.append(' ', i, ' '));
                     const f = e.createElement('div', 'lh-audit__description'),
                       v = e.createElement('div', 'lh-audit__stackpacks');
                     return (
@@ -8465,7 +8469,7 @@ limitations under the License.
                         'div',
                         'lh-load-opportunity__col lh-load-opportunity__col--two',
                       );
-                    return n.append(' ', r, ' ', o, ' '), t.append(n), t;
+                    return (n.append(' ', r, ' ', o, ' '), t.append(n), t);
                   })(e);
                 case 'scorescale':
                   return (function (e) {
@@ -8496,10 +8500,10 @@ limitations under the License.
                   return (function (e) {
                     const t = e.createFragment(),
                       n = e.createElement('style');
-                    n.append(
+                    (n.append(
                       '\n    .lh-scores-container {\n      display: flex;\n      flex-direction: column;\n      padding: var(--default-padding) 0;\n      position: relative;\n      width: 100%;\n    }\n\n    .lh-sticky-header {\n      --gauge-circle-size: var(--gauge-circle-size-sm);\n      --plugin-badge-size: 16px;\n      --plugin-icon-size: 75%;\n      --gauge-wrapper-width: 60px;\n      --gauge-percentage-font-size: 13px;\n      position: fixed;\n      left: 0;\n      right: 0;\n      top: var(--topbar-height);\n      font-weight: 500;\n      display: none;\n      justify-content: center;\n      background-color: var(--sticky-header-background-color);\n      border-bottom: 1px solid var(--color-gray-200);\n      padding-top: var(--score-container-padding);\n      padding-bottom: 4px;\n      z-index: 1;\n      pointer-events: none;\n    }\n\n    .lh-devtools .lh-sticky-header {\n      /* The report within DevTools is placed in a container with overflow, which changes the placement of this header unless we change `position` to `sticky.` */\n      position: sticky;\n    }\n\n    .lh-sticky-header--visible {\n      display: grid;\n      grid-auto-flow: column;\n      pointer-events: auto;\n    }\n\n    /* Disable the gauge arc animation for the sticky header, so toggling display: none\n       does not play the animation. */\n    .lh-sticky-header .lh-gauge-arc {\n      animation: none;\n    }\n\n    .lh-sticky-header .lh-gauge__label {\n      display: none;\n    }\n\n    .lh-highlighter {\n      width: var(--gauge-wrapper-width);\n      height: 1px;\n      background-color: var(--highlighter-background-color);\n      /* Position at bottom of first gauge in sticky header. */\n      position: absolute;\n      grid-column: 1;\n      bottom: -1px;\n    }\n\n    .lh-gauge__wrapper:first-of-type {\n      contain: none;\n    }\n  ',
                     ),
-                      t.append(n);
+                      t.append(n));
                     const r = e.createElement('div', 'lh-scores-wrapper'),
                       o = e.createElement('div', 'lh-scores-container'),
                       i = e.createElement('div', 'lh-pyro'),
@@ -8532,7 +8536,7 @@ limitations under the License.
                     const t = e.createFragment(),
                       n = e.createElement('div', 'lh-snippet__snippet'),
                       r = e.createElement('div', 'lh-snippet__snippet-inner');
-                    return n.append(' ', r, ' '), t.append(n), t;
+                    return (n.append(' ', r, ' '), t.append(n), t);
                   })(e);
                 case 'snippetHeader':
                   return (function (e) {
@@ -8567,7 +8571,9 @@ limitations under the License.
                       o = e.createElement('div', 'lh-snippet__line-icon'),
                       i = e.createElement('code');
                     return (
-                      n.append(' ', r, ' ', o, ' ', i, ' '), t.append(n), t
+                      n.append(' ', r, ' ', o, ' ', i, ' '),
+                      t.append(n),
+                      t
                     );
                   })(e);
                 case 'styles':
@@ -8586,10 +8592,10 @@ limitations under the License.
                   return (function (e) {
                     const t = e.createFragment(),
                       n = e.createElement('style');
-                    n.append(
+                    (n.append(
                       "\n    .lh-topbar {\n      position: sticky;\n      top: 0;\n      left: 0;\n      right: 0;\n      z-index: 1000;\n      display: flex;\n      align-items: center;\n      height: var(--topbar-height);\n      padding: var(--topbar-padding);\n      font-size: var(--report-font-size-secondary);\n      background-color: var(--topbar-background-color);\n      border-bottom: 1px solid var(--color-gray-200);\n    }\n\n    .lh-topbar__logo {\n      width: var(--topbar-logo-size);\n      height: var(--topbar-logo-size);\n      user-select: none;\n      flex: none;\n    }\n\n    .lh-topbar__url {\n      margin: var(--topbar-padding);\n      text-decoration: none;\n      color: var(--report-text-color);\n      text-overflow: ellipsis;\n      overflow: hidden;\n      white-space: nowrap;\n    }\n\n    .lh-tools {\n      display: flex;\n      align-items: center;\n      margin-left: auto;\n      will-change: transform;\n      min-width: var(--report-icon-size);\n    }\n    .lh-tools__button {\n      width: var(--report-icon-size);\n      min-width: 24px;\n      height: var(--report-icon-size);\n      cursor: pointer;\n      margin-right: 5px;\n      /* This is actually a button element, but we want to style it like a transparent div. */\n      display: flex;\n      background: none;\n      color: inherit;\n      border: none;\n      padding: 0;\n      font: inherit;\n      outline: inherit;\n    }\n    .lh-tools__button svg {\n      fill: var(--tools-icon-color);\n    }\n    .lh-dark .lh-tools__button svg {\n      filter: invert(1);\n    }\n    .lh-tools__button.lh-active + .lh-tools__dropdown {\n      opacity: 1;\n      clip: rect(-1px, 194px, 242px, -3px);\n      visibility: visible;\n    }\n    .lh-tools__dropdown {\n      position: absolute;\n      background-color: var(--report-background-color);\n      border: 1px solid var(--report-border-color);\n      border-radius: 3px;\n      padding: calc(var(--default-padding) / 2) 0;\n      cursor: pointer;\n      top: 36px;\n      right: 0;\n      box-shadow: 1px 1px 3px #ccc;\n      min-width: 125px;\n      clip: rect(0, 164px, 0, 0);\n      visibility: hidden;\n      opacity: 0;\n      transition: all 200ms cubic-bezier(0,0,0.2,1);\n    }\n    .lh-tools__dropdown a {\n      color: currentColor;\n      text-decoration: none;\n      white-space: nowrap;\n      padding: 0 6px;\n      line-height: 2;\n    }\n    .lh-tools__dropdown a:hover,\n    .lh-tools__dropdown a:focus {\n      background-color: var(--color-gray-200);\n      outline: none;\n    }\n    /* save-gist option hidden in report. */\n    .lh-tools__dropdown a[data-action='save-gist'] {\n      display: none;\n    }\n\n    .lh-locale-selector {\n      width: 100%;\n      color: var(--report-text-color);\n      background-color: var(--locale-selector-background-color);\n      padding: 2px;\n    }\n    .lh-tools-locale {\n      display: flex;\n      align-items: center;\n      flex-direction: row-reverse;\n    }\n    .lh-tools-locale__selector-wrapper {\n      transition: opacity 0.15s;\n      opacity: 0;\n      max-width: 200px;\n    }\n    .lh-button.lh-tool-locale__button {\n      height: var(--topbar-height);\n      color: var(--tools-icon-color);\n      padding: calc(var(--default-padding) / 2);\n    }\n    .lh-tool-locale__button.lh-active + .lh-tools-locale__selector-wrapper {\n      opacity: 1;\n      clip: rect(-1px, 194px, 242px, -3px);\n      visibility: visible;\n      margin: 0 4px;\n    }\n\n    @media screen and (max-width: 964px) {\n      .lh-tools__dropdown {\n        right: 0;\n        left: initial;\n      }\n    }\n    @media print {\n      .lh-topbar {\n        position: static;\n        margin-left: 0;\n      }\n\n      .lh-tools__dropdown {\n        display: none;\n      }\n    }\n  ",
                     ),
-                      t.append(n);
+                      t.append(n));
                     const r = e.createElement('div', 'lh-topbar'),
                       o = e.createElementNS(
                         'http://www.w3.org/2000/svg',
@@ -8605,165 +8611,165 @@ limitations under the License.
                         'http://www.w3.org/2000/svg',
                         'linearGradient',
                       );
-                    a.setAttribute('x1', '57.456%'),
+                    (a.setAttribute('x1', '57.456%'),
                       a.setAttribute('y1', '13.086%'),
                       a.setAttribute('x2', '18.259%'),
                       a.setAttribute('y2', '72.322%'),
-                      a.setAttribute('id', 'lh-topbar__logo--a');
+                      a.setAttribute('id', 'lh-topbar__logo--a'));
                     const l = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    l.setAttribute('stop-color', '#262626'),
+                    (l.setAttribute('stop-color', '#262626'),
                       l.setAttribute('stop-opacity', '.1'),
-                      l.setAttribute('offset', '0%');
+                      l.setAttribute('offset', '0%'));
                     const s = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    s.setAttribute('stop-color', '#262626'),
+                    (s.setAttribute('stop-color', '#262626'),
                       s.setAttribute('stop-opacity', '0'),
                       s.setAttribute('offset', '100%'),
-                      a.append(' ', l, ' ', s, ' ');
+                      a.append(' ', l, ' ', s, ' '));
                     const c = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'linearGradient',
                     );
-                    c.setAttribute('x1', '100%'),
+                    (c.setAttribute('x1', '100%'),
                       c.setAttribute('y1', '50%'),
                       c.setAttribute('x2', '0%'),
                       c.setAttribute('y2', '50%'),
-                      c.setAttribute('id', 'lh-topbar__logo--b');
+                      c.setAttribute('id', 'lh-topbar__logo--b'));
                     const d = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    d.setAttribute('stop-color', '#262626'),
+                    (d.setAttribute('stop-color', '#262626'),
                       d.setAttribute('stop-opacity', '.1'),
-                      d.setAttribute('offset', '0%');
+                      d.setAttribute('offset', '0%'));
                     const h = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    h.setAttribute('stop-color', '#262626'),
+                    (h.setAttribute('stop-color', '#262626'),
                       h.setAttribute('stop-opacity', '0'),
                       h.setAttribute('offset', '100%'),
-                      c.append(' ', d, ' ', h, ' ');
+                      c.append(' ', d, ' ', h, ' '));
                     const p = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'linearGradient',
                     );
-                    p.setAttribute('x1', '58.764%'),
+                    (p.setAttribute('x1', '58.764%'),
                       p.setAttribute('y1', '65.756%'),
                       p.setAttribute('x2', '36.939%'),
                       p.setAttribute('y2', '50.14%'),
-                      p.setAttribute('id', 'lh-topbar__logo--c');
+                      p.setAttribute('id', 'lh-topbar__logo--c'));
                     const u = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    u.setAttribute('stop-color', '#262626'),
+                    (u.setAttribute('stop-color', '#262626'),
                       u.setAttribute('stop-opacity', '.1'),
-                      u.setAttribute('offset', '0%');
+                      u.setAttribute('offset', '0%'));
                     const g = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    g.setAttribute('stop-color', '#262626'),
+                    (g.setAttribute('stop-color', '#262626'),
                       g.setAttribute('stop-opacity', '0'),
                       g.setAttribute('offset', '100%'),
-                      p.append(' ', u, ' ', g, ' ');
+                      p.append(' ', u, ' ', g, ' '));
                     const m = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'linearGradient',
                     );
-                    m.setAttribute('x1', '41.635%'),
+                    (m.setAttribute('x1', '41.635%'),
                       m.setAttribute('y1', '20.358%'),
                       m.setAttribute('x2', '72.863%'),
                       m.setAttribute('y2', '85.424%'),
-                      m.setAttribute('id', 'lh-topbar__logo--d');
+                      m.setAttribute('id', 'lh-topbar__logo--d'));
                     const f = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    f.setAttribute('stop-color', '#FFF'),
+                    (f.setAttribute('stop-color', '#FFF'),
                       f.setAttribute('stop-opacity', '.1'),
-                      f.setAttribute('offset', '0%');
+                      f.setAttribute('offset', '0%'));
                     const v = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'stop',
                     );
-                    v.setAttribute('stop-color', '#FFF'),
+                    (v.setAttribute('stop-color', '#FFF'),
                       v.setAttribute('stop-opacity', '0'),
                       v.setAttribute('offset', '100%'),
                       m.append(' ', f, ' ', v, ' '),
-                      i.append(' ', a, ' ', c, ' ', p, ' ', m, ' ');
+                      i.append(' ', a, ' ', c, ' ', p, ' ', m, ' '));
                     const b = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'g',
                     );
-                    b.setAttribute('fill', 'none'),
-                      b.setAttribute('fill-rule', 'evenodd');
+                    (b.setAttribute('fill', 'none'),
+                      b.setAttribute('fill-rule', 'evenodd'));
                     const _ = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    _.setAttribute(
+                    (_.setAttribute(
                       'd',
                       'M12 3l4.125 2.625v3.75H18v2.25h-1.688l1.5 9.375H6.188l1.5-9.375H6v-2.25h1.875V5.648L12 3zm2.201 9.938L9.54 14.633 9 18.028l5.625-2.062-.424-3.028zM12.005 5.67l-1.88 1.207v2.498h3.75V6.86l-1.87-1.19z',
                     ),
-                      _.setAttribute('fill', '#F44B21');
+                      _.setAttribute('fill', '#F44B21'));
                     const w = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    w.setAttribute('fill', '#FFF'),
+                    (w.setAttribute('fill', '#FFF'),
                       w.setAttribute(
                         'd',
                         'M14.201 12.938L9.54 14.633 9 18.028l5.625-2.062z',
-                      );
+                      ));
                     const y = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    y.setAttribute(
+                    (y.setAttribute(
                       'd',
                       'M6 18c-2.042 0-3.95-.01-5.813 0l1.5-9.375h4.326L6 18z',
                     ),
                       y.setAttribute('fill', 'url(#lh-topbar__logo--a)'),
                       y.setAttribute('fill-rule', 'nonzero'),
-                      y.setAttribute('transform', 'translate(6 3)');
+                      y.setAttribute('transform', 'translate(6 3)'));
                     const x = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    x.setAttribute('fill', '#FFF176'),
+                    (x.setAttribute('fill', '#FFF176'),
                       x.setAttribute('fill-rule', 'nonzero'),
                       x.setAttribute(
                         'd',
                         'M13.875 9.375v-2.56l-1.87-1.19-1.88 1.207v2.543z',
-                      );
+                      ));
                     const k = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    k.setAttribute('fill', 'url(#lh-topbar__logo--b)'),
+                    (k.setAttribute('fill', 'url(#lh-topbar__logo--b)'),
                       k.setAttribute('fill-rule', 'nonzero'),
                       k.setAttribute('d', 'M0 6.375h6v2.25H0z'),
-                      k.setAttribute('transform', 'translate(6 3)');
+                      k.setAttribute('transform', 'translate(6 3)'));
                     const E = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    E.setAttribute('fill', 'url(#lh-topbar__logo--c)'),
+                    (E.setAttribute('fill', 'url(#lh-topbar__logo--c)'),
                       E.setAttribute('fill-rule', 'nonzero'),
                       E.setAttribute('d', 'M6 6.375H1.875v-3.75L6 0z'),
-                      E.setAttribute('transform', 'translate(6 3)');
+                      E.setAttribute('transform', 'translate(6 3)'));
                     const A = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    A.setAttribute('fill', 'url(#lh-topbar__logo--d)'),
+                    (A.setAttribute('fill', 'url(#lh-topbar__logo--d)'),
                       A.setAttribute('fill-rule', 'nonzero'),
                       A.setAttribute(
                         'd',
@@ -8787,18 +8793,18 @@ limitations under the License.
                         A,
                         ' ',
                       ),
-                      o.append(' ', i, ' ', b, ' ');
+                      o.append(' ', i, ' ', b, ' '));
                     const C = e.createElement('a', 'lh-topbar__url');
-                    C.setAttribute('href', ''),
+                    (C.setAttribute('href', ''),
                       C.setAttribute('target', '_blank'),
-                      C.setAttribute('rel', 'noopener');
+                      C.setAttribute('rel', 'noopener'));
                     const z = e.createElement('div', 'lh-tools'),
                       S = e.createElement('div', 'lh-tools-locale lh-hidden'),
                       L = e.createElement(
                         'button',
                         'lh-button lh-tool-locale__button',
                       );
-                    L.setAttribute('id', 'lh-button__swap-locales'),
+                    (L.setAttribute('id', 'lh-button__swap-locales'),
                       L.setAttribute('title', 'Show Language Picker'),
                       L.setAttribute('aria-label', 'Toggle language picker'),
                       L.setAttribute('aria-haspopup', 'menu'),
@@ -8806,36 +8812,36 @@ limitations under the License.
                       L.setAttribute(
                         'aria-controls',
                         'lh-tools-locale__selector-wrapper',
-                      );
+                      ));
                     const M = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'svg',
                     );
-                    M.setAttribute('width', '20px'),
+                    (M.setAttribute('width', '20px'),
                       M.setAttribute('height', '20px'),
                       M.setAttribute('viewBox', '0 0 24 24'),
-                      M.setAttribute('fill', 'currentColor');
+                      M.setAttribute('fill', 'currentColor'));
                     const F = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    F.setAttribute('d', 'M0 0h24v24H0V0z'),
-                      F.setAttribute('fill', 'none');
+                    (F.setAttribute('d', 'M0 0h24v24H0V0z'),
+                      F.setAttribute('fill', 'none'));
                     const N = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    N.setAttribute(
+                    (N.setAttribute(
                       'd',
                       'M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z',
                     ),
                       M.append(F, N),
-                      L.append(' ', M, ' ');
+                      L.append(' ', M, ' '));
                     const T = e.createElement(
                       'div',
                       'lh-tools-locale__selector-wrapper',
                     );
-                    T.setAttribute('id', 'lh-tools-locale__selector-wrapper'),
+                    (T.setAttribute('id', 'lh-tools-locale__selector-wrapper'),
                       T.setAttribute('role', 'menu'),
                       T.setAttribute(
                         'aria-labelledby',
@@ -8843,104 +8849,104 @@ limitations under the License.
                       ),
                       T.setAttribute('aria-hidden', 'true'),
                       T.append(' ', ' '),
-                      S.append(' ', L, ' ', T, ' ');
+                      S.append(' ', L, ' ', T, ' '));
                     const D = e.createElement('button', 'lh-tools__button');
-                    D.setAttribute('id', 'lh-tools-button'),
+                    (D.setAttribute('id', 'lh-tools-button'),
                       D.setAttribute('title', 'Tools menu'),
                       D.setAttribute('aria-label', 'Toggle report tools menu'),
                       D.setAttribute('aria-haspopup', 'menu'),
                       D.setAttribute('aria-expanded', 'false'),
-                      D.setAttribute('aria-controls', 'lh-tools-dropdown');
+                      D.setAttribute('aria-controls', 'lh-tools-dropdown'));
                     const H = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'svg',
                     );
-                    H.setAttribute('width', '100%'),
+                    (H.setAttribute('width', '100%'),
                       H.setAttribute('height', '100%'),
-                      H.setAttribute('viewBox', '0 0 24 24');
+                      H.setAttribute('viewBox', '0 0 24 24'));
                     const R = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    R.setAttribute('d', 'M0 0h24v24H0z'),
-                      R.setAttribute('fill', 'none');
+                    (R.setAttribute('d', 'M0 0h24v24H0z'),
+                      R.setAttribute('fill', 'none'));
                     const P = e.createElementNS(
                       'http://www.w3.org/2000/svg',
                       'path',
                     );
-                    P.setAttribute(
+                    (P.setAttribute(
                       'd',
                       'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z',
                     ),
                       H.append(' ', R, ' ', P, ' '),
-                      D.append(' ', H, ' ');
+                      D.append(' ', H, ' '));
                     const U = e.createElement('div', 'lh-tools__dropdown');
-                    U.setAttribute('id', 'lh-tools-dropdown'),
+                    (U.setAttribute('id', 'lh-tools-dropdown'),
                       U.setAttribute('role', 'menu'),
-                      U.setAttribute('aria-labelledby', 'lh-tools-button');
+                      U.setAttribute('aria-labelledby', 'lh-tools-button'));
                     const $ = e.createElement(
                       'a',
                       'lh-report-icon lh-report-icon--print',
                     );
-                    $.setAttribute('role', 'menuitem'),
+                    ($.setAttribute('role', 'menuitem'),
                       $.setAttribute('tabindex', '-1'),
                       $.setAttribute('href', '#'),
                       $.setAttribute('data-i18n', 'dropdownPrintSummary'),
-                      $.setAttribute('data-action', 'print-summary');
+                      $.setAttribute('data-action', 'print-summary'));
                     const B = e.createElement(
                       'a',
                       'lh-report-icon lh-report-icon--print',
                     );
-                    B.setAttribute('role', 'menuitem'),
+                    (B.setAttribute('role', 'menuitem'),
                       B.setAttribute('tabindex', '-1'),
                       B.setAttribute('href', '#'),
                       B.setAttribute('data-i18n', 'dropdownPrintExpanded'),
-                      B.setAttribute('data-action', 'print-expanded');
+                      B.setAttribute('data-action', 'print-expanded'));
                     const O = e.createElement(
                       'a',
                       'lh-report-icon lh-report-icon--copy',
                     );
-                    O.setAttribute('role', 'menuitem'),
+                    (O.setAttribute('role', 'menuitem'),
                       O.setAttribute('tabindex', '-1'),
                       O.setAttribute('href', '#'),
                       O.setAttribute('data-i18n', 'dropdownCopyJSON'),
-                      O.setAttribute('data-action', 'copy');
+                      O.setAttribute('data-action', 'copy'));
                     const I = e.createElement(
                       'a',
                       'lh-report-icon lh-report-icon--download lh-hidden',
                     );
-                    I.setAttribute('role', 'menuitem'),
+                    (I.setAttribute('role', 'menuitem'),
                       I.setAttribute('tabindex', '-1'),
                       I.setAttribute('href', '#'),
                       I.setAttribute('data-i18n', 'dropdownSaveHTML'),
-                      I.setAttribute('data-action', 'save-html');
+                      I.setAttribute('data-action', 'save-html'));
                     const V = e.createElement(
                       'a',
                       'lh-report-icon lh-report-icon--download',
                     );
-                    V.setAttribute('role', 'menuitem'),
+                    (V.setAttribute('role', 'menuitem'),
                       V.setAttribute('tabindex', '-1'),
                       V.setAttribute('href', '#'),
                       V.setAttribute('data-i18n', 'dropdownSaveJSON'),
-                      V.setAttribute('data-action', 'save-json');
+                      V.setAttribute('data-action', 'save-json'));
                     const G = e.createElement(
                       'a',
                       'lh-report-icon lh-report-icon--open',
                     );
-                    G.setAttribute('role', 'menuitem'),
+                    (G.setAttribute('role', 'menuitem'),
                       G.setAttribute('tabindex', '-1'),
                       G.setAttribute('href', '#'),
                       G.setAttribute('data-i18n', 'dropdownViewer'),
-                      G.setAttribute('data-action', 'open-viewer');
+                      G.setAttribute('data-action', 'open-viewer'));
                     const j = e.createElement(
                       'a',
                       'lh-report-icon lh-report-icon--open',
                     );
-                    j.setAttribute('role', 'menuitem'),
+                    (j.setAttribute('role', 'menuitem'),
                       j.setAttribute('tabindex', '-1'),
                       j.setAttribute('href', '#'),
                       j.setAttribute('data-i18n', 'dropdownSaveGist'),
-                      j.setAttribute('data-action', 'save-gist');
+                      j.setAttribute('data-action', 'save-gist'));
                     const q = e.createElement(
                       'a',
                       'lh-report-icon lh-report-icon--dark',
@@ -8986,12 +8992,12 @@ limitations under the License.
                       ),
                       r = e.createElement('p', 'lh-warnings__msg'),
                       o = e.createElement('ul');
-                    return n.append(' ', r, ' ', o, ' '), t.append(n), t;
+                    return (n.append(' ', r, ' ', o, ' '), t.append(n), t);
                   })(e);
               }
               throw new Error('unexpected component: ' + t);
             })(this, e)),
-              this._componentCache.set(e, t);
+              this._componentCache.set(e, t));
             return t.cloneNode(!0);
           }
           clearComponentCache() {
@@ -9011,11 +9017,11 @@ limitations under the License.
                 (e.searchParams.set('utm_source', 'lighthouse'),
                 e.searchParams.set('utm_medium', this._lighthouseChannel));
               const r = this.createElement('a');
-              (r.rel = 'noopener'),
+              ((r.rel = 'noopener'),
                 (r.target = '_blank'),
                 (r.textContent = n.text),
                 this.safelySetHref(r, e.href),
-                t.appendChild(r);
+                t.appendChild(r));
             }
             return t;
           }
@@ -9038,7 +9044,7 @@ limitations under the License.
             for (const n of l.splitMarkdownCodeSpans(e))
               if (n.isCode) {
                 const e = this.createElement('code');
-                (e.textContent = n.text), t.appendChild(e);
+                ((e.textContent = n.text), t.appendChild(e));
               } else t.appendChild(this._document.createTextNode(n.text));
             return t;
           }
@@ -9066,12 +9072,12 @@ limitations under the License.
           saveFile(e, t) {
             const n = e.type.match('json') ? '.json' : '.html',
               r = this.createElement('a');
-            (r.download = `${t}${n}`),
+            ((r.download = `${t}${n}`),
               this.safelySetBlobHref(r, e),
               this._document.body.appendChild(r),
               r.click(),
               this._document.body.removeChild(r),
-              setTimeout(() => URL.revokeObjectURL(r.href), 500);
+              setTimeout(() => URL.revokeObjectURL(r.href), 500));
           }
         }
         /**
@@ -9091,7 +9097,7 @@ limitations under the License.
          * limitations under the License.
          */ class c {
           constructor(e, t) {
-            (this.dom = e), (this.detailsRenderer = t);
+            ((this.dom = e), (this.detailsRenderer = t));
           }
           get _clumpTitles() {
             return {
@@ -9121,22 +9127,22 @@ limitations under the License.
             );
             for (const t of e.relevantMetrics || []) {
               const e = this.dom.createChildOf(a, 'span', 'lh-audit__adorn');
-              (e.title = `Relevant to ${t.result.title}`),
-                (e.textContent = t.acronym || t.id);
+              ((e.title = `Relevant to ${t.result.title}`),
+                (e.textContent = t.acronym || t.id));
             }
             e.stackPacks &&
               e.stackPacks.forEach(e => {
                 const t = this.dom.createElement('div');
                 t.classList.add('lh-audit__stackpack');
                 const n = this.dom.createElement('img');
-                n.classList.add('lh-audit__stackpack__img'),
+                (n.classList.add('lh-audit__stackpack__img'),
                   (n.src = e.iconDataURL),
                   (n.alt = e.title),
                   t.appendChild(n),
                   t.appendChild(
                     this.dom.convertMarkdownLinkSnippets(e.description),
                   ),
-                  this.dom.find('.lh-audit__stackpacks', r).appendChild(t);
+                  this.dom.find('.lh-audit__stackpacks', r).appendChild(t));
               });
             const s = this.dom.find('details', r);
             if (e.result.details) {
@@ -9152,8 +9158,8 @@ limitations under the License.
             ) {
               r.classList.add('lh-audit--error');
               const t = this.dom.find('.lh-audit__display-text', r);
-              (t.textContent = n.errorLabel),
-                t.classList.add('lh-tooltip-boundary');
+              ((t.textContent = n.errorLabel),
+                t.classList.add('lh-tooltip-boundary'));
               this.dom.createChildOf(
                 t,
                 'div',
@@ -9190,7 +9196,7 @@ limitations under the License.
             if (!r.details || 'screenshot' !== r.details.type) return null;
             const o = this.dom.createElement('img', 'lh-final-ss-image'),
               i = r.details.data;
-            (o.src = i), (o.alt = r.title);
+            ((o.src = i), (o.alt = r.title));
             const a = this.dom.find('.lh-category .lh-category-header', e),
               l = this.dom.createElement('div', 'lh-category-headercol'),
               s = this.dom.createElement(
@@ -9198,11 +9204,11 @@ limitations under the License.
                 'lh-category-headercol lh-category-headercol--separator',
               ),
               c = this.dom.createElement('div', 'lh-category-headercol');
-            l.append(...a.childNodes),
+            (l.append(...a.childNodes),
               l.append(n),
               c.append(o),
               a.append(l, s, c),
-              a.classList.add('lh-category-header__finalscreenshot');
+              a.classList.add('lh-category-header__finalscreenshot'));
           }
           _createChevron() {
             const e = this.dom.createComponent('chevron');
@@ -9231,12 +9237,12 @@ limitations under the License.
           renderAuditGroup(e) {
             const t = this.dom.createElement('div', 'lh-audit-group'),
               n = this.dom.createElement('div', 'lh-audit-group__header');
-            (this.dom.createChildOf(
+            ((this.dom.createChildOf(
               n,
               'span',
               'lh-audit-group__title',
             ).textContent = e.title),
-              t.appendChild(n);
+              t.appendChild(n));
             let r = null;
             return (
               e.description &&
@@ -9256,7 +9262,7 @@ limitations under the License.
             for (const t of e) {
               const e = t.group || r,
                 o = n.get(e) || [];
-              o.push(t), n.set(e, o);
+              (o.push(t), n.set(e, o));
             }
             const o = [];
             for (const [e, i] of n) {
@@ -9267,14 +9273,15 @@ limitations under the License.
               const n = t[e],
                 [a, l] = this.renderAuditGroup(n);
               for (const e of i) a.insertBefore(this.renderAudit(e), l);
-              a.classList.add(`lh-audit-group--${e}`), o.push(a);
+              (a.classList.add(`lh-audit-group--${e}`), o.push(a));
             }
             return o;
           }
           renderUnexpandableClump(e, t) {
             const n = this.dom.createElement('div');
             return (
-              this._renderGroupedAudits(e, t).forEach(e => n.appendChild(e)), n
+              this._renderGroupedAudits(e, t).forEach(e => n.appendChild(e)),
+              n
             );
           }
           renderClump(e, {auditRefs: t, description: n}) {
@@ -9284,20 +9291,18 @@ limitations under the License.
             const i = this.dom.find('.lh-audit-group__header', o),
               a = this._clumpTitles[e];
             this.dom.find('.lh-audit-group__title', i).textContent = a;
-            this.dom.find(
-              '.lh-audit-group__itemcount',
-              o,
-            ).textContent = `(${t.length})`;
+            this.dom.find('.lh-audit-group__itemcount', o).textContent =
+              `(${t.length})`;
             const s = t.map(this.renderAudit.bind(this));
             o.append(...s);
             const c = this.dom.find('.lh-audit-group', r);
             if (n) {
               const e = this.dom.convertMarkdownLinkSnippets(n);
-              e.classList.add(
+              (e.classList.add(
                 'lh-audit-group__description',
                 'lh-audit-group__footer',
               ),
-                c.appendChild(e);
+                c.appendChild(e));
             }
             return (
               (this.dom.find('.lh-clump-toggletext--show', c).textContent =
@@ -9362,7 +9367,7 @@ limitations under the License.
               a = r / o,
               s = this.dom.find('.lh-fraction__content', t),
               c = this.dom.createElement('span');
-            (c.textContent = `${r}/${o}`), s.appendChild(c);
+            ((c.textContent = `${r}/${o}`), s.appendChild(c));
             let d = l.calculateRating(a);
             return (
               0 === i && (d = 'null'),
@@ -9382,9 +9387,9 @@ limitations under the License.
               o = (0.25 * r) / n;
             e.style.transform = `rotate(${360 * o - 90}deg)`;
             let i = t * n - r / 2;
-            0 === t && (e.style.opacity = '0'),
+            (0 === t && (e.style.opacity = '0'),
               1 === t && (i = n),
-              (e.style.strokeDasharray = `${Math.max(i, 0)} ${n}`);
+              (e.style.strokeDasharray = `${Math.max(i, 0)} ${n}`));
           }
           _auditHasWarning(e) {
             return Boolean(e.result.warnings?.length);
@@ -9394,31 +9399,31 @@ limitations under the License.
             return 'manual' === t || 'notApplicable' === t
               ? t
               : l.showAsPassed(e.result)
-              ? this._auditHasWarning(e)
-                ? 'warning'
-                : 'passed'
-              : 'failed';
+                ? this._auditHasWarning(e)
+                  ? 'warning'
+                  : 'passed'
+                : 'failed';
           }
           render(e, t = {}, n) {
             const r = this.dom.createElement('div', 'lh-category');
-            (r.id = e.id), r.appendChild(this.renderCategoryHeader(e, t, n));
+            ((r.id = e.id), r.appendChild(this.renderCategoryHeader(e, t, n)));
             const o = new Map();
-            o.set('failed', []),
+            (o.set('failed', []),
               o.set('warning', []),
               o.set('manual', []),
               o.set('passed', []),
-              o.set('notApplicable', []);
+              o.set('notApplicable', []));
             for (const t of e.auditRefs) {
               const e = this._getClumpIdForAuditRef(t),
                 n = o.get(e);
-              n.push(t), o.set(e, n);
+              (n.push(t), o.set(e, n));
             }
             for (const e of o.values()) e.sort((e, t) => t.weight - e.weight);
             for (const [n, i] of o) {
               if (0 === i.length) continue;
               if ('failed' === n) {
                 const e = this.renderUnexpandableClump(i, t);
-                e.classList.add('lh-clump--failed'), r.appendChild(e);
+                (e.classList.add('lh-clump--failed'), r.appendChild(e));
                 continue;
               }
               const o = 'manual' === n ? e.manualDescription : void 0,
@@ -9474,7 +9479,7 @@ limitations under the License.
             const r = e.createComponent('crcChain');
             e.find('.lh-crc-node', r).setAttribute('title', t.node.request.url);
             const o = e.find('.lh-crc-node__tree-marker', r);
-            t.treeMarkers.forEach(t => {
+            (t.treeMarkers.forEach(t => {
               t
                 ? (o.appendChild(
                     e.createElement('span', 'lh-tree-marker lh-vert'),
@@ -9502,7 +9507,7 @@ limitations under the License.
                   )
                 : o.appendChild(
                     e.createElement('span', 'lh-tree-marker lh-right'),
-                  );
+                  ));
             const i = t.node.request.url,
               a = n.renderTextURL(i),
               s = e.find('.lh-crc-node__tree-value', r);
@@ -9516,9 +9521,9 @@ limitations under the License.
               i.textContent =
                 ' - ' + l.i18n.formatMilliseconds(1e3 * (r - n)) + ', ';
               const a = e.createElement('span', 'lh-crc-node__chain-duration');
-              (a.textContent = l.i18n.formatBytesToKiB(o, 0.01)),
+              ((a.textContent = l.i18n.formatBytesToKiB(o, 0.01)),
                 s.appendChild(i),
-                s.appendChild(a);
+                s.appendChild(a));
             }
             return r;
           }
@@ -9539,12 +9544,12 @@ limitations under the License.
           static render(e, t, n) {
             const r = e.createComponent('crc'),
               o = e.find('.lh-crc', r);
-            (e.find('.lh-crc-initial-nav', r).textContent =
+            ((e.find('.lh-crc-initial-nav', r).textContent =
               l.i18n.strings.crcInitialNavigation),
               (e.find('.lh-crc__longest_duration_label', r).textContent =
                 l.i18n.strings.crcLongestDurationLabel),
               (e.find('.lh-crc__longest_duration', r).textContent =
-                l.i18n.formatMilliseconds(t.longestChain.duration));
+                l.i18n.formatMilliseconds(t.longestChain.duration)));
             const i = h.initTree(t.chains);
             for (const a of Object.keys(i.tree)) {
               const l = h.createSegment(i.tree, a, i.startTime, i.transferSize);
@@ -9593,8 +9598,8 @@ limitations under the License.
             e.find('.lh-snippet__title', i).textContent = t.title;
             const {snippetCollapseButtonLabel: a, snippetExpandButtonLabel: s} =
               l.i18n.strings;
-            (e.find('.lh-snippet__btn-label-collapse', i).textContent = a),
-              (e.find('.lh-snippet__btn-label-expand', i).textContent = s);
+            ((e.find('.lh-snippet__btn-label-collapse', i).textContent = a),
+              (e.find('.lh-snippet__btn-label-expand', i).textContent = s));
             const c = e.find('.lh-snippet__toggle-expand', i);
             if (
               (o ? c.addEventListener('click', () => r()) : c.remove(),
@@ -9618,10 +9623,10 @@ limitations under the License.
             const l = e.createComponent('snippetLine'),
               s = e.find('.lh-snippet__line', l),
               {classList: c} = s;
-            _[i].forEach(e => c.add(e)),
+            (_[i].forEach(e => c.add(e)),
               a === u
                 ? c.add('lh-snippet__show-if-collapsed')
-                : a === g && c.add('lh-snippet__show-if-expanded');
+                : a === g && c.add('lh-snippet__show-if-expanded'));
             const d = n + (o ? '…' : ''),
               h = e.find('.lh-snippet__line code', s);
             return (
@@ -9674,16 +9679,16 @@ limitations under the License.
               const {line: o, previousLine: i} = w(a, n),
                 {line: h, previousLine: v} = w(l, n),
                 b = !!h;
-              !!v && !b && (d = !0),
+              (!!v && !b && (d = !0),
                 b &&
                   d &&
                   (c.append(k.renderOmittedLinesPlaceholder(e, t, u)),
-                  (d = !1));
+                  (d = !1)));
               const _ = !o && 1 === n;
               if ((!o && !!i) || _) {
                 const r = !l.some(e => e.lineNumber > n) || 1 === n;
-                c.append(k.renderOmittedLinesPlaceholder(e, t, r ? g : p)),
-                  (d = !1);
+                (c.append(k.renderOmittedLinesPlaceholder(e, t, r ? g : p)),
+                  (d = !1));
               }
               if (!o) continue;
               const x = y(r, n),
@@ -9692,10 +9697,10 @@ limitations under the License.
                   contentType: E ? f : m,
                   visibility: h ? p : g,
                 });
-              c.append(k.renderSnippetLine(e, t, A)),
+              (c.append(k.renderSnippetLine(e, t, A)),
                 x.forEach(n => {
                   c.append(k.renderMessage(e, t, n));
-                });
+                }));
             }
             return c;
           }
@@ -9706,7 +9711,7 @@ limitations under the License.
                 o.classList.toggle('lh-snippet--expanded'),
               ),
               a = k.renderSnippetContent(e, r, t);
-            return o.append(i, a), o;
+            return (o.append(i, a), o);
           }
         }
         /**
@@ -9730,7 +9735,7 @@ limitations under the License.
           static renderClipPathInScreenshot(e, t, n, r, o) {
             const i = e.find('clipPath', t),
               a = `clip-${l.getUniqueSuffix()}`;
-            (i.id = a), (t.style.clipPath = `url(#${a})`);
+            ((i.id = a), (t.style.clipPath = `url(#${a})`));
             const s = n.top / o.height,
               c = s + r.height / o.height,
               d = n.left / o.width,
@@ -9746,7 +9751,7 @@ limitations under the License.
                 'http://www.w3.org/2000/svg',
                 'polygon',
               );
-              n.setAttribute('points', t), i.append(n);
+              (n.setAttribute('points', t), i.append(n));
             }
           }
           static installFullPageScreenshot(e, t) {
@@ -9812,10 +9817,10 @@ limitations under the License.
               return null;
             const o = e.createComponent('elementScreenshot'),
               i = e.find('div.lh-element-screenshot', o);
-            (i.dataset.rectWidth = n.width.toString()),
+            ((i.dataset.rectWidth = n.width.toString()),
               (i.dataset.rectHeight = n.height.toString()),
               (i.dataset.rectLeft = n.left.toString()),
-              (i.dataset.rectTop = n.top.toString());
+              (i.dataset.rectTop = n.top.toString()));
             const a = this._computeZoomFactor(n, r),
               l = {width: r.width / a, height: r.height / a};
             l.width = Math.min(t.width, l.width);
@@ -9825,21 +9830,19 @@ limitations under the License.
                 width: t.width,
                 height: t.height,
               });
-            e.find(
-              'div.lh-element-screenshot__content',
-              i,
-            ).style.top = `-${c}px`;
+            e.find('div.lh-element-screenshot__content', i).style.top =
+              `-${c}px`;
             const h = e.find('div.lh-element-screenshot__image', i);
-            (h.style.width = s + 'px'),
+            ((h.style.width = s + 'px'),
               (h.style.height = c + 'px'),
               (h.style.backgroundPositionY = -d.screenshot.top * a + 'px'),
               (h.style.backgroundPositionX = -d.screenshot.left * a + 'px'),
-              (h.style.backgroundSize = `${t.width * a}px ${t.height * a}px`);
+              (h.style.backgroundSize = `${t.width * a}px ${t.height * a}px`));
             const p = e.find('div.lh-element-screenshot__element-marker', i);
-            (p.style.width = n.width * a + 'px'),
+            ((p.style.width = n.width * a + 'px'),
               (p.style.height = n.height * a + 'px'),
               (p.style.left = d.clip.left * a + 'px'),
-              (p.style.top = d.clip.top * a + 'px');
+              (p.style.top = d.clip.top * a + 'px'));
             const u = e.find('div.lh-element-screenshot__mask', i);
             return (
               (u.style.width = s + 'px'),
@@ -9867,7 +9870,8 @@ limitations under the License.
          */ const C = ['http://', 'https://', 'data:'];
         class z {
           constructor(e, t = {}) {
-            (this._dom = e), (this._fullPageScreenshot = t.fullPageScreenshot);
+            ((this._dom = e),
+              (this._fullPageScreenshot = t.fullPageScreenshot));
           }
           render(e) {
             switch (e.type) {
@@ -9893,7 +9897,7 @@ limitations under the License.
           _renderBytes(e) {
             const t = l.i18n.formatBytesToKiB(e.value, e.granularity),
               n = this._renderText(t);
-            return (n.title = l.i18n.formatBytes(e.value)), n;
+            return ((n.title = l.i18n.formatBytes(e.value)), n);
           }
           _renderMilliseconds(e) {
             let t = l.i18n.formatMilliseconds(e.value, e.granularity);
@@ -9908,25 +9912,25 @@ limitations under the License.
             let n, r, o;
             try {
               const e = l.parseURL(t);
-              (n = '/' === e.file ? e.origin : e.file),
+              ((n = '/' === e.file ? e.origin : e.file),
                 (r =
                   '/' === e.file || '' === e.hostname ? '' : `(${e.hostname})`),
-                (o = t);
+                (o = t));
             } catch (e) {
               n = t;
             }
             const i = this._dom.createElement('div', 'lh-text__url');
             if ((i.appendChild(this._renderLink({text: n, url: t})), r)) {
               const e = this._renderText(r);
-              e.classList.add('lh-text__url-host'), i.appendChild(e);
+              (e.classList.add('lh-text__url-host'), i.appendChild(e));
             }
-            return o && ((i.title = t), (i.dataset.url = t)), i;
+            return (o && ((i.title = t), (i.dataset.url = t)), i);
           }
           _renderLink(e) {
             const t = this._dom.createElement('a');
             if ((this._dom.safelySetHref(t, e.url), !t.href)) {
               const t = this._renderText(e.text);
-              return t.classList.add('lh-link'), t;
+              return (t.classList.add('lh-link'), t);
             }
             return (
               (t.rel = 'noopener'),
@@ -9938,26 +9942,24 @@ limitations under the License.
           }
           _renderText(e) {
             const t = this._dom.createElement('div', 'lh-text');
-            return (t.textContent = e), t;
+            return ((t.textContent = e), t);
           }
           _renderNumeric(e) {
             const t = l.i18n.formatNumber(e.value, e.granularity),
               n = this._dom.createElement('div', 'lh-numeric');
-            return (n.textContent = t), n;
+            return ((n.textContent = t), n);
           }
           _renderThumbnail(e) {
             const t = this._dom.createElement('img', 'lh-thumbnail'),
               n = e;
-            return (t.src = n), (t.title = n), (t.alt = ''), t;
+            return ((t.src = n), (t.title = n), (t.alt = ''), t);
           }
           _renderUnknown(e, t) {
             console.error(`Unknown details type: ${e}`, t);
             const n = this._dom.createElement('details', 'lh-unknown');
             return (
-              (this._dom.createChildOf(
-                n,
-                'summary',
-              ).textContent = `We don't know how to render audit details of type \`${e}\`. The Lighthouse version that collected this data is likely newer than the Lighthouse version of the report renderer. Expand for the raw JSON.`),
+              (this._dom.createChildOf(n, 'summary').textContent =
+                `We don't know how to render audit details of type \`${e}\`. The Lighthouse version that collected this data is likely newer than the Lighthouse version of the report renderer. Expand for the raw JSON.`),
               (this._dom.createChildOf(n, 'pre').textContent = JSON.stringify(
                 t,
                 null,
@@ -10102,7 +10104,7 @@ limitations under the License.
             if (!r.some(Boolean)) return n;
             for (const t of e.subItems.items) {
               const e = this._renderTableRow(t, r);
-              e.classList.add('lh-sub-item-row'), n.append(e);
+              (e.classList.add('lh-sub-item-row'), n.append(e));
             }
             return n;
           }
@@ -10115,8 +10117,8 @@ limitations under the License.
             for (const e of o) {
               const t = `lh-table-column--${e.valueType || 'text'}`,
                 n = this._dom.createElement('div', 'lh-text');
-              (n.textContent = e.label),
-                this._dom.createChildOf(r, 'th', t).appendChild(n);
+              ((n.textContent = e.label),
+                this._dom.createChildOf(r, 'th', t).appendChild(n));
             }
             const i = this._dom.createChildOf(t, 'tbody');
             let a = !0;
@@ -10124,7 +10126,7 @@ limitations under the License.
               const e = this._renderTableRowsFromItem(t, o);
               for (const t of this._dom.findAll('tr', e))
                 t.classList.add(a ? 'lh-row--even' : 'lh-row--odd');
-              (a = !a), i.append(e);
+              ((a = !a), i.append(e));
             }
             return t;
           }
@@ -10142,13 +10144,13 @@ limitations under the License.
             const t = this._dom.createElement('span', 'lh-node');
             if (e.nodeLabel) {
               const n = this._dom.createElement('div');
-              (n.textContent = e.nodeLabel), t.appendChild(n);
+              ((n.textContent = e.nodeLabel), t.appendChild(n));
             }
             if (e.snippet) {
               const n = this._dom.createElement('div');
-              n.classList.add('lh-node__snippet'),
+              (n.classList.add('lh-node__snippet'),
                 (n.textContent = e.snippet),
-                t.appendChild(n);
+                t.appendChild(n));
             }
             if (
               (e.selector && (t.title = e.selector),
@@ -10166,7 +10168,7 @@ limitations under the License.
               n,
               {width: 147, height: 100},
             );
-            return r && t.prepend(r), t;
+            return (r && t.prepend(r), t);
           }
           renderSourceLocation(e) {
             if (!e.url) return null;
@@ -10178,21 +10180,21 @@ limitations under the License.
               }`;
             }
             if ('network' === e.urlProvider && n)
-              (r = this._renderLink({url: e.url, text: n})),
-                (r.title = `maps to generated location ${t}`);
+              ((r = this._renderLink({url: e.url, text: n})),
+                (r.title = `maps to generated location ${t}`));
             else if ('network' !== e.urlProvider || n)
               if ('comment' === e.urlProvider && n)
-                (r = this._renderText(`${n} (from source map)`)),
-                  (r.title = `${t} (from sourceURL)`);
+                ((r = this._renderText(`${n} (from source map)`)),
+                  (r.title = `${t} (from sourceURL)`));
               else {
                 if ('comment' !== e.urlProvider || n) return null;
                 r = this._renderText(`${t} (from sourceURL)`);
               }
             else
-              (r = this.renderTextURL(e.url)),
+              ((r = this.renderTextURL(e.url)),
                 (this._dom.find('.lh-link', r).textContent += `:${e.line + 1}:${
                   e.column
-                }`);
+                }`));
             return (
               r.classList.add('lh-source-location'),
               r.setAttribute('data-source-url', e.url),
@@ -10214,13 +10216,13 @@ limitations under the License.
                   'img',
                   'lh-filmstrip__thumbnail',
                 );
-              (r.src = n.data), (r.alt = 'Screenshot');
+              ((r.src = n.data), (r.alt = 'Screenshot'));
             }
             return t;
           }
           _renderCode(e) {
             const t = this._dom.createElement('pre', 'lh-code');
-            return (t.textContent = e), t;
+            return ((t.textContent = e), t);
           }
         }
         /**
@@ -10230,13 +10232,13 @@ limitations under the License.
          */ const S = 1024;
         class L {
           constructor(e, t) {
-            'en-XA' === e && (e = 'de'),
+            ('en-XA' === e && (e = 'de'),
               (this._numberDateLocale = e),
               (this._numberFormatter = new Intl.NumberFormat(e)),
               (this._percentFormatter = new Intl.NumberFormat(e, {
                 style: 'percent',
               })),
-              (this._strings = t);
+              (this._strings = t));
           }
           get strings() {
             return this._strings;
@@ -10267,8 +10269,8 @@ limitations under the License.
             return e >= 1048576
               ? this.formatBytesToMiB(e, t)
               : e >= S
-              ? this.formatBytesToKiB(e, t)
-              : this.formatNumber(e, t) + ' B';
+                ? this.formatBytesToKiB(e, t)
+                : this.formatNumber(e, t) + ' B';
           }
           _byteFormatterForGranularity(e) {
             let t = 0;
@@ -10304,8 +10306,8 @@ limitations under the License.
             try {
               n = new Intl.DateTimeFormat(this._numberDateLocale, t);
             } catch (e) {
-              (t.timeZone = 'UTC'),
-                (n = new Intl.DateTimeFormat(this._numberDateLocale, t));
+              ((t.timeZone = 'UTC'),
+                (n = new Intl.DateTimeFormat(this._numberDateLocale, t)));
             }
             return n.format(new Date(e));
           }
@@ -10359,7 +10361,7 @@ limitations under the License.
               ),
               'error' === e.result.scoreDisplayMode)
             ) {
-              (i.textContent = ''), (o.textContent = 'Error!');
+              ((i.textContent = ''), (o.textContent = 'Error!'));
               this.dom.createChildOf(i, 'span').textContent =
                 e.result.errorMessage || 'Report error: no metric information';
             }
@@ -10386,9 +10388,9 @@ limitations under the License.
               e.result.displayValue)
             ) {
               const t = e.result.displayValue;
-              (this.dom.find('div.lh-load-opportunity__sparkline', r).title =
+              ((this.dom.find('div.lh-load-opportunity__sparkline', r).title =
                 t),
-                (i.title = t);
+                (i.title = t));
             }
             return r;
           }
@@ -10407,7 +10409,7 @@ limitations under the License.
             const t = e.filter(e => 'metrics' === e.group),
               n = e.find(e => 'first-cpu-idle' === e.id),
               r = e.find(e => 'first-meaningful-paint' === e.id);
-            n && t.push(n), r && t.push(r);
+            (n && t.push(n), r && t.push(r));
             const o = [
               ...t.map(e => {
                 let t;
@@ -10432,31 +10434,31 @@ limitations under the License.
               a = new URL(
                 'https://googlechrome.github.io/lighthouse/scorecalc/',
               );
-            return (a.hash = i.toString()), a.href;
+            return ((a.hash = i.toString()), a.href);
           }
           _classifyPerformanceAudit(e) {
             return e.group
               ? null
               : e.result.details && 'opportunity' === e.result.details.type
-              ? 'load-opportunity'
-              : 'diagnostic';
+                ? 'load-opportunity'
+                : 'diagnostic';
           }
           render(e, t, n) {
             const r = l.i18n.strings,
               o = this.dom.createElement('div', 'lh-category');
-            (o.id = e.id), o.appendChild(this.renderCategoryHeader(e, t, n));
+            ((o.id = e.id), o.appendChild(this.renderCategoryHeader(e, t, n)));
             const i = e.auditRefs.filter(e => 'metrics' === e.group);
             if (i.length) {
               const [n, a] = this.renderAuditGroup(t.metrics),
                 s = this.dom.createElement('input', 'lh-metrics-toggle__input'),
                 c = `lh-metrics-toggle${l.getUniqueSuffix()}`;
-              s.setAttribute(
+              (s.setAttribute(
                 'aria-label',
                 'Toggle the display of metric descriptions',
               ),
                 (s.type = 'checkbox'),
                 (s.id = c),
-                n.prepend(s);
+                n.prepend(s));
               const d = this.dom.find('.lh-audit-group__header', n),
                 h = this.dom.createChildOf(
                   d,
@@ -10474,26 +10476,26 @@ limitations under the License.
                   'span',
                   'lh-metrics-toggle__labeltext--hide',
                 );
-              (p.textContent = l.i18n.strings.expandView),
-                (u.textContent = l.i18n.strings.collapseView);
+              ((p.textContent = l.i18n.strings.expandView),
+                (u.textContent = l.i18n.strings.collapseView));
               const g = this.dom.createElement('div', 'lh-metrics-container');
-              n.insertBefore(g, a),
+              (n.insertBefore(g, a),
                 i.forEach(e => {
                   g.appendChild(this._renderMetric(e));
-                });
+                }));
               const m = this.dom.find('.lh-category-header__description', o),
                 f = this.dom.createChildOf(m, 'div', 'lh-metrics__disclaimer'),
                 v = this.dom.convertMarkdownLinkSnippets(r.varianceDisclaimer);
               f.appendChild(v);
               const b = this.dom.createChildOf(f, 'a', 'lh-calclink');
-              (b.target = '_blank'),
+              ((b.target = '_blank'),
                 (b.textContent = r.calculatorLink),
                 this.dom.safelySetHref(
                   b,
                   this._getScoringCalculatorHref(e.auditRefs),
                 ),
                 n.classList.add('lh-audit-group--metrics'),
-                o.appendChild(n);
+                o.appendChild(n));
             }
             const a = this.dom.createChildOf(
                 o,
@@ -10522,19 +10524,19 @@ limitations under the License.
                 a = Math.max(1e3 * Math.ceil(i / 1e3), e),
                 [l, s] = this.renderAuditGroup(t['load-opportunities']),
                 d = this.dom.createComponent('opportunityHeader');
-              (this.dom.find('.lh-load-opportunity__col--one', d).textContent =
+              ((this.dom.find('.lh-load-opportunity__col--one', d).textContent =
                 r.opportunityResourceColumnLabel),
                 (this.dom.find(
                   '.lh-load-opportunity__col--two',
                   d,
-                ).textContent = r.opportunitySavingsColumnLabel);
+                ).textContent = r.opportunitySavingsColumnLabel));
               const h = this.dom.find('.lh-load-opportunity__header', d);
-              l.insertBefore(h, s),
+              (l.insertBefore(h, s),
                 c.forEach(e =>
                   l.insertBefore(this._renderOpportunity(e, a), s),
                 ),
                 l.classList.add('lh-audit-group--load-opportunities'),
-                o.appendChild(l);
+                o.appendChild(l));
             }
             const h = e.auditRefs
               .filter(e => 'diagnostic' === this._classifyPerformanceAudit(e))
@@ -10550,9 +10552,9 @@ limitations under the License.
               );
             if (h.length) {
               const [e, n] = this.renderAuditGroup(t.diagnostics);
-              h.forEach(t => e.insertBefore(this.renderAudit(t), n)),
+              (h.forEach(t => e.insertBefore(this.renderAudit(t), n)),
                 e.classList.add('lh-audit-group--diagnostics'),
-                o.appendChild(e);
+                o.appendChild(e));
             }
             const p = e.auditRefs.filter(
               e =>
@@ -10581,9 +10583,9 @@ limitations under the License.
               m.length > 0)
             ) {
               const [e, n] = this.renderAuditGroup(t.budgets);
-              m.forEach(t => e.insertBefore(t, n)),
+              (m.forEach(t => e.insertBefore(t, n)),
                 e.classList.add('lh-audit-group--budgets'),
-                o.appendChild(e);
+                o.appendChild(e));
             }
             return o;
           }
@@ -10603,13 +10605,13 @@ limitations under the License.
                   'input',
                   'lh-metricfilter__radio',
                 );
-              (i.type = 'radio'), (i.name = `metricsfilter-${o}`), (i.id = r);
+              ((i.type = 'radio'), (i.name = `metricsfilter-${o}`), (i.id = r));
               const a = this.dom.createChildOf(
                 n,
                 'label',
                 'lh-metricfilter__label',
               );
-              (a.htmlFor = r),
+              ((a.htmlFor = r),
                 (a.title = e.result?.title),
                 (a.textContent = e.acronym || e.id),
                 'All' === e.acronym &&
@@ -10644,7 +10646,7 @@ limitations under the License.
                       n = !!t.length && t.every(e => e.hidden);
                     e.hidden = n;
                   }
-                });
+                }));
             }
           }
         }
@@ -10666,7 +10668,7 @@ limitations under the License.
          */ class F extends c {
           render(e, t = {}) {
             const n = this.dom.createElement('div', 'lh-category');
-            (n.id = e.id), n.appendChild(this.renderCategoryHeader(e, t));
+            ((n.id = e.id), n.appendChild(this.renderCategoryHeader(e, t)));
             const r = e.auditRefs,
               o = r.filter(e => 'manual' !== e.result.scoreDisplayMode),
               i = this._renderAudits(o, t);
@@ -10676,7 +10678,7 @@ limitations under the License.
                 auditRefs: a,
                 description: e.manualDescription,
               });
-            return n.appendChild(l), n;
+            return (n.appendChild(l), n);
           }
           renderCategoryScore(e, t) {
             if (null === e.score) return super.renderScoreGauge(e, t);
@@ -10766,7 +10768,7 @@ limitations under the License.
          * (this is handled by terser)
          */ class N {
           constructor(e) {
-            (this._dom = e), (this._opts = {});
+            ((this._dom = e), (this._opts = {}));
           }
           renderReport(e, t, n) {
             if (!this._dom.rootEl && t) {
@@ -10779,10 +10781,10 @@ limitations under the License.
                 : (t.classList.add('lh-root', 'lh-vars'),
                   (this._dom.rootEl = t));
             } else this._dom.rootEl && t && (this._dom.rootEl = t);
-            n && (this._opts = n),
+            (n && (this._opts = n),
               this._dom.setLighthouseChannel(
                 e.configSettings.channel || 'unknown',
-              );
+              ));
             const r = l.prepareReportResult(e);
             return (
               (this._dom.rootEl.textContent = ''),
@@ -10894,7 +10896,7 @@ limitations under the License.
                   'a.lh-gauge__wrapper, a.lh-fraction__wrapper',
                   c,
                 );
-              d &&
+              (d &&
                 (this._dom.safelySetHref(d, `#${a.id}`),
                 d.addEventListener('click', e => {
                   if (!d.matches('[href^="#"]')) return;
@@ -10902,14 +10904,14 @@ limitations under the License.
                     n = this._dom.rootEl;
                   if (!t || !n) return;
                   const r = this._dom.find(t, n);
-                  e.preventDefault(), r.scrollIntoView();
+                  (e.preventDefault(), r.scrollIntoView());
                 }),
                 this._opts.onPageAnchorRendered?.(d)),
                 l.isPluginCategory(a.id)
                   ? i.push(c)
                   : s.renderCategoryScore === t.renderCategoryScore
-                  ? r.push(c)
-                  : o.push(c);
+                    ? r.push(c)
+                    : o.push(c));
             }
             return [...r, ...o, ...i];
           }
@@ -10918,7 +10920,7 @@ limitations under the License.
               ...l.UIStrings,
               ...e.i18n.rendererFormattedStrings,
             });
-            (l.i18n = t), (l.reportJson = e);
+            ((l.i18n = t), (l.reportJson = e));
             const n =
                 e.audits['full-page-screenshot']?.details &&
                 'full-page-screenshot' ===
@@ -10944,11 +10946,11 @@ limitations under the License.
               h)
             ) {
               const t = this._dom.find('.lh-scores-container', a);
-              h.append(...this._renderScoreGauges(e, o, i)),
+              (h.append(...this._renderScoreGauges(e, o, i)),
                 t.appendChild(h),
-                t.appendChild(p);
+                t.appendChild(p));
               const n = this._dom.createElement('div', 'lh-sticky-header');
-              n.append(...this._renderScoreGauges(e, o, i)), s.appendChild(n);
+              (n.append(...this._renderScoreGauges(e, o, i)), s.appendChild(n));
             }
             const u = d.appendChild(
                 this._dom.createElement('div', 'lh-categories'),
@@ -11005,7 +11007,7 @@ limitations under the License.
               if ('undefined' != typeof CompressionStream) {
                 const e = new CompressionStream('gzip'),
                   t = e.writable.getWriter();
-                t.write(n), t.close();
+                (t.write(n), t.close());
                 const r = await new Response(e.readable).arrayBuffer();
                 n = new Uint8Array(r);
               } else {
@@ -11046,8 +11048,8 @@ limitations under the License.
           return e
             ? `https://${window.location.host}/gh-pages`
             : t
-            ? 'http://localhost:8000'
-            : 'https://googlechrome.github.io/lighthouse';
+              ? 'http://localhost:8000'
+              : 'https://googlechrome.github.io/lighthouse';
         }
         function U(e) {
           const t = e.generatedTime,
@@ -11057,9 +11059,9 @@ limitations under the License.
         async function $(e, t, n) {
           const r = new URL(t),
             o = Boolean(window.CompressionStream);
-          (r.hash = await R.toBase64(JSON.stringify(e), {gzip: o})),
+          ((r.hash = await R.toBase64(JSON.stringify(e), {gzip: o})),
             o && r.searchParams.set('gzip', '1'),
-            window.open(r.toString(), n);
+            window.open(r.toString(), n));
         }
         async function B(e) {
           const t = 'viewer-' + U(e);
@@ -11081,7 +11083,7 @@ limitations under the License.
          */
         class O {
           constructor(e) {
-            (this._dom = e),
+            ((this._dom = e),
               this._toggleEl,
               this._menuEl,
               (this.onDocumentKeyDown = this.onDocumentKeyDown.bind(this)),
@@ -11093,10 +11095,10 @@ limitations under the License.
               (this._getNextSelectableNode =
                 this._getNextSelectableNode.bind(this)),
               (this._getPreviousMenuItem =
-                this._getPreviousMenuItem.bind(this));
+                this._getPreviousMenuItem.bind(this)));
           }
           setup(e) {
-            (this._toggleEl = this._dom.find(
+            ((this._toggleEl = this._dom.find(
               '.lh-topbar button.lh-tools__button',
               this._dom.rootEl,
             )),
@@ -11107,20 +11109,20 @@ limitations under the License.
                 this._dom.rootEl,
               )),
               this._menuEl.addEventListener('keydown', this.onMenuKeydown),
-              this._menuEl.addEventListener('click', e);
+              this._menuEl.addEventListener('click', e));
           }
           close() {
-            this._toggleEl.classList.remove('lh-active'),
+            (this._toggleEl.classList.remove('lh-active'),
               this._toggleEl.setAttribute('aria-expanded', 'false'),
               this._menuEl.contains(this._dom.document().activeElement) &&
                 this._toggleEl.focus(),
               this._menuEl.removeEventListener('focusout', this.onMenuFocusOut),
               this._dom
                 .document()
-                .removeEventListener('keydown', this.onDocumentKeyDown);
+                .removeEventListener('keydown', this.onDocumentKeyDown));
           }
           open(e) {
-            this._toggleEl.classList.contains('lh-active')
+            (this._toggleEl.classList.contains('lh-active')
               ? e.focus()
               : this._menuEl.addEventListener(
                   'transitionend',
@@ -11134,40 +11136,40 @@ limitations under the License.
               this._menuEl.addEventListener('focusout', this.onMenuFocusOut),
               this._dom
                 .document()
-                .addEventListener('keydown', this.onDocumentKeyDown);
+                .addEventListener('keydown', this.onDocumentKeyDown));
           }
           onToggleClick(e) {
-            e.preventDefault(),
+            (e.preventDefault(),
               e.stopImmediatePropagation(),
               this._toggleEl.classList.contains('lh-active')
                 ? this.close()
-                : this.open(this._getNextMenuItem());
+                : this.open(this._getNextMenuItem()));
           }
           onToggleKeydown(e) {
             switch (e.code) {
               case 'ArrowUp':
-                e.preventDefault(), this.open(this._getPreviousMenuItem());
+                (e.preventDefault(), this.open(this._getPreviousMenuItem()));
                 break;
               case 'ArrowDown':
               case 'Enter':
               case ' ':
-                e.preventDefault(), this.open(this._getNextMenuItem());
+                (e.preventDefault(), this.open(this._getNextMenuItem()));
             }
           }
           onMenuKeydown(e) {
             const t = e.target;
             switch (e.code) {
               case 'ArrowUp':
-                e.preventDefault(), this._getPreviousMenuItem(t).focus();
+                (e.preventDefault(), this._getPreviousMenuItem(t).focus());
                 break;
               case 'ArrowDown':
-                e.preventDefault(), this._getNextMenuItem(t).focus();
+                (e.preventDefault(), this._getNextMenuItem(t).focus());
                 break;
               case 'Home':
-                e.preventDefault(), this._getNextMenuItem().focus();
+                (e.preventDefault(), this._getNextMenuItem().focus());
                 break;
               case 'End':
-                e.preventDefault(), this._getPreviousMenuItem().focus();
+                (e.preventDefault(), this._getPreviousMenuItem().focus());
             }
           }
           onDocumentKeyDown(e) {
@@ -11185,7 +11187,7 @@ limitations under the License.
                 'none' !== window.getComputedStyle(e).display,
             );
             let r = t ? n.indexOf(t) + 1 : 0;
-            return r >= n.length && (r = 0), n[r];
+            return (r >= n.length && (r = 0), n[r]);
           }
           _getNextMenuItem(e) {
             const t = Array.from(this._menuEl.childNodes);
@@ -11202,7 +11204,7 @@ limitations under the License.
          * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
          */ class I {
           constructor(e, t) {
-            this.lhr,
+            (this.lhr,
               (this._reportUIFeatures = e),
               (this._dom = t),
               (this._dropDownMenu = new O(this._dom)),
@@ -11214,18 +11216,18 @@ limitations under the License.
               (this.onDropDownMenuClick = this.onDropDownMenuClick.bind(this)),
               (this.onKeyUp = this.onKeyUp.bind(this)),
               (this.onCopy = this.onCopy.bind(this)),
-              (this.collapseAllDetails = this.collapseAllDetails.bind(this));
+              (this.collapseAllDetails = this.collapseAllDetails.bind(this)));
           }
           enable(e) {
-            (this.lhr = e),
+            ((this.lhr = e),
               this._dom.rootEl.addEventListener('keyup', this.onKeyUp),
               this._dom.document().addEventListener('copy', this.onCopy),
               this._dropDownMenu.setup(this.onDropDownMenuClick),
-              this._setUpCollapseDetailsAfterPrinting();
-            this._dom
+              this._setUpCollapseDetailsAfterPrinting());
+            (this._dom
               .find('.lh-topbar__logo', this._dom.rootEl)
               .addEventListener('click', () => T(this._dom)),
-              this._setupStickyHeader();
+              this._setupStickyHeader());
           }
           onDropDownMenuClick(e) {
             e.preventDefault();
@@ -11236,10 +11238,10 @@ limitations under the License.
                   this.onCopyButtonClick();
                   break;
                 case 'print-summary':
-                  this.collapseAllDetails(), this._print();
+                  (this.collapseAllDetails(), this._print());
                   break;
                 case 'print-expanded':
-                  this.expandAllDetails(), this._print();
+                  (this.expandAllDetails(), this._print());
                   break;
                 case 'save-json': {
                   const e = JSON.stringify(this.lhr, null, 2);
@@ -11281,7 +11283,7 @@ limitations under the License.
             }
           }
           onCopy(e) {
-            this._copyAttempt &&
+            (this._copyAttempt &&
               e.clipboardData &&
               (e.preventDefault(),
               e.clipboardData.setData(
@@ -11292,7 +11294,7 @@ limitations under the License.
                 cmd: 'log',
                 msg: 'Report JSON copied to clipboard',
               })),
-              (this._copyAttempt = !1);
+              (this._copyAttempt = !1));
           }
           onCopyButtonClick() {
             this._dom.fireEventOn('lh-analytics', this._dom.document(), {
@@ -11313,11 +11315,11 @@ limitations under the License.
                     msg: 'Your browser does not support copy to clipboard.',
                   })));
             } catch (e) {
-              (this._copyAttempt = !1),
+              ((this._copyAttempt = !1),
                 this._dom.fireEventOn('lh-log', this._dom.document(), {
                   cmd: 'log',
                   msg: e.message,
-                });
+                }));
             }
           }
           onKeyUp(e) {
@@ -11346,8 +11348,8 @@ limitations under the License.
             return 'visible' !== t && 'hidden' !== t
               ? e
               : e.parentElement
-              ? this._getScrollParent(e.parentElement)
-              : document;
+                ? this._getScrollParent(e.parentElement)
+                : document;
           }
           _setUpCollapseDetailsAfterPrinting() {
             'onbeforeprint' in self
@@ -11359,7 +11361,10 @@ limitations under the License.
                 });
           }
           _setupStickyHeader() {
-            (this.topbarEl = this._dom.find('div.lh-topbar', this._dom.rootEl)),
+            ((this.topbarEl = this._dom.find(
+              'div.lh-topbar',
+              this._dom.rootEl,
+            )),
               (this.categoriesEl = this._dom.find(
                 'div.lh-categories',
                 this._dom.rootEl,
@@ -11391,7 +11396,7 @@ limitations under the License.
                     this._updateStickyHeader(),
                   ).observe(t);
                 }),
-              );
+              ));
           }
           _updateStickyHeader() {
             if (!this.stickyHeaderEl) return;
@@ -11408,11 +11413,11 @@ limitations under the License.
               o = r[n],
               i = r[0].getBoundingClientRect().left,
               a = o.getBoundingClientRect().left - i;
-            (this.highlightEl.style.transform = `translate(${a}px)`),
+            ((this.highlightEl.style.transform = `translate(${a}px)`),
               this.stickyHeaderEl.classList.toggle(
                 'lh-sticky-header--visible',
                 e,
-              );
+              ));
           }
         }
         /**
@@ -11459,19 +11464,19 @@ limitations under the License.
          * limitations under the License.
          */ class j {
           constructor(e, t = {}) {
-            this.json,
+            (this.json,
               (this._dom = e),
               (this._opts = t),
               (this._topbar = t.omitTopbar ? null : new I(this, e)),
-              (this.onMediaQueryChange = this.onMediaQueryChange.bind(this));
+              (this.onMediaQueryChange = this.onMediaQueryChange.bind(this)));
           }
           initFeatures(e) {
-            (this.json = e),
+            ((this.json = e),
               this._topbar &&
                 (this._topbar.enable(e), this._topbar.resetUIState()),
               this._setupMediaQueryListeners(),
               this._setupThirdPartyFilter(),
-              this._setupElementScreenshotOverlay(this._dom.rootEl);
+              this._setupElementScreenshotOverlay(this._dom.rootEl));
             let t = !1;
             !(
               this._dom.isDevTools() ||
@@ -11479,13 +11484,13 @@ limitations under the License.
             ) &&
               window.matchMedia('(prefers-color-scheme: dark)').matches &&
               (t = !0);
-            ['performance', 'accessibility', 'best-practices', 'seo'].every(
+            (['performance', 'accessibility', 'best-practices', 'seo'].every(
               t => {
                 const n = e.categories[t];
                 return n && 1 === n.score;
               },
             ) && ((t = !0), this._enableFireworks()),
-              t && T(this._dom, !0);
+              t && T(this._dom, !0));
             if (
               e.categories.performance &&
               e.categories.performance.auditRefs.some(t =>
@@ -11497,7 +11502,7 @@ limitations under the License.
                 this._dom.rootEl,
               ).checked = !0;
             }
-            this.json.audits['script-treemap-data'] &&
+            (this.json.audits['script-treemap-data'] &&
               this.json.audits['script-treemap-data'].details &&
               this.addButton({
                 text: l.i18n.strings.viewTreemapLabel,
@@ -11526,7 +11531,7 @@ limitations under the License.
               this._opts.getStandaloneReportHTML &&
                 this._dom
                   .find('a[data-action="save-html"]', this._dom.rootEl)
-                  .classList.remove('lh-hidden');
+                  .classList.remove('lh-hidden'));
             for (const e of this._dom.findAll(
               '[data-i18n]',
               this._dom.rootEl,
@@ -11558,21 +11563,22 @@ limitations under the License.
           getReportHtml() {
             if (!this._opts.getStandaloneReportHTML)
               throw new Error('`getStandaloneReportHTML` is not set');
-            return this.resetUIState(), this._opts.getStandaloneReportHTML();
+            return (this.resetUIState(), this._opts.getStandaloneReportHTML());
           }
           saveAsGist() {
             throw new Error('Cannot save as gist from base report');
           }
           _enableFireworks() {
             const e = this._dom.find('.lh-scores-container', this._dom.rootEl);
-            e.classList.add('lh-score100'),
+            (e.classList.add('lh-score100'),
               e.addEventListener('click', t => {
                 e.classList.toggle('lh-fireworks-paused');
-              });
+              }));
           }
           _setupMediaQueryListeners() {
             const e = self.matchMedia('(max-width: 500px)');
-            e.addListener(this.onMediaQueryChange), this.onMediaQueryChange(e);
+            (e.addListener(this.onMediaQueryChange),
+              this.onMediaQueryChange(e));
           }
           _resetUIState() {
             this._topbar && this._topbar.resetUIState();
@@ -11601,7 +11607,7 @@ limitations under the License.
                   r = this._getThirdPartyRows(n, this.json.finalUrl),
                   o = this._dom.createComponent('3pFilter'),
                   i = this._dom.find('input', o);
-                i.addEventListener('change', e => {
+                (i.addEventListener('change', e => {
                   const t =
                     e.target instanceof HTMLInputElement && !e.target.checked;
                   let o = !0,
@@ -11609,20 +11615,18 @@ limitations under the License.
                   for (; i; ) {
                     const e = t && r.includes(i);
                     do {
-                      i.classList.toggle('lh-row--hidden', e),
+                      (i.classList.toggle('lh-row--hidden', e),
                         i.classList.toggle('lh-row--even', !e && o),
                         i.classList.toggle('lh-row--odd', !e && !o),
-                        (i = i.nextElementSibling);
+                        (i = i.nextElementSibling));
                     } while (i && i.classList.contains('lh-sub-item-row'));
                     e || (o = !o);
                   }
                 }),
-                  (this._dom.find(
-                    '.lh-3p-filter-count',
-                    o,
-                  ).textContent = `${r.length}`),
+                  (this._dom.find('.lh-3p-filter-count', o).textContent =
+                    `${r.length}`),
                   (this._dom.find('.lh-3p-ui-string', o).textContent =
-                    l.i18n.strings.thirdPartyResourcesLabel);
+                    l.i18n.strings.thirdPartyResourcesLabel));
                 const a = r.length === n.length,
                   s = !r.length;
                 if (
@@ -11701,29 +11705,29 @@ limitations under the License.
               !this.el.parentNode)
             )
               throw new Error('element needs to be in the DOM');
-            this.el.parentNode.insertBefore(t, this.el), (this._id = void 0);
+            (this.el.parentNode.insertBefore(t, this.el), (this._id = void 0));
           }
           log(e, t = !0) {
-            this._id && clearTimeout(this._id),
+            (this._id && clearTimeout(this._id),
               (this.el.textContent = e),
               this.el.classList.add('lh-show'),
               t &&
                 (this._id = setTimeout(() => {
                   this.el.classList.remove('lh-show');
-                }, 7e3));
+                }, 7e3)));
           }
           warn(e) {
             this.log('Warning: ' + e);
           }
           error(e) {
-            this.log(e),
+            (this.log(e),
               setTimeout(() => {
                 throw new Error(e);
-              }, 0);
+              }, 0));
           }
           hide() {
-            this._id && clearTimeout(this._id),
-              this.el.classList.remove('lh-show');
+            (this._id && clearTimeout(this._id),
+              this.el.classList.remove('lh-show'));
           }
         }
         /**
@@ -11736,12 +11740,14 @@ limitations under the License.
             n.classList.add('lh-root', 'lh-vars');
             const r = new s(n.ownerDocument, n);
             return (
-              new N(r).renderReport(e, n, t), new j(r, t).initFeatures(e), n
+              new N(r).renderReport(e, n, t),
+              new j(r, t).initFeatures(e),
+              n
             );
           })(window.__LIGHTHOUSE_JSON__, {
             getStandaloneReportHTML: () => document.documentElement.outerHTML,
           });
-          document.body.append(e),
+          (document.body.append(e),
             document.addEventListener('lh-analytics', e => {
               window.ga && ga(e.detail.cmd, e.detail.fields);
             }),
@@ -11763,7 +11769,7 @@ limitations under the License.
                 case 'hide':
                   n.hide();
               }
-            });
+            }));
         };
       })();
 

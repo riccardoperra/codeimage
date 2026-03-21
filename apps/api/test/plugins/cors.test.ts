@@ -7,6 +7,7 @@ import type {TestContext} from 'vitest';
 import {afterAll, assert, beforeEach, expect, test} from 'vitest';
 import cors from '../../src/plugins/cors.js';
 
+// oxlint-disable-next-line no-unused-vars
 async function build(t: TestContext) {
   const app = Fastify();
   await void app.register(

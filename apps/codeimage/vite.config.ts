@@ -7,7 +7,7 @@ import type {Plugin, UserConfigExport} from 'vite';
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import {withStaticVercelPreview} from '../../scripts/vercel-output-build';
+import {withStaticVercelPreview} from '../../scripts/vercel-output-build.ts';
 
 const config: UserConfigExport = defineConfig(({mode}) => ({
   plugins: [

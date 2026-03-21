@@ -80,7 +80,7 @@ export const EditorConfigStore = defineStore(() => getDefaultConfig())
           return {name: fontWeightLabelMap[weight], weight};
         }),
         // TODO: remove when typescript > 5 to use satisfies
-      } as CustomFontConfiguration & {type: 'system'});
+      }) as CustomFontConfiguration & {type: 'system'};
 
     createEffect(
       on(fonts, fonts => {

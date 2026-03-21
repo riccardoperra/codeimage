@@ -2,14 +2,16 @@ import chalk from 'chalk';
 import {prompt} from 'enquirer';
 import {existsSync, mkdirSync, readdirSync, writeFileSync} from 'node:fs';
 import {join} from 'path';
-import prettier, {Options as PrettierOptions} from 'prettier';
+import prettier, {type Options as PrettierOptions} from 'prettier';
 import tsParser from 'prettier/parser-typescript';
 import {
+  type ObjectLiteralExpressionPropertyStructures,
+  type SourceFile,
+} from 'ts-morph';
+import {
   NewLineKind,
-  ObjectLiteralExpressionPropertyStructures,
   Project,
   ScriptTarget,
-  SourceFile,
   StructureKind,
   SyntaxKind,
   VariableDeclarationKind,
@@ -34,7 +36,7 @@ init();
 
 async function init() {
   const prettierConfig = (await prettier.resolveConfig(
-    join(__dirname, '../../../.prettierrc'),
+    join(__dirname, '../../../.oxfmtrc.json'),
   )) as PrettierOptions;
 
   const response = await prompt<{themeName: string}>({
@@ -152,7 +154,7 @@ async function createThemeFile(
           name: k,
           kind: StructureKind.PropertyAssignment,
           initializer: `'${v}'`,
-        } as ObjectLiteralExpressionPropertyStructures),
+        }) as ObjectLiteralExpressionPropertyStructures,
     ),
   );
 

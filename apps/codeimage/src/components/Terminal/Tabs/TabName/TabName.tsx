@@ -96,9 +96,8 @@ export default function TabName(props: TabNameProps): JSXElement {
     setTimeout(() => {
       const popperPositioner = portal.querySelector('[data-popper-positioner]');
       if (popperPositioner) {
-        (
-          popperPositioner as HTMLElement
-        ).style.transition = `transform 150ms ease-in-out`;
+        (popperPositioner as HTMLElement).style.transition =
+          `transform 150ms ease-in-out`;
       }
     }, 200);
   };

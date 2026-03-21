@@ -11,9 +11,10 @@
     "serve:https": "serve dist",
     "serve": "vite preview",
     "pre-commit": "lint-staged --relative",
-    "pre-commit-prettier": "prettier --write",
-    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
-    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "pre-commit-format": "oxfmt",
+    "pre-commit-eslint": "oxlint --fix",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json"
   },
   "devDependencies": {
@@ -37,7 +38,9 @@
     "vite-plugin-solid": "catalog:next",
     "vite-tsconfig-paths": "catalog:next",
     "workbox-core": "^6.6.0",
-    "workbox-window": "^6.6.0"
+    "workbox-window": "^6.6.0",
+    "oxfmt": "catalog:next",
+    "oxlint": "catalog:next"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",

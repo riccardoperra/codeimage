@@ -21,7 +21,9 @@
 }
 
 .preview {
-  font-family: Jetbrains Mono, monospace;
+  font-family:
+    Jetbrains Mono,
+    monospace;
   background-color: unset;
   color: white;
   width: 100%;

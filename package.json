@@ -45,14 +45,16 @@
     "libs:build:watch": "pnpm --filter \"{packages/**}\" --filter='!@codeimage/config' --parallel --aggregate-output build:watch",
     "kit:build": "pnpm --prefix=packages/kit build:kit",
     "lint": "pnpm --filter='@codeimage/*' --parallel -r lint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "typecheck": "pnpm --filter='@codeimage/*' --recursive --parallel typecheck",
     "build:prod": "pnpm libs:build && pnpm --filter=@codeimage/app build",
     "changeset:pr": "changeset version && tsx scripts/sync-package.ts",
     "pre-commit": "lint-staged --relative",
     "patch-solid-exports": "cross-env APPLY_PATCH=true tsx scripts/patch-solid-exports.ts",
     "unpatch-solid-exports": "cross-env APPLY_PATCH=false tsx scripts/patch-solid-exports.ts",
-    "pre-commit-prettier": "prettier --write",
-    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c .eslintrc.js --fix",
+    "pre-commit-format": "oxfmt",
+    "pre-commit-eslint": "oxlint --fix",
     "prepare:env": "tsx ./scripts/make-env.ts",
     "prepare:env:codesandbox": "RUN_ON_CODESANDBOX=true tsx ./scripts/make-env",
     "prepare:api:deploy": "pnpm-bundle-workspace-package @codeimage/api --outDir=dist/api-bundle && rm -rf dist/api-bundle/workspace-dependencies/prisma-models/.gitignore",
@@ -72,19 +74,16 @@
     "@railway/cli": "^3.3.1",
     "@types/node": "catalog:next",
     "@types/prettier": "^2.7.2",
-    "@typescript-eslint/eslint-plugin": "^5.57.1",
-    "@typescript-eslint/parser": "^5.57.1",
     "chalk": "5.1.2",
+    "eslint-plugin-solid": "0.14.5",
+    "oxfmt": "catalog:next",
+    "oxlint": "catalog:next",
     "cross-env": "^7.0.3",
     "enquirer": "2.3.6",
-    "eslint": "^8.38.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-solid": "^0.7.4",
+    "globals": "^17.4.0",
     "husky": "8.0.1",
     "lint-staged": "^13.2.1",
     "pnpm-bundle-workspace-package": "^1.0.2",
-    "prettier": "^2.8.7",
     "tslib": "^2.6.2",
     "tsx": "^3.12.7",
     "typescript": "~5.3.2",
@@ -101,7 +100,11 @@
     },
     "patchedDependencies": {
       "solid-headless": "patches/solid-headless.patch"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss"
+    ]
   },
   "dependencies": {
     "statebuilder": "^0.4.2"

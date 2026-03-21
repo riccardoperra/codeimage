@@ -53,7 +53,7 @@ export function Button(props: ButtonProps) {
     <Dynamic
       component={component()}
       class={className()}
-      type={component() === 'button' ? local.type ?? 'button' : undefined}
+      type={component() === 'button' ? (local.type ?? 'button') : undefined}
       {...others}
     >
       <Show when={local.leftIcon}>

@@ -377,8 +377,8 @@ export async function embedWebFonts<T extends HTMLElement>(
     options.fontEmbedCSS != null
       ? options.fontEmbedCSS
       : options.skipFonts
-      ? null
-      : await getWebFontCSS(clonedNode, options);
+        ? null
+        : await getWebFontCSS(clonedNode, options);
 
   if (cssText) {
     const styleNode = document.createElement('style');

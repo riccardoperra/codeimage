@@ -16,9 +16,10 @@
     "build:watch": "vite build --watch",
     "preview": "vite preview",
     "pre-commit": "lint-staged --relative",
-    "pre-commit-prettier": "prettier --write",
-    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
-    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "pre-commit-format": "oxfmt",
+    "pre-commit-eslint": "oxlint --fix",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "clean": "rimraf dist",
     "build-esm": "tsc -p tsconfig.esm.json",
     "build-dts": "tsc -p tsconfig.dts.json",
@@ -72,6 +73,8 @@
     "solid-js": "catalog:next"
   },
   "devDependencies": {
+    "oxfmt": "catalog:next",
+    "oxlint": "catalog:next",
     "rimraf": "^3.0.2",
     "typescript": "catalog:next",
     "vite": "catalog:next",

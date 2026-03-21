@@ -38,11 +38,5 @@
     "typescript": "catalog:next",
     "vite": "^8.0.1",
     "vite-plugin-solid": "catalog:next"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "lightningcss"
-    ]
   }
 }

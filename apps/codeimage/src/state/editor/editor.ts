@@ -250,7 +250,7 @@ export function createEditorsStore() {
             id: editor.id,
             code: editor.code,
             lineNumberStart: editor.lineNumberStart ?? 1,
-          } as EditorState),
+          }) as EditorState,
       ),
     );
     store.set('activeEditorId', item.editorTabs[0].id);

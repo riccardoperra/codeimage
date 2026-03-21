@@ -11,8 +11,7 @@ import * as styles from './terminal.css';
 import {getFrameState} from '@codeimage/store/editor/frame';
 
 export interface BaseTerminalProps
-  extends Omit<TerminalState, 'type'>,
-    WithRef<'div'> {
+  extends Omit<TerminalState, 'type'>, WithRef<'div'> {
   showTab: boolean;
   readonlyTab: boolean;
   preview?: boolean;

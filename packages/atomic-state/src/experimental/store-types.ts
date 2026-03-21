@@ -10,10 +10,10 @@ type KeyOf<T> = number extends keyof T
   ? 0 extends 1 & T
     ? keyof T
     : [T] extends [never]
-    ? never
-    : [T] extends [readonly unknown[]]
-    ? number
-    : keyof T
+      ? never
+      : [T] extends [readonly unknown[]]
+        ? number
+        : keyof T
   : keyof T;
 type MutableKeyOf<T> = KeyOf<T> & keyof PickMutable<T>;
 

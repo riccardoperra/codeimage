@@ -21,8 +21,10 @@
 }
 .container[data-active='true'] {
   opacity: 1;
-  box-shadow: rgb(255, 255, 255) 0px 0px 0px 0px,
-    var(--active-color) 0px 0px 0px 3px, rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+  box-shadow:
+    rgb(255, 255, 255) 0px 0px 0px 0px,
+    var(--active-color) 0px 0px 0px 3px,
+    rgba(0, 0, 0, 0) 0px 0px 0px 0px;
 }
 .container[data-active='false'] {
   opacity: var(--disabled-opacity);
