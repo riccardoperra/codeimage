@@ -427,7 +427,7 @@ jobs:
       - name: Prisma migrate
         run: |
           cd apps/api
-          prisma migrate deploy
+          pnpm prisma migrate deploy
           pnpm prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
