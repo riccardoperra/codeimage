@@ -6,9 +6,9 @@
   "types": "./dist/public-api.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/public-api.d.ts",
       "import": "./dist/config.mjs",
-      "default": "./dist/config.mjs",
-      "types": "./dist/public-api.d.ts"
+      "default": "./dist/config.mjs"
     }
   },
   "scripts": {

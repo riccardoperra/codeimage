@@ -110,7 +110,7 @@
     "solid-mdx": "^0.0.7",
     "solid-use": "^0.7.2",
     "statebuilder": "^0.4.2",
-    "tinykeys": "^1.4.0",
+    "tinykeys": "^3.0.0",
     "workbox-precaching": "^6.6.0",
     "workbox-routing": "^6.6.0",
     "workbox-strategies": "^6.6.0"

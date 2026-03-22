@@ -1,8 +1,8 @@
-import {useDragDropContext} from '@thisbeyond/solid-dnd';
-import type {Transform} from '@thisbeyond/solid-dnd/dist/types/layout';
+import { useDragDropContext } from "@thisbeyond/solid-dnd";
+import type { Transform } from "@thisbeyond/solid-dnd";
 
 export const ConstrainDragAxis = () => {
-  const [, {onDragStart, onDragEnd, addTransformer, removeTransformer}] =
+  const [, { onDragStart, onDragEnd, addTransformer, removeTransformer }] =
     useDragDropContext()!;
 
   const transformer: {
@@ -10,17 +10,17 @@ export const ConstrainDragAxis = () => {
     order: number;
     callback: (transform: Transform) => Transform;
   } = {
-    id: 'constrain-x-axis',
+    id: "constrain-x-axis",
     order: 100,
-    callback: (transform: Transform) => ({...transform, y: 0}),
+    callback: (transform: Transform) => ({ ...transform, y: 0 }),
   };
 
-  onDragStart(({draggable}) => {
-    addTransformer('draggables', draggable.id, transformer);
+  onDragStart(({ draggable }) => {
+    addTransformer("draggables", draggable.id, transformer);
   });
 
-  onDragEnd(({draggable}) => {
-    removeTransformer('draggables', draggable.id, transformer.id);
+  onDragEnd(({ draggable }) => {
+    removeTransformer("draggables", draggable.id, transformer.id);
   });
 
   return <></>;
