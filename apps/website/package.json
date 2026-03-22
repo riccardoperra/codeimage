@@ -1,5 +1,5 @@
 {
-  "name": "www",
+  "name": "@codeimage/website",
   "private": true,
   "type": "module",
   "scripts": {
