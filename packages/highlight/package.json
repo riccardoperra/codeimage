@@ -7,12 +7,12 @@
   "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/public-api.d.ts"
+      "types": "./dist/public-api.d.ts",
+      "default": "./dist/index.js"
     },
     "./themes": {
-      "import": "./dist/lib/themes/index.js",
-      "types": "./dist/lib/themes/index.d.ts"
+      "types": "./dist/lib/themes/index.d.ts",
+      "import": "./dist/lib/themes/index.js"
     },
     "./arcDark": {
       "import": "./dist/lib/themes/arcDark/index.js",
@@ -51,80 +51,80 @@
       "types": "./dist/lib/themes/light/index.d.ts"
     },
     "./materialLight": {
-      "import": "./dist/lib/themes/materialLight/index.js",
-      "types": "./dist/lib/themes/materialLight/index.d.ts"
+      "types": "./dist/lib/themes/materialLight/index.d.ts",
+      "import": "./dist/lib/themes/materialLight/index.js"
     },
     "./materialOcean": {
-      "import": "./dist/lib/themes/materialOcean/index.js",
-      "types": "./dist/lib/themes/materialOcean/index.d.ts"
+      "types": "./dist/lib/themes/materialOcean/index.d.ts",
+      "import": "./dist/lib/themes/materialOcean/index.js"
     },
     "./materialPalenight": {
-      "import": "./dist/lib/themes/materialPalenight/index.js",
-      "types": "./dist/lib/themes/materialPalenight/index.d.ts"
+      "types": "./dist/lib/themes/materialPalenight/index.d.ts",
+      "import": "./dist/lib/themes/materialPalenight/index.js"
     },
     "./materialVolcano": {
-      "import": "./dist/lib/themes/materialVolcano/index.js",
-      "types": "./dist/lib/themes/materialVolcano/index.d.ts"
+      "types": "./dist/lib/themes/materialVolcano/index.d.ts",
+      "import": "./dist/lib/themes/materialVolcano/index.js"
     },
     "./nightOwl": {
-      "import": "./dist/lib/themes/nightOwl/index.js",
-      "types": "./dist/lib/themes/nightOwl/index.d.ts"
+      "types": "./dist/lib/themes/nightOwl/index.d.ts",
+      "import": "./dist/lib/themes/nightOwl/index.js"
     },
     "./oneDark": {
-      "import": "./dist/lib/themes/oneDark/index.js",
-      "types": "./dist/lib/themes/oneDark/index.d.ts"
+      "types": "./dist/lib/themes/oneDark/index.d.ts",
+      "import": "./dist/lib/themes/oneDark/index.js"
     },
     "./synthwave84": {
-      "import": "./dist/lib/themes/synthwave84/index.js",
-      "types": "./dist/lib/themes/synthwave84/index.d.ts"
+      "types": "./dist/lib/themes/synthwave84/index.d.ts",
+      "import": "./dist/lib/themes/synthwave84/index.js"
     },
     "./vsCodeDark": {
-      "import": "./dist/lib/themes/vsCodeDark/index.js",
-      "types": "./dist/lib/themes/vsCodeDark/index.d.ts"
+      "types": "./dist/lib/themes/vsCodeDark/index.d.ts",
+      "import": "./dist/lib/themes/vsCodeDark/index.js"
     },
     "./githubDark": {
-      "import": "./dist/lib/themes/githubDark/index.js",
-      "types": "./dist/lib/themes/githubDark/index.d.ts"
+      "types": "./dist/lib/themes/githubDark/index.d.ts",
+      "import": "./dist/lib/themes/githubDark/index.js"
     },
     "./githubLight": {
-      "import": "./dist/lib/themes/githubLight/index.js",
-      "types": "./dist/lib/themes/githubLight/index.d.ts"
+      "types": "./dist/lib/themes/githubLight/index.d.ts",
+      "import": "./dist/lib/themes/githubLight/index.js"
     },
     "./poimandres": {
-      "import": "./dist/lib/themes/poimandres/index.js",
-      "types": "./dist/lib/themes/poimandres/index.d.ts"
+      "types": "./dist/lib/themes/poimandres/index.d.ts",
+      "import": "./dist/lib/themes/poimandres/index.js"
     },
     "./shadeOfPurple": {
-      "import": "./dist/lib/themes/shadeOfPurple/index.js",
-      "types": "./dist/lib/themes/shadeOfPurple/index.d.ts"
+      "types": "./dist/lib/themes/shadeOfPurple/index.d.ts",
+      "import": "./dist/lib/themes/shadeOfPurple/index.js"
     },
     "./panda": {
-      "import": "./dist/lib/themes/panda/index.js",
-      "types": "./dist/lib/themes/panda/index.d.ts"
+      "types": "./dist/lib/themes/panda/index.d.ts",
+      "import": "./dist/lib/themes/panda/index.js"
     },
     "./moonlight": {
-      "import": "./dist/lib/themes/moonlight/index.js",
-      "types": "./dist/lib/themes/moonlight/index.d.ts"
+      "types": "./dist/lib/themes/moonlight/index.d.ts",
+      "import": "./dist/lib/themes/moonlight/index.js"
     },
     "./vitesseDark": {
-      "import": "./dist/lib/themes/vitesseDark/index.js",
-      "types": "./dist/lib/themes/vitesseDark/index.d.ts"
+      "types": "./dist/lib/themes/vitesseDark/index.d.ts",
+      "import": "./dist/lib/themes/vitesseDark/index.js"
     },
     "./githubDarkDimmed": {
-      "import": "./dist/lib/themes/githubDarkDimmed/index.js",
-      "types": "./dist/lib/themes/githubDarkDimmed/index.d.ts"
+      "types": "./dist/lib/themes/githubDarkDimmed/index.d.ts",
+      "import": "./dist/lib/themes/githubDarkDimmed/index.js"
     },
     "./fleetDark": {
-      "import": "./dist/lib/themes/fleetDark/index.js",
-      "types": "./dist/lib/themes/fleetDark/index.d.ts"
+      "types": "./dist/lib/themes/fleetDark/index.d.ts",
+      "import": "./dist/lib/themes/fleetDark/index.js"
     },
     "./xCodeDark": {
-      "import": "./dist/lib/themes/xCodeDark/index.js",
-      "types": "./dist/lib/themes/xCodeDark/index.d.ts"
+      "types": "./dist/lib/themes/xCodeDark/index.d.ts",
+      "import": "./dist/lib/themes/xCodeDark/index.js"
     },
     "./xCodeLight": {
-      "import": "./dist/lib/themes/xCodeLight/index.js",
-      "types": "./dist/lib/themes/xCodeLight/index.d.ts"
+      "types": "./dist/lib/themes/xCodeLight/index.d.ts",
+      "import": "./dist/lib/themes/xCodeLight/index.js"
     }
   },
   "typesVersions": {

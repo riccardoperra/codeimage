@@ -11,8 +11,8 @@
   ],
   "exports": {
     ".": {
-      "default": "./dist/dom-export.js",
-      "types": "./dist/public-api.d.ts"
+      "types": "./dist/public-api.d.ts",
+      "default": "./dist/dom-export.js"
     }
   },
   "keywords": [
