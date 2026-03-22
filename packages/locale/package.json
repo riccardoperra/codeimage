@@ -38,10 +38,10 @@
     "solid-js": "catalog:next"
   },
   "devDependencies": {
-    "rimraf": "^3.0.2",
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
-    "typescript": "catalog:next",
+    "rimraf": "^3.0.2",
+    "typescript": "^5.9.3",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",
     "vite-plugin-solid": "catalog:next"

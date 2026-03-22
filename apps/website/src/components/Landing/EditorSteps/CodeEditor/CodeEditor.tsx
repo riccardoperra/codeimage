@@ -1,10 +1,7 @@
 import {type Extension} from '@codemirror/state';
-import {createEffect, createSignal, on, onMount, Show} from 'solid-js';
+import {createEffect, createResource, createSignal, on, Show, Suspense} from 'solid-js';
 import {CodeEditorPreviewBlock} from '../CodeEditor/CodeEditorPreviewBlock';
 import styles from './CodeEditor.module.css';
-
-// oxlint-disable-next-line typescript/consistent-type-imports
-type EditorCoreModule = Awaited<typeof import('./editor-core')>;
 
 interface CodeEditorProps {
   code: string;
@@ -13,14 +10,8 @@ interface CodeEditorProps {
 
 export function CodeEditor(props: CodeEditorProps) {
   let ref: HTMLDivElement | undefined;
-  const [remoteCm, setRemoteCm] = createSignal<EditorCoreModule>();
+  const [remoteCm] = createResource(() => import('./editor-core'));
   const [loading, setLoading] = createSignal(true);
-
-  onMount(() => {
-    void import('./editor-core')
-      .then(setRemoteCm)
-      .catch(() => setLoading(false));
-  });
 
   createEffect(
     on(
@@ -78,16 +69,22 @@ export function CodeEditor(props: CodeEditorProps) {
           ),
         );
 
-        const customThemeExt = props.customTheme
-          ? createLazyCompartmentExtension(() => props.customTheme!, editorView)
-          : null;
+        let customThemeExt: any
+        if (props.customTheme) {
+          customThemeExt = createLazyCompartmentExtension(
+            () => props.customTheme,
+            editorView,
+          );
+        }
 
         const jsExt = createLazyCompartmentExtension(
           () => import('./lang-javascript-plugin').then(m => m.jsxLanguage),
           editorView,
         );
         createEffect(() => {
-          const customThemeLoading = customThemeExt?.loading ?? false;
+          const customThemeLoading = customThemeExt
+            ? customThemeExt.loading
+            : false;
           const jsLoading = jsExt.loading;
           setLoading(!(!jsLoading && !customThemeLoading));
         });
@@ -97,8 +94,7 @@ export function CodeEditor(props: CodeEditorProps) {
   );
 
   return (
-    <Show
-      when={remoteCm()}
+    <Suspense
       fallback={
         <>
           <CodeEditorPreviewBlock code={props.code} />
@@ -120,6 +116,6 @@ export function CodeEditor(props: CodeEditorProps) {
           <span class={styles.spinner} aria-hidden="true" />
         </div>
       </Show>
-    </Show>
+    </Suspense>
   );
 }

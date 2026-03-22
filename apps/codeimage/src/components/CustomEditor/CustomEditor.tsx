@@ -1,22 +1,22 @@
-import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {getRootEditorStore} from '@codeimage/store/editor';
-import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
-import {getThemeStore} from '@codeimage/store/theme/theme.store';
+import { SUPPORTED_LANGUAGES } from "@codeimage/config";
+import { getRootEditorStore } from "@codeimage/store/editor";
+import { getActiveEditorStore } from "@codeimage/store/editor/activeEditor";
+import { getThemeStore } from "@codeimage/store/theme/theme.store";
 import {
   autocompletion,
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
-} from '@codemirror/autocomplete';
+} from "@codemirror/autocomplete";
 import {
   defaultKeymap,
   history,
   historyKeymap,
   indentWithTab,
-} from '@codemirror/commands';
-import {bracketMatching, indentOnInput} from '@codemirror/language';
-import type {Extension} from '@codemirror/state';
-import {EditorState} from '@codemirror/state';
+} from "@codemirror/commands";
+import { bracketMatching, indentOnInput } from "@codemirror/language";
+import type { Extension } from "@codemirror/state";
+import { EditorState } from "@codemirror/state";
 import {
   crosshairCursor,
   drawSelection,
@@ -26,11 +26,11 @@ import {
   keymap,
   lineNumbers,
   rectangularSelection,
-} from '@codemirror/view';
-import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
-import type {VoidProps} from 'solid-js';
-import {createEffect, createMemo, createResource, on} from 'solid-js';
-import {createTabIcon} from '../../hooks/use-tab-icon';
+} from "@codemirror/view";
+import { createCodeMirror, createEditorReadonly } from "solid-codemirror";
+import type { VoidProps } from "solid-js";
+import { createEffect, createMemo, createResource, on } from "solid-js";
+import { createTabIcon } from "../../hooks/use-tab-icon";
 
 const EDITOR_BASE_SETUP: Extension = [
   highlightSpecialChars(),
@@ -60,16 +60,16 @@ interface CustomEditorProps {
 }
 
 export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
-  const {themeArray: themes} = getThemeStore();
+  const { themeArray: themes } = getThemeStore();
   const languages = SUPPORTED_LANGUAGES;
   const {
     state: editorState,
     canvasEditorEvents,
-    computed: {selectedFont},
+    computed: { selectedFont },
   } = getRootEditorStore();
-  const {editor} = getActiveEditorStore();
+  const { editor } = getActiveEditorStore();
   const selectedLanguage = createMemo(() =>
-    languages.find(language => language.id === editor()?.languageId),
+    languages.find((language) => language.id === editor()?.languageId)
   );
 
   const {
@@ -78,26 +78,26 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     createExtension,
   } = createCodeMirror({
     value: editor()?.code,
-    onTransactionDispatched: tr => canvasEditorEvents.emit(tr),
+    onTransactionDispatched: (tr) => canvasEditorEvents.emit(tr),
     onValueChange: props.onValueChange,
   });
 
   createEffect(() => props.onEditorViewChange?.(editorView()));
 
-  const [currentLanguage] = createResource(selectedLanguage, ({plugin}) =>
-    plugin(),
+  const [currentLanguage] = createResource(selectedLanguage, ({ plugin }) =>
+    plugin()
   );
 
   const icon = createTabIcon(
     () => editor()?.tab.tabName ?? null,
-    () => editor()?.languageId ?? '',
-    true,
+    () => editor()?.languageId ?? "",
+    true
   );
 
-  const [currentExtraLanguage] = createResource(icon, iconDef => {
+  const [currentExtraLanguage] = createResource(icon, (iconDef) => {
     return iconDef?.extraLanguage
       ?.extension()
-      .then(extension => {
+      .then((extension) => {
         return {
           extension,
           overrideParent: iconDef.extraLanguage?.overrideParent,
@@ -108,39 +108,40 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
 
   const themeConfiguration = createMemo(
     () =>
-      themes().find(theme => theme()?.id === editorState.options.themeId)?.() ??
-      themes()[0](),
+      themes().find(
+        (theme) => theme()?.id === editorState.options.themeId
+      )?.() ?? themes()[0]()
   );
 
   const baseTheme = EditorView.theme({
-    '&': {
-      textAlign: 'left',
-      background: 'transparent !important',
+    "&": {
+      textAlign: "left",
+      background: "transparent !important",
     },
-    '.cm-content': {
-      textAlign: 'left',
+    ".cm-content": {
+      textAlign: "left",
     },
-    '.cm-gutters': {
-      backgroundColor: 'transparent',
-      border: 'none',
+    ".cm-gutters": {
+      backgroundColor: "transparent",
+      border: "none",
     },
-    '.cm-lineNumbers': {
-      position: 'sticky',
-      flexDirection: 'column',
+    ".cm-lineNumbers": {
+      position: "sticky",
+      flexDirection: "column",
       flexShrink: 0,
     },
-    '.cm-lineNumbers .cm-gutterElement': {
-      textAlign: 'right',
-      padding: '0 16px 0 8px',
-      lineHeight: '21px',
+    ".cm-lineNumbers .cm-gutterElement": {
+      textAlign: "right",
+      padding: "0 16px 0 8px",
+      lineHeight: "21px",
     },
-    '.cm-line': {
-      padding: '0 2px 0 8px',
+    ".cm-line": {
+      padding: "0 2px 0 8px",
     },
-    '.cm-cursor': {
-      borderLeftWidth: '2px',
-      height: '21px',
-      transform: 'translateY(-10%)',
+    ".cm-cursor": {
+      borderLeftWidth: "2px",
+      height: "21px",
+      transform: "translateY(-10%)",
     },
   });
 
@@ -150,15 +151,15 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       fontWeight = editorState.options.fontWeight,
       enableLigatures = editorState.options.enableLigatures;
 
-    const fontVariantLigatures = !!enableLigatures ? 'normal' : 'none';
+    const fontVariantLigatures = !!enableLigatures ? "normal" : "none";
 
     return EditorView.theme({
-      '.cm-content *': {
+      ".cm-content *": {
         fontFamily: `${fontName}, monospace`,
         fontWeight: fontWeight,
         fontVariantLigatures,
       },
-      '.cm-gutters': {
+      ".cm-gutters": {
         fontFamily: `${fontName}, monospace`,
         fontWeight: 400,
         fontVariantLigatures,
@@ -170,12 +171,13 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(EditorView.lineWrapping);
   createExtension(() =>
     EditorView.contentAttributes.of({
-      'aria-label': 'codeimage-editor',
-    }),
+      "aria-label": "codeimage-editor",
+    })
   );
   createExtension(() => customFontExtension());
   createExtension(() => {
     const language = currentLanguage();
+    console.log(language);
     const extraLanguage = currentExtraLanguage();
     if (!extraLanguage && !language) {
       return [];
@@ -193,7 +195,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     const lnStart = lineNumberStart() ?? 1;
     const newLn = (ln: number) => ln + (lnStart - 1);
     return editorState.options.showLineNumbers
-      ? lineNumbers({formatNumber: lineNo => String(newLn(lineNo))})
+      ? lineNumbers({ formatNumber: (lineNo) => String(newLn(lineNo)) })
       : [];
   });
   createExtension(() => themeConfiguration()?.editorTheme || []);
@@ -204,15 +206,15 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createEffect(
     on(
       () => props.readOnly,
-      readOnly => {
+      (readOnly) => {
         const extension = readOnly ? [] : EDITOR_BASE_SETUP;
         reconfigureBaseSetup(extension);
-      },
-    ),
+      }
+    )
   );
 
   return (
-    <code class={`language-${selectedLanguage()?.id ?? 'default'}`}>
+    <code class={`language-${selectedLanguage()?.id ?? "default"}`}>
       <div ref={setRef} />
     </code>
   );
