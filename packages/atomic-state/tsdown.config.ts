@@ -1,12 +1,11 @@
 import {defineConfig} from 'tsdown';
-import solid from 'rolldown-plugin-solid';
 
 export default defineConfig({
   entry: ['src/index.tsx'],
-  format: ['esm', 'cjs'],
+  format: ['esm'],
   platform: 'neutral',
   dts: true,
+  exports: true,
   clean: true,
   sourcemap: true,
-  plugins: [solid()],
 });

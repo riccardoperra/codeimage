@@ -2,21 +2,14 @@
   "name": "@codeimage/atomic-state",
   "version": "1.0.1",
   "source": "src/index.tsx",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
   "type": "module",
   "files": [
     "dist"
   ],
   "exports": {
-    ".": {
-      "solid": "./dist/source/index.jsx",
-      "import": "./dist/esm/index.js",
-      "browser": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "node": "./dist/cjs/index.js"
-    }
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "tsdown",
