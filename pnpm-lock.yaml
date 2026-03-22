@@ -66,6 +66,9 @@ overrides:
   typescript: ^5.9.3
 
 patchedDependencies:
+  '@codeui/kit':
+    hash: 327124a76affdf8a15e8f8482a05089d0900daa777402d696103afc7e091a449
+    path: patches/@codeui__kit.patch
   solid-headless:
     hash: b49786ed140172dc3b664c30dae5e1b5bdb8b42e4a6e5c24cc54f663cffbd394
     path: patches/solid-headless.patch
@@ -348,7 +351,7 @@ importers:
         version: 6.26.3
       '@codeui/kit':
         specifier: ^0.1.2
-        version: 0.1.2(@types/node@24.12.0)(lightningcss@1.32.0)(sass@1.98.0)(solid-js@1.9.11)(terser@5.46.1)(vite@8.0.1(@types/node@24.12.0)(esbuild@0.19.8)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0))
+        version: 0.1.2(patch_hash=327124a76affdf8a15e8f8482a05089d0900daa777402d696103afc7e091a449)(@types/node@24.12.0)(lightningcss@1.32.0)(sass@1.98.0)(solid-js@1.9.11)(terser@5.46.1)(vite@8.0.1(@types/node@24.12.0)(esbuild@0.19.8)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0))
       '@corvu/utils':
         specifier: 0.4.1
         version: 0.4.1(solid-js@1.9.11)
@@ -882,7 +885,7 @@ importers:
         version: 6.2.2
       '@codeui/kit':
         specifier: ^0.1.2
-        version: 0.1.2(@types/node@24.12.0)(lightningcss@1.32.0)(sass@1.98.0)(solid-js@1.9.11)(terser@5.46.1)(vite@8.0.1(@types/node@24.12.0)(esbuild@0.19.8)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0))
+        version: 0.1.2(patch_hash=327124a76affdf8a15e8f8482a05089d0900daa777402d696103afc7e091a449)(@types/node@24.12.0)(lightningcss@1.32.0)(sass@1.98.0)(solid-js@1.9.11)(terser@5.46.1)(vite@8.0.1(@types/node@24.12.0)(esbuild@0.19.8)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0))
       '@types/node':
         specifier: catalog:next
         version: 24.12.0
@@ -12102,7 +12105,7 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
-  '@codeui/kit@0.1.2(@types/node@24.12.0)(lightningcss@1.32.0)(sass@1.98.0)(solid-js@1.9.11)(terser@5.46.1)(vite@8.0.1(@types/node@24.12.0)(esbuild@0.19.8)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0))':
+  '@codeui/kit@0.1.2(patch_hash=327124a76affdf8a15e8f8482a05089d0900daa777402d696103afc7e091a449)(@types/node@24.12.0)(lightningcss@1.32.0)(sass@1.98.0)(solid-js@1.9.11)(terser@5.46.1)(vite@8.0.1(@types/node@24.12.0)(esbuild@0.19.8)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0))':
     dependencies:
       '@kobalte/core': 0.13.6(solid-js@1.9.11)
       '@kobalte/utils': 0.9.1(solid-js@1.9.11)

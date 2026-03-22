@@ -75,14 +75,14 @@
     "@types/node": "catalog:next",
     "@types/prettier": "^2.7.2",
     "chalk": "5.1.2",
-    "eslint-plugin-solid": "0.14.5",
-    "oxfmt": "catalog:next",
-    "oxlint": "catalog:next",
     "cross-env": "^7.0.3",
     "enquirer": "2.3.6",
+    "eslint-plugin-solid": "0.14.5",
     "globals": "^17.4.0",
     "husky": "8.0.1",
     "lint-staged": "^13.2.1",
+    "oxfmt": "catalog:next",
+    "oxlint": "catalog:next",
     "pnpm-bundle-workspace-package": "^1.0.2",
     "tslib": "^2.6.2",
     "tsx": "^3.12.7",
@@ -99,7 +99,8 @@
       "typescript": "^5.9.3"
     },
     "patchedDependencies": {
-      "solid-headless": "patches/solid-headless.patch"
+      "solid-headless": "patches/solid-headless.patch",
+      "@codeui/kit": "patches/@codeui__kit.patch"
     },
     "onlyBuiltDependencies": [
       "esbuild",

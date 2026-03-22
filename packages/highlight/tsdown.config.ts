@@ -38,7 +38,6 @@ export default defineConfig({
   unbundle: true,
   dts: true,
   clean: true,
-  exports: true,
   sourcemap: false,
   deps: {
     neverBundle: external,

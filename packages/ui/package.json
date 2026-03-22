@@ -18,7 +18,8 @@
         "require": "./dist/cjs/index.js"
       },
       "require": "./dist/cjs/index.js",
-      "node": "./dist/cjs/index.js"
+      "node": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
     },
     "./themes/darkTheme": {
       "import": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
