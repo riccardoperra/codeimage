@@ -9,6 +9,7 @@
   },
   "exports": {
     "./api-types": {
+      "default": "./index.js",,
       "types": "./index.d.ts"
     }
   },
