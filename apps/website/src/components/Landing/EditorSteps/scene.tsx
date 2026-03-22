@@ -11,7 +11,7 @@ export function createEditorScene() {
   const [ref, setRef] = createSignal<HTMLElement>();
   const stepsOffset = [0, 33, 66];
 
-  const stepsMainColors = {
+  const stepsMainColors: Record<number, string> = {
     0: '#1777f8',
     1: '#d554f7',
     2: '#8000FF',
@@ -48,10 +48,12 @@ export function createEditorScene() {
     ),
   );
 
+  const memoProgress = createMemo(() => progress());
+
   return {
     ref,
     setRef,
-    progress: createMemo(() => progress()),
+    progress: memoProgress,
     setProgress,
     inView,
     setInView,

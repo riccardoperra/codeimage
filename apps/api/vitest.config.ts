@@ -1,15 +1,17 @@
 import * as path from 'path';
-import type {UserConfig} from 'vitest/config';
+import type {ViteUserConfig} from 'vitest/config';
 import {defineConfig, mergeConfig} from 'vitest/config';
 
 export default defineConfig(() => {
   const testType = process.env.RUN_TEST ?? 'unit';
 
-  const config = {
+  const config = defineConfig({
     test: {
-      deps: {
-        inline: ['@fastify/autoload'],
-      },
+      server: {
+        deps: {
+          inline: ['@fastify/autoload'],
+        },
+      }
     },
     resolve: {
       alias: {
@@ -18,7 +20,7 @@ export default defineConfig(() => {
         ),
       },
     },
-  } satisfies UserConfig;
+  })
 
   if (testType === 'unit') {
     return mergeConfig(config, {
@@ -29,16 +31,16 @@ export default defineConfig(() => {
       },
     });
   } else if (testType === 'integration') {
-    return mergeConfig(config, {
+    return mergeConfig(config, defineConfig({
       test: {
+        fileParallelism: false,
         include: ['./test/**/*.integration.test.ts'],
-        threads: false,
         sequence: {
           hooks: 'list',
         },
         globalSetup: ['./test/setup-integration.ts'],
       },
-    } satisfies UserConfig);
+    } satisfies ViteUserConfig));
   }
   return {};
 });

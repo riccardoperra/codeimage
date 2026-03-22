@@ -18,21 +18,16 @@
         "require": "./dist/cjs/index.js"
       },
       "require": "./dist/cjs/index.js",
-      "node": "./dist/cjs/index.js"
+      "node": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
     },
     "./themes/darkTheme": {
-      "solid": "./dist/source-gen/lib/themes/darkTheme.css.vanilla.js",
-      "import": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
-      "browser": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
-      "require": "./dist/cjs/lib/themes/darkTheme.css.vanilla.js",
-      "node": "./dist/cjs/lib/themes/darkTheme.css.vanilla.js"
+      "default": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
+      "types": "./dist/types/lib/themes/dark-theme.css.d.ts"
     },
     "./themes/lightTheme": {
-      "solid": "./dist/source-gen/lib/themes/lightTheme.css.vanilla.js",
-      "import": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
-      "browser": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
-      "require": "./dist/cjs/lib/themes/darkTheme.css.vanilla.js",
-      "node": "./dist/cjs/lib/themes/darkTheme.css.vanilla.js"
+      "default": "./dist/esm/lib/themes/lightTheme.css.vanilla.js",
+      "types": "./dist/types/lib/themes/light-theme.css.d.ts"
     }
   },
   "typesVersions": {
@@ -55,9 +50,10 @@
     "build:vite": "vite build",
     "build:watch": "vite build --watch",
     "pre-commit": "lint-staged --relative",
-    "pre-commit-prettier": "prettier --write",
-    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
-    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "pre-commit-format": "oxfmt",
+    "pre-commit-eslint": "oxlint --fix",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json",
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
@@ -74,12 +70,11 @@
     "@vanilla-extract/sprinkles": "^1.5.2",
     "clsx": "^1.2.1",
     "solid-headless": "^0.13.0",
-    "solid-js": "^1.8.6",
+    "solid-js": "catalog:next",
     "solid-use": "^0.7.2"
   },
   "dependencies": {
     "@codeimage/locale": "workspace:*",
-    "@codeimage/vanilla-extract": "workspace:*",
     "@floating-ui/core": "^1.5.0",
     "@floating-ui/dom": "^1.5.3",
     "@motionone/solid": "^10.16.2",
@@ -104,8 +99,9 @@
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@types/node": "catalog:next",
-    "@vanilla-extract/esbuild-plugin": "^2.2.2",
-    "@vanilla-extract/rollup-plugin": "^1.2.1",
+    "@vanilla-extract/esbuild-plugin": "^2.3.22",
+    "@vanilla-extract/rollup-plugin": "^1.5.3",
+    "@vanilla-extract/vite-plugin": "5.2.1",
     "acorn-jsx": "^5.3.2",
     "chalk": "5.1.2",
     "csstype": "3.1.1",
@@ -119,13 +115,15 @@
     "rollup": "^2.79.1",
     "rollup-plugin-import-css": "^3.2.1",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-preset-solid": "^2.0.1",
-    "solid-js": "^1.8.6",
+    "rollup-preset-solid": "^3.0.0",
+    "solid-js": "catalog:next",
     "tiny-glob": "^0.2.9",
     "typescript": "catalog:next",
-    "vite": "^3.2.5",
-    "vite-plugin-dts": "^1.7.3",
-    "vite-plugin-solid": "^2.7.0"
+    "vite": "catalog:next",
+    "oxfmt": "catalog:next",
+    "oxlint": "catalog:next",
+    "vite-plugin-dts": "catalog:next",
+    "vite-plugin-solid": "catalog:next"
   },
   "engines": {
     "node": ">=24"

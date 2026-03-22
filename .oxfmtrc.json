@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "tabWidth": 2,
+  "quoteProps": "as-needed",
+  "printWidth": 80,
+  "singleQuote": true,
+  "arrowParens": "avoid",
+  "trailingComma": "all",
+  "bracketSpacing": false,
+  "endOfLine": "lf",
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "dist",
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/.output/**",
+    "**/coverage/**"
+  ]
+}

@@ -1,7 +1,7 @@
-import type {FlowProps} from 'solid-js';
-import * as styles from './Canvas.css';
+import type { FlowProps } from "solid-js";
+import * as styles from "./Canvas.css";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// oxlint-disable-next-line typescript/no-empty-object-type
 type CanvasProps = {};
 
 export function Canvas(props: FlowProps<CanvasProps>) {

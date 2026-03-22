@@ -1,7 +1,5 @@
-import {backgroundColorVar} from '@codeimage/ui';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import {FlowProps, Ref} from 'solid-js';
-import * as styles from './FeatureCard.css';
+import type {FlowProps, Ref} from 'solid-js';
+import styles from './FeatureCard.module.css';
 
 interface FeatureCardProps {
   ref?: Ref<HTMLDivElement>;
@@ -30,11 +28,7 @@ export function FeatureContent(props: FlowProps & {ref?: Ref<HTMLDivElement>}) {
 
 export function FeatureImageContent(props: FlowProps<{bgColor?: string}>) {
   const customStyles = () =>
-    props.bgColor
-      ? assignInlineVars({
-          [backgroundColorVar]: props.bgColor,
-        })
-      : {};
+    props.bgColor ? {'--background-color': props.bgColor} : {};
 
   return (
     <div class={styles.imageSection} style={customStyles()}>

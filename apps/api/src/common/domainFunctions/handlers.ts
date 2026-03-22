@@ -23,9 +23,11 @@ export function getHandlerMetadata(handler: object): HandlerMetadata {
 }
 
 export function createModuleHandlers<
+  // oxlint-disable-next-line typescript/no-explicit-any
   TDependencies extends Record<string, any>,
 >() {
   const builder = HandlerBuilder.withDependencies<TDependencies>();
+  // oxlint-disable-next-line typescript/no-explicit-any
   return <THandlerName extends string, R extends (...args: any[]) => any>(
     name: THandlerName,
     handlerCallback: (
@@ -44,6 +46,7 @@ export function createModuleHandlers<
   };
 }
 
+// oxlint-disable-next-line typescript/no-explicit-any
 export function registerHandlers<S extends readonly Handler<string, any>[]>(
   handlers: readonly [...S],
   dependencies: MergeHandlerDependencies<S>,

@@ -1,4 +1,4 @@
-import {Auth0Client, User} from '@auth0/auth0-spa-js';
+import type {Auth0Client, User} from '@auth0/auth0-spa-js';
 import {createRoot, createSignal} from 'solid-js';
 import {createStore} from 'solid-js/store';
 

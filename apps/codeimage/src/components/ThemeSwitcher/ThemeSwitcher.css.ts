@@ -93,4 +93,4 @@ export const themeBoxSelectedOverlay = style({
   },
 });
 
-export type ThemeSwitcherVariant = RecipeVariants<typeof grid>;
+export type ThemeSwitcherVariant = NonNullable<RecipeVariants<typeof grid>>;

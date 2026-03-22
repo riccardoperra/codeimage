@@ -16,9 +16,10 @@
     "build:watch": "vite build --watch",
     "preview": "vite preview",
     "pre-commit": "lint-staged --relative",
-    "pre-commit-prettier": "prettier --write",
-    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
-    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "pre-commit-format": "oxfmt",
+    "pre-commit-eslint": "oxlint --fix",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "clean": "rimraf dist",
     "build-esm": "tsc -p tsconfig.esm.json",
     "build-dts": "tsc -p tsconfig.dts.json",
@@ -62,21 +63,23 @@
     "prettier-plugin-java": "^2.6.0",
     "prettier-plugin-rust": "^0.1.9",
     "prettier-plugin-sql": "^0.18.0",
-    "solid-js": "^1.8.17"
+    "solid-js": "catalog:next"
   },
   "peerDependencies": {
     "@codeimage/highlight": "workspace:*",
     "@codemirror/language": "^6.10.1",
     "@codemirror/state": "^6.4.1",
     "@codemirror/view": "^6.26.3",
-    "solid-js": "^1.8.6"
+    "solid-js": "catalog:next"
   },
   "devDependencies": {
+    "oxfmt": "catalog:next",
+    "oxlint": "catalog:next",
     "rimraf": "^3.0.2",
     "typescript": "catalog:next",
-    "vite": "^3.2.5",
-    "vite-plugin-dts": "^1.7.3",
-    "vite-plugin-solid": "^2.7.0"
+    "vite": "catalog:next",
+    "vite-plugin-dts": "catalog:next",
+    "vite-plugin-solid": "catalog:next"
   },
   "engines": {
     "node": ">=24"

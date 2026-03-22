@@ -1,0 +1,46 @@
+.centeredWrapper {
+  height: auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.canvas {
+  border-radius: 1rem;
+}
+.snippetTheme {
+  --snippet-controls-red: #ff5f57;
+  --snippet-controls-yellow: #febc2e;
+  --snippet-controls-green: #28c840;
+  --snippet-header-background: ;
+  --snippet-content-shadow:
+    rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px,
+    rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px,
+    rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+.canvasContent {
+  border-radius: 22px;
+  overflow: hidden;
+}
+.snippetHeader {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 56px;
+  transition: background-color 0.2s ease-in-out;
+}
+[data-theme-mode='light'] .snippetHeader[data-accent-visible='true'] {
+  background-color: var(--snippet-header-background, rgba(0, 0, 0, 0.06));
+}
+[data-theme-mode='dark'] .snippetHeader[data-accent-visible='true'] {
+  background-color: var(--snippet-header-background, rgba(255, 255, 255, 0.06));
+}
+.snippet {
+  width: 500px;
+  height: auto;
+  padding: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 0.5rem;
+  font-size: 15px;
+  position: relative;
+}

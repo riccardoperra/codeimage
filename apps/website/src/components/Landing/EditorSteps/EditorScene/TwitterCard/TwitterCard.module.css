@@ -1,0 +1,35 @@
+.card {
+  padding: 3rem;
+  padding-top: 1.5rem;
+  width: 624px;
+  height: 584px;
+  border-radius: 16px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: scale(0) translate3d(-50%, 50%, 0);
+  background-color: #1d1d1d;
+  opacity: 1;
+  will-change: transform;
+}
+.title {
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.badge {
+  width: 36px;
+  height: 36px;
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.twitterInfo {
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+.twitterInfo[data-visible='true'] {
+  opacity: 1;
+}

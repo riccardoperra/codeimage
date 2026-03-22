@@ -64,7 +64,7 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
     ) {
       try {
         await fastify.authenticate(req, reply);
-      } catch (e) {
+      } catch {
         if (options.mustBeAuthenticated) {
           throw fastify.httpErrors.unauthorized();
         }

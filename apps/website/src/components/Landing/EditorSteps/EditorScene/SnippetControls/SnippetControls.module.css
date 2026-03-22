@@ -1,0 +1,14 @@
+.headerIconRow {
+  height: 56px;
+  align-items: center;
+  display: flex;
+  padding-left: 1rem;
+  column-gap: 0.5rem;
+}
+.headerIconRow .headerIconRowCircle {
+  width: 15px;
+  height: 15px;
+  margin: auto 0;
+  border-radius: 9999px;
+  background-color: var(--background-color, #a0aec0);
+}

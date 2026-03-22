@@ -1,25 +1,14 @@
-import {CustomTheme} from '@codeimage/highlight';
-import {backgroundColorVar, Box, Button} from '@codeimage/ui';
-import {Motion} from '@motionone/solid';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
+import type {CustomTheme} from '@codeimage/highlight';
+import {Motion} from 'solid-motionone';
 import {inView} from 'motion';
-import {
-  createMemo,
-  createResource,
-  createSignal,
-  For,
-  JSXElement,
-  on,
-  onMount,
-  Show,
-  Suspense,
-  VoidProps,
-} from 'solid-js';
+import type {JSXElement, VoidProps} from 'solid-js';
+import {createMemo, createSignal, For, on, onMount, Show} from 'solid-js';
+import {Button} from '~/components/Button/Button';
 import {CodeEditorPreviewBlock} from '~/components/Landing/EditorSteps/CodeEditor/CodeEditorPreviewBlock';
 import {mainWebsiteLink} from '~/core/constants';
 import {injectBreakpoints} from '~/theme/breakpoints';
 import {CodeEditor} from '../EditorSteps/CodeEditor/CodeEditor';
-import * as styles from './Showcase.css';
+import styles from './Showcase.module.css';
 
 export default function Showcase() {
   const code =
@@ -34,35 +23,34 @@ export default function Showcase() {
   const blocks = [
     {
       code,
-      theme: import('@codeimage/highlight/dracula').then(t => {
-        return t.draculaTheme;
-      }),
+      loadTheme: () =>
+        import('@codeimage/highlight/dracula').then(t => t.draculaTheme),
     },
     {
       code,
-      theme: import('@codeimage/highlight/materialVolcano').then(t => {
-        return t.materialVolcanoTheme;
-      }),
+      loadTheme: () =>
+        import('@codeimage/highlight/materialVolcano').then(
+          t => t.materialVolcanoTheme,
+        ),
     },
     {
       code,
-      theme: import('@codeimage/highlight/githubDark').then(t => {
-        return t.githubDarkTheme;
-      }),
+      loadTheme: () =>
+        import('@codeimage/highlight/githubDark').then(t => t.githubDarkTheme),
     },
     {
       code,
-      theme: import('@codeimage/highlight/vitesseDark').then(t => {
-        return t.vitesseDarkTheme;
-      }),
+      loadTheme: () =>
+        import('@codeimage/highlight/vitesseDark').then(
+          t => t.vitesseDarkTheme,
+        ),
       alternativeBackground:
         'linear-gradient(to right bottom, #2be7b5, #1edea2, #16d58f, #13cb7c, #16c268, #0db866, #04ae64, #00a462, #00976c, #008971, #007b72, #006d6d)',
     },
     {
       code,
-      theme: import('@codeimage/highlight/nightOwl').then(t => {
-        return t.nightOwlTheme;
-      }),
+      loadTheme: () =>
+        import('@codeimage/highlight/nightOwl').then(t => t.nightOwlTheme),
     },
   ];
 
@@ -74,11 +62,9 @@ export default function Showcase() {
     }),
   );
 
-  const filteredBlocks = createMemo(() => {
-    return blocks.slice(0, maxElements());
-  });
+  const filteredBlocks = createMemo(() => blocks.slice(0, maxElements()));
 
-  let contentEl: HTMLDivElement;
+  let contentEl!: HTMLDivElement;
   const [isInView, setIsInView] = createSignal(true);
 
   onMount(() => {
@@ -86,9 +72,7 @@ export default function Showcase() {
       contentEl,
       () => {
         setIsInView(true);
-        return () => {
-          return setIsInView(false);
-        };
+        return () => setIsInView(false);
       },
       {amount: 0.5},
     );
@@ -96,7 +80,11 @@ export default function Showcase() {
 
   return (
     <div class={styles.container}>
-      <div ref={contentEl} class={styles.content} data-in-view={isInView()}>
+      <div
+        ref={el => (contentEl = el)}
+        class={styles.content}
+        data-in-view={isInView()}
+      >
         <Motion.div
           animate={{
             opacity: isInView() ? 1 : 0,
@@ -105,12 +93,18 @@ export default function Showcase() {
             },
           }}
         >
-          <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
+          <div
+            style={{
+              display: 'flex',
+              'flex-direction': 'column',
+              'align-items': 'center',
+            }}
+          >
             <h1 class={styles.heading}>Start now to beautify your snippets</h1>
             <p class={styles.description}>
               with 20+ custom themes and much more...
             </p>
-          </Box>
+          </div>
         </Motion.div>
 
         <div class={styles.grid}>
@@ -130,8 +124,8 @@ export default function Showcase() {
                   animate={{
                     opacity: isInView() ? 1 : 0.5,
                     transform: isInView()
-                      ? `translateY(0px) scale(1)`
-                      : `translateY(20px) scale(0.65)`,
+                      ? 'translateY(0px) scale(1)'
+                      : 'translateY(20px) scale(0.65)',
                     transition: {
                       easing: [0.16, 1, 0.3, 1],
                     },
@@ -141,7 +135,7 @@ export default function Showcase() {
                   <ShowcaseCodeEditorBlock
                     code={block.code}
                     alternativePreviewBackground={block.alternativeBackground}
-                    customTheme={block.theme}
+                    loadTheme={block.loadTheme}
                   />
                 </Motion.div>
               )}
@@ -160,7 +154,7 @@ export default function Showcase() {
 }
 
 interface ShowcaseCodeEditorBlockProps {
-  customTheme?: Promise<CustomTheme>;
+  loadTheme?: () => Promise<CustomTheme>;
   code: string;
   alternativePreviewBackground?: string;
 }
@@ -171,16 +165,9 @@ function ShowcaseCodeEditorPreview(
   return (
     <div
       class={styles.codeContainer}
-      style={assignInlineVars({
-        [styles.codeContainerBg]: '#1d1d1d',
-      })}
+      style={{'--code-container-bg': '#1d1d1d'}}
     >
-      <div
-        class={styles.codeBlock}
-        style={assignInlineVars({
-          [styles.codeBlockBg]: '#111',
-        })}
-      >
+      <div class={styles.codeBlock} style={{'--code-block-bg': '#111'}}>
         <CodeEditorPreviewBlock code={props.code} />
       </div>
     </div>
@@ -188,44 +175,53 @@ function ShowcaseCodeEditorPreview(
 }
 
 export function ShowcaseCodeEditorBlock(props: ShowcaseCodeEditorBlockProps) {
-  const [customTheme] = createResource(() => props.customTheme);
+  const [customTheme, setCustomTheme] = createSignal<CustomTheme>();
+
+  onMount(() => {
+    if (!props.loadTheme) {
+      return;
+    }
+
+    void props
+      .loadTheme()
+      .then(setCustomTheme)
+      .catch(() => null);
+  });
 
   return (
-    <Suspense fallback={<ShowcaseCodeEditorPreview code={props.code} />}>
-      <Show
-        fallback={<ShowcaseCodeEditorPreview code={props.code} />}
-        when={customTheme()}
-        keyed={false}
-      >
+    <Show
+      fallback={<ShowcaseCodeEditorPreview code={props.code} />}
+      when={customTheme()}
+      keyed
+    >
+      {theme => (
         <div
           class={styles.codeContainer}
-          style={assignInlineVars({
-            [styles.codeContainerBg]:
+          style={{
+            '--code-container-bg':
               props.alternativePreviewBackground ||
-              customTheme().properties.previewBackground,
-          })}
+              theme.properties.previewBackground,
+          }}
         >
           <div
             class={styles.codeBlock}
-            style={assignInlineVars({
-              [styles.codeBlockBg]: customTheme().properties.terminal.main,
-            })}
+            style={{
+              '--code-block-bg': theme.properties.terminal.main,
+            }}
           >
-            <Suspense fallback={<CodeEditorPreviewBlock code={props.code} />}>
-              <CodeEditor
-                code={props.code}
-                customTheme={Promise.resolve(customTheme().editorTheme)}
-              />
-            </Suspense>
+            <CodeEditor
+              code={props.code}
+              customTheme={Promise.resolve(theme.editorTheme)}
+            />
           </div>
           <div
             class={styles.backdrop}
-            style={assignInlineVars({
-              [backgroundColorVar]: customTheme().properties.previewBackground,
-            })}
+            style={{
+              '--background-color': theme.properties.previewBackground,
+            }}
           />
         </div>
-      </Show>
-    </Suspense>
+      )}
+    </Show>
   );
 }

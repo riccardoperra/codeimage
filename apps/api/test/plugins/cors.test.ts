@@ -7,6 +7,7 @@ import type {TestContext} from 'vitest';
 import {afterAll, assert, beforeEach, expect, test} from 'vitest';
 import cors from '../../src/plugins/cors.js';
 
+// oxlint-disable-next-line no-unused-vars
 async function build(t: TestContext) {
   const app = Fastify();
   await void app.register(
@@ -82,8 +83,6 @@ test('should add multiple cors origins', async t => {
     },
   });
 
-  expect(responseValid.headers).toContain({
-    'access-control-allow-origin': 'https://example.com',
-    vary: 'Origin',
-  });
+  expect(responseValid.headers.vary).toEqual('Origin');
+  expect(responseValid.headers['access-control-allow-origin']).toEqual('https://example.com');
 });

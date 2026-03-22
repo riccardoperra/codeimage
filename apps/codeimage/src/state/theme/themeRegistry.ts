@@ -1,6 +1,6 @@
 import type {CustomTheme} from '@codeimage/highlight';
 
-interface ThemeRegistryEntry {
+export interface ThemeRegistryEntry {
   id: string;
   load: () => Promise<CustomTheme>;
 }

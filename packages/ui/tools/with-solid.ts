@@ -16,9 +16,11 @@ import type {ModuleFormat, OutputOptions, RollupOptions} from 'rollup';
 import {terser} from 'rollup-plugin-terser';
 import ts from 'typescript';
 
+// oxlint-disable-next-line typescript/no-explicit-any
 function findClosestPackageJson(start = cwd(), level = 0): any {
   try {
     const path = resolve(start, 'package.json');
+    // oxlint-disable-next-line typescript/no-require-imports
     return require(path);
   } catch {
     return level >= 10 ? {} : findClosestPackageJson(dirname(start), level + 1);

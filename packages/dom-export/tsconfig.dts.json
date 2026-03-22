@@ -1,9 +1,9 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-      "declaration": true,
-      "declarationMap": false,
-      "emitDeclarationOnly": true,
-      "outDir": "./dist"
-    }
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist"
   }
+}

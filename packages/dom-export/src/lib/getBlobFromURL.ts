@@ -1,19 +1,19 @@
-import type {Options} from './options';
-import {parseDataUrlContent} from './util';
+import type { Options } from "./options";
+import { parseDataUrlContent } from "./util";
 
 export interface Metadata {
   blob: string;
   contentType: string;
 }
 
-const cache: {[url: string]: Promise<Metadata>} = {};
+const cache: { [url: string]: Promise<Metadata> } = {};
 
 function getCacheKey(url: string) {
-  let key = url.replace(/\?.*/, '');
+  let key = url.replace(/\?.*/, "");
 
   // font resourse
   if (/ttf|otf|eot|woff2?/i.test(key)) {
-    key = key.replace(/.*\//, '');
+    key = key.replace(/.*\//, "");
   }
 
   return key;
@@ -21,7 +21,7 @@ function getCacheKey(url: string) {
 
 export async function getBlobFromURL(
   url: string,
-  options: Options,
+  options: Options
 ): Promise<Metadata> {
   const cacheKey = getCacheKey(url);
 
@@ -33,11 +33,11 @@ export async function getBlobFromURL(
   // ref: https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#Bypassing_the_cache
   if (options.cacheBust) {
     // eslint-disable-next-line no-param-reassign
-    url += (/\?/.test(url) ? '&' : '?') + new Date().getTime();
+    url += (/\?/.test(url) ? "&" : "?") + new Date().getTime();
   }
 
-  const failed = (reason: any): Metadata => {
-    let placeholder = '';
+  const failed = (reason: Error | string): Metadata => {
+    let placeholder = "";
     if (options.imagePlaceholder) {
       const parts = options.imagePlaceholder.split(/,/);
       if (parts && parts[1]) {
@@ -47,7 +47,7 @@ export async function getBlobFromURL(
 
     let msg = `Failed to fetch resource: ${url}`;
     if (reason) {
-      msg = typeof reason === 'string' ? reason : reason.message;
+      msg = typeof reason === "string" ? reason : reason.message;
     }
 
     if (msg) {
@@ -56,20 +56,20 @@ export async function getBlobFromURL(
 
     return {
       blob: placeholder,
-      contentType: '',
+      contentType: "",
     };
   };
 
   const deferred = window
     .fetch(url, options.fetchRequestInit)
-    .then(res =>
-      res.blob().then(blob => ({
+    .then((res) =>
+      res.blob().then((blob) => ({
         blob,
-        contentType: res.headers.get('Content-Type') || '',
-      })),
+        contentType: res.headers.get("Content-Type") || "",
+      }))
     )
     .then(
-      ({blob, contentType}) =>
+      ({ blob, contentType }) =>
         new Promise<Metadata>((resolve, reject) => {
           const reader = new FileReader();
           reader.onloadend = () =>
@@ -79,9 +79,9 @@ export async function getBlobFromURL(
             });
           reader.onerror = reject;
           reader.readAsDataURL(blob);
-        }),
+        })
     )
-    .then(({blob, contentType}) => ({
+    .then(({ blob, contentType }) => ({
       contentType,
       blob: parseDataUrlContent(blob),
     }))

@@ -35,7 +35,11 @@ export interface FloatingPortalProps {
 export const FloatingPortal = (
   props: PropsWithChildren<FloatingPortalProps>,
 ) => {
-  const portalNode = createFloatingPortalNode({id: props.id});
+  const portalNode = createFloatingPortalNode({
+    get id() {
+      return props.id;
+    },
+  });
 
   return (
     <Show when={portalNode()} keyed>

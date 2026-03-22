@@ -1,0 +1,69 @@
+.gradientBlueBg {
+  --gradient-blue-1: rgb(9, 171, 241);
+  --gradient-blue-2: rgb(5, 105, 148);
+  --gradient-blue-3: rgb(4, 84, 118);
+  --gradient-blue-4: rgb(6, 119, 167);
+  background: linear-gradient(
+    140deg,
+    var(--gradient-blue-1),
+    var(--gradient-blue-2),
+    var(--gradient-blue-3),
+    var(--gradient-blue-4)
+  );
+}
+@supports (color: lch(0% 0 0)) {
+  .gradientBlueBg {
+    --gradient-blue-1: lch(55.426% 65 248.244);
+    --gradient-blue-2: lch(41.146% 55 246.713);
+    --gradient-blue-3: lch(32.877% 65 245.35);
+    --gradient-blue-4: lch(46.456% 75 246.637);
+  }
+}
+.gradientPurpleBg {
+  background: linear-gradient(
+    to right top,
+    #7f469d,
+    #8242aa,
+    #833db7,
+    #8338c4,
+    #8233d2,
+    #8a35da,
+    #9336e2,
+    #9b38ea,
+    #af41ee,
+    #c24af2,
+    #d554f7,
+    #e65ffb
+  );
+}
+@supports (color: lch(0% 0 0)) {
+  .gradientPurpleBg {
+    background: linear-gradient(
+      to right top,
+      lch(39.843% 100 313.879),
+      lch(40.096% 90 312.655),
+      lch(40.024% 120 311.36),
+      lch(39.967% 114 310.184),
+      lch(39.967% 123 310.184),
+      lch(41.933% 128 309.574),
+      lch(43.867% 124 310.387),
+      lch(45.792% 121 310.885),
+      lch(50.11% 108 313.55),
+      lch(54.338% 109 316.277),
+      lch(58.787% 110 318.992),
+      lch(63.059% 106 321.566)
+    );
+  }
+}
+.gradientPurpleDarkerBg {
+  background: linear-gradient(-45deg, #402662 0%, #8000ff 100%);
+}
+@supports (color: lch(0% 0 0)) {
+  .gradientPurpleDarkerBg {
+    background: linear-gradient(
+      -45deg,
+      lch(20% 55 306.256) 0%,
+      lch(39.352% 132 308.054) 100%
+    );
+  }
+}

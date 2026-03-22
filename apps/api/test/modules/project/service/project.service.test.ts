@@ -304,6 +304,6 @@ test('clone -> should not wrap exception', async () => {
     .callsFake(async () => Promise.reject(httpErrors.notFound('not found')));
 
   await expect(service.clone(user, id, null)).rejects.toThrow(
-    new Error(`Cannot clone project with id ${id} since it does not exists`),
+    httpErrors.notFound(`Cannot clone project with id ${id} since it does not exists`),
   );
 });

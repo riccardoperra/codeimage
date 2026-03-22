@@ -1,7 +1,3 @@
 {
-  "*.{ts,tsx,js,jsx}": [
-    "pnpm lint",
-    "pnpm pre-commit-prettier",
-    "pnpm pre-commit-eslint"
-  ]
+  "*.{ts,tsx,js,jsx}": ["pnpm lint", "oxfmt", "pnpm lint:fix"]
 }

@@ -1,17 +1,33 @@
 {
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": [
+    "**/*.css.ts",
+    "src/theme/responsive.ts",
+    "src/theme/supportLch.ts"
+  ],
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "jsxImportSource": "solid-js",
+    "target": "ES2022",
     "jsx": "preserve",
-    "resolveJsonModule": true,
+    "jsxImportSource": "solid-js",
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
-    "baseUrl": "./",
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    /* Linting */
+    "skipLibCheck": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
     "paths": {
       "~/*": ["./src/*"]
     }
-  },
+  }
 }

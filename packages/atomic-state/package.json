@@ -2,28 +2,22 @@
   "name": "@codeimage/atomic-state",
   "version": "1.0.1",
   "source": "src/index.tsx",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
   "type": "module",
   "files": [
     "dist"
   ],
   "exports": {
-    ".": {
-      "solid": "./dist/source/index.jsx",
-      "import": "./dist/esm/index.js",
-      "browser": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "node": "./dist/cjs/index.js"
-    }
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsdown",
     "pre-commit": "lint-staged --relative",
-    "pre-commit-prettier": "prettier --write",
-    "pre-commit-eslint": "eslint --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js --fix",
-    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "pre-commit-format": "oxfmt",
+    "pre-commit-eslint": "oxlint --fix",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "clean": "rimraf dist",
     "test": "vitest",
     "build-esm": "tsc -p tsconfig.esm.json",
@@ -34,14 +28,15 @@
   },
   "peerDependencies": {
     "rxjs": "^7.8.0",
-    "solid-js": "^1.8.6"
+    "solid-js": "catalog:next"
   },
   "devDependencies": {
     "@types/node": "catalog:next",
-    "rollup": "^2.79.1",
-    "rollup-preset-solid": "^1.4.0",
+    "rolldown-plugin-solid": "catalog:next",
+    "oxfmt": "catalog:next",
+    "oxlint": "catalog:next",
     "rxjs": "^7.8.1",
-    "solid-js": "^1.8.6",
+    "solid-js": "catalog:next",
     "tsdown": "catalog:next",
     "vite": "catalog:next",
     "vitest": "catalog:next"

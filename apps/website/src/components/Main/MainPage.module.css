@@ -1,0 +1,254 @@
+@keyframes float {
+  0% {
+    transform: translate(40px, -40px);
+  }
+
+  50% {
+    transform: translate(40px, -25px);
+  }
+
+  100% {
+    transform: translate(40px, -40px);
+  }
+}
+
+.main {
+  margin: auto;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  min-height: 100%;
+  position: relative;
+}
+
+.main::before {
+  content: '';
+  background: linear-gradient(179deg, #09090900 0%, #000000 70%);
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.content {
+  margin-top: 32px;
+  z-index: 1;
+  padding-top: 3rem;
+  padding-bottom: 6rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media screen and (min-width: 992px) {
+  .content {
+    max-width: 1280px;
+    width: 100%;
+    padding-top: 6rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.imageSection {
+  margin-top: 2rem;
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 10px 10px;
+  color: #0077ff75;
+}
+
+@media screen and (min-width: 992px) {
+  .imageSection {
+    width: 55%;
+    max-width: 1280px;
+    border-radius: 24px;
+  }
+}
+
+.imageBox {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  width: 100%;
+  margin-top: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+@media screen and (min-width: 992px) {
+  .imageBox {
+    border-radius: 42px;
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+.imagePerspectiveBox {
+  position: relative;
+  display: flex;
+  grid-column-start: 1;
+  justify-content: flex-end;
+  grid-row-start: 2;
+  padding-bottom: 3rem;
+}
+
+@media screen and (min-width: 992px) {
+  .imagePerspectiveBox {
+    grid-row-start: 1;
+    padding-bottom: 0;
+    margin-top: 200px;
+    margin-bottom: 20px;
+  }
+}
+
+.textBox {
+  grid-row-start: 1;
+  grid-column-start: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.heroContainer {
+  width: 90%;
+}
+
+.heading {
+  max-width: 860px;
+  text-align: left;
+  font-size: 52px;
+  line-height: 100%;
+  margin: 0;
+}
+
+@media screen and (min-width: 740px) {
+  .heading {
+    font-size: 64px;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .heading {
+    font-size: 4.5rem;
+    max-width: 44rem;
+  }
+}
+
+.mobileDescription {
+  font-size: 24px;
+  color: #ededed;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+@media screen and (min-width: 740px) {
+  .mobileDescription {
+    max-width: 32rem;
+  }
+}
+
+.imageLeft {
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  min-height: 240px;
+}
+
+@media screen and (min-width: 740px) {
+  .imageLeft {
+    min-height: 450px;
+  }
+}
+
+.screenshot {
+  color: var(--root-primary-text-color);
+}
+
+.ctaContainer {
+  display: flex;
+  margin-top: 1rem;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+@media screen and (min-width: 740px) {
+  .ctaContainer {
+    flex-direction: row;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .ctaContainer {
+    margin-top: 3rem;
+  }
+}
+
+.advertisingBanner {
+  width: 100%;
+  display: flex;
+  padding: 1.5rem;
+  padding-block: 1.25rem;
+  flex-direction: column;
+  gap: 1rem;
+  border-radius: 0.5rem;
+  align-items: flex-start;
+  background: hsla(204, 100%, 50%, 0.15);
+}
+
+@media screen and (min-width: 740px) {
+  .advertisingBanner {
+    max-width: 400px;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .advertisingBanner {
+    max-width: 460px;
+  }
+}
+
+.advertisingDescription {
+  max-width: 860px;
+  text-align: left;
+  font-size: 24px;
+  line-height: 100%;
+  margin: 0;
+}
+
+@media screen and (min-width: 740px) {
+  .advertisingDescription {
+    font-size: 32px;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .advertisingDescription {
+    font-size: 1.35em;
+    max-width: 44rem;
+    font-weight: 400;
+    line-height: 1.25;
+  }
+}
+
+.advertisingBadge {
+  background-color: hsla(204, 100%, 50%, 0.15);
+  color: #0099ff;
+  letter-spacing: 1px;
+  min-width: auto;
+  padding-inline: 1rem;
+  padding-block: 0.5rem;
+  font-weight: 500;
+  border-radius: 9999px;
+}

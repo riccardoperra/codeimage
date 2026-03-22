@@ -1,7 +1,12 @@
 import type {Preset} from '@codeimage/prisma-models';
 
 export class PresetTestDataUtils {
-  static buildPreset(id: string, name: string, ownerId: string, data: {} = {}) {
+  static buildPreset(
+    id: string,
+    name: string,
+    ownerId: string,
+    data: Record<string, unknown> = {},
+  ) {
     return {
       id,
       name,

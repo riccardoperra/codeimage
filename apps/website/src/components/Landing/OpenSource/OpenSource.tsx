@@ -1,10 +1,8 @@
-import {Box, HStack, Link, Text} from '@codeimage/ui';
 import {createSignal, onMount} from 'solid-js';
 import {injectBreakpoints} from '~/theme/breakpoints';
-import * as styles from './OpenSource.css';
+import styles from './OpenSource.module.css';
 
 export default function OpenSource() {
-  let section: HTMLDivElement;
   const bp = injectBreakpoints();
   const baseUrl = `https://opencollective.com/codeimage/contributors.svg`;
 
@@ -24,10 +22,12 @@ export default function OpenSource() {
   onMount(() => setView(true));
 
   return (
-    <div class={styles.main} ref={section}>
+    <div class={styles.main}>
       <div class={styles.contributorsContent}>
         <div class={styles.contributorsStickyContent}>
-          <HStack display={'flex'} alignItems={'center'} spacing={6}>
+          <div
+            style={{display: 'flex', 'align-items': 'center', gap: '1.5rem'}}
+          >
             <svg
               width={54}
               height={54}
@@ -43,17 +43,17 @@ export default function OpenSource() {
                 fill="#fff"
               />
             </svg>
-            <Text weight={'bold'} size={'4xl'} class={styles.heading}>
+            <h2 class={styles.heading} style={{margin: 0, 'font-weight': 700}}>
               Open Source
-            </Text>
-          </HStack>
+            </h2>
+          </div>
 
-          <Box marginTop={4}>
-            <Text class={styles.description}>
+          <div style={{'margin-top': '1rem'}}>
+            <p class={styles.description}>
               CodeImage is an open source project, which is available entirely
               on GitHub.
-            </Text>
-          </Box>
+            </p>
+          </div>
 
           <div class={styles.contributorsObject} data-visible={view()}>
             <object
@@ -62,22 +62,21 @@ export default function OpenSource() {
             />
           </div>
 
-          <Box>
-            <Text as={'p'} class={styles.description}>
+          <div>
+            <p class={styles.description}>
               Contributors can help fix bugs and implement new features in
               CodeImage.
-            </Text>
-          </Box>
-          <Link
-            as={'a'}
+            </p>
+          </div>
+
+          <a
             href="https://github.com/riccardoperra/codeimage"
-            target="_blank'"
-            rel={'noopener'}
-            underline={true}
+            target="_blank"
+            rel="noopener"
             class={styles.becomeContributorLink}
           >
             Become a contributor →
-          </Link>
+          </a>
         </div>
       </div>
     </div>

@@ -1,14 +1,14 @@
 import chalk from 'chalk';
 import {cpSync, existsSync, mkdirSync, rmdirSync, writeFileSync} from 'node:fs';
 import {join, resolve} from 'node:path';
-import {ConfigEnv, Plugin, ResolvedConfig} from 'vite';
+import type {ConfigEnv, Plugin, ResolvedConfig} from 'vite';
 
-const ENABLE_VERCEL_BUILD = process.env.ENABLE_VERCEL_BUILD === 'true';
+const ENABLE_VERCEL_BUILD = true;
 
 /**
  * Generate a .vercel/output folder with the static assets from the generated build.
  */
-export function withStaticVercelPreview(): Plugin {
+export function withStaticVercelPreview(options?: {folder: string}): Plugin {
   let config: ResolvedConfig;
   let command: ConfigEnv['command'];
 
@@ -64,9 +64,11 @@ export function withStaticVercelPreview(): Plugin {
         {encoding: 'utf-8'},
       );
 
-      const distFolder = resolve(join(config.root, 'dist'));
-      cpSync(distFolder, join(outputDir, 'static'), {recursive: true});
-      console.log(chalk.green('Vercel output generated successfully.'));
+      const distFolder = resolve(join(config.root, options?.folder ?? 'dist'));
+      setTimeout(() => {
+        cpSync(distFolder, join(outputDir, 'static'), {recursive: true});
+        console.log(chalk.green('Vercel output generated successfully.'));
+      }, 250)
     },
   };
 }
