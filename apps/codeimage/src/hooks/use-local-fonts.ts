@@ -1,8 +1,8 @@
 import {
   determineFontFaceName,
   isMonospaced,
-} from "@core/modules/localFontAccessApi/font";
-import { FontMetrics } from "@core/modules/localFontAccessApi/fontMetrics";
+} from '@core/modules/localFontAccessApi/font';
+import {FontMetrics} from '@core/modules/localFontAccessApi/fontMetrics';
 
 export interface LoadedFont {
   family: string;
@@ -11,7 +11,7 @@ export interface LoadedFont {
 }
 
 export async function useLocalFonts(): Promise<LoadedFont[]> {
-  const { queryLocalFonts } = window;
+  const {queryLocalFonts} = window;
   if (!queryLocalFonts) {
     return [];
   }
@@ -37,7 +37,7 @@ export async function useLocalFonts(): Promise<LoadedFont[]> {
         fontData.faces.push(face);
       }
     }
-    Object.values(fonts).forEach((font) => {
+    Object.values(fonts).forEach(font => {
       font.faces.sort();
     });
   } catch {}

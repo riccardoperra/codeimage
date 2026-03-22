@@ -1,12 +1,12 @@
-import type { LanguageIconDefinition } from "@codeimage/config";
-import { SUPPORTED_LANGUAGES } from "@codeimage/config";
-import { highlight as _highlight } from "@core/directives/highlight";
-import { Combobox } from "@kobalte/core";
-import { createResizeObserver } from "@solid-primitives/resize-observer";
-import type { JSXElement } from "solid-js";
-import { createEffect, createMemo, createSignal } from "solid-js";
-import { TabIcon } from "../TabIcon/TabIcon";
-import * as styles from "./TabName.css";
+import type {LanguageIconDefinition} from '@codeimage/config';
+import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {highlight as _highlight} from '@core/directives/highlight';
+import {Combobox} from '@kobalte/core';
+import {createResizeObserver} from '@solid-primitives/resize-observer';
+import type {JSXElement} from 'solid-js';
+import {createEffect, createMemo, createSignal} from 'solid-js';
+import {TabIcon} from '../TabIcon/TabIcon';
+import * as styles from './TabName.css';
 
 interface TabNameProps {
   readonly: boolean;
@@ -17,11 +17,11 @@ interface TabNameProps {
 const highlight = _highlight;
 void highlight;
 
-const icons = SUPPORTED_LANGUAGES.flatMap((language) => language.icons);
+const icons = SUPPORTED_LANGUAGES.flatMap(language => language.icons);
 
 const uniqueIcons = icons.filter(
   (icon, index, self) =>
-    index === self.findIndex((i) => i.extension === icon.extension)
+    index === self.findIndex(i => i.extension === icon.extension),
 );
 
 export default function TabName(props: TabNameProps): JSXElement {
@@ -31,7 +31,7 @@ export default function TabName(props: TabNameProps): JSXElement {
   const [width, setWidth] = createSignal(0);
   const textWithDotExtension = /\.([0-9a-z.]?)+$/i;
   const gap = 8;
-  const placeholder = "Untitled";
+  const placeholder = 'Untitled';
 
   const computedWidth = () => width() + gap;
 
@@ -47,12 +47,12 @@ export default function TabName(props: TabNameProps): JSXElement {
 
   const onSelectItem = (item: LanguageIconDefinition | null) => {
     if (!item) return;
-    const sanitizedExtension = item.extension.replace(".", "");
+    const sanitizedExtension = item.extension.replace('.', '');
     const value = getFormattedValue(sanitizedExtension);
     onChange(value);
 
     // Move cursor before the extension dot in order to continue writing when contains only extension
-    if (value.startsWith(".")) {
+    if (value.startsWith('.')) {
       queueMicrotask(() => {
         const cursorPosition = value.indexOf(item.extension);
         inputEl.setSelectionRange(cursorPosition, cursorPosition);
@@ -61,9 +61,9 @@ export default function TabName(props: TabNameProps): JSXElement {
   };
 
   const getExtensionByInputValue = (inputValue: string | undefined | null) => {
-    if (!inputValue) return "";
+    if (!inputValue) return '';
     const extension = /\.[0-9a-z.]+$/i.exec(inputValue);
-    return (extension ? extension[0] : "").replace(".", "");
+    return (extension ? extension[0] : '').replace('.', '');
   };
 
   const extension = createMemo(() => getExtensionByInputValue(props.value));
@@ -71,7 +71,7 @@ export default function TabName(props: TabNameProps): JSXElement {
   const isMatched = (option: LanguageIconDefinition, inputValue: string) => {
     if (!inputValue) return true;
     const currentExtension = getExtensionByInputValue(inputValue);
-    if (!currentExtension && inputValue.endsWith(".")) {
+    if (!currentExtension && inputValue.endsWith('.')) {
       return true;
     }
     if (!currentExtension) return false;
@@ -79,7 +79,7 @@ export default function TabName(props: TabNameProps): JSXElement {
   };
 
   const getFormattedValue = (value: string) => {
-    const sanitizedValue = props.value || "";
+    const sanitizedValue = props.value || '';
     const hasDot = textWithDotExtension.test(sanitizedValue);
     if (!hasDot) {
       return `${sanitizedValue}.${value}`;
@@ -88,20 +88,17 @@ export default function TabName(props: TabNameProps): JSXElement {
   };
 
   const selectedItem = createMemo(() => {
-    return uniqueIcons.find(
-      (uniqueIcon) => extension() == uniqueIcon.extension
-    );
+    return uniqueIcons.find(uniqueIcon => extension() == uniqueIcon.extension);
   });
 
   const hiddenText = () => props.value || placeholder;
 
   const adjustPopperPositionerStyle = () => {
     setTimeout(() => {
-      const popperPositioner = portal.querySelector("[data-popper-positioner]");
+      const popperPositioner = portal.querySelector('[data-popper-positioner]');
       if (popperPositioner) {
-        (
-          popperPositioner as HTMLElement
-        ).style.transition = `transform 150ms ease-in-out`;
+        (popperPositioner as HTMLElement).style.transition =
+          `transform 150ms ease-in-out`;
       }
     }, 200);
   };
@@ -110,8 +107,8 @@ export default function TabName(props: TabNameProps): JSXElement {
     setWidth(hiddenTextEl.clientWidth);
     createResizeObserver(
       () => hiddenTextEl,
-      ({ width }) => setWidth(width),
-      { box: "content-box" }
+      ({width}) => setWidth(width),
+      {box: 'content-box'},
     );
   });
 
@@ -119,19 +116,19 @@ export default function TabName(props: TabNameProps): JSXElement {
     <Combobox.Root
       value={selectedItem()}
       onChange={onSelectItem}
-      optionLabel={"name"}
-      optionTextValue={"name"}
-      optionValue={"extension"}
+      optionLabel={'name'}
+      optionTextValue={'name'}
+      optionValue={'extension'}
       disallowEmptySelection={true}
-      placement={"bottom-start"}
+      placement={'bottom-start'}
       gutter={-2}
       shift={width() - 10}
-      onOpenChange={(isOpen) => {
+      onOpenChange={isOpen => {
         if (isOpen) {
           adjustPopperPositionerStyle();
         }
       }}
-      itemComponent={(props) => {
+      itemComponent={props => {
         return (
           <Combobox.Item
             item={props.item}
@@ -148,7 +145,7 @@ export default function TabName(props: TabNameProps): JSXElement {
       }}
       placeholder={placeholder}
       options={uniqueIcons}
-      triggerMode={"focus"}
+      triggerMode={'focus'}
       defaultFilter={isMatched}
     >
       <Combobox.Control class={styles.control} aria-label="Tab name">
@@ -157,7 +154,7 @@ export default function TabName(props: TabNameProps): JSXElement {
           value={props.value}
           class={styles.input}
           style={inputStyle()}
-          onInput={(el) => onChange(el.currentTarget.value)}
+          onInput={el => onChange(el.currentTarget.value)}
         />
         <div ref={hiddenTextEl} class={styles.inlineHiddenItem}>
           {hiddenText()}

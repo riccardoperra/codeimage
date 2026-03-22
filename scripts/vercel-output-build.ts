@@ -68,7 +68,7 @@ export function withStaticVercelPreview(options?: {folder: string}): Plugin {
       setTimeout(() => {
         cpSync(distFolder, join(outputDir, 'static'), {recursive: true});
         console.log(chalk.green('Vercel output generated successfully.'));
-      }, 250)
+      }, 250);
     },
   };
 }

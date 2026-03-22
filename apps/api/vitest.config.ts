@@ -11,7 +11,7 @@ export default defineConfig(() => {
         deps: {
           inline: ['@fastify/autoload'],
         },
-      }
+      },
     },
     resolve: {
       alias: {
@@ -20,7 +20,7 @@ export default defineConfig(() => {
         ),
       },
     },
-  })
+  });
 
   if (testType === 'unit') {
     return mergeConfig(config, {
@@ -31,16 +31,19 @@ export default defineConfig(() => {
       },
     });
   } else if (testType === 'integration') {
-    return mergeConfig(config, defineConfig({
-      test: {
-        fileParallelism: false,
-        include: ['./test/**/*.integration.test.ts'],
-        sequence: {
-          hooks: 'list',
+    return mergeConfig(
+      config,
+      defineConfig({
+        test: {
+          fileParallelism: false,
+          include: ['./test/**/*.integration.test.ts'],
+          sequence: {
+            hooks: 'list',
+          },
+          globalSetup: ['./test/setup-integration.ts'],
         },
-        globalSetup: ['./test/setup-integration.ts'],
-      },
-    } satisfies ViteUserConfig));
+      } satisfies ViteUserConfig),
+    );
   }
   return {};
 });
