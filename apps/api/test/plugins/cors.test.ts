@@ -83,8 +83,6 @@ test('should add multiple cors origins', async t => {
     },
   });
 
-  expect(responseValid.headers).toContain({
-    'access-control-allow-origin': 'https://example.com',
-    vary: 'Origin',
-  });
+  expect(responseValid.headers.vary).toEqual('Origin');
+  expect(responseValid.headers['access-control-allow-origin']).toEqual('https://example.com');
 });
