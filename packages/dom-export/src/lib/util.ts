@@ -1,31 +1,31 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import * as process from "process";
-import type { Options } from "./options";
+import * as process from 'process';
+import type {Options} from './options';
 
-const WOFF = "application/font-woff";
-const JPEG = "image/jpeg";
-const mimes: { [key: string]: string } = {
+const WOFF = 'application/font-woff';
+const JPEG = 'image/jpeg';
+const mimes: {[key: string]: string} = {
   woff: WOFF,
   woff2: WOFF,
-  ttf: "application/font-truetype",
-  eot: "application/vnd.ms-fontobject",
-  png: "image/png",
+  ttf: 'application/font-truetype',
+  eot: 'application/vnd.ms-fontobject',
+  png: 'image/png',
   jpg: JPEG,
   jpeg: JPEG,
-  gif: "image/gif",
-  tiff: "image/tiff",
-  svg: "image/svg+xml",
+  gif: 'image/gif',
+  tiff: 'image/tiff',
+  svg: 'image/svg+xml',
 };
 
 export function getExtension(url: string): string {
   const match = /\.([^./]*?)$/g.exec(url);
-  return match ? match[1] : "";
+  return match ? match[1] : '';
 }
 
 export function getMimeType(url: string): string {
   const extension = getExtension(url).toLowerCase();
-  return mimes[extension] || "";
+  return mimes[extension] || '';
 }
 
 export function resolveUrl(url: string, baseUrl: string | null): string {
@@ -45,8 +45,8 @@ export function resolveUrl(url: string, baseUrl: string | null): string {
   }
 
   const doc = document.implementation.createHTMLDocument();
-  const base = doc.createElement("base");
-  const a = doc.createElement("a");
+  const base = doc.createElement('base');
+  const a = doc.createElement('a');
 
   doc.head.appendChild(base);
   doc.body.appendChild(a);
@@ -65,10 +65,10 @@ export function isDataUrl(url: string) {
 }
 
 export const isSlotElement = (node: Node): node is HTMLSlotElement =>
-  (node as Element).tagName === "SLOT";
+  (node as Element).tagName === 'SLOT';
 
 export const isCustomElement = (node: Element): boolean =>
-  node.tagName.indexOf("-") > 0;
+  node.tagName.indexOf('-') > 0;
 
 export function makeDataUrl(content: string, mimeType: string) {
   return `data:${mimeType};base64,${content}`;
@@ -97,7 +97,7 @@ export const uuid = (function uuid() {
 export const delay =
   <T>(ms: number) =>
   (args: T) =>
-    new Promise<T>((resolve) => setTimeout(() => resolve(args), ms));
+    new Promise<T>(resolve => setTimeout(() => resolve(args), ms));
 
 // oxlint-disable-next-line typescript/no-explicit-any TODO: fix
 export function toArray<T>(arrayLike: any): T[] {
@@ -113,18 +113,18 @@ export function toArray<T>(arrayLike: any): T[] {
 function px(node: HTMLElement, styleProperty: string) {
   const win = node.ownerDocument.defaultView || window;
   const val = win.getComputedStyle(node).getPropertyValue(styleProperty);
-  return val ? parseFloat(val.replace("px", "")) : 0;
+  return val ? parseFloat(val.replace('px', '')) : 0;
 }
 
 export function getNodeWidth(node: HTMLElement) {
-  const leftBorder = px(node, "border-left-width");
-  const rightBorder = px(node, "border-right-width");
+  const leftBorder = px(node, 'border-left-width');
+  const rightBorder = px(node, 'border-right-width');
   return node.clientWidth + leftBorder + rightBorder;
 }
 
 export function getNodeHeight(node: HTMLElement) {
-  const topBorder = px(node, "border-top-width");
-  const bottomBorder = px(node, "border-bottom-width");
+  const topBorder = px(node, 'border-top-width');
+  const bottomBorder = px(node, 'border-bottom-width');
   return node.clientHeight + topBorder + bottomBorder;
 }
 
@@ -132,7 +132,7 @@ export function getImageSize(targetNode: HTMLElement, options: Options = {}) {
   const width = options.width || getNodeWidth(targetNode);
   const height = options.height || getNodeHeight(targetNode);
 
-  return { width, height };
+  return {width, height};
 }
 
 // @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/canvas#maximum_canvas_size
@@ -189,26 +189,26 @@ export function getPixelRatio() {
 
 export function canvasToBlob(
   canvas: HTMLCanvasElement,
-  options: Options = {}
+  options: Options = {},
 ): Promise<Blob | null> {
   if (canvas.toBlob) {
-    return new Promise((resolve) =>
+    return new Promise(resolve =>
       canvas.toBlob(
         resolve,
-        options.type ? options.type : "image/png",
-        options.quality ? options.quality : 1
-      )
+        options.type ? options.type : 'image/png',
+        options.quality ? options.quality : 1,
+      ),
     );
   }
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const binaryString = window.atob(
       canvas
         .toDataURL(
           options.type ? options.type : undefined,
-          options.quality ? options.quality : undefined
+          options.quality ? options.quality : undefined,
         )
-        .split(",")[1]
+        .split(',')[1],
     );
     const len = binaryString.length;
     const binaryArray = new Uint8Array(len);
@@ -219,18 +219,18 @@ export function canvasToBlob(
 
     resolve(
       new Blob([binaryArray], {
-        type: options.type ? options.type : "image/png",
-      })
+        type: options.type ? options.type : 'image/png',
+      }),
     );
   });
 }
 
 export const isInstanceOfElement = <
-  T extends typeof Element | typeof HTMLElement | typeof SVGImageElement
+  T extends typeof Element | typeof HTMLElement | typeof SVGImageElement,
 >(
   node: Element | HTMLElement | SVGImageElement,
-  instance: T
-): node is T["prototype"] => {
+  instance: T,
+): node is T['prototype'] => {
   if (node instanceof instance) return true;
 
   const nodePrototype = Object.getPrototypeOf(node);
@@ -248,8 +248,8 @@ export function createImage(url: string): Promise<HTMLImageElement> {
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = reject;
-    img.crossOrigin = "anonymous";
-    img.decoding = "sync";
+    img.crossOrigin = 'anonymous';
+    img.decoding = 'sync';
     img.src = url;
   });
 }
@@ -258,27 +258,27 @@ export async function svgToDataURL(svg: SVGElement): Promise<string> {
   return Promise.resolve()
     .then(() => new XMLSerializer().serializeToString(svg))
     .then(encodeURIComponent)
-    .then((html) => `data:image/svg+xml;charset=utf-8,${html}`);
+    .then(html => `data:image/svg+xml;charset=utf-8,${html}`);
 }
 
 export async function nodeToDataURL(
   node: HTMLElement,
   width: number,
-  height: number
+  height: number,
 ): Promise<string> {
-  const xmlns = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(xmlns, "svg");
-  const foreignObject = document.createElementNS(xmlns, "foreignObject");
+  const xmlns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(xmlns, 'svg');
+  const foreignObject = document.createElementNS(xmlns, 'foreignObject');
 
-  svg.setAttribute("width", `${width}`);
-  svg.setAttribute("height", `${height}`);
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute('width', `${width}`);
+  svg.setAttribute('height', `${height}`);
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
-  foreignObject.setAttribute("width", "100%");
-  foreignObject.setAttribute("height", "100%");
-  foreignObject.setAttribute("x", "0");
-  foreignObject.setAttribute("y", "0");
-  foreignObject.setAttribute("externalResourcesRequired", "true");
+  foreignObject.setAttribute('width', '100%');
+  foreignObject.setAttribute('height', '100%');
+  foreignObject.setAttribute('x', '0');
+  foreignObject.setAttribute('y', '0');
+  foreignObject.setAttribute('externalResourcesRequired', 'true');
 
   svg.appendChild(foreignObject);
   foreignObject.appendChild(node);

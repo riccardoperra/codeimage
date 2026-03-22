@@ -12,7 +12,7 @@ export type TextFieldProps = {
   value?: string | number;
   onChange?: (value: string) => void;
   size?: UseTextProps['size'];
-  ref?: Ref<DynamicNode<'input'>>
+  ref?: Ref<DynamicNode<'input'>>;
 } & $TextFieldProps &
   Omit<DynamicProps<'input'>, 'as' | 'ref' | 'onInput' | 'onChange' | 'type'>;
 

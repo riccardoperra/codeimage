@@ -1,7 +1,7 @@
-import type { AnimationControls } from "motion";
-import { animate } from "motion";
-import type { FlowProps } from "solid-js";
-import { onCleanup, onMount } from "solid-js";
+import type {AnimationControls} from 'motion';
+import {animate} from 'motion';
+import type {FlowProps} from 'solid-js';
+import {onCleanup, onMount} from 'solid-js';
 
 // oxlint-disable-next-line typescript/no-empty-object-type
 interface DynamicSizedContainerProps {}
@@ -11,7 +11,7 @@ function toPx(value: number) {
 }
 
 export function DynamicSizedContainer(
-  props: FlowProps<DynamicSizedContainerProps>
+  props: FlowProps<DynamicSizedContainerProps>,
 ) {
   let ref!: HTMLDivElement;
   let animation: AnimationControls | null = null;
@@ -23,19 +23,19 @@ export function DynamicSizedContainer(
         width,
         height,
       },
-      { duration: 0.2, easing: [0.4, 0, 0.2, 1] }
+      {duration: 0.2, easing: [0.4, 0, 0.2, 1]},
     );
   };
 
   const recalculateSize = () => {
-    if (animation && animation.playState === "running") {
+    if (animation && animation.playState === 'running') {
       animation.stop();
       animation = null;
     }
     const currentWidth = ref.offsetWidth;
     const currentHeight = ref.offsetHeight;
-    ref.style.width = "auto";
-    ref.style.height = "auto";
+    ref.style.width = 'auto';
+    ref.style.height = 'auto';
     const newWidth = toPx(ref.offsetWidth);
     const newHeight = toPx(ref.offsetHeight);
     ref.style.width = toPx(currentWidth);
@@ -49,7 +49,7 @@ export function DynamicSizedContainer(
     if (!ref) return;
     recalculateSize();
     const resizeObserver = new MutationObserver(recalculateSize);
-    resizeObserver.observe(ref, { childList: true, subtree: true });
+    resizeObserver.observe(ref, {childList: true, subtree: true});
     return onCleanup(() => resizeObserver.disconnect());
   });
 

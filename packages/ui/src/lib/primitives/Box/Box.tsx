@@ -7,21 +7,16 @@ import {sprinkles} from '../../theme';
 import {styled} from '../../utils';
 import {boxBase} from './Box.css';
 
-type UnboxIntrinsicElements<T> = T extends JSX.HTMLAttributes<infer U> ? U : never;
+type UnboxIntrinsicElements<T> =
+  T extends JSX.HTMLAttributes<infer U> ? U : never;
 
+type UnboxComponentProp<U> = U extends {ref: infer X} ? X : never;
 
-type UnboxComponentProp<U> =
-  U extends { ref: infer X }
-    ? X
+export type DynamicNode<T extends ValidConstructor> = T extends ValidElements
+  ? UnboxIntrinsicElements<JSX.IntrinsicElements[T]>
+  : T extends ValidComponent<infer U>
+    ? UnboxComponentProp<U>
     : never;
-
-export type DynamicNode<T extends ValidConstructor> =
-  T extends ValidElements
-    ? UnboxIntrinsicElements<JSX.IntrinsicElements[T]>
-    :
-    T extends ValidComponent<infer U>
-      ? UnboxComponentProp<U>
-      : never;
 
 export type ValidElements = keyof JSX.IntrinsicElements;
 export type ValidComponent<P> = (props: P) => JSX.Element;
@@ -31,13 +26,11 @@ export type ValidConstructor =
   | ValidComponent<any>
   | (string & {});
 
-export type DynamicProps<T extends ValidConstructor> =
-  T extends ValidElements
-    ? JSX.IntrinsicElements[T]
-    :
-    T extends ValidComponent<infer U>
-      ? U
-      : Record<string, unknown>;
+export type DynamicProps<T extends ValidConstructor> = T extends ValidElements
+  ? JSX.IntrinsicElements[T]
+  : T extends ValidComponent<infer U>
+    ? U
+    : Record<string, unknown>;
 
 type BoxParameters = {
   // Fallback to support both index number and string (ex. 2 | "2")

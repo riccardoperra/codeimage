@@ -1,5 +1,5 @@
 // oxlint-disable typescript/no-explicit-any
-const $HANDLER: unique symbol
+const $HANDLER: unique symbol;
 
 declare module '@api/domain' {
   type GenericHandler = (...args: any[]) => any;

@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "jsx": "preserve",
-    "moduleResolution": "bundler",
+    "moduleResolution": "bundler"
   },
   "include": ["./src"]
 }

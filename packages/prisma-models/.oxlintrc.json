@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "../../.oxlintrc.json"
-  ],
+  "extends": ["../../.oxlintrc.json"],
   "ignorePatterns": [
     "dist/**",
     "coverage/**",

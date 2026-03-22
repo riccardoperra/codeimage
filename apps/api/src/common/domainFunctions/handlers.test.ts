@@ -72,7 +72,10 @@ test('resolve handlers', () => {
 });
 
 test('handler events are evaluated only after call', () => {
-  const mockFn = vi.fn<(arg0: Deps, arg1: ResolvedDomainHandlerMap<DomainHandlerMap>) => void>();
+  const mockFn =
+    vi.fn<
+      (arg0: Deps, arg1: ResolvedDomainHandlerMap<DomainHandlerMap>) => void
+    >();
   const mockFn2 = vi.fn();
   const registry = new HandlerRegistry();
 
