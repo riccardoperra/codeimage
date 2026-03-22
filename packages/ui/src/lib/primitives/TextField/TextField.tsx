@@ -1,9 +1,6 @@
 import clsx from 'clsx';
-import type {
-  DynamicProps,
-  WithRef,
-} from 'solid-headless/dist/types/utils/dynamic-prop';
-import type {PropsWithChildren} from 'solid-js';
+import type {PropsWithChildren, Ref} from 'solid-js';
+import type {DynamicProps} from 'solid-js/web';
 import {omitProps} from 'solid-use/props';
 import {styled} from '../../utils';
 import type {UseTextProps} from '../Text';
@@ -16,8 +13,8 @@ export type TextFieldProps = {
   value?: string | number;
   onChange?: (value: string) => void;
   size?: UseTextProps['size'];
+  ref?: Ref<'input'>
 } & $TextFieldProps &
-  WithRef<'input'> &
   Omit<DynamicProps<'input'>, 'as' | 'ref' | 'onInput' | 'onChange' | 'type'>;
 
 export function TextField(props: PropsWithChildren<TextFieldProps>) {

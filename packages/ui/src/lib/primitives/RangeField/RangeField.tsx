@@ -1,9 +1,6 @@
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import type {
-  DynamicProps,
-  WithRef,
-} from 'solid-headless/dist/types/utils/dynamic-prop';
-import type {Component} from 'solid-js';
+import type {Component, Ref} from 'solid-js';
+import type {DynamicProps} from 'solid-js/web';
 import {omitProps} from 'solid-use/props';
 import {styled} from '../../utils';
 import type {UseTextProps} from '../Text';
@@ -13,8 +10,8 @@ type RangeFieldProps = {
   value?: number;
   onChange?: (value: number) => void;
   size?: UseTextProps['size'];
-} & WithRef<'input'> &
-  Omit<DynamicProps<'input'>, 'as' | 'ref' | 'onInput' | 'onChange'>;
+  ref?: Ref<'input'>;
+} & Omit<DynamicProps<'input'>, 'as' | 'ref' | 'onInput' | 'onChange'>;
 
 export const RangeField: Component<RangeFieldProps> = props => {
   function onChange(e: Event): void {

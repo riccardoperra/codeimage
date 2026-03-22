@@ -1,27 +1,12 @@
 import type {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
-import type {JSX, JSXElement, ParentProps, Ref} from 'solid-js';
+import type {JSXElement, ParentProps, Ref} from 'solid-js';
+import type {DynamicProps} from 'solid-js/web';
 import {omitProps, pickProps} from 'solid-use/props';
 import type {Sprinkles} from '../../theme';
 import {sprinkles} from '../../theme';
 import {styled} from '../../utils';
 import {boxBase} from './Box.css';
-
-export type ValidElements = keyof JSX.IntrinsicElements;
-export type ValidComponent<P> = (props: P) => JSX.Element;
-export type ValidConstructor =
-  | ValidElements
-  // oxlint-disable-next-line typescript/no-explicit-any
-  | ValidComponent<any>
-  | (string & {});
-
-export type DynamicProps<T extends ValidConstructor> =
-  T extends ValidElements
-    ? JSX.IntrinsicElements[T]
-    :
-    T extends ValidComponent<infer U>
-      ? U
-      : Record<string, unknown>;
 
 type BoxParameters = {
   // Fallback to support both index number and string (ex. 2 | "2")
