@@ -1,5 +1,4 @@
 import type {CustomTheme} from '@codeimage/highlight';
-import {filter} from '@solid-primitives/immutable';
 import type {Accessor, Resource} from 'solid-js';
 import {createSignal} from 'solid-js';
 
@@ -14,13 +13,11 @@ export function useFilteredThemes(
       return $themes();
     }
 
-    return filter($themes(), accessor => {
-      const theme = accessor();
-      return (
-        !!theme &&
-        theme.properties.label.toLowerCase().includes(value.toLowerCase())
-      );
-    });
+    return $themes().filter(
+      theme =>
+        !!theme() &&
+        theme()!.properties.label.toLowerCase().includes(value.toLowerCase()),
+    );
   };
 
   const filteredThemeIds = () => {

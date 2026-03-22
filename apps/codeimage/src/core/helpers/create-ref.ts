@@ -2,9 +2,9 @@ import type {
   DynamicNode,
   WithRef,
   // @ts-expect-error TODO: fix
-} from "solid-headless/src/utils/dynamic-prop";
+} from 'solid-headless/src/utils/dynamic-prop';
 // @ts-expect-error TODO: fix
-import type { ValidConstructor } from "solid-headless/src/utils/dynamic-prop";
+import type {ValidConstructor} from 'solid-headless/src/utils/dynamic-prop';
 
 type RefCallback<T> = (el: T) => void;
 type RefField<T> = T | RefCallback<T>;
@@ -13,9 +13,9 @@ type RefField<T> = T | RefCallback<T>;
 // TODO: open pr
 // https://github.com/LXSMNSYC/solid-headless/blob/main/packages/solid-headless/src/utils/dynamic-prop.ts
 function isRefFunction<U extends ValidConstructor>(
-  callback?: RefField<DynamicNode<U>>
+  callback?: RefField<DynamicNode<U>>,
 ): callback is RefCallback<DynamicNode<U>> {
-  return typeof callback === "function";
+  return typeof callback === 'function';
 }
 
 /**
@@ -25,10 +25,10 @@ function isRefFunction<U extends ValidConstructor>(
  */
 export function createRef<U extends ValidConstructor>(
   props: WithRef<U>,
-  callback: RefCallback<DynamicNode<U>>
+  callback: RefCallback<DynamicNode<U>>,
 ): RefCallback<DynamicNode<U>> {
-  return (e) => {
-    if ("ref" in props) {
+  return e => {
+    if ('ref' in props) {
       if (isRefFunction(props.ref)) {
         props.ref(e);
       } else {

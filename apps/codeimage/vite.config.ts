@@ -1,54 +1,54 @@
-import {nodeTypes} from '@mdx-js/mdx';
-import mdx from '@mdx-js/rollup';
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
-import type {Plugin, UserConfigExport} from 'vite';
-import {defineConfig} from 'vite';
-import solidPlugin from 'vite-plugin-solid';
-import tsconfigPaths from 'vite-tsconfig-paths';
-import {withStaticVercelPreview} from '../../scripts/vercel-output-build.ts';
+import { nodeTypes } from "@mdx-js/mdx";
+import mdx from "@mdx-js/rollup";
+import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
+import rehypeRaw from "rehype-raw";
+import rehypeSlug from "rehype-slug";
+import type { Plugin, UserConfigExport } from "vite";
+import { defineConfig } from "vite";
+import solidPlugin from "vite-plugin-solid";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { withStaticVercelPreview } from "../../scripts/vercel-output-build";
 
-const config: UserConfigExport = defineConfig(({mode}) => ({
+const config: UserConfigExport = defineConfig(({ mode }) => ({
   plugins: [
     {
       ...mdx({
         jsx: true,
-        jsxImportSource: 'solid-js',
-        providerImportSource: 'solid-mdx',
-        rehypePlugins: [rehypeSlug, [rehypeRaw, {passThrough: nodeTypes}]],
+        jsxImportSource: "solid-jsx",
+        providerImportSource: "solid-mdx",
+        rehypePlugins: [rehypeSlug, [rehypeRaw, { passThrough: nodeTypes }]],
       }),
-      enforce: 'pre',
+      enforce: "pre",
     },
     vanillaExtractPlugin({
-      unstable_mode: 'transform',
+      unstable_mode: "transform",
     }),
     solidPlugin({
-      extensions: ['.mdx', '.tsx', '.ts'],
+      extensions: [".mdx", ".tsx", ".ts"],
     }),
     tsconfigPaths(),
     {
-      name: 'html-inject-umami',
+      name: "html-inject-umami",
       transformIndexHtml(html) {
         const websiteId = process.env.UMAMI_WEBSITE_ID;
         const scriptSrc = process.env.UMAMI_SCRIPT_SRC;
 
-        if (mode !== 'production' || !websiteId || !scriptSrc) return html;
+        if (mode !== "production" || !websiteId || !scriptSrc) return html;
 
         // Auto-track is off since query param push a new page view and breaks the analytics
         // TODO: Find a better solution to handle query params
         return html.replace(
-          '<!-- %UMAMI% -->',
-          `<script async defer data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`,
+          "<!-- %UMAMI% -->",
+          `<script async defer data-website-id='${websiteId.trim()}' src='${scriptSrc.trim()}'></script>`
         );
       },
     },
     {
-      name: 'parse-environment-variables',
+      name: "parse-environment-variables",
 
       configResolved(resolvedConfig) {
-        const config = resolvedConfig as Omit<typeof resolvedConfig, 'env'> & {
-          env: (typeof resolvedConfig)['env'];
+        const config = resolvedConfig as Omit<typeof resolvedConfig, "env"> & {
+          env: (typeof resolvedConfig)["env"];
         };
         const env = config.env;
         config.env = Object.keys(env).reduce((acc, key) => {
@@ -72,8 +72,8 @@ const config: UserConfigExport = defineConfig(({mode}) => ({
       usePolling: true,
     },
     proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
+      "/api": {
+        target: "http://localhost:3000",
         changeOrigin: true,
         secure: false,
       },
@@ -86,6 +86,9 @@ const config: UserConfigExport = defineConfig(({mode}) => ({
     polyfillDynamicImport: false,
     cssCodeSplit: true,
     reportCompressedSize: true,
+  },
+  optimizeDeps: {
+    include: ["@codemirror/state", "@codemirror/view"],
   },
 }));
 
