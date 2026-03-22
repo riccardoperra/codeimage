@@ -36,7 +36,6 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "postinstall": "pnpm patch-solid-exports",
     "dev": "pnpm --filter=@codeimage/app dev",
     "dev:api": "pnpm --filter=@codeimage/api dev",
     "libs:build": "pnpm libs:build:core && pnpm libs:build:config",
@@ -51,8 +50,6 @@
     "build:prod": "pnpm libs:build && pnpm --filter=@codeimage/app build",
     "changeset:pr": "changeset version && tsx scripts/sync-package.ts",
     "pre-commit": "lint-staged --relative",
-    "patch-solid-exports": "cross-env APPLY_PATCH=true tsx scripts/patch-solid-exports.ts",
-    "unpatch-solid-exports": "cross-env APPLY_PATCH=false tsx scripts/patch-solid-exports.ts",
     "pre-commit-format": "oxfmt",
     "pre-commit-eslint": "oxlint --fix",
     "prepare:env": "tsx ./scripts/make-env.ts",
