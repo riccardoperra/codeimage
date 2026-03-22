@@ -11,8 +11,8 @@ export type ValidElements = keyof JSX.IntrinsicElements;
 export type ValidComponent<P> = (props: P) => JSX.Element;
 export type ValidConstructor =
   | ValidElements
+  // oxlint-disable-next-line typescript/no-explicit-any
   | ValidComponent<any>
-  // eslint-disable-next-line @typescript-eslint/ban-types
   | (string & {});
 
 export type DynamicProps<T extends ValidConstructor> =
