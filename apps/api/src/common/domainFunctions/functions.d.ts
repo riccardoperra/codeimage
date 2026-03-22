@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-types */
-
-const $HANDLER: unique symbol = Symbol('handler');
+// oxlint-disable typescript/no-explicit-any
+const $HANDLER: unique symbol
 
 declare module '@api/domain' {
   type GenericHandler = (...args: any[]) => any;
@@ -27,7 +26,7 @@ declare module '@api/domain' {
 
   type MergeHandlerDependencies<
     THandlers extends readonly Handler<string, any>[],
-    Accumulator extends Record<string, any> = {},
+    Accumulator extends Record<string, any> = NonNullable<unknown>,
   > = THandlers extends [infer InferredHandler, ...infer RestHandlers]
     ? InferredHandler extends Handler<any, infer HandlerMetadata>
       ? MergeHandlerDependencies<
@@ -53,6 +52,6 @@ declare module '@api/domain' {
 
   type Wrap<T> = T extends infer U ? {[K in keyof U]: U[K]} : never;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // oxlint-disable-next-line typescript/no-empty-object-type
   interface DomainHandlerMap {}
 }

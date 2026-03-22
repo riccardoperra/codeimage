@@ -23,6 +23,7 @@ test('create handler', () => {
     };
   });
 
+  // oxlint-disable-next-line typescript/no-explicit-any
   expect((handler as any)[$HANDLER].name).toBe('handler1');
 });
 
@@ -71,7 +72,7 @@ test('resolve handlers', () => {
 });
 
 test('handler events are evaluated only after call', () => {
-  const mockFn = vi.fn<[Deps, ResolvedDomainHandlerMap<DomainHandlerMap>]>();
+  const mockFn = vi.fn<(arg0: Deps, arg1: ResolvedDomainHandlerMap<DomainHandlerMap>) => void>();
   const mockFn2 = vi.fn();
   const registry = new HandlerRegistry();
 
@@ -85,6 +86,7 @@ test('handler events are evaluated only after call', () => {
   const handler1 = createHandler('handler1', (deps, {handlers}) => {
     mockFn(deps, handlers);
     return (p1: symbol, p2: string) => {
+      // oxlint-disable-next-line typescript/no-explicit-any
       (handlers as any).handler2(p1, p2);
       return {
         dep1: deps.p1,
@@ -97,6 +99,7 @@ test('handler events are evaluated only after call', () => {
   });
 
   const handler2 = createHandler('handler2', () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
     return (...params: any) => {
       mockFn2(...params);
       return {
