@@ -1,10 +1,18 @@
-import type {
-  NotWrappable,
-  Part,
-  PickMutable,
-  StoreSetter,
-} from 'solid-js/store/types/store';
+import type {NotWrappable, Part, StoreSetter} from 'solid-js/store';
 
+export type PickMutable<T> = {
+  [K in keyof T as (<U>() => U extends {
+    [V in K]: T[V];
+  }
+    ? 1
+    : 2) extends <U>() => U extends {
+    -readonly [V in K]: T[V];
+  }
+    ? 1
+    : 2
+    ? K
+    : never]: T[K];
+};
 type W<T> = Exclude<T, NotWrappable>;
 type KeyOf<T> = number extends keyof T
   ? 0 extends 1 & T
