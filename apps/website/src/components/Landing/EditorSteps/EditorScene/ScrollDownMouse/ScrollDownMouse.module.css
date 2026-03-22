@@ -1,0 +1,36 @@
+@keyframes scrollDownAnimation {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  40% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+    transform: translate(0, 20px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.scrollDown {
+  border: 2px solid #fff;
+  border-radius: 20px;
+  height: 35px;
+  width: 20px;
+  margin: auto;
+}
+.scrollDown::before {
+  background-color: #fff;
+  border-radius: 100%;
+  content: '';
+  height: 6px;
+  left: 0;
+  margin: 0 auto;
+  position: absolute;
+  right: 0;
+  top: 6px;
+  width: 6px;
+  animation: scrollDownAnimation 2s infinite;
+}

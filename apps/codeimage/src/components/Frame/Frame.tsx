@@ -111,7 +111,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
               props.background,
             )
               ? 'transparent'
-              : props.background ?? 'transparent',
+              : (props.background ?? 'transparent'),
             [styles.frameVars.opacity]: `${props.opacity}%`,
             [styles.frameVars.visibility]: `${
               props.visible ? 'visible' : 'hidden'

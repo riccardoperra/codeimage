@@ -1,52 +1,28 @@
-import {vanillaExtractPlugin as customVanillaExtractPlugin} from '@codeimage/vanilla-extract';
-import ssg from 'solid-start-static';
-import solid from 'solid-start/vite';
-import {defineConfig, Plugin} from 'vite';
+import {devtools} from '@tanstack/devtools-vite';
+
+import {tanstackStart} from '@tanstack/solid-start/plugin/vite';
+import {defineConfig} from 'vite';
+
+import solidPlugin from 'vite-plugin-solid';
+import viteTsConfigPaths from 'vite-tsconfig-paths';
+import {withStaticVercelPreview} from '../../scripts/vercel-output-build.ts';
 
 export default defineConfig({
-  build: {
-    cssCodeSplit: true,
-  },
   plugins: [
-    customVanillaExtractPlugin(),
-    solid({
-      adapter: ssg(),
-      prerenderRoutes: ['/'],
+    devtools(),
+    // this is the plugin that enables path aliases
+    viteTsConfigPaths({
+      projects: ['./tsconfig.json'],
     }),
-    mergeCssPlugin(),
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+      },
+    }),
+    solidPlugin({ssr: true}),
+    withStaticVercelPreview({
+      folder: 'dist/client',
+    }),
   ],
-  ssr: {
-    noExternal: [/^@solid-aria*/, '@solid-primitives/props'],
-  },
-  optimizeDeps: {
-    include: [
-      '@codemirror/state',
-      '@codemirror/view',
-      '@codemirror/lang-javascript',
-      '@codeimage/highlight',
-    ],
-  },
 });
-
-function mergeCssPlugin(): Plugin {
-  return {
-    name: 'fix-single-file-imports',
-    enforce: 'post',
-    renderChunk(code, options) {
-      // I need to remove every css chunk in order to put the styles into the <style id="css-critical-style"> tag.
-      // Vite cssSplitCss is broken since files are imported in the wrong order.
-      // The next step is to call the extract-static-css script
-      if (options['viteMetadata']) {
-        const importedCss = options['viteMetadata']['importedCss'] as
-          | Set<string>
-          | undefined;
-        if (importedCss) {
-          importedCss.clear();
-        }
-      }
-      return {
-        code,
-      };
-    },
-  };
-}

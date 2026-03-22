@@ -1,10 +1,9 @@
-import {Box} from '@codeimage/ui';
-import * as styles from './TerminalGlassReflection.css';
+import styles from './TerminalGlassReflection.module.css';
 
 export const TerminalGlassReflection = () => {
   return (
-    <Box class={styles.wrapper}>
-      <Box class={styles.content} />
-    </Box>
+    <div class={styles.wrapper}>
+      <div class={styles.content} />
+    </div>
   );
 };

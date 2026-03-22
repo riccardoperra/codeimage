@@ -1,0 +1,91 @@
+@font-face {
+  src:
+    url('../public/fonts/Mona-Sans-Regular.woff2')
+      format('woff2 supports variations'),
+    url('../public/fonts/Mona-Sans-Regular.woff2') format('woff2-variations');
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: 75% 125%;
+  font-family: 'Mona Sans';
+  font-display: swap;
+}
+
+@font-face {
+  src:
+    url('../public/fonts/Mona-Sans-Medium.woff2')
+      format('woff2 supports variations'),
+    url('../public/fonts/Mona-Sans-Medium.woff2') format('woff2-variations');
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: 75% 125%;
+  font-family: 'Mona Sans';
+  font-display: swap;
+}
+
+@font-face {
+  src:
+    url('../public/fonts/Mona-Sans-SemiBold.woff2')
+      format('woff2 supports variations'),
+    url('../public/fonts/Mona-Sans-SemiBold.woff2') format('woff2-variations');
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: 75% 125%;
+  font-family: 'Mona Sans';
+  font-display: swap;
+}
+
+@font-face {
+  src:
+    url('../public/fonts/Mona-Sans-Bold.woff2')
+      format('woff2 supports variations'),
+    url('../public/fonts/Mona-Sans-Bold.woff2') format('woff2-variations');
+  font-weight: 700;
+  font-style: normal;
+  font-stretch: 75% 125%;
+  font-family: 'Mona Sans';
+  font-display: swap;
+}
+
+/* ===== Global Resets ===== */
+html,
+body {
+  font-family:
+    'Mona Sans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Helvetica,
+    Arial,
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol';
+  background-color: #111111;
+  color: #ededed;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ===== Root Theme Variables ===== */
+:root {
+  --root-primary-text-color: #0099ff;
+  --root-green: #48bb78;
+  --root-purple: #9f7aea;
+  --root-red: #f56565;
+  --root-teal: #38b2ac;
+  --root-black: #000;
+}
+
+@supports (color: lch(0% 0 0)) {
+  :root {
+    --root-primary-text-color: lch(45% 70 270);
+    --root-green: lch(68.171% 90 152.173);
+    --root-purple: lch(58.652% 85 302.105);
+    --root-red: lch(60% 90 27.937);
+    --root-teal: lch(65% 70 191.538);
+  }
+}

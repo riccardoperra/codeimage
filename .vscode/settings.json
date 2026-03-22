@@ -1,5 +1,5 @@
 {
-    "editor.formatOnSave": true,
-    "editor.bracketPairColorization.enabled": false,
-    "typescript.tsdk": "node_modules/typescript/lib"
+  "editor.formatOnSave": true,
+  "editor.bracketPairColorization.enabled": false,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

@@ -1,5 +1,5 @@
 import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
-import {Extension} from '@codemirror/state';
+import type {Extension} from '@codemirror/state';
 import {tags as t} from '@lezer/highlight';
 
 const palette = {

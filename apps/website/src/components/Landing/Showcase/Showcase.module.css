@@ -1,0 +1,113 @@
+.container {
+  background: #111111;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+@media screen and (min-width: 740px) {
+  .container {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+.content {
+  padding-top: 0;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+@media screen and (min-width: 992px) {
+  .content {
+    max-width: 1280px;
+    width: 100%;
+    padding-top: 6rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+.grid {
+  --text-align-flex: flex-start;
+  display: flex;
+  align-items: var(--text-align-flex);
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 2rem;
+}
+@media screen and (min-width: 740px) {
+  .grid {
+    --text-align-flex: center;
+  }
+}
+@media screen and (min-width: 992px) {
+  .grid {
+    justify-content: center;
+  }
+}
+.backdrop {
+  content: '';
+  z-index: -1;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--background-color);
+  transform: translate3d(0px, -50%, 0) scale(0.75);
+  filter: blur(200px) saturate(500%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: 1.5rem;
+  flex: 1;
+  overflow: hidden;
+  height: 100%;
+  top: 50%;
+}
+[data-in-view='true'] .backdrop {
+  opacity: 0.5;
+}
+.codeContainer {
+  border-radius: 0.5rem;
+  background: var(--code-container-bg);
+  padding: 2rem;
+  position: relative;
+  z-index: 5;
+  isolation: isolate;
+}
+.codeBlock {
+  border-radius: 0.5rem;
+  background: var(--code-block-bg);
+  padding: 1.5rem;
+  font-size: 13px;
+}
+.heading {
+  font-size: 2.25rem;
+  text-align: left;
+  margin-bottom: 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+@media screen and (min-width: 992px) {
+  .heading {
+    text-align: center;
+    font-size: 4rem;
+  }
+}
+.description {
+  font-size: 1.5rem;
+  text-align: left;
+  margin: 0;
+  margin-bottom: 2rem;
+}
+@media screen and (min-width: 992px) {
+  .description {
+    font-size: 1.875rem;
+    text-align: center;
+  }
+}
+.ctaContainer {
+  display: flex;
+  margin-top: 4rem;
+}
+@media screen and (min-width: 992px) {
+  .ctaContainer {
+    justify-content: center;
+    margin-top: 6rem;
+  }
+}

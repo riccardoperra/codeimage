@@ -1,4 +1,4 @@
-import {vanillaExtractPlugin} from '@codeimage/vanilla-extract';
+import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import type {Plugin} from 'vite';
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
@@ -6,7 +6,9 @@ import {withStaticVercelPreview} from '../../../scripts/vercel-output-build';
 
 export const viteConfig = defineConfig({
   plugins: [
-    vanillaExtractPlugin() as unknown as Plugin,
+    vanillaExtractPlugin({
+      unstable_mode: 'transform',
+    }),
     solidPlugin(),
     withStaticVercelPreview() as unknown as Plugin,
   ],

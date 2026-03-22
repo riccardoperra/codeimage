@@ -1,10 +1,8 @@
 {
   "ci": {
     "collect": {
-      "url": [
-        "http://localhost/"
-      ],
-      "staticDistDir": "dist/public",
+      "url": ["http://localhost/"],
+      "staticDistDir": "dist/client",
       "numberOfRuns": 3
     },
     "upload": {

@@ -13,7 +13,7 @@ const handlersStub = {} as ResolvedDomainHandlerMap<DomainHandlerMap>;
 
 beforeEach(() => sinon.restore());
 
-test('when findById and found result', async t => {
+test('when findById and found result', async () => {
   const id = 'preset-1';
   const ownerId = 'owner-1';
 

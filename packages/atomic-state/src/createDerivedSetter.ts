@@ -13,10 +13,10 @@ export type GetTypeFromPathArray<
 > = Path['length'] extends 0
   ? T
   : T extends object
-  ? Path extends [infer Head, ...infer Rest]
-    ? GetTypeFromPathArray<T[Head & keyof T], Rest>
-    : never
-  : never;
+    ? Path extends [infer Head, ...infer Rest]
+      ? GetTypeFromPathArray<T[Head & keyof T], Rest>
+      : never
+    : never;
 
 export function createDerivedSetter<T extends object, TPaths extends Path<T>>(
   store: T,

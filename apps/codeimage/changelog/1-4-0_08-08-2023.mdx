@@ -63,7 +63,7 @@ This update also removed [node-tap](https://node-tap.org/) in favor of [vitest](
 
 ## 📏 No more fixed width - #503
 
-From this version, CodeImage snippet will have a dynamic min-width based on the content which can no longer be wrapped in multiple lines.  This allows you to change the size as you like, even if the code is small and you don't need to have a minimum size of 600px.
+From this version, CodeImage snippet will have a dynamic min-width based on the content which can no longer be wrapped in multiple lines. This allows you to change the size as you like, even if the code is small and you don't need to have a minimum size of 600px.
 
 <table>
   <tbody>
@@ -89,6 +89,7 @@ From this version, CodeImage snippet will have a dynamic min-width based on the 
 ## 🎴 Exported image improvements
 
 We've updates some core behavior of [DomExport](https://github.com/riccardoperra/codeimage/tree/main/packages/dom-export) package, which is a fork of `html-to-image` to add several fixes and improvements to the image export flow:
+
 - Snippets that overflows to the screen viewport are not cropped anymore
 - Partially fixes an issue where Safari from iOS and MacOS are not always able to generate the image including the custom background or the font (https://bugs.webkit.org/show_bug.cgi?id=219770)
 - Faster image generation by removing unused styles, fonts and duplicate cloned nodes
@@ -100,25 +101,27 @@ CodeImage never used a specific state manager to handle the application state. S
 For this reason we've done a refactor using my personal state manager [statebuilder](https://github.com/riccardoperra/statebuilder) which allows you to manage the state in a modular way through plugins on an as-needed basis.
 
 ## What's Changed
-* chore(docs): update contributing docker command by @kriskw1999 in https://github.com/riccardoperra/codeimage/pull/504
-* fix: safari rename dialog not opening by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/524
-* chore: update README.md by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/523
-* feat: dynamic min width by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/528
-* feat: integrate ESM + node18 + typescript5.0 + vitest in fastify api by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/530
-* feat: customizable export options by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/510
-* fix(app): canvas export image content is not rendered if it's higher than viewport by @riccardoperra in #532
-* feat: customizable export options by @riccardoperra in #510
-* feat: dynamic min width by @riccardoperra in #528
-* feat: custom background image by @riccardoperra in #526
-* fix: fix language field editor by @riccardoperra in #521
-* feat: refactor UI with codeui by @riccardoperra and @hackpirodev in #506
-* feat: refactor textfield with @codeui/kit by @riccardoperra in #517
-* feat: refactor Pagination with @codeui/kit by @riccardoperra in #516
-* fix: add radio item by @codeui/kit by @riccardoperra in #508
-* feat: @codeui/kit@0.20.1 and kobalte 0.9.0 upgrade by @riccardoperra in #514
-* feat: integrate submodule kit by @riccardoperra in #513
+
+- chore(docs): update contributing docker command by @kriskw1999 in https://github.com/riccardoperra/codeimage/pull/504
+- fix: safari rename dialog not opening by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/524
+- chore: update README.md by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/523
+- feat: dynamic min width by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/528
+- feat: integrate ESM + node18 + typescript5.0 + vitest in fastify api by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/530
+- feat: customizable export options by @riccardoperra in https://github.com/riccardoperra/codeimage/pull/510
+- fix(app): canvas export image content is not rendered if it's higher than viewport by @riccardoperra in #532
+- feat: customizable export options by @riccardoperra in #510
+- feat: dynamic min width by @riccardoperra in #528
+- feat: custom background image by @riccardoperra in #526
+- fix: fix language field editor by @riccardoperra in #521
+- feat: refactor UI with codeui by @riccardoperra and @hackpirodev in #506
+- feat: refactor textfield with @codeui/kit by @riccardoperra in #517
+- feat: refactor Pagination with @codeui/kit by @riccardoperra in #516
+- fix: add radio item by @codeui/kit by @riccardoperra in #508
+- feat: @codeui/kit@0.20.1 and kobalte 0.9.0 upgrade by @riccardoperra in #514
+- feat: integrate submodule kit by @riccardoperra in #513
 
 ## New Contributors
-* @kriskw1999 made their first contribution in https://github.com/riccardoperra/codeimage/pull/504
+
+- @kriskw1999 made their first contribution in https://github.com/riccardoperra/codeimage/pull/504
 
 **Full Changelog**: https://github.com/riccardoperra/codeimage/compare/v1.3.1...v1.4.0

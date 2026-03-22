@@ -30,10 +30,13 @@ export function selectSlice<T extends object, K extends keyof T>(
         }
 
         // create the selected slice
-        return definedKeys.reduce((vm, key) => {
-          vm[key] = state[key];
-          return vm;
-        }, {} as PickSlice<T, K>);
+        return definedKeys.reduce(
+          (vm, key) => {
+            vm[key] = state[key];
+            return vm;
+          },
+          {} as PickSlice<T, K>,
+        );
       }),
       filter((v): v is PickSlice<T, K> => v !== undefined),
     );

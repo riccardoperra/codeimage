@@ -189,7 +189,7 @@ export const WindowStyleForm: ParentComponent = () => {
                   getUmami().track('change-border', {
                     border: border ?? 'none',
                   });
-                  terminal.setBorder(isNone ? null : border ?? null);
+                  terminal.setBorder(isNone ? null : (border ?? null));
                 },
               )}
               aria-label={'Border'}

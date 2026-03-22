@@ -1,6 +1,7 @@
 {
   "name": "@codeimage/dom-export",
   "version": "1.11.5",
+  "type": "module",
   "description": "Generates an image from a DOM node using HTML5 canvas and SVG.",
   "main": "./dist/dom-export.mjs",
   "module": "./dist/dom-export.mjs",
@@ -25,17 +26,20 @@
     "svg"
   ],
   "scripts": {
-    "lint": "eslint . --ext .js,.jsx,.mjs,.ts,.tsx -c ../../.eslintrc.js",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "pre-commit-format": "oxfmt",
+    "pre-commit-eslint": "oxlint --fix",
     "build": "vite build",
     "test": "vitest",
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
   },
   "lint-staged": {
     "**/*.{js,jsx,tsx,ts,less,md,json}": [
-      "pretty-quick — staged"
+      "oxfmt"
     ],
     "*.ts": [
-      "eslint --fix"
+      "oxlint --fix"
     ]
   },
   "license": "MIT",
@@ -57,6 +61,8 @@
     "@types/node": "catalog:next",
     "happy-dom": "8.1.1",
     "lint-staged": "^13.2.1",
+    "oxfmt": "catalog:next",
+    "oxlint": "catalog:next",
     "prettier": "^2.8.7",
     "rimraf": "^3.0.2",
     "tslib": "^2.6.2",
@@ -71,11 +77,11 @@
   },
   "dependencies": {
     "@solid-primitives/platform": "^0.0.101",
-    "solid-js": "^1.8.6"
+    "solid-js": "catalog:next"
   },
   "peerDependencies": {
     "@solid-primitives/platform": "^0.0.101",
-    "solid-js": "^1.8.6"
+    "solid-js": "catalog:next"
   },
   "engines": {
     "node": ">=24"

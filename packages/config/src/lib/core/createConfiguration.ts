@@ -7,12 +7,8 @@ export function createConfiguration<
   Themes extends readonly CustomTheme[],
   Locales extends readonly string[],
   Languages extends readonly LanguageDefinition[],
-  Configuration extends AppStaticConfiguration<
-    V,
-    Themes,
-    Locales,
-    Languages
-  > = AppStaticConfiguration<V, Themes, Locales, Languages>,
+  Configuration extends AppStaticConfiguration<V, Themes, Locales, Languages> =
+    AppStaticConfiguration<V, Themes, Locales, Languages>,
 >(configuration: Configuration): [Configuration] {
   if (!configuration.version) {
     throw new Error('No version specified');

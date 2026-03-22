@@ -1,9 +1,9 @@
-import {Button, LoadingCircle} from '@codeimage/ui';
-import {JSX, ParentProps, Show} from 'solid-js';
-import * as styles from './GitHubButton.css';
+import {Show} from 'solid-js';
+import type {JSX, ParentProps} from 'solid-js';
+import styles from './GitHubButton.module.css';
 
 type GithubButtonProps = {
-  stars: number;
+  stars: number | string;
   class?: string;
   loading: boolean;
 };
@@ -29,10 +29,7 @@ function Star(props: JSX.IntrinsicElements['svg']) {
 
 export function GitHubButton(props: ParentProps<GithubButtonProps>) {
   return (
-    <Button
-      size={'xl'}
-      variant={'solid'}
-      theme={'secondary'}
+    <div
       class={
         props.class
           ? `${props.class} ${styles.githubButton}`
@@ -40,7 +37,7 @@ export function GitHubButton(props: ParentProps<GithubButtonProps>) {
       }
     >
       <a
-        class={styles.content}
+        class={`${styles.linkButton} ${styles.content}`}
         target={'_blank'}
         rel={'noopener'}
         aria-label={'Star riccardoperra/codeimage on GitHub'}
@@ -51,16 +48,19 @@ export function GitHubButton(props: ParentProps<GithubButtonProps>) {
       </a>
 
       <a
-        class={styles.socialCount}
+        class={`${styles.linkButton} ${styles.socialCount}`}
         target={'_blank'}
         rel={'noopener'}
         aria-label={`${props.stars} stargazers on GitHub`}
         href={'https://github.com/riccardoperra/codeimage/stargazers'}
       >
-        <Show fallback={<LoadingCircle />} when={!props.loading}>
+        <Show
+          fallback={<span class={styles.spinner} aria-hidden="true" />}
+          when={!props.loading}
+        >
           <span class={styles.text}>{props.stars}</span>
         </Show>
       </a>
-    </Button>
+    </div>
   );
 }

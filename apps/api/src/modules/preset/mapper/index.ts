@@ -1,6 +1,7 @@
 import type {Preset} from '@codeimage/prisma-models';
 import type {PresetDataDto, PresetDto} from '../schema/preset-dto.schema.js';
 
+// oxlint-disable-next-line typescript/no-unsafe-declaration-merging
 export interface PresetMapper {
   fromEntityToDto(entity: Preset): PresetDto;
 }

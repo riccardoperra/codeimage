@@ -1,4 +1,4 @@
-import * as styles from './CodeEditor.css';
+import styles from './CodeEditor.module.css';
 
 interface CodeEditorPreviewBlockProps {
   code: string;

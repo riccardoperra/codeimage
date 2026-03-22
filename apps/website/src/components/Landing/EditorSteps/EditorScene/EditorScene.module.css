@@ -1,0 +1,44 @@
+.container {
+  position: sticky;
+  max-height: 60vh;
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  border-radius: 1rem;
+  overflow: hidden;
+  clip-path: border-box;
+}
+@media screen and (min-width: 740px) {
+  .container {
+    bottom: unset;
+    position: relative;
+    max-height: 60vh;
+  }
+}
+.circularProgressBox {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.fixScaleContainer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(var(--editor-container-scale, 1));
+}
+.scrollDownContainer {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  margin: 0 auto;
+  transform: translateX(-50%);
+}
+.scrollDownText {
+  font-size: 14px;
+  margin-top: 8px;
+}

@@ -1,15 +1,15 @@
-import {Badge, Box, Button, Text} from '@codeimage/ui';
 import {animate, scroll} from 'motion';
-import {JSX, onMount} from 'solid-js';
+import type {JSX} from 'solid-js';
+import {onMount} from 'solid-js';
+import {Button} from '~/components/Button/Button';
 import {
   FeatureCard,
   FeatureContent,
   FeatureImageContent,
 } from '~/components/FeatureCard/FeatureCard';
-import {injectBreakpoints} from '~/theme/breakpoints';
 import {mainWebsiteLink} from '~/core/constants';
-import {rootThemeVars} from '~/theme/theme.css';
-import * as styles from './Projects.css';
+import {injectBreakpoints} from '~/theme/breakpoints';
+import styles from './Projects.module.css';
 
 function StorageBox(props: JSX.IntrinsicElements['svg']) {
   return (
@@ -25,7 +25,7 @@ function StorageBox(props: JSX.IntrinsicElements['svg']) {
 }
 
 export default function Projects() {
-  let cardRef: HTMLDivElement;
+  let cardRef!: HTMLDivElement;
   const bp = injectBreakpoints();
 
   onMount(() => {
@@ -40,26 +40,26 @@ export default function Projects() {
   return (
     <div class={styles.main}>
       <div class={styles.container}>
-        <FeatureCard ref={cardRef}>
+        <FeatureCard ref={el => (cardRef = el)}>
           <FeatureContent>
-            <Badge theme={styles.storageBadge}>
+            <div class={styles.storageBadge}>
               <StorageBox width={26} height={26} />
-            </Badge>
+            </div>
             <div>
-              <Text size={'5xl'} weight={'bold'}>
+              <h2 style={{margin: 0, 'font-size': '3rem', 'font-weight': 700}}>
                 Store your snippets
-              </Text>
+              </h2>
 
-              <Box marginTop={8}>
-                <Text size={'2xl'}>
-                  <span>
-                    You want to keep track of your snippets, and have a safe
-                    place to save them.
-                  </span>
-                </Text>
-              </Box>
+              <div style={{'margin-top': '2rem'}}>
+                <p
+                  style={{margin: 0, 'font-size': '1.5rem', 'line-height': 1.5}}
+                >
+                  You want to keep track of your snippets, and have a safe place
+                  to save them.
+                </p>
+              </div>
 
-              <Box marginTop={8}>
+              <div style={{'margin-top': '2rem'}}>
                 <Button
                   as={'a'}
                   size={'lg'}
@@ -68,15 +68,16 @@ export default function Projects() {
                 >
                   Getting started
                 </Button>
-                <Box marginTop={8}>
-                  <Text class={styles.descriptionText}>
+                <div style={{'margin-top': '2rem'}}>
+                  <p class={styles.descriptionText} style={{margin: 0}}>
                     *You must be authenticated to save your snippets remotely.
-                  </Text>
-                </Box>
-              </Box>
+                  </p>
+                </div>
+              </div>
             </div>
           </FeatureContent>
-          <FeatureImageContent bgColor={rootThemeVars.green}>
+
+          <FeatureImageContent bgColor={'var(--root-green)'}>
             <picture>
               <img
                 class={styles.image}

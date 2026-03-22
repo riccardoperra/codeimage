@@ -1,4 +1,4 @@
-import * as styles from './ScrollDownMouse.css';
+import styles from './ScrollDownMouse.module.css';
 
 export function ScrollDownMouse() {
   return <div class={styles.scrollDown} />;

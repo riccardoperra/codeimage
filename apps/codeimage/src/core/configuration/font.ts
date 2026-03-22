@@ -1,20 +1,20 @@
 import type {LoadedFont} from '../../hooks/use-local-fonts';
 import {mapToDictionary} from '../helpers/mapToDictionary';
 
-interface CustomFontType {
+export interface CustomFontType {
   name: string;
   weight: number;
   fontData?: FontData;
 }
 
-interface WebFontConfiguration {
+export interface WebFontConfiguration {
   id: string;
   name: string;
   type: 'web';
   types: readonly CustomFontType[];
 }
 
-interface SystemFontConfiguration {
+export interface SystemFontConfiguration {
   id: string;
   name: string;
   type: 'system';
@@ -129,6 +129,6 @@ export const [SUPPORTED_FONTS, SUPPORTED_FONTS_DICTIONARY] = createCustomFonts([
           {name: 'Medium', weight: 500},
           {name: 'Bold', weight: 700},
         ],
-      } as const),
+      }) as const,
   ),
 ] as const);

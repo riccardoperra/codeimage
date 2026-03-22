@@ -30,8 +30,8 @@ export function CustomColorPicker(props: CustomColorPickerProps) {
             class={styles.inputColor}
             style={assignInlineVars({
               [backgroundColorVar]: assetsStore.isAssetUrl(props.value)
-                ? assetsStore.getAssetImageBrowserUrl(props.value)() ?? '#000'
-                : props.value ?? '#000000',
+                ? (assetsStore.getAssetImageBrowserUrl(props.value)() ?? '#000')
+                : (props.value ?? '#000000'),
             })}
           />
         </div>

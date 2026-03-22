@@ -1,28 +1,20 @@
-import {backgroundColorVar} from '@codeimage/ui';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import * as styles from './SnippetControls.css';
-import * as parentStyles from '../Snippet.css';
+import {snippetThemeValues} from '../snippet-theme';
+import styles from './SnippetControls.module.css';
 
 export function SnippetControls() {
   return (
     <div class={styles.headerIconRow}>
       <div
         class={styles.headerIconRowCircle}
-        style={assignInlineVars({
-          [backgroundColorVar]: parentStyles.snippetThemeVars.controls.red,
-        })}
+        style={{'--background-color': snippetThemeValues.controls.red}}
       />
       <div
         class={styles.headerIconRowCircle}
-        style={assignInlineVars({
-          [backgroundColorVar]: parentStyles.snippetThemeVars.controls.yellow,
-        })}
+        style={{'--background-color': snippetThemeValues.controls.yellow}}
       />
       <div
         class={styles.headerIconRowCircle}
-        style={assignInlineVars({
-          [backgroundColorVar]: parentStyles.snippetThemeVars.controls.green,
-        })}
+        style={{'--background-color': snippetThemeValues.controls.green}}
       />
     </div>
   );

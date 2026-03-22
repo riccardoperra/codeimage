@@ -1,15 +1,27 @@
 import type {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
-import type {
-  DynamicProps,
-  WithRef,
-} from 'solid-headless/dist/types/utils/dynamic-prop';
-import type {JSXElement, PropsWithChildren} from 'solid-js';
+import type {JSX, JSXElement, ParentProps, Ref} from 'solid-js';
 import {omitProps, pickProps} from 'solid-use/props';
 import type {Sprinkles} from '../../theme';
 import {sprinkles} from '../../theme';
 import {styled} from '../../utils';
 import {boxBase} from './Box.css';
+
+export type ValidElements = keyof JSX.IntrinsicElements;
+export type ValidComponent<P> = (props: P) => JSX.Element;
+export type ValidConstructor =
+  | ValidElements
+  // oxlint-disable-next-line typescript/no-explicit-any
+  | ValidComponent<any>
+  | (string & {});
+
+export type DynamicProps<T extends ValidConstructor> =
+  T extends ValidElements
+    ? JSX.IntrinsicElements[T]
+    :
+    T extends ValidComponent<infer U>
+      ? U
+      : Record<string, unknown>;
 
 type BoxParameters = {
   // Fallback to support both index number and string (ex. 2 | "2")
@@ -18,11 +30,11 @@ type BoxParameters = {
 
 export type BoxProps<T extends ElementType = 'div'> = Partial<BoxParameters> & {
   as?: T;
-} & WithRef<T> &
-  Omit<DynamicProps<T>, 'as' | 'disabled' | 'ref'>;
+  ref?: Ref<T>;
+} & Omit<DynamicProps<T>, 'as' | 'disabled' | 'ref'>;
 
 export function Box<T extends ElementType = 'div'>(
-  props: PropsWithChildren<BoxProps<T>>,
+  props: ParentProps<BoxProps<T>>,
 ): JSXElement {
   return (
     <styled.div

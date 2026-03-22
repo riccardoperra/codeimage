@@ -1,7 +1,7 @@
 name: '🐞 - Bug Report'
 title: '🐞 - '
 description: Report a bug in Codeimage
-labels: [ 'bug', 'state: need triage' ]
+labels: ['bug', 'state: need triage']
 
 body:
   - type: dropdown
@@ -23,7 +23,7 @@ body:
     id: reproduction-url
     attributes:
       label: Please provide a screenshot or a video to a minimal reproduction of the bug
-      placeholder: "Enter an url or attach a file after submitting your issue"
+      placeholder: 'Enter an url or attach a file after submitting your issue'
 
   - type: textarea
     id: description
