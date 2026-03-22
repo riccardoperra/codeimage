@@ -1,7 +1,6 @@
-import type {JSX, JSXElement} from 'solid-js';
+import type {JSX, JSXElement, PropsWithChildren} from 'solid-js';
 import {createSignal, mergeProps, onMount, Show} from 'solid-js';
 import * as styles from './PortalHost.css';
-import type {PropsWithChildren} from 'solid-js/types/render/component';
 import {Portal} from 'solid-js/web';
 
 export function PortalHost(
