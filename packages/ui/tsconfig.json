@@ -4,6 +4,7 @@
     "noUnusedLocals": true,
     "sourceMap": true,
     "jsx": "preserve",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
     "preserveSymlinks": true,

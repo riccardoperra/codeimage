@@ -7,11 +7,7 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "main": "./dist/index.js",
-      "node": "./dist/index.js",
-      "require": "./dist/index.js",
-      "browser": "./dist/index.js",
+      "default": "./dist/index.js",
       "types": "./dist/public-api.d.ts"
     },
     "./themes": {

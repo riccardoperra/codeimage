@@ -22,16 +22,12 @@
       "types": "./dist/types/index.d.ts"
     },
     "./themes/darkTheme": {
-      "import": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
-      "browser": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
-      "require": "./dist/cjs/lib/themes/darkTheme.css.vanilla.js",
-      "node": "./dist/cjs/lib/themes/darkTheme.css.vanilla.js"
+      "default": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
+      "types": "./dist/types/lib/themes/dark-theme.css.d.ts"
     },
     "./themes/lightTheme": {
-      "import": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
-      "browser": "./dist/esm/lib/themes/darkTheme.css.vanilla.js",
-      "require": "./dist/cjs/lib/themes/darkTheme.css.vanilla.js",
-      "node": "./dist/cjs/lib/themes/darkTheme.css.vanilla.js"
+      "default": "./dist/esm/lib/themes/lightTheme.css.vanilla.js",
+      "types": "./dist/types/lib/themes/light-theme.css.d.ts"
     }
   },
   "typesVersions": {

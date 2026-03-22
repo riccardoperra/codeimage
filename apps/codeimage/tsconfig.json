@@ -4,6 +4,7 @@
     "jsx": "preserve",
     "importHelpers": true,
     "declaration": false,
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
