@@ -69,14 +69,14 @@
     "@types/node": "catalog:next",
     "@types/sinon": "^10.0.15",
     "@vitest/ui": "^0.31.4",
+    "concurrently": "^7.6.0",
+    "fastify-tsconfig": "^3.0.0",
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
-    "concurrently": "^7.6.0",
-    "fastify-tsconfig": "^1.0.1",
     "sinon": "^15.1.2",
-    "tsup": "6.7.0",
+    "tsup": "8.5.1",
     "tsx": "3.12.7",
-    "typescript": "catalog:next",
+    "typescript": "^5.9.3",
     "vite": "catalog:next",
     "vitest": "catalog:next"
   }

@@ -88,7 +88,7 @@ const config: UserConfigExport = defineConfig(({ mode }) => ({
     reportCompressedSize: true,
   },
   optimizeDeps: {
-    include: ["@codemirror/state", "@codemirror/view"],
+    include: ["@codemirror/state", "@codemirror/view", "@codemirror/language"],
   },
 }));
 

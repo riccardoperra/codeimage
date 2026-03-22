@@ -8,7 +8,7 @@
     "sourceMap": true,
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
-    "target": "ES2024",
+    "target": "ES2022",
     "typeRoots": ["./src/common/domainFunctions/functions.d.ts"]
   },
   "include": ["./src/**/*.ts"]

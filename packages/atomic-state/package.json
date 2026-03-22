@@ -32,17 +32,17 @@
   },
   "devDependencies": {
     "@types/node": "catalog:next",
-    "rolldown-plugin-solid": "catalog:next",
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
-    "rxjs": "^7.8.1",
+    "rolldown-plugin-solid": "catalog:next",
+    "rxjs": "^7.8.2",
     "solid-js": "catalog:next",
     "tsdown": "catalog:next",
     "vite": "catalog:next",
     "vitest": "catalog:next"
   },
   "dependencies": {
-    "statebuilder": "^0.4.2"
+    "statebuilder": "^0.8.1"
   },
   "engines": {
     "node": ">=24"
