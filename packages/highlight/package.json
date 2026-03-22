@@ -264,7 +264,7 @@
     "chalk": "5.1.2",
     "enquirer": "2.3.6",
     "rimraf": "^3.0.2",
-    "solid-codemirror": "^2.3.0",
+    "solid-codemirror": "^2.3.2",
     "solid-js": "catalog:next",
     "ts-morph": "^23.0.0",
     "oxfmt": "catalog:next",

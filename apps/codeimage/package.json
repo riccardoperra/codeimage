@@ -104,7 +104,7 @@
     "motion": "^10.15.5",
     "polished": "^4.2.2",
     "rxjs": "^7.8.1",
-    "solid-codemirror": "^2.3.0",
+    "solid-codemirror": "^2.3.2",
     "solid-headless": "^0.13.1",
     "solid-js": "catalog:next",
     "solid-mdx": "^0.0.7",

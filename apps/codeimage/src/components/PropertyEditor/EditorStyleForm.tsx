@@ -1,25 +1,25 @@
-import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import type {LanguageDefinition} from '@codeimage/config/src/lib/types/language-def';
-import type {CustomTheme} from '@codeimage/highlight';
-import {useI18n} from '@codeimage/locale';
-import {getRootEditorStore} from '@codeimage/store/editor';
-import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
-import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
-import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {createSelectOptions, NumberField, Select} from '@codeui/kit';
-import {appEnvironment} from '@core/configuration';
-import {getUmami} from '@core/constants/umami';
-import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
-import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {SkeletonLine} from '@ui/Skeleton/Skeleton';
-import type {ParentComponent} from 'solid-js';
-import {Show} from 'solid-js';
-import type {AppLocaleEntries} from '../../i18n';
-import {FontPicker} from './controls/FontPicker/FontPicker';
-import {PanelDivider} from './PanelDivider';
-import {PanelHeader} from './PanelHeader';
-import {PanelRow, TwoColumnPanelRow} from './PanelRow';
-import {SuspenseEditorItem} from './SuspenseEditorItem';
+import { SUPPORTED_LANGUAGES } from "@codeimage/config";
+import type { LanguageDefinition } from "@codeimage/config";
+import type { CustomTheme } from "@codeimage/highlight";
+import { useI18n } from "@codeimage/locale";
+import { getRootEditorStore } from "@codeimage/store/editor";
+import { getActiveEditorStore } from "@codeimage/store/editor/activeEditor";
+import { dispatchUpdateTheme } from "@codeimage/store/effects/onThemeChange";
+import { getThemeStore } from "@codeimage/store/theme/theme.store";
+import { createSelectOptions, NumberField, Select } from "@codeui/kit";
+import { appEnvironment } from "@core/configuration";
+import { getUmami } from "@core/constants/umami";
+import { DynamicSizedContainer } from "@ui/DynamicSizedContainer/DynamicSizedContainer";
+import { SegmentedField } from "@ui/SegmentedField/SegmentedField";
+import { SkeletonLine } from "@ui/Skeleton/Skeleton";
+import type { ParentComponent } from "solid-js";
+import { Show } from "solid-js";
+import type { AppLocaleEntries } from "../../i18n";
+import { FontPicker } from "./controls/FontPicker/FontPicker";
+import { PanelDivider } from "./PanelDivider";
+import { PanelHeader } from "./PanelHeader";
+import { PanelRow, TwoColumnPanelRow } from "./PanelRow";
+import { SuspenseEditorItem } from "./SuspenseEditorItem";
 
 const languages: readonly LanguageDefinition[] = [...SUPPORTED_LANGUAGES].sort(
   (a, b) => {
@@ -32,12 +32,12 @@ const languages: readonly LanguageDefinition[] = [...SUPPORTED_LANGUAGES].sort(
     } else {
       return a.label.localeCompare(b.label); // sort alphabetically
     }
-  },
+  }
 );
 
 export const EditorStyleForm: ParentComponent = () => {
-  const {themeArray} = getThemeStore();
-  const {lineNumbers: lineNumbersConfig} = appEnvironment;
+  const { themeArray } = getThemeStore();
+  const { lineNumbers: lineNumbersConfig } = appEnvironment;
   const [t] = useI18n<AppLocaleEntries>();
   const {
     editor,
@@ -48,44 +48,49 @@ export const EditorStyleForm: ParentComponent = () => {
   } = getActiveEditorStore();
   const {
     state,
-    actions: {setShowLineNumbers, setFontWeight, setFontId, setEnableLigatures},
-    computed: {selectedFont},
+    actions: {
+      setShowLineNumbers,
+      setFontWeight,
+      setFontId,
+      setEnableLigatures,
+    },
+    computed: { selectedFont },
   } = getRootEditorStore();
 
   const languagesOptions = createSelectOptions(
-    languages.map(language => ({
+    languages.map((language) => ({
       label: language.label,
       value: language.id,
     })),
     {
-      key: 'label',
-      valueKey: 'value',
-    },
+      key: "label",
+      valueKey: "value",
+    }
   );
 
   const syntaxHighlightOptions = createSelectOptions(
     () =>
       themeArray()
-        .map(theme => theme())
+        .map((theme) => theme())
         .filter((theme): theme is CustomTheme => !!theme)
-        .map(theme => {
+        .map((theme) => {
           return {
             label: theme.properties.label,
             value: theme.id,
           };
         }),
-    {key: 'label', valueKey: 'value'},
+    { key: "label", valueKey: "value" }
   );
 
   const languageFormatterOptions = createSelectOptions(
     () =>
-      formatter.availableFormatters().map(prettierPlugin => {
+      formatter.availableFormatters().map((prettierPlugin) => {
         return {
           label: prettierPlugin.name,
           value: prettierPlugin.parser,
         };
       }),
-    {key: 'label', valueKey: 'value'},
+    { key: "label", valueKey: "value" }
   );
 
   const fontWeightByFont = () => {
@@ -93,72 +98,72 @@ export const EditorStyleForm: ParentComponent = () => {
     if (!font) {
       return [];
     }
-    return font.types.map(type => ({
+    return font.types.map((type) => ({
       label: type.name,
       value: type.weight,
     }));
   };
 
   const fontWeightOptions = createSelectOptions(fontWeightByFont, {
-    key: 'label',
-    valueKey: 'value',
+    key: "label",
+    valueKey: "value",
   });
 
   return (
     <Show when={editor()}>
-      {editor => (
+      {(editor) => (
         <>
           <DynamicSizedContainer>
-            <PanelHeader label={t('frame.editor')} />
+            <PanelHeader label={t("frame.editor")} />
 
-            <PanelRow for={'frameLanguageField'} label={t('frame.language')}>
+            <PanelRow for={"frameLanguageField"} label={t("frame.language")}>
               <TwoColumnPanelRow>
                 <SuspenseEditorItem
-                  fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                  fallback={<SkeletonLine width={"100%"} height={"26px"} />}
                 >
                   {/* @ts-expect-error Fix @codeui/kit types */}
                   <Select
                     {...languagesOptions.props()}
                     {...languagesOptions.controlled(
                       () => editor().languageId,
-                      language => {
+                      (language) => {
                         setLanguageId(language!);
-                        getUmami().track('change-language', {
+                        getUmami().track("change-language", {
                           language: language!,
                         });
-                      },
+                      }
                     )}
                     options={languagesOptions.options()}
-                    aria-label={'Language'}
-                    id={'frameLanguageField'}
-                    size={'xs'}
+                    aria-label={"Language"}
+                    id={"frameLanguageField"}
+                    size={"xs"}
                   />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
 
-            <PanelRow for={'frameLanguageField'} label={t('frame.theme')}>
+            <PanelRow for={"frameLanguageField"} label={t("frame.theme")}>
               <TwoColumnPanelRow>
                 <SuspenseEditorItem
-                  fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                  fallback={<SkeletonLine width={"100%"} height={"26px"} />}
                 >
                   {/* @ts-expect-error Fix @codeui/kit types */}
                   <Select
                     {...syntaxHighlightOptions.props()}
                     {...syntaxHighlightOptions.controlled(
                       () => state.options.themeId,
-                      theme => {
+                      (theme) => {
                         theme = theme as string;
                         dispatchUpdateTheme({
                           updateBackground: false,
                           theme,
                         });
-                      },
+                      }
                     )}
                     options={syntaxHighlightOptions.options()}
-                    aria-label={'Syntax highlight'}
-                    id={'frameSyntaxHighlightField'}
-                    size={'xs'}
+                    aria-label={"Syntax highlight"}
+                    id={"frameSyntaxHighlightField"}
+                    size={"xs"}
                   />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
@@ -168,14 +173,14 @@ export const EditorStyleForm: ParentComponent = () => {
               when={formatter.availableFormatters().length > 0}
               keyed={true}
             >
-              {_ => (
+              {(_) => (
                 <PanelRow
-                  for={'editorLanguageFormatterField'}
-                  label={t('frame.formatter')}
+                  for={"editorLanguageFormatterField"}
+                  label={t("frame.formatter")}
                 >
                   <TwoColumnPanelRow>
                     <SuspenseEditorItem
-                      fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                      fallback={<SkeletonLine width={"100%"} height={"26px"} />}
                     >
                       {/* @ts-expect-error Fix @codeui/kit types */}
                       <Select
@@ -184,16 +189,16 @@ export const EditorStyleForm: ParentComponent = () => {
                           () =>
                             editor()?.formatter ??
                             formatter.availableFormatters()[0]?.parser,
-                          formatter => {
+                          (formatter) => {
                             formatter = formatter as string;
                             setFormatterName(formatter);
-                          },
+                          }
                         )}
                         disabled={formatter.availableFormatters().length === 1}
                         options={languageFormatterOptions.options()}
-                        aria-label={'Editor language formatter'}
-                        id={'editorLanguageFormatterField'}
-                        size={'xs'}
+                        aria-label={"Editor language formatter"}
+                        id={"editorLanguageFormatterField"}
+                        size={"xs"}
                       />
                     </SuspenseEditorItem>
                   </TwoColumnPanelRow>
@@ -202,22 +207,22 @@ export const EditorStyleForm: ParentComponent = () => {
             </Show>
 
             <PanelRow
-              for={'frameLineNumbersField'}
-              label={t('frame.lineNumbers')}
+              for={"frameLineNumbersField"}
+              label={t("frame.lineNumbers")}
             >
               <TwoColumnPanelRow>
                 <SuspenseEditorItem
-                  fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                  fallback={<SkeletonLine width={"100%"} height={"26px"} />}
                 >
                   <SegmentedField
-                    size={'xs'}
+                    size={"xs"}
                     adapt
-                    id={'frameLineNumbersField'}
+                    id={"frameLineNumbersField"}
                     value={state.options.showLineNumbers}
                     onChange={setShowLineNumbers}
                     items={[
-                      {label: t('common.show'), value: true},
-                      {label: t('common.hide'), value: false},
+                      { label: t("common.show"), value: true },
+                      { label: t("common.hide"), value: false },
                     ]}
                   />
                 </SuspenseEditorItem>
@@ -226,23 +231,23 @@ export const EditorStyleForm: ParentComponent = () => {
 
             <Show when={state.options.showLineNumbers}>
               <PanelRow
-                for={'frameLineNumberStartField'}
-                label={t('frame.lineNumberStart')}
+                for={"frameLineNumberStartField"}
+                label={t("frame.lineNumberStart")}
               >
                 <TwoColumnPanelRow>
                   <SuspenseEditorItem
-                    fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                    fallback={<SkeletonLine width={"100%"} height={"26px"} />}
                   >
                     <NumberField
-                      size={'xs'}
+                      size={"xs"}
                       min={lineNumbersConfig.min}
                       max={lineNumbersConfig.max}
-                      id={'frameLineNumberStartField'}
+                      id={"frameLineNumberStartField"}
                       value={editor().lineNumberStart}
-                      ref={el => {
+                      ref={(el) => {
                         // TODO why called two times?
                         if (el) {
-                          el.autocomplete = 'off';
+                          el.autocomplete = "off";
                         }
                       }}
                       onChange={setLineNumberStart}
@@ -256,63 +261,63 @@ export const EditorStyleForm: ParentComponent = () => {
           <PanelDivider />
 
           <DynamicSizedContainer>
-            <PanelHeader label={t('frame.font')} />
+            <PanelHeader label={t("frame.font")} />
 
             <PanelRow
-              for={'fontPicker'}
-              label={t('frame.font')}
-              feature={'fontPicker'}
+              for={"fontPicker"}
+              label={t("frame.font")}
+              feature={"fontPicker"}
             >
               <TwoColumnPanelRow>
                 <SuspenseEditorItem
-                  fallback={<SkeletonLine width={'100%'} height={'26px'} />}
+                  fallback={<SkeletonLine width={"100%"} height={"26px"} />}
                 >
                   <FontPicker
                     value={selectedFont()?.id}
-                    onChange={fontId => setFontId(fontId)}
+                    onChange={(fontId) => setFontId(fontId)}
                   />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
 
             <PanelRow
-              for={'frameFontWeightField'}
-              label={t('frame.fontWeight')}
+              for={"frameFontWeightField"}
+              label={t("frame.fontWeight")}
             >
               <TwoColumnPanelRow>
                 <SuspenseEditorItem
-                  fallback={<SkeletonLine width={'85%'} height={'26px'} />}
+                  fallback={<SkeletonLine width={"85%"} height={"26px"} />}
                 >
                   {/* @ts-expect-error Fix @codeui/kit types */}
                   <Select
                     {...fontWeightOptions.props()}
                     {...fontWeightOptions.controlled(
                       () => state.options.fontWeight,
-                      value => setFontWeight(value ?? 400),
+                      (value) => setFontWeight(value ?? 400)
                     )}
-                    aria-label={'Font weight'}
-                    id={'frameFontWeightField'}
+                    aria-label={"Font weight"}
+                    id={"frameFontWeightField"}
                     options={fontWeightOptions.options()}
-                    size={'xs'}
+                    size={"xs"}
                   />
                 </SuspenseEditorItem>
               </TwoColumnPanelRow>
             </PanelRow>
 
-            <PanelRow for={'frameFontWeightField'} label={t('frame.ligatures')}>
+            <PanelRow for={"frameFontWeightField"} label={t("frame.ligatures")}>
               <TwoColumnPanelRow>
                 <SuspenseEditorItem
-                  fallback={<SkeletonLine width={'85%'} height={'26px'} />}
+                  fallback={<SkeletonLine width={"85%"} height={"26px"} />}
                 >
                   <SegmentedField
                     adapt
-                    size={'xs'}
-                    id={'frameLigaturesField'}
+                    size={"xs"}
+                    id={"frameLigaturesField"}
                     value={state.options.enableLigatures}
                     onChange={setEnableLigatures}
                     items={[
-                      {label: t('common.yes'), value: true},
-                      {label: t('common.no'), value: false},
+                      { label: t("common.yes"), value: true },
+                      { label: t("common.no"), value: false },
                     ]}
                   />
                 </SuspenseEditorItem>
