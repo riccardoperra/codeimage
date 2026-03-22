@@ -1,9 +1,8 @@
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {Component, Ref} from 'solid-js';
-import type {DynamicProps} from 'solid-js/web';
 import {omitProps} from 'solid-use/props';
 import {styled} from '../../utils';
-import type {DynamicNode} from '../Box';
+import type {DynamicNode, DynamicProps} from '../Box';
 import type {UseTextProps} from '../Text';
 import * as styles from './RangeField.css';
 
