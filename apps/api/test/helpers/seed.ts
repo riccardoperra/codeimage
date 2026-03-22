@@ -4,7 +4,7 @@ import {testPresetUtils} from '../__internal__/presetUtils.js';
 
 export const client = new PrismaClient({
   datasources: {
-    db: {url: import.meta.env['DATABASE_URL']},
+    db: {url: import.meta.env['DATABASE_URL'] || process.env.DATABASE_URL},
   },
 });
 

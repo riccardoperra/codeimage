@@ -30,10 +30,10 @@
     "build:types": "tsc -p tsconfig.schema.json",
     "watch:ts": "tsc -w",
     "prisma:migrate:dev": "prisma migrate dev",
-    "prisma:migrate:test": "dotenv -e .env.test -- prisma migrate dev",
+    "prisma:migrate:test": "dotenv -e .env.testing -- prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:migrate:deploy-test": "dotenv -e .env.test -- prisma migrate deploy",
-    "prisma:migrate:reset-test": "dotenv -e .env.test -- prisma migrate reset --force",
+    "prisma:migrate:deploy-test": "dotenv -e .env.testing -- prisma migrate deploy",
+    "prisma:migrate:reset-test": "dotenv -e .env.testing -- prisma migrate reset --force",
     "prisma:generate": "prisma generate dev && pnpm --filter=@codeimage/prisma-models build",
     "docker:dev": "docker compose -f docker-compose.dev.yml up",
     "dev:start": "tsx watch node_modules/fastify-cli/cli.js start --ignore-watch=.ts$ -w -l info -P src/app.ts"
