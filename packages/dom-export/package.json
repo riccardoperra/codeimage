@@ -3,7 +3,7 @@
   "version": "1.11.5",
   "type": "module",
   "description": "Generates an image from a DOM node using HTML5 canvas and SVG.",
-  "main": "./dist/dom-export.mjs",
+  "main": "./dist/dom-export.js",
   "module": "./dist/dom-export.mjs",
   "types": "./dist/public-api.d.ts",
   "files": [
@@ -11,7 +11,7 @@
   ],
   "exports": {
     ".": {
-      "default": "./dist/dom-export.mjs",
+      "default": "./dist/dom-export.js",
       "types": "./dist/public-api.d.ts"
     }
   },
