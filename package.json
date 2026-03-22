@@ -99,7 +99,8 @@
       "solid-headless": "patches/solid-headless.patch",
       "@codeui/kit": "patches/@codeui__kit.patch",
       "tinykeys": "patches/tinykeys.patch",
-      "@thisbeyond/solid-dnd": "patches/@thisbeyond__solid-dnd.patch"
+      "@thisbeyond/solid-dnd": "patches/@thisbeyond__solid-dnd.patch",
+      "@motionone/solid": "patches/@motionone__solid.patch"
     },
     "onlyBuiltDependencies": [
       "esbuild",

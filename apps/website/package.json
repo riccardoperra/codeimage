@@ -26,7 +26,7 @@
     "@tanstack/solid-router-ssr-query": "latest",
     "@tanstack/solid-start": "latest",
     "motion": "^10.15.5",
-    "solid-codemirror": "^2.3.0",
+    "solid-codemirror": "^2.3.2",
     "solid-js": "catalog:next",
     "solid-motionone": "^1.0.4",
     "vite-tsconfig-paths": "catalog:next"
