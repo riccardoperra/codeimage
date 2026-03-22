@@ -1,12 +1,8 @@
 import type {ElementType} from '@solid-aria/types';
 import clsx from 'clsx';
-import type {
-  DynamicProps,
-  WithRef,
-} from 'solid-headless/dist/types/utils/dynamic-prop';
-import type {JSXElement, ParentProps} from 'solid-js';
+import type {JSXElement, ParentProps, Ref} from 'solid-js';
 import {splitProps} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {Dynamic, type DynamicProps} from 'solid-js/web';
 import type {UseTextProps} from './useText';
 import {useText} from './useText';
 
@@ -18,8 +14,8 @@ export type TextComponentProps = {
 export type TextProps<T extends ElementType = 'span'> = TextComponentProps & {
   as?: T | ElementType;
   innerHTML?: JSXElement | string;
-} & WithRef<T> &
-  Omit<DynamicProps<T>, 'ref' | 'as'>;
+  ref?: Ref<T>;
+} & Omit<DynamicProps<T>, 'ref' | 'as'>;
 
 export function Text<T extends ElementType = 'span'>(
   props: ParentProps<TextProps<T>>,
