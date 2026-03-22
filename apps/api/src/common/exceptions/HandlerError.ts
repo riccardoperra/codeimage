@@ -8,8 +8,8 @@ type HttpStatusCode = {
 };
 
 export abstract class HandlerError<
-  Args extends Record<string, string | number> | void = void,
->
+    Args extends Record<string, string | number> | void = void,
+  >
   extends Error
   implements FastifyError
 {

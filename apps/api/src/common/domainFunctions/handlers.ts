@@ -14,12 +14,6 @@ interface HandlerMetadata {
   name: string;
 }
 
-type DomainHandlerInternals = {
-  dependencies: unknown;
-  input: unknown[];
-  output: unknown;
-};
-
 export function getHandlerMetadata(handler: object): HandlerMetadata {
   const metadata = Reflect.get(handler, $HANDLER);
   if (!metadata) {
@@ -29,13 +23,12 @@ export function getHandlerMetadata(handler: object): HandlerMetadata {
 }
 
 export function createModuleHandlers<
-  TDependencies extends Record<string, unknown>,
+  // oxlint-disable-next-line typescript/no-explicit-any
+  TDependencies extends Record<string, any>,
 >() {
   const builder = HandlerBuilder.withDependencies<TDependencies>();
-  return <
-    THandlerName extends string,
-    R extends (...args: unknown[]) => unknown,
-  >(
+  // oxlint-disable-next-line typescript/no-explicit-any
+  return <THandlerName extends string, R extends (...args: any[]) => any>(
     name: THandlerName,
     handlerCallback: (
       dependencies: TDependencies,
@@ -53,9 +46,8 @@ export function createModuleHandlers<
   };
 }
 
-export function registerHandlers<
-  S extends readonly Handler<string, DomainHandlerInternals>[],
->(
+// oxlint-disable-next-line typescript/no-explicit-any
+export function registerHandlers<S extends readonly Handler<string, any>[]>(
   handlers: readonly [...S],
   dependencies: MergeHandlerDependencies<S>,
   registry: HandlerRegistry,
@@ -64,7 +56,8 @@ export function registerHandlers<
     handlers.map((handler: Handler<string>) => {
       const metadata = getHandlerMetadata(handler);
       const handlerCallback = Object.assign(
-        (...args: unknown[]) =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (...args: any[]) =>
           handler(dependencies, {handlers: registry.handlers})(...args),
         {
           [$HANDLER]: metadata,

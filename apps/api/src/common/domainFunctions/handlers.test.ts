@@ -1,11 +1,6 @@
 import type {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
 import {expect, test, vi} from 'vitest';
-import {
-  $HANDLER,
-  createModuleHandlers,
-  getHandlerMetadata,
-  registerHandlers,
-} from './handlers.js';
+import {$HANDLER, createModuleHandlers, registerHandlers} from './handlers.js';
 import {HandlerRegistry} from './registry.js';
 
 test('create handler', () => {
@@ -28,7 +23,7 @@ test('create handler', () => {
     };
   });
 
-  expect(getHandlerMetadata(handler)[$HANDLER].name).toBe('handler1');
+  expect((handler as any)[$HANDLER].name).toBe('handler1');
 });
 
 test('resolve handlers', () => {
@@ -90,11 +85,7 @@ test('handler events are evaluated only after call', () => {
   const handler1 = createHandler('handler1', (deps, {handlers}) => {
     mockFn(deps, handlers);
     return (p1: symbol, p2: string) => {
-      (
-        handlers as {
-          handler2: (first: symbol, second: string) => void;
-        }
-      ).handler2(p1, p2);
+      (handlers as any).handler2(p1, p2);
       return {
         dep1: deps.p1,
         dep2: deps.p2,
@@ -106,8 +97,8 @@ test('handler events are evaluated only after call', () => {
   });
 
   const handler2 = createHandler('handler2', () => {
-    return (p1: symbol, p2: string) => {
-      mockFn2(p1, p2);
+    return (...params: any) => {
+      mockFn2(...params);
       return {
         p3: 1,
       } as const;
