@@ -168,16 +168,6 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - name: Publish on Netlify
-        run: |
-          pnpm i -g netlify-cli@16.3.3
-          cd apps/website
-          netlify link
-          netlify deploy --prod --dir=dist/public
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.WEBSITE_NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.WEBSITE_NETLIFY_AUTH_TOKEN }}
-
       - uses: amondnet/vercel-action@v41.1.4
         with:
           vercel-token: ${{secrets.VERCEL_TOKEN}} # Required
