@@ -1,7 +1,9 @@
 import type {
   DynamicNode,
   WithRef,
+  // @ts-expect-error TODO: fix
 } from "solid-headless/src/utils/dynamic-prop";
+// @ts-expect-error TODO: fix
 import type { ValidConstructor } from "solid-headless/src/utils/dynamic-prop";
 
 type RefCallback<T> = (el: T) => void;
