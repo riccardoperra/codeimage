@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import {cpSync, existsSync, mkdirSync, rmdirSync, writeFileSync} from 'node:fs';
-import path, {join, resolve} from 'node:path';
-import {ConfigEnv, Plugin, ResolvedConfig} from 'vite';
+import {join, resolve} from 'node:path';
+import type {ConfigEnv, Plugin, ResolvedConfig} from 'vite';
 
 const ENABLE_VERCEL_BUILD = true;
 

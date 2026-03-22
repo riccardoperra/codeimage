@@ -1,25 +1,15 @@
-import type {JSX} from 'solid-js';
-import {mergeProps} from 'solid-js';
+import type { JSX } from "solid-js";
+import { mergeProps } from "solid-js";
 
 interface CodeImageLogoV2Props {
   withGradient?: boolean;
 }
 
 export const CodeImageLogoV2 = (
-  props: JSX.IntrinsicElements['svg'] & CodeImageLogoV2Props,
+  props: JSX.IntrinsicElements["svg"] & CodeImageLogoV2Props
 ) => {
-  const mergedProps = mergeProps({withGradient: true}, props);
-  const color = '#fff';
-
-  const style = () => {
-    let computedStyle = `.cls-1 { fill: ${color} }`;
-    if (mergedProps.withGradient) {
-      computedStyle += ` .cls-2 { fill: url(#codeimage-gradient-blue); }`;
-    } else {
-      computedStyle += ` .cls-2 { fill: unset }`;
-    }
-    return computedStyle;
-  };
+  const mergedProps = mergeProps({ withGradient: true }, props);
+  const color = "#fff";
 
   return (
     <svg
@@ -53,7 +43,7 @@ export const CodeImageLogoV2 = (
           <rect
             id="logo-container"
             class={`cls-2`}
-            style={{fill: mergedProps.withGradient ? undefined : 'unset'}}
+            style={{ fill: mergedProps.withGradient ? undefined : "unset" }}
             width="183.56"
             height="183.56"
             rx="60.48"

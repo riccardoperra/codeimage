@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "../../.oxlintrc.json"
+  ],
+  "ignorePatterns": [
+    "dist/**",
+    "coverage/**",
+    "vendor/**",
+    "test/snapshots/**",
+    "generated",
+    "dist"
+  ]
+}

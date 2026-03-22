@@ -3,6 +3,7 @@ import {createEffect, createSignal, on, onMount, Show} from 'solid-js';
 import {CodeEditorPreviewBlock} from '../CodeEditor/CodeEditorPreviewBlock';
 import styles from './CodeEditor.module.css';
 
+// oxlint-disable-next-line typescript/consistent-type-imports
 type EditorCoreModule = Awaited<typeof import('./editor-core')>;
 
 interface CodeEditorProps {

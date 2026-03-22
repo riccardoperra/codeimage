@@ -43,12 +43,14 @@ export function RemoteSvgIcon(props: SvgExternalIconProps): JSXElement {
   const [src, setSrc] = createSignal<SvgExternalIconProps['content'] | null>();
   const content = createMemo(() => props.content);
 
+  // oxlint-disable-next-line solid/reactivity
   const [data] = createResource(src, async content => {
     const svgResponse =
       typeof content === 'string'
         ? await fetch(content).then(res => res.text())
         : await content().then(e => e.default);
     if (props.delay) {
+      // oxlint-disable-next-line solid/reactivity
       await new Promise(r => setTimeout(r, props.delay));
     }
 

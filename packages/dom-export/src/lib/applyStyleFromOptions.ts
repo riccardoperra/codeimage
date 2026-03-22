@@ -1,10 +1,10 @@
-import type {Options} from './options';
+import type { Options } from "./options";
 
 export function applyStyleFromOptions<T extends HTMLElement>(
   node: T,
-  options: Options,
+  options: Options
 ): T {
-  const {style} = node;
+  const { style } = node;
 
   if (options.backgroundColor) {
     style.backgroundColor = options.backgroundColor;
@@ -20,7 +20,8 @@ export function applyStyleFromOptions<T extends HTMLElement>(
 
   const manual = options.style;
   if (manual != null) {
-    Object.keys(manual).forEach((key: any) => {
+    Object.keys(manual).forEach((key) => {
+      // @ts-expect-error No types
       style[key] = manual[key] as string;
     });
   }

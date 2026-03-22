@@ -1,4 +1,3 @@
-import type {JSX} from 'solid-js';
 import {createMemo, createSignal, onCleanup, onMount} from 'solid-js';
 import {Button} from '~/components/Button/Button';
 import {mainWebsiteLink} from '~/core/constants';

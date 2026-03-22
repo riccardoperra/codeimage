@@ -12,7 +12,7 @@ globalStyle('body', {
   },
 });
 
-const cssVar = /(--)[^\,\:\)]+/;
+const cssVar = /(--)[^,:)]+/;
 
 globalStyle(`[data-codeimage-theme=dark]`, {
   [cssVar.exec(themeVars.dynamicColors.panel.background)![0]]: '#151516',

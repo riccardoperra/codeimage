@@ -8,8 +8,6 @@ import {StepCardArea} from './StepCardScene/StepCardScene';
 
 export default function EditorSteps() {
   const scene = injectEditorScene();
-  let ref!: HTMLElement;
-
   const backgrounds = {
     0: gradientStyles.gradientBlueBg,
     1: gradientStyles.gradientPurpleBg,

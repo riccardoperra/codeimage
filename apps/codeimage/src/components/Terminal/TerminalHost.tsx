@@ -1,21 +1,22 @@
-import type {LanguageIconDefinition} from '@codeimage/config';
-import type {TerminalState} from '@codeimage/store/editor/model';
-import {FadeInOutTransition} from '@codeimage/ui';
-import {assignInlineVars} from '@vanilla-extract/dynamic';
-import clsx from 'clsx';
-import type {WithRef} from 'solid-headless/dist/types/utils/dynamic-prop';
-import type {FlowComponent} from 'solid-js';
-import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection';
-import {createTabTheme} from './Tabs/createTabTheme';
-import * as styles from './terminal.css';
-import {getFrameState} from '@codeimage/store/editor/frame';
+import type { LanguageIconDefinition } from "@codeimage/config";
+import type { TerminalState } from "@codeimage/store/editor/model";
+import { FadeInOutTransition } from "@codeimage/ui";
+import { assignInlineVars } from "@vanilla-extract/dynamic";
+import clsx from "clsx";
+import type { WithRef } from "solid-headless/dist/types/utils/dynamic-prop";
+import type { FlowComponent } from "solid-js";
+import { TerminalGlassReflection } from "./GlassReflection/TerminalGlassReflection";
+import { createTabTheme } from "./Tabs/createTabTheme";
+import * as styles from "./terminal.css";
+import { getFrameState } from "@codeimage/store/editor/frame";
 
 export interface BaseTerminalProps
-  extends Omit<TerminalState, 'type'>, WithRef<'div'> {
+  extends Omit<TerminalState, "type">,
+    WithRef<"div"> {
   showTab: boolean;
   readonlyTab: boolean;
   preview?: boolean;
-  tabIcon?: LanguageIconDefinition['content'];
+  tabIcon?: LanguageIconDefinition["content"];
   onTabChange?: (tab: string) => void;
   lite?: boolean;
   showOnlyActiveTab?: boolean;
@@ -25,10 +26,11 @@ export interface BaseTerminalProps
 export interface TerminalHostProps extends BaseTerminalProps {
   themeClass: string;
   themeId: string;
+  // oxlint-disable-next-line typescript/no-explicit-any
   style?: Record<string, any>;
 }
 
-export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
+export const TerminalHost: FlowComponent<TerminalHostProps> = (props) => {
   const tabTheme = createTabTheme(() => props.themeId);
   const darkMode = () => tabTheme().darkMode;
   const frameState = getFrameState().store;
@@ -48,26 +50,26 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
     <div
       class={clsx(styles.wrapper, props.themeClass)}
       data-lite={props.lite}
-      data-preview={props.preview || ''}
-      data-theme-mode={darkMode() ? 'dark' : 'light'}
+      data-preview={props.preview || ""}
+      data-theme-mode={darkMode() ? "dark" : "light"}
       data-header-visible={props.showHeader}
       data-accent-header={props.accentVisible && !props.alternativeTheme}
       data-fallback-inactive-tab={tabTheme()?.shouldFallbackInactiveColor}
-      data-custom-border={props.borderType === 'glass' ? 'glass' : null}
+      data-custom-border={props.borderType === "glass" ? "glass" : null}
       style={assignInlineVars({
         [styles.terminalVars.headerBackgroundColor]:
-          tabTheme()?.background ?? '',
+          tabTheme()?.background ?? "",
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
         [styles.terminalVars.boxShadow]:
-          props.shadow && props.shadow !== 'unset'
+          props.shadow && props.shadow !== "unset"
             ? props.shadow
-            : '0 0 0 0 rgb(0, 0, 0, 0)',
-        [styles.terminalVars.tabTextColor]: tabTheme()?.textColor ?? '',
+            : "0 0 0 0 rgb(0, 0, 0, 0)",
+        [styles.terminalVars.tabTextColor]: tabTheme()?.textColor ?? "",
         [styles.terminalVars.tabAccentActiveBackground]:
-          tabTheme().activeTabBackground ?? '',
+          tabTheme().activeTabBackground ?? "",
         [styles.terminalVars.tabAccentInactiveBackground]:
-          tabTheme().inactiveTabBackground ?? '',
+          tabTheme().inactiveTabBackground ?? "",
         [styles.terminalVars.radius]: frameState.padding === 0 ? 0 : undefined,
         ...(props.style ?? {}),
       })}

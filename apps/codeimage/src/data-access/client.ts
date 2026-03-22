@@ -1,32 +1,35 @@
-import {getAuth0State} from '@codeimage/store/auth/auth0';
+import { getAuth0State } from "@codeimage/store/auth/auth0";
 
 export interface RequestParams {
   body?: unknown;
   querystring?: Record<string, string | number | boolean | symbol>;
+  // oxlint-disable-next-line typescript/no-explicit-any
   params?: Record<string, any>;
   headers?: Record<string, string | null | undefined>;
 }
 
 export interface Schema {
+  // oxlint-disable-next-line typescript/no-explicit-any
   request: any;
+  // oxlint-disable-next-line typescript/no-explicit-any
   response: any;
 }
 
 export async function makeFetch(
   input: RequestInfo,
-  requestParams: Omit<RequestInit, keyof RequestParams> & RequestParams,
+  requestParams: Omit<RequestInit, keyof RequestParams> & RequestParams
 ): Promise<Response> {
-  const {getToken, forceLogin, loggedIn} = getAuth0State();
+  const { getToken, forceLogin, loggedIn } = getAuth0State();
 
-  let url = typeof input === 'string' ? input : input.url;
+  let url = typeof input === "string" ? input : input.url;
   const headers = new Headers();
-  const request: RequestInit = {...(requestParams as RequestInit)};
+  const request: RequestInit = { ...(requestParams as RequestInit) };
 
   if (loggedIn()) {
     try {
       const token = await getToken();
       if (token) {
-        headers.append('Authorization', `Bearer ${token}`);
+        headers.append("Authorization", `Bearer ${token}`);
       }
     } catch (e) {
       forceLogin();
@@ -44,8 +47,8 @@ export async function makeFetch(
 
   if (requestParams.body) {
     request.body = JSON.stringify(requestParams.body);
-    if (typeof requestParams.body === 'object') {
-      headers.set('Content-Type', 'application/json');
+    if (typeof requestParams.body === "object") {
+      headers.set("Content-Type", "application/json");
     }
   }
 
@@ -65,9 +68,9 @@ export async function makeFetch(
 
   request.headers = headers;
 
-  return fetch(url, request).then(async res => {
+  return fetch(url, request).then(async (res) => {
     if (!res.ok) {
-      return res.json().then(error => {
+      return res.json().then((error) => {
         return Promise.reject(error);
       });
     }

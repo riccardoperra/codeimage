@@ -56,7 +56,7 @@ const _styled: CustomComponentFactory = <T extends ElementType>(
       others,
     );
 
-    // TODO: broken solid/ts type with 5.3
+    // oxlint-disable-next-line typescript/no-explicit-any TODO: broken solid/ts type with 5.3
     return createComponent(Dynamic, propsWithDefault as any);
   };
 };
