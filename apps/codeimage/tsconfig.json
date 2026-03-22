@@ -3,6 +3,7 @@
   "compilerOptions": {
     "jsx": "preserve",
     "importHelpers": true,
+    "declaration": false,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
