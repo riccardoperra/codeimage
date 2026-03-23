@@ -3,7 +3,6 @@
   "compilerOptions": {
     "outDir": "dist",
     "resolveJsonModule": true,
-    "declarationMap": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "moduleResolution": "NodeNext",

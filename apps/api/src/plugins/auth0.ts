@@ -32,7 +32,7 @@ export function mockAuthProvider(context: {email: string}) {
       };
     };
 
-    fastify.decorateRequest('user', null);
+    fastify.decorateRequest('user', null!);
     fastify.decorate('authenticate', auth0Authenticate);
   });
 }
@@ -102,7 +102,7 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
       req.appUserOptional = req.appUser;
     }
 
-    fastify.decorateRequest('appUser', null);
+    fastify.decorateRequest('appUser', null!);
     fastify.decorate('authorize', authorize);
   },
 );

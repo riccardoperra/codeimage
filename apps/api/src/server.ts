@@ -1,8 +1,5 @@
-// Read the .env file.
-// Require library to exit fastify process, gracefully (if possible)
 import closeWithGrace from 'close-with-grace';
 import * as dotenv from 'dotenv';
-// Require the framework
 import Fastify from 'fastify';
 
 dotenv.config();
