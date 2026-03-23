@@ -46,5 +46,6 @@ catalogs:
     vitest: ^4.1.0
 
 overrides:
-  '@codemirror/state': '^6.6.0'
-  '@codemirror/view': '^6.40.0'
+  '@codemirror/state': 'catalog:next'
+  '@codemirror/view': 'catalog:next'
+  'typescript': 'catalog:next'
