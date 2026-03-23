@@ -19,12 +19,16 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     featured: true,
     plugin: () =>
       import("@codemirror/lang-javascript").then(({ javascript }) =>
-        javascript({ jsx: true })
+        javascript({ jsx: true }),
       ),
     prettier: {
       name: "Babel",
       parser: "babel",
-      plugin: () => import("prettier/parser-babel"),
+      plugin: () =>
+        Promise.all([
+          import("prettier/plugins/estree"),
+          import("prettier/parser-babel"),
+        ]),
     },
     icons: [
       {
@@ -108,12 +112,16 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     featured: true,
     plugin: () =>
       import("@codemirror/lang-javascript").then(({ javascript }) =>
-        javascript({ jsx: true, typescript: true })
+        javascript({ jsx: true, typescript: true }),
       ),
     prettier: {
       name: "TypeScript",
       parser: "typescript",
-      plugin: () => import("prettier/parser-typescript"),
+      plugin: () =>
+        Promise.all([
+          import("prettier/plugins/estree"),
+          import("prettier/parser-typescript"),
+        ]),
     },
     icons: [
       {
@@ -327,7 +335,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
       import("@codemirror/lang-sass").then(({ sass }) =>
         sass({
           indented: false,
-        })
+        }),
       ),
     prettier: {
       name: "Sass",
@@ -373,7 +381,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     featured: true,
     plugin: () =>
       import("@codemirror/lang-html").then(({ html }) =>
-        html({ matchClosingTags: true, autoCloseTags: true })
+        html({ matchClosingTags: true, autoCloseTags: true }),
       ),
     prettier: {
       name: "Html",
@@ -795,7 +803,7 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
     color: "#AA6746",
     plugin: () =>
       import("@replit/codemirror-lang-solidity").then(
-        ({ solidity }) => solidity
+        ({ solidity }) => solidity,
       ),
     icons: [
       {

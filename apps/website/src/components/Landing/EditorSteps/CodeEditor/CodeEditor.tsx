@@ -1,4 +1,7 @@
 import {type Extension} from '@codemirror/state';
+import type {
+  LazyCompartmentReconfigurationCallback
+} from 'solid-codemirror/dist/types/core/createLazyCompartmentExtension';
 import {createEffect, createResource, createSignal, on, Show, Suspense} from 'solid-js';
 import {CodeEditorPreviewBlock} from '../CodeEditor/CodeEditorPreviewBlock';
 import styles from './CodeEditor.module.css';
@@ -69,10 +72,10 @@ export function CodeEditor(props: CodeEditorProps) {
           ),
         );
 
-        let customThemeExt: any
+        let customThemeExt: LazyCompartmentReconfigurationCallback
         if (props.customTheme) {
           customThemeExt = createLazyCompartmentExtension(
-            () => props.customTheme,
+            () => props.customTheme!,
             editorView,
           );
         }
