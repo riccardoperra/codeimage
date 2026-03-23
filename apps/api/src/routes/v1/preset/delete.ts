@@ -1,6 +1,7 @@
 import {Type} from '@sinclair/typebox';
 import type {FastifyPluginAsync} from 'fastify';
 import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
+import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema.js';
 
 const schema = {
   tags: ['Preset'],
@@ -9,7 +10,7 @@ const schema = {
   }),
   summary: 'Delete an existing CodeImage preset',
   response: {
-    200: Type.Unknown(),
+    200: PresetDtoSchema,
   },
 };
 

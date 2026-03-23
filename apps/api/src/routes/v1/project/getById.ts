@@ -29,7 +29,6 @@ const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
     async request => {
       const {
         appUser,
-        // @ts-expect-error TODO: Fix types while updating fastify
         params: {id},
       } = request;
       return fastify.projectService.findById(appUser, id);

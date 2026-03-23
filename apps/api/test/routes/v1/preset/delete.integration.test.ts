@@ -20,7 +20,7 @@ afterEach(async () => {
   await clearAllSeeds();
 });
 
-test<TestContext>('DELETE /v1/project/:id [Delete Project] -> 200', async t => {
+test<TestContext>('DELETE /v1/preset/:id [Delete Preset] -> 200', async t => {
   const fastify = await build(t);
   const userId = t.user.id;
   const presetId = t.preset1.id;
