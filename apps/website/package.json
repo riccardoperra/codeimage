@@ -35,7 +35,7 @@
     "@lhci/cli": "^0.15.1",
     "@tanstack/devtools-vite": "latest",
     "@types/node": "catalog:next",
-    "typescript": "^5.9.3",
+    "typescript": "catalog:next",
     "vite": "catalog:next",
     "vite-plugin-solid": "catalog:next"
   }

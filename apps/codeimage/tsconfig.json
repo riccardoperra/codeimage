@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "rootDir": "./src",
     "jsx": "preserve",
     "importHelpers": true,
     "declaration": false,
@@ -18,5 +19,5 @@
       "@ui/*": ["./src/ui/*"]
     }
   },
-  "include": ["./src/**/*", "./scripts/**/*", "vite.config.ts"]
+  "include": ["./src/**/*", "./scripts/**/*"]
 }

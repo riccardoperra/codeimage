@@ -75,7 +75,7 @@
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
     "rimraf": "^3.0.2",
-    "typescript": "^5.9.3",
+    "typescript": "catalog:next",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",
     "vite-plugin-solid": "catalog:next"

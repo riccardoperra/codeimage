@@ -270,7 +270,7 @@
     "solid-js": "catalog:next",
     "ts-morph": "^23.0.0",
     "tsdown": "catalog:next",
-    "typescript": "^5.9.3",
+    "typescript": "catalog:next",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",
     "vite-plugin-solid": "catalog:next"
