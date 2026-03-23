@@ -1,6 +1,6 @@
 import type {HttpError} from '@fastify/sensible/lib/httpError.js';
 import fp from 'fastify-plugin';
-import {HandlerError} from '../common/exceptions/HandlerError.js';
+import type {HandlerError} from '../common/exceptions/HandlerError.js';
 import {NotFoundEntityException} from '../common/exceptions/NotFoundEntityException.js';
 
 export default fp(
