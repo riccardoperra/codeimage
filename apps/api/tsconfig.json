@@ -1,7 +1,6 @@
 {
   "extends": "fastify-tsconfig",
   "compilerOptions": {
-    "rootDir": "./src",
     "outDir": "dist",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
@@ -9,6 +8,7 @@
     "moduleResolution": "nodenext",
     "module": "NodeNext",
     "target": "ES2022",
+    "types": ["node"],
     "typeRoots": ["./src/common/domainFunctions/functions.d.ts"]
   },
   "include": ["./src/**/*.ts"]

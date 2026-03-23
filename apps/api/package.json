@@ -75,7 +75,7 @@
     "oxlint": "catalog:next",
     "sinon": "^15.1.2",
     "tsup": "8.5.1",
-    "tsx": "3.12.7",
+    "tsx": "catalog:next",
     "typescript": "catalog:next",
     "vite": "catalog:next",
     "vitest": "catalog:next"
