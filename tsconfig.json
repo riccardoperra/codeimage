@@ -3,11 +3,9 @@
     "strict": true,
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
     "declaration": true,
     "sourceMap": true,
     "importHelpers": true,
@@ -16,9 +14,6 @@
     "importsNotUsedAsValues": "remove",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "types": ["vite/client"],
-    "lib": ["dom", "ESNext"]
   },
-  "include": ["@types", "packages", "scripts"],
   "exclude": ["**/node_modules"]
 }

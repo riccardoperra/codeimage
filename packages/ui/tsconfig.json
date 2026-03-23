@@ -1,6 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
     "noUnusedLocals": true,
     "sourceMap": true,
     "jsx": "preserve",
@@ -8,7 +10,7 @@
     "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
     "preserveSymlinks": true,
-    "types": ["@types/node"]
+    "types": ["node"]
   },
   "include": ["./src"]
 }

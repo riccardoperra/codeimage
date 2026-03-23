@@ -1,13 +1,14 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "jsx": "preserve",
+    "rootDir": "./src",
     "importHelpers": true,
     "declaration": false,
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "types": ["vite/client", "@types/mdx"],
     "verbatimModuleSyntax": true,
@@ -18,5 +19,5 @@
       "@ui/*": ["./src/ui/*"]
     }
   },
-  "include": ["./src/**/*", "./scripts/**/*", "vite.config.ts"]
+  "include": ["./src/**/*", "./scripts/**/*"]
 }
