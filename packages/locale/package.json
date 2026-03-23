@@ -40,7 +40,7 @@
   "devDependencies": {
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
-    "rimraf": "^3.0.2",
+    "rimraf": "catalog:next",
     "typescript": "catalog:next",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",

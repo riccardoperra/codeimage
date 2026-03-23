@@ -5,7 +5,7 @@
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "moduleResolution": "bundler",
-    "types": ["@types/node"]
+    "types": ["node"]
   },
   "include": ["./src"]
 }

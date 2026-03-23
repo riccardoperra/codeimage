@@ -4,7 +4,8 @@
     "rootDir": "./src",
     "moduleResolution": "bundler",
     "jsx": "preserve",
-    "jsxImportSource": "solid-js"
+    "jsxImportSource": "solid-js",
+    "types": ["vite/client"]
   },
   "include": ["./src"]
 }

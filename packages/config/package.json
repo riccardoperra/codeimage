@@ -21,11 +21,9 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "clean": "rimraf dist",
-    "build-esm": "tsc -p tsconfig.esm.json",
     "build-dts": "tsc -p tsconfig.dts.json",
     "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.dts.json",
-    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
-    "dev": "chokidar \"src/**/*.{ts,tsx}\" -c \"pnpm build\""
+    "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json"
   },
   "dependencies": {
     "@codeimage/highlight": "workspace:*",
@@ -74,7 +72,7 @@
   "devDependencies": {
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
-    "rimraf": "^3.0.2",
+    "rimraf": "catalog:next",
     "typescript": "catalog:next",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",
