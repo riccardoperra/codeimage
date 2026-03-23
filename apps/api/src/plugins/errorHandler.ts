@@ -1,5 +1,6 @@
 import type {HttpError} from '@fastify/sensible/lib/httpError.js';
 import fp from 'fastify-plugin';
+import {HandlerError} from '../common/exceptions/HandlerError.js';
 import {NotFoundEntityException} from '../common/exceptions/NotFoundEntityException.js';
 
 export default fp(
@@ -7,10 +8,15 @@ export default fp(
     fastify.setErrorHandler((error, request, reply) => {
       let httpError: HttpError | null = null;
 
-      if (error.statusCode) {
+      if (
+        !!error &&
+        typeof error === 'object' &&
+        'statusCode' in error &&
+        'message' in error
+      ) {
         httpError = fastify.httpErrors.createError(
-          error.statusCode,
-          error.message,
+          error.statusCode as number,
+          error.message as string,
         );
       } else {
         if (error instanceof NotFoundEntityException) {
@@ -19,8 +25,8 @@ export default fp(
       }
 
       if (httpError) {
-        httpError.stack = error.stack;
-        httpError.code = error.code;
+        httpError.stack = (error as HandlerError).stack;
+        httpError.code = (error as HandlerError).code;
 
         return reply.send(httpError);
       }

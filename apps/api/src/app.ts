@@ -3,8 +3,7 @@ import AutoLoad from '@fastify/autoload';
 import fastifyEnv from '@fastify/env';
 import {Type} from '@sinclair/typebox';
 import type {FastifyPluginAsync} from 'fastify';
-import path, {join} from 'node:path';
-import {fileURLToPath} from 'node:url';
+import {join} from 'node:path';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -25,15 +24,14 @@ declare module 'fastify' {
   }
 }
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = import.meta.dirname;
 
 export type AppOptions = {
   authProvider: FastifyPluginAsync;
   // Place your custom options for app below here.
 } & Partial<AutoloadPluginOptions>;
 
-const app: FastifyPluginAsync<AppOptions> = async (
+const app: FastifyPluginAsync = async (
   fastify,
   opts,
 ): Promise<void> => {
