@@ -1,1 +1,1 @@
-export * from '../generated/client';
+export * from '../generated/client/index.js';

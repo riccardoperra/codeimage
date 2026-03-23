@@ -2,19 +2,13 @@
   "name": "@codeimage/prisma-models",
   "version": "0.0.1",
   "description": "",
+  "type": "module",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "node": "./dist/index.js",
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "./": [
-        "./dist/index.d.ts"
-      ]
+      "import": "./dist/index.js"
     }
   },
   "scripts": {
@@ -26,7 +20,7 @@
   "author": "Riccardo Perra",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "typescript": "catalog:next"
   },
   "engines": {
     "node": ">=24"

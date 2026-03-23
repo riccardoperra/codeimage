@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "strict": true,
+    "rootDir": "./src",
     "outDir": "dist",
     "target": "ESNext",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "declaration": true,
     "sourceMap": false
   },
