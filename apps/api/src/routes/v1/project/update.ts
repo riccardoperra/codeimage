@@ -31,10 +31,8 @@ const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
       const {
         appUser,
         body,
-        // @ts-expect-error TODO: Fix types while updating fastify
         params: {id},
       } = request;
-      // @ts-expect-error TODO: Fix types while updating fastify
       return fastify.projectService.update(appUser.id, id, body);
     },
   );

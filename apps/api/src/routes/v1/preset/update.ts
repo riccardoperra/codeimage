@@ -18,7 +18,6 @@ const schema = {
 
 export type UpdatePresetApi = GetApiTypes<typeof schema>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
   fastify.put(
     '/:id',
@@ -29,11 +28,9 @@ const updateRoute: FastifyPluginAsyncTypebox = async fastify => {
     request => {
       const {
         appUser,
-        // @ts-expect-error TODO: Fix types while updating fastify
         params: {id},
         body,
       } = request;
-      // @ts-expect-error TODO: Fix types while updating fastify
       return fastify.presetService.updatePreset(appUser.id, id, body);
     },
   );

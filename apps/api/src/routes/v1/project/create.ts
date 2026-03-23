@@ -25,7 +25,6 @@ const createRoute: FastifyPluginAsyncTypebox = async fastify => {
     },
     request => {
       const {appUser, body} = request;
-      // @ts-expect-error TODO: Fix types while updating fastify
       return fastify.projectService.createNewProject(appUser.id, body);
     },
   );

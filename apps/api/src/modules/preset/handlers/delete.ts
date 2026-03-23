@@ -7,8 +7,7 @@ export const remove =
     .withImplementation(({repository}, {handlers}) => {
       return async (userId: string, id: string) => {
         const preset = await handlers.findPresetById(userId, id);
-
-        return await repository.deletePreset(preset.id);
+        return repository.deletePreset(preset.id);
       };
     })
     .build();

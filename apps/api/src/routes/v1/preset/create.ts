@@ -16,7 +16,6 @@ const schema = {
 
 export type CreatePresetApi = GetApiTypes<typeof schema>;
 
-// eslint-disable-next-line
 const createRoute: FastifyPluginAsyncTypebox = async fastify => {
   fastify.post(
     '/',
@@ -26,7 +25,6 @@ const createRoute: FastifyPluginAsyncTypebox = async fastify => {
     },
     request => {
       const {appUser, body} = request;
-      // @ts-expect-error TODO: Fix types while updating fastify
       return fastify.presetService.createPreset(appUser.id, body);
     },
   );

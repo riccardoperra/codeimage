@@ -30,9 +30,7 @@ const cloneRoute: FastifyPluginAsyncTypebox = async fastify => {
       const {appUser, params, body} = request;
       return fastify.projectService.clone(
         appUser,
-        // @ts-expect-error TODO: Fix types while updating fastify
         params.id,
-        // @ts-expect-error TODO: Fix types while updating fastify
         body.newName ?? null,
       );
     },
