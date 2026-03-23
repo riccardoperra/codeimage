@@ -7,6 +7,7 @@ const pkg = JSON.parse(
   readFileSync(path.resolve(import.meta.dirname, 'package.json'), 'utf8'),
 ) as {
   dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
 };
 
@@ -16,10 +17,12 @@ const themes = readdirSync(themesPath).filter(file =>
 
 const external = [
   ...Object.keys(pkg.dependencies || {}),
+  ...Object.keys(pkg.devDependencies || {}),
   ...Object.keys(pkg.peerDependencies || {}),
   '@primer/primitives/dist/ts/colors/dark',
   '@primer/primitives/dist/ts/colors/light',
   '@primer/primitives/dist/ts/colors/dark_dimmed',
+  /@codemirror/
 ];
 
 const themeEntries = themes.reduce<Record<string, string>>((acc, theme) => {
@@ -40,6 +43,6 @@ export default defineConfig({
   clean: true,
   sourcemap: false,
   deps: {
-    neverBundle: external,
+    neverBundle: external
   },
 });

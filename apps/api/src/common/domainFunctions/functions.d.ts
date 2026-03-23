@@ -1,3 +1,4 @@
+// oxlint-disable typescript/no-explicit-any
 declare const $HANDLER: unique symbol;
 
 declare module '@api/domain' {

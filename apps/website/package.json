@@ -17,7 +17,7 @@
     "@codemirror/language": "^6.12.2",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.40.0",
-    "@lezer/highlight": "^1.1.4",
+    "@lezer/highlight": "catalog:next",
     "@solid-primitives/media": "2.3.5",
     "@solid-primitives/platform": "^0.2.1",
     "@tanstack/router-plugin": "^1.167.3",

@@ -242,7 +242,7 @@
     "@corvu/utils": "0.4.2",
     "@kobalte/core": "^0.13.6",
     "@kobalte/utils": "^0.9.1",
-    "@lezer/highlight": "^1.2.3",
+    "@lezer/highlight": "catalog:next",
     "@primer/primitives": "^7.11.5",
     "@solid-primitives/props": "^2.2.2"
   },
@@ -250,7 +250,7 @@
     "@codemirror/language": "catalog:next",
     "@codemirror/state": "catalog:next",
     "@codemirror/view": "catalog:next",
-    "@lezer/highlight": "^1.1.1"
+    "@lezer/highlight": "catalog:next"
   },
   "devDependencies": {
     "@codeimage/ui": "workspace:*",
