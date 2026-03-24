@@ -9,7 +9,6 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "jsxImportSource": "solid-js",
-    "preserveSymlinks": true,
     "types": ["node"]
   },
   "include": ["./src"]

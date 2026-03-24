@@ -1,5 +1,3 @@
-import '@formatjs/intl-relativetimeformat/polyfill';
-
 export function formatDistanceToNow(
   locale: string,
   value: string | Date,
@@ -11,22 +9,22 @@ export function formatDistanceToNow(
   const months = Math.floor(days / 30);
   const years = Math.floor(months / 12);
   const rtf = new Intl.RelativeTimeFormat(locale, {
-    numeric: 'always',
-    localeMatcher: 'best fit',
-    style: 'long',
+    numeric: "always",
+    localeMatcher: "best fit",
+    style: "long",
   });
 
   if (years > 0) {
-    return rtf.format(0 - years, 'year');
+    return rtf.format(0 - years, "year");
   } else if (months > 0) {
-    return rtf.format(0 - months, 'month');
+    return rtf.format(0 - months, "month");
   } else if (days > 0) {
-    return rtf.format(0 - days, 'day');
+    return rtf.format(0 - days, "day");
   } else if (hours > 0) {
-    return rtf.format(Math.round(0 - hours), 'hour');
+    return rtf.format(Math.round(0 - hours), "hour");
   } else if (minutes > 0) {
-    return rtf.format(Math.round(0 - minutes), 'minute');
+    return rtf.format(Math.round(0 - minutes), "minute");
   } else {
-    return rtf.format(Math.round(0 - diff), 'second');
+    return rtf.format(Math.round(0 - diff), "second");
   }
 }
