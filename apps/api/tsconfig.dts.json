@@ -6,7 +6,6 @@
     "declarationMap": false,
     "outDir": "./dist",
     "moduleResolution": "NodeNext",
-    "module": "NodeNext",
-    "target": "ES2022"
+    "module": "NodeNext"
   }
 }
