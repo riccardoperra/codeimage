@@ -10,6 +10,6 @@ export default defineConfig({
   format: 'esm',
   treeshake: false,
   deps: {
-    skipNodeModulesBundle: true
-  }
+    skipNodeModulesBundle: true,
+  },
 });
