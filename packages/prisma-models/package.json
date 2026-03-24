@@ -9,6 +9,10 @@
       "types": "./dist/index.d.ts",
       "node": "./dist/index.js",
       "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./generated/client/index.d.ts",
+      "import": "./generated/client/index.js"
     }
   },
   "scripts": {
@@ -20,6 +24,7 @@
   "author": "Riccardo Perra",
   "license": "MIT",
   "devDependencies": {
+    "@prisma/client-runtime-utils": "7.5.0",
     "typescript": "catalog:next"
   },
   "engines": {
