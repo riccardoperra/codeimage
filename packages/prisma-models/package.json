@@ -25,7 +25,7 @@
   "license": "MIT",
   "devDependencies": {
     "@prisma/client-runtime-utils": "7.5.0",
-    "typescript": "catalog:next"
+    "typescript": "^6.0.2"
   },
   "engines": {
     "node": ">=24"

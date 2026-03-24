@@ -194,41 +194,42 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
         name: "ng-component",
         extension: ".component.ts",
         content: () =>
-          import("material-icon-theme/icons/angular-component.svg?raw"),
+          import("material-icon-theme/icons/angular-component.clone.svg?raw"),
         matcher: /^.*\.(component.ts)$/,
       },
       {
         name: "ng-pipe",
         extension: ".pipe.ts",
-        content: () => import("material-icon-theme/icons/angular-pipe.svg?raw"),
+        content: () =>
+          import("material-icon-theme/icons/angular-pipe.clone.svg?raw"),
         matcher: /^.*\.(pipe.ts)$/,
       },
       {
         name: "ng-guard",
         extension: ".guard.ts",
         content: () =>
-          import("material-icon-theme/icons/angular-guard.svg?raw"),
+          import("material-icon-theme/icons/angular-guard.clone.svg?raw"),
         matcher: /^.*\.(guard.ts)$/,
       },
       {
         name: "ng-directive",
         extension: ".directive.ts",
         content: () =>
-          import("material-icon-theme/icons/angular-directive.svg?raw"),
+          import("material-icon-theme/icons/angular-directive.clone.svg?raw"),
         matcher: /^.*\.(directive.ts)$/,
       },
       {
         name: "ng-resolver",
         extension: ".resolver.ts",
         content: () =>
-          import("material-icon-theme/icons/angular-resolver.svg?raw"),
+          import("material-icon-theme/icons/angular-resolver.clone.svg?raw"),
         matcher: /^.*\.(resolver.ts)$/,
       },
       {
         name: "ng-service",
         extension: ".service.ts",
         content: () =>
-          import("material-icon-theme/icons/angular-service.svg?raw"),
+          import("material-icon-theme/icons/angular-service.clone.svg?raw"),
         matcher: /^.*\.(service.ts)$/,
       },
       {
