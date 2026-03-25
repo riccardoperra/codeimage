@@ -112,12 +112,6 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Prisma migrate
-        run: |
-          cd apps/api
-          pnpm prisma generate
-          pnpm --filter=@codeimage/prisma-models build
-
       - name: Restore dist
         uses: actions/cache@v5
         with:

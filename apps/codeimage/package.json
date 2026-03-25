@@ -15,7 +15,7 @@
     "pre-commit-eslint": "oxlint --fix",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "typecheck": "tsc --noEmit --skipLibCheck --project tsconfig.json"
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@mdx-js/mdx": "catalog:next",
