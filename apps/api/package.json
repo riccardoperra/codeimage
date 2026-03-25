@@ -11,6 +11,10 @@
     "./api-types": {
       "types": "./api-types/index.d.ts",
       "default": "./api-types/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.mts",
+      "default": "./dist/schemas/index.mjs"
     }
   },
   "scripts": {
