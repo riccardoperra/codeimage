@@ -1,4 +1,4 @@
-import {setupWorker} from 'msw';
+import {setupWorker} from 'msw/browser';
 import {db} from './db';
 import {persistMswjs} from './persist';
 import projectHandlers from './projectMockHandlers';

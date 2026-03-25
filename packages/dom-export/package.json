@@ -59,14 +59,14 @@
   ],
   "devDependencies": {
     "@types/node": "catalog:next",
-    "happy-dom": "8.1.1",
-    "lint-staged": "^13.2.1",
+    "happy-dom": "20.8.7",
+    "lint-staged": "^16.4.0",
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
-    "prettier": "^2.8.7",
+    "prettier": "^3.8.1",
     "rimraf": "catalog:next",
     "tslib": "^2.6.2",
-    "typescript": "catalog:next",
+    "typescript": "^6.0.2",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",
     "vitest": "catalog:next"

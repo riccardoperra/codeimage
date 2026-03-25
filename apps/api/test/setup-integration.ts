@@ -1,4 +1,4 @@
-import type {PrismaClient} from '@prisma/client';
+import type {PrismaClient} from '@codeimage/prisma-models/client';
 import * as dotEnv from 'dotenv';
 import {execSync} from 'node:child_process';
 import path from 'node:path';
@@ -10,7 +10,7 @@ export async function setup() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  void dotEnv.config({path: `${__dirname}/../.env.test`}).parsed;
+  void dotEnv.config({path: `${__dirname}/../.env.testing`}).parsed;
 
   execSync(
     `pnpm run prisma:migrate:reset-test --force && pnpm run prisma:migrate:deploy-test`,

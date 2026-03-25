@@ -8,8 +8,11 @@ export default defineConfig({
   ],
   unbundle: true,
   format: 'esm',
+  dts: {
+    enabled: true,
+  },
   treeshake: false,
   deps: {
-    skipNodeModulesBundle: true
-  }
+    skipNodeModulesBundle: true,
+  },
 });

@@ -1,5 +1,3 @@
-import '@formatjs/intl-relativetimeformat/polyfill';
-
 export function formatDistanceToNow(
   locale: string,
   value: string | Date,

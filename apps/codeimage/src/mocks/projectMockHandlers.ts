@@ -1,7 +1,7 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {randUuid} from '@ngneat/falso';
-import type {RequestHandler} from 'msw';
-import {rest} from 'msw';
+import {HttpResponse, type RequestHandler} from 'msw';
+import {http} from 'msw';
 import {db} from './db';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
@@ -33,9 +33,17 @@ function getProjectByIdOrThrowNotFound(id: string, ownerId?: string) {
   }
 }
 
+async function parseJsonBody<T>(request: Request): Promise<T | undefined> {
+  try {
+    return (await request.json()) as T;
+  } catch {
+    return undefined;
+  }
+}
+
 const handlers: RequestHandler[] = [
-  rest.get(`${BASE_URL}/api/v1/project`, (req, res, ctx) => {
-    const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
+  http.get(`${BASE_URL}/api/v1/project`, ({request}) => {
+    const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
     const projects = db.project.findMany({
       where: {
@@ -43,24 +51,26 @@ const handlers: RequestHandler[] = [
       },
     });
 
-    return res(ctx.json(projects));
+    return HttpResponse.json(projects);
   }),
-  rest.get(`${BASE_URL}/api/v1/project/:id`, (req, res, ctx) => {
-    const id = req.params['id'] as string;
+  http.get(`${BASE_URL}/api/v1/project/:id`, ({params}) => {
+    const id = params['id'] as string;
     const {data, error} = getProjectByIdOrThrowNotFound(id);
     if (error) {
-      return res(ctx.status(404), ctx.json(error));
+      return HttpResponse.json(error, {
+        status: 404,
+      });
     }
-    return res(ctx.json(data));
+    return HttpResponse.json(data);
   }),
-  rest.delete(`${BASE_URL}/api/v1/project/:id`, (req, res, ctx) => {
-    const id = req.params['id'] as string;
-    const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
+  http.delete(`${BASE_URL}/api/v1/project/:id`, ({request, params}) => {
+    const id = params['id'] as string;
+    const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
     try {
       const {data, error} = getProjectByIdOrThrowNotFound(id, ownerId);
       if (error) {
-        return res(ctx.status(404), ctx.json(error));
+        return HttpResponse.json(error, {status: 404});
       }
       const deleteResult = db.project.delete({
         where: {
@@ -68,25 +78,28 @@ const handlers: RequestHandler[] = [
           ownerId: {equals: ownerId},
         },
       });
-      return res(ctx.json(deleteResult));
+      return HttpResponse.json(deleteResult);
     } catch (e) {
-      return res(
-        ctx.status(404),
-        ctx.json({
+      return HttpResponse.json(
+        {
           error: e,
-        }),
+        },
+        {status: 404},
       );
     }
   }),
-  rest.put(`${BASE_URL}/api/v1/project/:id/name`, (req, res, ctx) => {
-    const id = req.params['id'] as string;
-    const body = req.body as ApiTypes.UpdateProjectNameApi['request']['body'];
-    const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
+  http.put(`${BASE_URL}/api/v1/project/:id/name`, async ({request, params}) => {
+    const id = params['id'] as string;
+    const body =
+      await parseJsonBody<ApiTypes.UpdateProjectNameApi['request']['body']>(
+        request,
+      );
+    const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
     try {
       const {data, error} = getProjectByIdOrThrowNotFound(id, ownerId);
       if (error) {
-        return res(ctx.status(404), ctx.json(error));
+        return HttpResponse.json(error, {status: 404});
       }
       const updateNameResult = db.project.update({
         data: {
@@ -97,25 +110,28 @@ const handlers: RequestHandler[] = [
           ownerId: {equals: ownerId},
         },
       });
-      return res(ctx.json(updateNameResult));
+      return HttpResponse.json(updateNameResult);
     } catch (e) {
-      return res(
-        ctx.status(404),
-        ctx.json({
+      return HttpResponse.json(
+        {
           error: e,
-        }),
+        },
+        {status: 404},
       );
     }
   }),
-  rest.put(`${BASE_URL}/api/v1/project/:id`, (req, res, ctx) => {
-    const id = req.params['id'] as string;
-    const body = req.body as ApiTypes.UpdateProjectApi['request']['body'];
-    const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
+  http.put(`${BASE_URL}/api/v1/project/:id`, async ({request, params}) => {
+    const id = params['id'] as string;
+    const body =
+      await parseJsonBody<ApiTypes.UpdateProjectApi['request']['body']>(
+        request,
+      );
+    const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
     try {
       const {data, error} = getProjectByIdOrThrowNotFound(id, ownerId);
       if (error) {
-        return res(ctx.status(404), ctx.json(error));
+        return HttpResponse.json(error, {status: 404});
       }
       const updateNameResult = db.project.update({
         data: {
@@ -156,19 +172,22 @@ const handlers: RequestHandler[] = [
           ownerId: {equals: ownerId},
         },
       });
-      return res(ctx.json(updateNameResult));
+      return HttpResponse.json(updateNameResult);
     } catch (e) {
-      return res(
-        ctx.status(404),
-        ctx.json({
+      return HttpResponse.json(
+        {
           error: e,
-        }),
+        },
+        {status: 404},
       );
     }
   }),
-  rest.post(`${BASE_URL}/api/v1/project`, (req, res, ctx) => {
-    const body = req.body as ApiTypes.CreateProjectApi['request']['body'];
-    const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
+  http.post(`${BASE_URL}/api/v1/project`, async ({request}) => {
+    const body =
+      await parseJsonBody<ApiTypes.CreateProjectApi['request']['body']>(
+        request,
+      );
+    const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
     const project = db.project.create({
       id: randUuid(),
@@ -211,31 +230,45 @@ const handlers: RequestHandler[] = [
         code: editor.code,
       })),
     });
-    return res(ctx.json(project));
+    return HttpResponse.json(project);
   }),
-  rest.post(`${BASE_URL}/api/v1/project/:id/clone`, (req, res, ctx) => {
-    const id = req.params['id'] as string;
-    const body = req.body as ApiTypes.CloneProjectApi['request']['body'];
-    const ownerId = req.headers.get('auth-mock-user-id') ?? 'default-user';
+  http.post(
+    `${BASE_URL}/api/v1/project/:id/clone`,
+    async ({request, params}) => {
+      const id = params['id'] as string;
+      const body =
+        await parseJsonBody<ApiTypes.CloneProjectApi['request']['body']>(
+          request,
+        );
+      const ownerId =
+        request.headers.get('auth-mock-user-id') ?? 'default-user';
 
-    const {data, error} = getProjectByIdOrThrowNotFound(id, ownerId);
-    if (error) {
-      return res(ctx.status(404), ctx.json(error));
-    }
-    if (data) {
-      const {id, name, ...others} = data;
+      const {data, error} = getProjectByIdOrThrowNotFound(id, ownerId);
+      if (error) {
+        return HttpResponse.json(error, {status: 404});
+      }
+      if (data) {
+        const {id: _id, name, ...others} = data;
 
-      return res(
-        ctx.json(
+        return HttpResponse.json(
           db.project.create({
             ...others,
             name: body?.newName ?? name,
             isOwner: true,
           }),
-        ),
+        );
+      }
+
+      return HttpResponse.json(
+        {
+          error: 'Not Found',
+          message: `Project with id ${id} not found`,
+          statusCode: 404,
+        },
+        {status: 404},
       );
-    }
-  }),
+    },
+  ),
 ];
 
 export default handlers;
