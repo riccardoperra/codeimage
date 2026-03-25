@@ -9,10 +9,7 @@
     "moduleResolution": "nodenext",
     "module": "NodeNext",
     "target": "ESNext",
-    "types": [
-      "@types/node",
-      "./src/common/domainFunctions/functions.d.ts"
-    ]
+    "types": ["@types/node", "./src/common/domainFunctions/functions.d.ts"]
   },
   "include": ["./src/**/*.ts"]
 }

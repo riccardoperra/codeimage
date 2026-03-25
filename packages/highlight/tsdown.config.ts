@@ -22,7 +22,7 @@ const external = [
   '@primer/primitives/dist/ts/colors/dark',
   '@primer/primitives/dist/ts/colors/light',
   '@primer/primitives/dist/ts/colors/dark_dimmed',
-  /@codemirror/
+  /@codemirror/,
 ];
 
 const themeEntries = themes.reduce<Record<string, string>>((acc, theme) => {
@@ -43,6 +43,6 @@ export default defineConfig({
   clean: true,
   sourcemap: false,
   deps: {
-    neverBundle: external
+    neverBundle: external,
   },
 });

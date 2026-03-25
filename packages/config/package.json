@@ -55,7 +55,7 @@
     "@prettier/plugin-php": "^0.24.0",
     "@prettier/plugin-xml": "^3.4.2",
     "@replit/codemirror-lang-solidity": "^6.0.2",
-    "material-icon-theme": "^5.1.0",
+    "material-icon-theme": "^5.32.0",
     "prettier": "^3.8.1",
     "prettier-plugin-java": "^2.8.1",
     "prettier-plugin-rust": "^0.1.9",
@@ -74,7 +74,7 @@
     "oxlint": "catalog:next",
     "rimraf": "catalog:next",
     "tsdown": "0.21.4",
-    "typescript": "catalog:next",
+    "typescript": "^6.0.2",
     "vite": "catalog:next",
     "vite-plugin-dts": "catalog:next",
     "vite-plugin-solid": "catalog:next"

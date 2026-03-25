@@ -8,7 +8,7 @@ export default defineConfig(() => {
   const config = defineConfig({
     test: {
       env: {
-        FASTIFY_AUTOLOAD_TYPESCRIPT: "1",
+        FASTIFY_AUTOLOAD_TYPESCRIPT: '1',
       },
       server: {
         deps: {

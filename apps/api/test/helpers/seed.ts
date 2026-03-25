@@ -1,11 +1,13 @@
-import {PrismaClient} from '@codeimage/prisma-models';
-import * as crypto from 'crypto';
+import {PrismaClient} from '@codeimage/prisma-models/client';
+import {PrismaPg} from '@prisma/adapter-pg';
+import * as crypto from 'node:crypto';
 import {testPresetUtils} from '../__internal__/presetUtils.js';
 
+const adapter = new PrismaPg({
+  connectionString: import.meta.env['DATABASE_URL'] || process.env.DATABASE_URL,
+});
 export const client = new PrismaClient({
-  datasources: {
-    db: {url: import.meta.env['DATABASE_URL'] || process.env.DATABASE_URL},
-  },
+  adapter,
 });
 
 export const userSeed = {

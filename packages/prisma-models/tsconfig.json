@@ -4,10 +4,11 @@
     "rootDir": "./src",
     "outDir": "dist",
     "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
+    "module": "ESNext",
     "declaration": true,
-    "sourceMap": false
+    "sourceMap": false,
+    "moduleResolution": "bundler",
+    "esModuleInterop": true
   },
   "include": ["src/**/*"]
 }

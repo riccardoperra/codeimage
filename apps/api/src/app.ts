@@ -31,10 +31,7 @@ export type AppOptions = {
   // Place your custom options for app below here.
 } & Partial<AutoloadPluginOptions>;
 
-const app: FastifyPluginAsync = async (
-  fastify,
-  opts,
-): Promise<void> => {
+const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   // Do not touch the following lines
 
   await fastify.register(fastifyEnv, {
