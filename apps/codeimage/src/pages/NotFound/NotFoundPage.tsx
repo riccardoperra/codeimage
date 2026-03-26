@@ -1,7 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {Box, Text} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
-import {Link} from '@solidjs/router';
+import {A as Link} from '@solidjs/router';
 import type {AppLocaleEntries} from '../../i18n';
 import * as styles from './NotFoundPage.css';
 

@@ -3,9 +3,8 @@ import fastifyEnv from '@fastify/env';
 import {Type} from '@sinclair/typebox';
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
-import * as sinon from 'sinon';
 import type {TestContext} from 'vitest';
-import {assert, beforeEach, test, vi} from 'vitest';
+import {assert, beforeEach, expect, test, vi} from 'vitest';
 import auth0 from '../../src/plugins/auth0.js';
 import prisma from '../../src/plugins/prisma.js';
 import sensible from '../../src/plugins/sensible.js';
@@ -19,7 +18,7 @@ vi.stubEnv('CLIENT_SECRET_AUTH', 'secret');
 vi.stubEnv('DOMAIN_AUTH0', 'domain');
 vi.stubEnv('AUDIENCE_AUTH0', 'audience');
 
-beforeEach(() => sinon.restore());
+beforeEach(() => vi.restoreAllMocks());
 
 async function build(t: TestContext, options: AppOptions = {mockAuth: false}) {
   if (options.mockAuth) {
@@ -79,9 +78,7 @@ async function build(t: TestContext, options: AppOptions = {mockAuth: false}) {
 
 test('should throw unauthorized if token is not valid', async t => {
   const app = await build(t);
-  sinon
-    .stub(app, 'authenticate')
-    .callsFake(() => Promise.reject(new Error('Error')));
+  vi.spyOn(app, 'authenticate').mockRejectedValue(new Error('Error'));
 
   const response = await app.inject({
     method: 'GET',
@@ -94,9 +91,7 @@ test('should throw unauthorized if token is not valid', async t => {
 
 test('should not throw unauthorized if token is not present and mustBeAuthenticated = false', async t => {
   const app = await build(t);
-  sinon
-    .stub(app, 'authenticate')
-    .callsFake(() => Promise.reject(new Error('Error')));
+  vi.spyOn(app, 'authenticate').mockRejectedValue(new Error('Error'));
 
   const response = await app.inject({
     method: 'GET',
@@ -116,7 +111,7 @@ test('should decorate `appUser` if present', async t => {
     createdAt: new Date(),
   };
 
-  sinon.stub(app, 'authenticate').callsFake(async req => {
+  vi.spyOn(app, 'authenticate').mockImplementation(async req => {
     req.user = {
       [`${process.env.AUTH0_CLIENT_CLAIMS}/email`]: 'storeduser@example.it',
     };
@@ -124,8 +119,8 @@ test('should decorate `appUser` if present', async t => {
 
   // TODO: FIX THIS MAGIC TEST
 
-  const createSpy = sinon.stub(app.prisma.user, 'create');
-  sinon.stub(app.prisma.user, 'findFirst').resolves(storedUser);
+  const createSpy = vi.spyOn(app.prisma.user, 'create');
+  vi.spyOn(app.prisma.user, 'findFirst').mockResolvedValue(storedUser);
 
   const response = await app.inject({
     method: 'GET',
@@ -135,7 +130,7 @@ test('should decorate `appUser` if present', async t => {
   const resObj = response.json<{response: string; appUser: User | null}>();
 
   assert.equal(resObj.response, 'ok');
-  assert.ok(createSpy.notCalled);
+  expect(createSpy).not.toHaveBeenCalled();
   assert.strictEqual(resObj.appUser?.email, 'storeduser@example.it');
 });
 
@@ -147,18 +142,17 @@ test('should also sync user in db if not exists', async t => {
     createdAt: new Date(),
   };
 
-  sinon.stub(app, 'authenticate').callsFake(async req => {
+  vi.spyOn(app, 'authenticate').mockImplementation(async req => {
     req.user = {
       [`${process.env.AUTH0_CLIENT_CLAIMS}/email`]: 'email@example.it',
     };
   });
 
-  sinon.stub(app.prisma.user, 'findFirst').resolves(null);
+  vi.spyOn(app.prisma.user, 'findFirst').mockResolvedValue(null);
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const createSpy = sinon.stub(app.prisma.user, 'create').resolves(storedUser);
+  const createSpy = vi
+    .spyOn(app.prisma.user, 'create')
+    .mockResolvedValue(storedUser);
 
   const response = await app.inject({
     method: 'GET',
@@ -168,14 +162,15 @@ test('should also sync user in db if not exists', async t => {
   const resObj = response.json<{response: string; appUser: User | null}>();
 
   // TODO: fix test
-  // t.ok(createSpy.calledOnce);
+  // expect(createSpy).toHaveBeenCalledTimes(1);
   assert.equal(resObj.response, 'ok');
+  expect(createSpy).toHaveBeenCalledTimes(1);
   assert.equal(resObj.appUser?.email, 'email@example.it');
 });
 
 test('should return bad user detail if user has no email', async t => {
   const app = await build(t);
-  sinon.stub(app, 'authenticate').callsFake(async req => {
+  vi.spyOn(app, 'authenticate').mockImplementation(async req => {
     req.user = {
       [`${process.env.AUTH0_CLIENT_CLAIMS}/email`]: null,
     };
@@ -197,15 +192,15 @@ test('should return bad user detail if user has no email', async t => {
 test('should mock auth', async t => {
   const app = await build(t, {mockAuth: true});
 
-  const response = await app.inject({
-    method: 'GET',
-    url: '/',
-  });
-
-  sinon.stub(app.prisma.user, 'findFirst').resolves({
+  vi.spyOn(app.prisma.user, 'findFirst').mockResolvedValue({
     email: 'dev@example.it',
     id: 'id',
     createdAt: new Date(),
+  });
+
+  const response = await app.inject({
+    method: 'GET',
+    url: '/',
   });
 
   assert.equal(response.statusCode, 200);
@@ -218,15 +213,15 @@ test('should mock auth', async t => {
 test('should mock auth with env fallback', async t => {
   const app = await build(t, {mockAuth: true});
 
-  const response = await app.inject({
-    method: 'GET',
-    url: '/',
-  });
-
-  sinon.stub(app.prisma.user, 'findFirst').resolves({
+  vi.spyOn(app.prisma.user, 'findFirst').mockResolvedValue({
     email: 'dev@example.it',
     id: 'id',
     createdAt: new Date(),
+  });
+
+  const response = await app.inject({
+    method: 'GET',
+    url: '/',
   });
 
   assert.equal(response.statusCode, 200);

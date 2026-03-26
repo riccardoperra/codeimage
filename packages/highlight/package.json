@@ -243,7 +243,7 @@
     "@kobalte/core": "^0.13.11",
     "@kobalte/utils": "^0.9.1",
     "@lezer/highlight": "catalog:next",
-    "@primer/primitives": "^7.11.5",
+    "@primer/primitives": "^7.17.1",
     "@solid-primitives/props": "^3.2.3"
   },
   "peerDependencies": {
@@ -268,7 +268,7 @@
     "rimraf": "catalog:next",
     "solid-codemirror": "catalog:next",
     "solid-js": "catalog:next",
-    "ts-morph": "^23.0.0",
+    "ts-morph": "^27.0.2",
     "tsdown": "catalog:next",
     "typescript": "^6.0.2",
     "vite": "catalog:next",

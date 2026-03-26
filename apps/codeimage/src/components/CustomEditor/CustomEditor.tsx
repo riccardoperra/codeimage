@@ -176,7 +176,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(() => customFontExtension());
   createExtension(() => {
     const language = currentLanguage();
-    console.log(language);
     const extraLanguage = currentExtraLanguage();
     if (!extraLanguage && !language) {
       return [];

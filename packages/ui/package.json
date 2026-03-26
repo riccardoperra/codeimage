@@ -104,7 +104,7 @@
     "merge-anything": "^6.0.6",
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
-    "pretty-ms": "8.0.0",
+    "pretty-ms": "9.3.0",
     "rimraf": "catalog:next",
     "rollup": "^4.60.0",
     "rollup-plugin-import-css": "^4.2.0",

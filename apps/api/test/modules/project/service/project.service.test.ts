@@ -1,7 +1,6 @@
 import type {User} from '@codeimage/prisma-models';
 import type {HttpErrors} from '@fastify/sensible/lib/httpError.js';
-import * as sinon from 'sinon';
-import {assert, beforeEach, expect, test} from 'vitest';
+import {assert, beforeEach, expect, test, vi} from 'vitest';
 import type {
   ProjectCreateResponse,
   ProjectGetByIdResponse,
@@ -114,7 +113,7 @@ const baseResponse = {
   name: 'project1',
 } as ProjectGetByIdResponse;
 
-beforeEach(() => sinon.restore());
+beforeEach(() => vi.restoreAllMocks());
 
 test('create project', async () => {
   const {repository, service} = makeMockProjectService();
@@ -149,7 +148,7 @@ test('create project', async () => {
     },
   };
 
-  sinon.stub(repository, 'createNewProject').resolves({
+  vi.spyOn(repository, 'createNewProject').mockResolvedValue({
     ...data,
     updatedAt: new Date(),
     createdAt: new Date(),
@@ -174,18 +173,14 @@ test('findById -> should return project', async () => {
   };
   const {repository, service} = makeMockProjectService();
 
-  sinon
-    .stub(repository, 'findById')
-    .withArgs(id)
-    .callsFake(() =>
-      Promise.resolve({
-        ...baseResponse,
-        ownerId: 'userId1',
-      }),
-    );
+  const findByIdStub = vi.spyOn(repository, 'findById').mockResolvedValue({
+    ...baseResponse,
+    ownerId: 'userId1',
+  });
 
   const result = await service.findById(user, id);
 
+  expect(findByIdStub).toHaveBeenCalledWith(id);
   assert.ok(result.isOwner);
   assert.equal(result.ownerId, user.id);
   assert.equal(result.name, 'project1');
@@ -200,19 +195,15 @@ test('findById -> should return project and not owner', async () => {
   };
   const {repository, service} = makeMockProjectService();
 
-  sinon
-    .stub(repository, 'findById')
-    .withArgs(id)
-    .callsFake(() =>
-      Promise.resolve({
-        ...baseResponse,
-        ownerId: 'differentOwner',
-        id: '1',
-      } as ProjectGetByIdResponse),
-    );
+  const findByIdStub = vi.spyOn(repository, 'findById').mockResolvedValue({
+    ...baseResponse,
+    ownerId: 'differentOwner',
+    id: '1',
+  } as ProjectGetByIdResponse);
 
   const result = await service.findById(user, id);
 
+  expect(findByIdStub).toHaveBeenCalledWith(id);
   assert.notOk(result.isOwner);
   assert.equal(result.ownerId, 'differentOwner');
   assert.equal(result.name, 'project1');
@@ -226,29 +217,29 @@ test('findById -> should return 404 error when not found project', async () => {
     createdAt: new Date(),
   };
   const {repository, service, httpErrors} = makeMockProjectService();
-  const notFoundSpy = sinon.spy(httpErrors, 'notFound');
-  sinon.stub(repository, 'findById').callsFake(async () => null);
+  const notFoundSpy = vi.spyOn(httpErrors, 'notFound');
+  vi.spyOn(repository, 'findById').mockResolvedValue(null);
 
   await expect(service.findById(user, id), 'will reject').rejects.toThrow();
-  assert.ok(notFoundSpy.called, 'called not found spy');
+  expect(notFoundSpy).toHaveBeenCalled();
 });
 
 test('clone -> should return cloned project', async () => {
   const {repository, service} = makeMockProjectService();
-  sinon.stub(repository, 'findById').callsFake(async () => ({
+  vi.spyOn(repository, 'findById').mockResolvedValue({
     ...baseResponse,
     name: 'Existing',
     ownerId: 'userId1',
-  }));
+  });
   const user: User = {
     id: 'userId1',
     email: 'email@example.it',
     createdAt: new Date(),
   };
 
-  const createNewProjectStub = sinon
-    .stub(service, 'createNewProject')
-    .resolves({
+  const createNewProjectStub = vi
+    .spyOn(service, 'createNewProject')
+    .mockResolvedValue({
       ...baseResponse,
       id: baseResponse.id,
       name: 'Existing',
@@ -256,20 +247,20 @@ test('clone -> should return cloned project', async () => {
 
   const result1 = await service.clone(user, 'projectId1', null);
 
-  assert.ok(createNewProjectStub.calledOnce);
+  expect(createNewProjectStub).toHaveBeenCalledTimes(1);
   assert.equal(result1.name, 'Existing');
 
-  sinon.restore();
+  vi.restoreAllMocks();
 
-  sinon.stub(repository, 'findById').callsFake(async () => ({
+  vi.spyOn(repository, 'findById').mockResolvedValue({
     ...baseResponse,
     name: 'Existing',
     ownerId: 'userId1',
-  }));
+  });
 
-  const createNewProjectStub2 = sinon
-    .stub(service, 'createNewProject')
-    .resolves({
+  const createNewProjectStub2 = vi
+    .spyOn(service, 'createNewProject')
+    .mockResolvedValue({
       ...baseResponse,
       id: baseResponse.id,
       name: 'new name',
@@ -277,7 +268,7 @@ test('clone -> should return cloned project', async () => {
 
   const result2 = await service.clone(user, 'projectId1', 'new name');
   assert.equal(result2.name, 'new name');
-  assert.ok(createNewProjectStub2.calledOnce);
+  expect(createNewProjectStub2).toHaveBeenCalledTimes(1);
 });
 
 test('clone -> should not wrap exception', async () => {
@@ -291,17 +282,15 @@ test('clone -> should not wrap exception', async () => {
 
   const error = new Error('same exception');
 
-  sinon
-    .stub(repository, 'findById')
-    .callsFake(async () => Promise.reject(error));
+  vi.spyOn(repository, 'findById').mockRejectedValue(error);
 
   await expect(service.clone(user, id, null)).rejects.toThrow(error);
 
-  sinon.restore();
+  vi.restoreAllMocks();
 
-  sinon
-    .stub(repository, 'findById')
-    .callsFake(async () => Promise.reject(httpErrors.notFound('not found')));
+  vi.spyOn(repository, 'findById').mockRejectedValue(
+    httpErrors.notFound('not found'),
+  );
 
   await expect(service.clone(user, id, null)).rejects.toThrow(
     httpErrors.notFound(

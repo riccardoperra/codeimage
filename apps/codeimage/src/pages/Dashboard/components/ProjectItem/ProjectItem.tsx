@@ -15,7 +15,7 @@ import {
 import {highlight as _highlight} from '@core/directives/highlight';
 import {formatDistanceToNow} from '@core/helpers/date';
 import {createControlledDialog} from '@core/hooks/createControlledDialog';
-import {Link, useNavigate} from '@solidjs/router';
+import {A as Link, useNavigate} from '@solidjs/router';
 import {ConfirmDialog} from '@ui/ConfirmDialog/ConfirmDialog';
 import {RenameContentDialog} from '@ui/ConfirmDialog/RenameContentDialog';
 import {assignInlineVars} from '@vanilla-extract/dynamic';

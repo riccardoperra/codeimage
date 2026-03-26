@@ -19,7 +19,7 @@ catalogs:
     '@codemirror/lang-python': '^6.2.1'
     '@codemirror/lang-rust': '^6.0.2'
     '@codemirror/lang-sql': '^6.10.0'
-    '@codemirror/language': '^6.12.2'
+    '@codemirror/language': '^6.12.3'
     '@codemirror/lint': '^6.9.5'
     '@codemirror/search': '^6.6.0'
     '@codemirror/state': '^6.6.0'
@@ -37,15 +37,15 @@ catalogs:
     rolldown-plugin-solid: ^0.2.1
     sass: ^1.98.0
     solid-codemirror: ^2.3.2
-    solid-js: ^1.9.11
-    tsdown: ^0.21.4
+    solid-js: ^1.9.12
+    tsdown: ^0.21.5
     tsx: ^4.21.0
     typescript: ^6.0.2
-    vite: ^8.0.2
+    vite: ^8.0.3
     vite-plugin-dts: ^4.5.4
     vite-plugin-solid: ^2.11.11
     vite-tsconfig-paths: ^6.1.1
-    vitest: ^4.1.1
+    vitest: ^4.1.2
 
 overrides:
   '@codemirror/state': 'catalog:next'
