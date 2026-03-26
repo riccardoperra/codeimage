@@ -1,6 +1,5 @@
 import type {User} from '@codeimage/prisma-models';
-import * as sinon from 'sinon';
-import {afterEach, assert, beforeEach, test} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
 import type {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
 import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
 import {testPresetUtils} from '../../../__internal__/presetUtils.js';
@@ -11,7 +10,7 @@ interface TestContext {
   user: User;
 }
 
-beforeEach(() => sinon.restore());
+beforeEach(() => vi.restoreAllMocks());
 
 beforeEach<TestContext>(async context => {
   context.user = await userSeed.createUser();
@@ -24,8 +23,8 @@ afterEach(async () => {
 test<TestContext>('POST /v1/preset [Create Preset] -> 200', async t => {
   const fastify = await build(t);
   const userId = t.user.id;
-  const spy = sinon.spy(fastify.presetService, 'createPreset');
-  const createRepositorySpy = sinon.spy(fastify.presetRepository, 'create');
+  const spy = vi.spyOn(fastify.presetService, 'createPreset');
+  const createRepositorySpy = vi.spyOn(fastify.presetRepository, 'create');
 
   const data = testPresetUtils.buildPresetData();
 
@@ -42,17 +41,18 @@ test<TestContext>('POST /v1/preset [Create Preset] -> 200', async t => {
 
   const body = response.json<PresetDto>();
 
-  assert.ok(spy.withArgs(userId, request).calledOnce, 'has been called once');
-  assert.ok(createRepositorySpy.called);
+  expect(spy).toHaveBeenCalledTimes(1);
+  expect(spy).toHaveBeenCalledWith(userId, request);
+  expect(createRepositorySpy).toHaveBeenCalled();
   assert.strictEqual(response.statusCode, 200, 'return status 200');
   assert.strictEqual(body.name, 'Data');
 });
 
 test('POST /v1/preset [Create Preset] -> Exceed presets limit > 422', async t => {
   const fastify = await build(t);
-  const createRepositorySpy = sinon.spy(fastify.presetRepository, 'create');
+  const createRepositorySpy = vi.spyOn(fastify.presetRepository, 'create');
   const data = testPresetUtils.buildPresetData();
-  sinon.stub(fastify.config, 'PRESETS_LIMIT').value(-1);
+  vi.spyOn(fastify.config, 'PRESETS_LIMIT', 'get').mockReturnValue(-1);
 
   const request: PresetCreateDto = {
     name: 'Data',
@@ -67,6 +67,6 @@ test('POST /v1/preset [Create Preset] -> Exceed presets limit > 422', async t =>
 
   response.json<PresetDto>();
 
-  assert.ok(createRepositorySpy.notCalled);
+  expect(createRepositorySpy).not.toHaveBeenCalled();
   assert.equal(response.statusCode, 422, 'return status 422');
 });

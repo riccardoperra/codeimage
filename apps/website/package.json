@@ -19,7 +19,7 @@
     "@lezer/highlight": "catalog:next",
     "@solid-primitives/media": "^2.3.5",
     "@solid-primitives/platform": "^0.2.1",
-    "@tanstack/router-plugin": "^1.167.4",
+    "@tanstack/router-plugin": "^1.167.7",
     "@tanstack/solid-router": "latest",
     "@tanstack/solid-router-devtools": "latest",
     "@tanstack/solid-router-ssr-query": "latest",

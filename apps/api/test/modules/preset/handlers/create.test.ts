@@ -1,7 +1,6 @@
 import type {DomainHandlerMap, ResolvedDomainHandlerMap} from '@api/domain';
 import type {Preset} from '@codeimage/prisma-models';
-import * as sinon from 'sinon';
-import {assert, beforeEach, expect, test} from 'vitest';
+import {assert, beforeEach, expect, test, vi} from 'vitest';
 import {create} from '../../../../src/modules/preset/handlers/create.js';
 import type {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
 import type {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
@@ -11,7 +10,7 @@ import {dependencies} from './dependencies.js';
 
 const handlersStub = {} as ResolvedDomainHandlerMap<DomainHandlerMap>;
 
-beforeEach(() => sinon.restore());
+beforeEach(() => vi.restoreAllMocks());
 
 test('when findById and found result', async () => {
   const id = 'preset-1';
@@ -41,16 +40,16 @@ test('when findById and found result', async () => {
     data: testPresetUtils.buildPresetData(),
   };
 
-  sinon.stub(dependencies.config, 'PRESETS_LIMIT').value(10);
-  sinon.stub(dependencies.repository, 'countByOwnerId').resolves(0);
+  vi.spyOn(dependencies.config, 'PRESETS_LIMIT', 'get').mockReturnValue(10);
+  vi.spyOn(dependencies.repository, 'countByOwnerId').mockResolvedValue(0);
 
-  const createStub = sinon
-    .stub(dependencies.repository, 'create')
-    .resolves(savedPreset);
+  const createStub = vi
+    .spyOn(dependencies.repository, 'create')
+    .mockResolvedValue(savedPreset);
 
-  const fromEntityToDtoStub = sinon
-    .stub(dependencies.mapper, 'fromEntityToDto')
-    .resolves(expected);
+  const fromEntityToDtoStub = vi
+    .spyOn(dependencies.mapper, 'fromEntityToDto')
+    .mockResolvedValue(expected);
 
   const result = await create(
     dependencies as unknown as PresetHandlerDependencies,
@@ -59,10 +58,14 @@ test('when findById and found result', async () => {
     },
   )(ownerId, request);
 
-  assert.ok(
-    createStub.calledOnceWithExactly({...request, version: BigInt(1), ownerId}),
-  );
-  assert.ok(fromEntityToDtoStub.calledOnceWithExactly(savedPreset));
+  expect(createStub).toHaveBeenCalledTimes(1);
+  expect(createStub).toHaveBeenCalledWith({
+    ...request,
+    version: BigInt(1),
+    ownerId,
+  });
+  expect(fromEntityToDtoStub).toHaveBeenCalledTimes(1);
+  expect(fromEntityToDtoStub).toHaveBeenCalledWith(savedPreset);
 
   assert.equal(result, expected);
 });
@@ -86,17 +89,14 @@ test('throw error when exceed limit', async () => {
     ownerId,
   };
 
-  sinon.stub(dependencies.config, 'PRESETS_LIMIT').value(1);
-  sinon.stub(dependencies.repository, 'countByOwnerId').resolves(10);
+  vi.spyOn(dependencies.config, 'PRESETS_LIMIT', 'get').mockReturnValue(1);
+  vi.spyOn(dependencies.repository, 'countByOwnerId').mockResolvedValue(10);
 
-  const createStub = sinon
-    .stub(dependencies.repository, 'create')
-    .resolves(savedPreset);
+  const createStub = vi
+    .spyOn(dependencies.repository, 'create')
+    .mockResolvedValue(savedPreset);
 
-  const fromEntityToDtoStub = sinon.stub(
-    dependencies.mapper,
-    'fromEntityToDto',
-  );
+  const fromEntityToDtoStub = vi.spyOn(dependencies.mapper, 'fromEntityToDto');
 
   await expect(
     create(dependencies as unknown as PresetHandlerDependencies, {
@@ -104,6 +104,6 @@ test('throw error when exceed limit', async () => {
     })(ownerId, request),
   ).rejects.toThrow();
 
-  assert.ok(createStub.notCalled);
-  assert.ok(fromEntityToDtoStub.notCalled);
+  expect(createStub).not.toHaveBeenCalled();
+  expect(fromEntityToDtoStub).not.toHaveBeenCalled();
 });

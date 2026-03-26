@@ -1,9 +1,8 @@
-import * as sinon from 'sinon';
-import {assert, test} from 'vitest';
+import {expect, test, vi} from 'vitest';
 import {HandlerBuilder} from '../../../src/common/domainFunctions/builder.js';
 
 test('create handler', async () => {
-  const fn = sinon.fake();
+  const fn = vi.fn();
 
   const handler = HandlerBuilder.withDependencies<string>()
     .withName('name')
@@ -14,5 +13,5 @@ test('create handler', async () => {
   // oxlint-disable-next-line typescript/no-explicit-any
   handler('test-deps', {} as any)(1);
 
-  assert(fn.calledWith(1, 'test-deps'));
+  expect(fn).toHaveBeenCalledWith(1, 'test-deps');
 });

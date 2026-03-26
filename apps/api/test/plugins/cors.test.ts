@@ -2,9 +2,8 @@ import fastifyEnv from '@fastify/env';
 import {Type} from '@sinclair/typebox';
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
-import * as sinon from 'sinon';
 import type {TestContext} from 'vitest';
-import {afterAll, assert, beforeEach, expect, test} from 'vitest';
+import {afterAll, assert, beforeEach, expect, test, vi} from 'vitest';
 import cors from '../../src/plugins/cors.js';
 
 // oxlint-disable-next-line no-unused-vars
@@ -26,7 +25,7 @@ async function build(t: TestContext) {
   return app;
 }
 
-beforeEach(() => sinon.restore());
+beforeEach(() => vi.restoreAllMocks());
 
 test('should add cors origin *', async t => {
   process.env.ALLOWED_ORIGINS = '*';

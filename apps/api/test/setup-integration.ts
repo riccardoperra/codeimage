@@ -10,7 +10,7 @@ export async function setup() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  void dotEnv.config({path: `${__dirname}/../.env.testing`}).parsed;
+  void dotEnv.config({path: `${__dirname}/../.env.test`}).parsed;
 
   execSync(
     `pnpm run prisma:migrate:reset-test --force && pnpm run prisma:migrate:deploy-test`,

@@ -5,7 +5,7 @@ import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {backgroundColorVar, Box, colorVar, HStack} from '@codeimage/ui';
 import {buttonStyles, Link} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
-import {Link as LocalLink} from '@solidjs/router';
+import {A as LocalLink} from '@solidjs/router';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {VoidProps} from 'solid-js';
 import {createMemo, Show} from 'solid-js';
