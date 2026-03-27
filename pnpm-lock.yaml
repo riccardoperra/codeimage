@@ -179,9 +179,6 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^20.5.0
         version: 20.5.0
-      '@railway/cli':
-        specifier: ^4.35.0
-        version: 4.35.0
       '@types/node':
         specifier: catalog:next
         version: 25.5.0
@@ -191,18 +188,12 @@ importers:
       chalk:
         specifier: 5.6.2
         version: 5.6.2
-      cross-env:
-        specifier: ^10.1.0
-        version: 10.1.0
       enquirer:
         specifier: 2.4.1
         version: 2.4.1
       eslint-plugin-solid:
         specifier: 0.14.5
         version: 0.14.5(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.2)
-      globals:
-        specifier: ^17.4.0
-        version: 17.4.0
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -3002,9 +2993,6 @@ packages:
     resolution: {integrity: sha512-cXu86tF4VQVfwz8W1SPbhoRyHJkti6mjH/XJIxp40jhO4j2k1m4KYrEykxqWPkFF3vrK4rgQppBh//AwyGSXPA==}
     engines: {node: '>=18'}
 
-  '@napi-rs/triples@1.2.0':
-    resolution: {integrity: sha512-HAPjR3bnCsdXBsATpDIP5WCrw0JcACwhhrwIAQhiR46n+jm+a2F8kBsfseAuWtSyQ+H3Yebt2k43B5dy+04yMA==}
-
   '@napi-rs/wasm-runtime@1.1.1':
     resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==}
 
@@ -3811,11 +3799,6 @@ packages:
 
   '@radix-ui/colors@3.0.0':
     resolution: {integrity: sha512-FUOsGBkHrYJwCSEtWRCIfQbZG7q1e6DgxCIOe1SUQzDe/7rXXeA47s8yCn6fuTNQAj1Zq4oTFi9Yjp3wzElcxg==}
-
-  '@railway/cli@4.35.0':
-    resolution: {integrity: sha512-b30N1gJ/FCdMdgLQ0I0glvI+a3RYZke0x3prR8G4vZ8rwkgWyqD8+rdwJB5mgFpn40QrzGw9jNHbaPOXPncKSA==}
-    engines: {node: '>=16.0.0'}
-    hasBin: true
 
   '@replit/codemirror-lang-solidity@6.0.2':
     resolution: {integrity: sha512-/dpTVH338KFV6SaDYYSadkB4bI/0B0QRF/bkt1XS3t3QtyR49mn6+2k0OUQhvt2ZSO7kt10J+OPilRAtgbmX0w==}
@@ -5886,10 +5869,6 @@ packages:
     resolution: {integrity: sha512-WboRycPNsVw3B3TL559F7kuBUM4d8CgMEvk6xEJlOp7OBPjt6G7z8WMWlD2rOFZLk6OYfFIUGsCOWzcQH9K2og==}
     engines: {node: '>= 6'}
 
-  data-uri-to-buffer@4.0.1:
-    resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
-    engines: {node: '>= 12'}
-
   data-uri-to-buffer@6.0.2:
     resolution: {integrity: sha512-7hvf7/GW8e86rW0ptuwS3OcBGDjIi6SZva7hCyWC0yYry2cOPmLIjXAUHI6DK2HsnwJd9ifmt57i8eV2n4YNpw==}
     engines: {node: '>= 14'}
@@ -6518,10 +6497,6 @@ packages:
       domexception:
         optional: true
 
-  fetch-blob@3.2.0:
-    resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==}
-    engines: {node: ^12.20 || >= 14.13}
-
   fflate@0.8.2:
     resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
@@ -6588,10 +6563,6 @@ packages:
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
-
-  formdata-polyfill@4.0.10:
-    resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==}
-    engines: {node: '>=12.20.0'}
 
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
@@ -6746,10 +6717,6 @@ packages:
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
-    engines: {node: '>=18'}
-
-  globals@17.4.0:
-    resolution: {integrity: sha512-hjrNztw/VajQwOLsMNT1cbJiH2muO3OROCHnbehc8eY5JyD2gqz4AcMHPqgaOR59DjgUjYAYLeH699g/eWi2jw==}
     engines: {node: '>=18'}
 
   globalthis@1.0.4:
@@ -8075,11 +8042,6 @@ packages:
     resolution: {integrity: sha512-t1QzWwnk4sjLWaQAS8CHgOJ+RAfmHpxFWmc36IWTiWHQfs0w5JDMBS1b1ZxQteo0vVVuWJvIUKHDkkeK7vIGCg==}
     engines: {node: '>= 8.0.0'}
 
-  node-domexception@1.0.0:
-    resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
-    engines: {node: '>=10.5.0'}
-    deprecated: Use your platform's native DOMException instead
-
   node-fetch-native@1.6.7:
     resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
 
@@ -8095,10 +8057,6 @@ packages:
   node-fetch@3.0.0-beta.9:
     resolution: {integrity: sha512-RdbZCEynH2tH46+tj0ua9caUHVWrd/RHnRfvly2EVdqGmI3ndS1Vn/xjm5KuGejDt2RNDQsVRLPNd2QPwcewVg==}
     engines: {node: ^10.17 || >=12.3}
-
-  node-fetch@3.3.2:
-    resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   node-gyp@8.4.1:
     resolution: {integrity: sha512-olTJRgUtAb/hOXG0E93wZDs5YiJlgbXxTwQAFHyNlRsXQnYzUaF2aGgujZbw+hR8aF4ZG/rST57bWMWD16jr9w==}
@@ -10209,10 +10167,6 @@ packages:
 
   web-namespaces@2.0.1:
     resolution: {integrity: sha512-bKr1DkiNa2krS7qxNtdrtHAmzuYGFQLiQ13TsorsdT6ULTkPLKuu5+GsFpDlg6JFjUTwX2DyhMPG2be8uPrqsQ==}
-
-  web-streams-polyfill@3.3.3:
-    resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
-    engines: {node: '>= 8'}
 
   webdriver-bidi-protocol@0.4.1:
     resolution: {integrity: sha512-ARrjNjtWRRs2w4Tk7nqrf2gBI0QXWuOmMCx2hU+1jUt6d00MjMxURrhxhGbrsoiZKJrhTSTzbIrc554iKI10qw==}
@@ -12770,8 +12724,6 @@ snapshots:
       outvariant: 1.4.3
       strict-event-emitter: 0.5.1
 
-  '@napi-rs/triples@1.2.0': {}
-
   '@napi-rs/wasm-runtime@1.1.1':
     dependencies:
       '@emnapi/core': 1.9.1
@@ -13901,12 +13853,6 @@ snapshots:
       quansync: 1.0.0
 
   '@radix-ui/colors@3.0.0': {}
-
-  '@railway/cli@4.35.0':
-    dependencies:
-      '@napi-rs/triples': 1.2.0
-      node-fetch: 3.3.2
-      tar: 6.2.1
 
   '@replit/codemirror-lang-solidity@6.0.2(@codemirror/language@6.12.3)':
     dependencies:
@@ -16208,8 +16154,6 @@ snapshots:
 
   data-uri-to-buffer@3.0.1: {}
 
-  data-uri-to-buffer@4.0.1: {}
-
   data-uri-to-buffer@6.0.2: {}
 
   data-urls@7.0.0:
@@ -17020,11 +16964,6 @@ snapshots:
 
   fetch-blob@2.1.2: {}
 
-  fetch-blob@3.2.0:
-    dependencies:
-      node-domexception: 1.0.0
-      web-streams-polyfill: 3.3.3
-
   fflate@0.8.2: {}
 
   figures@2.0.0:
@@ -17109,10 +17048,6 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
-
-  formdata-polyfill@4.0.10:
-    dependencies:
-      fetch-blob: 3.2.0
 
   forwarded@0.2.0: {}
 
@@ -17297,8 +17232,6 @@ snapshots:
   globals@11.12.0: {}
 
   globals@14.0.0: {}
-
-  globals@17.4.0: {}
 
   globalthis@1.0.4:
     dependencies:
@@ -18888,8 +18821,6 @@ snapshots:
     dependencies:
       clone: 2.1.2
 
-  node-domexception@1.0.0: {}
-
   node-fetch-native@1.6.7: {}
 
   node-fetch@2.6.11(encoding@0.1.13):
@@ -18904,12 +18835,6 @@ snapshots:
       fetch-blob: 2.1.2
     transitivePeerDependencies:
       - domexception
-
-  node-fetch@3.3.2:
-    dependencies:
-      data-uri-to-buffer: 4.0.1
-      fetch-blob: 3.2.0
-      formdata-polyfill: 4.0.10
 
   node-gyp@8.4.1:
     dependencies:
@@ -21236,8 +21161,6 @@ snapshots:
       minimalistic-assert: 1.0.1
 
   web-namespaces@2.0.1: {}
-
-  web-streams-polyfill@3.3.3: {}
 
   webdriver-bidi-protocol@0.4.1: {}
 
