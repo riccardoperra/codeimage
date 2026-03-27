@@ -1,6 +1,6 @@
 {
   "name": "@codeimage/config",
-  "version": "9.0.4",
+  "version": "10.0.0",
   "module": "./dist/config.mjs",
   "source": "./src/public-api.ts",
   "types": "./dist/public-api.d.ts",

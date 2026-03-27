@@ -1,6 +1,6 @@
-# @codeimage/atomic-state
+# @codeimage/prisma-models
 
-## 1.1.0
+## 0.1.0
 
 ### Minor Changes
 
@@ -38,14 +38,4 @@
 
 - [#685](https://github.com/riccardoperra/codeimage/pull/685) [`0a6bbf9`](https://github.com/riccardoperra/codeimage/commit/0a6bbf97a1692e73daa51449a76ae32388ffcbaa) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Update to TypeScript 6.0
 
-## 1.0.1
-
-### Patch Changes
-
-- [#631](https://github.com/riccardoperra/codeimage/pull/631) [`d8b472a2`](https://github.com/riccardoperra/codeimage/commit/d8b472a2a3ddc1fd113d89688d045755046ee8b0) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: add support for go lang
-
-## 1.0.0
-
-### Major Changes
-
-- [#438](https://github.com/riccardoperra/codeimage/pull/438) [`7f41e9d8`](https://github.com/riccardoperra/codeimage/commit/7f41e9d85a38de540f1cd23f763bf22d73c93812) Thanks [@riccardoperra](https://github.com/riccardoperra)! - feat: refactor state management
+- [#685](https://github.com/riccardoperra/codeimage/pull/685) [`9d17f94`](https://github.com/riccardoperra/codeimage/commit/9d17f945b8074dab4bb172106f5478122a90458a) Thanks [@riccardoperra](https://github.com/riccardoperra)! - Upgrade to Prisma 7
