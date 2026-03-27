@@ -150,8 +150,8 @@ jobs:
       - name: 'Run prisma DB migrations'
         run: |
           cd apps/api
-          prisma migrate deploy
-          prisma generate
+          pnpm prisma migrate deploy
+          pnpm prisma generate
           pnpm --filter=@codeimage/prisma-models build
 
       - name: Test (unit)
