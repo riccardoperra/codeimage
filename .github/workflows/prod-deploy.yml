@@ -67,14 +67,14 @@ jobs:
           pnpm libs:build
 
       - name: Cache packages
-        uses: actions/cache@v5
+        uses: actions/cache/save@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
   build-api:
     name: 'Build @codeimage/api'
-    needs: ['install']
+    needs: ['install', 'build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -94,13 +94,18 @@ jobs:
           pnpm --filter=@codeimage/api build:ts
           pnpm prepare:api:deploy
 
-      - name: Cache build
-        uses: actions/cache@v5
+      - name: Cache api dist
+        uses: actions/cache/save@v5
+        with:
+          path: apps/api/dist
+          key: rest-api-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Cache api bundle
+        uses: actions/cache/save@v5
         with:
           path: |
             dist/api-bundle/**
           key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
-          restore-keys: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
 
   test-api:
     name: Api test
@@ -157,7 +162,7 @@ jobs:
 
   typecheck-packages:
     name: Type-checking packages/**
-    needs: ['install', 'build-packages']
+    needs: ['install', 'build-packages', 'build-api']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -168,10 +173,16 @@ jobs:
         uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Restore api dist
+        uses: actions/cache/restore@v5
+        with:
+          path: apps/api/dist
+          key: rest-api-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Typecheck packages
         run: |
@@ -195,7 +206,7 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -226,12 +237,12 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
       - name: Restore api build
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: |
             dist/api-bundle/**
@@ -267,7 +278,7 @@ jobs:
         uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -314,7 +325,7 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
-        uses: actions/cache@v5
+        uses: actions/cache/restore@v5
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
