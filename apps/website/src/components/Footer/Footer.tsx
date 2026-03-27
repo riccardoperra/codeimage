@@ -26,7 +26,7 @@ export default function Footer() {
               rel={'noopener'}
               title="Better Comments for GitHub"
             >
-              GitHub
+              Better Comments for GitHub
             </a>
             <a
               class={styles.link}

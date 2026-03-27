@@ -51,6 +51,7 @@
 }
 .becomeContributorLink {
   font-size: 1.25rem;
+  color: white;
 }
 @media screen and (min-width: 992px) {
   .becomeContributorLink {
