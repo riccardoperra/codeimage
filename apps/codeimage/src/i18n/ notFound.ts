@@ -27,4 +27,11 @@ export const notFound = {
       goToHome: 'Go to home',
     },
   },
+  zh: {
+    notFound: {
+      title: '404',
+      description: '你访问的资源不存在',
+      goToHome: '返回首页',
+    },
+  },
 };
