@@ -58,6 +58,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
         data-line-marks="true"
         data-line-focus={String(focused().size > 0)}
         data-line-diff={String(hasDiff())}
+        data-line-numbers={String(props.showLineNumbers)}
         style={{
           '--codeimage-font-family': `${props.fontFamily}, monospace`,
           '--codeimage-font-weight': props.fontWeight,
@@ -84,6 +85,12 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
                       classList={{
                         'cm-lineMarkDim':
                           focused().size > 0 && !focused().has(index() + 1),
+                        'cm-lineMark-added':
+                          marks().get(index() + 1) === 'added',
+                        'cm-lineMark-removed':
+                          marks().get(index() + 1) === 'removed',
+                        'cm-lineMark-highlight':
+                          marks().get(index() + 1) === 'highlight',
                       }}
                       style={{'grid-row': `${index() + 1}`}}
                     >

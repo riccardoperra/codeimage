@@ -80,9 +80,18 @@ export function marksValue(doc: Text, marks: TabMarks): MarkState {
   };
 }
 
-const dimmedLine = new (class extends GutterMarker {
-  elementClass = 'cm-lineMarkDim';
-})();
+class GutterClass extends GutterMarker {
+  constructor(readonly elementClass: string) {
+    super();
+  }
+}
+
+const dimmedLine = new GutterClass('cm-lineMarkDim');
+const gutterMarks = {
+  added: new GutterClass('cm-lineMark-added'),
+  removed: new GutterClass('cm-lineMark-removed'),
+  highlight: new GutterClass('cm-lineMark-highlight'),
+};
 
 export const lineMarksField = StateField.define<MarkState>({
   create: () => ({decorations: Decoration.none, focused: Decoration.none}),
@@ -134,16 +143,23 @@ export const lineMarksField = StateField.define<MarkState>({
     }),
     gutterLineClass.compute([field], state => {
       const value = state.field(field);
-      if (!value.focused.size) return RangeSet.empty;
-      const highlighted = new Set<number>();
-      for (let cursor = value.focused.iter(); cursor.value; cursor.next())
-        highlighted.add(cursor.from);
       const markers = [];
-      for (let line = 1; line <= state.doc.lines; line++) {
-        const from = state.doc.line(line).from;
-        if (!highlighted.has(from)) markers.push(dimmedLine.range(from));
+      for (let cursor = value.decorations.iter(); cursor.value; cursor.next())
+        markers.push(
+          gutterMarks[
+            cursor.value.spec.attributes['data-mark'] as LineMark['kind']
+          ].range(cursor.from),
+        );
+      if (value.focused.size) {
+        const highlighted = new Set<number>();
+        for (let cursor = value.focused.iter(); cursor.value; cursor.next())
+          highlighted.add(cursor.from);
+        for (let line = 1; line <= state.doc.lines; line++) {
+          const from = state.doc.line(line).from;
+          if (!highlighted.has(from)) markers.push(dimmedLine.range(from));
+        }
       }
-      return RangeSet.of(markers);
+      return RangeSet.of(markers, true);
     }),
   ],
 });

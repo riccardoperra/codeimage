@@ -193,10 +193,13 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     const lnStart = lineNumberStart() ?? 1;
     const newLn = (ln: number) => ln + (lnStart - 1);
     return editorState.options.showLineNumbers
-      ? lineNumbers({
-          formatNumber: lineNo => String(newLn(lineNo)),
-          domEventHandlers: {mousedown: gutterMarkMouseDown},
-        })
+      ? [
+          lineNumbers({
+            formatNumber: lineNo => String(newLn(lineNo)),
+            domEventHandlers: {mousedown: gutterMarkMouseDown},
+          }),
+          EditorView.editorAttributes.of({'data-line-numbers': 'true'}),
+        ]
       : [];
   });
   createExtension(() => themeConfiguration()?.editorTheme || []);
@@ -204,8 +207,12 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const initialMarks = untrack(
     () => editor()?.marks ?? {lines: [], focusedLines: []},
   );
-  createExtension(() =>
-    lineMarksExtension(!props.readOnly, initialMarks, {
+  createExtension(() => {
+    // Names use the numbers the user sees, so a custom start shifts them too.
+    const offset = editorState.options.showLineNumbers
+      ? (lineNumberStart() ?? 1) - 1
+      : 0;
+    return lineMarksExtension(!props.readOnly, initialMarks, {
       toolbar: t('lineMarks.toolbar'),
       highlight: t('lineMarks.highlight'),
       added: t('lineMarks.added'),
@@ -215,11 +222,14 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       focusHint: t('lineMarks.focusHint'),
       removeMark: t('lineMarks.removeMark'),
       unmarked: t('lineMarks.unmarked'),
-      line: line => t('lineMarks.line', {line: String(line)}),
+      line: line => t('lineMarks.line', {line: String(line + offset)}),
       selection: (from, to) =>
-        t('lineMarks.selection', {from: String(from), to: String(to)}),
-    }),
-  );
+        t('lineMarks.selection', {
+          from: String(from + offset),
+          to: String(to + offset),
+        }),
+    });
+  });
   createExtension(() => EditorState.readOnly.of(props.readOnly));
 
   const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);

@@ -75,11 +75,31 @@ test('exports diff and highlight marks with focused code and gutter numbers', ()
   assert.ok(lines[1][1].includes('data-mark="added"'));
   assert.ok(lines[2][1].includes('data-mark="highlight"'));
   assert.ok(!lines[3][1].includes('data-mark'));
-  const dimmed = Array.from(
-    html.matchAll(/class="cm-gutterElement cm-lineMarkDim"[^>]*>(\d+)</g),
-    match => Number(match[1]),
+  assert.ok(html.includes('data-line-numbers="true"'));
+  const gutter = new Map(
+    Array.from(
+      html.matchAll(/class="cm-gutterElement([^"]*)"[^>]*>(\d+)</g),
+      match => [Number(match[2]), match[1].trim().split(/\s+/)] as const,
+    ),
   );
-  assert.deepEqual(dimmed, [42, 43, 45]);
+  assert.deepEqual(
+    [...gutter].flatMap(([line, classes]) =>
+      classes.includes('cm-lineMarkDim') ? [line] : [],
+    ),
+    [42, 43, 45],
+  );
+  // The mark band covers the line number too, so the row reads as one line.
+  assert.deepEqual(
+    [42, 43, 44, 45].map(line =>
+      gutter.get(line)?.filter(name => name.startsWith('cm-lineMark-')),
+    ),
+    [
+      ['cm-lineMark-removed'],
+      ['cm-lineMark-added'],
+      ['cm-lineMark-highlight'],
+      [],
+    ],
+  );
 });
 
 test('highlight-only exports omit the sign column and work without a gutter', () => {

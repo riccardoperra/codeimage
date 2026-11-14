@@ -1,4 +1,5 @@
 import {EditorState, EditorSelection} from '@codemirror/state';
+import {gutterLineClass} from '@codemirror/view';
 import {expect, test} from 'vitest';
 import {menuLines} from './gutter';
 import type {TabMarks} from '../../../../state/editor/model';
@@ -55,4 +56,33 @@ test('JSON snapshot round-trip preserves the persisted marks data exactly', () =
   expect(readMarks(state)).toEqual(marks);
   expect(JSON.stringify(readMarks(state))).toBe(JSON.stringify(marks));
   expect(Object.keys(readMarks(state))).toEqual(['lines', 'focusedLines']);
+});
+
+test('line numbers carry the mark band so the whole row reads as marked', () => {
+  const state = EditorState.create({
+    doc,
+    extensions: [
+      lineMarksField.init(state =>
+        marksValue(state.doc, {
+          lines: [
+            {line: 1, kind: 'added'},
+            {line: 3, kind: 'highlight'},
+          ],
+          focusedLines: [3],
+        }),
+      ),
+    ],
+  });
+  const classes = (line: number) => {
+    const from = state.doc.line(line).from;
+    const names: string[] = [];
+    for (const set of state.facet(gutterLineClass))
+      set.between(from, from, (_from, _to, marker) => {
+        names.push(marker.elementClass);
+      });
+    return names.sort();
+  };
+  expect(classes(1)).toEqual(['cm-lineMark-added', 'cm-lineMarkDim']);
+  expect(classes(2)).toEqual(['cm-lineMarkDim']);
+  expect(classes(3)).toEqual(['cm-lineMark-highlight']);
 });

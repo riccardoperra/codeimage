@@ -1,5 +1,5 @@
 import type {EditorState, Extension} from '@codemirror/state';
-import {StateEffect, StateField} from '@codemirror/state';
+import {RangeSet, StateEffect, StateField} from '@codemirror/state';
 import type {
   BlockInfo,
   DecorationSet,
@@ -10,6 +10,8 @@ import type {
 import {
   Decoration,
   EditorView,
+  GutterMarker,
+  gutterLineClass,
   keymap,
   showTooltip,
   tooltips,
@@ -190,6 +192,17 @@ function selectionBar(labels: LineMarkLabels): Extension {
   ];
 }
 
+class PreviewClass extends GutterMarker {
+  constructor(readonly elementClass: string) {
+    super();
+  }
+}
+
+const previewGutter = {
+  highlight: new PreviewClass('cm-lineMarkPreview-highlight'),
+  clear: new PreviewClass('cm-lineMarkPreview-clear'),
+};
+
 type GutterPreview = {from: number; to: number; kind: LineMark['kind'] | null};
 
 const setGutterPreview = StateEffect.define<GutterPreview | null>();
@@ -215,7 +228,21 @@ const gutterPreviewField = StateField.define<DecorationSet>({
     }
     return value;
   },
-  provide: field => EditorView.decorations.from(field),
+  provide: field => [
+    EditorView.decorations.from(field),
+    gutterLineClass.compute([field], state => {
+      const markers = [];
+      for (let cursor = state.field(field).iter(); cursor.value; cursor.next())
+        markers.push(
+          previewGutter[
+            cursor.value.spec.attributes['data-mark-preview'] as
+              | 'highlight'
+              | 'clear'
+          ].range(cursor.from),
+        );
+      return RangeSet.of(markers);
+    }),
+  ],
 });
 
 export function gutterMarkMouseDown(
@@ -273,19 +300,27 @@ export function gutterMarkMouseDown(
 }
 
 const controlsTheme = EditorView.theme({
-  '.cm-lineNumbers .cm-gutterElement': {cursor: 'pointer', borderRadius: '4px'},
-  '.cm-lineNumbers .cm-gutterElement:hover': {backgroundColor: '#8883'},
-  // The preview has to win over any mark it is about to replace.
-  '.cm-line[data-mark-preview="highlight"]': {
-    background:
-      'var(--codeimage-line-highlight, rgba(128, 128, 128, 0.16)) !important',
-    boxShadow:
-      'inset 2px 0 var(--codeimage-line-accent, currentColor) !important',
+  '.cm-lineNumbers .cm-gutterElement': {cursor: 'pointer'},
+  // An overlay, so hovering a number keeps the row's mark band underneath.
+  '.cm-lineNumbers .cm-gutterElement:hover': {
+    backgroundImage: 'linear-gradient(#8883, #8883)',
   },
-  '.cm-line[data-mark-preview="clear"]': {
-    background: 'none !important',
+  // The preview has to win over any mark it is about to replace.
+  '.cm-line[data-mark-preview="highlight"], .cm-lineNumbers .cm-lineMarkPreview-highlight':
+    {
+      background:
+        'var(--codeimage-line-highlight, rgba(128, 128, 128, 0.16)) !important',
+      boxShadow:
+        'inset 2px 0 var(--codeimage-line-accent, currentColor) !important',
+    },
+  '&[data-line-numbers="true"] .cm-line[data-mark-preview="highlight"]': {
     boxShadow: 'none !important',
   },
+  '.cm-line[data-mark-preview="clear"], .cm-lineNumbers .cm-lineMarkPreview-clear':
+    {
+      background: 'none !important',
+      boxShadow: 'none !important',
+    },
   // App chrome, so it keeps one contrast-safe palette across syntax themes.
   '.cm-tooltip.cm-lineMarkToolbar': {
     display: 'flex',
@@ -301,10 +336,6 @@ const controlsTheme = EditorView.theme({
     fontSize: '12px',
     lineHeight: '1',
     boxShadow: '0 4px 16px #0005',
-    animation: 'cm-lineMarkToolbar-in 120ms ease-out',
-  },
-  '@keyframes cm-lineMarkToolbar-in': {
-    from: {opacity: 0, transform: 'translateY(2px)'},
   },
   '.cm-lineMarkToolbar button': {
     border: '0',
@@ -327,9 +358,6 @@ const controlsTheme = EditorView.theme({
   },
   '@media (pointer: coarse)': {
     '.cm-lineMarkToolbar button': {padding: '10px 12px'},
-  },
-  '@media (prefers-reduced-motion: reduce)': {
-    '.cm-tooltip.cm-lineMarkToolbar': {animation: 'none'},
   },
 });
 

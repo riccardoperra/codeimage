@@ -1,14 +1,23 @@
-[data-line-marks] [data-mark='added'] {
+/* The band covers the whole row: line number and code share one background. */
+[data-line-marks] [data-mark='added'],
+[data-line-marks] .cm-lineNumbers .cm-lineMark-added {
   background-color: var(--codeimage-line-added, rgba(46, 160, 67, 0.18));
 }
 
-[data-line-marks] [data-mark='removed'] {
+[data-line-marks] [data-mark='removed'],
+[data-line-marks] .cm-lineNumbers .cm-lineMark-removed {
   background-color: var(--codeimage-line-removed, rgba(248, 81, 73, 0.18));
 }
 
-[data-line-marks] [data-mark='highlight'] {
+[data-line-marks] [data-mark='highlight'],
+[data-line-marks] .cm-lineNumbers .cm-lineMark-highlight {
   background-color: var(--codeimage-line-highlight, rgba(128, 128, 128, 0.16));
   box-shadow: inset 2px 0 var(--codeimage-line-accent, currentColor);
+}
+
+/* With line numbers the accent bar moves to the left edge of the row. */
+[data-line-marks][data-line-numbers='true'] [data-mark='highlight'] {
+  box-shadow: none;
 }
 
 [data-line-marks][data-line-focus='true']

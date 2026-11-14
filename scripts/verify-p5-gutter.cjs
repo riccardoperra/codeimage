@@ -74,6 +74,15 @@ async function main() {
     const read = () => page.evaluate(() => marks.readMarks(view.state));
     const marker = line =>
       page.locator(`.cm-lineMarkMarker[data-mark-line="${line}"]`);
+    const editorLine = line =>
+      page
+        .locator('.cm-editor:has([contenteditable=true]) .cm-line')
+        .nth(line - 1);
+    // Markers render only for the hovered, caret, focused or open line.
+    const openMenu = async line => {
+      await editorLine(line).hover();
+      await marker(line).click();
+    };
     const menu = page.getByRole('menu', {name: 'Line marks'});
     const item = name =>
       menu.getByRole(
@@ -111,6 +120,7 @@ async function main() {
         .locator('.cm-lineMarkGlyph')
         .evaluate(el => getComputedStyle(el, '::before').opacity);
     if (!process.env.P5_BASELINE && !process.env.P5_EXPORT_ONLY) {
+      await editorLine(1).hover();
       await marker(1).waitFor({timeout: 2000});
       const overlay = await page.evaluate(() => {
         const gutter = view.dom.querySelector('.cm-lineMarkGutter');
@@ -125,15 +135,25 @@ async function main() {
         overlay.after,
         'markers must not move or narrow the code',
       );
-      assert.equal(
-        await marker(1).evaluate(el => getComputedStyle(el).opacity),
-        '0',
-      );
       assert((await marker(1).boundingBox()).width >= 20);
+      await page.mouse.move(0, 0);
+      await page.waitForFunction(
+        () =>
+          !document.querySelector('.cm-lineMarkMarker[data-hovered]') &&
+          [...document.querySelectorAll('.cm-lineMarkMarker')].every(
+            el =>
+              !el.matches(':popover-open') ||
+              getComputedStyle(el).opacity === '0',
+          ),
+      );
+      assert(
+        (await page.locator('.cm-lineMarkMarker:popover-open').count()) <= 1,
+        'only the caret line keeps a marker at rest',
+      );
 
       assert.equal(await page.locator('.cm-lineMarkClear').count(), 0);
       assert.equal(await ghostOpacity(1), '0');
-      await marker(1).hover();
+      await editorLine(1).hover();
       assert.equal(await ghostOpacity(1), '0.5');
       await page
         .locator('.cm-editor:has([contenteditable=true]) .cm-line')
@@ -144,7 +164,7 @@ async function main() {
         '1',
       );
 
-      await marker(1).click();
+      await openMenu(1);
       assert.equal(await item('Remove mark').isDisabled(), true);
       if (process.env.P5_MEDIA) await page.waitForTimeout(650);
       await item('Added').click();
@@ -168,7 +188,7 @@ async function main() {
       assert.deepEqual(await read(), initial);
       console.log('PASS menu applies to one line and undo restores every mark');
       await select(4, 6);
-      await marker(5).click();
+      await openMenu(5);
       assert.equal(
         await menu.locator('.cm-lineMarkMenuHeader').innerText(),
         'Lines 4–6 (selection)',
@@ -187,7 +207,7 @@ async function main() {
         (await read()).lines.filter(mark => mark.line >= 4),
         [4, 5, 6].map(line => ({line, kind: 'highlight'})),
       );
-      await marker(5).click();
+      await openMenu(5);
       assert.equal(
         await item('Highlight').getAttribute('aria-checked'),
         'true',
@@ -196,10 +216,10 @@ async function main() {
       assert.deepEqual((await read()).focusedLines, [5, 6]);
       assert(!(await read()).lines.some(mark => mark.line >= 4));
       await undo();
-      await marker(5).click();
+      await openMenu(5);
       await item('Focus').click();
       assert.deepEqual((await read()).focusedLines, [4, 5, 6]);
-      await marker(5).click();
+      await openMenu(5);
       await item('Remove mark').click();
       assert.deepEqual(await read(), {
         lines: initial.lines.slice(0, 2),
@@ -214,7 +234,7 @@ async function main() {
       console.log(
         'PASS selection scope, all-selected checks, kind toggling, additive focus, removal and exact undo',
       );
-      await marker(9).click();
+      await openMenu(9);
       assert.equal(
         await menu.locator('.cm-lineMarkMenuHeader').innerText(),
         'Line 9',
@@ -224,11 +244,23 @@ async function main() {
         await marker(9).evaluate(el => el === document.activeElement),
         true,
       );
-      await marker(8).focus();
-      await page.keyboard.press('Tab');
+      await page.keyboard.press('ArrowUp');
+      await page.waitForFunction(() =>
+        document.activeElement?.matches('[data-mark-line="8"]'),
+      );
       assert.equal(
-        await marker(9).evaluate(el => el === document.activeElement),
-        true,
+        await page.evaluate(
+          () =>
+            [...document.querySelectorAll('.cm-lineMarkMarker')].filter(
+              el => el.matches(':popover-open') && el.tabIndex === 0,
+            ).length,
+        ),
+        1,
+        'markers expose a single Tab stop',
+      );
+      await page.keyboard.press('ArrowDown');
+      await page.waitForFunction(() =>
+        document.activeElement?.matches('[data-mark-line="9"]'),
       );
       await page.keyboard.press('Enter');
       await page.keyboard.press('ArrowDown');
@@ -246,6 +278,51 @@ async function main() {
       );
       console.log(
         'PASS mouse and keyboard menu, outside-selection scope, and Escape focus return',
+      );
+      const tall = await page.evaluate(async () => {
+        const end = view.state.doc.length;
+        view.dispatch({changes: {from: end, insert: '\n'.repeat(60)}});
+        let scroller = view.dom.parentElement;
+        while (
+          scroller &&
+          !(
+            scroller.scrollHeight > scroller.clientHeight + 5 &&
+            /auto|scroll/.test(getComputedStyle(scroller).overflowY)
+          )
+        )
+          scroller = scroller.parentElement;
+        scroller.scrollTop = 400;
+        await new Promise(resolve => setTimeout(resolve, 300));
+        const markers = [...document.querySelectorAll('.cm-lineMarkMarker')];
+        const rendered = markers.filter(
+          el =>
+            !el.matches(':popover-open') &&
+            getComputedStyle(el).display !== 'none',
+        ).length;
+        const covering = markers
+          .filter(el => el.matches(':popover-open'))
+          .filter(el => {
+            const rect = el.getBoundingClientRect();
+            el.style.pointerEvents = 'none';
+            const under = document.elementFromPoint(
+              rect.x + 10,
+              rect.y + rect.height / 2,
+            );
+            el.style.pointerEvents = '';
+            return !view.dom.contains(under);
+          }).length;
+        scroller.scrollTop = 0;
+        view.dispatch({changes: {from: end, to: view.state.doc.length}});
+        await new Promise(resolve => setTimeout(resolve, 300));
+        return {rendered, covering};
+      });
+      assert.deepEqual(
+        tall,
+        {rendered: 0, covering: 0},
+        'markers must not render while closed or cover the header and dock',
+      );
+      console.log(
+        'PASS markers stay inside the visible editor after scrolling',
       );
     }
     await page.evaluate(
@@ -333,7 +410,7 @@ async function main() {
         getRootEditorStore().actions.setShowLineNumbers(true);
       });
       await select(4, 6);
-      await marker(5).click();
+      await openMenu(5);
       if (process.env.P5_MEDIA) {
         await page.waitForTimeout(600);
         await page.screenshot({path: path.join(out, 'dark-selection.png')});
@@ -348,7 +425,7 @@ async function main() {
         dispatchUpdateTheme({theme: 'githubLight'});
         getRootEditorStore().actions.setShowLineNumbers(true);
       });
-      await marker(5).click();
+      await openMenu(5);
       if (process.env.P5_MEDIA) {
         await page.waitForTimeout(750);
         await page.screenshot({path: path.join(out, 'light-selection.png')});
@@ -377,7 +454,7 @@ async function main() {
       );
       await page.keyboard.press('Escape');
       console.log(
-        'PASS light and dark themes, marker gutter before line numbers, and Tab navigation',
+        'PASS light and dark themes and marker gutter before line numbers',
       );
       const session = await context.newCDPSession(page);
       await session.send('Emulation.setTouchEmulationEnabled', {
@@ -400,6 +477,8 @@ async function main() {
             .name
         );
         marks.setLineMarks(view, initial, false);
+        const {getRootEditorStore} = await import('/src/state/editor/index.ts');
+        getRootEditorStore().actions.setShowLineNumbers(true);
       }, initial);
       assert.equal(
         await page.evaluate(() => matchMedia('(pointer: coarse)').matches),
@@ -418,9 +497,19 @@ async function main() {
           touchPoints: [],
         });
       };
+      await tap(editorLine(1));
+      await page.waitForFunction(() =>
+        document.querySelector('[data-mark-line="1"][data-active]'),
+      );
+      assert.equal(
+        await marker(1).evaluate(el => getComputedStyle(el).opacity),
+        '1',
+        'touch reveals the caret line marker',
+      );
+      const touchTarget = await marker(1).boundingBox();
       assert(
-        (await marker(1).boundingBox()).width >= 20,
-        'touch target must stay 20px wide after canvas scaling',
+        touchTarget.width >= 20 && touchTarget.height >= 24,
+        'touch target must stay at least 20x24 after canvas scaling',
       );
       const touchBox = await marker(1).boundingBox();
       const touchNumberStart = await page
@@ -439,7 +528,11 @@ async function main() {
       );
       await tap(marker(1));
       await menu.waitFor();
-      assert.equal(await ghostOpacity(1), '0');
+      assert.equal(
+        await page.locator('.cm-lineMarkMarker[data-hovered]').count(),
+        0,
+        'touch must not leave a sticky hover',
+      );
       const box = await menu.boundingBox();
       assert(box.x >= 8 && box.x + box.width <= 382);
       if (process.env.P5_MEDIA) {
