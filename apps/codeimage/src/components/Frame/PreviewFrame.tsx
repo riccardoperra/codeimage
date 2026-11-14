@@ -1,5 +1,5 @@
 import {FittedWindow} from './FittedWindow';
-import {FrameSignature} from './FrameSignature';
+import {FrameSignature, framePadding} from './FrameSignature';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -106,7 +106,10 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
               : props.tab ? 'auto' : `${frame.height}px`,
             [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
             [styles.frameVars.minHeight]: target() ? '0' : '100%',
-            [styles.frameVars.padding]: `${frame.padding}px`,
+            [styles.frameVars.padding]: framePadding(
+              frame.padding,
+              frame.signature,
+            ),
           })}
         >
           <div
