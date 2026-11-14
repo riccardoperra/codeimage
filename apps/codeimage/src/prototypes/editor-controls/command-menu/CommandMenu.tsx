@@ -1,5 +1,8 @@
+import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {icons} from '@codeui/kit';
+import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {Dialog} from '@kobalte/core/dialog';
+import {useNavigate} from '@solidjs/router';
 import {
   createMemo,
   createSignal,
@@ -10,7 +13,9 @@ import {
   Show,
   untrack,
 } from 'solid-js';
+import {Changelog} from '../../../components/Changelog/Changelog';
 import type {EditorControlsModel} from '../model';
+import {settingsCommands} from '../shell/commands';
 import type {Stage} from '../stage';
 import * as styles from './command-menu.css';
 import type {Action, Command} from './commands';
@@ -55,6 +60,9 @@ function Commands(
   props: CommandMenuProps & {onRun: (command: Command) => void},
 ) {
   const listId = createUniqueId();
+  const auth = getAuth0State();
+  const navigate = useNavigate();
+  const openDialog = createControlledDialog();
   let input!: HTMLInputElement;
   let list!: HTMLDivElement;
 
@@ -80,10 +88,35 @@ function Commands(
         run: () => void props.stage.format(),
       });
     }
+    // What the old menu at the top left held beside Settings.
+    const fromOldMenu: Command[] = [
+      {
+        id: 'changelog',
+        group: 'Settings',
+        label: 'Changelog',
+        run: () => openDialog(Changelog, {}),
+      },
+      {
+        id: 'github',
+        group: 'Settings',
+        label: 'CodeImage on GitHub',
+        run: () =>
+          window.open('https://github.com/riccardoperra/codeimage', '_blank'),
+      },
+    ];
+    if (auth.loggedIn()) {
+      fromOldMenu.push({
+        id: 'logout',
+        group: 'Settings',
+        label: 'Logout',
+        run: () => void auth.signOut().then(() => navigate('/')),
+      });
+    }
     return buildCommands({
       model: props.model,
       listed: createListedModel(props.model),
       actions,
+      settings: settingsCommands(fromOldMenu),
       reveal: commandMenu.reveal(),
     });
   });
