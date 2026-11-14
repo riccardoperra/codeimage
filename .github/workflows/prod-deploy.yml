@@ -176,37 +176,6 @@ jobs:
           pnpm --filter='@codeimage/api' typecheck:ci
           pnpm --filter='@codeimage/app' typecheck
 
-  deploy-highlight-package:
-    name: Deploy @codeimage/highlight app
-    environment: Production
-    needs: ['lint', 'build-packages']
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout PR
-        uses: actions/checkout@v7
-      - name: 📥 Setup
-        uses: ./.github/actions/setup-job
-      - name: 📥 Monorepo install
-        uses: ./.github/actions/pnpm-install
-      - name: Download libs dist
-        uses: actions/download-artifact@v8
-        with:
-          name: libs-dist
-          path: packages
-      - name: Build @codeimage/highlight/dev
-        env:
-          ENABLE_VERCEL_BUILD: true
-        run: |
-          pnpm --filter=@codeimage/highlight build:dev
-      - uses: amondnet/vercel-action@v42.3.0
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: packages/highlight/dev
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_HIGHLIGHT_DEV_PROJECT_ID }}
-          vercel-args: '--prebuilt --prod'
-
   deploy-api:
     name: Build and Deploy Api
     environment: Production
