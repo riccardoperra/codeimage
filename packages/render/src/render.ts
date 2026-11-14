@@ -145,9 +145,21 @@ const getRuntime = () => (runtime ??= loadRuntime());
 
 // Takumi 2.19 parses `to bottom right` but drops the equivalent
 // `to right bottom`, which seven built-in theme backgrounds use.
-const gradientCorner = /\bto (left|right) (top|bottom)\b/g;
+const gradientCorner = /(linear-gradient\(\s*)to (left|right) (top|bottom)\b/g;
 const normalizeGradients = (css: string) =>
-  css.replace(gradientCorner, 'to $2 $1');
+  css.replace(gradientCorner, '$1to $3 $2');
+
+// Solid escapes `<` in text and `"` in attribute values, so a raw `<` always
+// opens a tag and a quoted value never holds a raw quote. Only style values
+// change; text and other attributes are the user's.
+const htmlTag = /<!--[\s\S]*?-->|<[^>"]*(?:"[^"]*"[^>"]*)*>/g;
+const styleAttribute = /"[^"]*"|(\sstyle=")([^"]*")/g;
+const normalizeStyleAttributes = (html: string) =>
+  html.replace(htmlTag, tag =>
+    tag.replace(styleAttribute, (match, name?: string, value?: string) =>
+      name && value ? name + normalizeGradients(value) : match,
+    ),
+  );
 
 async function fetchImage(url: string): Promise<ImageSource> {
   const response = await fetch(url);
@@ -178,7 +190,7 @@ export async function snapshotMarkup(
     registerFallbacks,
   } = await getRuntime();
   const frame = await entry.renderFrame(document);
-  const html = normalizeGradients(frame.html);
+  const html = normalizeStyleAttributes(frame.html);
   const css = [stylesheet, frame.css].map(normalizeGradients);
   const fonts = [
     ...fontsFor(UI_FONT.id, UI_FONT.family),
