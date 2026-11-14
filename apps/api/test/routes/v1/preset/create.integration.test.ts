@@ -1,7 +1,7 @@
 import type {User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, expect, test} from 'vitest';
-import type {PresetCreateDto} from '../../../../src/modules/preset/preset.contract.js';
-import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
+import type {PresetCreateBody} from '../../../../src/modules/preset/preset.contract.js';
+import type {PresetResponse} from '../../../../src/modules/preset/preset.contract.js';
 import {testPresetUtils} from '../../../helpers/preset.js';
 import {build} from '../../../helpers/app.js';
 import {clearAllSeeds, client, userSeed} from '../../../helpers/seed.js';
@@ -24,7 +24,7 @@ test<TestContext>('POST /v1/preset [Create Preset] -> 200', async t => {
 
   const data = testPresetUtils.buildPresetData();
 
-  const request: PresetCreateDto = {
+  const request: PresetCreateBody = {
     name: 'Data',
     data,
   };
@@ -35,7 +35,7 @@ test<TestContext>('POST /v1/preset [Create Preset] -> 200', async t => {
     payload: request,
   });
 
-  const body = response.json<PresetDto>();
+  const body = response.json<PresetResponse>();
 
   assert.strictEqual(response.statusCode, 200, 'return status 200');
   assert.strictEqual(body.name, 'Data');
@@ -50,7 +50,7 @@ test('POST /v1/preset [Create Preset] -> Exceed presets limit > 422', async t =>
   const fastify = await build(t, {config: {PRESETS_LIMIT: -1}});
   const data = testPresetUtils.buildPresetData();
 
-  const request: PresetCreateDto = {
+  const request: PresetCreateBody = {
     name: 'Data',
     data,
   };
@@ -61,7 +61,7 @@ test('POST /v1/preset [Create Preset] -> Exceed presets limit > 422', async t =>
     payload: request,
   });
 
-  response.json<PresetDto>();
+  response.json<PresetResponse>();
 
   assert.equal(response.statusCode, 422, 'return status 422');
   expect(await client.preset.count()).toBe(0);

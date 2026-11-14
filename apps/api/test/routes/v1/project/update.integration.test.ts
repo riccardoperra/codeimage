@@ -1,7 +1,7 @@
 import type {User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 import type {
-  ProjectUpdateRequest,
+  ProjectUpdateBody,
   ProjectUpdateResponse,
 } from '../../../../src/modules/project/project.contract.js';
 
@@ -18,7 +18,7 @@ interface TestContext {
   project1: Awaited<ReturnType<typeof projectSeed.createProject>>;
 }
 
-function buildUpdateRequest(editorId: string): ProjectUpdateRequest {
+function buildUpdateRequest(editorId: string): ProjectUpdateBody {
   return {
     frame: {
       background: '#fff',

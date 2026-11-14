@@ -1,7 +1,7 @@
 import type {Preset, User} from '@codeimage/prisma-models';
 import type {FastifyError} from 'fastify';
 import {afterEach, assert, beforeEach, test} from 'vitest';
-import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
+import type {PresetResponse} from '../../../../src/modules/preset/preset.contract.js';
 import {build} from '../../../helpers/app.js';
 import {clearAllSeeds, presetSeed, userSeed} from '../../../helpers/seed.js';
 
@@ -30,7 +30,7 @@ test<TestContext>('/v1/preset/:id -> when preset found -> 200', async context =>
     method: 'GET',
   });
 
-  const body = response.json<PresetDto>();
+  const body = response.json<PresetResponse>();
 
   assert.equal(response.statusCode, 200);
   assert.equal(body.id, presetId);

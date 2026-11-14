@@ -85,5 +85,5 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
       fontWeight: 400,
       enableLigatures: true,
     },
-  } as SchemaModel.ProjectCompleteResponse);
+  } as SchemaModel.ProjectGetByIdResponse);
 });

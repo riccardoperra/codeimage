@@ -92,9 +92,3 @@ export type PresetData = Static<typeof PresetDataSchema>;
 export type PresetResponse = Static<typeof PresetSchema>;
 export type PresetCreateBody = Static<typeof PresetCreateBodySchema>;
 export type PresetUpdateBody = Static<typeof PresetUpdateBodySchema>;
-
-export type PresetDto = PresetResponse;
-export type PresetCreateDto = PresetCreateBody;
-export type PresetUpdateDto = PresetUpdateBody;
-
-export type PresetDataDto = PresetData;

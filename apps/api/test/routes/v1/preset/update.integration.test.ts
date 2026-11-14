@@ -1,8 +1,8 @@
 import type {Preset, User} from '@codeimage/prisma-models';
 import type {FastifyError} from 'fastify';
 import {afterEach, assert, beforeEach, expect, test} from 'vitest';
-import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
-import type {PresetUpdateDto} from '../../../../src/modules/preset/preset.contract.js';
+import type {PresetResponse} from '../../../../src/modules/preset/preset.contract.js';
+import type {PresetUpdateBody} from '../../../../src/modules/preset/preset.contract.js';
 import {testPresetUtils} from '../../../helpers/preset.js';
 import {build} from '../../../helpers/app.js';
 import {
@@ -32,7 +32,7 @@ test<TestContext>('[PUT] /v1/preset/:id -> 200', async context => {
   const fastify = await build(context);
   const presetId = context.preset1.id;
 
-  const request: PresetUpdateDto = {
+  const request: PresetUpdateBody = {
     data: testPresetUtils.buildPresetData(),
     name: 'updated',
   };
@@ -43,7 +43,7 @@ test<TestContext>('[PUT] /v1/preset/:id -> 200', async context => {
     payload: request,
   });
 
-  const body = response.json<PresetDto>();
+  const body = response.json<PresetResponse>();
 
   assert.equal(response.statusCode, 200);
   assert.equal(body.name, 'updated');
@@ -57,7 +57,7 @@ test<TestContext>('[PUT] /v1/preset/:id -> when preset not found -> 404', async 
   const userId = context.user.id;
   const presetId = 'badId';
 
-  const request: PresetUpdateDto = {
+  const request: PresetUpdateBody = {
     name: 'updated',
     data: {test: 'updated'},
   };
