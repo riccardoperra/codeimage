@@ -29,17 +29,24 @@ function position(
 }
 
 export const size: Flag = {
-  options: {
-    size: {type: 'string'},
-    signature: {type: 'string'},
-    'signature-position': {type: 'string'},
+  args: {
+    size: {
+      type: 'string',
+      valueHint: 'target',
+      description:
+        'Export at an exact social size: x-landscape, square, linkedin-portrait, or og',
+    },
+    signature: {
+      type: 'string',
+      valueHint: 'handle',
+      description: 'Show a handle such as @me in a bottom corner',
+    },
+    'signature-position': {
+      type: 'string',
+      valueHint: 'corner',
+      description: 'bottom-left or bottom-right (default: bottom-right)',
+    },
   },
-  usage: `  --size <target>      Export at an exact social size: x-landscape,
-                       square, linkedin-portrait, or og
-  --signature <handle> Show a handle such as @me in a bottom corner
-  --signature-position <corner>
-                       bottom-left or bottom-right (default: bottom-right)
-`,
   validate(values) {
     if (target(values) && values.scale !== undefined) {
       throw new UsageError(

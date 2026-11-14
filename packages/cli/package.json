@@ -17,6 +17,7 @@
     "lint": "oxlint"
   },
   "dependencies": {
+    "citty": "0.2.2",
     "zod": "^4.1.12",
     "@codeimage/render": "workspace:*",
     "@takumi-rs/core": "2.19.0"

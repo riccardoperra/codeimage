@@ -1,4 +1,4 @@
-import type {ParseArgsOptionsConfig} from 'node:util';
+import type {ArgDef} from 'citty';
 import type {SnapshotDocument} from '@codeimage/render';
 import type {CodeInput} from '../snapshot';
 import {marks} from './marks';
@@ -17,8 +17,7 @@ export interface ImageOutput {
 }
 
 export interface Flag {
-  options: ParseArgsOptionsConfig;
-  usage: string;
+  args: Record<string, ArgDef & {multiple?: boolean}>;
   apply?(snapshot: SnapshotDocument, values: FlagValues): SnapshotDocument;
   validate?(values: FlagValues): void;
   prepareInputs?(inputs: CodeInput[], values: FlagValues): Promise<CodeInput[]>;

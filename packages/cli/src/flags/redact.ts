@@ -2,9 +2,13 @@ import {detectSecrets, redactSecrets} from '@codeimage/secrets';
 import type {Flag} from './index';
 
 export const redact: Flag = {
-  options: {'no-redact': {type: 'boolean'}},
-  usage:
-    '  --no-redact          Keep secrets visible. By default each one is masked\n                       and listed on stderr\n',
+  args: {
+    'no-redact': {
+      type: 'boolean',
+      description:
+        'Keep secrets visible. By default each one is masked and listed on stderr',
+    },
+  },
   async prepareInputs(inputs, values) {
     if (values['no-redact']) return inputs;
     let count = 0;
