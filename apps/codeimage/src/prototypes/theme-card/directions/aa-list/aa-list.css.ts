@@ -1,4 +1,4 @@
-import {themeVars} from '@codeimage/ui';
+import {themeVars, withThemeMode} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
 import {option} from '../../screen.css';
 
@@ -32,6 +32,10 @@ export const row = style([
       '&[aria-pressed="true"]': {
         background: themeVars.dynamicColors.input.backgroundColor,
       },
+      ...withThemeMode(
+        {light: {background: themeVars.backgroundColor.white}},
+        '&[aria-pressed="true"]',
+      ),
     },
   },
 ]);

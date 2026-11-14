@@ -1,4 +1,4 @@
-import {themeVars} from '@codeimage/ui';
+import {themeVars, withThemeMode} from '@codeimage/ui';
 import {createVar, style} from '@vanilla-extract/css';
 
 export const islandWidth = createVar();
@@ -100,6 +100,11 @@ export const option = style({
     '(hover: hover) and (pointer: fine)': {
       selectors: {
         '&:hover': {background: themeVars.dynamicColors.input.backgroundColor},
+        // The light input grey is almost the island grey; white reads.
+        ...withThemeMode(
+          {light: {background: themeVars.backgroundColor.white}},
+          '&:hover',
+        ),
       },
     },
     '(prefers-reduced-motion: reduce)': {transition: 'none'},
@@ -112,12 +117,19 @@ export const card = style([
     borderRadius: '16px',
     padding: themeVars.spacing['3'],
     background: themeVars.dynamicColors.input.backgroundColor,
+    selectors: withThemeMode({
+      light: {background: themeVars.backgroundColor.white},
+    }),
     '@media': {
       '(hover: hover) and (pointer: fine)': {
         selectors: {
           '&:hover': {
             background: themeVars.dynamicColors.button.base.backgroundColor,
           },
+          ...withThemeMode(
+            {light: {background: themeVars.backgroundColor.gray['200']}},
+            '&:hover',
+          ),
         },
       },
     },
