@@ -113,6 +113,40 @@ describe('release discovery across visits', () => {
     reloaded.dispose();
   });
 
+  it('closes a shown release on focus after another tab dismisses it without recording again', async () => {
+    const db = database();
+    const update = vi.spyOn(db, 'update');
+    const track = vi.fn();
+    Object.assign(window, {umami: {track}});
+    const visit = () =>
+      createRoot(dispose => {
+        const store = createWhatsNew(db, Date.parse('2026-11-14'));
+        return {store, announcement: store.announce(() => () => true), dispose};
+      });
+    const a = visit();
+    const b = visit();
+    try {
+      await settle();
+      expect(a.announcement()).not.toBeNull();
+      expect(b.announcement()).not.toBeNull();
+      a.store.dismiss();
+      await settle();
+      const writes = update.mock.calls.length;
+      const dismissals = () =>
+        track.mock.calls.filter(([event]) => event === 'whats-new-dismissed');
+      expect(dismissals()).toHaveLength(1);
+      window.dispatchEvent(new Event('focus'));
+      await settle();
+      expect(b.announcement()).toBeNull();
+      expect(update).toHaveBeenCalledTimes(writes);
+      expect(dismissals()).toHaveLength(1);
+    } finally {
+      a.dispose();
+      b.dispose();
+      Reflect.deleteProperty(window, 'umami');
+    }
+  });
+
   it('keeps working when the browser refuses storage', async () => {
     const refusing = {
       get: () => {

@@ -85,6 +85,10 @@ export function createWhatsNew(
     try {
       const raw = await attempt(() => storage.get('whats-new'));
       setFacts(current => mergeFacts(current, parseFacts(raw)));
+      const current = announcement();
+      if (current && facts().dismissed.has(current.release.id)) {
+        setAnnouncement(null);
+      }
     } catch {
       // No stored facts: the worst case is one repeated announcement.
     } finally {
