@@ -37,8 +37,27 @@ export interface WindowTabProps {
 
 const TabName = lazy(() => import('../TabName/TabName'));
 
-export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
+function TabCloseButton(props: {onClose: () => void}) {
   const [t] = useI18n<AppLocaleEntries>();
+  return (
+    <button
+      class={modern.close}
+      aria-label={t('frame.closeTab')}
+      onPointerDown={event => event.stopPropagation()}
+      onMouseDown={event => event.stopPropagation()}
+      data-export-exclude={true}
+      onClick={event => {
+        props.onClose();
+        event.stopPropagation();
+        event.preventDefault();
+      }}
+    >
+      ×
+    </button>
+  );
+}
+
+export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
   let ref!: HTMLDivElement;
   const [width, setWidth] = createSignal<number>(0);
   // eslint-disable-next-line solid/reactivity
@@ -113,20 +132,7 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
               />
             }
           >
-            <button
-              class={modern.close}
-              aria-label={t('frame.closeTab')}
-              onPointerDown={event => event.stopPropagation()}
-              onMouseDown={event => event.stopPropagation()}
-              data-export-exclude={true}
-              onClick={event => {
-                props.onClose?.();
-                event.stopPropagation();
-                event.preventDefault();
-              }}
-            >
-              ×
-            </button>
+            <TabCloseButton onClose={() => props.onClose?.()} />
           </Show>
         </Show>
       }
