@@ -1,8 +1,19 @@
 import {invertedEffects, isolateHistory} from '@codemirror/commands';
 import type {ChangeDesc, Extension, Text} from '@codemirror/state';
-import {MapMode, StateEffect, StateField, Transaction} from '@codemirror/state';
+import {
+  MapMode,
+  RangeSet,
+  StateEffect,
+  StateField,
+  Transaction,
+} from '@codemirror/state';
 import type {DecorationSet} from '@codemirror/view';
-import {Decoration, EditorView} from '@codemirror/view';
+import {
+  Decoration,
+  EditorView,
+  GutterMarker,
+  gutterLineClass,
+} from '@codemirror/view';
 import type {LineMark, TabMarks} from '../../../../state/editor/model';
 
 interface MarkState {
@@ -59,6 +70,10 @@ export function marksValue(doc: Text, marks: TabMarks): MarkState {
   };
 }
 
+const dimmedLine = new (class extends GutterMarker {
+  elementClass = 'cm-lineMarkDim';
+})();
+
 export const lineMarksField = StateField.define<MarkState>({
   create: () => ({decorations: Decoration.none, focus: false}),
   update(value, tr) {
@@ -99,6 +114,20 @@ export const lineMarksField = StateField.define<MarkState>({
         'data-line-focus': String(value.focus),
         'data-line-diff': String(diff),
       };
+    }),
+    gutterLineClass.compute([field], state => {
+      const value = state.field(field);
+      if (!value.focus) return RangeSet.empty;
+      const highlighted = new Set<number>();
+      for (let cursor = value.decorations.iter(); cursor.value; cursor.next())
+        if (cursor.value.spec.attributes['data-mark'] === 'highlight')
+          highlighted.add(cursor.from);
+      const markers = [];
+      for (let line = 1; line <= state.doc.lines; line++) {
+        const from = state.doc.line(line).from;
+        if (!highlighted.has(from)) markers.push(dimmedLine.range(from));
+      }
+      return RangeSet.of(markers);
     }),
   ],
 });
