@@ -266,3 +266,15 @@ test('diff marks indent the code by two columns and focus dims the other rows', 
     {rows: 3, columns: 3, indent: 0, dimmed: []},
   );
 });
+
+test('focus dims every row outside the focused lines, marked or not', async () => {
+  const scene = pairScene(
+    await step('a\nbb\nccc', {
+      marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2, 9]},
+    }),
+    await step('a\nbb\nccc', {marks: {lines: [], focusedLines: [9]}}),
+    false,
+  );
+  assert.deepEqual([...scene.from.dimmed], [0, 2]);
+  assert.deepEqual([...scene.to.dimmed], []);
+});

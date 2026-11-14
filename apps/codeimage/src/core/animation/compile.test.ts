@@ -165,6 +165,41 @@ test('code shifts by the diff indent and fades with focus dimming', () => {
   assert.deepEqual(at('x', 1000), {left: 0, top: 0, opacity: 1});
 });
 
+test('a row that loses focus dims while the row that gains it brightens', () => {
+  const stay = (text: string, line: number) =>
+    move(text, {line, col: 0}, {line, col: 0});
+  const {at, marks} = play(
+    scene([stay('x', 0), stay('y', 1)], {
+      marks: [{...stay('', 0), mark: 'highlight'}],
+      gutter: {
+        numbers: [stay('1', 0), stay('2', 1)],
+        fromColumns: 1,
+        toColumns: 1,
+      },
+      from: box({dimmed: new Set([1])}),
+      to: box({dimmed: new Set([0])}),
+    }),
+  );
+  const opacity = (pose: (timeMs: number) => {opacity: number}) =>
+    [0, 500, 1000].map(timeMs => pose(timeMs).opacity);
+  for (const text of ['x', '1']) {
+    assert.deepEqual(
+      opacity(timeMs => at(text, timeMs)),
+      [1, 0.675, 0.35],
+    );
+  }
+  for (const text of ['y', '2']) {
+    assert.deepEqual(
+      opacity(timeMs => at(text, timeMs)),
+      [0.35, 0.675, 1],
+    );
+  }
+  assert.deepEqual(
+    opacity(timeMs => marks(timeMs)[0]),
+    [1, 0.675, 0.35],
+  );
+});
+
 test('the code box grows from the first step size to the second', () => {
   const {boxOf} = play(
     scene([move('x', {line: 0, col: 0}, {line: 0, col: 0})], {
