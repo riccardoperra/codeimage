@@ -104,11 +104,11 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore dist
-        uses: actions/cache/restore@v5
+      - name: Download libs dist
+        uses: actions/download-artifact@v8
         with:
+          name: libs-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Test renderer
         run: pnpm --filter=@codeimage/render test
