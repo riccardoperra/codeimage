@@ -110,15 +110,20 @@ export function AnimationPreview(props: ParentProps) {
     ),
   );
 
+  // The editor frame keeps its layout under the stage. Its size is measured
+  // into the frame store, which sizes the export frame.
   return (
-    <>
-      <div style={{display: ready() ? 'none' : 'contents'}}>
+    <div class={styles.layers}>
+      <div
+        class={styles.layer}
+        style={{visibility: ready() ? 'hidden' : undefined}}
+      >
         {props.children}
       </div>
       <Show when={plan.state === 'ready' && plan()} keyed>
         {plan => <AnimationStage plan={plan} visible={ready()} />}
       </Show>
-    </>
+    </div>
   );
 }
 
