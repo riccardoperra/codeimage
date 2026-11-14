@@ -1,3 +1,5 @@
+import {NewDot} from '../../../../components/WhatsNew/NewDot';
+import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
 import {themeVars} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {
@@ -286,17 +288,20 @@ export default function Inspector(props: VariantProps) {
             <Show
               when={mobile()}
               fallback={
-                <Button
-                  class="inspector-command"
-                  size="sm"
-                  theme="secondary"
-                  aria-haspopup="dialog"
-                  aria-expanded={commandMenu.isOpen()}
-                  onClick={commandMenu.open}
-                >
-                  Search
-                  <kbd>{commandMenu.shortcut}</kbd>
-                </Button>
+                <span class={commandAnchor}>
+                  <Button
+                    class="inspector-command"
+                    size="sm"
+                    theme="secondary"
+                    aria-haspopup="dialog"
+                    aria-expanded={commandMenu.isOpen()}
+                    onClick={commandMenu.open}
+                  >
+                    Search
+                    <kbd>{commandMenu.shortcut}</kbd>
+                  </Button>
+                  <NewDot highlight="command-menu" />
+                </span>
               }
             >
               <props.stage.ExportButton />

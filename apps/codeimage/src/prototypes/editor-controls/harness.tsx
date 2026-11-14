@@ -1,3 +1,7 @@
+import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
+import {getWhatsNew} from '../../state/whats-new';
+import {commandMenu} from './command-menu/state';
+import {settings} from './shell/settings-state';
 import type {JSX} from 'solid-js';
 import {createEffect, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
@@ -18,6 +22,15 @@ export {PickerRoute as PrototypeRoute} from './picker/PickerRoute';
 
 function Editor() {
   const model = createEditorControlsModel();
+  const news = getWhatsNew();
+  news.bindLocation('command-menu', () => {
+    settings.close();
+    requestAnimationFrame(commandMenu.open);
+  });
+  news.bindLocation('settings-experiments', () => {
+    commandMenu.close();
+    settings.open('experiments');
+  });
   let page!: HTMLDivElement;
 
   const side = () =>
@@ -77,6 +90,10 @@ function Editor() {
       </div>
       {/* Outside the layout, so it stays open while the layout under it changes. */}
       <SettingsDialog model={model} />
+      <WhatsNewHost
+        located
+        quiet={() => !settings.isOpen() && !commandMenu.isOpen()}
+      />
     </>
   );
 }

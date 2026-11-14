@@ -1,3 +1,5 @@
+import {NewDot} from '../../../../components/WhatsNew/NewDot';
+import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
 import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
@@ -274,20 +276,23 @@ export default function Studio(props: VariantProps) {
             )}
           </For>
           <Show when={!isPhone()}>
-            <button
-              type="button"
-              class={`${styles.railButton} ${styles.railSearch}`}
-              aria-haspopup="dialog"
-              aria-expanded={commandMenu.isOpen()}
-              title={`Search themes and options (${commandMenu.shortcut})`}
-              onClick={commandMenu.open}
-            >
-              <span class={styles.railIcon}>
-                <SearchIcon />
-              </span>
-              Search
-              <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
-            </button>
+            <span class={commandAnchor}>
+              <button
+                type="button"
+                class={`${styles.railButton} ${styles.railSearch}`}
+                aria-haspopup="dialog"
+                aria-expanded={commandMenu.isOpen()}
+                title={`Search themes and options (${commandMenu.shortcut})`}
+                onClick={commandMenu.open}
+              >
+                <span class={styles.railIcon}>
+                  <SearchIcon />
+                </span>
+                Search
+                <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
+              </button>
+              <NewDot highlight="command-menu" />
+            </span>
           </Show>
         </nav>
 

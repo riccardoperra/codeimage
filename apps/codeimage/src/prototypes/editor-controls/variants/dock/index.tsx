@@ -1,3 +1,5 @@
+import {NewDot} from '../../../../components/WhatsNew/NewDot';
+import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
 import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Popover} from '@kobalte/core/popover';
@@ -395,19 +397,22 @@ export default function Dock(props: VariantProps) {
                 icon={<SlidersIcon />}
               />
               <Show when={!compact()}>
-                <Button
-                  class="dock-item"
-                  theme={'secondary'}
-                  variant={'ghost'}
-                  size={'sm'}
-                  leftIcon={<SearchIcon />}
-                  aria-label="Search themes and options"
-                  aria-haspopup="dialog"
-                  aria-expanded={commandMenu.isOpen()}
-                  onClick={commandMenu.open}
-                >
-                  <kbd class="dock-kbd">{commandMenu.shortcut}</kbd>
-                </Button>
+                <span class={commandAnchor}>
+                  <Button
+                    class="dock-item"
+                    theme={'secondary'}
+                    variant={'ghost'}
+                    size={'sm'}
+                    leftIcon={<SearchIcon />}
+                    aria-label="Search themes and options"
+                    aria-haspopup="dialog"
+                    aria-expanded={commandMenu.isOpen()}
+                    onClick={commandMenu.open}
+                  >
+                    <kbd class="dock-kbd">{commandMenu.shortcut}</kbd>
+                  </Button>
+                  <NewDot highlight="command-menu" />
+                </span>
               </Show>
               <Show when={exportInBar}>
                 <div class="dock-bar-export" onClick={close}>
