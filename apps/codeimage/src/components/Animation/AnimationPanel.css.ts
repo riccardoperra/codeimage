@@ -39,9 +39,22 @@ export const island = style({
 
 export const transport = style({
   display: 'flex',
+  flexWrap: 'wrap',
   alignItems: 'center',
   gap: '12px',
   minHeight: '40px',
+});
+
+export const timing = style({
+  '@media': {
+    'screen and (max-width: 768px)': {
+      flex: '1 1 0',
+      minWidth: 0,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
+  },
 });
 
 export const time = style({

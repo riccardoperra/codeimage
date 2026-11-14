@@ -132,6 +132,9 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
   const scenes: HTMLElement[] = [];
   const css = [
     `[data-animation-stage] [data-animation-scene]{position:relative;overflow:hidden;width:${timeline.width}px;height:${timeline.height}px}`,
+    // Tokens that move past the code box would show scrollbars where the
+    // system draws them, as in WebKit. The box clips them as Takumi does.
+    '[data-animation-stage] .cm-editor .cm-scroller{overflow:hidden}',
     target
       ? `[data-animation-stage] [data-animation-window]{display:block!important;min-width:${FITTED_WINDOW_MIN_WIDTH}px;width:max-content}`
       : '',

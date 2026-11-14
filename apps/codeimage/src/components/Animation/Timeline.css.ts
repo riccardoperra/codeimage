@@ -2,10 +2,17 @@ import {themeVars, withThemeMode} from '@codeimage/ui';
 import {darkGrayScale} from '@codeimage/ui/themes/darkTheme';
 import {style} from '@vanilla-extract/css';
 
+// Takes a row of its own on a phone, where the buttons fill the first one.
 export const track = style({
   position: 'relative',
   flex: 1,
   minWidth: 0,
+  '@media': {
+    'screen and (max-width: 768px)': {
+      flexBasis: '100%',
+      order: 1,
+    },
+  },
   height: '40px',
   display: 'flex',
   alignItems: 'center',

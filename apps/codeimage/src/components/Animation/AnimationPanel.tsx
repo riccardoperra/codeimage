@@ -81,12 +81,17 @@ export function AnimationPanel() {
           {formatSeconds(animation.durationMs())}
         </span>
         <Popover placement={'top-end'}>
-          <PopoverTrigger as={Button} size={'sm'} theme={'secondary'}>
+          <PopoverTrigger
+            as={Button}
+            size={'sm'}
+            theme={'secondary'}
+            class={styles.timing}
+          >
             {timingSummary()}
           </PopoverTrigger>
           <PopoverContent title={t('animation.timing')} class={styles.popover}>
             <PanelRow
-              for={'animationTransitionField'}
+              for={'animationTransitionField-input'}
               label={t('animation.transition')}
             >
               <TwoColumnPanelRow>
@@ -206,7 +211,7 @@ export function AnimationPanel() {
                   class={styles.popover}
                 >
                   <PanelRow
-                    for={`animationHold-${index}`}
+                    for={`animationHold-${index}-input`}
                     label={t('animation.hold')}
                   >
                     <TwoColumnPanelRow>
