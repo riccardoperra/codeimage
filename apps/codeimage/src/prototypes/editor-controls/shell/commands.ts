@@ -49,7 +49,7 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
         current: entry.id === layout,
         run: () => {
           preferences.setLayout(entry.id);
-          getWhatsNew().seen('layouts', 'use');
+          getWhatsNew().seen('layouts');
         },
       }),
     ),
@@ -72,7 +72,7 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
         current: cards.id === preferences.themeCards(),
         run: () => {
           preferences.setThemeCards(cards.id);
-          getWhatsNew().seen('theme-cards', 'use');
+          getWhatsNew().seen('theme-cards');
         },
       }),
     ),

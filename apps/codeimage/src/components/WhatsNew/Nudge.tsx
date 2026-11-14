@@ -8,7 +8,6 @@ import * as styles from './whats-new.css';
 export function Nudge(props: {
   release: (typeof RELEASES)[number];
   dismiss: () => void;
-  located: boolean;
 }) {
   const news = getWhatsNew();
   const [expanded, setExpanded] = createSignal(false);
@@ -66,7 +65,7 @@ export function Nudge(props: {
                 )}
               </For>
             </div>
-            <Show when={props.located && highlight().where}>
+            <Show when={news.canShowMe(highlight().id)}>
               <Button
                 size="sm"
                 theme="secondary"

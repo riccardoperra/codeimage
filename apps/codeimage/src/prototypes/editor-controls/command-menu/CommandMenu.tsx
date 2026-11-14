@@ -292,7 +292,7 @@ export function CommandMenu(props: CommandMenuProps) {
   onCleanup(commandMenu.close);
 
   const run = (command: Command) => {
-    getWhatsNew().seen('command-menu', 'use');
+    getWhatsNew().seen('command-menu');
     giveFocusBack = command.preview !== undefined;
     if (!command.current) command.run();
     commandMenu.close();

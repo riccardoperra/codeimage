@@ -314,7 +314,7 @@ export function createSettingSections(
                 default={DEFAULT_LAYOUT}
                 onChange={value => {
                   preferences.setLayout(value);
-                  news.seen('layouts', 'use');
+                  news.seen('layouts');
                 }}
                 preview={option => (
                   <LayoutPreview
@@ -347,7 +347,7 @@ export function createSettingSections(
                     default={DEFAULT_CARDS}
                     onChange={value => {
                       preferences.setThemeCards(value);
-                      news.seen('theme-cards', 'use');
+                      news.seen('theme-cards');
                     }}
                     preview={option => (
                       <ThemeCardsPreview style={option.id} theme={current()} />
@@ -388,13 +388,15 @@ export function createSettingSections(
           experimental: 'experimental' in highlight,
           small: true,
           control: () => (
-            <Button
-              size="sm"
-              theme="secondary"
-              onClick={() => news.showMe(highlight.id, 'library')}
-            >
-              Show me
-            </Button>
+            <Show when={news.canShowMe(highlight.id)}>
+              <Button
+                size="sm"
+                theme="secondary"
+                onClick={() => news.showMe(highlight.id, 'library')}
+              >
+                Show me
+              </Button>
+            </Show>
           ),
         })),
       })),

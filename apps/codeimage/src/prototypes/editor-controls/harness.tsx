@@ -90,10 +90,7 @@ function Editor() {
       </div>
       {/* Outside the layout, so it stays open while the layout under it changes. */}
       <SettingsDialog model={model} />
-      <WhatsNewHost
-        located
-        quiet={() => !settings.isOpen() && !commandMenu.isOpen()}
-      />
+      <WhatsNewHost quiet={() => !settings.isOpen() && !commandMenu.isOpen()} />
     </>
   );
 }

@@ -8,7 +8,6 @@ import * as styles from './whats-new.css';
 export function Showcase(props: {
   release: (typeof RELEASES)[number];
   dismiss: () => void;
-  located: boolean;
 }) {
   const news = getWhatsNew();
   createEffect(() =>
@@ -42,7 +41,7 @@ export function Showcase(props: {
                   </span>
                   <h3 class={styles.title}>{highlight.title}</h3>
                   <p class={styles.body}>{highlight.body}</p>
-                  <Show when={props.located && highlight.where}>
+                  <Show when={news.canShowMe(highlight.id)}>
                     <div class={styles.actions}>
                       <Button
                         size="sm"

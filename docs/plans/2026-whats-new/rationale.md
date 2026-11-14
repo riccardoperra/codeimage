@@ -9,7 +9,8 @@ The in-app "What's new" has to announce features without blocking the editor, po
 ```tsx
 // Editor shell: the host knows when it is safe, the core knows what is pending.
 const whatsNew = getWhatsNew();
-const announcement = whatsNew.announce(() => !isExporting() && !dialogOpen());
+// The watcher runs only while a release waits, and is disposed once it shows.
+const announcement = whatsNew.announce(() => watchQuiet(isQuiet));
 
 <Show when={announcement()}>
   {a => (a().surface === 'nudge' ? <Nudge release={a().release} /> : <Showcase release={a().release} />)}
@@ -20,10 +21,11 @@ const announcement = whatsNew.announce(() => !isExporting() && !dialogOpen());
 
 // The owner of a place registers how to open it, and reports use.
 whatsNew.bindLocation('command-menu', commandMenu.open);
-onChange={value => { preferences.setLayout(value); whatsNew.seen('layouts', 'use'); }}
+onChange={value => { preferences.setLayout(value); whatsNew.seen('layouts'); }}
 
 // Settings archive renders the registry and asks only for the "New" tag.
-<For each={RELEASES}>{release => … whatsNew.isNew(h.id) … whatsNew.showMe(h.id, 'library')}</For>
+// Show me appears only while the owner of the place is mounted.
+<For each={RELEASES}>{release => … whatsNew.isNew(h.id) … whatsNew.canShowMe(h.id) && whatsNew.showMe(h.id, 'library')}</For>
 ```
 
 ## Shape
@@ -35,7 +37,7 @@ onChange={value => { preferences.setLayout(value); whatsNew.seen('layouts', 'use
 - **Seen means located.** Only opening the coachmark or using the feature marks a highlight seen. Nudge steps, archive rows and "Show me" do not, so the dot is still on the control when the user arrives.
 - **A feature PR adds its own highlight** next to the control it ships. The registry on trunk lists only features that are on trunk.
 
-Other folders import only `state/whats-new/index.ts`. The public interface is the registry plus eight store members. Callers never see a fact, a storage key or an event name.
+Other folders import only `state/whats-new/index.ts`. The public interface is the registry plus nine store members. Callers never see a fact, a storage key or an event name.
 
 ## Synthesis decision
 
@@ -63,13 +65,13 @@ Two candidates, one on Opus and one on Fable. No cross-judge ran, because no mod
 
 The first release is `2026-11`, dated `2026-11-14`. Change its date on shipping day. It announces Command menu, Editor layouts, and Theme card styles. Layouts and theme card styles are experiments. A bundle never announces a feature that it does not contain.
 
-`WhatsNewHost` mounts once in the unified editor and once in the classic editor. After a short initial delay it waits for the host's quiet accessor and checks the DOM for visible dialogs, menus, and expanded popup triggers. Inline listboxes, including the theme picker, do not block announcements. The announcement then remains latched until dismissal. A major release uses the scrollable Showcase sheet. This release uses the Nudge.
+`WhatsNewHost` mounts once in the unified editor and once in the classic editor. While a release waits to be shown, and only then, it lets the editor settle for a moment and then watches the DOM for visible dialogs, menus, and expanded popup triggers, at most once a frame. The watcher stops as soon as the announcement shows, so a visit with nothing pending observes nothing. Inline listboxes, including the theme picker, do not block announcements. The announcement then remains latched until dismissal. A major release uses the scrollable Showcase sheet. This release uses the Nudge.
 
 Only opening a coachmark or using a feature records a seen fact. Running a command counts as command-menu use. Choosing a layout or theme card style counts as use of that experiment. Opening the menu through Show me does not consume its dot. The Settings archive renders rows from the same registry, with New tags from `isNew()`. Its Show me buttons reveal a location without changing facts.
 
 Coachmarks inside a modal mount their portal inside that dialog. A body portal would be hidden from assistive technology by the modal. Dots remain mounted as invisible anchors until their coachmark closes, so opening one can record the seen fact without destroying the popover.
 
-The classic editor has the Nudge and Showcase, with no located actions, dots, or Settings archive. Its Footer and Toolbar link directly to GitHub releases. The former version gate, Changelog, MDX notes and renderer, and the old FeatureBadge are removed together. The unrelated compatibility banner remains.
+The classic editor has the Nudge and Showcase, with no located actions, dots, or Settings archive. It binds no location, so its surfaces show no Show me. A binding ends when the component that made it unmounts. Its Footer and Toolbar link directly to GitHub releases. The former version gate, Changelog, MDX notes and renderer, and the old FeatureBadge are removed together. The unrelated compatibility banner remains.
 
 The development-only query `?whatsNew=nudge` or `?whatsNew=showcase` forces a review view. `await window.resetWhatsNew()` clears the persisted record. Reload after resetting. Production builds remove these aids.
 

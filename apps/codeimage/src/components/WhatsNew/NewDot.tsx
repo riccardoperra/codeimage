@@ -32,7 +32,7 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
                 setOpen(value);
                 if (value) {
                   news.opened(props.highlight, 'coachmark');
-                  news.seen(props.highlight, 'coachmark');
+                  news.seen(props.highlight);
                 }
               }}
               placement="bottom-start"

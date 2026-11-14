@@ -1,4 +1,4 @@
-import {createRoot} from 'solid-js';
+import {createRoot, createSignal, onCleanup} from 'solid-js';
 import {describe, expect, it, vi} from 'vitest';
 import {createWhatsNew} from './whats-new.store';
 
@@ -26,12 +26,16 @@ const boot = (db: ReturnType<typeof database>) =>
 
 describe('release discovery across visits', () => {
   it('waits for a quiet editor and keeps a shown announcement until dismissal', async () => {
-    const {createSignal} = await import('solid-js');
     const db = database();
     const app = createRoot(dispose => {
       const store = createWhatsNew(db, Date.parse('2026-11-14'));
       const [quiet, setQuiet] = createSignal(false);
-      return {store, setQuiet, announcement: store.announce(quiet), dispose};
+      return {
+        store,
+        setQuiet,
+        announcement: store.announce(() => quiet),
+        dispose,
+      };
     });
     await settle();
     expect(app.announcement()).toBeNull();
@@ -43,7 +47,7 @@ describe('release discovery across visits', () => {
     await settle();
     const next = createRoot(dispose => {
       const store = createWhatsNew(db, Date.parse('2026-11-14'));
-      return {announcement: store.announce(() => true), dispose};
+      return {announcement: store.announce(() => () => true), dispose};
     });
     await settle();
     expect(next.announcement()).toBeNull();
@@ -52,13 +56,43 @@ describe('release discovery across visits', () => {
     next.dispose();
   });
 
+  it('watches for a quiet moment only while a release waits to be shown', async () => {
+    const db = database();
+    const [quiet, setQuiet] = createSignal(false);
+    let watching = 0;
+    const watch = () => {
+      watching++;
+      onCleanup(() => watching--);
+      return quiet;
+    };
+    const first = createRoot(dispose => {
+      const store = createWhatsNew(db, Date.parse('2026-11-14'));
+      return {announcement: store.announce(watch), store, dispose};
+    });
+    await settle();
+    expect(watching).toBe(1);
+    setQuiet(true);
+    expect(first.announcement()).not.toBeNull();
+    expect(watching).toBe(0);
+    first.store.dismiss();
+    await settle();
+    const returning = createRoot(dispose => {
+      createWhatsNew(db, Date.parse('2026-11-14')).announce(watch);
+      return dispose;
+    });
+    await settle();
+    expect(watching).toBe(0);
+    first.dispose();
+    returning();
+  });
+
   it('keeps facts from two tabs and refreshes them on focus', async () => {
     const db = database();
     const a = boot(db);
     const b = boot(db);
     await settle();
-    a.store.seen('command-menu', 'coachmark');
-    b.store.seen('layouts', 'use');
+    a.store.seen('command-menu');
+    b.store.seen('layouts');
     const reloaded = boot(db);
     await settle();
     expect(reloaded.store.hasDot('command-menu')).toBe(false);
@@ -77,15 +111,20 @@ describe('release discovery across visits', () => {
     const app = boot(database());
     await settle();
     let revealed = false;
-    app.store.bindLocation('command-menu', () => {
-      revealed = true;
+    const unbind = createRoot(dispose => {
+      app.store.bindLocation('command-menu', () => {
+        revealed = true;
+      });
+      return dispose;
     });
-    app.store.opened('command-menu', 'library');
+    expect(app.store.canShowMe('command-menu')).toBe(true);
     app.store.showMe('command-menu', 'nudge');
     expect(revealed).toBe(true);
     expect(app.store.hasDot('command-menu')).toBe(true);
-    app.store.seen('command-menu', 'coachmark');
+    app.store.seen('command-menu');
     expect(app.store.hasDot('command-menu')).toBe(false);
+    unbind();
+    expect(app.store.canShowMe('command-menu')).toBe(false);
     app.dispose();
   });
 });

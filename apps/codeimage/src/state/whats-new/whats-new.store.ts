@@ -7,7 +7,6 @@ import {
   createRoot,
   createSignal,
   onCleanup,
-  untrack,
 } from 'solid-js';
 import type {Decision, Facts} from './decide';
 import {
@@ -21,16 +20,24 @@ import type {HighlightId, LocatedHighlightId, Where} from './registry';
 import {RELEASES} from './registry';
 
 export type Surface = 'nudge' | 'showcase' | 'coachmark' | 'library';
-type Announcement = Decision['announcement'];
+type Announcement = Decision<(typeof RELEASES)[number]>['announcement'];
 
 export interface WhatsNew {
-  announce(quiet: Accessor<boolean>): Accessor<Announcement>;
+  /**
+   * `watchQuiet` runs only while a release waits to be shown, and its owner is
+   * disposed as soon as the release shows or stops waiting, so whatever it
+   * observes costs nothing on a visit with nothing to announce.
+   */
+  announce(watchQuiet: () => Accessor<boolean>): Accessor<Announcement>;
   dismiss(): void;
   hasDot(id: LocatedHighlightId): boolean;
   isNew(id: HighlightId): boolean;
   opened(id: HighlightId, on: Surface): void;
-  seen(id: HighlightId, by: 'coachmark' | 'use'): void;
-  showMe(id: LocatedHighlightId, from: Surface): void;
+  seen(id: HighlightId): void;
+  /** True while the component that owns the highlight's place is mounted. */
+  canShowMe(id: HighlightId): boolean;
+  showMe(id: HighlightId, from: Surface): void;
+  /** Unbinds when the calling owner is disposed. */
   bindLocation(where: Where, reveal: () => void): void;
 }
 
@@ -56,16 +63,24 @@ export function createWhatsNew(
   const [facts, setFacts] = createSignal<Facts>(NO_FACTS);
   const [loaded, setLoaded] = createSignal(false);
   const [announcement, setAnnouncement] = createSignal<Announcement>(null);
-  const locations = new Map<Where, () => void>();
+  const [locations, setLocations] = createSignal<
+    ReadonlyMap<Where, () => void>
+  >(new Map());
   const decision = createMemo(() =>
     decide(loaded() ? RELEASES : [], facts(), now),
   );
+  const pending = createMemo(() => decision().announcement, null, {
+    equals: (a, b) => a?.release.id === b?.release.id,
+  });
+  const whereOf = (id: HighlightId) =>
+    RELEASES.flatMap(release => release.highlights).find(
+      highlight => highlight.id === id,
+    )?.where ?? null;
 
   async function load() {
     try {
       const raw = await storage.get('whats-new');
       setFacts(current => mergeFacts(current, parseFacts(raw)));
-      await storage.del('version');
     } catch {
       // Editing remains available when browser storage is disabled.
     } finally {
@@ -83,16 +98,25 @@ export function createWhatsNew(
   }
 
   void load();
+  // The record of the former changelog, which nothing reads any more.
+  storage.del('version').catch(() => {});
   window.addEventListener('focus', load);
   onCleanup(() => window.removeEventListener('focus', load));
 
   return {
-    announce(quiet) {
+    announce(watchQuiet) {
       createEffect(() => {
-        const pending = decision().announcement;
-        if (!quiet() || !pending || untrack(announcement)) return;
-        setAnnouncement(pending);
-        track('shown', {surface: pending.surface, release: pending.release.id});
+        const release = pending();
+        if (!release || announcement()) return;
+        const quiet = watchQuiet();
+        createEffect(() => {
+          if (!quiet()) return;
+          setAnnouncement(release);
+          track('shown', {
+            surface: release.surface,
+            release: release.release.id,
+          });
+        });
       });
       return announcement;
     },
@@ -106,21 +130,31 @@ export function createWhatsNew(
         release: current.release.id,
       });
     },
-    hasDot: id => loaded() && decision().dots.includes(id),
-    isNew: id => loaded() && decision().fresh.has(id),
+    hasDot: id => decision().dots.includes(id),
+    isNew: id => decision().fresh.has(id),
     opened: (id, surface) => track('opened', {surface, highlight: id}),
-    seen(id, _by) {
+    seen(id) {
       record({seen: new Set([id]), dismissed: new Set()});
+    },
+    canShowMe: id => {
+      const where = whereOf(id);
+      return where !== null && locations().has(where);
     },
     showMe(id, surface) {
       track('show-me', {surface, highlight: id});
-      const highlight = RELEASES.flatMap(release => release.highlights).find(
-        highlight => highlight.id === id,
-      );
-      if (highlight) locations.get(highlight.where)?.();
+      const where = whereOf(id);
+      if (where) locations().get(where)?.();
     },
-    bindLocation: (where, reveal) => {
-      locations.set(where, reveal);
+    bindLocation(where, reveal) {
+      setLocations(current => new Map(current).set(where, reveal));
+      onCleanup(() =>
+        setLocations(current => {
+          if (current.get(where) !== reveal) return current;
+          const next = new Map(current);
+          next.delete(where);
+          return next;
+        }),
+      );
     },
   };
 }
