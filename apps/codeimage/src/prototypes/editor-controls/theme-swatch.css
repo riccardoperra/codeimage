@@ -61,11 +61,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: calc(var(--swatch-size) * 0.46);
   font-weight: 600;
   line-height: 1;

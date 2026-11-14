@@ -32,52 +32,42 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
       run: () => settings.open(),
     },
     // A link to each section of the dialog.
-    ...SECTIONS.map(
-      (section): Command => ({
-        id: `settings=${section.id}`,
-        group: GROUP,
-        label: `Settings: ${section.name}`,
-        run: () => settings.open(section.id),
-      }),
-    ),
-    ...LAYOUTS.map(
-      (entry): Command => ({
-        id: `layout=${entry.id}`,
-        group: GROUP,
-        label: `Layout: ${entry.name}`,
-        current: entry.id === layout,
-        run: () => preferences.setLayout(entry.id),
-      }),
-    ),
+    ...SECTIONS.map((section): Command => ({
+      id: `settings=${section.id}`,
+      group: GROUP,
+      label: `Settings: ${section.name}`,
+      run: () => settings.open(section.id),
+    })),
+    ...LAYOUTS.map((entry): Command => ({
+      id: `layout=${entry.id}`,
+      group: GROUP,
+      label: `Layout: ${entry.name}`,
+      current: entry.id === layout,
+      run: () => preferences.setLayout(entry.id),
+    })),
     ...(layout === 'inspector'
-      ? sides.map(
-          (side): Command => ({
-            id: `inspector-side=${side.id}`,
-            group: GROUP,
-            label: `Inspector side: ${side.name}`,
-            current: side.id === preferences.inspectorSide(),
-            run: () => preferences.setInspectorSide(side.id),
-          }),
-        )
+      ? sides.map((side): Command => ({
+          id: `inspector-side=${side.id}`,
+          group: GROUP,
+          label: `Inspector side: ${side.name}`,
+          current: side.id === preferences.inspectorSide(),
+          run: () => preferences.setInspectorSide(side.id),
+        }))
       : []),
-    ...THEME_CARDS.map(
-      (cards): Command => ({
-        id: `theme-cards=${cards.id}`,
-        group: GROUP,
-        label: `Theme cards: ${cards.name}`,
-        current: cards.id === preferences.themeCards(),
-        run: () => preferences.setThemeCards(cards.id),
-      }),
-    ),
-    ...MODES.map(
-      (mode): Command => ({
-        id: `colour-mode=${mode.id}`,
-        group: GROUP,
-        label: `Colour mode: ${mode.name}`,
-        current: mode.id === ui.get.themeMode,
-        run: () => ui.setThemeMode(mode.id),
-      }),
-    ),
+    ...THEME_CARDS.map((cards): Command => ({
+      id: `theme-cards=${cards.id}`,
+      group: GROUP,
+      label: `Theme cards: ${cards.name}`,
+      current: cards.id === preferences.themeCards(),
+      run: () => preferences.setThemeCards(cards.id),
+    })),
+    ...MODES.map((mode): Command => ({
+      id: `colour-mode=${mode.id}`,
+      group: GROUP,
+      label: `Colour mode: ${mode.name}`,
+      current: mode.id === ui.get.themeMode,
+      run: () => ui.setThemeMode(mode.id),
+    })),
     ...extra,
   ];
 }
