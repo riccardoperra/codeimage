@@ -14,6 +14,8 @@ interface FontSource {
   data: () => Promise<Uint8Array>;
 }
 
+const bundledFontFamilies = ['Inter', 'Inter var'] as const;
+
 let session: Promise<Renderer> | undefined;
 const fonts = new Map<string, Promise<void>>();
 let registered = Promise.resolve();
@@ -126,7 +128,7 @@ async function readStylesheet(sheet: CSSStyleSheet) {
   }
 }
 
-async function collectCss(codeFamily: string, text: string) {
+async function collectCss(families: ReadonlySet<string>, text: string) {
   const sources: FontSource[] = [];
   const css = await Promise.all(
     [...document.styleSheets].map(async sheet => {
@@ -147,9 +149,10 @@ async function collectCss(codeFamily: string, text: string) {
           .replace(/['"]/g, '')
           .trim();
         if (
-          (normalizeFamily(name) !== codeFamily &&
-            name !== 'CodeImage Signature') ||
-          name.startsWith('Inter')
+          !families.has(normalizeFamily(name)) ||
+          bundledFontFamilies.some(
+            family => normalizeFamily(family) === normalizeFamily(name),
+          )
         )
           continue;
         const url = /url\("([^"]+)"\)/.exec(
@@ -226,6 +229,7 @@ function cloneExportNode(node: HTMLElement) {
     clone,
     `width: max-content; min-width: ${node.getBoundingClientRect().width}px`,
   );
+  const fontFamilies = new Set<string>();
   const originals = [node, ...node.querySelectorAll('*')];
   const copies = [clone, ...clone.querySelectorAll('*')];
   originals.forEach((original, index) => {
@@ -235,6 +239,13 @@ function cloneExportNode(node: HTMLElement) {
       return;
     }
     const computed = getComputedStyle(original);
+    if (
+      [...original.childNodes].some(
+        child => child.nodeType === Node.TEXT_NODE && child.textContent?.trim(),
+      )
+    ) {
+      fontFamilies.add(normalizeFamily(computed.fontFamily.split(',')[0]));
+    }
     if (/to (left|right) (top|bottom)/.test(computed.backgroundImage)) {
       // Takumi 2.19 drops `to right bottom` but draws `to bottom right`.
       appendStyle(
@@ -260,7 +271,7 @@ function cloneExportNode(node: HTMLElement) {
     throw new Error('Invalid document.');
   body.append(clone);
   html.append(body);
-  return {html: html.outerHTML, text: clone.textContent ?? ''};
+  return {html: html.outerHTML, text: clone.textContent ?? '', fontFamilies};
 }
 
 async function localFontSources(
@@ -305,18 +316,19 @@ export const takumi: Rasterizer = async (
   {format, pixelRatio, quality, codeFont},
 ) => {
   const {width, height} = node.getBoundingClientRect();
-  const {html, text} = cloneExportNode(node);
+  const {html, text, fontFamilies} = cloneExportNode(node);
   const codeFamily = normalizeFamily(codeFont.name);
+  fontFamilies.add(codeFamily);
   const [renderer, {css, sources}, localFonts] = await Promise.all([
     getRenderer(),
-    collectCss(codeFamily, text),
+    collectCss(fontFamilies, text),
     localFontSources(codeFont),
   ]);
   const fontSources = [
     ...(codeFont.type === 'web'
       ? sources.filter(source => normalizeFamily(source.name) === codeFamily)
       : localFonts),
-    ...['Inter', 'Inter var'].map((name): FontSource => ({
+    ...bundledFontFamilies.map((name): FontSource => ({
       name,
       key: name,
       weight: 400,
@@ -330,12 +342,16 @@ export const takumi: Rasterizer = async (
   ) {
     throw new ExportFontError(codeFont.name, 'unavailable');
   }
+  const requiredFamilies = new Set([
+    codeFamily,
+    ...sources.map(source => normalizeFamily(source.name)),
+  ]);
   await Promise.all(
     fontSources.map(async source => {
       try {
         await registerFont(renderer, source);
       } catch (error) {
-        if (normalizeFamily(source.name) === codeFamily) throw error;
+        if (requiredFamilies.has(normalizeFamily(source.name))) throw error;
         console.warn('[CodeImage] Optional export font unavailable.', error);
       }
     }),

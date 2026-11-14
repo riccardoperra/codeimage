@@ -522,23 +522,61 @@ describe('Takumi export', () => {
     );
   });
 
-  it('registers the signature font from its own font-face source', async () => {
+  it('preserves variable weights for a renamed text font from its own source', async () => {
+    const readProperty = CSSStyleDeclaration.prototype.getPropertyValue;
+    vi.spyOn(
+      CSSStyleDeclaration.prototype,
+      'getPropertyValue',
+    ).mockImplementation(function (
+      this: CSSStyleDeclaration,
+      property: string,
+    ) {
+      return property === 'font-weight' &&
+        readProperty.call(this, 'font-family').includes('Inter Renamed Caption')
+        ? '100 900'
+        : readProperty.call(this, property);
+    });
     const style = document.createElement('style');
     style.textContent =
-      '@font-face { font-family: "CodeImage Signature"; src: url("https://example.test/signature.woff2"); font-weight: 100 900; }';
+      '@font-face { font-family: "Inter Renamed Caption"; src: url("https://example.test/signature.woff2"); font-weight: 100 900; }';
     document.head.append(style);
     const node = exportNode(
-      '<span style="font-family: CodeImage Signature">@codeimage</span>',
+      '<span style="font-family: Inter Renamed Caption">@codeimage</span>',
     );
     const {takumi} = await import('./takumi');
     await takumi(node, options);
     expect(fetch).toHaveBeenCalledWith('https://example.test/signature.woff2');
     expect(renderer.registerFont).toHaveBeenCalledWith(
-      expect.objectContaining({name: 'CodeImage Signature'}),
+      expect.objectContaining({
+        name: 'Inter Renamed Caption',
+        weight: undefined,
+      }),
     );
     expect(renderer.prepare.mock.calls[0][1]).toMatchObject({
-      fontFamilies: ['Inter var', 'Inter', 'CodeImage Signature'],
+      fontFamilies: ['Inter var', 'Inter', 'Inter Renamed Caption'],
     });
+  });
+
+  it('rejects a failed font used by exported text instead of silently substituting the code font', async () => {
+    const style = document.createElement('style');
+    style.textContent =
+      '@font-face { font-family: "Required Caption"; src: url("https://example.test/caption.woff2"); }';
+    document.head.append(style);
+    vi.mocked(fetch).mockImplementation(async input => {
+      if (String(input).includes('caption.woff2'))
+        throw new TypeError('Caption font unavailable');
+      return new Response(new Uint8Array([0, 1, 2]));
+    });
+    const {takumi} = await import('./takumi');
+    await expect(
+      takumi(
+        exportNode(
+          '<span style="font-family: Required Caption">caption</span>',
+        ),
+        options,
+      ),
+    ).rejects.toMatchObject({family: 'Required Caption', reason: 'read'});
+    expect(renderer.render).not.toHaveBeenCalled();
   });
 
   it('carries the inherited UI font into the exported document', async () => {

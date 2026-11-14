@@ -112,7 +112,7 @@ async function main() {
     await page.addInitScript(() =>
       performance.setResourceTimingBufferSize(10000),
     );
-    await page.goto(baseUrl + '/' + query, {
+    await page.goto(baseUrl + (process.env.P2_PATH ?? '/') + query, {
       waitUntil: 'domcontentloaded',
       timeout: 180000,
     });
@@ -977,6 +977,14 @@ async function main() {
         window.fontProbeState.queries = 0;
         window.fontProbeState.blobs = [];
       });
+      if (process.env.P2_FONT_WEIGHT) {
+        await page.evaluate(async weight => {
+          const {getRootEditorStore} =
+            await import('/src/state/editor/index.ts');
+          getRootEditorStore().actions.setFontWeight(weight);
+          await document.fonts.ready;
+        }, Number(process.env.P2_FONT_WEIGHT));
+      }
       fontRequests.length = 0;
       const previousFallbacks = fallback.length;
       const result = await render('takumi', `local-${name}`);
@@ -985,10 +993,23 @@ async function main() {
         await reference(`local-${name}-chrome`),
         `local-${name}`,
       );
+      const weights = await page.evaluate(
+        selector =>
+          [...document.querySelectorAll(selector + ' .cm-content span')].map(
+            node => getComputedStyle(node).fontWeight,
+          ),
+        wrapperSelector,
+      );
+      if (process.env.P2_FONT_WEIGHT)
+        assert.ok(
+          weights.includes(process.env.P2_FONT_WEIGHT),
+          'Requested bold code weight is not rendered',
+        );
       const access = await page.evaluate(() => window.fontProbeState);
       assert.equal(access.queries, 0, 'Export must not enumerate fonts.');
       const row = {
         family: name,
+        weights: [...new Set(weights)],
         chrome,
         access,
         requests: [...fontRequests],
@@ -1017,7 +1038,9 @@ async function main() {
       assert.ok(row.chrome.percent <= 0.5, `${webFont} exceeds 0.5%.`);
     }
     const system = [];
-    for (const family of (process.env.P2_SYSTEM_FONTS ?? 'Menlo').split(',')) {
+    for (const family of (process.env.P2_SYSTEM_FONTS ?? 'Menlo')
+      .split(',')
+      .filter(Boolean)) {
       await chooseFont(family, true);
       const {row, result} = await exportWithFont(family);
       system.push(row);

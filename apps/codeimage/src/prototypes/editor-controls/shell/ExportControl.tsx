@@ -1,3 +1,4 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {
@@ -22,7 +23,7 @@ import {settings} from './settings-state';
 /** What an export gives with the settings now, such as `PNG at 3x`. */
 export function exportSummary(): string {
   const canvas = getExportCanvasStore();
-  return `${canvas.get.extension.toUpperCase()} at ${canvas.get.devicePixelRatio}x`;
+  return `${canvas.get.extension.toUpperCase()} at ${getFrameState().exportPixelRatio(canvas.get.devicePixelRatio)}x`;
 }
 
 /**

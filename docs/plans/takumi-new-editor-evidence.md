@@ -1,40 +1,49 @@
 # Takumi in the new editor
 
-The renderer preference in PR #701 now controls the new editor from PR #711. The integration has its own branch so the workers on the editor and signature branches keep their checkouts.
+The renderer preference from PR #701 controls the new editor from PR #711. The integration has its own branch so the editor and signature workers keep their checkouts.
+
+The final branch passes 59 app tests, typecheck, lint, and the production build on Node 24. Exit codes are recorded; lint retains existing warnings.
 
 ## Export behavior
 
-The Experiments section reads and writes `EditorConfigStore.renderer`. It uses the existing switch control and localized renderer labels. Restore defaults also resets the renderer. Turning on Takumi does not download WASM until an export starts.
+Experiments reads and writes `EditorConfigStore.renderer`. Restore defaults resets it. Turning on Takumi does not download WASM until an export starts. The normal export and per-tab export use the same choice. A per-tab batch captures it once.
 
-The main export and the per-tab export pass the selected renderer to `exportImage`. A per-tab batch captures the renderer once. Social sizes use the production target picker and keep their exact dimensions. Export settings show 1x while a target is active.
+Social sizes use the production target picker. Export settings, the button, the dropdown and the command menu show the effective scale. A target fixes it at 1x and removes ineffective scale commands.
 
-App tests pass, 58 of 58. Typecheck, lint, and the production build on Node 24 pass. Lint retains existing warnings.
+The UI probe selects Square through the picker in Inspector, Dock and Studio. It checks the button and command-menu summaries, downloads a 1080×1080 PNG and restores defaults. It enables Takumi through the UI for the ZIP, counts two calls to the actual WASM renderer and inspects both PNG entries.
 
-The Playwright check drives Inspector, Dock, and Studio. It enables Takumi, reloads, downloads a 1080×1080 PNG, and restores defaults in each layout. It also downloads and inspects a two-image ZIP.
+Persistence checks confirm the value in IndexedDB before reload, then wait for the hydrated switch. Five reloads pass in each layout. Immediate unload while a write is pending is outside this check. Earlier immediate-read assertions failed in two runs, so those runs are not persistence passes. One also recorded a development-server module-fetch error.
 
 ```sh
 UI_RENDERER_URL=http://localhost:4403 pnpm exec tsx scripts/parity/new-editor-renderer.ts
 ```
 
-## Signature font compatibility
+## Fonts and the current signature frontend
 
-The published signature frontend at `83be16ad` uses a font named `CodeImage Signature`. The old adapter skipped its font-face declaration, so exported handles used the code font. Registering a variable font at the first weight in its range also forced thin text.
+The adapter collects the primary font families used by exported text. It loads their declared font-face sources, without a hardcoded signature family name. A failed used face triggers the existing browser fallback. The bundled optional UI fallback fonts retain their previous behavior.
 
-The adapter now reads the signature's own font-face sources. Variable faces retain their native weight range. Other code-font selection and required-font fallback rules stay in place.
+Variable font ranges do not force a face to the first weight in the range. A regression test uses a renamed text font and asserts the absence of a forced weight. Another rejects a failed used text face. Geist Mono and Monaspace Argon also pass real image comparisons with code rendered at weight 700.
 
-The styled signature check runs against the signature frontend from PR #729. That frontend was overlaid in a disposable verification step and removed afterward. The integration does not include its API changes or saved-signature management.
+The current styled signature frontend at `24a636d8` was overlaid for rendering checks and removed afterward. Its enlarged marks and current platform icons were included. This integration does not include the signature API or saved-signature management.
 
-- All 18 combinations of Minimal, Pill, and Card with two background tones and three positions pass. The worst signature-crop difference from Chrome is 0.1964%, under the 0.5% limit.
-- All five platform icons pass in each of the three styles. These 15 checks use a dark background and the left position.
-- The reference is Chrome at native display scale 2. The adapter renders the same node at export scale 2. The comparison crops the signature with 12 CSS pixels of padding and uses pixelmatch threshold 0.1.
-- The completed matrices report no render errors or fallbacks. A separate run encountered a failed JetBrains Mono download and used the expected browser fallback. It is not counted as a parity pass.
-- Avatar image loading, saved signatures, and the unpublished changes on #729 are outside these checks.
+- All 18 style, tone and position combinations pass at native display 1 and export 1, using the production `exportImage` path with a Square target.
+- The same 18 combinations pass at native display 2 and export 2 with a free frame of the same dimensions.
+- All five platform icons pass in each of the three styles at 1x.
+- The limit is 0.5% different pixels in the signature crop. The crop includes 12 CSS pixels of padding and uses pixelmatch threshold 0.1. The completed matrices have no render errors, font network failures or browser fallbacks.
+- The signature matrices select bundled Geist Mono for code, avoiding a dependency on the external default code-font download. The signature uses its own actual Inter files.
+- Avatar loading, signature CRUD and later #729 changes are outside these checks.
 
-Run the following on a checkout that includes the styled signature frontend.
+Two earlier separate-session probes each reported three required JetBrains Mono read failures. No HTTP status was captured, so the cause is unknown. They are recorded separately and are not parity passes.
+
+An intermediate 2x probe omitted its ratio argument and produced NaN. Those results were discarded. Native 1x captures also replace downsampled Retina captures as the native 1x reference. No font or SVG workaround was added for these probe errors.
+
+Run the signature commands on a checkout that includes the styled signature frontend.
 
 ```sh
-SIGNATURE_URL=http://localhost:4403 pnpm exec tsx scripts/parity/signature-renderer.ts
-SIGNATURE_ALL_ICONS=1 SIGNATURE_QUICK=1 SIGNATURE_URL=http://localhost:4403 pnpm exec tsx scripts/parity/signature-renderer.ts
+SIGNATURE_RATIO=1 SIGNATURE_URL=http://localhost:4403 pnpm exec tsx scripts/parity/signature-renderer.ts
+SIGNATURE_RATIO=2 SIGNATURE_URL=http://localhost:4403 pnpm exec tsx scripts/parity/signature-renderer.ts
+SIGNATURE_RATIO=1 SIGNATURE_ALL_ICONS=1 SIGNATURE_QUICK=1 pnpm exec tsx scripts/parity/signature-renderer.ts
+P2_URL=http://localhost:4403 P2_PATH=/classic P2_REVIEW_CASE=local-fonts P2_WEB_FONTS='Geist Mono,Monaspace Argon' P2_SYSTEM_FONTS='' P2_FONT_WEIGHT=700 P2_PERF=0 pnpm exec tsx scripts/parity/rasterizers.ts
 ```
 
-The [recorded results](media/takumi-new-editor.json) include the failing font comparison, the corrected comparison, the icon matrix, and the adapter source hash. No performance measurement was repeated.
+The [recorded results](media/takumi-new-editor.json) include the original font failure, current signature and code-font comparisons, UI checks and adapter source hash. Performance was not measured again.

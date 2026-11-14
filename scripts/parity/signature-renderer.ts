@@ -7,6 +7,8 @@ import {PNG} from 'pngjs';
 
 async function main() {
   const out = process.env.SIGNATURE_OUT ?? '/tmp/codeimage-signature-renderer';
+  const ratio = Number(process.env.SIGNATURE_RATIO ?? 1);
+  const displayDpr = Number(process.env.SIGNATURE_DISPLAY_DPR ?? ratio);
   mkdirSync(out, {recursive: true});
   const worker = 'apps/codeimage/public/mockServiceWorker.js';
   const original = readFileSync(worker);
@@ -16,11 +18,11 @@ async function main() {
   );
   const browser = await chromium.launch({
     headless: true,
-    args: ['--force-device-scale-factor=2'],
+    args: [`--force-device-scale-factor=${displayDpr}`],
   });
   const context = await browser.newContext({
     viewport: {width: 1440, height: 1200},
-    deviceScaleFactor: 2,
+    deviceScaleFactor: displayDpr,
   });
   const page = await context.newPage();
   const session = await context.newCDPSession(page);
@@ -32,6 +34,14 @@ async function main() {
       fallbacks.push(message.text());
   });
   const results = [];
+  const fontNetworkIssues: {url: string; error: string}[] = [];
+  page.on('requestfailed', request => {
+    if (/\.(woff2?|ttf|otf)\b/.test(request.url()))
+      fontNetworkIssues.push({
+        url: request.url(),
+        error: request.failure()?.errorText ?? 'unknown',
+      });
+  });
   try {
     await page.goto(
       (process.env.SIGNATURE_URL ?? 'http://localhost:4403') + '/?v=2',
@@ -58,7 +68,12 @@ async function main() {
                 const {getFrameState} =
                   await import('/src/state/editor/frame.ts');
                 const frame = getFrameState();
-                frame.setExportTarget('square');
+                frame.setExportTarget(data.ratio === 1 ? 'square' : null);
+                frame.setWidth(1080);
+                frame.setHeight(1080);
+                const {getRootEditorStore} =
+                  await import('/src/state/editor/index.ts');
+                getRootEditorStore().actions.setFontId('geist-mono');
                 frame.setBackground(data.background);
                 frame.setSignature({
                   handle: 'codeimage',
@@ -67,6 +82,8 @@ async function main() {
                   position: data.position,
                   platform: data.platform,
                   avatar: null,
+                  profile: null,
+                  savedId: null,
                 });
                 await document.fonts.ready;
                 await new Promise<void>(resolve =>
@@ -105,50 +122,49 @@ async function main() {
                   },
                 };
               },
-              {style, background, position, platform},
+              {style, background, position, platform, ratio},
             );
             const {data} = await session.send('Page.captureScreenshot', {
               format: 'png',
               captureBeyondViewport: true,
-              clip: {...geometry.frame, scale: 1},
+              clip: {...geometry.frame, scale: ratio / displayDpr},
             });
             const chrome = PNG.sync.read(Buffer.from(data, 'base64'));
-            const bytes = await page.evaluate(async () => {
+            const bytes = await page.evaluate(async ratio => {
               const styles = await import('/src/components/Frame/Frame.css.ts');
-              const {getRootEditorStore} =
-                await import('/src/state/editor/index.ts');
-              const {createRasterizer} =
-                await import('/src/core/rasterize/index.ts');
+              const {exportImage} =
+                await import('/src/hooks/use-export-image.ts');
               const wrapper = document.querySelector(
                 '.' + CSS.escape(styles.previewWrapper.split(' ')[0]),
               );
-              if (!(wrapper?.firstElementChild instanceof HTMLElement))
+              if (!(wrapper instanceof HTMLElement))
                 throw new Error('Export frame missing');
-              const blob = await createRasterizer('takumi', 'blob')(
-                wrapper.firstElementChild,
-                {
-                  format: 'png',
-                  pixelRatio: 2,
+              const blob = await exportImage({
+                ref: wrapper,
+                renderer: 'takumi',
+                options: {
+                  mode: 'getBlob',
+                  extension: 'png',
+                  pixelRatio: ratio,
                   quality: 1,
-                  codeFont: getRootEditorStore().computed.selectedFont(),
                 },
-              );
+              });
               if (!(blob instanceof Blob)) throw new Error('Expected a PNG');
               return Array.from(new Uint8Array(await blob.arrayBuffer()));
-            });
+            }, ratio);
             const rendered = PNG.sync.read(Buffer.from(bytes));
             assert.equal(rendered.width, chrome.width);
             assert.equal(rendered.height, chrome.height);
             const {crop} = geometry;
-            const width = crop.width * 2;
-            const height = crop.height * 2;
+            const width = crop.width * ratio;
+            const height = crop.height * ratio;
             const reference = new PNG({width, height});
             const image = new PNG({width, height});
             PNG.bitblt(
               chrome,
               reference,
-              crop.x * 2,
-              crop.y * 2,
+              crop.x * ratio,
+              crop.y * ratio,
               width,
               height,
               0,
@@ -157,8 +173,8 @@ async function main() {
             PNG.bitblt(
               rendered,
               image,
-              crop.x * 2,
-              crop.y * 2,
+              crop.x * ratio,
+              crop.y * ratio,
               width,
               height,
               0,
@@ -186,7 +202,15 @@ async function main() {
               path.join(out, name + '-diff.png'),
               PNG.sync.write(diff),
             );
-            results.push({platform, style, background, position, percent});
+            results.push({
+              platform,
+              style,
+              background,
+              position,
+              ratio,
+              displayDpr,
+              percent,
+            });
             console.log(results.at(-1));
           }
         }
@@ -201,7 +225,7 @@ async function main() {
   } finally {
     writeFileSync(
       path.join(out, 'results.json'),
-      JSON.stringify({results, errors, fallbacks}, null, 2),
+      JSON.stringify({results, errors, fallbacks, fontNetworkIssues}, null, 2),
     );
     await browser.close();
     writeFileSync(worker, original);

@@ -5,6 +5,12 @@ import {chromium} from 'playwright';
 import {PNG} from 'pngjs';
 import {createRequire} from 'node:module';
 
+declare global {
+  interface Window {
+    takumiProbeRenders: number;
+  }
+}
+
 async function main() {
   const out =
     process.env.UI_RENDERER_OUT ?? '/tmp/codeimage-new-editor-renderer';
@@ -19,6 +25,9 @@ async function main() {
   const browser = await chromium.launch({headless: true});
   const context = await browser.newContext({acceptDownloads: true});
   const page = await context.newPage();
+  await page.addInitScript(() =>
+    performance.setResourceTimingBufferSize(10000),
+  );
   const errors: string[] = [];
   const fallbacks: string[] = [];
   const wasm: string[] = [];
@@ -31,6 +40,12 @@ async function main() {
     if (request.url().includes('.wasm')) wasm.push(request.url());
   });
   const rows = [];
+  const reloads = Number(process.env.UI_RENDERER_RELOADS ?? 5);
+  const persisted = (renderer: string) =>
+    page.waitForFunction(async expected => {
+      const {useIdb} = await import('/src/hooks/use-indexed-db.tsx');
+      return (await useIdb().get('editorConfig'))?.renderer === expected;
+    }, renderer);
   try {
     for (const [layout, param] of [
       ['inspector', '2'],
@@ -65,28 +80,61 @@ async function main() {
         requestsBefore,
         'The toggle alone must not load WASM',
       );
+      await persisted('takumi');
       await page.keyboard.press('Escape');
-      console.log({layout, step: 'reload'});
-      await page.reload();
+      for (let repeat = 0; repeat < reloads; repeat++) {
+        console.log({layout, step: 'reload', repeat});
+        await page.reload();
+        await page
+          .locator(`[data-layout="${layout}"]`)
+          .waitFor({timeout: 180000});
+        await page
+          .locator('[data-static-code-view] .cm-line')
+          .first()
+          .waitFor({state: 'attached'});
+        await page.locator('[data-settings-trigger]:visible').click();
+        await page.locator('[data-settings-section="experiments"]').click();
+        await page.waitForFunction(
+          () =>
+            document
+              .getElementById('settings-rendering-engine')
+              ?.getAttribute('aria-checked') === 'true',
+        );
+        await persisted('takumi');
+        await page.keyboard.press('Escape');
+      }
+      if (layout === 'inspector')
+        await page.getByRole('button', {name: /Frame.*padding/}).click();
+      else if (layout === 'dock')
+        await page.getByRole('button', {name: 'More', exact: true}).click();
+      else await page.getByRole('button', {name: 'Frame', exact: true}).click();
       await page
-        .locator(`[data-layout="${layout}"]`)
-        .waitFor({timeout: 180000});
-      await page
-        .locator('[data-static-code-view] .cm-line')
-        .first()
-        .waitFor({state: 'attached'});
-      await page.locator('[data-settings-trigger]:visible').click();
-      await page.locator('[data-settings-section="experiments"]').click();
+        .getByRole('button', {name: 'Aspect ratio', exact: true})
+        .click();
+      await page.getByRole('button', {name: 'Free size', exact: true}).click();
+      await page.getByRole('button', {name: /Square\s*1080x1080/}).click();
+      await page.keyboard.press('Escape');
+      await page.keyboard.press('Escape');
+      assert.match(
+        (await page.locator('[data-export-image]').getAttribute('title')) ?? '',
+        /at 1x$/,
+      );
+      await page.keyboard.press('ControlOrMeta+k');
+      const search = page.getByRole('combobox', {
+        name: 'Search themes and options',
+      });
+      await search.fill('Export scale');
       assert.equal(
-        await toggle.getAttribute('aria-checked'),
-        'true',
-        'Renderer preference survives reload',
+        await page.getByRole('option').count(),
+        0,
+        'Exact targets must not offer ineffective scale commands',
+      );
+      await search.fill('Export image');
+      assert.match(
+        await page.getByRole('option').first().innerText(),
+        /PNG at 1x/,
       );
       await page.keyboard.press('Escape');
-      await page.evaluate(async () => {
-        const {getFrameState} = await import('/src/state/editor/frame.ts');
-        getFrameState().setExportTarget('square');
-      });
       await page.waitForFunction(() => {
         const node = document
           .querySelector('[data-static-code-view]')
@@ -118,8 +166,12 @@ async function main() {
         .getByRole('button', {name: 'Restore defaults', exact: true})
         .click();
       assert.equal(await toggle.getAttribute('aria-checked'), 'false');
+      await persisted('dom-export');
       await page.keyboard.press('Escape');
       rows.push({
+        reloads,
+        picker: 'square',
+        summary: '1x',
         layout,
         persisted: true,
         width: png.width,
@@ -127,8 +179,38 @@ async function main() {
         restored: true,
       });
     }
+    await page.locator('[data-settings-trigger]:visible').click();
+    await page.locator('[data-settings-section="experiments"]').click();
+    await page
+      .getByRole('switch', {name: 'Use Takumi rendering engine'})
+      .press('Space');
+    await persisted('takumi');
+    await page.keyboard.press('Escape');
     await page.evaluate(async () => {
-      window.setRenderer('takumi');
+      const candidates = performance
+        .getEntriesByType('resource')
+        .map(entry => entry.name)
+        .filter(
+          name => name.includes('takumi') && /\.m?js(?:[?#]|$)/.test(name),
+        );
+      let Renderer;
+      for (const candidate of candidates) {
+        const module = await import(candidate);
+        if (typeof module.Renderer === 'function') {
+          Renderer = module.Renderer;
+          break;
+        }
+      }
+      if (!Renderer)
+        throw new Error(
+          'Takumi module was not loaded: ' + candidates.join(', '),
+        );
+      const originalRender = Renderer.prototype.render;
+      window.takumiProbeRenders = 0;
+      Renderer.prototype.render = function (...args: unknown[]) {
+        window.takumiProbeRenders++;
+        return originalRender.apply(this, args);
+      };
       const {getRootEditorStore} = await import('/src/state/editor/index.ts');
       getRootEditorStore().actions.addEditor({
         code: 'const second = 2;',
@@ -155,12 +237,14 @@ async function main() {
       assert.equal(png.width, 1080);
       assert.equal(png.height, 1080);
     }
+    const tabRenders = await page.evaluate(() => window.takumiProbeRenders);
+    assert.equal(tabRenders, 2, 'Both tab images must use the Takumi renderer');
     assert.deepEqual(errors, []);
     assert.deepEqual(fallbacks, []);
     writeFileSync(
       path.join(out, 'results.json'),
       JSON.stringify(
-        {rows, tabs: Object.keys(entries), errors, fallbacks, wasm},
+        {rows, tabs: Object.keys(entries), tabRenders, errors, fallbacks, wasm},
         null,
         2,
       ),

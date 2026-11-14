@@ -1,3 +1,4 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getUiStore} from '@codeimage/store/ui';
 import {ExportExtension} from '../../../hooks/use-export-image';
@@ -54,13 +55,15 @@ export function exportCommands(exporter: Exporter): Command[] {
       current: format.id === store.get.extension,
       run: () => store.set('extension', format.id),
     })),
-    ...[1, 2, 3, 6].map((scale): Command => ({
-      id: `export-scale=${scale}`,
-      group,
-      label: `Export scale: ${scale}x`,
-      current: scale === store.get.devicePixelRatio,
-      run: () => store.set('devicePixelRatio', scale),
-    })),
+    ...(getFrameState().exportTarget() ? [] : [1, 2, 3, 6]).map(
+      (scale): Command => ({
+        id: `export-scale=${scale}`,
+        group,
+        label: `Export scale: ${scale}x`,
+        current: scale === store.get.devicePixelRatio,
+        run: () => store.set('devicePixelRatio', scale),
+      }),
+    ),
     ...[70, 80, 90, 100].map((quality): Command => ({
       id: `export-quality=${quality}`,
       group,
