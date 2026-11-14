@@ -229,3 +229,35 @@ test<TestContext>('PUT /v1/project/:id [Update Project] -> keeps editor tabs of 
   });
   expect(ownTabs.map(tab => tab.id)).not.toContain(otherTab.id);
 });
+
+test<TestContext>('PUT /v1/project/:id [Update Project] -> ignores keys outside the update contract', async context => {
+  const fastify = await build(context);
+  const data = buildUpdateRequest(context.project1.editorTabs[0].id);
+
+  const response = await fastify.inject({
+    url: `/api/v1/project/${context.project1.id}`,
+    method: 'PUT',
+    payload: {
+      ...data,
+      frame: {...data.frame, id: crypto.randomUUID()},
+      terminal: {...data.terminal, unknownKey: true},
+      editorOptions: {...data.editorOptions, id: crypto.randomUUID()},
+    },
+  });
+
+  assert.equal(response.statusCode, 200, 'return status 200');
+  expect(
+    await client.project.findUniqueOrThrow({
+      where: {id: context.project1.id},
+      include: {frame: true, terminal: true, editorOptions: true},
+    }),
+  ).toMatchObject({
+    frameId: context.project1.frameId,
+    frame: {id: context.project1.frameId, ...data.frame},
+    terminal: {id: context.project1.terminalId, ...data.terminal},
+    editorOptions: {
+      id: context.project1.editorOptionsId,
+      ...data.editorOptions,
+    },
+  });
+});
