@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict';
 import {test} from 'vitest';
 import {compileScene} from './compile';
-import type {Scene, StepBox, TokenTransition} from './model';
+import type {
+  Cell,
+  MarkTransition,
+  Scene,
+  SceneTiming,
+  StepBox,
+  TokenTransition,
+} from './model';
+import {descendants, parseHtml, styleAt, type Element} from './test-utils';
 
 const metrics = {charWidth: 10, lineHeight: 20};
 const timing = {transitionMs: 1000, easing: 'linear'} as const;
@@ -26,44 +34,67 @@ const scene = (
   ...overrides,
 });
 
-// The style of the element that shows `text`, and the keyframes it plays.
-function animationOf(compiled: {html: string; css: string}, text: string) {
-  const style = compiled.html.match(
-    new RegExp(`style="([^"]*)">${text}</span>`),
-  )?.[1];
-  assert.ok(style, `rendered ${text}`);
-  const name = style.match(/animation:(\S+) /)?.[1];
-  const keyframes = name
-    ? compiled.css.match(new RegExp(`@keyframes ${name}\\{.*\\}`))?.[0]
-    : undefined;
-  return {style, keyframes};
-}
-
-test('a move starts at its old cell and ends at its new one', () => {
-  const compiled = compileScene(
-    scene([
-      {
-        kind: 'move',
-        key: 'k',
-        text: 'x',
-        classes: 'c',
-        from: {line: 0, col: 0},
-        to: {line: 2, col: 4},
-      },
-    ]),
-    metrics,
-    timing,
-    'a',
-  );
-  const {style, keyframes} = animationOf(compiled, 'x');
-  assert.match(style, /left:40px;top:40px/);
-  assert.match(style, /animation:\S+ 1000ms linear 0ms both/);
-  // The old cell is 4 columns left of and 2 lines above the new one.
-  assert.match(keyframes!, /from\{left:0px;top:0px\}to\{left:40px;top:40px\}/);
+const move = (
+  text: string,
+  from: Cell,
+  to: Cell,
+): Extract<TokenTransition, {kind: 'move'}> => ({
+  kind: 'move',
+  key: text,
+  text,
+  classes: 'c',
+  from,
+  to,
 });
 
-test('leaving tokens fade out by 30% and entering tokens fade in from 70%', () => {
-  const compiled = compileScene(
+function play(input: Scene, sceneTiming: SceneTiming = timing) {
+  const {html, css} = compileScene(input, metrics, sceneTiming, 'a');
+  const elements = descendants(parseHtml(html));
+  const pose = (element: Element, timeMs: number) => {
+    const {left, top, opacity = 1} = styleAt(element, css, timeMs);
+    return {left, top, opacity};
+  };
+  const sized = (element: Element, timeMs: number) => {
+    const {width, height} = styleAt(element, css, timeMs);
+    return {width, height};
+  };
+  const all = (text: string) =>
+    elements.filter(element => element.text === text);
+  return {
+    elements,
+    at: (text: string, timeMs: number) => {
+      const [element, ...others] = all(text);
+      assert.ok(element && !others.length, `one element shows ${text}`);
+      return pose(element, timeMs);
+    },
+    each: (text: string, timeMs: number) =>
+      all(text).map(element => ({
+        classes: element.attributes.class,
+        ...pose(element, timeMs),
+      })),
+    boxOf: (text: string, timeMs: number) => {
+      const [element] = all(text);
+      return sized(element.parent!, timeMs);
+    },
+    marks: (timeMs: number) =>
+      elements
+        .filter(element => element.attributes['data-mark'])
+        .map(element => ({
+          mark: element.attributes['data-mark'],
+          ...pose(element, timeMs),
+        })),
+  };
+}
+
+test('a move slides from its old cell to its new one', () => {
+  const {at} = play(scene([move('x', {line: 0, col: 0}, {line: 2, col: 4})]));
+  assert.deepEqual(at('x', 0), {left: 0, top: 0, opacity: 1});
+  assert.deepEqual(at('x', 500), {left: 20, top: 20, opacity: 1});
+  assert.deepEqual(at('x', 1000), {left: 40, top: 40, opacity: 1});
+});
+
+test('leaving tokens are gone at 30% and entering tokens start at 70%', () => {
+  const {at} = play(
     scene([
       {
         kind: 'leave',
@@ -80,140 +111,104 @@ test('leaving tokens fade out by 30% and entering tokens fade in from 70%', () =
         to: {line: 0, col: 1},
       },
     ]),
-    metrics,
-    timing,
-    'a',
   );
-  const leave = animationOf(compiled, 'old');
-  assert.match(leave.style, /left:20px;top:20px/);
-  assert.match(
-    leave.keyframes!,
-    /0%\{opacity:1\}30%\{opacity:0\}100%\{opacity:0\}/,
+  assert.deepEqual(
+    [0, 150, 300, 1000].map(time => at('old', time)),
+    [1, 0.5, 0, 0].map(opacity => ({left: 20, top: 20, opacity})),
   );
-  const enter = animationOf(compiled, 'new');
-  assert.match(enter.style, /left:10px;top:0px/);
-  assert.match(
-    enter.keyframes!,
-    /0%\{opacity:0\}70%\{opacity:0\}100%\{opacity:1\}/,
+  assert.deepEqual(
+    [0, 700, 850, 1000].map(time => at('new', time)),
+    [0, 0, 0.5, 1].map(opacity => ({left: 10, top: 0, opacity})),
   );
 });
 
-test('a token that keeps its cell and opacity is not animated', () => {
-  const compiled = compileScene(
-    scene([
-      {
-        kind: 'move',
-        key: 'k',
-        text: 'same',
-        classes: 'c',
-        from: {line: 1, col: 1},
-        to: {line: 1, col: 1},
-      },
-    ]),
-    metrics,
-    timing,
-    'a',
+test('a token that keeps its cell stays put', () => {
+  const {at} = play(
+    scene([move('same', {line: 1, col: 1}, {line: 1, col: 1})]),
   );
-  assert.doesNotMatch(animationOf(compiled, 'same').style, /animation/);
+  for (const time of [0, 500, 1000]) {
+    assert.deepEqual(at('same', time), {left: 10, top: 20, opacity: 1});
+  }
 });
 
 test('a token that changes classes slides in both colors while they crossfade', () => {
-  const compiled = compileScene(
+  const {each} = play(
     scene([
       {
-        kind: 'move',
-        key: 'k',
-        text: 'x',
+        ...move('x', {line: 0, col: 0}, {line: 1, col: 2}),
         classes: 'new',
         fromClasses: 'old',
-        from: {line: 0, col: 0},
-        to: {line: 1, col: 2},
       },
     ]),
-    metrics,
-    timing,
-    'a',
   );
-  const spans = Array.from(
-    compiled.html.matchAll(
-      /<span class="(\w+)" style="[^"]*animation:(\S+) [^"]*">x<\/span>/g,
-    ),
-    ([, classes, name]) => [
-      classes,
-      compiled.css.match(new RegExp(`@keyframes ${name}\\{(.*)\\}`))?.[1],
-    ],
-  );
-  assert.deepEqual(spans, [
-    ['old', 'from{left:0px;top:0px;opacity:1}to{left:20px;top:20px;opacity:0}'],
-    ['new', 'from{left:0px;top:0px;opacity:0}to{left:20px;top:20px;opacity:1}'],
+  assert.deepEqual(each('x', 0), [
+    {classes: 'old', left: 0, top: 0, opacity: 1},
+    {classes: 'new', left: 0, top: 0, opacity: 0},
+  ]);
+  assert.deepEqual(each('x', 500), [
+    {classes: 'old', left: 10, top: 10, opacity: 0.5},
+    {classes: 'new', left: 10, top: 10, opacity: 0.5},
+  ]);
+  assert.deepEqual(each('x', 1000), [
+    {classes: 'old', left: 20, top: 20, opacity: 0},
+    {classes: 'new', left: 20, top: 20, opacity: 1},
   ]);
 });
 
 test('code shifts by the diff indent and fades with focus dimming', () => {
-  const compiled = compileScene(
-    scene(
-      [
-        {
-          kind: 'move',
-          key: 'k',
-          text: 'x',
-          classes: '',
-          from: {line: 0, col: 0},
-          to: {line: 0, col: 0},
-        },
-      ],
-      {from: box({indent: 2, dimmed: new Set([0])}), to: box()},
-    ),
-    metrics,
-    timing,
-    'a',
+  const {at} = play(
+    scene([move('x', {line: 0, col: 0}, {line: 0, col: 0})], {
+      from: box({indent: 2, dimmed: new Set([0])}),
+    }),
   );
-  const {style, keyframes} = animationOf(compiled, 'x');
-  assert.match(style, /left:0px/);
-  assert.match(
-    keyframes!,
-    /from\{left:20px;top:0px;opacity:0.35\}to\{left:0px;top:0px;opacity:1\}/,
-  );
+  assert.deepEqual(at('x', 0), {left: 20, top: 0, opacity: 0.35});
+  assert.deepEqual(at('x', 1000), {left: 0, top: 0, opacity: 1});
 });
 
-test('the code box animates between the two step sizes', () => {
-  const compiled = compileScene(
-    scene([], {
+test('the code box grows from the first step size to the second', () => {
+  const {boxOf} = play(
+    scene([move('x', {line: 0, col: 0}, {line: 0, col: 0})], {
       from: box({rows: 2, columns: 5}),
       to: box({rows: 4, columns: 9}),
     }),
-    metrics,
-    timing,
-    's1',
   );
-  assert.ok(
-    compiled.css.includes(
-      '@keyframes s1-box{from{width:50px;height:40px}to{width:90px;height:80px}}',
-    ),
-  );
-  assert.ok(compiled.html.includes('width:90px;height:80px;animation:s1-box'));
+  assert.deepEqual(boxOf('x', 0), {width: 50, height: 40});
+  assert.deepEqual(boxOf('x', 500), {width: 70, height: 60});
+  assert.deepEqual(boxOf('x', 1000), {width: 90, height: 80});
 });
 
-test('a scene that shows the second half starts every animation late', () => {
-  const compiled = compileScene(
-    scene([
-      {
-        kind: 'enter',
-        key: 'b',
-        text: 'new',
-        classes: '',
-        to: {line: 0, col: 0},
-      },
-    ]),
-    metrics,
-    {...timing, offsetMs: 400},
-    'a',
-  );
-  assert.match(animationOf(compiled, 'new').style, /1000ms linear -400ms both/);
+test('a scene that shows the second half starts where the first half is at that time', () => {
+  const moving = scene([move('x', {line: 0, col: 0}, {line: 0, col: 10})]);
+  const first = play(moving);
+  const second = play(moving, {...timing, offsetMs: 400});
+  assert.deepEqual(second.at('x', 0), first.at('x', 400));
+  assert.deepEqual(second.at('x', 600), first.at('x', 1000));
 });
 
-test('escapes token text and renders line numbers only with a gutter', () => {
-  const withoutGutter = compileScene(
+test('a kept mark moves with its line, and the others fade', () => {
+  const marks: MarkTransition[] = [
+    {
+      kind: 'move',
+      key: 'k',
+      mark: 'added',
+      from: {line: 1, col: 0},
+      to: {line: 2, col: 0},
+    },
+    {kind: 'leave', key: 'l', mark: 'highlight', from: {line: 0, col: 0}},
+  ];
+  const {marks: at} = play(scene([], {marks}));
+  assert.deepEqual(at(0), [
+    {mark: 'added', left: 0, top: 20, opacity: 1},
+    {mark: 'highlight', left: 0, top: 0, opacity: 1},
+  ]);
+  assert.deepEqual(at(1000), [
+    {mark: 'added', left: 0, top: 40, opacity: 1},
+    {mark: 'highlight', left: 0, top: 0, opacity: 0},
+  ]);
+});
+
+test('token text is shown as text, not markup', () => {
+  const {at} = play(
     scene([
       {
         kind: 'enter',
@@ -223,37 +218,24 @@ test('escapes token text and renders line numbers only with a gutter', () => {
         to: {line: 0, col: 0},
       },
     ]),
-    metrics,
-    timing,
-    'a',
   );
-  assert.ok(withoutGutter.html.includes('>&lt;a&amp;b&gt;</span>'));
-  assert.ok(!withoutGutter.html.includes('cm-gutters'));
-  const withGutter = compileScene(
-    scene([], {
-      gutter: {
-        numbers: [
-          {
-            kind: 'enter',
-            key: 'gutter:9',
-            text: '9',
-            classes: '',
-            to: {line: 0, col: 1},
-          },
-        ],
-        fromColumns: 1,
-        toColumns: 2,
-      },
-    }),
-    metrics,
-    timing,
-    'a',
+  assert.equal(at('<a&b>', 1000).opacity, 1);
+});
+
+test('line numbers appear only with a gutter, which grows with its digits', () => {
+  const nine: TokenTransition = {
+    kind: 'enter',
+    key: 'gutter:9',
+    text: '9',
+    classes: '',
+    to: {line: 0, col: 1},
+  };
+  const without = play(scene([]));
+  assert.ok(without.elements.every(element => element.text !== '9'));
+  const {at, boxOf} = play(
+    scene([], {gutter: {numbers: [nine], fromColumns: 1, toColumns: 2}}),
   );
-  assert.ok(withGutter.html.includes('class="cm-gutters"'));
-  assert.ok(
-    withGutter.css.includes(
-      'from{width:10px;height:60px}to{width:20px;height:60px}',
-    ),
-  );
-  assert.match(animationOf(withGutter, '9').style, /left:10px;top:0px/);
+  assert.deepEqual(at('9', 1000), {left: 10, top: 0, opacity: 1});
+  assert.deepEqual(boxOf('9', 0), {width: 10, height: 60});
+  assert.deepEqual(boxOf('9', 1000), {width: 20, height: 60});
 });

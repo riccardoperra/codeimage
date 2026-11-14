@@ -8,11 +8,11 @@ import {pairScene} from './pair';
 // The 35-line pair of the prototypes: every fifth line gains a comment line
 // and turns `const` into `let`.
 const source = readFileSync(
-  new URL('../../hooks/use-export-image.ts', import.meta.url),
+  new URL('animation.perf.fixture.txt', import.meta.url),
   'utf8',
 )
-  .split('\n')
-  .slice(40, 75);
+  .trimEnd()
+  .split('\n');
 const from = source.join('\n');
 const to = source
   .map((line, index) =>
