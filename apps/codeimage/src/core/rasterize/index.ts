@@ -1,3 +1,6 @@
+import type {CustomFontConfiguration} from '../configuration/font';
+import {ExportFontError} from './font-error';
+import {notifyFontFallback} from './notify-font-fallback';
 import {getUmami} from '../constants/umami';
 import {domExport} from './domExport';
 
@@ -7,6 +10,7 @@ export interface RasterizeOptions {
   format: 'png' | 'jpeg' | 'svg';
   pixelRatio: number;
   quality: number;
+  codeFont: CustomFontConfiguration;
 }
 
 export type Rasterizer = (
@@ -30,6 +34,7 @@ export function createRasterizer(
         '[CodeImage] Takumi export failed. Using dom-export.',
         error,
       );
+      if (error instanceof ExportFontError) notifyFontFallback(error);
       getUmami().track('export-renderer-fallback', {
         renderer: 'takumi',
         format: options.format,

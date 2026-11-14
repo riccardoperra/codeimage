@@ -1,6 +1,7 @@
 import type {Renderer} from '@takumi-rs/wasm';
 import interUrl from 'inter-ui/variable/InterVariable.woff2?url';
-import {SUPPORTED_FONTS} from '../configuration/font';
+import type {CustomFontConfiguration} from '../configuration/font';
+import {ExportFontError} from './font-error';
 import {determineFontFaceName} from '../modules/localFontAccessApi/font';
 import type {Rasterizer} from './index';
 
@@ -48,19 +49,44 @@ async function readBytes(url: string) {
 async function registerFont(renderer: Renderer, source: FontSource) {
   let pending = fonts.get(source.key);
   if (!pending) {
-    const data = source.data();
+    const data = source.data().catch(error => {
+      throw new ExportFontError(source.name, 'read', error);
+    });
     data.catch(() => undefined);
     // Takumi falls back through fonts in registration order, so register in
     // call order rather than in the order the downloads finish.
     pending = registered
       .then(async () => {
-        await renderer.registerFont({...source, data: await data});
+        const bytes = await data;
+        const collection =
+          bytes[0] === 0x74 &&
+          bytes[1] === 0x74 &&
+          bytes[2] === 0x63 &&
+          bytes[3] === 0x66;
+        try {
+          // Collections carry their own face weights and styles. Overriding
+          // those values would turn every face into the same variant.
+          await renderer.registerFont(
+            collection
+              ? {name: source.name, data: bytes}
+              : {...source, data: bytes},
+          );
+        } catch (error) {
+          throw new ExportFontError(
+            source.name,
+            collection
+              ? 'collection'
+              : error instanceof Error &&
+                  error.message === 'Unsupported font format'
+                ? 'format'
+                : 'registration',
+            error,
+          );
+        }
       })
       .catch(error => {
         fonts.delete(source.key);
-        throw new Error(`Export font unavailable: ${source.name}`, {
-          cause: error,
-        });
+        throw error;
       });
     registered = pending.catch(() => undefined);
     fonts.set(source.key, pending);
@@ -100,7 +126,7 @@ async function readStylesheet(sheet: CSSStyleSheet) {
   }
 }
 
-async function collectCss(usedFamilies: Set<string>) {
+async function collectCss(codeFamily: string, text: string) {
   const sources: FontSource[] = [];
   const css = await Promise.all(
     [...document.styleSheets].map(async sheet => {
@@ -120,10 +146,7 @@ async function collectCss(usedFamilies: Set<string>) {
           .getPropertyValue('font-family')
           .replace(/['"]/g, '')
           .trim();
-        if (
-          !usedFamilies.has(normalizeFamily(name)) ||
-          name.startsWith('Inter')
-        )
+        if (normalizeFamily(name) !== codeFamily || name.startsWith('Inter'))
           continue;
         const url = /url\("([^"]+)"\)/.exec(
           rule.style.getPropertyValue('src'),
@@ -162,7 +185,19 @@ async function collectCss(usedFamilies: Set<string>) {
       return rules.join('\n');
     }),
   );
-  return {css, sources};
+  return {
+    css,
+    sources: sources.filter(
+      source =>
+        !source.unicodeRange ||
+        [...text].some(char => {
+          const point = char.codePointAt(0)!;
+          return source.unicodeRange?.some(
+            ([start, end]) => point >= start && point <= end,
+          );
+        }),
+    ),
+  };
 }
 
 // A CSSOM write reserializes the whole style attribute, which rounds lengths
@@ -185,8 +220,6 @@ function cloneExportNode(node: HTMLElement) {
   );
   const originals = [node, ...node.querySelectorAll('*')];
   const copies = [clone, ...clone.querySelectorAll('*')];
-  const usedFamilies = new Set<string>(['inter', 'inter var']);
-  const codeFamilies = new Set<string>();
   originals.forEach((original, index) => {
     const copy = copies[index];
     if (original.closest('[data-export-exclude="true"]')) {
@@ -194,9 +227,6 @@ function cloneExportNode(node: HTMLElement) {
       return;
     }
     const computed = getComputedStyle(original);
-    if (original.matches('.cm-line')) {
-      codeFamilies.add(normalizeFamily(computed.fontFamily.split(',')[0]));
-    }
     if (/to (left|right) (top|bottom)/.test(computed.backgroundImage)) {
       // Takumi 2.19 drops `to right bottom` but draws `to bottom right`.
       appendStyle(
@@ -215,9 +245,6 @@ function cloneExportNode(node: HTMLElement) {
         appendStyle(copy, `height: ${getComputedStyle(line).lineHeight}`);
       }
     }
-    computed.fontFamily
-      .split(',')
-      .forEach(name => usedFamilies.add(normalizeFamily(name)));
   });
   const html = document.documentElement.cloneNode(false);
   const body = document.body.cloneNode(false);
@@ -225,61 +252,33 @@ function cloneExportNode(node: HTMLElement) {
     throw new Error('Invalid document.');
   body.append(clone);
   html.append(body);
-  return {html: html.outerHTML, usedFamilies, codeFamilies};
+  return {html: html.outerHTML, text: clone.textContent ?? ''};
 }
 
-async function localFontSources(usedFamilies: Set<string>) {
-  const webFamilies = new Set(
-    SUPPORTED_FONTS.map(font => normalizeFamily(font.name)),
-  );
-  const localFamilies = [...usedFamilies].filter(
-    name =>
-      !webFamilies.has(name) &&
-      ![
-        'inter',
-        'inter var',
-        'system-ui',
-        '-apple-system',
-        'sans-serif',
-        'monospace',
-        'serif',
-      ].includes(name),
-  );
-  if (!localFamilies.length || !window.queryLocalFonts) return [];
-  try {
-    const localFonts = await window.queryLocalFonts();
-    return localFonts
-      .filter(font => localFamilies.includes(normalizeFamily(font.family)))
-      .map(
-        (font): FontSource => ({
-          name: font.family,
-          key: font.postscriptName,
-          weight: Number(determineFontFaceName(font.style)),
-          style: /italic|oblique/i.test(font.style) ? 'italic' : 'normal',
-          data: async () =>
-            new Uint8Array(await (await font.blob()).arrayBuffer()),
-        }),
-      );
-  } catch (error) {
-    console.warn('[CodeImage] Local export font unavailable.', error);
-    return [];
-  }
+function localFontSources(font: CustomFontConfiguration): FontSource[] {
+  if (font.type !== 'system') return [];
+  return (font.fontData.sources ?? []).map(source => ({
+    name: font.name,
+    key: source.postscriptName,
+    weight: Number(determineFontFaceName(source.style)),
+    style: /italic|oblique/i.test(source.style) ? 'italic' : 'normal',
+    data: async () => new Uint8Array(await (await source.blob()).arrayBuffer()),
+  }));
 }
 
 export const takumi: Rasterizer = async (
   node,
-  {format, pixelRatio, quality},
+  {format, pixelRatio, quality, codeFont},
 ) => {
   const {width, height} = node.getBoundingClientRect();
-  const {html, usedFamilies, codeFamilies} = cloneExportNode(node);
-  const [renderer, {css, sources}, localFonts] = await Promise.all([
+  const {html, text} = cloneExportNode(node);
+  const codeFamily = normalizeFamily(codeFont.name);
+  const [renderer, {css, sources}] = await Promise.all([
     getRenderer(),
-    collectCss(usedFamilies),
-    localFontSources(usedFamilies),
+    collectCss(codeFamily, text),
   ]);
   const fontSources = [
-    ...sources,
-    ...localFonts,
+    ...(codeFont.type === 'web' ? sources : localFontSources(codeFont)),
     ...['Inter', 'Inter var'].map(
       (name): FontSource => ({
         name,
@@ -290,16 +289,26 @@ export const takumi: Rasterizer = async (
       }),
     ),
   ];
-  for (const family of codeFamilies) {
-    if (!fontSources.some(source => normalizeFamily(source.name) === family)) {
-      throw new Error(`Export font unavailable: ${family}`);
-    }
+  if (
+    !fontSources.some(source => normalizeFamily(source.name) === codeFamily)
+  ) {
+    throw new ExportFontError(codeFont.name, 'unavailable');
   }
-  await Promise.all(fontSources.map(source => registerFont(renderer, source)));
+  await Promise.all(
+    fontSources.map(async source => {
+      try {
+        await registerFont(renderer, source);
+      } catch (error) {
+        if (normalizeFamily(source.name) === codeFamily) throw error;
+        console.warn('[CodeImage] Optional export font unavailable.', error);
+      }
+    }),
+  );
   const options = {
     width: Math.round(width) * pixelRatio,
     height: Math.round(height) * pixelRatio,
     css,
+    fontFamilies: [codeFont.name, 'Inter', 'Inter var'],
   };
   if (format === 'svg') {
     const prepared = await renderer.prepare(html, {

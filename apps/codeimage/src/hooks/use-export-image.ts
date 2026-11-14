@@ -1,3 +1,4 @@
+import {getRootEditorStore} from '../state/editor';
 import {createRasterizer} from '@core/rasterize';
 import type {RasterizerName, RasterizeOptions} from '@core/rasterize';
 import {useWebshare} from '@core/hooks/use-webshare';
@@ -66,6 +67,7 @@ export async function exportImage(
     mode === ExportMode.export ? 'dataUrl' : 'blob',
   );
   const rasterizeOptions = {
+    codeFont: getRootEditorStore().computed.selectedFont(),
     format: extension,
     pixelRatio: data.rasterizeOptions?.pixelRatio ?? pixelRatio,
     quality,

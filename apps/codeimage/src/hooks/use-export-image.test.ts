@@ -2,6 +2,15 @@
 import {expect, it, vi} from 'vitest';
 import {ExportExtension, exportImage, ExportMode} from './use-export-image';
 
+const codeFont = vi.hoisted(() => ({
+  id: 'jetbrains-mono',
+  name: 'Jetbrains Mono',
+  type: 'web',
+  types: [],
+}));
+vi.mock('../state/editor', () => ({
+  getRootEditorStore: () => ({computed: {selectedFont: () => codeFont}}),
+}));
 const rasterize = vi.hoisted(() => vi.fn(async () => new Blob(['png'])));
 vi.mock('@core/rasterize', () => ({createRasterizer: () => rasterize}));
 vi.mock('@core/hooks/use-webshare', () => ({
@@ -25,6 +34,7 @@ it('uses the requested pixel ratio override for an exact-size export', async () 
   });
   expect(result).toBeInstanceOf(Blob);
   expect(rasterize).toHaveBeenCalledWith(node, {
+    codeFont,
     format: 'png',
     pixelRatio: 1,
     quality: 1,

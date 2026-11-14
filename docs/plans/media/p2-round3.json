@@ -1,0 +1,690 @@
+{
+  "reference": {
+    "browser": "Playwright Chromium 1200 on macOS",
+    "displayDpr": 2,
+    "exportScale": 2,
+    "pixelmatchThreshold": 0.1,
+    "gatePercent": 0.5
+  },
+  "before": {
+    "adapter": "ec490046",
+    "selectedWebFont": "Geist Mono",
+    "fallback": [
+      "[CodeImage] Takumi export failed. Using dom-export. Error: Export font unavailable: Menlo\n    at http://localhost:4446/src/core/rasterize/takumi.ts?t=1794672943352:39:10"
+    ],
+    "cause": "Unsupported font format",
+    "regressions": "Tests  3 failed | 18 passed (21)"
+  },
+  "native": {
+    "diagnostic": {
+      "permission": "granted",
+      "count": 912,
+      "results": [
+        {
+          "name": "Menlo Bold",
+          "bytes": 599848,
+          "signature": [116, 114, 117, 101],
+          "stage": "registration",
+          "error": "Error: Unsupported font format"
+        },
+        {
+          "name": "Menlo Bold Italic",
+          "bytes": 443436,
+          "signature": [116, 114, 117, 101],
+          "stage": "registration",
+          "error": "Error: Unsupported font format"
+        },
+        {
+          "name": "Menlo Italic",
+          "bytes": 465876,
+          "signature": [116, 114, 117, 101],
+          "stage": "registration",
+          "error": "Error: Unsupported font format"
+        },
+        {
+          "name": "Menlo Regular",
+          "bytes": 625016,
+          "signature": [116, 114, 117, 101],
+          "stage": "registration",
+          "error": "Error: Unsupported font format"
+        },
+        {
+          "name": "Monaco",
+          "bytes": 529148,
+          "signature": [116, 114, 117, 101],
+          "stage": "registration",
+          "error": "Error: Unsupported font format"
+        }
+      ]
+    },
+    "webFont": "Geist Mono",
+    "webParity": {
+      "percent": 0.03203323515823516,
+      "width": 1184,
+      "height": 936
+    },
+    "system": [
+      {
+        "family": "Menlo",
+        "chrome": {
+          "percent": 0.7830261302483524,
+          "width": 1188,
+          "height": 936
+        },
+        "access": {
+          "queries": 0
+        },
+        "fallback": [
+          "[CodeImage] Takumi export failed. Using dom-export. ExportFontError: Export font unavailable: Menlo (format)\n    at http://localhost:4446/src/core/rasterize/takumi.ts?t=1794673004966:48:11"
+        ]
+      }
+    ],
+    "fallback": [
+      "[CodeImage] Takumi export failed. Using dom-export. ExportFontError: Export font unavailable: Menlo (format)\n    at http://localhost:4446/src/core/rasterize/takumi.ts?t=1794673004966:48:11"
+    ]
+  },
+  "collections": {
+    "file": "/System/Library/Fonts/Menlo.ttc",
+    "bytes": 2134132,
+    "signature": [116, 116, 99, 102],
+    "families": [
+      {
+        "name": "Menlo",
+        "faces": [
+          {
+            "weight": 400,
+            "style": "normal",
+            "width": 100,
+            "index": 0
+          },
+          {
+            "weight": 700,
+            "style": "normal",
+            "width": 100,
+            "index": 1
+          },
+          {
+            "weight": 400,
+            "style": "italic",
+            "width": 100,
+            "index": 2
+          },
+          {
+            "weight": 700,
+            "style": "italic",
+            "width": 100,
+            "index": 3
+          }
+        ]
+      }
+    ]
+  },
+  "matrix": {
+    "initial": {
+      "onVsChrome": {
+        "percent": 0.0316722972972973,
+        "width": 1184,
+        "height": 936
+      },
+      "offVsChrome": {
+        "percent": 0.9419575825825826,
+        "width": 1184,
+        "height": 936
+      },
+      "onVsOff": {
+        "percent": 0.9739005832755833,
+        "width": 1184,
+        "height": 936
+      }
+    },
+    "rows": [
+      {
+        "theme": "Fleet Dark",
+        "terminal": "windows",
+        "takumi": 0.05260669323169323
+      },
+      {
+        "theme": "Fleet Dark",
+        "terminal": "macOs",
+        "takumi": 0.0316722972972973
+      },
+      {
+        "theme": "Fleet Dark",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.0316722972972973
+      },
+      {
+        "theme": "Fleet Dark",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.0316722972972973
+      },
+      {
+        "theme": "VSCode Dark",
+        "terminal": "windows",
+        "takumi": 0.0524262243012243
+      },
+      {
+        "theme": "VSCode Dark",
+        "terminal": "macOs",
+        "takumi": 0.031491828366828366
+      },
+      {
+        "theme": "VSCode Dark",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.031491828366828366
+      },
+      {
+        "theme": "VSCode Dark",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.031491828366828366
+      },
+      {
+        "theme": "XCode Dark",
+        "terminal": "windows",
+        "takumi": 0.05161411411411412
+      },
+      {
+        "theme": "XCode Dark",
+        "terminal": "macOs",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "XCode Dark",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "XCode Dark",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "Night Owl",
+        "terminal": "windows",
+        "takumi": 0.05170434857934858
+      },
+      {
+        "theme": "Night Owl",
+        "terminal": "macOs",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "Night Owl",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "Night Owl",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "GitHub Dark",
+        "terminal": "windows",
+        "takumi": 0.05260669323169323
+      },
+      {
+        "theme": "GitHub Dark",
+        "terminal": "macOs",
+        "takumi": 0.03158206283206283
+      },
+      {
+        "theme": "GitHub Dark",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.03158206283206283
+      },
+      {
+        "theme": "GitHub Dark",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.03158206283206283
+      },
+      {
+        "theme": "GitHub Dark Dimmed",
+        "terminal": "windows",
+        "takumi": 0.05134341071841072
+      },
+      {
+        "theme": "GitHub Dark Dimmed",
+        "terminal": "macOs",
+        "takumi": 0.030409014784014785
+      },
+      {
+        "theme": "GitHub Dark Dimmed",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.030409014784014785
+      },
+      {
+        "theme": "GitHub Dark Dimmed",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.030409014784014785
+      },
+      {
+        "theme": "Dracula",
+        "terminal": "windows",
+        "takumi": 0.050260597135597135
+      },
+      {
+        "theme": "Dracula",
+        "terminal": "macOs",
+        "takumi": 0.0293262012012012
+      },
+      {
+        "theme": "Dracula",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.0293262012012012
+      },
+      {
+        "theme": "Dracula",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.0293262012012012
+      },
+      {
+        "theme": "XCode Light",
+        "terminal": "windows",
+        "takumi": 0.07110475860475861
+      },
+      {
+        "theme": "XCode Light",
+        "terminal": "macOs",
+        "takumi": 0.05008012820512821
+      },
+      {
+        "theme": "XCode Light",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.05008012820512821
+      },
+      {
+        "theme": "XCode Light",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.05008012820512821
+      },
+      {
+        "theme": "Material Ocean",
+        "terminal": "windows",
+        "takumi": 0.051794583044583044
+      },
+      {
+        "theme": "Material Ocean",
+        "terminal": "macOs",
+        "takumi": 0.03086018711018711
+      },
+      {
+        "theme": "Material Ocean",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.03086018711018711
+      },
+      {
+        "theme": "Material Ocean",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.03086018711018711
+      },
+      {
+        "theme": "Synthwave '84",
+        "terminal": "windows",
+        "takumi": 0.05188481750981751
+      },
+      {
+        "theme": "Synthwave '84",
+        "terminal": "macOs",
+        "takumi": 0.030950421575421574
+      },
+      {
+        "theme": "Synthwave '84",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.030950421575421574
+      },
+      {
+        "theme": "Synthwave '84",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.030950421575421574
+      },
+      {
+        "theme": "Poimandres",
+        "terminal": "windows",
+        "takumi": 0.047463328713328715
+      },
+      {
+        "theme": "Poimandres",
+        "terminal": "macOs",
+        "takumi": 0.026528932778932778
+      },
+      {
+        "theme": "Poimandres",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.026528932778932778
+      },
+      {
+        "theme": "Poimandres",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.026528932778932778
+      },
+      {
+        "theme": "Material Volcano",
+        "terminal": "windows",
+        "takumi": 0.051794583044583044
+      },
+      {
+        "theme": "Material Volcano",
+        "terminal": "macOs",
+        "takumi": 0.030769952644952647
+      },
+      {
+        "theme": "Material Volcano",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.030769952644952647
+      },
+      {
+        "theme": "Material Volcano",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.030769952644952647
+      },
+      {
+        "theme": "One dark",
+        "terminal": "windows",
+        "takumi": 0.05134341071841072
+      },
+      {
+        "theme": "One dark",
+        "terminal": "macOs",
+        "takumi": 0.030409014784014785
+      },
+      {
+        "theme": "One dark",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.030409014784014785
+      },
+      {
+        "theme": "One dark",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.030409014784014785
+      },
+      {
+        "theme": "Panda",
+        "terminal": "windows",
+        "takumi": 0.051794583044583044
+      },
+      {
+        "theme": "Panda",
+        "terminal": "macOs",
+        "takumi": 0.03086018711018711
+      },
+      {
+        "theme": "Panda",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.03086018711018711
+      },
+      {
+        "theme": "Panda",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.03086018711018711
+      },
+      {
+        "theme": "Aura Dark",
+        "terminal": "windows",
+        "takumi": 0.05044106606606607
+      },
+      {
+        "theme": "Aura Dark",
+        "terminal": "macOs",
+        "takumi": 0.029416435666435665
+      },
+      {
+        "theme": "Aura Dark",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.029416435666435665
+      },
+      {
+        "theme": "Aura Dark",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.029416435666435665
+      },
+      {
+        "theme": "One light",
+        "terminal": "windows",
+        "takumi": 0.07164616539616539
+      },
+      {
+        "theme": "One light",
+        "terminal": "macOs",
+        "takumi": 0.050621534996534996
+      },
+      {
+        "theme": "One light",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.050621534996534996
+      },
+      {
+        "theme": "One light",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.050621534996534996
+      },
+      {
+        "theme": "Material Palenight",
+        "terminal": "windows",
+        "takumi": 0.05170434857934858
+      },
+      {
+        "theme": "Material Palenight",
+        "terminal": "macOs",
+        "takumi": 0.030769952644952647
+      },
+      {
+        "theme": "Material Palenight",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.030769952644952647
+      },
+      {
+        "theme": "Material Palenight",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.030769952644952647
+      },
+      {
+        "theme": "GitHub Light",
+        "terminal": "windows",
+        "takumi": 0.07056335181335181
+      },
+      {
+        "theme": "GitHub Light",
+        "terminal": "macOs",
+        "takumi": 0.04953872141372141
+      },
+      {
+        "theme": "GitHub Light",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.04953872141372141
+      },
+      {
+        "theme": "GitHub Light",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.04953872141372141
+      },
+      {
+        "theme": "Moonlight",
+        "terminal": "windows",
+        "takumi": 0.05161411411411412
+      },
+      {
+        "theme": "Moonlight",
+        "terminal": "macOs",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "Moonlight",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "Moonlight",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "Vitesse Dark",
+        "terminal": "windows",
+        "takumi": 0.050621534996534996
+      },
+      {
+        "theme": "Vitesse Dark",
+        "terminal": "macOs",
+        "takumi": 0.029596904596904595
+      },
+      {
+        "theme": "Vitesse Dark",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.029596904596904595
+      },
+      {
+        "theme": "Vitesse Dark",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.029596904596904595
+      },
+      {
+        "theme": "Duotone Sea",
+        "terminal": "windows",
+        "takumi": 0.05170434857934858
+      },
+      {
+        "theme": "Duotone Sea",
+        "terminal": "macOs",
+        "takumi": 0.030769952644952647
+      },
+      {
+        "theme": "Duotone Sea",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.030769952644952647
+      },
+      {
+        "theme": "Duotone Sea",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.030769952644952647
+      },
+      {
+        "theme": "Duotone Dark",
+        "terminal": "windows",
+        "takumi": 0.051794583044583044
+      },
+      {
+        "theme": "Duotone Dark",
+        "terminal": "macOs",
+        "takumi": 0.03086018711018711
+      },
+      {
+        "theme": "Duotone Dark",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.03086018711018711
+      },
+      {
+        "theme": "Duotone Dark",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.03086018711018711
+      },
+      {
+        "theme": "Shades Of Purple",
+        "terminal": "windows",
+        "takumi": 0.05161411411411412
+      },
+      {
+        "theme": "Shades Of Purple",
+        "terminal": "macOs",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "Shades Of Purple",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "Shades Of Purple",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.03067971817971818
+      },
+      {
+        "theme": "Coldark Cold",
+        "terminal": "windows",
+        "takumi": 0.06975124162624162
+      },
+      {
+        "theme": "Coldark Cold",
+        "terminal": "macOs",
+        "takumi": 0.048726611226611226
+      },
+      {
+        "theme": "Coldark Cold",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.048726611226611226
+      },
+      {
+        "theme": "Coldark Cold",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.048726611226611226
+      },
+      {
+        "theme": "Coldark Dark",
+        "terminal": "windows",
+        "takumi": 0.052696927696927694
+      },
+      {
+        "theme": "Coldark Dark",
+        "terminal": "macOs",
+        "takumi": 0.0316722972972973
+      },
+      {
+        "theme": "Coldark Dark",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.0316722972972973
+      },
+      {
+        "theme": "Coldark Dark",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.0316722972972973
+      },
+      {
+        "theme": "Material Light",
+        "terminal": "windows",
+        "takumi": 0.07083405520905521
+      },
+      {
+        "theme": "Material Light",
+        "terminal": "macOs",
+        "takumi": 0.04980942480942481
+      },
+      {
+        "theme": "Material Light",
+        "terminal": "macOsGrayTheme",
+        "takumi": 0.04980942480942481
+      },
+      {
+        "theme": "Material Light",
+        "terminal": "macOsOutlineTheme",
+        "takumi": 0.04980942480942481
+      }
+    ],
+    "fallback": [],
+    "errors": [],
+    "fontIssues": []
+  },
+  "blockedFont": {
+    "diff": {
+      "percent": 0,
+      "width": 1184,
+      "height": 936
+    },
+    "messages": [
+      "[CodeImage] Takumi export failed. Using dom-export. ExportFontError: Export font unavailable: JetBrains Mono (read)\n    at http://localhost:4446/src/core/rasterize/takumi.ts?t=1794673004966:29:10"
+    ],
+    "recovered": {
+      "percent": 0.0316722972972973,
+      "width": 1184,
+      "height": 936
+    }
+  },
+  "checks": {
+    "tests": 26,
+    "lint": {
+      "errors": 0,
+      "existingWarnings": 33
+    },
+    "typecheck": "passed",
+    "productionBuild": "passed with generated .vercel cleared"
+  }
+}

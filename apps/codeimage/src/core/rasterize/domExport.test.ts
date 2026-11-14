@@ -16,6 +16,7 @@ afterEach(() => vi.clearAllMocks());
 
 it('returns an SVG blob for SVG share and getBlob exports', async () => {
   const blob = await domExport('blob')(document.createElement('div'), {
+    codeFont: {id: 'test', name: 'Test Mono', type: 'web', types: []},
     format: 'svg',
     pixelRatio: 2,
     quality: 1,

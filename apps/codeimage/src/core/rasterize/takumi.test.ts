@@ -1,4 +1,8 @@
 // @vitest-environment happy-dom
+import type {
+  SystemFontConfiguration,
+  WebFontConfiguration,
+} from '../configuration/font';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 const renderer = vi.hoisted(() => ({
@@ -24,7 +28,15 @@ vi.mock('@takumi-rs/wasm', () => ({
 }));
 vi.mock('@takumi-rs/wasm/wasm-url', () => ({default: '/takumi.wasm'}));
 
-const options = {format: 'png', pixelRatio: 2, quality: 0.8} as const;
+function webFont(name: string): WebFontConfiguration {
+  return {id: name, name, type: 'web', types: [{name: 'Regular', weight: 400}]};
+}
+const options = {
+  format: 'png',
+  pixelRatio: 2,
+  quality: 0.8,
+  codeFont: webFont('Inter var'),
+} as const;
 
 function exportNode(html: string) {
   const node = document.createElement('div');
@@ -40,6 +52,7 @@ function exportNode(html: string) {
 beforeEach(() => {
   vi.resetModules();
   vi.clearAllMocks();
+  renderer.registerFont.mockReset();
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => new Response(new Uint8Array([0, 1, 2]))),
@@ -73,7 +86,7 @@ describe('Takumi export', () => {
       },
     ]);
     const node = exportNode(
-      '<div style="font-family: ui-monospace, Menlo, monospace"><div class="cm-line" style="font-family: JetBrains Mono, monospace">const code = 1;</div></div>',
+      '<div style="font-family: ui-monospace, Menlo, monospace"><div class="cm-line" style="font-family: JetBrains Mono, monospace">const код = 1;</div></div>',
     );
     const {takumi} = await import('./takumi');
     await expect(
@@ -139,14 +152,124 @@ describe('Takumi export', () => {
   });
 
   it('continues rendering when an optional UI font cannot register', async () => {
-    renderer.registerFont.mockImplementationOnce(async () => {
-      throw new Error('Optional UI font failed');
+    const style = document.createElement('style');
+    style.textContent =
+      '@font-face { font-family: "Code Mono"; src: url("https://example.test/code.woff2"); }';
+    document.head.append(style);
+    renderer.registerFont.mockImplementation(async font => {
+      if (font.name.startsWith('Inter'))
+        throw new Error('Optional UI font failed');
+    });
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const {takumi} = await import('./takumi');
+    await expect(
+      takumi(exportNode('code'), {...options, codeFont: webFont('Code Mono')}),
+    ).resolves.toBeInstanceOf(Blob);
+    expect(renderer.render).toHaveBeenCalledOnce();
+    expect(warn).toHaveBeenCalled();
+  });
+
+  it('preserves the native faces of a stored TrueType collection', async () => {
+    const bytes = new Uint8Array([0x74, 0x74, 0x63, 0x66, 1, 2, 3]);
+    const source = {
+      family: 'Collection Mono',
+      fullName: 'Collection Mono Bold',
+      postscriptName: 'CollectionMono-Bold',
+      style: 'Bold',
+      blob: async () => new Blob([bytes]),
+    };
+    const {takumi} = await import('./takumi');
+    await takumi(exportNode('code'), {
+      ...options,
+      codeFont: {
+        id: 'collection',
+        name: 'Collection Mono',
+        type: 'system',
+        types: [{name: 'Bold', weight: 700}],
+        fontData: {
+          family: 'Collection Mono',
+          faces: ['700'],
+          monospaced: true,
+          sources: [source],
+        },
+      },
+    });
+    expect(renderer.registerFont).toHaveBeenCalledWith({
+      name: 'Collection Mono',
+      data: bytes,
+    });
+  });
+
+  it('distinguishes an unreadable stored font from a rejected collection', async () => {
+    const source = {
+      family: 'Menlo',
+      fullName: 'Menlo Regular',
+      postscriptName: 'Menlo-Regular',
+      style: 'Regular',
+      blob: vi.fn<() => Promise<Blob>>(async () => {
+        throw new Error('Blob cannot be read');
+      }),
+    };
+    const codeFont = {
+      id: 'Menlo',
+      name: 'Menlo',
+      type: 'system',
+      types: [],
+      fontData: {
+        family: 'Menlo',
+        faces: ['400'],
+        monospaced: true,
+        sources: [source],
+      },
+    } satisfies SystemFontConfiguration;
+    const {takumi} = await import('./takumi');
+    await expect(
+      takumi(exportNode('code'), {...options, codeFont}),
+    ).rejects.toMatchObject({
+      family: 'Menlo',
+      reason: 'read',
+      cause: expect.objectContaining({message: 'Blob cannot be read'}),
+    });
+    source.blob.mockImplementation(
+      async () => new Blob([new Uint8Array([0x74, 0x74, 0x63, 0x66])]),
+    );
+    renderer.registerFont.mockImplementation(async font => {
+      if (font.name === 'Menlo') throw new Error('Collection cannot register');
+    });
+    await expect(
+      takumi(exportNode('code'), {...options, codeFont}),
+    ).rejects.toMatchObject({family: 'Menlo', reason: 'collection'});
+  });
+
+  it('reports an unsupported selected font format separately from a read failure', async () => {
+    const source = {
+      family: 'Menlo',
+      fullName: 'Menlo Regular',
+      postscriptName: 'Menlo-Regular',
+      style: 'Regular',
+      blob: async () => new Blob([new Uint8Array([0x74, 0x72, 0x75, 0x65])]),
+    };
+    renderer.registerFont.mockImplementation(async font => {
+      if (font.name === 'Menlo') throw new Error('Unsupported font format');
     });
     const {takumi} = await import('./takumi');
-    await expect(takumi(exportNode('code'), options)).resolves.toBeInstanceOf(
-      Blob,
-    );
-    expect(renderer.render).toHaveBeenCalledOnce();
+    await expect(
+      takumi(exportNode('code'), {
+        ...options,
+        codeFont: {
+          id: 'Menlo',
+          name: 'Menlo',
+          type: 'system',
+          types: [],
+          fontData: {
+            family: 'Menlo',
+            faces: ['400'],
+            monospaced: true,
+            sources: [source],
+          },
+        },
+      }),
+    ).rejects.toMatchObject({family: 'Menlo', reason: 'format'});
   });
 
   it('keeps the measured frame width as a minimum and lets the widest line fit', async () => {
@@ -232,13 +355,15 @@ describe('Takumi export', () => {
       '<span style="font-family: JetBrains Mono">code</span>',
     );
     const {takumi} = await import('./takumi');
-    await expect(takumi(node, options)).rejects.toThrow(
-      'Export font unavailable: JetBrains Mono',
-    );
+    await expect(
+      takumi(node, {...options, codeFont: webFont('JetBrains Mono')}),
+    ).rejects.toThrow('Export font unavailable: JetBrains Mono');
     expect(renderer.prepare).not.toHaveBeenCalled();
     expect(renderer.render).not.toHaveBeenCalled();
     vi.mocked(fetch).mockResolvedValue(new Response(new Uint8Array([0, 1, 2])));
-    await expect(takumi(node, options)).resolves.toBeInstanceOf(Blob);
+    await expect(
+      takumi(node, {...options, codeFont: webFont('JetBrains Mono')}),
+    ).resolves.toBeInstanceOf(Blob);
     expect(renderer.render).toHaveBeenCalledOnce();
     expect(warn).not.toHaveBeenCalled();
   });
@@ -248,9 +373,9 @@ describe('Takumi export', () => {
       '<div class="cm-line" style="font-family: Missing Mono, monospace">code</div>',
     );
     const {takumi} = await import('./takumi');
-    await expect(takumi(node, options)).rejects.toThrow(
-      'Export font unavailable: missing mono',
-    );
+    await expect(
+      takumi(node, {...options, codeFont: webFont('Missing Mono')}),
+    ).rejects.toThrow('Export font unavailable: Missing Mono');
     expect(renderer.prepare).not.toHaveBeenCalled();
   });
 
@@ -265,19 +390,33 @@ describe('Takumi export', () => {
       return new Response(new Uint8Array([0, 1, 2]));
     });
     const node = exportNode(
-      '<div class="cm-line" style="font-family: JetBrains Mono, monospace">const code = 1;</div>',
+      '<div class="cm-line" style="font-family: JetBrains Mono, monospace">const код = 1;</div>',
     );
     const {takumi} = await import('./takumi');
-    await expect(takumi(node, options)).rejects.toThrow(
-      'Export font unavailable: JetBrains Mono',
-    );
+    await expect(
+      takumi(node, {...options, codeFont: webFont('JetBrains Mono')}),
+    ).rejects.toThrow('Export font unavailable: JetBrains Mono');
     expect(renderer.prepare).not.toHaveBeenCalled();
     expect(renderer.registerFont).toHaveBeenCalledWith(
       expect.objectContaining({unicodeRange: [[0x400, 0x4ff]]}),
     );
   });
 
-  it('registers fonts in stylesheet order when downloads finish out of order', async () => {
+  it('does not load a font subset for glyphs absent from the export', async () => {
+    const style = document.createElement('style');
+    style.textContent =
+      '@font-face { font-family: "Code Mono"; src: url("https://example.test/cyrillic.woff2"); unicode-range: U+0400-04FF; } @font-face { font-family: "Code Mono"; src: url("https://example.test/latin.woff2"); unicode-range: U+0000-00FF; }';
+    document.head.append(style);
+    const {takumi} = await import('./takumi');
+    await takumi(exportNode('const code = 1;'), {
+      ...options,
+      codeFont: webFont('Code Mono'),
+    });
+    expect(fetch).not.toHaveBeenCalledWith(expect.stringContaining('cyrillic'));
+    expect(renderer.render).toHaveBeenCalledOnce();
+  });
+
+  it('registers only the selected code family before optional UI fonts', async () => {
     vi.mocked(fetch).mockImplementation(async input => {
       if (String(input).includes('slow.woff2'))
         await new Promise(resolve => setTimeout(resolve, 20));
@@ -291,9 +430,9 @@ describe('Takumi export', () => {
       '<span style="font-family: Slow Mono, Fast Mono">code</span>',
     );
     const {takumi} = await import('./takumi');
-    await takumi(node, options);
+    await takumi(node, {...options, codeFont: webFont('Slow Mono')});
     expect(renderer.registerFont.mock.calls.map(([font]) => font.name)).toEqual(
-      ['Slow Mono', 'Fast Mono', 'Inter', 'Inter var'],
+      ['Slow Mono', 'Inter', 'Inter var'],
     );
   });
 
@@ -305,31 +444,6 @@ describe('Takumi export', () => {
     await takumi(node, options);
     expect(renderer.render.mock.calls[0][0]).toContain('Inter var');
     expect(renderer.render.mock.calls[0][0]).toContain('<body');
-  });
-
-  it('uses FontData.blob bytes for a selected local font', async () => {
-    const blob = vi.fn(async () => new Blob([new Uint8Array([7, 8, 9])]));
-    window.queryLocalFonts = vi.fn(async () => [
-      {
-        family: 'Local Mono',
-        fullName: 'Local Mono Regular',
-        postscriptName: 'LocalMono-Regular',
-        style: 'Regular',
-        blob,
-      },
-    ]);
-    const node = exportNode(
-      '<span style="font-family: Local Mono">code</span>',
-    );
-    const {takumi} = await import('./takumi');
-    await takumi(node, options);
-    expect(blob).toHaveBeenCalledOnce();
-    expect(renderer.registerFont).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'Local Mono',
-        data: new Uint8Array([7, 8, 9]),
-      }),
-    );
   });
 
   it('reuses one initialized renderer and registered fonts for the session', async () => {

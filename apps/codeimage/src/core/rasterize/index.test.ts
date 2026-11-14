@@ -5,7 +5,9 @@ const mocks = vi.hoisted(() => ({
   fallback: vi.fn(async () => new Blob(['fallback'], {type: 'image/png'})),
   takumi: vi.fn(async () => new Blob(['takumi'], {type: 'image/png'})),
   track: vi.fn(),
+  notify: vi.fn(),
 }));
+vi.mock('./notify-font-fallback', () => ({notifyFontFallback: mocks.notify}));
 vi.mock('./domExport', () => ({domExport: () => mocks.fallback}));
 vi.mock('./takumi', () => ({takumi: mocks.takumi}));
 vi.mock('../constants/umami', () => ({getUmami: () => ({track: mocks.track})}));
@@ -21,6 +23,7 @@ it('uses dom-export by default without invoking Takumi', async () => {
     format: 'png',
     pixelRatio: 2,
     quality: 1,
+    codeFont: {id: 'test', name: 'Test Mono', type: 'web', types: []},
   });
   expect(mocks.fallback).toHaveBeenCalledOnce();
   expect(mocks.takumi).not.toHaveBeenCalled();
@@ -32,7 +35,12 @@ it('falls back for this export and retries Takumi on the next export', async () 
   const {createRasterizer} = await import('./index');
   const rasterize = createRasterizer('takumi', 'blob');
   const node = document.createElement('div');
-  const options = {format: 'png', pixelRatio: 2, quality: 1} as const;
+  const options = {
+    format: 'png',
+    pixelRatio: 2,
+    quality: 1,
+    codeFont: {id: 'test', name: 'Test Mono', type: 'web', types: []},
+  } as const;
   const first = await rasterize(node, options);
   expect(first instanceof Blob && (await first.text())).toBe('fallback');
   const second = await rasterize(node, options);
@@ -43,4 +51,23 @@ it('falls back for this export and retries Takumi on the next export', async () 
     format: 'png',
     error: 'Error',
   });
+});
+
+it('names the unavailable code font and its failure reason in the fallback notification', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  const {ExportFontError} = await import('./font-error');
+  mocks.takumi.mockRejectedValueOnce(
+    new ExportFontError('Menlo', 'read', new Error('Blob unavailable')),
+  );
+  const {createRasterizer} = await import('./index');
+  await createRasterizer('takumi', 'blob')(document.createElement('div'), {
+    format: 'png',
+    pixelRatio: 2,
+    quality: 1,
+    codeFont: {id: 'Menlo', name: 'Menlo', type: 'web', types: []},
+  });
+  expect(mocks.notify).toHaveBeenCalledWith(
+    expect.objectContaining({family: 'Menlo', reason: 'read'}),
+  );
+  expect(mocks.fallback).toHaveBeenCalledOnce();
 });

@@ -37,7 +37,11 @@ Takumi falls back through fonts in registration order. Fonts now register in sty
 
 The review reproduced the earlier intermittent Inter output by blocking code-font downloads. `registerFont` swallowed the error, so Takumi rendered with only the UI font available.
 
-Font registration now rejects the export on failure. The existing rasterizer boundary logs the missing family and falls back to dom-export. Failed cache entries are removed, and the registration queue remains usable for the next export. The adapter also rejects a selected code family with no source, including an unavailable local font. A successful non-Latin subset does not hide a failed Latin subset.
+A missing required code font rejects Takumi before rendering. The rasterizer boundary logs the family and reason, shows a localized toast, and falls back to dom-export. Optional UI-font failures log a warning and continue. Failed cache entries are removed, and the registration queue remains usable for the next export.
+
+The adapter receives the selected font configuration from the editor. It registers that family and the bundled Inter UI font, rather than every family in computed CSS fallback stacks. Unicode-range subsets are loaded only when their ranges intersect exported text. Takumi's bundled fallback remains available for missing glyphs. Each render specifies its font families so previously cached fonts cannot change its fallback order.
+
+The local font loader retains native `FontData` handles per family and face. Export reads their `blob()` bytes without another `queryLocalFonts()` call. Config persistence keeps family metadata and omits native handles. TrueType collections retain their own face weights and styles when passed to Takumi.
 
 The blocked-font browser check gets exactly the dom-export PNG, with one fallback message naming JetBrains Mono. Restoring downloads in the same session makes the next export use Takumi again, at 0.0317% from Chrome.
 
@@ -61,6 +65,46 @@ The [300-line crop](media/p2-round2-gutter.png) shows the failing display-1/expo
 The blocked-font export matches dom-export at 0 different pixels and logs one fallback naming JetBrains Mono. After restoring downloads, the same session renders through Takumi at 0.0317% from Chrome. Unit tests also cover a missing font source and a missing Latin subset when another subset succeeds.
 
 One matrix attempt encountered an unavailable code font and returned dom-export. That run was stopped and is not a parity pass. A fresh diagnostic session loaded the font and passed. The completed matrix result is recorded below. Performance was not rerun.
+
+## Review round 3
+
+The reported failure reproduces on this Mac with the original `ec490046` adapter, native local-font permission granted, and Geist Mono selected in the font picker:
+
+```text
+[CodeImage] Takumi export failed. Using dom-export. Error: Export font unavailable: Menlo
+Fallback cause: Unsupported font format
+```
+
+The failure is in Takumi registration. All four native Menlo `FontData.blob()` reads succeed. Chrome returns extracted faces with the legacy Apple `true` signature, bytes `74 72 75 65`, which Takumi 2.19 rejects as an unsupported format. Monaco's native blob fails registration the same way. The `.ttc` collection itself is supported. Reading `/System/Library/Fonts/Menlo.ttc` directly and passing it to the same WASM version registers four faces with the correct weights, styles, and collection indices. Export cannot read that filesystem path from the browser, so unsupported native blobs use the existing browser export.
+
+The fixed adapter exports Geist Mono through Takumi at **0.0320%** different pixels from Chrome, with no fallback and no local-font query. Selecting Menlo in the real font picker uses the stored native handles and makes zero export-time local-font queries. Its unsupported blob format produces one fallback, exactly the dom-export PNG, and this visible toast:
+
+```text
+Used browser export for Menlo. This font format is not supported by Takumi.
+```
+
+The message and failure reasons have English, Italian, German, and Spanish translations. The console retains the underlying exception.
+
+The three new regression cases failed before implementation. The final suite includes unused fallback-stack fonts, selected web fonts, stored local handles, optional UI-font failures, unused subsets, collection face metadata, and distinct read and format failures:
+
+```text
+Before: Tests  3 failed | 18 passed (21)
+After:  Tests  26 passed (26)
+```
+
+All **104 matrix cells** pass again. The worst cell is **0.0716%**, with zero fallbacks, font issues, or page errors. The [round 3 results](media/p2-round3.json) record the native font signatures and registration failures, the original fallback, the fixed web and system exports, collection support, and the full matrix. The comparison uses native display DPR 2, export scale 2, and pixelmatch threshold 0.1, as in round 2. Performance was not rerun.
+
+`pnpm --filter=@codeimage/app test`, `pnpm lint`, `pnpm typecheck`, and the app production build pass. Lint has the same 33 existing warnings. The fresh-worktree API generation steps below were needed before typecheck. Repeated production builds on this machine's Node version also require clearing generated `apps/codeimage/.vercel` first, because the existing Vercel plugin uses removed `rmdirSync({recursive:true})` behavior. The clean-output build passes.
+
+The native permission override must target Playwright's actual browser context. An initial probe targeted the default context and enumerated zero fonts. After correcting the harness, it enumerated 912 native faces. Earlier probe and selector failures are excluded from the passing results.
+
+Run the checks sequentially with one development server on port 4446:
+
+```sh
+P2_URL=http://localhost:4446 P2_REVIEW_CASE=local-fonts P2_WEB_FONT=geist-mono P2_HEADED=1 P2_OUT=/tmp/p2-round3/native pnpm exec tsx scripts/parity/rasterizers.ts
+P2_URL=http://localhost:4446 P2_OUT=/tmp/p2-round3/matrix P2_PERF=0 pnpm exec tsx scripts/parity/rasterizers.ts
+P2_URL=http://localhost:4446 P2_REVIEW_CASE=blocked-font P2_OUT=/tmp/p2-round3/font pnpm exec tsx scripts/parity/rasterizers.ts
+```
 
 ## Parity matrix
 
@@ -136,7 +180,7 @@ The run used the Vite development app on an Apple M3 with eight logical cores wh
 
 ## Checks
 
-- `pnpm --filter=@codeimage/app test` passed 18 tests in five files, including both display/export crossovers, font failure recovery, missing font sources, and a missing Latin subset.
+- `pnpm --filter=@codeimage/app test` passes 26 tests in six files, including display/export crossovers, font failure recovery, required versus optional fonts, stored local handles, and unsupported font formats.
 - `pnpm lint` passed with zero errors and 33 existing warnings.
 - `pnpm typecheck` passes. A fresh worktree needs `pnpm --filter=@codeimage/api exec prisma generate`, `pnpm --filter=@codeimage/prisma-models build`, and `pnpm --filter=@codeimage/api build:ts` first. The separate `build:types` script fails because its config omits `declaration`; the API build supplies the required declarations.
 - `pnpm --filter=@codeimage/app build` passed. Takumi stays in a 5.14 kB chunk behind a dynamic `import()`, which loads the 4,213,356-byte WASM file (1,867.65 kB gzip) on the first Takumi export. The flag-off live export requested no WASM.

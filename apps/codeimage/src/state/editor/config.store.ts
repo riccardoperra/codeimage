@@ -44,6 +44,14 @@ function getDefaultConfig(): ConfigState {
 export const EditorConfigStore = defineStore(() => getDefaultConfig())
   .extend(withIndexedDbPlugin('editorConfig', getDefaultConfig()))
   .extend(_ => {
+    const persist = (state: ConfigState) =>
+      _.idb.set({
+        ...unwrap(state),
+        systemFonts: state.systemFonts.map(font => ({
+          ...unwrap(font),
+          fontData: {...unwrap(font.fontData), sources: []},
+        })),
+      });
     onMount(() => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owner = getOwner()!;
@@ -60,14 +68,14 @@ export const EditorConfigStore = defineStore(() => getDefaultConfig())
                 ? 'takumi'
                 : 'dom-export',
           );
-          _.idb.set(unwrap(_.get));
+          persist(_.get);
           _.set('ready', true);
           _.set('fonts', [...SUPPORTED_FONTS]);
           createEffect(
             on(
               _,
               state => {
-                _.idb.set(unwrap(state));
+                persist(state);
               },
               {defer: true},
             ),

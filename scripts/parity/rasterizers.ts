@@ -6,6 +6,12 @@ import pixelmatch from 'pixelmatch';
 import {chromium, type Page} from 'playwright';
 import {PNG} from 'pngjs';
 
+declare global {
+  interface Window {
+    fontProbeState: {queries: number};
+  }
+}
+
 async function main() {
   const root = path.resolve(__dirname, '../..');
   const out = process.env.P2_OUT ?? '/tmp/swarm-p2';
@@ -23,6 +29,7 @@ async function main() {
   // baselines to whole CSS pixels. A native factor matches a Retina display.
   const browser = await chromium.launch({
     executablePath,
+    headless: process.env.P2_HEADED !== '1',
     args: [`--force-device-scale-factor=${displayDpr}`],
   });
   const context = await browser.newContext({
@@ -562,6 +569,10 @@ async function main() {
       await page.keyboard.press('Escape');
       await settings(page, true);
       await boot(page);
+      if (process.env.P2_REVIEW_CASE === 'local-fonts') {
+        await runLocalFonts();
+        return;
+      }
       await page.getByRole('button', {name: 'Menu', exact: true}).click();
       await page.getByRole('menuitem', {name: 'Settings', exact: true}).click();
       const control = page.getByRole('switch', {
@@ -897,6 +908,165 @@ async function main() {
     );
   }
 
+  async function runLocalFonts() {
+    const {targetInfo} = await screenshotSession.send('Target.getTargetInfo');
+    await screenshotSession.send('Browser.setPermission', {
+      browserContextId: targetInfo.browserContextId,
+      permission: {name: 'local-fonts'},
+      setting: 'granted',
+      origin: baseUrl,
+    });
+    const diagnostic = await page.evaluate(async () => {
+      const fonts = await window.queryLocalFonts!();
+      const results = [];
+      const modulePath = '/node_modules/@takumi-rs/wasm/dist/export.mjs';
+      const wasmPath = '/node_modules/@takumi-rs/wasm/bundlers/wasm-url.mjs';
+      const {default: init, Renderer} = await import(modulePath);
+      const {default: url} = await import(wasmPath);
+      await init({module_or_path: url});
+      const renderer = new Renderer();
+      for (const font of fonts.filter(font =>
+        ['Menlo', 'Monaco'].includes(font.family),
+      )) {
+        let stage = 'blob';
+        let bytes = 0;
+        let signature: number[] = [];
+        try {
+          const data = new Uint8Array(await (await font.blob()).arrayBuffer());
+          bytes = data.length;
+          signature = Array.from(data.slice(0, 4));
+          stage = 'registration';
+          const families = await renderer.registerFont({
+            name: font.family,
+            data,
+          });
+          results.push({
+            name: font.fullName,
+            families,
+            bytes: data.length,
+            signature: Array.from(data.slice(0, 4)),
+          });
+        } catch (error) {
+          results.push({
+            name: font.fullName,
+            bytes,
+            signature,
+            stage,
+            error: String(error),
+          });
+        }
+      }
+      renderer.free();
+      return {
+        permission: (
+          await navigator.permissions.query({
+            name: 'local-fonts',
+          } as PermissionDescriptor)
+        ).state,
+        count: fonts.length,
+        results,
+      };
+    });
+    console.log('NATIVE FONT DIAGNOSTIC', JSON.stringify(diagnostic));
+    async function chooseFont(name: string, system = false) {
+      const trigger = page.locator('[class*="FontPicker_inputValue"]').first();
+      await trigger.click();
+      const tab = page
+        .getByRole('tab', {name: system ? 'System' : 'Default', exact: true})
+        .last();
+      if ((await tab.getAttribute('aria-selected')) !== 'true')
+        await tab.click();
+      if (system)
+        await page.getByPlaceholder('Search font...').fill(name.toLowerCase());
+      await page.getByRole('option', {name, exact: true}).click();
+      await page.keyboard.press('Escape');
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(300);
+    }
+    if (process.env.P2_WEB_FONT === 'geist-mono')
+      await chooseFont('Geist Mono');
+    const webFont = await page
+      .locator('[class*="FontPicker_inputValue"]')
+      .first()
+      .innerText();
+    assert.ok(
+      diagnostic.count > 0,
+      'Native local fonts are not available in this browser context.',
+    );
+    await page.evaluate(() => {
+      window.fontProbeState = {queries: 0};
+      const query = window.queryLocalFonts!.bind(window);
+      window.queryLocalFonts = options => {
+        window.fontProbeState.queries++;
+        return query(options);
+      };
+    });
+    const web = await render('takumi', 'local-web-selected');
+    const webParity = compare(
+      web.data,
+      await reference('local-web-chrome'),
+      'local-web',
+    );
+    assert.ok(webParity.percent <= 0.5);
+    assert.deepEqual(fallback, []);
+    assert.equal(
+      await page.evaluate(() => window.fontProbeState.queries),
+      0,
+      'Web export must not enumerate local fonts.',
+    );
+    const system = [];
+    for (const family of ['Menlo']) {
+      await chooseFont(family, true);
+      await page.evaluate(() => {
+        if (window.fontProbeState) window.fontProbeState.queries = 0;
+      });
+      const previousFallbacks = fallback.length;
+      const result = await render('takumi', `local-${family}`);
+      const chrome = compare(
+        result.data,
+        await reference(`local-${family}-chrome`),
+        `local-${family}`,
+      );
+      const access = await page.evaluate(() => window.fontProbeState ?? null);
+      assert.equal(
+        access.queries,
+        0,
+        'System export must reuse stored FontData.',
+      );
+      const fontFallbacks = fallback.slice(previousFallbacks);
+      system.push({family, chrome, access, fallback: fontFallbacks});
+      if (fontFallbacks.length) {
+        assert.equal(fontFallbacks.length, 1);
+        await page
+          .getByText(
+            `Used browser export for ${family}. ${fontFallbacks[0].includes('(format)') ? 'This font format is not supported by Takumi.' : 'The font data could not be read.'}`,
+            {exact: true},
+          )
+          .waitFor();
+        const browserExport = await render(
+          'dom-export',
+          `local-${family}-fallback-reference`,
+        );
+        assert.equal(
+          compare(result.data, browserExport.data, `local-${family}-fallback`)
+            .percent,
+          0,
+        );
+      } else {
+        assert.ok(
+          chrome.percent <= 0.5,
+          `${family} exceeds the Chrome parity gate.`,
+        );
+      }
+    }
+    const report = {diagnostic, webFont, webParity, system, fallback};
+    console.log('LOCAL FONT RESULTS', JSON.stringify(report));
+    writeFileSync(
+      path.join(out, 'local-fonts.json'),
+      JSON.stringify(report, null, 2),
+    );
+  }
+
   async function runBlockedFont() {
     const originalFetch = await page.evaluateHandle(() => window.fetch);
     await page.evaluate(() => {
@@ -935,6 +1105,11 @@ async function main() {
       'Fallback must explain the missing font.',
     );
     assert.equal(diff.percent, 0, 'Blocked font export must equal dom-export.');
+    await page
+      .getByText(
+        /^Used browser export for Jetbrains Mono\. The font data could not be read\.$/i,
+      )
+      .waitFor();
     await page.evaluate(original => {
       window.fetch = original;
     }, originalFetch);
@@ -976,6 +1151,10 @@ async function main() {
   );
   try {
     await boot(page);
+    if (process.env.P2_REVIEW_CASE === 'local-fonts') {
+      await runLocalFonts();
+      return;
+    }
     if (process.env.P2_REVIEW_CASE === 'crossovers') {
       await runReviewCases();
       assert.deepEqual(fallback, []);
