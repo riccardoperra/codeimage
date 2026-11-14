@@ -66,7 +66,7 @@ The stage, from `stage.tsx`, holds the parts of the real editor that a layout pl
 
 `ThemePicker` is the theme picker in the style chosen in the second pill: search, the dark and light filter, and every theme. Place it where your layout shows themes, in a container with a definite height, and it fills it. Its optional props are `size` (`'md'` for the kit fields on touch layouts), `autofocus` (focus the selected theme on mount, for a tray or a sheet) and `onPick(theme, byKeyboard)`.
 
-`ThemeSwatch`, from `ThemeSwatch.tsx`, draws one theme as a small mark, for example in a button that shows the applied theme. Without a `variant` it draws the mark of the chosen style. The marks are `orb`, `syntax-orb`, `aa`, `palette`, and `window`. `palette` and `window` also take a `width`, in px or `fill`.
+`ThemeSwatch`, from `ThemeSwatch.tsx`, draws one theme as a small mark, for example in a button that shows the applied theme. Without a `variant` it draws the mark of the chosen style. The marks are `orb`, `syntax-orb`, `aa`, `palette`, and `window`. `palette` and `window` also take a `width`, in px or `fill`. With `fill`, `window` keeps the default frame's shape, about 5 to 4, and grows with its card.
 
 The harness creates a new stage for each mount and keeps one model for the whole session. `registry.ts` lists the layouts in picker order. You do not edit it. It reads `meta` from your folder. `ModelDump.tsx`, a plain list of every control with native inputs, is no longer used by a layout and can start a new one.
 
@@ -91,6 +91,7 @@ The Code style mounts one CodeMirror preview per theme, 26 in all. Switching to 
 - Show themes with `props.ThemePicker`, not with a grid of your own, so that the theme style pill reaches your layout.
 - Keep the top center of the page free of controls: the pills float there.
 - A popover that closes on outside clicks should treat `[data-prototype-chrome]` as inside, so that switching the theme style keeps it open.
+- `SegmentedField` with `adapt` makes the kit control `height: 100%`. Under a parent of auto height that falls back to its line height, about 24px. Give the parent the kit's field height, 36px at `sm` or 40px at `md`.
 - The pickers listen for keys on `document`. Solid delegates `onKeyDown` to `document` too, so `stopPropagation()` in an `onKeyDown` handler does not keep a key from them. Use a native `on:keydown` listener on your element, or give the element a composite role such as `listbox`. A composite that stops the keys it uses in a native listener can add `data-passes-keys`, so that the pickers still get the others.
 
 ## Delete the prototype
