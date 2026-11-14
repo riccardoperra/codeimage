@@ -1,3 +1,5 @@
+import {useI18n} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../../i18n';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import type {DragEventParam} from '@core/modules/dnd';
 import {ConstrainDragAxis} from '@core/modules/dnd/ConstrainDragAxis';
@@ -10,12 +12,16 @@ import {
 import type {VoidProps} from 'solid-js';
 import {createMemo, ErrorBoundary, For, Show, Suspense} from 'solid-js';
 import {createTabIcon} from '../../../hooks/use-tab-icon';
+import type {WindowStyle} from '../WindowStyles/WindowStyles';
+import {WindowTab} from './Tab/WindowTab';
+import * as modern from './Tab/WindowTabStyle.css';
 import {DraggableWindowTab} from './Tab/DraggableWindowTab';
 import * as styles from './Tab/Tab.css';
 import {TabAddButton} from './TabAddButton/TabAddButton';
 import {TerminalWindowTabListPreview} from './TerminalWindowTabListPreview';
 
 export interface TerminalWindowTabListProps {
+  appearance?: WindowStyle;
   accent: boolean;
   readOnly: boolean;
   lite?: boolean;
@@ -30,7 +36,9 @@ export function TerminalWindowTabList(
 ) {
   return (
     <>
-      {props.preview ? (
+      {props.appearance && (props.readOnly || props.preview) ? (
+        <StaticWindowTabs {...props} />
+      ) : props.preview ? (
         <TerminalWindowTabListPreview {...props} />
       ) : (
         <TerminalWindowTabListContent {...props} />
@@ -97,10 +105,18 @@ export function TerminalWindowTabListContent(
     >
       <Suspense>
         <div
-          class={styles.wrapper({accent: props.accent, lite: props.lite})}
+          class={
+            props.appearance
+              ? modern.wrapper
+              : styles.wrapper({accent: props.accent, lite: props.lite})
+          }
+          data-window-tabs={props.appearance}
           data-accent-visible={props.accent}
         >
-          <div class={styles.tabListWrapper} ref={wrapperRef}>
+          <div
+            class={props.appearance ? modern.list : styles.tabListWrapper}
+            ref={wrapperRef}
+          >
             <DragDropProvider
               onDragEnd={handleDragEnd}
               collisionDetector={closestCorners}
@@ -128,6 +144,7 @@ export function TerminalWindowTabListContent(
 
                     return (
                       <DraggableWindowTab
+                        appearance={props.appearance}
                         exportExclude={
                           !editor.tab.tabName?.length &&
                           (state.editors.length === 1 || !active())
@@ -157,6 +174,7 @@ export function TerminalWindowTabListContent(
           </div>
           <Show when={!props.readOnly}>
             <TabAddButton
+              appearance={props.appearance}
               disabled={!canAddEditor()}
               onAdd={() => addEditor(null, true)}
             />
@@ -164,5 +182,41 @@ export function TerminalWindowTabListContent(
         </div>
       </Suspense>
     </ErrorBoundary>
+  );
+}
+
+function StaticWindowTabs(props: TerminalWindowTabListProps) {
+  const [t] = useI18n<AppLocaleEntries>();
+  const editor = getRootEditorStore();
+  const active = (id: string) =>
+    props.activeTabId ? id === props.activeTabId : editor.isActive(id);
+  const tabs = () =>
+    editor.state.editors.filter(
+      tab =>
+        (!props.showOnlyActiveTab || active(tab.id)) &&
+        (props.appearance === 'editor' || !!tab.tab.tabName),
+    );
+  return (
+    <div
+      class={modern.wrapper}
+      data-window-tabs={props.appearance}
+      data-static-tabs="true"
+    >
+      <div class={modern.list}>
+        <For each={tabs()}>
+          {tab => (
+            <WindowTab
+              appearance={props.appearance}
+              active={active(tab.id)}
+              accentMode={false}
+              index={0}
+              content={
+                <span>{tab.tab.tabName || t('frame.windowUntitled')}</span>
+              }
+            />
+          )}
+        </For>
+      </div>
+    </div>
   );
 }
