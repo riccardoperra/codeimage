@@ -19,7 +19,7 @@ export const ExportTargetSchema = Type.Union([
 
 export const FrameExportProperties = {
   exportTarget: Type.Optional(Nullable(ExportTargetSchema)),
-  aspectRatio: Type.Optional(Nullable(Type.String())),
+  aspectRatio: Type.Optional(Type.Union([Type.Null(), Type.String()])),
   signature: Type.Optional(Nullable(FrameSignatureSchema)),
 };
 
