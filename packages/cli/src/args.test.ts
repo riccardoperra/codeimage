@@ -1,5 +1,7 @@
 import {describe, expect, it} from 'vitest';
-import {inferLanguage, parseArgs, UsageError} from './args';
+import {toCliConfig} from '../../../apps/codeimage/src/components/Presets/cliConfig';
+import {parseArgs, UsageError} from './args';
+import {snapshotDocumentSchema} from './document';
 import {buildSnapshot, parsePreset} from './snapshot';
 
 function renderArgs(argv: string[] = []) {
@@ -51,6 +53,13 @@ describe('arguments', () => {
     expect(renderArgs(['--format=webp']).output).toBe('codeimage.webp');
   });
 
+  it('infers the format from the output extension unless --format is given', () => {
+    expect(renderArgs(['-o', 'a.svg']).format).toBe('svg');
+    expect(renderArgs(['-o', 'a.JPG']).format).toBe('jpeg');
+    expect(renderArgs(['-o', 'a.out']).format).toBe('png');
+    expect(renderArgs(['-o', 'a.svg', '--format', 'webp']).format).toBe('webp');
+  });
+
   it('accepts -- before filenames starting with a dash', () => {
     expect(renderArgs(['--', '--example.ts']).files).toEqual(['--example.ts']);
   });
@@ -66,7 +75,7 @@ describe('arguments', () => {
     },
   );
 
-  it.each(['0', '-1', 'NaN', 'Infinity', ''])(
+  it.each(['0', '-1', 'NaN', 'Infinity', '', '3.5'])(
     'rejects invalid scale %s',
     scale => {
       expect(() => renderArgs([`--scale=${scale}`])).toThrow('--scale');
@@ -103,8 +112,12 @@ describe('snapshot', () => {
     ['README.md', 'markdown'],
     ['foo.TSX', 'typescript'],
     ['unknown.ext', 'plain-text'],
-  ])('infers %s as %s from config', (file, language) => {
-    expect(inferLanguage(file)).toBe(language);
+  ])('infers %s as %s from config', async (file, language) => {
+    const snapshot = await buildSnapshot({
+      args: renderArgs(),
+      inputs: [{name: file, code: ''}],
+    });
+    expect(snapshot.editor.editors[0].languageId).toBe(language);
   });
 
   it('rejects missing input', async () => {
@@ -121,8 +134,9 @@ describe('snapshot', () => {
         {name: 'b.py', code: 'print(1)'},
       ],
     });
+    expect(snapshotDocumentSchema.parse(snapshot)).toEqual(snapshot);
     expect(snapshot).toMatchObject({
-      $version: '1.10.0',
+      $version: '1.0.0',
       format: 'png',
       scale: 1,
       width: 960,
@@ -192,54 +206,77 @@ describe('snapshot', () => {
     expect(snapshot.editor.editors[0].code).toBe('two');
   });
 
-  it('round trips the web preset data shape and gives flags precedence', async () => {
+  it('reads what Copy as CLI config writes and gives flags precedence', async () => {
+    const webPreset = {
+      appVersion: '1.10.0',
+      localSyncId: 'local-1',
+      frame: {
+        background: '#ff0000',
+        padding: 32,
+        radius: 0,
+        visible: true,
+        opacity: 50,
+        signature: '@me',
+      },
+      terminal: {
+        showHeader: true,
+        type: 'windows',
+        accentVisible: false,
+        shadow: null,
+        background: '#111111',
+        textColor: '#eeeeee',
+        showWatermark: false,
+        showGlassReflection: true,
+        opacity: 80,
+        alternativeTheme: true,
+        borderType: null,
+      },
+      editor: {
+        fontId: 'fira-code',
+        fontWeight: 700,
+        showLineNumbers: true,
+        themeId: 'dracula',
+        enableLigatures: false,
+      },
+    };
     const inputs = [{name: 'a.ts', code: 'const a = 1;'}];
-    const original = await buildSnapshot({args: renderArgs(), inputs});
-    const preset = parsePreset(
-      JSON.stringify({
-        appVersion: original.$version,
-        frame: {...original.frame, padding: 32, background: '#ff0000'},
-        terminal: {...original.terminal, showWatermark: false},
-        editor: {...original.editor.options, fontWeight: 700},
-      }),
-    );
+    const preset = parsePreset(toCliConfig(webPreset));
     const copied = await buildSnapshot({args: renderArgs(), inputs, preset});
-    expect(copied.frame).toEqual(preset.frame);
-    expect(copied.terminal).toEqual(preset.terminal);
-    expect(copied.editor.options).toEqual(preset.editor);
-    const initialWebPreset = parsePreset(
-      JSON.stringify({
-        ...preset,
-        appVersion: '1.7.0',
-        editor: {...preset.editor, themeId: 'fleetTheme'},
+    expect(copied.frame).toEqual(webPreset.frame);
+    expect(copied.terminal).toEqual(webPreset.terminal);
+    expect(copied.editor.options).toEqual(webPreset.editor);
+    expect(snapshotDocumentSchema.parse(copied)).toEqual(copied);
+
+    const initial = parsePreset(
+      toCliConfig({
+        ...webPreset,
+        editor: {...webPreset.editor, themeId: 'fleetTheme'},
       }),
     );
-    expect(initialWebPreset.editor.themeId).toBe('fleetDark');
+    expect(initial.editor.themeId).toBe('fleetDark');
+
     const overridden = await buildSnapshot({
-      args: renderArgs([
-        '--theme',
-        'dracula',
-        '--lines',
-        '1-1',
-        '--scale',
-        '2',
-      ]),
+      args: renderArgs(['--theme', 'fleetDark', '--lines', '1-1']),
       inputs,
       preset,
     });
     expect(overridden.editor.options).toMatchObject({
-      themeId: 'dracula',
+      themeId: 'fleetDark',
       showLineNumbers: true,
       fontWeight: 700,
     });
     expect(overridden.frame.background).not.toBe('#ff0000');
-    expect(overridden.scale).toBe(2);
   });
 
-  it.each(['{', '{}', '{"appVersion":"999"}'])(
-    'names --preset on invalid JSON or data %s',
-    text => {
-      expect(() => parsePreset(text)).toThrow('--preset');
-    },
-  );
+  it.each([
+    ['{', '--preset'],
+    ['[]', '--preset'],
+    ['{}', '--preset: frame'],
+    [
+      JSON.stringify({frame: {}, terminal: {}, editor: {}}),
+      '--preset: frame.background',
+    ],
+  ])('names --preset and the field on invalid preset %s', (text, message) => {
+    expect(() => parsePreset(text)).toThrow(message);
+  });
 });

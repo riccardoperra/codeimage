@@ -1,52 +1,46 @@
+import {inferLanguageFromPath} from '@codeimage/config';
 import {basename} from 'node:path';
 import {z} from 'zod';
-import appPackage from '../../../apps/codeimage/package.json';
-import {inferLanguage, resolveTheme, UsageError} from './args';
+import {resolveTheme, UsageError} from './args';
 import type {RenderArgs} from './args';
+import {projectSnapshotSchema, SUPPORTED_SNAPSHOT_MAJOR} from './document';
+import type {SnapshotInput} from './document';
 
-const presetSchema = z.object({
-  appVersion: z.string().min(1),
-  frame: z.object({
-    background: z.string(),
-    padding: z.number().nonnegative(),
-    radius: z.number().nonnegative(),
-    visible: z.boolean(),
-    opacity: z.number().min(0).max(100),
-  }),
-  terminal: z.object({
-    showHeader: z.boolean(),
-    type: z.enum(['macOs', 'macOsGrayTheme', 'macOsOutlineTheme', 'windows']),
-    accentVisible: z.boolean(),
-    shadow: z.string().nullable(),
-    background: z.string(),
-    textColor: z.string(),
-    showWatermark: z.boolean(),
-    showGlassReflection: z.boolean(),
-    opacity: z.number().min(0).max(100),
-    alternativeTheme: z.boolean(),
-    borderType: z.literal('glass').nullable(),
-  }),
-  editor: z.object({
-    fontId: z.string().min(1),
-    fontWeight: z.number().positive(),
-    showLineNumbers: z.boolean(),
-    themeId: z
-      .string()
-      .transform(id => (id === 'fleetTheme' ? 'fleetDark' : id)),
-    enableLigatures: z.boolean(),
-  }),
+const presetSchema = z.looseObject({
+  frame: projectSnapshotSchema.shape.frame,
+  terminal: projectSnapshotSchema.shape.terminal,
+  editor: projectSnapshotSchema.shape.editor.shape.options,
 });
 
-export function parsePreset(text: string) {
+export type Preset = z.output<typeof presetSchema>;
+
+function formatIssues(issues: z.core.$ZodIssue[]) {
+  const shown = issues
+    .slice(0, 3)
+    .map(issue => `${issue.path.join('.')}: ${issue.message}`);
+  if (issues.length > 3) shown.push(`and ${issues.length - 3} more`);
+  return shown.join('; ');
+}
+
+export function parsePreset(text: string): Preset {
+  let preset: Preset;
   try {
-    const preset = presetSchema.parse(JSON.parse(text));
-    resolveTheme(preset.editor.themeId, '--preset editor.themeId');
-    return preset;
+    preset = presetSchema.parse(JSON.parse(text));
   } catch (error) {
-    throw new UsageError(
-      `--preset: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    const message =
+      error instanceof z.ZodError
+        ? formatIssues(error.issues)
+        : error instanceof Error
+          ? error.message
+          : String(error);
+    throw new UsageError(`--preset: ${message}`);
   }
+  const themeId =
+    preset.editor.themeId === 'fleetTheme'
+      ? 'fleetDark'
+      : preset.editor.themeId;
+  resolveTheme(themeId, '--preset editor.themeId');
+  return {...preset, editor: {...preset.editor, themeId}};
 }
 
 export type CodeInput = {name: string; code: string};
@@ -58,14 +52,25 @@ export async function buildSnapshot({
 }: {
   args: RenderArgs;
   inputs: CodeInput[];
-  preset?: ReturnType<typeof parsePreset>;
-}) {
+  preset?: Preset;
+}): Promise<SnapshotInput> {
   if (inputs.length === 0)
-    throw new UsageError('input: provide a file or pipe code through stdin');
+    throw new UsageError('no input: give a file or pipe code through stdin');
   const theme = await resolveTheme(
     args.theme ?? preset?.editor.themeId ?? 'fleetDark',
   ).load();
-  const useThemeColors = args.theme !== undefined || !preset;
+  const colors =
+    args.theme !== undefined || !preset
+      ? {
+          frame: theme.properties.previewBackground,
+          terminal: theme.properties.terminal.main,
+          text: theme.properties.terminal.text,
+        }
+      : {
+          frame: preset.frame.background,
+          terminal: preset.terminal.background,
+          text: preset.terminal.textColor,
+        };
   const editors = inputs.map(({name, code}, index) => {
     if (args.lines) {
       const lines = code.replace(/\r\n?/g, '\n').split('\n');
@@ -79,22 +84,20 @@ export async function buildSnapshot({
       id: `cli-${index + 1}`,
       code,
       tabName: basename(name),
-      languageId: args.language ?? inferLanguage(name),
+      languageId: args.language ?? inferLanguageFromPath(name) ?? 'plain-text',
       lineNumberStart: args.lines?.start ?? 1,
     };
   });
   return {
     $snippetId: null,
-    $version: appPackage.version,
+    $version: `${SUPPORTED_SNAPSHOT_MAJOR}.0.0`,
     frame: {
       padding: 64,
       radius: 8,
       visible: true,
       opacity: 100,
       ...preset?.frame,
-      background: useThemeColors
-        ? theme.properties.previewBackground
-        : preset.frame.background,
+      background: colors.frame,
     },
     terminal: {
       showHeader: true,
@@ -107,12 +110,8 @@ export async function buildSnapshot({
       alternativeTheme: false,
       borderType: 'glass',
       ...preset?.terminal,
-      background: useThemeColors
-        ? theme.properties.terminal.main
-        : preset.terminal.background,
-      textColor: useThemeColors
-        ? theme.properties.terminal.text
-        : preset.terminal.textColor,
+      background: colors.terminal,
+      textColor: colors.text,
     },
     editor: {
       options: {
@@ -122,7 +121,7 @@ export async function buildSnapshot({
         ...preset?.editor,
         themeId: theme.id,
         showLineNumbers:
-          args.lines !== undefined || (preset?.editor.showLineNumbers ?? false),
+          args.lines !== undefined || preset?.editor.showLineNumbers === true,
       },
       editors,
     },

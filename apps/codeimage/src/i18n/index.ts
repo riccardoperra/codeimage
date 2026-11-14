@@ -4,6 +4,7 @@ import {presets} from './presets';
 import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
+import {cliConfig} from './cliConfig';
 
 export const locale = {
   it: {
@@ -94,6 +95,7 @@ export const locale = {
     ...bottomBar.it,
     ...notFound.it,
     ...presets.it,
+    ...cliConfig.it,
   },
   en: {
     canvas: {
@@ -180,6 +182,7 @@ export const locale = {
     ...dashboard.en,
     ...notFound.en,
     ...presets.en,
+    ...cliConfig.en,
   },
   de: {
     common: {
@@ -267,6 +270,7 @@ export const locale = {
     ...dashboard.de,
     ...notFound.de,
     ...presets.de,
+    ...cliConfig.de,
   },
   es: {
     common: {
@@ -354,6 +358,7 @@ export const locale = {
     ...dashboard.es,
     ...notFound.es,
     ...presets.es,
+    ...cliConfig.es,
   },
 };
 
