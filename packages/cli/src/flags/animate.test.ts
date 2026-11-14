@@ -195,9 +195,12 @@ describe('animate flag', () => {
   });
 
   it.each([
-    [['--hold=-1'], '--hold: expected milliseconds, 0 or more'],
-    [['--hold', 'soon'], '--hold: expected milliseconds, 0 or more'],
-    [['--hold', ''], '--hold: expected milliseconds, 0 or more'],
+    [['--hold=-1'], '--hold: expected milliseconds from 0 to 10000'],
+    [['--hold', 'soon'], '--hold: expected milliseconds from 0 to 10000'],
+    [['--hold', ''], '--hold: expected milliseconds from 0 to 10000'],
+    [['--hold', '10001'], '--hold: expected milliseconds from 0 to 10000'],
+    [['--transition', '99'], '--transition: expected milliseconds from 100'],
+    [['--transition', '5001'], '--transition: expected milliseconds from 100'],
     [['--transition', 'Infinity'], '--transition: expected milliseconds'],
     [['--easing', 'bounce'], '--easing: expected smooth, snappy, or linear'],
     [['--fps', '25'], '--fps: expected 24, 30, 50, or 60'],
@@ -210,12 +213,13 @@ describe('animate flag', () => {
     expect(parse).toThrow(message);
   });
 
-  it('rejects an animation that lasts 0 ms', async () => {
-    const message = '--animate: animation: The holds and transitions add up';
-    await expect(plan(['--hold', '0'], [inputs[0]])).rejects.toThrow(message);
-    await expect(plan(['--hold', '0', '--transition', '0'])).rejects.toThrow(
-      UsageError,
+  it('rejects a single step, which would be a still image', async () => {
+    await expect(plan([], [inputs[0]])).rejects.toThrow(
+      '--animate: needs two or more steps',
     );
+  });
+
+  it('accepts holds of 0 ms while the transitions move', async () => {
     const moving = await plan(['--hold', '0']);
     expect(moving.document.animation.transitionMs).toBe(900);
   });

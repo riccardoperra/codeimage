@@ -51,12 +51,18 @@ function format(values: FlagValues): Format {
   return format;
 }
 
+// The same limits as the editor's Animate panel.
+const LIMITS = {hold: {min: 0, max: 10_000}, transition: {min: 100, max: 5000}};
+
 function milliseconds(values: FlagValues, flag: 'hold' | 'transition') {
   const value = values[flag];
   if (value === undefined) return undefined;
   const ms = typeof value === 'string' && value.trim() ? Number(value) : NaN;
-  if (!Number.isFinite(ms) || ms < 0) {
-    throw new UsageError(`--${flag}: expected milliseconds, 0 or more`);
+  const {min, max} = LIMITS[flag];
+  if (!Number.isFinite(ms) || ms < min || ms > max) {
+    throw new UsageError(
+      `--${flag}: expected milliseconds from ${min} to ${max}`,
+    );
   }
   return ms;
 }
@@ -102,6 +108,11 @@ export function planAnimation(
   args: AnimationArgs,
   preset?: Preset,
 ): {document: AnimationDocument; notes: string[]} {
+  if (snapshot.editor.editors.length < 2) {
+    throw new UsageError(
+      '--animate: needs two or more steps, one per input file or tab',
+    );
+  }
   const stored = preset?.animation;
   const fps = args.fps ?? stored?.fps;
   let document: AnimationDocument;
