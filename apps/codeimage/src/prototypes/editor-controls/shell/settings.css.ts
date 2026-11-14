@@ -20,9 +20,9 @@ const focusRing = {
  * dialog's own surface. On the right, the section on screen, on the app's
  * background, so that its groups are islands as the editor's panels are.
  *
- * On a phone the left pane turns into two rows on top: the search with the
- * close button, then the sections as tabs. Four sections do not need a
- * screen of their own, and the search stays in reach.
+ * On a phone the left pane turns into rows on top: the search with the
+ * close button, then the sections as tabs, three to a row. Six sections do
+ * not need a screen of their own, and the search stays in reach.
  */
 export const shell = style({
   display: 'grid',
@@ -119,13 +119,13 @@ export const nav = style({
   padding: `${themeVars.spacing['1']} ${themeVars.spacing['3']} ${themeVars.spacing['3']}`,
   overflowY: 'auto',
   '@media': {
+    // Six labels are wider than a phone, so they take two rows of three
+    // rather than hide some of them past the edge.
     [phone]: {
-      flexDirection: 'row',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
       gap: themeVars.spacing['1'],
       padding: `0 ${themeVars.spacing['2']} ${themeVars.spacing['2']}`,
-      overflowX: 'auto',
-      overflowY: 'hidden',
-      scrollbarWidth: 'none',
     },
   },
 });
@@ -169,12 +169,11 @@ export const navItem = style({
       transition: 'none',
       selectors: {'&:active': {transform: 'none'}},
     },
-    // Five sections share one row of a phone: less padding, and they may shrink.
     [phone]: {
-      flex: '1 1 auto',
       justifyContent: 'center',
       height: '40px',
       padding: '0 4px',
+      whiteSpace: 'nowrap',
     },
   },
 });

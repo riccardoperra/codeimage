@@ -125,7 +125,7 @@ The left pane has a search field and the sections, each with an icon. The right 
 - Experiments holds what is not the default yet. Inspector and Window carry a `Default` tag, and `Restore defaults` goes back to both. The choices are cards and not switches because each is one out of three: two switches would turn each other off.
 - The search filters the rows of every section by title and description, and every word has to match. The results are grouped by section. Escape clears the search, a second Escape closes the dialog, and `/` focuses the field.
 - Opening the dialog focuses the section on screen, not the search, so a phone does not open its keyboard over the settings.
-- Under 769px the left pane becomes two rows on top: the search with the close button, then the sections as tabs without icons. Five sections do not need a screen of their own, and this keeps every section and the search one tap away.
+- Under 769px the left pane becomes two rows on top: the search with the close button, then the sections as tabs without icons, three to a row. Six sections do not need a screen of their own, and this keeps every section and the search one tap away.
 - To add a setting, add a row to a group in `sections.tsx`. Use the segmented control or a switch for a choice. The kit's `Select` does not work in this dialog: the dialog is modal, and Kobalte marks the select's list, which it adds outside the dialog, as hidden from assistive technology.
 - Create any dialog a row opens in `SettingsDialog`, which stays mounted. The panel inside it goes away as the dialog closes.
 
