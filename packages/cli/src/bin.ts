@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import {readFile, writeFile} from 'node:fs/promises';
-import {defineCommand, renderUsage, runCommand} from 'citty';
-import {ARGS, normalizeArgs, renderArgs, UsageError} from './args';
+import {renderUsage} from 'citty';
+import {COMMAND, parseArgs, UsageError} from './args';
 import {FLAGS} from './flags';
 import {renderSnapshot} from '@codeimage/render';
 import {planImages} from './images';
@@ -29,63 +29,55 @@ async function readStdin() {
   return code;
 }
 
-const command = defineCommand({
-  meta: {name: 'codeimage', description: 'Render code as an image'},
-  args: ARGS,
-  async run({args: parsed, rawArgs}) {
-    const args = renderArgs(parsed, rawArgs);
-    if (args.kind === 'help') {
-      process.stdout.write(await renderUsage(command));
-      return;
+async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  if (args.kind === 'help') {
+    process.stdout.write(await renderUsage(COMMAND));
+    return;
+  }
+  if (!args.files.length && process.stdin.isTTY) {
+    process.stderr.write(await renderUsage(COMMAND));
+    process.exitCode = 2;
+    return;
+  }
+  const preset = args.preset
+    ? parsePreset(await readInput(args.preset, '--preset: '))
+    : undefined;
+  const files = args.files.length ? args.files : ['-'];
+  const inputs: CodeInput[] = [];
+  for (const file of files) {
+    inputs.push(
+      file === '-'
+        ? {name: 'stdin', code: await readStdin()}
+        : {name: file, code: await readInput(file)},
+    );
+  }
+  const outputs = await planImages(args, inputs, preset);
+  for (const output of outputs) {
+    const image = await renderSnapshot(output.snapshot);
+    if (output.path === '-') {
+      await new Promise<void>((resolve, reject) => {
+        process.stdout.write(image, error =>
+          error ? reject(error) : resolve(),
+        );
+      });
+    } else {
+      await writeFile(output.path, image);
+      process.stdout.write(`${output.path}\n`);
     }
-    if (!args.files.length && process.stdin.isTTY) {
-      process.stderr.write(await renderUsage(command));
-      process.exitCode = 2;
-      return;
-    }
-    const preset = args.preset
-      ? parsePreset(await readInput(args.preset, '--preset: '))
-      : undefined;
-    const files = args.files.length ? args.files : ['-'];
-    const inputs: CodeInput[] = [];
-    for (const file of files) {
-      inputs.push(
-        file === '-'
-          ? {name: 'stdin', code: await readStdin()}
-          : {name: file, code: await readInput(file)},
-      );
-    }
-    const outputs = await planImages(args, inputs, preset);
-    for (const output of outputs) {
-      const image = await renderSnapshot(output.snapshot);
-      if (output.path === '-') {
-        await new Promise<void>((resolve, reject) => {
-          process.stdout.write(image, error =>
-            error ? reject(error) : resolve(),
-          );
-        });
-      } else {
-        await writeFile(output.path, image);
-        process.stdout.write(`${output.path}\n`);
-      }
-      for (const flag of FLAGS) {
-        for (const sidecar of flag.sidecars?.(output, args.values) ?? []) {
-          await writeFile(sidecar.path, sidecar.text);
-          process.stdout.write(`${sidecar.path}\n`);
-        }
+    for (const flag of FLAGS) {
+      for (const sidecar of flag.sidecars?.(output, args.values) ?? []) {
+        await writeFile(sidecar.path, sidecar.text);
+        process.stdout.write(`${sidecar.path}\n`);
       }
     }
-  },
-});
+  }
+}
 
 process.stdout.on('error', error => {
   process.stderr.write(`codeimage: ${error.message}\n`);
   process.exitCode = 1;
 });
-
-async function main() {
-  await runCommand(command, {rawArgs: normalizeArgs(process.argv.slice(2))});
-}
 
 main().catch(error => {
   process.stderr.write(
