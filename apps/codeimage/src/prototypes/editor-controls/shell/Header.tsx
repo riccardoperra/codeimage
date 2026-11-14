@@ -29,7 +29,11 @@ export function Header(props: {stage: Stage}) {
   return (
     <header class={styles.header}>
       <div class={styles.brand}>
-        <CodeImageLogoV2 height={22} withGradient={true} />
+        {/*
+          28px in a row of 36px buttons: at 22px the mark left 7px of air
+          above and below it and the left side read lighter than the right.
+        */}
+        <CodeImageLogoV2 height={28} withGradient={true} />
       </div>
       <Show when={loggedIn() && modality === 'full'}>
         <Link
