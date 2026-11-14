@@ -74,6 +74,12 @@ export type GlyphWidths = ReadonlyMap<string, number>;
 // Measured once per font and size, in CSS pixels.
 export type CodeMetrics = {charWidth: number; lineHeight: number};
 
+export type Point = {x: number; y: number};
+
+export type Size = {width: number; height: number};
+
+export type NonEmpty<T> = readonly [T, ...T[]];
+
 export type SceneTiming = {
   transitionMs: number;
   easing: AnimationSettings['easing'];
