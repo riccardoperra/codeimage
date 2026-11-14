@@ -15,6 +15,7 @@ import {
 const options = {
   transitionMs: 901,
   easing: 'linear',
+  fps: 30,
   lineNumbers: false,
   metrics: {charWidth: 10, lineHeight: 20},
   widths: new Map(),
@@ -305,6 +306,55 @@ test('a window that rescales stays centered inside the padding of its target fra
         label,
       );
     }
+  }
+});
+
+test('a rescaling window is on its path at every frame an export draws', () => {
+  const size = {width: 1080, height: 1080};
+  const padding = 64;
+  const holdMs = 517;
+  // The test player rounds the scale to 6 decimals, which moves the edge of a
+  // 2644 px window 0.0014 px. Between two stops the window is 0.017 px off.
+  const exact = 0.002;
+  for (const fps of [24, 25, 30, 50, 60]) {
+    const timeline = planTimeline(
+      [
+        step('a', holdMs, {size, window: fitted(size, padding, [480, 117])}),
+        targetStep(size, fitted(size, padding, [2644, 139])),
+      ],
+      {...options, fps},
+    );
+    const [, early, late] = timeline.scenes;
+    assert.ok(early.kind === 'transition' && late.kind === 'transition');
+    const end = holdMs + options.transitionMs;
+    let frames = 0;
+    // An export draws frame k at floor(k * 1000 / fps) ms of the timeline.
+    for (let frame = 0; Math.floor((frame * 1000) / fps) < end; frame++) {
+      const timeMs = Math.floor((frame * 1000) / fps) - holdMs;
+      if (timeMs < 0) continue;
+      frames++;
+      const scene = timeMs < late.offsetMs ? early : late;
+      const {left, top, width, height, scale} = styleOf(
+        timeline,
+        scene,
+        'window',
+        timeMs - scene.offsetMs,
+      );
+      const box = {left, top, width: width * scale, height: height * scale};
+      const center = centerOf(box);
+      const label = `${fps} fps at ${timeMs} ms: ${JSON.stringify(box)}`;
+      assert.ok(
+        Math.abs(center.x - size.width / 2) <= exact &&
+          Math.abs(center.y - size.height / 2) <= exact,
+        label,
+      );
+      assert.ok(
+        box.left >= padding - exact &&
+          box.left + box.width <= size.width - padding + exact,
+        label,
+      );
+    }
+    assert.ok(frames >= 21, `${frames} frames at ${fps} fps`);
   }
 });
 
