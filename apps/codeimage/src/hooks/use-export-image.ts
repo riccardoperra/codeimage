@@ -1,5 +1,3 @@
-import {getRootEditorStore} from '../state/editor';
-import {createRasterizer} from '@core/rasterize';
 import type {RasterizerName, RasterizeOptions} from '@core/rasterize';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {isIOS} from '@solid-primitives/platform';
@@ -45,7 +43,7 @@ function resolveMimeType(extension: ExportExtension): string {
 
 export async function exportImage(
   data: ExportImagePayload,
-): Promise<Blob | string> {
+): Promise<Blob | string | undefined> {
   const {
     options: {extension, mode, pixelRatio, quality},
     ref,
@@ -62,6 +60,12 @@ export async function exportImage(
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
   const previewNode = ref.firstChild as HTMLElement;
 
+  const [{createRasterizer}, {getRootEditorStore}, {getFrameState}] =
+    await Promise.all([
+      import('@core/rasterize'),
+      import('../state/editor'),
+      import('@codeimage/store/editor/frame'),
+    ]);
   const rasterize = createRasterizer(
     data.renderer,
     mode === ExportMode.export ? 'dataUrl' : 'blob',
@@ -69,7 +73,9 @@ export async function exportImage(
   const rasterizeOptions = {
     codeFont: getRootEditorStore().computed.selectedFont(),
     format: extension,
-    pixelRatio: data.rasterizeOptions?.pixelRatio ?? pixelRatio,
+    pixelRatio: getFrameState().exportPixelRatio(
+      data.rasterizeOptions?.pixelRatio ?? pixelRatio,
+    ),
     quality,
   };
 
@@ -97,37 +103,30 @@ export async function exportImage(
           files: [file],
         };
 
-        if (canShare(data)) {
-          const safeShare = () =>
-            share(data)?.catch((error: Error) => {
-              if (error.name === 'AbortError') {
-                return null;
-              }
-              throw error;
-            });
-
-          /**
-           * ATTENTION: this is a partial workaround to fix this issue of "Save image" for iOS 15:
-           * {@link https://bugs.webkit.org/show_bug.cgi?id=231995}
-           *
-           * The Promise.race() allows to update the pending state of the promise
-           * after 3s since the share() will never be resolved if the
-           * user press on "Save image" button.
-           *
-           * This fix is partial since if the promise of navigator.share() is not resolved,
-           * even if the pending is present, an error by the platform/userAgent of iOS will be thrown
-           *
-           * */
-          if (isIOS) {
-            await Promise.race([
-              safeShare(),
-              new Promise(r => setTimeout(r, 3000)),
-            ]);
-            return blob;
-          } else {
-            await safeShare();
-          }
+        if (!canShare(data)) {
+          throw new Error('WebShare cannot share this image.');
         }
+
+        const shared = share(data)?.then(
+          () => true,
+          (error: unknown) => {
+            if (error instanceof Error && error.name === 'AbortError') {
+              return false;
+            }
+            throw error;
+          },
+        );
+        // iOS "Save image" can leave share() pending. Release the loading state
+        // after three seconds, without claiming that the share succeeded.
+        const completed = isIOS
+          ? await Promise.race([
+              shared,
+              new Promise<false>(resolve =>
+                setTimeout(() => resolve(false), 3000),
+              ),
+            ])
+          : await shared;
+        if (!completed) return undefined;
 
         return blob;
       }
@@ -167,11 +166,5 @@ export async function exportImage(
     }
   }
 
-  const cb = exportByMode(previewNode);
-
-  return cb
-    .then(r => r as string | Blob)
-    .catch(e => {
-      throw e;
-    });
+  return exportByMode(previewNode);
 }

@@ -1,3 +1,5 @@
+import {FittedWindow} from './FittedWindow';
+import {FrameSignature, framePadding} from './FrameSignature';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -47,6 +49,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   const config = provideState(EditorConfigStore);
   let ref!: HTMLDivElement;
   const frame = getFrameState().store;
+  const target = () => getFrameState().exportTarget();
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
@@ -96,11 +99,22 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
           style={assignInlineVars({
             overflow: 'hidden',
             [styles.frameVars.radius]: `${frame.radius}px`,
-            [styles.frameVars.width]: frame.width ? `${frame.width}px` : 'auto',
-            [styles.frameVars.height]: frame.height
-              ? `${frame.height}px`
-              : 'auto',
-            [styles.frameVars.padding]: `${frame.padding}px`,
+            [styles.frameVars.width]: target()
+              ? `${target()!.resolution[0]}px`
+              : frame.width
+                ? `${frame.width}px`
+                : 'auto',
+            [styles.frameVars.height]: target()
+              ? `${target()!.resolution[1]}px`
+              : frame.height
+                ? `${frame.height}px`
+                : 'auto',
+            [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
+            [styles.frameVars.minHeight]: target() ? '0' : '100%',
+            [styles.frameVars.padding]: framePadding(
+              frame.padding,
+              frame.signature,
+            ),
           })}
         >
           <div
@@ -132,44 +146,47 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
             </Show>
           </div>
 
-          <DynamicTerminal
-            type={terminal.type}
-            activeTabId={props.tab?.id}
-            readonlyTab={true}
-            showTab={true}
-            showOnlyActiveTab={exportCanvasStore.get.showOnlyActiveTab}
-            shadow={terminal.shadow}
-            background={terminal.background}
-            accentVisible={terminal.accentVisible}
-            textColor={terminal.textColor}
-            showHeader={terminal.showHeader}
-            showGlassReflection={terminal.showGlassReflection}
-            showWatermark={terminal.showWatermark}
-            opacity={terminal.opacity}
-            alternativeTheme={terminal.alternativeTheme}
-            borderType={terminal.borderType}
-            themeId={editor.state.options.themeId}
-          >
-            <Show when={tab()}>
-              {active => (
-                <StaticCodeView
-                  code={active().code}
-                  languageId={active().languageId}
-                  language={
-                    props.language === undefined
-                      ? language.latest
-                      : props.language
-                  }
-                  theme={theme()!}
-                  showLineNumbers={editor.state.options.showLineNumbers}
-                  lineNumberStart={active().lineNumberStart ?? 1}
-                  fontFamily={editor.computed.selectedFont().name}
-                  fontWeight={editor.state.options.fontWeight}
-                  enableLigatures={editor.state.options.enableLigatures}
-                />
-              )}
-            </Show>
-          </DynamicTerminal>
+          <FittedWindow active={!!target()}>
+            <DynamicTerminal
+              type={terminal.type}
+              activeTabId={props.tab?.id}
+              readonlyTab={true}
+              showTab={true}
+              showOnlyActiveTab={exportCanvasStore.get.showOnlyActiveTab}
+              shadow={terminal.shadow}
+              background={terminal.background}
+              accentVisible={terminal.accentVisible}
+              textColor={terminal.textColor}
+              showHeader={terminal.showHeader}
+              showGlassReflection={terminal.showGlassReflection}
+              showWatermark={terminal.showWatermark}
+              opacity={terminal.opacity}
+              alternativeTheme={terminal.alternativeTheme}
+              borderType={terminal.borderType}
+              themeId={editor.state.options.themeId}
+            >
+              <Show when={tab()}>
+                {active => (
+                  <StaticCodeView
+                    code={active().code}
+                    languageId={active().languageId}
+                    language={
+                      props.language === undefined
+                        ? language.latest
+                        : props.language
+                    }
+                    theme={theme()!}
+                    showLineNumbers={editor.state.options.showLineNumbers}
+                    lineNumberStart={active().lineNumberStart ?? 1}
+                    fontFamily={editor.computed.selectedFont().name}
+                    fontWeight={editor.state.options.fontWeight}
+                    enableLigatures={editor.state.options.enableLigatures}
+                  />
+                )}
+              </Show>
+            </DynamicTerminal>
+          </FittedWindow>
+          <FrameSignature signature={frame.signature} />
         </div>
       </div>
     </PreviewPortal>

@@ -5,6 +5,7 @@ import type {MainData} from '~/components/Main/MainData';
 import gradientStyles from '~/theme/gradients.module.css';
 import {breakpoints} from '~/theme/breakpoints';
 import {betterCommentsForGitHubLink, mainWebsiteLink} from '~/core/constants';
+import {publicAsset} from '~/core/publicAsset';
 import {GitHubButton} from '../GitHubButton/GitHubButton';
 import {Header} from '../Header/Header';
 
@@ -84,23 +85,29 @@ export default function MainPage(props: MainPageProps) {
                 <picture>
                   <source
                     type="image/webp"
-                    srcset={'/landing/codeimage_preview_mobile_ultra.webp'}
+                    srcset={publicAsset(
+                      'landing/codeimage_preview_mobile_ultra.webp',
+                    )}
                     media={`(max-width: ${breakpoints.tablet - 1}px)`}
                   />
                   <source
                     type="image/webp"
-                    srcset={'/landing/codeimage_preview_mobile.webp'}
+                    srcset={publicAsset(
+                      'landing/codeimage_preview_mobile.webp',
+                    )}
                     media={`(min-width: ${breakpoints.tablet}px)`}
                   />
                   <source
                     type="image/webp"
-                    srcset={'/landing/codeimage_preview_desktop.webp'}
+                    srcset={publicAsset(
+                      'landing/codeimage_preview_desktop.webp',
+                    )}
                     media={`(min-width: ${breakpoints.desktop}px)`}
                   />
                   <img
                     class={styles.imageLeft}
                     loading={'lazy'}
-                    src={'/landing/codeimage_preview_lite.png'}
+                    src={publicAsset('landing/codeimage_preview_lite.png')}
                     alt={'Preview of CodeImage snippet'}
                   />
                 </picture>

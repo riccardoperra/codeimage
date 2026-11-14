@@ -1,3 +1,5 @@
+import type {Static} from '@sinclair/typebox';
+import {ExportTargetSchema, type FrameSignatureSchema} from './project.contract.js';
 import {defineErrors} from '../../shared/errors.js';
 import {
   isOwnedBy,
@@ -13,6 +15,9 @@ import {
 } from './project.contract.js';
 
 export interface SnippetFrame {
+  readonly exportTarget?: Static<typeof ExportTargetSchema> | null;
+  readonly aspectRatio?: string | null;
+  readonly signature?: Static<typeof FrameSignatureSchema> | null;
   readonly id: string;
   readonly background: string | null;
   readonly padding: number;
@@ -115,6 +120,9 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
   return {
     name: body.name,
     frame: {
+      aspectRatio: body.frame.aspectRatio ?? null,
+      exportTarget: body.frame.exportTarget ?? null,
+      signature: body.frame.signature ?? null,
       padding:
         body.frame.padding ??
         SnippetFrameCreateRequestSchema.properties.padding.default,
@@ -205,4 +213,28 @@ export function draftFromClone(
 
 export function viewFor(project: Project, viewer: Principal): ProjectView {
   return {...project, isOwner: isOwnedBy(viewer, project.ownerId)};
+}
+
+export function readFrameSignature(frame: {
+  signatureHandle?: string | null;
+  signaturePosition?: string | null;
+}): Static<typeof FrameSignatureSchema> | null {
+  const {signatureHandle: handle, signaturePosition: position} = frame;
+  return handle && (position === 'bottom-left' || position === 'bottom-right')
+    ? {handle, position}
+    : null;
+}
+
+export function readFrameExportProperties(frame: {
+  exportTarget?: string | null;
+  signatureHandle?: string | null;
+  signaturePosition?: string | null;
+}) {
+  return {
+    exportTarget:
+      ExportTargetSchema.anyOf.find(
+        target => target.const === frame.exportTarget,
+      )?.const ?? null,
+    signature: readFrameSignature(frame),
+  };
 }

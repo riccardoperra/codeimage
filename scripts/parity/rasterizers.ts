@@ -189,12 +189,12 @@ async function main() {
           performance
             .getEntriesByType('resource')
             .map(entry => entry.name)
-            .filter(name => name.includes('/src/hooks/export-snippet.ts'))
-            .at(-1) ?? '/src/hooks/export-snippet.ts';
-        const {exportSnippet} = await import(modulePath);
+            .filter(name => name.includes('/src/hooks/use-export-image.ts'))
+            .at(-1) ?? '/src/hooks/use-export-image.ts';
+        const {exportImage} = await import(modulePath);
         const wrapper = document.querySelector(wrapperSelector);
         performance.mark('p2-export-start');
-        const blob = await exportSnippet({
+        const blob = await exportImage({
           ref: wrapper,
           renderer: engine,
           rasterizeOptions: {pixelRatio},
@@ -226,22 +226,9 @@ async function main() {
     return {...result, data: bytes};
   }
 
-  async function reference(name: string) {
+  async function reference(name: string, pixelRatio = displayDpr) {
     const state = await page.evaluate(
       async ({wrapperSelector, portalSelector}) => {
-        const modulePath =
-          performance
-            .getEntriesByType('resource')
-            .map(entry => entry.name)
-            .filter(name => name.includes('/src/hooks/export-snippet.ts'))
-            .at(-1) ?? '/src/hooks/export-snippet.ts';
-        const {previewEditorView} = await import(modulePath);
-        const view = previewEditorView;
-        const previous = view.viewState?.printing;
-        if (view.viewState && view.measure) {
-          view.viewState.printing = true;
-          view.measure();
-        }
         const portal = document.querySelector<HTMLElement>(portalSelector);
         if (!portal) throw new Error('Export portal not found.');
         const style = portal.getAttribute('style');
@@ -251,7 +238,7 @@ async function main() {
         hide.id = 'p2-reference-style';
         hide.textContent = `[data-export-exclude="true"]{visibility:hidden!important}${wrapperSelector}::before,${wrapperSelector}::after,${portalSelector}::before,${portalSelector}::after{display:none!important}`;
         document.head.append(hide);
-        return {style, previous, portalSelector};
+        return {style, portalSelector};
       },
       {wrapperSelector, portalSelector},
     );
@@ -265,27 +252,18 @@ async function main() {
           ...bounds,
           width: Math.round(bounds.width),
           height: Math.round(bounds.height),
-          scale: 1,
+          scale: pixelRatio / displayDpr,
         },
       });
       const png = Buffer.from(data, 'base64');
       writeFileSync(path.join(out, name + '.png'), png);
       return png;
     } finally {
-      await page.evaluate(async state => {
+      await page.evaluate(state => {
         const portal = document.querySelector(state.portalSelector);
         if (state.style === null) portal?.removeAttribute('style');
         else portal?.setAttribute('style', state.style);
         document.getElementById('p2-reference-style')?.remove();
-        const modulePath =
-          performance
-            .getEntriesByType('resource')
-            .map(entry => entry.name)
-            .filter(name => name.includes('/src/hooks/export-snippet.ts'))
-            .at(-1) ?? '/src/hooks/export-snippet.ts';
-        const {previewEditorView: view} = await import(modulePath);
-        if (view.viewState) view.viewState.printing = state.previous;
-        view.requestMeasure();
       }, state);
     }
   }
@@ -515,13 +493,8 @@ async function main() {
       const referencePng = await reference('p2-long-chrome');
       const chrome = compare(on.data, referencePng, 'long-on-chrome');
       const docLines = await page.evaluate(async () => {
-        const modulePath = performance
-          .getEntriesByType('resource')
-          .map(e => e.name)
-          .filter(name => name.includes('/src/hooks/export-snippet.ts'))
-          .at(-1);
-        const {previewEditorView} = await import(modulePath);
-        return previewEditorView.state.doc.lines;
+        return document.querySelectorAll('[data-static-code-view] .cm-line')
+          .length;
       });
       assert.equal(docLines, 300);
       assert.equal(chrome.width, diff.width);
@@ -807,15 +780,6 @@ async function main() {
     await setLineNumbers(true);
     await page.waitForTimeout(300);
     const geometry = await page.evaluate(async wrapperSelector => {
-      const modulePath =
-        performance
-          .getEntriesByType('resource')
-          .map(entry => entry.name)
-          .filter(name => name.includes('/src/hooks/export-snippet.ts'))
-          .at(-1) ?? '/src/hooks/export-snippet.ts';
-      const {previewEditorView: view} = await import(modulePath);
-      view.viewState.printing = true;
-      view.measure();
       const frame = document.querySelector(wrapperSelector + ' > *');
       const code = frame?.querySelector('.cm-line');
       const gutter = frame?.querySelector('.cm-lineNumbers');
@@ -1177,6 +1141,62 @@ async function main() {
   );
   try {
     await boot(page);
+    if (process.env.P2_TARGETS === '1') {
+      const targets = [
+        {id: 'x-landscape', width: 1600, height: 900},
+        {id: 'square', width: 1080, height: 1080},
+        {id: 'linkedin-portrait', width: 1080, height: 1350},
+        {id: 'open-graph', width: 1200, height: 630},
+      ];
+      const results = [];
+      for (const target of targets) {
+        await page.evaluate(async id => {
+          const {getFrameState} = await import('/src/state/editor/frame.ts');
+          const frame = getFrameState();
+          frame.setExportTarget(id);
+          frame.setSignature({handle: '@codeimage', position: 'bottom-right'});
+        }, target.id);
+        await page.waitForFunction(
+          ({wrapperSelector, width, height}) => {
+            const node = document.querySelector(wrapperSelector + ' > *');
+            const rect = node?.getBoundingClientRect();
+            return (
+              rect &&
+              Math.round(rect.width) === width &&
+              Math.round(rect.height) === height
+            );
+          },
+          {...target, wrapperSelector},
+        );
+        await page.evaluate(() => document.fonts.ready);
+        const chrome = await reference(target.id + '-chrome', 1);
+        for (const engine of ['dom-export', 'takumi'] as const) {
+          const image = await render(
+            engine,
+            target.id + '-' + engine,
+            'png',
+            page,
+            3,
+          );
+          const png = PNG.sync.read(image.data);
+          assert.equal(png.width, target.width);
+          assert.equal(png.height, target.height);
+          const diff = compare(
+            image.data,
+            chrome,
+            target.id + '-' + engine + '-chrome',
+          );
+          results.push({target: target.id, engine, ...diff});
+          console.log(results.at(-1));
+          assert.ok(diff.percent <= 0.5, JSON.stringify(results.at(-1)));
+        }
+      }
+      writeFileSync(
+        path.join(out, 'targets.json'),
+        JSON.stringify(results, null, 2),
+      );
+      return;
+    }
     if (process.env.P2_REVIEW_CASE === 'local-fonts') {
       await runLocalFonts();
       return;
