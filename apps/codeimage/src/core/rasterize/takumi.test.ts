@@ -80,24 +80,35 @@ describe('Takumi export', () => {
     expect(node.style.backgroundImage).toContain('to right bottom');
   });
 
-  it('passes exact CodeMirror gutter row heights that outerHTML would round', async () => {
-    const {takumi} = await import('./takumi');
-    const node = exportNode(
-      '<div class="cm-gutterElement" style="height: 22.3984px; margin-top: 4px">1</div>',
-    );
-    const row = node.querySelector('.cm-gutterElement');
-    if (!row) throw new Error('Expected a gutter row.');
-    vi.spyOn(row, 'getBoundingClientRect').mockReturnValue(
-      new DOMRect(0, 0, 40, 22.3984375),
-    );
-    await takumi(node, options);
-    const html = renderer.prepare.mock.calls[0][0];
-    expect(html).toContain('height: 22.3984375px');
-    expect(html).toContain('margin-top: 4px');
-    expect(row.getAttribute('style')).toBe(
-      'height: 22.3984px; margin-top: 4px',
-    );
-  });
+  it.each([
+    {displayDpr: 1, pixelRatio: 2, measuredHeight: 22.390625},
+    {displayDpr: 2, pixelRatio: 1, measuredHeight: 22.3984375},
+  ])(
+    'sizes gutter rows using code line height at export scale $pixelRatio from display DPR $displayDpr',
+    async ({displayDpr, pixelRatio, measuredHeight}) => {
+      vi.stubGlobal('devicePixelRatio', displayDpr);
+      const {takumi} = await import('./takumi');
+      const node = exportNode(
+        `<div class="cm-editor"><div class="cm-gutterElement" style="height: 0px; visibility: hidden">999</div><div class="cm-gutterElement" style="height: ${measuredHeight}px; margin-top: 4px">1</div><div class="cm-line" style="line-height: 22.4px">const line1 = 1;</div></div>`,
+      );
+      const row = node.querySelector('.cm-gutterElement:nth-child(2)');
+      if (!row) throw new Error('Expected a gutter row.');
+      vi.spyOn(row, 'getBoundingClientRect').mockReturnValue(
+        new DOMRect(0, 0, 40, measuredHeight),
+      );
+      const original = node.outerHTML;
+      await takumi(node, {...options, pixelRatio});
+      const html = renderer.prepare.mock.calls[0][0];
+      const exported = new DOMParser().parseFromString(html, 'text/html');
+      expect(
+        exported.querySelector<HTMLElement>('.cm-gutterElement:nth-child(2)')
+          ?.style.height,
+      ).toBe('22.4px');
+      expect(html).toContain('height: 0px');
+      expect(html).toContain('margin-top: 4px');
+      expect(node.outerHTML).toBe(original);
+    },
+  );
 
   it('omits excluded subtrees without changing the live node', async () => {
     const {takumi} = await import('./takumi');
@@ -112,7 +123,7 @@ describe('Takumi export', () => {
     expect(node.outerHTML).toBe(original);
   });
 
-  it('keeps rendering with the UI font when a code font cannot load', async () => {
+  it('rejects a missing code font before rendering and recovers on the next export', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     vi.mocked(fetch).mockImplementation(async input => {
       if (String(input).includes('missing.woff2'))
@@ -127,9 +138,15 @@ describe('Takumi export', () => {
       '<span style="font-family: JetBrains Mono">code</span>',
     );
     const {takumi} = await import('./takumi');
+    await expect(takumi(node, options)).rejects.toThrow(
+      'Export font unavailable: JetBrains Mono',
+    );
+    expect(renderer.prepare).not.toHaveBeenCalled();
+    expect(renderer.render).not.toHaveBeenCalled();
+    vi.mocked(fetch).mockResolvedValue(new Response(new Uint8Array([0, 1, 2])));
     await expect(takumi(node, options)).resolves.toBeInstanceOf(Blob);
-    expect(warn).toHaveBeenCalled();
     expect(renderer.render).toHaveBeenCalledOnce();
+    expect(warn).not.toHaveBeenCalled();
   });
 
   it('registers fonts in stylesheet order when downloads finish out of order', async () => {
