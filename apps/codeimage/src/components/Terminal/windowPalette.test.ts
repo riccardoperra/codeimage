@@ -51,12 +51,25 @@ test('falls back to text for a missing accent and leaves unsupported colours unc
   expect(palette.status).toBe('var(--ink)');
 });
 
-test('darkens the ambient base and composites translucent accents into opaque backgrounds', () => {
-  const palette = createWindowPalette({
-    background: '#ffffff',
-    text: '#000',
-    accent: 'rgba(255, 0, 0, .5)',
-  });
-  expect(palette.ambientBase).toBe('rgb(209, 209, 209)');
-  expect(palette.status).toBe('rgb(255, 235, 235)');
+test('darkens the ambient base and composites a translucent accent into the status bar', () => {
+  expect(
+    createWindowPalette({background: '#ffffff', text: '#000'}).ambientBase,
+  ).toBe('rgb(209, 209, 209)');
+  expect(
+    createWindowPalette({
+      background: '#000000',
+      text: '#fff',
+      accent: 'rgba(255, 0, 0, .5)',
+    }).status,
+  ).toBe('rgb(20, 0, 0)');
+});
+
+test('gives a window lighter than its text a neutral status bar', () => {
+  expect(
+    createWindowPalette({
+      background: '#ffffff',
+      text: '#1F2328',
+      accent: '#cf222e',
+    }).status,
+  ).toBe('rgb(246, 246, 246)');
 });

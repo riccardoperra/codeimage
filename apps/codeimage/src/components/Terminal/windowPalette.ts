@@ -62,6 +62,7 @@ const mix = (base: Color, tint: Color, amount: number) => {
     a: 1,
   });
 };
+const lightness = (c: Color) => 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
 
 export function createWindowPalette({
   background,
@@ -73,8 +74,14 @@ export function createWindowPalette({
   const tint = parseColor(accent);
   const inkAt = (alpha: number) => (ink ? rgba(ink, alpha) : text);
   const accentAt = (alpha: number) => (tint ? rgba(tint, alpha) : text);
-  const tintedPaper = (amount: number) =>
-    paper && tint ? mix(paper, tint, amount) : text;
+  // On a light window an accent-tinted band reads as an error or a deleted
+  // diff line (GitHub Light's red), so it stays neutral and the accent lives
+  // in its mark.
+  const status = () => {
+    if (!paper || !tint) return text;
+    if (ink && lightness(paper) > lightness(ink)) return mix(paper, ink, 0.04);
+    return mix(paper, tint, 0.16);
+  };
   return {
     ink04: inkAt(0.04),
     ink08: inkAt(0.08),
@@ -86,7 +93,7 @@ export function createWindowPalette({
     ink90: inkAt(0.9),
     accent: tint ? rgba(tint, 1) : text,
     background: paper ? rgba(paper, 1) : text,
-    status: tintedPaper(0.16),
+    status: status(),
     accent14: accentAt(0.14),
     accent22: accentAt(0.22),
     accent45: accentAt(0.45),
