@@ -186,6 +186,35 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
     expect(countPixels(numbered, cmLightGutter)).toBeGreaterThan(10);
   });
 
+  it('draws the watermark name on light and dark terminals', async () => {
+    const watermarkPixels = async (themeId: string) => {
+      const draw = (showWatermark: boolean) =>
+        png({
+          ...plainDocument('', {themeId}),
+          terminal: {
+            ...sampleDocument.terminal,
+            background: '',
+            textColor: '',
+            showHeader: false,
+            showWatermark,
+          },
+        });
+      const [on, off] = await Promise.all([draw(true), draw(false)]);
+      let changed = 0;
+      for (let i = 0; i < on.data.length; i += 4) {
+        const delta = [0, 1, 2].reduce(
+          (sum, c) => sum + Math.abs(on.data[i + c] - off.data[i + c]),
+          0,
+        );
+        if (delta > 30) changed++;
+      }
+      return changed;
+    };
+    const dark = await watermarkPixels('vsCodeDarkTheme');
+    const light = await watermarkPixels('xCodeLight');
+    expect(light).toBeGreaterThan(dark * 0.7);
+  });
+
   it('parses a tab with the language its name selects', async () => {
     const sfc = '<template>\n  <p>{{ count }}</p>\n</template>';
     const content = async (tabName: string, languageId: string) => {
