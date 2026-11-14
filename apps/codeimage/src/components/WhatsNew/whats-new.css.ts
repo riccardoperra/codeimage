@@ -4,45 +4,53 @@ import {curve, duration, ms, reduceMotion as reduce} from './motion';
 
 const c = themeVars.dynamicColors;
 const ease = curve.out;
-export const surface = style({
+const ring = 'rgba(128,128,128,.16)';
+const lift = '0 20px 60px rgba(0,0,0,.2)';
+const floating = style({
   color: c.baseText,
   background: c.background,
   borderRadius: '18px',
-  boxShadow: '0 0 0 1px rgba(128,128,128,.16), 0 20px 60px rgba(0,0,0,.2)',
-  transition: `opacity 240ms ${ease}, transform 240ms ${ease}`,
-  '@starting-style': {opacity: 0, transform: 'translateY(12px) scale(.97)'},
+});
+
+// The Nudge rises from the bottom edge it sits on, as a toast does, and
+// leaves the same way, faster. Its shadow is a filter so that it follows
+// the clip that reveals the expanded card.
+export const nudge = style({
+  position: 'fixed',
+  left: '28px',
+  bottom: '28px',
+  zIndex: 40,
+  width: '340px',
+  maxWidth: 'calc(100vw - 24px)',
+  filter: `drop-shadow(${lift})`,
+  transition: `opacity ${ms(duration.nudgeIn)} ${curve.toast}, transform ${ms(duration.nudgeIn)} ${curve.toast}`,
+  '@starting-style': {opacity: 0, transform: 'translateY(100%)'},
+  selectors: {
+    '&[data-closing]': {
+      opacity: 0,
+      transform: 'translateY(100%)',
+      pointerEvents: 'none',
+      transitionDuration: ms(duration.nudgeOut),
+      transitionTimingFunction: ease,
+    },
+  },
   '@media': {
+    'screen and (max-width: 768px)': {
+      left: '12px',
+      bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+    },
     [reduce]: {
       transitionProperty: 'opacity',
-      transform: 'none',
       '@starting-style': {transform: 'none'},
+      selectors: {'&[data-closing]': {transform: 'none'}},
     },
   },
 });
-export const nudge = style([
-  surface,
-  {
-    position: 'fixed',
-    left: '28px',
-    bottom: '28px',
-    zIndex: 40,
-    width: '340px',
-    maxWidth: 'calc(100vw - 24px)',
-    overflow: 'hidden',
-    '@media': {
-      'screen and (max-width: 768px)': {
-        left: '12px',
-        bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
-      },
-    },
-  },
+const face = style([floating, {boxShadow: `inset 0 0 0 1px ${ring}`}]);
+export const collapsed = style([
+  face,
+  {display: 'flex', alignItems: 'center', gap: '10px', padding: '12px'},
 ]);
-export const collapsed = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '10px',
-  padding: '12px',
-});
 export const summary = style({
   display: 'flex',
   flex: 1,
@@ -51,7 +59,50 @@ export const summary = style({
   fontSize: '13px',
 });
 export const muted = style({color: c.descriptionTextColor, fontSize: '12px'});
-export const expanded = style({padding: '10px 10px 12px'});
+// See reveals the expanded card upward from the height of the bar it
+// replaces. A clip, so that no layout property animates.
+export const expanded = style([
+  face,
+  {
+    padding: '10px 10px 12px',
+    clipPath: 'inset(0 round 18px)',
+    transition: `clip-path ${ms(duration.reveal)} ${ease}`,
+    '@starting-style': {
+      clipPath: 'inset(calc(100% - var(--nudge-from)) 0 0 0 round 18px)',
+    },
+    '@media': {[reduce]: {transition: 'none'}},
+  },
+]);
+// The content fades in under the clip, so the bar's text does not jump.
+export const revealed = style({
+  transition: `opacity ${ms(duration.reveal)} ${ease}`,
+  '@starting-style': {opacity: 0},
+});
+// The steps share one grid cell, so the step that leaves fades over the one
+// that arrives, without taking space. Next moves forward: the new step comes
+// from the right and the old one leaves to the left.
+export const stage = style({display: 'grid'});
+export const slide = style({
+  gridArea: '1 / 1',
+  transition: `opacity ${ms(duration.step)} ${ease}, transform ${ms(duration.step)} ${ease}`,
+  selectors: {
+    '&:not(:only-child)': {
+      '@starting-style': {opacity: 0, transform: 'translateX(8px)'},
+    },
+    '&[data-leaving]': {opacity: 0, transform: 'translateX(-8px)'},
+  },
+  '@media': {
+    [reduce]: {
+      transitionProperty: 'opacity',
+      selectors: {
+        '&:not(:only-child)': {'@starting-style': {transform: 'none'}},
+        '&[data-leaving]': {transform: 'none'},
+      },
+    },
+  },
+});
+// Steps from the keyboard swap at once.
+globalStyle(`${nudge}[data-instant] *`, {transitionDuration: '0s'});
 export const copy = style({padding: '14px 6px 4px'});
 export const title = style({
   margin: '8px 0 4px',
@@ -65,6 +116,8 @@ export const body = style({
   fontSize: '13px',
   lineHeight: 1.5,
 });
+// Every step keeps room for three lines, so Next never resizes the card.
+globalStyle(`${slide} ${body}`, {minHeight: '3lh'});
 export const actions = style({
   display: 'flex',
   alignItems: 'center',
@@ -204,15 +257,16 @@ globalStyle(`${filledAnchor} > ${dotAnchor} ${dot}::after`, {
 const shrink = keyframes({to: {opacity: 0, transform: 'scale(.96)'}});
 const fadeOut = keyframes({to: {opacity: 0}});
 export const coachmark = style([
-  surface,
+  floating,
   {
+    boxShadow: `0 0 0 1px ${ring}, ${lift}`,
+    transition: `opacity ${ms(duration.coachmarkIn)} ${ease}, transform ${ms(duration.coachmarkIn)} ${ease}`,
     width: '290px',
     maxWidth: 'calc(100vw - 24px)',
     padding: '10px 10px 12px',
     zIndex: 1000,
     outline: 'none',
     transformOrigin: 'var(--kb-popover-content-transform-origin)',
-    transitionDuration: ms(duration.coachmarkIn),
     '@starting-style': {opacity: 0, transform: 'scale(.96)'},
     selectors: {
       '&[data-closed]': {
@@ -222,6 +276,7 @@ export const coachmark = style([
     },
     '@media': {
       [reduce]: {
+        transitionProperty: 'opacity',
         '@starting-style': {transform: 'none'},
         selectors: {'&[data-closed]': {animationName: fadeOut}},
       },
