@@ -33,6 +33,10 @@ const require = createRequire(
 const {Renderer} = require('@takumi-rs/core');
 
 type Document = ReturnType<typeof parseSnapshotDocument>;
+// The part of the app's editor store the script reads in the page.
+type EditorStore = {
+  animation: {playback(): {state: string}; playhead(): number};
+};
 interface Settings {
   steps: {editorId: string; holdMs: number}[];
   transitionMs: number;
@@ -393,6 +397,8 @@ async function loadCase(page: Page, document: Document, faces: string) {
         const editorState = '/src/state/editor/index.ts';
         const {getEditorStore} = await import(/* @vite-ignore */ editorState);
         const store = getEditorStore();
+        Object.assign(window, {editorStore: store});
+        store.animation.actions.edit();
         store.editor.actions.setFromPersistedState(document.editor);
         store.frame.setFromPersistedState(document.frame);
         store.terminal.setFromPersistedState(document.terminal);
@@ -427,15 +433,18 @@ async function previewAt(page: Page, ms: number) {
     const {getEditorStore} = await import(/* @vite-ignore */ editorState);
     getEditorStore().animation.actions.seek(ms);
   }, ms);
+  // A predicate that returns a promise counts as true at once, so the
+  // store was kept on the window for a synchronous check.
   await page.waitForFunction(
-    async ms => {
-      const editorState = '/src/state/editor/index.ts';
-      const {getEditorStore} = await import(/* @vite-ignore */ editorState);
+    ms => {
+      const {animation} = (window as unknown as {editorStore: EditorStore})
+        .editorStore;
       const stage = window.document.querySelector<HTMLElement>(
         '[data-animation-stage]',
       );
       return (
-        getEditorStore().animation.playhead() === ms &&
+        animation.playback().state === 'paused' &&
+        animation.playhead() === ms &&
         stage !== null &&
         stage.style.display !== 'none' &&
         stage.offsetWidth > 0
