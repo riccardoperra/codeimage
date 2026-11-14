@@ -93,11 +93,16 @@ jobs:
         run: |
           pnpm libs:build
 
-      - name: Cache packages
-        uses: actions/cache/save@v5
+      - name: Upload packages dist
+        uses: actions/upload-artifact@v4
         with:
-          path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+          name: packages-dist
+          path: |
+            packages/*/dist
+            packages/prisma-models/generated
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
 
   typecheck-packages:
     if: ${{ needs.install.outputs.libs-change == 'true' }}
@@ -112,17 +117,17 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore dist
-        uses: actions/cache/restore@v5
+      - name: Download packages dist
+        uses: actions/download-artifact@v4
         with:
+          name: packages-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
-      - name: Restore api bundle
-        uses: actions/cache/restore@v5
+      - name: Download api dist
+        uses: actions/download-artifact@v4
         with:
+          name: api-dist
           path: apps/api/dist
-          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Typecheck packages
         run: |
@@ -147,11 +152,11 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore dist
-        uses: actions/cache/restore@v5
+      - name: Download packages dist
+        uses: actions/download-artifact@v4
         with:
+          name: packages-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Build app
         env:
@@ -172,6 +177,7 @@ jobs:
         with:
           name: preview-app
           path: apps/codeimage/dist
+          retention-days: 1
           if-no-files-found: error
 
   build-app-next:
@@ -188,11 +194,11 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore dist
-        uses: actions/cache/restore@v5
+      - name: Download packages dist
+        uses: actions/download-artifact@v4
         with:
+          name: packages-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Build app
         env:
@@ -213,6 +219,7 @@ jobs:
         with:
           name: preview-app
           path: apps/codeimage/dist
+          retention-days: 1
           if-no-files-found: error
 
   build-highlight-dev:
@@ -229,11 +236,11 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore dist
-        uses: actions/cache/restore@v5
+      - name: Download packages dist
+        uses: actions/download-artifact@v4
         with:
+          name: packages-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Build highlight demo
         run: |
@@ -244,6 +251,7 @@ jobs:
         with:
           name: preview-highlight
           path: packages/highlight/dev/dist
+          retention-days: 1
           if-no-files-found: error
 
   build-website-dev:
@@ -260,11 +268,11 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore dist
-        uses: actions/cache/restore@v5
+      - name: Download packages dist
+        uses: actions/download-artifact@v4
         with:
+          name: packages-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Build website preview
         env:
@@ -281,13 +289,8 @@ jobs:
         with:
           name: preview-website
           path: apps/website/dist/client
+          retention-days: 1
           if-no-files-found: error
-
-      - name: Cache website
-        uses: actions/cache/save@v5
-        with:
-          path: apps/website
-          key: apps-website-${{ github.run_id }}-${{ github.run_number }}
 
   website-lhci:
     name: Lighthouse
@@ -301,11 +304,11 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore website
-        uses: actions/cache/restore@v5
+      - name: Download website
+        uses: actions/download-artifact@v4
         with:
-          path: apps/website
-          key: apps-website-${{ github.run_id }}-${{ github.run_number }}
+          name: preview-website
+          path: apps/website/dist/client
 
       - name: run Lighthouse CI
         run: |
@@ -432,17 +435,22 @@ jobs:
           pnpm --filter=@codeimage/api build:ts
           pnpm prepare:api:deploy
 
-      - name: Cache api dist
-        uses: actions/cache/save@v5
+      - name: Upload api dist
+        uses: actions/upload-artifact@v4
         with:
+          name: api-dist
           path: apps/api/dist
-          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
+          retention-days: 1
+          if-no-files-found: error
 
-      - name: Cache api bundle
-        uses: actions/cache/save@v5
+      - name: Upload api bundle
+        uses: actions/upload-artifact@v4
         with:
-          path: dist/api-bundle/**
-          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
+          name: api-bundle
+          path: dist/api-bundle
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
 
   be-test:
     if: ${{ needs.install.outputs.backend-change == 'true' }}
@@ -485,13 +493,6 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore dist
-        uses: actions/cache/restore@v5
-        with:
-          path: |
-            packages
-          key: packages-${{ github.run_id }}-${{ github.run_number }}
-
       - name: Prisma migrate
         run: |
           cd apps/api
@@ -519,18 +520,17 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore packages
-        uses: actions/cache/restore@v5
+      - name: Download packages dist
+        uses: actions/download-artifact@v4
         with:
+          name: packages-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
-      - name: Restore api build
-        uses: actions/cache/restore@v5
+      - name: Download api bundle
+        uses: actions/download-artifact@v4
         with:
-          path: |
-            dist/api-bundle/**
-          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
+          name: api-bundle
+          path: dist/api-bundle
 
       - name: Run migrations
         run: |
