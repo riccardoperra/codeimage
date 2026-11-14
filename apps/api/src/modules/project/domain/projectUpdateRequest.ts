@@ -22,7 +22,20 @@ interface EditorUpdateRequest {
 export interface ProjectUpdateRequest {
   editorOptions: Omit<SnippetEditorOptions, IdAndProjectId>;
   terminal: Omit<SnippetTerminal, IdAndProjectId>;
-  frame: Omit<SnippetFrame, IdAndProjectId>;
+  frame: Omit<
+    SnippetFrame,
+    | IdAndProjectId
+    | 'exportTarget'
+    | 'aspectRatio'
+    | 'signatureHandle'
+    | 'signaturePosition'
+  > &
+    Partial<
+      Pick<
+        SnippetFrame,
+        'exportTarget' | 'aspectRatio' | 'signatureHandle' | 'signaturePosition'
+      >
+    >;
   editors: EditorUpdateRequest[];
 }
 

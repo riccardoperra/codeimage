@@ -13,4 +13,9 @@ export {SUPPORTED_LOCALES} from './lib/base/locales';
 export {SUPPORTED_LANGUAGES} from './lib/base/languages';
 export {inferLanguageFromPath} from './lib/base/infer-language';
 export {AVAILABLE_COLORS, AVAILABLE_GRADIENTS} from './lib/base/colors';
-export {type AspectRatio, DEFAULT_ASPECT_RATIOS} from './lib/base/aspectRatio';
+export {
+  type AspectRatio,
+  type ExportTargetId,
+  DEFAULT_ASPECT_RATIOS,
+  getExportTarget,
+} from './lib/base/aspectRatio';

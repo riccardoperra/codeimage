@@ -15,6 +15,7 @@ export function makeMockProjectService() {
     create: () => void 0,
     createNewProject: () => void 0,
     update: () => void 0,
+    updateProject: () => void 0,
     delete: () => void 0,
   } as unknown as ProjectRepository;
 
@@ -299,3 +300,59 @@ test('clone -> should not wrap exception', async () => {
     ),
   );
 });
+
+test.each(['create', 'update'] as const)(
+  '%s response restores the target and signature',
+  async operation => {
+    const {repository, service} = makeMockProjectService();
+    const stored = {
+      ...baseResponse,
+      frame: {
+        ...baseResponse.frame,
+        aspectRatio: null,
+        exportTarget: 'x-landscape',
+        signatureHandle: '@me',
+        signaturePosition: 'bottom-left',
+      },
+    };
+    const request = {
+      ...baseResponse,
+      editors: baseResponse.editorTabs,
+      terminal: {...baseResponse.terminal, borderType: null},
+      frame: {
+        ...baseResponse.frame,
+        aspectRatio: null,
+        exportTarget: 'x-landscape' as const,
+        signature: {handle: '@me', position: 'bottom-left' as const},
+      },
+    };
+    vi.spyOn(repository, 'createNewProject').mockResolvedValue(stored);
+    const update = vi
+      .spyOn(repository, 'updateProject')
+      .mockResolvedValue(stored);
+    const result =
+      operation === 'create'
+        ? await service.createNewProject('userId', request)
+        : await service.update('userId', stored.id, request);
+    expect(result.frame.exportTarget).toBe('x-landscape');
+    expect(result.frame.aspectRatio).toBeNull();
+    expect(result.frame.signature).toEqual({
+      handle: '@me',
+      position: 'bottom-left',
+    });
+    expect(result.frame).not.toHaveProperty('signatureHandle');
+    expect(result.frame).not.toHaveProperty('signaturePosition');
+    if (operation === 'update') {
+      expect(update).toHaveBeenCalledWith(
+        'userId',
+        stored.id,
+        expect.objectContaining({
+          frame: expect.objectContaining({
+            signatureHandle: '@me',
+            signaturePosition: 'bottom-left',
+          }),
+        }),
+      );
+    }
+  },
+);

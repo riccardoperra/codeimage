@@ -1,3 +1,7 @@
+import type {getExportTarget} from '@codeimage/config';
+import type {FrameState} from '@codeimage/store/frame/model';
+import {FittedWindow} from './FittedWindow';
+import {FrameSignature, framePadding} from './FrameSignature';
 import type {AssetId} from '@codeimage/store/assets/assets';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
@@ -22,18 +26,23 @@ interface FrameProps {
   opacity: number;
   visible: boolean;
   readOnly: boolean;
+  signature: FrameState['signature'];
+  exportTarget?: ReturnType<typeof getExportTarget>;
   aspectRatio: string | null | undefined;
   onWidthChange: (width: number) => void;
   onHeightChange: (height: number) => void;
 }
 
 export const Frame: ParentComponent<FrameProps> = props => {
+  const target = () => props.exportTarget;
+  const targetWidth = () => Math.min(640, target()?.resolution[0] ?? 640);
+  const targetScale = () => targetWidth() / (target()?.resolution[0] ?? 640);
   const {width, height, onResizeStart, setRef, resizing, ref, refresh} =
     createHorizontalResize({
       minWidth: 200,
       maxWidth: 1920,
       aspectRatio: () => {
-        if (!props.aspectRatio) return null;
+        if (!props.aspectRatio || target()) return null;
         const [w, h] = props.aspectRatio.split('/').map(Number);
         return w / h;
       },
@@ -42,11 +51,13 @@ export const Frame: ParentComponent<FrameProps> = props => {
   const assetsStore = getAssetsStore();
 
   const computedWidth = () => {
+    if (target()) return `${target()!.resolution[0]}px`;
     const size = width();
     return size ? `${size}px` : 'auto';
   };
 
   const computedHeight = () => {
+    if (target()) return `${target()!.resolution[1]}px`;
     const size = height();
     return size ? `${size}px` : '100%';
   };
@@ -74,7 +85,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
     createResizeObserver(
       () => preview,
       () => {
-        refresh();
+        if (!target()) refresh();
       },
     );
   });
@@ -88,10 +99,13 @@ export const Frame: ParentComponent<FrameProps> = props => {
 
   return (
     <div
-      style={assignInlineVars({
-        [styles.frameVars.radius]: borderRadius(),
-        [styles.frameVars.aspectRatio]: 'unset',
-      })}
+      style={{
+        ...assignInlineVars({
+          [styles.frameVars.radius]: borderRadius(),
+          [styles.frameVars.aspectRatio]: 'unset',
+        }),
+        zoom: target() ? targetScale() : undefined,
+      }}
       class={styles.wrapper}
     >
       <div
@@ -100,7 +114,12 @@ export const Frame: ParentComponent<FrameProps> = props => {
         style={assignInlineVars({
           [styles.frameVars.width]: computedWidth(),
           [styles.frameVars.height]: computedHeight(),
-          [styles.frameVars.padding]: `${props.padding}px`,
+          [styles.frameVars.padding]: framePadding(
+            props.padding,
+            props.signature,
+          ),
+          [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
+          [styles.frameVars.minHeight]: target() ? '0' : '100%',
         })}
       >
         <div
@@ -139,14 +158,15 @@ export const Frame: ParentComponent<FrameProps> = props => {
           </Show>
         </div>
 
-        <Show when={modality === 'full' && !props.readOnly}>
+        <Show when={modality === 'full' && !props.readOnly && !target()}>
           <div class={styles.dragControls} use:exportExclude={true}>
             <div class={styles.dragControlLeft} onMouseDown={onResizeStart} />
             <div class={styles.dragControlRight} onMouseDown={onResizeStart} />
           </div>
         </Show>
 
-        {props.children}
+        <FittedWindow active={!!target()}>{props.children}</FittedWindow>
+        <FrameSignature signature={props.signature} />
       </div>
 
       <FadeInOutTransition show={resizing()}>

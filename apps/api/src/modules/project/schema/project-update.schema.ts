@@ -1,4 +1,5 @@
 import {TabMarksSchema} from '../../../schemas/marks.js';
+import {FrameExportProperties} from './frame-export.schema.js';
 import type {Static} from '@sinclair/typebox';
 import {Type} from '@sinclair/typebox';
 import {Nullable} from '../../../common/typebox/nullable.js';
@@ -6,6 +7,7 @@ import {SnippetTerminalBorderType} from './project.schema.js';
 
 export const SnippetFrameUpdateRequestSchema = Type.Object(
   {
+    ...FrameExportProperties,
     background: Nullable(Type.String()),
     opacity: Type.Number(),
     radius: Nullable(Type.Number()),
@@ -65,7 +67,7 @@ const EditorOptionsUpdateRequestSchema = Type.Object(
 export const ProjectUpdateRequestSchema = Type.Object(
   {
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
-    frame: Type.Required(SnippetFrameUpdateRequestSchema),
+    frame: SnippetFrameUpdateRequestSchema,
     terminal: Type.Required(SnippetTerminalUpdateRequestSchema),
     editors: SnippetEditorTabsUpdateRequestSchema,
   },
@@ -80,7 +82,7 @@ export const ProjectUpdateResponseSchema = Type.Object(
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     ownerId: Type.String({format: 'uuid'}),
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
-    frame: Type.Required(SnippetFrameUpdateRequestSchema),
+    frame: SnippetFrameUpdateRequestSchema,
     terminal: Type.Required(SnippetTerminalUpdateRequestSchema),
     editorTabs: SnippetEditorTabsUpdateRequestSchema,
   },
