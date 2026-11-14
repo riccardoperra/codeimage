@@ -123,6 +123,12 @@ export function ExportPopoverContent() {
               size={'md'}
               label={'(Export) Show only active tab'}
             />
+            <Checkbox
+              checked={exportCanvasStore.get.oneImagePerTab}
+              onChange={value => exportCanvasStore.set('oneImagePerTab', value)}
+              size={'md'}
+              label={t('export.oneImagePerTab')}
+            />
           </VStack>
         </div>
       </DynamicSizedContainer>

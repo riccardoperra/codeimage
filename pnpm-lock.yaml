@@ -495,6 +495,9 @@ importers:
       downloadjs:
         specifier: ^1.4.7
         version: 1.4.7
+      fflate:
+        specifier: 0.8.2
+        version: 0.8.2
       idb-keyval:
         specifier: ^6.2.2
         version: 6.2.2

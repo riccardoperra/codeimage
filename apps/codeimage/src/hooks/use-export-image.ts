@@ -177,8 +177,18 @@ export async function exportImage(
           });
       }
       case ExportMode.getBlob: {
+        if (extension === ExportExtension.svg) {
+          const svg = await toSvg(ref, toImageOptions);
+          return new Blob(
+            [decodeURIComponent(svg.slice(svg.indexOf(',') + 1))],
+            {
+              type: mimeType,
+            },
+          );
+        }
         const blob = await toBlob(ref, toImageOptions);
-        return blob as Blob;
+        if (!blob) throw new Error('Error on blob file save.');
+        return blob;
       }
       default: {
         throw new Error('Invalid modality');
