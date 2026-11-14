@@ -36,16 +36,9 @@ vi.mock('@codeimage/store/editor', () => ({
 }));
 vi.mock('./TabIcon/TabIcon', () => ({TabIcon: () => null}));
 vi.mock('@codeimage/locale', () => ({
-  useI18n: () => [
-    (key: string, params?: {count: string}) =>
-      key === 'frame.windowUntitled'
-        ? 'Untitled'
-        : key === 'frame.windowLine'
-          ? `${params?.count} line`
-          : key === 'frame.windowLines'
-            ? `${params?.count} lines`
-            : key,
-  ],
+  useI18n: () => {
+    throw Error('The Node renderer provides no translation context');
+  },
 }));
 vi.mock('@codeimage/ui', () => ({
   Loading: () => null,

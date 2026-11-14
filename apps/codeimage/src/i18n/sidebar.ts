@@ -1,8 +1,6 @@
 export default {
   en: {
     frame: {
-      windowLine: '{{count}} line',
-      windowUntitled: 'Untitled',
       windowCard: 'Card',
       windowEditor: 'Editor',
       windowShell: 'Terminal',
@@ -13,7 +11,6 @@ export default {
       borderNone: 'None',
       borderGlass: 'Glass',
       ambientBackground: 'Ambient · derived from theme',
-      windowLines: '{{count}} lines',
       windowMacOs: 'macOS',
       windowMacOsGray: 'macOS gray',
       windowMacOsOutline: 'macOS outline',
@@ -51,8 +48,6 @@ export default {
   },
   it: {
     frame: {
-      windowLine: '{{count}} riga',
-      windowUntitled: 'Senza titolo',
       windowCard: 'Scheda',
       windowEditor: 'Editor',
       windowShell: 'Terminale',
@@ -63,7 +58,6 @@ export default {
       borderNone: 'Nessuno',
       borderGlass: 'Vetro',
       ambientBackground: 'Ambiente · derivato dal tema',
-      windowLines: '{{count}} righe',
       windowMacOs: 'macOS',
       windowMacOsGray: 'macOS grigio',
       windowMacOsOutline: 'macOS contorno',
@@ -100,8 +94,6 @@ export default {
   },
   de: {
     frame: {
-      windowLine: '{{count}} Zeile',
-      windowUntitled: 'Unbenannt',
       windowCard: 'Karte',
       windowEditor: 'Editor',
       windowShell: 'Terminal',
@@ -112,7 +104,6 @@ export default {
       borderNone: 'Keiner',
       borderGlass: 'Glas',
       ambientBackground: 'Umgebung · aus dem Thema',
-      windowLines: '{{count}} Zeilen',
       windowMacOs: 'macOS',
       windowMacOsGray: 'macOS grau',
       windowMacOsOutline: 'macOS Kontur',
@@ -149,8 +140,6 @@ export default {
   },
   es: {
     frame: {
-      windowLine: '{{count}} línea',
-      windowUntitled: 'Sin título',
       windowCard: 'Tarjeta',
       windowEditor: 'Editor',
       windowShell: 'Terminal',
@@ -161,7 +150,6 @@ export default {
       borderNone: 'Ninguno',
       borderGlass: 'Cristal',
       ambientBackground: 'Ambiente · derivado del tema',
-      windowLines: '{{count}} líneas',
       windowMacOs: 'macOS',
       windowMacOsGray: 'macOS gris',
       windowMacOsOutline: 'macOS contorno',

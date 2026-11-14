@@ -1,8 +1,6 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
-import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {createMemo, For, Show, type ParentComponent} from 'solid-js';
-import type {AppLocaleEntries} from '../../../i18n';
 import {TerminalWindowTabList} from '../Tabs/TerminalWindowTabList';
 import type {BaseTerminalProps} from '../TerminalHost';
 import {TerminalHost} from '../TerminalHost';
@@ -11,11 +9,14 @@ import * as styles from './WindowStyles.css';
 
 export type WindowStyle = 'card' | 'editor' | 'shell';
 
+// The window's own text is part of the exported image, so it is the same in
+// every interface language and needs no translation context, which the Node
+// renderer does not provide.
+
 const WindowStyleTerminal: ParentComponent<
   BaseTerminalProps & {windowStyle: WindowStyle}
 > = props => {
   const editor = getRootEditorStore();
-  const [t] = useI18n<AppLocaleEntries>();
   const active = createMemo(() =>
     editor.state.editors.find(tab =>
       props.activeTabId
@@ -106,9 +107,7 @@ const WindowStyleTerminal: ParentComponent<
               {language()}
             </span>
             <span>
-              {t(lineCount() === 1 ? 'frame.windowLine' : 'frame.windowLines', {
-                count: String(lineCount()),
-              })}
+              {`${lineCount()} ${lineCount() === 1 ? 'line' : 'lines'}`}
             </span>
           </div>
         </Show>

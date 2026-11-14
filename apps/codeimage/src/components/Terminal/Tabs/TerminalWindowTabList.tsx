@@ -1,5 +1,3 @@
-import {useI18n} from '@codeimage/locale';
-import type {AppLocaleEntries} from '../../../i18n';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import type {DragEventParam} from '@core/modules/dnd';
 import {ConstrainDragAxis} from '@core/modules/dnd/ConstrainDragAxis';
@@ -186,7 +184,6 @@ export function TerminalWindowTabListContent(
 }
 
 function StaticWindowTabs(props: TerminalWindowTabListProps) {
-  const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
   const active = (id: string) =>
     props.activeTabId ? id === props.activeTabId : editor.isActive(id);
@@ -210,9 +207,7 @@ function StaticWindowTabs(props: TerminalWindowTabListProps) {
               active={active(tab.id)}
               accentMode={false}
               index={0}
-              content={
-                <span>{tab.tab.tabName || t('frame.windowUntitled')}</span>
-              }
+              content={<span>{tab.tab.tabName || 'Untitled'}</span>}
             />
           )}
         </For>
