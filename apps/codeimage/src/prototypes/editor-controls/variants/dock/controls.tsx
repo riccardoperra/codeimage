@@ -54,7 +54,11 @@ export function SegmentedChoice(props: {control: ChoiceControl}) {
   );
 }
 
-export function SelectChoice(props: {control: ChoiceControl}) {
+export function SelectChoice(props: {
+  control: ChoiceControl;
+  /** Space between the trigger and its list, for a trigger inside the dock bar. */
+  gutter?: number;
+}) {
   const options = createSelectOptions(
     () =>
       props.control
@@ -75,6 +79,7 @@ export function SelectChoice(props: {control: ChoiceControl}) {
       )}
       options={options.options()}
       disabled={props.control.disabled()}
+      gutter={props.gutter}
       aria-label={props.control.label()}
       id={fieldId(props.control)}
       size={'sm'}

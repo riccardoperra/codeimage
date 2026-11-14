@@ -10,17 +10,15 @@ export interface DockApi {
   readonly stage: Stage;
   readonly fields: Fields;
   readonly ThemePicker: Component<ThemePickerSlotProps>;
-  /** The panel the tray shows, if it is open. */
+  /** The panel that is open, in a popover or, on a phone, in the sheet. */
   readonly panel: Accessor<PanelId | undefined>;
-  /** True on a phone-width window, where the dock is the bottom bar and trays are sheets. */
+  /** True on a phone-width window, where the dock is the bottom bar and panels are sheets. */
   readonly compact: Accessor<boolean>;
-  readonly open: (panel: PanelId) => void;
-  /** Closes the tray. A preview that was not kept is taken back. */
   readonly close: () => void;
   /**
-   * After a pick in a tray that holds one list. A pointer that can hover has
+   * After a pick in a panel that holds one list. A pointer that can hover has
    * already seen the preview, so the pick is final. A finger has not, so the
-   * tray stays for the next try.
+   * panel stays for the next try.
    */
   readonly closeAfterPick: (byKeyboard: boolean) => void;
 }
@@ -45,10 +43,16 @@ export function createMediaQuery(query: string): Accessor<boolean> {
 /** A click that came from Enter or Space reports no pointer detail. */
 export const isKeyboardClick = (event: MouseEvent) => event.detail === 0;
 
+/** The harness pills are chrome: using them must not close what the dock has open. */
+export const inPrototypeChrome = (target: EventTarget | null) =>
+  target instanceof Element && !!target.closest('[data-prototype-chrome]');
+
 /**
- * The harness picker switches variants on digits, R and the arrows. It
- * listens on the document, where Solid's delegated handlers also run, so
- * only stopping the remaining document listeners keeps a key from it.
+ * The kit's segmented control and lists take Escape for themselves, and
+ * Kobalte then leaves the surface around them open. This closes it from a
+ * native listener on the surface, which a list that opened outside it, such
+ * as a select's, does not reach.
  */
-export const keepFromPicker = (event: KeyboardEvent) =>
-  event.stopImmediatePropagation();
+export const closeOnEscape = (close: () => void) => (event: KeyboardEvent) => {
+  if (event.key === 'Escape') close();
+};

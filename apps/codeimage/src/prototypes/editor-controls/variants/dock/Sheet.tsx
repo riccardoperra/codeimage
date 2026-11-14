@@ -1,34 +1,10 @@
 import {Dialog} from '@kobalte/core/dialog';
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  Match,
-  on,
-  onCleanup,
-  Show,
-  Switch,
-} from 'solid-js';
+import {createEffect, createMemo, createSignal, on, Show} from 'solid-js';
+import {Dynamic} from 'solid-js/web';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
-import {keepFromPicker, useDock} from './context';
+import {closeOnEscape, inPrototypeChrome, useDock} from './context';
 import type {PanelId} from './fields';
-import {
-  BackgroundPanel,
-  FontPanel,
-  LanguagePanel,
-  MorePanel,
-  PaddingPanel,
-  ThemesPanel,
-} from './panels';
-
-const TITLES: Record<PanelId, string> = {
-  themes: 'Theme',
-  background: 'Background',
-  padding: 'Padding',
-  language: 'Language',
-  font: 'Font',
-  more: 'More options',
-};
+import {PANELS} from './panels';
 
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 const FOCUSABLE =
@@ -43,21 +19,19 @@ function rubberband(overshoot: number, dimension: number): number {
   );
 }
 
-interface TrayProps {
-  /** Clicks in here switch or close the tray themselves. */
+interface SheetProps {
+  /** Taps in here switch or close the sheet themselves. */
   bar: () => HTMLElement | undefined;
-  /** The element that opened the tray, which gets focus back when it closes. */
+  /** The element that opened the sheet, which gets focus back when it closes. */
   trigger: () => HTMLElement | undefined;
-  /** True when the keyboard opened the tray, which then appears without motion. */
-  instant: boolean;
 }
 
 /**
- * The one surface the dock opens. It is an island in the layout between the
- * canvas and the dock, so the canvas gives up the room and the frame zooms to
- * fit above it. A tray can therefore never lie on the frame it changes.
+ * The phone's surface for every panel of the dock. It sits in the layout
+ * between the canvas and the bar and is at most 40% of the height, so the
+ * preview stays in view above it. A drag on its handle closes it.
  */
-export function Tray(props: TrayProps) {
+export function Sheet(props: SheetProps) {
   const dock = useDock();
   const [slot, setSlot] = createSignal<HTMLDivElement>();
   let content: HTMLDivElement | undefined;
@@ -68,34 +42,14 @@ export function Tray(props: TrayProps) {
     previous => dock.panel() ?? previous,
   );
 
-  // The prototype pickers are harness chrome: switching the theme style
-  // there keeps the tray open, so the new style shows in place.
   const inBar = (target: EventTarget | null) =>
-    target instanceof Element &&
-    (!!props.bar()?.contains(target) ||
-      !!target.closest('[data-prototype-chrome]'));
-
-  // A tray narrower than the window sits above the dock item that opened it.
-  const align = () => {
-    const trigger = props.trigger()?.getBoundingClientRect();
-    const area = slot()?.getBoundingClientRect();
-    if (!content || !trigger || !area) return;
-    const width = content.offsetWidth;
-    const centre = trigger.left + trigger.width / 2 - area.left;
-    const room = Math.max(area.width - width, 0);
-    const offset = Math.round(Math.min(Math.max(centre - width / 2, 0), room));
-    content.style.marginLeft = `${offset}px`;
-    content.style.transformOrigin = `${centre - offset}px 100%`;
-  };
-
-  const resize = new ResizeObserver(align);
-  onCleanup(() => resize.disconnect());
+    (target instanceof Node && !!props.bar()?.contains(target)) ||
+    inPrototypeChrome(target);
 
   createEffect(
     on(dock.panel, panel => {
       if (!panel) return;
       queueMicrotask(() => {
-        align();
         if (!content || content.contains(document.activeElement)) return;
         (content.querySelector<HTMLElement>(FOCUSABLE) ?? content).focus();
       });
@@ -167,11 +121,11 @@ export function Tray(props: TrayProps) {
       }}
       modal={false}
     >
-      <div class="dock-tray-slot" ref={setSlot} />
+      <div class="dock-sheet-slot" ref={setSlot} />
       {/*
         Kobalte starts its focus handling when the content is created, so the
         content has to be created on open. The portal does that, and it
-        mounts into the slot, which keeps the tray in the layout.
+        mounts into the slot, which keeps the sheet in the layout.
       */}
       <Show when={slot()}>
         {mount => (
@@ -179,13 +133,10 @@ export function Tray(props: TrayProps) {
             <Dialog.Content
               ref={(element: HTMLDivElement) => {
                 content = element;
-                resize.observe(element);
-                align();
               }}
-              class={`dock-tray dock-island ${sidebarTheme}`}
-              aria-label={TITLES[shown() ?? 'more']}
+              class={`dock-sheet ${sidebarTheme}`}
+              aria-label={PANELS[shown() ?? 'more'].title}
               data-panel={shown()}
-              data-instant={props.instant ? '' : undefined}
               onOpenAutoFocus={event => event.preventDefault()}
               onCloseAutoFocus={event => {
                 event.preventDefault();
@@ -201,48 +152,23 @@ export function Tray(props: TrayProps) {
               onInteractOutside={event => {
                 if (!event.defaultPrevented) dismissedOutside = true;
               }}
-              onKeyDown={(event: KeyboardEvent) => {
-                const typed =
-                  event.key.length === 1 || event.key.startsWith('Arrow');
-                if (typed && !event.metaKey && !event.ctrlKey) {
-                  keepFromPicker(event);
-                }
-              }}
+              on:keydown={closeOnEscape(dock.close)}
             >
-              <Show when={dock.compact()}>
-                <button
-                  type="button"
-                  class="dock-grabber"
-                  aria-label="Close"
-                  onPointerDown={onGrab}
-                  onPointerMove={onDrag}
-                  onPointerUp={onRelease}
-                  onPointerCancel={onRelease}
-                  onClick={event => {
-                    if (event.detail === 0) dock.close();
-                  }}
-                />
+              <button
+                type="button"
+                class="dock-grabber"
+                aria-label="Close"
+                onPointerDown={onGrab}
+                onPointerMove={onDrag}
+                onPointerUp={onRelease}
+                onPointerCancel={onRelease}
+                onClick={event => {
+                  if (event.detail === 0) dock.close();
+                }}
+              />
+              <Show when={shown()}>
+                {panel => <Dynamic component={PANELS[panel()].Body} />}
               </Show>
-              <Switch>
-                <Match when={shown() === 'themes'}>
-                  <ThemesPanel />
-                </Match>
-                <Match when={shown() === 'background'}>
-                  <BackgroundPanel />
-                </Match>
-                <Match when={shown() === 'padding'}>
-                  <PaddingPanel />
-                </Match>
-                <Match when={shown() === 'language'}>
-                  <LanguagePanel />
-                </Match>
-                <Match when={shown() === 'font'}>
-                  <FontPanel />
-                </Match>
-                <Match when={shown() === 'more'}>
-                  <MorePanel />
-                </Match>
-              </Switch>
             </Dialog.Content>
           </Dialog.Portal>
         )}
