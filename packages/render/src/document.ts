@@ -1,5 +1,4 @@
 import {z} from 'zod';
-import {parseTabMarks} from '../../../apps/api/src/schemas/marks';
 
 export const SUPPORTED_SNAPSHOT_MAJOR = 1;
 
@@ -77,17 +76,8 @@ export const projectSnapshotSchema = z.looseObject({
                   kind: z.enum(['added', 'removed', 'highlight']),
                 }),
               ),
-              focusedLines: z.array(z.number().int().positive()).optional(),
-              focus: z.boolean().optional(),
+              focusedLines: z.array(z.number().int().positive()).default([]),
             })
-            .refine(
-              marks =>
-                marks.focusedLines !== undefined || marks.focus !== undefined,
-              {
-                message: 'Expected focusedLines or legacy focus',
-              },
-            )
-            .transform(parseTabMarks)
             .optional(),
         }),
       )

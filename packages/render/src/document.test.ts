@@ -43,24 +43,12 @@ describe('parseSnapshotDocument', () => {
     expect(parseSnapshotDocument(document)).toEqual(document);
   });
   it.each([
+    {marks: {lines: [{line: 2, kind: 'highlight'}]}, focusedLines: []},
     {
-      marks: {lines: [{line: 2, kind: 'highlight'}], focus: true},
-      focusedLines: [2],
-    },
-    {
-      marks: {lines: [{line: 2, kind: 'highlight'}], focus: false},
-      focusedLines: [],
-    },
-    {marks: {lines: [{line: 2, kind: 'added'}], focus: true}, focusedLines: []},
-    {
-      marks: {
-        lines: [{line: 2, kind: 'highlight'}],
-        focusedLines: [1, 3],
-        focus: true,
-      },
+      marks: {lines: [{line: 2, kind: 'highlight'}], focusedLines: [1, 3]},
       focusedLines: [1, 3],
     },
-  ])('normalizes persisted marks $marks', ({marks, focusedLines}) => {
+  ])('reads focused lines from $marks', ({marks, focusedLines}) => {
     const document = parseSnapshotDocument({
       ...sampleDocument,
       editor: {
