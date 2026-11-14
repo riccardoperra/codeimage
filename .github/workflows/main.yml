@@ -1,16 +1,15 @@
 name: Main
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     types: [opened, synchronize, reopened, edited, assigned]
   pull_request_target:
     types: [opened, synchronize, reopened, edited, assigned]
     branches:
       - changeset-release/main
-
-env:
-  IS_MAIN_BRANCH: ${{ github.head_ref == 'main' }}
-  IS_NEXT_BRANCH: ${{ github.head_ref == 'next' }}
 
 jobs:
   install:
@@ -24,7 +23,6 @@ jobs:
         uses: ./.github/actions/pnpm-install
 
       - uses: dorny/paths-filter@v4
-        if: (${{ env.IS_MAIN_BRANCH == 'false' }} || ${{ env.IS_NEXT_BRANCH == 'false' }})
         id: diff-changes
         with:
           filters: |
@@ -138,11 +136,11 @@ jobs:
           pnpm --filter='@codeimage/api' typecheck:ci
           pnpm --filter='@codeimage/app' typecheck
 
-  build-app-dev:
-    name: Build App and Preview (Dev)
+  build-app-preview:
+    name: Build App (Preview)
     environment: Preview
     needs: [build-packages]
-    if: ${{ github.head_ref  != 'next' }}
+    if: ${{ github.event_name != 'push' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -164,7 +162,7 @@ jobs:
           VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
           VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
+          VITE_ENABLE_MSW: true
           VITE_PRESET_LIMIT: 10
           VITE_PRESET_LIMIT_GUEST: 5
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
@@ -180,11 +178,11 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-  build-app-next:
-    name: Build App and Preview (Next)
+  build-app-rc:
+    name: Build App (RC)
     environment: Next
     needs: [build-packages]
-    if: ${{ github.head_ref  == 'next' }}
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -206,7 +204,7 @@ jobs:
           VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
           VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
+          VITE_ENABLE_MSW: false
           VITE_PRESET_LIMIT: 10
           VITE_PRESET_LIMIT_GUEST: 5
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
@@ -323,10 +321,10 @@ jobs:
   deploy-preview:
     name: Deploy preview
     needs:
-      [build-app-dev, build-app-next, build-highlight-dev, build-website-dev]
+      [build-app-preview, build-app-rc, build-highlight-dev, build-website-dev]
     if: ${{ !cancelled() && contains(needs.*.result, 'success') }}
     environment:
-      name: ${{ github.head_ref == 'next' && 'Next' || 'Preview' }}
+      name: ${{ github.event_name == 'push' && 'Next' || 'Preview' }}
       url: ${{ steps.deploy.outputs.url }}
     permissions:
       contents: read
@@ -342,7 +340,7 @@ jobs:
           version: 10.32.1
 
       - name: Download app
-        if: ${{ needs.build-app-dev.result == 'success' || needs.build-app-next.result == 'success' }}
+        if: ${{ needs.build-app-preview.result == 'success' || needs.build-app-rc.result == 'success' }}
         uses: actions/download-artifact@v4
         with:
           name: preview-app
@@ -368,8 +366,8 @@ jobs:
           account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           project-name: codeimage-preview
           directory: site
-          branch: ${{ github.head_ref == 'next' && 'next' || format('pr-{0}', github.event.pull_request.number) }}
-          production-branch: next
+          branch: ${{ github.event_name == 'push' && 'main' || format('pr-{0}', github.event.pull_request.number) }}
+          production-branch: main
 
       - name: Comment preview links
         if: ${{ !cancelled() && github.event.pull_request.number }}
@@ -377,7 +375,7 @@ jobs:
         env:
           PREVIEW_URL: ${{ steps.deploy.outputs.url }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          APP_RESULT: ${{ needs.build-app-dev.result != 'skipped' && needs.build-app-dev.result || needs.build-app-next.result }}
+          APP_RESULT: ${{ needs.build-app-preview.result != 'skipped' && needs.build-app-preview.result || needs.build-app-rc.result }}
           WEBSITE_RESULT: ${{ needs.build-website-dev.result }}
           HIGHLIGHT_RESULT: ${{ needs.build-highlight-dev.result }}
         with:
@@ -506,11 +504,11 @@ jobs:
       - name: Test (integration)
         run: pnpm --filter=@codeimage/api test:integration
 
-  deploy-api-next:
-    if: ${{ github.head_ref  == 'next' }}
+  deploy-api-rc:
+    if: ${{ github.event_name == 'push' }}
     environment: Next
-    name: Deploy next
-    needs: [lint, build-packages, build-api, be-test, build-app-next]
+    name: Deploy API (RC)
+    needs: [lint, build-packages, build-api, be-test, build-app-rc]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -549,5 +547,5 @@ jobs:
           RAILWAY_API_PROJECT_ID: ${{ secrets.RAILWAY_API_PROJECT_ID }}
 
 concurrency:
-  group: main-${{ github.head_ref }}
-  cancel-in-progress: true
+  group: main-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'push' }}

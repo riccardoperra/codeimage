@@ -18,7 +18,7 @@ inputs:
     description: 'Pages branch to deploy to'
     required: true
   production-branch:
-    description: 'Production branch used when the project is created'
+    description: 'Production branch the project is created with or updated to'
     required: true
 
 outputs:
@@ -53,6 +53,19 @@ runs:
           echo "Cloudflare API returned HTTP $status for project $PROJECT_NAME"
           cat project.json
           exit 1
+        fi
+        if [ "$(jq -r '.result.production_branch' project.json)" != "$PRODUCTION_BRANCH" ]; then
+          status=$(curl -sS -o patch.json -w '%{http_code}' -X PATCH \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data "$(jq -n --arg branch "$PRODUCTION_BRANCH" '{production_branch: $branch}')" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT_NAME")
+          if [ "$status" != 200 ]; then
+            echo "Cloudflare API returned HTTP $status updating production branch of $PROJECT_NAME"
+            cat patch.json
+            exit 1
+          fi
+          rm patch.json
         fi
         echo "subdomain=$(jq -r '.result.subdomain' project.json)" >> "$GITHUB_OUTPUT"
         rm project.json
