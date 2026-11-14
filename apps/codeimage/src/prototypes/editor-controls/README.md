@@ -16,7 +16,7 @@ This folder holds the editor in three layouts and several ways to draw a theme. 
 
 The snippet route `/:snippetId`, `/dashboard` and `/login` are untouched and still open the production screens.
 
-The layout, the side of the Inspector panel and the theme card style are settings. Change them in the settings dialog, which the gear in the header opens, or in the command menu. Two URL parameters pick a layout and a style for a link, with no visible control:
+The layout, the side of the Inspector panel and the theme card style are settings. Change them in the settings dialog or in the command menu. Each layout opens the settings from its own chrome: Inspector from the gear in the header, Studio from the foot of its rail under Search, Dock from the gear in its floating bar. On a phone, where the rail and the bar have no room for it, the gear is in the header in every layout. Two URL parameters pick a layout and a style for a link, with no visible control:
 
 | Parameter | Values                                    | Wins over the stored choice |
 | --------- | ----------------------------------------- | --------------------------- |
@@ -64,8 +64,8 @@ Each layout is a folder, `variants/<slug>/index.tsx`, that exports two things:
 The stage, from `stage.tsx`, holds the parts of the real editor that a layout places:
 
 - `Canvas` renders the live frame with the CodeMirror editor. It fills its parent and zooms the frame out when the frame is larger than the space it gets, so give it a parent with a definite size. Render it exactly once.
-- `ExportButton` and `CopyToClipboardButton` are the production buttons, bound to the canvas.
-- `randomize()`, `format()`, and `canFormat()` are the frame toolbar actions.
+- `ExportButton` is the Export control (see [Export](#export)), and `CopyToClipboardButton` the production button, both bound to the canvas. `exporter` runs the exports for anything else, such as the command menu.
+- `randomize()`, `format()`, and `canFormat()` are the frame toolbar actions. `controls/FrameActions` draws today's frame toolbar without its export settings button.
 - `ThemePreview` draws the mini editor of today's theme cards for one entry of `model.themes()`.
 - `exportRef()` is the element that export captures. Pass it to any other production component that takes a `canvasRef` or a `frameRef`, such as `FrameToolbar`.
 
@@ -79,10 +79,10 @@ The stage, from `stage.tsx`, holds the parts of the real editor that a layout pl
 
 `shell/` holds what every layout shares around the canvas: the header and the settings.
 
-- `Header.tsx` is the compact header. It has no bar of its own and is as tall as its controls, so it reads as the first row of the islands. It holds the logo, the dashboard link and the snippet name where production shows them, the gear that opens the settings, and the production Share, Export and sign-in or user badge. The harness renders it once, above the layout, so no layout mounts it.
+- `Header.tsx` is the compact header. It has no bar of its own and is as tall as its controls, so it reads as the first row of the islands. It holds the logo, the dashboard link and the snippet name where production shows them, the gear that opens the settings while the layout has no entry of its own, the production Share, the Export control, and the production sign-in or user badge. The harness renders it once, above the layout, so no layout mounts it.
 - `SettingsDialog.tsx` is the one settings surface, a kit `Dialog` in two panes. The harness mounts it once.
 - `sections.tsx` holds every setting as data: sections, groups and rows. The dialog draws them and its search reads the same rows.
-- `settings-state.ts` exports `settings.open(section?)`, `settings.close`, `settings.isOpen` and `settings.section`. Closing returns focus to what opened it, or to the gear when a layout change replaced the header.
+- `settings-state.ts` exports `settings.open(section?)`, `settings.close`, `settings.isOpen` and `settings.section`. Closing returns focus to what opened it, or to the settings entry on screen when a layout change replaced it. A layout that shows its own entry calls `claimSettingsEntry()` while it is on screen, and the header drops its gear then.
 - `preferences.ts` keeps the three choices in local storage under the one key `codeimage:prototype-settings`, as `{layout, inspectorSide, themeCards}`. Without stored choices the editor opens in Inspector with the panel on the right and Window cards. `preferences.restoreDefaults()` turns every experiment off.
 - `commands.ts` lists the same choices as commands for the command menu, and one `Settings: <section>` command per section.
 - `previews.tsx` draws the small layout wireframes, and `icons.tsx` the icons of the header and the settings.
@@ -105,22 +105,27 @@ The logo is 28px tall, which is the height of its mark. Beside 36px buttons that
 
 The left pane has a search field and the sections, each with an icon. The right pane has a breadcrumb, `Settings / General`, a close button, and the section as titled groups. A group is one island of rows. A row is a title, one line that explains it, and its control on the right. A `wide` row puts its control under the text at the island's width, which the cards with a preview use.
 
-| Section     | Group        | Row         | Control                             |
-| ----------- | ------------ | ----------- | ----------------------------------- |
-| General     | Interface    | Language    | Segmented, one option per locale    |
-| Appearance  | Colours      | Colour mode | Segmented: Dark, Light, System      |
-| Appearance  | Inspector    | Panel side  | Segmented: Left, Right              |
-| Experiments | Editor       | Layout      | Cards: Inspector, Dock, Studio      |
-| Experiments | Theme picker | Theme cards | Cards: Window, Orb, Aa list         |
-| About       | CodeImage    | Version     | The version, to read                |
-| About       | CodeImage    | Changelog   | Opens the production changelog      |
-| About       | CodeImage    | GitHub      | A link to the repository            |
-| About       | Account      | Log out     | A button, only for a signed-in user |
+| Section     | Group        | Row                 | Control                             |
+| ----------- | ------------ | ------------------- | ----------------------------------- |
+| General     | Interface    | Language            | Segmented, one option per locale    |
+| Appearance  | Colours      | Colour mode         | Segmented: Dark, Light, System      |
+| Appearance  | Inspector    | Panel side          | Segmented: Left, Right              |
+| Export      | Image        | Format              | Segmented: PNG, SVG, JPEG           |
+| Export      | Image        | Quality             | Slider, 70 to 100%, only for JPEG   |
+| Export      | Image        | Scale               | Segmented: 1x, 2x, 3x, 6x           |
+| Export      | Tabs         | Only the active tab | Switch                              |
+| Experiments | Editor       | Layout              | Cards: Inspector, Dock, Studio      |
+| Experiments | Theme picker | Theme cards         | Cards: Window, Orb, Aa list         |
+| About       | CodeImage    | Version             | The version, to read                |
+| About       | CodeImage    | Changelog           | Opens the production changelog      |
+| About       | CodeImage    | GitHub              | A link to the repository            |
+| About       | Account      | Log out             | A button, only for a signed-in user |
 
+- Export reads and writes the production export store, `getExportCanvasStore()`, the one store that today's export settings popover writes. Today's export dialog keeps its own format, quality and scale; here there is one value of each.
 - Experiments holds what is not the default yet. Inspector and Window carry a `Default` tag, and `Restore defaults` goes back to both. The choices are cards and not switches because each is one out of three: two switches would turn each other off.
 - The search filters the rows of every section by title and description, and every word has to match. The results are grouped by section. Escape clears the search, a second Escape closes the dialog, and `/` focuses the field.
 - Opening the dialog focuses the section on screen, not the search, so a phone does not open its keyboard over the settings.
-- Under 769px the left pane becomes two rows on top: the search with the close button, then the sections as tabs without icons. Four sections do not need a screen of their own, and this keeps every section and the search one tap away.
+- Under 769px the left pane becomes two rows on top: the search with the close button, then the sections as tabs without icons. Five sections do not need a screen of their own, and this keeps every section and the search one tap away.
 - To add a setting, add a row to a group in `sections.tsx`. Use the segmented control or a switch for a choice. The kit's `Select` does not work in this dialog: the dialog is modal, and Kobalte marks the select's list, which it adds outside the dialog, as hidden from assistive technology.
 - Create anything a row opens, such as the changelog, in `SettingsDialog`, which stays mounted. The panel inside it goes away as the dialog closes.
 
@@ -134,6 +139,12 @@ The old menu at the top left of the header is gone. Its entries moved:
 | Changelog | Settings, About, and the `Changelog` command                     |
 | GitHub    | Settings, About, and the `CodeImage on GitHub` command           |
 | Logout    | The user badge's menu, Settings, About, and the `Logout` command |
+
+## Export
+
+`shell/ExportControl.tsx` is Export in two parts. The button exports the image at once with the export settings, with no dialog, and Ctrl+S does the same. The arrow beside it opens a menu: `Export image` with what it gives, such as `PNG at 3x`; `Export one image per tab`, a zip with one image per tab, which stays listed with `Needs two tabs or more` while the snippet has one tab; `Redact secrets` while a tab shows a secret; and `Export settings…`, which opens Settings at Export.
+
+`shell/export.tsx` runs them. The image is production's `exportImage` with the format, scale and quality of the export store. One image per tab runs what production's `useExportSnippet` runs when its stored `oneImagePerTab` flag is on, on demand: a `PreviewFrame` per tab, `renderTabFiles` and `deliverTabFiles`. The stored flag itself is not used here, since the menu offers both exports.
 
 ## Shared controls
 
@@ -162,7 +173,7 @@ Inspector puts its panel on the right. Set `data-inspector-side="left"` on its r
 
 `command-menu/` holds one command menu for every layout. The harness mounts it and binds Cmd+K, or Ctrl+K off Apple platforms. No layout has to do anything to get it.
 
-- It lists every theme, every option of every visible control, every background fill, the actions Export, Randomize and Format, and the settings: `Settings…`, one `Settings: <section>` command per section of the dialog, each layout, the Inspector side, each theme card style, the colour mode, and what the old header menu held. `listed-model.ts` turns the window style and the font, which the model hands out as production pickers, into plain choices over the same stores, so that they can be listed too.
+- It lists every theme, every option of every visible control, every background fill, the actions Randomize and Format, the exports and every export setting (`Export image`, `Export one image per tab` while there are two tabs or more, `Export settings…`, each format, scale, JPEG quality and tab choice), and the settings: `Settings…`, one `Settings: <section>` command per section of the dialog, each layout, the Inspector side, each theme card style, the colour mode, and what the old header menu held. `listed-model.ts` turns the window style and the font, which the model hands out as production pickers, into plain choices over the same stores, so that they can be listed too.
 - The highlighted row is previewed on the canvas through the model's preview session. Enter saves it. Escape, or any other way out, ends the preview.
 - It floats at the bottom centre with no scrim and is six rows tall, so the frame stays in view while the list is walked.
 - It does not open over an open list, menu, popover or modal dialog. A layout that wants it to open anyway closes what it has open first: `commandMenu.beforeOpen(close)`.
