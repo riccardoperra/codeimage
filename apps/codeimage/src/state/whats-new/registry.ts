@@ -53,7 +53,7 @@ export const RELEASES = [
       {
         id: 'tabs',
         title: 'One image per tab',
-        body: 'Export each tab as its own image. With more than one tab, they download together as a zip.',
+        body: 'Export each tab as its own image, together in one zip. It needs two tabs or more.',
         where: 'export',
       },
       {
