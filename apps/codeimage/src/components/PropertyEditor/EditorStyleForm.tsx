@@ -258,11 +258,7 @@ export const EditorStyleForm: ParentComponent = () => {
           <DynamicSizedContainer>
             <PanelHeader label={t('frame.font')} />
 
-            <PanelRow
-              for={'fontPicker'}
-              label={t('frame.font')}
-              feature={'fontPicker'}
-            >
+            <PanelRow for={'fontPicker'} label={t('frame.font')}>
               <TwoColumnPanelRow>
                 <SuspenseEditorItem
                   fallback={<SkeletonLine width={'100%'} height={'26px'} />}

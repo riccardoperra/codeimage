@@ -12,13 +12,11 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchUpdateTheme} from '@codeimage/store/effects/onThemeChange';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {VersionStore} from '@codeimage/store/version/version.store';
 import {appEnvironment} from '@core/configuration';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {getUmami} from '@core/constants/umami';
 import type {Accessor, Component} from 'solid-js';
 import {createMemo, createSelector} from 'solid-js';
-import {provideState} from 'statebuilder';
 import {FontPicker} from '../../components/PropertyEditor/controls/FontPicker/FontPicker';
 import {ImagePicker} from '../../components/PropertyEditor/controls/ImagePicker/ImagePicker';
 import {TerminalControlField} from '../../components/PropertyEditor/controls/TerminalControlField/TerminalControlField';
@@ -247,7 +245,6 @@ export function createEditorControlsModel(): EditorControlsModel {
   const editor = getRootEditorStore();
   const activeEditor = getActiveEditorStore();
   const themeStore = getThemeStore();
-  const versionStore = provideState(VersionStore);
   const shadows = createMemo(shadowsLabel);
   const session = createPreviewSession();
   const isActiveTheme = createSelector(
@@ -473,7 +470,6 @@ export function createEditorControlsModel(): EditorControlsModel {
           value: () => terminal.state.borderType ?? 'none',
           set: border => terminal.setBorder(border === 'none' ? null : border),
           track: border => {
-            versionStore.see('borderType', false);
             getUmami().track('change-border', {border});
           },
         }),

@@ -1,14 +1,11 @@
-import type {FeatureName} from '@codeimage/store/version/version.store';
 import {Box, Text} from '@codeimage/ui';
 import type {FlowComponent, JSXElement} from 'solid-js';
 import {Show} from 'solid-js';
-import {FeatureBadge} from '../FeatureBadge/FeatureBadge';
 import * as styles from './EditorSidebar.css';
 import {panelRowContent} from './EditorSidebar.css';
 
 interface PanelRowProps {
   label?: JSXElement;
-  feature?: FeatureName;
   for: string;
 }
 
@@ -32,11 +29,6 @@ export const PanelRow: FlowComponent<PanelRowProps> = props => {
         >
           <Box as={'span'} position={'relative'}>
             {props.label}
-            <Show when={props.feature}>
-              {feature => (
-                <FeatureBadge untilSeenTimes={3} featureName={feature()} />
-              )}
-            </Show>
           </Box>
         </Text>
       </Show>

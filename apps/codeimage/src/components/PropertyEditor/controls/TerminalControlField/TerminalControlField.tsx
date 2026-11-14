@@ -1,14 +1,12 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {VersionStore} from '@codeimage/store/version/version.store';
 import {Box, RadioBlock} from '@codeimage/ui';
 import {Checkbox} from '@codeui/kit';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import type {JSXElement} from 'solid-js';
-import {createSignal, For, onMount, Suspense} from 'solid-js';
+import {createSignal, For, Suspense} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {provideState} from 'statebuilder';
 import {SettingsIcon} from '../../../Icons/SettingsIcon';
 import {SidebarPopover} from '../../SidebarPopover/SidebarPopover';
 import {SidebarPopoverTitle} from '../../SidebarPopover/SidebarPopoverTitle';
@@ -26,18 +24,9 @@ export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
   const [open, setOpen] = createSignal(false);
-  const versionStore = provideState(VersionStore);
   const terminalThemes = AVAILABLE_TERMINAL_THEMES;
   const terminalState = getTerminalState();
   const {state: editorState} = getRootEditorStore();
-
-  onMount(() => {
-    versionStore.seeOnOpeningEvent({
-      featureName: 'windowStylePicker',
-      log: true,
-      open,
-    });
-  });
 
   return (
     <SidebarPopover
