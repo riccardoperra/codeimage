@@ -16,7 +16,7 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/*.test.ts"
+    "test": "vitest run"
   },
   "devDependencies": {
     "@mdx-js/mdx": "catalog:next",
@@ -40,6 +40,7 @@
     "vite": "catalog:next",
     "vite-plugin-solid": "catalog:next",
     "vite-tsconfig-paths": "catalog:next",
+    "vitest": "catalog:next",
     "workbox-core": "^7.4.0",
     "workbox-window": "^7.4.0"
   },

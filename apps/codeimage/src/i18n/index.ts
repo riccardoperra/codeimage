@@ -1,3 +1,4 @@
+import {altText} from './altText';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
@@ -54,8 +55,6 @@ export const locale = {
       reload: 'Ricarica',
     },
     export: {
-      copyAltText: 'Copia testo alternativo',
-      altTextCopied: 'Testo alternativo copiato',
       title: 'Esporta immagine',
       shareMode: 'Condividi il tuo codice',
       shareHint: 'Questa modalità usa la nuova',
@@ -96,6 +95,7 @@ export const locale = {
     ...bottomBar.it,
     ...notFound.it,
     ...presets.it,
+    ...altText.it,
   },
   en: {
     canvas: {
@@ -143,8 +143,6 @@ export const locale = {
       reload: 'Reload',
     },
     export: {
-      copyAltText: 'Copy alt text',
-      altTextCopied: 'Alt text copied',
       title: 'Export image',
       shareMode: 'Share your code',
       shareHint: 'This modality uses the new',
@@ -184,6 +182,7 @@ export const locale = {
     ...dashboard.en,
     ...notFound.en,
     ...presets.en,
+    ...altText.en,
   },
   de: {
     common: {
@@ -232,8 +231,6 @@ export const locale = {
       reload: 'Neu laden',
     },
     export: {
-      copyAltText: 'Alternativtext kopieren',
-      altTextCopied: 'Alternativtext kopiert',
       title: 'Bild exportieren',
       shareMode: 'Code teilen',
       shareHint: 'Diese Funktion verwendet die neue',
@@ -273,6 +270,7 @@ export const locale = {
     ...dashboard.de,
     ...notFound.de,
     ...presets.de,
+    ...altText.de,
   },
   es: {
     common: {
@@ -320,8 +318,6 @@ export const locale = {
       reload: 'Recargar',
     },
     export: {
-      copyAltText: 'Copiar texto alternativo',
-      altTextCopied: 'Texto alternativo copiado',
       title: 'Exporta imagen',
       shareMode: 'Comparte tu código',
       shareHint: 'Esta modalidad utiliza el nuevo',
@@ -362,6 +358,7 @@ export const locale = {
     ...dashboard.es,
     ...notFound.es,
     ...presets.es,
+    ...altText.es,
   },
 };
 

@@ -5,7 +5,7 @@ import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {ColorSwatchIcon} from '../Icons/ColorSwatch';
 import {SparklesIcon} from '../Icons/SparklesIcon';
-import {CopyAltTextButton} from './ExportContent';
+import {CopyAltTextButton} from './CopyAltTextButton';
 import {CopyToClipboardButton} from './CopyToClipboardButton';
 import {ExportInNewTabButton} from './ExportNewTabButton';
 import {ExportSettingsButton} from './ExportSettingsButton';
