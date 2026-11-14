@@ -8,6 +8,7 @@ import {
   Show,
 } from 'solid-js';
 import './picker.css';
+import clsx from 'clsx';
 
 /** The item a key selects, `replay`, or undefined to leave the key to the page. */
 export type PickerKeys = (
@@ -25,6 +26,8 @@ interface PickerProps {
   keys: PickerKeys;
   /** Shows the replay button. */
   onReplay?: () => void;
+  /** Classes of the page that places the pill. */
+  class?: string;
 }
 
 /** Number keys, the arrows, and R to replay: the layout picker of PICKER.md. */
@@ -122,7 +125,7 @@ export function Picker(props: PickerProps) {
 
   return (
     <nav
-      class="proto-picker"
+      class={clsx('proto-picker', props.class)}
       aria-label={props.label}
       data-position="top"
       data-ready={ready() ? '' : undefined}

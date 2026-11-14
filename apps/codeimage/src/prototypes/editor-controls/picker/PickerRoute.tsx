@@ -1,6 +1,7 @@
 import type {JSX} from 'solid-js';
 import {createSignal, onCleanup, onMount, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {CommandMenu} from '../command-menu/CommandMenu';
 import type {Variant} from '../contract';
 import {EditorHost} from '../EditorHost';
@@ -9,7 +10,7 @@ import {createStage} from '../stage';
 import type {ThemePickerSlotProps} from '../theme-styles/ThemePicker';
 import {ThemePicker} from '../theme-styles/ThemePicker';
 import {themeStyle} from '../theme-styles/style';
-import './picker-route.css';
+import * as styles from './picker-route.css';
 import {numberKeys, Picker} from './Picker';
 
 interface PickerRouteProps {
@@ -95,11 +96,11 @@ function Variants(props: PickerRouteProps) {
 
   return (
     <div
-      class="proto-harness"
+      class={styles.harness}
       data-offset={chrome.offset() === undefined ? undefined : ''}
-      style={{'--proto-offset': `${chrome.offset() ?? 0}px`}}
+      style={assignInlineVars({[styles.offset]: `${chrome.offset() ?? 0}px`})}
     >
-      <div class="proto-variant" ref={page}>
+      <div class={styles.variant} ref={page}>
         <Show when={mounted()} keyed>
           {({index}) => {
             // Created outside the JSX: a call in a prop compiles to a getter
@@ -128,8 +129,9 @@ function Variants(props: PickerRouteProps) {
           }}
         </Show>
       </div>
-      <div class="proto-pickers" ref={pills}>
+      <div class={styles.pickers} ref={pills}>
         <Picker
+          class={styles.pill}
           label="Prototype variants"
           names={props.variants.map(variant => variant.name)}
           active={mounted().index}
