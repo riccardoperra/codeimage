@@ -256,11 +256,11 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy to Railway
+        if: ${{ github.event.inputs.deploy-backend == 'true' }}
         run: |
-          npx @railway/cli@3.3.1 link --environment production $RAILWAY_API_PROJECT_ID
           cd dist/api-bundle
           find -type f -name '.gitignore' -delete
-          npx @railway/cli@3.3.1 up -s codeimage
+          npx -y @railway/cli@4.35.0 up --project "$RAILWAY_API_PROJECT_ID" --environment production --service codeimage --ci
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_API_PROJECT_ID: ${{ secrets.RAILWAY_API_PROJECT_ID }}
