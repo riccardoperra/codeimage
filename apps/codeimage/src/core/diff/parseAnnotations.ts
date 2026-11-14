@@ -7,6 +7,30 @@ export interface AnnotatedCode {
   count: number;
 }
 
+const NOTATION = /\[!code (\+\+|--|highlight|focus)(?::([1-9]\d*))?\]/g;
+
+/**
+ * Returns the quote open at `end`. Only template literals continue across
+ * lines, and a quote without a closing partner on the line (a Rust lifetime,
+ * an apostrophe in prose) does not open a string.
+ */
+function quoteAt(line: string, open: string, end: number): string {
+  let quote = open;
+  for (let index = 0; index < end; index++) {
+    const char = line[index];
+    if (quote) {
+      if (char === '\\') index++;
+      else if (char === quote) quote = '';
+    } else if (
+      char === '`' ||
+      ((char === '"' || char === "'") && line.includes(char, index + 1))
+    ) {
+      quote = char;
+    }
+  }
+  return quote;
+}
+
 /** Comment delimiters come from the active language's CodeMirror commentTokens. */
 export function parseAnnotations(
   input: string,
@@ -17,66 +41,49 @@ export function parseAnnotations(
   const pending: {line: number; kind: LineMark['kind']; count: number}[] = [];
   let focus = false;
   let count = 0;
-  let quote = '';
+  let template = '';
   for (const line of source) {
-    let commentStart = -1;
-    let commentEnd = line.length;
-    for (let index = 0; index < line.length; index++) {
-      const char = line[index];
-      if (quote) {
-        if (char === '\\') index++;
-        else if (char === quote) quote = '';
-        continue;
-      }
-      if (tokens.line && line.startsWith(tokens.line, index)) {
-        commentStart = index;
-        break;
-      }
-      if (tokens.block && line.startsWith(tokens.block.open, index)) {
-        const end = line.indexOf(
-          tokens.block.close,
-          index + tokens.block.open.length,
-        );
-        if (end >= 0) {
-          commentStart = index;
-          commentEnd = end + tokens.block.close.length;
-          break;
-        }
-      }
-      if (char === '"' || char === "'" || char === '`') quote = char;
-    }
-    if (commentStart < 0) {
-      output.push(line);
-      continue;
-    }
-    const comment = line.slice(commentStart, commentEnd);
-    const annotations = [
-      ...comment.matchAll(
-        /\[!code (\+\+|--|highlight|focus)(?::([1-9]\d*))?\]/g,
-      ),
-    ].filter(
+    const openAtStart = template;
+    template = quoteAt(line, template, line.length) === '`' ? '`' : '';
+    const annotations = [...line.matchAll(NOTATION)].filter(
       match => !match[2] || match[1] === 'highlight' || match[1] === 'focus',
     );
     if (!annotations.length) {
       output.push(line);
       continue;
     }
-    let remainder = comment;
-    for (const match of annotations)
-      remainder = remainder.replace(match[0], '');
-    const delimiters =
-      tokens.block && comment.startsWith(tokens.block.open)
-        ? [tokens.block.open, tokens.block.close]
-        : [tokens.line ?? ''];
-    for (const delimiter of delimiters)
-      remainder = remainder.replace(delimiter, '');
+    const first = annotations[0].index;
+    const last = annotations[annotations.length - 1];
+    let commentStart = tokens.line ? line.lastIndexOf(tokens.line, first) : -1;
+    let commentEnd = line.length;
+    let delimiters = [tokens.line ?? ''];
+    if (tokens.block) {
+      const open = line.lastIndexOf(tokens.block.open, first);
+      const close = line.indexOf(
+        tokens.block.close,
+        last.index + last[0].length,
+      );
+      if (open > commentStart && close >= 0) {
+        commentStart = open;
+        commentEnd = close + tokens.block.close.length;
+        delimiters = [tokens.block.open, tokens.block.close];
+      }
+    }
+    if (commentStart < 0 || quoteAt(line, openAtStart, commentStart)) {
+      output.push(line);
+      continue;
+    }
+    const comment = line.slice(commentStart, commentEnd);
+    const withoutNotation = annotations.reduce(
+      (text, match) => text.replace(match[0], ''),
+      comment,
+    );
+    const remainder = delimiters.reduce(
+      (text, delimiter) => text.replace(delimiter, ''),
+      withoutNotation,
+    );
     const cleaned = remainder.trim()
-      ? line.slice(0, commentStart) +
-        annotations.reduce(
-          (text, match) => text.replace(match[0], ''),
-          comment,
-        ) +
-        line.slice(commentEnd)
+      ? line.slice(0, commentStart) + withoutNotation + line.slice(commentEnd)
       : (line.slice(0, commentStart) + line.slice(commentEnd)).trimEnd();
     const standalone = !cleaned.trim();
     const target = output.length + 1;
