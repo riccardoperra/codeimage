@@ -11,10 +11,17 @@ import {
   IconButton,
   icons,
 } from '@codeui/kit';
-import {Show} from 'solid-js';
+import {createSignal, Show} from 'solid-js';
 import {DownloadIcon} from '../../../components/Icons/Download';
+import {NewDot} from '../../../components/WhatsNew/NewDot';
+import {
+  commandAnchor,
+  filledAnchor,
+  leadingDot,
+} from '../../../components/WhatsNew/whats-new.css';
 import {useHotkey} from '../../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../../i18n';
+import {getWhatsNew} from '../../../state/whats-new';
 import type {Exporter} from './export';
 import * as styles from './export.css';
 import {settings} from './settings-state';
@@ -35,6 +42,14 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
   const [t] = useI18n<AppLocaleEntries>();
   const exporter = () => props.exporter;
   const size = () => props.size ?? 'sm';
+  const [menuOpen, setMenuOpen] = createSignal(false);
+
+  // One image per tab and Redact secrets live in the menu. A Show me from
+  // the settings waits a frame, so that the settings close first.
+  getWhatsNew().bindLocation('export', () => {
+    settings.close();
+    requestAnimationFrame(() => setMenuOpen(true));
+  });
 
   // As production's Ctrl+S, which opened the export dialog.
   useHotkey(document.body, {
@@ -46,29 +61,43 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
 
   return (
     <div class={styles.group} role="group" aria-label="Export" data-export>
-      <Button
-        class={styles.main}
-        theme={'primary'}
-        size={size()}
-        loading={exporter().busy()}
-        leftIcon={<DownloadIcon />}
-        title={`Export as ${exportSummary()}`}
-        data-export-image
-        onClick={() => exporter().image()}
-      >
-        {t('toolbar.export')}
-      </Button>
-      <DropdownMenu placement="bottom-end">
-        <DropdownMenuTrigger
-          as={IconButton}
-          class={styles.more}
+      {/* Hide secrets points here: while the code shows a secret, an export
+          would carry it. */}
+      <span class={`${commandAnchor} ${filledAnchor} ${leadingDot}`}>
+        <Button
+          class={styles.main}
           theme={'primary'}
           size={size()}
-          aria-label="More ways to export"
-          data-export-menu
+          loading={exporter().busy()}
+          leftIcon={<DownloadIcon />}
+          title={`Export as ${exportSummary()}`}
+          data-export-image
+          onClick={() => exporter().image()}
         >
-          <icons.ChevronDownIcon />
-        </DropdownMenuTrigger>
+          {t('toolbar.export')}
+        </Button>
+        <Show when={exporter().secrets() > 0}>
+          <NewDot highlight="redact" />
+        </Show>
+      </span>
+      <DropdownMenu
+        placement="bottom-end"
+        open={menuOpen()}
+        onOpenChange={setMenuOpen}
+      >
+        <span class={`${commandAnchor} ${filledAnchor}`}>
+          <DropdownMenuTrigger
+            as={IconButton}
+            class={styles.more}
+            theme={'primary'}
+            size={size()}
+            aria-label="More ways to export"
+            data-export-menu
+          >
+            <icons.ChevronDownIcon />
+          </DropdownMenuTrigger>
+          <NewDot highlight="tabs" />
+        </span>
         <DropdownMenuPortal>
           <DropdownMenuContent>
             <DropdownMenuItem onSelect={() => exporter().image()}>

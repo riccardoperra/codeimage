@@ -2,6 +2,7 @@ import {useI18n} from '@codeimage/locale';
 import {detectSecrets} from '@codeimage/secrets';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
+import {getWhatsNew} from '@codeimage/store/whats-new';
 import {toast} from '@codeimage/ui';
 import {getUmami} from '@core/constants/umami';
 import {loadLanguage} from '@core/snapshot/tokenize';
@@ -113,13 +114,17 @@ export function createExporter(
       void run(() =>
         exportImage({ref: ref(), options: options(ExportMode.export)}),
       ),
-    eachTab: () => void run(eachTab),
+    eachTab: () => {
+      getWhatsNew().seen('tabs');
+      void run(eachTab);
+    },
     secrets: () =>
       editor.state.editors.reduce(
         (count, tab) => count + detectSecrets(tab.code).length,
         0,
       ),
-    redactSecrets: () =>
+    redactSecrets: () => {
+      getWhatsNew().seen('redact');
       batch(() => {
         editor.state.editors.forEach((tab, index) => {
           const redacted = redactTabCode(
@@ -129,6 +134,7 @@ export function createExporter(
           if (redacted !== tab.code)
             editor.actions.setEditors(index, 'code', redacted);
         });
-      }),
+      });
+    },
   };
 }

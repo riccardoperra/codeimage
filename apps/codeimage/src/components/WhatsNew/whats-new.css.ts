@@ -172,6 +172,17 @@ globalStyle(`${commandAnchor} > ${dotAnchor}`, {
   top: '-9px',
   zIndex: 1,
 });
+// A dot on the corner of a filled control, which has the dot's colour.
+export const filledAnchor = style({});
+globalStyle(`${filledAnchor} > ${dotAnchor} ${dot}::after`, {
+  boxShadow: `0 0 0 2px ${c.background}`,
+});
+// For a control whose right corner touches another control with a dot.
+export const leadingDot = style({});
+globalStyle(`${leadingDot} > ${dotAnchor}`, {
+  right: 'auto',
+  left: '-9px',
+});
 export const coachmark = style([
   surface,
   {
