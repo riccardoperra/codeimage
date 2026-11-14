@@ -116,14 +116,14 @@ The second issue was a gap in round 3. After a reload, a selected system font ha
 
 Results against Chrome, at native display DPR 2 and export scale 2:
 
-| Code font      | Source           | Takumi vs Chrome | Fallback | Native faces read |
-| -------------- | ---------------- | ---------------: | -------- | ----------------- |
-| JetBrains Mono | web              |          0.0323% | none     | none              |
-| Fira Code      | web              |          0.0337% | none     | none              |
-| Geist Mono     | web              |          0.0334% | none     | none              |
-| Menlo          | system, `true`   |          0.0328% | none     | Menlo's 4 faces   |
-| Andale Mono    | system, `.ttf`   |          0.0321% | none     | AndaleMono        |
-| Courier New    | system, `.ttf`   |          0.0319% | none     | Courier New's 4   |
+| Code font      | Source         | Takumi vs Chrome | Fallback | Native faces read |
+| -------------- | -------------- | ---------------: | -------- | ----------------- |
+| JetBrains Mono | web            |          0.0323% | none     | none              |
+| Fira Code      | web            |          0.0337% | none     | none              |
+| Geist Mono     | web            |          0.0334% | none     | none              |
+| Menlo          | system, `true` |          0.0328% | none     | Menlo's 4 faces   |
+| Andale Mono    | system, `.ttf` |          0.0321% | none     | AndaleMono        |
+| Courier New    | system, `.ttf` |          0.0319% | none     | Courier New's 4   |
 
 With a web font selected, export read no native font and fetched only the selected family's files and Inter. Monaco and PT Mono are not offered in the System picker, because its monospace check filters them out. That check predates P2, so the blob probe covers them instead. A forced FontData read failure shows "Used browser export for Menlo. The font data could not be read." and produces exactly the dom-export PNG. All 104 matrix cells pass again in Chrome 157, worst 0.0706% and median 0.0321%, with no fallbacks, font issues, or page errors. The app has 28 passing tests, and lint and typecheck pass.
 
@@ -235,3 +235,25 @@ P2_URL=http://localhost:4435 P2_REVIEW_CASE=crossovers P2_DISPLAY_DPR=1 P2_OUT=/
 P2_URL=http://localhost:4435 P2_REVIEW_CASE=crossovers P2_DISPLAY_DPR=2 P2_OUT=/tmp/p2-round2/dpr2 pnpm exec tsx scripts/parity/rasterizers.ts
 P2_URL=http://localhost:4435 P2_REVIEW_CASE=blocked-font P2_OUT=/tmp/p2-round2/font pnpm exec tsx scripts/parity/rasterizers.ts
 ```
+
+## Main alignment, 14 November 2026
+
+PR #701 now includes main through `b52ab947`. The merge preserves exact social export sizes, the alt-text success actions, and the current share cancellation behavior. Importing the export modes no longer initializes the editor or browser-only rasterizer modules.
+
+The parity script now reads the static preview introduced by P1. It no longer imports the deleted `exportSnippet` or `previewEditorView` exports.
+
+- App tests pass, 57 of 57. The new social-resolution checks first failed with ratio 3 instead of 1 for both engines.
+- App typecheck, lint, package builds, API build, and the production app build pass. Lint retains existing warnings.
+- All 104 theme and terminal comparisons pass against Chrome. The worst difference is 0.3324%, below the existing 0.5% limit. There are no render errors or fallbacks in the matrix.
+- All eight unconditional live checks pass, including the 300-line static export, clipboard, SVG, persisted flags, and the deliberately blocked WASM fallback. The optional trunk baseline and saved-matrix lanes were not run.
+- All four social targets match their exact PNG dimensions with both engines when the requested scale is 3, including the P7 signature. Each comparison stays below 0.5% from Chrome.
+- Performance was not measured again.
+
+Reproduce with the app running on mocks at port 4402 after building the workspace packages.
+
+```sh
+P2_PERF=0 P2_LIVE=1 P2_OUT=/tmp/p2-main pnpm exec tsx scripts/parity/rasterizers.ts
+P2_TARGETS=1 P2_PERF=0 P2_OUT=/tmp/p2-targets pnpm exec tsx scripts/parity/rasterizers.ts
+```
+
+The [alignment results](media/p2-main-alignment.json) record this run. New UI wiring and the styled signature checks belong to the integration above #711, so this PR remains independently mergeable against main.
