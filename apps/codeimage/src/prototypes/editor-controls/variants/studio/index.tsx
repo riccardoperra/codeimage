@@ -276,20 +276,22 @@ export default function Studio(props: VariantProps) {
               </button>
             )}
           </For>
-          <button
-            type="button"
-            class={`${styles.railButton} ${styles.railSearch}`}
-            aria-haspopup="dialog"
-            aria-expanded={commandMenu.isOpen()}
-            title={`Search themes and options (${commandMenu.shortcut})`}
-            onClick={commandMenu.open}
-          >
-            <span class={styles.railIcon}>
-              <SearchIcon />
-            </span>
-            Search
-            <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
-          </button>
+          <Show when={!isPhone()}>
+            <button
+              type="button"
+              class={`${styles.railButton} ${styles.railSearch}`}
+              aria-haspopup="dialog"
+              aria-expanded={commandMenu.isOpen()}
+              title={`Search themes and options (${commandMenu.shortcut})`}
+              onClick={commandMenu.open}
+            >
+              <span class={styles.railIcon}>
+                <SearchIcon />
+              </span>
+              Search
+              <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
+            </button>
+          </Show>
         </nav>
 
         <section

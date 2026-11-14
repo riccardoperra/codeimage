@@ -135,9 +135,10 @@ export const railButton = style([
 ]);
 
 // The command menu's button sits apart from the panels, at the foot of the rail.
+// The command menu's button sits apart from the panels, at the foot of the rail.
+// It is not rendered on phones, where the rail is a tab bar sized for five rooms.
 export const railSearch = style({
   marginTop: 'auto',
-  '@media': {[compact]: {marginTop: 0}},
 });
 
 export const railHint = style({
