@@ -1,58 +1,43 @@
+import {isIOS} from '@solid-primitives/platform';
 import download from 'downloadjs';
 import {zipSync} from 'fflate';
-import {isIOS} from '@solid-primitives/platform';
 import {exportTabName} from './export-tab-name';
-import {ExportMode, type ExportImagePayload} from './use-export-image';
+import {ExportMode} from './use-export-image';
 
-export async function exportTabs({
-  payload,
-  tabs,
-  activeId,
-  activate,
-  render,
-}: {
-  payload: ExportImagePayload;
-  tabs: {id: string; name: string | null}[];
-  activeId: string;
-  activate: (id: string) => void;
-  render: (payload: ExportImagePayload) => Promise<Blob | string>;
-}): Promise<Blob> {
+export interface ExportTab {
+  id: string;
+  name: string | null;
+}
+
+export async function renderTabFiles(
+  tabs: readonly ExportTab[],
+  render: (id: string) => Promise<Blob | string>,
+): Promise<File[]> {
   const files: File[] = [];
-  try {
-    for (const [index, tab] of tabs.entries()) {
-      activate(tab.id);
-      await new Promise<void>(resolve =>
-        requestAnimationFrame(() => resolve()),
-      );
-      const blob = await render({
-        ...payload,
-        options: {...payload.options, mode: ExportMode.getBlob},
-      });
-      if (!(blob instanceof Blob)) throw new Error('Expected an image blob.');
-      files.push(
-        new File(
-          [blob],
-          exportTabName(tab.name, index, payload.options.extension),
-          {type: blob.type},
-        ),
-      );
-    }
-  } finally {
-    activate(activeId);
+  for (const [index, tab] of tabs.entries()) {
+    const blob = await render(tab.id);
+    if (!(blob instanceof Blob)) throw new Error('Expected an image blob.');
+    // Name the file after the format the rasterizer produced, so a format it
+    // cannot write as a blob never ships under the wrong extension.
+    const extension = /^image\/(\w+)/.exec(blob.type)?.[1] ?? 'png';
+    files.push(
+      new File([blob], exportTabName(tab.name, index, extension), {
+        type: blob.type,
+      }),
+    );
   }
+  return files;
+}
+
+export async function deliverTabFiles(
+  files: File[],
+  mode: ExportMode,
+): Promise<Blob> {
   if (
-    payload.options.mode === ExportMode.share &&
-    navigator.canShare?.({files})
+    mode === ExportMode.share &&
+    navigator.canShare?.({files}) &&
+    (await shareFiles(files))
   ) {
-    const share = navigator.share({files}).catch((error: unknown) => {
-      if (!(error instanceof Error) || error.name !== 'AbortError') throw error;
-    });
-    if (isIOS)
-      await Promise.race([
-        share,
-        new Promise(resolve => setTimeout(resolve, 3000)),
-      ]);
-    else await share;
     return files[0];
   }
   const entries: Record<string, Uint8Array> = {};
@@ -63,4 +48,24 @@ export async function exportTabs({
   });
   download(archive, 'codeimage-tabs.zip', archive.type);
   return archive;
+}
+
+// Rendering several tabs can outlast the click's user activation, so a
+// NotAllowedError falls back to the zip. On iOS, "Save image" never settles
+// the share promise (https://bugs.webkit.org/show_bug.cgi?id=231995).
+function shareFiles(files: File[]): Promise<boolean> {
+  const shared = navigator.share({files}).then(
+    () => true,
+    (error: unknown) => {
+      const name = (error as {name?: string} | null)?.name;
+      if (name === 'AbortError') return true;
+      if (name === 'NotAllowedError') return false;
+      throw error;
+    },
+  );
+  if (!isIOS) return shared;
+  return Promise.race([
+    shared,
+    new Promise<boolean>(resolve => setTimeout(() => resolve(true), 3000)),
+  ]);
 }
