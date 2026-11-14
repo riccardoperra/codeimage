@@ -84,7 +84,8 @@
     "playwright": "1.57.0",
     "pixelmatch": "7.1.0",
     "pngjs": "7.0.0",
-    "@types/pngjs": "6.0.5"
+    "@types/pngjs": "6.0.5",
+    "wrangler": "4.156.0"
   },
   "engines": {
     "node": ">=24",

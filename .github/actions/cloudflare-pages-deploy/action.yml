@@ -46,7 +46,7 @@ runs:
         }
         status=$(fetch_project)
         if [ "$status" = 404 ]; then
-          pnpm dlx wrangler@4.156.0 pages project create "$PROJECT_NAME" --production-branch="$PRODUCTION_BRANCH"
+          pnpm exec wrangler pages project create "$PROJECT_NAME" --production-branch="$PRODUCTION_BRANCH"
           status=$(fetch_project)
         fi
         if [ "$status" != 200 ]; then
@@ -83,7 +83,7 @@ runs:
         SUBDOMAIN: ${{ steps.project.outputs.subdomain }}
         COMMIT_HASH: ${{ github.event.pull_request.head.sha || github.sha }}
       run: |
-        pnpm dlx wrangler@4.156.0 pages deploy "$DIRECTORY" --project-name="$PROJECT_NAME" --branch="$BRANCH" --commit-hash="$COMMIT_HASH" --commit-dirty=true
+        pnpm exec wrangler pages deploy "$DIRECTORY" --project-name="$PROJECT_NAME" --branch="$BRANCH" --commit-hash="$COMMIT_HASH" --commit-dirty=true
         if [ "$BRANCH" = "$PRODUCTION_BRANCH" ]; then
           url="https://$SUBDOMAIN"
         else
