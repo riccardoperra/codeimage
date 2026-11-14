@@ -4,6 +4,7 @@ import {createSignal, onCleanup} from 'solid-js';
 export const SECTIONS = [
   {id: 'general', name: 'General'},
   {id: 'appearance', name: 'Appearance'},
+  {id: 'export', name: 'Export'},
   {id: 'experiments', name: 'Experiments'},
   {id: 'about', name: 'About'},
 ] as const;

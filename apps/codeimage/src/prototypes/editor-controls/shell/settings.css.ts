@@ -363,6 +363,17 @@ export const rowControl = style({
 // The kit's segmented control fills its parent, so it gets one with a size.
 // Its tabs are 8px lower than the track, so the track grows on a phone to
 // keep each tab a 36px target.
+// A slider as wide as a segmented control of three options.
+export const range = style({
+  display: 'flex',
+  alignItems: 'center',
+  flex: 'none',
+  width: '252px',
+  '@media': {
+    [narrow]: {width: '100%'},
+  },
+});
+
 export const segmented = style({
   display: 'flex',
   flex: 'none',
