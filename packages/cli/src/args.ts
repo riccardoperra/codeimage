@@ -5,6 +5,8 @@ import type {ParseArgsOptionsConfig} from 'node:util';
 import {THEME_REGISTRY} from '../../../apps/codeimage/src/state/theme/themeRegistry';
 import {FLAGS} from './flags';
 
+const DEFAULT_SCALE = 1;
+
 export const USAGE = `Usage: codeimage [options] [file...]
 
 Render code as an image. Each file becomes a tab. With no files, or with -
@@ -17,7 +19,7 @@ Options:
   --lang <id>          Language id for every tab (default: from the file name)
   --lines <a-b>        Render only lines a to b, numbered from a
   --preset <file>      JSON copied with "Copy as CLI config" in the web app
-  --scale <n>          Pixel ratio, at most 3 (default: 1)
+  --scale <n>          Pixel ratio, at most 3 (default: ${DEFAULT_SCALE})
   -h, --help           Show this help
 ${FLAGS.map(flag => flag.usage).join('')}
 Examples:
@@ -94,7 +96,7 @@ export function parseArgs(argv: string[]) {
   if (!format) {
     throw new UsageError('--format: expected png, jpeg, webp, or svg');
   }
-  const scale = Number(values.scale ?? 1);
+  const scale = Number(values.scale ?? DEFAULT_SCALE);
   if (!Number.isFinite(scale) || scale <= 0 || scale > 3) {
     throw new UsageError('--scale: expected a number above 0 and at most 3');
   }

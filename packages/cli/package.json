@@ -11,13 +11,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown && node scripts/package.mjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint"
   },
   "dependencies": {
-    "zod": "^4.1.12"
+    "zod": "^4.1.12",
+    "@codeimage/render": "workspace:*",
+    "@takumi-rs/core": "2.19.0"
   },
   "devDependencies": {
     "@codeimage/config": "workspace:*",
@@ -32,6 +34,7 @@
     "node": ">=24"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "publish"
   }
 }

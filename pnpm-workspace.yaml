@@ -3,6 +3,8 @@ packages:
   - 'packages/**'
   - 'tools/**'
   - '!**/test/**'
+  - '!**/dist/**'
+  - '!**/publish/**'
 
 catalogs:
   next:

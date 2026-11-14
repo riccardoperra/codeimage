@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {toCliConfig} from '../../../apps/codeimage/src/components/Presets/cliConfig';
 import {parseArgs, UsageError} from './args';
-import {snapshotDocumentSchema} from './document';
+import {snapshotDocumentSchema} from '@codeimage/render';
 import {buildSnapshot, parsePreset} from './snapshot';
 
 function renderArgs(argv: string[] = []) {
@@ -139,7 +139,6 @@ describe('snapshot', () => {
       $version: '1.0.0',
       format: 'png',
       scale: 1,
-      width: 960,
       frame: {padding: 64, radius: 8, visible: true, opacity: 100},
       terminal: {
         type: 'macOs',
