@@ -168,7 +168,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v41.1.4
+      - uses: amondnet/vercel-action@v42.3.0
         with:
           vercel-token: ${{secrets.VERCEL_TOKEN}} # Required
           github-token: ${{secrets.GITHUB_TOKEN}} #Optional
@@ -214,7 +214,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v41.1.4
+      - uses: amondnet/vercel-action@v42.3.0
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -252,7 +252,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/highlight build:dev
 
-      - uses: amondnet/vercel-action@v41.1.4
+      - uses: amondnet/vercel-action@v42.3.0
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
@@ -293,7 +293,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/website build
 
-      - uses: amondnet/vercel-action@v41.1.4
+      - uses: amondnet/vercel-action@v42.3.0
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
           github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
