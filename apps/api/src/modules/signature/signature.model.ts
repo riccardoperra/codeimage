@@ -29,11 +29,7 @@ export interface SignatureDraft {
   readonly isDefault?: boolean;
 }
 
-export interface SignatureChanges {
-  readonly name?: string;
-  readonly data?: SignatureData;
-  readonly isDefault?: boolean;
-}
+export type SignatureChanges = Partial<SignatureDraft>;
 
 export const SignatureErrors = defineErrors({
   notFound: {
