@@ -40,6 +40,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
   const terminalStore = getTerminalState();
   const editorStore = getRootEditorStore();
   const store = getEditorStore();
+  const animationStore = store.animation;
   const idb = useIdb();
   const navigate = useNavigate();
 
@@ -68,6 +69,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
         .then((idbState) => {
           if (idbState && !idbState.$snippetId) {
             editorStore.actions.setFromPersistedState(idbState.editor);
+            animationStore.actions.setFromPersistedState(idbState.animation);
             frameStore.setFromPersistedState(idbState.frame);
             terminalStore.setFromPersistedState(idbState.terminal);
           }
@@ -86,6 +88,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
     frameStore.stateToPersist$,
     terminalStore.stateToPersist$,
     editorStore.stateToPersist$,
+    animationStore.stateToPersist$,
   ).pipe(
     filter(() => isReadyToSync()),
     map(
@@ -94,6 +97,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
           frameStore.stateToPersist(),
           terminalStore.stateToPersist(),
           editorStore.stateToPersist(),
+          animationStore.stateToPersist(),
         ] as const,
     ),
   );
@@ -114,6 +118,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
             frame: frameStore.stateToPersist(),
             terminal: terminalStore.stateToPersist(),
             editor: editorStore.stateToPersist(),
+            animation: animationStore.stateToPersist(),
           });
           idb.set("document", state);
         });
@@ -125,6 +130,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
   function updateStateFromRemote(data: ApiTypes.GetProjectByIdApi["response"]) {
     setActiveWorkspace(data);
     editorStore.actions.setFromWorkspace(data);
+    animationStore.actions.setFromPersistedState(data.animation);
     terminalStore.setState((state) => ({
       ...state,
       ...data.terminal,
@@ -156,7 +162,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
         tap(() => setRemoteSync(true)),
         debounceTime(3000),
         tap(() => setRemoteSync(false)),
-        switchMap(([frame, terminal, { editors, options }]) => {
+        switchMap(([frame, terminal, { editors, options }, animation]) => {
           const workspace = activeWorkspace();
           if (!workspace) return EMPTY;
           const dataToSave: ApiTypes.UpdateProjectApi["request"]["body"] = {
@@ -164,6 +170,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
             terminal,
             editors,
             editorOptions: options,
+            animation: { ...animation, steps: [...animation.steps] },
           };
           return from(
             API.project.updateSnippet({
@@ -191,6 +198,10 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
               terminal: terminalStore.stateToPersist(),
               editors: editorStore.stateToPersist().editors,
               editorOptions: editorStore.stateToPersist().options,
+              animation: {
+                ...animationStore.stateToPersist(),
+                steps: [...animationStore.stateToPersist().steps],
+              },
             },
             params: { id: workspace.id },
           })

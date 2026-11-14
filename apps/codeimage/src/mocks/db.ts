@@ -17,6 +17,15 @@ export const db = factory({
       fontWeight: Number,
     },
     editorTabs: Array,
+    animation: nullable(
+      {
+        steps: Array,
+        transitionMs: Number,
+        easing: (): 'smooth' | 'snappy' | 'linear' => 'smooth',
+        fps: (): 24 | 30 | 50 | 60 => 30,
+      },
+      {defaultsToNull: true},
+    ),
     terminal: {
       id: String,
       textColor: String,

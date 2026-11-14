@@ -183,6 +183,7 @@ const handlers: RequestHandler[] = [
             lineNumberStart: editor.lineNumberStart,
             marks: editor.marks ?? {lines: [], focusedLines: []},
           })),
+          animation: body?.animation ?? data?.animation ?? null,
         },
         where: {
           id: {equals: data?.id},
