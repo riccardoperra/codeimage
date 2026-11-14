@@ -18,6 +18,7 @@ export interface BaseTerminalProps extends Omit<TerminalState, 'type'> {
   onTabChange?: (tab: string) => void;
   lite?: boolean;
   showOnlyActiveTab?: boolean;
+  activeTabId?: string;
   themeId: string;
 }
 
@@ -55,19 +56,18 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
       data-fallback-inactive-tab={tabTheme()?.shouldFallbackInactiveColor}
       data-custom-border={props.borderType === 'glass' ? 'glass' : null}
       style={assignInlineVars({
-        [styles.terminalVars.headerBackgroundColor]:
-          tabTheme()?.background ?? '',
+        [styles.terminalVars.headerBackgroundColor]: tabTheme()?.background,
         [styles.terminalVars.backgroundColor]: background(),
         [styles.terminalVars.textColor]: props.textColor,
         [styles.terminalVars.boxShadow]:
           props.shadow && props.shadow !== 'unset'
             ? props.shadow
             : '0 0 0 0 rgb(0, 0, 0, 0)',
-        [styles.terminalVars.tabTextColor]: tabTheme()?.textColor ?? '',
+        [styles.terminalVars.tabTextColor]: tabTheme()?.textColor,
         [styles.terminalVars.tabAccentActiveBackground]:
-          tabTheme().activeTabBackground ?? '',
+          tabTheme().activeTabBackground,
         [styles.terminalVars.tabAccentInactiveBackground]:
-          tabTheme().inactiveTabBackground ?? '',
+          tabTheme().inactiveTabBackground,
         [styles.terminalVars.radius]: frameState.padding === 0 ? 0 : undefined,
         ...(props.style ?? {}),
       })}

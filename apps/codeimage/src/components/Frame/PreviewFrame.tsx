@@ -5,27 +5,29 @@ import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {getFrameState} from '@codeimage/store/editor/frame';
+import type {EditorState} from '@codeimage/store/editor/model';
+import type {Language} from '@codemirror/language';
+import {loadLanguage} from '@core/snapshot/tokenize';
+import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {createRef} from '@core/helpers/create-ref';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {ParentProps, Ref, VoidProps} from 'solid-js';
-import {lazy, onMount, Show, Suspense} from 'solid-js';
+import {createMemo, createResource, onMount, Show, Suspense} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {provideState} from 'statebuilder';
-import {setPreviewEditorView} from '../../hooks/export-snippet';
 import {useHotkey} from '../../hooks/use-hotkey';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
+import StaticCodeView from '../CustomEditor/StaticCodeView';
 import * as styles from './Frame.css';
 import {FrameSkeleton} from './FrameSkeleton';
 
-interface PreviewFrameProps {
+export interface PreviewFrameProps {
   ref: Ref<HTMLDivElement>;
+  tab?: EditorState;
+  language?: Language | null;
 }
-
-const PreviewExportEditor = lazy(
-  () => import('../CustomEditor/PreviewExportEditor'),
-);
 
 function PreviewPortal(props: ParentProps) {
   const config = provideState(EditorConfigStore);
@@ -46,8 +48,26 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   const frame = getFrameState().store;
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
+  const tab = () => props.tab ?? getActiveEditorStore().editor();
+  const [language] = createResource(
+    () => {
+      const active = tab();
+      // Without a language id the canvas editor keeps its last parser, so the resource keeps it too.
+      if (props.language !== undefined || !active?.languageId) return undefined;
+      return {languageId: active.languageId, tabName: active.tab.tabName};
+    },
+    ({languageId, tabName}) => loadLanguage(languageId, tabName),
+    {initialValue: null},
+  );
   const assetsStore = getAssetsStore();
   const exportCanvasStore = getExportCanvasStore();
+  const theme = createMemo(() => {
+    const themes = getThemeStore().themeArray();
+    return (
+      themes.find(theme => theme()?.id === editor.state.options.themeId)?.() ??
+      themes[0]()
+    );
+  });
 
   const filterHotKey = () =>
     editor.state.options.focused ||
@@ -75,8 +95,10 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
           style={assignInlineVars({
             overflow: 'hidden',
             [styles.frameVars.radius]: `${frame.radius}px`,
-            [styles.frameVars.width]: `${frame.width}px`,
-            [styles.frameVars.height]: `${frame.height}px`,
+            [styles.frameVars.width]: frame.width ? `${frame.width}px` : 'auto',
+            [styles.frameVars.height]: frame.height
+              ? `${frame.height}px`
+              : 'auto',
             [styles.frameVars.padding]: `${frame.padding}px`,
           })}
         >
@@ -111,6 +133,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
 
           <DynamicTerminal
             type={terminal.type}
+            activeTabId={props.tab?.id}
             readonlyTab={true}
             showTab={true}
             showOnlyActiveTab={exportCanvasStore.get.showOnlyActiveTab}
@@ -126,8 +149,24 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
             borderType={terminal.borderType}
             themeId={editor.state.options.themeId}
           >
-            <Show when={getActiveEditorStore().editor()}>
-              <PreviewExportEditor onSetEditorView={setPreviewEditorView} />
+            <Show when={tab()}>
+              {active => (
+                <StaticCodeView
+                  code={active().code}
+                  languageId={active().languageId}
+                  language={
+                    props.language === undefined
+                      ? language.latest
+                      : props.language
+                  }
+                  theme={theme()!}
+                  showLineNumbers={editor.state.options.showLineNumbers}
+                  lineNumberStart={active().lineNumberStart ?? 1}
+                  fontFamily={editor.computed.selectedFont().name}
+                  fontWeight={editor.state.options.fontWeight}
+                  enableLigatures={editor.state.options.enableLigatures}
+                />
+              )}
             </Show>
           </DynamicTerminal>
         </div>

@@ -4,10 +4,10 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:13-alpine
+    image: postgres:18-alpine
     restart: unless-stopped
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres18_data:/var/lib/postgresql
     ports:
       - '5432:5432'
     environment:
@@ -15,7 +15,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=codeimage
   test_db:
-    image: postgres:13-alpine
+    image: postgres:18-alpine
     restart: always
     ports:
       - '5433:5432'
@@ -25,4 +25,4 @@ services:
       POSTGRES_DB: codeimage_test
 
 volumes:
-  postgres_data: null
+  postgres18_data: null

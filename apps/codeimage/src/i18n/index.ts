@@ -1,12 +1,15 @@
+import {secrets} from './secrets';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
 import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
+import {exportTabs} from './exportTabs';
 
 export const locale = {
   it: {
+    ...secrets.it,
     common: {
       close: 'Chiudi',
       confirm: 'Conferma',
@@ -94,8 +97,10 @@ export const locale = {
     ...bottomBar.it,
     ...notFound.it,
     ...presets.it,
+    ...exportTabs.it,
   },
   en: {
+    ...secrets.en,
     canvas: {
       copiedToClipboard: 'Snippet copied to clipboard',
       linkGeneratedToClipboard: 'Link copied to clipboard',
@@ -180,8 +185,10 @@ export const locale = {
     ...dashboard.en,
     ...notFound.en,
     ...presets.en,
+    ...exportTabs.en,
   },
   de: {
+    ...secrets.de,
     common: {
       close: 'Schließen',
       confirm: 'Bestätigen',
@@ -267,8 +274,10 @@ export const locale = {
     ...dashboard.de,
     ...notFound.de,
     ...presets.de,
+    ...exportTabs.de,
   },
   es: {
+    ...secrets.es,
     common: {
       close: 'Cerrar',
       confirm: 'Confirmar',
@@ -354,6 +363,7 @@ export const locale = {
     ...dashboard.es,
     ...notFound.es,
     ...presets.es,
+    ...exportTabs.es,
   },
 };
 

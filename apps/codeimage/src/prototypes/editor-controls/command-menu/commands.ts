@@ -127,26 +127,22 @@ export function buildCommands(input: {
   const shown = shownTheme(model);
 
   return [
-    ...actions.map(
-      (action, index): Command => ({
-        id: `action=${index}`,
-        group: 'Actions',
-        label: action.label,
-        note: action.note,
-        run: action.run,
-      }),
-    ),
+    ...actions.map((action, index): Command => ({
+      id: `action=${index}`,
+      group: 'Actions',
+      label: action.label,
+      note: action.note,
+      run: action.run,
+    })),
     ...settings,
-    ...model.themes().map(
-      (theme): Command => ({
-        id: `theme=${theme.id}`,
-        group: 'Theme',
-        label: `Theme: ${theme.name}`,
-        current: theme.id === shown?.id,
-        preview: theme.preview,
-        run: theme.apply,
-      }),
-    ),
+    ...model.themes().map((theme): Command => ({
+      id: `theme=${theme.id}`,
+      group: 'Theme',
+      label: `Theme: ${theme.name}`,
+      current: theme.id === shown?.id,
+      preview: theme.preview,
+      run: theme.apply,
+    })),
     ...listed.sections.flatMap(section =>
       section.controls
         .filter(control => control.visible())

@@ -1,0 +1,57 @@
+[
+  {
+    "name": "default",
+    "output": "PNG",
+    "diffPercent": 0
+  },
+  {
+    "name": "long-300-numbered",
+    "output": "PNG",
+    "diffPercent": 0.05621886393365061
+  },
+  {
+    "name": "gutter-from-998",
+    "output": "PNG",
+    "diffPercent": 0.030253082684804606
+  },
+  {
+    "name": "light-theme-gutter-from-9",
+    "output": "PNG",
+    "diffPercent": 0
+  },
+  {
+    "name": "ligatures-off",
+    "output": "PNG",
+    "diffPercent": 0
+  },
+  {
+    "name": "three-tabs",
+    "output": "PNG",
+    "diffPercent": 0
+  },
+  {
+    "name": "vue-tab",
+    "output": "PNG",
+    "diffPercent": 0
+  },
+  {
+    "name": "angular-tab",
+    "output": "PNG",
+    "diffPercent": 0
+  },
+  {
+    "name": "windows-glass",
+    "output": "PNG",
+    "diffPercent": 0
+  },
+  {
+    "name": "svg",
+    "output": "SVG",
+    "diffPercent": 0.010190868981392672
+  },
+  {
+    "name": "clipboard",
+    "output": "clipboard",
+    "diffPercent": 0.008792122258456422
+  }
+]

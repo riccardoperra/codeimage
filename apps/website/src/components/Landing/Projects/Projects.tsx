@@ -8,6 +8,7 @@ import {
   FeatureImageContent,
 } from '~/components/FeatureCard/FeatureCard';
 import {mainWebsiteLink} from '~/core/constants';
+import {publicAsset} from '~/core/publicAsset';
 import {injectBreakpoints} from '~/theme/breakpoints';
 import styles from './Projects.module.css';
 
@@ -83,7 +84,7 @@ export default function Projects() {
                 class={styles.image}
                 loading={'lazy'}
                 alt={'Project showcase preview'}
-                src={'/projects-showcase.webp'}
+                src={publicAsset('projects-showcase.webp')}
               />
             </picture>
           </FeatureImageContent>

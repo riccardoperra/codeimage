@@ -279,26 +279,24 @@ export function createEditorControlsModel(): EditorControlsModel {
   );
 
   const themes = createMemo(() =>
-    loadedThemes().map(
-      (theme): ThemeEntry => ({
-        id: theme.id,
-        name: theme.properties.label,
-        dark: theme.properties.darkMode,
-        colors: {
-          background: theme.properties.previewBackground,
-          window: theme.properties.terminal.main,
-          text: theme.properties.terminal.text,
-          syntax: readSyntaxColors(theme),
-        },
-        active: () => isActiveTheme(theme.id),
-        apply: () =>
-          session.commit(() => {
-            dispatchUpdateTheme({theme, updateBackground: true});
-            getUmami().track('theme-change', {themeId: theme.id});
-          }),
-        preview: () => session.show(() => showTheme(theme, true)),
-      }),
-    ),
+    loadedThemes().map((theme): ThemeEntry => ({
+      id: theme.id,
+      name: theme.properties.label,
+      dark: theme.properties.darkMode,
+      colors: {
+        background: theme.properties.previewBackground,
+        window: theme.properties.terminal.main,
+        text: theme.properties.terminal.text,
+        syntax: readSyntaxColors(theme),
+      },
+      active: () => isActiveTheme(theme.id),
+      apply: () =>
+        session.commit(() => {
+          dispatchUpdateTheme({theme, updateBackground: true});
+          getUmami().track('theme-change', {themeId: theme.id});
+        }),
+      preview: () => session.show(() => showTheme(theme, true)),
+    })),
   );
 
   const frameVisible = () => frame.store.visible;

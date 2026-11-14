@@ -1,3 +1,4 @@
+import {isChromium, isFirefox} from '@solid-primitives/platform';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as process from 'process';
@@ -269,10 +270,19 @@ export async function nodeToDataURL(
   const xmlns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(xmlns, 'svg');
   const foreignObject = document.createElementNS(xmlns, 'foreignObject');
+  // Chromium and Firefox lay out SVG images at DPR 1, where text can measure
+  // wider than on a high-DPR page and wrap inside the widths copied from it.
+  // In WebKit the same scale enlarges the output instead.
+  const layoutScale =
+    isChromium || isFirefox ? window.devicePixelRatio || 1 : 1;
+  node.style.zoom = `${(Number(node.style.zoom) || 1) * layoutScale}`;
 
   svg.setAttribute('width', `${width}`);
   svg.setAttribute('height', `${height}`);
-  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.setAttribute(
+    'viewBox',
+    `0 0 ${width * layoutScale} ${height * layoutScale}`,
+  );
 
   foreignObject.setAttribute('width', '100%');
   foreignObject.setAttribute('height', '100%');

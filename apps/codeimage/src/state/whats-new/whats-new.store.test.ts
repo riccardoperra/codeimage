@@ -1,7 +1,13 @@
+import type * as solid from 'solid-js';
 import {createRoot, createSignal, onCleanup} from 'solid-js';
 import {describe, expect, it, vi} from 'vitest';
 import {createWhatsNew} from './whats-new.store';
 
+// The suite renders snapshots with Solid's server build, where signals never
+// update. The store runs in the browser, so it gets the browser build here.
+vi.mock('solid-js', () =>
+  vi.importActual<typeof solid>('solid-js/dist/solid.js'),
+);
 vi.stubGlobal('window', new EventTarget());
 
 function database() {

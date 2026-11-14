@@ -1,0 +1,61 @@
+import assert from 'node:assert/strict';
+import {readFile, writeFile} from 'node:fs/promises';
+import pixelmatch from 'pixelmatch';
+import type {Page} from 'playwright';
+import {PNG} from 'pngjs';
+
+export const PIXELMATCH_THRESHOLD = 0.1;
+export const MAX_DIFF_PERCENT = 0.5;
+
+export async function openEditor(page: Page, url: string) {
+  console.log(`Opening ${url}`);
+  await page.goto(url, {waitUntil: 'commit'});
+  await page
+    .locator('.cm-content[contenteditable="true"]')
+    .waitFor({state: 'attached', timeout: 600_000});
+  const close = page.getByRole('button', {name: 'close', exact: true});
+  if (await close.isVisible()) await close.click();
+  await page.setViewportSize({width: 1441, height: 1000});
+  await page.setViewportSize({width: 1440, height: 1000});
+  await page.evaluate(() => document.fonts.ready);
+}
+
+export async function selectTheme(page: Page, label: string) {
+  await page.locator('button[aria-label="Syntax highlight"]').click();
+  await page.getByRole('option', {name: label, exact: true}).click();
+}
+
+export async function exportPng(page: Page, path: string) {
+  await page.getByRole('button', {name: 'Export', exact: true}).click();
+  await page.getByRole('tab', {name: 'PNG', exact: true}).click();
+  const download = page.waitForEvent('download', {timeout: 120_000});
+  await page
+    .getByRole('button', {name: 'Confirm', exact: true})
+    .click({timeout: 120_000});
+  await (await download).saveAs(path);
+  const png = PNG.sync.read(await readFile(path));
+  assert.ok(png.width > 0 && png.height > 0, 'exported a nonempty image');
+  return png;
+}
+
+export async function diffPng(
+  basePath: string,
+  headPath: string,
+  diffPath: string,
+) {
+  const base = PNG.sync.read(await readFile(basePath));
+  const head = PNG.sync.read(await readFile(headPath));
+  assert.equal(head.width, base.width, `width differs for ${headPath}`);
+  assert.equal(head.height, base.height, `height differs for ${headPath}`);
+  const diff = new PNG({width: base.width, height: base.height});
+  const pixels = pixelmatch(
+    base.data,
+    head.data,
+    diff.data,
+    base.width,
+    base.height,
+    {threshold: PIXELMATCH_THRESHOLD},
+  );
+  await writeFile(diffPath, PNG.sync.write(diff));
+  return (pixels / (base.width * base.height)) * 100;
+}
