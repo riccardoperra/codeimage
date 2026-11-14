@@ -119,7 +119,9 @@ export function ExportPopoverContent() {
               </HStack>
             </FlexField>
 
-            <CopyAltTextButton />
+            <div>
+              <CopyAltTextButton />
+            </div>
             <Checkbox
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}

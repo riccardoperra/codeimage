@@ -1,11 +1,18 @@
 import {useI18n} from '@codeimage/locale';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {toast} from '@codeimage/ui';
-import {Button} from '@codeui/kit';
+import {Button, Tooltip} from '@codeui/kit';
 import {altText} from '@core/altText';
 import type {AppLocaleEntries} from '../../i18n';
+import {ClipboardIcon} from '../Icons/Clipboard';
 
-export function CopyAltTextButton(props: {text?: string; onCopy?: () => void}) {
+export function CopyAltTextButton(props: {
+  text?: string;
+  onCopy?: () => void;
+  size?: 'xs' | 'sm';
+  icon?: boolean;
+  class?: string;
+}) {
   const [t] = useI18n<AppLocaleEntries>();
   const activeEditor = getActiveEditorStore();
 
@@ -24,16 +31,23 @@ export function CopyAltTextButton(props: {text?: string; onCopy?: () => void}) {
   }
 
   return (
-    <Button
-      size={'xs'}
-      theme={'secondary'}
-      disabled={
-        (!props.text && !activeEditor.editor()) ||
-        !navigator.clipboard?.writeText
-      }
-      onClick={copy}
-    >
-      {t('altText.copy')}
-    </Button>
+    <Tooltip content={t('altText.hint')} theme={'secondary'}>
+      <Button
+        size={props.size ?? 'sm'}
+        theme={'tertiary'}
+        variant={'ghost'}
+        class={props.class}
+        leftIcon={
+          props.icon === false ? undefined : <ClipboardIcon size={'sm'} />
+        }
+        disabled={
+          (!props.text && !activeEditor.editor()) ||
+          !navigator.clipboard?.writeText
+        }
+        onClick={copy}
+      >
+        {t('altText.copy')}
+      </Button>
+    </Tooltip>
   );
 }
