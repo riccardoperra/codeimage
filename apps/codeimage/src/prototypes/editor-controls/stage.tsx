@@ -6,7 +6,6 @@ import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import type {Accessor, Component} from 'solid-js';
 import {createSignal, lazy, onMount, Suspense} from 'solid-js';
-import {FrameHandler} from '../../components/Frame/FrameHandler';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {PreviewFrame} from '../../components/Frame/PreviewFrame';
 import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItem';
@@ -15,6 +14,7 @@ import {ThemeBoxSkeleton} from '../../components/ThemeSwitcher/ThemeBoxSkeleton'
 import {themeBoxTerminalHost} from '../../components/ThemeSwitcher/ThemeSwitcher.css';
 import {CopyToClipboardButton} from '../../components/Toolbar/CopyToClipboardButton';
 import {ExportButton} from '../../components/Toolbar/ExportButton';
+import {FitFrame} from './FitFrame';
 import type {ThemeEntry} from './model';
 
 const ManagedFrame = lazy(() =>
@@ -28,7 +28,10 @@ const CustomEditorPreview = lazy(
 );
 
 export interface Stage {
-  /** The live frame with the real CodeMirror editor. Render it once; it fills its parent. */
+  /**
+   * The live frame with the real CodeMirror editor. Render it once; it fills its
+   * parent and zooms out when the frame is larger than the space it gets.
+   */
   readonly Canvas: Component;
   /** The hidden copy of the frame that export and copy capture. Set once Canvas mounts. */
   readonly exportRef: Accessor<HTMLElement | undefined>;
@@ -89,11 +92,11 @@ export function createStage(): Stage {
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
       return (
         <SuspenseEditorItem fallback={<FrameSkeleton />}>
-          <FrameHandler onScaleChange={frame.setScale}>
+          <FitFrame onScaleChange={frame.setScale}>
             <Suspense fallback={<FrameSkeleton />}>
               <ManagedFrame />
             </Suspense>
-          </FrameHandler>
+          </FitFrame>
           <PreviewFrame ref={setExportRef} />
         </SuspenseEditorItem>
       );

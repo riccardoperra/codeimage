@@ -42,7 +42,7 @@ Each variant is a folder, `variants/<slug>/index.tsx`, that exports two things:
 
 `VariantProps` has the `model` and a `stage`. The stage, from `stage.tsx`, holds the parts of the real editor that a variant places:
 
-- `Canvas` renders the live frame with the CodeMirror editor. It fills its parent. Render it exactly once.
+- `Canvas` renders the live frame with the CodeMirror editor. It fills its parent and zooms the frame out when the frame is larger than the space it gets, so give it a parent with a definite size. Render it exactly once.
 - `ExportButton` and `CopyToClipboardButton` are the production buttons, bound to the canvas.
 - `randomize()`, `format()`, and `canFormat()` are the frame toolbar actions.
 - `ThemePreview` draws the mini editor of today's theme cards for one entry of `model.themes()`.
