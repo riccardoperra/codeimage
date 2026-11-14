@@ -19,41 +19,28 @@ export function shannonEntropy(value: string): number {
   return entropy;
 }
 
-function isPlaceholder(value: string): boolean {
-  return /•|x{3,}|your[-_ ]|<[^>]*>|changeme|example|process\.env\.|\$\{/i.test(
-    value,
-  );
-}
+const envAssignmentPrefix = /^\s*(?:export\s+)?[\w.-]+\s*=\s*$/;
+const bareWord = /^[a-zA-Z_.-]+$/;
 
 export function detectSecrets(text: string): SecretMatch[] {
   const matches: SecretMatch[] = [];
   for (const rule of rules) {
     const pattern = new RegExp(rule.pattern.source, rule.pattern.flags + 'd');
     for (const match of text.matchAll(pattern)) {
-      const group =
-        match.groups?.secret !== undefined
-          ? 'secret'
-          : match.groups?.literal !== undefined
-            ? 'literal'
-            : 'env';
+      const group = match.groups?.secret !== undefined ? 'secret' : 'env';
       const value = match.groups?.[group];
       const range = match.indices?.groups?.[group];
       if (!value || !range || value.includes('•')) continue;
-      if (rule.id === 'generic-assignment') {
-        if (
-          isPlaceholder(value) ||
-          value.length < 12 ||
-          shannonEntropy(value) < 3.5
-        )
-          continue;
-        if (
-          group === 'env' &&
-          !/^\s*(?:export\s+)?[\w.-]+\s*=\s*$/.test(
+      if ('allow' in rule && rule.allow.test(value)) continue;
+      if ('entropy' in rule && shannonEntropy(value) < rule.entropy) continue;
+      if (
+        group === 'env' &&
+        (bareWord.test(value) ||
+          !envAssignmentPrefix.test(
             text.slice(text.lastIndexOf('\n', range[0] - 1) + 1, range[0]),
-          )
-        )
-          continue;
-      }
+          ))
+      )
+        continue;
       matches.push({
         from: range[0],
         to: range[1],

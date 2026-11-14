@@ -199,3 +199,48 @@ test('escaped quotes inside a literal are part of the secret', () => {
     `const password = "${'•'.repeat(value.length)}";`,
   );
 });
+
+test('provider placeholders follow the Gitleaks entropy and allowlist', () => {
+  assert.deepEqual(detectSecrets(`ghp_${'x'.repeat(36)}`), []);
+  assert.deepEqual(detectSecrets(`STRIPE_KEY=sk_test_${'x'.repeat(24)}`), []);
+  assert.deepEqual(detectSecrets('AKIAIOSFODNN7EXAMPLE'), []);
+});
+
+test('connection passwords keep @ and skip placeholders', () => {
+  assert.equal(
+    redactSecrets('postgres://admin:Fake@Pass123@db.internal:5432/app'),
+    `postgres://admin:${'•'.repeat(12)}@db.internal:5432/app`,
+  );
+  for (const input of [
+    'postgres://user:${DB_PASSWORD}@localhost/db',
+    'mongodb+srv://user:<password>@cluster0.example.net',
+    'postgres://user:$DB_PASSWORD@localhost/db',
+    'https://example.com:8080/path',
+  ])
+    assert.deepEqual(detectSecrets(input), [], input);
+});
+
+test('generic assignments skip prose, URLs and code expressions', () => {
+  for (const input of [
+    'const tokenEndpoint = "https://oauth2.googleapis.com/token";',
+    'passwordPlaceholder: "At least 8 characters, one symbol",',
+    'csrfToken: "{{ csrf_token() }}",',
+    'token = get_token_from_keychain()',
+    'password_hash = hashlib.sha256(raw).hexdigest()',
+    'api_token = default_token_value',
+  ])
+    assert.deepEqual(detectSecrets(input), [], input);
+});
+
+test('scans long adversarial lines in linear time', () => {
+  for (const line of [
+    'token.'.repeat(2_000),
+    'token-'.repeat(2_000),
+    'a.'.repeat(5_000),
+    'ab+'.repeat(3_400),
+  ]) {
+    const start = performance.now();
+    detectSecrets(line);
+    assert.ok(performance.now() - start < 500, line.slice(0, 12));
+  }
+});
