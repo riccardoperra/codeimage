@@ -3,7 +3,15 @@ import {getExportTarget} from '@codeimage/config';
 import type {CommentTokens} from '@codemirror/commands';
 import {EditorState} from '@codemirror/state';
 import {parseAnnotations} from '../core/diff/parseAnnotations';
-import {FrameSignature, framePadding} from '../components/Frame/FrameSignature';
+import {
+  FITTED_WINDOW_MIN_WIDTH,
+  fitScale,
+} from '../components/Frame/FittedWindow';
+import {
+  FrameSignature,
+  frameBottomPadding,
+  framePadding,
+} from '../components/Frame/FrameSignature';
 
 import '../theme/global.css';
 import {isAssetLinkUrl, isAssetUrl} from '@codeimage/store/assets/assets';
@@ -20,9 +28,6 @@ import StaticCodeView from '../components/CustomEditor/StaticCodeView';
 import {staticThemeCss} from '../components/CustomEditor/staticTheme';
 import * as styles from '../components/Frame/Frame.css';
 import {DynamicTerminal} from '../components/Terminal/DynamicTerminal/DynamicTerminal';
-
-export const targetSize = (id: string | null | undefined) =>
-  getExportTarget(id)?.resolution;
 
 export async function annotateCode(
   code: string,
@@ -95,6 +100,35 @@ export function frameSizeCss(size?: FrameSize): string {
   return `[data-snapshot-frame]{${declarations
     .map(([variable, value]) => `${cssVar(variable)}:${value}`)
     .join(';')}}`;
+}
+
+// The web FittedWindow centers the window in a named target's content box and
+// scales it down to fit. Takumi cannot run that DOM measurement, so the
+// renderer measures the natural frame first and this places the window.
+export function targetLayout(
+  frame: RenderSnapshot['frame'],
+  natural: FrameSize,
+): {size: FrameSize; css: string} | undefined {
+  const target = getExportTarget(frame.exportTarget);
+  if (!target) return undefined;
+  const [width, height] = target.resolution;
+  const {padding} = frame;
+  const bottom = frameBottomPadding(padding, frame.signature);
+  const window = {
+    width: Math.max(1, Math.ceil(natural.width) - 2 * padding),
+    height: Math.max(1, Math.ceil(natural.height) - padding - bottom),
+  };
+  const viewport = {
+    width: Math.max(1, width - 2 * padding),
+    height: Math.max(1, height - padding - bottom),
+  };
+  const scale = fitScale(viewport, window);
+  const left = padding + (viewport.width - window.width * scale) / 2;
+  const top = padding + (viewport.height - window.height * scale) / 2;
+  return {
+    size: {width, height},
+    css: `[data-snapshot-frame]{padding:0!important;min-width:0!important;max-width:none!important}[data-snapshot-window]{position:absolute;left:${left}px;top:${top}px;width:${window.width}px;height:${window.height}px;transform-origin:top left;transform:scale(${scale})}`,
+  };
 }
 
 async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
@@ -220,6 +254,9 @@ async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
       `[data-snapshot-frame]{${cssVar(styles.frameVars.width)}:${
         snapshot.width === undefined ? 'max-content' : `${snapshot.width}px`
       }}`,
+      frame.exportTarget
+        ? `[data-snapshot-window]{display:block!important;min-width:${FITTED_WINDOW_MIN_WIDTH}px;width:max-content}`
+        : '',
     ].join('\n'),
     fontFamily: font.name,
     backgroundImage,
