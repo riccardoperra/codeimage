@@ -54,6 +54,7 @@
     "@codeimage/highlight": "workspace:*",
     "@codeimage/locale": "workspace:*",
     "@codeimage/prisma-models": "workspace:*",
+    "@codeimage/secrets": "workspace:*",
     "@codeimage/ui": "workspace:*",
     "@codemirror/autocomplete": "catalog:next",
     "@codemirror/commands": "catalog:next",

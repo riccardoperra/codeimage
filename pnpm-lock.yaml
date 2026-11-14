@@ -372,6 +372,9 @@ importers:
       '@codeimage/prisma-models':
         specifier: workspace:*
         version: link:../../packages/prisma-models
+      '@codeimage/secrets':
+        specifier: workspace:*
+        version: link:../../packages/secrets
       '@codeimage/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -1162,6 +1165,20 @@ importers:
       vitest:
         specifier: catalog:next
         version: 4.1.2(@types/node@25.5.0)(@vitest/ui@4.1.2)(happy-dom@20.8.8)(jsdom@28.1.0)(msw@2.12.14(@types/node@25.5.0)(typescript@6.0.2))(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+  packages/secrets:
+    devDependencies:
+      '@types/node':
+        specifier: catalog:next
+        version: 25.5.0
+      oxlint:
+        specifier: catalog:next
+        version: 1.57.0
+      tsx:
+        specifier: catalog:next
+        version: 4.21.0
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.2
 
   packages/ui:
     dependencies:

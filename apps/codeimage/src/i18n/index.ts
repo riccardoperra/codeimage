@@ -1,4 +1,5 @@
 import {lineMarksLocale} from './lineMarks';
+import {secrets} from './secrets';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
@@ -9,6 +10,7 @@ import {cliConfig} from './cliConfig';
 
 export const locale = {
   it: {
+    ...secrets.it,
     common: {
       close: 'Chiudi',
       confirm: 'Conferma',
@@ -100,6 +102,7 @@ export const locale = {
     ...lineMarksLocale.it,
   },
   en: {
+    ...secrets.en,
     canvas: {
       copiedToClipboard: 'Snippet copied to clipboard',
       linkGeneratedToClipboard: 'Link copied to clipboard',
@@ -188,6 +191,7 @@ export const locale = {
     ...lineMarksLocale.en,
   },
   de: {
+    ...secrets.de,
     common: {
       close: 'Schließen',
       confirm: 'Bestätigen',
@@ -277,6 +281,7 @@ export const locale = {
     ...lineMarksLocale.de,
   },
   es: {
+    ...secrets.es,
     common: {
       close: 'Cerrar',
       confirm: 'Confirmar',

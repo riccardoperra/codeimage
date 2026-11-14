@@ -4,9 +4,11 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
+import type {Transaction} from '@codemirror/state';
+import type {EditorView} from '@codemirror/view';
 import {appEnvironment} from '@core/configuration';
 import {from, map, shareReplay} from 'rxjs';
-import {createSelector} from 'solid-js';
+import {createSelector, createSignal} from 'solid-js';
 import type {SetStoreFunction} from 'solid-js/store';
 import {defineStore, provideState} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
@@ -42,6 +44,8 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
 }
 
 export function createEditorsStore() {
+  const [activeEditorView, setActiveEditorView] = createSignal<EditorView>();
+
   const config = defineStore(() => ({
     editors: [getInitialEditorState()],
     options: getInitialEditorUiOptions(),
@@ -279,11 +283,13 @@ export function createEditorsStore() {
       return mapToStateToPersistState(state);
     },
     stateToPersist$,
+    activeEditorView,
     computed: {
       selectedFont,
       canAddEditor,
     },
     actions: {
+      setActiveEditorView,
       setEditors: setEditorsWithCommand,
       addEditor,
       removeEditor,
