@@ -108,19 +108,7 @@ export default function Inspector(props: VariantProps) {
     const media = matchMedia('(max-width: 768px)');
     const update = () => setMobile(media.matches);
     media.addEventListener('change', update);
-    // Keep the harness picker from consuming keys after the kit handles a focused control.
-    const protectControlKeys = (event: KeyboardEvent) => {
-      if (
-        event.target instanceof HTMLElement &&
-        event.target.closest('.inspector-panel, .inspector-select-portal')
-      )
-        event.stopImmediatePropagation();
-    };
-    document.addEventListener('keydown', protectControlKeys);
-    onCleanup(() => {
-      media.removeEventListener('change', update);
-      document.removeEventListener('keydown', protectControlKeys);
-    });
+    onCleanup(() => media.removeEventListener('change', update));
   });
   const toggleSection = (id: PanelId, open: boolean) =>
     setOpenSections(current => {

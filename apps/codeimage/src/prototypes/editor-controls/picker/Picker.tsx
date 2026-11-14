@@ -57,6 +57,8 @@ const KEY_OWNERS = [
   'input',
   'textarea',
   'select',
+  // A kit select's trigger types ahead and opens on the arrows while closed.
+  '[aria-haspopup="listbox"]',
   '[role="listbox"]',
   '[role="menu"]',
   '[role="menubar"]',
