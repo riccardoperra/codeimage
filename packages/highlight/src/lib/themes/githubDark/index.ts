@@ -10,6 +10,7 @@ export const githubDarkTheme = createTheme({
     label: 'GitHub Dark',
     previewBackground: 'linear-gradient(135deg, #E233FF 0%, #FF6B00 100%)',
     terminal: {
+      accent: '#ff7b72',
       main: libColors.codemirror.bg,
       text: libColors.codemirror.text,
       tabs: {

@@ -91,7 +91,6 @@ function controlCommands(
       id: `${control.id}=${fill}`,
       label: `${label}: ${name}`,
       current: fill === value,
-      // The model's background has no preview of its own.
       preview: () => model.preview(() => frame.setBackground(fill)),
       run: () => control.set(fill),
     }));

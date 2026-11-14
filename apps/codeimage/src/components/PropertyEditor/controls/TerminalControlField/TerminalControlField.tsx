@@ -1,3 +1,5 @@
+import {useI18n} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../../../i18n';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Box, RadioBlock} from '@codeimage/ui';
@@ -23,6 +25,7 @@ interface TerminalControlFieldProps {
 export function TerminalControlField(
   props: TerminalControlFieldProps,
 ): JSXElement {
+  const [t] = useI18n<AppLocaleEntries>();
   const [open, setOpen] = createSignal(false);
   const terminalThemes = AVAILABLE_TERMINAL_THEMES;
   const terminalState = getTerminalState();
@@ -76,6 +79,7 @@ export function TerminalControlField(
             value={terminal.name}
             onSelect={props.onTerminalChange}
           >
+            <span>{t(terminal.label)}</span>
             <Box padding={2} width={'100%'}>
               <Suspense fallback={<TerminalControlSkeleton />}>
                 <Dynamic
