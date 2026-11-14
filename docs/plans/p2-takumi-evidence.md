@@ -242,8 +242,8 @@ PR #701 now includes main through `b52ab947`. The merge preserves exact social e
 
 The parity script now reads the static preview introduced by P1. It no longer imports the deleted `exportSnippet` or `previewEditorView` exports.
 
-- App tests pass, 57 of 57. The new social-resolution checks first failed with ratio 3 instead of 1 for both engines.
-- App typecheck, lint, package builds, API build, and the production app build pass. Lint retains existing warnings.
+- App tests pass, 57 of 57, including social-resolution checks for both engines.
+- App typecheck, lint, package builds, API build, and the production app build on Node 24 pass. Lint and the exact social-target checks were repeated on the published `0d29af04` commit. Lint retains existing warnings.
 - All 104 theme and terminal comparisons pass against Chrome. The worst difference is 0.3324%, below the existing 0.5% limit. There are no render errors or fallbacks in the matrix.
 - All eight unconditional live checks pass, including the 300-line static export, clipboard, SVG, persisted flags, and the deliberately blocked WASM fallback. The optional trunk baseline and saved-matrix lanes were not run.
 - All four social targets match their exact PNG dimensions with both engines when the requested scale is 3, including the P7 signature. Each comparison stays below 0.5% from Chrome.

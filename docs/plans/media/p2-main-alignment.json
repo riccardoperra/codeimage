@@ -1,6 +1,6 @@
 {
   "main": "b52ab947",
-  "head": "414543d2",
+  "head": "0d29af04",
   "parity": {
     "cells": 104,
     "worstPercent": 0.33233353545853545,
@@ -11,14 +11,14 @@
     {
       "target": "x-landscape",
       "engine": "dom-export",
-      "percent": 0.05423611111111111,
+      "percent": 0.12277777777777778,
       "width": 1600,
       "height": 900
     },
     {
       "target": "x-landscape",
       "engine": "takumi",
-      "percent": 0.218125,
+      "percent": 0.28965277777777776,
       "width": 1600,
       "height": 900
     },
@@ -46,7 +46,7 @@
     {
       "target": "linkedin-portrait",
       "engine": "takumi",
-      "percent": 0.17613168724279835,
+      "percent": 0.17551440329218107,
       "width": 1080,
       "height": 1350
     },
