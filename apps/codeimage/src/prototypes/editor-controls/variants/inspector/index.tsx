@@ -120,6 +120,10 @@ export default function Inspector(props: VariantProps) {
     new Set(),
   );
   const [sheet, setSheet] = createSignal<'short' | 'tall'>('short');
+  // The page can start below the harness pills, so the root, not the window,
+  // sets how tall the sheet may grow.
+  const [rootHeight, setRootHeight] = createSignal(innerHeight);
+  const tallSheet = () => Math.min(560, rootHeight() - 284);
   const [mobile, setMobile] = createSignal(
     matchMedia('(max-width: 768px)').matches,
   );
@@ -174,7 +178,18 @@ export default function Inspector(props: VariantProps) {
     '--inspector-hover': themeVars.dynamicColors.button.base.hoverColor,
   };
   return (
-    <div class="inspector-root" data-sheet={sheet()} style={tokens}>
+    <div
+      class="inspector-root"
+      data-sheet={sheet()}
+      style={{...tokens, '--inspector-tall-sheet': `${tallSheet()}px`}}
+      ref={root => {
+        const observer = new ResizeObserver(() =>
+          setRootHeight(root.clientHeight),
+        );
+        observer.observe(root);
+        onCleanup(() => observer.disconnect());
+      }}
+    >
       <div class="inspector-header">
         <Show
           when={mobile()}
@@ -244,7 +259,7 @@ export default function Inspector(props: VariantProps) {
               const distance = drag.startY - event.clientY;
               if (Math.abs(distance) < 8 && !skipHandleClick) return;
               skipHandleClick = true;
-              panel.style.height = `${Math.max(92, Math.min(Math.min(560, innerHeight - 284), drag.height + distance))}px`;
+              panel.style.height = `${Math.max(92, Math.min(tallSheet(), drag.height + distance))}px`;
               setSheet('tall');
             }}
             onPointerUp={event => {
@@ -258,8 +273,7 @@ export default function Inspector(props: VariantProps) {
                     ? velocity > 0
                       ? 'tall'
                       : 'short'
-                    : panel.clientHeight >
-                        (92 + Math.min(560, innerHeight - 284)) / 2
+                    : panel.clientHeight > (92 + tallSheet()) / 2
                       ? 'tall'
                       : 'short',
                 );

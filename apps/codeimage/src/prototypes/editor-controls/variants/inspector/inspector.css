@@ -330,7 +330,7 @@
     display: none;
   }
   .inspector-root[data-sheet='tall'] .inspector-panel {
-    height: min(560px, calc(100dvh - 284px));
+    height: var(--inspector-tall-sheet);
   }
   .inspector-root[data-sheet='tall'] .inspector-quick-controls,
   .inspector-root[data-sheet='tall'] .inspector-frame-actions {
