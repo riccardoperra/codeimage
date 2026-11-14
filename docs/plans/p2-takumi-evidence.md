@@ -257,3 +257,13 @@ P2_TARGETS=1 P2_PERF=0 P2_OUT=/tmp/p2-targets pnpm exec tsx scripts/parity/raste
 ```
 
 The [alignment results](media/p2-main-alignment.json) record this run. New UI wiring and the styled signature checks belong to the integration above #711, so this PR remains independently mergeable against main.
+
+## Latest main alignment, 15 November 2026
+
+The branch includes main through `89200f59`, including both VS Code 2026 themes. Code head `4b96d7ac` passes 57 app tests, typecheck, lint and the production build on Node 24.14.0.
+
+All 112 theme and terminal comparisons pass with no matrix errors, font issues or fallbacks. The worst difference remains 0.3324%, below 0.5%. All eight unconditional live checks pass on the final run. Performance was not rerun.
+
+The first live run timed out capturing the settings container after reload. It did not report a failed flag assertion. The probe now captures the page and closes settings through Escape instead of depending on that ancestor container. The complete live run then passed. This changes only the probe.
+
+All four social targets were rerun after the latest main merge. Both engines produce the exact target dimensions at requested scale 3, including the P7 signature. All eight image comparisons stay below 0.5%.
