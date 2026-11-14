@@ -28,8 +28,10 @@ test('renders all highlighted lines synchronously on the server without document
   );
   assert.equal((html.match(/class="cm-line"/g) ?? []).length, 300);
   assert.ok(html.includes('value300'));
-  assert.ok(html.includes('cm-gutterElement">42<'));
-  assert.ok(html.includes('cm-gutterElement">341<'));
+  assert.ok(html.includes('>42<'));
+  assert.ok(html.includes('>341<'));
+  // CodeMirror sizes the gutter for line 999 of 300 lines, which is 1040 when numbering starts at 42.
+  assert.ok(html.includes('visibility:hidden">1040<'));
   assert.ok(html.includes('data-static-code-view'));
 });
 

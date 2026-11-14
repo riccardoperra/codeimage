@@ -24,6 +24,11 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
   const theme = createMemo(() => getStaticTheme(props.theme));
   if (!isServer) createEffect(() => mountStaticTheme(document, props.theme));
   const ligatures = () => (props.enableLigatures ? 'normal' : 'none');
+  // CodeMirror sizes the gutter for the largest line number with as many digits as the line count.
+  const gutterSpacer = () => {
+    const largest = 10 ** String(lines().length).length - 1;
+    return largest + props.lineNumberStart - 1;
+  };
   return (
     <code class={`language-${props.languageId}`}>
       <div
@@ -42,9 +47,18 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
           <Show when={props.showLineNumbers}>
             <div class="cm-gutters" aria-hidden="true">
               <div class="cm-gutter cm-lineNumbers">
+                <div
+                  class="cm-gutterElement"
+                  style={{'grid-row': '1', visibility: 'hidden'}}
+                >
+                  {gutterSpacer()}
+                </div>
                 <For each={lines()}>
                   {(_, index) => (
-                    <div class="cm-gutterElement">
+                    <div
+                      class="cm-gutterElement"
+                      style={{'grid-row': `${index() + 1}`}}
+                    >
                       {props.lineNumberStart + index()}
                     </div>
                   )}

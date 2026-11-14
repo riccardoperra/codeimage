@@ -50,11 +50,14 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
   const [language] = createResource(
-    () => (props.language === undefined ? tab()?.languageId : undefined),
-    loadLanguage,
-    {
-      initialValue: null,
+    () => {
+      const active = tab();
+      // Without a language id the canvas editor keeps its last parser, so the resource keeps it too.
+      if (props.language !== undefined || !active?.languageId) return undefined;
+      return {languageId: active.languageId, tabName: active.tab.tabName};
     },
+    ({languageId, tabName}) => loadLanguage(languageId, tabName),
+    {initialValue: null},
   );
   const assetsStore = getAssetsStore();
   const exportCanvasStore = getExportCanvasStore();

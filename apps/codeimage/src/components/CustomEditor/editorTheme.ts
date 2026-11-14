@@ -20,7 +20,6 @@ export const baseEditorTheme = EditorView.theme({
   '.cm-lineNumbers .cm-gutterElement': {
     textAlign: 'right',
     padding: '0 16px 0 8px',
-    lineHeight: '21px',
   },
   '.cm-line': {
     padding: '0 2px 0 8px',
