@@ -65,7 +65,7 @@
   "devDependencies": {
     "@prisma/adapter-pg": "7.10.1",
     "@types/node": "catalog:next",
-    "@vitest/ui": "^4.1.2",
+    "@vitest/ui": "4.1.12",
     "fastify-tsconfig": "^3.0.0",
     "oxfmt": "catalog:next",
     "oxlint": "catalog:next",
@@ -73,7 +73,7 @@
     "prisma": "7.10.1",
     "tsdown": "catalog:next",
     "tsx": "catalog:next",
-    "typescript": "^6.0.2",
+    "typescript": "catalog:next",
     "vite": "catalog:next",
     "vitest": "catalog:next"
   }
