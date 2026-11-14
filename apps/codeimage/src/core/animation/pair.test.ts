@@ -88,22 +88,33 @@ test('two identical steps only move tokens, each onto its own cell', async () =>
   for (const transition of transitions) {
     assert.ok(transition.kind === 'move');
     assert.deepEqual(transition.from, transition.to);
+    assert.equal(transition.fromClasses, undefined);
   }
 });
 
-test('a token that changes classes fades between colors under distinct keys', () => {
+test('a kept token that changes classes moves and names the classes it had', () => {
   const transitions = pairSteps(
     [[{text: 'foo', classes: 'a'}]],
-    [[{text: 'foo', classes: 'b'}]],
-  );
-  assert.deepEqual(
-    transitions.map(({kind, classes}) => [kind, classes]),
     [
-      ['leave', 'a'],
-      ['enter', 'b'],
+      [
+        {text: '  ', classes: ''},
+        {text: 'foo', classes: 'b'},
+      ],
     ],
   );
-  assert.notEqual(transitions[0].key, transitions[1].key);
+  assert.deepEqual(
+    transitions.map(({key: _, ...transition}) => transition),
+    [
+      {
+        kind: 'move',
+        text: 'foo',
+        classes: 'b',
+        fromClasses: 'a',
+        from: {line: 0, col: 0},
+        to: {line: 0, col: 2},
+      },
+    ],
+  );
 });
 
 test('places tokens after a tab at the next tab stop', () => {

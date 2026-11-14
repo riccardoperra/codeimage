@@ -34,6 +34,8 @@ export type TokenTransition =
       key: string;
       text: string;
       classes: string;
+      // The classes the token had, when the step changes its highlighting.
+      fromClasses?: string;
       from: Cell;
       to: Cell;
     }

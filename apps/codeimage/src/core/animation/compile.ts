@@ -24,11 +24,18 @@ const escapeHtml = (text: string) =>
 const escapeAttribute = (text: string) =>
   escapeHtml(text).replace(/"/g, '&quot;');
 
+export const animationCss = (
+  id: string,
+  {transitionMs, easing, offsetMs = 0}: SceneTiming,
+) =>
+  `animation:${id} ${transitionMs}ms ${EASING_CURVES[easing]} ${-offsetMs}ms both`;
+
 type Point = {x: number; y: number};
+type Pose = Point & {opacity: number};
 
 type Layer = {
   place: (cell: Cell, box: StepBox) => Point;
-  element: (transition: TokenTransition, style: string) => string;
+  element: (text: string, classes: string, style: string) => string;
 };
 
 export function compileScene(
@@ -39,63 +46,66 @@ export function compileScene(
 ): {html: string; css: string} {
   const {charWidth, lineHeight} = metrics;
   const {from, to} = scene;
-  const animation = (id: string) =>
-    `animation:${id} ${timing.transitionMs}ms ${EASING_CURVES[timing.easing]} ${-(timing.offsetMs ?? 0)}ms both`;
-  const opacity = (box: StepBox, cell: Cell) =>
-    box.dimmed.has(cell.line) ? DIM_OPACITY : 1;
   const keyframes: string[] = [];
   let count = 0;
+  const animate = (frames: string, id = `${name}-${count++}`) => {
+    keyframes.push(`@keyframes ${id}{${frames}}`);
+    return animationCss(id, timing);
+  };
+  const at = ({x, y}: Point) => `left:${px(x)};top:${px(y)}`;
 
-  const compileLayer = (transitions: TokenTransition[], layer: Layer) =>
-    transitions
+  const compileLayer = (transitions: TokenTransition[], layer: Layer) => {
+    const pose = (cell: Cell, box: StepBox): Pose => ({
+      ...layer.place(cell, box),
+      opacity: box.dimmed.has(cell.line) ? DIM_OPACITY : 1,
+    });
+    // Takumi rounds layout positions to device pixels but not transforms, so
+    // a move animates `left` and `top`. Both endpoints then land on the pixels
+    // the static layout uses.
+    const glide = (text: string, classes: string, start: Pose, end: Pose) => {
+      const fades = start.opacity !== end.opacity;
+      const frame = (pose: Pose) =>
+        `{${at(pose)}${fades ? `;opacity:${pose.opacity}` : ''}}`;
+      const style = [at(end)];
+      if (fades || start.x !== end.x || start.y !== end.y) {
+        style.push(animate(`from${frame(start)}to${frame(end)}`));
+      }
+      if (!fades && end.opacity !== 1) style.push(`opacity:${end.opacity}`);
+      return layer.element(text, classes, style.join(';'));
+    };
+    return transitions
       .map(transition => {
-        const id = `${name}-${count++}`;
-        const cell =
-          transition.kind === 'leave' ? transition.from : transition.to;
-        const box = transition.kind === 'leave' ? from : to;
-        const {x, y} = layer.place(cell, box);
-        let style = `left:${px(x)};top:${px(y)}`;
+        const {text, classes} = transition;
         if (transition.kind === 'leave') {
-          keyframes.push(
-            `@keyframes ${id}{0%{opacity:${opacity(from, transition.from)}}${percent(LEAVE_END)}{opacity:0}100%{opacity:0}}`,
-          );
-          style += `;${animation(id)}`;
-        } else if (transition.kind === 'enter') {
-          keyframes.push(
-            `@keyframes ${id}{0%{opacity:0}${percent(ENTER_START)}{opacity:0}100%{opacity:${opacity(to, transition.to)}}}`,
-          );
-          style += `;${animation(id)}`;
-        } else {
-          // Takumi rounds layout positions to device pixels but not
-          // transforms, so a move animates `left` and `top`. Both endpoints
-          // then land on the pixels the static layout uses.
-          const start = layer.place(transition.from, from);
-          const startOpacity = opacity(from, transition.from);
-          const endOpacity = opacity(to, transition.to);
-          const fade = startOpacity !== endOpacity;
-          if (start.x !== x || start.y !== y || fade) {
-            const fromOpacity = fade ? `;opacity:${startOpacity}` : '';
-            const toOpacity = fade ? `;opacity:${endOpacity}` : '';
-            keyframes.push(
-              `@keyframes ${id}{from{left:${px(start.x)};top:${px(start.y)}${fromOpacity}}to{left:${px(x)};top:${px(y)}${toOpacity}}}`,
-            );
-            style += `;${animation(id)}`;
-          }
-          if (!fade && endOpacity !== 1) style += `;opacity:${endOpacity}`;
+          const start = pose(transition.from, from);
+          const fade = `0%{opacity:${start.opacity}}${percent(LEAVE_END)}{opacity:0}100%{opacity:0}`;
+          return layer.element(text, classes, `${at(start)};${animate(fade)}`);
         }
-        return layer.element(transition, style);
+        const end = pose(transition.to, to);
+        if (transition.kind === 'enter') {
+          const fade = `0%{opacity:0}${percent(ENTER_START)}{opacity:0}100%{opacity:${end.opacity}}`;
+          return layer.element(text, classes, `${at(end)};${animate(fade)}`);
+        }
+        const start = pose(transition.from, from);
+        if (transition.fromClasses === undefined) {
+          return glide(text, classes, start, end);
+        }
+        return (
+          glide(text, transition.fromClasses, start, {...end, opacity: 0}) +
+          glide(text, classes, {...start, opacity: 0}, end)
+        );
       })
       .join('');
+  };
 
   const sizedBox = (id: string, width: (box: StepBox) => number) => {
     const size = (box: StepBox) =>
       `width:${px(width(box) * charWidth)};height:${px(box.rows * lineHeight)}`;
-    keyframes.push(`@keyframes ${id}{from{${size(from)}}to{${size(to)}}}`);
-    return `position:relative;${size(to)};${animation(id)}`;
+    return `position:relative;${size(to)};${animate(`from{${size(from)}}to{${size(to)}}`, id)}`;
   };
 
-  const token: Layer['element'] = (transition, style) =>
-    `<span class="${escapeAttribute(transition.classes)}" style="position:absolute;white-space:pre;${style}">${escapeHtml(transition.text)}</span>`;
+  const token: Layer['element'] = (text, classes, style) =>
+    `<span class="${escapeAttribute(classes)}" style="position:absolute;white-space:pre;${style}">${escapeHtml(text)}</span>`;
 
   const code = compileLayer(scene.code, {
     place: (cell, box) => ({
@@ -106,8 +116,8 @@ export function compileScene(
   });
   const marks = compileLayer(scene.marks, {
     place: cell => ({x: 0, y: cell.line * lineHeight}),
-    element: (transition, style) =>
-      `<div data-mark="${escapeAttribute(transition.classes)}" style="position:absolute;right:0;height:${px(lineHeight)};${style}"></div>`,
+    element: (_, kind, style) =>
+      `<div data-mark="${escapeAttribute(kind)}" style="position:absolute;right:0;height:${px(lineHeight)};${style}"></div>`,
   });
   const gutter = scene.gutter
     ? compileLayer(scene.gutter, {
