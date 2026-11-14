@@ -346,5 +346,40 @@
   "transientFontFailure": {
     "probe": "signature-bluesky/results.json",
     "reason": "The required JetBrains Mono download failed and triggered the expected fallback. A subsequent same-session icon matrix completed without fallback."
+  },
+  "ui": {
+    "rows": [
+      {
+        "layout": "inspector",
+        "persisted": true,
+        "width": 1080,
+        "height": 1080,
+        "restored": true
+      },
+      {
+        "layout": "dock",
+        "persisted": true,
+        "width": 1080,
+        "height": 1080,
+        "restored": true
+      },
+      {
+        "layout": "studio",
+        "persisted": true,
+        "width": 1080,
+        "height": 1080,
+        "restored": true
+      }
+    ],
+    "tabs": ["01-index.tsx.png", "02-second.ts.png"],
+    "errors": [],
+    "fallbacks": [],
+    "wasm": 3
+  },
+  "validation": {
+    "unitTests": 58,
+    "typecheck": "passed",
+    "lint": "passed with existing warnings",
+    "productionBuild": "passed on Node 24"
   }
 }

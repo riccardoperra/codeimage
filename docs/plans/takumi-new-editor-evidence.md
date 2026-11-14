@@ -8,6 +8,8 @@ The Experiments section reads and writes `EditorConfigStore.renderer`. It uses t
 
 The main export and the per-tab export pass the selected renderer to `exportImage`. A per-tab batch captures the renderer once. Social sizes use the production target picker and keep their exact dimensions. Export settings show 1x while a target is active.
 
+App tests pass, 58 of 58. Typecheck, lint, and the production build on Node 24 pass. Lint retains existing warnings.
+
 The Playwright check drives Inspector, Dock, and Studio. It enables Takumi, reloads, downloads a 1080×1080 PNG, and restores defaults in each layout. It also downloads and inspects a two-image ZIP.
 
 ```sh
