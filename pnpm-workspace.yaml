@@ -68,3 +68,9 @@ catalogs:
 
 overrides:
   typescript: 'catalog:next'
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - '@fastify/swagger-ui@6.1.4'
+  - fast-json-stringify@7.3.6
+  - postcss@8.5.33
+  - sql-escaper@1.6.0
