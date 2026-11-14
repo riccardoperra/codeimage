@@ -13,6 +13,7 @@ export default defineConfig({
   },
   treeshake: false,
   deps: {
-    skipNodeModulesBundle: true,
+    neverBundle: true,
+    resolveDepSubpath: true,
   },
 });
