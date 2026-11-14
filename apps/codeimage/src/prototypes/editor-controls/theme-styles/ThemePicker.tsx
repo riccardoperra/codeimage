@@ -99,7 +99,7 @@ export function ThemePicker(props: ThemePickerProps) {
             onChange={browser.setQuery}
           />
         </div>
-        <div class={styles.filter}>
+        <div class={styles.filter} data-size={props.size ?? 'sm'}>
           <SegmentedField
             size={props.size ?? 'sm'}
             adapt
