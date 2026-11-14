@@ -78,7 +78,18 @@ export const prompt = style({
   fontSize: '13px',
   color: palette.ink62,
 });
-export const promptSign = style({color: palette.accent});
+// A drawn chevron, not the "❯" character: the Node renderer's fonts lack that
+// glyph and draw a box in its place.
+export const promptSign = style({
+  width: '6px',
+  height: '6px',
+  flex: 'none',
+  alignSelf: 'center',
+  marginLeft: '-2px',
+  borderTop: `1.5px solid ${palette.accent}`,
+  borderRight: `1.5px solid ${palette.accent}`,
+  transform: 'rotate(45deg)',
+});
 export const status = style({
   display: 'flex',
   alignItems: 'center',

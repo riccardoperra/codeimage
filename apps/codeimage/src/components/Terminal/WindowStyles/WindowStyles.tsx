@@ -90,7 +90,7 @@ const WindowStyleTerminal: ParentComponent<
           </Show>
           <Show when={props.windowStyle === 'shell' && name()}>
             <div class={styles.prompt}>
-              <span class={styles.promptSign}>❯</span>
+              <span class={styles.promptSign} aria-hidden="true" />
               <span>cat {name()}</span>
             </div>
           </Show>
