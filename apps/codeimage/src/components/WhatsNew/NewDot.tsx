@@ -1,10 +1,11 @@
 import {Button} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
-import {createSignal, Show} from 'solid-js';
+import {createSignal, onCleanup, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import type {LocatedHighlightId} from '../../state/whats-new';
 import {getWhatsNew, RELEASES} from '../../state/whats-new';
 import {illustrations} from './illustrations';
+import {duration, fromKeyboard} from './motion';
 import * as styles from './whats-new.css';
 
 const TABBABLE =
@@ -39,16 +40,29 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
   // The popover unmounts with the dot, before its own close focus can run.
   let returnTo: HTMLElement | undefined;
   const [open, setOpen] = createSignal(false);
+  // A coachmark opened or closed from the keyboard appears and goes at once.
+  const [instant, setInstant] = createSignal(false);
+  // The dot stays mounted while its coachmark shrinks back into it.
+  const [closing, setClosing] = createSignal(false);
+  let closed: number | undefined;
+  onCleanup(() => clearTimeout(closed));
   const toggle = (value: boolean, side: 'before' | 'after' = 'before') => {
     if (value === open()) return;
     if (value) {
+      // Open before marking seen, or the dot unmounts for a moment and comes
+      // back as a new element, without its fade.
+      setOpen(true);
       news.opened(props.highlight, 'coachmark');
       news.seen(props.highlight);
-    } else if (anchor && !news.hasDot(props.highlight)) {
-      returnTo = tabbableBeside(anchor, side, content);
+      return;
     }
-    setOpen(value);
-    if (!value) returnTo?.focus();
+    if (anchor && !news.hasDot(props.highlight))
+      returnTo = tabbableBeside(anchor, side, content);
+    clearTimeout(closed);
+    setClosing(!instant());
+    closed = window.setTimeout(() => setClosing(false), duration.coachmarkOut);
+    setOpen(false);
+    returnTo?.focus();
   };
   const highlight = () =>
     RELEASES.flatMap(release => release.highlights).find(
@@ -57,7 +71,7 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
   return (
     <Show when={highlight()}>
       {item => (
-        <Show when={news.hasDot(props.highlight) || open()}>
+        <Show when={news.hasDot(props.highlight) || open() || closing()}>
           <span
             ref={element => {
               anchor = element;
@@ -73,6 +87,8 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
             >
               <Popover.Trigger
                 class={styles.dot}
+                onClick={(event: MouseEvent) => setInstant(fromKeyboard(event))}
+                data-instant={instant() ? '' : undefined}
                 aria-label={`New: ${item().title}`}
                 data-seen={!news.hasDot(props.highlight) ? '' : undefined}
               />
@@ -86,11 +102,15 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
                 <Popover.Content
                   ref={content}
                   class={styles.coachmark}
+                  data-instant={instant() ? '' : undefined}
+                  onEscapeKeyDown={() => setInstant(true)}
+                  onPointerDownOutside={() => setInstant(false)}
                   // The coachmark is portaled away from its dot, so Tab would
                   // otherwise leave it for the end of the page.
                   onKeyDown={(event: KeyboardEvent) => {
                     if (event.key !== 'Tab') return;
                     event.preventDefault();
+                    setInstant(true);
                     toggle(false, event.shiftKey ? 'before' : 'after');
                   }}
                   onCloseAutoFocus={event => {
@@ -114,7 +134,10 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
                     <Button
                       size="sm"
                       theme="secondary"
-                      onClick={() => toggle(false)}
+                      onClick={event => {
+                        setInstant(fromKeyboard(event));
+                        toggle(false);
+                      }}
                     >
                       Got it
                     </Button>

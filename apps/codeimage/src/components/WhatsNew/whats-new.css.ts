@@ -1,9 +1,9 @@
 import {themeVars} from '@codeimage/ui';
-import {globalStyle, style} from '@vanilla-extract/css';
+import {globalStyle, keyframes, style} from '@vanilla-extract/css';
+import {curve, duration, ms, reduceMotion as reduce} from './motion';
 
 const c = themeVars.dynamicColors;
-const ease = 'cubic-bezier(0.23, 1, 0.32, 1)';
-const reduce = '(prefers-reduced-motion: reduce)';
+const ease = curve.out;
 export const surface = style({
   color: c.baseText,
   background: c.background,
@@ -155,7 +155,7 @@ export const dot = style({
   background: 'transparent',
   color: c.primary,
   cursor: 'pointer',
-  transition: `transform 120ms ${ease}`,
+  transition: `transform ${ms(duration.press)} ${ease}`,
   '@media': {
     [reduce]: {
       transitionProperty: 'opacity',
@@ -171,8 +171,11 @@ export const dot = style({
       borderRadius: '50%',
       background: 'currentColor',
       boxShadow: '0 0 0 3px color-mix(in srgb, currentColor 12%, transparent)',
+      // The dot fades as its coachmark grows out of it.
+      transition: `opacity ${ms(duration.coachmarkIn)} ${ease}`,
     },
     '&[data-seen]::after': {opacity: 0},
+    '&[data-instant]::after': {transition: 'none'},
     '&:focus-visible': {
       outline: `2px solid ${c.primary}`,
       outlineOffset: '1px',
@@ -196,6 +199,10 @@ export const filledAnchor = style({});
 globalStyle(`${filledAnchor} > ${dotAnchor} ${dot}::after`, {
   boxShadow: `0 0 0 2px ${c.background}`,
 });
+// Kobalte keeps a closing popover mounted until its animation ends, so the
+// exit is a keyframe while the entry is a transition.
+const shrink = keyframes({to: {opacity: 0, transform: 'scale(.96)'}});
+const fadeOut = keyframes({to: {opacity: 0}});
 export const coachmark = style([
   surface,
   {
@@ -205,9 +212,20 @@ export const coachmark = style([
     zIndex: 1000,
     outline: 'none',
     transformOrigin: 'var(--kb-popover-content-transform-origin)',
-    transitionDuration: '180ms',
+    transitionDuration: ms(duration.coachmarkIn),
     '@starting-style': {opacity: 0, transform: 'scale(.96)'},
-    '@media': {[reduce]: {'@starting-style': {transform: 'none'}}},
+    selectors: {
+      '&[data-closed]': {
+        animation: `${shrink} ${ms(duration.coachmarkOut)} ${ease} forwards`,
+      },
+      '&[data-instant]': {transition: 'none', animation: 'none'},
+    },
+    '@media': {
+      [reduce]: {
+        '@starting-style': {transform: 'none'},
+        selectors: {'&[data-closed]': {animationName: fadeOut}},
+      },
+    },
   },
 ]);
 export const sheet = style({
@@ -256,12 +274,9 @@ export const link = style({
   fontSize: '12px',
   textUnderlineOffset: '3px',
 });
-const controls = `${nudge} button, ${coachmark} button, ${sheet} button`;
-globalStyle(controls, {
-  transition: `transform 120ms ${ease}`,
-  '@media': {[reduce]: {transitionProperty: 'opacity'}},
-});
+// The kit's buttons already scale to .97 on press. Here they only keep still
+// when motion is reduced.
 globalStyle(
   `${nudge} button:active, ${coachmark} button:active, ${sheet} button:active`,
-  {transform: 'scale(.97)', '@media': {[reduce]: {transform: 'none'}}},
+  {'@media': {[reduce]: {transform: 'none'}}},
 );
