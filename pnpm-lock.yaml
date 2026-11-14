@@ -234,8 +234,8 @@ importers:
         specifier: 11.4.3
         version: 11.4.3
       '@fastify/env':
-        specifier: ^5.0.3
-        version: 5.0.3
+        specifier: 7.0.1
+        version: 7.0.1
       '@fastify/jwt':
         specifier: 10.2.7
         version: 10.2.7
@@ -2641,8 +2641,8 @@ packages:
   '@fastify/deepmerge@3.2.1':
     resolution: {integrity: sha512-N5Oqvltoa2r9z1tbx4xjky0oRR60v+T47Ic4J1ukoVQcptLOrIdRnCSdTGmOmajZuHVKlTnfcmrjyqsGEW1ztA==}
 
-  '@fastify/env@5.0.3':
-    resolution: {integrity: sha512-VqXKcw+keaZaCry9dDtphDQy6l+B1UOodk4q57NdIK/tjZsPMYEBTXjEDiZCAiD9KaGJXbJOMgYdgejU1iD0jA==}
+  '@fastify/env@7.0.1':
+    resolution: {integrity: sha512-LSYu+03Y6shfd2blr12X3vbyEH0yt7ZmTTCz83r44FQtP+BA90xLsxIpdUY0bJ8hgEgtyJ7SDpAU1TDiiIW1kw==}
 
   '@fastify/error@4.2.0':
     resolution: {integrity: sha512-RSo3sVDXfHskiBZKBPRgnQTtIqpi/7zhJOEmAxCiBcM7d0uwdGdxLlsCaLzGs8v8NnxIRlfG0N51p5yFaOentQ==}
@@ -6216,10 +6216,6 @@ packages:
     resolution: {integrity: sha512-YUBODAS0puvSc9bGdu07o1GSouVn63xDazqZqvT99Hta4nPqZ1jTdBcz12dDdxSC9jYbVlpWlnu0IJaMR8TIEQ==}
     hasBin: true
 
-  dotenv-expand@10.0.0:
-    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
-    engines: {node: '>=12'}
-
   dotenv-expand@12.0.3:
     resolution: {integrity: sha512-uc47g4b+4k/M/SeaW1y4OApx+mtLWl92l5LMPP0GNXctZqELk+YGgOPIIC5elYmUH4OuoK3JLhuRUYegeySiFA==}
     engines: {node: '>=12'}
@@ -6320,8 +6316,8 @@ packages:
     resolution: {integrity: sha512-dtJUTepzMW3Lm/NPxRf3wP4642UWhjL2sQxc+ym2YMj1m/H2zDNQOlezafzkHwn6sMstjHTwG6iQQsctDW/b1A==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  env-schema@6.1.0:
-    resolution: {integrity: sha512-TWtYV2jKe7bd/19kzvNGa8GRRrSwmIMarhcWBzuZYPbHtdlUdjYhnaFvxrO4+GvcwF10sEeVGzf9b/wqLIyf9A==}
+  env-schema@8.0.1:
+    resolution: {integrity: sha512-VKqpgL3EPCnSRVsUyi+aPHbS+OJKFsqoNoT/sxSKowhyGMvqd9TgaUTZsMYFmIYTLT/tkj02HpuWXP9eCb377Q==}
 
   environment@1.1.0:
     resolution: {integrity: sha512-xUtoPkMggbz0MPyPiIWr1Kp4aeWJjDZ6SMvURhimjdZgsRuDplF5/s9hcgGhyXMhs+6vpnuoiZ2kFiu3FMnS8Q==}
@@ -12259,10 +12255,10 @@ snapshots:
 
   '@fastify/deepmerge@3.2.1': {}
 
-  '@fastify/env@5.0.3':
+  '@fastify/env@7.0.1':
     dependencies:
-      env-schema: 6.1.0
-      fastify-plugin: 5.1.0
+      env-schema: 8.0.1
+      fastify-plugin: 6.0.1
 
   '@fastify/error@4.2.0': {}
 
@@ -16606,8 +16602,6 @@ snapshots:
       dotenv-expand: 12.0.3
       minimist: 1.2.8
 
-  dotenv-expand@10.0.0: {}
-
   dotenv-expand@12.0.3:
     dependencies:
       dotenv: 16.6.1
@@ -16687,11 +16681,9 @@ snapshots:
 
   env-paths@3.0.0: {}
 
-  env-schema@6.1.0:
+  env-schema@8.0.1:
     dependencies:
       ajv: 8.18.0
-      dotenv: 17.4.2
-      dotenv-expand: 10.0.0
 
   environment@1.1.0: {}
 
