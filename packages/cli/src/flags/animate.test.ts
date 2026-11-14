@@ -161,8 +161,21 @@ describe('animate flag', () => {
   ])('with %j notes that the GIF plays at %s', async (argv, note) => {
     const {notes} = await plan([...argv, '-o', 'demo.gif']);
     expect(notes).toHaveLength(1);
-    expect(notes[0]).toContain('--fps: GIF supports 50, 25, or 20 fps');
+    expect(notes[0]).toContain('GIF supports 50, 25, or 20 fps');
     expect(notes[0]).toContain(note);
+  });
+
+  it('notes the GIF rate when the preset asks for another one', async () => {
+    const preset = presetWith({
+      steps: [{editorId: 'tab-1', holdMs: 100}],
+      transitionMs: 200,
+      easing: 'linear',
+      fps: 60,
+    });
+    const {notes} = await plan(['-o', 'demo.gif'], inputs, preset);
+    expect(notes).toEqual([
+      'GIF supports 50, 25, or 20 fps, so this one plays at 50 instead of 60',
+    ]);
   });
 
   it('notes nothing for a rate the file plays, or one nobody asked for', async () => {

@@ -125,10 +125,10 @@ The other flags apply to every step, so `--theme`, `--preset`, `--lines`,
 `--split-tabs` and `--alt` do not combine with `--animate`.
 
 A GIF frame lasts whole hundredths of a second, so a GIF plays at 50, 25, or
-20 fps. When `--fps` asks for another rate, the command names the rate it used
-on stderr. Each GIF frame has its own 256 colors, so a gradient shows bands
-and a small detail can change color between frames. WebP and animated PNG keep
-every pixel.
+20 fps. When `--fps` or the preset asks for another rate, the command names the
+rate it used on stderr. Each GIF frame has its own 256 colors, so a gradient
+shows bands and a small detail can change color between frames. WebP and
+animated PNG keep every pixel.
 
 A preset can hold an `animation` section in the shape the web app stores,
 with `steps`, `transitionMs`, `easing`, and `fps`. The steps give their

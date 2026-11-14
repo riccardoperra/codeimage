@@ -136,7 +136,7 @@ export function planAnimation(
     notes:
       fps !== undefined && played !== fps
         ? [
-            `--fps: GIF supports 50, 25, or 20 fps, so this one plays at ${played} instead of ${fps}`,
+            `GIF supports 50, 25, or 20 fps, so this one plays at ${played} instead of ${fps}`,
           ]
         : [],
   };
