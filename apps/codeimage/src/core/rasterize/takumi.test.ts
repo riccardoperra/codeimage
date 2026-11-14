@@ -55,39 +55,48 @@ afterEach(() => {
 });
 
 describe('Takumi export', () => {
-  it('preserves fractional layout widths inside the rounded output viewport', async () => {
+  it('keeps the measured frame width as a minimum and lets the widest line fit', async () => {
     const {takumi} = await import('./takumi');
     const node = exportNode('a line that must not wrap');
     vi.mocked(node.getBoundingClientRect).mockReturnValue(
       new DOMRect(0, 0, 300.25, 200),
     );
     await takumi(node, options);
-    expect(renderer.prepare.mock.calls[0][0]).toContain('width: 300.25px');
+    expect(renderer.prepare.mock.calls[0][0]).toContain(
+      'width: max-content; min-width: 300.25px',
+    );
     expect(renderer.prepare.mock.calls[0][1]).toMatchObject({width: 600});
     expect(node.style.width).toBe('');
   });
 
-  it('resolves corner gradients to angles without changing the live background', async () => {
+  it('writes corner gradients in the keyword order Takumi draws without changing the live background', async () => {
     const {takumi} = await import('./takumi');
     const node = exportNode('code');
     node.style.backgroundImage = 'linear-gradient(to right bottom, red, blue)';
     await takumi(node, options);
     expect(renderer.prepare.mock.calls[0][0]).toContain(
-      '146.30993247402023deg',
+      'background-image: linear-gradient(to bottom right, red, blue)',
     );
     expect(node.style.backgroundImage).toContain('to right bottom');
   });
 
-  it('preserves Chrome line-box rounding without shrinking fonts', async () => {
+  it('passes exact CodeMirror gutter row heights that outerHTML would round', async () => {
     const {takumi} = await import('./takumi');
     const node = exportNode(
-      '<div style="line-height:22.4px;font-size:16px">line</div>',
+      '<div class="cm-gutterElement" style="height: 22.3984px; margin-top: 4px">1</div>',
+    );
+    const row = node.querySelector('.cm-gutterElement');
+    if (!row) throw new Error('Expected a gutter row.');
+    vi.spyOn(row, 'getBoundingClientRect').mockReturnValue(
+      new DOMRect(0, 0, 40, 22.3984375),
     );
     await takumi(node, options);
     const html = renderer.prepare.mock.calls[0][0];
-    expect(html).toContain('22.390625px');
-    expect(html).toContain('font-size: 16px');
-    expect(node.firstElementChild?.getAttribute('style')).toContain('22.4px');
+    expect(html).toContain('height: 22.3984375px');
+    expect(html).toContain('margin-top: 4px');
+    expect(row.getAttribute('style')).toBe(
+      'height: 22.3984px; margin-top: 4px',
+    );
   });
 
   it('omits excluded subtrees without changing the live node', async () => {
@@ -121,6 +130,26 @@ describe('Takumi export', () => {
     await expect(takumi(node, options)).resolves.toBeInstanceOf(Blob);
     expect(warn).toHaveBeenCalled();
     expect(renderer.render).toHaveBeenCalledOnce();
+  });
+
+  it('registers fonts in stylesheet order when downloads finish out of order', async () => {
+    vi.mocked(fetch).mockImplementation(async input => {
+      if (String(input).includes('slow.woff2'))
+        await new Promise(resolve => setTimeout(resolve, 20));
+      return new Response(new Uint8Array([0, 1, 2]));
+    });
+    const style = document.createElement('style');
+    style.textContent =
+      '@font-face { font-family: "Slow Mono"; src: url("https://example.test/slow.woff2"); } @font-face { font-family: "Fast Mono"; src: url("https://example.test/fast.woff2"); }';
+    document.head.append(style);
+    const node = exportNode(
+      '<span style="font-family: Slow Mono, Fast Mono">code</span>',
+    );
+    const {takumi} = await import('./takumi');
+    await takumi(node, options);
+    expect(renderer.registerFont.mock.calls.map(([font]) => font.name)).toEqual(
+      ['Slow Mono', 'Fast Mono', 'Inter', 'Inter var'],
+    );
   });
 
   it('carries the inherited UI font into the exported document', async () => {

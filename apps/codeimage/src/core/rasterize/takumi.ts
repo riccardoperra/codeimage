@@ -15,6 +15,7 @@ interface FontSource {
 
 let session: Promise<Renderer> | undefined;
 const fonts = new Map<string, Promise<void>>();
+let registered = Promise.resolve();
 const externalCss = new Map<string, Promise<string>>();
 
 async function getRenderer() {
@@ -47,10 +48,14 @@ async function readBytes(url: string) {
 async function registerFont(renderer: Renderer, source: FontSource) {
   let pending = fonts.get(source.key);
   if (!pending) {
-    pending = source
-      .data()
-      .then(data => renderer.registerFont({...source, data}))
-      .then(() => undefined)
+    const data = source.data();
+    data.catch(() => undefined);
+    // Takumi falls back through fonts in registration order, so register in
+    // call order rather than in the order the downloads finish.
+    pending = registered = registered
+      .then(async () => {
+        await renderer.registerFont({...source, data: await data});
+      })
       .catch(error => {
         fonts.delete(source.key);
         console.warn(
@@ -160,11 +165,24 @@ async function collectCss(usedFamilies: Set<string>) {
   return {css, sources};
 }
 
+// A CSSOM write reserializes the whole style attribute, which rounds lengths
+// to six significant digits and writes corner gradients as `to right bottom`.
+function appendStyle(element: Element, declaration: string) {
+  element.setAttribute(
+    'style',
+    `${element.getAttribute('style') ?? ''}; ${declaration}`,
+  );
+}
+
 function cloneExportNode(node: HTMLElement) {
   const clone = node.cloneNode(true);
   if (!(clone instanceof HTMLElement)) throw new Error('Invalid export node.');
-  // Keep a fractional intrinsic width from wrapping text in an integer viewport.
-  clone.style.width = `${node.getBoundingClientRect().width}px`;
+  // Chrome sized the frame with its own text metrics, and Takumi ignores
+  // `min-width: max-content`. Let the frame fit Takumi's widest line.
+  appendStyle(
+    clone,
+    `width: max-content; min-width: ${node.getBoundingClientRect().width}px`,
+  );
   const originals = [node, ...node.querySelectorAll('*')];
   const copies = [clone, ...clone.querySelectorAll('*')];
   const usedFamilies = new Set<string>(['inter', 'inter var']);
@@ -175,36 +193,20 @@ function cloneExportNode(node: HTMLElement) {
       return;
     }
     const computed = getComputedStyle(original);
-    if (
-      copy instanceof HTMLElement &&
-      computed.backgroundImage.includes('linear-gradient(to ')
-    ) {
-      const {width, height} = original.getBoundingClientRect();
-      // Takumi 2.19 accepts angles but drops gradients with corner keywords.
-      copy.style.backgroundImage = computed.backgroundImage.replace(
-        /linear-gradient\(to ((?:(?:top|bottom|left|right)\s*){1,2}),/g,
-        (_match, direction: string) => {
-          const x = direction.includes('right')
-            ? 1
-            : direction.includes('left')
-              ? -1
-              : 0;
-          const y = direction.includes('bottom')
-            ? 1
-            : direction.includes('top')
-              ? -1
-              : 0;
-          const angle =
-            (Math.atan2(x * (y ? height : 1), -y * (x ? width : 1)) * 180) /
-            Math.PI;
-          return `linear-gradient(${(angle + 360) % 360}deg,`;
-        },
+    if (/to (left|right) (top|bottom)/.test(computed.backgroundImage)) {
+      // Takumi 2.19 drops `to right bottom` but draws `to bottom right`.
+      appendStyle(
+        copy,
+        `background-image: ${computed.backgroundImage.replace(
+          /to (left|right) (top|bottom)/g,
+          'to $2 $1',
+        )}`,
       );
     }
-    if (copy instanceof HTMLElement && computed.lineHeight.endsWith('px')) {
-      // Chrome lays out line boxes in 1/64px units. Preserve that rounding so
-      // fractional line heights do not accumulate drift in long snippets.
-      copy.style.lineHeight = `${Math.floor(parseFloat(computed.lineHeight) * 64) / 64}px`;
+    if (original.matches('.cm-gutterElement')) {
+      // CodeMirror sizes gutter rows to the measured line height. Pass it
+      // exactly, or line numbers drift in long snippets.
+      appendStyle(copy, `height: ${original.getBoundingClientRect().height}px`);
     }
     computed.fontFamily
       .split(',')
