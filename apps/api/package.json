@@ -51,6 +51,7 @@
     "@fastify/swagger": "9.9.4",
     "@fastify/swagger-ui": "6.1.4",
     "@fastify/type-provider-typebox": "6.3.0",
+    "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
     "@sinclair/typebox": "0.34.52",
     "close-with-grace": "^2.5.0",
@@ -63,7 +64,6 @@
     "fastify-plugin": "6.0.1"
   },
   "devDependencies": {
-    "@prisma/adapter-pg": "7.10.1",
     "@types/node": "catalog:next",
     "@vitest/ui": "4.1.12",
     "fastify-tsconfig": "^3.0.0",

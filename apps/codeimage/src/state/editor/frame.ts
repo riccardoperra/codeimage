@@ -1,3 +1,5 @@
+import {getExportTarget} from '@codeimage/config';
+import {createMemo} from 'solid-js';
 import type {
   FrameState,
   PersistedFrameState,
@@ -22,6 +24,8 @@ export function getInitialFrameState(): FrameState {
     width: 0,
     height: 0,
     aspectRatio: null,
+    exportTarget: null,
+    signature: null,
   };
 }
 
@@ -39,7 +43,9 @@ type Commands = {
   setNextPadding: void;
   setFromPreset: PresetData['frame'];
   setFromPersistedState: PersistedFrameState;
+  setSignature: FrameState['signature'];
   setAspectRatio: string | null;
+  setExportTarget: FrameState['exportTarget'];
 };
 
 const frameState = defineStore(() => getInitialFrameState())
@@ -96,16 +102,42 @@ const frameState = defineStore(() => getInitialFrameState())
         return {...state, padding: Number(availablePadding[next].value)};
       })
       .hold(store.commands.setFromPreset, presetData => {
-        store.set(state => ({...state, ...presetData}));
+        store.set(state => ({
+          ...state,
+          ...presetData,
+          signature: presetData.signature ?? null,
+          aspectRatio: presetData.aspectRatio ?? null,
+          exportTarget: presetData.exportTarget ?? null,
+        }));
       })
       .hold(store.commands.setFromPersistedState, (_, {state}) => {
-        return {...state, ..._};
+        return {
+          ...state,
+          ..._,
+          signature: _.signature ?? null,
+          aspectRatio: _.aspectRatio ?? null,
+          exportTarget: _.exportTarget ?? null,
+        };
       })
+      .hold(store.commands.setSignature, (signature, {state}) => ({
+        ...state,
+        signature,
+      }))
+      .hold(store.commands.setExportTarget, (exportTarget, {state}) => ({
+        ...state,
+        exportTarget,
+        aspectRatio: null,
+      }))
       .hold(store.commands.setAspectRatio, (aspectRatio, {state}) => {
-        return {...state, aspectRatio};
+        return {...state, aspectRatio, exportTarget: null};
       });
   })
   .extend(store => {
+    const exportTarget = createMemo(() =>
+      getExportTarget(store().exportTarget),
+    );
+    const exportPixelRatio = (pixelRatio: number) =>
+      exportTarget() ? 1 : pixelRatio;
     const mapToStateToPersistState = (
       state: FrameState,
     ): PersistedFrameState => {
@@ -115,7 +147,10 @@ const frameState = defineStore(() => getInitialFrameState())
         padding: state.padding,
         visible: state.visible,
         radius: state.radius,
-      } as PersistedFrameState;
+        signature: state.signature,
+        aspectRatio: state.aspectRatio,
+        exportTarget: state.exportTarget,
+      };
     };
 
     const stateToPersist$ = from(
@@ -129,6 +164,9 @@ const frameState = defineStore(() => getInitialFrameState())
         store.commands.setVisibility,
         store.commands.setNextPadding,
         store.commands.setFromPreset,
+        store.commands.setSignature,
+        store.commands.setAspectRatio,
+        store.commands.setExportTarget,
       ]),
     ).pipe(
       map(() => store()),
@@ -139,6 +177,8 @@ const frameState = defineStore(() => getInitialFrameState())
       get store() {
         return store.get;
       },
+      exportTarget,
+      exportPixelRatio,
       setStore: store.set,
       stateToPersist$,
       stateToPersist() {
