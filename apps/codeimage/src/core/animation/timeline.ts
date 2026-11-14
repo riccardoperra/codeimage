@@ -37,11 +37,12 @@ export type TimelineOptions = Pick<
 // `offset` moves the frame from the top left of the video to its center.
 export type FramePlacement = StepLayout & {offset: Point};
 
+export type FrameBox = Pick<FramePlacement, 'size' | 'offset'>;
+
 // `animation` is the declaration that plays the motion's keyframes.
 export type FrameMotion =
-  // A natural frame takes its size from the code box and slides to stay
-  // centered.
-  | {kind: 'slide'; from: Point; to: Point; animation: string}
+  // A natural frame resizes and slides on one easing, so its center stays.
+  | {kind: 'slide'; from: FrameBox; to: FrameBox; animation: string}
   // A target frame keeps its size, and its window moves and scales.
   | {
       kind: 'window';
@@ -75,10 +76,43 @@ export type Timeline = {
   css: string;
 };
 
-export const translate = ({x, y}: Point) => `translate(${x}px,${y}px)`;
+// The elements a renderer draws the frame and its window with.
+export type FrameSelectors = {frame: string; window: string};
 
 export const windowDeclarations = (window: WindowPlacement) =>
   `left:${window.left}px;top:${window.top}px;width:${window.width}px;height:${window.height}px;transform:scale(${window.scale})`;
+
+const sizeDeclarations = ({width, height}: Size) =>
+  `width:${width}px;height:${height}px`;
+
+const boxDeclarations = ({size, offset}: FrameBox) =>
+  `transform:translate(${offset.x}px,${offset.y}px);${sizeDeclarations(size)}`;
+
+// The frame is exactly as large as the timeline says, whatever its content.
+const sizedFrame = ({frame}: FrameSelectors, declarations: string) =>
+  `${frame}{min-width:0;max-width:none;${declarations}}`;
+
+// Pins the window inside a target frame, at the place `declarations` give.
+export const targetWindowCss = (
+  {frame, window}: FrameSelectors,
+  declarations: string,
+) =>
+  `${frame}{padding:0!important;min-width:0!important;max-width:none!important}${window}{position:absolute;transform-origin:top left;${declarations}}`;
+
+// Places and sizes the frame of one scene, and its window in a target frame.
+export function frameRules(
+  scene: TimelineScene,
+  selectors: FrameSelectors,
+): string {
+  if (scene.kind === 'hold') {
+    const {window} = scene.frame;
+    return `${sizedFrame(selectors, boxDeclarations(scene.frame))}${window ? targetWindowCss(selectors, windowDeclarations(window)) : ''}`;
+  }
+  const {frame} = scene;
+  return frame.kind === 'window'
+    ? `${sizedFrame(selectors, sizeDeclarations(frame.size))}${targetWindowCss(selectors, frame.animation)}`
+    : sizedFrame(selectors, frame.animation);
+}
 
 export function planTimeline(
   steps: NonEmpty<TimelineStep>,
@@ -126,11 +160,11 @@ export function planTimeline(
             from: from.window,
             to: to.window,
           } as const)
-        : ({kind: 'slide', from: from.offset, to: to.offset} as const);
+        : ({kind: 'slide', from, to} as const);
     css.push(
       motion.kind === 'window'
         ? `@keyframes ${name}-window{from{${windowDeclarations(motion.from)}}to{${windowDeclarations(motion.to)}}}`
-        : `@keyframes ${name}-slide{from{transform:${translate(motion.from)}}to{transform:${translate(motion.to)}}}`,
+        : `@keyframes ${name}-slide{from{${boxDeclarations(from)}}to{${boxDeclarations(to)}}}`,
     );
     const scene = pairScene(step, next, lineNumbers, widths);
     for (const [active, offsetMs, durationMs] of [

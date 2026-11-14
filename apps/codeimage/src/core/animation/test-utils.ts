@@ -82,6 +82,18 @@ function keyframes(css: string) {
 
 const number = (value: string) => parseFloat(value);
 
+// A length is one number. A translation is two, as translateX and translateY.
+function numbers(property: string, value: string): Record<string, number> {
+  const translation = value.match(/^translate\((-?[\d.]+)px,(-?[\d.]+)px\)$/);
+  if (translation) {
+    return {
+      translateX: number(translation[1]),
+      translateY: number(translation[2]),
+    };
+  }
+  return /^-?[\d.]+(px)?$/.test(value) ? {[property]: number(value)} : {};
+}
+
 // The numeric value of every property of `element` at `timeMs`, in pixels for
 // lengths. An animation fills both ways, as compileScene asks.
 export function styleAt(
@@ -92,7 +104,7 @@ export function styleAt(
   const inline = declarations(element.attributes.style ?? '');
   const style: Record<string, number> = {};
   for (const [property, value] of Object.entries(inline)) {
-    if (/^-?[\d.]+(px)?$/.test(value)) style[property] = number(value);
+    Object.assign(style, numbers(property, value));
   }
   if (!inline.animation) return style;
   const [name, duration, easing, delay] = inline.animation.split(' ');
@@ -110,9 +122,11 @@ export function styleAt(
     const before = defined.findLast(stop => stop.offset <= progress) ?? after;
     const span = after.offset - before.offset;
     const ratio = span ? (progress - before.offset) / span : 0;
-    const from = number(before.values[property]);
-    const to = number(after.values[property]);
-    style[property] = Number((from + (to - from) * ratio).toFixed(3));
+    const from = numbers(property, before.values[property]);
+    const to = numbers(property, after.values[property]);
+    for (const [key, end] of Object.entries(to)) {
+      style[key] = Number((from[key] + (end - from[key]) * ratio).toFixed(3));
+    }
   }
   return style;
 }
