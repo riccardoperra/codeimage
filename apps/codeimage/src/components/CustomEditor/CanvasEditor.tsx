@@ -11,22 +11,44 @@ import {
   createEditorFocus,
 } from 'solid-codemirror';
 import type {Accessor} from 'solid-js';
-import {createEffect, createSignal, on} from 'solid-js';
+import {createEffect, createSignal, on, onCleanup} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {SparklesIcon} from '../Icons/SparklesIcon';
 import CustomEditor from './CustomEditor';
+import {createSecretsExtension} from './plugins/secrets';
 
 interface CanvasEditorProps {
   readOnly: boolean;
 }
 
 export default function CanvasEditor(props: CanvasEditorProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   const [editorView, setEditorView] = createSignal<EditorView>();
   const activeEditorStore = getActiveEditorStore();
+  const secrets = createSecretsExtension(
+    () => ({
+      warning: ruleId =>
+        t('secrets.warning', {kind: t(`secrets.rules.${ruleId}`)}),
+      redact: t('secrets.redact'),
+      ignore: t('secrets.ignore'),
+    }),
+    () => activeEditorStore.editor()?.id ?? '',
+  );
+  createCompartmentExtension(
+    () => (props.readOnly ? [] : secrets.extension),
+    editorView,
+  );
+  createEffect(
+    on([editorView, () => activeEditorStore.editor()?.id], ([view]) => {
+      if (view && !props.readOnly) secrets.refresh(view);
+    }),
+  );
   const {
     state: editorState,
-    actions: {setFocused},
+    actions: {setFocused, setActiveEditorView},
   } = getRootEditorStore();
+  createEffect(() => setActiveEditorView(editorView()));
+  onCleanup(() => setActiveEditorView(undefined));
 
   const {setFocused: editorSetFocused} = createEditorFocus(
     editorView as Accessor<EditorView>,
