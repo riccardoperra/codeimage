@@ -1,4 +1,4 @@
-import {Button, IconButton} from '@codeui/kit';
+import {Button, IconButton, icons} from '@codeui/kit';
 import {createEffect, createSignal, createUniqueId, For, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES} from '../../state/whats-new';
@@ -47,7 +47,7 @@ export function Nudge(props: {
               aria-label="Dismiss what's new"
               onClick={props.dismiss}
             >
-              ×
+              <icons.CloseIcon />
             </IconButton>
           </div>
         }
@@ -107,7 +107,7 @@ export function Nudge(props: {
               aria-label="Dismiss what's new"
               onClick={props.dismiss}
             >
-              ×
+              <icons.CloseIcon />
             </IconButton>
           </div>
         </div>
