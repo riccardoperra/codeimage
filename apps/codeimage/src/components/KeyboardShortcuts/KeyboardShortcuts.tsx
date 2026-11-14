@@ -16,7 +16,10 @@ import type {JSXElement} from 'solid-js';
 import {createMemo, createSignal, For} from 'solid-js';
 import {useHotkey} from '../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../i18n';
-import {markCommands} from '../CustomEditor/plugins/lineMarks/controls';
+import {
+  markCommands,
+  shortcutKeys,
+} from '../CustomEditor/plugins/lineMarks/controls';
 import {HintIcon} from '../Icons/Hint';
 import * as styles from './KeyboardShortcuts.css';
 
@@ -47,11 +50,7 @@ export function KeyboardShortcuts(): JSXElement {
     {label: t('shortcut.openShortcuts'), key: ['?']},
     ...markCommands.map(command => ({
       label: t(`lineMarks.shortcut.${command.id}`),
-      key: [
-        /(Mac|iPhone|iPad)/.test(navigator.platform) ? '⌘' : 'Ctrl',
-        'Alt',
-        command.key.slice(-1),
-      ],
+      key: shortcutKeys(command.key),
     })),
   ]);
 
