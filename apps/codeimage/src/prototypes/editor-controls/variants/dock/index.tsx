@@ -22,7 +22,7 @@ import {
   inPrototypeChrome,
   isKeyboardClick,
 } from './context';
-import {SegmentedChoice, SelectChoice} from './controls';
+import {fieldId, SegmentedChoice, SelectChoice} from '../../controls/fields';
 import './dock.css';
 import type {PanelId} from './fields';
 import {createFields, PLACES} from './fields';
@@ -356,7 +356,10 @@ export default function Dock(props: VariantProps) {
                     >
                       <PaddingIcon />
                       <div class="dock-segmented">
-                        <SegmentedChoice control={control()} />
+                        <SegmentedChoice
+                          control={control()}
+                          id={fieldId('dock', control().id)}
+                        />
                       </div>
                     </div>
                   )}
@@ -368,7 +371,11 @@ export default function Dock(props: VariantProps) {
                       title={control().label()}
                     >
                       {/* Clears the bar, so the list starts where the popovers do. */}
-                      <SelectChoice control={control()} gutter={18} />
+                      <SelectChoice
+                        control={control()}
+                        id={fieldId('dock', control().id)}
+                        gutter={18}
+                      />
                     </div>
                   )}
                 </Show>

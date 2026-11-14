@@ -62,12 +62,6 @@ export const GROUPS: readonly {id: GroupId; label: string}[] = [
   {id: 'code', label: 'Code'},
 ];
 
-/** Choices that show all options in the row, as a segmented field. The rest are selects. */
-export const SEGMENTED_CHOICES: ReadonlySet<ControlId> = new Set([
-  'frame.padding',
-  'frame.radius',
-]);
-
 export interface Fields extends ListedModel {
   readonly group: (id: GroupId) => readonly Control[];
 }

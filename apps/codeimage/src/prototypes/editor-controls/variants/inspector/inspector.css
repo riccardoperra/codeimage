@@ -171,13 +171,13 @@
   position: absolute;
   inset: 0 4px;
 }
-.inspector-root .inspector-control > div {
+.inspector-root [data-control] > div {
   grid-template-columns: minmax(100px, 1fr) minmax(0, 1.5fr);
   min-height: 40px;
   padding: 2px 4px;
   align-items: center;
 }
-.inspector-root .inspector-control > div > label {
+.inspector-root [data-control] > div > label {
   padding-left: 0;
   height: auto;
   min-height: 36px;
@@ -186,59 +186,20 @@
   hyphens: none;
   word-break: normal;
 }
-.inspector-root .inspector-control > div > div {
+.inspector-root [data-control] > div > div {
   min-width: 0;
   align-items: center;
 }
-.inspector-root .inspector-control [data-cui='select'],
-.inspector-root .inspector-control [data-field-size] {
+.inspector-root [data-control] [data-cui='select'],
+.inspector-root [data-control] [data-field-size] {
   width: 100%;
 }
-.inspector-root .inspector-control button[aria-haspopup='listbox'] {
-  width: 100%;
-  min-height: 36px;
-}
-.inspector-root .inspector-control [data-field-size] input {
-  width: 100%;
-}
-.inspector-root .inspector-switch {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  align-items: center;
+.inspector-root [data-control] button[aria-haspopup='listbox'] {
   width: 100%;
   min-height: 36px;
-  position: relative;
 }
-.inspector-root .inspector-switch-state {
-  color: var(--inspector-muted);
-  font-size: 12px;
-}
-.inspector-root .inspector-switch-track {
-  display: block;
-  width: 32px;
-  height: 20px;
-  padding: 3px;
-  border-radius: 99px;
-  background: var(--inspector-switch-off);
-}
-.inspector-root .inspector-switch-track[data-checked] {
-  background: var(--inspector-switch-on);
-}
-.inspector-root .inspector-switch-thumb {
-  display: block;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  transform: translateX(0);
-}
-.inspector-root .inspector-switch-thumb[data-checked] {
-  transform: translateX(12px);
-}
-.inspector-root .inspector-switch:focus-within .inspector-switch-track {
-  outline: 2px solid var(--inspector-accent);
-  outline-offset: 3px;
+.inspector-root [data-control] [data-field-size] input {
+  width: 100%;
 }
 .inspector-root .inspector-inline-trigger {
   display: flex;
@@ -280,17 +241,6 @@
   font-size: 12px;
   color: var(--inspector-muted);
   margin: 6px 0;
-}
-.inspector-root .inspector-range {
-  display: flex;
-  width: 100%;
-  gap: 8px;
-  align-items: center;
-}
-.inspector-root .inspector-range output {
-  color: var(--inspector-muted);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
 }
 .inspector-root .inspector-sheet-handle,
 .inspector-root .inspector-quick-controls {
@@ -351,7 +301,7 @@
   .inspector-root .inspector-themes {
     min-height: 436px;
   }
-  .inspector-root .inspector-control input:not([type='checkbox']) {
+  .inspector-root [data-control] input:not([type='checkbox']) {
     min-height: 40px;
     font-size: 16px;
   }
@@ -385,13 +335,10 @@
     min-width: 40px;
   }
 
-  .inspector-root .inspector-switch {
+  .inspector-root [data-control] > div > label {
     min-height: 40px;
   }
-  .inspector-root .inspector-control > div > label {
-    min-height: 40px;
-  }
-  .inspector-root .inspector-control > div {
+  .inspector-root [data-control] > div {
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -409,21 +356,6 @@
 
 .inspector-root .inspector-section:last-child {
   margin-bottom: 0;
-}
-
-/*
- * Production gives the window style trigger a full row. Beside its label the
- * preview clips, so that its settings icon stays inside the field.
- */
-.inspector-root [data-control='window.style'] [aria-haspopup='dialog'] {
-  min-width: 0;
-}
-.inspector-root
-  [data-control='window.style']
-  [aria-haspopup='dialog']
-  > :first-child {
-  min-width: 0;
-  overflow: hidden;
 }
 
 /* Overlays render outside the root, so these rules are global. */

@@ -1,14 +1,8 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {RadioGroup} from '@kobalte/core/radio-group';
-import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
-import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {getUmami} from '@core/constants/umami';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Accessor, Component, ParentProps} from 'solid-js';
-import {createSignal, For, Show, Suspense} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {createSignal, For, Show} from 'solid-js';
 import {provideState} from 'statebuilder';
 import {EditorForm} from '../../../../components/PropertyEditor/EditorForm';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
@@ -21,8 +15,8 @@ import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls
 import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
 import {PresetSwitcher} from '../../../../components/Presets/PresetSwitcher/PresetSwitcher';
 import type {VariantProps} from '../../contract';
-import type {ControlId} from '../../model';
-import {ControlRow, ownKeys, renderControl} from './controls';
+import {ControlRow} from '../../controls/ControlRow';
+import type {Control, ControlId} from '../../model';
 import type {IconComponent} from './icons';
 import {
   CodeIcon,
@@ -56,10 +50,20 @@ export interface Panel {
   readonly Body: Component<PanelProps>;
 }
 
+function Row(props: {control: Control; size: Accessor<'sm' | 'md'>}) {
+  return (
+    <ControlRow control={props.control} prefix="studio" size={props.size()} />
+  );
+}
+
 function Rows(props: PanelProps & {ids: readonly ControlId[]}) {
   return (
     <For each={props.ids}>
-      {id => <ControlRow model={props.model} id={id} size={props.size} />}
+      {id => (
+        <Show when={props.model.control(id)}>
+          {control => <Row control={control()} size={props.size} />}
+        </Show>
+      )}
     </For>
   );
 }
@@ -81,7 +85,7 @@ function FramePanel(props: PanelProps) {
       <section class={styles.section}>
         <PanelHeader label={background()?.label() ?? 'Background'} />
         <Show when={visible()}>
-          {control => renderControl(control(), props.size)}
+          {control => <Row control={control()} size={props.size} />}
         </Show>
         <Show when={background()?.visible() && background()}>
           {control => {
@@ -111,87 +115,15 @@ function FramePanel(props: PanelProps) {
   );
 }
 
-const windowStyleNames: Record<string, string> = {
-  macOs: 'macOS',
-  macOsGrayTheme: 'macOS gray',
-  macOsOutlineTheme: 'macOS outline',
-  windows: 'Windows',
-};
-
-/**
- * Today's window picker is a modal over the frame. The panel has room for the
- * choices, so they sit here; the kit's RadioList draws no previews.
- */
-function WindowStyleField(props: PanelProps) {
-  const terminal = getTerminalState();
-  const editor = getRootEditorStore();
-  const control = () => props.model.control('window.style');
-
-  return (
-    <Show when={control()?.visible()}>
-      <FullWidthPanelRow>
-        <RadioGroup
-          class={styles.windowGrid}
-          style={{width: '100%'}}
-          aria-label="Window style"
-          value={terminal.state.type}
-          onChange={type => {
-            terminal.setType(type);
-            getUmami().track('change-terminal-type', {type});
-          }}
-          onKeyDown={ownKeys}
-        >
-          <For each={Object.values(AVAILABLE_TERMINAL_THEMES.entries)}>
-            {entry => (
-              <RadioGroup.Item value={entry.name} class={styles.windowTile}>
-                <RadioGroup.ItemInput />
-                <RadioGroup.ItemLabel class={styles.windowTileLabel}>
-                  <span class={styles.visuallyHidden}>
-                    {windowStyleNames[entry.name] ?? entry.name}
-                  </span>
-                </RadioGroup.ItemLabel>
-                <div class={styles.windowTilePreview} aria-hidden="true">
-                  <Suspense>
-                    <Dynamic
-                      component={entry.component}
-                      lite
-                      preview={true}
-                      shadow={TERMINAL_SHADOWS.md}
-                      showTab={true}
-                      textColor={terminal.state.textColor}
-                      background={terminal.state.background}
-                      accentVisible={terminal.state.accentVisible}
-                      readonlyTab={true}
-                      showHeader={true}
-                      showWatermark={false}
-                      alternativeTheme={false}
-                      opacity={100}
-                      themeId={editor.state.options.themeId}
-                      showGlassReflection={false}
-                      borderType={null}
-                    />
-                  </Suspense>
-                </div>
-                <span class={styles.windowTileCaption} aria-hidden="true">
-                  {windowStyleNames[entry.name] ?? entry.name}
-                </span>
-              </RadioGroup.Item>
-            )}
-          </For>
-        </RadioGroup>
-      </FullWidthPanelRow>
-    </Show>
-  );
-}
-
 function WindowPanel(props: PanelProps) {
   return (
     <Form>
       <section class={styles.section}>
         <PanelHeader label="Title bar" />
-        <Rows {...props} ids={['window.header']} />
-        <WindowStyleField {...props} />
-        <Rows {...props} ids={['window.accent']} />
+        <Rows
+          {...props}
+          ids={['window.header', 'window.style', 'window.accent']}
+        />
       </section>
       <section class={styles.section}>
         <PanelHeader label="Surface" />
@@ -256,8 +188,9 @@ function FontRows(props: PanelProps) {
           </FullWidthPanelRow>
         }
       >
-        {renderControl(
-          {
+        <Row
+          size={props.size}
+          control={{
             kind: 'select',
             id: 'font.family',
             label: () => family()?.label() ?? 'Font',
@@ -272,9 +205,8 @@ function FontRows(props: PanelProps) {
             },
             preview: id =>
               props.model.preview(() => editor.actions.setFontId(id)),
-          },
-          props.size,
-        )}
+          }}
+        />
       </Show>
     </>
   );

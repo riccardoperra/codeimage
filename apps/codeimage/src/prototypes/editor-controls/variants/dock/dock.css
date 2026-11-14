@@ -47,6 +47,7 @@
 
 /* The kit's segmented control fills its parent, so it gets one with a size. */
 .dock-segmented {
+  --proto-segmented-height: 32px;
   display: flex;
   height: 32px;
 }
@@ -350,8 +351,8 @@
 }
 
 /* Today's row gives the label 38% of a 280px sidebar. Here the longest label needs more. */
-.dock-more .dock-group > div,
-.dock-font-style > div {
+.dock-more .dock-group > [data-control] > div,
+.dock-font-style > [data-control] > div {
   grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
 }
 
@@ -360,50 +361,6 @@
   flex-wrap: wrap;
   gap: 8px;
   padding-top: 16px;
-}
-
-/* The kit has no switch. Kobalte's, with the app's tokens. */
-
-.dock-switch {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 100%;
-  min-height: 32px;
-}
-
-.dock-switch-track {
-  position: relative;
-  flex: none;
-  width: 36px;
-  height: 20px;
-  border-radius: 10px;
-  background: var(--dock-pressed);
-  cursor: pointer;
-}
-
-.dock-switch-track[data-checked] {
-  background: var(--dock-primary);
-}
-
-.dock-switch-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--dock-knob);
-  transition: transform 150ms var(--dock-ease-out);
-}
-
-.dock-switch-thumb[data-checked] {
-  transform: translateX(16px);
-}
-
-.dock-switch-input:focus-visible + .dock-switch-track {
-  outline: 2px solid var(--dock-primary);
-  outline-offset: 2px;
 }
 
 /* Phone: the dock is the bottom bar, in the layout, and every panel is a short sheet above it. */
@@ -527,21 +484,6 @@
     max-height: none;
     overflow: visible;
   }
-
-  .dock-switch-track {
-    width: 44px;
-    height: 26px;
-    border-radius: 13px;
-  }
-
-  .dock-switch-thumb {
-    width: 22px;
-    height: 22px;
-  }
-
-  .dock-switch-thumb[data-checked] {
-    transform: translateX(18px);
-  }
 }
 
 @keyframes dock-sheet-in {
@@ -564,10 +506,6 @@
 
   .dock-sheet[data-closed] {
     animation: none;
-  }
-
-  .dock-switch-thumb {
-    transition: none;
   }
 }
 

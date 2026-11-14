@@ -10,7 +10,8 @@ import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/F
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
 import {commandMenu} from '../../command-menu/state';
 import {useDock} from './context';
-import {ControlRow, SegmentedChoice} from './controls';
+import {ControlRow} from '../../controls/ControlRow';
+import {fieldId, SegmentedChoice} from '../../controls/fields';
 import type {GroupId, PanelId} from './fields';
 import {GROUPS} from './fields';
 import {SearchIcon} from './icons';
@@ -62,7 +63,7 @@ function BackgroundPanel() {
                     The frame is hidden, so there is no background to set.
                   </p>
                   <Show when={frameVisible()}>
-                    {toggle => <ControlRow control={toggle()} />}
+                    {toggle => <ControlRow control={toggle()} prefix="dock" />}
                   </Show>
                 </>
               }
@@ -89,7 +90,10 @@ function PaddingPanel() {
         <div class="dock-panel dock-padding-panel">
           <PanelHeader label={control().label()} />
           <div class="dock-segmented">
-            <SegmentedChoice control={control()} />
+            <SegmentedChoice
+              control={control()}
+              id={fieldId('dock', control().id)}
+            />
           </div>
         </div>
       )}
@@ -196,10 +200,10 @@ function FontPanel() {
       </Show>
       <div class="dock-font-style">
         <Show when={weight()}>
-          {control => <ControlRow control={control()} />}
+          {control => <ControlRow control={control()} prefix="dock" />}
         </Show>
         <Show when={ligatures()}>
-          {control => <ControlRow control={control()} />}
+          {control => <ControlRow control={control()} prefix="dock" />}
         </Show>
       </div>
     </div>
@@ -210,7 +214,7 @@ function Group(props: {id: GroupId}) {
   const dock = useDock();
   return (
     <For each={dock.fields.group(props.id)}>
-      {control => <ControlRow control={control} />}
+      {control => <ControlRow control={control} prefix="dock" />}
     </For>
   );
 }

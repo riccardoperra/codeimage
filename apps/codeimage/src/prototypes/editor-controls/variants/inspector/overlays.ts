@@ -7,11 +7,11 @@ const OPEN_TRIGGER = [
   '[aria-haspopup="listbox"][aria-expanded="true"][aria-controls]',
 ].join(', ');
 /**
- * The choices of the production window style and aspect ratio pickers are
- * divs with a click handler only. These are their development class names.
+ * The choices of the production aspect ratio picker are divs with a click
+ * handler only. These are their development class names.
  */
 const CHOICES =
-  '[class*="RadioBlock_radioBlock_base__"], [class*="_aspectRatioCard__"], [class*="_aspectRatioCardFull__"]';
+  '[class*="_aspectRatioCard__"], [class*="_aspectRatioCardFull__"]';
 
 /** Lets the keyboard reach a div that only listens for clicks. */
 function reachable(element: HTMLElement) {
