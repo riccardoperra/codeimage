@@ -14,7 +14,13 @@ export const MAX_DIFF_PERCENT = 0.5;
 // scale of 1 again.
 export function launchChrome(scale: number) {
   return chromium.launch({
-    args: [`--force-device-scale-factor=${scale}`, '--window-size=4000,4000'],
+    args: [
+      `--force-device-scale-factor=${scale}`,
+      '--window-size=4000,4000',
+      // Linux hinting snaps glyph advances to device pixels instead of using
+      // the fractional font metrics Takumi and macOS Chrome use.
+      '--font-render-hinting=none',
+    ],
   });
 }
 
