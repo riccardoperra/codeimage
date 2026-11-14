@@ -127,7 +127,7 @@ export function ExportPopoverContent() {
               checked={exportCanvasStore.get.oneImagePerTab}
               onChange={value => exportCanvasStore.set('oneImagePerTab', value)}
               size={'md'}
-              label={t('export.oneImagePerTab')}
+              label={t('exportTabs.oneImagePerTab')}
             />
           </VStack>
         </div>

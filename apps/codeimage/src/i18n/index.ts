@@ -5,6 +5,7 @@ import {presets} from './presets';
 import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
+import {exportTabs} from './exportTabs';
 
 export const locale = {
   it: {
@@ -56,7 +57,6 @@ export const locale = {
       reload: 'Ricarica',
     },
     export: {
-      oneImagePerTab: 'Una immagine per scheda',
       title: 'Esporta immagine',
       shareMode: 'Condividi il tuo codice',
       shareHint: 'Questa modalità usa la nuova',
@@ -97,6 +97,7 @@ export const locale = {
     ...bottomBar.it,
     ...notFound.it,
     ...presets.it,
+    ...exportTabs.it,
   },
   en: {
     ...secrets.en,
@@ -145,7 +146,6 @@ export const locale = {
       reload: 'Reload',
     },
     export: {
-      oneImagePerTab: 'One image per tab',
       title: 'Export image',
       shareMode: 'Share your code',
       shareHint: 'This modality uses the new',
@@ -185,6 +185,7 @@ export const locale = {
     ...dashboard.en,
     ...notFound.en,
     ...presets.en,
+    ...exportTabs.en,
   },
   de: {
     ...secrets.de,
@@ -234,7 +235,6 @@ export const locale = {
       reload: 'Neu laden',
     },
     export: {
-      oneImagePerTab: 'Ein Bild pro Tab',
       title: 'Bild exportieren',
       shareMode: 'Code teilen',
       shareHint: 'Diese Funktion verwendet die neue',
@@ -274,6 +274,7 @@ export const locale = {
     ...dashboard.de,
     ...notFound.de,
     ...presets.de,
+    ...exportTabs.de,
   },
   es: {
     ...secrets.es,
@@ -322,7 +323,6 @@ export const locale = {
       reload: 'Recargar',
     },
     export: {
-      oneImagePerTab: 'Una imagen por pestaña',
       title: 'Exporta imagen',
       shareMode: 'Comparte tu código',
       shareHint: 'Esta modalidad utiliza el nuevo',
@@ -363,6 +363,7 @@ export const locale = {
     ...dashboard.es,
     ...notFound.es,
     ...presets.es,
+    ...exportTabs.es,
   },
 };
 
