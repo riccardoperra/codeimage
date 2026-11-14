@@ -100,7 +100,7 @@ export function DraggableWindowTab(props: VoidProps<WindowTabProps>) {
                 <WindowTabContentText>{props.tabName}</WindowTabContentText>
               }
             >
-              <span>{props.tabName}</span>
+              <span>{props.tabName || 'Untitled'}</span>
             </Show>
           }
           when={!props.readonlyTab}
