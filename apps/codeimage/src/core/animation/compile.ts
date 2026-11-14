@@ -50,7 +50,8 @@ export function compileScene(
     transitions
       .map(transition => {
         const id = `${name}-${count++}`;
-        const cell = transition.kind === 'leave' ? transition.from : transition.to;
+        const cell =
+          transition.kind === 'leave' ? transition.from : transition.to;
         const box = transition.kind === 'leave' ? from : to;
         const {x, y} = layer.place(cell, box);
         let style = `left:${px(x)};top:${px(y)}`;
@@ -65,17 +66,18 @@ export function compileScene(
           );
           style += `;${animation(id)}`;
         } else {
+          // Takumi rounds layout positions to device pixels but not
+          // transforms, so a move animates `left` and `top`. Both endpoints
+          // then land on the pixels the static layout uses.
           const start = layer.place(transition.from, from);
-          const dx = start.x - x;
-          const dy = start.y - y;
           const startOpacity = opacity(from, transition.from);
           const endOpacity = opacity(to, transition.to);
           const fade = startOpacity !== endOpacity;
-          if (dx !== 0 || dy !== 0 || fade) {
+          if (start.x !== x || start.y !== y || fade) {
             const fromOpacity = fade ? `;opacity:${startOpacity}` : '';
             const toOpacity = fade ? `;opacity:${endOpacity}` : '';
             keyframes.push(
-              `@keyframes ${id}{from{transform:translate(${px(dx)},${px(dy)})${fromOpacity}}to{transform:translate(0px,0px)${toOpacity}}}`,
+              `@keyframes ${id}{from{left:${px(start.x)};top:${px(start.y)}${fromOpacity}}to{left:${px(x)};top:${px(y)}${toOpacity}}}`,
             );
             style += `;${animation(id)}`;
           }

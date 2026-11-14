@@ -18,7 +18,14 @@ const box = (overrides: Partial<StepBox> = {}): StepBox => ({
 const scene = (
   code: TokenTransition[],
   overrides: Partial<Scene> = {},
-): Scene => ({code, gutter: null, marks: [], from: box(), to: box(), ...overrides});
+): Scene => ({
+  code,
+  gutter: null,
+  marks: [],
+  from: box(),
+  to: box(),
+  ...overrides,
+});
 
 // The style of the element that shows `text`, and the keyframes it plays.
 function animationOf(compiled: {html: string; css: string}, text: string) {
@@ -51,27 +58,43 @@ test('a move starts at its old cell and ends at its new one', () => {
   const {style, keyframes} = animationOf(compiled, 'x');
   assert.match(style, /left:40px;top:40px/);
   assert.match(style, /animation:\S+ 1000ms linear 0ms both/);
-  assert.match(
-    keyframes!,
-    /from\{transform:translate\(-40px,-40px\)\}to\{transform:translate\(0px,0px\)\}/,
-  );
+  // The old cell is 4 columns left of and 2 lines above the new one.
+  assert.match(keyframes!, /from\{left:0px;top:0px\}to\{left:40px;top:40px\}/);
 });
 
 test('leaving tokens fade out by 30% and entering tokens fade in from 70%', () => {
   const compiled = compileScene(
     scene([
-      {kind: 'leave', key: 'a', text: 'old', classes: '', from: {line: 1, col: 2}},
-      {kind: 'enter', key: 'b', text: 'new', classes: '', to: {line: 0, col: 1}},
+      {
+        kind: 'leave',
+        key: 'a',
+        text: 'old',
+        classes: '',
+        from: {line: 1, col: 2},
+      },
+      {
+        kind: 'enter',
+        key: 'b',
+        text: 'new',
+        classes: '',
+        to: {line: 0, col: 1},
+      },
     ]),
     metrics,
     timing,
   );
   const leave = animationOf(compiled, 'old');
   assert.match(leave.style, /left:20px;top:20px/);
-  assert.match(leave.keyframes!, /0%\{opacity:1\}30%\{opacity:0\}100%\{opacity:0\}/);
+  assert.match(
+    leave.keyframes!,
+    /0%\{opacity:1\}30%\{opacity:0\}100%\{opacity:0\}/,
+  );
   const enter = animationOf(compiled, 'new');
   assert.match(enter.style, /left:10px;top:0px/);
-  assert.match(enter.keyframes!, /0%\{opacity:0\}70%\{opacity:0\}100%\{opacity:1\}/);
+  assert.match(
+    enter.keyframes!,
+    /0%\{opacity:0\}70%\{opacity:0\}100%\{opacity:1\}/,
+  );
 });
 
 test('a token that keeps its cell and opacity is not animated', () => {
@@ -114,13 +137,16 @@ test('code shifts by the diff indent and fades with focus dimming', () => {
   assert.match(style, /left:0px/);
   assert.match(
     keyframes!,
-    /from\{transform:translate\(20px,0px\);opacity:0.35\}to\{transform:translate\(0px,0px\);opacity:1\}/,
+    /from\{left:20px;top:0px;opacity:0.35\}to\{left:0px;top:0px;opacity:1\}/,
   );
 });
 
 test('the code box animates between the two step sizes', () => {
   const compiled = compileScene(
-    scene([], {from: box({rows: 2, columns: 5}), to: box({rows: 4, columns: 9})}),
+    scene([], {
+      from: box({rows: 2, columns: 5}),
+      to: box({rows: 4, columns: 9}),
+    }),
     metrics,
     timing,
     's1',
@@ -135,7 +161,15 @@ test('the code box animates between the two step sizes', () => {
 
 test('a scene that shows the second half starts every animation late', () => {
   const compiled = compileScene(
-    scene([{kind: 'enter', key: 'b', text: 'new', classes: '', to: {line: 0, col: 0}}]),
+    scene([
+      {
+        kind: 'enter',
+        key: 'b',
+        text: 'new',
+        classes: '',
+        to: {line: 0, col: 0},
+      },
+    ]),
     metrics,
     {...timing, offsetMs: 400},
   );
@@ -144,7 +178,15 @@ test('a scene that shows the second half starts every animation late', () => {
 
 test('escapes token text and renders line numbers only with a gutter', () => {
   const withoutGutter = compileScene(
-    scene([{kind: 'enter', key: 'b', text: '<a&b>', classes: '', to: {line: 0, col: 0}}]),
+    scene([
+      {
+        kind: 'enter',
+        key: 'b',
+        text: '<a&b>',
+        classes: '',
+        to: {line: 0, col: 0},
+      },
+    ]),
     metrics,
     timing,
   );
@@ -152,7 +194,15 @@ test('escapes token text and renders line numbers only with a gutter', () => {
   assert.ok(!withoutGutter.html.includes('cm-gutters'));
   const withGutter = compileScene(
     scene([], {
-      gutter: [{kind: 'enter', key: 'gutter:9', text: '9', classes: '', to: {line: 0, col: 1}}],
+      gutter: [
+        {
+          kind: 'enter',
+          key: 'gutter:9',
+          text: '9',
+          classes: '',
+          to: {line: 0, col: 1},
+        },
+      ],
       from: box({gutterColumns: 1}),
       to: box({gutterColumns: 2}),
     }),
@@ -160,6 +210,10 @@ test('escapes token text and renders line numbers only with a gutter', () => {
     timing,
   );
   assert.ok(withGutter.html.includes('class="cm-gutters"'));
-  assert.ok(withGutter.css.includes('from{width:10px;height:60px}to{width:20px;height:60px}'));
+  assert.ok(
+    withGutter.css.includes(
+      'from{width:10px;height:60px}to{width:20px;height:60px}',
+    ),
+  );
   assert.match(animationOf(withGutter, '9').style, /left:10px;top:0px/);
 });
