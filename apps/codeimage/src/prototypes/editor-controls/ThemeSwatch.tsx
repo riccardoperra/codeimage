@@ -100,6 +100,11 @@ export function ThemeSwatch(props: ThemeSwatchProps) {
         </Match>
         <Match when={variant() === 'window'}>
           <span class="proto-theme-swatch-editor">
+            <span class="proto-theme-swatch-header">
+              <span />
+              <span />
+              <span />
+            </span>
             <span class="proto-theme-swatch-line">
               <span style={{background: syntax().keyword, width: '24%'}} />
               <span style={{background: syntax().function, width: '38%'}} />
@@ -108,8 +113,16 @@ export function ThemeSwatch(props: ThemeSwatchProps) {
               <span style={{background: syntax().property, width: '28%'}} />
               <span style={{background: syntax().string, width: '34%'}} />
             </span>
-            <span class="proto-theme-swatch-line">
+            <span class="proto-theme-swatch-line" data-indent data-long>
+              <span style={{background: syntax().function, width: '30%'}} />
+              <span style={{background: syntax().number, width: '12%'}} />
+            </span>
+            <span class="proto-theme-swatch-line" data-long>
               <span style={{background: syntax().comment, width: '56%'}} />
+            </span>
+            <span class="proto-theme-swatch-line" data-long>
+              <span style={{background: syntax().type, width: '18%'}} />
+              <span style={{background: syntax().base, width: '10%'}} />
             </span>
           </span>
         </Match>

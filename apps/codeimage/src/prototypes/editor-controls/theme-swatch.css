@@ -148,3 +148,46 @@
   min-height: 2px;
   border-radius: 999px;
 }
+
+/* The small mark keeps three lines and no header. */
+.proto-theme-swatch-header,
+.proto-theme-swatch:not([data-wide]) .proto-theme-swatch-line[data-long] {
+  display: none;
+}
+
+/*
+ * As a card, the window keeps the default frame's shape, about 5 to 4, with
+ * the frame's padding around it, a header and five lines of code. Sizes
+ * follow the card through container units.
+ */
+.proto-theme-swatch[data-variant='window'][data-wide] {
+  container-type: size;
+  height: auto;
+  aspect-ratio: 5 / 4;
+}
+
+.proto-theme-swatch[data-wide] .proto-theme-swatch-editor {
+  inset: 14% 12%;
+  justify-content: flex-start;
+  gap: 6.5cqh;
+  padding: 7cqh 8cqw;
+  border-radius: 5cqh;
+}
+
+.proto-theme-swatch[data-wide] .proto-theme-swatch-header {
+  display: flex;
+  gap: 2.4cqw;
+  margin-bottom: 1.5cqh;
+}
+
+.proto-theme-swatch[data-wide] .proto-theme-swatch-header > span {
+  width: 3.8cqh;
+  height: 3.8cqh;
+  border-radius: 50%;
+  background: var(--swatch-comment);
+  opacity: 0.6;
+}
+
+.proto-theme-swatch[data-wide] .proto-theme-swatch-line > span {
+  height: 4cqh;
+}
