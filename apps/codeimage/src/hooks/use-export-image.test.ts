@@ -1,27 +1,23 @@
-/// <reference types="node" />
-import assert from 'node:assert/strict';
-import {test} from 'node:test';
+import {expect, test} from 'vitest';
 import {exportTabName} from './export-tab-name';
 
 test('numbers four tabs and makes slashes and spaces safe', () => {
-  assert.deepEqual(
+  expect(
     ['index.ts', 'src/ui card.tsx', 'dir\\file.ts', '  ../  '].map(
       (name, index) => exportTabName(name, index, 'png'),
     ),
-    [
-      '01-index.ts.png',
-      '02-src-ui-card.tsx.png',
-      '03-dir-file.ts.png',
-      '04-untitled.png',
-    ],
-  );
+  ).toEqual([
+    '01-index.ts.png',
+    '02-src-ui-card.tsx.png',
+    '03-dir-file.ts.png',
+    '04-untitled.png',
+  ]);
 });
 
 test('supports SVG, JPEG, unnamed and duplicate tabs', () => {
-  assert.equal(exportTabName(null, 0, 'svg'), '01-untitled.svg');
-  assert.equal(exportTabName('same', 1, 'jpeg'), '02-same.jpeg');
-  assert.notEqual(
-    exportTabName('same', 0, 'png'),
+  expect(exportTabName(null, 0, 'svg')).toBe('01-untitled.svg');
+  expect(exportTabName('same', 1, 'jpeg')).toBe('02-same.jpeg');
+  expect(exportTabName('same', 0, 'png')).not.toBe(
     exportTabName('same', 1, 'png'),
   );
 });
