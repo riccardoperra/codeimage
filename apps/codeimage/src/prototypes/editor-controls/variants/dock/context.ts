@@ -43,10 +43,6 @@ export function createMediaQuery(query: string): Accessor<boolean> {
 /** A click that came from Enter or Space reports no pointer detail. */
 export const isKeyboardClick = (event: MouseEvent) => event.detail === 0;
 
-/** The harness pills are chrome: using them must not close what the dock has open. */
-export const inPrototypeChrome = (target: EventTarget | null) =>
-  target instanceof Element && !!target.closest('[data-prototype-chrome]');
-
 /**
  * The kit's segmented control and lists take Escape for themselves, and
  * Kobalte then leaves the surface around them open. This closes it from a

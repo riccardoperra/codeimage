@@ -7,11 +7,11 @@ import {Dynamic} from 'solid-js/web';
 import {Footer} from '../../../../components/Footer/Footer';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
-import {Toolbar} from '../../../../components/Toolbar/Toolbar';
 import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import type {ControlId} from '../../model';
+import {Header} from '../../shell/Header';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
 import type {DockApi} from './context';
@@ -19,7 +19,6 @@ import {
   closeOnEscape,
   createMediaQuery,
   DockContext,
-  inPrototypeChrome,
   isKeyboardClick,
 } from './context';
 import {SegmentedChoice, SelectChoice} from './controls';
@@ -162,12 +161,6 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
                 ).focus();
               });
             }}
-            onPointerDownOutside={event => {
-              if (inPrototypeChrome(event.target)) event.preventDefault();
-            }}
-            onFocusOutside={event => {
-              if (inPrototypeChrome(event.target)) event.preventDefault();
-            }}
             on:keydown={closeOnEscape(() =>
               props.host.onOpenChange(props.panel, false),
             )}
@@ -284,7 +277,7 @@ export default function Dock(props: VariantProps) {
         data-compact={compact() ? '' : undefined}
         style={{'--dock-safe': `${dockHeight() + MARGIN * 2}px`}}
       >
-        <Toolbar canvasRef={props.stage.exportRef()} />
+        <Header stage={props.stage} />
         {/* Popovers mount here: inside the root for its tokens, out of its layout. */}
         <div class="dock-overlays" ref={setOverlays} />
 
