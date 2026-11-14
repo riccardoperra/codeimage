@@ -40,6 +40,14 @@
  * Where the pills would cover a control, the page starts under them and the
  * variant's root fills what is left in place of 100dvh.
  */
+/*
+ * The body clips what overflows it and positions the popovers portaled to it,
+ * so it keeps the viewport's height once the page leaves the flow.
+ */
+.proto-harness[data-offset] {
+  height: 100dvh;
+}
+
 .proto-harness[data-offset] > .proto-variant {
   position: fixed;
   inset: var(--proto-offset) 0 0;
