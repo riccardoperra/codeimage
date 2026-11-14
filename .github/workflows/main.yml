@@ -94,7 +94,8 @@ jobs:
   render-packages:
     name: Render snapshots in Node
     needs: [build-packages]
-    runs-on: ubuntu-latest
+    # Playwright 1.57 cannot install Chromium on ubuntu-latest, now 26.04.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout PR
         uses: actions/checkout@v7
