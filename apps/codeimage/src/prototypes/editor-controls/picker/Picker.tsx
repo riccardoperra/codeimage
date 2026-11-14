@@ -15,15 +15,42 @@ interface PickerProps {
   onReplay: () => void;
 }
 
-function isEditable(target: EventTarget | null): boolean {
+// Widgets that use arrows, digits or letters themselves: fields, and the
+// lists, menus, dialogs and other composites the page renders or opens.
+const KEY_OWNERS = [
+  'input',
+  'textarea',
+  'select',
+  '[role="listbox"]',
+  '[role="menu"]',
+  '[role="menubar"]',
+  '[role="dialog"]',
+  '[role="alertdialog"]',
+  '[role="combobox"]',
+  '[role="grid"]',
+  '[role="tree"]',
+  '[role="radiogroup"]',
+  '[role="tablist"]',
+  '[role="slider"]',
+  '[role="spinbutton"]',
+].join(', ');
+
+// A list, menu, dialog or combobox the page opened, wherever focus is.
+const OPEN_POPUP =
+  '[aria-haspopup]:not([aria-haspopup="false"])[aria-expanded="true"], [role="combobox"][aria-expanded="true"]';
+
+function pageOwnsKey(event: KeyboardEvent): boolean {
+  const target = event.target;
   return (
-    target instanceof HTMLElement &&
-    (/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName) ||
-      target.isContentEditable)
+    event.defaultPrevented ||
+    (target instanceof HTMLElement &&
+      (target.isContentEditable || target.closest(KEY_OWNERS) !== null)) ||
+    document.querySelector(OPEN_POPUP) !== null
   );
 }
 
-// Markup, styles and keys follow the prototype skill's PICKER.md verbatim.
+// Markup and styles follow the prototype skill's PICKER.md verbatim. The keys
+// follow it too, and also step aside for the page's own lists and popups.
 // data-position="top" because the reference editor keeps its frame toolbar
 // at the bottom center.
 export function Picker(props: PickerProps) {
@@ -42,7 +69,7 @@ export function Picker(props: PickerProps) {
   createEffect(on(() => props.active, moveHighlight));
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (isEditable(e.target)) return;
+    if (pageOwnsKey(e)) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const num = parseInt(e.key, 10);
     if (num >= 1 && num <= count()) props.onSelect(num - 1);
