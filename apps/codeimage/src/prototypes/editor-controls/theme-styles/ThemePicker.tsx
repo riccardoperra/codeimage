@@ -89,7 +89,8 @@ export function ThemePicker(props: ThemePickerProps) {
           <TextField
             size={props.size ?? 'sm'}
             placeholder="Search themes…"
-            aria-label="Search themes"
+            // The kit labels its root, not the input.
+            ref={input => input.setAttribute('aria-label', 'Search themes')}
             value={browser.query()}
             onChange={browser.setQuery}
           />
