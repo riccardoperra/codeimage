@@ -1,3 +1,4 @@
+import {existsSync} from 'node:fs';
 import {copyFile, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {basename, dirname, join} from 'node:path';
@@ -11,15 +12,43 @@ const dist = join(root, 'dist');
 const fontsDir = join(dist, 'fonts');
 const require = createRequire(import.meta.url);
 
-const fontsource = (pkg, ...stylesheets) => ({kind: 'fontsource', pkg, stylesheets});
-const appFont = (file, weight) => ({kind: 'file', path: join(appRoot, 'public/assets/fonts', file), weight});
+const packageDir = pkg => dirname(require.resolve(`${pkg}/package.json`));
+const fontsource = (pkg, ...stylesheets) => ({
+  kind: 'fontsource',
+  pkg,
+  stylesheets,
+  license: join(packageDir(pkg), 'LICENSE'),
+});
+const packageFont = (pkg, file, license) => ({
+  kind: 'file',
+  path: join(packageDir(pkg), file),
+  license: join(packageDir(pkg), license),
+});
+const appFont = (file, weight) => {
+  const path = join(appRoot, 'public/assets/fonts', file);
+  const license = join(dirname(path), 'OFL.txt');
+  return {
+    kind: 'file',
+    path,
+    weight,
+    license: existsSync(license) ? license : undefined,
+  };
+};
 
 const FONT_SOURCES = {
-  'jetbrains-mono': [fontsource('@fontsource-variable/jetbrains-mono', 'index.css')],
+  'jetbrains-mono': [
+    fontsource('@fontsource-variable/jetbrains-mono', 'index.css'),
+  ],
   'fira-code': [fontsource('@fontsource-variable/fira-code', 'index.css')],
-  'source-code-pro': [fontsource('@fontsource-variable/source-code-pro', 'index.css')],
-  'overpass-mono': [fontsource('@fontsource-variable/overpass-mono', 'index.css')],
-  'cascadia-code': [fontsource('@fontsource-variable/cascadia-code', 'index.css')],
+  'source-code-pro': [
+    fontsource('@fontsource-variable/source-code-pro', 'index.css'),
+  ],
+  'overpass-mono': [
+    fontsource('@fontsource-variable/overpass-mono', 'index.css'),
+  ],
+  'cascadia-code': [
+    fontsource('@fontsource-variable/cascadia-code', 'index.css'),
+  ],
   'space-mono': [fontsource('@fontsource/space-mono', '400.css', '700.css')],
   'geist-mono': [appFont('geist_mono/GeistMono[wght].ttf')],
   'ibm-plex-mono': [
@@ -34,13 +63,27 @@ const FONT_SOURCES = {
       [appFont(`monaspace/Monaspace${name}VarVF[wght,wdth,slnt].ttf`)],
     ]),
   ),
-  ui: [
-    {
-      kind: 'file',
-      path: join(dirname(require.resolve('inter-ui/package.json')), 'variable/InterVariable.woff2'),
-    },
-  ],
+  ui: [packageFont('inter-ui', 'variable/InterVariable.woff2', 'LICENSE.txt')],
 };
+
+// Families for glyphs the app fonts lack, in the order Takumi tries them. The
+// renderer bundles them instead of reading host fonts, so every machine draws
+// the same image. Twemoji (OFL font, CC-BY 4.0 art) draws emoji and flags. Noto
+// Sans SC (Chinese, kana) and Noto Sans KR (Hangul) are OFL variable fonts.
+const FALLBACK_FONTS = [
+  {
+    family: 'Twemoji',
+    sources: [packageFont('twemoji-colr-font', 'twemoji.woff2', 'LICENSE')],
+  },
+  {
+    family: 'Noto Sans SC',
+    sources: [fontsource('@fontsource-variable/noto-sans-sc', 'index.css')],
+  },
+  {
+    family: 'Noto Sans KR',
+    sources: [fontsource('@fontsource-variable/noto-sans-kr', 'index.css')],
+  },
+];
 
 function parseUnicodeRange(value) {
   return value.split(',').map(range => {
@@ -50,7 +93,7 @@ function parseUnicodeRange(value) {
 }
 
 async function fontsourceFaces({pkg, stylesheets}) {
-  const pkgDir = dirname(require.resolve(`${pkg}/package.json`));
+  const pkgDir = packageDir(pkg);
   const faces = [];
   for (const stylesheet of stylesheets) {
     const css = await readFile(join(pkgDir, stylesheet), 'utf8');
@@ -68,23 +111,39 @@ async function fontsourceFaces({pkg, stylesheets}) {
   return faces;
 }
 
+async function copyFonts(name, sources) {
+  const files = [];
+  for (const source of sources) {
+    const faces =
+      source.kind === 'fontsource' ? await fontsourceFaces(source) : [source];
+    for (const {path, weight, unicodeRange} of faces) {
+      const file = basename(path);
+      await copyFile(path, join(fontsDir, file));
+      files.push({file, weight, unicodeRange});
+    }
+    if (source.license) {
+      await copyFile(
+        source.license,
+        join(fontsDir, 'licenses', `${name}-${basename(source.license)}`),
+      );
+    }
+  }
+  return files;
+}
+
 async function buildFonts(supportedFontIds) {
   const missing = supportedFontIds.filter(id => !(id in FONT_SOURCES));
   if (missing.length) {
     throw new Error(`No font files for app fonts: ${missing.join(', ')}`);
   }
-  await mkdir(fontsDir, {recursive: true});
-  const manifest = {};
+  await mkdir(join(fontsDir, 'licenses'), {recursive: true});
+  const manifest = {fonts: {}, fallbacks: []};
   for (const [id, sources] of Object.entries(FONT_SOURCES)) {
-    manifest[id] = [];
-    for (const source of sources) {
-      const faces = source.kind === 'fontsource' ? await fontsourceFaces(source) : [source];
-      for (const {path, weight, unicodeRange} of faces) {
-        const file = basename(path);
-        await copyFile(path, join(fontsDir, file));
-        manifest[id].push({file, weight, unicodeRange});
-      }
-    }
+    manifest.fonts[id] = await copyFonts(id, sources);
+  }
+  for (const {family, sources} of FALLBACK_FONTS) {
+    const name = family.toLowerCase().replaceAll(' ', '-');
+    manifest.fallbacks.push({family, files: await copyFonts(name, sources)});
   }
   await writeFile(join(fontsDir, 'manifest.json'), JSON.stringify(manifest));
 }

@@ -1,4 +1,3 @@
-import {existsSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {Renderer} from '@takumi-rs/core';
@@ -35,6 +34,13 @@ interface FontFile {
   unicodeRange?: [number, number][];
 }
 
+interface FontManifest {
+  // The files of each app font and of the UI font.
+  fonts: Record<string, FontFile[]>;
+  // Families for glyphs the app fonts lack, in the order Takumi tries them.
+  fallbacks: {family: string; files: FontFile[]}[];
+}
+
 export interface SnapshotFont {
   family: string;
   path: string;
@@ -46,36 +52,14 @@ export interface SnapshotMarkup {
   document: SnapshotDocument;
   html: string;
   css: string[];
+  // The UI and code fonts the markup names. Fallbacks are not listed.
   fonts: SnapshotFont[];
+  // The fallback chain every measure and render uses.
+  fontFamilies: string[];
   images: ImageSource[];
 }
 
 const UI_FONT = {id: 'ui', family: 'Inter var'} as const;
-
-// Browsers draw emoji and CJK text with system fonts, so the renderer falls
-// back to the host's fonts for them instead of bundling large font sets.
-const SYSTEM_FALLBACKS = [
-  {
-    needs: /\p{Extended_Pictographic}/u,
-    paths: [
-      '/System/Library/Fonts/Apple Color Emoji.ttc',
-      '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf',
-      '/usr/share/fonts/noto/NotoColorEmoji.ttf',
-      '/usr/share/fonts/google-noto-emoji/NotoColorEmoji.ttf',
-      'C:\\Windows\\Fonts\\seguiemj.ttf',
-    ],
-  },
-  {
-    needs: /[^\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}]/u,
-    paths: [
-      '/System/Library/Fonts/Hiragino Sans GB.ttc',
-      '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
-      '/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc',
-      '/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc',
-      'C:\\Windows\\Fonts\\msyh.ttc',
-    ],
-  },
-];
 
 const dist = new URL('../dist/', import.meta.url);
 
@@ -84,59 +68,57 @@ async function loadRuntime() {
     import(new URL('ssr/entry-server.js', dist).href) as Promise<RenderEntry>,
     readFile(new URL('ssr/assets/style.css', dist), 'utf8'),
     readFile(new URL('fonts/manifest.json', dist), 'utf8').then(
-      text => JSON.parse(text) as Record<string, FontFile[]>,
+      text => JSON.parse(text) as FontManifest,
     ),
   ]);
   const renderer = new Renderer();
-  const registered = new Map<string, Promise<unknown>>();
-  const fontsFor = (fontId: string, family: string): SnapshotFont[] => {
-    const files = manifest[fontId];
-    if (!files) throw new Error(`No font files for font "${fontId}"`);
-    return files.map(({file, ...face}) => ({
+  const faces = (family: string, files: FontFile[]): SnapshotFont[] =>
+    files.map(({file, ...face}) => ({
       family,
       path: fileURLToPath(new URL(`fonts/${file}`, dist)),
       ...face,
     }));
+  const fontsFor = (fontId: string, family: string) => {
+    const files = manifest.fonts[fontId];
+    if (!files) throw new Error(`No font files for font "${fontId}"`);
+    return faces(family, files);
   };
-  const registerFonts = (fonts: SnapshotFont[]) =>
-    Promise.all(
-      fonts.map(font => {
-        const key = `${font.family}\u0000${font.path}`;
-        let pending = registered.get(key);
-        if (!pending) {
-          pending = readFile(font.path).then(data =>
-            renderer.registerFont({
-              name: font.family,
-              data,
-              weight: font.weight,
-              unicodeRange: font.unicodeRange,
-            }),
-          );
-          registered.set(key, pending);
-        }
-        return pending;
-      }),
-    );
-  const registerFallbacks = (text: string) =>
-    Promise.all(
-      SYSTEM_FALLBACKS.filter(({needs}) => needs.test(text)).map(({paths}) => {
-        const path = paths.find(path => existsSync(path));
-        if (!path) return;
-        let pending = registered.get(path);
-        if (!pending) {
-          pending = readFile(path).then(data => renderer.registerFont({data}));
-          registered.set(path, pending);
-        }
-        return pending;
-      }),
-    );
+  const register = async (fonts: SnapshotFont[]) => {
+    const files = await Promise.all(fonts.map(font => readFile(font.path)));
+    for (const [index, font] of fonts.entries()) {
+      await renderer.registerFont({
+        name: font.family,
+        data: files[index],
+        weight: font.weight,
+        unicodeRange: font.unicodeRange,
+      });
+    }
+  };
+  // The fallbacks and the UI font register once, in a fixed order, before the
+  // first render. Each render names the same fallback chain, so the image never
+  // depends on which app fonts earlier renders registered.
+  for (const {family, files} of manifest.fallbacks) {
+    await register(faces(family, files));
+  }
+  const uiFonts = fontsFor(UI_FONT.id, UI_FONT.family);
+  await register(uiFonts);
+  const appFonts = new Map<string, Promise<void>>();
+  const registerAppFont = (fontId: string, family: string) => {
+    let pending = appFonts.get(fontId);
+    if (!pending) {
+      pending = register(fontsFor(fontId, family));
+      appFonts.set(fontId, pending);
+    }
+    return pending;
+  };
   return {
     entry,
     stylesheet,
     renderer,
+    uiFonts,
     fontsFor,
-    registerFonts,
-    registerFallbacks,
+    registerAppFont,
+    fontFamilies: manifest.fallbacks.map(({family}) => family),
   };
 }
 
@@ -185,27 +167,21 @@ export async function snapshotMarkup(
     entry,
     stylesheet,
     renderer,
+    uiFonts,
     fontsFor,
-    registerFonts,
-    registerFallbacks,
+    registerAppFont,
+    fontFamilies,
   } = await getRuntime();
   const frame = await entry.renderFrame(document);
   const html = normalizeStyleAttributes(frame.html);
   const css = [stylesheet, frame.css].map(normalizeGradients);
-  const fonts = [
-    ...fontsFor(UI_FONT.id, UI_FONT.family),
-    ...fontsFor(document.editor.options.fontId, frame.fontFamily),
-  ];
-  await registerFonts(fonts);
-  await registerFallbacks(
-    document.editor.editors
-      .map(editor => `${editor.tabName}\n${editor.code}`)
-      .join('\n'),
-  );
+  const {fontId} = document.editor.options;
+  await registerAppFont(fontId, frame.fontFamily);
   // Like the web frame, the frame is at least as wide as its code, so no line
   // wraps, and it is sized to whole CSS pixels like the editor's client size.
   const content = await renderer.measure(html, {
     css: [...css, entry.frameSizeCss()],
+    fontFamilies,
   });
   const size = {
     width: Math.max(document.width ?? 0, Math.ceil(content.width)),
@@ -215,7 +191,8 @@ export async function snapshotMarkup(
     document,
     html,
     css: [...css, entry.frameSizeCss(size)],
-    fonts,
+    fonts: [...uiFonts, ...fontsFor(fontId, frame.fontFamily)],
+    fontFamilies,
     images: frame.backgroundImage
       ? [await fetchImage(frame.backgroundImage)]
       : [],
@@ -225,14 +202,16 @@ export async function snapshotMarkup(
 export async function renderSnapshot(
   input: SnapshotInput,
 ): Promise<Uint8Array | string> {
-  const {document, html, css, images} = await snapshotMarkup(input);
+  const {document, html, css, images, fontFamilies} =
+    await snapshotMarkup(input);
   const {renderer} = await getRuntime();
   if (document.format === 'svg') {
-    return renderer.renderSvg(html, {css, images});
+    return renderer.renderSvg(html, {css, images, fontFamilies});
   }
   const image = await renderer.render(html, {
     css,
     images,
+    fontFamilies,
     format: document.format,
     devicePixelRatio: document.scale,
   });
