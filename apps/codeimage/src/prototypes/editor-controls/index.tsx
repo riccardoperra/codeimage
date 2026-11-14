@@ -1,6 +1,3 @@
-import {PrototypeRoute} from './harness';
-import {variants} from './registry';
+import {UnifiedEditor} from './harness';
 
-export default function EditorControlsPrototype() {
-  return <PrototypeRoute variants={variants} themeStyles />;
-}
+export default UnifiedEditor;

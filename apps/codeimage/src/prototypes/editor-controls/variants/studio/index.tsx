@@ -17,9 +17,9 @@ import {ExportInNewTabButton} from '../../../../components/Toolbar/ExportNewTabB
 import {ExportSettingsButton} from '../../../../components/Toolbar/ExportSettingsButton';
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
-import {Toolbar} from '../../../../components/Toolbar/Toolbar';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
+import {Header} from '../../shell/Header';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import type {Panel, PanelId} from './panels';
@@ -248,7 +248,7 @@ export default function Studio(props: VariantProps) {
 
   return (
     <div class={styles.root}>
-      <Toolbar canvasRef={props.stage.exportRef()} />
+      <Header stage={props.stage} />
 
       <div
         ref={bodyEl}

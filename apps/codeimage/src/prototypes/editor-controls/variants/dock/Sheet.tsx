@@ -2,7 +2,7 @@ import {Dialog} from '@kobalte/core/dialog';
 import {createEffect, createMemo, createSignal, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
-import {closeOnEscape, inPrototypeChrome, useDock} from './context';
+import {closeOnEscape, useDock} from './context';
 import type {PanelId} from './fields';
 import {PANELS} from './panels';
 
@@ -43,8 +43,7 @@ export function Sheet(props: SheetProps) {
   );
 
   const inBar = (target: EventTarget | null) =>
-    (target instanceof Node && !!props.bar()?.contains(target)) ||
-    inPrototypeChrome(target);
+    target instanceof Node && !!props.bar()?.contains(target);
 
   createEffect(
     on(dock.panel, panel => {

@@ -65,6 +65,9 @@ const Editor = () => {
   );
 };
 
+// The editor in the layout the user chose. It lives with the prototypes for now.
+const UnifiedEditor = lazyWithNoLauncher(() => import("./prototypes/editor-controls"));
+
 const NotFoundPage = lazyWithNoLauncher(() => import("./pages/NotFound/NotFoundPage"));
 
 export function Bootstrap() {
@@ -81,15 +84,20 @@ export function Bootstrap() {
       component: () => {
         const state = getAuth0State();
         return (
-          <Show fallback={<Editor />} when={state.loggedIn()}>
+          <Show fallback={<UnifiedEditor />} when={state.loggedIn()}>
             <Dashboard />
           </Show>
         );
       },
     },
     {
+      // Today's editor, kept for comparison.
+      path: "classic",
+      component: Editor,
+    },
+    {
       path: "prototypes/editor-controls",
-      component: lazyWithNoLauncher(() => import("./prototypes/editor-controls")),
+      component: UnifiedEditor,
     },
     {
       path: "prototypes/theme-card",

@@ -11,9 +11,9 @@ import {
 } from 'solid-js';
 import type {JSX, ParentProps} from 'solid-js';
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
-import {Toolbar} from '../../../../components/Toolbar/Toolbar';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
+import {Header} from '../../shell/Header';
 import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
 import {createOverlayPlacement} from './overlays';
@@ -262,12 +262,7 @@ export default function Inspector(props: VariantProps) {
       }}
     >
       <div class="inspector-header">
-        <Show
-          when={mobile()}
-          fallback={<Toolbar canvasRef={props.stage.exportRef()} />}
-        >
-          <Toolbar canvasRef={props.stage.exportRef()} />
-        </Show>
+        <Header stage={props.stage} />
       </div>
       <div class="inspector-workspace">
         <main

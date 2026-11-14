@@ -119,9 +119,11 @@ export function buildCommands(input: {
   model: EditorControlsModel;
   listed: ListedModel;
   actions: readonly Action[];
+  /** Commands that are not about the image, such as the layout. They follow the actions. */
+  settings: readonly Command[];
   reveal: ((id: ControlId) => void) | undefined;
 }): Command[] {
-  const {model, listed, actions, reveal} = input;
+  const {model, listed, actions, settings, reveal} = input;
   const shown = shownTheme(model);
 
   return [
@@ -134,6 +136,7 @@ export function buildCommands(input: {
         run: action.run,
       }),
     ),
+    ...settings,
     ...model.themes().map(
       (theme): Command => ({
         id: `theme=${theme.id}`,

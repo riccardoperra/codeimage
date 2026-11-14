@@ -25,8 +25,6 @@ interface PickerProps {
   keys: PickerKeys;
   /** Shows the replay button. */
   onReplay?: () => void;
-  /** Dims the pill and ignores its keys. */
-  disabled?: boolean;
 }
 
 /** Number keys, the arrows, and R to replay: the layout picker of PICKER.md. */
@@ -38,18 +36,6 @@ export const numberKeys: PickerKeys = (key, active, count) => {
   if (key === 'r' || key === 'R') return 'replay';
   return undefined;
 };
-
-/** The first letter of each name, and [ and ] to step, for a second picker. */
-export const letterKeys =
-  (names: readonly string[]): PickerKeys =>
-  (key, active, count) => {
-    if (key === '[') return (active - 1 + count) % count;
-    if (key === ']') return (active + 1) % count;
-    const index = names.findIndex(
-      name => name[0].toLowerCase() === key.toLowerCase(),
-    );
-    return index >= 0 ? index : undefined;
-  };
 
 // Widgets that use arrows, digits or letters themselves: fields, and the
 // lists, menus, dialogs and other composites the page renders or opens.
@@ -117,7 +103,7 @@ export function Picker(props: PickerProps) {
   createEffect(on(() => props.active, moveHighlight));
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (props.disabled || pageOwnsKey(e)) return;
+    if (pageOwnsKey(e)) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const target = props.keys(e.key, props.active, count());
     if (target === 'replay') props.onReplay?.();
@@ -140,7 +126,6 @@ export function Picker(props: PickerProps) {
       aria-label={props.label}
       data-position="top"
       data-ready={ready() ? '' : undefined}
-      data-disabled={props.disabled ? '' : undefined}
     >
       <span
         ref={el => (highlight = el)}
@@ -154,7 +139,6 @@ export function Picker(props: PickerProps) {
             class="proto-picker-item"
             data-active={i() === props.active ? '' : undefined}
             aria-current={i() === props.active ? 'true' : undefined}
-            disabled={props.disabled}
             onClick={() => props.onSelect(i())}
           >
             {name}

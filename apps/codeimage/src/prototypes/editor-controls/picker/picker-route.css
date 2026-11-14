@@ -31,11 +31,6 @@
   pointer-events: auto;
 }
 
-/* The theme style picker does nothing for a layout that keeps its own. */
-.proto-pickers > .proto-picker[data-disabled] {
-  opacity: 0.4;
-}
-
 /*
  * Where the pills would cover a control, the page starts under them and the
  * variant's root fills what is left in place of 100dvh.
