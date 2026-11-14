@@ -50,3 +50,33 @@ The checked-in worker is MSW 0.47 while the installed client is 2.12.14. A tempo
 Raw screenshots, scripts, logs, PNG comparison, SVG exports, and the decision trail are in `/tmp/swarm-p6/` on the implementation machine.
 
 The coordinator review was applied: no preview-editor change, no worker-file change, and an explicit store-owned editor view passed to Redact all. Independent review of the final PR head remains with the coordinator.
+
+## Independent review at the Opus commits
+
+A second reviewer reran the checks on its own Playwright harness, against a trunk dev server and a head dev server, and changed the detector and the copy.
+
+Fixed:
+
+- `generic-assignment` backtracked catastrophically. A 10,000-character line of `token.` took 36 s and `token-` took 16 s, on the main thread, during linting. The name now starts only at the beginning of its run, and the keyword is checked with a lazy lookahead. The same line now takes under 1 ms. `connection-url-password` was quadratic on dotted runs (91 ms at 10,000 characters) and is now linear. A unit test covers four adversarial lines.
+- Provider rules now keep the Gitleaks entropy minimums and the AWS `EXAMPLE` allowlist, so `ghp_xxxx…`, `sk_test_xxxx…`, and `AKIAIOSFODNN7EXAMPLE` get no hint.
+- Connection passwords that contain `@` were cut at the first `@`, which left the rest visible. Placeholders such as `${DB_PASSWORD}`, `$DB_PASSWORD`, and `<password>` were flagged. Both are fixed.
+- Generic assignments flagged prose (`passwordPlaceholder: "At least 8 characters, one symbol"`), URLs (`tokenEndpoint = "https://…/token"`), templates (`{{ csrf_token() }}`), and unquoted calls (`token = get_token_from_keychain()`). These are now skipped. A UUID or SHA assigned to a name like `sessionToken` still gets a hint on purpose.
+- The copy read "Looks like a AWS access token", "Sembra un chiave privata", "Parece un clave API", and "1 possible secrets visible". The article now lives in each label, and a singular string handles one secret. The hint now says what redaction does and where undo works.
+
+Reproduced at the Opus head:
+
+| Check | Result |
+| --- | --- |
+| Lane 1 | Trunk and head clean PNG exports are byte-identical, 525 × 244, 0/128,100 changed pixels. No hint. |
+| Lane 2 | The hint reads "Looks like a GitHub token". The dialog shows "1 possible secret visible" and **Export anyway**. After **Redact all**, the editor shows `ghp_` and 36 dots. The PNG is byte-identical to an export of the same bullets typed by hand. |
+| Lane 3 | The redacted SVG (1.66 MB) contains `ghp_` and 36 bullets, with neither the token nor its suffix. |
+| Lane 4 | Ignore hides the hint, nothing is written to storage, and the hint is back after reload. |
+| Lane 5 | One Cmd+Z after Redact restores the token. |
+| Lane 6 | The PEM block is one "Looks like a private key" diagnostic that spans all six lines. |
+| Lane 9 | A UUID, a git SHA, and a lockfile `sha512-` integrity string get no hint and no export warning. |
+| Lane 10 | The PUT sent after Redact contains bullets and no token. localStorage, sessionStorage, and every IndexedDB store hold no token. The reload view did not reproduce: `mocks/persist.ts` writes the mock DB only on BroadcastChannel messages and hydrates on a `load` event that has already fired, so the saved project returns 404 on reload. This is trunk mock behavior. |
+| Two tabs | The warning counts "2 possible secrets visible". **Redact all** masks the inactive tab's connection password, and one Cmd+Z in the current tab restores its token. |
+
+Detector perf, 5 warm-ups and 30 runs: `pnpm --filter=@codeimage/secrets bench` medians were 3.87, 4.32, and 2.62 ms (PR: 4.85 ms). On a mixed 2,000-line file (168,786 bytes, 572 matches) with `.env` lines, URLs, minified code, and lockfile hashes, the original detector had medians of 12.8 and 12.2 ms, and the fixed one 8.0 and 9.1 ms. Both are under the 20 ms limit. The host was loaded, so the maximums (80 to 287 ms) reflect contention.
+
+The review video still shows the earlier copy. The warning screenshot is replaced, and [two-tab warning](media/p6-review-tabs-warning.png) is added.
