@@ -173,7 +173,17 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
     }),
   ).toMatchObject({
     ownerId: userId,
-    frame: data.frame,
+    frame: {
+      background: data.frame.background,
+      opacity: data.frame.opacity,
+      radius: data.frame.radius,
+      padding: data.frame.padding,
+      visible: data.frame.visible,
+      exportTarget: data.frame.exportTarget,
+      aspectRatio: data.frame.aspectRatio,
+      signatureHandle: data.frame.signature?.handle ?? null,
+      signaturePosition: data.frame.signature?.position ?? null,
+    },
     terminal: data.terminal,
     editorOptions: data.editorOptions,
     editorTabs: body.editorTabs,
@@ -259,7 +269,18 @@ test<TestContext>('PUT /v1/project/:id [Update Project] -> ignores keys outside 
     }),
   ).toMatchObject({
     frameId: context.project1.frameId,
-    frame: {id: context.project1.frameId, ...data.frame},
+    frame: {
+      id: context.project1.frameId,
+      background: data.frame.background,
+      opacity: data.frame.opacity,
+      radius: data.frame.radius,
+      padding: data.frame.padding,
+      visible: data.frame.visible,
+      exportTarget: data.frame.exportTarget,
+      aspectRatio: data.frame.aspectRatio,
+      signatureHandle: data.frame.signature?.handle ?? null,
+      signaturePosition: data.frame.signature?.position ?? null,
+    },
     terminal: {id: context.project1.terminalId, ...data.terminal},
     editorOptions: {
       id: context.project1.editorOptionsId,
