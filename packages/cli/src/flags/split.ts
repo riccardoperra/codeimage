@@ -4,12 +4,11 @@ import type {Flag} from './index';
 
 export const split: Flag = {
   options: {'split-tabs': {type: 'boolean'}},
-  usage: '  --split-tabs        Write one numbered image per input tab\n',
+  usage: '  --split-tabs         Write one image per tab, such as out-01.png\n',
   validate(values) {
     if (values['split-tabs'] && values.output === '-')
       throw new UsageError('--split-tabs: -o must be a file path');
   },
-  apply: snapshot => snapshot,
   outputs(output, values) {
     if (!values['split-tabs']) return [output];
     const extension = extname(output.path);

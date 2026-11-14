@@ -34,10 +34,18 @@ export const size: Flag = {
     signature: {type: 'string'},
     'signature-position': {type: 'string'},
   },
-  usage:
-    '  --size <target>     x-landscape, square, linkedin-portrait, or og\n  --signature <text>  Add a handle to the frame\n  --signature-position <corner>  bottom-left or bottom-right (default)\n',
+  usage: `  --size <target>      Export at an exact social size: x-landscape,
+                       square, linkedin-portrait, or og
+  --signature <handle> Show a handle such as @me in a bottom corner
+  --signature-position <corner>
+                       bottom-left or bottom-right (default: bottom-right)
+`,
   validate(values) {
-    target(values);
+    if (target(values) && values.scale !== undefined) {
+      throw new UsageError(
+        '--scale: --size exports at the exact target size, so drop --scale',
+      );
+    }
     position(values);
     if (
       values.signature !== undefined &&
@@ -48,10 +56,16 @@ export const size: Flag = {
   },
   apply(snapshot, values) {
     const selected = target(values);
-    const signature =
+    const current = snapshot.frame.signature;
+    const handle =
       typeof values.signature === 'string'
-        ? {handle: values.signature.trim(), position: position(values)}
-        : snapshot.frame.signature;
+        ? values.signature.trim()
+        : current?.handle;
+    if (!handle && values['signature-position'] !== undefined) {
+      throw new UsageError(
+        '--signature-position: needs --signature or a preset with a signature',
+      );
+    }
     return {
       ...snapshot,
       frame: {
@@ -60,9 +74,15 @@ export const size: Flag = {
           exportTarget: selected.id,
           aspectRatio: selected.ratio,
         }),
-        ...(signature !== undefined && {signature}),
-        ...(values['signature-position'] !== undefined &&
-          signature && {signature: {...signature, position: position(values)}}),
+        ...(handle && {
+          signature: {
+            handle,
+            position:
+              values['signature-position'] === undefined && current
+                ? current.position
+                : position(values),
+          },
+        }),
       },
     };
   },

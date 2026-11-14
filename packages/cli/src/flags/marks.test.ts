@@ -110,4 +110,9 @@ describe('marks flag', () => {
     expect(snapshot.editor.editors[0].code).toBe(code);
     expect(snapshot.editor.editors[0].marks?.lines).toEqual([]);
   });
+  it('rejects focus when no line is highlighted', async () => {
+    await expect(prepare(['--focus'])).rejects.toThrow(
+      '--focus: no line is highlighted',
+    );
+  });
 });
