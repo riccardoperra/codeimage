@@ -162,15 +162,13 @@
   position: absolute;
   inset: 0 4px;
 }
-.inspector-root .inspector-control > div:not(.inspector-inline),
-.inspector-root .inspector-inline > div:first-child {
+.inspector-root .inspector-control > div {
   grid-template-columns: minmax(100px, 1fr) minmax(0, 1.5fr);
   min-height: 40px;
   padding: 2px 4px;
   align-items: center;
 }
-.inspector-root .inspector-control > div:not(.inspector-inline) > label,
-.inspector-root .inspector-inline > div:first-child > label {
+.inspector-root .inspector-control > div > label {
   padding-left: 0;
   height: auto;
   min-height: 36px;
@@ -179,8 +177,7 @@
   hyphens: none;
   word-break: normal;
 }
-.inspector-root .inspector-control > div:not(.inspector-inline) > div,
-.inspector-root .inspector-inline > div:first-child > div {
+.inspector-root .inspector-control > div > div {
   min-width: 0;
   align-items: center;
 }
@@ -257,26 +254,13 @@
   flex-shrink: 0;
   border-radius: 6px;
 }
-.inspector-root .inspector-inline-content {
-  display: grid;
-  gap: 12px;
-  padding: 12px;
-  margin: 8px 4px 12px;
-  background: var(--inspector-app);
-  border-radius: 16px;
-}
-.inspector-root .inspector-inline-content > div {
-  min-width: 0;
-}
-.inspector-root .inspector-color-picker div[title][role='button'] {
+.inspector-color-picker div[title][role='button'] {
   cursor: pointer;
   min-height: 40px;
   min-width: 40px;
 }
-.inspector-root
-  .inspector-color-picker
-  div[title][role='button']:focus-visible {
-  outline: 2px solid var(--inspector-accent);
+.inspector-color-picker div[title][role='button']:focus-visible {
+  outline: 2px solid Highlight;
   outline-offset: 3px;
 }
 .inspector-root .inspector-more-trigger {
@@ -298,23 +282,6 @@
   color: var(--inspector-muted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
-}
-.inspector-root .inspector-font-list {
-  max-height: 240px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-.inspector-root .inspector-window-option {
-  display: grid;
-  width: 100%;
-  gap: 8px;
-}
-.inspector-root .inspector-window-option > span {
-  font-size: 13px;
-}
-.inspector-root .inspector-window-option [data-preview] {
-  pointer-events: none;
-  width: 100%;
 }
 .inspector-root .inspector-sheet-handle,
 .inspector-root .inspector-quick-controls {
@@ -375,7 +342,6 @@
   .inspector-root .inspector-themes {
     min-height: 436px;
   }
-  .inspector-root .inspector-inline-content input,
   .inspector-root .inspector-control input:not([type='checkbox']) {
     min-height: 40px;
     font-size: 16px;
@@ -413,12 +379,10 @@
   .inspector-root .inspector-switch {
     min-height: 40px;
   }
-  .inspector-root .inspector-control > div:not(.inspector-inline) > label,
-  .inspector-root .inspector-inline > div:first-child > label {
+  .inspector-root .inspector-control > div > label {
     min-height: 40px;
   }
-  .inspector-root .inspector-control > div:not(.inspector-inline),
-  .inspector-root .inspector-inline > div:first-child {
+  .inspector-root .inspector-control > div {
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -438,6 +402,28 @@
   margin-bottom: 0;
 }
 
+/*
+ * Production gives the window style trigger a full row. Beside its label the
+ * preview clips, so that its settings icon stays inside the field.
+ */
+.inspector-root [data-control='window.style'] [aria-haspopup='dialog'] {
+  min-width: 0;
+}
+.inspector-root
+  [data-control='window.style']
+  [aria-haspopup='dialog']
+  > :first-child {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Overlays render outside the root, so these rules are global. */
+[data-popper-positioner] [data-keys]:focus-visible,
+.inspector-root [data-keys]:focus-visible {
+  outline: 2px solid Highlight;
+  outline-offset: 2px;
+}
+
 .inspector-select-portal {
   animation: none !important;
   transition: none !important;
@@ -451,8 +437,4 @@
 .inspector-root .inspector-panel [data-cui='segmentedControlIndicator'] {
   animation: none;
   transition: none;
-}
-
-.inspector-root .inspector-color-picker div:has(> div[title]) {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
 }

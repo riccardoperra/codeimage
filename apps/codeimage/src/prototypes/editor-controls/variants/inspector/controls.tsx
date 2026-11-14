@@ -1,34 +1,24 @@
-import {getRootEditorStore} from '@codeimage/store/editor';
-import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {RangeField} from '@codeimage/ui';
 import {
   Button,
-  Listbox,
   NumberField,
-  RadioList,
-  RadioListItem,
   Select,
-  TextField,
   createSelectOptions,
   themeTokens,
   themeVars as kitVars,
 } from '@codeui/kit';
-import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {Collapsible} from '@kobalte/core/collapsible';
 import {Switch} from '@kobalte/core/switch';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {For, Show, createSignal, onCleanup, onMount} from 'solid-js';
-import type {ParentProps} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
-import {provideState} from 'statebuilder';
+import {Show, createSignal, onCleanup, onMount} from 'solid-js';
+import type {JSX, ParentProps} from 'solid-js';
+import {AspectRatioPicker} from '../../../../components/PropertyEditor/controls/AspectRatioPicker/AspectRatioPicker';
 import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls/ColorPicker/ColorPicker';
-import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
-import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
 import {
   PanelRow,
   TwoColumnPanelRow,
 } from '../../../../components/PropertyEditor/PanelRow';
+import {SidebarPopover} from '../../../../components/PropertyEditor/SidebarPopover/SidebarPopover';
+import {SidebarPopoverTitle} from '../../../../components/PropertyEditor/SidebarPopover/SidebarPopoverTitle';
 import type {
   BackgroundControl,
   Control,
@@ -70,56 +60,53 @@ function Toggle(props: {
   );
 }
 
-function Inline(
+/**
+ * A row whose picker opens over the panel, in the production SidebarPopover
+ * the app's own pickers use. The panel places it (see overlays.ts).
+ */
+function Overlay(
   props: ParentProps<{
     id: string;
     label: string;
+    title: string;
     value: string;
     swatch?: string;
   }>,
 ) {
   const [open, setOpen] = createSignal(false);
-  let trigger: HTMLButtonElement | undefined;
   return (
-    <Collapsible
-      class="inspector-inline"
-      open={open()}
-      onOpenChange={setOpen}
-      onKeyDown={event => {
-        if (event.key !== 'Escape' || !open()) return;
-        event.stopPropagation();
-        setOpen(false);
-        trigger?.focus();
-      }}
-    >
-      <PanelRow for={props.id} label={props.label}>
-        <TwoColumnPanelRow>
-          <Collapsible.Trigger
-            as={Button}
-            id={props.id}
-            class="inspector-inline-trigger"
-            size="sm"
-            theme="secondary"
-            variant="ghost"
-            ref={element => {
-              trigger = element;
-            }}
-          >
-            <Show when={props.swatch}>
-              <span
-                class="inspector-value-swatch"
-                style={{background: props.swatch}}
-              />
-            </Show>
-            <span class="inspector-inline-value">{props.value}</span>
-            <span aria-hidden="true">⌄</span>
-          </Collapsible.Trigger>
-        </TwoColumnPanelRow>
-      </PanelRow>
-      <Collapsible.Content class="inspector-inline-content">
-        {props.children}
-      </Collapsible.Content>
-    </Collapsible>
+    <PanelRow for={props.id} label={props.label}>
+      <TwoColumnPanelRow>
+        <SidebarPopover
+          open={open()}
+          onOpenChange={setOpen}
+          input={(trigger: JSX.HTMLAttributes<HTMLButtonElement>) => (
+            <Button
+              {...trigger}
+              id={props.id}
+              class="inspector-inline-trigger"
+              size="sm"
+              theme="secondary"
+              variant="ghost"
+            >
+              <Show when={props.swatch}>
+                <span
+                  class="inspector-value-swatch"
+                  style={{background: props.swatch}}
+                />
+              </Show>
+              <span class="inspector-inline-value">{props.value}</span>
+              <span aria-hidden="true">⌄</span>
+            </Button>
+          )}
+        >
+          <SidebarPopoverTitle onClose={() => setOpen(false)}>
+            {props.title}
+          </SidebarPopoverTitle>
+          {props.children}
+        </SidebarPopover>
+      </TwoColumnPanelRow>
+    </PanelRow>
   );
 }
 
@@ -182,14 +169,15 @@ function ColorPickerContent(props: {control: BackgroundControl}) {
 
 function Background(props: {control: BackgroundControl}) {
   return (
-    <Inline
+    <Overlay
       id="inspector-background"
       label="Background"
+      title="Background"
       value="Color & image"
       swatch={props.control.value()}
     >
       <ColorPickerContent control={props.control} />
-    </Inline>
+    </Overlay>
   );
 }
 
@@ -235,161 +223,48 @@ function Choice(props: {control: SelectControl | SegmentedControl}) {
 }
 
 function Ratio(props: {control: SelectControl}) {
+  // The model keys Auto as 'null'; the production picker takes null.
   return (
-    <Inline
-      id="inspector-ratio"
-      label={props.control.label()}
-      value={
-        props.control
-          .options()
-          .find(option => option.key === props.control.value())?.label ?? 'Auto'
-      }
-    >
-      <RadioList
-        value={props.control.value()}
-        onChange={props.control.set}
-        aria-label="Aspect ratio"
-        orientation="vertical"
-        size="sm"
-      >
-        <For each={props.control.options()}>
-          {option => <RadioListItem value={option.key} label={option.label} />}
-        </For>
-      </RadioList>
-    </Inline>
-  );
-}
-
-function WindowPicker() {
-  const terminal = getTerminalState();
-  const editor = getRootEditorStore();
-  const labels = {
-    macOs: 'macOS',
-    macOsGrayTheme: 'Gray',
-    macOsOutlineTheme: 'Outline',
-    windows: 'Windows',
-  };
-  const selected = () =>
-    AVAILABLE_TERMINAL_THEMES.keys.find(key => key === terminal.state.type) ??
-    'macOs';
-  return (
-    <Inline
-      id="inspector-window-style"
-      label="Window style"
-      value={labels[selected()]}
-    >
-      <RadioList
-        value={terminal.state.type}
-        onChange={terminal.setType}
-        aria-label="Window style"
-        orientation="vertical"
-        size="sm"
-      >
-        <For each={AVAILABLE_TERMINAL_THEMES.keys}>
-          {key => (
-            <div class="inspector-window-option">
-              <RadioListItem value={key} label={labels[key]} />
-              <Dynamic
-                component={AVAILABLE_TERMINAL_THEMES.entries[key].component}
-                lite
-                preview
-                showTab
-                readonlyTab
-                showHeader
-                showWatermark={false}
-                showGlassReflection={false}
-                shadow={null}
-                background={terminal.state.background}
-                textColor={terminal.state.textColor}
-                accentVisible={terminal.state.accentVisible}
-                alternativeTheme={terminal.state.alternativeTheme}
-                opacity={100}
-                borderType={null}
-                themeId={editor.state.options.themeId}
-              />
-            </div>
-          )}
-        </For>
-      </RadioList>
-    </Inline>
-  );
-}
-
-function FontPicker() {
-  const editor = getRootEditorStore();
-  const config = provideState(EditorConfigStore);
-  const [query, setQuery] = createSignal('');
-  const [source, setSource] = createSignal<'web' | 'system'>('web');
-  const list = createFontPickerListboxProps({
-    onEsc: () => document.getElementById('inspector-font-family')?.focus(),
-    get value() {
-      return editor.state.options.fontId;
-    },
-    onChange: editor.actions.setFontId,
-    get items() {
-      return config.get.fonts
-        .filter(font => font.name.toLowerCase().includes(query().toLowerCase()))
-        .map(font => ({label: font.name, value: font.id}));
-    },
-  });
-  return (
-    <Inline
-      id="inspector-font-family"
-      label="Font family"
-      value={editor.computed.selectedFont()?.name ?? 'Choose font'}
-    >
-      <SegmentedField
-        value={source()}
-        onChange={setSource}
-        items={[
-          {label: 'Web fonts', value: 'web'},
-          {label: 'System fonts', value: 'system'},
-        ]}
-        size="sm"
-        adapt
-      />
-      <Show
-        when={source() === 'web'}
-        fallback={
-          <FontSystemPicker
-            value={editor.state.options.fontId}
-            onChange={editor.actions.setFontId}
-            onEsc={() =>
-              document.getElementById('inspector-font-family')?.focus()
-            }
-          />
-        }
-      >
-        <TextField
-          aria-label="Search fonts"
-          placeholder="Search fonts…"
-          ref={element => element.setAttribute('aria-label', 'Search fonts')}
-          value={query()}
-          onChange={setQuery}
-          size="sm"
+    <PanelRow for="inspector-ratio" label={props.control.label()}>
+      <TwoColumnPanelRow>
+        <AspectRatioPicker
+          value={
+            props.control.value() === 'null' ? null : props.control.value()
+          }
+          onChange={ratio => props.control.set(String(ratio))}
         />
-        <div class="inspector-font-list">
-          <Listbox {...list} autoFocus={false} aria-label="Font family" />
-        </div>
-        <Show when={!list.options.length}>
-          <p>No fonts match.</p>
-        </Show>
-      </Show>
-    </Inline>
+      </TwoColumnPanelRow>
+    </PanelRow>
   );
 }
 
 function renderCustom(control: CustomControl) {
-  if (control.id === 'window.style') return <WindowPicker />;
-  if (control.id === 'font.family') return <FontPicker />;
+  // The model binds the production TerminalControlField and FontPicker.
+  if (control.id === 'window.style')
+    return (
+      <PanelRow for="inspector-window-style" label="Window style">
+        <TwoColumnPanelRow>
+          <control.Control />
+        </TwoColumnPanelRow>
+      </PanelRow>
+    );
+  if (control.id === 'font.family')
+    return (
+      <PanelRow for="inspector-font-family" label="Font family">
+        <TwoColumnPanelRow>
+          <control.Control />
+        </TwoColumnPanelRow>
+      </PanelRow>
+    );
   return (
-    <Inline
+    <Overlay
       id="inspector-background-image"
       label={control.label()}
+      title={control.label()}
       value="Choose image"
     >
       <control.Control />
-    </Inline>
+    </Overlay>
   );
 }
 

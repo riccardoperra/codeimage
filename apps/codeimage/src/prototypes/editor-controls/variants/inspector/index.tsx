@@ -8,6 +8,7 @@ import {Toolbar} from '../../../../components/Toolbar/Toolbar';
 import type {VariantMeta, VariantProps} from '../../contract';
 import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
+import {createOverlayPlacement} from './overlays';
 import './inspector.css';
 
 export const meta: VariantMeta = {
@@ -27,6 +28,11 @@ const primaryControls: Record<SectionId, readonly ControlId[]> = {
   font: ['font.family', 'font.weight'],
 };
 type PanelId = SectionId | 'themes';
+
+// Solid routes delegated events from a portal to its owner, so the Escape that
+// closes an overlay would also reach the section around its trigger.
+const fromPortal = (event: KeyboardEvent) =>
+  !(event.currentTarget as Node).contains(event.target as Node);
 
 // The arrow keys, Home and End move between the section headers.
 function moveBetweenHeaders(event: KeyboardEvent) {
@@ -64,7 +70,7 @@ function Section(
       open={props.open}
       onOpenChange={props.onOpenChange}
       onKeyDown={event => {
-        if (event.key !== 'Escape' || !props.open) return;
+        if (event.key !== 'Escape' || !props.open || fromPortal(event)) return;
         event.stopPropagation();
         props.onOpenChange(false);
         trigger?.focus();
@@ -118,7 +124,12 @@ export default function Inspector(props: VariantProps) {
     matchMedia('(max-width: 768px)').matches,
   );
   let panel: HTMLElement | undefined;
+  let canvas: HTMLElement | undefined;
   let handle: HTMLButtonElement | undefined;
+  const overlayInset = createOverlayPlacement(
+    () => panel,
+    () => canvas,
+  );
   let drag:
     | {pointerId: number; startY: number; height: number; time: number}
     | undefined;
@@ -176,11 +187,20 @@ export default function Inspector(props: VariantProps) {
         <main
           class="inspector-canvas"
           aria-label="Image preview"
+          ref={element => {
+            canvas = element;
+          }}
           onPointerDown={() => {
             if (mobile() && sheet() === 'tall') setSheet('short');
           }}
         >
-          <div class="inspector-stage">
+          <div
+            class="inspector-stage"
+            style={{
+              'padding-right': `${overlayInset().right}px`,
+              'padding-bottom': `${overlayInset().bottom}px`,
+            }}
+          >
             <props.stage.Canvas />
           </div>
           <div class="inspector-frame-actions">
@@ -299,7 +319,7 @@ export default function Inspector(props: VariantProps) {
           <div
             class="inspector-panel-scroll"
             onKeyDown={event => {
-              if (event.key !== 'Escape') return;
+              if (event.key !== 'Escape' || fromPortal(event)) return;
               event.stopPropagation();
               setSheet('short');
               handle?.focus();
@@ -352,6 +372,7 @@ export default function Inspector(props: VariantProps) {
                     onKeyDown={event => {
                       if (
                         event.key !== 'Escape' ||
+                        fromPortal(event) ||
                         !moreSections().has(section.id)
                       )
                         return;
