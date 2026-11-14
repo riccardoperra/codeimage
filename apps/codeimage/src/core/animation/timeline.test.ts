@@ -48,8 +48,8 @@ test('holds each step and switches the active step halfway through a transition'
   const timeline = planTimeline([step('a'), step('b', 300)], options);
   assert.deepEqual(order(timeline), [
     ['hold', 0, 500, null],
-    ['transition', 0, 450, 0],
-    ['transition', 1, 451, 450],
+    ['transition', 0, 451, 0],
+    ['transition', 1, 450, 451],
     ['hold', 1, 300, null],
   ]);
 });
@@ -60,11 +60,11 @@ test('leaves out holds of 0 ms', () => {
     options,
   );
   assert.deepEqual(order(timeline), [
-    ['transition', 0, 450, 0],
-    ['transition', 1, 451, 450],
+    ['transition', 0, 451, 0],
+    ['transition', 1, 450, 451],
     ['hold', 1, 500, null],
-    ['transition', 1, 450, 0],
-    ['transition', 2, 451, 450],
+    ['transition', 1, 451, 0],
+    ['transition', 2, 450, 451],
   ]);
 });
 
@@ -162,6 +162,29 @@ test('a frame that grows stays centered and ends where each hold puts it', () =>
       `center ${center.x},${center.y} at ${progress}`,
     );
   }
+});
+
+test('a single step is one hold', () => {
+  const timeline = planTimeline([step('a', 500, natural(400, 200))], options);
+  assert.deepEqual(order(timeline), [['hold', 0, 500, null]]);
+  assert.deepEqual([timeline.width, timeline.height], [400, 200]);
+});
+
+test('a single step held for 0 ms has no scenes', () => {
+  const timeline = planTimeline([step('a', 0)], options);
+  assert.deepEqual(order(timeline), []);
+});
+
+test('the first frame of a 1 ms transition shows the step it leaves', () => {
+  const timeline = planTimeline([step('a'), step('b', 300)], {
+    ...options,
+    transitionMs: 1,
+  });
+  assert.deepEqual(order(timeline), [
+    ['hold', 0, 500, null],
+    ['transition', 0, 1, 0],
+    ['hold', 1, 300, null],
+  ]);
 });
 
 test('an export target keeps its frame and moves the window', () => {

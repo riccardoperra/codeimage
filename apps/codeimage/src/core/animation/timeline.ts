@@ -138,7 +138,8 @@ export function planTimeline(
 
   const scenes: TimelineScene[] = [];
   const css: string[] = [];
-  const halfMs = Math.floor(transitionMs / 2);
+  // Rounding up keeps the first frame of a 1 ms transition on its first step.
+  const halfMs = Math.ceil(transitionMs / 2);
   for (const [index, step] of steps.entries()) {
     scenes.push({
       kind: 'hold',
