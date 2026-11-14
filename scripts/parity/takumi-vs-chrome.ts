@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {extname, join} from 'node:path';
 import {parseArgs} from 'node:util';
@@ -186,11 +187,12 @@ async function fontFace(font: SnapshotFont): Promise<string> {
 async function renderInChrome(
   browser: Browser,
   markup: SnapshotMarkup,
+  output: {width: number; height: number},
 ): Promise<Buffer> {
   const page = await browser.newPage({viewport: null});
   try {
     const faces = await Promise.all(markup.fonts.map(fontFace));
-    const head = [...faces, ...markup.css]
+    const head = [...faces, ...markup.naturalCss]
       .map(css => `<style>${css}</style>`)
       .join('');
     await page.setContent(
@@ -200,10 +202,20 @@ async function renderInChrome(
       ),
     );
     await page.evaluate(() => document.fonts.ready);
-    return await page
-      .locator('body > div > div')
-      .first()
-      .screenshot({omitBackground: true, animations: 'disabled'});
+    const clip = await page.locator('[data-snapshot-frame]').evaluate(el => {
+      const {x, y} = el.getBoundingClientRect();
+      return {x, y, width: el.clientWidth, height: el.clientHeight};
+    });
+    assert.deepEqual(
+      output,
+      {width: clip.width * SCALE, height: clip.height * SCALE},
+      'Node output must match the natural Chrome client box times scale',
+    );
+    return await page.screenshot({
+      clip,
+      omitBackground: true,
+      animations: 'disabled',
+    });
   } finally {
     await page.close();
   }
@@ -221,11 +233,14 @@ async function main() {
       if (args.only && !cell.name.includes(args.only)) continue;
       const markup = await snapshotMarkup(cell.document);
       const takumiBytes = (await renderSnapshot(cell.document)) as Uint8Array;
-      const chromeBytes = await renderInChrome(browser, markup);
+      const {width, height} = PNG.sync.read(Buffer.from(takumiBytes));
+      const chromeBytes = await renderInChrome(browser, markup, {
+        width,
+        height,
+      });
       const base = join(args.out, slug(cell.name));
       await writeFile(`${base}-takumi.png`, takumiBytes);
       await writeFile(`${base}-chrome.png`, chromeBytes);
-      const {width, height} = PNG.sync.read(chromeBytes);
       const percent = await diffPng(
         `${base}-chrome.png`,
         `${base}-takumi.png`,

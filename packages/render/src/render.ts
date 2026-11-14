@@ -52,6 +52,9 @@ export interface SnapshotMarkup {
   document: SnapshotDocument;
   html: string;
   css: string[];
+  // Browser layout, before Takumi's frame sizing overrides.
+  naturalCss: string[];
+  size: FrameSize;
   // The UI and code fonts the markup names. Fallbacks are not listed.
   fonts: SnapshotFont[];
   // The fallback chain every measure and render uses.
@@ -178,19 +181,27 @@ export async function snapshotMarkup(
   const {fontId} = document.editor.options;
   await registerAppFont(fontId, frame.fontFamily);
   // Like the web frame, the frame is at least as wide as its code, so no line
-  // wraps, and it is sized to whole CSS pixels like the editor's client size.
+  // wraps. The borderless frame's clientWidth/clientHeight round to the nearest
+  // CSS pixel before the web exporter applies the scale.
+  const scale = document.format === 'svg' ? 1 : document.scale;
   const content = await renderer.measure(html, {
     css: [...css, entry.frameSizeCss()],
     fontFamilies,
+    devicePixelRatio: scale,
   });
-  const size = {
-    width: Math.max(document.width ?? 0, Math.ceil(content.width)),
-    height: Math.ceil(content.height),
+  const layoutSize = {
+    width: Math.max(document.width ?? 0, content.width / scale),
+    height: content.height / scale,
   };
   return {
     document,
     html,
-    css: [...css, entry.frameSizeCss(size)],
+    css: [...css, entry.frameSizeCss(layoutSize)],
+    naturalCss: css,
+    size: {
+      width: Math.round(layoutSize.width),
+      height: Math.round(layoutSize.height),
+    },
     fonts: [...uiFonts, ...fontsFor(fontId, frame.fontFamily)],
     fontFamilies,
     images: frame.backgroundImage
@@ -202,13 +213,15 @@ export async function snapshotMarkup(
 export async function renderSnapshot(
   input: SnapshotInput,
 ): Promise<Uint8Array | string> {
-  const {document, html, css, images, fontFamilies} =
+  const {document, html, css, images, fontFamilies, size} =
     await snapshotMarkup(input);
   const {renderer} = await getRuntime();
   if (document.format === 'svg') {
-    return renderer.renderSvg(html, {css, images, fontFamilies});
+    return renderer.renderSvg(html, {css, images, fontFamilies, ...size});
   }
   const image = await renderer.render(html, {
+    width: Math.floor(size.width * document.scale),
+    height: Math.floor(size.height * document.scale),
     css,
     images,
     fontFamilies,
