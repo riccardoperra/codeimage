@@ -4,11 +4,12 @@ import type {
   Cell,
   GlyphWidths,
   Gutter,
-  MarkKind,
+  Mark,
   MarkTransition,
   Scene,
   Step,
   StepBox,
+  Token,
   TokenTransition,
   Transition,
 } from './model';
@@ -17,8 +18,6 @@ import type {
 const TAB_SIZE = 4;
 
 type Placed<T> = {item: T; cell: Cell};
-type Token = {key: string; text: string; classes: string};
-type Mark = {key: string; mark: MarkKind};
 
 type CodeToken = {
   content: string;
