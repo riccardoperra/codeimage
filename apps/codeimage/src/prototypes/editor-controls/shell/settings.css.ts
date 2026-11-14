@@ -41,7 +41,8 @@ export const cards = style({
 
 export const card = style({position: 'relative', display: 'flex'});
 
-// An island with no border. The selected card gets a ring, as the theme cards do.
+// An island with no border, on the input surface in both modes: the dialog is
+// white in light mode. The selected card gets a ring, as the theme cards do.
 export const cardLabel = style({
   display: 'flex',
   flex: 1,
@@ -63,7 +64,6 @@ export const cardLabel = style({
       outline: `2px solid ${c.primary}`,
       outlineOffset: '2px',
     },
-    ...withThemeMode({light: {background: themeVars.backgroundColor.white}}),
   },
   '@media': {
     '(prefers-reduced-motion: reduce)': {
@@ -87,6 +87,10 @@ export const preview = style({
   borderRadius: '10px',
   background: c.panel.background,
   color: c.baseText,
+  // White on the grey card, so the miniature reads as a screen.
+  selectors: {
+    ...withThemeMode({light: {background: themeVars.backgroundColor.white}}),
+  },
   '@media': {
     'screen and (max-width: 560px)': {
       flex: 'none',
