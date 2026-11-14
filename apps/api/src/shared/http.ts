@@ -8,7 +8,9 @@ declare module 'fastify' {
     principal: Principal;
   }
 
-  interface FastifyContextConfig extends OperationConfig {}
+  interface FastifyContextConfig {
+    auth?: OperationConfig['auth'];
+  }
 }
 
 export function actorOf(request: FastifyRequest): Actor {

@@ -1,4 +1,3 @@
-import type {AutoloadPluginOptions} from '@fastify/autoload';
 import AutoLoad from '@fastify/autoload';
 import identity from './modules/identity/index.js';
 import project from './modules/project/index.js';
@@ -17,25 +16,18 @@ export const options: FastifyServerOptions = {
   logger: {redact: ['req.headers.authorization']},
 };
 
-const __dirname = import.meta.dirname;
-
 export type AppOptions = {
   authProvider?: FastifyPluginAsync;
   config?: Partial<Config>;
-  // Place your custom options for app below here.
-} & Partial<AutoloadPluginOptions>;
+};
 
 const app: FastifyPluginAsync<AppOptions> = async (
   fastify,
   opts,
 ): Promise<void> => {
   await fastify.register(configPlugin, {overrides: opts.config});
-
-  // This loads all plugins defined in plugins
-  // those should be support plugins that are reused
-  // through your application
   await fastify.register(AutoLoad, {
-    dir: join(__dirname, 'plugins'),
+    dir: join(import.meta.dirname, 'plugins'),
     options: opts,
     forceESM: true,
     ignorePattern: /\.d\.[cm]?ts$/,

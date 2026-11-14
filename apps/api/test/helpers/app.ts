@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, {type FastifyInstance} from 'fastify';
 import fp from 'fastify-plugin';
 import type {TestContext} from 'vitest';
 import App, {type AppOptions, options as serverOptions} from '../../src/app.js';
@@ -14,7 +14,7 @@ export async function build(
   await app.register(fp(App), {
     authProvider:
       as === null
-        ? fp(async app => {
+        ? fp(async (app: FastifyInstance) => {
             app.decorate('authenticate', async () => {
               throw new Error('no session');
             });

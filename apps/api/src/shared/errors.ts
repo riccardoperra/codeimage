@@ -1,12 +1,12 @@
 export type ErrorKind =
-  | 'invalid' // 400
-  | 'unauthenticated' // 401
-  | 'forbidden' // 403
-  | 'not_found' // 404
-  | 'conflict' // 409
-  | 'unprocessable' // 422
-  | 'rate_limited' // 429
-  | 'internal'; // 500, message masked in the response
+  | 'invalid'
+  | 'unauthenticated'
+  | 'forbidden'
+  | 'not_found'
+  | 'conflict'
+  | 'unprocessable'
+  | 'rate_limited'
+  | 'internal';
 
 export class AppError extends Error {
   override readonly name = 'AppError';

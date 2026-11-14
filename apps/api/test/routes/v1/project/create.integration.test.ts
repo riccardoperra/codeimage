@@ -1,9 +1,6 @@
 import type {User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, expect, test} from 'vitest';
-import type {
-  ProjectCreateRequest,
-  ProjectCreateResponse,
-} from '../../../../src/modules/project/project.contract.js';
+import type {ProjectCreateResponse} from '../../../../src/modules/project/project.contract.js';
 
 import {build} from '../../../helpers/app.js';
 import {clearAllSeeds, client, userSeed} from '../../../helpers/seed.js';
@@ -24,7 +21,7 @@ test<TestContext>('POST /v1/project/ [Create Project] -> 200', async context => 
   const fastify = await build(context);
   const userId = context.user.id;
 
-  const data: ProjectCreateRequest = {
+  const data = {
     name: 'Data',
     frame: {
       background: '#fff',
