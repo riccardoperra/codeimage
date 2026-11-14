@@ -34,16 +34,18 @@ export type Transition<T, Moved = unknown> =
   | (T & {kind: 'enter'; to: Cell})
   | (T & {kind: 'leave'; from: Cell});
 
+// A run of code without whitespace, or a line number.
+export type Token = {key: string; text: string; classes: string};
+
 // `fromClasses` names the classes a kept token had, when the step changes its
 // highlighting.
-export type TokenTransition = Transition<
-  {key: string; text: string; classes: string},
-  {fromClasses?: string}
->;
+export type TokenTransition = Transition<Token, {fromClasses?: string}>;
 
 export type MarkKind = LineMark['kind'];
 
-export type MarkTransition = Transition<{key: string; mark: MarkKind}>;
+export type Mark = {key: string; mark: MarkKind};
+
+export type MarkTransition = Transition<Mark>;
 
 // The size and state of one step's code box, in cells.
 export type StepBox = {
