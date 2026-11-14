@@ -1,0 +1,14 @@
+
+> @codeimage/api@0.6.0 test:unit /Users/riccardoperra/.t3/worktrees/codeimage/t3-3ebc7362-749891be7d5422a9/apps/api
+> RUN_TEST=unit vitest run --maxWorkers=2
+
+
+ RUN  v4.1.2 /Users/riccardoperra/.t3/worktrees/codeimage/t3-3ebc7362-749891be7d5422a9/apps/api
+
+[dotenv@17.3.1] injecting env (0) from .env.test -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+
+ Test Files  11 passed (11)
+      Tests  28 passed (28)
+   Start at  13:32:17
+   Duration  23.60s (transform 2.10s, setup 0ms, import 16.84s, tests 3.84s, environment 4ms)
+

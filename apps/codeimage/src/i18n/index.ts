@@ -1,6 +1,7 @@
 import {secrets} from './secrets';
 import {rendering} from './rendering';
 import {altText} from './altText';
+import {lineMarksLocale} from './lineMarks';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
@@ -102,6 +103,7 @@ export const locale = {
     ...exportTabs.it,
     ...rendering.it,
     ...altText.it,
+    ...lineMarksLocale.it,
   },
   en: {
     ...secrets.en,
@@ -192,6 +194,7 @@ export const locale = {
     ...exportTabs.en,
     ...rendering.en,
     ...altText.en,
+    ...lineMarksLocale.en,
   },
   de: {
     ...secrets.de,
@@ -283,6 +286,7 @@ export const locale = {
     ...exportTabs.de,
     ...rendering.de,
     ...altText.de,
+    ...lineMarksLocale.de,
   },
   es: {
     ...secrets.es,
@@ -374,6 +378,7 @@ export const locale = {
     ...exportTabs.es,
     ...rendering.es,
     ...altText.es,
+    ...lineMarksLocale.es,
   },
 };
 
