@@ -6,6 +6,7 @@ import {children, createMemo} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {omitProps} from 'solid-use/props';
 import {CodeImageLogoV2} from '../../Icons/CodeImageLogoV2';
+import {createTabTheme} from '../Tabs/createTabTheme';
 import * as styles from '../terminal.css';
 import type {BaseTerminalProps} from '../TerminalHost';
 
@@ -26,6 +27,7 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
   );
 
   const resolvedChildren = children(() => props.children);
+  const tabTheme = createTabTheme(() => props.themeId);
 
   return (
     <Dynamic component={terminal()} {...omitProps(props, ['type'])}>
@@ -33,7 +35,13 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
 
       <FadeInOutTransition show={props.showWatermark}>
         <Box class={styles.watermark}>
-          <CodeImageLogoV2 width={125} withGradient={false} />
+          {/* The logo's light rule also matches on the SVG itself, because
+              Takumi draws inline SVG apart from the terminal around it. */}
+          <CodeImageLogoV2
+            width={125}
+            withGradient={false}
+            data-theme-mode={tabTheme().darkMode ? 'dark' : 'light'}
+          />
         </Box>
       </FadeInOutTransition>
     </Dynamic>
