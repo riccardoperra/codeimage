@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'vitest';
 import {parseHtml, styleAt} from './test-utils';
+import type {Size} from './model';
 import {
   frameRules,
   planTimeline,
@@ -95,17 +96,28 @@ test('every animation a scene plays has its keyframes', () => {
   }
 });
 
-// Where the frame of `scene` is at `timeMs` into the scene, with its center.
-function frameAt(timeline: Timeline, scene: TimelineScene, timeMs: number) {
+// The style frameRules gives the frame or its window at `timeMs` into `scene`.
+function styleOf(
+  timeline: Timeline,
+  scene: TimelineScene,
+  element: 'frame' | 'window',
+  timeMs: number,
+) {
   const rules = frameRules(scene, {frame: '#frame', window: '#window'});
   const declarations = Array.from(
-    rules.matchAll(/#frame\{([^}]*)\}/g),
+    rules.matchAll(new RegExp(`#${element}\\{([^}]*)\\}`, 'g')),
     ([, body]) => body,
   ).join(';');
-  const [frame] = parseHtml(`<div style="${declarations}"></div>`).children;
-  const {translateX, translateY, width, height} = styleAt(
-    frame,
-    timeline.css,
+  const [node] = parseHtml(`<div style="${declarations}"></div>`).children;
+  return styleAt(node, timeline.css, timeMs);
+}
+
+// Where the frame of `scene` is at `timeMs` into the scene, with its center.
+function frameAt(timeline: Timeline, scene: TimelineScene, timeMs: number) {
+  const {translateX, translateY, width, height} = styleOf(
+    timeline,
+    scene,
+    'frame',
     timeMs,
   );
   return {
@@ -205,4 +217,142 @@ test('an export target keeps its frame and moves the window', () => {
   assert.ok(early.kind === 'transition' && early.frame.kind === 'window');
   assert.deepEqual(early.frame.size, {width: 1600, height: 900});
   assert.deepEqual([early.frame.from, early.frame.to], [small, fitted]);
+});
+
+const targetStep = (size: Size, window: WindowPlacement) =>
+  step('a', 500, {size, window});
+
+// Centers a window in the frame inside its padding, scaled down to fit, the
+// way an export target places it.
+function fitted(
+  size: Size,
+  padding: number,
+  [width, height]: readonly [number, number],
+) {
+  const area = {
+    width: size.width - 2 * padding,
+    height: size.height - 2 * padding,
+  };
+  const scale = Math.min(1, area.width / width, area.height / height);
+  return {
+    left: padding + (area.width - width * scale) / 2,
+    top: padding + (area.height - height * scale) / 2,
+    width,
+    height,
+    scale,
+  };
+}
+
+// The box the window of a two-step timeline shows at `progress` of its
+// transition, after its scale.
+function visibleWindowAt(timeline: Timeline, progress: number) {
+  const [, early, late] = timeline.scenes;
+  assert.ok(early.kind === 'transition' && late.kind === 'transition');
+  const timeMs = progress * options.transitionMs;
+  const scene = timeMs < late.offsetMs ? early : late;
+  const {left, top, width, height, scale} = styleOf(
+    timeline,
+    scene,
+    'window',
+    timeMs - scene.offsetMs,
+  );
+  return {left, top, width: width * scale, height: height * scale};
+}
+
+const centerOf = (box: {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}) => ({
+  x: box.left + box.width / 2,
+  y: box.top + box.height / 2,
+});
+
+test('a window that rescales stays centered inside the padding of its target frame', () => {
+  const square = {width: 1080, height: 1080};
+  const landscape = {width: 1600, height: 900};
+  const padding = 64;
+  for (const [size, from, to] of [
+    // One short line to two long ones.
+    [square, [480, 117], [2644, 139]],
+    // Two lines to 45.
+    [landscape, [480, 139], [480, 1101]],
+    // 60 short lines to two long ones.
+    [square, [480, 1438], [2644, 139]],
+  ] as const) {
+    const timeline = planTimeline(
+      [
+        targetStep(size, fitted(size, padding, from)),
+        targetStep(size, fitted(size, padding, to)),
+      ],
+      options,
+    );
+    for (const progress of [0.25, 0.5, 0.75]) {
+      const box = visibleWindowAt(timeline, progress);
+      const center = centerOf(box);
+      const label = `${to} at ${progress}: ${JSON.stringify(box)}`;
+      assert.ok(
+        Math.abs(center.x - size.width / 2) <= 0.01 &&
+          Math.abs(center.y - size.height / 2) <= 0.01,
+        label,
+      );
+      assert.ok(
+        box.left >= padding &&
+          box.top >= padding &&
+          box.left + box.width <= size.width - padding &&
+          box.top + box.height <= size.height - padding,
+        label,
+      );
+    }
+  }
+});
+
+test('a rescaling window moves its visible center on the easing path between its ends', () => {
+  const size = {width: 1600, height: 900};
+  const from = {left: 100, top: 100, width: 400, height: 200, scale: 1};
+  const to = {left: 500, top: 300, width: 2000, height: 1000, scale: 0.4};
+  const timeline = planTimeline(
+    [targetStep(size, from), targetStep(size, to)],
+    options,
+  );
+  const start = centerOf({...from, width: 400, height: 200});
+  const end = centerOf({...to, width: 800, height: 400});
+  for (const progress of [0, 0.25, 0.5, 0.75, 1]) {
+    const center = centerOf(visibleWindowAt(timeline, progress));
+    assert.ok(
+      Math.abs(center.x - (start.x + (end.x - start.x) * progress)) <= 0.01 &&
+        Math.abs(center.y - (start.y + (end.y - start.y) * progress)) <= 0.01,
+      `${JSON.stringify(center)} at ${progress}`,
+    );
+  }
+});
+
+test('a rescaling window starts and ends on the placements of its holds', () => {
+  const size = {width: 1080, height: 1080};
+  const from = fitted(size, 64, [480, 117]);
+  const to = fitted(size, 64, [2644, 139]);
+  const timeline = planTimeline(
+    [targetStep(size, from), targetStep(size, to)],
+    options,
+  );
+  const [, early, late] = timeline.scenes;
+  const placement = (scene: TimelineScene, timeMs: number) => {
+    const {left, top, width, height, scale} = styleOf(
+      timeline,
+      scene,
+      'window',
+      timeMs,
+    );
+    return {left, top, width, height, scale};
+  };
+  const rounded = (window: WindowPlacement) =>
+    Object.fromEntries(
+      Object.entries(window).map(([key, value]) => [
+        key,
+        Number(value.toFixed(6)),
+      ]),
+    );
+  assert.deepEqual(placement(early, 0), rounded(from));
+  assert.deepEqual(placement(late, late.durationMs), rounded(to));
 });

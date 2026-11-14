@@ -82,7 +82,8 @@ function keyframes(css: string) {
 
 const number = (value: string) => parseFloat(value);
 
-// A length is one number. A translation is two, as translateX and translateY.
+// A length is one number. A translation is two, as translateX and translateY,
+// and a scale is one, as scale.
 function numbers(property: string, value: string): Record<string, number> {
   const translation = value.match(/^translate\((-?[\d.]+)px,(-?[\d.]+)px\)$/);
   if (translation) {
@@ -91,6 +92,8 @@ function numbers(property: string, value: string): Record<string, number> {
       translateY: number(translation[2]),
     };
   }
+  const scale = value.match(/^scale\(([\d.e-]+)\)$/);
+  if (scale) return {scale: number(scale[1])};
   return /^-?[\d.]+(px)?$/.test(value) ? {[property]: number(value)} : {};
 }
 
@@ -125,7 +128,7 @@ export function styleAt(
     const from = numbers(property, before.values[property]);
     const to = numbers(property, after.values[property]);
     for (const [key, end] of Object.entries(to)) {
-      style[key] = Number((from[key] + (end - from[key]) * ratio).toFixed(3));
+      style[key] = Number((from[key] + (end - from[key]) * ratio).toFixed(6));
     }
   }
   return style;
