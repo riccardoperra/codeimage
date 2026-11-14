@@ -9,6 +9,7 @@ import {useNavigate} from '@solidjs/router';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component, JSX} from 'solid-js';
 import {createMemo, For, Match, Show, Switch} from 'solid-js';
+import {releaseDate} from '../../../components/WhatsNew/releaseDate';
 import {getWhatsNew, RELEASES} from '../../../state/whats-new';
 import type {HighlightId, LocatedHighlightId} from '../../../state/whats-new';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -379,7 +380,7 @@ export function createSettingSections(
     ),
     groups: () =>
       RELEASES.map(release => ({
-        title: `${release.title} · ${release.date}`,
+        title: `${release.title} · ${releaseDate(release)}`,
         rows: release.highlights.map(highlight => ({
           id: `news-${highlight.id}`,
           title: highlight.title,

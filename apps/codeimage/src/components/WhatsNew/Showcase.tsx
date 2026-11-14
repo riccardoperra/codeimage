@@ -3,6 +3,7 @@ import {createEffect, For, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES} from '../../state/whats-new';
 import {illustrations} from './illustrations';
+import {releaseDate} from './releaseDate';
 import * as styles from './whats-new.css';
 
 export function Showcase(props: {
@@ -26,7 +27,9 @@ export function Showcase(props: {
     >
       <div class={styles.sheet} data-whats-new="showcase">
         <header class={styles.hero}>
-          <span class={styles.tag}>{props.release.date}</span>
+          <time class={styles.tag} datetime={props.release.date}>
+            {releaseDate(props.release)}
+          </time>
           <h2 class={styles.heroTitle}>{props.release.title}</h2>
           <p class={styles.body}>New tools and choices for your editor.</p>
         </header>
