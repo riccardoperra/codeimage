@@ -1,4 +1,3 @@
-import {parseTabMarks} from '@codeimage/api/schemas';
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
@@ -108,7 +107,7 @@ export function createEditorsStore() {
           id: editor.id,
           code: editor.code,
           lineNumberStart: editor.lineNumberStart,
-          marks: parseTabMarks(editor.marks),
+          marks: editor.marks ?? {lines: [], focusedLines: []},
         }));
       return {
         options: {...state.options, ...persistedState.options},
@@ -120,7 +119,7 @@ export function createEditorsStore() {
             tab: {tabName: editor.tabName},
             id: editor.id,
             lineNumberStart: editor.lineNumberStart,
-            marks: parseTabMarks(editor.marks),
+            marks: editor.marks ?? {lines: [], focusedLines: []},
           };
         }),
       };
@@ -144,7 +143,7 @@ export function createEditorsStore() {
           tabName: editor.tab.tabName ?? '',
           id: editor.id,
           lineNumberStart: editor.lineNumberStart ?? 1,
-          marks: parseTabMarks(editor.marks),
+          marks: editor.marks ?? {lines: [], focusedLines: []},
         };
       }),
       options: {
@@ -255,7 +254,7 @@ export function createEditorsStore() {
             id: editor.id,
             code: editor.code,
             lineNumberStart: editor.lineNumberStart ?? 1,
-            marks: parseTabMarks(editor.marks),
+            marks: editor.marks ?? {lines: [], focusedLines: []},
           }) as EditorState,
       ),
     );

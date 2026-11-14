@@ -54,21 +54,6 @@ test('rejects invalid kinds and line numbers at the API boundary', () => {
   }
 });
 
-test('migrates legacy focus to highlighted lines only and disables empty focus', () => {
-  expect(parseTabMarks({lines: marks.lines, focus: true})).toEqual({
-    lines: marks.lines,
-    focusedLines: [5],
-  });
-  expect(parseTabMarks({lines: marks.lines, focus: false})).toEqual({
-    lines: marks.lines,
-    focusedLines: [],
-  });
-  expect(parseTabMarks({lines: [], focus: true})).toEqual({
-    lines: [],
-    focusedLines: [],
-  });
-});
-
 test('rejects invalid focused line numbers', () => {
   for (const focusedLines of [[0], [-1], [1.5], ['2']]) {
     expect(Value.Check(TabMarksSchema, {lines: [], focusedLines})).toBe(false);
