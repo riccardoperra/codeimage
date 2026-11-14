@@ -3,7 +3,8 @@ import {readFile, writeFile} from 'node:fs/promises';
 import {parseArgs, UsageError, USAGE} from './args';
 import {FLAGS} from './flags';
 import {renderSnapshot} from '@codeimage/render';
-import {buildSnapshot, parsePreset} from './snapshot';
+import {planImages} from './images';
+import {parsePreset} from './snapshot';
 import type {CodeInput} from './snapshot';
 
 async function readInput(path: string, prefix = '') {
@@ -42,7 +43,7 @@ async function main() {
     ? parsePreset(await readInput(args.preset, '--preset: '))
     : undefined;
   const files = args.files.length ? args.files : ['-'];
-  let inputs: CodeInput[] = [];
+  const inputs: CodeInput[] = [];
   for (const file of files) {
     inputs.push(
       file === '-'
@@ -50,20 +51,7 @@ async function main() {
         : {name: file, code: await readInput(file)},
     );
   }
-  for (const flag of FLAGS) {
-    if (flag.prepareInputs)
-      inputs = await flag.prepareInputs(inputs, args.values);
-  }
-  const snapshot = FLAGS.reduce(
-    (snapshot, flag) => flag.apply(snapshot, args.values),
-    await buildSnapshot({args, inputs, preset}),
-  );
-  let outputs = [{snapshot, path: args.output}];
-  for (const flag of FLAGS) {
-    const expand = flag.outputs;
-    if (expand)
-      outputs = outputs.flatMap(output => expand(output, args.values));
-  }
+  const outputs = await planImages(args, inputs, preset);
   for (const output of outputs) {
     const image = await renderSnapshot(output.snapshot);
     if (output.path === '-') {
