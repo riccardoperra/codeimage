@@ -8,9 +8,7 @@ import type {Stage} from '../stage';
 import {AaList} from './aa-list';
 import type {ThemeBrowser, ThemeMode} from './browser';
 import {createThemeBrowser} from './browser';
-import {CodeList} from './code';
 import {OrbList} from './orb';
-import {PaletteList} from './palette';
 import * as styles from './picker.css';
 import type {ThemeStyleId} from './style';
 import {WindowList} from './window';
@@ -21,10 +19,8 @@ export interface ThemeListProps {
 }
 
 const LISTS: Record<ThemeStyleId, Component<ThemeListProps>> = {
-  code: CodeList,
   orb: OrbList,
   aa: AaList,
-  palette: PaletteList,
   window: WindowList,
 };
 

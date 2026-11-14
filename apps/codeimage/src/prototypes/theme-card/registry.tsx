@@ -5,14 +5,12 @@ import {ThemePickerScreen} from './ThemePickerScreen';
 
 // A width a real panel would have, chosen per style.
 const ISLAND_WIDTH: Record<ThemeStyleId, number> = {
-  code: 360,
   orb: 360,
   aa: 320,
-  palette: 340,
   window: 360,
 };
 
-/** The same five picker bodies the layouts show, each alone beside the canvas. */
+/** The same three picker bodies the layouts show, each alone beside the canvas. */
 export const directions: readonly Variant[] = THEME_STYLES.map(style => ({
   name: style.name,
   axis: style.axis,

@@ -1,6 +1,6 @@
 # Editor controls prototype
 
-This folder holds several layouts of the editor screen and several ways to draw a theme, behind two pickers, so you can compare every pair on the real editor. It follows the `prototype` skill from [emilkowalski/skills](https://github.com/emilkowalski/skills). A second route, `../theme-card/`, shows the five theme pickers alone next to the canvas. Nothing in production imports from `prototypes/`. The only production change is two routes in `apps/codeimage/src/index.tsx`.
+This folder holds several layouts of the editor screen and several ways to draw a theme, behind two pickers, so you can compare every pair on the real editor. It follows the `prototype` skill from [emilkowalski/skills](https://github.com/emilkowalski/skills). A second route, `../theme-card/`, shows the three theme pickers alone next to the canvas. Nothing in production imports from `prototypes/`. The only production change is two routes in `apps/codeimage/src/index.tsx`.
 
 ## Run it
 
@@ -9,14 +9,14 @@ This folder holds several layouts of the editor screen and several ways to draw 
 
 Two pills sit at the top of the page. The first picks the layout, the second picks the theme style that every layout uses for its theme picker.
 
-| Pill        | Choices                             | Keys                                                   | URL parameter |
-| ----------- | ----------------------------------- | ------------------------------------------------------ | ------------- |
-| Layout      | Current, Inspector, Dock, Studio    | `1` to `4`, the left and right arrows, `R` to re-mount | `v`           |
-| Theme style | Code, Orb, Aa list, Palette, Window | `C`, `O`, `A`, `P`, `W`, or `[` and `]` to step        | `t`           |
+| Pill        | Choices                          | Keys                                                   | URL parameter |
+| ----------- | -------------------------------- | ------------------------------------------------------ | ------------- |
+| Layout      | Current, Inspector, Dock, Studio | `1` to `4`, the left and right arrows, `R` to re-mount | `v`           |
+| Theme style | Window, Orb, Aa list             | `W`, `O`, `A`, or `[` and `]` to step                  | `t`           |
 
 A reload keeps both choices. The keys do nothing while focus is in a field, a select, a list, a menu, a dialog or another composite widget, while a list or popup that the page opened is open, or while a modifier key is held. The theme list is the one list they reach: it keeps the arrows and Escape, and the digits and letters still switch the pills. Current renders today's production editor with its own theme panel, so the theme style pill is dimmed there.
 
-The page opens in the Orb style. Riccardo pointed at T3 Code's orb cards, and the three layouts were built around them.
+The page opens in the Window style, which Riccardo chose. Orb and Aa list stay as alternatives.
 
 The pills sit above the page and below the popovers and dialogs that the page opens. Where they would cover a control of the page, as on a narrow window, the harness starts the page under them.
 
@@ -66,22 +66,20 @@ The stage, from `stage.tsx`, holds the parts of the real editor that a layout pl
 
 `ThemePicker` is the theme picker in the style chosen in the second pill: search, the dark and light filter, and every theme. Place it where your layout shows themes, in a container with a definite height, and it fills it. Its optional props are `size` (`'md'` for the kit fields on touch layouts), `autofocus` (focus the selected theme on mount, for a tray or a sheet) and `onPick(theme, byKeyboard)`.
 
-`ThemeSwatch`, from `ThemeSwatch.tsx`, draws one theme as a small mark, for example in a button that shows the applied theme. Without a `variant` it draws the mark of the chosen style. The marks are `orb`, `syntax-orb`, `aa`, `palette`, and `window`. `palette` and `window` also take a `width`, in px or `fill`. With `fill`, `window` keeps the default frame's shape, about 5 to 4, and grows with its card.
+`ThemeSwatch`, from `ThemeSwatch.tsx`, draws one theme as a small mark, for example in a button that shows the applied theme. Without a `variant` it draws the mark of the chosen style. The marks are `syntax-orb`, `aa`, and `window`. `window` also takes a `width`, in px or `fill`. With `fill`, `window` keeps the default frame's shape, about 5 to 4, and grows with its card.
 
 The harness creates a new stage for each mount and keeps one model for the whole session. `registry.ts` lists the layouts in picker order. You do not edit it. It reads `meta` from your folder. `ModelDump.tsx`, a plain list of every control with native inputs, is no longer used by a layout and can start a new one.
 
 ## Theme styles
 
-`theme-styles/` holds the five ways to draw a theme, as bodies that every layout and the theme-card route render:
+`theme-styles/` holds the three ways to draw a theme, as bodies that every layout and the theme-card route render:
 
 - `style.ts` lists the styles and keeps the chosen one in a signal mirrored to `t`.
 - `ThemePicker.tsx` is the body: search, filter, and the list of the chosen style. The columns follow the width of the container.
 - `browser.ts` holds the behaviour every style shares. Hover or keyboard focus previews a theme on the canvas, and leaving the list or pressing Escape puts the applied theme back. A click, Enter or Space applies it. The arrow keys move through the options as they sit on screen, in a list or in a grid.
-- `code/`, `orb/`, `aa-list/`, `palette/`, and `window/` draw the list of each style.
+- `window/`, `orb/`, and `aa-list/` draw the list of each style.
 
 `../theme-card/` renders the same bodies with a fixed style, each in an island beside the canvas at the width of a real panel. It cannot drift from the layouts.
-
-The Code style mounts one CodeMirror preview per theme, 26 in all. Switching to it takes about 0.2 to 0.3 s and one main-thread task of 0.1 to 0.2 s, measured once in each layout at 1440x900.
 
 ## Command menu
 

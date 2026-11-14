@@ -12,10 +12,10 @@ export interface ThemeStyle {
 
 export const THEME_STYLES = [
   {
-    id: 'code',
-    name: 'Code',
-    axis: 'Fidelity: real highlighted code, large enough to read',
-    mark: 'orb',
+    id: 'window',
+    name: 'Window',
+    axis: 'Miniature: the frame and window you export, with bars for code',
+    mark: 'window',
   },
   {
     id: 'orb',
@@ -29,32 +29,23 @@ export const THEME_STYLES = [
     axis: 'Density: one text row per theme, grouped by dark and light',
     mark: 'aa',
   },
-  {
-    id: 'palette',
-    name: 'Palette',
-    axis: 'Information: the syntax colours themselves, nothing else',
-    mark: 'palette',
-  },
-  {
-    id: 'window',
-    name: 'Window',
-    axis: 'Miniature: the frame and window you export, with bars for code',
-    mark: 'window',
-  },
 ] as const satisfies readonly ThemeStyle[];
 
 export type ThemeStyleId = (typeof THEME_STYLES)[number]['id'];
 
-// Riccardo pointed at T3 Code's orb cards, and the three layouts were built
-// around them, so they open in that style.
-const DEFAULT_STYLE: ThemeStyleId = 'orb';
+// Riccardo chose the Window miniature as the default; Orb and Aa list stay
+// as alternatives.
+const DEFAULT_STYLE: ThemeStyleId = 'window';
 
 export function parseThemeStyle(value: string | null): ThemeStyleId {
   return THEME_STYLES.find(style => style.id === value)?.id ?? DEFAULT_STYLE;
 }
 
 export function themeStyleEntry(id: ThemeStyleId) {
-  return THEME_STYLES.find(style => style.id === id) ?? THEME_STYLES[1];
+  return (
+    THEME_STYLES.find(style => style.id === id) ??
+    THEME_STYLES.find(style => style.id === DEFAULT_STYLE)!
+  );
 }
 
 // One choice for the page, read from and written to the `t` URL parameter,
