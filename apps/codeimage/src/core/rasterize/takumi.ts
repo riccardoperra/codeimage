@@ -8,7 +8,7 @@ import type {Rasterizer} from './index';
 interface FontSource {
   name: string;
   key: string;
-  weight: number;
+  weight?: number;
   style: 'normal' | 'italic';
   unicodeRange?: [number, number][];
   data: () => Promise<Uint8Array>;
@@ -146,14 +146,22 @@ async function collectCss(codeFamily: string, text: string) {
           .getPropertyValue('font-family')
           .replace(/['"]/g, '')
           .trim();
-        if (normalizeFamily(name) !== codeFamily || name.startsWith('Inter'))
+        if (
+          (normalizeFamily(name) !== codeFamily &&
+            name !== 'CodeImage Signature') ||
+          name.startsWith('Inter')
+        )
           continue;
         const url = /url\("([^"]+)"\)/.exec(
           rule.style.getPropertyValue('src'),
         )?.[1];
         if (!url) continue;
-        const weight =
-          parseInt(rule.style.getPropertyValue('font-weight')) || 400;
+        const declaredWeight = rule.style
+          .getPropertyValue('font-weight')
+          .trim();
+        const weight = declaredWeight.includes(' ')
+          ? undefined
+          : parseInt(declaredWeight) || 400;
         const style =
           rule.style.getPropertyValue('font-style') === 'italic'
             ? 'italic'
@@ -305,16 +313,17 @@ export const takumi: Rasterizer = async (
     localFontSources(codeFont),
   ]);
   const fontSources = [
-    ...(codeFont.type === 'web' ? sources : localFonts),
-    ...['Inter', 'Inter var'].map(
-      (name): FontSource => ({
-        name,
-        key: name,
-        weight: 400,
-        style: 'normal',
-        data: () => readBytes(interUrl),
-      }),
-    ),
+    ...(codeFont.type === 'web'
+      ? sources.filter(source => normalizeFamily(source.name) === codeFamily)
+      : localFonts),
+    ...['Inter', 'Inter var'].map((name): FontSource => ({
+      name,
+      key: name,
+      weight: 400,
+      style: 'normal',
+      data: () => readBytes(interUrl),
+    })),
+    ...sources.filter(source => normalizeFamily(source.name) !== codeFamily),
   ];
   if (
     !fontSources.some(source => normalizeFamily(source.name) === codeFamily)
@@ -335,7 +344,9 @@ export const takumi: Rasterizer = async (
     width: Math.round(width) * pixelRatio,
     height: Math.round(height) * pixelRatio,
     css,
-    fontFamilies: [codeFont.name, 'Inter', 'Inter var'],
+    fontFamilies: [
+      ...new Set([codeFont.name, ...fontSources.map(source => source.name)]),
+    ],
   };
   if (format === 'svg') {
     const prepared = await renderer.prepare(html, {

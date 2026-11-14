@@ -1,0 +1,350 @@
+{
+  "uiBase": "0254e0bb",
+  "takumiBase": "052c6562",
+  "signatureFrontendSnapshot": "83be16ad",
+  "adapterSha256": "6f3b2327ed1d5c7f9abc085f609d6eaa35a5b223be26bdd0e391e3f6211b0062",
+  "signatureBefore": {
+    "results": [
+      {
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 4.602220166512488
+      },
+      {
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-center",
+        "percent": 6.316902339104004
+      },
+      {
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-right",
+        "percent": 5.30262984009515
+      },
+      {
+        "style": "minimal",
+        "background": "#f8fafc",
+        "position": "bottom-left",
+        "percent": 4.602220166512488
+      },
+      {
+        "style": "minimal",
+        "background": "#f8fafc",
+        "position": "bottom-center",
+        "percent": 6.320206158319017
+      },
+      {
+        "style": "minimal",
+        "background": "#f8fafc",
+        "position": "bottom-right",
+        "percent": 5.299326020880137
+      },
+      {
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 4.013409961685824
+      },
+      {
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-center",
+        "percent": 5.366379310344827
+      },
+      {
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-right",
+        "percent": 4.549808429118774
+      },
+      {
+        "style": "pill",
+        "background": "#f8fafc",
+        "position": "bottom-left",
+        "percent": 2.6149425287356323
+      },
+      {
+        "style": "pill",
+        "background": "#f8fafc",
+        "position": "bottom-center",
+        "percent": 3.8625478927203063
+      },
+      {
+        "style": "pill",
+        "background": "#f8fafc",
+        "position": "bottom-right",
+        "percent": 3.139367816091954
+      },
+      {
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 6.380722990777339
+      },
+      {
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-center",
+        "percent": 8.469202898550725
+      },
+      {
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-right",
+        "percent": 10.451663372859025
+      },
+      {
+        "style": "card",
+        "background": "#f8fafc",
+        "position": "bottom-left",
+        "percent": 3.5789278656126484
+      },
+      {
+        "style": "card",
+        "background": "#f8fafc",
+        "position": "bottom-center",
+        "percent": 4.263422266139657
+      },
+      {
+        "style": "card",
+        "background": "#f8fafc",
+        "position": "bottom-right",
+        "percent": 4.391057312252965
+      }
+    ],
+    "errors": [],
+    "fallbacks": []
+  },
+  "signatureAfter": {
+    "results": [
+      {
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-center",
+        "percent": 0.006607638430025109
+      },
+      {
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-right",
+        "percent": 0.0033038192150125546
+      },
+      {
+        "style": "minimal",
+        "background": "#f8fafc",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "style": "minimal",
+        "background": "#f8fafc",
+        "position": "bottom-center",
+        "percent": 0.006607638430025109
+      },
+      {
+        "style": "minimal",
+        "background": "#f8fafc",
+        "position": "bottom-right",
+        "percent": 0.0033038192150125546
+      },
+      {
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0.19636015325670497
+      },
+      {
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-center",
+        "percent": 0
+      },
+      {
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-right",
+        "percent": 0
+      },
+      {
+        "style": "pill",
+        "background": "#f8fafc",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "style": "pill",
+        "background": "#f8fafc",
+        "position": "bottom-center",
+        "percent": 0.0023946360153256703
+      },
+      {
+        "style": "pill",
+        "background": "#f8fafc",
+        "position": "bottom-right",
+        "percent": 0.0023946360153256703
+      },
+      {
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-center",
+        "percent": 0.0010293148880105402
+      },
+      {
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-right",
+        "percent": 0
+      },
+      {
+        "style": "card",
+        "background": "#f8fafc",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "style": "card",
+        "background": "#f8fafc",
+        "position": "bottom-center",
+        "percent": 0.0010293148880105402
+      },
+      {
+        "style": "card",
+        "background": "#f8fafc",
+        "position": "bottom-right",
+        "percent": 0
+      }
+    ],
+    "errors": [],
+    "fallbacks": []
+  },
+  "icons": {
+    "results": [
+      {
+        "platform": "x",
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "x",
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0.19636015325670497
+      },
+      {
+        "platform": "x",
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "bluesky",
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "bluesky",
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0.19636015325670497
+      },
+      {
+        "platform": "bluesky",
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "github",
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "github",
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0.19636015325670497
+      },
+      {
+        "platform": "github",
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "mastodon",
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "mastodon",
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0.19636015325670497
+      },
+      {
+        "platform": "mastodon",
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "linkedin",
+        "style": "minimal",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "linkedin",
+        "style": "pill",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      },
+      {
+        "platform": "linkedin",
+        "style": "card",
+        "background": "#202028",
+        "position": "bottom-left",
+        "percent": 0
+      }
+    ],
+    "errors": [],
+    "fallbacks": []
+  },
+  "scope": "The signature frontend was overlaid only for rendering checks. The full signature API branch was not merged.",
+  "transientFontFailure": {
+    "probe": "signature-bluesky/results.json",
+    "reason": "The required JetBrains Mono download failed and triggered the expected fallback. A subsequent same-session icon matrix completed without fallback."
+  }
+}

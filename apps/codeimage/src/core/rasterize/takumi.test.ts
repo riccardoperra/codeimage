@@ -522,6 +522,25 @@ describe('Takumi export', () => {
     );
   });
 
+  it('registers the signature font from its own font-face source', async () => {
+    const style = document.createElement('style');
+    style.textContent =
+      '@font-face { font-family: "CodeImage Signature"; src: url("https://example.test/signature.woff2"); font-weight: 100 900; }';
+    document.head.append(style);
+    const node = exportNode(
+      '<span style="font-family: CodeImage Signature">@codeimage</span>',
+    );
+    const {takumi} = await import('./takumi');
+    await takumi(node, options);
+    expect(fetch).toHaveBeenCalledWith('https://example.test/signature.woff2');
+    expect(renderer.registerFont).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'CodeImage Signature'}),
+    );
+    expect(renderer.prepare.mock.calls[0][1]).toMatchObject({
+      fontFamilies: ['Inter var', 'Inter', 'CodeImage Signature'],
+    });
+  });
+
   it('carries the inherited UI font into the exported document', async () => {
     document.body.style.fontFamily = 'Inter var, system-ui, sans-serif';
     const node = exportNode('index.tsx');
