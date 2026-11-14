@@ -30,7 +30,9 @@ const byKind = (transitions: TokenTransition[], kind: string) =>
 const visibleText = (transitions: TokenTransition[]) =>
   transitions
     .flatMap(transition =>
-      transition.kind === 'leave' ? [] : [{...transition.to, text: transition.text}],
+      transition.kind === 'leave'
+        ? []
+        : [{...transition.to, text: transition.text}],
     )
     .sort((a, b) => a.line - b.line || a.col - b.col)
     .reduce<string[]>((rows, {line, text}) => {
@@ -71,8 +73,13 @@ test('inserting two lines at the top moves every old token down two lines', asyn
     });
   }
   const entered = byKind(transitions, 'enter');
-  assert.ok(entered.every(token => token.kind === 'enter' && token.to.line < 2));
-  assert.equal(new Set(transitions.map(token => token.key)).size, transitions.length);
+  assert.ok(
+    entered.every(token => token.kind === 'enter' && token.to.line < 2),
+  );
+  assert.equal(
+    new Set(transitions.map(token => token.key)).size,
+    transitions.length,
+  );
 });
 
 test('two identical steps only move tokens, each onto its own cell', async () => {
@@ -108,6 +115,25 @@ test('places tokens after a tab at the next tab stop', () => {
   assert.deepEqual(token.to, {line: 0, col: 4});
 });
 
+test('places tokens after wide glyphs by their measured width', () => {
+  const line = [[{text: '你好 x', classes: ''}]];
+  const cellOfX = (widths?: Map<string, number>) => {
+    const token = pairSteps(line, line, widths).find(({text}) => text === 'x');
+    assert.ok(token?.kind === 'move');
+    return token.to;
+  };
+  assert.deepEqual(cellOfX(), {line: 0, col: 3});
+  assert.deepEqual(
+    cellOfX(
+      new Map([
+        ['你', 1.5],
+        ['好', 1.5],
+      ]),
+    ),
+    {line: 0, col: 4},
+  );
+});
+
 test('line numbers keep their place when lines are inserted at the top', async () => {
   const scene = pairScene(
     await step(SOURCE),
@@ -137,10 +163,13 @@ test('line numbers slide right when the gutter gains a digit', async () => {
   assert.equal(scene.to.gutterColumns, 2);
   const one = scene.gutter!.find(number => number.text === '1')!;
   assert.ok(one.kind === 'move');
-  assert.deepEqual([one.from, one.to], [
-    {line: 0, col: 0},
-    {line: 0, col: 1},
-  ]);
+  assert.deepEqual(
+    [one.from, one.to],
+    [
+      {line: 0, col: 0},
+      {line: 0, col: 1},
+    ],
+  );
 });
 
 test('a mark both steps keep moves with its line, and the others fade', async () => {

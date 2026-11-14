@@ -1,6 +1,13 @@
 import type {TokenLine} from '@core/snapshot/tokenize';
 import {syncTokenKeys, toKeyedTokens} from '@shikijs/magic-move/core';
-import type {Cell, Scene, Step, StepBox, TokenTransition} from './model';
+import type {
+  Cell,
+  GlyphWidths,
+  Scene,
+  Step,
+  StepBox,
+  TokenTransition,
+} from './model';
 
 // Matches `tab-size` in the static layout.
 const TAB_SIZE = 4;
@@ -15,17 +22,31 @@ type CodeToken = {
   key?: string;
 };
 
-const advance = (col: number, char: string) =>
-  char === '\t' ? col + TAB_SIZE - (col % TAB_SIZE) : col + 1;
+const NO_WIDTHS: GlyphWidths = new Map();
+
+const segmenter = new Intl.Segmenter();
+
+export const isAscii = (text: string) => /^[\t\n -~]*$/.test(text);
+
+export const graphemes = (text: string) =>
+  isAscii(text)
+    ? text.split('')
+    : Array.from(segmenter.segment(text), ({segment}) => segment);
+
+const columnsAfter = (col: number, text: string, widths: GlyphWidths) =>
+  graphemes(text).reduce(
+    (col, grapheme) =>
+      grapheme === '\t'
+        ? col + TAB_SIZE - (col % TAB_SIZE)
+        : col + (widths.get(grapheme) ?? 1),
+    col,
+  );
 
 const lineText = (line: TokenLine) => line.map(span => span.text).join('');
 
-const lineColumns = (line: TokenLine) =>
-  Array.from(lineText(line)).reduce(advance, 0);
-
 // Whitespace only adds width, so it moves the cells and is never a token.
 // Splitting at whitespace keeps `=>` and `===` whole for ligatures.
-function codeTokens(lines: TokenLine[]): CodeToken[][] {
+function codeTokens(lines: TokenLine[], widths: GlyphWidths): CodeToken[][] {
   let offset = 0;
   return lines.map((line, row) => {
     const tokens: CodeToken[] = [];
@@ -40,7 +61,7 @@ function codeTokens(lines: TokenLine[]): CodeToken[][] {
             cell: {line: row, col},
           });
         }
-        col = Array.from(piece).reduce(advance, col);
+        col = columnsAfter(col, piece, widths);
         offset += piece.length;
       }
     }
@@ -80,9 +101,10 @@ function pairPlaced(from: Placed[], to: Placed[]): TokenTransition[] {
 export function pairSteps(
   from: TokenLine[],
   to: TokenLine[],
+  widths = NO_WIDTHS,
 ): TokenTransition[] {
   const keyed = (lines: TokenLine[], salt: string) => {
-    const tokens = codeTokens(lines);
+    const tokens = codeTokens(lines, widths);
     // Distinct salts keep the keys of unmatched tokens apart.
     const info = toKeyedTokens(lines.map(lineText).join('\n'), tokens, salt);
     return {info, tokens: tokens.flat()};
@@ -92,26 +114,23 @@ export function pairSteps(
   const ownKeys = new Map(target.tokens.map(token => [token, token.key!]));
   syncTokenKeys(source.info, target.info, {enhanceMatching: true});
   const sourceTokens = new Map(source.tokens.map(token => [token.key!, token]));
+  const placed = (token: CodeToken, key = token.key!): Placed => ({
+    key,
+    text: token.content,
+    classes: token.classes,
+    cell: token.cell,
+  });
   // A matched token that changes classes changes color, so it fades from one
   // color to the other instead of moving under one of them.
-  const place = (token: CodeToken): Placed => {
+  const recolored = (token: CodeToken) => {
     const match = sourceTokens.get(token.key!);
-    const recolored = match !== undefined && match.classes !== token.classes;
-    return {
-      key: recolored ? ownKeys.get(token)! : token.key!,
-      text: token.content,
-      classes: token.classes,
-      cell: token.cell,
-    };
+    return match !== undefined && match.classes !== token.classes;
   };
   return pairPlaced(
-    source.tokens.map(token => ({
-      key: token.key!,
-      text: token.content,
-      classes: token.classes,
-      cell: token.cell,
-    })),
-    target.tokens.map(place),
+    source.tokens.map(token => placed(token)),
+    target.tokens.map(token =>
+      recolored(token) ? placed(token, ownKeys.get(token)) : placed(token),
+    ),
   );
 }
 
@@ -130,14 +149,21 @@ function gutterColumns(step: Step) {
   return String(largest + step.lineNumberStart - 1).length;
 }
 
-function stepBox(step: Step, lineNumbers: boolean): StepBox {
+function stepBox(
+  step: Step,
+  lineNumbers: boolean,
+  widths: GlyphWidths,
+): StepBox {
   const kinds = markKinds(step);
-  const indent = [...kinds.values()].some(kind => kind !== 'highlight')
-    ? 2
-    : 0;
+  const indent = [...kinds.values()].some(kind => kind !== 'highlight') ? 2 : 0;
   return {
     rows: step.lines.length,
-    columns: indent + Math.max(0, ...step.lines.map(lineColumns)),
+    columns:
+      indent +
+      Math.max(
+        0,
+        ...step.lines.map(line => columnsAfter(0, lineText(line), widths)),
+      ),
     indent,
     gutterColumns: lineNumbers ? gutterColumns(step) : 0,
     dimmed: dimmedRows(step),
@@ -188,11 +214,16 @@ function markTokens(step: Step): Placed[] {
     });
 }
 
-export function pairScene(from: Step, to: Step, lineNumbers: boolean): Scene {
-  const fromBox = stepBox(from, lineNumbers);
-  const toBox = stepBox(to, lineNumbers);
+export function pairScene(
+  from: Step,
+  to: Step,
+  lineNumbers: boolean,
+  widths = NO_WIDTHS,
+): Scene {
+  const fromBox = stepBox(from, lineNumbers, widths);
+  const toBox = stepBox(to, lineNumbers, widths);
   return {
-    code: pairSteps(from.lines, to.lines),
+    code: pairSteps(from.lines, to.lines, widths),
     gutter: lineNumbers
       ? pairPlaced(gutterTokens(from, fromBox), gutterTokens(to, toBox))
       : null,
