@@ -109,7 +109,13 @@ export function ThemePicker(props: ThemePickerProps) {
           />
         </div>
       </div>
-      <div class={styles.list} data-theme-list {...browser.listProps}>
+      <div
+        class={styles.list}
+        data-theme-list
+        // The list stops the arrows and Escape it uses; digits and letters still switch the prototype.
+        data-passes-keys
+        {...browser.listProps}
+      >
         <Show
           when={browser.themes().length > 0}
           fallback={

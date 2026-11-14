@@ -75,12 +75,22 @@ const KEY_OWNERS = [
 const OPEN_POPUP =
   '[aria-haspopup]:not([aria-haspopup="false"])[aria-expanded="true"], [role="combobox"][aria-expanded="true"]';
 
+// A widget marked data-passes-keys stops the keys it uses itself, so the
+// rest reach the pickers unless a widget around it owns them.
+function insideOwner(element: Element | null): boolean {
+  const owner = element?.closest(KEY_OWNERS);
+  if (!owner) return false;
+  return owner.hasAttribute('data-passes-keys')
+    ? insideOwner(owner.parentElement)
+    : true;
+}
+
 function pageOwnsKey(event: KeyboardEvent): boolean {
   const target = event.target;
   return (
     event.defaultPrevented ||
     (target instanceof HTMLElement &&
-      (target.isContentEditable || target.closest(KEY_OWNERS) !== null)) ||
+      (target.isContentEditable || insideOwner(target))) ||
     document.querySelector(OPEN_POPUP) !== null
   );
 }

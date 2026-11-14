@@ -47,6 +47,15 @@ function optionsIn(list: Element): HTMLElement[] {
 
 // Arrow keys follow the layout on screen, so the same code moves through a
 // one-column list and through a grid of cards.
+const NAVIGATION = new Set([
+  'ArrowRight',
+  'ArrowLeft',
+  'ArrowDown',
+  'ArrowUp',
+  'Home',
+  'End',
+]);
+
 function neighbour(
   options: readonly HTMLElement[],
   from: HTMLElement,
@@ -175,11 +184,11 @@ export function createThemeBrowser(
           }
           return;
         }
-        const next = neighbour(optionsIn(list), from, event.key);
-        if (!next) return;
+        if (!NAVIGATION.has(event.key)) return;
+        // Also at the edges, where no option is next: the key stays the list's.
         event.preventDefault();
         event.stopPropagation();
-        next.focus();
+        neighbour(optionsIn(list), from, event.key)?.focus();
       },
     },
     optionProps: theme => ({

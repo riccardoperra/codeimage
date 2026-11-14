@@ -14,7 +14,7 @@ Two pills sit at the top of the page. The first picks the layout, the second pic
 | Layout      | Current, Inspector, Dock, Studio    | `1` to `4`, the left and right arrows, `R` to re-mount | `v`           |
 | Theme style | Code, Orb, Aa list, Palette, Window | `C`, `O`, `A`, `P`, `W`, or `[` and `]` to step        | `t`           |
 
-A reload keeps both choices. The keys do nothing while focus is in a field, a list, a menu, a dialog or another composite widget, while a list or popup that the page opened is open, or while a modifier key is held. Current renders today's production editor with its own theme panel, so the theme style pill is dimmed there.
+A reload keeps both choices. The keys do nothing while focus is in a field, a list, a menu, a dialog or another composite widget, while a list or popup that the page opened is open, or while a modifier key is held. The theme list is the one list they reach: it keeps the arrows and Escape, and the digits and letters still switch the pills. Current renders today's production editor with its own theme panel, so the theme style pill is dimmed there.
 
 The page opens in the Orb style. Riccardo pointed at T3 Code's orb cards, and the three layouts were built around them.
 
@@ -91,7 +91,7 @@ The Code style mounts one CodeMirror preview per theme, 26 in all. Switching to 
 - Show themes with `props.ThemePicker`, not with a grid of your own, so that the theme style pill reaches your layout.
 - Keep the top center of the page free of controls: the pills float there.
 - A popover that closes on outside clicks should treat `[data-prototype-chrome]` as inside, so that switching the theme style keeps it open.
-- The pickers listen for keys on `document`. Solid delegates `onKeyDown` to `document` too, so `stopPropagation()` in an `onKeyDown` handler does not keep a key from them. Use a native `on:keydown` listener on your element, or give the element a composite role such as `listbox`.
+- The pickers listen for keys on `document`. Solid delegates `onKeyDown` to `document` too, so `stopPropagation()` in an `onKeyDown` handler does not keep a key from them. Use a native `on:keydown` listener on your element, or give the element a composite role such as `listbox`. A composite that stops the keys it uses in a native listener can add `data-passes-keys`, so that the pickers still get the others.
 
 ## Delete the prototype
 
