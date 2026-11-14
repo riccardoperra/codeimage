@@ -1,0 +1,29 @@
+{
+  "frame": {
+    "background": "linear-gradient(152deg, rgb(87% 61% 43%) 0%, rgb(49% 14% 95%) 100%)",
+    "opacity": 100,
+    "padding": 64,
+    "visible": true,
+    "radius": 8
+  },
+  "terminal": {
+    "opacity": 100,
+    "background": "#0d1117",
+    "accentVisible": true,
+    "alternativeTheme": false,
+    "shadow": "rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    "showGlassReflection": false,
+    "type": "macOs",
+    "showHeader": true,
+    "showWatermark": true,
+    "textColor": "#e6edf3",
+    "borderType": "glass"
+  },
+  "editor": {
+    "fontId": "jetbrains-mono",
+    "fontWeight": 400,
+    "showLineNumbers": false,
+    "themeId": "githubDark",
+    "enableLigatures": true
+  }
+}
