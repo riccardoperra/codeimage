@@ -1,12 +1,15 @@
 import type {CustomTheme} from '@codeimage/highlight';
+import type {TabMarks} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {tokenizeCode} from '@core/snapshot/tokenize';
 import {createEffect, createMemo, For, Show} from 'solid-js';
 import {isServer} from 'solid-js/web';
 import {getStaticTheme, mountStaticTheme} from './staticTheme';
+import './plugins/lineMarks/marks.css';
 
 export interface StaticCodeViewProps {
   code: string;
+  marks: TabMarks;
   languageId: string;
   language: Language | null;
   theme: CustomTheme;
@@ -22,6 +25,16 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
     tokenizeCode(props.code, props.language, props.theme),
   );
   const theme = createMemo(() => getStaticTheme(props.theme));
+  const marks = createMemo(
+    () =>
+      new Map(
+        props.marks.lines
+          .filter(mark => mark.line >= 1 && mark.line <= lines().length)
+          .map(mark => [mark.line, mark.kind]),
+      ),
+  );
+  const hasDiff = () =>
+    Array.from(marks().values()).some(kind => kind !== 'highlight');
   if (!isServer) createEffect(() => mountStaticTheme(document, props.theme));
   const ligatures = () => (props.enableLigatures ? 'normal' : 'none');
   // CodeMirror sizes the gutter for the largest line number with as many digits as the line count.
@@ -34,6 +47,9 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
       <div
         class={`cm-editor ${theme().classes}`}
         data-static-code-view
+        data-line-marks="true"
+        data-line-focus={String(props.marks.focus)}
+        data-line-diff={String(hasDiff())}
         style={{
           '--codeimage-font-family': `${props.fontFamily}, monospace`,
           '--codeimage-font-weight': props.fontWeight,
@@ -57,6 +73,11 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
                   {(_, index) => (
                     <div
                       class="cm-gutterElement"
+                      classList={{
+                        'cm-lineMarkDim':
+                          props.marks.focus &&
+                          marks().get(index() + 1) !== 'highlight',
+                      }}
                       style={{'grid-row': `${index() + 1}`}}
                     >
                       {props.lineNumberStart + index()}
@@ -68,8 +89,8 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
           </Show>
           <div class="cm-content cm-lineWrapping">
             <For each={lines()}>
-              {line => (
-                <div class="cm-line">
+              {(line, index) => (
+                <div class="cm-line" data-mark={marks().get(index() + 1)}>
                   <For each={line}>
                     {span => (
                       <Show when={span.classes} fallback={span.text}>

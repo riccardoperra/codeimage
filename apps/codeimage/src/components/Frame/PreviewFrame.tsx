@@ -153,6 +153,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
               {active => (
                 <StaticCodeView
                   code={active().code}
+                  marks={active().marks}
                   languageId={active().languageId}
                   language={
                     props.language === undefined
