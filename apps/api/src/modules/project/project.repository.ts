@@ -1,4 +1,4 @@
-import {parseTabMarks} from '../../schemas/marks.js';
+import {parseTabMarks} from './project.model.js';
 import type * as repository from './project.repository.js';
 import type {
   Project as ProjectRow,

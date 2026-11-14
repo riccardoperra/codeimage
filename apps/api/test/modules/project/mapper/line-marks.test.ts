@@ -1,6 +1,7 @@
 import {Value} from '@sinclair/typebox/value';
 import {expect, test} from 'vitest';
-import {parseTabMarks, TabMarksSchema} from '../../../../src/schemas/marks.js';
+import {parseTabMarks} from '../../../../src/modules/project/project.model.js';
+import {TabMarksSchema} from '../../../../src/modules/project/project.contract.js';
 import {SnippetEditorTabsCreateRequestSchema} from '../../../../src/modules/project/project.contract.js';
 import {SnippetEditorTabsUpdateRequestSchema} from '../../../../src/modules/project/project.contract.js';
 

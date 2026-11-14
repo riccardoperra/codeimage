@@ -1,7 +1,22 @@
-import {TabMarksSchema} from '../../schemas/marks.js';
 import type {Static} from '@sinclair/typebox';
 import {Type} from '@sinclair/typebox';
 import {defineContract, enumLiteral, Nullable} from '../../shared/contract.js';
+
+export const TabMarksSchema = Type.Object({
+  lines: Type.Array(
+    Type.Object({
+      line: Type.Integer({minimum: 1}),
+      kind: Type.Union([
+        Type.Literal('added'),
+        Type.Literal('removed'),
+        Type.Literal('highlight'),
+      ]),
+    }),
+  ),
+  focusedLines: Type.Array(Type.Integer({minimum: 1})),
+});
+
+export type TabMarks = Static<typeof TabMarksSchema>;
 
 export const BaseProjectResponseSchema = Type.Object(
   {
