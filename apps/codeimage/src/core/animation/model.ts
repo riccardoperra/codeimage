@@ -10,10 +10,14 @@ export type AnimationSettings = {
   fps: 24 | 30 | 50 | 60;
 };
 
-export const EASING_CURVES: Record<AnimationSettings['easing'], string> = {
-  smooth: 'cubic-bezier(0.65, 0, 0.35, 1)',
-  snappy: 'cubic-bezier(0.2, 0, 0, 1)',
-  linear: 'linear',
+// The cubic-bezier() control points x1, y1, x2, y2 of each easing.
+export const EASING_CURVES: Record<
+  AnimationSettings['easing'],
+  readonly [number, number, number, number]
+> = {
+  smooth: [0.65, 0, 0.35, 1],
+  snappy: [0.2, 0, 0, 1],
+  linear: [0, 0, 1, 1],
 };
 
 // One tab as an animation step sees it.

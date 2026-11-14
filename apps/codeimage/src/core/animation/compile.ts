@@ -27,11 +27,16 @@ const escapeHtml = (text: string) =>
 const escapeAttribute = (text: string) =>
   escapeHtml(text).replace(/"/g, '&quot;');
 
+const timingFunction = (easing: SceneTiming['easing']) =>
+  easing === 'linear'
+    ? 'linear'
+    : `cubic-bezier(${EASING_CURVES[easing].join(', ')})`;
+
 export const animationCss = (
   id: string,
   {transitionMs, easing, offsetMs = 0}: SceneTiming,
 ) =>
-  `animation:${id} ${transitionMs}ms ${EASING_CURVES[easing]} ${-offsetMs}ms both`;
+  `animation:${id} ${transitionMs}ms ${timingFunction(easing)} ${-offsetMs}ms both`;
 
 type Pose = Point & {opacity: number};
 
