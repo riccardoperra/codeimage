@@ -4,6 +4,7 @@ import {z} from 'zod';
 import {resolveTheme, UsageError} from './args';
 import type {RenderArgs} from './args';
 import {
+  animationSettingsSchema,
   projectSnapshotSchema,
   SUPPORTED_SNAPSHOT_MAJOR,
 } from '@codeimage/render';
@@ -13,6 +14,9 @@ const presetSchema = z.looseObject({
   frame: projectSnapshotSchema.shape.frame,
   terminal: projectSnapshotSchema.shape.terminal,
   editor: projectSnapshotSchema.shape.editor.shape.options,
+  // The timing of --animate. Its steps give their holds to the input files in
+  // order, since the files are the tabs.
+  animation: animationSettingsSchema.optional(),
 });
 
 export type Preset = z.output<typeof presetSchema>;

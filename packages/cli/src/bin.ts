@@ -3,7 +3,9 @@ import {readFile, writeFile} from 'node:fs/promises';
 import {renderUsage} from 'citty';
 import {COMMAND, parseArgs, UsageError} from './args';
 import {FLAGS} from './flags';
-import {renderSnapshot} from '@codeimage/render';
+import {planAnimation} from './flags/animate';
+import {renderAnimation, renderSnapshot} from '@codeimage/render';
+import type {SnapshotDocument} from '@codeimage/render';
 import {planImages} from './images';
 import {parsePreset} from './snapshot';
 import type {CodeInput} from './snapshot';
@@ -53,8 +55,14 @@ async function main() {
     );
   }
   const outputs = await planImages(args, inputs, preset);
+  const render = (snapshot: SnapshotDocument) => {
+    if (!args.animation) return renderSnapshot(snapshot);
+    const {document, notes} = planAnimation(snapshot, args.animation, preset);
+    for (const note of notes) process.stderr.write(`codeimage: ${note}\n`);
+    return renderAnimation(document);
+  };
   for (const output of outputs) {
-    const image = await renderSnapshot(output.snapshot);
+    const image = await render(output.snapshot);
     if (output.path === '-') {
       await new Promise<void>((resolve, reject) => {
         process.stdout.write(image, error =>
