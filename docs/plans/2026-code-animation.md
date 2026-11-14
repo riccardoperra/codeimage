@@ -46,7 +46,7 @@ Tests alone are not sufficient verification. A PR is verified only when its unit
   - [ ] A2 touches only `packages/render/**`, `packages/cli/src/args.ts`, `packages/cli/src/bin.ts`, and `packages/cli/src/flags/animate.ts`.
   - [ ] A3 touches only `apps/codeimage/src/state/editor/**`, `apps/codeimage/src/components/Animation/**`, `apps/codeimage/src/components/Frame/PreviewFrame.tsx`, the editor page layout under `apps/codeimage/src/pages/Editor/**`, `apps/api/prisma/**`, `apps/api/src/**` for the new field, `packages/locale/**`, and `scripts/parity/animation-*.ts`.
   - [ ] A4 touches only `apps/codeimage/src/core/rasterize/**`, `apps/codeimage/src/hooks/use-export-animation.ts`, `apps/codeimage/src/workers/animation.worker.ts`, and `apps/codeimage/src/components/Toolbar/Export*.tsx`.
-  - [ ] A5 touches only `apps/codeimage/src/core/video/**`, `apps/codeimage/src/hooks/use-export-animation.ts`, `apps/codeimage/src/components/Toolbar/Export*.tsx`, and `packages/cli/src/video/**`.
+  - [ ] A5 touches only `apps/codeimage/src/core/video/**`, `apps/codeimage/src/hooks/use-export-animation.ts`, `apps/codeimage/src/components/Toolbar/Export*.tsx`, `packages/cli/src/video/**`, `packages/cli/src/args.ts`, and `packages/cli/src/bin.ts`.
 - [ ] Hold the review gate. A2, A3, A4, and A5 change an interaction. They wait for the operator's review in chat with screenshots and a video before merge.
 
 ### PR mechanics, for every PR
@@ -344,23 +344,33 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Edit `apps/codeimage/src/workers/animation.worker.ts` and `apps/codeimage/src/hooks/use-export-animation.ts`.
 - [ ] Edit `apps/codeimage/src/components/Toolbar/ExportContent.tsx`.
 - [ ] Create `packages/cli/src/video/ffmpeg.ts`.
+- [ ] Create `packages/cli/src/video/download.ts` and `packages/cli/src/video/checksums.ts`.
+- [ ] Edit `packages/cli/src/args.ts` and `packages/cli/src/bin.ts` to add the `install-ffmpeg` command.
 
 **Build.**
 
 - [ ] In the worker, render each frame with Takumi `render({timeMs, format: 'raw'})` and pass the RGBA pixels to a WebCodecs `VideoFrame`. Encode with Mediabunny to MP4 with H.264. When `canEncode` rejects H.264, fall back to WebM with VP9 and say so in the dialog.
 - [ ] Round the video width and height up to even numbers, because H.264 rejects odd sizes. Fill the added pixel with the frame background.
 - [ ] Hide **MP4** in browsers without `VideoEncoder` and say why in a tooltip.
-- [ ] In the CLI, find `ffmpeg` on `PATH`. Pipe raw RGBA frames from Takumi into `ffmpeg -f rawvideo -pix_fmt rgba` with `libx264`, `yuv420p`, and `+faststart`. Without `ffmpeg`, exit with code 2 and print how to install it. Do not bundle ffmpeg, because `ffmpeg-static` is GPL-3.0.
+- [ ] In the CLI, pipe raw RGBA frames from Takumi into `ffmpeg -f rawvideo -pix_fmt rgba` with `libx264`, `yuv420p`, and `+faststart`.
+- [ ] Resolve the ffmpeg binary in this order, and stop at the first hit. First the `--ffmpeg <path>` flag, then the `CODEIMAGE_FFMPEG` variable, then `ffmpeg` on `PATH`, then the CodeImage cache. When none exists, download it.
+- [ ] Download the binary only on the first MP4 export, never at install time. Use the `ffmpeg-static` release assets on GitHub, release `b6.1.1`, file `ffmpeg-<platform>-<arch>.gz`. Do not add the `ffmpeg-static` npm package as a dependency. Its `install` script downloads about 20 to 30 MB for every user, and pnpm 10 and Bun skip dependency install scripts unless the user allows them, so the binary would be missing for them.
+- [ ] Pin the release tag and the SHA-256 of each platform file in `checksums.ts`. Reject a download whose hash differs, and delete it.
+- [ ] Store the binary in the user cache folder under `codeimage/ffmpeg/<release>/<platform>-<arch>/`. That is `~/Library/Caches` on macOS, `$XDG_CACHE_HOME` or `~/.cache` on Linux, and `%LOCALAPPDATA%` on Windows. The folder is outside `node_modules` and the `npx` cache, so CLI upgrades and `npx` runs reuse it. Download the `LICENSE` and `README` files of the same release next to the binary.
+- [ ] Write the download to a temporary file in the same folder, then rename it into place. Two CLI runs at once then end with one complete binary.
+- [ ] Print one line before the download with the size and the target folder. Show progress on a TTY only. When the download fails, exit with code 2 and name the four ways to provide ffmpeg.
+- [ ] Add `codeimage install-ffmpeg`, which runs the same download and prints the binary path. CI jobs run it once and cache the folder.
 
 **You see.**
 
 - [ ] Exporting a three-step project as MP4 in Chrome downloads a file that plays in QuickTime.
-- [ ] `codeimage a.ts b.ts --animate -o demo.mp4` writes an MP4 when ffmpeg is installed.
+- [ ] `codeimage a.ts b.ts --animate -o demo.mp4` writes an MP4. On a machine without ffmpeg, the first run prints `Downloading ffmpeg b6.1.1 (19 MB) to ~/Library/Caches/codeimage/ffmpeg/...` once, and the second run prints nothing about ffmpeg.
 
 **Verify, unit.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
 
 - [ ] `encode.test.ts` asserts the even-size rounding and the codec fallback order. Run `pnpm --filter=@codeimage/app test`.
-- [ ] `video/ffmpeg.test.ts` asserts the ffmpeg arguments and the error when ffmpeg is missing. Run `pnpm --filter=@codeimage/cli test`.
+- [ ] `video/ffmpeg.test.ts` asserts the ffmpeg arguments and the resolution order. Run `pnpm --filter=@codeimage/cli test`.
+- [ ] `video/download.test.ts` serves a fake release from a local HTTP server. It asserts that a good file lands in the cache, that a file with a wrong hash is deleted and fails, that a second call does not download again, and that two calls at once leave one complete binary.
 
 **Verify, live.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked. Ten lanes on `claude-sonnet-5-5` at the PR head, per the boot recipe.
 
@@ -371,7 +381,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Lane 5. Export a project with an odd frame width. Save `a5-odd-size.png`. Pass when the MP4 has an even width and no visible edge.
 - [ ] Lane 6. Upload the MP4 to a local `<video>` element and play it to the end. Save `a5-video-tag.png`. Pass when it plays without stalling.
 - [ ] Lane 7. Run the CLI MP4 export with ffmpeg installed. Save `a5-cli.png`. Pass when the file plays and `ffprobe` shows `yuv420p`.
-- [ ] Lane 8. Run the CLI MP4 export with `PATH` lacking ffmpeg. Save `a5-cli-missing.png`. Pass when the CLI exits with code 2 and prints the install hint.
+- [ ] Lane 8. Run the CLI MP4 export three times with `PATH` lacking ffmpeg and an empty `XDG_CACHE_HOME`. The first run is online, the second is online, and the third is offline with a fresh cache folder. Save `a5-cli-download.png`. Pass when the first run downloads once and writes the MP4, the second run reuses the cache, and the third exits with code 2 and names the four ways to provide ffmpeg.
 - [ ] Lane 9. Cancel an MP4 export in the browser. Save `a5-cancel.png`. Pass when no file downloads and the editor works.
 - [ ] Lane 10. Compare the web MP4 and the CLI MP4 of the same project JSON. Save `a5-web-vs-cli.png`. Pass when frames at the same times differ by at most 2%.
 
@@ -380,7 +390,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Metric. Measure WebP export wall time at trunk and head. On head, measure MP4 export wall time for a 3 second animation at 60 fps and 1920 by 1080 in Chrome and in the CLI.
 - [ ] Probe. Ten interleaved WebP exports on trunk and head. Then ten MP4 exports on head in each place.
 - [ ] Baseline. Record the trunk WebP median first.
-- [ ] Rule. The head WebP median is at most 1.05 times trunk. The browser MP4 median is at most 15 s and the CLI MP4 median is at most 6 s. The prototype measured 32.6 ms per raw frame in Takumi WASM and 8.6 ms in native Takumi, before encoding.
+- [ ] Rule. The head WebP median is at most 1.05 times trunk. The browser MP4 median is at most 15 s and the CLI MP4 median is at most 6 s, with ffmpeg already in the cache. The first download is not part of the budget. The prototype measured 32.6 ms per raw frame in Takumi WASM and 8.6 ms in native Takumi, before encoding.
 
 **Review gate.** The operator reviews before merge.
 
@@ -446,6 +456,8 @@ A JavaScript tween that writes a style per frame was the runner-up for the timel
 
 Recording the DOM preview with `MediaRecorder` or screenshots gives frames at the speed of the screen, drops frames under load, and cannot run in the CLI.
 
+The `ffmpeg-static` npm package was rejected as a dependency of the CLI, and its binaries were kept. The package downloads the binary in an `install` script. Every user would download 20 to 30 MB even without making a video, and pnpm 10 and Bun skip that script by default, so those users would have no binary. An optional peer dependency fails for `npx` and global installs, because the CLI cannot import a package the user installed elsewhere. Downloading the same release files on the first MP4 export follows the Playwright and Puppeteer browser downloads. It costs nothing for users who never export MP4, and the cache survives CLI upgrades.
+
 ffmpeg.wasm weighs about 65 MB and its core is GPL-2.0. Mediabunny with WebCodecs is the maintained MP4 muxer, and its license is MPL-2.0.
 
 Takumi already writes WebP, GIF, and APNG, so `gifenc` and `sharp` are not needed.
@@ -459,6 +471,8 @@ Takumi already writes WebP, GIF, and APNG, so `gifenc` and `sharp` are not neede
 - WebCodecs H.264 support varies by browser and platform. A5 falls back to WebM with VP9 and hides MP4 when there is no `VideoEncoder`.
 - GIF files are large at 1080p. A4 shows the output size before the download, and the dialog suggests WebP or MP4 for long clips.
 - Animated WebP is lossless by default in Takumi WASM. A4 checks whether `quality` is honored, and otherwise shows the larger size.
+- The ffmpeg download depends on the `eugeneware/ffmpeg-static` GitHub releases. A5 pins the tag and the SHA-256 of each file, so a changed file fails instead of running. If the release disappears, the four other ways to provide ffmpeg still work. Moving the files to a CodeImage release is the fallback.
+- The ffmpeg binaries are GPL-3.0. The CLI does not ship them in its npm package and downloads their `LICENSE` and `README` next to the binary. The operator confirms this before A5 merges.
 - The `@keyframes` count grows with tokens. A 300-line step makes a large stylesheet. A1 perf measures compile time, and A4 measures the stylesheet's effect on render time.
 
 ## Appendix D. Links and reading list
