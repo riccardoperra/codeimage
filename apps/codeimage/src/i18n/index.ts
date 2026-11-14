@@ -6,6 +6,7 @@ import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
 import {exportTabs} from './exportTabs';
+import {cliConfig} from './cliConfig';
 
 export const locale = {
   it: {
@@ -98,6 +99,7 @@ export const locale = {
     ...notFound.it,
     ...presets.it,
     ...exportTabs.it,
+    ...cliConfig.it,
   },
   en: {
     ...secrets.en,
@@ -186,6 +188,7 @@ export const locale = {
     ...notFound.en,
     ...presets.en,
     ...exportTabs.en,
+    ...cliConfig.en,
   },
   de: {
     ...secrets.de,
@@ -275,6 +278,7 @@ export const locale = {
     ...notFound.de,
     ...presets.de,
     ...exportTabs.de,
+    ...cliConfig.de,
   },
   es: {
     ...secrets.es,
@@ -364,6 +368,7 @@ export const locale = {
     ...notFound.es,
     ...presets.es,
     ...exportTabs.es,
+    ...cliConfig.es,
   },
 };
 

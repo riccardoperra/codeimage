@@ -31,6 +31,7 @@ import {DotHorizontalIcon} from '../../Icons/DotVertical';
 import {PanelDivider} from '../../PropertyEditor/PanelDivider';
 import {ThemeBoxSkeleton} from '../../ThemeSwitcher/ThemeBoxSkeleton';
 import type {ThemeSwitcherVariant} from '../../ThemeSwitcher/ThemeSwitcher.css';
+import {toCliConfig} from '../cliConfig';
 import {EmptyPresetFallback} from '../EmptyPresetFallback/EmptyPresetFallback';
 import {PresetPreview} from '../PresetPreview/PresetPreview';
 import {PresetUpdateDialog} from '../PresetUpdateDialog';
@@ -223,22 +224,29 @@ export const PresetSwitcher: ParentComponent<
                                   {t('presets.share.label')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                  onClick={async () => {
-                                    try {
-                                      await navigator.clipboard.writeText(
-                                        JSON.stringify(theme.data, null, 2),
+                                  onClick={() => {
+                                    Promise.resolve()
+                                      .then(() =>
+                                        navigator.clipboard.writeText(
+                                          toCliConfig(theme.data),
+                                        ),
+                                      )
+                                      .then(
+                                        () =>
+                                          toast.success(t('cliConfig.copied'), {
+                                            position: 'bottom-center',
+                                          }),
+                                        () =>
+                                          toast.error(
+                                            t('cliConfig.copyError'),
+                                            {
+                                              position: 'bottom-center',
+                                            },
+                                          ),
                                       );
-                                      toast.success('CLI config copied', {
-                                        position: 'bottom-center',
-                                      });
-                                    } catch {
-                                      toast.error('Could not copy CLI config', {
-                                        position: 'bottom-center',
-                                      });
-                                    }
                                   }}
                                 >
-                                  Copy as CLI config
+                                  {t('cliConfig.copy')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {
