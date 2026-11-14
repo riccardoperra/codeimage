@@ -1,6 +1,7 @@
 {
   "name": "@codeimage/cli",
   "version": "0.1.0",
+  "private": true,
   "description": "Render CodeImage screenshots from files or stdin",
   "type": "module",
   "license": "MIT",
