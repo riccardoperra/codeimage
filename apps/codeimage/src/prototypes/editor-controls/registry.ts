@@ -1,13 +1,13 @@
 import type {Variant} from './contract';
-import Current, {meta as current} from './variants/current';
+import type {LayoutId} from './shell/preferences';
 import Dock, {meta as dock} from './variants/dock';
 import Inspector, {meta as inspector} from './variants/inspector';
 import Studio, {meta as studio} from './variants/studio';
 
-// Names and axes live in each variant's folder, so builders never edit this file.
-export const variants: readonly Variant[] = [
-  {...current, component: Current},
-  {...inspector, component: Inspector},
-  {...dock, component: Dock},
-  {...studio, component: Studio},
-];
+// Names and axes live in each layout's folder. Today's editor is no longer a
+// layout here: it is the production route `/classic`.
+export const layouts: Record<LayoutId, Variant> = {
+  inspector: {...inspector, component: Inspector},
+  dock: {...dock, component: Dock},
+  studio: {...studio, component: Studio},
+};

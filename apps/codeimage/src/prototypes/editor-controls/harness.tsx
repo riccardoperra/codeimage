@@ -1,118 +1,49 @@
-import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {EditorSyncProvider} from '@codeimage/store/editor/createEditorSync';
-import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {VersionStore} from '@codeimage/store/version/version.store';
 import type {JSX} from 'solid-js';
-import {createSignal, onCleanup, onMount, Show, Suspense} from 'solid-js';
+import {createEffect, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {provideState} from 'statebuilder';
-import {EditorPageSkeleton} from '../../pages/Editor/components/EditorSkeleton';
 import {CommandMenu} from './command-menu/CommandMenu';
-import './harness.css';
+import {EditorHost} from './EditorHost';
 import {createEditorControlsModel} from './model';
-import type {Variant} from './contract';
-import {letterKeys, numberKeys, Picker} from './picker/Picker';
+import {layouts} from './registry';
+import {preferences} from './shell/preferences';
+import {SettingsDialog} from './shell/SettingsDialog';
 import {createStage} from './stage';
 import type {ThemePickerSlotProps} from './theme-styles/ThemePicker';
 import {ThemePicker} from './theme-styles/ThemePicker';
-import {setThemeStyle, THEME_STYLES, themeStyle} from './theme-styles/style';
+import {themeStyle} from './theme-styles/style';
 
-interface HarnessProps {
-  variants: readonly Variant[];
-  /** Adds the theme style picker beside the variant picker. */
-  themeStyles?: boolean;
-}
+export {PickerRoute as PrototypeRoute} from './picker/PickerRoute';
 
-const CONTROLS =
-  'a[href], button, input, select, textarea, [role="button"], [tabindex]:not([tabindex="-1"])';
-
-/**
- * The pills float over the page. Where they would cover a control of the
- * page, typically the production header on a narrow window, the page starts
- * under them. The check measures the page as if it were not moved.
- */
-function createChromeOffset(
-  pills: () => HTMLElement | undefined,
-  page: () => HTMLElement | undefined,
-) {
-  const [offset, setOffset] = createSignal<number>();
-  const measure = () => {
-    const chrome = pills();
-    const content = page();
-    if (!chrome || !content) return;
-    const boxes = [...chrome.children].map(el => el.getBoundingClientRect());
-    const bottom = Math.max(...boxes.map(box => box.bottom));
-    const shift = offset() ?? 0;
-    const covered = [...content.querySelectorAll(CONTROLS)].some(el => {
-      const r = el.getBoundingClientRect();
-      if (r.width === 0 || r.top - shift > bottom) return false;
-      return boxes.some(
-        box =>
-          r.left < box.right &&
-          r.right > box.left &&
-          r.top - shift < box.bottom &&
-          r.bottom - shift > box.top,
-      );
-    });
-    setOffset(covered ? Math.ceil(bottom) + 12 : undefined);
-  };
-  onMount(() => {
-    const observer = new ResizeObserver(() => requestAnimationFrame(measure));
-    const chrome = pills();
-    if (chrome) observer.observe(chrome);
-    window.addEventListener('resize', measure);
-    onCleanup(() => {
-      observer.disconnect();
-      window.removeEventListener('resize', measure);
-    });
-  });
-  return {offset, measure};
-}
-
-function initialIndex(count: number): number {
-  const requested = parseInt(
-    new URLSearchParams(location.search).get('v') ?? '',
-    10,
-  );
-  return requested >= 1 && requested <= count ? requested - 1 : 0;
-}
-
-function Harness(props: HarnessProps) {
+function Editor() {
   const model = createEditorControlsModel();
-  // A fresh object on every switch or replay, so the keyed Show re-mounts.
-  const [mounted, setMounted] = createSignal({
-    // oxlint-disable-next-line solid/reactivity -- the variant list never changes
-    index: initialIndex(props.variants.length),
+  let page!: HTMLDivElement;
+
+  const side = () =>
+    preferences.layout() === 'inspector'
+      ? preferences.inspectorSide()
+      : undefined;
+
+  // The Inspector reads its side from the layout root. The attribute goes on
+  // the wrapper below and on the root element the layout renders into it.
+  createEffect(() => {
+    const value = side();
+    preferences.layout();
+    const root = page.firstElementChild;
+    if (!(root instanceof HTMLElement)) return;
+    if (value) root.dataset.inspectorSide = value;
+    else delete root.dataset.inspectorSide;
   });
-
-  let pills: HTMLDivElement | undefined;
-  let page: HTMLDivElement | undefined;
-  const chrome = createChromeOffset(
-    () => pills,
-    () => page,
-  );
-
-  const select = (index: number) => {
-    if (index < 0 || index >= props.variants.length) return;
-    const url = new URL(location.href);
-    url.searchParams.set('v', String(index + 1));
-    history.replaceState(history.state, '', url);
-    setMounted({index});
-  };
-
-  const styleNames = THEME_STYLES.map(style => style.name);
-  const styleIndex = () =>
-    THEME_STYLES.findIndex(style => style.id === themeStyle());
 
   return (
-    <div
-      class="proto-harness"
-      data-offset={chrome.offset() === undefined ? undefined : ''}
-      style={{'--proto-offset': `${chrome.offset() ?? 0}px`}}
-    >
-      <div class="proto-variant" ref={page}>
-        <Show when={mounted()} keyed>
-          {({index}) => {
+    <>
+      <div
+        class="proto-variant"
+        ref={page}
+        data-layout={preferences.layout()}
+        data-inspector-side={side()}
+      >
+        <Show when={layouts[preferences.layout()]} keyed>
+          {layout => {
             // Created outside the JSX: a call in a prop compiles to a getter
             // and would build a new stage on every read.
             const stage = createStage();
@@ -124,66 +55,37 @@ function Harness(props: HarnessProps) {
                 style={themeStyle()}
               />
             );
-            requestAnimationFrame(chrome.measure);
             return (
               <>
                 <Dynamic
-                  component={props.variants[index].component}
+                  component={layout.component}
                   model={model}
                   stage={stage}
                   ThemePicker={BoundThemePicker}
                 />
                 {/* One menu for every layout, bound to the shortcut here. */}
-                <Show when={!props.variants[index].noCommandMenu}>
-                  <CommandMenu model={model} stage={stage} />
-                </Show>
+                <CommandMenu model={model} stage={stage} />
               </>
             );
           }}
         </Show>
       </div>
-      <div class="proto-pickers" ref={pills} data-prototype-chrome>
-        <Picker
-          label="Prototype variants"
-          names={props.variants.map(variant => variant.name)}
-          active={mounted().index}
-          onSelect={select}
-          keys={numberKeys}
-          onReplay={() => setMounted(({index}) => ({index}))}
-        />
-        <Show when={props.themeStyles}>
-          <Picker
-            label="Theme styles"
-            names={styleNames}
-            active={styleIndex()}
-            onSelect={index => setThemeStyle(THEME_STYLES[index].id)}
-            keys={letterKeys(styleNames)}
-            disabled={props.variants[mounted().index].ownThemePicker}
-          />
-        </Show>
-      </div>
-    </div>
+      {/* Outside the layout, so it stays open while the layout under it changes. */}
+      <SettingsDialog model={model} />
+    </>
   );
 }
 
-/** Loads the editor stores like the `/` route, then shows one variant at a time behind the picker. */
-export function PrototypeRoute(props: HarnessProps): JSX.Element {
-  getThemeStore().loadThemes();
-  const editorConfig = provideState(EditorConfigStore);
-  const versionState = provideState(VersionStore);
-
+/**
+ * The editor in the layout the user chose, with no prototype chrome: the
+ * layout, the Inspector's side and the theme cards are settings, changed in
+ * the settings dialog and the command menu. The `v` and `t` URL parameters
+ * still pick a layout and a theme card style for a link.
+ */
+export function UnifiedEditor(): JSX.Element {
   return (
-    <Suspense fallback={<EditorPageSkeleton />}>
-      <Show
-        when={editorConfig.get.ready && versionState.ready()}
-        fallback={<EditorPageSkeleton />}
-      >
-        {/* Same as the `/` route, which passes an undefined snippet id
-            despite the string type: the prototype edits the local document. */}
-        <EditorSyncProvider snippetId={undefined!}>
-          <Harness variants={props.variants} themeStyles={props.themeStyles} />
-        </EditorSyncProvider>
-      </Show>
-    </Suspense>
+    <EditorHost>
+      <Editor />
+    </EditorHost>
   );
 }
