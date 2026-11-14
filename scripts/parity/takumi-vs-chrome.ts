@@ -2,7 +2,6 @@ import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {extname, join} from 'node:path';
 import {parseArgs} from 'node:util';
 import type {Browser} from 'playwright';
-import {chromium} from 'playwright';
 import {PNG} from 'pngjs';
 import type {
   SnapshotFont,
@@ -14,7 +13,12 @@ import {
   snapshotMarkup,
   supportedThemeIds,
 } from '../../packages/render/dist/index.mjs';
-import {diffPng, MAX_DIFF_PERCENT, PIXELMATCH_THRESHOLD} from './lib';
+import {
+  diffPng,
+  launchChrome,
+  MAX_DIFF_PERCENT,
+  PIXELMATCH_THRESHOLD,
+} from './lib';
 
 const {values: args} = parseArgs({
   options: {
@@ -22,6 +26,8 @@ const {values: args} = parseArgs({
     only: {type: 'string'},
   },
 });
+
+const SCALE = 2;
 
 const DEFAULT_CODE = [
   'function Counter() {',
@@ -54,7 +60,7 @@ function snapshot(
     $version: '1.10.0',
     $snippetId: null,
     format: 'png',
-    scale: 2,
+    scale: SCALE,
     frame: {
       background: null,
       padding: 64,
@@ -141,6 +147,18 @@ async function matrix(): Promise<Cell[]> {
       name: 'no header',
       document: snapshot('materialOcean', {terminal: {showHeader: false}}),
     },
+    {
+      name: 'line wider than 1920 px, width 500',
+      document: {
+        ...snapshot('dracula', {
+          options: {showLineNumbers: true},
+          editor: {
+            code: `const note = "${'a line the frame must not wrap '.repeat(8)}";\n${DEFAULT_CODE}`,
+          },
+        }),
+        width: 500,
+      },
+    },
   ];
 }
 
@@ -169,10 +187,7 @@ async function renderInChrome(
   browser: Browser,
   markup: SnapshotMarkup,
 ): Promise<Buffer> {
-  const page = await browser.newPage({
-    viewport: {width: 4000, height: 4000},
-    deviceScaleFactor: markup.document.scale,
-  });
+  const page = await browser.newPage({viewport: null});
   try {
     const faces = await Promise.all(markup.fonts.map(fontFace));
     const head = [...faces, ...markup.css]
@@ -198,7 +213,7 @@ const slug = (name: string) => name.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
 
 async function main() {
   await mkdir(args.out, {recursive: true});
-  const browser = await chromium.launch();
+  const browser = await launchChrome(SCALE);
   const rows: string[] = [];
   let failed = 0;
   try {
