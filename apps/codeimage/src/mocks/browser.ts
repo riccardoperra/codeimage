@@ -1,7 +1,10 @@
 import {setupWorker} from 'msw/browser';
-import {db} from './db';
-import {persistMswjs} from './persist';
+import {hydrateDb} from './persist';
 import projectHandlers from './projectMockHandlers';
 
 export const worker = setupWorker(...projectHandlers);
-persistMswjs(db);
+
+export async function startMockApi() {
+  await hydrateDb();
+  await worker.start();
+}

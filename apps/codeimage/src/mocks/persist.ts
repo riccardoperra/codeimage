@@ -1,38 +1,17 @@
-import {drop} from '@mswjs/data';
-import type {FactoryAPI} from '@mswjs/data/lib/glossary';
-import {useIdb} from '../hooks/use-indexed-db';
+import {get, set} from 'idb-keyval';
+import {db} from './db';
 
-const STORAGE_KEY_PREFIX = 'mswjs-data';
+const STORAGE_KEY = 'mswjs-data';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function persistMswjs(db: FactoryAPI<any>) {
-  const idb = useIdb();
-  const key = `${STORAGE_KEY_PREFIX}`;
+type PersistedState = {
+  project: ReturnType<typeof db.project.getAll>;
+};
 
-  const channel = new BroadcastChannel('mswjs/data/sync');
-  channel.addEventListener('message', persistState);
+export async function hydrateDb() {
+  const state = await get<PersistedState>(STORAGE_KEY);
+  state?.project.forEach(project => db.project.create(project));
+}
 
-  async function persistState() {
-    const state: Record<string, unknown> = {};
-    Object.entries(db).forEach(([k, entity]) => (state[k] = entity.getAll()));
-    await idb.set(key, state);
-  }
-
-  async function hydrateState() {
-    drop(db);
-    const initialState = await idb.get(key);
-    if (!initialState) {
-      return;
-    }
-    Object.entries(db).forEach(([k, entity]) => {
-      const value = initialState[k];
-      if (value instanceof Array) {
-        value.forEach(_ => entity.create(_));
-      } else {
-        entity.create(value);
-      }
-    });
-  }
-
-  window.addEventListener('load', hydrateState);
+export function persistDb() {
+  return set(STORAGE_KEY, {project: db.project.getAll()});
 }

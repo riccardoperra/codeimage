@@ -3,6 +3,7 @@ import {randUuid} from '@ngneat/falso';
 import {HttpResponse, type RequestHandler} from 'msw';
 import {http} from 'msw';
 import {db} from './db';
+import {persistDb} from './persist';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -16,6 +17,7 @@ function getProjectByIdOrThrowNotFound(id: string, ownerId?: string) {
   try {
     const project = db.project.findFirst({
       where: whereClause,
+      strict: true,
     });
     return {
       data: project,
@@ -63,7 +65,7 @@ const handlers: RequestHandler[] = [
     }
     return HttpResponse.json(data);
   }),
-  http.delete(`${BASE_URL}/api/v1/project/:id`, ({request, params}) => {
+  http.delete(`${BASE_URL}/api/v1/project/:id`, async ({request, params}) => {
     const id = params['id'] as string;
     const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
@@ -78,6 +80,7 @@ const handlers: RequestHandler[] = [
           ownerId: {equals: ownerId},
         },
       });
+      await persistDb();
       return HttpResponse.json(deleteResult);
     } catch (e) {
       return HttpResponse.json(
@@ -110,6 +113,7 @@ const handlers: RequestHandler[] = [
           ownerId: {equals: ownerId},
         },
       });
+      await persistDb();
       return HttpResponse.json(updateNameResult);
     } catch (e) {
       return HttpResponse.json(
@@ -172,6 +176,7 @@ const handlers: RequestHandler[] = [
           ownerId: {equals: ownerId},
         },
       });
+      await persistDb();
       return HttpResponse.json(updateNameResult);
     } catch (e) {
       return HttpResponse.json(
@@ -230,6 +235,7 @@ const handlers: RequestHandler[] = [
         code: editor.code,
       })),
     });
+    await persistDb();
     return HttpResponse.json(project);
   }),
   http.post(
@@ -250,13 +256,14 @@ const handlers: RequestHandler[] = [
       if (data) {
         const {id: _id, name, ...others} = data;
 
-        return HttpResponse.json(
-          db.project.create({
-            ...others,
-            name: body?.newName ?? name,
-            isOwner: true,
-          }),
-        );
+        const project = db.project.create({
+          ...others,
+          id: randUuid(),
+          name: body?.newName ?? name,
+          isOwner: true,
+        });
+        await persistDb();
+        return HttpResponse.json(project);
       }
 
       return HttpResponse.json(
