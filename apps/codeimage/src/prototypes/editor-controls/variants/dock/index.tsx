@@ -80,7 +80,7 @@ export default function Dock(props: VariantProps) {
 
   let bar: HTMLDivElement | undefined;
   let canvas: HTMLDivElement | undefined;
-  let exportSlot: HTMLDivElement | undefined;
+  let root: HTMLDivElement | undefined;
   let trigger: HTMLElement | undefined;
 
   const inset = createFrameGuard(() => canvas);
@@ -151,24 +151,17 @@ export default function Dock(props: VariantProps) {
     onCleanup(() => window.removeEventListener('keydown', onKeyDown, true));
   });
 
-  // The production Export button owns the dialog. It listens for Ctrl+S on
-  // wide windows, and on a phone it is the button in the bar.
+  // The production Export button owns the dialog, in the header on wide
+  // windows and in the bar on a phone. It is the page's one primary button.
+  // The frame lets the tray close and hand focus back first.
   const exportImage = () =>
-    requestAnimationFrame(() => {
-      const button = exportSlot?.querySelector('button');
-      if (button) {
-        button.click();
-        return;
-      }
-      document.body.dispatchEvent(
-        new KeyboardEvent('keydown', {
-          key: 's',
-          code: 'KeyS',
-          ctrlKey: true,
-          bubbles: true,
-        }),
-      );
-    });
+    requestAnimationFrame(() =>
+      root
+        ?.querySelector<HTMLElement>(
+          '[data-cui="button"][data-theme="primary"]',
+        )
+        ?.click(),
+    );
 
   const actions = (): Action[] => [
     {label: 'Export image…', note: 'Ctrl S', run: exportImage},
@@ -197,6 +190,7 @@ export default function Dock(props: VariantProps) {
   return (
     <DockContext.Provider value={dock}>
       <div
+        ref={root}
         class={`dock-root ${tokens}`}
         data-panel={panel()}
         data-compact={compact() ? '' : undefined}
@@ -312,7 +306,7 @@ export default function Dock(props: VariantProps) {
               </Button>
             </Show>
             <Show when={exportInBar}>
-              <div class="dock-bar-export" ref={exportSlot} onClick={close}>
+              <div class="dock-bar-export" onClick={close}>
                 <props.stage.ExportButton />
               </div>
             </Show>
