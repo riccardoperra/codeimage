@@ -1,8 +1,12 @@
 import {history, redo, undo} from '@codemirror/commands';
 import type {Transaction} from '@codemirror/state';
-import {EditorState} from '@codemirror/state';
+import {EditorState, type TransactionSpec} from '@codemirror/state';
+import type {EditorView} from '@codemirror/view';
 import {describe, expect, it} from 'vitest';
+import {pasteAnnotations} from './paste';
 import {
+  clearLineMark,
+  markLines,
   lineMarksField,
   lineMarksHistory,
   marksValue,
@@ -16,14 +20,75 @@ function editor() {
       doc: 'one\ntwo\nthree\nfour\nfive\nsix',
       extensions: [lineMarksField, history(), lineMarksHistory],
     }),
-    dispatch(tr: Transaction) {
-      target.state = tr.state;
+    dispatch(tr: Transaction | TransactionSpec) {
+      target.state = 'state' in tr ? tr.state : target.state.update(tr).state;
     },
   };
   return target;
 }
 
 describe('line marks', () => {
+  it('adds separate focus selections, clears one line at a time, and undoes each clear', () => {
+    const target = editor();
+    const view = target as unknown as EditorView;
+    markLines(view, [1, 2], 'focus');
+    markLines(view, [5, 6], 'focus');
+    markLines(view, [2], 'added');
+    expect(readMarks(target.state)).toEqual({
+      lines: [{line: 2, kind: 'added'}],
+      focusedLines: [1, 2, 5, 6],
+    });
+    clearLineMark(view, 2, 'added');
+    expect(readMarks(target.state).focusedLines).toEqual([1, 2, 5, 6]);
+    expect(readMarks(target.state).lines).toEqual([]);
+    undo(target);
+    expect(readMarks(target.state).lines).toEqual([{line: 2, kind: 'added'}]);
+    clearLineMark(view, 2, 'focus');
+    expect(readMarks(target.state)).toEqual({
+      lines: [{line: 2, kind: 'added'}],
+      focusedLines: [1, 5, 6],
+    });
+    undo(target);
+    expect(readMarks(target.state).focusedLines).toEqual([1, 2, 5, 6]);
+    markLines(view, [1, 2], null);
+    expect(readMarks(target.state).focusedLines).toEqual([5, 6]);
+    markLines(view, [5, 6], null);
+    expect(readMarks(target.state).focusedLines).toEqual([]);
+  });
+  it('maps, deletes and restores focused lines independently of highlights', () => {
+    const target = editor();
+    markLines(target as unknown as EditorView, [2], 'focus');
+    target.dispatch({changes: {from: 0, insert: 'new\nnew\n'}});
+    expect(readMarks(target.state)).toEqual({lines: [], focusedLines: [4]});
+    target.dispatch({
+      changes: {
+        from: target.state.doc.line(4).from,
+        to: target.state.doc.line(5).from,
+      },
+    });
+    expect(readMarks(target.state).focusedLines).toEqual([]);
+    undo(target);
+    expect(readMarks(target.state).focusedLines).toEqual([4]);
+  });
+  it('merges pasted focus ranges with existing focus and undoes annotation conversion', () => {
+    const target = editor();
+    const view = target as unknown as EditorView;
+    markLines(view, [1], 'focus');
+    target.dispatch({selection: {anchor: target.state.doc.line(4).from}});
+    pasteAnnotations(view, 'alpha // [!code ++] [!code focus:2]\nbeta\n', {
+      line: '//',
+    });
+    expect(readMarks(target.state)).toEqual({
+      lines: [{line: 4, kind: 'added'}],
+      focusedLines: [1, 4, 5],
+    });
+    expect(target.state.doc.toString()).not.toContain('[!code');
+    undo(target);
+    expect(target.state.doc.toString()).toContain('[!code focus:2]');
+    expect(readMarks(target.state)).toEqual({lines: [], focusedLines: [1]});
+    redo(target);
+    expect(readMarks(target.state).focusedLines).toEqual([1, 4, 5]);
+  });
   it('maps a mark on line 5 to line 7 after inserting two lines above it', () => {
     const view = editor();
     view.dispatch(
@@ -31,7 +96,7 @@ describe('line marks', () => {
         effects: replaceMarks.of(
           marksValue(view.state.doc, {
             lines: [{line: 5, kind: 'highlight'}],
-            focus: false,
+            focusedLines: [],
           }),
         ),
       }),
@@ -48,17 +113,17 @@ describe('line marks', () => {
         effects: replaceMarks.of(
           marksValue(view.state.doc, {
             lines: [{line: 2, kind: 'added'}],
-            focus: true,
+            focusedLines: [2],
           }),
         ),
       }),
     );
     expect(undo(view)).toBe(true);
-    expect(readMarks(view.state)).toEqual({lines: [], focus: false});
+    expect(readMarks(view.state)).toEqual({lines: [], focusedLines: []});
     expect(redo(view)).toBe(true);
     expect(readMarks(view.state)).toEqual({
       lines: [{line: 2, kind: 'added'}],
-      focus: true,
+      focusedLines: [2],
     });
   });
   it('restores a deleted marked line on undo', () => {
@@ -68,7 +133,7 @@ describe('line marks', () => {
         effects: replaceMarks.of(
           marksValue(view.state.doc, {
             lines: [{line: 2, kind: 'removed'}],
-            focus: false,
+            focusedLines: [],
           }),
         ),
       }),
@@ -92,7 +157,7 @@ describe('line marks', () => {
         effects: replaceMarks.of(
           marksValue(view.state.doc, {
             lines: [{line: 2, kind: 'highlight'}],
-            focus: false,
+            focusedLines: [],
           }),
         ),
       }),
@@ -114,7 +179,7 @@ describe('line marks', () => {
               {line: 2, kind: 'added'},
               {line: 3, kind: 'removed'},
             ],
-            focus: false,
+            focusedLines: [],
           }),
         ),
       }),
@@ -136,7 +201,7 @@ describe('line marks', () => {
               {line: 2, kind: 'highlight'},
               {line: 99, kind: 'added'},
             ],
-            focus: false,
+            focusedLines: [],
           }),
         ),
       }),

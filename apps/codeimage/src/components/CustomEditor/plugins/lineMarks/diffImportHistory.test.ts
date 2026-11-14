@@ -26,7 +26,7 @@ function fixture() {
         code: 'keep',
         languageId: 'typescript',
         lineNumberStart: 1,
-        marks: {lines: [], focus: false},
+        marks: {lines: [], focusedLines: []},
       },
       {
         id: 'current',
@@ -34,7 +34,7 @@ function fixture() {
         code: 'raw two-file diff',
         languageId: 'python',
         lineNumberStart: 7,
-        marks: {lines: [{line: 1, kind: 'highlight'}], focus: true},
+        marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [1]},
       },
     ],
   };
@@ -53,7 +53,7 @@ function fixture() {
             {line: 1, kind: 'removed'},
             {line: 2, kind: 'added'},
           ],
-          focus: false,
+          focusedLines: [],
         },
       },
       {

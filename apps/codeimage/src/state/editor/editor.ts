@@ -1,3 +1,4 @@
+import {parseTabMarks} from '@codeimage/api/schemas';
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
@@ -23,7 +24,7 @@ export function getInitialEditorState(): EditorState {
     languageId: appEnvironment.defaultState.editor.languageId,
     formatter: null,
     lineNumberStart: 1,
-    marks: {lines: [], focus: false},
+    marks: {lines: [], focusedLines: []},
     tab: {
       tabName: 'index.tsx',
       tabIcon: undefined,
@@ -107,7 +108,7 @@ export function createEditorsStore() {
           id: editor.id,
           code: editor.code,
           lineNumberStart: editor.lineNumberStart,
-          marks: editor.marks ?? {lines: [], focus: false},
+          marks: parseTabMarks(editor.marks),
         }));
       return {
         options: {...state.options, ...persistedState.options},
@@ -119,7 +120,7 @@ export function createEditorsStore() {
             tab: {tabName: editor.tabName},
             id: editor.id,
             lineNumberStart: editor.lineNumberStart,
-            marks: editor.marks ?? {lines: [], focus: false},
+            marks: parseTabMarks(editor.marks),
           };
         }),
       };
@@ -143,7 +144,7 @@ export function createEditorsStore() {
           tabName: editor.tab.tabName ?? '',
           id: editor.id,
           lineNumberStart: editor.lineNumberStart ?? 1,
-          marks: editor.marks ?? {lines: [], focus: false},
+          marks: parseTabMarks(editor.marks),
         };
       }),
       options: {
@@ -254,7 +255,7 @@ export function createEditorsStore() {
             id: editor.id,
             code: editor.code,
             lineNumberStart: editor.lineNumberStart ?? 1,
-            marks: editor.marks ?? {lines: [], focus: false},
+            marks: parseTabMarks(editor.marks),
           }) as EditorState,
       ),
     );

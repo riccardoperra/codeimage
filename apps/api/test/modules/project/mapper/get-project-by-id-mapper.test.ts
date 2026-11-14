@@ -52,7 +52,7 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
         languageId: 'typescript',
         tabName: 'n.ts',
         lineNumberStart: 1,
-        marks: {lines: [{line: 1, kind: 'highlight'}], focus: true},
+        marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
       },
     ],
   });
@@ -72,7 +72,7 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
         languageId: 'typescript',
         tabName: 'n.ts',
         lineNumberStart: 1,
-        marks: {lines: [{line: 1, kind: 'highlight'}], focus: true},
+        marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
       },
     ],
     frame: {
