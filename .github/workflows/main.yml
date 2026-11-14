@@ -12,45 +12,8 @@ on:
       - changeset-release/main
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout PR
-        uses: actions/checkout@v6
-      - name: 📥 Setup
-        uses: ./.github/actions/setup-job
-      - name: 📥 Monorepo install
-        uses: ./.github/actions/pnpm-install
-
-      - uses: dorny/paths-filter@v4
-        id: diff-changes
-        with:
-          filters: |
-            app:
-              - apps/codeimage/**
-              - package.json
-              - pnpm-lock.json
-            libs:
-              - packages/**
-              - package.json
-              - pnpm-lock.json
-            backend:
-              - 'packages/prisma-models/**'
-              - 'apps/api/**'
-              - package.json
-              - pnpm-lock.json
-
-    outputs:
-      backend-change: 'true'
-      app-change: 'true'
-      libs-change: 'true'
-  #      backend-change: ${{ steps.filter.outputs.backend }}
-  #      app-change: ${{ steps.filter.outputs.app }}
-  #      libs-change: ${{ steps.filter.outputs.libs }}
-
   lint:
     name: Lint
-    needs: install
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -71,7 +34,6 @@ jobs:
 
   build-packages:
     name: Build packages
-    needs: [install]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -103,9 +65,8 @@ jobs:
           if-no-files-found: error
 
   typecheck-packages:
-    if: ${{ needs.install.outputs.libs-change == 'true' }}
     name: Type-checking
-    needs: [install, build-packages, build-api]
+    needs: [build-packages, build-api]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -224,7 +185,6 @@ jobs:
     name: '@codeimage/highlight dev and Preview'
     environment: Preview
     needs: [build-packages]
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -256,7 +216,6 @@ jobs:
     name: '@codeimage/website dev and Preview'
     environment: Preview
     needs: [build-packages]
-    if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -412,7 +371,7 @@ jobs:
 
   build-api:
     name: Build Api
-    needs: [install, build-packages]
+    needs: [build-packages]
     runs-on: ubuntu-latest
 
     steps:
@@ -451,9 +410,7 @@ jobs:
           if-no-files-found: error
 
   be-test:
-    if: ${{ needs.install.outputs.backend-change == 'true' }}
     name: Api test
-    needs: [install]
     runs-on: ubuntu-latest
 
     services:
