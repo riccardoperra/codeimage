@@ -202,3 +202,30 @@ test<TestContext>('PUT /v1/project/:id [Update Project] -> 404 when the project 
     'keeps the stored frame',
   );
 });
+
+test<TestContext>('PUT /v1/project/:id [Update Project] -> keeps editor tabs of other projects untouched', async context => {
+  const fastify = await build(context);
+  const otherUser = await userSeed.createUser();
+  const otherProject = await projectSeed.createProject(
+    'owned by another user',
+    otherUser.id,
+  );
+  const otherTab = otherProject.editorTabs[0];
+
+  const response = await fastify.inject({
+    url: `/api/v1/project/${context.project1.id}`,
+    method: 'PUT',
+    payload: buildUpdateRequest(otherTab.id),
+  });
+
+  assert.equal(response.statusCode, 200, 'return status 200');
+  expect(
+    await client.snippetEditorTab.findUniqueOrThrow({
+      where: {id: otherTab.id},
+    }),
+  ).toEqual(otherTab);
+  const ownTabs = await client.snippetEditorTab.findMany({
+    where: {projectId: context.project1.id},
+  });
+  expect(ownTabs.map(tab => tab.id)).not.toContain(otherTab.id);
+});
