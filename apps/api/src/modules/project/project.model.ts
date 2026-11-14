@@ -34,6 +34,7 @@ export interface SnippetTerminal {
   readonly opacity: number;
   readonly alternativeTheme: boolean;
   readonly borderType: string | null;
+  readonly surface: 'solid' | 'wash';
 }
 
 export interface SnippetEditorOptions {
@@ -152,6 +153,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
         SnippetTerminalCreateRequestSchema.properties.alternativeTheme.default,
       shadow: body.terminal.shadow ?? null,
       borderType: body.terminal.borderType ?? null,
+      surface: readTerminalSurface(body.terminal.surface),
     },
     editorOptions: {
       fontWeight: body.editorOptions.fontWeight,
@@ -174,7 +176,10 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
 export function changesFromUpdateBody(body: ProjectUpdateBody): ProjectChanges {
   return {
     frame: body.frame,
-    terminal: body.terminal,
+    terminal: {
+      ...body.terminal,
+      surface: readTerminalSurface(body.terminal.surface),
+    },
     editorOptions: body.editorOptions,
     editorTabs: body.editors,
   };
@@ -205,4 +210,10 @@ export function draftFromClone(
 
 export function viewFor(project: Project, viewer: Principal): ProjectView {
   return {...project, isOwner: isOwnedBy(viewer, project.ownerId)};
+}
+
+export function readTerminalSurface(
+  value: string | null | undefined,
+): SnippetTerminal['surface'] {
+  return value === 'wash' ? 'wash' : 'solid';
 }
