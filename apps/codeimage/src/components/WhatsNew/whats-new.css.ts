@@ -172,6 +172,12 @@ globalStyle(`${commandAnchor} > ${dotAnchor}`, {
   top: '-9px',
   zIndex: 1,
 });
+// A layout may give the buttons in its toolbar a taller touch target. The
+// dot keeps its own, so that it does not cover the control it sits on.
+globalStyle(`${commandAnchor} > ${dotAnchor} ${dot}`, {
+  minWidth: 0,
+  minHeight: 0,
+});
 // A dot on the corner of a filled control, which has the dot's colour.
 export const filledAnchor = style({});
 globalStyle(`${filledAnchor} > ${dotAnchor} ${dot}::after`, {
