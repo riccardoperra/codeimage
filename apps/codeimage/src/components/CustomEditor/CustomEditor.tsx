@@ -30,6 +30,7 @@ import {
 import {createCodeMirror, createEditorReadonly} from 'solid-codemirror';
 import type {VoidProps} from 'solid-js';
 import {createEffect, createMemo, createResource, on} from 'solid-js';
+import {baseEditorTheme} from './editorTheme';
 import {createTabIcon} from '../../hooks/use-tab-icon';
 
 const EDITOR_BASE_SETUP: Extension = [
@@ -64,7 +65,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   const languages = SUPPORTED_LANGUAGES;
   const {
     state: editorState,
-    canvasEditorEvents,
     computed: {selectedFont},
   } = getRootEditorStore();
   const {editor} = getActiveEditorStore();
@@ -78,7 +78,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
     createExtension,
   } = createCodeMirror({
     value: editor()?.code,
-    onTransactionDispatched: tr => canvasEditorEvents.emit(tr),
     onValueChange: props.onValueChange,
   });
 
@@ -111,38 +110,6 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       themes().find(theme => theme()?.id === editorState.options.themeId)?.() ??
       themes()[0](),
   );
-
-  const baseTheme = EditorView.theme({
-    '&': {
-      textAlign: 'left',
-      background: 'transparent !important',
-    },
-    '.cm-content': {
-      textAlign: 'left',
-    },
-    '.cm-gutters': {
-      backgroundColor: 'transparent',
-      border: 'none',
-    },
-    '.cm-lineNumbers': {
-      position: 'sticky',
-      flexDirection: 'column',
-      flexShrink: 0,
-    },
-    '.cm-lineNumbers .cm-gutterElement': {
-      textAlign: 'right',
-      padding: '0 16px 0 8px',
-      lineHeight: '21px',
-    },
-    '.cm-line': {
-      padding: '0 2px 0 8px',
-    },
-    '.cm-cursor': {
-      borderLeftWidth: '2px',
-      height: '21px',
-      transform: 'translateY(-10%)',
-    },
-  });
 
   const customFontExtension = (): Extension => {
     const font = selectedFont();
@@ -197,7 +164,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       : [];
   });
   createExtension(() => themeConfiguration()?.editorTheme || []);
-  createExtension(baseTheme);
+  createExtension(baseEditorTheme);
 
   const reconfigureBaseSetup = createExtension(EDITOR_BASE_SETUP);
 

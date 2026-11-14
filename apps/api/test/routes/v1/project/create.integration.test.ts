@@ -1,12 +1,9 @@
 import type {User} from '@codeimage/prisma-models';
-import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
-import type {
-  ProjectCreateRequest,
-  ProjectCreateResponse,
-} from '../../../../src/modules/project/schema/index.js';
+import {afterEach, assert, beforeEach, expect, test} from 'vitest';
+import type {ProjectCreateResponse} from '../../../../src/modules/project/project.contract.js';
 
-import {build} from '../../../helper.js';
-import {clearAllSeeds, userSeed} from '../../../helpers/seed.js';
+import {build} from '../../../helpers/app.js';
+import {clearAllSeeds, client, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
@@ -23,9 +20,8 @@ afterEach(async () => {
 test<TestContext>('POST /v1/project/ [Create Project] -> 200', async context => {
   const fastify = await build(context);
   const userId = context.user.id;
-  const spy = vi.spyOn(fastify.projectService, 'createNewProject');
 
-  const data: ProjectCreateRequest = {
+  const data = {
     name: 'Data',
     frame: {
       background: '#fff',
@@ -71,7 +67,12 @@ test<TestContext>('POST /v1/project/ [Create Project] -> 200', async context => 
 
   const body = response.json<ProjectCreateResponse>();
 
-  expect(spy, 'has been called once').toHaveBeenCalledWith(userId, data);
   assert.equal(response.statusCode, 200, 'return status 200');
   assert.equal(body.name, 'Data');
+  expect(
+    await client.project.findUnique({
+      where: {id: body.id},
+      include: {editorTabs: true},
+    }),
+  ).toMatchObject({ownerId: userId, name: data.name, editorTabs: data.editors});
 });

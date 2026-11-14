@@ -53,6 +53,7 @@ export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
 
           <Show when={props.showTab && (!props.lite || props.preview)}>
             <TerminalWindowTabList
+              activeTabId={props.activeTabId}
               lite={props.lite}
               showOnlyActiveTab={props.showOnlyActiveTab}
               preview={props.preview ?? false}

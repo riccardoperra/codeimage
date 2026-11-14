@@ -1,0 +1,1462 @@
+{
+  "threshold": 0.1,
+  "maxDiffPercent": 0.5,
+  "rows": [
+    {
+      "theme": "Fleet Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0.0169
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0.0169
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0.0169
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0.0169
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave  84",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave  84",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave  84",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave  84",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave  84",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave  84",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave  84",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave  84",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "985x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "windows",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "windows",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOs",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOs",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": false,
+      "size": "981x468",
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbersFrom42": true,
+      "size": "981x468",
+      "diffPercent": 0
+    }
+  ]
+}
