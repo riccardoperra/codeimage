@@ -1,0 +1,1318 @@
+/* Colours and radii come from tokens.css.ts. Every selector starts with dock-. */
+
+.dock-root {
+  --dock-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --dock-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --dock-row: 36px;
+
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  overflow: hidden;
+  background: var(--dock-canvas);
+  color: var(--dock-text);
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.dock-root button,
+.dock-root input {
+  font: inherit;
+  color: inherit;
+}
+
+.dock-root button {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dock-root :focus-visible {
+  outline: 2px solid var(--dock-primary);
+  outline-offset: 2px;
+}
+
+.dock-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.dock-icon {
+  flex: none;
+}
+
+/* Stage */
+
+.dock-stage {
+  grid-row: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Keeps the frame clear of the prototype picker at the top centre. */
+  padding-top: 44px;
+}
+
+.dock-canvas {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dock-brand {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  height: 22px;
+  width: auto;
+}
+
+.dock-menu {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+}
+
+/* Dock */
+
+.dock-bar-slot {
+  grid-row: 3;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 16px;
+}
+
+.dock-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  max-width: 100%;
+  padding: 6px;
+  border: 1px solid var(--dock-border);
+  border-radius: var(--dock-radius);
+  background: var(--dock-surface);
+  box-shadow: var(--dock-shadow);
+}
+
+.dock-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 160ms var(--dock-ease-out);
+}
+
+button.dock-item:active {
+  transform: scale(0.97);
+}
+
+.dock-item[aria-expanded='true'] {
+  background: var(--dock-raised);
+}
+
+.dock-item-art {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--dock-muted);
+}
+
+.dock-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dock-item-label {
+  color: var(--dock-muted);
+  font-size: 11px;
+}
+
+.dock-item-label:only-child {
+  color: var(--dock-text);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dock-item-value {
+  overflow: hidden;
+  max-width: 132px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dock-art-theme,
+.dock-art-fill {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.35);
+}
+
+.dock-art-theme {
+  position: relative;
+  overflow: hidden;
+}
+
+.dock-art-theme > span {
+  position: absolute;
+  inset: 7px 0 0 7px;
+  border-top-left-radius: 5px;
+}
+
+.dock-art-fill[data-hidden] {
+  background: repeating-conic-gradient(
+      rgba(128, 128, 128, 0.35) 0 25%,
+      transparent 0 50%
+    )
+    0 0 / 8px 8px !important;
+}
+
+.dock-art-font {
+  color: var(--dock-text);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dock-separator {
+  align-self: center;
+  width: 1px;
+  height: 24px;
+  margin: 0 6px;
+  background: var(--dock-border);
+}
+
+.dock-bar-padding {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  cursor: default;
+}
+
+.dock-bar-padding .dock-row-label {
+  flex: none;
+  color: var(--dock-muted);
+  font-size: 11px;
+}
+
+.dock-bar-padding .dock-segment-label {
+  min-width: 28px;
+  height: 20px;
+  padding: 0 6px;
+}
+
+.dock-bar-padding-button {
+  display: none;
+}
+
+.dock-bar-search {
+  color: var(--dock-muted);
+}
+
+.dock-kbd {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--dock-raised);
+  color: var(--dock-muted);
+  font: inherit;
+  font-size: 11px;
+}
+
+.dock-bar-copy,
+.dock-bar-export {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+
+/* Tray */
+
+.dock-tray-slot {
+  grid-row: 2;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  padding: 0 16px;
+}
+
+.dock-tray {
+  position: relative;
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
+  /* The canvas keeps at least a third of the window while a tray is open. */
+  max-height: calc(100dvh - 124px - 33dvh);
+  margin-bottom: 8px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--dock-border);
+  border-radius: var(--dock-radius);
+  background: var(--dock-surface);
+  box-shadow: var(--dock-shadow);
+  animation: dock-tray-in 160ms var(--dock-ease-out);
+}
+
+/* Opened from the keyboard, so it appears at once. */
+.dock-tray[data-instant] {
+  animation: none;
+}
+
+.dock-tray:focus-visible {
+  outline: none;
+}
+
+@keyframes dock-tray-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+@keyframes dock-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.dock-tray[data-panel='themes'] {
+  width: 100%;
+}
+
+.dock-tray[data-panel='language'] {
+  width: 860px;
+}
+
+.dock-tray[data-panel='background'] {
+  width: 920px;
+}
+
+.dock-tray[data-panel='font'] {
+  width: 880px;
+}
+
+.dock-tray[data-panel='commands'] {
+  width: 640px;
+}
+
+.dock-tray[data-detail] {
+  width: 640px;
+}
+
+.dock-panel {
+  padding: 12px;
+}
+
+.dock-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 32px;
+  margin-bottom: 10px;
+}
+
+.dock-panel-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dock-hint {
+  margin: 0 0 0 auto;
+  color: var(--dock-muted);
+  font-size: 11px;
+}
+
+.dock-empty {
+  margin: 0;
+  padding: 16px 8px;
+  color: var(--dock-muted);
+}
+
+.dock-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--dock-primary) !important;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.dock-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 240px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: var(--dock-raised);
+  color: var(--dock-muted);
+}
+
+.dock-search:focus-within {
+  outline: 2px solid var(--dock-primary);
+  outline-offset: 0;
+}
+
+.dock-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--dock-text);
+}
+
+.dock-root .dock-search input:focus-visible {
+  outline: none;
+}
+
+.dock-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.dock-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--dock-raised);
+  cursor: pointer;
+  transition: transform 160ms var(--dock-ease-out);
+}
+
+.dock-button:active {
+  transform: scale(0.97);
+}
+
+.dock-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Themes */
+
+.dock-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 8px;
+}
+
+.dock-theme {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+  background: var(--dock-raised);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 160ms var(--dock-ease-out);
+}
+
+.dock-theme:active {
+  transform: scale(0.97);
+}
+
+.dock-root .dock-theme[data-previewed],
+.dock-root .dock-theme:focus-visible {
+  outline: 2px solid var(--dock-primary);
+  outline-offset: 1px;
+}
+
+.dock-theme-art {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 46px;
+  padding: 7px 7px 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dock-theme-code {
+  display: block;
+  zoom: 0.55;
+}
+
+.dock-theme-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 24px;
+  padding: 0 6px;
+  color: var(--dock-muted);
+  font-size: 11px;
+}
+
+.dock-theme-name-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dock-theme .dock-icon,
+.dock-chip .dock-icon {
+  display: none;
+  color: var(--dock-primary);
+}
+
+.dock-theme[data-selected] .dock-icon,
+.dock-chip[data-selected] .dock-icon {
+  display: block;
+}
+
+.dock-theme[data-selected] .dock-theme-name {
+  color: var(--dock-text);
+  font-weight: 600;
+}
+
+/* Lists of options */
+
+.dock-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 4px;
+}
+
+.dock-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dock-chip[data-previewed] {
+  background: var(--dock-raised);
+}
+
+.dock-chip[data-selected] {
+  background: var(--dock-raised);
+  font-weight: 600;
+}
+
+.dock-chip-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dock-padding-panel .dock-chip-grid {
+  grid-template-columns: repeat(5, 64px);
+}
+
+.dock-padding-panel .dock-chip {
+  justify-content: center;
+}
+
+.dock-padding-panel .dock-chip-label {
+  flex: none;
+}
+
+.dock-font {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 272px;
+  gap: 16px;
+}
+
+.dock-font-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dock-font-side,
+.dock-background-side,
+.dock-detail-side {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 42px;
+}
+
+.dock-detail-side {
+  padding-top: 8px;
+}
+
+.dock-window-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.dock-window-grid .dock-chip {
+  height: auto;
+  padding: 8px 10px;
+  flex-wrap: wrap;
+  background: var(--dock-raised);
+}
+
+.dock-root .dock-window-grid .dock-chip[data-previewed],
+.dock-root .dock-window-grid .dock-chip[data-selected] {
+  outline: 2px solid var(--dock-primary);
+  outline-offset: 0;
+}
+
+.dock-window-art {
+  display: block;
+  width: 100%;
+  pointer-events: none;
+}
+
+.dock-system-fonts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Background */
+
+.dock-background {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+}
+
+.dock-background-hidden {
+  grid-column: 1 / -1;
+  max-width: 360px;
+}
+
+.dock-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 32px);
+  gap: 6px;
+}
+
+.dock-swatch {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 160ms var(--dock-ease-out);
+}
+
+.dock-swatch:active {
+  transform: scale(0.94);
+}
+
+.dock-swatch-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.35);
+}
+
+.dock-root .dock-swatch[data-previewed],
+.dock-root .dock-swatch[data-selected] {
+  outline: 2px solid var(--dock-primary);
+  outline-offset: 2px;
+}
+
+.dock-color input {
+  width: 44px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+
+.dock-image {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 10px;
+}
+
+/* Rows */
+
+.dock-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--dock-row);
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+}
+
+.dock-row-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dock-row-value {
+  overflow: hidden;
+  max-width: 55%;
+  color: var(--dock-muted);
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dock-list-row,
+.dock-switch,
+.dock-switch .dock-row-label {
+  cursor: pointer;
+}
+
+.dock-list-row .dock-icon {
+  color: var(--dock-muted);
+}
+
+.dock-list-row:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dock-switch .dock-row-label {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+}
+
+.dock-switch-track {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--dock-pressed);
+}
+
+.dock-switch-track[data-checked] {
+  background: var(--dock-primary);
+}
+
+.dock-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--dock-knob);
+  transition: transform 150ms var(--dock-ease-out);
+}
+
+.dock-switch-thumb[data-checked] {
+  transform: translateX(12px);
+}
+
+.dock-switch-input:focus-visible + .dock-switch-track {
+  outline: 2px solid var(--dock-primary);
+  outline-offset: 2px;
+}
+
+.dock-segments {
+  display: flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--dock-raised);
+}
+
+.dock-segment {
+  position: relative;
+}
+
+.dock-segment-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 34px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  color: var(--dock-muted);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.dock-segment[data-checked] .dock-segment-label {
+  background: var(--dock-pressed);
+  color: var(--dock-text);
+  font-weight: 500;
+}
+
+.dock-segment-input:focus-visible + .dock-segment-label {
+  outline: 2px solid var(--dock-primary);
+  outline-offset: 1px;
+}
+
+.dock-range input {
+  flex: none;
+  width: 120px;
+  accent-color: var(--dock-primary);
+}
+
+.dock-range .dock-row-value {
+  width: 28px;
+  text-align: right;
+}
+
+.dock-number input {
+  box-sizing: border-box;
+  width: 88px;
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--dock-raised);
+  text-align: right;
+}
+
+/* More */
+
+.dock-groups {
+  display: grid;
+  grid-template-columns: repeat(3, 292px);
+  gap: 12px;
+}
+
+.dock-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dock-group-title {
+  margin: 0;
+  padding: 6px 10px 8px;
+  color: var(--dock-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dock-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 8px 10px 2px;
+}
+
+/* The dock has no room for Copy below 1200px, so it moves here. */
+.dock-actions-copy,
+.dock-actions-search {
+  display: none;
+}
+
+.dock-tab-list {
+  position: relative;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
+  background: var(--dock-raised);
+}
+
+.dock-tab {
+  flex: 1;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dock-muted);
+  cursor: pointer;
+}
+
+.dock-tab[data-selected] {
+  background: var(--dock-pressed);
+  color: var(--dock-text);
+  font-weight: 500;
+}
+
+/* Command menu */
+
+.dock-commands {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.dock-commands-input {
+  box-sizing: border-box;
+  width: auto;
+  height: 44px;
+  margin: 6px 6px 0;
+  background: transparent;
+}
+
+.dock-commands-input:focus-within {
+  outline: none;
+}
+
+.dock-command-list {
+  max-height: 300px;
+  padding: 0 6px 6px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--dock-border);
+}
+
+.dock-command-group {
+  padding: 10px 10px 4px;
+  color: var(--dock-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dock-command {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  scroll-margin: 6px;
+}
+
+.dock-command[data-active] {
+  background: var(--dock-raised);
+}
+
+.dock-command-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dock-command .dock-icon {
+  color: var(--dock-primary);
+}
+
+.dock-command-note {
+  color: var(--dock-muted);
+  font-size: 11px;
+}
+
+.dock-commands-hint {
+  margin: 0;
+  padding: 8px 16px;
+  border-top: 1px solid var(--dock-border);
+}
+
+.dock-grabber {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button.dock-item:hover,
+  .dock-button:not(:disabled):hover,
+  .dock-list-row:not(:disabled):hover,
+  .dock-switch:hover,
+  .dock-chip:hover,
+  .dock-tab:hover {
+    background: var(--dock-raised);
+  }
+
+  .dock-button:not(:disabled):hover {
+    background: var(--dock-pressed);
+  }
+}
+
+/* The dock sheds its widest parts before it would wrap. */
+@media (max-width: 1199px) {
+  .dock-bar-padding,
+  .dock-bar-copy {
+    display: none;
+  }
+
+  .dock-bar-padding-button,
+  .dock-actions-copy {
+    display: flex;
+  }
+
+  .dock-item-value {
+    max-width: 104px;
+  }
+
+  .dock-groups {
+    grid-template-columns: repeat(3, minmax(0, 292px));
+  }
+}
+
+/* Phone: the dock is the bottom bar and every tray is a short sheet. */
+@media (max-width: 767px) {
+  .dock-root {
+    --dock-row: 44px;
+    font-size: 14px;
+  }
+
+  .dock-brand,
+  .dock-menu,
+  .dock-hint,
+  .dock-bar-search,
+  .dock-separator,
+  .dock-item-value {
+    display: none;
+  }
+
+  .dock-root input {
+    font-size: 16px;
+  }
+
+  .dock-bar-slot {
+    padding: 0;
+  }
+
+  .dock-bar {
+    box-sizing: border-box;
+    width: 100%;
+    justify-content: space-between;
+    padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px));
+    border-width: 1px 0 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .dock-item {
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    height: 48px;
+    min-width: 40px;
+    padding: 0 2px;
+  }
+
+  .dock-item-label,
+  .dock-item-label:only-child {
+    color: var(--dock-muted);
+    font-size: 10px;
+    font-weight: 400;
+  }
+
+  .dock-item[aria-expanded='true'] .dock-item-label {
+    color: var(--dock-text);
+  }
+
+  .dock-item-art,
+  .dock-art-theme,
+  .dock-art-fill {
+    width: 22px;
+    height: 22px;
+  }
+
+  .dock-bar-export {
+    padding: 0 2px 0 6px;
+  }
+
+  .dock-tray-slot {
+    padding: 0;
+  }
+
+  .dock-tray,
+  .dock-tray[data-panel],
+  .dock-tray[data-detail] {
+    width: 100%;
+    max-height: 40dvh;
+    margin: 0;
+    border-width: 1px 0 0;
+    border-radius: var(--dock-radius) var(--dock-radius) 0 0;
+    box-shadow: none;
+    transform-origin: center !important;
+    animation: dock-sheet-in 280ms var(--dock-ease-drawer);
+  }
+
+  .dock-tray[data-closed] {
+    animation: dock-sheet-out 200ms var(--dock-ease-out) forwards;
+  }
+
+  .dock-tray[data-dragged] {
+    animation: none;
+  }
+
+  .dock-grabber {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    background: var(--dock-surface);
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .dock-grabber::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: 0 auto;
+    border-radius: 2px;
+    background: var(--dock-pressed);
+  }
+
+  .dock-panel {
+    padding: 0 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .dock-panel-head {
+    min-height: 0;
+    margin-bottom: 6px;
+  }
+
+  .dock-panel-title {
+    padding: 0 6px;
+  }
+
+  /* 26 themes in seven rows of four, all inside the sheet. */
+  .dock-themes {
+    padding-inline: 6px;
+  }
+
+  .dock-theme-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .dock-theme {
+    height: 40px;
+    border-radius: 9px;
+    background: none;
+  }
+
+  .dock-theme-chip {
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+  }
+
+  .dock-theme-chip-name {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 0 3px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.1;
+    text-align: center;
+  }
+
+  .dock-root .dock-theme[data-selected] {
+    outline: 2px solid var(--dock-text);
+    outline-offset: 1px;
+  }
+
+  .dock-chip-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dock-chip {
+    height: 40px;
+  }
+
+  .dock-padding-panel .dock-chip-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .dock-font,
+  .dock-background {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .dock-font-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dock-font-side,
+  .dock-background-side {
+    padding-top: 0;
+  }
+
+  .dock-swatches {
+    grid-template-columns: repeat(auto-fill, 40px);
+  }
+
+  .dock-swatch {
+    width: 40px;
+    height: 40px;
+  }
+
+  .dock-segment-label {
+    min-width: 40px;
+    height: 36px;
+  }
+
+  .dock-switch-track {
+    width: 40px;
+    height: 24px;
+    border-radius: 12px;
+  }
+
+  .dock-switch-thumb {
+    width: 20px;
+    height: 20px;
+  }
+
+  .dock-switch-thumb[data-checked] {
+    transform: translateX(16px);
+  }
+
+  .dock-range input {
+    width: 150px;
+  }
+
+  .dock-number input,
+  .dock-button {
+    height: 40px;
+  }
+
+  .dock-groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dock-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .dock-actions-search {
+    display: inline-flex;
+  }
+
+  /*
+   * The search sheet opens at the top, because the phone keyboard covers the
+   * bottom of the window.
+   */
+  .dock-root[data-panel='commands'] {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .dock-root[data-panel='commands'] .dock-tray-slot {
+    grid-row: 1;
+  }
+
+  .dock-root[data-panel='commands'] .dock-stage {
+    grid-row: 2;
+    padding-top: 0;
+  }
+
+  .dock-tray[data-panel='commands'] {
+    padding-top: 64px;
+    border-width: 0 0 1px;
+    border-radius: 0 0 var(--dock-radius) var(--dock-radius);
+    animation-name: dock-fade-in;
+  }
+
+  .dock-tray[data-panel='commands'] .dock-grabber {
+    display: none;
+  }
+
+  .dock-command {
+    height: 44px;
+  }
+
+  .dock-command-list {
+    max-height: calc(40dvh - 120px);
+  }
+}
+
+@keyframes dock-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes dock-sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-tray,
+  .dock-tray[data-panel],
+  .dock-tray[data-closed] {
+    animation: dock-fade-in 160ms ease;
+  }
+
+  .dock-tray[data-closed] {
+    animation: none;
+  }
+
+  .dock-item,
+  .dock-button,
+  .dock-theme,
+  .dock-swatch,
+  .dock-switch-thumb {
+    transition: none;
+  }
+
+  button.dock-item:active,
+  .dock-button:active,
+  .dock-theme:active,
+  .dock-swatch:active {
+    transform: none;
+  }
+}
