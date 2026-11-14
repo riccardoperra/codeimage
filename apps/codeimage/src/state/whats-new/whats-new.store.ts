@@ -77,12 +77,16 @@ export function createWhatsNew(
       highlight => highlight.id === id,
     )?.where ?? null;
 
+  // idb-keyval opens the database synchronously, so a browser that refuses
+  // IndexedDB throws instead of rejecting. Editing must go on either way.
+  const attempt = <T>(work: () => Promise<T>) => Promise.resolve().then(work);
+
   async function load() {
     try {
-      const raw = await storage.get('whats-new');
+      const raw = await attempt(() => storage.get('whats-new'));
       setFacts(current => mergeFacts(current, parseFacts(raw)));
     } catch {
-      // Editing remains available when browser storage is disabled.
+      // No stored facts: the worst case is one repeated announcement.
     } finally {
       setLoaded(true);
     }
@@ -90,16 +94,16 @@ export function createWhatsNew(
 
   function record(delta: Facts) {
     setFacts(current => mergeFacts(current, delta));
-    void storage
-      .update('whats-new', raw =>
+    attempt(() =>
+      storage.update('whats-new', raw =>
         serializeFacts(mergeFacts(parseFacts(raw), delta)),
-      )
-      .catch(() => {});
+      ),
+    ).catch(() => {});
   }
 
   void load();
   // The record of the former changelog, which nothing reads any more.
-  storage.del('version').catch(() => {});
+  attempt(() => storage.del('version')).catch(() => {});
   window.addEventListener('focus', load);
   onCleanup(() => window.removeEventListener('focus', load));
 

@@ -107,6 +107,32 @@ describe('release discovery across visits', () => {
     reloaded.dispose();
   });
 
+  it('keeps working when the browser refuses storage', async () => {
+    const refusing = {
+      get: () => {
+        throw new DOMException('denied', 'SecurityError');
+      },
+      update: () => {
+        throw new DOMException('denied', 'SecurityError');
+      },
+      del: () => {
+        throw new DOMException('denied', 'SecurityError');
+      },
+    };
+    const app = createRoot(dispose => {
+      const store = createWhatsNew(refusing, Date.parse('2026-11-14'));
+      return {store, announcement: store.announce(() => () => true), dispose};
+    });
+    await settle();
+    expect(app.announcement()?.surface).toBe('nudge');
+    expect(() => app.store.seen('command-menu')).not.toThrow();
+    expect(app.store.hasDot('command-menu')).toBe(false);
+    expect(() => app.store.dismiss()).not.toThrow();
+    expect(app.announcement()).toBeNull();
+    await settle();
+    app.dispose();
+  });
+
   it('reveals the location without consuming its pointer', async () => {
     const app = boot(database());
     await settle();
