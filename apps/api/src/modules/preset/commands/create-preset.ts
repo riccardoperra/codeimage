@@ -6,18 +6,18 @@ import {
   exceedsPresetLimit,
   PresetErrors,
 } from '../preset.model.js';
-import type {PresetRepository} from '../preset.repository.js';
+import type {PresetDependencies} from '../preset.repository.js';
 export const createPreset = defineCommand<
   {actor: Actor; draft: PresetDraft},
   Preset
 >('preset.createPreset');
 export default defineHandler(
   createPreset,
-  ({presets, limit}: {presets: PresetRepository; limit: number}) =>
+  ({presets, scopeFor, limit}: PresetDependencies & {limit: number}) =>
     async ({actor, draft}) => {
-      const mine = presets.ownedBy(actor.userId);
-      if (exceedsPresetLimit(await mine.count(), limit))
+      const scope = scopeFor(actor.userId);
+      if (exceedsPresetLimit(await presets.countPresets(scope), limit))
         throw PresetErrors.limitExceeded({limit});
-      return mine.create(draft);
+      return presets.createPreset(scope, draft);
     },
 );
