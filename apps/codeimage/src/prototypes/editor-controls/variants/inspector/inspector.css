@@ -133,9 +133,14 @@
 .inspector-root .inspector-section-content {
   padding: 6px 0 8px;
 }
+/* Four rows of orb cards, twelve themes, with the whole panel inside 1440x900. */
+.inspector-root
+  .inspector-section[data-section='themes']
+  .inspector-section-content {
+  padding-bottom: 2px;
+}
 .inspector-root .inspector-themes {
-  /* Search, filter and four rows of orb cards: twelve themes at 1440x900. */
-  height: 600px;
+  height: 576px;
   padding: 0 4px;
 }
 .inspector-root .inspector-control > div:not(.inspector-inline),

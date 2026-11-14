@@ -15,8 +15,8 @@ export const item = style([
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: themeVars.spacing['2'],
-    padding: themeVars.spacing['3'],
+    gap: '6px',
+    padding: `10px ${themeVars.spacing['3']}`,
     textAlign: 'center',
   },
 ]);
