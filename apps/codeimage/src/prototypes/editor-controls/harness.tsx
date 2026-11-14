@@ -5,6 +5,8 @@ import {CommandMenu} from './command-menu/CommandMenu';
 import {EditorHost} from './EditorHost';
 import {createEditorControlsModel} from './model';
 import {layouts} from './registry';
+import {Header} from './shell/Header';
+import {page as pageClass} from './shell/header.css';
 import {preferences} from './shell/preferences';
 import {SettingsDialog} from './shell/SettingsDialog';
 import {createStage} from './stage';
@@ -24,11 +26,12 @@ function Editor() {
       : undefined;
 
   // The Inspector reads its side from the layout root. The attribute goes on
-  // the wrapper below and on the root element the layout renders into it.
+  // the page below and on the root element the layout renders into it, the
+  // one after the header.
   createEffect(() => {
     const value = side();
     preferences.layout();
-    const root = page.firstElementChild;
+    const root = page.querySelector(':scope > header + *');
     if (!(root instanceof HTMLElement)) return;
     if (value) root.dataset.inspectorSide = value;
     else delete root.dataset.inspectorSide;
@@ -37,7 +40,7 @@ function Editor() {
   return (
     <>
       <div
-        class="proto-variant"
+        class={`proto-variant ${pageClass}`}
         ref={page}
         data-layout={preferences.layout()}
         data-inspector-side={side()}
@@ -57,6 +60,8 @@ function Editor() {
             );
             return (
               <>
+                {/* Here and not in the layouts, so that it sits at one place in all of them. */}
+                <Header stage={stage} />
                 <Dynamic
                   component={layout.component}
                   model={model}

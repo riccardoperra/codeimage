@@ -19,7 +19,6 @@ import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
-import {Header} from '../../shell/Header';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import type {Panel, PanelId} from './panels';
@@ -248,8 +247,6 @@ export default function Studio(props: VariantProps) {
 
   return (
     <div class={styles.root}>
-      <Header stage={props.stage} />
-
       <div
         ref={bodyEl}
         class={styles.body}

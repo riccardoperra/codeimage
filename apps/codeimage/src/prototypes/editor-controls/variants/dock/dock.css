@@ -9,9 +9,6 @@
   --dock-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --dock-gap: 8px;
   --dock-radius: 22px;
-  /* The header meets the island's edges. The root's own gap is the space under it. */
-  --shell-inset: var(--dock-gap);
-  --shell-gap: 0px;
 
   /*
    * In the page flow, not fixed: the body clips what leaves its box, and a
@@ -21,8 +18,9 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  height: 100dvh;
-  gap: var(--dock-gap);
+  /* Under the page's header, which the harness renders: the rest of the page. */
+  flex: 1;
+  min-height: 0;
   padding-bottom: var(--dock-gap);
   overflow: hidden;
   background: var(--dock-app);
@@ -364,10 +362,7 @@
 /* Phone: the dock is the bottom bar, in the layout, and every panel is a short sheet above it. */
 @media (max-width: 767px) {
   .dock-root {
-    gap: 0;
     padding-bottom: 0;
-    /* The canvas runs edge to edge here, so the header keeps the space under it. */
-    --shell-gap: var(--dock-gap);
   }
 
   .dock-body {

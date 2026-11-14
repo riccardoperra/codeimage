@@ -52,7 +52,9 @@ const island = style({
 export const root = style({
   display: 'flex',
   flexDirection: 'column',
-  height: '100dvh',
+  // Under the page's header, which the harness renders: the rest of the page.
+  flex: 1,
+  minHeight: 0,
   overflow: 'hidden',
   background: c.panel.background,
   color: c.baseText,

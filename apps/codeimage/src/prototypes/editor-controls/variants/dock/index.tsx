@@ -11,7 +11,6 @@ import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import type {ControlId} from '../../model';
-import {Header} from '../../shell/Header';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
 import type {DockApi} from './context';
@@ -277,7 +276,6 @@ export default function Dock(props: VariantProps) {
         data-compact={compact() ? '' : undefined}
         style={{'--dock-safe': `${dockHeight() + MARGIN * 2}px`}}
       >
-        <Header stage={props.stage} />
         {/* Popovers mount here: inside the root for its tokens, out of its layout. */}
         <div class="dock-overlays" ref={setOverlays} />
 

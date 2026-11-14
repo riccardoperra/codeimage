@@ -13,7 +13,6 @@ import type {JSX, ParentProps} from 'solid-js';
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
-import {Header} from '../../shell/Header';
 import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
 import {createOverlayPlacement} from './overlays';
@@ -166,8 +165,8 @@ export default function Inspector(props: VariantProps) {
   // One section at a time. All may be closed, which leaves the summaries.
   const [openSection, setOpenSection] = createSignal<PanelId | null>('themes');
   const [sheet, setSheet] = createSignal<'short' | 'tall'>('short');
-  // The page can start below the harness pills, so the root, not the window,
-  // sets how tall the sheet may grow.
+  // How far down the page the layout ends, which sets how tall the sheet
+  // may grow. The page's header is above the root.
   const [rootHeight, setRootHeight] = createSignal(innerHeight);
   const tallSheet = () => Math.min(560, rootHeight() - 284);
   const [mobile, setMobile] = createSignal(
@@ -255,15 +254,12 @@ export default function Inspector(props: VariantProps) {
       style={{...tokens, '--inspector-tall-sheet': `${tallSheet()}px`}}
       ref={root => {
         const observer = new ResizeObserver(() =>
-          setRootHeight(root.clientHeight),
+          setRootHeight(root.getBoundingClientRect().bottom),
         );
         observer.observe(root);
         onCleanup(() => observer.disconnect());
       }}
     >
-      <div class="inspector-header">
-        <Header stage={props.stage} />
-      </div>
       <div class="inspector-workspace">
         <main
           class="inspector-canvas"

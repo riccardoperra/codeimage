@@ -1,10 +1,10 @@
 .inspector-root {
   --inspector-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  /* The header is the first row of the islands: same inset, same gap. */
-  --shell-inset: 12px;
-  height: 100dvh;
+  /* Under the page's header, which the harness renders: the rest of the page. */
+  flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   overflow: hidden;
   background: var(--inspector-app);
   color: var(--inspector-text);
@@ -28,16 +28,14 @@
   outline: 2px solid var(--inspector-accent);
   outline-offset: 3px;
 }
-.inspector-root .inspector-header {
-  min-width: 0;
-}
 .inspector-root .inspector-workspace {
   min-height: 0;
   min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 12px;
-  padding: 0 12px 12px;
+  /* The page's inset, which the header shares, on the sides and between the islands. */
+  gap: 8px;
+  padding: 0 8px 8px;
 }
 /*
  * data-inspector-side="left", on the root or on any ancestor the settings
@@ -294,9 +292,6 @@
   transition: none;
 }
 @media (max-width: 768px) {
-  .inspector-root {
-    --shell-inset: 8px;
-  }
   .inspector-root .inspector-workspace {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) auto;
@@ -371,11 +366,6 @@
   }
   .inspector-root .inspector-frame-actions > div > div {
     column-gap: 4px;
-  }
-
-  .inspector-root .inspector-header button {
-    min-height: 40px;
-    min-width: 40px;
   }
 
   .inspector-root [data-control] > div > label {
