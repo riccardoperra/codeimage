@@ -1,8 +1,5 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {getTerminalState} from '@codeimage/store/editor/terminal';
-import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
-import {getUmami} from '@core/constants/umami';
 import {provideState} from 'statebuilder';
 import type {
   Control,
@@ -35,22 +32,12 @@ const SWITCHES: Partial<
     on: 'true',
     off: 'false',
   },
-  'window.border': {label: 'Glass border', on: 'glass', off: 'none'},
 };
 
 const LABELS: Partial<Record<ControlId, string>> = {
   'window.style': 'Window style',
   // Picking a theme also sets the background. This one keeps it.
   'editor.theme': 'Syntax theme',
-};
-
-const WINDOW_STYLE_LABELS: Partial<
-  Record<(typeof AVAILABLE_TERMINAL_THEMES.keys)[number], string>
-> = {
-  macOs: 'macOS',
-  macOsGrayTheme: 'macOS gray',
-  macOsOutlineTheme: 'macOS outline',
-  windows: 'Windows',
 };
 
 export interface ListedModel {
@@ -73,29 +60,8 @@ export interface ListedModel {
  * what turns on.
  */
 export function createListedModel(model: EditorControlsModel): ListedModel {
-  const terminal = getTerminalState();
   const editor = getRootEditorStore();
   const config = provideState(EditorConfigStore);
-
-  const windowStyle = (base: Control): SelectControl => ({
-    kind: 'select',
-    id: base.id,
-    label: base.label,
-    visible: base.visible,
-    disabled: () => false,
-    options: () =>
-      AVAILABLE_TERMINAL_THEMES.keys.map(key => ({
-        key,
-        label: WINDOW_STYLE_LABELS[key] ?? key,
-      })),
-    value: () => terminal.state.type,
-    set: type => {
-      model.endPreview();
-      terminal.setType(type);
-      getUmami().track('change-terminal-type', {type});
-    },
-    preview: type => model.preview(() => terminal.setType(type)),
-  });
 
   const fontFamily = (base: Control): SelectControl => ({
     kind: 'select',
@@ -127,7 +93,6 @@ export function createListedModel(model: EditorControlsModel): ListedModel {
   });
 
   const adapt = (base: Control): Control => {
-    if (base.id === 'window.style') return windowStyle(base);
     if (base.id === 'font.family') return fontFamily(base);
     if (base.id === 'editor.theme' && base.kind === 'select') {
       // The stored id can be one the registry does not know. The editor then
