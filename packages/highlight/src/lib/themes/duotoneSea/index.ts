@@ -10,6 +10,7 @@ export const duotoneSeaTheme = createTheme({
     previewBackground:
       'linear-gradient(to right bottom, #1e737e, #186b76, #13636d, #0d5b65, #06535d)',
     terminal: {
+      accent: '#32AE85',
       main: '#1D262F',
       text: '#D6E9FF',
     },

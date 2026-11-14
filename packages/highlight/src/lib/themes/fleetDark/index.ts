@@ -9,6 +9,7 @@ export const fleetDarkTheme = createTheme({
     label: 'Fleet Dark',
     previewBackground: `linear-gradient(152deg, rgb(87% 61% 43%) 0%, rgb(49% 14% 95%) 100%)`,
     terminal: {
+      accent: '#82d2ce',
       main: palette.background,
       text: '#fff',
     },

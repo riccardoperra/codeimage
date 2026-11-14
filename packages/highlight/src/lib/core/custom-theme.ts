@@ -12,6 +12,7 @@ export interface TerminalThemeProperties {
    * @description Main background color of terminal
    */
   main: string;
+  accent?: string;
   /**
    * description Base text color of terminal frame
    */
