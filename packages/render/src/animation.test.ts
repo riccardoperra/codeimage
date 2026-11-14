@@ -174,9 +174,9 @@ const steps2 = (
 const sum = (values: number[]) =>
   values.reduce((total, value) => total + value, 0);
 
-const stillSize = async (input: AnimationInput, editor: number) => {
+const still = async (input: AnimationInput, editor: number) => {
   const {animation, format, ...project} = input;
-  const still = decode(
+  return decode(
     await renderSnapshot({
       ...project,
       editor: {
@@ -185,7 +185,29 @@ const stillSize = async (input: AnimationInput, editor: number) => {
       },
     }),
   );
-  return {width: still.width, height: still.height};
+};
+
+// A GIF pixel is drawn or clear. A ghost is drawn where the still, centered
+// in the frame, is clear. A hole is the reverse.
+const coverage = (frame: PNG, image: PNG) => {
+  const left = Math.floor((frame.width - image.width) / 2);
+  const top = Math.floor((frame.height - image.height) / 2);
+  let [ghosts, holes] = [0, 0];
+  for (let y = 0; y < frame.height; y++) {
+    for (let x = 0; x < frame.width; x++) {
+      const [column, row] = [x - left, y - top];
+      const opaque =
+        column >= 0 &&
+        row >= 0 &&
+        column < image.width &&
+        row < image.height &&
+        image.data[(row * image.width + column) * 4 + 3] > 0;
+      const drawn = frame.data[(y * frame.width + x) * 4 + 3] > 0;
+      if (drawn && !opaque) ghosts++;
+      if (opaque && !drawn) holes++;
+    }
+  }
+  return {ghosts, holes};
 };
 
 // The pixels that draw code. The margin around a smaller frame is clear.
@@ -202,10 +224,7 @@ describe('renderAnimation', {timeout: 60_000}, () => {
   it('holds every tab and morphs between them when the project stores no animation', async () => {
     const input = steps2([SHORT, TALL]);
     const webp = readWebpAnimation(await renderAnimation(input));
-    const [short, tall] = [
-      await stillSize(input, 0),
-      await stillSize(input, 1),
-    ];
+    const [short, tall] = [await still(input, 0), await still(input, 1)];
     // The short tab has the longer line.
     expect(short.width).toBeGreaterThan(tall.width);
     expect(tall.height).toBeGreaterThan(short.height);
@@ -261,28 +280,24 @@ describe('renderAnimation', {timeout: 60_000}, () => {
     expect([two.width, two.height]).toEqual([2 * one.width, 2 * one.height]);
   });
 
-  it('leaves nothing of a larger frame behind in a GIF', async () => {
-    const input = steps2([TALL, SHORT]);
-    const gif = decodeGif(await renderAnimation({...input, format: 'gif'}));
-    const [tall, short] = [
-      await stillSize(input, 0),
-      await stillSize(input, 1),
-    ];
-    // The short frame sits centered, so the rows above it are empty.
-    const margin = Math.floor((tall.height - short.height) / 2);
-    expect(margin).toBeGreaterThan(20);
-    const opaqueAbove = (frame: PNG) => {
-      let count = 0;
-      for (let i = 3; i < margin * frame.width * 4; i += 4) {
-        if (frame.data[i]) count++;
-      }
-      return count;
-    };
-    expect(opaqueAbove(gif.frames[0])).toBeGreaterThan(
-      margin * tall.width * 0.9,
-    );
-    expect(opaqueAbove(gif.frames.at(-1)!)).toBe(0);
-  });
+  it.each([
+    ['taller', [TALL, SHORT]],
+    ['wider', [SHORT, TALL]],
+  ] as const)(
+    'draws a GIF hold after a %s step exactly where its still is',
+    async (_, codes) => {
+      const input = steps2([...codes]);
+      const gif = decodeGif(await renderAnimation({...input, format: 'gif'}));
+      expect(coverage(gif.frames[0], await still(input, 0))).toEqual({
+        ghosts: 0,
+        holes: 0,
+      });
+      expect(coverage(gif.frames.at(-1)!, await still(input, 1))).toEqual({
+        ghosts: 0,
+        holes: 0,
+      });
+    },
+  );
 
   it.each([
     [60, 20],
