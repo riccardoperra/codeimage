@@ -53,10 +53,10 @@ jobs:
         run: |
           pnpm libs:build
 
-      - name: Upload packages dist
+      - name: Upload libs dist
         uses: actions/upload-artifact@v7
         with:
-          name: packages-dist
+          name: libs-dist
           path: |
             packages/*/dist
             packages/prisma-models/generated
@@ -76,10 +76,10 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Download packages dist
+      - name: Download libs dist
         uses: actions/download-artifact@v8
         with:
-          name: packages-dist
+          name: libs-dist
           path: packages
 
       - name: Typecheck packages
@@ -105,10 +105,10 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Download packages dist
+      - name: Download libs dist
         uses: actions/download-artifact@v8
         with:
-          name: packages-dist
+          name: libs-dist
           path: packages
 
       - name: Build app
@@ -125,10 +125,10 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - name: Upload preview
+      - name: Upload Pages build
         uses: actions/upload-artifact@v7
         with:
-          name: preview-app
+          name: pages-app
           path: apps/codeimage/dist
           retention-days: 1
           if-no-files-found: error
@@ -147,10 +147,10 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Download packages dist
+      - name: Download libs dist
         uses: actions/download-artifact@v8
         with:
-          name: packages-dist
+          name: libs-dist
           path: packages
 
       - name: Build app
@@ -167,10 +167,10 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - name: Upload preview
+      - name: Upload Pages build
         uses: actions/upload-artifact@v7
         with:
-          name: preview-app
+          name: pages-app
           path: apps/codeimage/dist
           retention-days: 1
           if-no-files-found: error
@@ -188,20 +188,20 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Download packages dist
+      - name: Download libs dist
         uses: actions/download-artifact@v8
         with:
-          name: packages-dist
+          name: libs-dist
           path: packages
 
       - name: Build highlight demo
         run: |
           pnpm --filter=@codeimage/highlight build:dev --base=/highlight/
 
-      - name: Upload preview
+      - name: Upload Pages build
         uses: actions/upload-artifact@v7
         with:
-          name: preview-highlight
+          name: pages-highlight
           path: packages/highlight/dev/dist
           retention-days: 1
           if-no-files-found: error
@@ -235,10 +235,10 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Download packages dist
+      - name: Download libs dist
         uses: actions/download-artifact@v8
         with:
-          name: packages-dist
+          name: libs-dist
           path: packages
 
       - name: Build website preview
@@ -251,10 +251,10 @@ jobs:
         run: |
           pnpm --filter=@codeimage/website build --base=/website/
 
-      - name: Upload preview
+      - name: Upload Pages build
         uses: actions/upload-artifact@v7
         with:
-          name: preview-website
+          name: pages-website
           path: apps/website/dist/client
           retention-days: 1
           if-no-files-found: error
@@ -275,7 +275,7 @@ jobs:
       - name: Download website
         uses: actions/download-artifact@v8
         with:
-          name: preview-website
+          name: pages-website
           path: apps/website/dist/client
 
       - name: run Lighthouse CI
@@ -312,19 +312,19 @@ jobs:
         if: ${{ needs.build-app-preview.result == 'success' || needs.build-app-rc.result == 'success' }}
         uses: actions/download-artifact@v8
         with:
-          name: preview-app
+          name: pages-app
           path: site
       - name: Download website
         if: ${{ needs.build-website-dev.result == 'success' }}
         uses: actions/download-artifact@v8
         with:
-          name: preview-website
+          name: pages-website
           path: site/website
       - name: Download highlight
         if: ${{ needs.build-highlight-dev.result == 'success' }}
         uses: actions/download-artifact@v8
         with:
-          name: preview-highlight
+          name: pages-highlight
           path: site/highlight
 
       - name: Deploy to Cloudflare Pages
@@ -392,10 +392,10 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Download packages dist
+      - name: Download libs dist
         uses: actions/download-artifact@v8
         with:
-          name: packages-dist
+          name: libs-dist
           path: packages
 
       - name: Build
@@ -403,10 +403,10 @@ jobs:
           pnpm --filter=@codeimage/api build:ts
           pnpm prepare:api:deploy
 
-      - name: Upload api bundle
+      - name: Upload api deploy bundle
         uses: actions/upload-artifact@v7
         with:
-          name: api-bundle
+          name: api-deploy-bundle
           path: dist/api-bundle
           include-hidden-files: true
           retention-days: 1
@@ -478,16 +478,16 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Download packages dist
+      - name: Download libs dist
         uses: actions/download-artifact@v8
         with:
-          name: packages-dist
+          name: libs-dist
           path: packages
 
-      - name: Download api bundle
+      - name: Download api deploy bundle
         uses: actions/download-artifact@v8
         with:
-          name: api-bundle
+          name: api-deploy-bundle
           path: dist/api-bundle
 
       - name: Run migrations
