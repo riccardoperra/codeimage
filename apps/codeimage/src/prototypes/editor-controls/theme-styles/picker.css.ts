@@ -27,9 +27,10 @@ export const tools = style({
   flex: 'none',
 });
 
-export const search = style({flex: '1 1 220px', minWidth: 0});
+// Both fit one row in a phone panel, 340px; a 320px desktop panel stacks them.
+export const search = style({flex: '1 1 160px', minWidth: 0});
 
-export const filter = style({flex: '1 1 200px', maxWidth: '320px'});
+export const filter = style({flex: '1 1 168px', maxWidth: '320px'});
 
 // The padding keeps focus rings and selection rings inside the scroller.
 export const list = style({
