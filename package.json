@@ -38,8 +38,8 @@
     "prepare": "husky install",
     "dev": "pnpm --filter=@codeimage/app dev",
     "dev:api": "pnpm --filter=@codeimage/api dev",
-    "libs:build": "pnpm libs:build:core && pnpm libs:build:config && pnpm libs:build:render",
-    "libs:build:core": "pnpm --filter \"@codeimage/*{packages/**}\" --filter='!@codeimage/config' --filter='!@codeimage/render' --parallel build",
+    "libs:build": "pnpm libs:build:core && pnpm libs:build:config && pnpm libs:build:render && pnpm libs:build:cli",
+    "libs:build:core": "pnpm --filter \"@codeimage/*{packages/**}\" --filter='!@codeimage/config' --filter='!@codeimage/render' --filter='!@codeimage/cli' --parallel build",
     "libs:build:config": "pnpm --filter=@codeimage/config build",
     "libs:build:render": "pnpm --filter=@codeimage/render build",
     "libs:build:watch": "pnpm --filter \"{packages/**}\" --filter='!@codeimage/config' --parallel --aggregate-output build:watch",
@@ -55,7 +55,8 @@
     "pre-commit-eslint": "oxlint --fix",
     "prepare:env": "tsx ./scripts/make-env.ts",
     "prepare:env:codesandbox": "RUN_ON_CODESANDBOX=true tsx ./scripts/make-env",
-    "prepare:api:deploy": "node ./scripts/prepare-api-deploy.mjs"
+    "prepare:api:deploy": "node ./scripts/prepare-api-deploy.mjs",
+    "libs:build:cli": "pnpm --filter=@codeimage/cli build"
   },
   "packageManager": "pnpm@12.18.0",
   "devDependencies": {
