@@ -1,3 +1,6 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {altText} from '@core/altText';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import type {SegmentedFieldItem} from '@codeimage/ui';
@@ -9,9 +12,10 @@ import {
   HStack,
   RangeField,
   Text,
+  toast,
   VStack,
 } from '@codeimage/ui';
-import {Checkbox, PopoverContent} from '@codeui/kit';
+import {Button, Checkbox, PopoverContent} from '@codeui/kit';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Show} from 'solid-js';
@@ -117,6 +121,7 @@ export function ExportPopoverContent() {
               </HStack>
             </FlexField>
 
+            <CopyAltTextButton />
             <Checkbox
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}
@@ -133,5 +138,35 @@ export function ExportPopoverContent() {
         </div>
       </DynamicSizedContainer>
     </PopoverContent>
+  );
+}
+
+export function CopyAltTextButton() {
+  const [t] = useI18n<AppLocaleEntries>();
+  const activeEditor = getActiveEditorStore();
+  const [copying, setCopying] = createSignal(false);
+  async function copy() {
+    const editor = activeEditor.editor();
+    if (!editor) return;
+    setCopying(true);
+    try {
+      await navigator.clipboard.writeText(altText(editor));
+      toast.success(() => t('export.altTextCopied'));
+    } catch {
+      toast.error(() => t('export.genericSaveError'));
+    } finally {
+      setCopying(false);
+    }
+  }
+  return (
+    <Button
+      size={'xs'}
+      theme={'secondary'}
+      loading={copying()}
+      disabled={!activeEditor.editor() || !navigator.clipboard?.writeText}
+      onClick={copy}
+    >
+      {t('export.copyAltText')}
+    </Button>
   );
 }
