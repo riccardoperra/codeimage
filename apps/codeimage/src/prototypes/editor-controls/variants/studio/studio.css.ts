@@ -1,16 +1,24 @@
-import {themeVars, withThemeMode} from '@codeimage/ui';
-import {createVar, style} from '@vanilla-extract/css';
+import {themeVars} from '@codeimage/ui';
+import {
+  createContainer,
+  createVar,
+  globalStyle,
+  style,
+} from '@vanilla-extract/css';
 
 const c = themeVars.dynamicColors;
 
-export const PHONE_QUERY = '(max-width: 640px)';
-const phone = `screen and ${PHONE_QUERY}`;
+/** Same breakpoint as the app's `useModality`, so the production header and this layout agree. */
+export const COMPACT_QUERY = '(max-width: 768px)';
+const compact = `screen and ${COMPACT_QUERY}`;
 const finePointer = '(hover: hover) and (pointer: fine)';
 const reducedMotion = '(prefers-reduced-motion: reduce)';
 const easeOut = 'cubic-bezier(0.23, 1, 0.32, 1)';
+const gap = '8px';
 
 export const sheetHeight = createVar();
-export const themeRows = createVar();
+/** Sheet height plus the gap above it, 0 while no sheet is open. */
+export const sheetSpace = createVar();
 
 const focusRing = {
   outline: `2px solid ${c.primary}`,
@@ -35,66 +43,64 @@ const pressable = style({
   },
 });
 
+/** The canvas has always been an island; the control areas now match it. */
+const island = style({
+  borderRadius: '22px',
+  background: c.background,
+});
+
 export const root = style({
-  position: 'relative',
-  display: 'grid',
-  gridTemplateAreas: '"rail panel main"',
-  gridTemplateColumns: '64px auto minmax(0, 1fr)',
-  gridTemplateRows: 'minmax(0, 1fr)',
+  display: 'flex',
+  flexDirection: 'column',
   height: '100dvh',
   overflow: 'hidden',
   background: c.panel.background,
   color: c.baseText,
-  fontSize: '0.8125rem',
-  vars: {[sheetHeight]: '0px'},
+});
+
+export const body = style({
+  position: 'relative',
+  flex: 1,
+  minHeight: 0,
+  display: 'grid',
+  gridTemplateAreas: '"rail panel main"',
+  gridTemplateColumns: 'auto auto minmax(0, 1fr)',
+  gridTemplateRows: 'minmax(0, 1fr)',
+  gap,
+  padding: `0 ${gap} ${gap}`,
+  vars: {[sheetHeight]: '0px', [sheetSpace]: '0px'},
   '@media': {
-    [phone]: {
+    [compact]: {
       gridTemplateAreas: '"main" "rail"',
       gridTemplateColumns: 'minmax(0, 1fr)',
       gridTemplateRows: 'minmax(0, 1fr) auto',
+      paddingBottom: `calc(${gap} + env(safe-area-inset-bottom, 0px))`,
     },
   },
 });
 
-export const rail = style({
-  gridArea: 'rail',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '2px',
-  padding: '12px 0 12px',
-  '@media': {
-    [phone]: {
-      flexDirection: 'row',
-      alignItems: 'stretch',
-      gap: 0,
-      padding: '4px 4px env(safe-area-inset-bottom, 0px)',
-      borderTop: `1px solid ${c.divider}`,
-      background: c.panel.background,
-      position: 'relative',
-      zIndex: 30,
+export const rail = style([
+  island,
+  {
+    gridArea: 'rail',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '4px',
+    width: '76px',
+    padding: '10px 0',
+    '@media': {
+      [compact]: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: 'auto',
+        padding: '4px',
+        position: 'relative',
+        zIndex: 30,
+      },
     },
   },
-});
-
-export const railLogo = style({
-  display: 'grid',
-  placeItems: 'center',
-  height: '40px',
-  marginBottom: '10px',
-  '@media': {[phone]: {display: 'none'}},
-});
-
-export const railSpacer = style({
-  flex: 1,
-  '@media': {[phone]: {display: 'none'}},
-});
-
-export const railFooter = style({
-  display: 'grid',
-  placeItems: 'center',
-  '@media': {[phone]: {display: 'none'}},
-});
+]);
 
 export const railButton = style([
   pressable,
@@ -104,15 +110,15 @@ export const railButton = style([
     alignItems: 'center',
     justifyContent: 'center',
     gap: '4px',
-    width: '60px',
-    minHeight: '56px',
-    padding: '4px 0',
+    width: '64px',
+    minHeight: '60px',
+    padding: '6px 0',
     border: 0,
-    borderRadius: '10px',
+    borderRadius: '14px',
     background: 'transparent',
     color: c.descriptionTextColor,
     fontFamily: 'inherit',
-    fontSize: '0.6875rem',
+    fontSize: themeVars.fontSize.xs,
     fontWeight: 500,
     lineHeight: 1.2,
     cursor: 'pointer',
@@ -123,12 +129,7 @@ export const railButton = style([
       [finePointer]: {
         selectors: {'&:hover': {color: c.baseText}},
       },
-      [phone]: {
-        flex: 1,
-        width: 'auto',
-        minHeight: '52px',
-        selectors: {'&:not([data-phone="tab"])': {display: 'none'}},
-      },
+      [compact]: {flex: 1, width: 'auto', minHeight: '56px'},
     },
   },
 ]);
@@ -136,9 +137,9 @@ export const railButton = style([
 export const railIcon = style({
   display: 'grid',
   placeItems: 'center',
-  width: '40px',
-  height: '28px',
-  borderRadius: '14px',
+  width: '44px',
+  height: '30px',
+  borderRadius: '15px',
   selectors: {
     [`${railButton}[aria-expanded="true"] &`]: {
       background: c.button.primaryAlt.backgroundColor,
@@ -153,52 +154,47 @@ export const railIcon = style({
         },
       },
     },
-    [phone]: {
-      selectors: {
-        [`${railButton}[data-owns-open] &`]: {
-          background: c.button.primaryAlt.backgroundColor,
-          color: c.primary,
-        },
-      },
-    },
   },
 });
 
-export const panel = style({
-  gridArea: 'panel',
-  display: 'flex',
-  flexDirection: 'column',
-  width: '280px',
-  minHeight: 0,
-  background: c.panel.background,
-  selectors: {
-    '&[data-wide]': {width: '360px'},
-    '&[hidden]': {display: 'none'},
-  },
-  '@media': {
-    [phone]: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 'calc(56px + env(safe-area-inset-bottom, 0px))',
-      zIndex: 20,
-      width: 'auto',
-      height: sheetHeight,
-      borderTop: `1px solid ${c.divider}`,
-      borderRadius: '16px 16px 0 0',
-      boxShadow: '0 -12px 32px rgba(0, 0, 0, 0.28)',
-      selectors: {'&[data-wide]': {width: 'auto'}},
+export const panel = style([
+  island,
+  {
+    gridArea: 'panel',
+    display: 'flex',
+    flexDirection: 'column',
+    width: '320px',
+    minHeight: 0,
+    overflow: 'hidden',
+    selectors: {
+      '&[data-wide]': {width: '372px'},
+      '&[hidden]': {display: 'none'},
+    },
+    '@media': {
+      [compact]: {
+        position: 'absolute',
+        left: gap,
+        right: gap,
+        bottom: `calc(${gap} + 72px + env(safe-area-inset-bottom, 0px))`,
+        zIndex: 20,
+        width: 'auto',
+        height: sheetHeight,
+        boxShadow: '0 -8px 32px rgba(0, 0, 0, 0.28)',
+        selectors: {'&[data-wide]': {width: 'auto'}},
+      },
     },
   },
-});
+]);
 
 export const sheetGrip = style({
   display: 'none',
   '@media': {
-    [phone]: {
+    // A 28px strip, so a sheet without its own header still has a handle to drag.
+    [compact]: {
       display: 'flex',
       justifyContent: 'center',
-      paddingTop: '8px',
+      alignItems: 'center',
+      height: '28px',
       selectors: {
         '&::before': {
           content: '""',
@@ -212,27 +208,30 @@ export const sheetGrip = style({
   },
 });
 
+export const panelGrabArea = style({
+  flexShrink: 0,
+  '@media': {
+    [compact]: {
+      touchAction: 'none',
+      cursor: 'grab',
+      userSelect: 'none',
+      WebkitUserSelect: 'none',
+    },
+  },
+});
+
 export const panelHeader = style({
   display: 'flex',
   alignItems: 'center',
   gap: '4px',
-  flexShrink: 0,
-  height: '52px',
-  padding: '0 10px 0 16px',
-  '@media': {
-    [phone]: {height: '48px', touchAction: 'none', cursor: 'grab'},
-  },
-});
-
-export const panelGrabArea = style({
-  flexShrink: 0,
-  '@media': {[phone]: {touchAction: 'none'}},
+  height: '56px',
+  padding: '0 12px 0 16px',
 });
 
 export const panelTitle = style({
   flex: 1,
   margin: 0,
-  fontSize: '0.9375rem',
+  fontSize: themeVars.fontSize.base,
   fontWeight: 600,
   letterSpacing: '-0.01em',
 });
@@ -248,37 +247,21 @@ export const panelPage = style({
 export const panelBody = style({
   flex: 1,
   minHeight: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '18px',
-  padding: '2px 16px 16px',
   overflowY: 'auto',
   overscrollBehavior: 'contain',
+  padding: '0 16px 16px 0',
 });
 
-export const iconButton = style([
-  pressable,
-  {
-    display: 'grid',
-    placeItems: 'center',
-    width: '32px',
-    height: '32px',
-    padding: 0,
-    border: 0,
-    borderRadius: '8px',
-    background: 'transparent',
-    color: c.descriptionTextColor,
-    cursor: 'pointer',
-    '@media': {
-      [finePointer]: {
-        selectors: {
-          '&:hover': {background: c.input.backgroundColor, color: c.baseText},
-        },
-      },
-      [phone]: {width: '40px', height: '40px'},
-    },
-  },
-]);
+export const section = style({
+  display: 'flex',
+  flexDirection: 'column',
+  selectors: {'& + &': {marginTop: '8px'}},
+});
+
+export const fullWidth = style({
+  paddingLeft: '15px',
+  paddingBottom: '6px',
+});
 
 export const visuallyHidden = style({
   position: 'absolute',
@@ -292,127 +275,89 @@ export const visuallyHidden = style({
   border: 0,
 });
 
-export const desktopOnly = style({
-  '@media': {[phone]: {display: 'none'}},
-});
+const mainContainer = createContainer();
 
-export const phoneOnly = style({
-  display: 'none',
-  '@media': {[phone]: {display: 'contents'}},
-});
-
-export const main = style({
-  gridArea: 'main',
-  position: 'relative',
-  minWidth: 0,
-  minHeight: 0,
-  padding: '8px 8px 8px 0',
-  '@media': {[phone]: {padding: 0}},
-});
-
-export const canvas = style({
-  position: 'relative',
-  display: 'flex',
-  height: '100%',
-  overflow: 'hidden',
-  borderRadius: '16px',
-  border: `1px solid ${c.divider}`,
-  background: c.background,
-  '@media': {
-    // The prototype picker floats over the top 64px on phones, where a
-    // shipped build would keep its top bar.
-    [phone]: {
-      height: `calc(100% - ${sheetHeight})`,
-      paddingTop: '64px',
-      borderRadius: 0,
-      border: 0,
+export const main = style([
+  island,
+  {
+    containerName: mainContainer,
+    containerType: 'inline-size',
+    gridArea: 'main',
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: 0,
+    minHeight: 0,
+    overflow: 'hidden',
+    '@media': {
+      [compact]: {height: `calc(100% - ${sheetSpace})`},
     },
+  },
+]);
+
+export const stage = style({
+  position: 'relative',
+  flex: 1,
+  minHeight: 0,
+  display: 'flex',
+});
+
+// The production frame toolbar and footer sit absolutely over today's
+// canvas; here each gets its own row so neither can cover the frame.
+export const frameActions = style({
+  display: 'flex',
+  justifyContent: 'center',
+  padding: '0 16px 12px',
+  flexShrink: 0,
+});
+
+globalStyle(`${frameActions} > *`, {
+  position: 'static',
+  transform: 'none',
+});
+
+export const footer = style({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  padding: '0 12px 6px',
+  flexShrink: 0,
+  '@container': {
+    [`${mainContainer} (max-width: 720px)`]: {display: 'none'},
   },
 });
 
-// Controls
+globalStyle(`${footer} > *`, {position: 'static'});
 
-export const section = style({
+export const compactActions = style({
   display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-});
-
-export const sectionTitle = style({
-  margin: 0,
-  fontSize: '0.75rem',
-  fontWeight: 600,
-  color: c.descriptionTextColor,
-});
-
-export const divider = style({
-  height: '1px',
-  flexShrink: 0,
-  background: c.divider,
-});
-
-export const row = style({
-  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '12px',
-  minHeight: '30px',
-  '@media': {[phone]: {minHeight: '44px'}},
-});
-
-export const label = style({
-  flex: 1,
-  minWidth: 0,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  color: c.input.labelTextColor,
-});
-
-export const stack = style({
-  display: 'flex',
-  flexDirection: 'column',
   gap: '8px',
+  padding: '8px 12px 12px',
+  flexShrink: 0,
 });
 
-export const hint = style({
-  margin: 0,
-  fontSize: '0.75rem',
-  lineHeight: 1.4,
-  color: c.descriptionTextColor,
+globalStyle(`${compactActions} button`, {
+  minHeight: '40px',
+  minWidth: '40px',
 });
 
-export const value = style({
-  fontVariantNumeric: 'tabular-nums',
-  color: c.descriptionTextColor,
-});
+// The kit has no switch, so this is Kobalte's switch drawn with the kit's tokens.
 
 export const switchRoot = style({
   display: 'flex',
   alignItems: 'center',
-  gap: '12px',
-  minHeight: '30px',
-  '@media': {[phone]: {minHeight: '44px'}},
+  justifyContent: 'flex-end',
+  width: '100%',
 });
-
-export const switchLabel = style([
-  label,
-  {
-    cursor: 'pointer',
-    userSelect: 'none',
-    WebkitUserSelect: 'none',
-    alignSelf: 'stretch',
-    display: 'flex',
-    alignItems: 'center',
-  },
-]);
 
 export const switchControl = style({
   position: 'relative',
   flexShrink: 0,
-  width: '30px',
-  height: '18px',
-  borderRadius: '9px',
+  width: '36px',
+  height: '22px',
+  borderRadius: '11px',
   background: c.button.base.backgroundColor,
   cursor: 'pointer',
   transition: 'background-color 120ms ease',
@@ -420,314 +365,49 @@ export const switchControl = style({
     '&[data-checked]': {background: c.primary},
     [`${switchRoot}:has(input:focus-visible) &`]: focusRing,
   },
-  '@media': {[phone]: {width: '40px', height: '24px', borderRadius: '12px'}},
+  '@media': {[compact]: {width: '44px', height: '26px', borderRadius: '13px'}},
 });
 
 export const switchThumb = style({
   position: 'absolute',
-  top: '2px',
-  left: '2px',
-  width: '14px',
-  height: '14px',
+  top: '3px',
+  left: '3px',
+  width: '16px',
+  height: '16px',
   borderRadius: '50%',
   background: '#fff',
   boxShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
   transition: `transform 120ms ${easeOut}`,
   selectors: {
-    '&[data-checked]': {transform: 'translateX(12px)'},
+    '&[data-checked]': {transform: 'translateX(14px)'},
   },
   '@media': {
-    [phone]: {
+    [compact]: {
       width: '20px',
       height: '20px',
-      selectors: {'&[data-checked]': {transform: 'translateX(16px)'}},
+      selectors: {'&[data-checked]': {transform: 'translateX(18px)'}},
     },
     [reducedMotion]: {transition: 'none'},
   },
 });
 
-export const segmented = style({
-  display: 'grid',
-  gridAutoFlow: 'column',
-  gridAutoColumns: 'minmax(0, 1fr)',
-  gap: '2px',
-  padding: '2px',
-  borderRadius: '8px',
-  background: c.input.backgroundColor,
-});
-
-export const segment = style({
-  position: 'relative',
-  height: '26px',
-  borderRadius: '6px',
-  color: c.descriptionTextColor,
-  selectors: {
-    '&[data-checked]': {
-      color: c.baseText,
-      boxShadow: '0 1px 2px rgba(0, 0, 0, 0.16)',
-    },
-    ...withThemeMode(
-      {
-        dark: {background: '#383838'},
-        light: {background: '#ffffff'},
-      },
-      '&[data-checked]',
-    ),
-    '&:has(input:focus-visible)': focusRing,
-  },
-  '@media': {
-    [phone]: {height: '38px'},
-    [finePointer]: {
-      selectors: {'&:hover:not([data-checked])': {color: c.baseText}},
-    },
-  },
-});
-
-export const segmentLabel = style({
-  position: 'absolute',
-  inset: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '0.75rem',
-  fontWeight: 500,
-  cursor: 'pointer',
-  userSelect: 'none',
-  WebkitUserSelect: 'none',
-  whiteSpace: 'nowrap',
-});
-
-export const selectTrigger = style([
-  pressable,
-  {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    width: '150px',
-    height: '30px',
-    padding: '0 6px 0 10px',
-    border: 0,
-    borderRadius: '7px',
-    background: c.input.backgroundColor,
-    color: c.input.textColor,
-    fontFamily: 'inherit',
-    fontSize: '0.8125rem',
-    cursor: 'pointer',
-    selectors: {
-      '&:active:not(:disabled)': {transform: 'none'},
-      '&:disabled': {opacity: 0.55, cursor: 'default'},
-    },
-    '@media': {
-      [phone]: {height: '40px', width: '176px'},
-    },
-  },
-]);
-
-export const selectTriggerWide = style({width: '100%'});
-
-export const selectValue = style({
-  flex: 1,
-  minWidth: 0,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  textAlign: 'left',
-});
-
-export const selectIcon = style({
-  display: 'grid',
-  color: c.descriptionTextColor,
-});
-
-export const selectContent = style({
-  zIndex: 60,
-  minWidth: 'var(--kb-popper-anchor-width)',
-  maxHeight: 'min(320px, var(--kb-popper-content-available-height))',
-  overflowY: 'auto',
-  overscrollBehavior: 'contain',
-  padding: '4px',
-  borderRadius: '9px',
-  border: `1px solid ${c.divider}`,
-  background: c.listBox.panelBackground,
-  color: c.listBox.textColor,
-  boxShadow: '0 12px 32px rgba(0, 0, 0, 0.24)',
-  selectors: {
-    ...withThemeMode({light: {background: '#ffffff'}}),
-  },
-});
-
-export const selectListbox = style({outline: 'none'});
-
-export const selectItem = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '8px',
-  height: '30px',
-  padding: '0 8px',
-  borderRadius: '6px',
-  fontSize: '0.8125rem',
-  cursor: 'default',
-  outline: 'none',
-  selectors: {
-    '&[data-highlighted]': {background: c.listBox.hoverBackgroundColor},
-    ...withThemeMode({light: {background: '#f0f0f0'}}, '&[data-highlighted]'),
-    '&[data-selected]': {fontWeight: 600},
-  },
-  '@media': {[phone]: {height: '40px'}},
-});
-
-export const selectItemIndicator = style({
-  display: 'grid',
-  color: c.primary,
-});
-
-export const textInput = style({
-  width: '100%',
-  minWidth: 0,
-  height: '30px',
-  padding: '0 10px',
-  border: 0,
-  borderRadius: '7px',
-  background: c.input.backgroundColor,
-  color: c.input.textColor,
-  fontFamily: 'inherit',
-  fontSize: '0.8125rem',
-  selectors: {
-    '&:focus-visible': focusRing,
-    '&::placeholder': {color: c.descriptionTextColor},
-  },
-  '@media': {[phone]: {height: '40px', fontSize: '16px'}},
-});
-
-export const numberInput = style([
-  textInput,
-  {width: '88px', textAlign: 'right', fontVariantNumeric: 'tabular-nums'},
-]);
-
-export const range = style({
-  flex: 1,
-  minWidth: 0,
-  height: '20px',
-  margin: 0,
-  accentColor: c.primary,
-  cursor: 'pointer',
-  selectors: {'&:focus-visible': focusRing},
-  '@media': {[phone]: {height: '40px'}},
-});
-
-export const rangeValue = style([
-  value,
-  {width: '40px', textAlign: 'right', flexShrink: 0},
-]);
-
-export const button = style([
-  pressable,
-  {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    height: '32px',
-    padding: '0 12px',
-    border: 0,
-    borderRadius: '8px',
-    background: c.button.base.backgroundColor,
-    color: c.button.base.textColor,
-    fontFamily: 'inherit',
-    fontSize: '0.8125rem',
-    fontWeight: 500,
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    selectors: {
-      '&:disabled': {opacity: 0.5, cursor: 'default'},
-    },
-    '@media': {
-      [finePointer]: {
-        selectors: {
-          '&:hover:not(:disabled)': {background: c.button.base.hoverColor},
-        },
-      },
-      [phone]: {height: '44px'},
-    },
-  },
-]);
-
-export const buttonPrimary = style({
-  background: c.button.primary.backgroundColor,
-  color: c.button.primary.textColor,
-  '@media': {
-    [finePointer]: {
-      selectors: {
-        '&:hover:not(:disabled)': {background: c.button.primary.hoverColor},
-      },
-    },
-  },
-});
-
-export const buttonBlock = style({width: '100%'});
-
-export const buttonRow = style({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-  gap: '8px',
-});
-
-export const kbd = style({
-  marginLeft: 'auto',
-  paddingLeft: '8px',
-  fontSize: '0.6875rem',
-  opacity: 0.75,
-  fontVariantNumeric: 'tabular-nums',
-  '@media': {[phone]: {display: 'none'}},
-});
-
-export const swatchGrid = style({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(8, minmax(0, 1fr))',
-  gap: '6px',
-  '@media': {
-    [phone]: {gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: '8px'},
-  },
-});
-
-export const swatch = style([
-  pressable,
-  {
-    aspectRatio: '1',
-    width: '100%',
-    padding: 0,
-    border: 0,
-    borderRadius: '6px',
-    cursor: 'pointer',
-    boxShadow: 'inset 0 0 0 1px rgba(127, 127, 127, 0.25)',
-    selectors: {
-      '&[aria-checked="true"]': {
-        outline: `2px solid ${c.primary}`,
-        outlineOffset: '2px',
-      },
-    },
-  },
-]);
+// Window style tiles
 
 export const windowGrid = style({
   display: 'grid',
   gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-  gap: '8px',
+  gap: '10px',
 });
 
 export const windowTile = style({
   position: 'relative',
-  height: '72px',
+  height: '84px',
   overflow: 'hidden',
-  borderRadius: '8px',
+  borderRadius: '14px',
   background: c.input.backgroundColor,
   cursor: 'pointer',
   selectors: {
-    '&[data-checked]': {
-      outline: `2px solid ${c.primary}`,
-      outlineOffset: '1px',
-    },
+    '&[data-checked]': {boxShadow: `inset 0 0 0 2px ${c.primary}`},
     '&:has(input:focus-visible)': focusRing,
   },
 });
@@ -741,180 +421,116 @@ export const windowTileLabel = style({
 
 export const windowTilePreview = style({
   position: 'absolute',
-  top: '8px',
-  left: '8px',
-  width: '220px',
+  top: '10px',
+  left: '10px',
+  width: '230px',
   zoom: 0.5,
   pointerEvents: 'none',
 });
 
 export const windowTileCaption = style({
   position: 'absolute',
-  left: '8px',
-  bottom: '6px',
-  fontSize: '0.6875rem',
+  left: '12px',
+  bottom: '8px',
+  fontSize: themeVars.fontSize.xs,
   fontWeight: 500,
   color: c.descriptionTextColor,
   pointerEvents: 'none',
   selectors: {[`${windowTile}[data-checked] &`]: {color: c.baseText}},
 });
 
-// Themes gallery
+// Themes
+
+export const themeBody = style({
+  flex: 1,
+  minHeight: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+  padding: '0 16px',
+});
 
 export const themeToolbar = style({
   display: 'flex',
-  gap: '8px',
   alignItems: 'center',
+  gap: '8px',
   flexShrink: 0,
 });
 
-export const searchBox = style({
-  position: 'relative',
-  flex: 1,
-  minWidth: 0,
-});
+export const themeSearch = style({flex: 1, minWidth: 0});
 
-export const searchIcon = style({
-  position: 'absolute',
-  left: '9px',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  display: 'grid',
-  color: c.descriptionTextColor,
-  pointerEvents: 'none',
-});
-
-export const searchInput = style([
-  textInput,
-  {
-    paddingLeft: '30px',
-    selectors: {'&::-webkit-search-cancel-button': {display: 'none'}},
-  },
-]);
-
-export const toneGroup = style({flexShrink: 0, width: '140px'});
-
-export const themeBody = style([panelBody, {gap: '12px', overflow: 'hidden'}]);
+export const themeTones = style({flex: '0 0 150px'});
 
 export const themeScroller = style({
   flex: 1,
   minHeight: 0,
   overflowY: 'auto',
   overscrollBehavior: 'contain',
-  containerType: 'size',
-  margin: '0 -4px',
-  padding: '4px',
+  margin: '0 -6px',
+  padding: '6px 6px 16px',
 });
 
 export const themeGrid = style({
   display: 'grid',
   gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-  columnGap: '8px',
-  rowGap: '8px',
-  gridAutoRows: `clamp(52px, calc((100cqh - 8px - (${themeRows} - 1) * 8px) / ${themeRows}), 104px)`,
+  gap: '8px',
   outline: 'none',
-  '@media': {
-    [phone]: {
-      rowGap: '6px',
-      gridAutoRows: `clamp(40px, calc((100cqh - 8px - (${themeRows} - 1) * 6px) / ${themeRows}), 96px)`,
-    },
-  },
 });
 
-export const themeTile = style([
+export const themeCard = style([
   pressable,
   {
+    position: 'relative',
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
+    alignItems: 'center',
+    gap: '10px',
     minWidth: 0,
-    padding: 0,
+    padding: '16px 6px 12px',
     border: 0,
-    background: 'transparent',
-    color: c.descriptionTextColor,
+    borderRadius: '16px',
+    background: c.input.backgroundColor,
+    color: c.baseText,
     fontFamily: 'inherit',
-    textAlign: 'left',
     cursor: 'pointer',
     selectors: {
       '&:active:not(:disabled)': {transform: 'scale(0.98)'},
-      '&:focus-visible': {outline: 'none'},
-      '&[aria-checked="true"]': {color: c.baseText},
     },
     '@media': {
-      [finePointer]: {selectors: {'&:hover': {color: c.baseText}}},
-      [phone]: {position: 'relative'},
+      [finePointer]: {
+        selectors: {'&:hover': {background: c.button.base.backgroundColor}},
+      },
+      [compact]: {padding: '12px 4px 10px', gap: '8px'},
     },
   },
 ]);
 
-export const themeArt = style({
-  position: 'relative',
-  flex: 1,
-  minHeight: 0,
-  width: '100%',
-  overflow: 'hidden',
-  borderRadius: '8px',
-  backgroundSize: 'cover',
-  backgroundPosition: '50% 50%',
-  boxShadow: 'inset 0 0 0 1px rgba(127, 127, 127, 0.2)',
-  selectors: {
-    [`${themeTile}[aria-checked="true"] &`]: {
-      outline: `2px solid ${c.primary}`,
-      outlineOffset: '2px',
-    },
-    [`${themeTile}:focus-visible &`]: {
-      outline: `2px solid ${c.primary}`,
-      outlineOffset: '2px',
-    },
-  },
-});
-
-export const themePreview = style({
-  position: 'absolute',
-  top: '8%',
-  left: '50%',
-  width: '232px',
-  zoom: 0.4,
-  transform: 'translateX(-50%)',
-  pointerEvents: 'none',
-  '@media': {[phone]: {zoom: 0.3}},
-});
-
-export const themeCheck = style({
-  position: 'absolute',
-  top: '4px',
-  right: '4px',
-  zIndex: 1,
+export const themeOrb = style({
   display: 'grid',
   placeItems: 'center',
-  width: '18px',
-  height: '18px',
+  padding: '3px',
   borderRadius: '50%',
-  background: c.primary,
-  color: '#fff',
+  selectors: {
+    [`${themeCard}[aria-selected="true"] &`]: {
+      boxShadow: `0 0 0 2px ${c.primary}`,
+    },
+  },
 });
 
 export const themeName = style({
-  flexShrink: 0,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  fontSize: '0.75rem',
-  lineHeight: '14px',
+  fontSize: themeVars.fontSize.sm,
+  lineHeight: 1.25,
   fontWeight: 500,
-  '@media': {
-    [phone]: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      padding: '10px 6px 3px',
-      borderRadius: '0 0 8px 8px',
-      background: 'linear-gradient(transparent, rgba(0, 0, 0, 0.65))',
-      color: '#fff',
-      fontSize: '0.6875rem',
-    },
-  },
+  textAlign: 'center',
+  overflowWrap: 'anywhere',
+});
+
+export const themeTone = style({
+  position: 'absolute',
+  top: '8px',
+  right: '8px',
+  display: 'grid',
+  color: c.descriptionTextColor,
 });
 
 export const emptyState = style({
@@ -923,6 +539,8 @@ export const emptyState = style({
   alignItems: 'flex-start',
   gap: '10px',
   padding: '8px 0',
+  color: c.descriptionTextColor,
+  fontSize: themeVars.fontSize.sm,
 });
 
 export const presetsHost = style({
@@ -930,14 +548,6 @@ export const presetsHost = style({
   minHeight: 0,
   display: 'flex',
   flexDirection: 'column',
-  padding: '0 12px 12px 16px',
+  padding: '4px 12px 12px 16px',
   overflow: 'hidden',
-});
-
-export const resolution = style([value, {fontSize: '0.75rem'}]);
-
-// Last, so it wins over the display of the button it sits on.
-export const phoneOnlyFlex = style({
-  display: 'none',
-  '@media': {[phone]: {display: 'inline-flex', alignItems: 'center'}},
 });

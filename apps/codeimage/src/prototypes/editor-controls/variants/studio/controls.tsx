@@ -1,18 +1,14 @@
-import {isAssetUrl} from '@codeimage/store/assets/assets';
-import {RadioGroup} from '@kobalte/core/radio-group';
-import {Select} from '@kobalte/core/select';
+import {RangeField} from '@codeimage/ui';
+import {createSelectOptions, NumberField, Select} from '@codeui/kit';
 import {Switch} from '@kobalte/core/switch';
-import clsx from 'clsx';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {JSX} from 'solid-js';
-import {createSignal, For, Show} from 'solid-js';
-import type {
-  BackgroundControl,
-  ChoiceOption,
-  Control,
-  ControlId,
-  EditorControlsModel,
-} from '../../model';
-import {CheckIcon, ChevronIcon} from './icons';
+import {Show} from 'solid-js';
+import {
+  PanelRow,
+  TwoColumnPanelRow,
+} from '../../../../components/PropertyEditor/PanelRow';
+import type {Control, ControlId, EditorControlsModel} from '../../model';
 import * as styles from './studio.css';
 
 /**
@@ -24,6 +20,14 @@ export function ownKeys(e: KeyboardEvent) {
   if (/^(ArrowLeft|ArrowRight|[0-9rR])$/.test(e.key)) {
     e.stopImmediatePropagation();
   }
+}
+
+const COMPOSITE =
+  '[role=radiogroup], [role=tablist], [role=listbox], [aria-haspopup=listbox]';
+
+/** Keeps arrow keys and typeahead inside segmented controls, selects and grids. */
+export function ownCompositeKeys(e: KeyboardEvent) {
+  if ((e.target as Element).closest?.(COMPOSITE)) ownKeys(e);
 }
 
 /** Arrow, Home and End movement through a grid of `count` cells. */
@@ -52,7 +56,6 @@ interface Look {
   readonly label?: string;
   /** A two-value choice drawn as a switch: the key that means on, and off. */
   readonly asSwitch?: {readonly on: string; readonly off: string};
-  readonly as?: 'segmented' | 'select';
 }
 
 // Booleans become switches whose label carries the meaning, so on and off
@@ -66,11 +69,10 @@ const LOOKS: Partial<Record<ControlId, Look>> = {
     label: 'Glass border',
     asSwitch: {on: 'glass', off: 'none'},
   },
-  'frame.padding': {as: 'segmented'},
 };
 
-export function SwitchRow(props: {
-  label: string;
+export function SwitchField(props: {
+  id: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
 }) {
@@ -80,8 +82,7 @@ export function SwitchRow(props: {
       checked={props.checked}
       onChange={props.onChange}
     >
-      <Switch.Input />
-      <Switch.Label class={styles.switchLabel}>{props.label}</Switch.Label>
+      <Switch.Input id={props.id} />
       <Switch.Control class={styles.switchControl}>
         <Switch.Thumb class={styles.switchThumb} />
       </Switch.Control>
@@ -89,334 +90,154 @@ export function SwitchRow(props: {
   );
 }
 
-export function SegmentedField(props: {
-  label: string;
-  hideLabel?: boolean;
-  options: readonly ChoiceOption[];
-  value: string;
-  onChange: (key: string) => void;
-  class?: string;
-}) {
-  return (
-    <RadioGroup
-      class={clsx(styles.stack, props.class)}
-      value={props.value}
-      onChange={props.onChange}
-      orientation="horizontal"
-      onKeyDown={ownKeys}
-    >
-      <RadioGroup.Label
-        class={props.hideLabel ? styles.visuallyHidden : styles.label}
-      >
-        {props.label}
-      </RadioGroup.Label>
-      <div class={styles.segmented}>
-        <For each={props.options}>
-          {option => (
-            <RadioGroup.Item value={option.key} class={styles.segment}>
-              <RadioGroup.ItemInput />
-              <RadioGroup.ItemLabel class={styles.segmentLabel}>
-                {option.label}
-              </RadioGroup.ItemLabel>
-            </RadioGroup.Item>
-          )}
-        </For>
-      </div>
-    </RadioGroup>
-  );
+function fieldId(id: ControlId) {
+  return `studio-${id.replace('.', '-')}`;
 }
 
-export function SelectField(props: {
+function ChoiceSelect(props: {
+  id: string;
   label: string;
-  options: readonly ChoiceOption[];
+  options: readonly {key: string; label: string}[];
   value: string;
   onChange: (key: string) => void;
   disabled?: boolean;
-  /** Label above and a full width trigger, for long values like font names. */
-  stacked?: boolean;
+  size: 'sm' | 'md';
 }) {
-  const selected = () =>
-    props.options.find(option => option.key === props.value) ?? null;
-
+  const options = createSelectOptions(
+    () =>
+      props.options.map(option => ({label: option.label, value: option.key})),
+    {key: 'label', valueKey: 'value'},
+  );
   return (
-    <Select<ChoiceOption>
-      class={props.stacked ? styles.stack : styles.row}
-      options={[...props.options]}
-      optionValue="key"
-      optionTextValue="label"
-      value={selected()}
-      onChange={option => option && props.onChange(option.key)}
-      disabled={props.disabled}
-      placeholder={props.value || 'None'}
-      gutter={4}
-      placement="bottom-end"
-      itemComponent={item => (
-        <Select.Item item={item.item} class={styles.selectItem}>
-          <Select.ItemLabel>{item.item.rawValue.label}</Select.ItemLabel>
-          <Select.ItemIndicator class={styles.selectItemIndicator}>
-            <CheckIcon size={14} />
-          </Select.ItemIndicator>
-        </Select.Item>
+    // @ts-expect-error Fix @codeui/kit types, as the production forms do
+    <Select
+      {...options.props()}
+      {...options.controlled(
+        () => props.value,
+        key => {
+          if (typeof key === 'string') props.onChange(key);
+        },
       )}
-    >
-      <Select.Label class={styles.label}>{props.label}</Select.Label>
-      <Select.Trigger
-        class={clsx(
-          styles.selectTrigger,
-          props.stacked && styles.selectTriggerWide,
-        )}
-        onKeyDown={ownKeys}
-      >
-        <Select.Value<ChoiceOption> class={styles.selectValue}>
-          {state => state.selectedOption()?.label}
-        </Select.Value>
-        <Select.Icon class={styles.selectIcon}>
-          <ChevronIcon size={16} />
-        </Select.Icon>
-      </Select.Trigger>
-      <Select.Portal>
-        <Select.Content class={styles.selectContent} onKeyDown={ownKeys}>
-          <Select.Listbox class={styles.selectListbox} />
-        </Select.Content>
-      </Select.Portal>
-    </Select>
+      options={options.options()}
+      aria-label={props.label}
+      id={props.id}
+      size={props.size}
+      disabled={props.disabled}
+    />
   );
 }
 
-export function RangeRow(props: {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  unit?: string;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <label class={styles.row}>
-      <span class={styles.label}>{props.label}</span>
-      <input
-        type="range"
-        class={styles.range}
-        min={props.min}
-        max={props.max}
-        step={props.step}
-        value={props.value}
-        onInput={e => props.onChange(e.currentTarget.valueAsNumber)}
-      />
-      <span class={styles.rangeValue}>
-        {props.value}
-        {props.unit}
-      </span>
-    </label>
-  );
-}
-
-function NumberRow(props: {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <label class={styles.row}>
-      <span class={styles.label}>{props.label}</span>
-      <input
-        type="number"
-        inputmode="numeric"
-        class={styles.numberInput}
-        min={props.min}
-        max={props.max}
-        value={props.value}
-        onChange={e => {
-          const next = e.currentTarget.valueAsNumber;
-          if (Number.isFinite(next)) {
-            props.onChange(Math.max(props.min, Math.min(props.max, next)));
-          }
-        }}
-      />
-    </label>
-  );
-}
-
-type BackgroundMode = 'gradient' | 'color' | 'image';
-
-const backgroundModes: readonly ChoiceOption[] = [
-  {key: 'gradient', label: 'Gradient'},
-  {key: 'color', label: 'Color'},
-  {key: 'image', label: 'Image'},
-];
-
-function initialBackgroundMode(control: BackgroundControl): BackgroundMode {
-  const value = control.value();
-  if (control.colors.includes(value)) return 'color';
-  if (isAssetUrl(value)) return 'image';
-  return 'gradient';
-}
-
-function BackgroundField(props: {
-  control: BackgroundControl;
-  image: Control | undefined;
-}) {
-  const [mode, setMode] = createSignal(initialBackgroundMode(props.control));
-  const swatches = () =>
-    mode() === 'color' ? props.control.colors : props.control.gradients;
-  const cells: HTMLButtonElement[] = [];
-  const selectedIndex = () => swatches().indexOf(props.control.value());
-
-  const onKeyDown = (e: KeyboardEvent) => {
-    const index = cells.indexOf(e.target as HTMLButtonElement);
-    if (index < 0) return;
-    const next = moveInGrid(e, index, swatches().length, 8);
-    if (next === undefined) return;
-    props.control.set(swatches()[next]);
-    cells[next]?.focus();
-  };
-
-  return (
-    <div class={styles.stack}>
-      <SegmentedField
-        label="Background source"
-        hideLabel
-        options={backgroundModes}
-        value={mode()}
-        onChange={key => setMode(key as BackgroundMode)}
-      />
-      <Show
-        when={mode() !== 'image'}
-        fallback={
-          <Show when={props.image}>{image => renderControl(image())}</Show>
-        }
-      >
-        <div
-          role="radiogroup"
-          aria-label={mode() === 'color' ? 'Colors' : 'Gradients'}
-          class={styles.swatchGrid}
-          onKeyDown={onKeyDown}
-        >
-          <For each={swatches()}>
-            {(swatch, index) => (
-              <button
-                ref={el => (cells[index()] = el)}
-                type="button"
-                role="radio"
-                aria-checked={props.control.value() === swatch}
-                aria-label={swatch}
-                title={swatch}
-                tabIndex={index() === Math.max(0, selectedIndex()) ? 0 : -1}
-                class={styles.swatch}
-                style={{background: swatch}}
-                onClick={() => props.control.set(swatch)}
-              />
-            )}
-          </For>
-        </div>
-        <input
-          class={styles.textInput}
-          aria-label="Custom background"
-          placeholder="#hex, rgb() or a CSS gradient"
-          spellcheck={false}
-          value={isAssetUrl(props.control.value()) ? '' : props.control.value()}
-          onChange={e => {
-            const next = e.currentTarget.value.trim();
-            if (next) props.control.set(next);
-          }}
-        />
-      </Show>
-    </div>
-  );
-}
-
-/** One row per control kind. The kind of a control never changes, so the branch runs once. */
+/**
+ * One row per control kind, laid out with the production sidebar rows. The
+ * kind of a control never changes, so the branch runs once.
+ */
 export function renderControl(
   control: Control,
-  model?: EditorControlsModel,
+  size: () => 'sm' | 'md',
 ): JSX.Element {
   const look = LOOKS[control.id] ?? {};
   const label = () => look.label ?? control.label();
+  const id = fieldId(control.id);
 
-  switch (control.kind) {
-    case 'toggle':
-      return (
-        <SwitchRow
-          label={label()}
-          checked={control.value()}
-          onChange={control.set}
-        />
-      );
-    case 'segmented':
-    case 'select': {
-      const asSwitch = look.asSwitch;
-      if (asSwitch) {
+  const field = (): JSX.Element => {
+    switch (control.kind) {
+      case 'toggle':
         return (
-          <SwitchRow
-            label={label()}
-            checked={control.value() === asSwitch.on}
-            onChange={on => control.set(on ? asSwitch.on : asSwitch.off)}
+          <SwitchField
+            id={id}
+            checked={control.value()}
+            onChange={control.set}
           />
         );
-      }
-      if ((look.as ?? control.kind) === 'segmented') {
+      case 'segmented':
+      case 'select': {
+        const asSwitch = look.asSwitch;
+        if (asSwitch) {
+          return (
+            <SwitchField
+              id={id}
+              checked={control.value() === asSwitch.on}
+              onChange={on => control.set(on ? asSwitch.on : asSwitch.off)}
+            />
+          );
+        }
+        if (control.kind === 'segmented') {
+          return (
+            <SegmentedField
+              adapt
+              id={id}
+              size={size()}
+              value={control.value()}
+              onChange={control.set}
+              items={control.options().map(option => ({
+                label: option.label,
+                value: option.key,
+              }))}
+            />
+          );
+        }
         return (
-          <SegmentedField
+          <ChoiceSelect
+            id={id}
             label={label()}
             options={control.options()}
             value={control.value()}
             onChange={control.set}
+            disabled={control.disabled()}
+            size={size()}
           />
         );
       }
-      return (
-        <SelectField
-          label={label()}
-          options={control.options()}
-          value={control.value()}
-          onChange={control.set}
-          disabled={control.disabled()}
-        />
-      );
+      case 'range':
+        return (
+          <RangeField
+            id={id}
+            value={control.value()}
+            min={control.min}
+            max={control.max}
+            step={control.step}
+            onChange={control.set}
+          />
+        );
+      case 'number':
+        return (
+          <NumberField
+            id={id}
+            size={size()}
+            min={control.min}
+            max={control.max}
+            value={control.value()}
+            onChange={value => {
+              if (typeof value === 'number') control.set(value);
+            }}
+          />
+        );
+      case 'background':
+      case 'custom':
+        return null;
     }
-    case 'range':
-      return (
-        <RangeRow
-          label={label()}
-          value={control.value()}
-          min={control.min}
-          max={control.max}
-          step={control.step}
-          unit="%"
-          onChange={control.set}
-        />
-      );
-    case 'number':
-      return (
-        <NumberRow
-          label={label()}
-          value={control.value()}
-          min={control.min}
-          max={control.max}
-          onChange={control.set}
-        />
-      );
-    case 'background':
-      return (
-        <BackgroundField
-          control={control}
-          image={model?.control('frame.backgroundImage')}
-        />
-      );
-    case 'custom':
-      return <control.Control />;
-  }
+  };
+
+  // The kit's select puts the id on its root and names the trigger `<id>-trigger`.
+  const labelFor =
+    control.kind === 'select' && !look.asSwitch ? `${id}-trigger` : id;
+  return (
+    <PanelRow for={labelFor} label={label()}>
+      <TwoColumnPanelRow>{field()}</TwoColumnPanelRow>
+    </PanelRow>
+  );
 }
 
 /** Renders the control, or nothing while today's sidebar would hide it. */
-export function ControlRow(props: {model: EditorControlsModel; id: ControlId}) {
+export function ControlRow(props: {
+  model: EditorControlsModel;
+  id: ControlId;
+  size: () => 'sm' | 'md';
+}) {
   const control = props.model.control(props.id);
   return (
     <Show when={control?.visible() && control}>
-      {visible => renderControl(visible(), props.model)}
+      {visible => renderControl(visible(), props.size)}
     </Show>
   );
 }

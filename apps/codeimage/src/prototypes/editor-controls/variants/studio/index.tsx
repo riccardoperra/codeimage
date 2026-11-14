@@ -1,5 +1,6 @@
+import {Button, IconButton} from '@codeui/kit';
+import {useModality} from '@core/hooks/isMobile';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
-import clsx from 'clsx';
 import {
   createMemo,
   createSignal,
@@ -9,11 +10,19 @@ import {
   Show,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {ToolbarSettingsButton} from '../../../../components/Toolbar/ToolbarSettings';
+import {Footer} from '../../../../components/Footer/Footer';
+import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
+import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
+import {ExportInNewTabButton} from '../../../../components/Toolbar/ExportNewTabButton';
+import {ExportSettingsButton} from '../../../../components/Toolbar/ExportSettingsButton';
+import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
+import {ShareButton} from '../../../../components/Toolbar/ShareButton';
+import {Toolbar} from '../../../../components/Toolbar/Toolbar';
 import type {VariantMeta, VariantProps} from '../../contract';
-import {CloseIcon, CollapseIcon, PresetsIcon, ShuffleIcon} from './icons';
+import {ownCompositeKeys} from './controls';
+import {CloseIcon, CollapseIcon} from './icons';
 import type {Panel, PanelId} from './panels';
-import {EXPORT_BUTTON_ID, PANELS} from './panels';
+import {PANELS} from './panels';
 import * as styles from './studio.css';
 
 export const meta: VariantMeta = {
@@ -25,8 +34,9 @@ type Stop = 'short' | 'tall';
 
 const PANEL_ID = 'studio-panel';
 const DRAWER = 'cubic-bezier(0.32, 0.72, 0, 1)';
-/** Canvas height kept above the tall stop: 64px under the picker, the rest for the frame. */
-const TALL_STOP_GAP = 180;
+const GAP = 8;
+/** Canvas island height kept above the tall stop, so the frame stays in view. */
+const TALL_STOP_CANVAS = 220;
 const FLICK_VELOCITY = 0.11;
 
 function reducedMotion() {
@@ -37,41 +47,36 @@ function rubberband(overshoot: number, dimension: number) {
   return (overshoot * dimension * 0.55) / (dimension + 0.55 * overshoot);
 }
 
-function Logo() {
-  return (
-    <svg width="26" height="22" viewBox="0 0 62.31 53.4" aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M51,0H11.34A11.34,11.34,0,0,0,0,11.34V42.07A11.34,11.34,0,0,0,11.34,53.4H51A11.34,11.34,0,0,0,62.31,42.07V11.34A11.34,11.34,0,0,0,51,0ZM10.47,29.58l5.76-5.75a2.23,2.23,0,0,0,0-3.15l-5.76-5.76a2.23,2.23,0,0,1,0-3.14l1.31-1.31a2.23,2.23,0,0,1,3.14,0L25.13,20.68a2.23,2.23,0,0,1,0,3.15L14.92,34a2.22,2.22,0,0,1-3.14,0l-1.31-1.3A2.25,2.25,0,0,1,10.47,29.58Zm31.81,6H28.93a2.22,2.22,0,0,1-2.23-2.22h0a2.23,2.23,0,0,1,2.23-2.23H42.28a2.22,2.22,0,0,1,2.22,2.23h0A2.21,2.21,0,0,1,42.28,35.6Z"
-      />
-    </svg>
-  );
-}
-
 export default function Studio(props: VariantProps) {
-  const phoneQuery = matchMedia(styles.PHONE_QUERY);
-  const [isPhone, setIsPhone] = createSignal(phoneQuery.matches);
+  // The production header and buttons pick their layout once, at load.
+  const modality = useModality();
+  const compactQuery = matchMedia(styles.COMPACT_QUERY);
+  const [isPhone, setIsPhone] = createSignal(compactQuery.matches);
   const [openId, setOpenId] = createSignal<PanelId | null>(
     isPhone() ? null : 'themes',
   );
+  const [mounted, setMounted] = createSignal<ReadonlySet<PanelId>>(
+    new Set(openId() ? [openId()!] : []),
+  );
   const [stop, setStop] = createSignal<Stop>('short');
-  const [mainHeight, setMainHeight] = createSignal(0);
+  const [available, setAvailable] = createSignal(0);
   const openers = new Map<PanelId, HTMLElement>();
+  const size = () => (isPhone() ? 'md' : 'sm');
   let panelEl!: HTMLElement;
-  let mainEl!: HTMLElement;
+  let bodyEl!: HTMLDivElement;
+  let railEl!: HTMLElement;
 
   const openPanel = createMemo(() =>
     PANELS.find(panel => panel.id === openId()),
   );
-  const panelById = (id: PanelId) => PANELS.find(panel => panel.id === id)!;
 
-  const sheetHeights = () => {
-    const main = mainHeight();
-    return {
-      short: Math.round(main * 0.5),
-      tall: Math.max(Math.round(main * 0.5), main - TALL_STOP_GAP),
-    };
-  };
+  const sheetHeights = () => ({
+    short: Math.round(available() * 0.5),
+    tall: Math.max(
+      Math.round(available() * 0.5),
+      available() - TALL_STOP_CANVAS,
+    ),
+  });
   const sheetHeight = () =>
     isPhone() && openId() ? sheetHeights()[stop()] : 0;
 
@@ -86,45 +91,42 @@ export default function Studio(props: VariantProps) {
     );
   };
 
-  const [mounted, setMounted] = createSignal<ReadonlySet<PanelId>>(
-    new Set(openId() ? [openId()!] : []),
-  );
-
   const open = (panel: Panel) => {
     const wasOpen = openId() !== null;
     setMounted(prev =>
       prev.has(panel.id) ? prev : new Set([...prev, panel.id]),
     );
-    setStop(panel.sheet);
+    setStop(panel.sheet ?? 'short');
     setOpenId(panel.id);
     if (!isPhone() || wasOpen) return;
     stopAnimations();
     if (reducedMotion()) {
       panelEl.animate([{opacity: 0}, {opacity: 1}], {duration: 200});
     } else {
-      slide('100%', '0px', 300);
+      slide('110%', '0px', 300);
     }
+  };
+
+  const finishClose = (id: PanelId, returnFocus: boolean) => {
+    stopAnimations();
+    setOpenId(null);
+    if (returnFocus) openers.get(id)?.focus();
   };
 
   const close = (returnFocus = false) => {
     const id = openId();
     if (!id) return;
-    const done = () => {
-      stopAnimations();
-      setOpenId(null);
-      if (returnFocus) openers.get(id)?.focus();
-    };
-    if (!isPhone()) return done();
+    if (!isPhone()) return finishClose(id, returnFocus);
     const exit = reducedMotion()
       ? panelEl.animate([{opacity: 1}, {opacity: 0}], {
           duration: 150,
           fill: 'forwards',
         })
       : panelEl.animate(
-          [{transform: 'translateY(0)'}, {transform: 'translateY(100%)'}],
+          [{transform: 'translateY(0)'}, {transform: 'translateY(110%)'}],
           {duration: 200, easing: DRAWER, fill: 'forwards'},
         );
-    exit.onfinish = done;
+    exit.onfinish = () => finishClose(id, returnFocus);
   };
 
   const toggle = (panel: Panel) =>
@@ -201,173 +203,173 @@ export default function Studio(props: VariantProps) {
     );
 
     if (nearest.target === 'closed') {
-      if (reducedMotion()) return close();
+      const id = openId();
+      if (!id || reducedMotion()) return close();
       const exit = panelEl.animate(
         [
           {transform: `translateY(${offset}px)`},
-          {transform: 'translateY(100%)'},
+          {transform: 'translateY(110%)'},
         ],
         {duration: 200, easing: DRAWER, fill: 'forwards'},
       );
-      exit.onfinish = () => {
-        stopAnimations();
-        setOpenId(null);
-      };
+      exit.onfinish = () => finishClose(id, false);
       return;
     }
     settle(nearest.target, offset);
   };
 
   const onPanelKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== 'Escape' || e.defaultPrevented) return;
+    ownCompositeKeys(e);
+    if (e.key !== 'Escape' || e.defaultPrevented || e.cancelBubble) return;
     e.stopPropagation();
     close(true);
   };
 
   onMount(() => {
     const onQuery = (e: MediaQueryListEvent) => setIsPhone(e.matches);
-    phoneQuery.addEventListener('change', onQuery);
+    compactQuery.addEventListener('change', onQuery);
 
-    const observer = new ResizeObserver(([entry]) =>
-      setMainHeight(entry.contentRect.height),
-    );
-    observer.observe(mainEl);
-
-    const onSave = (e: KeyboardEvent) => {
-      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 's') return;
-      e.preventDefault();
-      const exportPanel = PANELS.find(panel => panel.id === 'export');
-      if (exportPanel && openId() !== 'export') open(exportPanel);
-      requestAnimationFrame(() =>
-        document.getElementById(EXPORT_BUTTON_ID)?.focus(),
+    const measure = () =>
+      setAvailable(
+        railEl.getBoundingClientRect().top -
+          bodyEl.getBoundingClientRect().top -
+          GAP,
       );
-    };
-    document.addEventListener('keydown', onSave);
+    const observer = new ResizeObserver(measure);
+    observer.observe(bodyEl);
+    measure();
 
     onCleanup(() => {
-      phoneQuery.removeEventListener('change', onQuery);
+      compactQuery.removeEventListener('change', onQuery);
       observer.disconnect();
-      document.removeEventListener('keydown', onSave);
     });
   });
 
-  const opener = (panel: Panel) => (
-    <button
-      ref={el => openers.set(panel.id, el)}
-      type="button"
-      class={styles.railButton}
-      data-phone={panel.phone}
-      aria-controls={PANEL_ID}
-      aria-expanded={openId() === panel.id}
-      data-owns-open={openPanel()?.phone === panel.id ? '' : undefined}
-      onClick={() => toggle(panel)}
-    >
-      <span class={styles.railIcon}>
-        <panel.Icon />
-      </span>
-      {panel.label}
-    </button>
-  );
-
   return (
-    <div
-      class={styles.root}
-      style={assignInlineVars({[styles.sheetHeight]: `${sheetHeight()}px`})}
-    >
-      <nav class={styles.rail} aria-label="Editor panels">
-        <div class={styles.railLogo}>
-          <Logo />
-        </div>
-        <For each={PANELS}>{opener}</For>
-        <div class={styles.railSpacer} />
-        <div class={styles.railFooter}>
-          <ToolbarSettingsButton />
-        </div>
-      </nav>
+    <div class={styles.root}>
+      <Toolbar canvasRef={props.stage.exportRef()} />
 
-      <section
-        ref={panelEl}
-        id={PANEL_ID}
-        role="region"
-        aria-label={openPanel()?.label}
-        class={styles.panel}
-        data-wide={openPanel()?.wide ? '' : undefined}
-        hidden={!openPanel()}
-        onKeyDown={onPanelKeyDown}
+      <div
+        ref={bodyEl}
+        class={styles.body}
+        style={assignInlineVars({
+          [styles.sheetHeight]: `${sheetHeight()}px`,
+          [styles.sheetSpace]: `${sheetHeight() ? sheetHeight() + GAP : 0}px`,
+        })}
       >
-        <div
-          class={styles.panelGrabArea}
-          onPointerDown={onGrabStart}
-          onPointerMove={onGrabMove}
-          onPointerUp={onGrabEnd}
-          onPointerCancel={onGrabEnd}
-        >
-          <div class={styles.sheetGrip} />
-          <Show when={!openPanel()?.ownHeader}>
-            <div class={styles.panelHeader}>
-              <h2 class={styles.panelTitle}>{openPanel()?.label}</h2>
-              <Show when={openId() === 'themes'}>
-                <button
-                  type="button"
-                  class={clsx(styles.button, styles.phoneOnlyFlex)}
-                  onClick={() => open(panelById('presets'))}
-                >
-                  <PresetsIcon size={16} />
-                  Presets
-                </button>
-                <button
-                  type="button"
-                  class={styles.iconButton}
-                  aria-label="Random theme"
-                  title="Random theme"
-                  onClick={() => props.stage.randomize()}
-                >
-                  <ShuffleIcon size={18} />
-                </button>
-              </Show>
-              <Show when={openId() === 'export'}>
-                <span class={styles.phoneOnlyFlex}>
-                  <ToolbarSettingsButton />
-                </span>
-              </Show>
+        <nav ref={railEl} class={styles.rail} aria-label="Editor panels">
+          <For each={PANELS}>
+            {panel => (
               <button
+                ref={el => openers.set(panel.id, el)}
                 type="button"
-                class={styles.iconButton}
-                aria-label={`Close ${openPanel()?.label ?? 'panel'}`}
-                title="Close (Esc)"
-                onClick={() => close(true)}
+                class={styles.railButton}
+                aria-controls={PANEL_ID}
+                aria-expanded={openId() === panel.id}
+                onClick={() => toggle(panel)}
               >
-                <span class={styles.desktopOnly}>
-                  <CollapseIcon size={18} />
+                <span class={styles.railIcon}>
+                  <panel.Icon />
                 </span>
-                <span class={styles.phoneOnly}>
-                  <CloseIcon size={18} />
-                </span>
+                {panel.label}
               </button>
-            </div>
-          </Show>
-        </div>
-        <For each={PANELS}>
-          {panel => (
-            <Show when={mounted().has(panel.id)}>
-              <div class={styles.panelPage} hidden={openId() !== panel.id}>
-                <Dynamic
-                  component={panel.Body}
-                  model={props.model}
-                  stage={props.stage}
-                  close={() => close(true)}
-                />
+            )}
+          </For>
+        </nav>
+
+        <section
+          ref={panelEl}
+          id={PANEL_ID}
+          role="region"
+          aria-label={openPanel()?.label}
+          class={styles.panel}
+          data-wide={openPanel()?.wide ? '' : undefined}
+          hidden={!openPanel()}
+          onKeyDown={onPanelKeyDown}
+        >
+          <div
+            class={styles.panelGrabArea}
+            onPointerDown={onGrabStart}
+            onPointerMove={onGrabMove}
+            onPointerUp={onGrabEnd}
+            onPointerCancel={onGrabEnd}
+          >
+            <div class={styles.sheetGrip} />
+            <Show when={!openPanel()?.ownHeader}>
+              <div class={styles.panelHeader}>
+                <h2 class={styles.panelTitle}>{openPanel()?.label}</h2>
+                <IconButton
+                  size={size()}
+                  theme="secondary"
+                  variant="ghost"
+                  aria-label={`Close ${openPanel()?.label ?? 'panel'}`}
+                  title="Close (Esc)"
+                  onClick={() => close(true)}
+                >
+                  <Show when={isPhone()} fallback={<CollapseIcon size={18} />}>
+                    <CloseIcon size={18} />
+                  </Show>
+                </IconButton>
               </div>
             </Show>
-          )}
-        </For>
-      </section>
+          </div>
+          <For each={PANELS}>
+            {panel => (
+              <Show when={mounted().has(panel.id)}>
+                <div class={styles.panelPage} hidden={openId() !== panel.id}>
+                  <Dynamic
+                    component={panel.Body}
+                    model={props.model}
+                    stage={props.stage}
+                    size={size}
+                    phone={isPhone}
+                    close={() => close(true)}
+                  />
+                </div>
+              </Show>
+            )}
+          </For>
+        </section>
 
-      <main ref={mainEl} class={styles.main}>
-        <div class={styles.canvas}>
-          <props.stage.Canvas />
-        </div>
-      </main>
+        <main class={styles.main}>
+          <div class={styles.stage}>
+            <props.stage.Canvas />
+          </div>
+          <Show
+            when={modality === 'full'}
+            fallback={
+              <div class={styles.compactActions}>
+                <ExportSettingsButton />
+                <ShareButton showLabel={false} />
+                <Button
+                  size="xs"
+                  theme="secondary"
+                  aria-label="Random theme"
+                  leftIcon={<ColorSwatchIcon />}
+                  onClick={() => props.stage.randomize()}
+                />
+                <Button
+                  size="xs"
+                  theme="secondary"
+                  aria-label="Format code"
+                  leftIcon={<SparklesIcon />}
+                  disabled={!props.stage.canFormat()}
+                  onClick={() => props.stage.format()}
+                />
+                <ExportInNewTabButton canvasRef={props.stage.exportRef()} />
+                <props.stage.ExportButton />
+              </div>
+            }
+          >
+            <div class={styles.frameActions}>
+              <FrameToolbar frameRef={props.stage.exportRef()} />
+            </div>
+            <div class={styles.footer}>
+              <Footer />
+            </div>
+          </Show>
+        </main>
+      </div>
     </div>
   );
 }

@@ -61,14 +61,6 @@ export const PresetsIcon: IconComponent = props => (
   </Icon>
 );
 
-export const ExportIcon: IconComponent = props => (
-  <Icon size={props.size}>
-    <path d="M20.5 15v3.5a2.5 2.5 0 0 1-2.5 2.5H6a2.5 2.5 0 0 1-2.5-2.5V15" />
-    <path d="m7.5 10.5 4.5 4.5 4.5-4.5" />
-    <path d="M12 15V3" />
-  </Icon>
-);
-
 export const CollapseIcon: IconComponent = props => (
   <Icon size={props.size}>
     <rect x="3" y="3" width="18" height="18" rx="3" />
@@ -84,62 +76,15 @@ export const CloseIcon: IconComponent = props => (
   </Icon>
 );
 
-export const ShuffleIcon: IconComponent = props => (
+export const SunIcon: IconComponent = props => (
   <Icon size={props.size}>
-    <path d="M2.5 18h1.6c1.3 0 2.5-.6 3.3-1.7l6.2-8.6c.8-1.1 2-1.7 3.3-1.7h4.6" />
-    <path d="m18.5 3 3 3-3 3" />
-    <path d="M2.5 6h1.8c1.5 0 2.9.9 3.6 2.2" />
-    <path d="M21.5 18h-4.6c-1.3 0-2.6-.7-3.3-1.8l-.5-.8" />
-    <path d="m18.5 15 3 3-3 3" />
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" />
   </Icon>
 );
 
-export const SearchIcon: IconComponent = props => (
+export const MoonIcon: IconComponent = props => (
   <Icon size={props.size}>
-    <circle cx="11" cy="11" r="7" />
-    <path d="m20.5 20.5-4.5-4.5" />
-  </Icon>
-);
-
-export const CheckIcon: IconComponent = props => (
-  <Icon size={props.size}>
-    <path d="M20 6 9 17l-5-5" />
-  </Icon>
-);
-
-export const ChevronIcon: IconComponent = props => (
-  <Icon size={props.size}>
-    <path d="m7 10 5 5 5-5" />
-  </Icon>
-);
-
-export const SparklesIcon: IconComponent = props => (
-  <Icon size={props.size}>
-    <path d="M10 3.5 11.6 8l4.4 1.6-4.4 1.6L10 15.5l-1.6-4.3L4 9.6 8.4 8z" />
-    <path d="M18 14v6" />
-    <path d="M15 17h6" />
-  </Icon>
-);
-
-export const CopyIcon: IconComponent = props => (
-  <Icon size={props.size}>
-    <rect x="8.5" y="8.5" width="12" height="12" rx="2" />
-    <path d="M4.5 15.5V6a2 2 0 0 1 2-2h9.5" />
-  </Icon>
-);
-
-export const OpenIcon: IconComponent = props => (
-  <Icon size={props.size}>
-    <path d="M14.5 3.5h6v6" />
-    <path d="M10 14 20.5 3.5" />
-    <path d="M18.5 13.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2h5.5" />
-  </Icon>
-);
-
-export const ShareIcon: IconComponent = props => (
-  <Icon size={props.size}>
-    <path d="M4.5 12v7a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-7" />
-    <path d="m16 6.5-4-4-4 4" />
-    <path d="M12 2.5v12.5" />
+    <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z" />
   </Icon>
 );
