@@ -220,6 +220,7 @@
   },
   "scripts": {
     "dev": "vite serve ./dev --host",
+    "test": "tsx --test test/*.test.ts",
     "build": "tsdown",
     "build:dev": "vite build ./dev",
     "pre-commit": "lint-staged --relative",
