@@ -26,7 +26,7 @@ const NO_WIDTHS: GlyphWidths = new Map();
 
 const segmenter = new Intl.Segmenter();
 
-export const isAscii = (text: string) => /^[\t\n -~]*$/.test(text);
+export const isAscii = (text: string) => /^[\t\n\r -~]*$/.test(text);
 
 export const graphemes = (text: string) =>
   isAscii(text)
