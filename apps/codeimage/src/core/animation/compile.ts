@@ -1,6 +1,7 @@
 import type {
   Cell,
   CodeMetrics,
+  Point,
   Scene,
   SceneTiming,
   StepBox,
@@ -30,7 +31,6 @@ export const animationCss = (
 ) =>
   `animation:${id} ${transitionMs}ms ${EASING_CURVES[easing]} ${-offsetMs}ms both`;
 
-type Point = {x: number; y: number};
 type Pose = Point & {opacity: number};
 
 type Layer = {
