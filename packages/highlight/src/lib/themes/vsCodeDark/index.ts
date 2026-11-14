@@ -6,7 +6,7 @@ export const vsCodeDarkTheme = createTheme({
   editorTheme: vsCodeDark,
   properties: {
     darkMode: true,
-    label: 'VSCode Dark',
+    label: 'VSCode Dark (classic)',
     previewBackground:
       'linear-gradient(to right bottom, #1cb1f2, #00a9f2, #00a0f2, #0097f1, #008def, #0086f1, #007ff2, #0078f2, #0071f6, #006afa, #0062fd, #0059ff)',
     terminal: {
