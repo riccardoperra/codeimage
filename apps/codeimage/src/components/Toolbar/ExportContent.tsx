@@ -1,4 +1,3 @@
-import {getFrameState} from '@codeimage/store/editor/frame';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import type {SegmentedFieldItem} from '@codeimage/ui';
@@ -126,7 +125,7 @@ export function ExportPopoverContent() {
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}
               size={'md'}
-              label={'(Export) Show only active tab'}
+              label={t('exportTabs.showOnlyActiveTab')}
             />
             <Checkbox
               checked={exportCanvasStore.get.oneImagePerTab}

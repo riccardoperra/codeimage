@@ -40,7 +40,7 @@ export const locale = {
       es: 'Spagnolo',
     },
     toolbar: {
-      export: 'Exporta',
+      export: 'Esporta',
       openNewTab: 'Apri',
       loadingNewTab: 'Preparando link...',
       share: 'Condividi',
