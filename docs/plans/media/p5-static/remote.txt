@@ -1,0 +1,83 @@
+RESPONSE 200 http://localhost:4428/api/v1/project
+DASHBOARD G
+My projects
+No projects yet
+Create a new project from scratch
+and share your snippets
+New
+Better Comments for GitHub
+GitHub
+Issue & Feedback
+Releases
+🎉What's new
+RESPONSE 200 http://localhost:4428/api/v1/project
+RESPONSE 200 http://localhost:4428/api/v1/project/4a492db3-c715-4ada-93e3-f644fd93b238
+GET MARKS true [ { lines: [], focus: false } ]
+NEW CLICKED http://localhost:4428/4a492db3-c715-4ada-93e3-f644fd93b238
+RESPONSE 502 http://localhost:4428/api/v1/preset
+CONSOLE Failed to load resource: the server responded with a status of 502 (Bad Gateway)
+EDITOR READY {
+  readOnly: false,
+  connected: true,
+  code: 'function Counter() {\n' +
+    '  const [count, setCount] = createSignal(0);\n' +
+    '  \n' +
+    '  setInterval(\n' +
+    '    () => setCount(count() + 1),\n' +
+    '    1000\n' +
+    '  );\n' +
+    '\n' +
+    '  return <div>The count is {count()}</div>\n' +
+    '}\n',
+  id: '521195b2-f7cf-4616-93a1-2ff49312b128'
+}
+BEFORE MARK {
+  keys: [
+    'Ctrl-Space',        undefined,             undefined,
+    'Escape',            'ArrowDown',           'ArrowUp',
+    'PageDown',          'PageUp',              'Enter',
+    'Mod-Alt-1',         'Mod-Alt-2',           'Mod-Alt-3',
+    'Mod-Alt-0',         'Backspace',           'Alt-ArrowLeft',
+    'Alt-ArrowRight',    'Alt-ArrowUp',         'Shift-Alt-ArrowUp',
+    'Alt-ArrowDown',     'Shift-Alt-ArrowDown', 'Mod-Alt-ArrowUp',
+    'Mod-Alt-ArrowDown', 'Escape',              'Mod-Enter',
+    'Alt-l',             'Mod-i',               'Mod-[',
+    'Mod-]',             'Mod-Alt-\\',          'Shift-Mod-k',
+    'Shift-Mod-\\',      'Mod-/',               'Alt-A',
+    'Ctrl-m',            'ArrowLeft',           'Mod-ArrowLeft',
+    undefined,           'ArrowRight',          'Mod-ArrowRight',
+    undefined,           'ArrowUp',             undefined,
+    undefined,           'ArrowDown',           undefined,
+    undefined,           'PageUp',              'PageDown',
+    'Home',              'Mod-Home',            'End',
+    'Mod-End',           'Enter',               'Mod-a',
+    'Backspace',         'Delete',              'Mod-Backspace',
+    'Mod-Delete',        undefined,             undefined,
+    undefined,           undefined,             undefined,
+    undefined,           undefined,             undefined,
+    undefined,           undefined,             undefined,
+    undefined,           undefined,             undefined,
+    undefined,           'Ctrl-Space',          undefined,
+    undefined,           'Escape',              'ArrowDown',
+    'ArrowUp',           'PageDown',            'PageUp',
+    'Enter',             'Mod-z',               'Mod-y',
+    undefined,           'Mod-u',               'Alt-u',
+    'Tab'
+  ],
+  selection: { anchor: 0, head: 30 },
+  active: '<div spellcheck="false" autocorrect="off" autocapitalize="off" writingsuggestions="false" translate="no" contenteditable="true" style="tab-size: 4;" class="cm-content cm-lineWrapping" role="textbox" a'
+}
+AFTER MARK {
+  lines: [ { line: 1, kind: 'added' }, { line: 2, kind: 'added' } ],
+  focus: false
+} {
+  lines: [ { line: 1, kind: 'added' }, { line: 2, kind: 'added' } ],
+  focus: false
+}
+RESPONSE 200 http://localhost:4428/api/v1/project/4a492db3-c715-4ada-93e3-f644fd93b238
+API PAYLOAD PASS {"lines":[{"line":1,"kind":"added"},{"line":2,"kind":"added"},{"line":3,"kind":"highlight"}],"focus":false}
+RESPONSE 200 http://localhost:4428/api/v1/project/4a492db3-c715-4ada-93e3-f644fd93b238
+RESPONSE 502 http://localhost:4428/api/v1/preset
+CONSOLE Failed to load resource: the server responded with a status of 502 (Bad Gateway)
+GET MARKS true [ { lines: [ [Object], [Object], [Object] ], focus: false } ]
+REMOTE RELOAD PASS

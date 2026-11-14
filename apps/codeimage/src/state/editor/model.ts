@@ -1,3 +1,4 @@
+import type {TabMarks as ApiTabMarks} from '@codeimage/api/api-types';
 import type {PersistedFrameState} from '@codeimage/store/frame/model';
 
 export interface EditorUIOptions {
@@ -13,6 +14,11 @@ export interface TabState {
   tabIcon?: string;
 }
 
+export const MAX_EDITOR_TABS = 6;
+
+export type LineMark = TabMarks['lines'][number];
+export type TabMarks = ApiTabMarks;
+
 export interface EditorState {
   id: string;
   code: string;
@@ -20,6 +26,7 @@ export interface EditorState {
   formatter?: string | null;
   languageId: string;
   lineNumberStart: number;
+  marks: TabMarks;
 }
 
 export interface EditorUIOptions {
@@ -39,6 +46,7 @@ export interface PersistedEditorState {
     tabName: string;
     languageId: string;
     lineNumberStart: number;
+    marks?: TabMarks;
   }[];
 }
 

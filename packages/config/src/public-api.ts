@@ -10,7 +10,7 @@ export {
   type TerminalDefinitionMap,
 } from './lib/types/terminal-def';
 export {SUPPORTED_LOCALES} from './lib/base/locales';
-export {SUPPORTED_LANGUAGES} from './lib/base/languages';
+export {SUPPORTED_LANGUAGES, inferLanguageFromPath} from './lib/base/languages';
 export {AVAILABLE_COLORS, AVAILABLE_GRADIENTS} from './lib/base/colors';
 export {
   type AspectRatio,

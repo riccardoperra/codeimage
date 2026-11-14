@@ -23,6 +23,22 @@ export const FrameExportProperties = {
   signature: Type.Optional(Nullable(FrameSignatureSchema)),
 };
 
+export const TabMarksSchema = Type.Object({
+  lines: Type.Array(
+    Type.Object({
+      line: Type.Integer({minimum: 1}),
+      kind: Type.Union([
+        Type.Literal('added'),
+        Type.Literal('removed'),
+        Type.Literal('highlight'),
+      ]),
+    }),
+  ),
+  focusedLines: Type.Array(Type.Integer({minimum: 1})),
+});
+
+export type TabMarks = Static<typeof TabMarksSchema>;
+
 export const BaseProjectResponseSchema = Type.Object(
   {
     id: Type.String({format: 'uuid'}),
@@ -42,6 +58,7 @@ export const BaseSnippetEditorTabsSchema = Type.Array(
     languageId: Type.String(),
     tabName: Type.String(),
     lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
+    marks: Type.Optional(Nullable(TabMarksSchema)),
   }),
 );
 
@@ -100,6 +117,7 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
       languageId: Type.String(),
       tabName: Type.String(),
       lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
+      marks: Type.Optional(Nullable(TabMarksSchema)),
     },
     {title: 'SnippetEditorTabCreateRequest'},
   ),
@@ -191,6 +209,7 @@ export const SnippetEditorTabsUpdateRequestSchema = Type.Array(
       languageId: Type.String(),
       tabName: Type.String(),
       lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
+      marks: Type.Optional(Nullable(TabMarksSchema)),
     },
     {title: 'SnippetEditorTabUpdateRequest'},
   ),
