@@ -1,286 +1,272 @@
-import {useI18n} from '@codeimage/locale';
-import {getAuth0State} from '@codeimage/store/auth/auth0';
-import {getUiStore} from '@codeimage/store/ui';
-import {HStack} from '@codeimage/ui';
-import {
-  Button,
-  buttonStyles,
-  Dialog,
-  DialogPanelContent,
-  DialogPanelFooter,
-} from '@codeui/kit';
-import {appEnvironment} from '@core/configuration';
-import {getUmami} from '@core/constants/umami';
-import {createControlledDialog} from '@core/hooks/createControlledDialog';
-import {RadioGroup} from '@kobalte/core/radio-group';
-import {useNavigate} from '@solidjs/router';
-import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import type {JSX} from 'solid-js';
-import {For, Match, Show, Switch} from 'solid-js';
-import {Changelog} from '../../../components/Changelog/Changelog';
-import type {AppLocaleEntries} from '../../../i18n';
-import type {EditorControlsModel, ThemeEntry} from '../model';
-import {ThemeSwatch} from '../ThemeSwatch';
-import type {ThemeCardsId} from './preferences';
-import {LAYOUTS, preferences, THEME_CARDS} from './preferences';
-import {LayoutPreview} from './previews';
+import {Dialog, IconButton, TextField} from '@codeui/kit';
+import {useModality} from '@core/hooks/isMobile';
+import {Dialog as KDialog} from '@kobalte/core/dialog';
+import {createMemo, createSignal, For, onCleanup, Show} from 'solid-js';
+import type {EditorControlsModel} from '../model';
+import {CloseIcon, SearchIcon} from './icons';
+import type {SettingGroup, SettingRow, SettingSection} from './sections';
+import {createSettingSections} from './sections';
 import {settings} from './settings-state';
 import * as styles from './settings.css';
 
-interface CardOption<T extends string> {
-  readonly id: T;
-  readonly name: string;
-  readonly hint: string;
-}
-
-/** One choice out of a few, each with a picture of what it gives. */
-function ChoiceCards<T extends string>(props: {
-  label: string;
-  options: readonly CardOption<T>[];
-  value: string;
-  onChange: (value: T) => void;
-  preview: (option: CardOption<T>) => JSX.Element;
-}) {
+function Row(props: {row: SettingRow}) {
+  const titleId = () => `setting-${props.row.id}-title`;
+  const descriptionId = () => `setting-${props.row.id}-description`;
   return (
-    <RadioGroup
-      class={styles.cards}
-      aria-label={props.label}
-      value={props.value}
-      onChange={value => props.onChange(value as T)}
+    <div
+      class={styles.row}
+      role="group"
+      aria-labelledby={titleId()}
+      aria-describedby={descriptionId()}
+      data-setting={props.row.id}
+      data-wide={props.row.wide ? '' : undefined}
+      data-small={props.row.small ? '' : undefined}
     >
-      <For each={props.options}>
-        {option => (
-          <RadioGroup.Item value={option.id} class={styles.card}>
-            <RadioGroup.ItemInput />
-            <RadioGroup.ItemLabel class={styles.cardLabel}>
-              <span class={styles.preview} aria-hidden="true">
-                {props.preview(option)}
-              </span>
-              <span class={styles.cardText}>
-                <span class={styles.cardName}>{option.name}</span>
-                <span class={styles.cardHint}>{option.hint}</span>
-              </span>
-            </RadioGroup.ItemLabel>
-          </RadioGroup.Item>
-        )}
-      </For>
-    </RadioGroup>
-  );
-}
-
-/** How one theme looks as a card of each style, drawn with the shared swatch. */
-function ThemeCardsPreview(props: {style: ThemeCardsId; theme: ThemeEntry}) {
-  return (
-    <Switch>
-      <Match when={props.style === 'window'}>
-        <ThemeSwatch
-          theme={props.theme}
-          variant="window"
-          size={48}
-          width={68}
-        />
-      </Match>
-      <Match when={props.style === 'orb'}>
-        <ThemeSwatch theme={props.theme} variant="syntax-orb" size={44} />
-      </Match>
-      <Match when={props.style === 'aa'}>
-        <span class={styles.listRow}>
-          <ThemeSwatch theme={props.theme} variant="aa" size={28} />
-          <span class={styles.listLine} />
+      <div class={styles.rowText}>
+        <span id={titleId()} class={styles.rowTitle}>
+          {props.row.title}
         </span>
-      </Match>
-    </Switch>
+        <span id={descriptionId()} class={styles.rowDescription}>
+          {props.row.description()}
+        </span>
+      </div>
+      <div class={styles.rowControl}>{props.row.control()}</div>
+    </div>
   );
 }
 
-function Section(props: {title: string; hint?: string; children: JSX.Element}) {
+/** Rows that belong together: a title and one island. */
+function Group(props: SettingGroup) {
   return (
-    <section class={styles.section}>
-      <div>
-        <h3 class={styles.sectionTitle}>{props.title}</h3>
-        <Show when={props.hint}>
-          <p class={styles.sectionHint}>{props.hint}</p>
+    <section class={styles.group}>
+      <h3 class={styles.groupTitle}>{props.title}</h3>
+      <div class={styles.island}>
+        <For each={props.rows}>{row => <Row row={row} />}</For>
+      </div>
+    </section>
+  );
+}
+
+function Panel(props: {sections: readonly SettingSection[]}) {
+  const modality = useModality();
+  const [query, setQuery] = createSignal('');
+  let shell!: HTMLDivElement;
+  let search: HTMLInputElement | undefined;
+
+  const current = () =>
+    props.sections.find(section => section.id === settings.section()) ??
+    props.sections[0];
+
+  const terms = createMemo(() =>
+    query().trim().toLowerCase().split(/\s+/).filter(Boolean),
+  );
+  const searching = () => terms().length > 0;
+  const matches = (row: SettingRow) => {
+    const text = `${row.title} ${row.description()}`.toLowerCase();
+    return terms().every(term => text.includes(term));
+  };
+  // Every section's rows that match, under the section's name.
+  const results = createMemo(() =>
+    props.sections
+      .map(section => ({
+        section,
+        rows: section
+          .groups()
+          .flatMap(group => group.rows)
+          .filter(matches),
+      }))
+      .filter(entry => entry.rows.length > 0),
+  );
+
+  const show = (section: SettingSection) => {
+    setQuery('');
+    settings.setSection(section.id);
+  };
+
+  const navItems = () => [
+    ...shell.querySelectorAll<HTMLElement>('[data-settings-section]'),
+  ];
+
+  // The dialog would focus its first field, the search, which opens a phone's
+  // keyboard over the settings. Kobalte asks before it does, with an event on
+  // the dialog's panel, and the section on screen takes the focus instead.
+  const takeFocus = (event: Event) => {
+    if (!(event.target instanceof Node) || !event.target.contains(shell))
+      return;
+    event.preventDefault();
+    shell
+      .querySelector<HTMLElement>('[data-settings-section][aria-current]')
+      ?.focus();
+  };
+  document.addEventListener('focusScope.autoFocusOnMount', takeFocus, true);
+  onCleanup(() =>
+    document.removeEventListener(
+      'focusScope.autoFocusOnMount',
+      takeFocus,
+      true,
+    ),
+  );
+
+  return (
+    <div
+      class={styles.shell}
+      ref={shell}
+      data-settings
+      // Native, so that the keys stop here and not at the document.
+      on:keydown={(event: KeyboardEvent) => {
+        const typing =
+          event.target instanceof HTMLElement &&
+          event.target.matches('input, textarea, [contenteditable]');
+        if (event.key === '/' && !typing) {
+          event.preventDefault();
+          search?.focus();
+        }
+      }}
+    >
+      <div
+        class={styles.search}
+        on:keydown={(event: KeyboardEvent) => {
+          if (event.key === 'Escape' && query()) {
+            // Clears the search first; a second Escape closes the dialog.
+            event.stopPropagation();
+            setQuery('');
+          } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            navItems()[0]?.focus();
+          }
+        }}
+      >
+        <span class={styles.searchIcon}>
+          <SearchIcon size={16} />
+        </span>
+        <TextField
+          size={modality === 'full' ? 'sm' : 'md'}
+          placeholder="Search settings"
+          // The kit labels its root, not the input.
+          ref={input => {
+            search = input;
+            input.setAttribute('aria-label', 'Search settings');
+          }}
+          value={query()}
+          onChange={setQuery}
+        />
+        <kbd class={styles.searchKey} aria-hidden="true">
+          /
+        </kbd>
+      </div>
+
+      <nav
+        class={styles.nav}
+        aria-label="Settings sections"
+        on:keydown={(event: KeyboardEvent) => {
+          const step =
+            event.key === 'ArrowDown' || event.key === 'ArrowRight'
+              ? 1
+              : event.key === 'ArrowUp' || event.key === 'ArrowLeft'
+                ? -1
+                : 0;
+          if (!step) return;
+          const items = navItems();
+          const index = items.findIndex(item => item === event.target);
+          if (index < 0) return;
+          event.preventDefault();
+          items[(index + step + items.length) % items.length]?.focus();
+        }}
+      >
+        <For each={props.sections}>
+          {section => (
+            <button
+              type="button"
+              class={styles.navItem}
+              data-settings-section={section.id}
+              aria-current={
+                !searching() && current().id === section.id ? 'page' : undefined
+              }
+              onClick={() => show(section)}
+            >
+              <span class={styles.navIcon}>
+                <section.icon />
+              </span>
+              {section.name}
+            </button>
+          )}
+        </For>
+      </nav>
+
+      <header class={styles.head}>
+        <KDialog.Title class={styles.crumbs}>
+          <span class={styles.crumbRoot}>Settings</span>
+          <span class={styles.crumbSlash} aria-hidden="true">
+            /
+          </span>
+          <span>{searching() ? 'Search' : current().name}</span>
+        </KDialog.Title>
+        <KDialog.CloseButton
+          as={IconButton}
+          class={styles.close}
+          aria-label={'Close'}
+          size={modality === 'full' ? 'sm' : 'md'}
+          theme={'secondary'}
+          variant={'ghost'}
+        >
+          <CloseIcon size={18} />
+        </KDialog.CloseButton>
+      </header>
+
+      <div class={styles.body} data-settings-body>
+        <Show
+          when={searching()}
+          fallback={
+            <>
+              <Show when={current().intro}>
+                <div class={styles.intro}>
+                  <p class={styles.introText}>{current().intro}</p>
+                  {current().action?.()}
+                </div>
+              </Show>
+              <For each={current().groups()}>
+                {group => <Group {...group} />}
+              </For>
+            </>
+          }
+        >
+          <Show
+            when={results().length > 0}
+            fallback={
+              <p class={styles.empty} role="status">
+                No settings match “{query().trim()}”.
+              </p>
+            }
+          >
+            <For each={results()}>
+              {entry => <Group title={entry.section.name} rows={entry.rows} />}
+            </For>
+          </Show>
         </Show>
       </div>
-      {props.children}
-    </section>
+    </div>
   );
 }
 
 /**
  * The settings of the editor, in one dialog that the header and the command
- * menu open. The workspace comes first: the layout, the side of the
- * Inspector, and how themes are shown. Under it are today's settings, the
- * app's colour mode and its language, and what the old menu at the top left
- * held beside Settings: the changelog, the repository and log out.
+ * menu open. A column on the left holds the search and the sections, and the
+ * section on screen is a list of groups, each one island of rows. A row is a
+ * title, a line that explains it, and its control.
  */
 export function SettingsDialog(props: {model: EditorControlsModel}) {
-  const [t] = useI18n<AppLocaleEntries>();
-  const ui = getUiStore();
-  const auth = getAuth0State();
-  const navigate = useNavigate();
-  const openDialog = createControlledDialog();
-
-  // The applied theme, or the first one, as the canvas draws it.
-  const theme = () => {
-    const themes = props.model.themes();
-    return themes.find(entry => entry.active()) ?? themes[0];
-  };
-
+  // Made here and not in the panel, which goes away as the dialog closes:
+  // the changelog that a row opens has to outlive it.
+  const sections = createSettingSections(props.model);
   return (
     <Dialog
-      size={'lg'}
-      title={'Settings'}
+      size={'xl'}
       open={settings.isOpen()}
       onOpenChange={open => {
         if (!open) settings.close();
       }}
     >
-      <DialogPanelContent>
-        <div class={styles.content} data-settings>
-          <Section
-            title="Layout"
-            hint="Where the controls sit around the canvas."
-          >
-            <ChoiceCards
-              label="Layout"
-              options={LAYOUTS}
-              value={preferences.layout()}
-              onChange={preferences.setLayout}
-              preview={option => (
-                <LayoutPreview
-                  layout={option.id}
-                  side={preferences.inspectorSide()}
-                />
-              )}
-            />
-            <Show when={preferences.layout() === 'inspector'}>
-              <div class={styles.row}>
-                <span class={styles.rowLabel}>Panel side</span>
-                <div class={styles.segmentedNarrow}>
-                  <SegmentedField
-                    adapt
-                    size={'sm'}
-                    value={preferences.inspectorSide()}
-                    onChange={preferences.setInspectorSide}
-                    items={[
-                      {label: 'Left', value: 'left'},
-                      {label: 'Right', value: 'right'},
-                    ]}
-                  />
-                </div>
-              </div>
-            </Show>
-          </Section>
-
-          <Section
-            title="Theme cards"
-            hint="How the theme picker shows a theme."
-          >
-            <Show when={theme()}>
-              {current => (
-                <ChoiceCards
-                  label="Theme cards"
-                  options={THEME_CARDS}
-                  value={preferences.themeCards()}
-                  onChange={preferences.setThemeCards}
-                  preview={option => (
-                    <ThemeCardsPreview style={option.id} theme={current()} />
-                  )}
-                />
-              )}
-            </Show>
-          </Section>
-
-          <Section title="Appearance">
-            <div class={styles.row}>
-              <span class={styles.rowLabel}>Colour mode</span>
-              <div class={styles.segmented}>
-                <SegmentedField
-                  adapt
-                  size={'sm'}
-                  value={ui.get.themeMode}
-                  onChange={ui.setThemeMode}
-                  items={[
-                    {label: 'Dark', value: 'dark'},
-                    {label: 'Light', value: 'light'},
-                    {label: 'System', value: 'system'},
-                  ]}
-                />
-              </div>
-            </div>
-            <div class={styles.row}>
-              <span class={styles.rowLabel}>Language</span>
-              <div class={styles.segmented}>
-                <SegmentedField
-                  adapt
-                  size={'sm'}
-                  value={ui.get.locale}
-                  onChange={locale => {
-                    ui.setLocale(locale);
-                    getUmami().track('change-app-language', {locale});
-                  }}
-                  items={appEnvironment.locales.map(locale => ({
-                    label: t(`locales.${locale}`),
-                    value: locale,
-                  }))}
-                />
-              </div>
-            </div>
-          </Section>
-
-          <Section title="About">
-            <div class={styles.links}>
-              <Button
-                size={'sm'}
-                theme={'secondary'}
-                onClick={() => {
-                  settings.close();
-                  openDialog(Changelog, {});
-                }}
-              >
-                Changelog
-              </Button>
-              <a
-                class={buttonStyles.button({theme: 'secondary', size: 'sm'})}
-                style={{'text-decoration': 'unset'}}
-                target="_blank"
-                rel="noreferrer"
-                href="https://github.com/riccardoperra/codeimage"
-              >
-                GitHub
-              </a>
-              <Show when={auth.loggedIn()}>
-                <Button
-                  size={'sm'}
-                  theme={'secondary'}
-                  onClick={() => {
-                    settings.close();
-                    void auth.signOut().then(() => navigate('/'));
-                  }}
-                >
-                  Logout
-                </Button>
-              </Show>
-              <span class={styles.version}>
-                CodeImage {appEnvironment.version}
-              </span>
-            </div>
-          </Section>
-        </div>
-      </DialogPanelContent>
-      <DialogPanelFooter>
-        <HStack spacing={'2'} justifyContent={'flexEnd'}>
-          <Button
-            size={'md'}
-            type="button"
-            theme={'secondary'}
-            onClick={settings.close}
-          >
-            {t('common.close')}
-          </Button>
-        </HStack>
-      </DialogPanelFooter>
+      <Panel sections={sections} />
     </Dialog>
   );
 }

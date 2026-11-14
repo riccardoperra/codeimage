@@ -42,9 +42,10 @@ interface Stored {
 }
 
 const STORAGE_KEY = 'codeimage:prototype-settings';
-const DEFAULT_LAYOUT: LayoutId = 'inspector';
+/** What the editor shows before any choice. The other layouts and cards are experiments. */
+export const DEFAULT_LAYOUT: LayoutId = 'inspector';
 const DEFAULT_SIDE: InspectorSide = 'right';
-const DEFAULT_CARDS: ThemeCardsId = 'window';
+export const DEFAULT_CARDS: ThemeCardsId = 'window';
 
 const isLayout = (value: unknown): value is LayoutId =>
   LAYOUTS.some(layout => layout.id === value);
@@ -145,5 +146,13 @@ export const preferences = {
   setThemeCards: (id: ThemeCardsId) => {
     showThemeCards(id);
     save({themeCards: id});
+  },
+  /** True while a layout or a theme card style that is not the default is on. */
+  experimenting: () =>
+    layout() !== DEFAULT_LAYOUT || themeStyle() !== DEFAULT_CARDS,
+  /** Turns every experiment off: back to the default layout and theme cards. */
+  restoreDefaults: () => {
+    preferences.setLayout(DEFAULT_LAYOUT);
+    preferences.setThemeCards(DEFAULT_CARDS);
   },
 };
