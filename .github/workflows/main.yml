@@ -211,9 +211,25 @@ jobs:
     environment: Preview
     needs: [build-packages]
     runs-on: ubuntu-latest
+    outputs:
+      website-changed: ${{ steps.changes.outputs.website }}
     steps:
       - name: Checkout PR
         uses: actions/checkout@v7
+      - name: Detect website changes
+        id: changes
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            website:
+              - 'apps/website/**'
+              - 'packages/highlight/**'
+              - 'packages/ui/**'
+              - 'packages/locale/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/main.yml'
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -246,6 +262,7 @@ jobs:
   website-lhci:
     name: Lighthouse
     needs: [build-website-dev]
+    if: ${{ needs.build-website-dev.outputs.website-changed == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
