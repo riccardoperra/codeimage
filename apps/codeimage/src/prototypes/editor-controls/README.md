@@ -70,6 +70,14 @@ The stage, from `stage.tsx`, holds the parts of the real editor that a layout pl
 
 The harness creates a new stage for each mount and keeps one model for the whole session. `registry.ts` lists the layouts in picker order. You do not edit it. It reads `meta` from your folder. `ModelDump.tsx`, a plain list of every control with native inputs, is no longer used by a layout and can start a new one.
 
+## Shared controls
+
+`controls/` holds the controls the three layouts share, so a row looks and behaves the same everywhere:
+
+- `ControlRow` renders one control of the model as a row of today's sidebar. It maps every kind to a field, turns the two on/off choices (alternative background, glass border) into switches, draws the window style as tiles, and wraps the row in an element with `data-control`. A layout passes the `prefix` of its field ids and places the rows; the background stays with the layout.
+- `fields.tsx` has the parts: `SwitchField` (Kobalte's switch with the kit tokens), `SegmentedChoice`, `SelectChoice`, and `AspectRatioField` (the production picker).
+- `WindowStyleTiles` shows every window style with its preview.
+
 ## Inspector's panel side
 
 Inspector puts its panel on the right. Set `data-inspector-side="left"` on its root, `.inspector-root`, or on any element around it, and the panel moves before the canvas; `right` or no attribute keeps it on the right. Phones keep the bottom sheet either way. The pickers that open over the panel follow it to either side.
@@ -102,6 +110,7 @@ Inspector puts its panel on the right. Set `data-inspector-side="left"` on its r
 - Style with the tokens from `@codeimage/ui` (`themeVars`) in vanilla-extract `.css.ts` files inside your folder. Plain CSS is fine if every selector starts with a class that belongs to your folder.
 - Add no dependency without saying so in your report.
 - Show themes with `props.ThemePicker`, not with a grid of your own, so that the theme style pill reaches your layout.
+- Render rows with `controls/ControlRow`, not with fields of your own.
 - Keep the top center of the page free of controls: the pills float there.
 - A popover that closes on outside clicks should treat `[data-prototype-chrome]` as inside, so that switching the theme style keeps it open.
 - `SegmentedField` with `adapt` makes the kit control `height: 100%`. Under a parent of auto height that falls back to its line height, about 24px. Give the parent the kit's field height, 36px at `sm` or 40px at `md`.
