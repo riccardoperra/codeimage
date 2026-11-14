@@ -3,8 +3,8 @@ import type {Preset} from '@codeimage/prisma-models';
 import {assert, beforeEach, expect, test, vi} from 'vitest';
 import {create} from '../../../../src/modules/preset/handlers/create.js';
 import type {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
-import type {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
-import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import type {PresetCreateDto} from '../../../../src/modules/preset/preset.contract.js';
+import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
 import {testPresetUtils} from '../../../helpers/preset.js';
 import {dependencies} from './dependencies.js';
 

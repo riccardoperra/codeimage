@@ -1,6 +1,6 @@
 import {HandlerBuilder} from '../../../common/domainFunctions/builder.js';
-import type {PresetDto} from '../schema/preset-dto.schema.js';
-import type {PresetUpdateDto} from '../schema/preset-update-dto.schema.js';
+import type {PresetDto} from '../preset.contract.js';
+import type {PresetUpdateDto} from '../preset.contract.js';
 import type {PresetHandlerDependencies} from './index.js';
 
 export const update =

@@ -1,36 +1,14 @@
 import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
-import {Type} from '@sinclair/typebox';
-import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
-import {PresetDtoSchema} from '../../../modules/preset/schema/preset-dto.schema.js';
-
-const schema = {
-  tags: ['Preset'],
-  summary: 'Returns current user preset by id',
-  params: Type.Object({
-    id: Type.String(),
-  }),
-  response: {
-    200: PresetDtoSchema,
-  },
+import {presetContract as op} from '../../../modules/preset/preset.contract.js';
+const route: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.route({
+    ...op.get,
+    preValidation: (req, reply) => fastify.authorize(req, reply),
+    handler: request =>
+      fastify.presetService.findPresetById(
+        request.appUser.id,
+        request.params.id,
+      ),
+  });
 };
-
-export type GetPresetByIdApi = GetApiTypes<typeof schema>;
-
-const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.get(
-    '/:id',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    async request => {
-      const {
-        appUser,
-        params: {id},
-      } = request;
-      return fastify.presetService.findPresetById(appUser.id, id);
-    },
-  );
-};
-
-export default getByIdRoute;
+export default route;

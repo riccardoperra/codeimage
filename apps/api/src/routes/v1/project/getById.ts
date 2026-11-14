@@ -1,39 +1,12 @@
 import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
-import {Type} from '@sinclair/typebox';
-import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
-import {ProjectGetByIdResponseSchema} from '../../../modules/project/schema/index.js';
-
-const schema = {
-  tags: ['Project'],
-  summary: 'Returns a CodeImage project by id',
-  params: Type.Object({
-    id: Type.String(),
-  }),
-  response: {
-    200: ProjectGetByIdResponseSchema,
-  },
+import {projectContract as op} from '../../../modules/project/project.contract.js';
+const route: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.route({
+    ...op.get,
+    preValidation: (req, reply) =>
+      fastify.authorize(req, reply, {mustBeAuthenticated: false}),
+    handler: request =>
+      fastify.projectService.findById(request.appUser, request.params.id),
+  });
 };
-
-export type GetProjectByIdApi = GetApiTypes<typeof schema>;
-
-const getByIdRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.get(
-    '/:id',
-    {
-      preValidation: (req, reply) =>
-        fastify.authorize(req, reply, {
-          mustBeAuthenticated: false,
-        }),
-      schema,
-    },
-    async request => {
-      const {
-        appUser,
-        params: {id},
-      } = request;
-      return fastify.projectService.findById(appUser, id);
-    },
-  );
-};
-
-export default getByIdRoute;
+export default route;

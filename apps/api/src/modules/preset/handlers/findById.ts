@@ -1,6 +1,6 @@
 import {HandlerBuilder} from '../../../common/domainFunctions/builder.js';
 import {PresetErrors} from '../preset.model.js';
-import type {PresetDto} from '../schema/preset-dto.schema.js';
+import type {PresetDto} from '../preset.contract.js';
 import type {PresetHandlerDependencies} from './index.js';
 
 export const findById =

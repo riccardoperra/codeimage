@@ -1,10 +1,10 @@
 import type * as DomainModel from '../domain/index.js';
-import type {ProjectCreateRequest} from '../schema/index.js';
+import type {ProjectCreateRequest} from '../project.contract.js';
 import {
   EditorOptionsCreateRequestSchema,
   SnippetFrameCreateRequestSchema,
   SnippetTerminalCreateRequestSchema,
-} from '../schema/project-create.schema.js';
+} from '../project.contract.js';
 
 export function createProjectRequestMapper(
   data: ProjectCreateRequest,

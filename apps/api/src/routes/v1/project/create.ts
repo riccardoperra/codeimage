@@ -1,33 +1,11 @@
 import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
-import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
-import {
-  ProjectCreateRequestSchema,
-  ProjectCreateResponseSchema,
-} from '../../../modules/project/schema/index.js';
-
-const schema = {
-  tags: ['Project'],
-  summary: 'Create a new CodeImage project',
-  body: ProjectCreateRequestSchema,
-  response: {
-    200: ProjectCreateResponseSchema,
-  },
+import {projectContract as op} from '../../../modules/project/project.contract.js';
+const route: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.route({
+    ...op.create,
+    preValidation: (req, reply) => fastify.authorize(req, reply),
+    handler: request =>
+      fastify.projectService.createNewProject(request.appUser.id, request.body),
+  });
 };
-
-export type CreateProjectApi = GetApiTypes<typeof schema>;
-
-const createRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.post(
-    '/',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    request => {
-      const {appUser, body} = request;
-      return fastify.projectService.createNewProject(appUser.id, body);
-    },
-  );
-};
-
-export default createRoute;
+export default route;

@@ -1,5 +1,5 @@
 import type * as DomainModel from '../domain/index.js';
-import type {ProjectCompleteResponse} from '../schema/index.js';
+import type {ProjectCompleteResponse} from '../project.contract.js';
 
 export function createCompleteProjectGetByIdResponseMapper(
   data: DomainModel.ProjectGetByIdResponse,

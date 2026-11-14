@@ -1,8 +1,8 @@
 import type {Preset, User} from '@codeimage/prisma-models';
 import type {FastifyError} from 'fastify';
 import {afterEach, assert, beforeEach, expect, test} from 'vitest';
-import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
-import type {PresetUpdateDto} from '../../../../src/modules/preset/schema/preset-update-dto.schema.js';
+import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
+import type {PresetUpdateDto} from '../../../../src/modules/preset/preset.contract.js';
 import {testPresetUtils} from '../../../helpers/preset.js';
 import {build} from '../../../helper.js';
 import {

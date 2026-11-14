@@ -9,12 +9,8 @@
   },
   "exports": {
     "./api-types": {
-      "types": "./api-types/index.d.ts",
+      "types": "./src/api-types.ts",
       "default": "./api-types/index.js"
-    },
-    "./schemas": {
-      "types": "./dist/schemas/index.d.mts",
-      "default": "./dist/schemas/index.mjs"
     }
   },
   "scripts": {
@@ -32,7 +28,6 @@
     "typecheck:ci": "tsc --skipLibCheck --project tsconfig.dts.json",
     "dev": "tsx watch src/server.ts | pino-pretty",
     "build:ts": "tsdown",
-    "build:types": "tsc -p tsconfig.schema.json",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:test": "dotenv -e .env.test -- prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",

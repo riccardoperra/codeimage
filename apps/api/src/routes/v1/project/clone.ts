@@ -1,40 +1,15 @@
 import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
-import {Type} from '@sinclair/typebox';
-import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
-import {ProjectCreateResponseSchema} from '../../../modules/project/schema/index.js';
-
-const schema = {
-  tags: ['Project'],
-  summary: 'Clone a CodeImage project from an existing one',
-  params: Type.Object({
-    id: Type.String(),
-  }),
-  body: Type.Object({
-    newName: Type.Optional(Type.String()),
-  }),
-  response: {
-    200: ProjectCreateResponseSchema,
-  },
+import {projectContract as op} from '../../../modules/project/project.contract.js';
+const route: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.route({
+    ...op.clone,
+    preValidation: (req, reply) => fastify.authorize(req, reply),
+    handler: request =>
+      fastify.projectService.clone(
+        request.appUser,
+        request.params.id,
+        request.body.newName ?? null,
+      ),
+  });
 };
-
-export type CloneProjectApi = GetApiTypes<typeof schema>;
-
-const cloneRoute: FastifyPluginAsyncTypebox = async fastify => {
-  fastify.post(
-    '/:id/clone',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    request => {
-      const {appUser, params, body} = request;
-      return fastify.projectService.clone(
-        appUser,
-        params.id,
-        body.newName ?? null,
-      );
-    },
-  );
-};
-
-export default cloneRoute;
+export default route;

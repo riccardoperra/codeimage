@@ -1,38 +1,14 @@
-import {Type} from '@sinclair/typebox';
-import type {FastifyPluginAsync} from 'fastify';
-import type {GetApiTypes} from '../../../common/types/extract-api-types.js';
-import {ProjectDeleteResponseSchema} from '../../../modules/project/schema/index.js';
-
-const schema = {
-  tags: ['Project'],
-  params: Type.Object({
-    id: Type.String(),
-  }),
-  summary: 'Delete an existing CodeImage project',
-  response: {
-    200: ProjectDeleteResponseSchema,
-  },
+import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import {projectContract as op} from '../../../modules/project/project.contract.js';
+const route: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.route({
+    ...op.remove,
+    preValidation: (req, reply) => fastify.authorize(req, reply),
+    handler: request =>
+      fastify.projectRepository.deleteProject(
+        request.params.id,
+        request.appUser.id,
+      ),
+  });
 };
-
-export type DeleteProjectApi = GetApiTypes<typeof schema>;
-
-const deleteRoute: FastifyPluginAsync = async fastify => {
-  fastify.delete<{
-    Params: {id: string};
-  }>(
-    '/:id',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema,
-    },
-    async request => {
-      const {
-        appUser,
-        params: {id},
-      } = request;
-      return fastify.projectRepository.deleteProject(id, appUser.id);
-    },
-  );
-};
-
-export default deleteRoute;
+export default route;
