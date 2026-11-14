@@ -12,6 +12,8 @@ let reveal: Reveal | undefined;
 
 // Run before the menu opens, so that a layout can close what it has open.
 const makeWay = new Set<() => void>();
+// Run as the menu closes, while the event that closed it is still running.
+const closing = new Set<() => void>();
 
 // A list, a menu or a popover that is open, or a modal dialog. Each keeps
 // focus to itself, so a menu opened over one would fight it for focus.
@@ -40,7 +42,16 @@ export const commandMenu = {
     opener = active instanceof HTMLElement ? active : undefined;
     setOpen(true);
   },
-  close: () => setOpen(false),
+  close: () => {
+    if (!isOpen()) return;
+    closing.forEach(handler => handler());
+    setOpen(false);
+  },
+  /** Registers work for the moment the menu closes. Returns the undo. */
+  onClose: (handler: () => void) => {
+    closing.add(handler);
+    return () => closing.delete(handler);
+  },
   /** What had focus when the menu opened, to give it back. */
   opener: () => opener,
   /** Registers what a layout closes to make way for the menu. Returns the undo. */

@@ -103,11 +103,22 @@ function Commands(
 
   const optionId = (index: number) => `${listId}-${index}`;
 
+  // The command the canvas is previewing. Showing it a second time would
+  // undo and redo the same write, and the editor saves after that.
+  let previewed: string | undefined;
+  const endPreview = () => {
+    previewed = undefined;
+    props.model.endPreview();
+  };
+
   const highlight = (index: number, scroll: boolean) => {
     setActive(index);
     const command = results()[index];
-    if (command?.preview && !command.current) command.preview();
-    else props.model.endPreview();
+    if (!command?.preview || command.current) endPreview();
+    else if (command.id !== previewed) {
+      previewed = command.id;
+      command.preview();
+    }
     if (scroll) {
       document
         .getElementById(optionId(index))
@@ -131,7 +142,11 @@ function Commands(
   };
 
   onMount(() => input.focus());
-  onCleanup(() => props.model.endPreview());
+  // Ended as the menu closes, not when this unmounts: a write made during
+  // Solid's cleanup runs its effects later, outside the preview's quiet
+  // scope, and the editor would save a restored language.
+  onCleanup(commandMenu.onClose(endPreview));
+  onCleanup(endPreview);
 
   return (
     <>
@@ -161,7 +176,7 @@ function Commands(
             if (query().trim()) highlight(0, false);
             else {
               setActive(0);
-              props.model.endPreview();
+              endPreview();
             }
           }}
           onKeyDown={onKeyDown}
