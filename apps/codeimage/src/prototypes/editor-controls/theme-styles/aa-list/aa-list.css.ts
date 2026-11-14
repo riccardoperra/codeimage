@@ -1,17 +1,20 @@
 import {themeVars, withThemeMode} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
-import {option} from '../../screen.css';
+import {option} from '../picker.css';
 
+// One column in a panel; rows flow into columns in a wide tray.
 export const group = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '2px',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+  columnGap: themeVars.spacing['3'],
+  rowGap: '2px',
   selectors: {
     '& + &': {marginTop: themeVars.spacing['4']},
   },
 });
 
 export const groupLabel = style({
+  gridColumn: '1 / -1',
   padding: `0 ${themeVars.spacing['2']} ${themeVars.spacing['1']}`,
   color: themeVars.dynamicColors.descriptionTextColor,
   fontSize: themeVars.fontSize.xs,

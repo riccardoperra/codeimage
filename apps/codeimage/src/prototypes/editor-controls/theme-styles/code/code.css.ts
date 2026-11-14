@@ -1,10 +1,10 @@
 import {themeVars} from '@codeimage/ui';
 import {globalStyle, style} from '@vanilla-extract/css';
-import {card} from '../../screen.css';
+import {card} from '../picker.css';
 
 export const list = style({
-  display: 'flex',
-  flexDirection: 'column',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
   gap: themeVars.spacing['3'],
 });
 

@@ -1,10 +1,11 @@
 import {themeVars} from '@codeimage/ui';
 import {style} from '@vanilla-extract/css';
-import {card} from '../../screen.css';
+import {card} from '../picker.css';
 
 export const grid = style({
   display: 'grid',
-  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+  // Three columns in a narrow panel, cards of at least 136px where there is room.
+  gridTemplateColumns: `repeat(auto-fill, minmax(min(136px, calc((100% - 16px) / 3)), 1fr))`,
   gap: themeVars.spacing['2'],
 });
 

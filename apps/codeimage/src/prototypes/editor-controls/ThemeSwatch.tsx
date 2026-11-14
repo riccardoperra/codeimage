@@ -1,6 +1,7 @@
 import type {JSX} from 'solid-js';
 import {Match, Switch} from 'solid-js';
 import type {ThemeEntry} from './model';
+import {themeStyle, themeStyleEntry} from './theme-styles/style';
 import './theme-swatch.css';
 
 export const SWATCH_VARIANTS = [
@@ -13,23 +14,13 @@ export const SWATCH_VARIANTS = [
 
 export type SwatchVariant = (typeof SWATCH_VARIANTS)[number];
 
-function isSwatchVariant(value: string | null): value is SwatchVariant {
-  return SWATCH_VARIANTS.some(variant => variant === value);
-}
-
-/** The `t` URL parameter, so `?t=aa` restyles every swatch that sets no `variant`. */
-export function swatchVariantFromUrl(): SwatchVariant {
-  const requested = new URLSearchParams(location.search).get('t');
-  return isSwatchVariant(requested) ? requested : 'orb';
-}
-
 interface ThemeSwatchProps {
   theme: ThemeEntry;
   /** Height in px, and the diameter of the round styles. Defaults to 56. */
   size?: number;
-  /** Width in px of `palette` and `window`. Defaults to `size`. */
-  width?: number;
-  /** Defaults to the `t` URL parameter, then to `orb`. */
+  /** Width in px of `palette` and `window`, or `fill` for the width of the parent. Defaults to `size`. */
+  width?: number | 'fill';
+  /** Defaults to the mark of the theme style chosen in the harness (the `t` URL parameter). */
   variant?: SwatchVariant;
 }
 
@@ -42,16 +33,24 @@ interface ThemeSwatchProps {
  * - `window`: a window with bars of code colours on the frame background.
  */
 export function ThemeSwatch(props: ThemeSwatchProps) {
-  const variant = () => props.variant ?? swatchVariantFromUrl();
+  const variant = () => props.variant ?? themeStyleEntry(themeStyle()).mark;
   const size = () => props.size ?? 56;
   const width = () => props.width ?? size();
   const syntax = () => props.theme.colors.syntax;
-  const wide = () => width() >= size() * 1.6;
+  const wide = () => {
+    const value = width();
+    return value === 'fill' || value >= size() * 1.6;
+  };
+  const dot = () => {
+    const value = width();
+    if (value === 'fill') return size() * 0.24;
+    return wide() ? Math.min(size() * 0.26, value / 9) : size() * 0.18;
+  };
 
   const style = (): JSX.CSSProperties => ({
     '--swatch-size': `${size()}px`,
-    '--swatch-width': `${width()}px`,
-    '--swatch-dot': `${wide() ? Math.min(size() * 0.26, width() / 9) : size() * 0.18}px`,
+    '--swatch-width': width() === 'fill' ? '100%' : `${width()}px`,
+    '--swatch-dot': `${dot()}px`,
     '--swatch-frame': props.theme.colors.background,
     '--swatch-window': props.theme.colors.window,
     '--swatch-text': props.theme.colors.text,

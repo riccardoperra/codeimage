@@ -1,6 +1,6 @@
 import type {Accessor, JSX} from 'solid-js';
 import {createMemo, createSignal} from 'solid-js';
-import type {EditorControlsModel, ThemeEntry} from '../editor-controls/model';
+import type {EditorControlsModel, ThemeEntry} from '../model';
 
 export type ThemeMode = 'all' | 'dark' | 'light';
 
@@ -24,8 +24,17 @@ export interface ThemeBrowser {
   readonly optionProps: (
     theme: ThemeEntry,
   ) => JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+  /** The applied theme, or the first one when the stored id matches none, as the editor draws it. */
+  readonly isSelected: (theme: ThemeEntry) => boolean;
   /** Moves focus to the first option, e.g. on ArrowDown in the search field. */
   readonly focusFirst: () => void;
+  /** Moves focus to the selected option, or the first one. */
+  readonly focusSelected: () => void;
+}
+
+export interface ThemeBrowserOptions {
+  /** After a click or Enter applied a theme. */
+  readonly onPick?: (theme: ThemeEntry, byKeyboard: boolean) => void;
 }
 
 const OPTION = '[data-theme-option]';
@@ -68,7 +77,10 @@ function neighbour(
   return best;
 }
 
-export function createThemeBrowser(model: EditorControlsModel): ThemeBrowser {
+export function createThemeBrowser(
+  model: EditorControlsModel,
+  options: ThemeBrowserOptions = {},
+): ThemeBrowser {
   const [query, setQuery] = createSignal('');
   const [mode, setMode] = createSignal<ThemeMode>('all');
   let list: HTMLElement | undefined;
@@ -92,6 +104,18 @@ export function createThemeBrowser(model: EditorControlsModel): ThemeBrowser {
   const byId = (id: string | undefined) =>
     model.themes().find(theme => theme.id === id);
 
+  const selectedId = createMemo(
+    () =>
+      (model.themes().find(theme => theme.active()) ?? model.themes()[0])?.id,
+  );
+
+  // The applied theme is already on the canvas. Previewing it again would
+  // also put its own frame background over a custom one.
+  const show = (theme: ThemeEntry) => {
+    if (theme.id === selectedId()) model.endPreview();
+    else theme.preview();
+  };
+
   const focusedOption = () => {
     const active = document.activeElement;
     return list && active instanceof HTMLElement && list.contains(active)
@@ -103,7 +127,7 @@ export function createThemeBrowser(model: EditorControlsModel): ThemeBrowser {
   // canvas: the focused theme, or the applied one when nothing is focused.
   const settle = () => {
     const theme = byId(focusedOption()?.dataset.themeOption);
-    if (theme) theme.preview();
+    if (theme) show(theme);
     else model.endPreview();
   };
 
@@ -144,14 +168,26 @@ export function createThemeBrowser(model: EditorControlsModel): ThemeBrowser {
       type: 'button',
       'data-theme-option': theme.id,
       get 'aria-pressed'() {
-        return theme.active();
+        return theme.id === selectedId();
       },
-      onMouseEnter: () => theme.preview(),
-      onFocus: () => theme.preview(),
-      onClick: () => theme.apply(),
+      onMouseEnter: () => show(theme),
+      onFocus: () => show(theme),
+      onClick: event => {
+        theme.apply();
+        // A click from Enter or Space reports no pointer detail.
+        options.onPick?.(theme, event.detail === 0);
+      },
     }),
+    isSelected: theme => theme.id === selectedId(),
     focusFirst: () => {
       if (list) optionsIn(list)[0]?.focus();
+    },
+    focusSelected: () => {
+      if (!list) return;
+      const all = optionsIn(list);
+      (
+        all.find(el => el.dataset.themeOption === selectedId()) ?? all[0]
+      )?.focus();
     },
   };
 }

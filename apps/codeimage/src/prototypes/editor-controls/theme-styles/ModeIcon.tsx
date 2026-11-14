@@ -1,5 +1,5 @@
 import {Show} from 'solid-js';
-import {modeIcon} from './screen.css';
+import {modeIcon} from './picker.css';
 
 /** A moon for a dark theme, a sun for a light one. */
 export function ModeIcon(props: {dark: boolean; size?: number}) {
