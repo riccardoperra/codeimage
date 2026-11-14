@@ -177,10 +177,27 @@ export function setLineMarks(
   });
 }
 
+export type MarkKind = LineMark['kind'] | 'focus';
+
+export function hasMark(marks: TabMarks, line: number, kind: MarkKind) {
+  return kind === 'focus'
+    ? marks.focusedLines.includes(line)
+    : marks.lines.some(mark => mark.line === line && mark.kind === kind);
+}
+
+/** The contiguous lines around `line` that carry `kind`. */
+export function markRun(marks: TabMarks, line: number, kind: MarkKind) {
+  let first = line;
+  let last = line;
+  while (hasMark(marks, first - 1, kind)) first--;
+  while (hasMark(marks, last + 1, kind)) last++;
+  return Array.from({length: last - first + 1}, (_, i) => first + i);
+}
+
 export function markLines(
   view: EditorView,
   lines: number[],
-  kind: LineMark['kind'] | 'focus' | null,
+  kind: MarkKind | null,
 ) {
   if (view.state.readOnly) return false;
   const marks = readMarks(view.state);
@@ -201,21 +218,32 @@ export function markLines(
   return true;
 }
 
-export function clearLineMark(
-  view: EditorView,
-  line: number,
-  kind: LineMark['kind'] | 'focus',
-) {
+export function unmarkLines(view: EditorView, lines: number[], kind: MarkKind) {
   if (view.state.readOnly) return false;
   const marks = readMarks(view.state);
+  const removed = new Set(lines);
   setLineMarks(view, {
-    lines: marks.lines.filter(mark => mark.line !== line || mark.kind !== kind),
+    lines: marks.lines.filter(
+      mark => !removed.has(mark.line) || mark.kind !== kind,
+    ),
     focusedLines:
       kind === 'focus'
-        ? marks.focusedLines.filter(value => value !== line)
+        ? marks.focusedLines.filter(line => !removed.has(line))
         : marks.focusedLines,
   });
   return true;
+}
+
+/** Removes `kind` when every line already has it, otherwise adds it. */
+export function toggleMark(
+  view: EditorView,
+  lines: number[],
+  kind: MarkKind | null,
+) {
+  const marks = readMarks(view.state);
+  return kind && lines.every(line => hasMark(marks, line, kind))
+    ? unmarkLines(view, lines, kind)
+    : markLines(view, lines, kind);
 }
 
 export const lineMarksHistory: Extension = invertedEffects.of(tr => {
