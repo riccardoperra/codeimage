@@ -108,6 +108,13 @@ export function createThemeBrowser(
     () =>
       (model.themes().find(theme => theme.active()) ?? model.themes()[0])?.id,
   );
+  // One tab stop for the whole list: the selected theme, or the first one
+  // when the filter hides it. The arrow keys move inside.
+  const tabStopId = createMemo(() =>
+    themes().some(theme => theme.id === selectedId())
+      ? selectedId()
+      : themes()[0]?.id,
+  );
 
   // The applied theme is already on the canvas. Previewing it again would
   // also put its own frame background over a custom one.
@@ -140,6 +147,8 @@ export function createThemeBrowser(
     groups,
     listProps: {
       ref: (el: HTMLDivElement) => (list = el),
+      role: 'listbox',
+      'aria-label': 'Themes',
       onMouseLeave: settle,
       onFocusOut: event => {
         const next = event.relatedTarget;
@@ -166,9 +175,13 @@ export function createThemeBrowser(
     },
     optionProps: theme => ({
       type: 'button',
+      role: 'option',
       'data-theme-option': theme.id,
-      get 'aria-pressed'() {
+      get 'aria-selected'() {
         return theme.id === selectedId();
+      },
+      get tabIndex() {
+        return theme.id === tabStopId() ? 0 : -1;
       },
       onMouseEnter: () => show(theme),
       onFocus: () => show(theme),

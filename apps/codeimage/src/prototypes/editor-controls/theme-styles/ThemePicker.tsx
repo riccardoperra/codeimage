@@ -104,7 +104,7 @@ export function ThemePicker(props: ThemePickerProps) {
           />
         </div>
       </div>
-      <div class={styles.list} {...browser.listProps}>
+      <div class={styles.list} data-theme-list {...browser.listProps}>
         <Show
           when={browser.themes().length > 0}
           fallback={

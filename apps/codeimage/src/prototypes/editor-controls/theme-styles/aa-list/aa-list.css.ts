@@ -32,12 +32,12 @@ export const row = style([
     padding: `0 ${themeVars.spacing['2']}`,
     borderRadius: '10px',
     selectors: {
-      '&[aria-pressed="true"]': {
+      '&[aria-selected="true"]': {
         background: themeVars.dynamicColors.input.backgroundColor,
       },
       ...withThemeMode(
         {light: {background: themeVars.backgroundColor.white}},
-        '&[aria-pressed="true"]',
+        '&[aria-selected="true"]',
       ),
     },
   },
@@ -53,7 +53,7 @@ export const check = style({
   transition:
     'opacity 150ms ease-out, transform 200ms cubic-bezier(0.23, 1, 0.32, 1)',
   selectors: {
-    '[aria-pressed="true"] &': {opacity: 1, transform: 'scale(1)'},
+    '[aria-selected="true"] &': {opacity: 1, transform: 'scale(1)'},
   },
   '@media': {
     '(prefers-reduced-motion: reduce)': {transition: 'none'},

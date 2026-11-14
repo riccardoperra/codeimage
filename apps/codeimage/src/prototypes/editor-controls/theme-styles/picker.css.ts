@@ -115,7 +115,7 @@ export const name = style({
   fontWeight: themeVars.fontWeight.medium,
   lineHeight: 1.3,
   selectors: {
-    '[aria-pressed="true"] &': {fontWeight: themeVars.fontWeight.semibold},
+    '[aria-selected="true"] &': {fontWeight: themeVars.fontWeight.semibold},
   },
 });
 
@@ -137,7 +137,7 @@ export const markRing = style({
   pointerEvents: 'none',
   transition: `opacity 200ms ease-out, transform 200ms ${strongEaseOut}`,
   selectors: {
-    '[aria-pressed="true"] &': {opacity: 1, transform: 'scale(1)'},
+    '[aria-selected="true"] &': {opacity: 1, transform: 'scale(1)'},
   },
   '@media': {
     '(prefers-reduced-motion: reduce)': {transition: 'none'},
