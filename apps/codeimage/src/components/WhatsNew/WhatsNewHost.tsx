@@ -10,7 +10,6 @@ const OPEN_POPUP =
 // Gives the editor a moment to settle before anything floats over it.
 const SETTLE_MS = 700;
 
-/** True once the host is quiet and no popup is on screen. */
 function watchQuiet(hostQuiet?: Accessor<boolean>): Accessor<boolean> {
   const [clear, setClear] = createSignal(false);
   let frame = 0;

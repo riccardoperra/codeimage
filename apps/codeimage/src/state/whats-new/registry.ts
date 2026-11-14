@@ -1,5 +1,5 @@
-// Pure content with zero imports, so the Settings archive, the tests and a
-// possible static changelog page can all render from this file alone.
+// Pure content with zero imports, so the Settings archive and the tests can
+// render from this file alone.
 
 /**
  * Places in the editor where a feature lives. Adding one means the component
