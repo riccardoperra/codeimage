@@ -49,10 +49,11 @@ vi.mock('./Tab/WindowTabStyle.css', () => ({
   close: 'close',
 }));
 
-test('classic tabs of an export render without a translation context', () => {
+test('classic tabs of an export render without a translation context and without prop attributes', () => {
   const html = renderToString(() =>
     createComponent(TerminalWindowTabList, {accent: true, readOnly: true}),
   );
   expect(html).toContain('first.ts');
   expect(html).toContain('second.ts');
+  expect(html).not.toMatch(/\s(active|index|accentmode|appearance|tabicon)=/i);
 });

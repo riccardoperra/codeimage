@@ -29,6 +29,12 @@ export function WindowTab(
     'style',
     'rightContent',
     'content',
+    'appearance',
+    'active',
+    'index',
+    'accentMode',
+    'lite',
+    'tabIcon',
   ]);
 
   return (
