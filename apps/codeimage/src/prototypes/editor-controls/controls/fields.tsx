@@ -80,7 +80,11 @@ export function SelectChoice(props: {
       {...options.controlled(
         () => props.control.value(),
         key => {
-          if (key !== undefined) props.control.set(key);
+          // Kobalte also reports the selection it already holds whenever
+          // its options are rebuilt, as the formatters are when a preview
+          // restores the active tab. Saving that would end the preview.
+          if (key !== undefined && key !== props.control.value())
+            props.control.set(key);
         },
       )}
       options={options.options()}
