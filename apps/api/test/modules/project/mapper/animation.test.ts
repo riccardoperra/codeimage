@@ -1,6 +1,9 @@
 import {Value} from '@sinclair/typebox/value';
 import {expect, test} from 'vitest';
-import {ProjectUpdateRequestSchema} from '../../../../src/modules/project/project.contract.js';
+import {
+  type AnimationSettings,
+  ProjectUpdateRequestSchema,
+} from '../../../../src/modules/project/project.contract.js';
 import {
   changesFromUpdateBody,
   draftFromClone,
@@ -9,7 +12,7 @@ import {
 } from '../../../../src/modules/project/project.model.js';
 import {asUserId} from '../../../../src/shared/principal.js';
 
-const animation = {
+const animation: AnimationSettings = {
   steps: [
     {editorId: 'b', holdMs: 400},
     {editorId: 'a', holdMs: 0},
@@ -17,7 +20,7 @@ const animation = {
   transitionMs: 900,
   easing: 'snappy',
   fps: 60,
-} as const;
+};
 
 const tab = (id: string) => ({
   id,

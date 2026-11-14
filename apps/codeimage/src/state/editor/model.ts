@@ -1,5 +1,7 @@
-import type {TabMarks as ApiTabMarks} from '@codeimage/api/api-types';
-import type {AnimationSettings} from '@core/animation/model';
+import type {
+  AnimationSettings as ApiAnimationSettings,
+  TabMarks as ApiTabMarks,
+} from '@codeimage/api/api-types';
 import type {PersistedFrameState} from '@codeimage/store/frame/model';
 
 export interface EditorUIOptions {
@@ -88,5 +90,9 @@ export interface ProjectEditorPersistedState {
   terminal: PersistedTerminalState;
   editor: PersistedEditorState;
   // Missing in snapshots saved before animations.
-  animation?: AnimationSettings;
+  animation?: PersistedAnimationSettings;
 }
+
+export type PersistedAnimationSettings = Omit<ApiAnimationSettings, 'steps'> & {
+  readonly steps: readonly ApiAnimationSettings['steps'][number][];
+};
