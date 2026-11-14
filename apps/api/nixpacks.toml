@@ -1,8 +1,0 @@
-# nixpacks.toml
-providers = ["node"]
-
-[phases.setup]
-nixPkgs = ["nodejs"]
-
-[phases.build]
-cmds = ["ls"]
