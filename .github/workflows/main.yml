@@ -382,10 +382,11 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: '[API] Generate Prisma Migration'
-        run: |
-          pnpm --filter=@codeimage/api exec prisma generate
-          pnpm --filter=@codeimage/prisma-models build
+      - name: Download packages dist
+        uses: actions/download-artifact@v4
+        with:
+          name: packages-dist
+          path: packages
 
       - name: Build
         run: |

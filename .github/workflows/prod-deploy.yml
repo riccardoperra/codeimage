@@ -84,10 +84,12 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: '[API] Generate Prisma Migration'
-        run: |
-          pnpm --filter=@codeimage/api exec prisma generate
-          pnpm --filter=@codeimage/prisma-models build
+      - name: Restore packages
+        uses: actions/cache/restore@v5
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+          fail-on-cache-miss: true
 
       - name: Build
         run: |
