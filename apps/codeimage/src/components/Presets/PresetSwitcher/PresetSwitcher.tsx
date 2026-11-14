@@ -146,6 +146,20 @@ export const PresetSwitcher: ParentComponent<
                 });
               }
 
+              async function copyCliConfig() {
+                try {
+                  await navigator.clipboard.writeText(toCliConfig(theme.data));
+                } catch {
+                  toast.error(t('cliConfig.copyError'), {
+                    position: 'bottom-center',
+                  });
+                  return;
+                }
+                toast.success(t('cliConfig.copied'), {
+                  position: 'bottom-center',
+                });
+              }
+
               return (
                 <Suspense fallback={<ThemeBoxSkeleton />}>
                   <div>
@@ -223,29 +237,7 @@ export const PresetSwitcher: ParentComponent<
                                 >
                                   {t('presets.share.label')}
                                 </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    Promise.resolve()
-                                      .then(() =>
-                                        navigator.clipboard.writeText(
-                                          toCliConfig(theme.data),
-                                        ),
-                                      )
-                                      .then(
-                                        () =>
-                                          toast.success(t('cliConfig.copied'), {
-                                            position: 'bottom-center',
-                                          }),
-                                        () =>
-                                          toast.error(
-                                            t('cliConfig.copyError'),
-                                            {
-                                              position: 'bottom-center',
-                                            },
-                                          ),
-                                      );
-                                  }}
-                                >
+                                <DropdownMenuItem onClick={copyCliConfig}>
                                   {t('cliConfig.copy')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
