@@ -276,7 +276,7 @@ const handlers: RequestHandler[] = [
 
         const project = db.project.create({
           ...others,
-          id: randUuid(),
+          id: crypto.randomUUID(),
           name: body?.newName ?? name,
           isOwner: true,
         });

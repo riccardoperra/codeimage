@@ -1,5 +1,4 @@
-import {readFrameExportProperties} from './project.model.js';
-import {parseTabMarks} from '../../schemas/marks.js';
+import {readFrameExportProperties, parseTabMarks} from './project.model.js';
 import type * as repository from './project.repository.js';
 import type {
   Project as ProjectRow,

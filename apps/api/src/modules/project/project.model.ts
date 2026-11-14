@@ -1,6 +1,11 @@
 import type {Static} from '@sinclair/typebox';
-import {ExportTargetSchema, type FrameSignatureSchema} from './project.contract.js';
-import {parseTabMarks, type TabMarks} from '../../schemas/marks.js';
+import {Value} from '@sinclair/typebox/value';
+import {
+  ExportTargetSchema,
+  type FrameSignatureSchema,
+  TabMarksSchema,
+  type TabMarks,
+} from './project.contract.js';
 import {defineErrors} from '../../shared/errors.js';
 import {
   isOwnedBy,
@@ -187,7 +192,10 @@ export function changesFromUpdateBody(body: ProjectUpdateBody): ProjectChanges {
     frame: body.frame,
     terminal: body.terminal,
     editorOptions: body.editorOptions,
-    editorTabs: body.editors.map(editor => ({...editor, marks: parseTabMarks(editor.marks)})),
+    editorTabs: body.editors.map(editor => ({
+      ...editor,
+      marks: parseTabMarks(editor.marks),
+    })),
   };
 }
 
@@ -241,4 +249,10 @@ export function readFrameExportProperties(frame: {
       )?.const ?? null,
     signature: readFrameSignature(frame),
   };
+}
+
+export function parseTabMarks(value: unknown): TabMarks {
+  return Value.Check(TabMarksSchema, value)
+    ? value
+    : {lines: [], focusedLines: []};
 }

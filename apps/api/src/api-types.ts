@@ -18,4 +18,4 @@ export type GetPresetByIdApi = PresetApi['get'];
 export type UpdatePresetApi = PresetApi['update'];
 export type GetAllPresetApi = PresetApi['list'];
 
-export type {TabMarks} from './schemas/marks.js';
+export type {TabMarks} from './modules/project/project.contract.js';
