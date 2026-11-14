@@ -69,6 +69,34 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
     expect(image.width).toBe(1200);
   });
 
+  describe.each([
+    'macOs',
+    'macOsGrayTheme',
+    'macOsOutlineTheme',
+    'windows',
+  ] as const)('%s web export dimensions', type => {
+    it.each([
+      {name: 'one line', code: 'const x = 1;', scale: 2, size: [1000, 488]},
+      {
+        name: 'wide line',
+        code: `alpha ${'wrap '.repeat(100)}\nbeta\ngamma`,
+        scale: 1,
+        size: [5061, 289],
+      },
+    ])(
+      'matches the client box times scale for $name',
+      async ({code, scale, size}) => {
+        const image = await png({
+          ...withEditor({code, tabName: 'index.ts'}),
+          terminal: {...sampleDocument.terminal, type, shadow: null},
+          width: 500,
+          scale,
+        });
+        expect([image.width, image.height]).toEqual(size);
+      },
+    );
+  });
+
   it('grows with the code', async () => {
     const short = await png({...sampleDocument, scale: 1});
     const long = await png({
