@@ -58,6 +58,12 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
         marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
       },
     ],
+    animation: {
+      steps: [{editorId: 'tabId', holdMs: 800}],
+      transitionMs: 900,
+      easing: 'smooth',
+      fps: 30,
+    },
   });
 
   assert.deepStrictEqual(result, {
@@ -78,6 +84,12 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
         marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
       },
     ],
+    animation: {
+      steps: [{editorId: 'tabId', holdMs: 800}],
+      transitionMs: 900,
+      easing: 'smooth',
+      fps: 30,
+    },
     frame: {
       id: 'frameId',
       aspectRatio: null,

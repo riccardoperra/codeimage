@@ -50,6 +50,7 @@ export function toProjectResponse(view: ProjectView): ProjectGetByIdResponse {
       lineNumberStart: editor.lineNumberStart,
       marks: editor.marks,
     })),
+    animation: view.animation,
     isOwner: view.isOwner,
   };
 }

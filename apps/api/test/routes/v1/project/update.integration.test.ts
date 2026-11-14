@@ -291,3 +291,56 @@ test<TestContext>('PUT /v1/project/:id [Update Project] -> ignores keys outside 
     },
   });
 });
+
+test<TestContext>('PUT /v1/project/:id [Update Project] -> saves and loads the animation', async context => {
+  const fastify = await build(context);
+  const storedTab = context.project1.editorTabs[0].id;
+  const loaded = async () => {
+    const response = await fastify.inject({
+      url: `/api/v1/project/${context.project1.id}`,
+      method: 'GET',
+    });
+    return JSON.parse(response.body) as ProjectUpdateResponse;
+  };
+
+  assert.equal((await loaded()).animation, null, 'loads without an animation');
+
+  const animation = {
+    steps: [
+      {editorId: 'temp', holdMs: 1200},
+      {editorId: storedTab, holdMs: 0},
+    ],
+    transitionMs: 650,
+    easing: 'linear',
+    fps: 24,
+  } satisfies ProjectUpdateBody['animation'];
+  const response = await fastify.inject({
+    url: `/api/v1/project/${context.project1.id}`,
+    method: 'PUT',
+    payload: {...buildUpdateRequest(storedTab), animation},
+  });
+  assert.equal(response.statusCode, 200, 'return status 200');
+
+  const project = await loaded();
+  const newTab = project.editorTabs.find(tab => tab.tabName === 'index.tsx');
+  assert.ok(newTab && newTab.id !== 'temp', 'the new tab has a server id');
+  assert.deepStrictEqual(project.animation, {
+    ...animation,
+    steps: [
+      {editorId: newTab.id, holdMs: 1200},
+      {editorId: storedTab, holdMs: 0},
+    ],
+  });
+
+  const withoutAnimation = await fastify.inject({
+    url: `/api/v1/project/${context.project1.id}`,
+    method: 'PUT',
+    payload: buildUpdateRequest(storedTab),
+  });
+  assert.equal(withoutAnimation.statusCode, 200, 'return status 200');
+  assert.deepStrictEqual(
+    (await loaded()).animation?.transitionMs,
+    650,
+    'an update without an animation keeps the saved one',
+  );
+});

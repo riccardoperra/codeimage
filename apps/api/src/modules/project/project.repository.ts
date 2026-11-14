@@ -1,4 +1,9 @@
-import {readFrameExportProperties, parseTabMarks} from './project.model.js';
+import {randomUUID} from 'node:crypto';
+import {
+  parseAnimationSettings,
+  parseTabMarks,
+  readFrameExportProperties,
+} from './project.model.js';
 import type * as repository from './project.repository.js';
 import type {
   Project as ProjectRow,
@@ -59,6 +64,7 @@ export async function createProject(
   const row = await scope.client.project.create({
     data: {
       name: draft.name,
+      animation: draft.animation ?? undefined,
       owner: {
         connect: {id: scope.ownerId},
       },
@@ -125,11 +131,31 @@ export async function updateProject(
   id: string,
   changes: ProjectChanges,
 ): Promise<Project | null> {
+  const stored = await scope.client.snippetEditorTab.findMany({
+    where: {projectId: id},
+    select: {id: true},
+  });
+  const storedIds = new Set(stored.map(tab => tab.id));
+  // A tab the project does not store yet gets a new id, and the animation
+  // steps that point at it follow it.
+  const tabIds = new Map(
+    changes.editorTabs.map(tab => [
+      tab.id,
+      storedIds.has(tab.id) ? tab.id : randomUUID(),
+    ]),
+  );
   const row = await orNull(
     scope.client.project.update({
       where: {id_ownerId: {id, ownerId: scope.ownerId}},
       data: {
         id,
+        animation: changes.animation && {
+          ...changes.animation,
+          steps: changes.animation.steps.map(step => ({
+            ...step,
+            editorId: tabIds.get(step.editorId) ?? step.editorId,
+          })),
+        },
         editorTabs: {
           deleteMany: {
             NOT: {id: {in: changes.editorTabs.map(tab => tab.id)}},
@@ -137,7 +163,14 @@ export async function updateProject(
           upsert: changes.editorTabs.map(
             ({id, code, tabName, languageId, lineNumberStart, marks}) => ({
               where: {id},
-              create: {code, tabName, languageId, lineNumberStart, marks},
+              create: {
+                id: tabIds.get(id),
+                code,
+                tabName,
+                languageId,
+                lineNumberStart,
+                marks,
+              },
               update: {code, tabName, languageId, lineNumberStart, marks},
             }),
           ),
@@ -294,5 +327,6 @@ function toProject(
       lineNumberStart: tab.lineNumberStart,
       marks: parseTabMarks(tab.marks),
     })),
+    animation: parseAnimationSettings(row.animation),
   };
 }

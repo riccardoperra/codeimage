@@ -1,6 +1,9 @@
+import {randomUUID} from 'node:crypto';
 import type {Static} from '@sinclair/typebox';
 import {Value} from '@sinclair/typebox/value';
 import {
+  AnimationSettingsSchema,
+  type AnimationSettings,
   ExportTargetSchema,
   type FrameSignatureSchema,
   TabMarksSchema,
@@ -79,6 +82,7 @@ export interface Project extends ProjectHeader {
   readonly terminal: SnippetTerminal;
   readonly editorOptions: SnippetEditorOptions;
   readonly editorTabs: SnippetEditorTab[];
+  readonly animation: AnimationSettings | null;
 }
 
 export interface ProjectSummary extends ProjectHeader {
@@ -99,7 +103,11 @@ export interface ProjectDraft {
   readonly frame: WithoutIds<SnippetFrame>;
   readonly terminal: WithoutIds<SnippetTerminal>;
   readonly editorOptions: WithoutIds<SnippetEditorOptions>;
-  readonly editorTabs: readonly Omit<SnippetEditorTab, 'id' | 'projectId'>[];
+  // A clone names its tabs, so its animation steps can point at them.
+  readonly editorTabs: readonly (Omit<SnippetEditorTab, 'id' | 'projectId'> & {
+    readonly id?: string;
+  })[];
+  readonly animation: AnimationSettings | null;
 }
 
 export interface ProjectChanges {
@@ -107,6 +115,8 @@ export interface ProjectChanges {
   readonly terminal: WithoutIds<SnippetTerminal>;
   readonly editorOptions: WithoutIds<SnippetEditorOptions>;
   readonly editorTabs: readonly Omit<SnippetEditorTab, 'projectId'>[];
+  // Left unchanged when undefined, for clients without animations.
+  readonly animation?: AnimationSettings;
 }
 
 export const ProjectErrors = defineErrors({
@@ -184,6 +194,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
       lineNumberStart: editor.lineNumberStart,
       marks: parseTabMarks(editor.marks),
     })),
+    animation: null,
   };
 }
 
@@ -196,23 +207,28 @@ export function changesFromUpdateBody(body: ProjectUpdateBody): ProjectChanges {
       ...editor,
       marks: parseTabMarks(editor.marks),
     })),
+    animation: parseAnimationSettings(body.animation) ?? undefined,
   };
 }
 
 export function draftFromClone(
   source: Project,
   newName: string | null,
+  newTabId: () => string = randomUUID,
 ): ProjectDraft {
   const {id: _f, ...frame} = source.frame;
   const {id: _t, ...terminal} = source.terminal;
   const {id: _e, ...editorOptions} = source.editorOptions;
+  const tabIds = new Map(source.editorTabs.map(tab => [tab.id, newTabId()]));
+  const {animation} = source;
   return {
     name: newName ?? source.name,
     frame,
     terminal,
     editorOptions,
     editorTabs: source.editorTabs.map(
-      ({languageId, code, tabName, lineNumberStart, marks}) => ({
+      ({id, languageId, code, tabName, lineNumberStart, marks}) => ({
+        id: tabIds.get(id),
         languageId,
         code,
         tabName,
@@ -220,6 +236,13 @@ export function draftFromClone(
         marks,
       }),
     ),
+    animation: animation && {
+      ...animation,
+      steps: animation.steps.map(step => ({
+        ...step,
+        editorId: tabIds.get(step.editorId) ?? step.editorId,
+      })),
+    },
   };
 }
 
@@ -249,6 +272,18 @@ export function readFrameExportProperties(frame: {
       )?.const ?? null,
     signature: readFrameSignature(frame),
   };
+}
+
+// A timeline of 0 ms has no frame to render, so it is no animation.
+export function parseAnimationSettings(
+  value: unknown,
+): AnimationSettings | null {
+  if (!Value.Check(AnimationSettingsSchema, value)) return null;
+  const {steps, transitionMs} = value;
+  const totalMs =
+    steps.reduce((total, step) => total + step.holdMs, 0) +
+    (steps.length - 1) * transitionMs;
+  return totalMs > 0 ? value : null;
 }
 
 export function parseTabMarks(value: unknown): TabMarks {
