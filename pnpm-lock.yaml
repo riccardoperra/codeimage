@@ -753,6 +753,9 @@ importers:
       '@takumi-rs/core':
         specifier: 2.19.0
         version: 2.19.0(csstype@3.2.3)(react@19.2.4)
+      citty:
+        specifier: 0.2.2
+        version: 0.2.2
       zod:
         specifier: ^4.1.12
         version: 4.6.7
@@ -5813,6 +5816,9 @@ packages:
 
   citty@0.2.1:
     resolution: {integrity: sha512-kEV95lFBhQgtogAPlQfJJ0WGVSokvLr/UEoFPiKKOXF7pl98HfUVUD0ejsuTCld/9xH9vogSywZ5KqHzXrZpqg==}
+
+  citty@0.2.2:
+    resolution: {integrity: sha512-+6vJA3L98yv+IdfKGZHBNiGW5KHn22e/JwID0Strsz8h4S/csAu/OuICwxrg44k5MRiZHWIo8XXuJgQTriRP4w==}
 
   clean-stack@2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
@@ -16204,6 +16210,8 @@ snapshots:
       consola: 3.4.2
 
   citty@0.2.1: {}
+
+  citty@0.2.2: {}
 
   clean-stack@2.2.0: {}
 

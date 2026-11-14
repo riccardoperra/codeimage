@@ -3,8 +3,12 @@ import {UsageError} from '../errors';
 import type {Flag} from './index';
 
 export const split: Flag = {
-  options: {'split-tabs': {type: 'boolean'}},
-  usage: '  --split-tabs         Write one image per tab, such as out-01.png\n',
+  args: {
+    'split-tabs': {
+      type: 'boolean',
+      description: 'Write one image per tab, such as out-01.png',
+    },
+  },
   validate(values) {
     if (values['split-tabs'] && values.output === '-')
       throw new UsageError('--split-tabs: -o must be a file path');

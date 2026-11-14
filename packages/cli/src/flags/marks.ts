@@ -32,15 +32,23 @@ function lineRanges(values: FlagValues, flag: 'highlight' | 'focus') {
 }
 
 export const marks: Flag = {
-  options: {
-    diff: {type: 'boolean'},
-    highlight: {type: 'string'},
-    focus: {type: 'string', multiple: true},
+  args: {
+    diff: {
+      type: 'boolean',
+      description: 'Read a unified diff, one tab per changed file',
+    },
+    highlight: {
+      type: 'string',
+      valueHint: 'lines',
+      description: 'Highlight lines such as 3-5,9',
+    },
+    focus: {
+      type: 'string',
+      multiple: true,
+      valueHint: 'lines',
+      description: 'Focus lines such as 3-5,9; repeat to add ranges',
+    },
   },
-  usage: `  --diff               Read a unified diff, one tab per changed file
-  --highlight <lines>  Highlight lines such as 3-5,9
-  --focus <lines>      Focus lines such as 3-5,9; repeat to add ranges
-`,
   validate(values) {
     lineRanges(values, 'highlight');
     lineRanges(values, 'focus');

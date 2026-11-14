@@ -3,8 +3,9 @@ import {UsageError} from '../errors';
 import type {Flag} from './index';
 
 export const alt: Flag = {
-  options: {alt: {type: 'boolean'}},
-  usage: '  --alt                Write alt text to <output>.alt.txt\n',
+  args: {
+    alt: {type: 'boolean', description: 'Write alt text to <output>.alt.txt'},
+  },
   validate(values) {
     if (values.alt && values.output === '-')
       throw new UsageError('--alt: -o must be a file path for the sidecar');
