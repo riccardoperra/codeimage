@@ -92,6 +92,10 @@ export function Bootstrap() {
       component: lazyWithNoLauncher(() => import("./prototypes/editor-controls")),
     },
     {
+      path: "prototypes/theme-card",
+      component: lazyWithNoLauncher(() => import("./prototypes/theme-card")),
+    },
+    {
       path: ":snippetId",
       component: Editor,
     },
