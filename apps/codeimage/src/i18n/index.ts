@@ -8,6 +8,7 @@ import sidebarLocale from './sidebar';
 import {uiLocale} from './ui';
 import {bottomBar} from './bottombar';
 import {exportTabs} from './exportTabs';
+import {cliConfig} from './cliConfig';
 
 export const locale = {
   it: {
@@ -102,6 +103,7 @@ export const locale = {
     ...exportTabs.it,
     ...altText.it,
     ...lineMarksLocale.it,
+    ...cliConfig.it,
   },
   en: {
     ...secrets.en,
@@ -192,6 +194,7 @@ export const locale = {
     ...exportTabs.en,
     ...altText.en,
     ...lineMarksLocale.en,
+    ...cliConfig.en,
   },
   de: {
     ...secrets.de,
@@ -283,6 +286,7 @@ export const locale = {
     ...exportTabs.de,
     ...altText.de,
     ...lineMarksLocale.de,
+    ...cliConfig.de,
   },
   es: {
     ...secrets.es,
@@ -374,6 +378,7 @@ export const locale = {
     ...exportTabs.es,
     ...altText.es,
     ...lineMarksLocale.es,
+    ...cliConfig.es,
   },
 };
 

@@ -815,8 +815,3 @@ export const SUPPORTED_LANGUAGES: readonly LanguageDefinition[] = [
   },
 ];
 
-export function inferLanguageFromPath(path: string): string | undefined {
-  return SUPPORTED_LANGUAGES.find(language =>
-    language.icons.some(icon => icon.matcher.test(path)),
-  )?.id;
-}

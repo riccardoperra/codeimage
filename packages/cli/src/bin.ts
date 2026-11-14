@@ -1,28 +1,28 @@
 #!/usr/bin/env node
 import {readFile, writeFile} from 'node:fs/promises';
 import {parseArgs, UsageError, USAGE} from './args';
-import {buildSnapshot, parsePreset} from './snapshot';
-import type {CodeInput} from './snapshot';
+import {FLAGS} from './flags';
 import {renderSnapshot} from './render';
+import {buildSnapshot, parsePreset} from './snapshot';
 
-async function readInput(path: string, flag: string) {
+async function readInput(path: string, prefix = '') {
   try {
     return await readFile(path, 'utf8');
   } catch (error) {
     throw new UsageError(
-      `${flag}: ${error instanceof Error ? error.message : String(error)}`,
+      `${prefix}${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }
 
 async function readStdin() {
-  if (process.stdin.isTTY)
-    throw new UsageError('input: provide a file or pipe code through stdin');
+  if (process.stdin.isTTY) {
+    throw new UsageError('stdin (-) is a terminal: pipe code into codeimage');
+  }
   process.stdin.setEncoding('utf8');
   let code = '';
   for await (const chunk of process.stdin) code += chunk;
-  if (!code.length)
-    throw new UsageError('input: provide a file or pipe code through stdin');
+  if (!code) throw new UsageError('stdin is empty');
   return code;
 }
 
@@ -32,18 +32,27 @@ async function main() {
     process.stdout.write(USAGE);
     return;
   }
+  if (!args.files.length && process.stdin.isTTY) {
+    process.stderr.write(USAGE);
+    process.exitCode = 2;
+    return;
+  }
   const preset = args.preset
-    ? parsePreset(await readInput(args.preset, '--preset'))
+    ? parsePreset(await readInput(args.preset, '--preset: '))
     : undefined;
   const files = args.files.length ? args.files : ['-'];
-  const inputs: CodeInput[] = [];
+  const inputs = [];
   for (const file of files) {
-    inputs.push({
-      name: file === '-' ? 'stdin' : file,
-      code: file === '-' ? await readStdin() : await readInput(file, 'input'),
-    });
+    inputs.push(
+      file === '-'
+        ? {name: 'stdin', code: await readStdin()}
+        : {name: file, code: await readInput(file)},
+    );
   }
-  const snapshot = await buildSnapshot({args, inputs, preset});
+  const snapshot = FLAGS.reduce(
+    (snapshot, flag) => flag.apply(snapshot, args.values),
+    await buildSnapshot({args, inputs, preset}),
+  );
   const image = await renderSnapshot(snapshot);
   if (args.output === '-') {
     await new Promise<void>((resolve, reject) => {
@@ -65,7 +74,7 @@ main().catch(error => {
     `codeimage: ${error instanceof Error ? error.message : String(error)}\n`,
   );
   if (error instanceof UsageError) {
-    process.stderr.write(`\n${USAGE}`);
+    process.stderr.write('Run codeimage --help for usage.\n');
     process.exitCode = 2;
   } else {
     process.exitCode = 1;
