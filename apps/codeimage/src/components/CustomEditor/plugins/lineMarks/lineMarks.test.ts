@@ -5,13 +5,15 @@ import type {EditorView} from '@codemirror/view';
 import {describe, expect, it} from 'vitest';
 import {pasteAnnotations} from './paste';
 import {
-  clearLineMark,
   markLines,
+  markRun,
   lineMarksField,
   lineMarksHistory,
   marksValue,
   readMarks,
   replaceMarks,
+  toggleMark,
+  unmarkLines,
 } from './state';
 
 function editor() {
@@ -28,7 +30,7 @@ function editor() {
 }
 
 describe('line marks', () => {
-  it('adds separate focus selections, clears one line at a time, and undoes each clear', () => {
+  it('adds separate focus selections, clears one kind at a time, and undoes each clear', () => {
     const target = editor();
     const view = target as unknown as EditorView;
     markLines(view, [1, 2], 'focus');
@@ -38,15 +40,15 @@ describe('line marks', () => {
       lines: [{line: 2, kind: 'added'}],
       focusedLines: [1, 2, 5, 6],
     });
-    clearLineMark(view, 2, 'added');
+    unmarkLines(view, [2], 'added');
     expect(readMarks(target.state).focusedLines).toEqual([1, 2, 5, 6]);
     expect(readMarks(target.state).lines).toEqual([]);
     undo(target);
     expect(readMarks(target.state).lines).toEqual([{line: 2, kind: 'added'}]);
-    clearLineMark(view, 2, 'focus');
+    unmarkLines(view, markRun(readMarks(target.state), 2, 'focus'), 'focus');
     expect(readMarks(target.state)).toEqual({
       lines: [{line: 2, kind: 'added'}],
-      focusedLines: [1, 5, 6],
+      focusedLines: [5, 6],
     });
     undo(target);
     expect(readMarks(target.state).focusedLines).toEqual([1, 2, 5, 6]);
@@ -54,6 +56,23 @@ describe('line marks', () => {
     expect(readMarks(target.state).focusedLines).toEqual([5, 6]);
     markLines(view, [5, 6], null);
     expect(readMarks(target.state).focusedLines).toEqual([]);
+  });
+  it('toggles a kind off only when every selected line already has it', () => {
+    const target = editor();
+    const view = target as unknown as EditorView;
+    toggleMark(view, [2, 3], 'focus');
+    toggleMark(view, [3, 4], 'focus');
+    expect(readMarks(target.state).focusedLines).toEqual([2, 3, 4]);
+    toggleMark(view, [3, 4], 'focus');
+    expect(readMarks(target.state).focusedLines).toEqual([2]);
+    toggleMark(view, [1], 'highlight');
+    toggleMark(view, [1, 2], 'added');
+    expect(readMarks(target.state).lines).toEqual([
+      {line: 1, kind: 'added'},
+      {line: 2, kind: 'added'},
+    ]);
+    toggleMark(view, [1, 2], 'added');
+    expect(readMarks(target.state)).toEqual({lines: [], focusedLines: [2]});
   });
   it('maps, deletes and restores focused lines independently of highlights', () => {
     const target = editor();

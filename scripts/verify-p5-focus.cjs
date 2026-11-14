@@ -119,11 +119,24 @@ async function main() {
       {line: 4, kind: 'highlight'},
     ]);
     await page.getByRole('button', {name: 'Clear focus', exact: true}).click();
-    assert.deepEqual((await read()).focusedLines, [3, 6, 7]);
+    assert.deepEqual((await read()).focusedLines, [6, 7]);
     assert.equal((await read()).lines.length, 2);
     await page.keyboard.press('Meta+z');
     assert.deepEqual((await read()).focusedLines, [2, 3, 6, 7]);
-    console.log('PASS two focus ranges, independent clear chips, undo');
+    console.log('PASS two focus ranges, the chip clears one range, undo');
+
+    await select(6, 7);
+    const focusButton = page
+      .locator('.cm-lineMarkToolbar:not(.cm-lineMarkClear)')
+      .getByRole('button', {name: 'Focus', exact: true});
+    assert.equal(await focusButton.getAttribute('aria-pressed'), 'true');
+    await select(5, 6);
+    assert.equal(await focusButton.getAttribute('aria-pressed'), 'false');
+    await action(6, 7, 'Focus');
+    assert.deepEqual((await read()).focusedLines, [2, 3]);
+    await page.keyboard.press('Meta+z');
+    assert.deepEqual((await read()).focusedLines, [2, 3, 6, 7]);
+    console.log('PASS Focus shows its pressed state and toggles off');
 
     await cursor(8);
     await page.keyboard.press('Meta+Alt+4');
@@ -134,19 +147,29 @@ async function main() {
     assert.equal(await page.locator('.cm-lineMarkClear').count(), 0);
     await page.keyboard.press('Meta+z');
     assert.equal(await page.evaluate(() => view.state.doc.toString()), code);
-    await page
-      .locator('.cm-editor:has([contenteditable=true]) .cm-line')
-      .nth(1)
-      .hover();
-    await page
-      .getByRole('button', {name: 'Clear highlight', exact: true})
-      .waitFor();
-    await page
-      .getByRole('button', {name: 'Clear highlight', exact: true})
-      .click();
+    const rows = page.locator('.cm-editor:has([contenteditable=true]) .cm-line');
+    await rows.nth(1).hover();
+    assert.equal(await page.locator('.cm-lineMarkClear').count(), 0);
+    const row = await rows.nth(1).boundingBox();
+    const start = {x: row.x + 40, y: row.y + row.height / 2};
+    await page.mouse.click(start.x, start.y);
+    const chipBox = await page.locator('.cm-lineMarkClear').boundingBox();
+    const end = {
+      x: chipBox.x + chipBox.width / 2,
+      y: chipBox.y + chipBox.height / 2,
+    };
+    for (let step = 1; step <= 8; step++) {
+      await page.mouse.move(
+        start.x + ((end.x - start.x) * step) / 8,
+        start.y + ((end.y - start.y) * step) / 8,
+      );
+      assert.equal(await page.locator('.cm-lineMarkClear').count(), 1);
+    }
+    await page.mouse.down();
+    await page.mouse.up();
     assert.deepEqual((await read()).lines, [{line: 4, kind: 'highlight'}]);
     await page.keyboard.press('Meta+z');
-    console.log('PASS typing on unmarked line and pointer hover');
+    console.log('PASS the chip follows the caret and stays under the pointer');
 
     await page.getByRole('button', {name: 'Export', exact: true}).click();
     await page.getByRole('button', {name: 'Confirm', exact: true}).waitFor();
@@ -285,7 +308,7 @@ async function main() {
     assert.ok(box.x >= 0 && box.x + box.width <= 390);
     await page.screenshot({path: path.join(out, 'p5-focus-clear-mobile.png')});
     await page.getByRole('button', {name: 'Clear focus', exact: true}).click();
-    assert.deepEqual((await read()).focusedLines, [3, 6, 7]);
+    assert.deepEqual((await read()).focusedLines, [6, 7]);
     console.log('PASS mobile 390px clear chip', box);
     assert.deepEqual(errors, []);
   } catch (error) {

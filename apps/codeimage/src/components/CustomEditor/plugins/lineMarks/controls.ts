@@ -16,7 +16,16 @@ import {
   ViewPlugin,
 } from '@codemirror/view';
 import type {LineMark} from '../../../../state/editor/model';
-import {clearLineMark, lineMarksField, markLines, readMarks} from './state';
+import type {MarkKind} from './state';
+import {
+  hasMark,
+  lineMarksField,
+  markLines,
+  markRun,
+  readMarks,
+  toggleMark,
+  unmarkLines,
+} from './state';
 
 export interface LineMarkLabels {
   toolbar: string;
@@ -26,13 +35,13 @@ export interface LineMarkLabels {
   clear: string;
   focus: string;
   focusHint: string;
-  clearMark: Record<LineMark['kind'] | 'focus', string>;
+  clearMark: Record<MarkKind, string>;
 }
 
 export const markCommands: {
   id: 'highlight' | 'added' | 'removed' | 'focus' | 'clear';
   key: string;
-  kind: LineMark['kind'] | 'focus' | null;
+  kind: MarkKind | null;
 }[] = [
   {id: 'highlight', key: 'Mod-Alt-1', kind: 'highlight'},
   {id: 'added', key: 'Mod-Alt-2', kind: 'added'},
@@ -64,7 +73,7 @@ export function selectedLines(state: EditorState): number[] {
 
 export const lineMarkKeymap: KeyBinding[] = markCommands.map(({key, kind}) => ({
   key,
-  run: view => markLines(view, selectedLines(view.state), kind),
+  run: view => toggleMark(view, selectedLines(view.state), kind),
   preventDefault: true,
 }));
 
@@ -93,27 +102,32 @@ function toolbarView(labels: LineMarkLabels) {
       };
       return element;
     };
+    const toggles: [HTMLButtonElement, MarkKind][] = [];
     for (const command of markCommands) {
       const keys = shortcutKeys(command.key);
       const element = button(
         labels[command.id],
         `${command.id === 'focus' ? labels.focusHint : labels[command.id]} (${keys.join(isApple() ? '' : '+')})`,
-        () => markLines(view, selectedLines(view.state), command.kind),
+        () => toggleMark(view, selectedLines(view.state), command.kind),
       );
       element.setAttribute(
         'aria-keyshortcuts',
         `${isApple() ? 'Meta' : 'Control'}+Alt+${command.key.slice(-1)}`,
       );
+      if (command.kind) toggles.push([element, command.kind]);
     }
-    const syncVisibility = () => {
+    const sync = () => {
       dom.style.visibility = view.hasFocus ? '' : 'hidden';
+      const marks = readMarks(view.state);
+      const lines = selectedLines(view.state);
+      for (const [element, kind] of toggles)
+        element.setAttribute(
+          'aria-pressed',
+          String(lines.every(line => hasMark(marks, line, kind))),
+        );
     };
-    syncVisibility();
-    return {
-      dom,
-      offset: {x: 0, y: 4},
-      update: () => syncVisibility(),
-    };
+    sync();
+    return {dom, offset: {x: 0, y: 4}, update: sync};
   };
 }
 
@@ -181,8 +195,7 @@ function selectionBar(labels: LineMarkLabels): Extension {
   ];
 }
 
-const hoverLine = StateEffect.define<number | null>();
-
+/** Clear buttons for the marks on the caret line, hidden while typing. */
 function inlineClear(labels: LineMarkLabels): Extension {
   const create =
     (line: number) =>
@@ -193,116 +206,61 @@ function inlineClear(labels: LineMarkLabels): Extension {
       dom.setAttribute('aria-label', labels.clear);
       dom.addEventListener('mousedown', event => event.preventDefault());
       const marks = readMarks(view.state);
-      const kinds: (LineMark['kind'] | 'focus')[] = marks.lines
-        .filter(mark => mark.line === line)
-        .map(mark => mark.kind);
-      if (marks.focusedLines.includes(line)) kinds.push('focus');
+      const kinds = (['highlight', 'added', 'removed', 'focus'] as const).filter(
+        kind => hasMark(marks, line, kind),
+      );
       for (const kind of kinds) {
         const button = dom.appendChild(document.createElement('button'));
         button.type = 'button';
         button.textContent = `${labels[kind]} ×`;
         button.setAttribute('aria-label', labels.clearMark[kind]);
         button.onclick = () => {
-          clearLineMark(view, line, kind);
+          unmarkLines(view, markRun(readMarks(view.state), line, kind), kind);
           view.focus();
         };
       }
       const syncVisibility = () => {
-        dom.style.visibility =
-          view.hasFocus || view.state.field(field).hover === line
-            ? ''
-            : 'hidden';
+        dom.style.visibility = view.hasFocus ? '' : 'hidden';
       };
-      dom.addEventListener('mouseleave', () => {
-        if (view.state.field(field).hover !== null)
-          view.dispatch({effects: hoverLine.of(null)});
-      });
       syncVisibility();
       return {dom, offset: {x: 0, y: 4}, update: syncVisibility};
     };
-  const field = StateField.define<{
-    hover: number | null;
-    typing: boolean;
-    tooltip: Tooltip | null;
-  }>({
-    create: () => ({hover: null, typing: false, tooltip: null}),
-    update(value, tr) {
-      let {hover, typing} = value;
-      if (tr.docChanged) {
-        hover = null;
-        typing = true;
-      } else if (tr.selection) typing = false;
-      for (const effect of tr.effects) {
-        if (effect.is(hoverLine)) {
-          hover = effect.value;
-          typing = false;
-        }
-      }
-      const selection = tr.state.selection.main;
-      const line =
-        hover ??
-        (!typing && selection.empty
-          ? tr.state.doc.lineAt(selection.head).number
-          : null);
-      if (
-        !line ||
-        line > tr.state.doc.lines ||
-        !selection.empty ||
-        tr.state.readOnly
-      )
-        return {hover, typing, tooltip: null};
-      const marks = readMarks(tr.state);
-      if (
-        !marks.lines.some(mark => mark.line === line) &&
-        !marks.focusedLines.includes(line)
-      )
-        return {hover, typing, tooltip: null};
-      const pos = tr.state.doc.line(line).to;
-      if (
-        value.tooltip?.pos === pos &&
-        tr.startState.field(lineMarksField) === tr.state.field(lineMarksField)
-      )
-        return {...value, hover, typing};
-      return {
-        hover,
-        typing,
-        tooltip: {
-          pos,
-          above: true,
-          strictSide: false,
-          create: create(line),
-        },
-      };
-    },
-    provide: field =>
-      showTooltip.compute([field], state => state.field(field).tooltip),
-  });
-  const tracker = ViewPlugin.define(view => {
-    const move = (event: MouseEvent) => {
-      const pos = view.posAtCoords({x: event.clientX, y: event.clientY});
-      const line = pos === null ? null : view.state.doc.lineAt(pos).number;
-      if (view.state.field(field).hover !== line)
-        view.dispatch({effects: hoverLine.of(line)});
-    };
-    const leave = (event: MouseEvent) => {
-      if (
-        event.relatedTarget instanceof Element &&
-        event.relatedTarget.closest('.cm-lineMarkClear')
-      )
-        return;
-      if (view.state.field(field).hover !== null)
-        view.dispatch({effects: hoverLine.of(null)});
-    };
-    view.contentDOM.addEventListener('mousemove', move);
-    view.contentDOM.addEventListener('mouseleave', leave);
-    return {
-      destroy() {
-        view.contentDOM.removeEventListener('mousemove', move);
-        view.contentDOM.removeEventListener('mouseleave', leave);
+  const field = StateField.define<{typing: boolean; tooltip: Tooltip | null}>(
+    {
+      create: () => ({typing: false, tooltip: null}),
+      update(value, tr) {
+        const typing = tr.docChanged || (value.typing && !tr.selection);
+        const selection = tr.state.selection.main;
+        if (typing || !selection.empty || tr.state.readOnly)
+          return {typing, tooltip: null};
+        const line = tr.state.doc.lineAt(selection.head);
+        const marks = tr.state.field(lineMarksField);
+        let marked = false;
+        for (const set of [marks.decorations, marks.focused])
+          set.between(line.from, line.from, () => {
+            marked = true;
+          });
+        if (!marked) return {typing, tooltip: null};
+        if (
+          value.tooltip?.pos === line.to &&
+          tr.startState.field(lineMarksField) === marks
+        )
+          return {typing, tooltip: value.tooltip};
+        return {
+          typing,
+          tooltip: {
+            pos: line.to,
+            above: true,
+            strictSide: false,
+            create: create(line.number),
+          },
+        };
       },
-    };
-  });
-  return [field, tracker];
+      provide: field =>
+        showTooltip.compute([field], state => state.field(field).tooltip),
+    },
+  );
+  return field;
 }
 
 type GutterPreview = {from: number; to: number; kind: LineMark['kind'] | null};
@@ -401,8 +359,12 @@ const controlsTheme = EditorView.theme({
     background: 'none !important',
     boxShadow: 'none !important',
   },
+  // App chrome, so it keeps one contrast-safe palette across syntax themes.
   '.cm-tooltip.cm-lineMarkToolbar': {
     display: 'flex',
+    background: '#232326',
+    color: '#f4f4f5',
+    border: '1px solid #ffffff1f',
     flexWrap: 'wrap',
     maxWidth: 'calc(100vw - 16px)',
     gap: '2px',
@@ -429,6 +391,10 @@ const controlsTheme = EditorView.theme({
     whiteSpace: 'nowrap',
   },
   '.cm-lineMarkToolbar button:hover': {background: '#8883'},
+  '.cm-lineMarkToolbar button[aria-pressed="true"]': {
+    background: '#8884',
+    boxShadow: 'inset 0 -2px currentColor',
+  },
   '.cm-lineMarkToolbar button:focus-visible': {
     outline: '2px solid currentColor',
     outlineOffset: '-2px',
