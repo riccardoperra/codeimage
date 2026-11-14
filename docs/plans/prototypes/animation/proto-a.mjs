@@ -1,7 +1,7 @@
 import {createRequire} from 'node:module';
 import {readFile, writeFile} from 'node:fs/promises';
-const WT = '/Users/riccardoperra/WebstormProjects/codeimage/.claude/worktrees/code-animation-plan';
-const OUT = new URL('./', import.meta.url).pathname;
+const WT = process.env.CODEIMAGE_ROOT ?? new URL('../../../../', import.meta.url).pathname.replace(/\/$/, '');
+const OUT = (process.env.OUT_DIR ?? (await import('node:os')).tmpdir()) + '/';
 const require = createRequire(WT + '/packages/render/package.json');
 const {Renderer} = require('@takumi-rs/core');
 

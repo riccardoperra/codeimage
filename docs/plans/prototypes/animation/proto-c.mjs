@@ -1,7 +1,7 @@
 import {readFile, writeFile} from 'node:fs/promises';
-const WT = '/Users/riccardoperra/WebstormProjects/codeimage/.claude/worktrees/code-animation-plan';
+const WT = process.env.CODEIMAGE_ROOT ?? new URL('../../../../', import.meta.url).pathname.replace(/\/$/, '');
 const DEPS = new URL('../anim-deps/node_modules/', import.meta.url).pathname;
-const OUT = new URL('./', import.meta.url).pathname;
+const OUT = (process.env.OUT_DIR ?? (await import('node:os')).tmpdir()) + '/';
 const wasm = await import(DEPS + '@takumi-rs/wasm/dist/export.mjs');
 const {toKeyedTokens, syncTokenKeys} = await import(DEPS + '@shikijs/magic-move/dist/core.mjs');
 wasm.initSync({module: await readFile(DEPS + '@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm')});

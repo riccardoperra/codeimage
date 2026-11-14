@@ -402,7 +402,9 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 ## Appendix A. Prototype evidence
 
-The prototypes ran on 2026-11-14 on branch `plan/code-animation`, based on `9c7301f5`, with the machine at a load average between 3.5 and 4.6. They use Takumi 2.19.0 and `@shikijs/magic-move` 4.6.0. The scripts and frames are in `docs/plans/prototypes/animation/`. `proto-c.mjs` loads its packages from a scratch `anim-deps/node_modules` folder next to it. Run `npm install --prefix <folder>/anim-deps @takumi-rs/wasm@2.19.0 @shikijs/magic-move@4.6.0` first.
+The prototypes ran on 2026-11-14 on a checkout of the P4 stack at `9c7301f5`, with the machine at a load average between 3.5 and 4.6. They use Takumi 2.19.0 and `@shikijs/magic-move` 4.6.0. The scripts and frames are in `docs/plans/prototypes/animation/`.
+
+To run a script again, set `CODEIMAGE_ROOT` to a checkout that has `packages/render` with its dependencies installed, which means P3 or later. Without it, a script uses the repository that holds it. Set `OUT_DIR` to choose where the output goes. The default is the system temporary folder. `proto-c.mjs` also loads packages from `docs/plans/prototypes/anim-deps/node_modules`. Run `npm install --prefix docs/plans/prototypes/anim-deps @takumi-rs/wasm@2.19.0 @shikijs/magic-move@4.6.0` first, and do not commit that folder.
 
 Takumi animates per-token keyframes. `proto-a.mjs` builds one scene with absolutely positioned token spans and one `@keyframes` rule per token. `frame-0.png` shows the first step, and `frame-14.png` shows tokens between their two places with removed tokens fading. `out-1x.webp` is the result.
 
