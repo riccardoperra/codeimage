@@ -4,9 +4,14 @@ import {join} from 'node:path';
 import {parseArgs} from 'node:util';
 import pixelmatch from 'pixelmatch';
 import {PNG} from 'pngjs';
-import type {SnapshotInput} from '../../packages/render/dist/index.mjs';
+import type {
+  AnimationInput,
+  SnapshotInput,
+} from '../../packages/render/dist/index.mjs';
 import {
+  animationFps,
   parseSnapshotDocument,
+  renderAnimation,
   renderSnapshot,
 } from '../../packages/render/dist/index.mjs';
 import {decodeAnimation} from './animation-frames';
@@ -17,8 +22,8 @@ const {values: args} = parseArgs({
     out: {type: 'string', default: '/tmp/codeimage-parity/animation'},
     case: {type: 'string', multiple: true},
     scale: {type: 'string', default: '2'},
-    // Also encodes each case with Takumi renderAnimation and checks the
-    // frames that animation-frames.ts decodes from it.
+    // Also writes each case as WebP, GIF and APNG with renderAnimation and
+    // checks the frames that animation-frames.ts decodes from them.
     encode: {type: 'boolean', default: false},
     // Moves a layer of the first transition frame, as code:2 or gutter:2,
     // to show that the layout check catches it.
@@ -61,16 +66,16 @@ interface Entry {
   ): {size: {width: number; height: number}; css: string} | undefined;
   renderAnimationScenes(
     document: Document,
-    settings: Settings,
+    // `fps` is the rate the file plays at, which GIF lowers.
+    settings: Omit<Settings, 'fps'> & {fps: number},
     measure: (html: string, css: string) => Promise<Measured>,
   ): Promise<Scenes>;
 }
-interface Settings {
-  steps: {editorId: string; holdMs: number}[];
-  transitionMs: number;
-  easing: 'smooth' | 'snappy' | 'linear';
-  fps: 24 | 30 | 50 | 60;
-}
+type Settings = NonNullable<AnimationInput['animation']>;
+
+// When an export at `fps` draws frame `index`, on the timeline of all scenes.
+const frameTimeMs = (index: number, fps: number) =>
+  Math.floor((index * 1000) / fps);
 
 async function main() {
   const entry = (await import(
@@ -116,7 +121,7 @@ async function main() {
     return appFonts.get(fontId)!;
   };
 
-  // Copied from packages/render/src/render.ts, which A2 extends to animations.
+  // Copied from packages/render/src/render.ts.
   const gradientCorner =
     /(linear-gradient\(\s*)to (left|right) (top|bottom)\b/g;
   const normalizeGradients = (css: string) =>
@@ -436,6 +441,10 @@ async function main() {
   // A hold sits on whole pixels, so its center may be 0.5 px off for an odd
   // margin and 0.25 px more for a width that was rounded to place it.
   const CENTER_TOLERANCE = 0.75;
+  // A window has a keyframe stop at every frame the export draws, so its
+  // center is on the line between its two ends there. Takumi truncates its
+  // left, top, width and height to 1/64 of a device pixel each.
+  const WINDOW_DRIFT_TOLERANCE = 3 / 64;
   // Takumi truncates lengths to 1/64 of a device pixel, so a window that
   // fills the padding may cross it by that much.
   const WINDOW_OUT_TOLERANCE = 1 / 64;
@@ -1075,26 +1084,33 @@ const label = 'a much longer label that pushes the code past the width of the ta
       };
     };
     // How far the center of the frame is from the center of the video, at
-    // eight times of the transition and its end. In a target frame, also
-    // where its window is.
+    // every frame the export draws of the transition, and at its end. In a
+    // target frame, also where its window is.
     let center = 0;
     const windows: Rect[] = [];
-    for (const scene of [early, late]) {
-      for (let step = 0; step <= 4; step++) {
-        const frame = await frameOf(
-          scene,
-          Math.round((step * scene.durationMs) / 4),
-        );
-        center = Math.max(
-          center,
-          Math.abs(frame.transform[4] + frame.width / 2 - animation.width / 2),
-          Math.abs(
-            frame.transform[5] + frame.height / 2 - animation.height / 2,
-          ),
-        );
-        const window = windowOf(frame);
-        if (window) windows.push(window);
-      }
+    const transition = {
+      startMs: fromHold.durationMs,
+      endMs: fromHold.durationMs + early.durationMs + late.durationMs,
+    };
+    const frameTimes: number[] = [];
+    for (let index = 0; ; index++) {
+      const timeMs = frameTimeMs(index, settings.fps);
+      if (timeMs >= transition.endMs) break;
+      if (timeMs >= transition.startMs) frameTimes.push(timeMs);
+    }
+    for (const timeMs of [...frameTimes, transition.endMs]) {
+      const sinceStart = timeMs - transition.startMs;
+      const frame =
+        sinceStart < early.durationMs
+          ? await frameOf(early, sinceStart)
+          : await frameOf(late, sinceStart - early.durationMs);
+      center = Math.max(
+        center,
+        Math.abs(frame.transform[4] + frame.width / 2 - animation.width / 2),
+        Math.abs(frame.transform[5] + frame.height / 2 - animation.height / 2),
+      );
+      const window = windowOf(frame);
+      if (window) windows.push(window);
     }
     // How far the window's center strays from the line between its two
     // ends, and how far the window reaches into the padding of its frame.
@@ -1215,66 +1231,83 @@ const label = 'a much longer label that pushes the code past the width of the ta
       PNG.sync.write(toStatic),
     );
     const encoded: Record<string, string> = {};
+    let encodedDiff = 0;
+    let ghosts = 0;
     if (args.encode) {
-      // Takumi samples frame k at k * 1000 / fps on the timeline of all
-      // scenes, and WebP and GIF merge repeated frames into longer ones.
-      // Each decoded frame is rendered directly at its start and compared.
-      const sceneAt = (ms: number) => {
-        let start = 0;
-        for (const scene of animation.scenes) {
-          if (ms < start + scene.durationMs) return {scene, timeMs: ms - start};
-          start += scene.durationMs;
-        }
-        const last = animation.scenes.at(-1)!;
-        return {scene: last, timeMs: last.durationMs};
-      };
+      // WebP merges repeated frames into longer ones. Every decoded frame is
+      // compared with a direct render of the time the export drew it at.
       for (const format of ['webp', 'gif', 'apng'] as const) {
-        const fps = format === 'gif' ? 50 : settings.fps;
+        const fps = animationFps(format, settings.fps);
         const file = join(out, `${name}.${format}`);
         await writeFile(
           file,
-          await renderer.renderAnimation({
-            scenes: animation.scenes.map(({html, durationMs}) => ({
-              node: normalizeStyleAttributes(html),
-              durationMs,
-            })),
-            width: animation.width * scale,
-            height: animation.height * scale,
-            css: pageCss(animation.css),
-            fontFamilies,
-            fps,
-            format,
-            devicePixelRatio: scale,
-          }),
+          await renderAnimation({...input, format, animation: settings}),
         );
+        // The stops of a rescaling window follow the frame rate.
+        const played =
+          fps === settings.fps
+            ? animation
+            : await entry.renderAnimationScenes(
+                document,
+                {...settings, fps},
+                measureAt(scale),
+              );
+        const sceneAt = (ms: number) => {
+          let start = 0;
+          for (const scene of played.scenes) {
+            if (ms < start + scene.durationMs)
+              return {scene, timeMs: ms - start};
+            start += scene.durationMs;
+          }
+          const last = played.scenes.at(-1)!;
+          return {scene: last, timeMs: last.durationMs};
+        };
+        const reference = async (scene: {html: string}, timeMs: number) =>
+          decode(
+            await renderer.render(normalizeStyleAttributes(scene.html), {
+              width: played.width * scale,
+              height: played.height * scale,
+              css: pageCss(played.css),
+              fontFamilies,
+              format: 'png',
+              devicePixelRatio: scale,
+              timeMs,
+            }),
+          );
         const decoded = await decodeAnimation(file);
         let worst = 0;
-        for (const index of [
-          0,
-          Math.floor(decoded.frames.length / 2),
-          decoded.frames.length - 1,
-        ]) {
-          const sample = Math.round(
-            (decoded.frames[index].startMs * fps) / 1000,
-          );
-          const {scene, timeMs} = sceneAt(Math.round((sample * 1000) / fps));
-          worst = Math.max(
-            worst,
-            await diffPercent(
-              decoded.frames[index].png,
-              await frameAt(scene, timeMs),
-            ),
-          );
+        // A GIF pixel is clear or opaque. A ghost is a pixel the frame shows
+        // where the render is clear, left behind by a frame before it. A hole
+        // is the reverse: Takumi's quantizer gives some opaque colors the
+        // palette entry that it also marks transparent.
+        let [ghost, holes] = [0, 0];
+        for (const {png, startMs} of decoded.frames) {
+          const index = Math.round((startMs * fps) / 1000);
+          const {scene, timeMs} = sceneAt(frameTimeMs(index, fps));
+          const direct = await reference(scene, timeMs);
+          worst = Math.max(worst, await diffPercent(png, direct));
+          if (format !== 'gif') continue;
+          for (let alpha = 3; alpha < png.data.length; alpha += 4) {
+            const [shown, drawn] = [png.data[alpha], direct.data[alpha]];
+            if (shown && !drawn) ghost++;
+            if (!shown && drawn) holes++;
+          }
         }
-        encoded[format] = `${decoded.frames.length}f ${worst.toFixed(3)}`;
+        encoded[format] =
+          `${decoded.frames.length}f ${worst.toFixed(3)}${format === 'gif' ? ` ${ghost} ghost ${holes} hole px` : ''}`;
+        // A GIF frame has its own 256 colors, so its colors are not compared.
+        if (format === 'gif') ghosts = ghost;
+        else encodedDiff = Math.max(encodedDiff, worst);
       }
     }
     const pass =
       layout === null &&
       paint === null &&
       center <= CENTER_TOLERANCE &&
-      windowDrift <= CENTER_TOLERANCE &&
+      windowDrift <= WINDOW_DRIFT_TOLERANCE / scale &&
       windowOut <= WINDOW_OUT_TOLERANCE / scale &&
+      encodedDiff <= MAX_DIFF_PERCENT &&
+      ghosts === 0 &&
       reference === 0 &&
       startDiff <= MAX_DIFF_PERCENT &&
       endDiff <= MAX_DIFF_PERCENT &&
