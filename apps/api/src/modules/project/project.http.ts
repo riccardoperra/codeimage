@@ -9,6 +9,9 @@ export function toProjectResponse(view: ProjectView): ProjectGetByIdResponse {
     createdAt: view.createdAt.toISOString(),
     updatedAt: view.updatedAt.toISOString(),
     frame: {
+      exportTarget: view.frame.exportTarget,
+      aspectRatio: view.frame.aspectRatio,
+      signature: view.frame.signature,
       id: view.frame.id,
       padding: view.frame.padding,
       visible: view.frame.visible,
