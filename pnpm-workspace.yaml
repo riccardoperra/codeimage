@@ -4,6 +4,25 @@ packages:
   - 'tools/**'
   - '!**/test/**'
 
+saveExact: true
+shellEmulator: true
+
+allowBuilds:
+  '@parcel/watcher': false
+  '@prisma/engines': false
+  browser-tabs-lock: false
+  esbuild: true
+  lightningcss: true
+  msw: false
+  prisma: false
+  workerd: false
+
+patchedDependencies:
+  '@codeui/kit': patches/@codeui__kit.patch
+  '@motionone/solid': patches/@motionone__solid.patch
+  solid-headless: patches/solid-headless.patch
+  tinykeys: patches/tinykeys.patch
+
 catalogs:
   next:
     '@codemirror/autocomplete': '^6.20.1'
@@ -48,6 +67,10 @@ catalogs:
     vitest: ^4.1.12
 
 overrides:
-  '@codemirror/state': 'catalog:next'
-  '@codemirror/view': 'catalog:next'
-  'typescript': 'catalog:next'
+  typescript: 'catalog:next'
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - '@fastify/swagger-ui@6.1.4'
+  - fast-json-stringify@7.3.6
+  - postcss@8.5.33
+  - sql-escaper@1.6.0

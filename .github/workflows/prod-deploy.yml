@@ -13,27 +13,16 @@ on:
         description: Deploy website
 
 concurrency:
-  group: deploy-${{ github.head_ref }}
-  cancel-in-progress: true
+  group: deploy-production
+  cancel-in-progress: false
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout PR
-        uses: actions/checkout@v6
-      - name: 📥 Setup
-        uses: ./.github/actions/setup-job
-      - name: 📥 Monorepo install
-        uses: ./.github/actions/pnpm-install
-
   lint:
     name: Lint
-    needs: ['install']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -47,11 +36,10 @@ jobs:
 
   build-packages:
     name: Build packages/**
-    needs: ['install']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -74,31 +62,27 @@ jobs:
 
   build-api:
     name: 'Build @codeimage/api'
-    needs: ['install', 'build-packages']
+    needs: ['build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: '[API] Generate Prisma Migration'
-        run: |
-          pnpm --filter=@codeimage/api exec prisma generate
-          pnpm --filter=@codeimage/prisma-models build
+      - name: Restore packages
+        uses: actions/cache/restore@v5
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+          fail-on-cache-miss: true
 
       - name: Build
         run: |
           pnpm --filter=@codeimage/api build:ts
           pnpm prepare:api:deploy
-
-      - name: Cache api dist
-        uses: actions/cache/save@v5
-        with:
-          path: apps/api/dist
-          key: rest-api-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Cache api bundle
         uses: actions/cache/save@v5
@@ -109,12 +93,11 @@ jobs:
 
   test-api:
     name: Api test
-    needs: [install]
     runs-on: ubuntu-latest
 
     services:
       postgres:
-        image: postgres:13-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -141,7 +124,7 @@ jobs:
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -162,11 +145,11 @@ jobs:
 
   typecheck-packages:
     name: Type-checking packages/**
-    needs: ['install', 'build-packages', 'build-api']
+    needs: ['build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -177,12 +160,6 @@ jobs:
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Restore api dist
-        uses: actions/cache/restore@v5
-        with:
-          path: apps/api/dist
-          key: rest-api-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Typecheck packages
         run: |
@@ -196,11 +173,11 @@ jobs:
   deploy-highlight-package:
     name: Deploy @codeimage/highlight app
     environment: Production
-    needs: ['install', 'lint', 'build-packages']
+    needs: ['lint', 'build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -227,11 +204,11 @@ jobs:
   deploy-api:
     name: Build and Deploy Api
     environment: Production
-    needs: [install, lint, typecheck-packages, test-api, build-api]
+    needs: [lint, typecheck-packages, test-api, build-api]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -268,11 +245,11 @@ jobs:
   deploy-app:
     name: Deploy @codeimage/app
     environment: Production
-    needs: [install, lint, typecheck-packages, build-packages, deploy-api]
+    needs: [lint, typecheck-packages, build-packages, deploy-api]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -290,7 +267,7 @@ jobs:
           VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
           VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
+          VITE_ENABLE_MSW: false
           VITE_PRESET_LIMIT: 10
           VITE_PRESET_LIMIT_GUEST: 5
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
@@ -316,11 +293,11 @@ jobs:
     if: ${{ github.event.inputs.deploy-website == 'true' }}
     name: Deploy @codeimage/website
     environment: Production
-    needs: [install, lint, typecheck-packages, build-packages]
+    needs: [lint, typecheck-packages, build-packages]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install

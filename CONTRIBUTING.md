@@ -29,7 +29,7 @@ git clone https://github.com/YOUR_USERNAME/codeimage.git
 
 ### Installing Node.js and pnpm
 
-This repository uses [pnpm](https://pnpm.io/it/) to manage multiple projects. You need to install **pnpm 10 or higher**
+This repository uses [pnpm](https://pnpm.io/it/) to manage multiple projects. You need to install **pnpm 12 or higher**
 and **Node.js v24 or higher**.
 
 You can run the following commands in your terminal to check your local Node.js and npm versions:
