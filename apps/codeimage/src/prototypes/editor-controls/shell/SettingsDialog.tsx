@@ -3,7 +3,14 @@ import {getWhatsNew} from '../../../state/whats-new';
 import {Dialog, IconButton, TextField} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Dialog as KDialog} from '@kobalte/core/dialog';
-import {createMemo, createSignal, For, onCleanup, Show} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+  Show,
+} from 'solid-js';
 import type {EditorControlsModel} from '../model';
 import {CloseIcon, SearchIcon} from './icons';
 import type {SettingGroup, SettingRow, SettingSection} from './sections';
@@ -12,6 +19,10 @@ import {settings} from './settings-state';
 import * as styles from './settings.css';
 
 function Row(props: {row: SettingRow}) {
+  createEffect(() => {
+    const id = props.row.fresh;
+    if (id) getWhatsNew().opened(id, 'library');
+  });
   const titleId = () => `setting-${props.row.id}-title`;
   const descriptionId = () => `setting-${props.row.id}-description`;
   return (
@@ -27,6 +38,9 @@ function Row(props: {row: SettingRow}) {
       <div class={styles.rowText}>
         <span id={titleId()} class={styles.rowTitle}>
           {props.row.title}
+          <Show when={props.row.experimental}>
+            <span class={styles.tag}>Experiment</span>
+          </Show>
           <Show when={props.row.highlight}>
             {id => <NewDot highlight={id()} />}
           </Show>

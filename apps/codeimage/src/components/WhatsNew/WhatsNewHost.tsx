@@ -22,7 +22,8 @@ export function WhatsNewHost(props: {
   // announce subscribes to the accessor for the lifetime of this host.
   // oxlint-disable-next-line solid/reactivity
   const announcement = news.announce(canAnnounce);
-  const current = () => review() ?? announcement();
+  const current = () =>
+    forced === 'nudge' || forced === 'showcase' ? review() : announcement();
   const dismiss = () => {
     setReview(null);
     news.dismiss();
@@ -35,7 +36,7 @@ export function WhatsNewHost(props: {
         ready &&
           ![
             ...document.querySelectorAll<HTMLElement>(
-              '[role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [aria-haspopup]:not([aria-haspopup="false"])[aria-expanded="true"]',
+              '[role="dialog"], [role="alertdialog"], [role="menu"], [aria-haspopup]:not([aria-haspopup="false"])[aria-expanded="true"]',
             ),
           ].some(element => element.getClientRects().length > 0),
       );

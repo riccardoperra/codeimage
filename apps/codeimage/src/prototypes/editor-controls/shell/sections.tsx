@@ -20,6 +20,7 @@ import {
   ExperimentsIcon,
   ExternalIcon,
   GeneralIcon,
+  NewsIcon,
   RestoreIcon,
 } from './icons';
 import type {ThemeCardsId} from './preferences';
@@ -41,6 +42,7 @@ export interface SettingRow {
   readonly title: string;
   readonly highlight?: LocatedHighlightId;
   readonly fresh?: HighlightId;
+  readonly experimental?: boolean;
   readonly description: () => string;
   /** Beside the text, or under it for a `wide` row. */
   readonly control: () => JSX.Element;
@@ -363,7 +365,7 @@ export function createSettingSections(
   const library: SettingSection = {
     id: 'whats-new',
     name: nameOf('whats-new'),
-    icon: ExperimentsIcon,
+    icon: NewsIcon,
     intro: 'Features added to CodeImage, newest first.',
     action: () => (
       <a
@@ -383,6 +385,7 @@ export function createSettingSections(
           title: highlight.title,
           description: () => highlight.body,
           fresh: highlight.id,
+          experimental: 'experimental' in highlight,
           small: true,
           control: () => (
             <Button

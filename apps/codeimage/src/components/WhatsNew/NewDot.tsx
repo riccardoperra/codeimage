@@ -9,6 +9,7 @@ import * as styles from './whats-new.css';
 
 export function NewDot(props: {highlight: LocatedHighlightId}) {
   const news = getWhatsNew();
+  let anchor: HTMLSpanElement | undefined;
   const [open, setOpen] = createSignal(false);
   const highlight = () =>
     RELEASES.flatMap(release => release.highlights).find(
@@ -18,7 +19,13 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
     <Show when={highlight()}>
       {item => (
         <Show when={news.hasDot(props.highlight) || open()}>
-          <span class={styles.dotAnchor} data-news-dot={props.highlight}>
+          <span
+            ref={element => {
+              anchor = element;
+            }}
+            class={styles.dotAnchor}
+            data-news-dot={props.highlight}
+          >
             <Popover
               open={open()}
               onOpenChange={value => {
@@ -36,7 +43,13 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
                 aria-label={`New: ${item().title}`}
                 data-seen={!news.hasDot(props.highlight) ? '' : undefined}
               />
-              <Popover.Portal>
+              <Popover.Portal
+                mount={
+                  anchor?.closest<HTMLElement>(
+                    '[role="dialog"], [role="alertdialog"]',
+                  ) ?? document.body
+                }
+              >
                 <Popover.Content class={styles.coachmark}>
                   <Dynamic component={illustrations[item().id]} />
                   <div class={styles.copy}>

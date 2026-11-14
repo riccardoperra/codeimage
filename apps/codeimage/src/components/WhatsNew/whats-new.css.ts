@@ -107,7 +107,9 @@ export const illustration = style({
   overflow: 'hidden',
 });
 export const miniWindow = style({
-  width: '116px',
+  width: '180px',
+  color: c.baseText,
+  lineHeight: 1.8,
   padding: '12px',
   borderRadius: '10px',
   background: c.background,
@@ -139,7 +141,15 @@ export const dot = style({
   background: 'transparent',
   color: c.primary,
   cursor: 'pointer',
+  transition: `transform 120ms ${ease}`,
+  '@media': {
+    [reduce]: {
+      transitionProperty: 'opacity',
+      selectors: {'&:active': {transform: 'none'}},
+    },
+  },
   selectors: {
+    '&:active': {transform: 'scale(.97)'},
     '&::after': {
       content: '""',
       width: '7px',

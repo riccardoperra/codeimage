@@ -64,7 +64,9 @@ export function Showcase(props: {
           </For>
         </div>
         <footer class={styles.sheetFooter}>
-          <Button onClick={props.dismiss}>Start creating</Button>
+          <Button theme="primary" onClick={props.dismiss}>
+            Start creating
+          </Button>
           <a
             class={styles.link}
             href="https://github.com/riccardoperra/codeimage/releases"

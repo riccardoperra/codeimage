@@ -28,7 +28,7 @@ export function Nudge(props: {
               <strong>{props.release.highlights.length} new things</strong>
               <span class={styles.muted}>{props.release.title}</span>
             </div>
-            <Button size="sm" onClick={() => setExpanded(true)}>
+            <Button size="sm" theme="primary" onClick={() => setExpanded(true)}>
               See
             </Button>
             <IconButton
@@ -77,6 +77,7 @@ export function Nudge(props: {
             </Show>
             <Button
               size="sm"
+              theme="primary"
               onClick={() =>
                 step() === props.release.highlights.length - 1
                   ? props.dismiss()

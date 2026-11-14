@@ -60,7 +60,6 @@ export const Footer = () => {
             target="_blank"
             rel="noreferrer"
           >
-            🎉
             <Box as={'span'} marginLeft={1}>
               What's new
             </Box>
