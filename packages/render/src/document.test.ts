@@ -42,6 +42,53 @@ describe('parseSnapshotDocument', () => {
     };
     expect(parseSnapshotDocument(document)).toEqual(document);
   });
+  it.each([
+    {
+      marks: {lines: [{line: 2, kind: 'highlight'}], focus: true},
+      focusedLines: [2],
+    },
+    {
+      marks: {lines: [{line: 2, kind: 'highlight'}], focus: false},
+      focusedLines: [],
+    },
+    {marks: {lines: [{line: 2, kind: 'added'}], focus: true}, focusedLines: []},
+    {
+      marks: {
+        lines: [{line: 2, kind: 'highlight'}],
+        focusedLines: [1, 3],
+        focus: true,
+      },
+      focusedLines: [1, 3],
+    },
+  ])('normalizes persisted marks $marks', ({marks, focusedLines}) => {
+    const document = parseSnapshotDocument({
+      ...sampleDocument,
+      editor: {
+        ...sampleDocument.editor,
+        editors: [{...sampleDocument.editor.editors[0], marks}],
+      },
+    });
+    expect(document.editor.editors[0].marks).toMatchObject({
+      lines: marks.lines,
+      focusedLines,
+    });
+  });
+  it('rejects malformed focused line numbers', () => {
+    expect(() =>
+      parseSnapshotDocument({
+        ...sampleDocument,
+        editor: {
+          ...sampleDocument.editor,
+          editors: [
+            {
+              ...sampleDocument.editor.editors[0],
+              marks: {lines: [], focusedLines: [0]},
+            },
+          ],
+        },
+      }),
+    ).toThrow('marks.focusedLines');
+  });
   it('requires an editor', () => {
     const {editor, ...project} = sampleDocument;
     expect(() => parseSnapshotDocument(project)).toThrow();

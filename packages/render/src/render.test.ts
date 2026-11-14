@@ -52,6 +52,62 @@ async function textRuns(markup: SnapshotMarkup) {
 }
 
 describe('renderSnapshot', {timeout: 30_000}, () => {
+  it('keeps two focused ranges sharp and dims all other code lines', async () => {
+    const base = plainDocument(
+      Array.from({length: 6}, () => 'focusprobe').join('\n'),
+      {showLineNumbers: false},
+    );
+    base.frame.radius = 0;
+    const focused = {
+      ...base,
+      editor: {
+        ...base.editor,
+        editors: base.editor.editors.map(tab => ({
+          ...tab,
+          marks: {lines: [], focusedLines: [2, 3, 5]},
+        })),
+      },
+    };
+    const [plain, marked] = await Promise.all([png(base), png(focused)]);
+    expect([marked.width, marked.height]).toEqual([plain.width, plain.height]);
+    const bands: {start: number; end: number}[] = [];
+    for (let y = 0; y < plain.height; y++) {
+      const row = plain.data.subarray(
+        y * plain.width * 4,
+        (y + 1) * plain.width * 4,
+      );
+      const hasInk = row.some(
+        (value, index) => index % 4 !== 3 && value !== 128,
+      );
+      if (!hasInk) continue;
+      const last = bands.at(-1);
+      if (last && last.end === y) last.end++;
+      else bands.push({start: y, end: y + 1});
+    }
+    expect(bands).toHaveLength(6);
+    for (const [index, {start, end}] of bands.entries()) {
+      const before = plain.data.subarray(
+        start * plain.width * 4,
+        end * plain.width * 4,
+      );
+      const after = marked.data.subarray(
+        start * plain.width * 4,
+        end * plain.width * 4,
+      );
+      if ([2, 3, 5].includes(index + 1)) expect(after).toEqual(before);
+      else {
+        const contrast = (data: Uint8Array) =>
+          data.reduce(
+            (sum, value, offset) =>
+              sum + (offset % 4 === 3 ? 0 : Math.abs(value - 128)),
+            0,
+          );
+        expect(contrast(after)).toBeGreaterThan(0);
+        expect(contrast(after)).toBeLessThan(contrast(before) * 0.5);
+      }
+    }
+  });
+
   it('scales the frame by whole multiples', async () => {
     const [one, two, three] = await Promise.all(
       [1, 2, 3].map(scale => png({...sampleDocument, scale})),

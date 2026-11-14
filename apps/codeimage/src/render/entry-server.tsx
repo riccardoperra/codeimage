@@ -220,7 +220,7 @@ async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
             >
               <StaticCodeView
                 code={activeEditor.code}
-                marks={activeEditor.marks ?? {lines: [], focus: false}}
+                marks={activeEditor.marks ?? {lines: [], focusedLines: []}}
                 languageId={activeEditor.languageId}
                 language={language}
                 theme={theme}

@@ -11,7 +11,7 @@ import {parseSnapshotDocument} from './document';
 
 export interface AnnotatedCode {
   code: string;
-  marks: NonNullable<SnapshotInput['editor']['editors'][number]['marks']>;
+  marks: NonNullable<ProjectSnapshot['editor']['editors'][number]['marks']>;
   count: number;
   sourceLines: number[];
 }

@@ -163,6 +163,7 @@ await tsdown({
   entry: ['src/index.ts'],
   format: 'esm',
   dts: true,
+  deps: {alwaysBundle: [/@sinclair\/typebox/]},
   clean: false,
   tsconfig: 'tsconfig.json',
 });
