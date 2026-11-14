@@ -33,8 +33,8 @@ export const lineMarksLocale = {
     lineMarks: {
       toolbar: 'Marcature delle righe',
       highlight: 'Evidenzia',
-      added: 'Aggiunte',
-      removed: 'Rimosse',
+      added: 'Aggiunta',
+      removed: 'Rimossa',
       clear: 'Cancella',
       focus: 'Focus',
       focusHint: 'Mantieni nitide le righe selezionate e attenua le altre',
@@ -94,8 +94,8 @@ export const lineMarksLocale = {
     lineMarks: {
       toolbar: 'Marcas de línea',
       highlight: 'Resaltar',
-      added: 'Añadidas',
-      removed: 'Eliminadas',
+      added: 'Añadida',
+      removed: 'Eliminada',
       clear: 'Borrar',
       focus: 'Enfoque',
       focusHint:

@@ -1,4 +1,13 @@
-/* The band covers the whole row: line number and code share one background. */
+:where([data-line-marks]) {
+  --codeimage-line-accent: rgba(64, 128, 224, 0.8);
+}
+
+[data-line-marks] .cm-scroller,
+[data-line-marks] .cm-gutters,
+[data-line-marks] .cm-gutter {
+  overflow: visible;
+}
+
 [data-line-marks] [data-mark='added'],
 [data-line-marks] .cm-lineNumbers .cm-lineMark-added {
   background-color: var(--codeimage-line-added, rgba(46, 160, 67, 0.18));
@@ -12,12 +21,47 @@
 [data-line-marks] [data-mark='highlight'],
 [data-line-marks] .cm-lineNumbers .cm-lineMark-highlight {
   background-color: var(--codeimage-line-highlight, rgba(128, 128, 128, 0.16));
-  box-shadow: inset 2px 0 var(--codeimage-line-accent, currentColor);
 }
 
-/* With line numbers the accent bar moves to the left edge of the row. */
-[data-line-marks][data-line-numbers='true'] [data-mark='highlight'] {
-  box-shadow: none;
+[data-line-marks] [data-mark],
+[data-line-marks] .cm-lineNumbers .cm-gutterElement {
+  position: relative;
+}
+
+/* Extend into the existing window inset without changing code or gutter widths. */
+[data-line-marks] [data-mark]::after,
+[data-line-marks]:not([data-line-numbers='true']) [data-mark]::before,
+[data-line-marks]
+  .cm-lineNumbers
+  :is(
+    .cm-lineMark-added,
+    .cm-lineMark-removed,
+    .cm-lineMark-highlight
+  )::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(
+    var(--codeimage-content-inset, 16px) - var(--codeimage-line-border, 0px)
+  );
+  background-color: inherit;
+  pointer-events: none;
+}
+
+[data-line-marks] [data-mark]::after {
+  left: 100%;
+}
+
+[data-line-marks]:not([data-line-numbers='true']) [data-mark]::before,
+[data-line-marks] .cm-lineNumbers .cm-gutterElement::before {
+  right: 100%;
+}
+
+[data-line-marks]:not([data-line-numbers='true'])
+  [data-mark='highlight']::before,
+[data-line-marks] .cm-lineNumbers .cm-lineMark-highlight::before {
+  box-shadow: inset 2px 0 var(--codeimage-line-accent);
 }
 
 [data-line-marks][data-line-focus='true']
@@ -26,11 +70,8 @@
   opacity: 0.35;
 }
 
-[data-line-marks][data-line-diff='true'] :is(.cm-line, [data-line]) {
-  padding-left: calc(8px + 2ch);
-}
-
-[data-line-marks][data-line-diff='true'] [data-mark='added'] {
+[data-line-marks]:not([data-line-numbers='true']) [data-mark='added']::before,
+[data-line-marks] .cm-lineNumbers .cm-lineMark-added::before {
   background-image:
     linear-gradient(
       var(--codeimage-line-added-sign, #2ea043),
@@ -44,17 +85,18 @@
     0.75ch 1px,
     1px 0.75ch;
   background-position:
-    0.5ch 0.7em,
-    calc(0.875ch - 0.5px) calc(0.7em - 0.375ch + 0.5px);
+    center 0.7em,
+    center calc(0.7em - 0.375ch + 0.5px);
   background-repeat: no-repeat;
 }
 
-[data-line-marks][data-line-diff='true'] [data-mark='removed'] {
+[data-line-marks]:not([data-line-numbers='true']) [data-mark='removed']::before,
+[data-line-marks] .cm-lineNumbers .cm-lineMark-removed::before {
   background-image: linear-gradient(
     var(--codeimage-line-removed-sign, #f85149),
     var(--codeimage-line-removed-sign, #f85149)
   );
   background-size: 0.75ch 1px;
-  background-position: 0.5ch 0.7em;
+  background-position: center 0.7em;
   background-repeat: no-repeat;
 }

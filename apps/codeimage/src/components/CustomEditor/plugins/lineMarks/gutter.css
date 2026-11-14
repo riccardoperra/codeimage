@@ -1,17 +1,13 @@
-.cm-editor:has(.cm-lineMarkGutter) .cm-scroller {
-  overflow: visible;
-}
-
 .cm-lineMarkGutter {
   position: absolute;
-  inset-inline-start: -12px;
+  inset-inline-start: calc(-1 * var(--codeimage-content-inset, 16px));
   overflow: visible !important;
 }
 
 .cm-lineMarkGutter .cm-gutterElement {
   display: flex;
   justify-content: center;
-  width: 20px;
+  width: var(--codeimage-content-inset, 16px);
   padding: 0;
 }
 
@@ -52,6 +48,11 @@
 }
 .cm-lineMarkGlyph-removed {
   color: var(--codeimage-line-removed-sign, #f85149);
+}
+
+/* The control targets the sign already painted in the window inset. */
+.cm-lineMarkMarker :is(.cm-lineMarkGlyph-added, .cm-lineMarkGlyph-removed) {
+  visibility: hidden;
 }
 .cm-lineMarkGlyph-highlight::before {
   content: '';

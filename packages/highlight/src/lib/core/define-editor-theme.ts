@@ -26,6 +26,7 @@ export const defineEditorTheme = (theme: ThemeOptions) => {
   const base = EditorView.theme({
     '&': {
       color: highlight.base,
+      '--codeimage-line-accent': highlight.keywords,
     },
   });
 

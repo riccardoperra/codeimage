@@ -387,13 +387,16 @@ async function main() {
       Buffer.from(png, 'base64'),
     );
     if (process.env.P5_BASELINE) {
-      console.log('Saved original P5 baseline');
+      console.log('Saved PNG reference');
       return;
     }
     const before = PNG.sync.read(
       fs.readFileSync(
         process.env.P5_BASELINE_PATH ??
-          path.join(__dirname, '../docs/plans/media/p5-gutter/before.png'),
+          path.join(
+            __dirname,
+            '../docs/plans/media/p5-gutter/final/export-reference.png',
+          ),
       ),
     );
     const after = PNG.sync.read(Buffer.from(png, 'base64'));
@@ -401,9 +404,9 @@ async function main() {
     assert.equal(after.height, before.height);
     assert(
       after.data.equals(before.data),
-      'PNG pixels differ from original P5',
+      'PNG pixels differ from the reviewed reference',
     );
-    console.log('PASS PNG export pixel-identical to the pre-change export');
+    console.log('PASS PNG export matches the reviewed reference');
     if (!process.env.P5_EXPORT_ONLY) {
       await page.evaluate(async () => {
         const {getRootEditorStore} = await import('/src/state/editor/index.ts');
