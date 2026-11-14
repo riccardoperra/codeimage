@@ -5,10 +5,8 @@ import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {
   For,
   Show,
-  createEffect,
   createMemo,
   createSignal,
-  on,
   onCleanup,
   onMount,
 } from 'solid-js';
@@ -326,22 +324,8 @@ export default function Inspector(props: VariantProps) {
       return next;
     });
   const selectedTheme = () =>
-    props.model.themes().find(theme => theme.active());
-  createEffect(() => {
-    const themes = props.model.themes();
-    if (themes.length && !themes.some(theme => theme.active()))
-      (themes.find(theme => theme.id === 'fleetDark') ?? themes[0])?.apply();
-  });
-  // Saved theme ids can hydrate with stale window colors. Reapply through the model without replacing the frame fill.
-  createEffect(
-    on(
-      () => selectedTheme()?.id,
-      id => {
-        const control = props.model.control('editor.theme');
-        if (id && control?.kind === 'select') control.set(id);
-      },
-    ),
-  );
+    props.model.themes().find(theme => theme.active()) ??
+    props.model.themes()[0];
   const openQuickControl = (id: PanelId, controlId?: ControlId) => {
     setSheet('tall');
     toggleSection(id, true);
