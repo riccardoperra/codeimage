@@ -6,6 +6,8 @@ const easeOut = 'cubic-bezier(0.23, 1, 0.32, 1)';
 /** Same breakpoint as the app's `useModality`. */
 const phone = 'screen and (max-width: 768px)';
 const desktop = 'screen and (min-width: 769px)';
+/** Under this the right pane is too narrow for a text and a wide control side by side. */
+const narrow = 'screen and (max-width: 900px)';
 const finePointer = '(hover: hover) and (pointer: fine)';
 const reducedMotion = '(prefers-reduced-motion: reduce)';
 const focusRing = {
@@ -313,10 +315,10 @@ export const row = style({
     },
   },
   '@media': {
-    [phone]: {
+    [narrow]: {
       gap: themeVars.spacing['3'],
       selectors: {
-        // A segmented control or a select goes under its text, at full width.
+        // A segmented control goes under its text, at full width.
         '&:not([data-small])': {
           flexDirection: 'column',
           alignItems: 'stretch',
@@ -371,14 +373,14 @@ export const segmented = style({
     '&[data-count="4"]': {width: '336px'},
   },
   '@media': {
-    [phone]: {
+    [narrow]: {
       width: '100%',
-      height: '44px',
       selectors: {
         '&[data-count="2"]': {width: '100%'},
         '&[data-count="4"]': {width: '100%'},
       },
     },
+    [phone]: {height: '44px'},
   },
 });
 
