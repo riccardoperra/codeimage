@@ -5,10 +5,18 @@ packages:
   - '!**/test/**'
 
 saveExact: true
-savePrefix: ''
-strictPeerDependencies: false
 shellEmulator: true
-enablePrePostScripts: false
+
+allowBuilds:
+  esbuild: true
+  lightningcss: true
+
+patchedDependencies:
+  '@codeui/kit': patches/@codeui__kit.patch
+  '@motionone/solid': patches/@motionone__solid.patch
+  '@thisbeyond/solid-dnd': patches/@thisbeyond__solid-dnd.patch
+  solid-headless: patches/solid-headless.patch
+  tinykeys: patches/tinykeys.patch
 
 catalogs:
   next:
@@ -54,6 +62,4 @@ catalogs:
     vitest: ^4.1.12
 
 overrides:
-  '@codemirror/state': 'catalog:next'
-  '@codemirror/view': 'catalog:next'
-  'typescript': 'catalog:next'
+  typescript: 'catalog:next'
