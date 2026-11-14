@@ -46,6 +46,7 @@ Each variant is a folder, `variants/<slug>/index.tsx`, that exports two things:
 - `ExportButton` and `CopyToClipboardButton` are the production buttons, bound to the canvas.
 - `randomize()`, `format()`, and `canFormat()` are the frame toolbar actions.
 - `ThemePreview` draws the mini editor of today's theme cards for one entry of `model.themes()`.
+- `ThemeSwatch`, from `ThemeSwatch.tsx`, draws a colour orb for one entry of `model.themes()`. Use it for theme cards. A code thumbnail at card size does not say which theme it is, and the live canvas is the preview.
 - `exportRef()` is the element that export captures. Pass it to any other production component that takes a `canvasRef` or a `frameRef`, such as `Toolbar` or `FrameToolbar`.
 
 The harness creates a new stage for each mount, and keeps one model for the whole session. `registry.ts` lists the variants in picker order: Current, Inspector, Dock, Studio. You do not edit it. It reads `meta` from your folder.

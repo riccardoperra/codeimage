@@ -40,17 +40,24 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
       props.onScaleChange(rounded);
     };
 
+    // Changing the zoom resizes the observed content. Applying it in the next
+    // frame keeps the observer from reporting a resize loop.
+    let frame = 0;
     const observer = new ResizeObserver(entries => {
       for (const entry of entries) {
         const target = entry.target === wrapper ? available : natural;
         target.width = entry.contentRect.width;
         target.height = entry.contentRect.height;
       }
-      fit();
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(fit);
     });
     observer.observe(wrapper);
     observer.observe(content);
-    onCleanup(() => observer.disconnect());
+    onCleanup(() => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    });
   });
 
   return (
