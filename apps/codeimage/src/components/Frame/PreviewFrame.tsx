@@ -98,12 +98,14 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
           style={assignInlineVars({
             overflow: 'hidden',
             [styles.frameVars.radius]: `${frame.radius}px`,
-            [styles.frameVars.width]: target()
-              ? `${target()!.resolution[0]}px`
-              : props.tab ? 'auto' : `${frame.width}px`,
-            [styles.frameVars.height]: target()
-              ? `${target()!.resolution[1]}px`
-              : props.tab ? 'auto' : `${frame.height}px`,
+            [styles.frameVars.width]:
+              props.tab && !target()
+                ? 'auto'
+                : `${target()?.resolution[0] ?? frame.width}px`,
+            [styles.frameVars.height]:
+              props.tab && !target()
+                ? 'auto'
+                : `${target()?.resolution[1] ?? frame.height}px`,
             [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
             [styles.frameVars.minHeight]: target() ? '0' : '100%',
             [styles.frameVars.padding]: framePadding(
