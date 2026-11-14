@@ -133,82 +133,10 @@
 .inspector-root .inspector-section-content {
   padding: 6px 0 8px;
 }
-.inspector-root .inspector-theme-tools {
-  display: grid;
-  gap: 8px;
-  padding: 0 4px 12px;
-}
-.inspector-root .inspector-theme-tools [data-cui='text-field'] {
-  width: 100%;
-}
-.inspector-root .inspector-theme-filters {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-.inspector-root .inspector-count {
-  font-size: 12px;
-  color: var(--inspector-muted);
-  white-space: nowrap;
-}
-.inspector-root .inspector-theme-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: 110px;
-  gap: 8px;
-  max-height: 476px;
-  padding: 6px 4px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--inspector-hover) transparent;
-}
-.inspector-root .inspector-theme-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 6px;
-  border: 0;
-  border-radius: 14px;
-  padding: 6px 4px;
-  background: var(--inspector-app);
-  color: var(--inspector-text);
-  cursor: pointer;
-  font: inherit;
-  user-select: none;
-}
-.inspector-root .inspector-theme-tile:active {
-  transform: scale(0.98);
-}
-.inspector-root .inspector-orb {
-  width: 56px;
-  height: 56px;
-  display: block;
-  flex-shrink: 0;
-  border-radius: 50%;
-}
-.inspector-root .inspector-theme-tile[aria-pressed='true'] .inspector-orb {
-  outline: 2px solid var(--inspector-accent);
-  outline-offset: 3px;
-}
-.inspector-root .inspector-theme-name {
-  width: 100%;
-  white-space: normal;
-  overflow-wrap: normal;
-  word-break: normal;
-  font-size: 12px;
-  line-height: 16px;
-  text-align: center;
-}
-.inspector-root .inspector-empty {
-  display: grid;
-  gap: 12px;
-  min-height: 120px;
-  place-content: center;
-  text-align: center;
-  color: var(--inspector-muted);
+.inspector-root .inspector-themes {
+  /* Search, filter and four rows of orb cards: twelve themes at 1440x900. */
+  height: 600px;
+  padding: 0 4px;
 }
 .inspector-root .inspector-control > div:not(.inspector-inline),
 .inspector-root .inspector-inline > div:first-child {
@@ -372,11 +300,6 @@
   animation: none;
   transition: none;
 }
-@media (hover: hover) and (pointer: fine) {
-  .inspector-root .inspector-theme-tile:hover {
-    background: var(--inspector-hover);
-  }
-}
 @media (max-width: 768px) {
   .inspector-root {
     grid-template-rows: 116px minmax(0, 1fr);
@@ -431,10 +354,9 @@
   .inspector-root[data-sheet='tall'] .inspector-canvas {
     grid-template-rows: minmax(0, 1fr);
   }
-  .inspector-root .inspector-theme-grid {
-    max-height: 348px;
+  .inspector-root .inspector-themes {
+    height: 436px;
   }
-  .inspector-root .inspector-theme-tools input,
   .inspector-root .inspector-inline-content input,
   .inspector-root .inspector-control input:not([type='checkbox']) {
     min-height: 40px;
@@ -488,9 +410,6 @@
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
-  }
-  .inspector-root .inspector-theme-tile:active {
-    transform: none;
   }
 }
 

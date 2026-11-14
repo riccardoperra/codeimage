@@ -101,6 +101,7 @@ export default function Dock(props: VariantProps) {
     model: props.model,
     stage: props.stage,
     fields,
+    ThemePicker: props.ThemePicker,
     preview: change => {
       if (previewKey() === change.key) return;
       change.preview();

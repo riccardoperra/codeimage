@@ -321,6 +321,7 @@ export default function Studio(props: VariantProps) {
                     component={panel.Body}
                     model={props.model}
                     stage={props.stage}
+                    ThemePicker={props.ThemePicker}
                     size={size}
                     phone={isPhone}
                     close={() => close(true)}

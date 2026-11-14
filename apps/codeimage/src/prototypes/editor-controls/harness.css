@@ -1,16 +1,46 @@
 /*
- * PICKER.md places the pill at the top or the bottom only. Below 768px it
- * would cover the production header, and every variant keeps its own bar at
- * the bottom, so the page starts under the pill instead: 24px offset, 36px
- * pill, 12px gap. The variant's root fills what is left in place of 100dvh.
+ * The picker pills sit in one row at the top center, the place PICKER.md
+ * gives a single pill. They keep its look: only their positioning moves to
+ * this container, so that two pills sit side by side or wrap.
  */
-@media (max-width: 767px) {
-  .proto-variant {
-    position: fixed;
-    inset: 72px 0 0;
-  }
+.proto-pickers {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483647;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
 
-  .proto-variant.proto-variant > * {
-    height: 100%;
-  }
+.proto-pickers > .proto-picker[data-position] {
+  position: relative;
+  top: auto;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* The theme style picker does nothing for a layout that keeps its own. */
+.proto-pickers > .proto-picker[data-disabled] {
+  opacity: 0.4;
+}
+
+/*
+ * Where the pills would cover a control, the page starts under them and the
+ * variant's root fills what is left in place of 100dvh.
+ */
+.proto-harness[data-offset] > .proto-variant {
+  position: fixed;
+  inset: var(--proto-offset) 0 0;
+}
+
+.proto-harness[data-offset] > .proto-variant > * {
+  height: 100%;
 }

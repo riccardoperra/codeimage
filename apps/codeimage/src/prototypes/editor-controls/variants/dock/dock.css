@@ -258,13 +258,6 @@
   padding: 4px 16px 16px;
 }
 
-.dock-panel-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-}
-
 .dock-hint {
   margin: 0 0 0 auto;
   color: var(--dock-muted);
@@ -285,93 +278,14 @@
   margin: 0;
 }
 
-/* Themes */
+/* Themes: the shared picker fills the tray, which keeps a third of the window for the canvas. */
 
-.dock-theme-tone {
-  flex: none;
-  width: 200px;
-}
-
-.dock-theme-search {
-  width: 260px;
-}
-
-.dock-theme-grid {
-  display: grid;
-  /* Wide enough for the longest name on one line. */
-  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-  gap: 4px;
-  /* Two rows and the top of a third, so the grid shows that it scrolls. */
-  max-height: 268px;
-  margin: 0 -8px;
-  padding: 4px 8px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scroll-padding: 8px;
-}
-
-.dock-theme {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  padding: 14px 6px 12px;
-  border: 0;
-  border-radius: 16px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 160ms var(--dock-ease-out);
-}
-
-.dock-theme:active {
-  transform: scale(0.97);
+.dock-themes {
+  height: min(360px, calc(100dvh - 190px - 36dvh));
+  padding-top: 16px;
 }
 
 /* The card the canvas is showing. */
-.dock-theme[data-previewed] {
-  background: var(--dock-raised);
-}
-
-.dock-theme:focus-visible {
-  outline: 2px solid var(--dock-primary);
-  outline-offset: -2px;
-}
-
-.dock-theme-orb {
-  display: flex;
-  padding: 3px;
-  border: 2px solid transparent;
-  border-radius: 50%;
-}
-
-.dock-theme[data-selected] .dock-theme-orb {
-  border-color: var(--dock-primary);
-}
-
-.dock-theme-name {
-  color: var(--dock-muted);
-  font-size: var(--dock-text-xs);
-  line-height: 1.25;
-  text-align: center;
-}
-
-.dock-theme-name .dock-icon {
-  margin-right: 5px;
-  vertical-align: -2px;
-}
-
-.dock-theme[data-selected] .dock-theme-name,
-.dock-theme[data-previewed] .dock-theme-name {
-  color: var(--dock-text);
-}
-
 /* Narrow trays */
 
 .dock-list {
@@ -640,29 +554,6 @@
     padding: 0 16px calc(16px + env(safe-area-inset-bottom, 0px));
   }
 
-  .dock-panel-head {
-    padding: 0 0 8px;
-  }
-
-  .dock-theme-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    max-height: none;
-    overflow: visible;
-  }
-
-  .dock-theme {
-    gap: 4px;
-    padding: 6px 2px;
-  }
-
-  .dock-theme-orb {
-    padding: 2px;
-  }
-
-  .dock-theme-name {
-    line-height: 1.2;
-  }
-
   .dock-list {
     max-height: none;
     overflow: visible;
@@ -745,12 +636,7 @@
     animation: none;
   }
 
-  .dock-theme,
   .dock-switch-thumb {
     transition: none;
-  }
-
-  .dock-theme:active {
-    transform: none;
   }
 }

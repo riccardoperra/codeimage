@@ -1,7 +1,8 @@
-import type {Accessor} from 'solid-js';
+import type {Accessor, Component} from 'solid-js';
 import {createContext, createSignal, onCleanup, useContext} from 'solid-js';
 import type {EditorControlsModel} from '../../model';
 import type {Stage} from '../../stage';
+import type {ThemePickerSlotProps} from '../../theme-styles/ThemePicker';
 import type {Fields, PanelId} from './fields';
 import type {Change} from './preview';
 
@@ -9,6 +10,7 @@ export interface DockApi {
   readonly model: EditorControlsModel;
   readonly stage: Stage;
   readonly fields: Fields;
+  readonly ThemePicker: Component<ThemePickerSlotProps>;
   /** Shows a change on the canvas through the model, without saving it. */
   readonly preview: (change: Change) => void;
   /** Takes the previewed change back. */

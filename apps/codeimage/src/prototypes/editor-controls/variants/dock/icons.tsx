@@ -52,16 +52,3 @@ export const CheckIcon = () => (
     <path d="m3 8.5 3.25 3L13 4.5" />
   </Icon>
 );
-
-export const SunIcon = () => (
-  <Icon size={12}>
-    <circle cx="8" cy="8" r="2.75" />
-    <path d="M8 1.5v1.75M8 12.75v1.75M1.5 8h1.75M12.75 8h1.75M3.4 3.4l1.25 1.25M11.35 11.35l1.25 1.25M3.4 12.6l1.25-1.25M11.35 4.65l1.25-1.25" />
-  </Icon>
-);
-
-export const MoonIcon = () => (
-  <Icon size={12}>
-    <path d="M13.5 9.6A5.75 5.75 0 0 1 6.4 2.5a5.75 5.75 0 1 0 7.1 7.1Z" />
-  </Icon>
-);

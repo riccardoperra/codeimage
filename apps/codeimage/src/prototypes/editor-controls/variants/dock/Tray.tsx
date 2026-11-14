@@ -72,8 +72,12 @@ export function Tray(props: TrayProps) {
     previous => dock.panel() ?? previous,
   );
 
+  // The prototype pickers are harness chrome: switching the theme style
+  // there keeps the tray open, so the new style shows in place.
   const inBar = (target: EventTarget | null) =>
-    target instanceof Node && !!props.bar()?.contains(target);
+    target instanceof Element &&
+    (!!props.bar()?.contains(target) ||
+      !!target.closest('[data-prototype-chrome]'));
 
   // A tray narrower than the window sits above the dock item that opened it.
   const align = () => {

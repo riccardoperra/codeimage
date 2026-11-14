@@ -1,21 +1,12 @@
 import {themeVars} from '@codeimage/ui';
-import {Button, TextField} from '@codeui/kit';
+import {Button} from '@codeui/kit';
 import {Collapsible} from '@kobalte/core/collapsible';
-import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {
-  For,
-  Show,
-  createMemo,
-  createSignal,
-  onCleanup,
-  onMount,
-} from 'solid-js';
+import {For, Show, createSignal, onCleanup, onMount} from 'solid-js';
 import type {JSX, ParentProps} from 'solid-js';
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {Toolbar} from '../../../../components/Toolbar/Toolbar';
 import type {VariantMeta, VariantProps} from '../../contract';
-import type {Control, ControlId, SectionId, ThemeEntry} from '../../model';
-import {ThemeSwatch} from '../../ThemeSwatch';
+import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
 import './inspector.css';
 
@@ -36,10 +27,6 @@ const primaryControls: Record<SectionId, readonly ControlId[]> = {
   font: ['font.family', 'font.weight'],
 };
 type PanelId = SectionId | 'themes';
-type ThemePreview = {
-  id: string;
-  source: 'pointer' | 'keyboard';
-};
 
 function Section(
   props: ParentProps<{
@@ -88,187 +75,6 @@ function Section(
         {props.children}
       </Collapsible.Content>
     </Collapsible>
-  );
-}
-
-function ThemeGrid(props: VariantProps) {
-  const [query, setQuery] = createSignal('');
-  const [mode, setMode] = createSignal<'all' | 'dark' | 'light'>('all');
-  const [preview, setPreview] = createSignal<ThemePreview>();
-  let search: HTMLInputElement | undefined;
-  const themes = createMemo(() =>
-    props.model.themes().filter(theme => {
-      const term = query().toLowerCase().replace(/\s/g, '');
-      return (
-        `${theme.name}${theme.id}`
-          .toLowerCase()
-          .replace(/\s/g, '')
-          .includes(term) &&
-        (mode() === 'all' || theme.dark === (mode() === 'dark'))
-      );
-    }),
-  );
-  // The editor draws the first theme when the stored id matches none.
-  // `active()` stays on the applied theme while another one is previewed.
-  const selectedId = () =>
-    (
-      props.model.themes().find(theme => theme.active()) ??
-      props.model.themes()[0]
-    )?.id;
-  const buttons = new Map<string, HTMLButtonElement>();
-  const previewTheme = (theme: ThemeEntry, source: ThemePreview['source']) => {
-    setPreview({id: theme.id, source});
-    if (theme.id === selectedId()) props.model.endPreview();
-    else theme.preview();
-  };
-  const restore = () => {
-    if (!preview()) return;
-    setPreview(undefined);
-    props.model.endPreview();
-  };
-  const commit = (theme: ThemeEntry) => {
-    setPreview(undefined);
-    theme.apply();
-  };
-  onCleanup(restore);
-
-  // Native handlers run before the prototype picker's document shortcuts.
-  const move = (event: KeyboardEvent, current: number) => {
-    if (event.key === 'Escape' && preview()) {
-      event.preventDefault();
-      event.stopPropagation();
-      restore();
-      search?.focus();
-      return;
-    }
-    const offset = {ArrowRight: 1, ArrowLeft: -1, ArrowDown: 3, ArrowUp: -3}[
-      event.key
-    ];
-    if (offset === undefined && event.key !== 'Home' && event.key !== 'End')
-      return;
-    event.preventDefault();
-    event.stopPropagation();
-    const list = themes();
-    const index =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? list.length - 1
-          : (current + (offset ?? 0) + list.length) % list.length;
-    const theme = list[index];
-    if (theme) {
-      previewTheme(theme, 'keyboard');
-      buttons.get(theme.id)?.focus();
-    }
-  };
-  return (
-    <div class="inspector-themes">
-      <div
-        class="inspector-theme-tools"
-        onKeyDown={event => {
-          if (event.key !== 'ArrowDown') return;
-          event.preventDefault();
-          event.stopPropagation();
-          const first = themes()[0];
-          if (first) {
-            previewTheme(first, 'keyboard');
-            buttons.get(first.id)?.focus();
-          }
-        }}
-      >
-        <TextField
-          aria-label="Search themes"
-          placeholder="Search themes…"
-          value={query()}
-          onChange={setQuery}
-          size="sm"
-          ref={element => {
-            search = element;
-            element.setAttribute('aria-label', 'Search themes');
-          }}
-        />
-        <div class="inspector-theme-filters">
-          <SegmentedField<'all' | 'dark' | 'light'>
-            value={mode()}
-            onChange={value => {
-              restore();
-              setMode(value);
-            }}
-            size="sm"
-            items={[
-              {label: 'All', value: 'all'},
-              {label: 'Dark', value: 'dark'},
-              {label: 'Light', value: 'light'},
-            ]}
-          />
-          <span class="inspector-count">{themes().length} themes</span>
-        </div>
-      </div>
-      <div
-        class="inspector-theme-grid"
-        role="group"
-        aria-label="Themes"
-        onPointerLeave={() => {
-          if (preview()?.source === 'pointer') restore();
-        }}
-        onFocusOut={event => {
-          if (
-            !event.currentTarget.contains(
-              event.relatedTarget instanceof Node ? event.relatedTarget : null,
-            ) &&
-            preview()?.source === 'keyboard'
-          )
-            restore();
-        }}
-      >
-        <For each={themes()}>
-          {(theme, index) => (
-            <button
-              class="inspector-theme-tile"
-              data-theme-id={theme.id}
-              data-previewing={preview()?.id === theme.id ? '' : undefined}
-              aria-label={theme.name}
-              aria-pressed={selectedId() === theme.id}
-              tabIndex={
-                (preview()?.id ?? selectedId() ?? themes()[0]?.id) === theme.id
-                  ? 0
-                  : -1
-              }
-              ref={element => buttons.set(theme.id, element)}
-              onClick={() => commit(theme)}
-              onPointerEnter={event => {
-                if (event.pointerType === 'mouse')
-                  previewTheme(theme, 'pointer');
-              }}
-              onFocus={() => previewTheme(theme, 'keyboard')}
-              on:keydown={event => move(event, index())}
-            >
-              <span class="inspector-orb">
-                <ThemeSwatch theme={theme} size={56} />
-              </span>
-              <span class="inspector-theme-name">{theme.name}</span>
-            </button>
-          )}
-        </For>
-      </div>
-      <Show when={!themes().length}>
-        <div class="inspector-empty">
-          No themes match.
-          <Button
-            size="sm"
-            theme="secondary"
-            variant="ghost"
-            onClick={() => {
-              restore();
-              setQuery('');
-              setMode('all');
-            }}
-          >
-            Clear filters
-          </Button>
-        </div>
-      </Show>
-    </div>
   );
 }
 
@@ -504,7 +310,9 @@ export default function Inspector(props: VariantProps) {
               open={openSections().has('themes')}
               onOpenChange={open => toggleSection('themes', open)}
             >
-              <ThemeGrid {...props} />
+              <div class="inspector-themes">
+                <props.ThemePicker size={mobile() ? 'md' : 'sm'} />
+              </div>
             </Section>
             <For each={props.model.sections}>
               {section => (

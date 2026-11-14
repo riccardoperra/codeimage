@@ -30,28 +30,6 @@ export function ownCompositeKeys(e: KeyboardEvent) {
   if ((e.target as Element).closest?.(COMPOSITE)) ownKeys(e);
 }
 
-/** Arrow, Home and End movement through a grid of `count` cells. */
-export function moveInGrid(
-  e: KeyboardEvent,
-  index: number,
-  count: number,
-  columns: number,
-): number | undefined {
-  const targets: Record<string, number> = {
-    ArrowRight: index + 1,
-    ArrowLeft: index - 1,
-    ArrowDown: index + columns,
-    ArrowUp: index - columns,
-    Home: 0,
-    End: count - 1,
-  };
-  const next = targets[e.key];
-  if (next === undefined || count === 0) return undefined;
-  e.preventDefault();
-  e.stopImmediatePropagation();
-  return Math.max(0, Math.min(count - 1, next));
-}
-
 interface Look {
   readonly label?: string;
   /** A two-value choice drawn as a switch: the key that means on, and off. */

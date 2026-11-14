@@ -1,136 +1,28 @@
-import {Button, Listbox, TextField} from '@codeui/kit';
+import {Button, Listbox} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {createMemo, createSignal, For, Match, Show, Switch} from 'solid-js';
+import {createSignal, For, Match, Show, Switch} from 'solid-js';
 import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls/ColorPicker/ColorPicker';
 import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
 import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
-import type {ThemeEntry} from '../../model';
-import {ThemeSwatch} from '../../ThemeSwatch';
 import {useDock} from './context';
 import {ControlRow, SegmentedChoice} from './controls';
 import type {GroupId} from './fields';
 import {GROUPS} from './fields';
-import {MoonIcon, SearchIcon, SunIcon} from './icons';
-import {OptionGrid} from './OptionGrid';
-import {shownTheme, themeChange} from './preview';
+import {SearchIcon} from './icons';
 
-type Tone = 'all' | 'dark' | 'light';
-
-const TONES: {label: string; value: Tone}[] = [
-  {label: 'All', value: 'all'},
-  {label: 'Dark', value: 'dark'},
-  {label: 'Light', value: 'light'},
-];
-
-function ThemeCard(props: {theme: ThemeEntry}) {
-  const dock = useDock();
-  return (
-    <>
-      <span class="dock-theme-orb">
-        <ThemeSwatch theme={props.theme} size={dock.compact() ? 36 : 56} />
-      </span>
-      <span class="dock-theme-name">
-        <Show when={props.theme.dark} fallback={<SunIcon />}>
-          <MoonIcon />
-        </Show>
-        {props.theme.name}
-      </span>
-    </>
-  );
-}
-
+/** The theme picker in the style chosen in the harness, in the tray. */
 export function ThemesPanel() {
   const dock = useDock();
-  const [query, setQuery] = createSignal('');
-  const [tone, setTone] = createSignal<Tone>('all');
-  let search: HTMLInputElement | undefined;
-  let panel!: HTMLDivElement;
-
-  const themes = createMemo(() => {
-    const words = query().trim().toLowerCase();
-    return dock.model
-      .themes()
-      .filter(theme => tone() === 'all' || theme.dark === (tone() === 'dark'))
-      .filter(theme => theme.name.toLowerCase().includes(words));
-  });
-  const firstOption = () => panel.querySelector<HTMLElement>('[role="option"]');
-
   return (
-    <div class="dock-panel dock-themes" ref={panel}>
-      <header class="dock-panel-head">
-        <div class="dock-segmented dock-theme-tone">
-          <SegmentedField
-            adapt
-            size={'sm'}
-            value={tone()}
-            onChange={setTone}
-            items={TONES}
-          />
-        </div>
-        <Show when={!dock.compact()}>
-          <div
-            class="dock-theme-search"
-            onKeyDown={event => {
-              if (event.key === 'ArrowDown') {
-                event.preventDefault();
-                firstOption()?.focus();
-              } else if (event.key === 'Enter') {
-                event.preventDefault();
-                firstOption()?.click();
-              }
-            }}
-          >
-            <TextField
-              ref={element => (search = element)}
-              size={'sm'}
-              aria-label="Search themes"
-              placeholder={`Search ${dock.model.themes().length} themes`}
-              value={query()}
-              onChange={setQuery}
-            />
-          </div>
-          <p class="dock-hint">
-            Hover or use the arrow keys to preview. Enter applies. Esc cancels.
-          </p>
-        </Show>
-      </header>
-      <Show
-        when={themes().length > 0}
-        fallback={
-          <div class="dock-empty">
-            <p>No theme matches “{query()}”.</p>
-            <Button
-              size={'sm'}
-              theme={'secondary'}
-              onClick={() => {
-                setQuery('');
-                setTone('all');
-                search?.focus();
-              }}
-            >
-              Show all themes
-            </Button>
-          </div>
-        }
-      >
-        <OptionGrid
-          label="Themes"
-          class="dock-theme-grid"
-          optionClass="dock-theme"
-          items={themes()}
-          id={theme => theme.id}
-          selected={theme => theme.id === shownTheme(dock.model)?.id}
-          change={themeChange}
-          onPick={(_, byKeyboard) => dock.closeAfterPick(byKeyboard)}
-          search={() => search}
-          autofocus
-        >
-          {theme => <ThemeCard theme={theme} />}
-        </OptionGrid>
-      </Show>
+    <div class="dock-panel dock-themes">
+      <dock.ThemePicker
+        size={dock.compact() ? 'md' : 'sm'}
+        autofocus
+        onPick={(_, byKeyboard) => dock.closeAfterPick(byKeyboard)}
+      />
     </div>
   );
 }

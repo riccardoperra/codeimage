@@ -5,15 +5,51 @@ import {
   on,
   onCleanup,
   onMount,
+  Show,
 } from 'solid-js';
 import './picker.css';
 
+/** The item a key selects, `replay`, or undefined to leave the key to the page. */
+export type PickerKeys = (
+  key: string,
+  active: number,
+  count: number,
+) => number | 'replay' | undefined;
+
 interface PickerProps {
+  /** Accessible name of the pill. */
+  label: string;
   names: readonly string[];
   active: number;
   onSelect: (index: number) => void;
-  onReplay: () => void;
+  keys: PickerKeys;
+  /** Shows the replay button. */
+  onReplay?: () => void;
+  /** Dims the pill and ignores its keys. */
+  disabled?: boolean;
 }
+
+/** Number keys, the arrows, and R to replay: the layout picker of PICKER.md. */
+export const numberKeys: PickerKeys = (key, active, count) => {
+  const num = parseInt(key, 10);
+  if (num >= 1 && num <= count) return num - 1;
+  if (key === 'ArrowRight') return (active + 1) % count;
+  if (key === 'ArrowLeft') return (active - 1 + count) % count;
+  if (key === 'r' || key === 'R') return 'replay';
+  return undefined;
+};
+
+/** The first letter of each name, and [ and ] to step, for a second picker. */
+export const letterKeys =
+  (names: readonly string[]): PickerKeys =>
+  (key, active, count) => {
+    if (key === '[') return (active - 1 + count) % count;
+    if (key === ']') return (active + 1) % count;
+    const index = names.findIndex(
+      name => name[0].toLowerCase() === key.toLowerCase(),
+    );
+    return index >= 0 ? index : undefined;
+  };
 
 // Widgets that use arrows, digits or letters themselves: fields, and the
 // lists, menus, dialogs and other composites the page renders or opens.
@@ -69,15 +105,11 @@ export function Picker(props: PickerProps) {
   createEffect(on(() => props.active, moveHighlight));
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (pageOwnsKey(e)) return;
+    if (props.disabled || pageOwnsKey(e)) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
-    const num = parseInt(e.key, 10);
-    if (num >= 1 && num <= count()) props.onSelect(num - 1);
-    else if (e.key === 'ArrowRight')
-      props.onSelect((props.active + 1) % count());
-    else if (e.key === 'ArrowLeft')
-      props.onSelect((props.active - 1 + count()) % count());
-    else if (e.key === 'r' || e.key === 'R') props.onReplay();
+    const target = props.keys(e.key, props.active, count());
+    if (target === 'replay') props.onReplay?.();
+    else if (target !== undefined) props.onSelect(target);
   };
 
   onMount(() => {
@@ -93,9 +125,10 @@ export function Picker(props: PickerProps) {
   return (
     <nav
       class="proto-picker"
-      aria-label="Prototype variants"
+      aria-label={props.label}
       data-position="top"
       data-ready={ready() ? '' : undefined}
+      data-disabled={props.disabled ? '' : undefined}
     >
       <span
         ref={el => (highlight = el)}
@@ -109,20 +142,27 @@ export function Picker(props: PickerProps) {
             class="proto-picker-item"
             data-active={i() === props.active ? '' : undefined}
             aria-current={i() === props.active ? 'true' : undefined}
+            disabled={props.disabled}
             onClick={() => props.onSelect(i())}
           >
             {name}
           </button>
         )}
       </For>
-      <span class="proto-picker-divider" aria-hidden="true" />
-      <button
-        class="proto-picker-item proto-picker-replay"
-        aria-label="Replay animation (R)"
-        onClick={() => props.onReplay()}
-      >
-        ↻
-      </button>
+      <Show when={props.onReplay}>
+        {replay => (
+          <>
+            <span class="proto-picker-divider" aria-hidden="true" />
+            <button
+              class="proto-picker-item proto-picker-replay"
+              aria-label="Replay animation (R)"
+              onClick={() => replay()()}
+            >
+              ↻
+            </button>
+          </>
+        )}
+      </Show>
     </nav>
   );
 }
