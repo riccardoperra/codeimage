@@ -8,6 +8,7 @@ import {
 } from '../../../../components/PropertyEditor/PanelRow';
 import {SidebarPopover} from '../../../../components/PropertyEditor/SidebarPopover/SidebarPopover';
 import {SidebarPopoverTitle} from '../../../../components/PropertyEditor/SidebarPopover/SidebarPopoverTitle';
+import {AmbientSwatch} from '../../controls/AmbientSwatch';
 import {ControlRow as SharedRow} from '../../controls/ControlRow';
 import * as shared from '../../controls/controls.css';
 import type {BackgroundControl, Control} from '../../model';
@@ -109,6 +110,7 @@ function ColorPickerContent(props: {control: BackgroundControl}) {
         }
       }}
     >
+      <AmbientSwatch control={props.control} />
       <ColorPickerPopover
         value={props.control.value()}
         onChange={props.control.set}

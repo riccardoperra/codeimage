@@ -9,6 +9,7 @@ export const auraTheme = createTheme({
     label: 'Aura Dark',
     previewBackground: `linear-gradient(135deg,  rgba(171,73,222,1) 0%,rgba(73,84,222,1) 100%)`,
     terminal: {
+      accent: '#a277ff',
       main: palette.background,
       text: palette.purple,
     },

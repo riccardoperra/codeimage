@@ -23,6 +23,8 @@ export const db = factory({
       type: String,
       showWatermark: Boolean,
       alternativeTheme: Boolean,
+      surface: () => 'solid',
+      borderType: nullable(String),
       showHeader: Boolean,
       showGlassReflection: Boolean,
       opacity: Number,

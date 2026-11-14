@@ -55,6 +55,7 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
       opacity: 100,
       showHeader: true,
       borderType: null,
+      surface: 'solid',
     },
     editorTabs: [],
     name: 'Untitled',

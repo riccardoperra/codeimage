@@ -11,6 +11,7 @@ export const githubDarkDimmedTheme = createTheme({
     previewBackground:
       'linear-gradient(140deg, rgb(241 160 61), rgb(192 74 65),  rgb(115, 52, 52))',
     terminal: {
+      accent: '#f47067',
       main: libColors.codemirror.bg,
       text: libColors.codemirror.text,
       tabs: {

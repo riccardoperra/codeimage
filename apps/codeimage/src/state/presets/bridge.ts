@@ -60,6 +60,7 @@ export const withPresetBridge = (idbKey: string) =>
             showWatermark: terminalState.showWatermark,
             textColor: terminalState.textColor,
             borderType: terminalState.borderType,
+            surface: terminalState.surface,
           },
           editor: {
             fontId: editorState.options.fontId,
