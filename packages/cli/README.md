@@ -48,6 +48,20 @@ presets using the schema exported by `@codeimage/render`. `src/bin.ts` calls
 `renderSnapshot` and owns files, streams, and exit codes. Feature flags live in
 `src/flags/`, one file each.
 
+With the mock web app running on port 4434, check CLI parity with:
+
+```sh
+pnpm exec tsx packages/cli/scripts/web-parity.ts
+```
+
+The script copies saved presets through the web menu and compares the CLI
+output with Chrome screenshots of the export node at native scales 1 and 2.
+It uses `launchChrome(scale)` with `viewport: null` and checks the actual DPR.
+Scale 1 exercises the CLI default without a `--scale` flag. Images and results
+go to `/tmp/swarm-p4-restack`. Use `--url` and `--out` to change the defaults.
+The script stops at the first cell above 0.5% at pixelmatch threshold 0.1.
+Inspect that cell's diff before continuing.
+
 ## Packed distribution
 
 Run `pnpm --filter=@codeimage/cli pack` after `pnpm libs:build`. The build
