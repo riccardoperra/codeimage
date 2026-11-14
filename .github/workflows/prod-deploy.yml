@@ -55,7 +55,7 @@ jobs:
           pnpm libs:build
 
       - name: Cache packages
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -73,7 +73,7 @@ jobs:
         uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -85,7 +85,7 @@ jobs:
           pnpm prepare:api:deploy
 
       - name: Cache api bundle
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: |
             dist/api-bundle/**
@@ -156,7 +156,7 @@ jobs:
         uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -183,7 +183,7 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -214,12 +214,12 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
       - name: Restore api build
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             dist/api-bundle/**
@@ -256,7 +256,7 @@ jobs:
         uses: ./.github/actions/pnpm-install
 
       - name: Restore packages
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
@@ -303,7 +303,7 @@ jobs:
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
       - name: Restore packages
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
