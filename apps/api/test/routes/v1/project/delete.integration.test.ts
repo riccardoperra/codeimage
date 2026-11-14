@@ -27,7 +27,6 @@ afterEach(async () => {
 
 test<TestContext>('DELETE /v1/project/:id [Delete Project] -> 200', async context => {
   const fastify = await build(context);
-  const userId = context.user.id;
   const projectId = context.project1.id;
 
   const response = await fastify.inject({
@@ -36,4 +35,6 @@ test<TestContext>('DELETE /v1/project/:id [Delete Project] -> 200', async contex
   });
 
   assert.equal(response.statusCode, 200, 'return status 200');
+  expect(response.json()).toMatchObject({id: projectId});
+  expect(await client.project.findUnique({where: {id: projectId}})).toBeNull();
 });

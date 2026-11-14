@@ -12,7 +12,7 @@ export const project: FastifyPluginAsync = async fastify => {
 
   fastify.decorate(
     'projectService',
-    makeProjectService(fastify.projectRepository, fastify.httpErrors),
+    makeProjectService(fastify.projectRepository),
   );
 };
 

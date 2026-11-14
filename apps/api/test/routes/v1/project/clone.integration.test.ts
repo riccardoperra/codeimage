@@ -49,6 +49,9 @@ test<TestContext>('/v1/project/:id/clone -> 200', async context => {
   assert.equal(response.statusCode, 200);
   assert.notEqual(body.id, projectId);
   assert.equal(body.name, 'new name (copy)');
+  expect(await client.project.findUnique({where: {id: body.id}})).toMatchObject(
+    {ownerId: context.user.id, name: body.name},
+  );
 });
 
 test<TestContext>('/v1/project/:id -> 404 -> when project by id not exists', async context => {

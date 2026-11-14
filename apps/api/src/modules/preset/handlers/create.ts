@@ -1,5 +1,5 @@
 import {HandlerBuilder} from '../../../common/domainFunctions/builder.js';
-import {ExceedPresetLimitException} from '../exceptions/ExceedPresetLimitException.js';
+import {PresetErrors} from '../preset.model.js';
 import type {PresetCreateDto} from '../schema/preset-create-dto.schema.js';
 import type {PresetDto} from '../schema/preset-dto.schema.js';
 import type {PresetHandlerDependencies} from './index.js';
@@ -14,7 +14,7 @@ export const create =
       ): Promise<PresetDto> => {
         const count = repository.countByOwnerId(ownerId);
         if (config.PRESETS_LIMIT && (await count) > config.PRESETS_LIMIT) {
-          throw new ExceedPresetLimitException({limit: config.PRESETS_LIMIT});
+          throw PresetErrors.limitExceeded({limit: config.PRESETS_LIMIT});
         }
 
         const createdPreset = await repository.create({

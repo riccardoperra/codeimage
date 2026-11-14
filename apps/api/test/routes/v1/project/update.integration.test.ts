@@ -155,6 +155,23 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
   );
   assert.notEqual(body.updatedAt, context.project1.updatedAt.toISOString());
   assert.equal(body.name, 'project to update', 'return same name');
+  expect(
+    await client.project.findUnique({
+      where: {id: context.project1.id},
+      include: {
+        editorTabs: true,
+        frame: true,
+        terminal: true,
+        editorOptions: true,
+      },
+    }),
+  ).toMatchObject({
+    ownerId: userId,
+    frame: data.frame,
+    terminal: data.terminal,
+    editorOptions: data.editorOptions,
+    editorTabs: body.editorTabs,
+  });
 });
 
 test<TestContext>('PUT /v1/project/:id [Update Project] -> 404 when the project belongs to another user', async context => {

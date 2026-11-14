@@ -27,7 +27,6 @@ afterEach(async () => {
 
 test<TestContext>('DELETE /v1/preset/:id [Delete Preset] -> 200', async t => {
   const fastify = await build(t);
-  const userId = t.user.id;
   const presetId = t.preset1.id;
 
   const response = await fastify.inject({
@@ -36,4 +35,6 @@ test<TestContext>('DELETE /v1/preset/:id [Delete Preset] -> 200', async t => {
   });
 
   assert.equal(response.statusCode, 200, 'return status 200');
+  expect(response.json()).toMatchObject({id: presetId});
+  expect(await client.preset.findUnique({where: {id: presetId}})).toBeNull();
 });

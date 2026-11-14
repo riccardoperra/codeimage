@@ -38,6 +38,9 @@ test<TestContext>('PUT /v1/project/:id/name [Update Name] -> 200', async context
 
   assert.equal(response.statusCode, 200, 'return status 200');
   assert.equal(JSON.parse(response.body).name, newName, 'return updated name');
+  expect(
+    await client.project.findUnique({where: {id: projectId}}),
+  ).toMatchObject({name: newName, ownerId: userId});
 });
 
 test<TestContext>('PUT /v1/project/:id/name [Update Name] -> 404 when the project belongs to another user', async context => {

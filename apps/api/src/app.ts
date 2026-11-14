@@ -1,8 +1,17 @@
 import type {AutoloadPluginOptions} from '@fastify/autoload';
 import AutoLoad from '@fastify/autoload';
 import configPlugin, {type Config} from './config.js';
-import type {FastifyPluginAsync} from 'fastify';
+import type {FastifyServerOptions, FastifyPluginAsync} from 'fastify';
 import {join} from 'node:path';
+
+import {genReqId} from './plugins/request-id.js';
+
+export const options: FastifyServerOptions = {
+  requestIdHeader: false,
+  genReqId,
+  trustProxy: true,
+  logger: {redact: ['req.headers.authorization']},
+};
 
 const __dirname = import.meta.dirname;
 
@@ -25,6 +34,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dir: join(__dirname, 'plugins'),
     options: opts,
     forceESM: true,
+    ignorePattern: /\.d\.[cm]?ts$/,
   });
 
   // This loads all plugins defined in routes
@@ -34,6 +44,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     options: {prefix: '/api/'},
     routeParams: true,
     forceESM: true,
+    ignorePattern: /\.d\.[cm]?ts$/,
   });
 
   await fastify.register(AutoLoad, {
@@ -42,6 +53,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     encapsulate: false,
     maxDepth: 1,
     forceESM: true,
+    ignorePattern: /\.d\.[cm]?ts$/,
   });
 
   fastify.ready(() => fastify.log.info(fastify.printRoutes()));
