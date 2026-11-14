@@ -63,14 +63,36 @@ async function compare(page: Page, lane: number, scale: number) {
     .locator('.cm-line')
     .filter({hasText: 'console.log(answer);'})
     .waitFor();
+  await node.scrollIntoViewIfNeeded();
+  const origin = await node.evaluate(el => {
+    const {x, y, width, height} = el.getBoundingClientRect();
+    return {x: x + window.scrollX, y: y + window.scrollY, width, height};
+  });
   const backdrop = await page.addStyleTag({
     content: `
+      [class*="Frame_previewPortal"] { translate: ${Math.round(origin.x) - origin.x}px ${Math.round(origin.y) - origin.y}px !important; }
       html, body { background: transparent !important; }
       body * { visibility: hidden !important; }
       [class*="Frame_previewWrapper"], [class*="Frame_previewWrapper"] * { visibility: visible !important; }
     `,
   });
   try {
+    const aligned = await node.evaluate(el => {
+      const {x, y, width, height} = el.getBoundingClientRect();
+      return {x: x + window.scrollX, y: y + window.scrollY, width, height};
+    });
+    assert.equal(aligned.width, origin.width, 'Alignment must preserve width');
+    assert.equal(
+      aligned.height,
+      origin.height,
+      'Alignment must preserve height',
+    );
+    for (const coordinate of [aligned.x, aligned.y]) {
+      assert.ok(
+        Math.abs(coordinate * scale - Math.round(coordinate * scale)) < 1e-6,
+        'Screenshot page origin must align with device pixels',
+      );
+    }
     await node.screenshot({
       path: `${prefix}-chrome.png`,
       omitBackground: true,
