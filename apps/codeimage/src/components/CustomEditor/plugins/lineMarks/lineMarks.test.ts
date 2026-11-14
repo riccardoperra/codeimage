@@ -104,6 +104,26 @@ describe('line marks', () => {
     );
     expect(readMarks(view.state).lines).toEqual([{line: 3, kind: 'highlight'}]);
   });
+  it('keeps the mark of the remaining line when two marked lines join', () => {
+    const view = editor();
+    view.dispatch(
+      view.state.update({
+        effects: replaceMarks.of(
+          marksValue(view.state.doc, {
+            lines: [
+              {line: 2, kind: 'added'},
+              {line: 3, kind: 'removed'},
+            ],
+            focus: false,
+          }),
+        ),
+      }),
+    );
+    const end = view.state.doc.line(2).to;
+    view.dispatch(view.state.update({changes: {from: end, to: end + 1}}));
+    expect(readMarks(view.state).lines).toEqual([{line: 2, kind: 'added'}]);
+    expect(view.state.field(lineMarksField).decorations.size).toBe(1);
+  });
   it('deduplicates lines and ignores marks outside the document', () => {
     const view = editor();
     view.dispatch(

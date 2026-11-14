@@ -69,10 +69,13 @@ export const lineMarksField = StateField.define<MarkState>({
         tr.startState.doc,
       );
       const normalized = [];
+      let previous = -1;
       for (let cursor = mapped.iter(); cursor.value; cursor.next()) {
-        normalized.push(
-          cursor.value.range(tr.state.doc.lineAt(cursor.from).from),
-        );
+        const from = tr.state.doc.lineAt(cursor.from).from;
+        // Joining two marked lines keeps the mark of the line that remains.
+        if (from === previous) continue;
+        normalized.push(cursor.value.range(from));
+        previous = from;
       }
       value = {...value, decorations: Decoration.set(normalized, true)};
     }
