@@ -30,6 +30,8 @@ export type TimelineOptions = Pick<
   AnimationSettings,
   'transitionMs' | 'easing'
 > & {
+  // Frames per second of the export. Any rate, not only a persisted one.
+  fps: number;
   lineNumbers: boolean;
   metrics: CodeMetrics;
   widths: GlyphWidths;
@@ -137,10 +139,30 @@ function windowAt(
 // gives its time. Both ends stay the placements of the holds.
 const WINDOW_STOPS = 200;
 
+// When a transition plays, on the timeline of an export at `fps`.
+type Playback = {startMs: number; transitionMs: number; fps: number};
+
+// The times of a transition that get a stop, from 0 to 1. A window is off its
+// path between two stops, so every frame an export draws gets its own. Takumi
+// draws frame k at floor(k * 1000 / fps) ms. The even stops keep a preview
+// close to the path at the times in between.
+function windowStopTimes({startMs, transitionMs, fps}: Playback): number[] {
+  const times = new Set(
+    Array.from({length: WINDOW_STOPS + 1}, (_, index) => index / WINDOW_STOPS),
+  );
+  for (let frame = Math.ceil((startMs * fps) / 1000); ; frame++) {
+    const timeMs = Math.floor((frame * 1000) / fps) - startMs;
+    if (timeMs >= transitionMs) break;
+    times.add(timeMs / transitionMs);
+  }
+  return [...times].sort((a, b) => a - b);
+}
+
 function windowKeyframes(
   from: WindowPlacement,
   to: WindowPlacement,
   easing: AnimationSettings['easing'],
+  playback: Playback,
 ): {stops: string; easing: AnimationSettings['easing']} {
   if (from.scale === to.scale) {
     return {
@@ -148,15 +170,14 @@ function windowKeyframes(
       easing,
     };
   }
-  const stops = Array.from({length: WINDOW_STOPS + 1}, (_, index) => {
-    const time = index / WINDOW_STOPS;
+  const stops = windowStopTimes(playback).map(time => {
     const window =
-      index === 0
+      time === 0
         ? from
-        : index === WINDOW_STOPS
+        : time === 1
           ? to
           : windowAt(from, to, easedProgress(easing, time));
-    return `${(100 * index) / WINDOW_STOPS}%{${windowDeclarations(window)}}`;
+    return `${100 * time}%{${windowDeclarations(window)}}`;
   });
   return {stops: stops.join(''), easing: 'linear'};
 }
@@ -197,7 +218,7 @@ export function planTimeline(
   steps: NonEmpty<TimelineStep>,
   options: TimelineOptions,
 ): Timeline {
-  const {transitionMs, easing, lineNumbers, metrics, widths} = options;
+  const {transitionMs, easing, fps, lineNumbers, metrics, widths} = options;
   const sizes = steps.map(({layout}) => ({
     width: Math.round(layout.size.width),
     height: Math.round(layout.size.height),
@@ -219,6 +240,7 @@ export function planTimeline(
   const css: string[] = [];
   // Rounding up keeps the first frame of a 1 ms transition on its first step.
   const halfMs = Math.ceil(transitionMs / 2);
+  let startMs = 0;
   for (const [index, step] of steps.entries()) {
     scenes.push({
       kind: 'hold',
@@ -226,6 +248,7 @@ export function planTimeline(
       durationMs: step.holdMs,
       frame: frames[index],
     });
+    startMs += step.holdMs;
     const next = steps[index + 1];
     if (!next) continue;
 
@@ -243,8 +266,13 @@ export function planTimeline(
         : ({kind: 'slide', from, to} as const);
     const window =
       motion.kind === 'window'
-        ? windowKeyframes(motion.from, motion.to, easing)
+        ? windowKeyframes(motion.from, motion.to, easing, {
+            startMs,
+            transitionMs,
+            fps,
+          })
         : null;
+    startMs += transitionMs;
     css.push(
       window
         ? `@keyframes ${name}-window{${window.stops}}`
