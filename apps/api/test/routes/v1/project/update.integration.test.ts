@@ -37,6 +37,9 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       visible: true,
       radius: 0,
       padding: 0,
+      aspectRatio: null,
+      exportTarget: 'x-landscape',
+      signature: {handle: '@codeimage', position: 'bottom-left'},
     },
     editors: [
       {
@@ -99,6 +102,9 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       visible: true,
       radius: 0,
       padding: 0,
+      aspectRatio: null,
+      exportTarget: 'x-landscape',
+      signature: {handle: '@codeimage', position: 'bottom-left'},
     } as ProjectUpdateResponse['frame'],
     'return updated frame',
   );
