@@ -71,6 +71,9 @@ export const list = style({
   overscrollBehavior: 'contain',
   scrollPadding: themeVars.spacing['2'],
   scrollbarWidth: 'thin',
+  // A standard scrollbar width turns off the app's ::-webkit-scrollbar rules,
+  // so the colour has to be set here too or the browser draws its light default.
+  scrollbarColor: `${themeVars.dynamicColors.scrollBar.backgroundColor} transparent`,
 });
 
 export const group = style({

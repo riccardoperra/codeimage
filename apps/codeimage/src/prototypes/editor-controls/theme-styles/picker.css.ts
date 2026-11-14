@@ -50,6 +50,9 @@ export const list = style({
   margin: `0 calc(${themeVars.spacing['2']} * -1)`,
   padding: `${themeVars.spacing['2']} ${themeVars.spacing['2']} ${themeVars.spacing['4']}`,
   scrollbarWidth: 'thin',
+  // A standard scrollbar width turns off the app's ::-webkit-scrollbar rules,
+  // so the colour has to be set here too or the browser draws its light default.
+  scrollbarColor: `${themeVars.dynamicColors.scrollBar.backgroundColor} transparent`,
 });
 
 export const empty = style([
