@@ -116,6 +116,7 @@ export const miniWindow = style({
   boxShadow: '0 4px 16px rgba(0,0,0,.08)',
   fontSize: '11px',
 });
+export const redacted = style({color: c.primary, fontWeight: 600});
 export const wireCanvas = style({fill: 'currentColor', opacity: 0.1});
 export const wireFrame = style({fill: 'currentColor', opacity: 0.3});
 export const commandAnchor = style({

@@ -5,7 +5,7 @@
  * Places in the editor where a feature lives. Adding one means the component
  * that owns the place must register how to reveal it.
  */
-export type Where = 'command-menu' | 'settings-experiments';
+export type Where = 'command-menu' | 'settings-experiments' | 'export';
 
 export interface Highlight {
   /**
@@ -44,6 +44,18 @@ export const RELEASES = [
     date: '2026-11-14',
     major: false,
     highlights: [
+      {
+        id: 'redact',
+        title: 'Hide secrets',
+        body: 'Code that looks like an API key, token or password gets a warning. Redact replaces it with dots before you export.',
+        where: 'export',
+      },
+      {
+        id: 'tabs',
+        title: 'One image per tab',
+        body: 'Export each tab as its own image. With more than one tab, they download together as a zip.',
+        where: 'export',
+      },
       {
         id: 'command-menu',
         title: 'Command menu',

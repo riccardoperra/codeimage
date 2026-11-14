@@ -4,6 +4,7 @@ import {createResizeObserver} from '@solid-primitives/resize-observer';
 import type {Accessor} from 'solid-js';
 import {createEffect, on} from 'solid-js';
 import {defineStore} from 'statebuilder';
+import {getWhatsNew} from './whats-new';
 import {ExportExtension} from '../hooks/use-export-image';
 
 export interface PersistedExportCanvasSettings {
@@ -67,6 +68,10 @@ export const ExportCanvasStore = defineStore(() => ({
     },
     setShowOnlyActiveTab(value: boolean) {
       store.set('showOnlyActiveTab', value);
+    },
+    setOneImagePerTab(value: boolean) {
+      if (value) getWhatsNew().seen('tabs');
+      store.set('oneImagePerTab', value);
     },
     initCanvas(el: Accessor<HTMLElement | undefined>) {
       createResizeObserver(el, ref => {

@@ -185,11 +185,11 @@ Inspector puts its panel on the right. Set `data-inspector-side="left"` on its r
 
 The harness mounts `components/WhatsNew/WhatsNewHost` once. Its Nudge floats at the bottom left and waits for Settings, the command menu, and other popups to close before appearing. A release with `major: true` uses the Showcase sheet instead. Neither announcement reserves layout space.
 
-The registry and store live in `state/whats-new`. Import that folder's `index.ts` from other folders. The harness binds `command-menu` to `commandMenu.open` and `settings-experiments` to `settings.open('experiments')`. A layout puts `NewDot` beside each command-menu button it renders. Settings owns the dots on the Layout and Theme cards rows, and the archive before About.
+The registry and store live in `state/whats-new`. Import that folder's `index.ts` from other folders. The harness binds `command-menu` to `commandMenu.open` and `settings-experiments` to `settings.open('experiments')`. The production `ExportButton` binds `export` to its dialog, in this editor and in `/classic`. A layout puts `NewDot` beside each command-menu button it renders. Settings owns the dots on the Layout and Theme cards rows, and the archive before About. The export dialog owns the dot on One image per tab, and the dot beside its secrets warning, which shows only while the code holds a possible secret.
 
-Only a coachmark opening or a feature being used marks a highlight seen. Show me, Nudge steps, and archive rows keep the dot available. The command menu marks use when a command runs. Layout and theme card choices mark use when a choice is applied.
+Only a coachmark opening or a feature being used marks a highlight seen. Show me, Nudge steps, and archive rows keep the dot available. The command menu marks use when a command runs. Layout and theme card choices mark use when a choice is applied. Turning One image per tab on marks `tabs` used. Redact all, or Redact on an editor warning, marks `redact` used.
 
-In development, use `?whatsNew=nudge` or `?whatsNew=showcase` to review a view regardless of saved facts. Run `await window.resetWhatsNew()` and reload for a fresh visit. These aids are removed in production builds. `/classic` has announcements and external release links, with no dots or archive.
+In development, use `?whatsNew=nudge` or `?whatsNew=showcase` to review a view regardless of saved facts. Run `await window.resetWhatsNew()` and reload for a fresh visit. These aids are removed in production builds. `/classic` has announcements, external release links, and the export dialog's dots, with no archive.
 
 ## The theme-card lab
 

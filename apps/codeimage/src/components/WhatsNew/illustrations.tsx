@@ -17,6 +17,115 @@ function CommandIllustration() {
   );
 }
 
+function RedactIllustration() {
+  return (
+    <div class={styles.illustration} aria-hidden="true">
+      <div class={styles.miniWindow}>
+        <div>const client = connect({'{'}</div>
+        <div>
+          &nbsp;&nbsp;token: '<span class={styles.redacted}>••••••••••</span>',
+        </div>
+        <div>{'}'});</div>
+      </div>
+    </div>
+  );
+}
+
+function TabsIllustration() {
+  return (
+    <div class={styles.illustration} aria-hidden="true">
+      <svg width="250" height="96" viewBox="0 0 250 96">
+        <rect
+          class={styles.wireCanvas}
+          x="0"
+          y="8"
+          width="96"
+          height="80"
+          rx="8"
+        />
+        <rect fill="currentColor" x="8" y="16" width="24" height="8" rx="3" />
+        <rect
+          class={styles.wireFrame}
+          x="36"
+          y="16"
+          width="24"
+          height="8"
+          rx="3"
+        />
+        <rect
+          class={styles.wireFrame}
+          x="64"
+          y="16"
+          width="24"
+          height="8"
+          rx="3"
+        />
+        <path
+          d="M10 42h56m-56 12h40m-40 12h50"
+          stroke="currentColor"
+          stroke-width="3"
+        />
+        <path
+          d="M112 48h24m-8-8 8 8-8 8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <rect
+          class={styles.wireCanvas}
+          x="154"
+          y="4"
+          width="96"
+          height="24"
+          rx="6"
+        />
+        <rect
+          class={styles.wireFrame}
+          x="166"
+          y="9"
+          width="44"
+          height="14"
+          rx="3"
+        />
+        <rect
+          class={styles.wireCanvas}
+          x="154"
+          y="36"
+          width="96"
+          height="24"
+          rx="6"
+        />
+        <rect
+          class={styles.wireFrame}
+          x="166"
+          y="41"
+          width="44"
+          height="14"
+          rx="3"
+        />
+        <rect
+          class={styles.wireCanvas}
+          x="154"
+          y="68"
+          width="96"
+          height="24"
+          rx="6"
+        />
+        <rect
+          class={styles.wireFrame}
+          x="166"
+          y="73"
+          width="44"
+          height="14"
+          rx="3"
+        />
+      </svg>
+    </div>
+  );
+}
+
 function LayoutIllustration() {
   return (
     <div class={styles.illustration} aria-hidden="true">
@@ -123,6 +232,8 @@ function ThemeIllustration() {
 }
 
 export const illustrations: Record<HighlightId, Component> = {
+  redact: RedactIllustration,
+  tabs: TabsIllustration,
   'command-menu': CommandIllustration,
   layouts: LayoutIllustration,
   'theme-cards': ThemeIllustration,
