@@ -426,7 +426,6 @@ async function loadCase(page: Page, document: Document, faces: string) {
   throw new Error('The editor did not keep the tabs of the case');
 }
 
-// Pauses the preview at `ms` and captures the scene it shows.
 async function previewAt(page: Page, ms: number) {
   await page.evaluate(async ms => {
     const editorState = '/src/state/editor/index.ts';

@@ -57,7 +57,6 @@ const totalDurationMs = ({steps, transitionMs}: AnimationSettings) =>
   steps.reduce((total, step) => total + step.holdMs, 0) +
   (steps.length - 1) * transitionMs;
 
-// Where each step's hold starts on the timeline.
 export const stepStartsMs = ({steps, transitionMs}: AnimationSettings) =>
   steps.map((_, index) =>
     steps

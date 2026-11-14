@@ -5,7 +5,7 @@ import {Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {PlayIcon} from './icons';
 
-// Opens the Animate panel. A single tab has nothing to animate.
+// A single tab has nothing to animate.
 export function AnimateButton(props: {showLabel: boolean}) {
   const {animation, editor} = getEditorStore();
   const [t] = useI18n<AppLocaleEntries>();
