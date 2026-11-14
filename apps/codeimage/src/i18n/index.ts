@@ -1,5 +1,6 @@
 import {lineMarksLocale} from './lineMarks';
 import {secrets} from './secrets';
+import {altText} from './altText';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
@@ -100,6 +101,7 @@ export const locale = {
     ...presets.it,
     ...cliConfig.it,
     ...lineMarksLocale.it,
+    ...altText.it,
   },
   en: {
     ...secrets.en,
@@ -189,6 +191,7 @@ export const locale = {
     ...presets.en,
     ...cliConfig.en,
     ...lineMarksLocale.en,
+    ...altText.en,
   },
   de: {
     ...secrets.de,
@@ -279,6 +282,7 @@ export const locale = {
     ...presets.de,
     ...cliConfig.de,
     ...lineMarksLocale.de,
+    ...altText.de,
   },
   es: {
     ...secrets.es,
@@ -369,6 +373,7 @@ export const locale = {
     ...presets.es,
     ...cliConfig.es,
     ...lineMarksLocale.es,
+    ...altText.es,
   },
 };
 
