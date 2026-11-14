@@ -1,5 +1,9 @@
+import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getUiStore} from '@codeimage/store/ui';
+import {ExportExtension} from '../../../hooks/use-export-image';
 import type {Command} from '../command-menu/commands';
+import type {Exporter} from './export';
+import {exportSummary} from './ExportControl';
 import {LAYOUTS, preferences, THEME_CARDS} from './preferences';
 import {SECTIONS, settings} from './settings-state';
 
@@ -10,6 +14,78 @@ const MODES = [
   {id: 'light', name: 'Light'},
   {id: 'system', name: 'System'},
 ] as const;
+
+/**
+ * Export and every export setting as commands. They read and write the
+ * production export store, as the Export section of the settings does.
+ */
+export function exportCommands(exporter: Exporter): Command[] {
+  const store = getExportCanvasStore();
+  const group = 'Export';
+  const tabs = exporter.tabs();
+  const formats = [
+    {id: ExportExtension.png, name: 'PNG'},
+    {id: ExportExtension.svg, name: 'SVG'},
+    {id: ExportExtension.jpeg, name: 'JPEG'},
+  ];
+  return [
+    {
+      id: 'export=image',
+      group,
+      label: 'Export image',
+      note: exportSummary(),
+      run: exporter.image,
+    },
+    ...(tabs > 1
+      ? [
+          {
+            id: 'export=each-tab',
+            group,
+            label: 'Export one image per tab',
+            note: `${tabs} images`,
+            run: exporter.eachTab,
+          },
+        ]
+      : []),
+    {
+      id: 'export=settings',
+      group,
+      label: 'Export settings…',
+      run: () => settings.open('export'),
+    },
+    ...formats.map((format): Command => ({
+      id: `export-format=${format.id}`,
+      group,
+      label: `Export format: ${format.name}`,
+      current: format.id === store.get.extension,
+      run: () => store.set('extension', format.id),
+    })),
+    ...[1, 2, 3, 6].map((scale): Command => ({
+      id: `export-scale=${scale}`,
+      group,
+      label: `Export scale: ${scale}x`,
+      current: scale === store.get.devicePixelRatio,
+      run: () => store.set('devicePixelRatio', scale),
+    })),
+    ...[70, 80, 90, 100].map((quality): Command => ({
+      id: `export-quality=${quality}`,
+      group,
+      label: `JPEG quality: ${quality}%`,
+      current: quality === store.get.jpegQuality,
+      run: () => store.set('jpegQuality', quality),
+    })),
+    ...[
+      {on: true, name: 'Only the active tab'},
+      {on: false, name: 'All tabs'},
+    ].map((choice): Command => ({
+      id: `export-tabs=${choice.on}`,
+      group,
+      label: `Export tabs: ${choice.name}`,
+      current: choice.on === store.get.showOnlyActiveTab,
+      run: () => store.setShowOnlyActiveTab(choice.on),
+    })),
+  ];
+}
 
 /**
  * The settings as commands, so that the layout, the Inspector's side, the

@@ -6,12 +6,12 @@ import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {Footer} from '../../../../components/Footer/Footer';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
-import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
 import {SettingsIcon} from '../../shell/icons';
 import {claimSettingsEntry, settings} from '../../shell/settings-state';
 import type {VariantMeta, VariantProps} from '../../contract';
+import {FrameActions} from '../../controls/FrameActions';
 import type {ControlId} from '../../model';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
@@ -442,7 +442,7 @@ export default function Dock(props: VariantProps) {
 
             <Show when={!compact()}>
               <div class="dock-frame-actions dock-float">
-                <FrameToolbar frameRef={props.stage.exportRef()} />
+                <FrameActions frameRef={props.stage.exportRef()} />
               </div>
             </Show>
           </div>

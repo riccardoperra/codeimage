@@ -15,7 +15,7 @@ import {
 } from 'solid-js';
 import {Changelog} from '../../../components/Changelog/Changelog';
 import type {EditorControlsModel} from '../model';
-import {settingsCommands} from '../shell/commands';
+import {exportCommands, settingsCommands} from '../shell/commands';
 import type {Stage} from '../stage';
 import * as styles from './command-menu.css';
 import type {Action, Command} from './commands';
@@ -66,20 +66,8 @@ function Commands(
   let input!: HTMLInputElement;
   let list!: HTMLDivElement;
 
-  // The production Export button owns the dialog and is the page's one
-  // primary button. The frame lets this menu close first.
-  const exportImage = () =>
-    requestAnimationFrame(() =>
-      document
-        .querySelector<HTMLElement>(
-          '.proto-variant [data-cui="button"][data-theme="primary"]',
-        )
-        ?.click(),
-    );
-
   const commands = untrack(() => {
     const actions: Action[] = [
-      {label: 'Export image…', run: exportImage},
       {label: 'Randomize theme and style', run: props.stage.randomize},
     ];
     if (props.stage.canFormat()) {
@@ -116,7 +104,10 @@ function Commands(
       model: props.model,
       listed: createListedModel(props.model),
       actions,
-      settings: settingsCommands(fromOldMenu),
+      settings: [
+        ...exportCommands(props.stage.exporter),
+        ...settingsCommands(fromOldMenu),
+      ],
       reveal: commandMenu.reveal(),
     });
   });

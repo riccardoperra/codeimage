@@ -4,6 +4,7 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
+import {useModality} from '@core/hooks/isMobile';
 import type {Accessor, Component} from 'solid-js';
 import {
   createEffect,
@@ -21,10 +22,12 @@ import {TerminalHost} from '../../components/Terminal/TerminalHost';
 import {ThemeBoxSkeleton} from '../../components/ThemeSwitcher/ThemeBoxSkeleton';
 import {themeBoxTerminalHost} from '../../components/ThemeSwitcher/ThemeSwitcher.css';
 import {CopyToClipboardButton} from '../../components/Toolbar/CopyToClipboardButton';
-import {ExportButton} from '../../components/Toolbar/ExportButton';
 import {FitFrame} from './FitFrame';
 import * as placeholderStyles from './frame-placeholder.css';
 import type {ThemeEntry} from './model';
+import type {Exporter} from './shell/export';
+import {createExporter} from './shell/export';
+import {ExportControl} from './shell/ExportControl';
 
 // `?frame-delay=<ms>` holds the lazy frame back, to look at its placeholder
 // as a slow network shows it.
@@ -49,8 +52,14 @@ export interface Stage {
   readonly Canvas: Component;
   /** The hidden copy of the frame that export and copy capture. Set once Canvas mounts. */
   readonly exportRef: Accessor<HTMLElement | undefined>;
-  /** Production Export button with its dialog and the Ctrl+S shortcut. */
+  /**
+   * Export: the button exports at once with the export settings, the arrow
+   * beside it exports one image per tab or opens the export settings. It
+   * binds Ctrl+S.
+   */
   readonly ExportButton: Component;
+  /** What the Export control runs, for the command menu. */
+  readonly exporter: Exporter;
   readonly CopyToClipboardButton: Component;
   /** The mini editor that today's theme cards show, drawn in the given theme. */
   readonly ThemePreview: Component<{theme: ThemeEntry}>;
@@ -149,6 +158,9 @@ export function createStage(): Stage {
   const setScale = (scale: number) =>
     untrackCommand(() => frame.setScale(scale), false);
   const activeEditor = getActiveEditorStore();
+  const exporter = createExporter(exportRef);
+  // As today, a phone gets the smaller buttons.
+  const size = useModality() === 'full' ? 'sm' : 'xs';
 
   return {
     Canvas: () => {
@@ -167,7 +179,8 @@ export function createStage(): Stage {
       );
     },
     exportRef,
-    ExportButton: () => <ExportButton canvasRef={exportRef()} />,
+    ExportButton: () => <ExportControl exporter={exporter} size={size} />,
+    exporter,
     CopyToClipboardButton: () => (
       <CopyToClipboardButton canvasRef={exportRef()} />
     ),

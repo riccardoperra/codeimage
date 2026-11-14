@@ -14,13 +14,12 @@ import {Footer} from '../../../../components/Footer/Footer';
 import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ExportInNewTabButton} from '../../../../components/Toolbar/ExportNewTabButton';
-import {ExportSettingsButton} from '../../../../components/Toolbar/ExportSettingsButton';
-import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import {commandMenu} from '../../command-menu/state';
 import {SettingsIcon} from '../../shell/icons';
 import {claimSettingsEntry, settings} from '../../shell/settings-state';
 import type {VariantMeta, VariantProps} from '../../contract';
+import {FrameActions} from '../../controls/FrameActions';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import type {Panel, PanelId} from './panels';
@@ -377,7 +376,6 @@ export default function Studio(props: VariantProps) {
             when={modality === 'full'}
             fallback={
               <div class={styles.compactActions}>
-                <ExportSettingsButton />
                 <ShareButton showLabel={false} />
                 <Button
                   size="xs"
@@ -400,7 +398,7 @@ export default function Studio(props: VariantProps) {
             }
           >
             <div class={styles.frameActions}>
-              <FrameToolbar frameRef={props.stage.exportRef()} />
+              <FrameActions frameRef={props.stage.exportRef()} />
             </div>
             <div class={styles.footer}>
               <Footer />
