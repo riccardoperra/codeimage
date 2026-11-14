@@ -62,6 +62,32 @@ describe('parseAnnotations', () => {
       marks: {lines: [], focus: false},
     });
   });
+  it('finds annotations after an unclosed quote such as a Rust lifetime', () => {
+    const result = parseAnnotations(
+      "struct Parser<'a> { // [!code ++]\n  input: &'a str, // [!code highlight]\n}",
+      {line: '//', block: {open: '/*', close: '*/'}},
+    );
+    expect(result.code).toBe("struct Parser<'a> {\n  input: &'a str,\n}");
+    expect(result.marks.lines).toEqual([
+      {line: 1, kind: 'added'},
+      {line: 2, kind: 'highlight'},
+    ]);
+  });
+  it('ignores comment tokens inside strings before the annotation', () => {
+    expect(
+      parseAnnotations("const url = 'http://example.com'; // [!code ++]", {
+        line: '//',
+      }).code,
+    ).toBe("const url = 'http://example.com';");
+  });
+  it('does not let an apostrophe in prose hide later annotations', () => {
+    const result = parseAnnotations(
+      "Don't skip this.\n\nRun it <!-- [!code highlight] -->",
+      {block: {open: '<!--', close: '-->'}},
+    );
+    expect(result.code).toBe("Don't skip this.\n\nRun it");
+    expect(result.marks.lines).toEqual([{line: 3, kind: 'highlight'}]);
+  });
   it('keeps notation inside a multiline template string', () => {
     const code = 'const literal = `one\n// [!code ++]\n`;';
     expect(parseAnnotations(code, {line: '//'}).count).toBe(0);
