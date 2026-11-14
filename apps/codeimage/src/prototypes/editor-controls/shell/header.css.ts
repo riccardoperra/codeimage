@@ -57,7 +57,13 @@ globalStyle(`${header} button`, {
   '@media': {[phone]: {minWidth: phoneRow, minHeight: phoneRow}},
 });
 
-export const brand = style({display: 'flex', alignItems: 'center'});
+// The islands below have a 22px corner, so a logo flush with their edge looks
+// pushed into the corner. This lines it up with where their content starts.
+export const brand = style({
+  display: 'flex',
+  alignItems: 'center',
+  paddingLeft: themeVars.spacing['2'],
+});
 
 // Centred on the header, as today, whatever sits left and right of it.
 export const title = style({
