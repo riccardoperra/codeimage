@@ -1,6 +1,12 @@
 import {themeVars} from '@codeimage/ui';
 import {globalStyle, keyframes, style} from '@vanilla-extract/css';
-import {curve, duration, ms, reduceMotion as reduce} from './motion';
+import {
+  curve,
+  duration,
+  ms,
+  reduceMotion as reduce,
+  showcaseFor,
+} from './motion';
 
 const c = themeVars.dynamicColors;
 const ease = curve.out;
@@ -367,10 +373,10 @@ const enter = (rise: number, length: number) =>
     animation: `${keyframes({from: {opacity: 0, transform: `translateY(${rise}px)`}})} ${ms(length)} ${ease} var(--whats-new-at, 0ms) both`,
     '@media': {[reduce]: {animationName: fadeIn, animationDelay: '0ms'}},
   });
-export const lead = enter(12, 550);
-export const support = enter(8, 500);
+export const lead = enter(12, showcaseFor.lead);
+export const support = enter(8, showcaseFor.support);
 export const fade = style({
-  animation: `${fadeIn} 400ms ${ease} var(--whats-new-at, 0ms) both`,
+  animation: `${fadeIn} ${ms(showcaseFor.fade)} ${ease} var(--whats-new-at, 0ms) both`,
   '@media': {[reduce]: {animationDelay: '0ms'}},
 });
 export const sheet = style({
@@ -386,7 +392,7 @@ export const sheet = style({
   },
 });
 globalStyle(`[role="dialog"][data-expanded]:has(> ${sheet})`, {
-  animation: `${fadeIn} 250ms ${ease}`,
+  animation: `${fadeIn} ${ms(showcaseFor.sheet)} ${ease}`,
 });
 export const hero = style({textAlign: 'center', padding: '28px 0 32px'});
 export const heroTitle = style({
@@ -404,7 +410,7 @@ export const grid = style({
   },
 });
 export const card = style([
-  enter(8, 450),
+  enter(8, showcaseFor.card),
   {
     padding: '12px',
     borderRadius: '16px',

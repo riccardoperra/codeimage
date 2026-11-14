@@ -40,6 +40,15 @@ export const showcaseAt = {
   play: 350,
 } as const;
 
+/** How long each part of the Showcase takes to arrive. */
+export const showcaseFor = {
+  sheet: 250,
+  lead: 550,
+  support: 500,
+  card: 450,
+  fade: 400,
+} as const;
+
 export const ms = (value: number) => `${value}ms`;
 
 export const reduceMotion = '(prefers-reduced-motion: reduce)';
