@@ -132,7 +132,7 @@ const rules: readonly Rule[] = [
   },
   {
     name: 'the db decorator stays in composition',
-    why: 'Only module index.ts files pass fastify.db to a repository factory. A route or handler holding the db can write without an owner scope.',
+    why: 'Only module index.ts files pass fastify.db to repository functions and ownerScope. A route or handler holding the db can write without an owner scope.',
     violations: file =>
       /^modules\/[^/]+\/index\.ts$|^plugins\//.test(file.path)
         ? []
@@ -279,6 +279,23 @@ const kebab = (key: string) =>
 
 function routeOperations(file: SourceFile): string[] {
   const operations: string[] = [];
+  const module = moduleOf(file.path);
+  const bindings = new Set<string>();
+  for (const statement of file.ast.statements) {
+    if (
+      !ts.isImportDeclaration(statement) ||
+      !ts.isStringLiteral(statement.moduleSpecifier) ||
+      statement.moduleSpecifier.text !== `../${module}.contract.js`
+    )
+      continue;
+    const named = statement.importClause?.namedBindings;
+    if (named && ts.isNamedImports(named)) {
+      for (const binding of named.elements) {
+        if ((binding.propertyName ?? binding.name).text === `${module}Contract`)
+          bindings.add(binding.name.text);
+      }
+    }
+  }
   const visit = (node: ts.Node): void => {
     if (
       ts.isCallExpression(node) &&
@@ -288,13 +305,27 @@ function routeOperations(file: SourceFile): string[] {
       const object = node.arguments[0];
       const spread =
         object && ts.isObjectLiteralExpression(object)
-          ? object.properties.filter(ts.isSpreadAssignment)
-          : [];
+          ? object.properties[0]
+          : undefined;
+      const expression =
+        spread && ts.isSpreadAssignment(spread) ? spread.expression : undefined;
+      const handler =
+        object && ts.isObjectLiteralExpression(object)
+          ? object.properties[1]
+          : undefined;
       operations.push(
-        spread.length === 1 &&
-          ts.isPropertyAccessExpression(spread[0]!.expression)
-          ? spread[0]!.expression.name.text
-          : '<missing operation>',
+        object &&
+          ts.isObjectLiteralExpression(object) &&
+          object.properties.length === 2 &&
+          expression &&
+          ts.isPropertyAccessExpression(expression) &&
+          ts.isIdentifier(expression.expression) &&
+          bindings.has(expression.expression.text) &&
+          handler &&
+          ts.isPropertyAssignment(handler) &&
+          handler.name.getText() === 'handler'
+          ? expression.name.text
+          : '<expected contract operation and handler>',
       );
     }
     ts.forEachChild(node, visit);
@@ -350,6 +381,13 @@ describe('architecture', () => {
     const found: string[] = [];
     for (const file of sources.filter(file => isRoute(file.path))) {
       const calls = routeOperations(file);
+      const contract = `modules/${moduleOf(file.path)}/${moduleOf(file.path)}.contract.ts`;
+      if (!file.imports.some(i => i.target === contract))
+        found.push(`${file.path}: import the module contract`);
+      if (
+        !file.imports.some(i => /\/(commands|queries)\//.test(i.target ?? ''))
+      )
+        found.push(`${file.path}: import an action directly`);
       const name = file.path.split('/').at(-1)?.replace(/\.ts$/, '');
       if (calls.length !== 1)
         found.push(`${file.path}: expected one route, got ${calls.length}`);
@@ -450,4 +488,133 @@ test('module directories contain only allowed entries', () => {
     invalid,
     'Use the module role files and routes/, commands/ or queries/ only.',
   ).toEqual([]);
+});
+function typedSources() {
+  const configPath = resolve(SRC, '../tsconfig.json');
+  const config = ts.readConfigFile(configPath, ts.sys.readFile);
+  const parsed = ts.parseJsonConfigFileContent(
+    config.config,
+    ts.sys,
+    dirname(configPath),
+  );
+  const program = ts.createProgram(parsed.fileNames, parsed.options);
+  const checker = program.getTypeChecker();
+  const db = program.getSourceFile(join(SRC, 'shared/db.ts'))!;
+  const declaration = db.statements.find(
+    (node): node is ts.InterfaceDeclaration =>
+      ts.isInterfaceDeclaration(node) && node.name.text === 'OwnerScope',
+  )!;
+  const scopeType = checker.getTypeAtLocation(declaration);
+  const files = program
+    .getSourceFiles()
+    .filter(file => file.fileName.startsWith(`${SRC}/`));
+  return {checker, scopeType, files};
+}
+
+const typed = (() => {
+  let value: ReturnType<typeof typedSources> | undefined;
+  return () => (value ??= typedSources());
+})();
+
+test('only repositories and shared/db read the client from an OwnerScope', () => {
+  const {checker, scopeType, files} = typed();
+  const found: string[] = [];
+  for (const file of files) {
+    const path = relative(SRC, file.fileName);
+    if (role('repository').test(path) || path === 'shared/db.ts') continue;
+    const visit = (node: ts.Node): void => {
+      let receiver: ts.Node | undefined;
+      if (ts.isPropertyAccessExpression(node) && node.name.text === 'client')
+        receiver = node.expression;
+      if (
+        ts.isElementAccessExpression(node) &&
+        ts.isStringLiteralLike(node.argumentExpression) &&
+        node.argumentExpression.text === 'client'
+      )
+        receiver = node.expression;
+      if (ts.isBindingElement(node) && ts.isObjectBindingPattern(node.parent)) {
+        const key = node.propertyName ?? node.name;
+        if (
+          (ts.isIdentifier(key) || ts.isStringLiteralLike(key)) &&
+          key.text === 'client'
+        )
+          receiver = node.parent;
+      }
+      if (receiver) {
+        const type = checker.getTypeAtLocation(receiver);
+        if (
+          !(type.flags & ts.TypeFlags.Any) &&
+          checker.isTypeAssignableTo(type, scopeType)
+        )
+          found.push(`${path}: ${node.getText()}`);
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(file);
+  }
+  expect(found, 'Keep the Prisma client inside the repository.').toEqual([]);
+});
+
+test('exported repository writes require OwnerScope first', () => {
+  const {checker, scopeType, files} = typed();
+  const found: string[] = [];
+  const writes =
+    /^(create|createMany|createManyAndReturn|update|updateMany|updateManyAndReturn|upsert|delete|deleteMany|\$transaction|\$executeRaw|\$executeRawUnsafe|\$queryRaw|\$queryRawUnsafe)$/;
+  const hasWrite = (node: ts.Node, seen = new Set<ts.Node>()): boolean => {
+    if (seen.has(node)) return false;
+    seen.add(node);
+    let result = false;
+    const visit = (child: ts.Node): void => {
+      if (ts.isFunctionLike(child) && child !== node) return;
+      if (ts.isCallExpression(child)) {
+        const signature = checker.getResolvedSignature(child);
+        const declaration = signature?.declaration;
+        if (declaration) {
+          const source = declaration.getSourceFile().fileName;
+          const symbol = checker.getSymbolAtLocation(
+            ts.isPropertyAccessExpression(child.expression)
+              ? child.expression.name
+              : child.expression,
+          );
+          if (
+            source.includes('/prisma-models/generated/') &&
+            symbol &&
+            writes.test(symbol.name)
+          )
+            result = true;
+          if (source.startsWith(`${SRC}/`) && hasWrite(declaration, seen))
+            result = true;
+        }
+      }
+      ts.forEachChild(child, visit);
+    };
+    visit(node);
+    return result;
+  };
+  for (const file of files.filter(file =>
+    role('repository').test(file.fileName),
+  )) {
+    const module = checker.getSymbolAtLocation(file);
+    if (!module) continue;
+    for (const exported of checker.getExportsOfModule(module)) {
+      const type = checker.getTypeOfSymbolAtLocation(exported, file);
+      for (const signature of type.getCallSignatures()) {
+        const declaration = signature.declaration;
+        if (!declaration || !hasWrite(declaration)) continue;
+        const first = signature.parameters[0];
+        const parameterType =
+          first && checker.getTypeOfSymbolAtLocation(first, declaration);
+        if (
+          !parameterType ||
+          parameterType.flags & ts.TypeFlags.Any ||
+          !checker.isTypeAssignableTo(parameterType, scopeType) ||
+          !checker.isTypeAssignableTo(scopeType, parameterType)
+        )
+          found.push(
+            `${relative(SRC, file.fileName)}: ${exported.name} must take OwnerScope first`,
+          );
+      }
+    }
+  }
+  expect(found).toEqual([]);
 });

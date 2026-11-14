@@ -135,6 +135,57 @@ const cases: Violation[] = [
     path: 'src/modules/preset/preset.contract.ts',
     change: source => source.replace('  create: {', '  missing: {'),
   },
+  ...[
+    "import type {PrismaClient} from '@codeimage/prisma-models';",
+    "import {createPreset} from '../index.js';",
+  ].map(code => ({
+    rule: 'routes dispatch use cases',
+    path: 'src/modules/preset/routes/create.ts',
+    change: append(code),
+  })),
+  ...[
+    'scope.client',
+    "scope['client']",
+    'const {client} = scope',
+    "const {'client': database} = scope",
+  ].map(code => ({
+    rule: 'only repositories and shared/db read the client from an OwnerScope',
+    path: 'src/modules/preset/commands/create-preset.ts',
+    change: append(
+      `import type {OwnerScope} from '../../../shared/db.js';\nfunction leak(scope: OwnerScope) { ${code}; }`,
+    ),
+  })),
+  {
+    rule: 'exported repository writes require OwnerScope first',
+    path: 'src/modules/preset/preset.repository.ts',
+    change: append(
+      "import type {Db} from '../../shared/db.js';\nexport function inspect(db: Db) { return db.preset.deleteMany(); }",
+    ),
+  },
+  {
+    rule: 'exported repository writes require OwnerScope first',
+    path: 'src/modules/project/project.repository.ts',
+    change: source =>
+      source.replace('db.project.findFirst({', 'db.project.delete({'),
+  },
+  {
+    rule: 'exported repository writes require OwnerScope first',
+    path: 'src/modules/preset/preset.repository.ts',
+    change: append(
+      "import type {Db} from '../../shared/db.js';\nfunction persist(db: Db) { return db.preset.create({data: {name: 'bad', ownerId: 'owner', data: {}}}); }\nexport const inspect = (db: Db) => persist(db);",
+    ),
+  },
+  {
+    rule: 'each endpoint file registers exactly one contract operation',
+    path: 'src/modules/preset/routes/create.ts',
+    change: source =>
+      source.replace('...op.create,', "...op.create, url: '/changed',"),
+  },
+  {
+    rule: 'each endpoint file registers exactly one contract operation',
+    path: 'src/modules/preset/routes/create.ts',
+    change: source => source.replace('...op.create,', '...wrong.create,'),
+  },
 ];
 
 for (const violation of cases) {
