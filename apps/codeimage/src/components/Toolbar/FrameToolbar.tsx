@@ -5,7 +5,6 @@ import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {ColorSwatchIcon} from '../Icons/ColorSwatch';
 import {SparklesIcon} from '../Icons/SparklesIcon';
-import {CopyAltTextButton} from './CopyAltTextButton';
 import {CopyToClipboardButton} from './CopyToClipboardButton';
 import {ExportInNewTabButton} from './ExportNewTabButton';
 import {ExportSettingsButton} from './ExportSettingsButton';
@@ -26,7 +25,6 @@ export function FrameToolbar(props: FrameToolbarProps) {
       <HStack spacing={2}>
         <ExportSettingsButton />
         <CopyToClipboardButton canvasRef={props.frameRef} />
-        <CopyAltTextButton />
         <Button
           size={'xs'}
           theme={'secondary'}

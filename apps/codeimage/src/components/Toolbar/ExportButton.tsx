@@ -46,6 +46,7 @@ import {DownloadIcon} from '../Icons/Download';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {HintIcon} from '../Icons/Hint';
 import {redactTabCode} from '../CustomEditor/plugins/secrets';
+import {CopyAltTextButton} from './CopyAltTextButton';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -341,6 +342,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               size={'md'}
               label={t('exportTabs.oneImagePerTab')}
             />
+            <CopyAltTextButton />
           </VStack>
         </DynamicSizedContainer>
       </DialogPanelContent>
