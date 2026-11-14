@@ -8,7 +8,7 @@ import {PNG} from 'pngjs';
 
 declare global {
   interface Window {
-    fontProbeState: {queries: number};
+    fontProbeState: {queries: number; blobs: string[]};
   }
 }
 
@@ -976,70 +976,96 @@ async function main() {
         .last();
       if ((await tab.getAttribute('aria-selected')) !== 'true')
         await tab.click();
-      if (system)
-        await page.getByPlaceholder('Search font...').fill(name.toLowerCase());
+      if (system) {
+        const search = page.getByPlaceholder('Search font...');
+        await search.fill('');
+        await search.pressSequentially(name.toLowerCase());
+      }
       await page.getByRole('option', {name, exact: true}).click();
       await page.keyboard.press('Escape');
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(300);
     }
-    if (process.env.P2_WEB_FONT === 'geist-mono')
-      await chooseFont('Geist Mono');
-    const webFont = await page
-      .locator('[class*="FontPicker_inputValue"]')
-      .first()
-      .innerText();
     assert.ok(
       diagnostic.count > 0,
       'Native local fonts are not available in this browser context.',
     );
     await page.evaluate(() => {
-      window.fontProbeState = {queries: 0};
+      window.fontProbeState = {queries: 0, blobs: []};
       const query = window.queryLocalFonts!.bind(window);
       window.queryLocalFonts = options => {
         window.fontProbeState.queries++;
         return query(options);
       };
+      const blob = FontData.prototype.blob;
+      FontData.prototype.blob = function () {
+        window.fontProbeState.blobs.push(this.postscriptName);
+        return blob.call(this);
+      };
     });
-    const web = await render('takumi', 'local-web-selected');
-    const webParity = compare(
-      web.data,
-      await reference('local-web-chrome'),
-      'local-web',
-    );
-    assert.ok(webParity.percent <= 0.5);
-    assert.deepEqual(fallback, []);
-    assert.equal(
-      await page.evaluate(() => window.fontProbeState.queries),
-      0,
-      'Web export must not enumerate local fonts.',
-    );
-    const system = [];
-    for (const family of ['Menlo']) {
-      await chooseFont(family, true);
+    const fontRequests: string[] = [];
+    page.on('request', request => {
+      if (/\.(woff2?|ttf|otf)\b/.test(request.url()))
+        fontRequests.push(decodeURIComponent(new URL(request.url()).pathname));
+    });
+    async function exportWithFont(name: string) {
       await page.evaluate(() => {
-        if (window.fontProbeState) window.fontProbeState.queries = 0;
+        window.fontProbeState.queries = 0;
+        window.fontProbeState.blobs = [];
       });
+      fontRequests.length = 0;
       const previousFallbacks = fallback.length;
-      const result = await render('takumi', `local-${family}`);
+      const result = await render('takumi', `local-${name}`);
       const chrome = compare(
         result.data,
-        await reference(`local-${family}-chrome`),
-        `local-${family}`,
+        await reference(`local-${name}-chrome`),
+        `local-${name}`,
       );
-      const access = await page.evaluate(() => window.fontProbeState ?? null);
-      assert.equal(
-        access.queries,
-        0,
-        'System export must reuse stored FontData.',
+      const access = await page.evaluate(() => window.fontProbeState);
+      assert.equal(access.queries, 0, 'Export must not enumerate fonts.');
+      const row = {
+        family: name,
+        chrome,
+        access,
+        requests: [...fontRequests],
+        fallback: fallback.slice(previousFallbacks),
+      };
+      console.log('LOCAL FONT', JSON.stringify(row));
+      return {row, result};
+    }
+    const webFonts = (
+      process.env.P2_WEB_FONTS ??
+      (process.env.P2_WEB_FONT === 'geist-mono' ? 'Geist Mono' : '')
+    )
+      .split(',')
+      .filter(Boolean);
+    const web = [];
+    for (const family of webFonts.length ? webFonts : [null]) {
+      if (family) await chooseFont(family);
+      const webFont = await page
+        .locator('[class*="FontPicker_inputValue"]')
+        .first()
+        .innerText();
+      const {row} = await exportWithFont(webFont);
+      web.push(row);
+      assert.deepEqual(row.fallback, [], `${webFont} fell back.`);
+      assert.deepEqual(row.access.blobs, [], `${webFont} read a system font.`);
+      assert.ok(row.chrome.percent <= 0.5, `${webFont} exceeds 0.5%.`);
+    }
+    const system = [];
+    for (const family of (process.env.P2_SYSTEM_FONTS ?? 'Menlo').split(',')) {
+      await chooseFont(family, true);
+      const {row, result} = await exportWithFont(family);
+      system.push(row);
+      assert.ok(
+        row.access.blobs.length > 0,
+        `${family} export did not read its stored FontData.`,
       );
-      const fontFallbacks = fallback.slice(previousFallbacks);
-      system.push({family, chrome, access, fallback: fontFallbacks});
-      if (fontFallbacks.length) {
-        assert.equal(fontFallbacks.length, 1);
+      if (row.fallback.length) {
+        assert.equal(row.fallback.length, 1);
         await page
           .getByText(
-            `Used browser export for ${family}. ${fontFallbacks[0].includes('(format)') ? 'This font format is not supported by Takumi.' : 'The font data could not be read.'}`,
+            `Used browser export for ${family}. ${row.fallback[0].includes('(format)') ? 'This font format is not supported by Takumi.' : 'The font data could not be read.'}`,
             {exact: true},
           )
           .waitFor();
@@ -1054,12 +1080,12 @@ async function main() {
         );
       } else {
         assert.ok(
-          chrome.percent <= 0.5,
+          row.chrome.percent <= 0.5,
           `${family} exceeds the Chrome parity gate.`,
         );
       }
     }
-    const report = {diagnostic, webFont, webParity, system, fallback};
+    const report = {diagnostic, web, system, fallback};
     console.log('LOCAL FONT RESULTS', JSON.stringify(report));
     writeFileSync(
       path.join(out, 'local-fonts.json'),

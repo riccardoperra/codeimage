@@ -262,7 +262,20 @@ function localFontSources(font: CustomFontConfiguration): FontSource[] {
     key: source.postscriptName,
     weight: Number(determineFontFaceName(source.style)),
     style: /italic|oblique/i.test(source.style) ? 'italic' : 'normal',
-    data: async () => new Uint8Array(await (await source.blob()).arrayBuffer()),
+    data: async () => {
+      const bytes = new Uint8Array(await (await source.blob()).arrayBuffer());
+      // Chrome on macOS returns faces such as Menlo and Monaco with Apple's
+      // `true` sfnt version. Takumi only accepts the standard TrueType
+      // version, and the tables are the same.
+      if (
+        bytes[0] === 0x74 &&
+        bytes[1] === 0x72 &&
+        bytes[2] === 0x75 &&
+        bytes[3] === 0x65
+      )
+        bytes.set([0, 1, 0, 0]);
+      return bytes;
+    },
   }));
 }
 

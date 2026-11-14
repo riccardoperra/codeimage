@@ -241,13 +241,52 @@ describe('Takumi export', () => {
     ).rejects.toMatchObject({family: 'Menlo', reason: 'collection'});
   });
 
+  it('exports a system face that Chrome returns with the Apple TrueType tag', async () => {
+    const appleTrueType = new Uint8Array([0x74, 0x72, 0x75, 0x65, 0, 9, 0x80]);
+    const source = {
+      family: 'Menlo',
+      fullName: 'Menlo Regular',
+      postscriptName: 'Menlo-Regular',
+      style: 'Regular',
+      blob: async () => new Blob([appleTrueType]),
+    };
+    renderer.registerFont.mockImplementation(async font => {
+      if (font.data[0] === 0x74) throw new Error('Unsupported font format');
+    });
+    const {takumi} = await import('./takumi');
+    await expect(
+      takumi(exportNode('code'), {
+        ...options,
+        codeFont: {
+          id: 'Menlo',
+          name: 'Menlo',
+          type: 'system',
+          types: [{name: 'Regular', weight: 400}],
+          fontData: {
+            family: 'Menlo',
+            faces: ['400'],
+            monospaced: true,
+            sources: [source],
+          },
+        },
+      }),
+    ).resolves.toBeInstanceOf(Blob);
+    expect(renderer.registerFont).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'Menlo',
+        data: new Uint8Array([0, 1, 0, 0, 0, 9, 0x80]),
+      }),
+    );
+    expect(renderer.render).toHaveBeenCalledOnce();
+  });
+
   it('reports an unsupported selected font format separately from a read failure', async () => {
     const source = {
       family: 'Menlo',
       fullName: 'Menlo Regular',
       postscriptName: 'Menlo-Regular',
       style: 'Regular',
-      blob: async () => new Blob([new Uint8Array([0x74, 0x72, 0x75, 0x65])]),
+      blob: async () => new Blob([new Uint8Array([1, 2, 3, 4])]),
     };
     renderer.registerFont.mockImplementation(async font => {
       if (font.name === 'Menlo') throw new Error('Unsupported font format');
