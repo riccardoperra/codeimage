@@ -1,3 +1,4 @@
+import {getWhatsNew} from '../../../state/whats-new';
 import {createSignal} from 'solid-js';
 import {setThemeStyle, THEME_STYLES, themeStyle} from '../theme-styles/style';
 
@@ -132,6 +133,7 @@ function save(change: Stored) {
 export const preferences = {
   layout,
   setLayout: (id: LayoutId) => {
+    getWhatsNew().seen('layouts');
     setLayoutId(id);
     save({layout: id});
     syncParam('v', LAYOUTS.find(entry => entry.id === id)?.param ?? '');
@@ -144,6 +146,7 @@ export const preferences = {
   /** The theme card style in use, which a link can set to one outside `THEME_CARDS`. */
   themeCards: themeStyle,
   setThemeCards: (id: ThemeCardsId) => {
+    getWhatsNew().seen('theme-cards');
     showThemeCards(id);
     save({themeCards: id});
   },

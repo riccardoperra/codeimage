@@ -313,10 +313,7 @@ export function createSettingSections(
                 options={LAYOUTS}
                 value={preferences.layout()}
                 default={DEFAULT_LAYOUT}
-                onChange={value => {
-                  preferences.setLayout(value);
-                  news.seen('layouts');
-                }}
+                onChange={preferences.setLayout}
                 preview={option => (
                   <LayoutPreview
                     layout={option.id}
@@ -346,10 +343,7 @@ export function createSettingSections(
                     options={THEME_CARDS}
                     value={preferences.themeCards()}
                     default={DEFAULT_CARDS}
-                    onChange={value => {
-                      preferences.setThemeCards(value);
-                      news.seen('theme-cards');
-                    }}
+                    onChange={preferences.setThemeCards}
                     preview={option => (
                       <ThemeCardsPreview style={option.id} theme={current()} />
                     )}
