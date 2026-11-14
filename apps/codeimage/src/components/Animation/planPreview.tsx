@@ -157,6 +157,7 @@ export async function planPreview(
         owner,
         () => (
           <FrameView
+            natural
             activeTabId={tab.id}
             code={codeView(tab, languages[index])}
           />

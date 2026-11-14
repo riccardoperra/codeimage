@@ -72,6 +72,9 @@ export interface FrameViewProps {
   // Marks the frame and its window for the rules of an animation scene, and
   // takes the window out of FittedWindow so those rules can place it.
   animated?: boolean;
+  // Sizes the frame from its code, as the static export of one animation
+  // step, instead of from the editor frame on screen.
+  natural?: boolean;
 }
 
 // The frame as the export draws it, around any code view.
@@ -116,12 +119,12 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
           [styles.frameVars.radius]: `${frame.radius}px`,
           [styles.frameVars.width]: target()
             ? `${target()!.resolution[0]}px`
-            : frame.width
+            : frame.width && !props.natural
               ? `${frame.width}px`
               : 'auto',
           [styles.frameVars.height]: target()
             ? `${target()!.resolution[1]}px`
-            : frame.height
+            : frame.height && !props.natural
               ? `${frame.height}px`
               : 'auto',
           [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
