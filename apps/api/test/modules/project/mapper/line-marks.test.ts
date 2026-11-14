@@ -9,7 +9,7 @@ const marks = {
     {line: 3, kind: 'added'},
     {line: 5, kind: 'highlight'},
   ],
-  focus: true,
+  focusedLines: [2],
 };
 const tab = {
   id: 'tab',
@@ -34,8 +34,8 @@ test('keeps requests without marks compatible and restores null database values'
   expect(
     Value.Check(SnippetEditorTabsUpdateRequestSchema, [{...tab, marks: null}]),
   ).toBe(true);
-  expect(parseTabMarks(null)).toEqual({lines: [], focus: false});
-  expect(parseTabMarks(undefined)).toEqual({lines: [], focus: false});
+  expect(parseTabMarks(null)).toEqual({lines: [], focusedLines: []});
+  expect(parseTabMarks(undefined)).toEqual({lines: [], focusedLines: []});
 });
 
 test('rejects invalid kinds and line numbers at the API boundary', () => {
@@ -44,12 +44,33 @@ test('rejects invalid kinds and line numbers at the API boundary', () => {
     {line: 1.5, kind: 'added'},
     {line: 1, kind: 'unknown'},
   ]) {
-    expect(Value.Check(TabMarksSchema, {lines: [invalid], focus: false})).toBe(
-      false,
-    );
-    expect(parseTabMarks({lines: [invalid], focus: false})).toEqual({
+    expect(
+      Value.Check(TabMarksSchema, {lines: [invalid], focusedLines: []}),
+    ).toBe(false);
+    expect(parseTabMarks({lines: [invalid], focusedLines: []})).toEqual({
       lines: [],
-      focus: false,
+      focusedLines: [],
     });
+  }
+});
+
+test('migrates legacy focus to highlighted lines only and disables empty focus', () => {
+  expect(parseTabMarks({lines: marks.lines, focus: true})).toEqual({
+    lines: marks.lines,
+    focusedLines: [5],
+  });
+  expect(parseTabMarks({lines: marks.lines, focus: false})).toEqual({
+    lines: marks.lines,
+    focusedLines: [],
+  });
+  expect(parseTabMarks({lines: [], focus: true})).toEqual({
+    lines: [],
+    focusedLines: [],
+  });
+});
+
+test('rejects invalid focused line numbers', () => {
+  for (const focusedLines of [[0], [-1], [1.5], ['2']]) {
+    expect(Value.Check(TabMarksSchema, {lines: [], focusedLines})).toBe(false);
   }
 });

@@ -31,11 +31,13 @@ export function pasteAnnotations(
   for (const insertion of insertions) {
     const from = conversion.changes.mapPos(insertion.from, -1);
     const first = conversion.state.doc.lineAt(from).number;
+    mappedMarks.focusedLines.push(
+      ...parsed.marks.focusedLines.map(line => first + line - 1),
+    );
     for (const mark of parsed.marks.lines) {
       mappedMarks.lines.push({...mark, line: first + mark.line - 1});
     }
   }
-  mappedMarks.focus ||= parsed.marks.focus;
   const last = insertions[insertions.length - 1];
   view.dispatch({
     changes: conversion.changes,

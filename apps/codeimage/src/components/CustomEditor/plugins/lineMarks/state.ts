@@ -18,7 +18,7 @@ import type {LineMark, TabMarks} from '../../../../state/editor/model';
 
 interface MarkState {
   decorations: DecorationSet;
-  focus: boolean;
+  focused: DecorationSet;
 }
 
 const decorations = {
@@ -54,13 +54,23 @@ export const replaceMarks = StateEffect.define<MarkState>({
   map: (value, changes) => ({
     ...value,
     decorations: mapDecorations(value.decorations, changes),
+    focused: mapDecorations(value.focused, changes),
   }),
 });
 
 export function marksValue(doc: Text, marks: TabMarks): MarkState {
   const byLine = new Map(marks.lines.map(mark => [mark.line, mark.kind]));
   return {
-    focus: marks.focus,
+    focused: Decoration.set(
+      [...new Set(marks.focusedLines)]
+        .filter(line => line >= 1 && line <= doc.lines)
+        .sort((a, b) => a - b)
+        .map(line =>
+          Decoration.line({attributes: {'data-focused': 'true'}}).range(
+            doc.line(line).from,
+          ),
+        ),
+    ),
     decorations: Decoration.set(
       [...byLine]
         .filter(([line]) => line >= 1 && line <= doc.lines)
@@ -75,24 +85,30 @@ const dimmedLine = new (class extends GutterMarker {
 })();
 
 export const lineMarksField = StateField.define<MarkState>({
-  create: () => ({decorations: Decoration.none, focus: false}),
+  create: () => ({decorations: Decoration.none, focused: Decoration.none}),
   update(value, tr) {
     if (tr.docChanged) {
-      const mapped = mapDecorations(
-        value.decorations,
-        tr.changes,
-        tr.startState.doc,
-      );
-      const normalized = [];
-      let previous = -1;
-      for (let cursor = mapped.iter(); cursor.value; cursor.next()) {
-        const from = tr.state.doc.lineAt(cursor.from).from;
-        // Joining two marked lines keeps the mark of the line that remains.
-        if (from === previous) continue;
-        normalized.push(cursor.value.range(from));
-        previous = from;
-      }
-      value = {...value, decorations: Decoration.set(normalized, true)};
+      const map = (decorations: DecorationSet) => {
+        const mapped = mapDecorations(
+          decorations,
+          tr.changes,
+          tr.startState.doc,
+        );
+        const normalized = [];
+        let previous = -1;
+        for (let cursor = mapped.iter(); cursor.value; cursor.next()) {
+          const from = tr.state.doc.lineAt(cursor.from).from;
+          // Joining lines keeps one mark of each independent kind.
+          if (from === previous) continue;
+          normalized.push(cursor.value.range(from));
+          previous = from;
+        }
+        return Decoration.set(normalized, true);
+      };
+      value = {
+        decorations: map(value.decorations),
+        focused: map(value.focused),
+      };
     }
     for (const effect of tr.effects) {
       if (effect.is(replaceMarks)) value = effect.value;
@@ -101,6 +117,7 @@ export const lineMarksField = StateField.define<MarkState>({
   },
   provide: field => [
     EditorView.decorations.from(field, value => value.decorations),
+    EditorView.decorations.from(field, value => value.focused),
     EditorView.editorAttributes.from(field, value => {
       let diff = false;
       for (let cursor = value.decorations.iter(); cursor.value; cursor.next()) {
@@ -111,17 +128,16 @@ export const lineMarksField = StateField.define<MarkState>({
       }
       return {
         'data-line-marks': 'true',
-        'data-line-focus': String(value.focus),
+        'data-line-focus': String(value.focused.size > 0),
         'data-line-diff': String(diff),
       };
     }),
     gutterLineClass.compute([field], state => {
       const value = state.field(field);
-      if (!value.focus) return RangeSet.empty;
+      if (!value.focused.size) return RangeSet.empty;
       const highlighted = new Set<number>();
-      for (let cursor = value.decorations.iter(); cursor.value; cursor.next())
-        if (cursor.value.spec.attributes['data-mark'] === 'highlight')
-          highlighted.add(cursor.from);
+      for (let cursor = value.focused.iter(); cursor.value; cursor.next())
+        highlighted.add(cursor.from);
       const markers = [];
       for (let line = 1; line <= state.doc.lines; line++) {
         const from = state.doc.line(line).from;
@@ -140,7 +156,11 @@ export function readMarks(state: EditorView['state']): TabMarks {
     const line = state.doc.lineAt(from).number;
     byLine.set(line, {line, kind});
   });
-  return {lines: [...byLine.values()], focus: value.focus};
+  const focusedLines: number[] = [];
+  value.focused.between(0, state.doc.length, from => {
+    focusedLines.push(state.doc.lineAt(from).number);
+  });
+  return {lines: [...byLine.values()], focusedLines};
 }
 
 export function setLineMarks(
@@ -160,16 +180,41 @@ export function setLineMarks(
 export function markLines(
   view: EditorView,
   lines: number[],
-  kind: LineMark['kind'] | null,
+  kind: LineMark['kind'] | 'focus' | null,
 ) {
   if (view.state.readOnly) return false;
   const marks = readMarks(view.state);
+  const focused = new Set(marks.focusedLines);
   const updated = new Map(marks.lines.map(mark => [mark.line, mark]));
   for (const line of lines) {
-    if (kind) updated.set(line, {line, kind});
-    else updated.delete(line);
+    if (kind === 'focus') focused.add(line);
+    else if (kind) updated.set(line, {line, kind});
+    else {
+      updated.delete(line);
+      focused.delete(line);
+    }
   }
-  setLineMarks(view, {...marks, lines: [...updated.values()]});
+  setLineMarks(view, {
+    focusedLines: [...focused],
+    lines: [...updated.values()],
+  });
+  return true;
+}
+
+export function clearLineMark(
+  view: EditorView,
+  line: number,
+  kind: LineMark['kind'] | 'focus',
+) {
+  if (view.state.readOnly) return false;
+  const marks = readMarks(view.state);
+  setLineMarks(view, {
+    lines: marks.lines.filter(mark => mark.line !== line || mark.kind !== kind),
+    focusedLines:
+      kind === 'focus'
+        ? marks.focusedLines.filter(value => value !== line)
+        : marks.focusedLines,
+  });
   return true;
 }
 

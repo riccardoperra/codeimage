@@ -6,7 +6,7 @@ describe('parseAnnotations', () => {
     ['++', 'added'],
     ['--', 'removed'],
     ['highlight', 'highlight'],
-    ['focus', 'highlight'],
+    ['focus', 'focus'],
   ])('converts %s', (notation, kind) => {
     expect(
       parseAnnotations(`const n = 1; // [!code ${notation}]`, {line: '//'}),
@@ -14,7 +14,10 @@ describe('parseAnnotations', () => {
       code: 'const n = 1;',
       count: 1,
       sourceLines: [1],
-      marks: {lines: [{line: 1, kind}], focus: notation === 'focus'},
+      marks: {
+        lines: notation === 'focus' ? [] : [{line: 1, kind}],
+        focusedLines: notation === 'focus' ? [1] : [],
+      },
     });
   });
   it.each(['highlight', 'focus'])('bounds %s:N to the document', notation => {
@@ -22,15 +25,28 @@ describe('parseAnnotations', () => {
       `one // [!code ${notation}:3]\ntwo\nthree\nfour`,
       {line: '//'},
     );
-    expect(result.marks.lines.map(mark => mark.line)).toEqual([1, 2, 3]);
-    expect(result.marks.focus).toBe(notation === 'focus');
+    expect(
+      notation === 'focus'
+        ? result.marks.focusedLines
+        : result.marks.lines.map(mark => mark.line),
+    ).toEqual([1, 2, 3]);
+  });
+  it('keeps focus independent of color marks and accumulates separate ranges', () => {
+    const result = parseAnnotations(
+      'one // [!code ++] [!code focus:2]\ntwo\nthree\nfour // [!code focus:2]\nfive',
+      {line: '//'},
+    );
+    expect(result.marks).toEqual({
+      lines: [{line: 1, kind: 'added'}],
+      focusedLines: [1, 2, 4, 5],
+    });
   });
   it('accepts Python comments and standalone annotations for following code', () => {
     expect(parseAnnotations('# [!code ++]\nprint("hi")', {line: '#'})).toEqual({
       code: 'print("hi")',
       count: 1,
       sourceLines: [2],
-      marks: {lines: [{line: 1, kind: 'added'}], focus: false},
+      marks: {lines: [{line: 1, kind: 'added'}], focusedLines: []},
     });
   });
   it('accepts HTML comments without removing surrounding markup', () => {
@@ -62,7 +78,7 @@ describe('parseAnnotations', () => {
       code,
       count: 0,
       sourceLines: [1],
-      marks: {lines: [], focus: false},
+      marks: {lines: [], focusedLines: []},
     });
   });
   it('finds annotations after an unclosed quote such as a Rust lifetime', () => {
@@ -101,7 +117,7 @@ describe('parseAnnotations', () => {
     );
     expect(
       parseAnnotations('one // [!code focus:99999999999999]', {line: '//'})
-        .marks.lines,
+        .marks.focusedLines,
     ).toHaveLength(1);
   });
 });

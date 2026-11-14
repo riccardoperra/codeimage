@@ -202,7 +202,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
   createExtension(() => themeConfiguration()?.editorTheme || []);
   createExtension(baseEditorTheme);
   const initialMarks = untrack(
-    () => editor()?.marks ?? {lines: [], focus: false},
+    () => editor()?.marks ?? {lines: [], focusedLines: []},
   );
   createExtension(() =>
     lineMarksExtension(!props.readOnly, initialMarks, {
@@ -213,6 +213,12 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       clear: t('lineMarks.clear'),
       focus: t('lineMarks.focus'),
       focusHint: t('lineMarks.focusHint'),
+      clearMark: {
+        highlight: t('lineMarks.clearMark.highlight'),
+        added: t('lineMarks.clearMark.added'),
+        removed: t('lineMarks.clearMark.removed'),
+        focus: t('lineMarks.clearMark.focus'),
+      },
     }),
   );
   createExtension(() => EditorState.readOnly.of(props.readOnly));
@@ -244,7 +250,7 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
                     line: mark.line,
                     kind: mark.kind,
                   })),
-                  focus: tab.marks.focus,
+                  focusedLines: [...tab.marks.focusedLines],
                 }
               : null,
         };
@@ -269,7 +275,9 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
             changes: {from: 0, to: view.state.doc.length, insert: code},
             effects: replaceMarks.of(
               marksValue(EditorState.create({doc: code}).doc, {
-                focus: previous.focus,
+                focusedLines: previous.focusedLines.flatMap(
+                  line => lines.get(line) ?? [],
+                ),
                 lines: previous.lines.flatMap(mark => {
                   const line = lines.get(mark.line);
                   return line ? [{...mark, line}] : [];
@@ -280,7 +288,8 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
           });
           return;
         }
-        const tabMarks = marks ?? editor()?.marks ?? {lines: [], focus: false};
+        const tabMarks = marks ??
+          editor()?.marks ?? {lines: [], focusedLines: []};
         const doc = changedCode
           ? EditorState.create({doc: code}).doc
           : view.state.doc;

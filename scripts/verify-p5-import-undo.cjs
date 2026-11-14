@@ -90,7 +90,7 @@ async function main() {
         );
         markTools.setLineMarks(view, {
           lines: [{line: 3, kind: 'highlight'}],
-          focus: true,
+          focusedLines: [3],
         });
       }, diff);
       await page

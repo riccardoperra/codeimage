@@ -48,7 +48,7 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
         languageId: 'markdown',
         tabName: 'README.md',
         lineNumberStart: 1,
-        marks: {lines: [{line: 1, kind: 'highlight'}], focus: true},
+        marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
       },
       {
         id: 'temp',
@@ -146,7 +146,7 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
         languageId: 'markdown',
         tabName: 'README.md',
         lineNumberStart: 1,
-        marks: {lines: [{line: 1, kind: 'highlight'}], focus: true},
+        marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
       },
       {
         id: body.editorTabs[1].id,
@@ -154,7 +154,7 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
         languageId: 'typescript',
         tabName: 'index.tsx',
         lineNumberStart: 300,
-        marks: {lines: [], focus: false},
+        marks: {lines: [], focusedLines: []},
       },
     ] as ProjectUpdateResponse['editorTabs'],
     'return updated editor tabs',

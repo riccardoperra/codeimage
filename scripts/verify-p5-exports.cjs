@@ -95,7 +95,7 @@ async function marks(page, count) {
             line: 1 + i * 3,
             kind: ['added', 'removed', 'highlight'][i % 3],
           })),
-          focus: false,
+          focusedLines: [],
         },
         false,
       ),

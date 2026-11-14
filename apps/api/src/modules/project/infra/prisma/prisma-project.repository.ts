@@ -163,7 +163,7 @@ export function makePrismaProjectRepository(
           },
           upsert: data.editors.map(editor => {
             const {languageId, code, tabName, lineNumberStart, id} = editor;
-            const marks = editor.marks ?? {lines: [], focus: false};
+            const marks = editor.marks ?? {lines: [], focusedLines: []};
             return {
               where: {
                 id,
