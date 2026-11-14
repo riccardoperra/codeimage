@@ -5,7 +5,7 @@ import type {
   ProjectCreateResponse,
 } from '../../../../src/modules/project/project.contract.js';
 
-import {build} from '../../../helper.js';
+import {build} from '../../../helpers/app.js';
 import {clearAllSeeds, client, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {

@@ -2,7 +2,7 @@ import type {Preset, User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, test} from 'vitest';
 import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
 import {testPresetUtils} from '../../../helpers/preset.js';
-import {build} from '../../../helper.js';
+import {build} from '../../../helpers/app.js';
 import {clearAllSeeds, presetSeed, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {

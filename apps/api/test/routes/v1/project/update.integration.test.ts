@@ -5,7 +5,7 @@ import type {
   ProjectUpdateResponse,
 } from '../../../../src/modules/project/project.contract.js';
 
-import {build} from '../../../helper.js';
+import {build} from '../../../helpers/app.js';
 import {
   clearAllSeeds,
   client,

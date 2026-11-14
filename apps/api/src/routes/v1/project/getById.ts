@@ -3,10 +3,13 @@ import {projectContract as op} from '../../../modules/project/project.contract.j
 const route: FastifyPluginAsyncTypebox = async fastify => {
   fastify.route({
     ...op.get,
-    preValidation: (req, reply) =>
-      fastify.authorize(req, reply, {mustBeAuthenticated: false}),
     handler: request =>
-      fastify.projectService.findById(request.appUser, request.params.id),
+      fastify.projectService.findById(
+        request.principal.kind === 'user'
+          ? {id: request.principal.userId}
+          : null,
+        request.params.id,
+      ),
   });
 };
 export default route;

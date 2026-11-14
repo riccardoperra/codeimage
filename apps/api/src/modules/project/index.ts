@@ -7,7 +7,7 @@ import type {ProjectRepository} from './repository/index.js';
 export const project: FastifyPluginAsync = async fastify => {
   fastify.decorate(
     'projectRepository',
-    makePrismaProjectRepository(fastify.prisma),
+    makePrismaProjectRepository(fastify.db),
   );
 
   fastify.decorate(

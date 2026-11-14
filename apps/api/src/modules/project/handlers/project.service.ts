@@ -13,7 +13,10 @@ import {
 import type {ProjectCompleteResponse} from '../project.contract.js';
 
 export interface ProjectService {
-  findById(user: User | null, id: string): Promise<ProjectCompleteResponse>;
+  findById(
+    user: Pick<User, 'id'> | null,
+    id: string,
+  ): Promise<ProjectCompleteResponse>;
 
   findAllByUserId(userId: string): Promise<ProjectListItem[]>;
 
@@ -35,7 +38,7 @@ export interface ProjectService {
   ): Promise<ProjectUpdateResponse>;
 
   clone(
-    user: User,
+    user: Pick<User, 'id'>,
     projectId: string,
     newName: string | null,
   ): Promise<ProjectCreateResponse>;
@@ -46,7 +49,7 @@ export function makeProjectService(
 ): ProjectService {
   return {
     async findById(
-      user: User | null,
+      user: Pick<User, 'id'> | null,
       id: string,
     ): Promise<ProjectCompleteResponse> {
       const project = await repository.findById(id);
@@ -93,7 +96,7 @@ export function makeProjectService(
       return project;
     },
     async clone(
-      user: User,
+      user: Pick<User, 'id'>,
       projectId: string,
       newName: string | null,
     ): Promise<ProjectCreateResponse> {
