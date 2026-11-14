@@ -79,12 +79,47 @@ The stage, from `stage.tsx`, holds the parts of the real editor that a layout pl
 
 `shell/` holds what every layout shares around the canvas: the header and the settings.
 
-- `Header.tsx` is the compact header, 44px tall with no bar of its own, so it floats on the app background. It holds the logo, the dashboard link and the snippet name where production shows them, the gear that opens the settings, and the production Share, Export and sign-in or user badge. A layout renders `<Header stage={props.stage} />` at its top, in place of the production `Toolbar`.
-- `SettingsDialog.tsx` is the one settings surface, a kit `Dialog`. Its sections are Layout (three cards, each with a small drawing of the layout, and the panel side while Inspector is chosen), Theme cards (three cards, each drawn with the applied theme), Appearance (colour mode and language, the two settings production has today) and About (changelog, GitHub, log out). The harness mounts it once.
-- `settings-state.ts` exports `settings.open`, `settings.close` and `settings.isOpen`. Closing returns focus to what opened it, or to the gear when a layout change replaced the header.
-- `preferences.ts` keeps the three choices in local storage under the one key `codeimage:prototype-settings`, as `{layout, inspectorSide, themeCards}`. Without stored choices the editor opens in Inspector with the panel on the right and Window cards.
-- `commands.ts` lists the same choices as commands for the command menu.
-- `previews.tsx` draws the small layout wireframes.
+- `Header.tsx` is the compact header. It has no bar of its own and is as tall as its controls, 36px, so it reads as the first row of the islands. It holds the logo, the dashboard link and the snippet name where production shows them, the gear that opens the settings, and the production Share, Export and sign-in or user badge. A layout renders `<Header stage={props.stage} />` at its top, in place of the production `Toolbar`.
+- `SettingsDialog.tsx` is the one settings surface, a kit `Dialog` in two panes. The harness mounts it once.
+- `sections.tsx` holds every setting as data: sections, groups and rows. The dialog draws them and its search reads the same rows.
+- `settings-state.ts` exports `settings.open(section?)`, `settings.close`, `settings.isOpen` and `settings.section`. Closing returns focus to what opened it, or to the gear when a layout change replaced the header.
+- `preferences.ts` keeps the three choices in local storage under the one key `codeimage:prototype-settings`, as `{layout, inspectorSide, themeCards}`. Without stored choices the editor opens in Inspector with the panel on the right and Window cards. `preferences.restoreDefaults()` turns every experiment off.
+- `commands.ts` lists the same choices as commands for the command menu, and one `Settings: <section>` command per section.
+- `previews.tsx` draws the small layout wireframes, and `icons.tsx` the icons of the header and the settings.
+
+### The header and the islands
+
+The header takes its spacing from the layout through two custom properties, so that its edges meet the islands' outer edges and the space under it is the space between two islands:
+
+| Property        | Meaning                                             | Default         |
+| --------------- | --------------------------------------------------- | --------------- |
+| `--shell-inset` | The space between the page's edge and the islands   | `8px`           |
+| `--shell-gap`   | The space under the header, above the first islands | `--shell-inset` |
+
+A layout sets them on its root when its numbers differ: Inspector sets a 12px inset, and Dock sets the gap to 0 because its root already puts its own gap under the header. The layout's first row of islands then starts with no top padding of its own.
+
+### The settings dialog
+
+The left pane has a search field and the sections, each with an icon. The right pane has a breadcrumb, `Settings / General`, a close button, and the section as titled groups. A group is one island of rows. A row is a title, one line that explains it, and its control on the right. A `wide` row puts its control under the text at the island's width, which the cards with a preview use.
+
+| Section     | Group        | Row         | Control                             |
+| ----------- | ------------ | ----------- | ----------------------------------- |
+| General     | Interface    | Language    | Segmented, one option per locale    |
+| Appearance  | Colours      | Colour mode | Segmented: Dark, Light, System      |
+| Appearance  | Inspector    | Panel side  | Segmented: Left, Right              |
+| Experiments | Editor       | Layout      | Cards: Inspector, Dock, Studio      |
+| Experiments | Theme picker | Theme cards | Cards: Window, Orb, Aa list         |
+| About       | CodeImage    | Version     | The version, to read                |
+| About       | CodeImage    | Changelog   | Opens the production changelog      |
+| About       | CodeImage    | GitHub      | A link to the repository            |
+| About       | Account      | Log out     | A button, only for a signed-in user |
+
+- Experiments holds what is not the default yet. Inspector and Window carry a `Default` tag, and `Restore defaults` goes back to both. The choices are cards and not switches because each is one out of three: two switches would turn each other off.
+- The search filters the rows of every section by title and description, and every word has to match. The results are grouped by section. Escape clears the search, a second Escape closes the dialog, and `/` focuses the field.
+- Opening the dialog focuses the section on screen, not the search, so a phone does not open its keyboard over the settings.
+- Under 769px the left pane becomes two rows on top: the search with the close button, then the sections as tabs without icons. Four sections do not need a screen of their own, and this keeps every section and the search one tap away.
+- To add a setting, add a row to a group in `sections.tsx`. Use the segmented control or a switch for a choice. The kit's `Select` does not work in this dialog: the dialog is modal, and Kobalte marks the select's list, which it adds outside the dialog, as hidden from assistive technology.
+- Create anything a row opens, such as the changelog, in `SettingsDialog`, which stays mounted. The panel inside it goes away as the dialog closes.
 
 The harness sets `data-layout` on the page root, `.proto-variant`. While Inspector is chosen it also sets `data-inspector-side="left|right"`, on `.proto-variant` and on the root element that the layout renders, so a layout can read it from either.
 
@@ -124,7 +159,7 @@ Inspector puts its panel on the right. Set `data-inspector-side="left"` on its r
 
 `command-menu/` holds one command menu for every layout. The harness mounts it and binds Cmd+K, or Ctrl+K off Apple platforms. No layout has to do anything to get it.
 
-- It lists every theme, every option of every visible control, every background fill, the actions Export, Randomize and Format, and the settings: `Settings…`, each layout, the Inspector side, each theme card style, the colour mode, and what the old header menu held. `listed-model.ts` turns the window style and the font, which the model hands out as production pickers, into plain choices over the same stores, so that they can be listed too.
+- It lists every theme, every option of every visible control, every background fill, the actions Export, Randomize and Format, and the settings: `Settings…`, one `Settings: <section>` command per section of the dialog, each layout, the Inspector side, each theme card style, the colour mode, and what the old header menu held. `listed-model.ts` turns the window style and the font, which the model hands out as production pickers, into plain choices over the same stores, so that they can be listed too.
 - The highlighted row is previewed on the canvas through the model's preview session. Enter saves it. Escape, or any other way out, ends the preview.
 - It floats at the bottom centre with no scrim and is six rows tall, so the frame stays in view while the list is walked.
 - It does not open over an open list, menu, popover or modal dialog. A layout that wants it to open anyway closes what it has open first: `commandMenu.beforeOpen(close)`.
