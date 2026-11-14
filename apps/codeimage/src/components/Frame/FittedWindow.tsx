@@ -7,17 +7,28 @@ import {
   type ParentProps,
 } from 'solid-js';
 
+export const FITTED_WINDOW_MIN_WIDTH = 480;
+
+interface Size {
+  width: number;
+  height: number;
+}
+
+// The window shrinks to fit the frame but never grows past its natural size.
+export const fitScale = (viewport: Size, content: Size) =>
+  Math.min(1, viewport.width / content.width, viewport.height / content.height);
+
 function fitFrameWindow(frame: HTMLElement) {
   const content = frame.querySelector<HTMLElement>('[data-fitted-window]');
   const viewport = content?.parentElement;
   if (!content || !viewport || !viewport.hasAttribute('data-fit-window'))
     return;
-  const width = Math.max(content.offsetWidth, content.scrollWidth);
-  const height = Math.max(content.offsetHeight, content.scrollHeight);
-  const scale = Math.min(
-    1,
-    viewport.clientWidth / width,
-    viewport.clientHeight / height,
+  const scale = fitScale(
+    {width: viewport.clientWidth, height: viewport.clientHeight},
+    {
+      width: Math.max(content.offsetWidth, content.scrollWidth),
+      height: Math.max(content.offsetHeight, content.scrollHeight),
+    },
   );
   const transform = `translate(-50%, -50%) scale(${scale})`;
   if (content.style.transform !== transform)
@@ -70,7 +81,7 @@ export function FittedWindow(props: ParentProps<{active: boolean}>) {
                 left: '50%',
                 top: '50%',
                 width: 'max-content',
-                'min-width': '480px',
+                'min-width': `${FITTED_WINDOW_MIN_WIDTH}px`,
                 'transform-origin': 'center',
               }
             : {display: 'contents', transform: 'none'}
