@@ -103,9 +103,29 @@ test('defineHandler exposes the factory and registers on the selected bus', asyn
   t.onTestFinished(() => app.close());
   await app.register(busPlugin);
   await app.register(handler, {prefix: 'Hello'});
+  await app.register(defineHandler(length, () => async ({text}) => text.length));
   await app.ready();
   expect(await app.commandBus.execute(greet({name: 'Ada'}))).toBe('Hello Ada');
   await expect(app.queryBus.execute(greet({name: 'Ada'}))).rejects.toThrow(
     'not registered',
+  );
+});
+
+test('defining an action name twice throws', () => {
+  expect(() => defineCommand('test.length')).toThrow(
+    'already defined: test.length',
+  );
+});
+
+// Runs last: the action it defines stays defined for the rest of this file.
+test('boot fails when a defined action has no handler', async t => {
+  defineCommand<void, void>('test.orphan');
+  const app = Fastify();
+  t.onTestFinished(() => app.close());
+  await app.register(busPlugin);
+  await app.register(defineHandler(greet, () => async ({name}) => name));
+  await app.register(defineHandler(length, () => async ({text}) => text.length));
+  await expect(app.ready()).rejects.toThrow(
+    'No handler registered for: test.orphan',
   );
 });

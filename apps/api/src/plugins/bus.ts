@@ -1,5 +1,10 @@
 import fp from 'fastify-plugin';
-import {createBus, type Bus, type Middleware} from '../shared/bus.js';
+import {
+  createBus,
+  type Bus,
+  type Middleware,
+  unregisteredActions,
+} from '../shared/bus.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -36,8 +41,15 @@ export default fp(
         throw err;
       }
     };
-    fastify.decorate('commandBus', createBus({middlewares: [logging]}));
-    fastify.decorate('queryBus', createBus({middlewares: [logging]}));
+    const command = createBus({middlewares: [logging]});
+    const query = createBus({middlewares: [logging]});
+    fastify.decorate('commandBus', command);
+    fastify.decorate('queryBus', query);
+    fastify.addHook('onReady', async () => {
+      const missing = unregisteredActions({command, query});
+      if (missing.length > 0)
+        throw new Error(`No handler registered for: ${missing.join(', ')}`);
+    });
   },
   {name: 'bus'},
 );
