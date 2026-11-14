@@ -15,6 +15,7 @@ import {
   history,
   historyKeymap,
   indentWithTab,
+  isolateHistory,
 } from '@codemirror/commands';
 import {bracketMatching, indentOnInput} from '@codemirror/language';
 import type {Extension} from '@codemirror/state';
@@ -34,6 +35,7 @@ import type {VoidProps} from 'solid-js';
 import {createEffect, createMemo, createResource, on, untrack} from 'solid-js';
 import {baseEditorTheme} from './editorTheme';
 import {createTabIcon} from '../../hooks/use-tab-icon';
+import {mapLines} from '../../core/diff/mapLines';
 import {lineMarksExtension} from './plugins/lineMarks';
 import {gutterMarkMouseDown} from './plugins/lineMarks/controls';
 import {
@@ -256,8 +258,28 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
         )
           return;
         const changedTab = id !== activeId;
-        const changedCode = code !== view.state.doc.toString();
+        const current = view.state.doc.toString();
+        const changedCode = code !== current;
         if (!changedTab && !changedCode && !marks) return;
+        if (!changedTab && changedCode && !props.readOnly) {
+          // Format rewrites the stored code; map marks by line and keep the step undoable.
+          const lines = mapLines(current, code);
+          const previous = readMarks(view.state);
+          view.dispatch({
+            changes: {from: 0, to: view.state.doc.length, insert: code},
+            effects: replaceMarks.of(
+              marksValue(EditorState.create({doc: code}).doc, {
+                focus: previous.focus,
+                lines: previous.lines.flatMap(mark => {
+                  const line = lines.get(mark.line);
+                  return line ? [{...mark, line}] : [];
+                }),
+              }),
+            ),
+            annotations: isolateHistory.of('full'),
+          });
+          return;
+        }
         const tabMarks = marks ?? editor()?.marks ?? {lines: [], focus: false};
         const doc = changedCode
           ? EditorState.create({doc: code}).doc
