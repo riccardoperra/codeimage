@@ -35,7 +35,7 @@ export interface Release {
 
 /**
  * Newest first. Entries are never deleted, because this is the archive.
- * A feature PR adds its own highlight here, next to the control it ships.
+ * A highlight in this list means its feature is in the bundle.
  */
 export const RELEASES = [
   {

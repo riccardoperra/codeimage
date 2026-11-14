@@ -35,7 +35,7 @@ onChange={value => { preferences.setLayout(value); whatsNew.seen('layouts'); }}
 - **Facts** are two grow-only sets, `seen` highlight ids and `dismissed` release ids. Merging is a union, so marking seen is idempotent and two tabs converge without locks (separate-before-serializing-shared-state, make-operations-idempotent).
 - **The store** (`apps/codeimage/src/state/whats-new/whats-new.store.ts`) is the thin shell. It owns the one IndexedDB key, the one Umami call site, and the map of location openers.
 - **Seen means located.** Only opening the coachmark or using the feature marks a highlight seen. Nudge steps, archive rows and "Show me" do not, so the dot is still on the control when the user arrives.
-- **A feature PR adds its own highlight** next to the control it ships. The registry on trunk lists only features that are on trunk.
+- **The registry lists only features that are in the bundle.** Highlights for features that land later are added together in one final PR for the release, not by each feature PR.
 
 Other folders import only `state/whats-new/index.ts`. The public interface is the registry plus nine store members. Callers never see a fact, a storage key or an event name.
 
@@ -84,3 +84,22 @@ The development-only query `?whatsNew=nudge` or `?whatsNew=showcase` forces a re
 - IndexedDB writes are asynchronous. Browser checks wait for the dismissal write before reloading.
 - Floating announcements cover editor controls beneath them. They can be dismissed without changing the layout.
 - The Showcase is built and available for review, but this release is not major.
+
+## Highlights for the 2.0 PR
+
+The first release becomes "CodeImage 2.0" in one final PR, opened when the features below are on trunk. That PR renames the release, decides `major`, and adds each highlight with its dot and its illustration. The copy is a draft to check against the shipped behaviour.
+
+| Id | Title | Draft copy | Where the control lives | Source PR |
+| --- | --- | --- | --- | --- |
+| `social` | Social sizes | Frame presets sized for the networks you post on, with an optional handle signature. | Frame controls | #696 |
+| `alt` | Alt text | Copy a description of your snippet to paste along with the image. | Export dialog | #693 |
+| `marks` | Line marks | Mark lines as added, removed, highlighted or focused. | Code controls | #698 |
+| `takumi` | New renderer | A faster export engine. Experimental. | Settings, Experiments | #701 |
+| `cli` | codeimage CLI | Render the same image from your terminal or CI. | No control in the app, link to the docs | #702 |
+| `animate` | Code animations | Animate between code steps and export the result. | Animate panel | #707 and the PRs stacked on it |
+
+Open for that PR:
+
+- Whether 2.0 announces with the Showcase (`major: true`) or the Nudge.
+- Which PR carries the `major` changeset for `@codeimage/app`.
+- `redact` has no anchor while the code holds no possible secret, yet it takes one of the three dot slots. Decide whether it keeps a dot.
