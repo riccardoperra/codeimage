@@ -29,6 +29,13 @@ const {values: args} = parseArgs({
 });
 
 const SCALE = 2;
+const webMarksCss = readFile(
+  new URL(
+    '../../apps/codeimage/src/components/CustomEditor/plugins/lineMarks/marks.css',
+    import.meta.url,
+  ),
+  'utf8',
+);
 
 const DEFAULT_CODE = [
   'function Counter() {',
@@ -46,6 +53,7 @@ const DEFAULT_CODE = [
 interface Cell {
   name: string;
   document: SnapshotInput;
+  maxDiffPercent?: number;
 }
 
 function snapshot(
@@ -126,6 +134,60 @@ async function matrix(): Promise<Cell[]> {
       }),
     },
     {
+      name: 'marks with line numbers',
+      maxDiffPercent: 0.01,
+      document: snapshot('vsCodeDarkTheme', {
+        options: {showLineNumbers: true},
+        editor: {
+          lineNumberStart: 42,
+          marks: {
+            lines: [
+              {line: 2, kind: 'removed'},
+              {line: 3, kind: 'added'},
+              {line: 5, kind: 'highlight'},
+              {line: 6, kind: 'highlight'},
+            ],
+            focusedLines: [5, 6, 7],
+          },
+        },
+      }),
+    },
+    {
+      name: 'marks without line numbers',
+      maxDiffPercent: 0.01,
+      document: snapshot('vsCodeDarkTheme', {
+        editor: {
+          marks: {
+            lines: [
+              {line: 2, kind: 'removed'},
+              {line: 3, kind: 'added'},
+              {line: 5, kind: 'highlight'},
+              {line: 6, kind: 'highlight'},
+            ],
+            focusedLines: [5, 6, 7],
+          },
+        },
+      }),
+    },
+    {
+      name: 'marks light with line numbers',
+      maxDiffPercent: 0.01,
+      document: snapshot('githubLight', {
+        options: {showLineNumbers: true},
+        editor: {
+          marks: {
+            lines: [
+              {line: 2, kind: 'removed'},
+              {line: 3, kind: 'added'},
+              {line: 5, kind: 'highlight'},
+              {line: 6, kind: 'highlight'},
+            ],
+            focusedLines: [5, 6, 7],
+          },
+        },
+      }),
+    },
+    {
       name: 'glass reflection',
       document: snapshot('nightOwlTheme', {
         terminal: {showGlassReflection: true},
@@ -192,7 +254,9 @@ async function renderInChrome(
   const page = await browser.newPage({viewport: null});
   try {
     const faces = await Promise.all(markup.fonts.map(fontFace));
-    const head = [...faces, ...markup.naturalCss]
+    // The web app loads marks.css after CodeMirror. Keep this reference independent
+    // of the Node renderer's CSS order so clipping regressions remain visible.
+    const head = [...faces, ...markup.naturalCss, await webMarksCss]
       .map(css => `<style>${css}</style>`)
       .join('');
     await page.setContent(
@@ -246,7 +310,7 @@ async function main() {
         `${base}-takumi.png`,
         `${base}-diff.png`,
       );
-      const pass = percent <= MAX_DIFF_PERCENT;
+      const pass = percent <= (cell.maxDiffPercent ?? MAX_DIFF_PERCENT);
       if (!pass) failed++;
       rows.push(
         `| ${cell.name} | ${width}x${height} | ${percent.toFixed(2)}% | ${pass ? 'pass' : 'FAIL'} |`,
@@ -266,7 +330,7 @@ async function main() {
   console.log(`\n${table}\n\nImages in ${args.out}`);
   if (failed) {
     console.error(
-      `${failed} cell(s) differ by more than ${MAX_DIFF_PERCENT}% at threshold ${PIXELMATCH_THRESHOLD}`,
+      `${failed} cell(s) exceed their diff tolerance at threshold ${PIXELMATCH_THRESHOLD}`,
     );
     process.exit(1);
   }

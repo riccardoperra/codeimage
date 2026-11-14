@@ -199,7 +199,7 @@ export async function snapshotMarkup(
   } = await getRuntime();
   const frame = await entry.renderFrame(document);
   const html = normalizeStyleAttributes(frame.html);
-  const css = [stylesheet, frame.css].map(normalizeGradients);
+  const css = [frame.css, stylesheet].map(normalizeGradients);
   const {fontId} = document.editor.options;
   await registerAppFont(fontId, frame.fontFamily);
   // Like the web frame, the frame is at least as wide as its code, so no line
