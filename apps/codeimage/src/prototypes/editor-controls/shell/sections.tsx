@@ -11,6 +11,8 @@ import {useNavigate} from '@solidjs/router';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component, JSX} from 'solid-js';
 import {createMemo, For, Match, Show, Switch} from 'solid-js';
+import {Dynamic} from 'solid-js/web';
+import {illustrations} from '../../../components/WhatsNew/illustrations';
 import {releaseDate} from '../../../components/WhatsNew/releaseDate';
 import {getWhatsNew, RELEASES} from '../../../state/whats-new';
 import type {HighlightId, LocatedHighlightId} from '../../../state/whats-new';
@@ -49,6 +51,8 @@ export interface SettingRow {
   readonly highlight?: LocatedHighlightId;
   readonly fresh?: HighlightId;
   readonly experimental?: boolean;
+  /** A small picture before the text, as the archive's rows have. */
+  readonly picture?: () => JSX.Element;
   readonly description: () => string;
   /** Beside the text, or under it for a `wide` row. */
   readonly control: () => JSX.Element;
@@ -483,6 +487,9 @@ export function createSettingSections(
           description: () => highlight.body,
           fresh: highlight.id,
           experimental: 'experimental' in highlight,
+          picture: () => (
+            <Dynamic component={illustrations[highlight.id]} mode="thumb" />
+          ),
           small: true,
           control: () => (
             <Show when={news.canShowMe(highlight.id)}>

@@ -8,6 +8,8 @@ const phone = 'screen and (max-width: 768px)';
 const desktop = 'screen and (min-width: 769px)';
 /** Under this the right pane is too narrow for a text and a wide control side by side. */
 const narrow = 'screen and (max-width: 900px)';
+/** Under this a row has no room for a picture, a text and a button side by side. */
+const cramped = 'screen and (max-width: 560px)';
 const finePointer = '(hover: hover) and (pointer: fine)';
 const reducedMotion = '(prefers-reduced-motion: reduce)';
 const focusRing = {
@@ -335,6 +337,7 @@ export const rowText = style({
   flexDirection: 'column',
   gap: '2px',
   minWidth: 0,
+  selectors: {[`${row}[data-picture] &`]: {flex: 1}},
 });
 
 export const historyLink = style({
@@ -367,6 +370,38 @@ export const rowControl = style({
     [`${row}[data-wide] &`]: {display: 'block'},
   },
 });
+
+// The picture of an archive row, before its text. On a phone it gets
+// smaller and the button goes under the text, so the text keeps its width.
+export const rowPicture = style({
+  flex: 'none',
+  gridArea: 'picture',
+  alignSelf: 'start',
+  width: '104px',
+  height: '64px',
+  '@media': {[cramped]: {width: '80px', height: '50px'}},
+});
+
+globalStyle(`${row}[data-picture]`, {
+  gap: themeVars.spacing['4'],
+  '@media': {
+    [cramped]: {
+      display: 'grid',
+      gridTemplateColumns: 'auto minmax(0, 1fr)',
+      gridTemplateAreas: '"picture text" "picture control"',
+      rowGap: themeVars.spacing['2'],
+      columnGap: themeVars.spacing['3'],
+    },
+  },
+});
+globalStyle(`${row}[data-picture] > ${rowText}`, {gridArea: 'text'});
+// A long title in a narrow row puts its tags on the next line.
+globalStyle(`${row}[data-picture] ${rowTitle}`, {flexWrap: 'wrap'});
+globalStyle(`${row}[data-picture] > ${rowControl}`, {
+  gridArea: 'control',
+  justifyContent: 'flex-start',
+});
+globalStyle(`${row}[data-picture] > ${rowControl}:empty`, {display: 'none'});
 
 /* Controls */
 

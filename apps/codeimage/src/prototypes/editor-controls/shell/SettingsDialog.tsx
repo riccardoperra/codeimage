@@ -34,7 +34,11 @@ function Row(props: {row: SettingRow}) {
       data-setting={props.row.id}
       data-wide={props.row.wide ? '' : undefined}
       data-small={props.row.small ? '' : undefined}
+      data-picture={props.row.picture ? '' : undefined}
     >
+      <Show when={props.row.picture}>
+        {picture => <div class={styles.rowPicture}>{picture()()}</div>}
+      </Show>
       <div class={styles.rowText}>
         <span id={titleId()} class={styles.rowTitle}>
           {props.row.title}

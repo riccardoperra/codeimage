@@ -105,7 +105,20 @@ export const illustration = style({
   background: c.panel.background,
   color: c.primary,
   overflow: 'hidden',
+  selectors: {
+    '&[data-mode="thumb"]': {
+      height: '100%',
+      padding: '4px',
+      borderRadius: '8px',
+    },
+  },
 });
+// A thumbnail draws its picture at the size of its box.
+globalStyle(`${illustration}[data-mode="thumb"] svg`, {
+  width: '100%',
+  height: '100%',
+});
+export const thumbWindow = style({fill: c.background});
 export const miniWindow = style({
   width: '180px',
   color: c.baseText,
