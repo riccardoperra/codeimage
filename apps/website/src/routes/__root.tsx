@@ -11,6 +11,7 @@ import {HydrationScript} from 'solid-js/web';
 import {UmamiScript} from '~/components/Umami/UmamiScript.tsx';
 
 import {websiteThemeColor} from '~/core/constants';
+import {publicAsset} from '~/core/publicAsset';
 
 import styleCss from '../styles.css?url';
 
@@ -23,31 +24,31 @@ export const Route = createRootRouteWithContext()({
     ],
     links: [
       {rel: 'stylesheet', href: styleCss},
-      {rel: 'apple-touch-icon', href: '/apple-touch-icon.png'},
-      {rel: 'manifest', href: '/manifest.webmanifest'},
-      {rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg'},
-      {rel: 'icon', href: '/favicon.ico'},
+      {rel: 'apple-touch-icon', href: publicAsset('apple-touch-icon.png')},
+      {rel: 'manifest', href: publicAsset('manifest.webmanifest')},
+      {rel: 'icon', type: 'image/svg+xml', href: publicAsset('favicon.svg')},
+      {rel: 'icon', href: publicAsset('favicon.ico')},
       {
         rel: 'preload',
-        href: '/fonts/Mona-Sans-Bold.woff2',
+        href: publicAsset('fonts/Mona-Sans-Bold.woff2'),
         as: 'font',
         type: 'font/woff2',
       },
       {
         rel: 'preload',
-        href: '/fonts/Mona-Sans-Medium.woff2',
+        href: publicAsset('fonts/Mona-Sans-Medium.woff2'),
         as: 'font',
         type: 'font/woff2',
       },
       {
         rel: 'preload',
-        href: '/fonts/Mona-Sans-Regular.woff2',
+        href: publicAsset('fonts/Mona-Sans-Regular.woff2'),
         as: 'font',
         type: 'font/woff2',
       },
       {
         rel: 'preload',
-        href: '/fonts/Mona-Sans-SemiBold.woff2',
+        href: publicAsset('fonts/Mona-Sans-SemiBold.woff2'),
         as: 'font',
         type: 'font/woff2',
       },
