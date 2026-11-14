@@ -234,13 +234,11 @@ jobs:
 
       - name: Deploy to Railway
         if: ${{ github.event.inputs.deploy-backend == 'true' }}
-        run: |
-          cd dist/api-bundle
-          find -type f -name '.gitignore' -delete
-          npx -y @railway/cli@4.35.0 up --project "$RAILWAY_API_PROJECT_ID" --environment production --service codeimage --ci
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_API_PROJECT_ID: ${{ secrets.RAILWAY_API_PROJECT_ID }}
+        uses: ./.github/actions/railway-deploy
+        with:
+          token: ${{ secrets.RAILWAY_TOKEN }}
+          project-id: ${{ secrets.RAILWAY_API_PROJECT_ID }}
+          environment: production
 
   deploy-app:
     name: Deploy @codeimage/app
