@@ -32,6 +32,18 @@ const {values} = parseArgs({
   },
 });
 const root = resolve(__dirname, '../..');
+// Line numbers start at 42 so CodeMirror's gutter widens to three digits for an 11-line snippet.
+const snippet = `// keywords, strings, numbers, regex, ligatures
+import {readFile} from 'node:fs/promises';
+
+export async function load<T extends object>(path: string): Promise<T | null> {
+\tconst raw = await readFile(path, 'utf8'); // tab-indented
+\tif (raw.length === 0 || raw !== raw.trim()) return null;
+\tconst pattern = /^[a-z]+\\d{2,}$/gi;
+\treturn JSON.parse(raw) as T; /* 42, 0xff, 1e3, true */
+}
+
+const greeting = \`héllo \${'wörld'} 你好 👋\`;`;
 const servers: ChildProcess[] = [];
 const out = resolve(values.out);
 
@@ -122,6 +134,16 @@ async function main() {
     const head = await context.newPage();
     await openEditor(base, baseUrl);
     await openEditor(head, headUrl);
+    for (const page of [base, head]) {
+      await page.locator('.cm-content[contenteditable="true"]').fill(snippet);
+      await page
+        .locator('label[for="frameLineNumbersField"]')
+        .locator('..')
+        .getByText('Show', {exact: true})
+        .click();
+      await page.locator('#frameLineNumberStartField-input').fill('42');
+      await page.locator('#frameLineNumberStartField-input').press('Tab');
+    }
     await base.locator('button[aria-label="Syntax highlight"]').click();
     const themes = await base.getByRole('option').allTextContents();
     await base.keyboard.press('Escape');
