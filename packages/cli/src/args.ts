@@ -1,22 +1,45 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {extname} from 'node:path';
 import {parseArgs as parseNodeArgs} from 'node:util';
+import type {ParseArgsOptionsConfig} from 'node:util';
 import {THEME_REGISTRY} from '../../../apps/codeimage/src/state/theme/themeRegistry';
+import {FLAGS} from './flags';
 
-export const USAGE = `Usage: codeimage [files...] [options]
+export const USAGE = `Usage: codeimage [options] [file...]
 
-Read files as tabs, or pipe code through stdin. Use - for a stdin tab.
+Render code as an image. Each file becomes a tab. With no files, or with -
+as a file, the code is read from stdin.
 
-  --lang <id>        Override the language inferred from each file name
-  --lines <10-30>    Include an inclusive line range and show its gutter
-  --theme <id>      Use a CodeImage theme
-  --preset <file>   Read JSON from Copy as CLI config in the preset menu
-  --format <type>   png (default), jpeg, webp, or svg
-  --scale <n>       Positive image scale (default: 1)
-  -o <path>         Output path (default: codeimage.<format>), or - for stdout
-  -h, --help        Show this help
+Options:
+  -o, --output <path>  Output file, or - for stdout (default: codeimage.png)
+  --format <type>      png, jpeg, webp, or svg (default: from -o, else png)
+  --theme <id>         Theme id (default: fleetDark)
+  --lang <id>          Language id for every tab (default: from the file name)
+  --lines <a-b>        Render only lines a to b, numbered from a
+  --preset <file>      JSON copied with "Copy as CLI config" in the web app
+  --scale <n>          Pixel ratio, at most 3 (default: 1)
+  -h, --help           Show this help
+${FLAGS.map(flag => flag.usage).join('')}
+Examples:
+  codeimage src/app.ts -o app.png
+  cat app.py | codeimage --lang python -o - > app.png
 `;
 
 export class UsageError extends Error {}
+
+const FORMATS = {
+  png: 'png',
+  jpeg: 'jpeg',
+  jpg: 'jpeg',
+  webp: 'webp',
+  svg: 'svg',
+} as const;
+
+function formatOf(name: string) {
+  return Object.hasOwn(FORMATS, name)
+    ? FORMATS[name as keyof typeof FORMATS]
+    : undefined;
+}
 
 export function resolveTheme(id: string, flag = '--theme') {
   const theme = THEME_REGISTRY.find(theme => theme.id === id);
@@ -28,13 +51,16 @@ export function resolveTheme(id: string, flag = '--theme') {
   return theme;
 }
 
-export function inferLanguage(file: string) {
-  return (
-    SUPPORTED_LANGUAGES.find(language =>
-      language.icons.some(icon => icon.matcher.test(file.toLowerCase())),
-    )?.id ?? 'plain-text'
-  );
-}
+const OPTIONS = {
+  lang: {type: 'string'},
+  lines: {type: 'string'},
+  theme: {type: 'string'},
+  preset: {type: 'string'},
+  format: {type: 'string'},
+  scale: {type: 'string'},
+  output: {type: 'string', short: 'o'},
+  help: {type: 'boolean', short: 'h'},
+} as const satisfies ParseArgsOptionsConfig;
 
 export function parseArgs(argv: string[]) {
   let parsed;
@@ -42,16 +68,11 @@ export function parseArgs(argv: string[]) {
     parsed = parseNodeArgs({
       args: argv,
       allowPositionals: true,
-      options: {
-        lang: {type: 'string'},
-        lines: {type: 'string'},
-        theme: {type: 'string'},
-        preset: {type: 'string'},
-        format: {type: 'string'},
-        scale: {type: 'string'},
-        output: {type: 'string', short: 'o'},
-        help: {type: 'boolean', short: 'h'},
-      },
+      options: Object.assign(
+        {},
+        ...FLAGS.map(flag => flag.options),
+        OPTIONS,
+      ) as typeof OPTIONS,
     });
   } catch (error) {
     throw new UsageError(
@@ -61,18 +82,21 @@ export function parseArgs(argv: string[]) {
   const {values, positionals: files} = parsed;
   if (values.help) return {kind: 'help'} as const;
 
-  const format = values.format ?? 'png';
-  if (
-    format !== 'png' &&
-    format !== 'jpeg' &&
-    format !== 'webp' &&
-    format !== 'svg'
-  ) {
+  if (values.output === '') throw new UsageError('-o: expected a path or -');
+  const format =
+    values.format === undefined
+      ? (formatOf(
+          extname(values.output ?? '')
+            .slice(1)
+            .toLowerCase(),
+        ) ?? 'png')
+      : formatOf(values.format);
+  if (!format) {
     throw new UsageError('--format: expected png, jpeg, webp, or svg');
   }
   const scale = Number(values.scale ?? 1);
-  if (!Number.isFinite(scale) || scale <= 0) {
-    throw new UsageError('--scale: expected a positive finite number');
+  if (!Number.isFinite(scale) || scale <= 0 || scale > 3) {
+    throw new UsageError('--scale: expected a number above 0 and at most 3');
   }
   if (
     values.lang !== undefined &&
@@ -93,17 +117,14 @@ export function parseArgs(argv: string[]) {
       !Number.isSafeInteger(end) ||
       end < start
     ) {
-      throw new UsageError(
-        '--lines: expected an inclusive range such as 10-30',
-      );
+      throw new UsageError('--lines: expected a range such as 10-30');
     }
     lines = {start, end};
   }
-  if (values.output === '') throw new UsageError('-o: expected a path or -');
   if (values.preset === '')
     throw new UsageError('--preset: expected a JSON file path');
   if (files.filter(file => file === '-').length > 1) {
-    throw new UsageError('input: stdin (-) can only be read once');
+    throw new UsageError('stdin (-) can be given only once');
   }
   return {
     kind: 'render',
@@ -115,6 +136,7 @@ export function parseArgs(argv: string[]) {
     format,
     scale,
     output: values.output ?? `codeimage.${format}`,
+    values,
   } as const;
 }
 
