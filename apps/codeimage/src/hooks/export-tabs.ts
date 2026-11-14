@@ -5,17 +5,16 @@ import {exportTabName} from './export-tab-name';
 import {ExportMode} from './use-export-image';
 
 export interface ExportTab {
-  id: string;
   name: string | null;
 }
 
-export async function renderTabFiles(
-  tabs: readonly ExportTab[],
-  render: (id: string) => Promise<Blob | string>,
+export async function renderTabFiles<T extends ExportTab>(
+  tabs: readonly T[],
+  render: (tab: T) => Promise<Blob | string>,
 ): Promise<File[]> {
   const files: File[] = [];
   for (const [index, tab] of tabs.entries()) {
-    const blob = await render(tab.id);
+    const blob = await render(tab);
     if (!(blob instanceof Blob)) throw new Error('Expected an image blob.');
     // Name the file after the format the rasterizer produced, so a format it
     // cannot write as a blob never ships under the wrong extension.
