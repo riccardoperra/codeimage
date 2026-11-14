@@ -10,6 +10,9 @@ export const tokens = style({
     '--dock-app': themeVars.dynamicColors.panel.background,
     // Same surface as today's canvas, so every island reads as one family.
     '--dock-island': themeVars.dynamicColors.background,
+    // What floats over the canvas takes the surface and shadow of the kit's dialogs.
+    '--dock-float': themeVars.dynamicColors.dialog.panelBackgroundColor,
+    '--dock-float-shadow': themeVars.dynamicColors.dialog.panelShadow,
     '--dock-raised': themeVars.dynamicColors.input.backgroundColor,
     '--dock-pressed': themeVars.dynamicColors.button.base.backgroundColor,
     '--dock-text': themeVars.dynamicColors.baseText,

@@ -20,6 +20,8 @@ export interface VariantMeta {
   readonly axis: string;
   /** Renders its own theme picker, so the theme style picker does nothing for it. */
   readonly ownThemePicker?: boolean;
+  /** Gets no command menu from the harness: today's editor has none. */
+  readonly noCommandMenu?: boolean;
 }
 
 export interface Variant extends VariantMeta {

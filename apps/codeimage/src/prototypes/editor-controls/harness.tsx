@@ -7,6 +7,7 @@ import {createSignal, onCleanup, onMount, Show, Suspense} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {provideState} from 'statebuilder';
 import {EditorPageSkeleton} from '../../pages/Editor/components/EditorSkeleton';
+import {CommandMenu} from './command-menu/CommandMenu';
 import './harness.css';
 import {createEditorControlsModel} from './model';
 import type {Variant} from './contract';
@@ -125,12 +126,18 @@ function Harness(props: HarnessProps) {
             );
             requestAnimationFrame(chrome.measure);
             return (
-              <Dynamic
-                component={props.variants[index].component}
-                model={model}
-                stage={stage}
-                ThemePicker={BoundThemePicker}
-              />
+              <>
+                <Dynamic
+                  component={props.variants[index].component}
+                  model={model}
+                  stage={stage}
+                  ThemePicker={BoundThemePicker}
+                />
+                {/* One menu for every layout, bound to the shortcut here. */}
+                <Show when={!props.variants[index].noCommandMenu}>
+                  <CommandMenu model={model} stage={stage} />
+                </Show>
+              </>
             );
           }}
         </Show>

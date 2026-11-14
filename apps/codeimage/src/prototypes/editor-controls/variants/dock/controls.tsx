@@ -11,10 +11,11 @@ import {
   PanelRow,
   TwoColumnPanelRow,
 } from '../../../../components/PropertyEditor/PanelRow';
+import type {ChoiceControl} from '../../command-menu/listed-model';
+import {isChoice} from '../../command-menu/listed-model';
 import type {Control, SelectControl, ToggleControl} from '../../model';
 import {useDock} from './context';
-import type {ChoiceControl} from './fields';
-import {isChoice, SEGMENTED_CHOICES} from './fields';
+import {SEGMENTED_CHOICES} from './fields';
 
 const fieldId = (control: Control) => `dock-${control.id}`;
 
@@ -53,7 +54,11 @@ export function SegmentedChoice(props: {control: ChoiceControl}) {
   );
 }
 
-export function SelectChoice(props: {control: ChoiceControl}) {
+export function SelectChoice(props: {
+  control: ChoiceControl;
+  /** Space between the trigger and its list, for a trigger inside the dock bar. */
+  gutter?: number;
+}) {
   const options = createSelectOptions(
     () =>
       props.control
@@ -74,6 +79,7 @@ export function SelectChoice(props: {control: ChoiceControl}) {
       )}
       options={options.options()}
       disabled={props.control.disabled()}
+      gutter={props.gutter}
       aria-label={props.control.label()}
       id={fieldId(props.control)}
       size={'sm'}

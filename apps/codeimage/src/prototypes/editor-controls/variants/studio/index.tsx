@@ -18,9 +18,10 @@ import {ExportSettingsButton} from '../../../../components/Toolbar/ExportSetting
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import {Toolbar} from '../../../../components/Toolbar/Toolbar';
+import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {ownCompositeKeys} from './controls';
-import {CloseIcon, CollapseIcon} from './icons';
+import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import type {Panel, PanelId} from './panels';
 import {PANELS} from './panels';
 import * as styles from './studio.css';
@@ -275,6 +276,20 @@ export default function Studio(props: VariantProps) {
               </button>
             )}
           </For>
+          <button
+            type="button"
+            class={`${styles.railButton} ${styles.railSearch}`}
+            aria-haspopup="dialog"
+            aria-expanded={commandMenu.isOpen()}
+            title={`Search themes and options (${commandMenu.shortcut})`}
+            onClick={commandMenu.open}
+          >
+            <span class={styles.railIcon}>
+              <SearchIcon />
+            </span>
+            Search
+            <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
+          </button>
         </nav>
 
         <section

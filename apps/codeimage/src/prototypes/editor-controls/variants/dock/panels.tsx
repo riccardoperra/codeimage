@@ -1,5 +1,6 @@
 import {Button, Listbox} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
+import type {Component} from 'solid-js';
 import {createSignal, For, Match, Show, Switch} from 'solid-js';
 import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
@@ -7,17 +8,31 @@ import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls
 import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
 import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
+import {commandMenu} from '../../command-menu/state';
 import {useDock} from './context';
 import {ControlRow, SegmentedChoice} from './controls';
-import type {GroupId} from './fields';
+import type {GroupId, PanelId} from './fields';
 import {GROUPS} from './fields';
 import {SearchIcon} from './icons';
 
-/** The theme picker in the style chosen in the harness, in the tray. */
-export function ThemesPanel() {
+/**
+ * The theme picker in the style chosen in the harness. In the popover the
+ * cards sit in one row that scrolls sideways (see dock.css), so a wheel that
+ * only turns up and down has to move it.
+ */
+function ThemesPanel() {
   const dock = useDock();
+  const onWheel = (event: WheelEvent) => {
+    const list = (event.currentTarget as HTMLElement).querySelector(
+      '[data-theme-list]',
+    );
+    if (!list || list.scrollWidth <= list.clientWidth) return;
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.preventDefault();
+    list.scrollLeft += event.deltaY;
+  };
   return (
-    <div class="dock-panel dock-themes">
+    <div class="dock-panel dock-themes" on:wheel={onWheel}>
       <dock.ThemePicker
         size={dock.compact() ? 'md' : 'sm'}
         autofocus
@@ -29,7 +44,7 @@ export function ThemesPanel() {
 }
 
 /** Today's colour picker without its popover: gradients, colours and the image upload. */
-export function BackgroundPanel() {
+function BackgroundPanel() {
   const dock = useDock();
   const frameVisible = () => dock.fields.control('frame.visible', 'toggle');
 
@@ -66,7 +81,7 @@ export function BackgroundPanel() {
   );
 }
 
-export function PaddingPanel() {
+function PaddingPanel() {
   const dock = useDock();
   return (
     <Show when={dock.fields.choice('frame.padding')}>
@@ -88,7 +103,7 @@ interface Item {
 }
 
 /** The phone's language sheet. On wider windows the dock holds the kit's select. */
-export function LanguagePanel() {
+function LanguagePanel() {
   const dock = useDock();
   return (
     <Show when={dock.fields.choice('editor.language')}>
@@ -123,8 +138,8 @@ export function LanguagePanel() {
 
 type FontSource = 'default' | 'system';
 
-/** The content of today's font picker without its popover, with the two font rows under it. */
-export function FontPanel() {
+/** The content of today's font picker, with the two font rows under it. */
+function FontPanel() {
   const dock = useDock();
   const [source, setSource] = createSignal<FontSource>('default');
   const weight = () => dock.fields.choice('font.weight');
@@ -180,7 +195,6 @@ export function FontPanel() {
         }}
       </Show>
       <div class="dock-font-style">
-        <PanelHeader label="Style" />
         <Show when={weight()}>
           {control => <ControlRow control={control()} />}
         </Show>
@@ -213,7 +227,7 @@ function PhoneActions() {
         size={'sm'}
         theme={'secondary'}
         leftIcon={<SearchIcon />}
-        onClick={() => dock.open('commands')}
+        onClick={commandMenu.open}
       >
         Search all options
       </Button>
@@ -239,41 +253,37 @@ function PhoneActions() {
   );
 }
 
-export function MorePanel() {
+/** Frame, Window and Code, one group at a time, so the panel stays as narrow as a popover. */
+function MorePanel() {
   const dock = useDock();
-  // The phone sheet shows one group at a time.
   const [group, setGroup] = createSignal<GroupId>(GROUPS[0].id);
   return (
     <div class="dock-panel dock-more">
-      <Show
-        when={dock.compact()}
-        fallback={
-          <div class="dock-groups">
-            <For each={GROUPS}>
-              {group => (
-                <section class="dock-group" aria-label={group.label}>
-                  <PanelHeader label={group.label} />
-                  <Group id={group.id} />
-                </section>
-              )}
-            </For>
-          </div>
-        }
-      >
-        <div class="dock-segmented">
-          <SegmentedField
-            adapt
-            size={'sm'}
-            value={group()}
-            onChange={setGroup}
-            items={GROUPS.map(({id, label}) => ({label, value: id}))}
-          />
-        </div>
-        <section class="dock-group" aria-label={group()}>
-          <Group id={group()} />
-        </section>
+      <div class="dock-segmented">
+        <SegmentedField
+          adapt
+          size={'sm'}
+          value={group()}
+          onChange={setGroup}
+          items={GROUPS.map(({id, label}) => ({label, value: id}))}
+        />
+      </div>
+      <section class="dock-group" aria-label={group()}>
+        <Group id={group()} />
+      </section>
+      <Show when={dock.compact()}>
         <PhoneActions />
       </Show>
     </div>
   );
 }
+
+/** What each dock item opens: in a popover on wide windows, in the sheet on a phone. */
+export const PANELS: Record<PanelId, {title: string; Body: Component}> = {
+  themes: {title: 'Theme', Body: ThemesPanel},
+  background: {title: 'Background', Body: BackgroundPanel},
+  padding: {title: 'Padding', Body: PaddingPanel},
+  language: {title: 'Language', Body: LanguagePanel},
+  font: {title: 'Font', Body: FontPanel},
+  more: {title: 'More options', Body: MorePanel},
+};

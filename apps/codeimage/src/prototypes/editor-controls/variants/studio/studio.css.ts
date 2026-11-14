@@ -134,6 +134,19 @@ export const railButton = style([
   },
 ]);
 
+// The command menu's button sits apart from the panels, at the foot of the rail.
+export const railSearch = style({
+  marginTop: 'auto',
+  '@media': {[compact]: {marginTop: 0}},
+});
+
+export const railHint = style({
+  color: c.descriptionTextColor,
+  font: 'inherit',
+  fontSize: '11px',
+  '@media': {[compact]: {display: 'none'}},
+});
+
 export const railIcon = style({
   display: 'grid',
   placeItems: 'center',

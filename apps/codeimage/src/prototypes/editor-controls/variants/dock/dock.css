@@ -1,8 +1,7 @@
 /*
  * Colours and type sizes come from tokens.css.ts. Every selector starts with
  * dock-. Controls are the kit's and keep the kit's own look, so the rules
- * here are layout, the islands, and the three parts the kit does not have:
- * the switch, the theme card and the command menu.
+ * here are layout, the surfaces, and the switch, which the kit does not have.
  */
 
 .dock-root {
@@ -15,6 +14,7 @@
    * In the page flow, not fixed: the body clips what leaves its box, and a
    * body without content is 0px tall, which would hide every kit popover.
    */
+  position: relative;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -27,10 +27,18 @@
   font-size: var(--dock-text-sm);
 }
 
-/* An island is a rounded surface on the app background. Space separates islands, not lines. */
+/* The canvas is an island on the app background, as today. */
 .dock-island {
   border-radius: var(--dock-radius);
   background: var(--dock-island);
+}
+
+/* What floats over the canvas: the dock, the frame actions and the popovers. */
+.dock-float,
+.dock-popover {
+  border-radius: var(--dock-radius);
+  background: var(--dock-float);
+  box-shadow: var(--dock-float-shadow);
 }
 
 .dock-icon {
@@ -45,6 +53,15 @@
 
 /* Canvas */
 
+.dock-body {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0 var(--dock-gap);
+}
+
 .dock-stage {
   position: relative;
   order: 1;
@@ -52,10 +69,13 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  margin: 0 var(--dock-gap);
   overflow: hidden;
 }
 
+/*
+ * The canvas keeps the height of the dock free at its bottom, so the frame is
+ * centred in the space above the dock and the dock at rest never covers it.
+ */
 .dock-canvas {
   position: relative;
   display: flex;
@@ -63,20 +83,43 @@
   flex-direction: column;
   box-sizing: border-box;
   min-height: 0;
+  padding-bottom: var(--dock-safe);
   overflow: hidden;
+}
+
+.dock-footer {
+  position: absolute;
+  right: 0;
+  bottom: var(--dock-safe);
+}
+
+.dock-footer > div {
+  position: static;
 }
 
 /* Dock */
 
-.dock-bar-row {
-  position: relative;
+/*
+ * Over the bottom edge of the canvas, and out of the layout. On a window too
+ * narrow for one line the frame actions wrap above the bar, so the bar stays
+ * at the bottom and popovers open over the actions, not over more canvas.
+ */
+.dock-row {
+  position: absolute;
+  right: 0;
+  bottom: 12px;
+  left: 0;
   z-index: 2;
-  order: 3;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap-reverse;
   justify-content: center;
   gap: var(--dock-gap);
-  padding: 0 var(--dock-gap);
+  /* The gaps beside the islands let clicks through to the canvas. */
+  pointer-events: none;
+}
+
+.dock-row > * {
+  pointer-events: auto;
 }
 
 .dock-bar {
@@ -93,7 +136,7 @@
 .dock-root .dock-item {
   flex: none;
   gap: 8px;
-  padding-inline: 12px;
+  padding-inline: 10px;
 }
 
 .dock-root .dock-item[aria-expanded='true'] {
@@ -101,18 +144,17 @@
 }
 
 .dock-item-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: inline-grid;
+  text-align: left;
   white-space: nowrap;
 }
 
-/*
- * The name follows the applied theme, not the previewed one, so the label can
- * fit it: the bar only moves when a theme is applied.
- */
-.dock-item[data-panel='themes'] .dock-item-text {
-  min-width: 116px;
-  text-align: left;
+.dock-item-text > * {
+  grid-area: 1 / 1;
+}
+
+.dock-item-sizer {
+  visibility: hidden;
 }
 
 .dock-fill {
@@ -147,11 +189,11 @@
 }
 
 .dock-field-padding > :last-child {
-  width: 168px;
+  width: 152px;
 }
 
 .dock-field-language > * {
-  width: 120px;
+  width: 112px;
 }
 
 .dock-kbd {
@@ -167,7 +209,7 @@
   padding-left: 4px;
 }
 
-/* The production frame toolbar floats over today's canvas. Here it is an island of the dock row. */
+/* The production frame toolbar brings its own floating surface. Here it takes the dock's. */
 .dock-frame-actions {
   display: flex;
   align-items: center;
@@ -183,47 +225,34 @@
   transform: none;
 }
 
-/* Tray */
+/* Popovers */
 
-.dock-tray-slot {
-  position: relative;
-  z-index: 1;
-  order: 2;
-  display: flex;
-  min-width: 0;
-  padding: 0 var(--dock-gap);
+.dock-overlays {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
-/* The portal's own wrapper. */
-.dock-tray-slot > div:not(.dock-tray) {
-  display: contents;
-}
-
-/* An empty slot must not add a second gap between the canvas and the dock. */
-.dock-tray-slot:empty {
-  display: none;
-}
-
-.dock-tray {
-  position: relative;
+.dock-popover {
   box-sizing: border-box;
-  flex: none;
-  width: fit-content;
-  max-width: 100%;
-  /* The canvas keeps a good third of the window while a tray is open. */
-  max-height: calc(100dvh - 190px - 36dvh);
+  width: 364px;
+  max-width: calc(100vw - 16px);
+  max-height: var(--kb-popper-content-available-height);
   overflow: auto;
   overscroll-behavior: contain;
   outline: none;
-  animation: dock-tray-in 160ms var(--dock-ease-out);
+  /* Over the dock, the header and the harness pills, as the kit's popovers are. */
+  z-index: 40;
+  transform-origin: var(--kb-popover-content-transform-origin);
+  animation: dock-popover-in 160ms var(--dock-ease-out);
 }
 
 /* Opened from the keyboard, so it appears at once. */
-.dock-tray[data-instant] {
+.dock-popover[data-instant] {
   animation: none;
 }
 
-@keyframes dock-tray-in {
+@keyframes dock-popover-in {
   from {
     opacity: 0;
     transform: translateY(6px) scale(0.98);
@@ -236,82 +265,84 @@
   }
 }
 
-.dock-tray[data-panel='themes'] {
-  width: 100%;
-}
-
-.dock-tray[data-panel='background'],
-.dock-tray[data-panel='padding'],
-.dock-tray[data-panel='language'] {
+.dock-popover[data-panel='background'] {
   width: 392px;
-}
-
-.dock-tray[data-panel='font'] {
-  width: 720px;
-}
-
-.dock-tray[data-panel='commands'] {
-  width: 640px;
 }
 
 .dock-panel {
   padding: 4px 16px 16px;
 }
 
-.dock-hint {
-  margin: 0 0 0 auto;
-  color: var(--dock-muted);
-  font-size: var(--dock-text-xs);
-}
-
 .dock-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
   margin: 0;
   padding: 8px 0 12px;
   color: var(--dock-muted);
 }
 
-.dock-empty p {
-  margin: 0;
-}
-
-/* Themes: the shared picker fills the tray, which keeps a third of the window for the canvas. */
+/*
+ * Themes. The canvas under the panel is the preview, so the panel is short:
+ * the shared picker's cards sit in one row that scrolls sideways. The Aa list
+ * is a column, in a narrow panel of its own.
+ */
 
 .dock-themes {
-  height: min(360px, calc(100dvh - 190px - 36dvh));
   padding-top: 16px;
 }
 
-/* The card the canvas is showing. */
-/* Narrow trays */
+.dock-popover [data-theme-list] {
+  flex: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 12px;
+}
+
+.dock-popover
+  [data-theme-style]:not([data-theme-style='aa'])
+  [data-theme-list] {
+  padding-bottom: 8px;
+}
+
+.dock-popover
+  [data-theme-style]:not([data-theme-style='aa'])
+  [data-theme-list]
+  > div {
+  grid-template-columns: none;
+  /* Twelve orb or palette cards across the dock at 1440px. */
+  grid-auto-columns: var(--dock-card, 109px);
+  grid-auto-flow: column;
+  gap: 4px;
+  width: max-content;
+}
+
+.dock-popover [data-theme-style='window'] {
+  --dock-card: 148px;
+}
+
+/* Wide enough for the preview's longest line, so its five lines stay five. */
+.dock-popover [data-theme-style='code'] {
+  --dock-card: 280px;
+}
+
+/* Twelve rows on a 900px window. The list is narrow and sits beside the frame there. */
+.dock-popover [data-theme-style='aa'] [data-theme-list] {
+  max-height: min(576px, 62dvh);
+}
+
+/* Lists inside a popover */
 
 .dock-list {
-  max-height: 232px;
+  max-height: 208px;
   margin-top: 12px;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
-.dock-font {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 24px;
-}
-
-.dock-font-family,
 .dock-font-style {
-  min-width: 0;
+  padding-top: 8px;
 }
 
-/* More */
-
-.dock-groups {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 332px));
-  gap: 24px;
+.dock-more .dock-group {
+  padding-top: 8px;
 }
 
 .dock-group {
@@ -319,7 +350,8 @@
 }
 
 /* Today's row gives the label 38% of a 280px sidebar. Here the longest label needs more. */
-.dock-groups .dock-group > div {
+.dock-more .dock-group > div,
+.dock-font-style > div {
   grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
 }
 
@@ -374,106 +406,29 @@
   outline-offset: 2px;
 }
 
-/* Command menu */
-
-.dock-commands {
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-}
-
-.dock-commands-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 44px;
-  padding: 0 12px;
-  border-radius: 12px;
-  background: var(--dock-raised);
-  color: var(--dock-muted);
-}
-
-.dock-commands-input input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  outline: none;
-  background: transparent;
-  color: var(--dock-text);
-  font: inherit;
-}
-
-.dock-command-list {
-  max-height: 296px;
-  margin-top: 4px;
-  overflow: auto;
-  overscroll-behavior: contain;
-  scroll-padding: 8px;
-}
-
-.dock-command-group {
-  padding: 14px 12px 6px;
-  color: var(--dock-muted);
-  font-size: var(--dock-text-xs);
-  font-weight: 600;
-}
-
-.dock-command {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.dock-command[data-active] {
-  background: var(--dock-raised);
-}
-
-.dock-command-label {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dock-command .dock-icon {
-  color: var(--dock-primary);
-}
-
-.dock-command-note {
-  color: var(--dock-muted);
-  font-size: var(--dock-text-xs);
-}
-
-.dock-commands-hint {
-  margin: 0;
-  padding: 12px 12px 4px;
-}
-
-.dock-grabber {
-  display: none;
-}
-
-/* Phone: the dock is the bottom bar and every tray is a short sheet. */
+/* Phone: the dock is the bottom bar, in the layout, and every panel is a short sheet above it. */
 @media (max-width: 767px) {
   .dock-root {
     gap: 0;
     padding-bottom: 0;
   }
 
-  .dock-stage {
+  .dock-body {
     margin: 0;
+  }
+
+  .dock-stage {
     border-radius: var(--dock-radius) var(--dock-radius) 0 0;
   }
 
-  .dock-hint {
-    display: none;
+  .dock-canvas {
+    padding-bottom: 0;
   }
 
-  .dock-bar-row {
+  .dock-row {
+    position: relative;
+    bottom: auto;
+    order: 3;
     padding: 0;
   }
 
@@ -485,6 +440,7 @@
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
     border-radius: 0;
     background: var(--dock-app);
+    box-shadow: none;
   }
 
   .dock-root .dock-item {
@@ -498,32 +454,38 @@
     font-weight: 500;
   }
 
-  .dock-root .dock-item .dock-item-text {
-    width: auto;
+  .dock-sheet-slot {
+    position: relative;
+    z-index: 1;
+    order: 2;
+    display: flex;
     min-width: 0;
-    overflow: visible;
   }
 
-  .dock-tray-slot {
-    padding: 0;
+  /* The portal's own wrapper. */
+  .dock-sheet-slot > div:not(.dock-sheet) {
+    display: contents;
   }
 
-  .dock-tray,
-  .dock-tray[data-panel] {
+  .dock-sheet {
+    position: relative;
+    box-sizing: border-box;
+    flex: none;
     width: 100%;
     max-height: 40dvh;
-    margin: 0 !important;
+    overflow: auto;
+    overscroll-behavior: contain;
+    outline: none;
     border-radius: var(--dock-radius) var(--dock-radius) 0 0;
     background: var(--dock-app);
-    transform-origin: center !important;
     animation: dock-sheet-in 280ms var(--dock-ease-drawer);
   }
 
-  .dock-tray[data-closed] {
+  .dock-sheet[data-closed] {
     animation: dock-sheet-out 200ms var(--dock-ease-out) forwards;
   }
 
-  .dock-tray[data-dragged] {
+  .dock-sheet[data-dragged] {
     animation: none;
   }
 
@@ -566,16 +528,6 @@
     overflow: visible;
   }
 
-  .dock-font,
-  .dock-groups {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
-  }
-
-  .dock-more .dock-group {
-    padding-top: 8px;
-  }
-
   .dock-switch-track {
     width: 44px;
     height: 26px;
@@ -589,35 +541,6 @@
 
   .dock-switch-thumb[data-checked] {
     transform: translateX(18px);
-  }
-
-  /*
-   * The search sheet opens at the top, because the phone keyboard covers the
-   * bottom of the window.
-   */
-  .dock-root[data-panel='commands'] .dock-tray-slot {
-    order: 0;
-  }
-
-  .dock-tray[data-panel='commands'] {
-    border-radius: 0 0 var(--dock-radius) var(--dock-radius);
-    animation-name: dock-fade-in;
-  }
-
-  .dock-tray[data-panel='commands'] .dock-grabber {
-    display: none;
-  }
-
-  .dock-commands-input input {
-    font-size: 16px;
-  }
-
-  .dock-command {
-    height: 44px;
-  }
-
-  .dock-command-list {
-    max-height: calc(40dvh - 130px);
   }
 }
 
@@ -634,12 +557,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dock-tray,
-  .dock-tray[data-panel] {
+  .dock-popover,
+  .dock-sheet {
     animation: dock-fade-in 160ms ease;
   }
 
-  .dock-tray[data-closed] {
+  .dock-sheet[data-closed] {
     animation: none;
   }
 

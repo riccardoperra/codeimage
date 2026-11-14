@@ -75,3 +75,10 @@ export const CloseIcon: IconComponent = props => (
     <path d="m6 6 12 12" />
   </Icon>
 );
+
+export const SearchIcon: IconComponent = props => (
+  <Icon size={props.size}>
+    <circle cx="11" cy="11" r="6.25" />
+    <path d="m15.75 15.75 4.5 4.5" />
+  </Icon>
+);
