@@ -1,3 +1,4 @@
+import {isChromium} from '@solid-primitives/platform';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as process from 'process';
@@ -269,10 +270,17 @@ export async function nodeToDataURL(
   const xmlns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(xmlns, 'svg');
   const foreignObject = document.createElementNS(xmlns, 'foreignObject');
+  const pixelRatio = isChromium ? window.devicePixelRatio || 1 : 1;
+
+  // Chromium lays out SVG images at DPR 1, which can wrap text from a high-DPR page.
+  node.style.zoom = `${(Number(node.style.zoom) || 1) * pixelRatio}`;
 
   svg.setAttribute('width', `${width}`);
   svg.setAttribute('height', `${height}`);
-  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.setAttribute(
+    'viewBox',
+    `0 0 ${width * pixelRatio} ${height * pixelRatio}`,
+  );
 
   foreignObject.setAttribute('width', '100%');
   foreignObject.setAttribute('height', '100%');
