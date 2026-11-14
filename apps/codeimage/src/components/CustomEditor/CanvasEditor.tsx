@@ -122,125 +122,127 @@ export default function CanvasEditor(props: CanvasEditorProps) {
         if (files.length) {
           const tabId = activeEditorStore.editor()?.id;
           activeToastId = toast.success(
-            activeToast => (
-              <HStack spacing={5} alignItems="center">
-                <span>
-                  {t(
-                    files.length === 1
-                      ? 'lineMarks.diffFile'
-                      : 'lineMarks.diffFiles',
-                    {count: String(files.length)},
-                  )}
-                </span>
-                <Button
-                  size="xs"
-                  theme="primary"
-                  onClick={() => {
-                    const store = getRootEditorStore();
-                    if (
-                      activeEditorStore.editor()?.id !== tabId ||
-                      props.readOnly
-                    ) {
-                      toast.dismiss(activeToast.id);
-                      return;
-                    }
-                    const newTabCount = files.length - 1;
-                    if (
-                      newTabCount >
-                      MAX_EDITOR_TABS - store.state.editors.length
-                    ) {
-                      toast.error(t('lineMarks.notEnoughTabs'));
-                      return;
-                    }
-                    const first = files[0];
-                    const before = {
-                      activeEditorId: store.state.activeEditorId,
-                      editors: structuredClone(unwrap(store.state.editors)),
-                    };
-                    const languageId = (path: string) =>
-                      inferLanguageFromPath(path) ??
-                      activeEditorStore.editor()?.languageId ??
-                      'typescript';
-                    const after = {
-                      activeEditorId: before.activeEditorId,
-                      editors: [
-                        ...before.editors.map(editor =>
-                          editor.id === tabId
-                            ? {
-                                ...editor,
-                                code: first.code,
-                                marks: first.marks,
-                                tab: {tabName: first.path},
-                                languageId: languageId(first.path),
-                              }
-                            : editor,
-                        ),
-                        ...files.slice(1).map(file => ({
-                          ...getInitialEditorState(),
-                          id: createUniqueId(),
-                          code: file.code,
-                          marks: file.marks,
-                          tab: {tabName: file.path},
-                          languageId: languageId(file.path),
-                        })),
-                      ],
-                    };
-                    view.dispatch({
-                      changes: {
-                        from: 0,
-                        to: view.state.doc.length,
-                        insert: first.code,
-                      },
-                      effects: [
-                        replaceMarks.of(
-                          marksValue(
-                            EditorState.create({doc: first.code}).doc,
-                            first.marks,
-                          ),
-                        ),
-                        importDiff.of({before, after}),
-                      ],
-                      annotations: isolateHistory.of('full'),
-                    });
-                    toast.dismiss(activeToast.id);
-                    const importedState = view.state;
-                    activeToastId = toast.success(
-                      undoToast => (
-                        <HStack spacing={5} alignItems="center">
-                          <span>{t('lineMarks.importedDiff')}</span>
-                          <Button
-                            size="xs"
-                            theme="primary"
-                            onClick={() => {
-                              if (
-                                !props.readOnly &&
-                                activeEditorStore.editor()?.id === tabId &&
-                                view.state.doc.eq(importedState.doc) &&
-                                view.state.field(lineMarksField) ===
-                                  importedState.field(lineMarksField)
-                              )
-                                undo(view);
-                              toast.dismiss(undoToast.id);
-                              view.focus();
-                            }}
-                          >
-                            {t('lineMarks.undo')}
-                          </Button>
-                        </HStack>
+            activeToast => {
+              const onImportDiff = () => {
+                const store = getRootEditorStore();
+                if (
+                  activeEditorStore.editor()?.id !== tabId ||
+                  props.readOnly
+                ) {
+                  toast.dismiss(activeToast.id);
+                  return;
+                }
+                const newTabCount = files.length - 1;
+                if (
+                  newTabCount >
+                  MAX_EDITOR_TABS - store.state.editors.length
+                ) {
+                  toast.error(t('lineMarks.notEnoughTabs'));
+                  return;
+                }
+                const first = files[0];
+                const before = {
+                  activeEditorId: store.state.activeEditorId,
+                  editors: structuredClone(unwrap(store.state.editors)),
+                };
+                const getLanguageId = (path: string) =>
+                  inferLanguageFromPath(path) ??
+                  activeEditorStore.editor()?.languageId ??
+                  'typescript';
+                const after = {
+                  activeEditorId: before.activeEditorId,
+                  editors: [
+                    ...before.editors.map(editor =>
+                      editor.id === tabId
+                        ? {
+                            ...editor,
+                            code: first.code,
+                            marks: first.marks,
+                            tab: {tabName: first.path},
+                            languageId: getLanguageId(first.path),
+                          }
+                        : editor,
+                    ),
+                    ...files.slice(1).map(file => ({
+                      ...getInitialEditorState(),
+                      id: createUniqueId(),
+                      code: file.code,
+                      marks: file.marks,
+                      tab: {tabName: file.path},
+                      languageId: getLanguageId(file.path),
+                    })),
+                  ],
+                };
+                view.dispatch({
+                  changes: {
+                    from: 0,
+                    to: view.state.doc.length,
+                    insert: first.code,
+                  },
+                  effects: [
+                    replaceMarks.of(
+                      marksValue(
+                        EditorState.create({doc: first.code}).doc,
+                        first.marks,
                       ),
-                      {
-                        position: 'bottom-center',
-                        duration: 10000,
-                        theme: getUiStore().invertedThemeMode(),
-                      },
+                    ),
+                    importDiff.of({before, after}),
+                  ],
+                  annotations: isolateHistory.of('full'),
+                });
+                toast.dismiss(activeToast.id);
+                const importedState = view.state;
+                activeToastId = toast.success(
+                  undoToast => {
+                    const onUndoImport = () => {
+                      if (
+                        !props.readOnly &&
+                        activeEditorStore.editor()?.id === tabId &&
+                        view.state.doc.eq(importedState.doc) &&
+                        view.state.field(lineMarksField) ===
+                          importedState.field(lineMarksField)
+                      )
+                        undo(view);
+                      toast.dismiss(undoToast.id);
+                      view.focus();
+                    };
+                    return (
+                      <HStack spacing={5} alignItems="center">
+                        <span>{t('lineMarks.importedDiff')}</span>
+                        <Button
+                          size="xs"
+                          theme="primary"
+                          onClick={onUndoImport}
+                        >
+                          {t('lineMarks.undo')}
+                        </Button>
+                      </HStack>
                     );
-                    view.focus();
-                  }}
-                >
-                  {t('lineMarks.importDiff')}
-                </Button>
-              </HStack>
-            ),
+                  },
+                  {
+                    position: 'bottom-center',
+                    duration: 10000,
+                    theme: getUiStore().invertedThemeMode(),
+                  },
+                );
+                view.focus();
+              };
+              return (
+                <HStack spacing={5} alignItems="center">
+                  <span>
+                    {t(
+                      files.length === 1
+                        ? 'lineMarks.diffFile'
+                        : 'lineMarks.diffFiles',
+                      {count: String(files.length)},
+                    )}
+                  </span>
+                  <Button size="xs" theme="primary" onClick={onImportDiff}>
+                    {t('lineMarks.importDiff')}
+                  </Button>
+                </HStack>
+              );
+            },
             {
               position: 'bottom-center',
               duration: 10000,
@@ -260,37 +262,36 @@ export default function CanvasEditor(props: CanvasEditorProps) {
           const tabId = activeEditorStore.editor()?.id;
           const convertedState = view.state;
           activeToastId = toast.success(
-            activeToast => (
-              <HStack spacing={5} alignItems="center">
-                <span>
-                  {t(
-                    count === 1
-                      ? 'lineMarks.convertedOne'
-                      : 'lineMarks.convertedMany',
-                    {count: String(count)},
-                  )}
-                </span>
-                <Button
-                  size="xs"
-                  theme="primary"
-                  onClick={() => {
-                    if (
-                      activeEditorStore.editor()?.id === tabId &&
-                      view.state.doc.eq(convertedState.doc) &&
-                      view.state.field(lineMarksField).decorations ===
-                        convertedState.field(lineMarksField).decorations &&
-                      view.state.field(lineMarksField).focused ===
-                        convertedState.field(lineMarksField).focused
-                    )
-                      undo(view);
-                    toast.dismiss(activeToast.id);
-                    view.focus();
-                  }}
-                >
-                  {t('lineMarks.undo')}
-                </Button>
-              </HStack>
-            ),
+            activeToast => {
+              const onUndoAnnotations = () => {
+                if (
+                  activeEditorStore.editor()?.id === tabId &&
+                  view.state.doc.eq(convertedState.doc) &&
+                  view.state.field(lineMarksField).decorations ===
+                    convertedState.field(lineMarksField).decorations &&
+                  view.state.field(lineMarksField).focused ===
+                    convertedState.field(lineMarksField).focused
+                )
+                  undo(view);
+                toast.dismiss(activeToast.id);
+                view.focus();
+              };
+              return (
+                <HStack spacing={5} alignItems="center">
+                  <span>
+                    {t(
+                      count === 1
+                        ? 'lineMarks.convertedOne'
+                        : 'lineMarks.convertedMany',
+                      {count: String(count)},
+                    )}
+                  </span>
+                  <Button size="xs" theme="primary" onClick={onUndoAnnotations}>
+                    {t('lineMarks.undo')}
+                  </Button>
+                </HStack>
+              );
+            },
             {
               position: 'bottom-center',
               duration: 10000,
@@ -305,6 +306,11 @@ export default function CanvasEditor(props: CanvasEditorProps) {
           }
           activeToastId = toast.success(
             activeToast => {
+              const onFormatCode = () => {
+                const localValue = view.state.doc.toString();
+                activeEditorStore.format(localValue);
+                toast.dismiss(activeToast.id);
+              };
               const [t] = useI18n<AppLocaleEntries>();
               return (
                 <div>
@@ -320,11 +326,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
                       theme={'primary'}
                       leftIcon={<SparklesIcon size={'xs'} />}
                       disabled={!activeEditorStore.canFormat()}
-                      onClick={() => {
-                        const localValue = view.state.doc.toString();
-                        activeEditorStore.format(localValue);
-                        toast.dismiss(activeToast.id);
-                      }}
+                      onClick={onFormatCode}
                     >
                       Format
                     </Button>
