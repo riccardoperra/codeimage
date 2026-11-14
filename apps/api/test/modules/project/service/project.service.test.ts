@@ -1,5 +1,4 @@
 import type {User} from '@codeimage/prisma-models';
-import type {HttpErrors} from '@fastify/sensible/lib/httpError.js';
 import {assert, beforeEach, expect, test, vi} from 'vitest';
 import type {
   ProjectCreateResponse,
@@ -18,57 +17,9 @@ export function makeMockProjectService() {
     delete: () => void 0,
   } as unknown as ProjectRepository;
 
-  const httpErrors = {
-    internalServerError: (a: string) => ({message: a}),
-    notFound: (a: string) => ({name: 'NotFoundError', message: a}),
-    badGateway: (a: string) => ({message: a}),
-    badRequest: (a: string) => ({message: a}),
-    bandwidthLimitExceeded: (a: string) => ({message: a}),
-    conflict: (a: string) => ({message: a}),
-    createError: (a: string) => ({message: a}),
-    expectationFailed: (a: string) => ({message: a}),
-    failedDependency: (a: string) => ({message: a}),
-    forbidden: (a: string) => ({message: a}),
-    gatewayTimeout: (a: string) => ({message: a}),
-    getHttpError: (a: string) => ({message: a}),
-    gone: (a: string) => ({message: a}),
-    HttpError: (a: string) => ({message: a}),
-    httpVersionNotSupported: (a: string) => ({message: a}),
-    imateapot: (a: string) => ({message: a}),
-    insufficientStorage: (a: string) => ({message: a}),
-    lengthRequired: (a: string) => ({message: a}),
-    locked: (a: string) => ({message: a}),
-    loopDetected: (a: string) => ({message: a}),
-    methodNotAllowed: (a: string) => ({message: a}),
-    misdirectedRequest: (a: string) => ({message: a}),
-    networkAuthenticationRequired: (a: string) => ({message: a}),
-    notAcceptable: (a: string) => ({message: a}),
-    notExtended: (a: string) => ({message: a}),
-    notImplemented: (a: string) => ({message: a}),
-    payloadTooLarge: (a: string) => ({message: a}),
-    paymentRequired: (a: string) => ({message: a}),
-    preconditionFailed: (a: string) => ({message: a}),
-    preconditionRequired: (a: string) => ({message: a}),
-    proxyAuthenticationRequired: (a: string) => ({message: a}),
-    rangeNotSatisfiable: (a: string) => ({message: a}),
-    requestHeaderFieldsTooLarge: (a: string) => ({message: a}),
-    requestTimeout: (a: string) => ({message: a}),
-    serviceUnavailable: (a: string) => ({message: a}),
-    tooEarly: (a: string) => ({message: a}),
-    tooManyRequests: (a: string) => ({message: a}),
-    unauthorized: (a: string) => ({message: a}),
-    unavailableForLegalReasons: (a: string) => ({message: a}),
-    unprocessableEntity: (a: string) => ({message: a}),
-    unsupportedMediaType: (a: string) => ({message: a}),
-    upgradeRequired: (a: string) => ({message: a}),
-    uriTooLong: (a: string) => ({message: a}),
-    variantAlsoNegotiates: (a: string) => ({message: a}),
-  } as unknown as HttpErrors;
-
   return {
-    service: makeProjectService(repository, httpErrors),
+    service: makeProjectService(repository),
     repository,
-    httpErrors,
   };
 }
 
@@ -216,12 +167,13 @@ test('findById -> should return 404 error when not found project', async () => {
     email: 'email@example.it',
     createdAt: new Date(),
   };
-  const {repository, service, httpErrors} = makeMockProjectService();
-  const notFoundSpy = vi.spyOn(httpErrors, 'notFound');
+  const {repository, service} = makeMockProjectService();
   vi.spyOn(repository, 'findById').mockResolvedValue(null);
 
   await expect(service.findById(user, id), 'will reject').rejects.toThrow();
-  expect(notFoundSpy).toHaveBeenCalled();
+  await expect(service.findById(user, id)).rejects.toMatchObject({
+    code: 'PROJECT_NOT_FOUND',
+  });
 });
 
 test('clone -> should return cloned project', async () => {
@@ -278,23 +230,11 @@ test('clone -> should not wrap exception', async () => {
     email: 'email@example.it',
     createdAt: new Date(),
   };
-  const {repository, service, httpErrors} = makeMockProjectService();
+  const {repository, service} = makeMockProjectService();
 
   const error = new Error('same exception');
 
   vi.spyOn(repository, 'findById').mockRejectedValue(error);
 
   await expect(service.clone(user, id, null)).rejects.toThrow(error);
-
-  vi.restoreAllMocks();
-
-  vi.spyOn(repository, 'findById').mockRejectedValue(
-    httpErrors.notFound('not found'),
-  );
-
-  await expect(service.clone(user, id, null)).rejects.toThrow(
-    httpErrors.notFound(
-      `Cannot clone project with id ${id} since it does not exists`,
-    ),
-  );
 });

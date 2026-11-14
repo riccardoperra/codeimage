@@ -1,5 +1,5 @@
 import {HandlerBuilder} from '../../../common/domainFunctions/builder.js';
-import {NotFoundPresetException} from '../exceptions/NotFoundPresetException.js';
+import {PresetErrors} from '../preset.model.js';
 import type {PresetDto} from '../schema/preset-dto.schema.js';
 import type {PresetHandlerDependencies} from './index.js';
 
@@ -10,7 +10,7 @@ export const findById =
       return async (ownerId: string, id: string): Promise<PresetDto> => {
         const preset = await repository.findByIdAndOwnerId(id, ownerId);
         if (!preset) {
-          throw new NotFoundPresetException({id, ownerId});
+          throw PresetErrors.notFound({id, ownerId});
         }
         return mapper.fromEntityToDto(preset);
       };

@@ -1,12 +1,13 @@
 import closeWithGrace from 'close-with-grace';
 import * as dotenv from 'dotenv';
 import Fastify from 'fastify';
+import {options} from './app.js';
 
 dotenv.config();
 
 // Instantiate Fastify with some config
 const app = Fastify({
-  logger: true,
+  ...options,
 });
 // Register your application as a normal plugin.
 app.register(import('./app.js'));

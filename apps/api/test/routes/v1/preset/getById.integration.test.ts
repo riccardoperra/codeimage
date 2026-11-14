@@ -1,14 +1,9 @@
 import type {Preset, User} from '@codeimage/prisma-models';
 import type {FastifyError} from 'fastify';
-import {afterEach, assert, beforeEach, expect, test} from 'vitest';
+import {afterEach, assert, beforeEach, test} from 'vitest';
 import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
 import {build} from '../../../helper.js';
-import {
-  clearAllSeeds,
-  client,
-  presetSeed,
-  userSeed,
-} from '../../../helpers/seed.js';
+import {clearAllSeeds, presetSeed, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;

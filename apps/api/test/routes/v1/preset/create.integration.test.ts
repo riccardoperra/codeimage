@@ -39,6 +39,11 @@ test<TestContext>('POST /v1/preset [Create Preset] -> 200', async t => {
 
   assert.strictEqual(response.statusCode, 200, 'return status 200');
   assert.strictEqual(body.name, 'Data');
+  expect(await client.preset.findUnique({where: {id: body.id}})).toMatchObject({
+    ownerId: userId,
+    name: request.name,
+    data,
+  });
 });
 
 test('POST /v1/preset [Create Preset] -> Exceed presets limit > 422', async t => {
@@ -59,4 +64,5 @@ test('POST /v1/preset [Create Preset] -> Exceed presets limit > 422', async t =>
   response.json<PresetDto>();
 
   assert.equal(response.statusCode, 422, 'return status 422');
+  expect(await client.preset.count()).toBe(0);
 });

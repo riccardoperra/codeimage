@@ -1,5 +1,5 @@
 import type {Project, User} from '@codeimage/prisma-models';
-import type {HttpError, HttpErrors} from '@fastify/sensible/lib/httpError.js';
+import {ProjectErrors} from '../project.model.js';
 import {createProjectRequestMapper} from '../mapper/create-project-mapper.js';
 import {createCompleteProjectGetByIdResponseMapper} from '../mapper/get-project-by-id-mapper.js';
 import type {ProjectRepository} from '../repository/index.js';
@@ -43,7 +43,6 @@ export interface ProjectService {
 
 export function makeProjectService(
   repository: ProjectRepository,
-  httpErrors: HttpErrors,
 ): ProjectService {
   return {
     async findById(
@@ -53,7 +52,7 @@ export function makeProjectService(
       const project = await repository.findById(id);
 
       if (!project) {
-        throw httpErrors.notFound(`Project with id ${id} not found`);
+        throw ProjectErrors.notFound({id: id});
       }
 
       const isOwner = !!user && user.id === project.ownerId;
@@ -82,14 +81,14 @@ export function makeProjectService(
         newName,
       );
       if (!project) {
-        throw httpErrors.notFound(`Project with id ${projectId} not found`);
+        throw ProjectErrors.notFound({id: projectId});
       }
       return project;
     },
     async update(userId, projectId, data) {
       const project = await repository.updateProject(userId, projectId, data);
       if (!project) {
-        throw httpErrors.notFound(`Project with id ${projectId} not found`);
+        throw ProjectErrors.notFound({id: projectId});
       }
       return project;
     },
@@ -98,27 +97,15 @@ export function makeProjectService(
       projectId: string,
       newName: string | null,
     ): Promise<ProjectCreateResponse> {
-      try {
-        const project = await repository.findById(projectId);
-        if (!project) {
-          throw {name: 'NotFoundError'} as HttpError;
-        }
-        return this.createNewProject(user.id, {
-          name: newName ?? project.name,
-          frame: project.frame,
-          editors: project.editorTabs,
-          editorOptions: project.editorOptions,
-          terminal: project.terminal,
-        });
-      } catch (e) {
-        const error = e as HttpError;
-        if (error && error.name === 'NotFoundError') {
-          throw httpErrors.notFound(
-            `Cannot clone project with id ${projectId} since it does not exists`,
-          );
-        }
-        throw e;
-      }
+      const project = await repository.findById(projectId);
+      if (!project) throw ProjectErrors.cloneSourceNotFound({id: projectId});
+      return this.createNewProject(user.id, {
+        name: newName ?? project.name,
+        frame: project.frame,
+        editors: project.editorTabs,
+        editorOptions: project.editorOptions,
+        terminal: project.terminal,
+      });
     },
   };
 }

@@ -7,7 +7,7 @@ import type {TestContext} from 'vitest';
 import {assert, beforeEach, expect, test, vi} from 'vitest';
 import auth0 from '../../src/plugins/auth0.js';
 import prisma from '../../src/plugins/prisma.js';
-import sensible from '../../src/plugins/sensible.js';
+import errors from '../../src/plugins/errors.js';
 
 interface AppOptions {
   mockAuth: boolean;
@@ -41,7 +41,7 @@ async function build(t: TestContext, options: AppOptions = {mockAuth: false}) {
           ALLOWED_ORIGINS: Type.String(),
         }),
       });
-      await app.register(sensible);
+      await app.register(errors);
       await app.register(prisma);
       await app.register(auth0);
 
@@ -182,7 +182,7 @@ test('should return bad user detail if user has no email', async t => {
   });
 
   assert.equal(response.statusCode, 400);
-  assert.deepStrictEqual(response.json(), {
+  expect(response.json()).toMatchObject({
     statusCode: 400,
     message: 'No valid user data',
     error: 'Bad Request',

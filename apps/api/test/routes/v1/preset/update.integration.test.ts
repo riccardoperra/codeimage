@@ -47,6 +47,9 @@ test<TestContext>('[PUT] /v1/preset/:id -> 200', async context => {
 
   assert.equal(response.statusCode, 200);
   assert.equal(body.name, 'updated');
+  expect(await client.preset.findUnique({where: {id: presetId}})).toMatchObject(
+    {name: request.name, data: request.data, ownerId: context.user.id},
+  );
 });
 
 test<TestContext>('[PUT] /v1/preset/:id -> when preset not found -> 404', async context => {

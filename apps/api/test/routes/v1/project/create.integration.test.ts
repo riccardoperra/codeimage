@@ -72,4 +72,10 @@ test<TestContext>('POST /v1/project/ [Create Project] -> 200', async context => 
 
   assert.equal(response.statusCode, 200, 'return status 200');
   assert.equal(body.name, 'Data');
+  expect(
+    await client.project.findUnique({
+      where: {id: body.id},
+      include: {editorTabs: true},
+    }),
+  ).toMatchObject({ownerId: userId, name: data.name, editorTabs: data.editors});
 });

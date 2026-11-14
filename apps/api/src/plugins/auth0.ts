@@ -9,6 +9,7 @@ import type {
 import type {Authenticate} from 'fastify-auth0-verify';
 import fastifyAuth0Verify from 'fastify-auth0-verify';
 import fp from 'fastify-plugin';
+import {CommonErrors} from '../shared/errors.js';
 
 declare module '@fastify/jwt' {
   interface FastifyJWT {
@@ -66,7 +67,7 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
         await fastify.authenticate(req, reply);
       } catch {
         if (options.mustBeAuthenticated) {
-          throw fastify.httpErrors.unauthorized();
+          throw CommonErrors.unauthenticated();
         }
       }
 
@@ -80,7 +81,7 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
       const email = req.user[emailClaim] as string;
 
       if (!email) {
-        throw fastify.httpErrors.badRequest('No valid user data');
+        throw CommonErrors.invalidSession();
       }
 
       const user = await fastify.prisma.user.findFirst({
