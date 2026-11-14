@@ -43,7 +43,7 @@ for (const schema of [
   });
 }
 
-test('normalizes old database values and missing create/update fields to solid', () => {
+test('normalizes old database values and a create without a surface to solid', () => {
   for (const value of [undefined, null, 'solid', 'invalid'])
     expect(readTerminalSurface(value)).toBe('solid');
   const body = {
@@ -66,7 +66,6 @@ test('normalizes old database values and missing create/update fields to solid',
     editors: [],
   };
   expect(draftFromCreateBody(body).terminal.surface).toBe('solid');
-  expect(changesFromUpdateBody(body).terminal.surface).toBe('solid');
   const draft = draftFromCreateBody({
     ...body,
     terminal: {...terminal, surface: 'wash'},
@@ -87,4 +86,34 @@ test('normalizes old database values and missing create/update fields to solid',
   expect(toProjectResponse({...project, isOwner: true}).terminal).toMatchObject(
     {surface: 'wash', borderType: 'hairline'},
   );
+});
+
+test('an update without a surface, as an older app sends it, keeps the stored one', () => {
+  const body = {
+    terminal,
+    frame: {
+      background: null,
+      opacity: 100,
+      radius: 8,
+      padding: 64,
+      visible: true,
+    },
+    editorOptions: {
+      fontId: 'mono',
+      fontWeight: 400,
+      showLineNumbers: false,
+      themeId: 'githubDark',
+      enableLigatures: true,
+    },
+    editors: [],
+  };
+  expect(changesFromUpdateBody(body).terminal.surface).toBeUndefined();
+  expect(
+    changesFromUpdateBody({...body, terminal: {...terminal, surface: null}})
+      .terminal.surface,
+  ).toBeUndefined();
+  expect(
+    changesFromUpdateBody({...body, terminal: {...terminal, surface: 'wash'}})
+      .terminal.surface,
+  ).toBe('wash');
 });

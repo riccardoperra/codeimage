@@ -93,7 +93,10 @@ export interface ProjectDraft {
 
 export interface ProjectChanges {
   readonly frame: WithoutIds<SnippetFrame>;
-  readonly terminal: WithoutIds<SnippetTerminal>;
+  // Absent when the client predates the field, so the stored value stays.
+  readonly terminal: Omit<WithoutIds<SnippetTerminal>, 'surface'> & {
+    readonly surface?: SnippetTerminal['surface'];
+  };
   readonly editorOptions: WithoutIds<SnippetEditorOptions>;
   readonly editorTabs: readonly Omit<SnippetEditorTab, 'projectId'>[];
 }
@@ -176,10 +179,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
 export function changesFromUpdateBody(body: ProjectUpdateBody): ProjectChanges {
   return {
     frame: body.frame,
-    terminal: {
-      ...body.terminal,
-      surface: readTerminalSurface(body.terminal.surface),
-    },
+    terminal: {...body.terminal, surface: body.terminal.surface ?? undefined},
     editorOptions: body.editorOptions,
     editorTabs: body.editors,
   };
