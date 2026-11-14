@@ -47,15 +47,17 @@ codeimage foo.ts --highlight 3-5,9 --focus -o focused.png
 
 `--highlight` accepts comma-separated line numbers and inclusive ranges.
 With `--lines`, highlight numbers refer to the numbered lines in the output.
-`--focus` dims lines without a highlight mark. Shiki annotation comments in
+`--focus` dims lines without a highlight mark. With no highlighted line it is
+a usage error, since every line would be dimmed. Shiki annotation comments in
 input code become marks automatically through the language's comment syntax.
 The CLI removes the annotations before applying `--lines`.
 
 Secret redaction runs by default. Diagnostics go to stderr with the input
-name, line, column, and rule id, followed by `redacted N secrets`. Images and
+name, line, column, and rule id, followed by `redacted 1 secret` or `redacted N secrets`. Images and
 alt text use the masked code. `--no-redact` preserves the original code.
 
-`--size` sets an exact output size, independent of `--scale`.
+`--size` sets an exact output size. Like the web export, a target has no
+pixel ratio, so `--scale` with `--size` is a usage error.
 
 | Target              | Pixels      |
 | ------------------- | ----------- |
@@ -66,7 +68,8 @@ alt text use the masked code. `--no-redact` preserves the original code.
 
 The window centers inside the target and scales down to fit.
 `--signature @handle` adds a frame signature. `--signature-position` accepts
-`bottom-left` or `bottom-right`, with `bottom-right` as the default.
+`bottom-left` or `bottom-right`, with `bottom-right` as the default. It needs
+`--signature` or a preset that has a signature.
 
 `--split-tabs` writes one image per tab as `out-01.png`, `out-02.png`, and so
 on for `-o out.png`. It also supports JPEG, WebP, and SVG. Each image contains

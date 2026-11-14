@@ -35,8 +35,10 @@ export const marks: Flag = {
     highlight: {type: 'string'},
     focus: {type: 'boolean'},
   },
-  usage:
-    '  --diff              Import unified diff input as one tab per changed file\n  --highlight <lines> Mark lines such as 3-5,9\n  --focus             Dim lines without a highlight mark\n',
+  usage: `  --diff               Read a unified diff, one tab per changed file
+  --highlight <lines>  Highlight lines such as 3-5,9
+  --focus              Dim every line that is not highlighted
+`,
   validate(values) {
     highlights(values);
   },
@@ -86,33 +88,36 @@ export const marks: Flag = {
   },
   apply(snapshot, values) {
     const ranges = highlights(values);
-    return {
-      ...snapshot,
-      editor: {
-        ...snapshot.editor,
-        editors: snapshot.editor.editors.map(tab => {
-          const lines = new Map(
-            (tab.marks?.lines ?? []).map(mark => [mark.line, mark]),
-          );
-          for (let line = 1; line <= tab.code.split('\n').length; line++) {
-            const sourceLine = tab.lineNumberStart + line - 1;
-            if (
-              ranges.some(
-                range => sourceLine >= range.start && sourceLine <= range.end,
-              )
-            ) {
-              lines.set(line, {line, kind: 'highlight'});
-            }
-          }
-          return {
-            ...tab,
-            marks: {
-              lines: [...lines.values()].sort((a, b) => a.line - b.line),
-              focus: values.focus === true || tab.marks?.focus === true,
-            },
-          };
-        }),
-      },
-    };
+    const editors = snapshot.editor.editors.map(tab => {
+      const lines = new Map(
+        (tab.marks?.lines ?? []).map(mark => [mark.line, mark]),
+      );
+      for (let line = 1; line <= tab.code.split('\n').length; line++) {
+        const sourceLine = tab.lineNumberStart + line - 1;
+        if (
+          ranges.some(
+            range => sourceLine >= range.start && sourceLine <= range.end,
+          )
+        ) {
+          lines.set(line, {line, kind: 'highlight'});
+        }
+      }
+      return {
+        ...tab,
+        marks: {
+          lines: [...lines.values()].sort((a, b) => a.line - b.line),
+          focus: values.focus === true || tab.marks?.focus === true,
+        },
+      };
+    });
+    if (
+      values.focus &&
+      !editors.some(tab => tab.marks.lines.some(m => m.kind === 'highlight'))
+    ) {
+      throw new UsageError(
+        '--focus: no line is highlighted, so every line would be dimmed. Add --highlight or a [!code highlight] comment',
+      );
+    }
+    return {...snapshot, editor: {...snapshot.editor, editors}};
   },
 };

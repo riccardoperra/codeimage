@@ -28,6 +28,21 @@ async function cli(lane, args, input) {
   console.log(`PASS ${lane}`);
   return run;
 }
+async function usageError(lane, args, message) {
+  const run = spawnSync(
+    process.execPath,
+    ['packages/cli/dist/bin.js', ...args],
+    {
+      cwd: root,
+      encoding: 'utf8',
+    },
+  );
+  await writeFile(file(`${lane}.stderr.txt`), run.stderr ?? '');
+  assert.equal(run.status, 2, `${lane}: ${run.stderr}`);
+  assert.match(run.stderr, message, lane);
+  receipts.push({lane, args, exit: run.status});
+  console.log(`PASS ${lane}`);
+}
 const png = async path => PNG.sync.read(await readFile(path));
 const dimensions = async (path, width, height) => {
   const image = await png(path);
@@ -126,9 +141,25 @@ await cli('p6-svg', [
   '-o',
   file('p6-redacted.svg'),
 ]);
-const svg = await readFile(file('p6-redacted.svg'), 'utf8');
-assert.match(svg, /<svg/);
-for (const token of tokens) assert.ok(!svg.includes(token));
+// Takumi draws glyphs as paths, so the SVG holds no text to search. Instead,
+// render the redacted code from the alt sidecar unredacted and require the
+// same SVG: the image then shows exactly that code, and it has no token.
+const maskedCode = maskedAlt.slice(maskedAlt.indexOf('\n\n') + 2);
+const maskedFile = await fixture('masked/secrets.ts', maskedCode);
+await cli('p6-svg-masked', [
+  maskedFile,
+  '--no-redact',
+  '--format',
+  'svg',
+  '-o',
+  file('p6-masked.svg'),
+]);
+assert.ok(
+  (await readFile(file('p6-redacted.svg'))).equals(
+    await readFile(file('p6-masked.svg')),
+  ),
+  'the redacted SVG must equal the render of the masked code',
+);
 const unredacted = await cli('p6-no-redact', [
   secretFile,
   '--no-redact',
@@ -155,13 +186,21 @@ for (const [target, width, height] of [
     target,
     '--signature',
     '@me',
-    '--scale',
-    '2',
     '-o',
     file(`p7-${target}.png`),
   ]);
   await dimensions(file(`p7-${target}.png`), width, height);
 }
+await usageError(
+  'p7-scale-conflict',
+  [a, '--size', 'og', '--scale', '2', '-o', file('unused.png')],
+  /^codeimage: --scale: --size exports at the exact target size/,
+);
+await usageError(
+  'p5-focus-without-highlight',
+  [a, '--focus', '-o', file('unused.png')],
+  /^codeimage: --focus: no line is highlighted/,
+);
 await cli('p7-left', [
   a,
   '--size',
