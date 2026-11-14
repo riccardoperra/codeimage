@@ -55,6 +55,100 @@ afterEach(() => {
 });
 
 describe('Takumi export', () => {
+  it('exports a selected web font without reading unused fallback-stack system fonts', async () => {
+    const style = document.createElement('style');
+    style.textContent =
+      '@font-face { font-family: "JetBrains Mono"; src: url("https://example.test/code.woff2"); }';
+    document.head.append(style);
+    const blob = vi.fn(async () => {
+      throw new Error('Cannot read Menlo');
+    });
+    window.queryLocalFonts = vi.fn(async () => [
+      {
+        family: 'Menlo',
+        fullName: 'Menlo Regular',
+        postscriptName: 'Menlo-Regular',
+        style: 'Regular',
+        blob,
+      },
+    ]);
+    const node = exportNode(
+      '<div style="font-family: ui-monospace, Menlo, monospace"><div class="cm-line" style="font-family: JetBrains Mono, monospace">const code = 1;</div></div>',
+    );
+    const {takumi} = await import('./takumi');
+    await expect(
+      takumi(node, {
+        ...options,
+        codeFont: {
+          id: 'jetbrains-mono',
+          name: 'JetBrains Mono',
+          type: 'web',
+          types: [{name: 'Regular', weight: 400}],
+        },
+      }),
+    ).resolves.toBeInstanceOf(Blob);
+    expect(window.queryLocalFonts).not.toHaveBeenCalled();
+    expect(blob).not.toHaveBeenCalled();
+    expect(renderer.render).toHaveBeenCalledOnce();
+    expect(renderer.registerFont).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'JetBrains Mono'}),
+    );
+  });
+
+  it('uses stored FontData without asking for local-font access at export', async () => {
+    const blob = vi.fn(async () => new Blob([new Uint8Array([7, 8, 9])]));
+    const source = {
+      family: 'Local Mono',
+      fullName: 'Local Mono Regular',
+      postscriptName: 'LocalMono-Regular',
+      style: 'Regular',
+      blob,
+    };
+    window.queryLocalFonts = vi.fn(async () => {
+      throw new Error('Export must not enumerate fonts');
+    });
+    const node = exportNode(
+      '<div class="cm-line" style="font-family: Local Mono">code</div>',
+    );
+    const {takumi} = await import('./takumi');
+    await expect(
+      takumi(node, {
+        ...options,
+        codeFont: {
+          id: 'Local Mono',
+          name: 'Local Mono',
+          type: 'system',
+          types: [{name: 'Regular', weight: 400}],
+          fontData: {
+            family: 'Local Mono',
+            faces: ['400'],
+            monospaced: true,
+            sources: [source],
+          },
+        },
+      }),
+    ).resolves.toBeInstanceOf(Blob);
+    expect(window.queryLocalFonts).not.toHaveBeenCalled();
+    expect(blob).toHaveBeenCalledOnce();
+    expect(renderer.registerFont).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'Local Mono',
+        data: new Uint8Array([7, 8, 9]),
+      }),
+    );
+  });
+
+  it('continues rendering when an optional UI font cannot register', async () => {
+    renderer.registerFont.mockImplementationOnce(async () => {
+      throw new Error('Optional UI font failed');
+    });
+    const {takumi} = await import('./takumi');
+    await expect(takumi(exportNode('code'), options)).resolves.toBeInstanceOf(
+      Blob,
+    );
+    expect(renderer.render).toHaveBeenCalledOnce();
+  });
+
   it('keeps the measured frame width as a minimum and lets the widest line fit', async () => {
     const {takumi} = await import('./takumi');
     const node = exportNode('a line that must not wrap');
