@@ -16,7 +16,7 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run && tsx --test tests/*.test.ts"
   },
   "devDependencies": {
     "@mdx-js/mdx": "catalog:next",
