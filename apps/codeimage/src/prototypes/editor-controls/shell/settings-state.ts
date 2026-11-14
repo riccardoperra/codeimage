@@ -5,6 +5,7 @@ export const SECTIONS = [
   {id: 'general', name: 'General'},
   {id: 'appearance', name: 'Appearance'},
   {id: 'experiments', name: 'Experiments'},
+  {id: 'whats-new', name: "What's new"},
   {id: 'about', name: 'About'},
 ] as const;
 

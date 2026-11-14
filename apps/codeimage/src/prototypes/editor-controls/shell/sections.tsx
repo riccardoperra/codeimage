@@ -4,13 +4,13 @@ import {getUiStore} from '@codeimage/store/ui';
 import {Button, buttonStyles} from '@codeui/kit';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
-import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {RadioGroup} from '@kobalte/core/radio-group';
 import {useNavigate} from '@solidjs/router';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component, JSX} from 'solid-js';
 import {createMemo, For, Match, Show, Switch} from 'solid-js';
-import {Changelog} from '../../../components/Changelog/Changelog';
+import {getWhatsNew, RELEASES} from '../../../state/whats-new';
+import type {HighlightId, LocatedHighlightId} from '../../../state/whats-new';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {EditorControlsModel, ThemeEntry} from '../model';
 import {ThemeSwatch} from '../ThemeSwatch';
@@ -39,6 +39,8 @@ import * as styles from './settings.css';
 export interface SettingRow {
   readonly id: string;
   readonly title: string;
+  readonly highlight?: LocatedHighlightId;
+  readonly fresh?: HighlightId;
   readonly description: () => string;
   /** Beside the text, or under it for a `wide` row. */
   readonly control: () => JSX.Element;
@@ -194,7 +196,7 @@ export function createSettingSections(
   const ui = getUiStore();
   const auth = getAuth0State();
   const navigate = useNavigate();
-  const openDialog = createControlledDialog();
+  const news = getWhatsNew();
 
   // The applied theme, or the first one, as the canvas draws it.
   const theme = () => {
@@ -297,6 +299,7 @@ export function createSettingSections(
         rows: [
           {
             id: 'layout',
+            highlight: 'layouts',
             title: 'Layout',
             description: () =>
               'Where the controls sit around the canvas. Inspector is the default, Dock and Studio are experiments.',
@@ -307,7 +310,10 @@ export function createSettingSections(
                 options={LAYOUTS}
                 value={preferences.layout()}
                 default={DEFAULT_LAYOUT}
-                onChange={preferences.setLayout}
+                onChange={value => {
+                  preferences.setLayout(value);
+                  news.seen('layouts', 'use');
+                }}
                 preview={option => (
                   <LayoutPreview
                     layout={option.id}
@@ -324,6 +330,7 @@ export function createSettingSections(
         rows: [
           {
             id: 'theme-cards',
+            highlight: 'theme-cards',
             title: 'Theme cards',
             description: () =>
               'How the theme picker draws each theme. Window is the default, Orb and Aa list are experiments.',
@@ -336,7 +343,10 @@ export function createSettingSections(
                     options={THEME_CARDS}
                     value={preferences.themeCards()}
                     default={DEFAULT_CARDS}
-                    onChange={preferences.setThemeCards}
+                    onChange={value => {
+                      preferences.setThemeCards(value);
+                      news.seen('theme-cards', 'use');
+                    }}
                     preview={option => (
                       <ThemeCardsPreview style={option.id} theme={current()} />
                     )}
@@ -348,6 +358,43 @@ export function createSettingSections(
         ],
       },
     ],
+  };
+
+  const library: SettingSection = {
+    id: 'whats-new',
+    name: nameOf('whats-new'),
+    icon: ExperimentsIcon,
+    intro: 'Features added to CodeImage, newest first.',
+    action: () => (
+      <a
+        class={styles.historyLink}
+        href="https://github.com/riccardoperra/codeimage/releases"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Older releases on GitHub ↗
+      </a>
+    ),
+    groups: () =>
+      RELEASES.map(release => ({
+        title: `${release.title} · ${release.date}`,
+        rows: release.highlights.map(highlight => ({
+          id: `news-${highlight.id}`,
+          title: highlight.title,
+          description: () => highlight.body,
+          fresh: highlight.id,
+          small: true,
+          control: () => (
+            <Button
+              size="sm"
+              theme="secondary"
+              onClick={() => news.showMe(highlight.id, 'library')}
+            >
+              Show me
+            </Button>
+          ),
+        })),
+      })),
   };
 
   const about: SettingSection = {
@@ -365,24 +412,6 @@ export function createSettingSections(
             description: () => 'The release of CodeImage you are using.',
             control: () => (
               <span class={styles.value}>{appEnvironment.version}</span>
-            ),
-          },
-          {
-            id: 'changelog',
-            small: true,
-            title: 'Changelog',
-            description: () => 'What changed in each release.',
-            control: () => (
-              <Button
-                size={'sm'}
-                theme={'secondary'}
-                onClick={() => {
-                  settings.close();
-                  openDialog(Changelog, {});
-                }}
-              >
-                Open
-              </Button>
             ),
           },
           {
@@ -443,7 +472,7 @@ export function createSettingSections(
 
   // One list of rows per section for as long as nothing they read changes,
   // so that a search keeps the rows, and their controls, that still match.
-  return [general, appearance, experiments, about].map(section => {
+  return [general, appearance, experiments, library, about].map(section => {
     const groups = createMemo(section.groups);
     return {...section, groups};
   });

@@ -19,6 +19,8 @@ export function WhatsNewHost(props: {
       : null,
   );
   const canAnnounce = createMemo(() => quiet() && (props.quiet?.() ?? true));
+  // announce subscribes to the accessor for the lifetime of this host.
+  // oxlint-disable-next-line solid/reactivity
   const announcement = news.announce(canAnnounce);
   const current = () => review() ?? announcement();
   const dismiss = () => {

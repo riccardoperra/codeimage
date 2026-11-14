@@ -1,6 +1,5 @@
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {icons} from '@codeui/kit';
-import {createControlledDialog} from '@core/hooks/createControlledDialog';
 import {Dialog} from '@kobalte/core/dialog';
 import {useNavigate} from '@solidjs/router';
 import {
@@ -13,7 +12,8 @@ import {
   Show,
   untrack,
 } from 'solid-js';
-import {Changelog} from '../../../components/Changelog/Changelog';
+import {settings} from '../shell/settings-state';
+import {getWhatsNew} from '../../../state/whats-new';
 import type {EditorControlsModel} from '../model';
 import {settingsCommands} from '../shell/commands';
 import type {Stage} from '../stage';
@@ -62,7 +62,6 @@ function Commands(
   const listId = createUniqueId();
   const auth = getAuth0State();
   const navigate = useNavigate();
-  const openDialog = createControlledDialog();
   let input!: HTMLInputElement;
   let list!: HTMLDivElement;
 
@@ -91,10 +90,10 @@ function Commands(
     // What the old menu at the top left held beside Settings.
     const fromOldMenu: Command[] = [
       {
-        id: 'changelog',
+        id: 'whats-new',
         group: 'Settings',
-        label: 'Changelog',
-        run: () => openDialog(Changelog, {}),
+        label: "What's new",
+        run: () => settings.open('whats-new'),
       },
       {
         id: 'github',
@@ -293,6 +292,7 @@ export function CommandMenu(props: CommandMenuProps) {
   onCleanup(commandMenu.close);
 
   const run = (command: Command) => {
+    getWhatsNew().seen('command-menu', 'use');
     giveFocusBack = command.preview !== undefined;
     if (!command.current) command.run();
     commandMenu.close();

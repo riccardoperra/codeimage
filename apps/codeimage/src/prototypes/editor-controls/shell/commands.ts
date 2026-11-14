@@ -1,3 +1,4 @@
+import {getWhatsNew} from '../../../state/whats-new';
 import {getUiStore} from '@codeimage/store/ui';
 import type {Command} from '../command-menu/commands';
 import {LAYOUTS, preferences, THEME_CARDS} from './preferences';
@@ -46,7 +47,10 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
         group: GROUP,
         label: `Layout: ${entry.name}`,
         current: entry.id === layout,
-        run: () => preferences.setLayout(entry.id),
+        run: () => {
+          preferences.setLayout(entry.id);
+          getWhatsNew().seen('layouts', 'use');
+        },
       }),
     ),
     ...(layout === 'inspector'
@@ -66,7 +70,10 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
         group: GROUP,
         label: `Theme cards: ${cards.name}`,
         current: cards.id === preferences.themeCards(),
-        run: () => preferences.setThemeCards(cards.id),
+        run: () => {
+          preferences.setThemeCards(cards.id);
+          getWhatsNew().seen('theme-cards', 'use');
+        },
       }),
     ),
     ...MODES.map(

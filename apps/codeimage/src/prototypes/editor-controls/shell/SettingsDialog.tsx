@@ -1,3 +1,5 @@
+import {NewDot} from '../../../components/WhatsNew/NewDot';
+import {getWhatsNew} from '../../../state/whats-new';
 import {Dialog, IconButton, TextField} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Dialog as KDialog} from '@kobalte/core/dialog';
@@ -25,6 +27,12 @@ function Row(props: {row: SettingRow}) {
       <div class={styles.rowText}>
         <span id={titleId()} class={styles.rowTitle}>
           {props.row.title}
+          <Show when={props.row.highlight}>
+            {id => <NewDot highlight={id()} />}
+          </Show>
+          <Show when={props.row.fresh && getWhatsNew().isNew(props.row.fresh)}>
+            <span class={styles.tag}>New</span>
+          </Show>
         </span>
         <span id={descriptionId()} class={styles.rowDescription}>
           {props.row.description()}
@@ -255,8 +263,6 @@ function Panel(props: {sections: readonly SettingSection[]}) {
  * title, a line that explains it, and its control.
  */
 export function SettingsDialog(props: {model: EditorControlsModel}) {
-  // Made here and not in the panel, which goes away as the dialog closes:
-  // the changelog that a row opens has to outlive it.
   const sections = createSettingSections(props.model);
   return (
     <Dialog

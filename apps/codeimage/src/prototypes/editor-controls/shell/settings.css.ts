@@ -336,7 +336,16 @@ export const rowText = style({
   minWidth: 0,
 });
 
+export const historyLink = style({
+  color: c.descriptionTextColor,
+  fontSize: themeVars.fontSize.xs,
+  textUnderlineOffset: '3px',
+});
+
 export const rowTitle = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
   fontSize: themeVars.fontSize.sm,
   fontWeight: themeVars.fontWeight.medium,
 });
