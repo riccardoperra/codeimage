@@ -87,7 +87,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Create `apps/codeimage/src/core/animation/compile.ts`.
 - [ ] Create `apps/codeimage/src/components/CustomEditor/AnimatedCodeView.tsx`.
 - [ ] Edit `apps/codeimage/src/render/entry-server.tsx` to export `renderAnimationScenes`.
-- [ ] Edit `apps/codeimage/package.json` to add `@shikijs/magic-move`. Import only `@shikijs/magic-move/core`.
+- [ ] Edit `apps/codeimage/package.json` to add `@shikijs/magic-move`. Import only `@shikijs/magic-move/core`. Do not add `shiki`. Check with `pnpm why shiki --filter=@codeimage/app`, which must print nothing.
 - [ ] Create `scripts/parity/animation-endpoints.ts` and `scripts/parity/animation-frames.ts`.
 
 **Build.**
@@ -437,6 +437,8 @@ Motion Canvas and Revideo own their scene runtime and draw on a browser canvas. 
 Code Hike is React-only and animates the DOM with the Web Animations API, so it gives no frames for export.
 
 The `shiki-magic-move` renderer is DOM-only. It reads positions with `getBoundingClientRect` and animates with CSS transitions. The plan keeps its core for keys and drops its renderer, because export needs positions as data.
+
+The plan does not add Shiki and keeps CodeMirror. `@shikijs/magic-move` comes from the Shiki team, but its `core` entry imports only `diff-match-patch-es` and `ohash`, and `shiki` is an optional peer dependency. Installing the package in the prototype added no `shiki` package. CodeMirror stays the editor, and Lezer stays the highlighter. `tokenizeCode` produces the same tokens and classes for the static export and for the animation, which is why the endpoint parity rule can hold. Copying the matching code instead of depending on the package was weighed and rejected. The core is 8 KB under MIT, but a copy would leave CodeImage to track upstream fixes by hand.
 
 A JavaScript tween that writes a style per frame was the runner-up for the timeline. One `@keyframes` stylesheet wins, because the browser plays it for the preview and Takumi samples it for export. One source drives both.
 
