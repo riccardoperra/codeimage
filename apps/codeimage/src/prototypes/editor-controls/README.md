@@ -51,7 +51,7 @@ A preview shows a value on the canvas without saving it and without sending anal
 
 Each layout is a folder, `variants/<slug>/index.tsx`, that exports two things:
 
-- `meta`, a `VariantMeta` with the `name` shown in the picker and the `axis` the layout explores. `ownThemePicker: true` marks a layout that ignores the theme style, which only Current sets.
+- `meta`, a `VariantMeta` with the `name` shown in the picker and the `axis` the layout explores. `ownThemePicker: true` marks a layout that ignores the theme style, and `noCommandMenu: true` one that gets no command menu. Only Current sets them.
 - A default export, a `Component<VariantProps>` that lays out the whole editor screen.
 
 `VariantProps` has the `model`, a `stage`, and a `ThemePicker`.
@@ -82,6 +82,17 @@ The harness creates a new stage for each mount and keeps one model for the whole
 `../theme-card/` renders the same bodies with a fixed style, each in an island beside the canvas at the width of a real panel. It cannot drift from the layouts.
 
 The Code style mounts one CodeMirror preview per theme, 26 in all. Switching to it takes about 0.2 to 0.3 s and one main-thread task of 0.1 to 0.2 s, measured once in each layout at 1440x900.
+
+## Command menu
+
+`command-menu/` holds one command menu for every layout but Current. The harness mounts it and binds Cmd+K, or Ctrl+K off Apple platforms. No layout has to do anything to get it.
+
+- It lists every theme, every option of every visible control, every background fill, and the actions Export, Randomize and Format. `listed-model.ts` turns the window style and the font, which the model hands out as production pickers, into plain choices over the same stores, so that they can be listed too.
+- The highlighted row is previewed on the canvas through the model's preview session. Enter saves it. Escape, or any other way out, ends the preview.
+- It floats at the bottom centre with no scrim and is six rows tall, so the frame stays in view while the list is walked.
+- It does not open over an open list, menu, popover or modal dialog. A layout that wants it to open anyway closes what it has open first: `commandMenu.beforeOpen(close)`.
+- A layout adds a button with `commandMenu.open` and shows `commandMenu.shortcut` beside it, as Dock and Studio do. Both come from `command-menu/state.ts`.
+- `commandMenu.setReveal(id => ...)` lets a layout answer a command for a control that has no values to list, such as the image upload, by showing where the control lives. Without it the menu leaves those commands out.
 
 ## Rules for builders
 
