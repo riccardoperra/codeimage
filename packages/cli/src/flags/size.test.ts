@@ -12,8 +12,8 @@ describe('size flag', () => {
   ] as const)(
     'renders %s at its exact pixel size',
     async (target, width, height) => {
-      const {snapshot} = await prepare(['--size', target, '--scale', '2']);
-      const image = await renderSnapshot(snapshot);
+      const {snapshot} = await prepare(['--size', target]);
+      const image = await renderSnapshot({...snapshot, scale: 2});
       if (typeof image === 'string') throw new Error('Expected PNG');
       const bytes = Buffer.from(image);
       expect([bytes.readUInt32BE(16), bytes.readUInt32BE(20)]).toEqual([
@@ -47,8 +47,14 @@ describe('size flag', () => {
       ['--size', 'nope'],
       ['--signature', ''],
       ['--signature-position', 'top-left'],
+      ['--scale', '2', '--size', 'og'],
     ]) {
       expect(() => parseArgs(argv)).toThrow(argv[0]);
     }
+  });
+  it('rejects a signature position without a signature', async () => {
+    await expect(
+      prepare(['--signature-position', 'bottom-left']),
+    ).rejects.toThrow('--signature-position: needs --signature');
   });
 });

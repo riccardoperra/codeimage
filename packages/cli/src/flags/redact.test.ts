@@ -18,7 +18,7 @@ describe('redaction flag', () => {
       expect(tab.code).toContain(`ghp_${'•'.repeat(36)}`);
       expect(tab.code).not.toContain(token);
       const output = stderr.mock.calls.map(call => call[0]).join('');
-      expect(output).toBe('a.ts:2:14: github-pat\nredacted 1 secrets\n');
+      expect(output).toBe('a.ts:2:14: github-pat\nredacted 1 secret\n');
       expect(output).not.toContain(token);
       expect(await renderSnapshot(snapshot)).not.toContain(token);
     } finally {

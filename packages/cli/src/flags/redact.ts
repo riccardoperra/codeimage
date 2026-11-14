@@ -4,8 +4,7 @@ import type {Flag} from './index';
 export const redact: Flag = {
   options: {'no-redact': {type: 'boolean'}},
   usage:
-    '  --no-redact         Disable default secret redaction and diagnostics\n',
-  apply: snapshot => snapshot,
+    '  --no-redact          Keep secrets visible. By default each one is masked\n                       and listed on stderr\n',
   async prepareInputs(inputs, values) {
     if (values['no-redact']) return inputs;
     let count = 0;
@@ -21,7 +20,10 @@ export const redact: Flag = {
       count += matches.length;
       return {...input, code: redactSecrets(input.code, matches)};
     });
-    if (count) process.stderr.write(`redacted ${count} secrets\n`);
+    if (count)
+      process.stderr.write(
+        `redacted ${count} ${count === 1 ? 'secret' : 'secrets'}\n`,
+      );
     return redacted;
   },
 };
