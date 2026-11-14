@@ -10,3 +10,6 @@ export type {GetAllPresetApi} from '../routes/v1/preset/getAll.js';
 export type {CreatePresetApi} from '../routes/v1/preset/create.js';
 export type {UpdatePresetApi} from '../routes/v1/preset/update.js';
 export type {DeletePresetApi} from '../routes/v1/preset/delete.js';
+
+export {TabMarksSchema, parseTabMarks} from './marks.js';
+export type {TabMarks} from './marks.js';

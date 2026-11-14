@@ -1,5 +1,4 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {randUuid} from '@ngneat/falso';
 import {HttpResponse, type RequestHandler} from 'msw';
 import {http} from 'msw';
 import {db} from './db';
@@ -165,6 +164,8 @@ const handlers: RequestHandler[] = [
             tabName: editor.tabName,
             languageId: editor.languageId,
             code: editor.code,
+            lineNumberStart: editor.lineNumberStart,
+            marks: editor.marks ?? {lines: [], focus: false},
           })),
         },
         where: {
@@ -190,20 +191,20 @@ const handlers: RequestHandler[] = [
     const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
     const project = db.project.create({
-      id: randUuid(),
+      id: crypto.randomUUID(),
       name: body?.name,
       ownerId: ownerId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       editorOptions: {
-        id: randUuid(),
+        id: crypto.randomUUID(),
         fontId: body?.editorOptions.fontId,
         fontWeight: body?.editorOptions.fontWeight ?? 400,
         themeId: body?.editorOptions.themeId,
         showLineNumbers: body?.editorOptions.showLineNumbers ?? false,
       },
       frame: {
-        id: randUuid(),
+        id: crypto.randomUUID(),
         background: body?.frame.background,
         opacity: body?.frame.opacity ?? 100,
         padding: body?.frame.padding ?? 32,
@@ -212,7 +213,7 @@ const handlers: RequestHandler[] = [
       },
       isOwner: true,
       terminal: {
-        id: randUuid(),
+        id: crypto.randomUUID(),
         opacity: body?.terminal.opacity ?? 100,
         shadow: body?.terminal.shadow,
         type: body?.terminal.type,
@@ -224,10 +225,12 @@ const handlers: RequestHandler[] = [
         showWatermark: body?.terminal.showWatermark ?? false,
       },
       editorTabs: body?.editors.map(editor => ({
-        id: randUuid(),
+        id: crypto.randomUUID(),
         tabName: editor.tabName,
         languageId: editor.languageId,
         code: editor.code,
+        lineNumberStart: editor.lineNumberStart,
+        marks: editor.marks ?? {lines: [], focus: false},
       })),
     });
     return HttpResponse.json(project);

@@ -27,9 +27,9 @@ console.debug("💻 CodeImage version:", appEnvironment.version);
 
 const i18n = createI18nContext(locale);
 
-if (import.meta.env.VITE_ENABLE_MSW === true) {
-  import("./mocks/browser").then(({ worker }) => worker.start());
-}
+const mockApiReady = import.meta.env.VITE_ENABLE_MSW === true
+  ? import("./mocks/browser").then(({ worker }) => worker.start())
+  : Promise.resolve();
 
 // oxlint-disable-next-line typescript/no-explicit-any
 function lazyWithNoLauncher(cp: () => Promise<{ default: Component<any> }>) {
@@ -140,9 +140,8 @@ export function Bootstrap() {
   );
 }
 
-getAuth0State()
-  .initLogin()
-  .catch(() => null)
+mockApiReady
+  .then(() => getAuth0State().initLogin().catch(() => null))
   .then(() => {
     render(
       () => (

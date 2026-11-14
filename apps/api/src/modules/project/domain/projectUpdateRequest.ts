@@ -1,3 +1,5 @@
+import type {EditorTabResponse} from './editorTab.js';
+import type {TabMarks} from '../../../schemas/marks.js';
 import type {
   Project,
   SnippetEditorOptions,
@@ -14,14 +16,7 @@ interface EditorUpdateRequest {
   languageId: NonNullable<SnippetEditorTab['languageId']>;
   tabName: NonNullable<SnippetEditorTab['tabName']>;
   lineNumberStart: NonNullable<SnippetEditorTab['lineNumberStart']>;
-}
-
-interface EditorTabResponse {
-  id: NonNullable<SnippetEditorTab['id']>;
-  code: NonNullable<SnippetEditorTab['code']>;
-  languageId: NonNullable<SnippetEditorTab['languageId']>;
-  tabName: NonNullable<SnippetEditorTab['tabName']>;
-  lineNumberStart: NonNullable<SnippetEditorTab['lineNumberStart']>;
+  marks?: TabMarks | null;
 }
 
 export interface ProjectUpdateRequest {

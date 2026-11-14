@@ -1,3 +1,4 @@
+import {TabMarksSchema} from '../../../schemas/marks.js';
 import {Type} from '@sinclair/typebox';
 import {enumLiteral} from '../../../common/typebox/enum.js';
 import {Nullable} from '../../../common/typebox/nullable.js';
@@ -23,6 +24,7 @@ export const BaseSnippetEditorTabsSchema = Type.Array(
     languageId: Type.String(),
     tabName: Type.String(),
     lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
+    marks: Type.Optional(Nullable(TabMarksSchema)),
   }),
 );
 

@@ -1,3 +1,4 @@
+import type {EditorTabResponse} from './editorTab.js';
 import type {
   Project,
   SnippetEditorOptions,
@@ -10,7 +11,7 @@ export type ProjectGetByIdResponse = Project & {
   editorOptions: SnippetEditorOptions;
   terminal: SnippetTerminal;
   frame: SnippetFrame;
-  editorTabs: SnippetEditorTab[];
+  editorTabs: EditorTabResponse[];
 };
 
 export type PartialProjectGetByIdResponse = Project & {
