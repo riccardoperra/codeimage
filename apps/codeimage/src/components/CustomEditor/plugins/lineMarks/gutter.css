@@ -1,0 +1,210 @@
+.cm-editor:has(.cm-lineMarkGutter) .cm-scroller {
+  overflow: visible;
+}
+
+.cm-lineMarkGutter {
+  position: absolute;
+  inset-inline-start: -12px;
+  overflow: visible !important;
+}
+
+.cm-lineMarkGutter .cm-gutterElement {
+  display: flex;
+  justify-content: center;
+  width: 20px;
+  padding: 0;
+}
+
+.cm-lineMarkMarker {
+  position: fixed;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.cm-lineMarkGlyph {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  flex-shrink: 0;
+  font:
+    600 14px/1 ui-monospace,
+    monospace;
+}
+
+.cm-lineMarkGlyph-added {
+  color: var(--codeimage-line-added-sign, #2ea043);
+}
+.cm-lineMarkGlyph-removed {
+  color: var(--codeimage-line-removed-sign, #f85149);
+}
+.cm-lineMarkGlyph-highlight::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--codeimage-line-accent, #78a9ff);
+}
+
+.cm-lineMarkGlyph-focus::before,
+.cm-lineMarkFocusDot {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--codeimage-line-accent, #78a9ff);
+}
+
+.cm-lineMarkFocusDot {
+  position: absolute;
+  top: 3px;
+  right: 1px;
+  width: 4px;
+  height: 4px;
+}
+
+.cm-lineMarkGlyph-empty::before {
+  content: '';
+  width: 11px;
+  height: 11px;
+  border: 1px dashed currentColor;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cm-lineMarkMarker:is(:hover, [data-hovered]) {
+    opacity: 1;
+  }
+  .cm-lineMarkMarker:is(:hover, [data-hovered])
+    .cm-lineMarkGlyph-empty::before {
+    opacity: 0.5;
+  }
+  .cm-lineMarkMarker:hover {
+    background: #8882;
+  }
+  .cm-lineMarkMenu button:not(:disabled):hover {
+    background: #8882;
+  }
+}
+
+.cm-lineMarkMarker:focus-visible,
+.cm-lineMarkMenu button:focus-visible {
+  outline: 2px solid var(--codeimage-line-accent, #78a9ff);
+  outline-offset: -2px;
+}
+
+.cm-lineMarkMarker[aria-expanded='true'] {
+  background: #8883;
+  opacity: 1;
+}
+
+.cm-lineMarkMarker:focus-visible {
+  opacity: 1;
+}
+
+.cm-lineMarkMenu {
+  position: fixed;
+  margin: 0;
+  z-index: 1000;
+  box-sizing: border-box;
+  min-width: 220px;
+  max-width: calc(100vw - 16px);
+  padding: 4px;
+  border: 1px solid #ffffff24;
+  border-radius: 10px;
+  background: #232326;
+  color: #f4f4f5;
+  box-shadow:
+    0 12px 32px -8px #0008,
+    0 2px 6px #0004;
+  font:
+    13px/1.2 Inter,
+    system-ui,
+    sans-serif;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 150ms ease-out,
+    transform 150ms ease-out;
+}
+
+@starting-style {
+  .cm-lineMarkMenu[data-keyboard='false'] {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+.cm-lineMarkMenu[data-keyboard='true'] {
+  transition: none;
+}
+.cm-lineMarkMenuHeader {
+  padding: 6px 8px 4px;
+  opacity: 0.65;
+  font-size: 11.5px;
+}
+.cm-lineMarkMenu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cm-lineMarkMenu button:focus {
+  background: #8883;
+}
+.cm-lineMarkMenu button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.cm-lineMarkMenuLabel {
+  flex: 1;
+}
+.cm-lineMarkShortcut {
+  opacity: 0.6;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.cm-lineMarkCheck {
+  width: 12px;
+  color: #78a9ff;
+}
+.cm-lineMarkMenu hr {
+  border: 0;
+  border-top: 1px solid #8884;
+  margin: 4px 2px;
+}
+
+@media (pointer: coarse) {
+  .cm-lineMarkMarker {
+    width: 20px;
+  }
+  .cm-lineMarkMenu button {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-lineMarkMenu {
+    transition: none;
+  }
+}

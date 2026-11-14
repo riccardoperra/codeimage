@@ -17,15 +17,7 @@ import {
 } from '@codemirror/view';
 import type {LineMark} from '../../../../state/editor/model';
 import type {MarkKind} from './state';
-import {
-  hasMark,
-  lineMarksField,
-  markLines,
-  markRun,
-  readMarks,
-  toggleMark,
-  unmarkLines,
-} from './state';
+import {hasMark, markLines, readMarks, toggleMark} from './state';
 
 export interface LineMarkLabels {
   toolbar: string;
@@ -35,7 +27,10 @@ export interface LineMarkLabels {
   clear: string;
   focus: string;
   focusHint: string;
-  clearMark: Record<MarkKind, string>;
+  removeMark: string;
+  unmarked: string;
+  line: (line: number) => string;
+  selection: (from: number, to: number) => string;
 }
 
 export const markCommands: {
@@ -195,74 +190,6 @@ function selectionBar(labels: LineMarkLabels): Extension {
   ];
 }
 
-/** Clear buttons for the marks on the caret line, hidden while typing. */
-function inlineClear(labels: LineMarkLabels): Extension {
-  const create =
-    (line: number) =>
-    (view: EditorView): TooltipView => {
-      const dom = document.createElement('div');
-      dom.className = 'cm-lineMarkToolbar cm-lineMarkClear';
-      dom.setAttribute('role', 'toolbar');
-      dom.setAttribute('aria-label', labels.clear);
-      dom.addEventListener('mousedown', event => event.preventDefault());
-      const marks = readMarks(view.state);
-      const kinds = (['highlight', 'added', 'removed', 'focus'] as const).filter(
-        kind => hasMark(marks, line, kind),
-      );
-      for (const kind of kinds) {
-        const button = dom.appendChild(document.createElement('button'));
-        button.type = 'button';
-        button.textContent = `${labels[kind]} ×`;
-        button.setAttribute('aria-label', labels.clearMark[kind]);
-        button.onclick = () => {
-          unmarkLines(view, markRun(readMarks(view.state), line, kind), kind);
-          view.focus();
-        };
-      }
-      const syncVisibility = () => {
-        dom.style.visibility = view.hasFocus ? '' : 'hidden';
-      };
-      syncVisibility();
-      return {dom, offset: {x: 0, y: 4}, update: syncVisibility};
-    };
-  const field = StateField.define<{typing: boolean; tooltip: Tooltip | null}>(
-    {
-      create: () => ({typing: false, tooltip: null}),
-      update(value, tr) {
-        const typing = tr.docChanged || (value.typing && !tr.selection);
-        const selection = tr.state.selection.main;
-        if (typing || !selection.empty || tr.state.readOnly)
-          return {typing, tooltip: null};
-        const line = tr.state.doc.lineAt(selection.head);
-        const marks = tr.state.field(lineMarksField);
-        let marked = false;
-        for (const set of [marks.decorations, marks.focused])
-          set.between(line.from, line.from, () => {
-            marked = true;
-          });
-        if (!marked) return {typing, tooltip: null};
-        if (
-          value.tooltip?.pos === line.to &&
-          tr.startState.field(lineMarksField) === marks
-        )
-          return {typing, tooltip: value.tooltip};
-        return {
-          typing,
-          tooltip: {
-            pos: line.to,
-            above: true,
-            strictSide: false,
-            create: create(line.number),
-          },
-        };
-      },
-      provide: field =>
-        showTooltip.compute([field], state => state.field(field).tooltip),
-    },
-  );
-  return field;
-}
-
 type GutterPreview = {from: number; to: number; kind: LineMark['kind'] | null};
 
 const setGutterPreview = StateEffect.define<GutterPreview | null>();
@@ -376,7 +303,6 @@ const controlsTheme = EditorView.theme({
     boxShadow: '0 4px 16px #0005',
     animation: 'cm-lineMarkToolbar-in 120ms ease-out',
   },
-  '.cm-tooltip.cm-lineMarkClear': {animation: 'none'},
   '@keyframes cm-lineMarkToolbar-in': {
     from: {opacity: 0, transform: 'translateY(2px)'},
   },
@@ -410,7 +336,6 @@ const controlsTheme = EditorView.theme({
 export function lineMarkControls(labels: LineMarkLabels): Extension {
   return [
     selectionBar(labels),
-    inlineClear(labels),
     gutterPreviewField,
     controlsTheme,
     keymap.of(lineMarkKeymap),

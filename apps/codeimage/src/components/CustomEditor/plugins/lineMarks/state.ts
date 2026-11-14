@@ -185,15 +185,6 @@ export function hasMark(marks: TabMarks, line: number, kind: MarkKind) {
     : marks.lines.some(mark => mark.line === line && mark.kind === kind);
 }
 
-/** The contiguous lines around `line` that carry `kind`. */
-export function markRun(marks: TabMarks, line: number, kind: MarkKind) {
-  let first = line;
-  let last = line;
-  while (hasMark(marks, first - 1, kind)) first--;
-  while (hasMark(marks, last + 1, kind)) last++;
-  return Array.from({length: last - first + 1}, (_, i) => first + i);
-}
-
 export function markLines(
   view: EditorView,
   lines: number[],

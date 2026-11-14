@@ -2,6 +2,7 @@ import './marks.css';
 import type {Extension} from '@codemirror/state';
 import type {LineMarkLabels} from './controls';
 import {lineMarkControls} from './controls';
+import {lineMarkGutter} from './gutter';
 import type {TabMarks} from '../../../../state/editor/model';
 import {lineMarksField, lineMarksHistory, marksValue} from './state';
 
@@ -12,6 +13,8 @@ export function lineMarksExtension(
 ): Extension {
   return [
     lineMarksField.init(state => marksValue(state.doc, initial)),
-    ...(interactive ? [lineMarksHistory, lineMarkControls(labels)] : []),
+    ...(interactive
+      ? [lineMarksHistory, lineMarkControls(labels), lineMarkGutter(labels)]
+      : []),
   ];
 }

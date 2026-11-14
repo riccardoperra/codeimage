@@ -6,7 +6,6 @@ import {describe, expect, it} from 'vitest';
 import {pasteAnnotations} from './paste';
 import {
   markLines,
-  markRun,
   lineMarksField,
   lineMarksHistory,
   marksValue,
@@ -45,7 +44,7 @@ describe('line marks', () => {
     expect(readMarks(target.state).lines).toEqual([]);
     undo(target);
     expect(readMarks(target.state).lines).toEqual([{line: 2, kind: 'added'}]);
-    unmarkLines(view, markRun(readMarks(target.state), 2, 'focus'), 'focus');
+    unmarkLines(view, [1, 2], 'focus');
     expect(readMarks(target.state)).toEqual({
       lines: [{line: 2, kind: 'added'}],
       focusedLines: [5, 6],

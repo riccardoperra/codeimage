@@ -213,12 +213,11 @@ export default function CustomEditor(props: VoidProps<CustomEditorProps>) {
       clear: t('lineMarks.clear'),
       focus: t('lineMarks.focus'),
       focusHint: t('lineMarks.focusHint'),
-      clearMark: {
-        highlight: t('lineMarks.clearMark.highlight'),
-        added: t('lineMarks.clearMark.added'),
-        removed: t('lineMarks.clearMark.removed'),
-        focus: t('lineMarks.clearMark.focus'),
-      },
+      removeMark: t('lineMarks.removeMark'),
+      unmarked: t('lineMarks.unmarked'),
+      line: line => t('lineMarks.line', {line: String(line)}),
+      selection: (from, to) =>
+        t('lineMarks.selection', {from: String(from), to: String(to)}),
     }),
   );
   createExtension(() => EditorState.readOnly.of(props.readOnly));

@@ -60,3 +60,18 @@ test('rejects invalid focused line numbers', () => {
     expect(Value.Check(TabMarksSchema, {lines: [], focusedLines})).toBe(false);
   }
 });
+
+test('round-trips every mark kind and additive focus through the persisted JSON schema', () => {
+  const snapshot = {
+    lines: [
+      {line: 1, kind: 'removed'},
+      {line: 2, kind: 'added'},
+      {line: 3, kind: 'highlight'},
+    ],
+    focusedLines: [2, 4],
+  };
+  const restored = parseTabMarks(JSON.parse(JSON.stringify(snapshot)));
+  expect(Value.Check(TabMarksSchema, restored)).toBe(true);
+  expect(restored).toEqual(snapshot);
+  expect(Object.keys(restored)).toEqual(['lines', 'focusedLines']);
+});
