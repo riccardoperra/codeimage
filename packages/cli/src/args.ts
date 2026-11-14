@@ -1,4 +1,5 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
+import {snapshotDocumentSchema} from '@codeimage/render';
 import {extname} from 'node:path';
 import {parseArgs as parseNodeArgs} from 'node:util';
 import {defineCommand} from 'citty';
@@ -78,7 +79,7 @@ const OPTIONS = Object.fromEntries(
   ]),
 ) as typeof CORE_ARGS;
 
-const FORMATS = ['png', 'jpeg', 'webp', 'svg'] as const;
+const FORMATS = snapshotDocumentSchema.shape.format.unwrap().options;
 
 function formatOf(name: string) {
   return FORMATS.find(format => format === (name === 'jpg' ? 'jpeg' : name));

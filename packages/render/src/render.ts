@@ -65,11 +65,9 @@ interface FontManifest {
   fallbacks: {family: string; files: FontFile[]}[];
 }
 
-export interface SnapshotFont {
+export interface SnapshotFont extends Omit<FontFile, 'file'> {
   family: string;
   path: string;
-  weight?: number;
-  unicodeRange?: [number, number][];
 }
 
 export interface SnapshotMarkup {
