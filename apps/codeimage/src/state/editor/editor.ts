@@ -4,9 +4,7 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
-import type {Transaction} from '@codemirror/state';
 import {appEnvironment} from '@core/configuration';
-import {createEventBus} from '@solid-primitives/event-bus';
 import {from, map, shareReplay} from 'rxjs';
 import {createSelector} from 'solid-js';
 import type {SetStoreFunction} from 'solid-js/store';
@@ -304,6 +302,5 @@ export function createEditorsStore() {
         }
       },
     },
-    canvasEditorEvents: createEventBus<Transaction>(),
   } as const;
 }

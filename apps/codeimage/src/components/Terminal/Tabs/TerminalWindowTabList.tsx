@@ -22,6 +22,7 @@ export interface TerminalWindowTabListProps {
   preview?: boolean;
   small?: boolean;
   showOnlyActiveTab?: boolean;
+  activeTabId?: string;
 }
 
 export function TerminalWindowTabList(
@@ -53,8 +54,11 @@ export function TerminalWindowTabListContent(
       setEditors,
     },
     computed: {canAddEditor},
-    isActive,
+    isActive: isStoreActive,
   } = getRootEditorStore();
+
+  const isActive = (id: string) =>
+    props.activeTabId ? id === props.activeTabId : isStoreActive(id);
 
   const editors = () => {
     if (props.showOnlyActiveTab) {
