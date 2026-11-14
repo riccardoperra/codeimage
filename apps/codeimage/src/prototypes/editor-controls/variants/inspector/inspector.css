@@ -37,6 +37,20 @@
   gap: 12px;
   padding: 12px;
 }
+/*
+ * data-inspector-side="left", on the root or on any ancestor the settings
+ * own, puts the panel before the canvas. Phones keep the bottom sheet.
+ */
+@media (min-width: 769px) {
+  [data-inspector-side='left'] .inspector-root .inspector-workspace,
+  .inspector-root[data-inspector-side='left'] .inspector-workspace {
+    grid-template-columns: 360px minmax(0, 1fr);
+  }
+  [data-inspector-side='left'] .inspector-root .inspector-panel,
+  .inspector-root[data-inspector-side='left'] .inspector-panel {
+    order: -1;
+  }
+}
 .inspector-root .inspector-canvas {
   min-width: 0;
   min-height: 0;

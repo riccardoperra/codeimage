@@ -283,6 +283,7 @@ export default function Inspector(props: VariantProps) {
           <div
             class="inspector-stage"
             style={{
+              'padding-left': `${overlayInset().left}px`,
               'padding-right': `${overlayInset().right}px`,
               'padding-bottom': `${overlayInset().bottom}px`,
             }}

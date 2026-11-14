@@ -70,6 +70,10 @@ The stage, from `stage.tsx`, holds the parts of the real editor that a layout pl
 
 The harness creates a new stage for each mount and keeps one model for the whole session. `registry.ts` lists the layouts in picker order. You do not edit it. It reads `meta` from your folder. `ModelDump.tsx`, a plain list of every control with native inputs, is no longer used by a layout and can start a new one.
 
+## Inspector's panel side
+
+Inspector puts its panel on the right. Set `data-inspector-side="left"` on its root, `.inspector-root`, or on any element around it, and the panel moves before the canvas; `right` or no attribute keeps it on the right. Phones keep the bottom sheet either way. The pickers that open over the panel follow it to either side.
+
 ## Theme styles
 
 `theme-styles/` holds the three ways to draw a theme, as bodies that every layout and the theme-card route render:

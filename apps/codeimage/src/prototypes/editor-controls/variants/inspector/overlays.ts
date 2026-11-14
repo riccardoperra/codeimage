@@ -30,6 +30,7 @@ const MIN_ROOM = 160;
 const GAP = 8;
 
 export interface OverlayInset {
+  readonly left: number;
   readonly right: number;
   readonly bottom: number;
 }
@@ -50,7 +51,11 @@ export function createOverlayPlacement(
   panel: () => HTMLElement | undefined,
   canvas: () => HTMLElement | undefined,
 ): Accessor<OverlayInset> {
-  const [inset, setInset] = createSignal<OverlayInset>({right: 0, bottom: 0});
+  const [inset, setInset] = createSignal<OverlayInset>({
+    left: 0,
+    right: 0,
+    bottom: 0,
+  });
   let frame = 0;
   // Places a popover in the same task that the popover moved it, before a
   // paint could show it where it started.
@@ -69,6 +74,7 @@ export function createOverlayPlacement(
     const triggers = host
       ? [...host.querySelectorAll<HTMLElement>(OPEN_TRIGGER)]
       : [];
+    let fromLeft = 0;
     let right = 0;
     let bottom = 0;
     for (const trigger of triggers) {
@@ -103,10 +109,14 @@ export function createOverlayPlacement(
       const rect = positioner.getBoundingClientRect();
       const left = rect.left - shiftX;
       const top = rect.top - shiftY;
+      // With data-inspector-side="left" the panel sits before the canvas.
+      const panelFirst = box.right <= area.left + 1;
       const x =
         rect.width <= box.width
           ? clamp(left, box.left, box.right - rect.width)
-          : box.right - rect.width;
+          : panelFirst
+            ? box.left
+            : box.right - rect.width;
       let y: number;
       let cap = box.height;
       if (trigger.getAttribute('aria-haspopup') === 'listbox') {
@@ -149,13 +159,16 @@ export function createOverlayPlacement(
         y + rect.height > area.top;
       if (!covers) continue;
       // The panel sits beside the canvas on wide windows and under it on phones.
-      if (box.left >= area.right - 1)
+      if (panelFirst)
+        fromLeft = Math.max(fromLeft, x + rect.width - area.left + GAP);
+      else if (box.left >= area.right - 1)
         right = Math.max(right, area.right - x + GAP);
       else bottom = Math.max(bottom, area.bottom - y + GAP);
     }
     const room = (size: number, taken: number) =>
       Math.round(Math.max(0, Math.min(taken, size - MIN_ROOM)));
     setInset({
+      left: area ? room(area.width, fromLeft) : 0,
       right: area ? room(area.width, right) : 0,
       bottom: area ? room(area.height, bottom) : 0,
     });
