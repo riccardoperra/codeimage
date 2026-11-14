@@ -47,12 +47,6 @@ export function exportCommands(exporter: Exporter): Command[] {
           },
         ]
       : []),
-    {
-      id: 'export=settings',
-      group,
-      label: 'Export settings…',
-      run: () => settings.open('export'),
-    },
     ...formats.map((format): Command => ({
       id: `export-format=${format.id}`,
       group,

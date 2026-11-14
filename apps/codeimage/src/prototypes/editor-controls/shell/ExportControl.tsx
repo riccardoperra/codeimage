@@ -1,3 +1,4 @@
+import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {
   Button,
@@ -13,6 +14,7 @@ import {
 import {Show} from 'solid-js';
 import {DownloadIcon} from '../../../components/Icons/Download';
 import {useHotkey} from '../../../hooks/use-hotkey';
+import type {AppLocaleEntries} from '../../../i18n';
 import type {Exporter} from './export';
 import * as styles from './export.css';
 import {settings} from './settings-state';
@@ -30,6 +32,7 @@ export function exportSummary(): string {
  * one tab, so that it can be found before it is needed.
  */
 export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
+  const [t] = useI18n<AppLocaleEntries>();
   const exporter = () => props.exporter;
   const size = () => props.size ?? 'sm';
 
@@ -53,7 +56,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
         data-export-image
         onClick={() => exporter().image()}
       >
-        Export
+        {t('toolbar.export')}
       </Button>
       <DropdownMenu placement="bottom-end">
         <DropdownMenuTrigger

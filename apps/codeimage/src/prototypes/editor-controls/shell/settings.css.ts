@@ -169,10 +169,12 @@ export const navItem = style({
       transition: 'none',
       selectors: {'&:active': {transform: 'none'}},
     },
+    // Five sections share one row of a phone: less padding, and they may shrink.
     [phone]: {
-      flex: '1 0 auto',
+      flex: '1 1 auto',
       justifyContent: 'center',
       height: '40px',
+      padding: '0 4px',
     },
   },
 });

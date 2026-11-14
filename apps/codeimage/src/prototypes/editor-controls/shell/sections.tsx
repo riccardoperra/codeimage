@@ -436,7 +436,7 @@ export function createSettingSections(
             id: 'export-active-tab',
             title: 'Only the active tab',
             description: () =>
-              'The window shows the active tab alone, without the others beside it.',
+              'The window shows the active tab alone, without the other tabs.',
             small: true,
             control: () => (
               <SwitchField
