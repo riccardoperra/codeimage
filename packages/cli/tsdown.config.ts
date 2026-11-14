@@ -20,6 +20,7 @@ export default defineConfig({
     alwaysBundle: [
       /@codeimage\/render/,
       /@codeimage\/highlight/,
+      /@codeimage\/secrets/,
       /@primer\/primitives/,
     ],
   },
@@ -35,7 +36,7 @@ export default defineConfig({
         }: {SUPPORTED_LANGUAGES: typeof ConfigLanguages} = await import(id);
         const languages = SUPPORTED_LANGUAGES.map(
           language =>
-            `{id: ${JSON.stringify(language.id)}, icons: [${language.icons.map(icon => `{matcher: ${icon.matcher}}`).join(', ')}]}`,
+            `{id: ${JSON.stringify(language.id)}, label: ${JSON.stringify(language.label)}, icons: [${language.icons.map(icon => `{matcher: ${icon.matcher}}`).join(', ')}]}`,
         );
         return `export const SUPPORTED_LANGUAGES = [${languages.join(',\n')}];`;
       },

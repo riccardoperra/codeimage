@@ -28,7 +28,8 @@
     "oxlint": "catalog:next",
     "tsdown": "catalog:next",
     "typescript": "catalog:next",
-    "vitest": "catalog:next"
+    "vitest": "catalog:next",
+    "@codeimage/secrets": "workspace:*"
   },
   "engines": {
     "node": ">=24"

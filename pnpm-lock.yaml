@@ -751,6 +751,9 @@ importers:
       '@codeimage/highlight':
         specifier: workspace:*
         version: link:../highlight
+      '@codeimage/secrets':
+        specifier: workspace:*
+        version: link:../secrets
       '@types/node':
         specifier: catalog:next
         version: 25.9.9
@@ -12536,7 +12539,7 @@ snapshots:
       '@vanilla-extract/dynamic': 2.1.5
       '@vanilla-extract/recipes': 0.5.7(@vanilla-extract/css@1.20.0)
       '@vanilla-extract/vite-plugin': 4.0.20(@types/node@25.9.9)(jiti@2.6.1)(lightningcss@1.33.0)(sass@1.98.0)(terser@5.46.1)(tsx@4.23.15)(vite@8.3.8(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.23.15)(yaml@2.8.3))(yaml@2.8.3)
-      example-basic: link:../../../../../../../Users/riccardoperra/WebstormProjects/pipelineui/packages/app
+      example-basic: link:../../../../WebstormProjects/pipelineui/packages/app
       motion: 10.18.0
       polished: 4.3.1
       solid-js: 1.9.12
