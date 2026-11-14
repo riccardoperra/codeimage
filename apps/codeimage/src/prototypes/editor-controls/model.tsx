@@ -23,6 +23,8 @@ import {FontPicker} from '../../components/PropertyEditor/controls/FontPicker/Fo
 import {ImagePicker} from '../../components/PropertyEditor/controls/ImagePicker/ImagePicker';
 import {TerminalControlField} from '../../components/PropertyEditor/controls/TerminalControlField/TerminalControlField';
 import type {AppLocaleEntries} from '../../i18n';
+import type {SyntaxColors} from './syntax';
+import {readSyntaxColors} from './syntax';
 
 export type SectionId = 'frame' | 'window' | 'editor' | 'font';
 
@@ -135,6 +137,8 @@ export interface ThemeEntry {
     readonly background: string;
     readonly window: string;
     readonly text: string;
+    /** The colours the code editor gives these tokens in this theme. */
+    readonly syntax: SyntaxColors;
   };
   readonly active: Accessor<boolean>;
   /** Same as clicking a theme card today: also replaces the frame background. */
@@ -226,6 +230,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           background: theme.properties.previewBackground,
           window: theme.properties.terminal.main,
           text: theme.properties.terminal.text,
+          syntax: readSyntaxColors(theme),
         },
         active: () => isActiveTheme(theme.id),
         apply: () => {
