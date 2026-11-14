@@ -31,8 +31,9 @@ export const WindowStyleForm: ParentComponent = () => {
 
   const borderTypeSelect = createSelectOptions(
     [
-      {label: 'None', value: 'none'},
-      {label: 'Glass', value: 'glass'},
+      {label: t('frame.borderNone'), value: 'none'},
+      {label: t('frame.borderGlass'), value: 'glass'},
+      {label: t('frame.borderHairline'), value: 'hairline'},
     ],
     {
       key: 'label',

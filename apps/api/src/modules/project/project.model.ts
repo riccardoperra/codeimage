@@ -45,6 +45,7 @@ export interface SnippetTerminal {
   readonly opacity: number;
   readonly alternativeTheme: boolean;
   readonly borderType: string | null;
+  readonly surface: 'solid' | 'wash';
 }
 
 export interface SnippetEditorOptions {
@@ -104,7 +105,10 @@ export interface ProjectDraft {
 
 export interface ProjectChanges {
   readonly frame: WithoutIds<SnippetFrame>;
-  readonly terminal: WithoutIds<SnippetTerminal>;
+  // Absent when the client predates the field, so the stored value stays.
+  readonly terminal: Omit<WithoutIds<SnippetTerminal>, 'surface'> & {
+    readonly surface?: SnippetTerminal['surface'];
+  };
   readonly editorOptions: WithoutIds<SnippetEditorOptions>;
   readonly editorTabs: readonly Omit<SnippetEditorTab, 'projectId'>[];
 }
@@ -167,6 +171,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
         SnippetTerminalCreateRequestSchema.properties.alternativeTheme.default,
       shadow: body.terminal.shadow ?? null,
       borderType: body.terminal.borderType ?? null,
+      surface: readTerminalSurface(body.terminal.surface),
     },
     editorOptions: {
       fontWeight: body.editorOptions.fontWeight,
@@ -190,7 +195,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
 export function changesFromUpdateBody(body: ProjectUpdateBody): ProjectChanges {
   return {
     frame: body.frame,
-    terminal: body.terminal,
+    terminal: {...body.terminal, surface: body.terminal.surface ?? undefined},
     editorOptions: body.editorOptions,
     editorTabs: body.editors.map(editor => ({
       ...editor,
@@ -255,4 +260,10 @@ export function parseTabMarks(value: unknown): TabMarks {
   return Value.Check(TabMarksSchema, value)
     ? value
     : {lines: [], focusedLines: []};
+}
+
+export function readTerminalSurface(
+  value: string | null | undefined,
+): SnippetTerminal['surface'] {
+  return value === 'wash' ? 'wash' : 'solid';
 }

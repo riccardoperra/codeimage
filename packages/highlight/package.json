@@ -242,6 +242,8 @@
     "pre-commit-eslint": "oxlint --fix",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
+    "generate:accents": "tsx scripts/generate-accents.cts",
+    "test": "tsx --test test/*.test.cts",
     "generate:theme": "tsx scripts/generate-theme.cts",
     "clean": "rimraf dist",
     "build-esm": "tsc -p tsconfig.esm.json",

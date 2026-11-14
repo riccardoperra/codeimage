@@ -65,6 +65,7 @@ model SnippetTerminal {
   opacity             Float    @default(100)
   alternativeTheme    Boolean  @default(false)
   borderType          String?
+  surface             String?
 }
 
 model SnippetEditorOptions {
