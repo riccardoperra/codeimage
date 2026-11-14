@@ -288,6 +288,7 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Build.**
 
+- [ ] Move the `targetLayout` math from `apps/codeimage/src/render/entry-server.tsx` into `apps/codeimage/src/core/animation/` as a pure function, so the worker can plan a frame with a social target size. The operator chose A4 for this move on 2026-11-14.
 - [ ] Run Takumi WASM `prepareAnimation` and `renderAnimation` in a module worker, so the editor stays responsive. Send the scenes, the stylesheet, and the font bytes that P2 already collects.
 - [ ] Add **WebP**, **GIF**, and **APNG** to the export dialog when the project has more than one step. Show the output size, the duration, and a progress bar fed by the worker. **Cancel** terminates the worker.
 - [ ] When the WASM module fails to load, show an error that names the cause. There is no dom-export fallback for animation.
@@ -471,6 +472,7 @@ Takumi already writes WebP, GIF, and APNG, so `gifenc` and `sharp` are not neede
 - Takumi WASM may be too slow in Safari. A4 measures it. If the 12 s budget fails, render at 30 fps by default in that browser.
 - WebCodecs H.264 support varies by browser and platform. A5 falls back to WebM with VP9 and hides MP4 when there is no `VideoEncoder`.
 - GIF files are large at 1080p. A4 shows the output size before the download, and the dialog suggests WebP or MP4 for long clips.
+- A dimmed row that also has a line mark draws its glyphs 1 to 3 levels of 255 lighter than the static export, because the mark and the tokens fade as separate boxes. The operator chose to fix it in a small follow-up PR after A1 merges, with one box per row. The A1 row-paint check allows these rows 0.5 levels until then.
 - Animated WebP is lossless by default in Takumi WASM. A4 checks whether `quality` is honored, and otherwise shows the larger size.
 - The ffmpeg download depends on the `eugeneware/ffmpeg-static` GitHub releases. A5 pins the tag and the SHA-256 of each file, so a changed file fails instead of running. If the release disappears, the four other ways to provide ffmpeg still work. Moving the files to a CodeImage release is the fallback.
 - The ffmpeg binaries are GPL-3.0. The CLI does not ship them in its npm package and downloads their `LICENSE` and `README` next to the binary. The operator confirms this before A5 merges.
