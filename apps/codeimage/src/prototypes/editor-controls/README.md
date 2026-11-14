@@ -57,7 +57,7 @@ A preview shows a value on the canvas without saving it and without sending anal
 Each layout is a folder, `variants/<slug>/index.tsx`, that exports two things:
 
 - `meta`, a `VariantMeta` with the `name` of the layout and the `axis` it explores.
-- A default export, a `Component<VariantProps>` that lays out the whole editor screen.
+- A default export, a `Component<VariantProps>` that lays out the editor screen under the page's header.
 
 `VariantProps` has the `model`, a `stage`, and a `ThemePicker`.
 
@@ -79,7 +79,7 @@ The stage, from `stage.tsx`, holds the parts of the real editor that a layout pl
 
 `shell/` holds what every layout shares around the canvas: the header and the settings.
 
-- `Header.tsx` is the compact header. It has no bar of its own and is as tall as its controls, 36px, so it reads as the first row of the islands. It holds the logo, the dashboard link and the snippet name where production shows them, the gear that opens the settings, and the production Share, Export and sign-in or user badge. A layout renders `<Header stage={props.stage} />` at its top, in place of the production `Toolbar`.
+- `Header.tsx` is the compact header. It has no bar of its own and is as tall as its controls, so it reads as the first row of the islands. It holds the logo, the dashboard link and the snippet name where production shows them, the gear that opens the settings, and the production Share, Export and sign-in or user badge. The harness renders it once, above the layout, so no layout mounts it.
 - `SettingsDialog.tsx` is the one settings surface, a kit `Dialog` in two panes. The harness mounts it once.
 - `sections.tsx` holds every setting as data: sections, groups and rows. The dialog draws them and its search reads the same rows.
 - `settings-state.ts` exports `settings.open(section?)`, `settings.close`, `settings.isOpen` and `settings.section`. Closing returns focus to what opened it, or to the gear when a layout change replaced the header.
@@ -89,14 +89,17 @@ The stage, from `stage.tsx`, holds the parts of the real editor that a layout pl
 
 ### The header and the islands
 
-The header takes its spacing from the layout through two custom properties, so that its edges meet the islands' outer edges and the space under it is the space between two islands:
+The harness renders the header above the layout, so it sits at the same place in every layout. `header.css.ts` holds the only numbers behind where it sits:
 
-| Property        | Meaning                                             | Default         |
-| --------------- | --------------------------------------------------- | --------------- |
-| `--shell-inset` | The space between the page's edge and the islands   | `8px`           |
-| `--shell-gap`   | The space under the header, above the first islands | `--shell-inset` |
+| Number | Value                  | Meaning                                                                 |
+| ------ | ---------------------- | ----------------------------------------------------------------------- |
+| inset  | 8px                    | The space between the page's edge and the row, on the top and the sides |
+| row    | 36px, 40px under 769px | The height of the row, which is the height of its controls              |
+| gap    | 8px                    | The space under the row, above the first islands                        |
 
-A layout sets them on its root when its numbers differ: Inspector sets a 12px inset, and Dock sets the gap to 0 because its root already puts its own gap under the header. The layout's first row of islands then starts with no top padding of its own.
+The header is 52px tall in all, 56px on a phone. A layout fills the rest of the page (`flex: 1; min-height: 0`, not `100dvh`), keeps its first islands 8px from the sides so that the header's edges meet theirs, and adds no space at its top. Dock's canvas runs edge to edge on a phone, which is the one place where the edges do not meet.
+
+The logo is 28px tall, which is the height of its mark. Beside 36px buttons that leaves 4px above and below it. At 22px it left 7px, and the left of the row read lighter than the right.
 
 ### The settings dialog
 
@@ -172,7 +175,7 @@ Inspector puts its panel on the right. Set `data-inspector-side="left"` on its r
 - Style with the tokens from `@codeimage/ui` (`themeVars`) in vanilla-extract `.css.ts` files inside your folder. Plain CSS is fine if every selector starts with a class that belongs to your folder.
 - Add no dependency without saying so in your report.
 - Show themes with `props.ThemePicker`, not with a grid of your own, so that the Theme cards setting reaches your layout.
-- Start the layout with `<Header stage={props.stage} />` from `shell/Header`, not with the production `Toolbar`.
+- Do not render a header: the harness renders `shell/Header` above your layout. Size your root with `flex: 1; min-height: 0`, start your islands at its top edge, and keep them 8px from the sides.
 - The page root stays in normal flow. A fixed root lets the body collapse, and the body then clips the kit popovers portaled to it.
 - Render rows with `controls/ControlRow`, not with fields of your own.
 - `SegmentedField` with `adapt` makes the kit control `height: 100%`. Under a parent of auto height that falls back to its line height, about 24px. Give the parent the kit's field height, 36px at `sm` or 40px at `md`.
