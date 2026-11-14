@@ -1,25 +1,18 @@
+import AutoLoad from '@fastify/autoload';
 import fp from 'fastify-plugin';
+import {join} from 'node:path';
 import {createUserRepository} from './identity.repository.js';
-import {
-  createIdentityService,
-  type IdentityService,
-} from './identity.service.js';
-
-declare module 'fastify' {
-  interface FastifyInstance {
-    identity: IdentityService;
-  }
-}
 
 export default fp(
   async fastify => {
-    fastify.decorate(
-      'identity',
-      createIdentityService({users: createUserRepository(fastify.db)}),
-    );
+    await fastify.register(AutoLoad, {
+      dir: join(import.meta.dirname, 'commands'),
+      forceESM: true,
+      ignorePattern: /\.d\.[cm]?ts$/,
+      options: {users: createUserRepository(fastify.db)},
+    });
   },
-  {name: 'identity', dependencies: ['db']},
+  {name: 'identity', dependencies: ['db', 'bus']},
 );
 
-export type {IdentityService} from './identity.service.js';
-export type {User} from './identity.model.js';
+export {resolveSession} from './commands/resolve-session.js';

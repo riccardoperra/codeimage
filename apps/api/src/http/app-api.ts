@@ -3,6 +3,7 @@ import {join} from 'node:path';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import type {FastifyPluginAsync} from 'fastify';
+import {resolveSession} from '../modules/identity/index.js';
 import {CommonErrors} from '../shared/errors.js';
 import {anonymous} from '../shared/principal.js';
 
@@ -37,7 +38,9 @@ const appApi: FastifyPluginAsync = async fastify => {
           request.principal = anonymous;
           return;
         }
-        request.principal = await api.identity.actorFromSession(claims);
+        request.principal = await api.commandBus.execute(
+          resolveSession(claims),
+        );
       });
 
       api.addHook('onRoute', route => {
