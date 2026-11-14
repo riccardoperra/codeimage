@@ -1,3 +1,4 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import type {SegmentedFieldItem} from '@codeimage/ui';
@@ -127,6 +128,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const [supportWebShare] = useWebshare();
   const exportCanvasStore = getExportCanvasStore();
+  const target = () => getFrameState().exportTarget();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.export);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
@@ -271,16 +273,27 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               <FieldLabel size={'sm'}>
                 {t('export.pixelRatio')}
                 <Box as={'span'} marginLeft={3}>
-                  <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
+                  <FieldLabelHint>
+                    {getFrameState().exportPixelRatio(devicePixelRatio())}x
+                  </FieldLabelHint>
                 </Box>
               </FieldLabel>
-              <RangeField
-                value={devicePixelRatio()}
-                onChange={setDevicePixelRatio}
-                max={3}
-                min={1}
-                step={1}
-              />
+              <Show
+                when={!target()}
+                fallback={
+                  <FieldLabelHint>
+                    {target()?.resolution.join(' × ')}
+                  </FieldLabelHint>
+                }
+              >
+                <RangeField
+                  value={devicePixelRatio()}
+                  onChange={setDevicePixelRatio}
+                  max={3}
+                  min={1}
+                  step={1}
+                />
+              </Show>
             </FlexField>
 
             <Checkbox

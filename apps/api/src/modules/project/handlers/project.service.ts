@@ -1,3 +1,4 @@
+import {mapStoredFrame} from '../schema/frame-export.schema.js';
 import type {Project, User} from '@codeimage/prisma-models';
 import type {HttpError, HttpErrors} from '@fastify/sensible/lib/httpError.js';
 import {createProjectRequestMapper} from '../mapper/create-project-mapper.js';
@@ -70,16 +71,30 @@ export function makeProjectService(
       userId: string,
       data: ProjectCreateRequest,
     ): Promise<ProjectCreateResponse> {
-      return repository.createNewProject(
-        userId,
-        createProjectRequestMapper(data),
-      );
+      return repository
+        .createNewProject(userId, createProjectRequestMapper(data))
+        .then(project => ({...project, frame: mapStoredFrame(project.frame)}));
     },
     updateName(userId: string, projectId: string, newName: string) {
       return repository.updateProjectName(projectId, newName);
     },
     update(userId, projectId, data) {
-      return repository.updateProject(userId, projectId, data);
+      return repository
+        .updateProject(userId, projectId, {
+          ...data,
+          frame: {
+            ...data.frame,
+            signatureHandle:
+              data.frame.signature === undefined
+                ? undefined
+                : (data.frame.signature?.handle ?? null),
+            signaturePosition:
+              data.frame.signature === undefined
+                ? undefined
+                : (data.frame.signature?.position ?? null),
+          },
+        })
+        .then(project => ({...project, frame: mapStoredFrame(project.frame)}));
     },
     async clone(
       user: User,
@@ -93,7 +108,7 @@ export function makeProjectService(
         }
         return this.createNewProject(user.id, {
           name: newName ?? project.name,
-          frame: project.frame,
+          frame: mapStoredFrame(project.frame),
           editors: project.editorTabs,
           editorOptions: project.editorOptions,
           terminal: project.terminal,

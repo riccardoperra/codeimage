@@ -12,6 +12,10 @@ export function createProjectRequestMapper(
   return {
     name: data.name,
     frame: {
+      exportTarget: data.frame.exportTarget ?? null,
+      aspectRatio: data.frame.aspectRatio ?? null,
+      signatureHandle: data.frame.signature?.handle ?? null,
+      signaturePosition: data.frame.signature?.position ?? null,
       padding:
         data.frame.padding ??
         SnippetFrameCreateRequestSchema.properties.padding.default,

@@ -1,3 +1,4 @@
+import {FrameExportProperties} from './frame-export.schema.js';
 import {Type} from '@sinclair/typebox';
 import {enumLiteral} from '../../../common/typebox/enum.js';
 import {Nullable} from '../../../common/typebox/nullable.js';
@@ -27,6 +28,7 @@ export const BaseSnippetEditorTabsSchema = Type.Array(
 );
 
 export const BaseSnippetFrameSchema = Type.Object({
+  ...FrameExportProperties,
   id: Type.String({format: 'uuid'}),
   background: Type.String(),
   padding: Type.Number(),

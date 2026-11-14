@@ -1,3 +1,5 @@
+import type {ExportTargetId} from '@codeimage/config';
+
 export interface FrameState {
   background: string | null;
   padding: number;
@@ -8,10 +10,19 @@ export interface FrameState {
   scale: number;
   width: number;
   height: number;
+  signature: {handle: string; position: 'bottom-left' | 'bottom-right'} | null;
   aspectRatio: string | null;
+  exportTarget: ExportTargetId | null;
 }
 
 export type PersistedFrameState = Pick<
   FrameState,
-  'background' | 'padding' | 'radius' | 'visible' | 'opacity'
+  | 'background'
+  | 'padding'
+  | 'radius'
+  | 'visible'
+  | 'opacity'
+  | 'signature'
+  | 'aspectRatio'
+  | 'exportTarget'
 >;

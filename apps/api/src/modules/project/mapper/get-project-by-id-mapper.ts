@@ -1,3 +1,4 @@
+import {readFrameExportProperties} from '../schema/frame-export.schema.js';
 import type * as DomainModel from '../domain/index.js';
 import type {ProjectCompleteResponse} from '../schema/index.js';
 
@@ -11,6 +12,8 @@ export function createCompleteProjectGetByIdResponseMapper(
     createdAt: data.createdAt.toISOString(),
     updatedAt: data.updatedAt.toISOString(),
     frame: {
+      aspectRatio: data.frame.aspectRatio,
+      ...readFrameExportProperties(data.frame),
       id: data.frame.id,
       padding: data.frame.padding,
       visible: data.frame.visible,

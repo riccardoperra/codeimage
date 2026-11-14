@@ -1,3 +1,4 @@
+import {FrameExportProperties} from './frame-export.schema.js';
 import type {Static} from '@sinclair/typebox';
 import {Type} from '@sinclair/typebox';
 import {Nullable} from '../../../common/typebox/nullable.js';
@@ -5,6 +6,7 @@ import {SnippetTerminalBorderType} from './project.schema.js';
 
 export const SnippetFrameCreateRequestSchema = Type.Object(
   {
+    ...FrameExportProperties,
     background: Nullable(Type.String()),
     opacity: Nullable(
       Type.Number({
@@ -78,6 +80,7 @@ export const ProjectCreateRequestSchema = Type.Object(
 
 export const SnippetFrameCreateResponseSchema = Type.Object(
   {
+    ...FrameExportProperties,
     background: Nullable(Type.String()),
     opacity: Type.Number({
       minimum: 0,
@@ -100,7 +103,7 @@ export const ProjectCreateResponseSchema = Type.Object(
     createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     editorOptions: Type.Required(EditorOptionsCreateRequestSchema),
-    frame: Type.Required(SnippetFrameCreateResponseSchema),
+    frame: SnippetFrameCreateResponseSchema,
     terminal: Type.Required(SnippetTerminalCreateRequestSchema),
     editorTabs: SnippetEditorTabsCreateRequestSchema,
   },
