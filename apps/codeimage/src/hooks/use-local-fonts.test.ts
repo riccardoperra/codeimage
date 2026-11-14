@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import {afterEach, expect, it, vi} from 'vitest';
 import {useLocalFonts} from './use-local-fonts';
 
