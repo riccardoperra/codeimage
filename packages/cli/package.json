@@ -1,0 +1,37 @@
+{
+  "name": "@codeimage/cli",
+  "version": "0.1.0",
+  "description": "Render CodeImage screenshots from files or stdin",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "codeimage": "dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@codeimage/config": "workspace:*",
+    "@codeimage/highlight": "workspace:*",
+    "@types/node": "catalog:next",
+    "oxlint": "catalog:next",
+    "tsdown": "catalog:next",
+    "typescript": "catalog:next",
+    "vitest": "catalog:next"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
