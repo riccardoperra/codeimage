@@ -640,3 +640,14 @@
     transition: none;
   }
 }
+
+/*
+ * The kit's buttons and segmented controls move when pressed. With reduced
+ * motion they keep their colour changes and drop the movement.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .dock-root * {
+    transition-property:
+      color, background-color, border-color, opacity, box-shadow !important;
+  }
+}

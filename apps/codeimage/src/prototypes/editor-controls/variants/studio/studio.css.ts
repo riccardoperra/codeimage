@@ -458,3 +458,14 @@ export const presetsHost = style({
   padding: '4px 12px 12px 16px',
   overflow: 'hidden',
 });
+
+// The kit's buttons and segmented controls move when pressed. With reduced
+// motion they keep their colour changes and drop the movement.
+globalStyle(`${root} *`, {
+  '@media': {
+    [reducedMotion]: {
+      transitionProperty:
+        'color, background-color, border-color, opacity, box-shadow !important',
+    },
+  },
+});
