@@ -159,3 +159,15 @@ Rerun the perf script with `P5_HEAD_URL`, `P5_TRUNK_URL`, `P5_CHROMIUM`, and `P5
 The implementation follows Model the Domain by indexing `TabMarks` by physical line. Type System Discipline reuses the existing `TabMarks` type. Laziness Protocol keeps the existing CSS and editor logic. Build the Lever and Prove It Works keep the capture, pixel comparison, and real export probe rerunnable. Attack the Premise replaced the assumption of slow startup with a direct check of the optimizer hashes and failed import URLs.
 
 The remaining review limits are Firefox availability and the fresh stack review. No merge was attempted.
+
+## Import undo, 2026-11-14
+
+Import as diff now records the tab list and active tab in the same CodeMirror history step as the code and marks. Cmd+Z and the new import toast's Undo both restore the exact state immediately before clicking Import as diff. That state includes the pasted raw diff. Redo restores the imported tabs with the same IDs. A subsequent text edit undoes before the import.
+
+The snapshot belongs only to an import transaction. Ordinary tab operations keep their existing behavior. The toast follows the annotation toast's guard and only undoes while the imported tab's code and marks are unchanged.
+
+The two history regression tests failed without the import's inverted effect and pass with it. Chromium verification uses an existing tab plus an active Python tab with a highlight, focus mode, and a non-default starting line number. Importing a two-file TypeScript diff renames the active tab and adds a tab. Both undo paths restore every stored tab field and the live editor's code and marks. Redo and later-edit ordering pass too.
+
+Run `node scripts/verify-p5-import-undo.cjs` against port 4433. `P5_URL`, `P5_OUT`, and `P5_CHROMIUM` override the URL, evidence directory, and browser executable. Screenshots, state snapshots, and logs are in `/tmp/swarm-p5-undo/`. The copied local environment enables MSW and mock auth. Temporary Vite middleware serves the installed MSW worker without changing the checked-in worker.
+
+All 49 app tests pass. `pnpm lint` passes with the existing 32 warnings and no errors. `pnpm typecheck` passes across the workspace. P1 remains at `17233c93`, already contained in P5, so no rebase was needed.
