@@ -1,8 +1,10 @@
 .inspector-root {
   --inspector-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  /* The header is the first row of the islands: same inset, same gap. */
+  --shell-inset: 12px;
   height: 100dvh;
   display: grid;
-  grid-template-rows: 52px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
   background: var(--inspector-app);
   color: var(--inspector-text);
@@ -35,7 +37,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
   gap: 12px;
-  padding: 12px;
+  padding: 0 12px 12px;
 }
 /*
  * data-inspector-side="left", on the root or on any ancestor the settings
@@ -292,10 +294,13 @@
   transition: none;
 }
 @media (max-width: 768px) {
+  .inspector-root {
+    --shell-inset: 8px;
+  }
   .inspector-root .inspector-workspace {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) auto;
-    padding: 8px;
+    padding: 0 8px 8px;
     gap: 8px;
   }
   .inspector-root .inspector-panel {

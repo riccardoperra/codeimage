@@ -9,6 +9,9 @@
   --dock-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --dock-gap: 8px;
   --dock-radius: 22px;
+  /* The header meets the island's edges. The root's own gap is the space under it. */
+  --shell-inset: var(--dock-gap);
+  --shell-gap: 0px;
 
   /*
    * In the page flow, not fixed: the body clips what leaves its box, and a
@@ -363,6 +366,8 @@
   .dock-root {
     gap: 0;
     padding-bottom: 0;
+    /* The canvas runs edge to edge here, so the header keeps the space under it. */
+    --shell-gap: var(--dock-gap);
   }
 
   .dock-body {
