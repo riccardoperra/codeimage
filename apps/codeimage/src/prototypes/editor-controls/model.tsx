@@ -17,8 +17,9 @@ import {appEnvironment} from '@core/configuration';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {getUmami} from '@core/constants/umami';
 import type {Accessor, Component} from 'solid-js';
-import {createMemo, createSelector} from 'solid-js';
+import {batch, createMemo, createSelector, createSignal} from 'solid-js';
 import {provideState} from 'statebuilder';
+import {untrackCommand} from 'statebuilder/commands';
 import {FontPicker} from '../../components/PropertyEditor/controls/FontPicker/FontPicker';
 import {ImagePicker} from '../../components/PropertyEditor/controls/ImagePicker/ImagePicker';
 import {TerminalControlField} from '../../components/PropertyEditor/controls/TerminalControlField/TerminalControlField';
@@ -140,9 +141,12 @@ export interface ThemeEntry {
     /** The colours the code editor gives these tokens in this theme. */
     readonly syntax: SyntaxColors;
   };
+  /** The applied theme. Stays on it while another theme is previewed. */
   readonly active: Accessor<boolean>;
   /** Same as clicking a theme card today: also replaces the frame background. */
   readonly apply: () => void;
+  /** Shows the theme on the canvas without saving it, until `apply()` or `endThemePreview()`. */
+  readonly preview: () => void;
 }
 
 export interface EditorControlsModel {
@@ -150,6 +154,15 @@ export interface EditorControlsModel {
   readonly control: (id: ControlId) => Control | undefined;
   /** Registry order. Grows while theme modules load. */
   readonly themes: Accessor<readonly ThemeEntry[]>;
+  /** Puts back the applied theme after `preview()`. Does nothing when no preview runs. */
+  readonly endThemePreview: () => void;
+}
+
+interface ThemeLook {
+  readonly themeId: string;
+  readonly frameBackground: string | null;
+  readonly windowBackground: string;
+  readonly windowText: string;
 }
 
 type OptionValue = string | number | boolean | null;
@@ -209,7 +222,37 @@ export function createEditorControlsModel(): EditorControlsModel {
   const themeStore = getThemeStore();
   const versionStore = provideState(VersionStore);
   const shadows = createMemo(shadowsLabel);
-  const isActiveTheme = createSelector(() => editor.state.options.themeId);
+  // Set while a preview runs: the look to restore when it ends.
+  const [applied, setApplied] = createSignal<ThemeLook | null>(null);
+  const isActiveTheme = createSelector(
+    () => applied()?.themeId ?? editor.state.options.themeId,
+  );
+
+  const currentLook = (): ThemeLook => ({
+    themeId: editor.state.options.themeId,
+    frameBackground: frame.store.background,
+    windowBackground: terminal.state.background,
+    windowText: terminal.state.textColor,
+  });
+
+  // Untracked commands still update the stores but skip the persistence
+  // watchers, so a preview never reaches IndexedDB.
+  const showLook = (look: ThemeLook) =>
+    batch(() =>
+      untrackCommand(() => {
+        frame.setStore('background', look.frameBackground);
+        terminal.setState('background', look.windowBackground);
+        terminal.setState('textColor', look.windowText);
+        editor.actions.setThemeId(look.themeId);
+      }, false),
+    );
+
+  const endThemePreview = () => {
+    const look = applied();
+    if (!look) return;
+    setApplied(null);
+    showLook(look);
+  };
 
   // Reading a resource before it is ready would suspend the caller's
   // boundary, so only settled themes are read.
@@ -234,8 +277,18 @@ export function createEditorControlsModel(): EditorControlsModel {
         },
         active: () => isActiveTheme(theme.id),
         apply: () => {
+          setApplied(null);
           dispatchUpdateTheme({theme, updateBackground: true});
           getUmami().track('theme-change', {themeId: theme.id});
+        },
+        preview: () => {
+          if (!applied()) setApplied(currentLook());
+          showLook({
+            themeId: theme.id,
+            frameBackground: theme.properties.previewBackground,
+            windowBackground: theme.properties.terminal.main,
+            windowText: theme.properties.terminal.text,
+          });
         },
       }),
     ),
@@ -445,7 +498,10 @@ export function createEditorControlsModel(): EditorControlsModel {
               value: theme.id,
             })),
           value: () => editor.state.options.themeId,
-          set: theme => dispatchUpdateTheme({theme, updateBackground: false}),
+          set: theme => {
+            setApplied(null);
+            dispatchUpdateTheme({theme, updateBackground: false});
+          },
         }),
         choice('select', {
           id: 'editor.formatter',
@@ -528,5 +584,6 @@ export function createEditorControlsModel(): EditorControlsModel {
     sections,
     control: id => byId.get(id),
     themes,
+    endThemePreview,
   };
 }
