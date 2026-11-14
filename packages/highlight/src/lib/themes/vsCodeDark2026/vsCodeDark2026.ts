@@ -1,11 +1,21 @@
 // Colors from microsoft/vscode fde6187a0, MIT, Copyright Microsoft Corporation.
+import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
 import {EditorView} from '@codemirror/view';
+import {tags as t} from '@lezer/highlight';
 import {defineEditorTheme} from '../../core';
 
 export const background = '#121314';
 export const foreground = '#BBBEBF';
 
 export const vsCodeDark2026 = [
+  // Tags the shared keys can't tell apart from plain keywords or punctuation. First in the list so it outranks defineEditorTheme.
+  syntaxHighlighting(
+    HighlightStyle.define([
+      {tag: [t.controlKeyword, t.operatorKeyword], color: '#C586C0'},
+      {tag: [t.modifier, t.null, t.special(t.brace)], color: '#569cd6'},
+      {tag: t.function(t.punctuation), color: '#ff7b72'},
+    ]),
+  ),
   EditorView.theme({
     '&': {backgroundColor: background},
     '.cm-activeLine': {backgroundColor: '#242526'},

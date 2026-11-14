@@ -18,6 +18,11 @@ const themes = [
     comment: '#8b949e',
     function: '#d2a8ff',
     number: '#b5cea8',
+    control: '#c586c0',
+    modifier: '#569cd6',
+    constantLanguage: '#569cd6',
+    templateBrace: '#569cd6',
+    arrow: '#ff7b72',
     activeLine: '#242526',
   },
   {
@@ -29,12 +34,22 @@ const themes = [
     comment: '#6e7781',
     function: '#8250df',
     number: '#098658',
+    control: '#af00db',
+    modifier: '#0000ff',
+    constantLanguage: '#0000ff',
+    templateBrace: '#0000ff',
+    arrow: '#cf222e',
     activeLine: '#EAEAEA40',
   },
 ];
 
-const doc =
-  '// Preview\nconst count: number = 42;\nfunction greet() { return "Hello"; }\ngreet();';
+const doc = [
+  '// Preview',
+  'const count: number = 42;',
+  'async function greet() { if (count) await greet(); return "Hello"; }',
+  'const label = () => `${null}`;',
+  'class Store { static size = 1; }',
+].join('\n');
 
 for (const expected of themes) {
   const {theme} = expected;
@@ -42,10 +57,18 @@ for (const expected of themes) {
     doc,
     extensions: [javascript({typescript: true, jsx: true}), theme.editorTheme],
   });
-  const css = state
-    .facet(EditorView.styleModule)
-    .map(module => module.getRules())
-    .join('\n');
+  const modules = state.facet(EditorView.styleModule);
+  const css = modules.map(module => module.getRules()).join('\n');
+  // CodeMirror mounts the facet's modules in reverse, so the first module with a rule for the token's classes wins.
+  const colorOf = (classes: string) => {
+    for (const module of modules)
+      for (const name of classes.split(' ')) {
+        const color = new RegExp(`\\.${name} \\{color: ([^;]+);`).exec(
+          module.getRules(),
+        )?.[1];
+        if (color) return color.toLowerCase();
+      }
+  };
 
   test(`${theme.id} uses the upstream editor background and foreground`, () => {
     assert.equal(theme.properties.terminal.main, expected.background);
@@ -82,13 +105,26 @@ for (const expected of themes) {
     for (const [token, key] of [
       ['// Preview', 'comment'],
       ['const', 'keyword'],
+      ['function', 'keyword'],
       ['42', 'number'],
       ['greet', 'function'],
       ['"Hello"', 'string'],
+      ['if', 'control'],
+      ['return', 'control'],
+      ['await', 'control'],
+      ['async', 'modifier'],
+      ['static', 'modifier'],
+      ['null', 'constantLanguage'],
+      ['${', 'templateBrace'],
+      ['=>', 'arrow'],
     ] as const) {
       const className = rendered.get(token);
       assert.ok(className, `${token} is highlighted by the TypeScript parser`);
-      assert.ok(css.includes(`.${className} {color: ${expected[key]};}`));
+      assert.equal(
+        colorOf(className),
+        expected[key].toLowerCase(),
+        `${token} renders as ${key}`,
+      );
     }
   });
 
