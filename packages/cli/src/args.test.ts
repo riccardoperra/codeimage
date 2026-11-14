@@ -215,7 +215,7 @@ describe('snapshot', () => {
         radius: 0,
         visible: true,
         opacity: 50,
-        signature: '@me',
+        signature: {handle: '@me', position: 'bottom-right' as const},
       },
       terminal: {
         showHeader: true,

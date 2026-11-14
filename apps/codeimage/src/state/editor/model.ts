@@ -1,4 +1,4 @@
-import type {PersistedFrameState} from '@codeimage/store/frame/model';
+import type {PersistedFrameState} from '../frame/model';
 
 export interface EditorUIOptions {
   fontId: string;

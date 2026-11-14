@@ -4,6 +4,7 @@ import {parseArgs, UsageError, USAGE} from './args';
 import {FLAGS} from './flags';
 import {renderSnapshot} from '@codeimage/render';
 import {buildSnapshot, parsePreset} from './snapshot';
+import type {CodeInput} from './snapshot';
 
 async function readInput(path: string, prefix = '') {
   try {
@@ -41,7 +42,7 @@ async function main() {
     ? parsePreset(await readInput(args.preset, '--preset: '))
     : undefined;
   const files = args.files.length ? args.files : ['-'];
-  const inputs = [];
+  let inputs: CodeInput[] = [];
   for (const file of files) {
     inputs.push(
       file === '-'
@@ -49,18 +50,38 @@ async function main() {
         : {name: file, code: await readInput(file)},
     );
   }
+  for (const flag of FLAGS) {
+    if (flag.prepareInputs)
+      inputs = await flag.prepareInputs(inputs, args.values);
+  }
   const snapshot = FLAGS.reduce(
     (snapshot, flag) => flag.apply(snapshot, args.values),
     await buildSnapshot({args, inputs, preset}),
   );
-  const image = await renderSnapshot(snapshot);
-  if (args.output === '-') {
-    await new Promise<void>((resolve, reject) => {
-      process.stdout.write(image, error => (error ? reject(error) : resolve()));
-    });
-  } else {
-    await writeFile(args.output, image);
-    process.stdout.write(`${args.output}\n`);
+  let outputs = [{snapshot, path: args.output}];
+  for (const flag of FLAGS) {
+    const expand = flag.outputs;
+    if (expand)
+      outputs = outputs.flatMap(output => expand(output, args.values));
+  }
+  for (const output of outputs) {
+    const image = await renderSnapshot(output.snapshot);
+    if (output.path === '-') {
+      await new Promise<void>((resolve, reject) => {
+        process.stdout.write(image, error =>
+          error ? reject(error) : resolve(),
+        );
+      });
+    } else {
+      await writeFile(output.path, image);
+      process.stdout.write(`${output.path}\n`);
+    }
+    for (const flag of FLAGS) {
+      for (const sidecar of flag.sidecars?.(output, args.values) ?? []) {
+        await writeFile(sidecar.path, sidecar.text);
+        process.stdout.write(`${sidecar.path}\n`);
+      }
+    }
   }
 }
 

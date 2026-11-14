@@ -4,6 +4,8 @@ import {parseArgs as parseNodeArgs} from 'node:util';
 import type {ParseArgsOptionsConfig} from 'node:util';
 import {THEME_REGISTRY} from '../../../apps/codeimage/src/state/theme/themeRegistry';
 import {FLAGS} from './flags';
+import {UsageError} from './errors';
+export {UsageError} from './errors';
 
 const DEFAULT_SCALE = 1;
 
@@ -26,8 +28,6 @@ Examples:
   codeimage src/app.ts -o app.png
   cat app.py | codeimage --lang python -o - > app.png
 `;
-
-export class UsageError extends Error {}
 
 const FORMATS = {
   png: 'png',
@@ -128,6 +128,7 @@ export function parseArgs(argv: string[]) {
   if (files.filter(file => file === '-').length > 1) {
     throw new UsageError('stdin (-) can be given only once');
   }
+  for (const flag of FLAGS) flag.validate?.(values);
   return {
     kind: 'render',
     files,

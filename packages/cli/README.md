@@ -33,6 +33,53 @@ written. Errors go to stderr. Exit codes are 0 for success, 1 for render or
 write failures, and 2 for invalid options, presets, or inputs. Running with no
 files from a terminal prints usage and exits with 2.
 
+## Feature flags
+
+`--diff` imports unified diffs from stdin or files. Each changed text file
+becomes a tab with added and removed marks. Binary-only and malformed input
+is a usage error.
+
+```sh
+git diff | codeimage --diff -o changes.png
+codeimage changes.diff --diff --split-tabs -o changes.png
+codeimage foo.ts --highlight 3-5,9 --focus -o focused.png
+```
+
+`--highlight` accepts comma-separated line numbers and inclusive ranges.
+With `--lines`, highlight numbers refer to the numbered lines in the output.
+`--focus` dims lines without a highlight mark. Shiki annotation comments in
+input code become marks automatically through the language's comment syntax.
+The CLI removes the annotations before applying `--lines`.
+
+Secret redaction runs by default. Diagnostics go to stderr with the input
+name, line, column, and rule id, followed by `redacted N secrets`. Images and
+alt text use the masked code. `--no-redact` preserves the original code.
+
+`--size` sets an exact output size, independent of `--scale`.
+
+| Target              | Pixels      |
+| ------------------- | ----------- |
+| `x-landscape`       | 1600 × 900  |
+| `square`            | 1080 × 1080 |
+| `linkedin-portrait` | 1080 × 1350 |
+| `og`                | 1200 × 630  |
+
+The window centers inside the target and scales down to fit.
+`--signature @handle` adds a frame signature. `--signature-position` accepts
+`bottom-left` or `bottom-right`, with `bottom-right` as the default.
+
+`--split-tabs` writes one image per tab as `out-01.png`, `out-02.png`, and so
+on for `-o out.png`. It also supports JPEG, WebP, and SVG. Each image contains
+only its input tab. `--alt` writes `out.png.alt.txt` using the web app's
+`altText` function for the visible tab. With both flags, each numbered image
+gets its own sidecar. Both flags require a file output instead of stdout.
+
+```sh
+codeimage foo.ts --size x-landscape --signature @me -o social.png
+codeimage a.ts b.py c.rs --split-tabs --alt -o out.png
+codeimage foo.ts --lines 5-12 --alt -o range.png
+```
+
 ## Development
 
 ```sh
@@ -61,6 +108,13 @@ Scale 1 exercises the CLI default without a `--scale` flag. Images and results
 go to `/tmp/swarm-p4-restack`. Use `--url` and `--out` to change the defaults.
 The script stops at the first cell above 0.5% at pixelmatch threshold 0.1.
 Inspect that cell's diff before continuing.
+
+The Node-only feature checks run the built CLI and inspect its output files.
+Run them inside tmux when verifying a change.
+
+```sh
+node packages/cli/scripts/verify-feature-flags.mjs /tmp/swarm-cli-flags
+```
 
 ## Packed distribution
 
