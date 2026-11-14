@@ -1,40 +1,82 @@
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {RangeField} from '@codeimage/ui';
+import {
+  Button,
+  Listbox,
+  NumberField,
+  RadioList,
+  RadioListItem,
+  Select,
+  TextField,
+  createSelectOptions,
+  themeTokens,
+  themeVars as kitVars,
+} from '@codeui/kit';
 import {AVAILABLE_TERMINAL_THEMES} from '@core/configuration/terminal-themes';
 import {Collapsible} from '@kobalte/core/collapsible';
 import {Switch} from '@kobalte/core/switch';
-import {For, Show, createMemo, createSignal, onCleanup} from 'solid-js';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
+import {For, Show, createSignal, onCleanup, onMount} from 'solid-js';
 import type {ParentProps} from 'solid-js';
-import type {Subscription} from 'rxjs';
+import {Dynamic} from 'solid-js/web';
 import {provideState} from 'statebuilder';
-import type {BackgroundControl, Control, CustomControl} from '../../model';
+import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls/ColorPicker/ColorPicker';
+import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
+import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
+import {
+  PanelRow,
+  TwoColumnPanelRow,
+} from '../../../../components/PropertyEditor/PanelRow';
+import type {
+  BackgroundControl,
+  Control,
+  CustomControl,
+  SelectControl,
+  SegmentedControl,
+} from '../../model';
 
 function Toggle(props: {
+  control: Control;
   label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
 }) {
+  const id = () => `inspector-${props.control.id.replace('.', '-')}`;
   return (
-    <Switch
-      class="inspector-row inspector-switch"
-      checked={props.checked}
-      onChange={props.onChange}
-    >
-      <Switch.Label class="inspector-label">{props.label}</Switch.Label>
-      <span class="inspector-switch-state" aria-hidden="true">
-        {props.checked ? 'On' : 'Off'}
-      </span>
-      <Switch.Input />
-      <Switch.Control class="inspector-switch-track">
-        <Switch.Thumb class="inspector-switch-thumb" />
-      </Switch.Control>
-    </Switch>
+    <PanelRow for={`${id()}-input`} label={props.label}>
+      <TwoColumnPanelRow>
+        <Switch
+          class="inspector-switch"
+          style={{
+            '--inspector-switch-on': kitVars.brand,
+            '--inspector-switch-off': themeTokens.colors.gray6,
+          }}
+          id={id()}
+          checked={props.checked}
+          onChange={props.onChange}
+        >
+          <span class="inspector-switch-state" aria-hidden="true">
+            {props.checked ? 'On' : 'Off'}
+          </span>
+          <Switch.Input aria-label={props.label} />
+          <Switch.Control class="inspector-switch-track">
+            <Switch.Thumb class="inspector-switch-thumb" />
+          </Switch.Control>
+        </Switch>
+      </TwoColumnPanelRow>
+    </PanelRow>
   );
 }
 
 function Inline(
-  props: ParentProps<{label: string; value: string; swatch?: string}>,
+  props: ParentProps<{
+    id: string;
+    label: string;
+    value: string;
+    swatch?: string;
+  }>,
 ) {
   const [open, setOpen] = createSignal(false);
   let trigger: HTMLButtonElement | undefined;
@@ -50,27 +92,30 @@ function Inline(
         trigger?.focus();
       }}
     >
-      <Collapsible.Trigger
-        as="button"
-        class="inspector-row inspector-inline-trigger"
-        ref={element => {
-          trigger = element;
-        }}
-      >
-        <span class="inspector-label">{props.label}</span>
-        <span class="inspector-inline-value" title={props.value}>
-          <Show when={props.swatch}>
-            <span
-              class="inspector-value-swatch"
-              style={{background: props.swatch}}
-            />
-          </Show>
-          {props.value}
-          <span class="inspector-chevron" aria-hidden="true">
-            ›
-          </span>
-        </span>
-      </Collapsible.Trigger>
+      <PanelRow for={props.id} label={props.label}>
+        <TwoColumnPanelRow>
+          <Collapsible.Trigger
+            as={Button}
+            id={props.id}
+            class="inspector-inline-trigger"
+            size="sm"
+            theme="secondary"
+            variant="ghost"
+            ref={element => {
+              trigger = element;
+            }}
+          >
+            <Show when={props.swatch}>
+              <span
+                class="inspector-value-swatch"
+                style={{background: props.swatch}}
+              />
+            </Show>
+            <span class="inspector-inline-value">{props.value}</span>
+            <span aria-hidden="true">⌄</span>
+          </Collapsible.Trigger>
+        </TwoColumnPanelRow>
+      </PanelRow>
       <Collapsible.Content class="inspector-inline-content">
         {props.children}
       </Collapsible.Content>
@@ -78,97 +123,194 @@ function Inline(
   );
 }
 
+function ColorPickerContent(props: {control: BackgroundControl}) {
+  let content: HTMLDivElement | undefined;
+  onMount(() => {
+    const enhancePresets = () => {
+      content
+        ?.querySelector('input')
+        ?.setAttribute('aria-label', 'Color or gradient');
+      for (const item of content?.querySelectorAll<HTMLElement>('div[title]') ??
+        []) {
+        item.setAttribute('role', 'button');
+        item.tabIndex = 0;
+        item.setAttribute('aria-label', `Background fill ${item.title}`);
+        item.setAttribute(
+          'aria-pressed',
+          String(item.title === props.control.value()),
+        );
+      }
+    };
+    // The production color presets are mouse-only. Keep their UI and add keyboard access locally.
+    const observer = new MutationObserver(enhancePresets);
+    if (content)
+      observer.observe(content, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class'],
+      });
+    enhancePresets();
+    onCleanup(() => observer.disconnect());
+  });
+  return (
+    <div
+      class="inspector-color-picker"
+      ref={element => {
+        content = element;
+      }}
+      onKeyDown={event => {
+        if (
+          (event.key === 'Enter' || event.key === ' ') &&
+          event.target instanceof HTMLElement &&
+          event.target.matches('div[title][role="button"]')
+        ) {
+          event.preventDefault();
+          event.target.click();
+        }
+      }}
+    >
+      <ColorPickerPopover
+        value={props.control.value()}
+        onChange={props.control.set}
+        colors={[...props.control.colors]}
+        gradientColors={[...props.control.gradients]}
+      />
+    </div>
+  );
+}
+
 function Background(props: {control: BackgroundControl}) {
   return (
     <Inline
+      id="inspector-background"
       label="Background"
-      value="Custom fill"
+      value="Color & image"
       swatch={props.control.value()}
     >
-      <label class="inspector-field-label" for="inspector-background">
-        Color or gradient
-      </label>
-      <input
-        class="inspector-search"
-        id="inspector-background"
-        type="text"
-        value={props.control.value()}
-        onChange={event => {
-          const input = event.currentTarget;
-          if (CSS.supports('background', input.value)) {
-            props.control.set(input.value);
-            input.setCustomValidity('');
-          } else {
-            input.setCustomValidity('Enter a CSS color or gradient.');
-            input.reportValidity();
-          }
-        }}
-      />
-      <div
-        class="inspector-swatches"
-        role="group"
-        aria-label="Background fills"
-      >
-        <For each={[...props.control.gradients, ...props.control.colors]}>
-          {(color, index) => (
-            <button
-              class="inspector-swatch"
-              aria-label={`Background fill ${index() + 1}`}
-              title={color}
-              aria-pressed={color === props.control.value()}
-              style={{background: color}}
-              onClick={() => props.control.set(color)}
-            >
-              {color === props.control.value() ? '✓' : ''}
-            </button>
-          )}
-        </For>
-      </div>
+      <ColorPickerContent control={props.control} />
     </Inline>
   );
 }
 
-const windowLabels = {
-  macOs: 'macOS',
-  macOsGrayTheme: 'Gray',
-  macOsOutlineTheme: 'Outline',
-  windows: 'Windows',
-};
+function Choice(props: {control: SelectControl | SegmentedControl}) {
+  const options = createSelectOptions(() => props.control.options(), {
+    key: 'label',
+    valueKey: 'key',
+  });
+  const id = () => `inspector-${props.control.id.replace('.', '-')}`;
+  return (
+    <PanelRow for={`${id()}-trigger`} label={props.control.label()}>
+      <TwoColumnPanelRow>
+        <Select
+          {...options.props()}
+          {...options.controlled(props.control.value, value => {
+            if (value !== undefined) props.control.set(value);
+          })}
+          onChange={option => {
+            if (option) props.control.set(option.value);
+          }}
+          options={options.options()}
+          onOpenChange={open => {
+            if (!open) return;
+            const listboxId = `${id()}-listbox`;
+            queueMicrotask(() =>
+              document
+                .getElementById(listboxId)
+                ?.parentElement?.classList.add('inspector-select-portal'),
+            );
+          }}
+          optionValue="value"
+          optionTextValue="label"
+          multiple={false}
+          disallowEmptySelection
+          aria-label={props.control.label()}
+          disabled={props.control.disabled()}
+          id={id()}
+          size="sm"
+        />
+      </TwoColumnPanelRow>
+    </PanelRow>
+  );
+}
+
+function Ratio(props: {control: SelectControl}) {
+  return (
+    <Inline
+      id="inspector-ratio"
+      label={props.control.label()}
+      value={
+        props.control
+          .options()
+          .find(option => option.key === props.control.value())?.label ?? 'Auto'
+      }
+    >
+      <RadioList
+        value={props.control.value()}
+        onChange={props.control.set}
+        aria-label="Aspect ratio"
+        orientation="vertical"
+        size="sm"
+      >
+        <For each={props.control.options()}>
+          {option => <RadioListItem value={option.key} label={option.label} />}
+        </For>
+      </RadioList>
+    </Inline>
+  );
+}
 
 function WindowPicker() {
   const terminal = getTerminalState();
+  const editor = getRootEditorStore();
+  const labels = {
+    macOs: 'macOS',
+    macOsGrayTheme: 'Gray',
+    macOsOutlineTheme: 'Outline',
+    windows: 'Windows',
+  };
   const selected = () =>
     AVAILABLE_TERMINAL_THEMES.keys.find(key => key === terminal.state.type) ??
     'macOs';
   return (
-    <Inline label="Window style" value={windowLabels[selected()]}>
-      <div
-        class="inspector-window-options"
-        role="group"
+    <Inline
+      id="inspector-window-style"
+      label="Window style"
+      value={labels[selected()]}
+    >
+      <RadioList
+        value={terminal.state.type}
+        onChange={terminal.setType}
         aria-label="Window style"
+        orientation="vertical"
+        size="sm"
       >
         <For each={AVAILABLE_TERMINAL_THEMES.keys}>
           {key => (
-            <button
-              class="inspector-window-option"
-              aria-pressed={terminal.state.type === key}
-              onClick={() => terminal.setType(key)}
-            >
-              <span
-                class="inspector-window-sketch"
-                data-window-style={key}
-                aria-hidden="true"
-              >
-                <i />
-                <i />
-                <i />
-                <span>index.ts</span>
-              </span>
-              {windowLabels[key]}
-            </button>
+            <div class="inspector-window-option">
+              <RadioListItem value={key} label={labels[key]} />
+              <Dynamic
+                component={AVAILABLE_TERMINAL_THEMES.entries[key].component}
+                lite
+                preview
+                showTab
+                readonlyTab
+                showHeader
+                showWatermark={false}
+                showGlassReflection={false}
+                shadow={null}
+                background={terminal.state.background}
+                textColor={terminal.state.textColor}
+                accentVisible={terminal.state.accentVisible}
+                alternativeTheme={terminal.state.alternativeTheme}
+                opacity={100}
+                borderType={null}
+                themeId={editor.state.options.themeId}
+              />
+            </div>
           )}
         </For>
-      </div>
+      </RadioList>
     </Inline>
   );
 }
@@ -178,97 +320,61 @@ function FontPicker() {
   const config = provideState(EditorConfigStore);
   const [query, setQuery] = createSignal('');
   const [source, setSource] = createSignal<'web' | 'system'>('web');
-  const [request, setRequest] = createSignal<
-    'idle' | 'loading' | 'error' | 'ready'
-  >('idle');
-  const fonts = createMemo(() =>
-    (source() === 'web' ? config.get.fonts : config.get.systemFonts).filter(
-      font => font.name.toLowerCase().includes(query().toLowerCase()),
-    ),
-  );
-  let subscription: Subscription | undefined;
-  const loadSystemFonts = () => {
-    subscription?.unsubscribe();
-    setRequest('loading');
-    subscription = config.localFontsApi.accessSystemFonts(false).subscribe({
-      next: () => setRequest('ready'),
-      error: () => setRequest('error'),
-    });
-  };
-  onCleanup(() => subscription?.unsubscribe());
+  const list = createFontPickerListboxProps({
+    onEsc: () => document.getElementById('inspector-font-family')?.focus(),
+    get value() {
+      return editor.state.options.fontId;
+    },
+    onChange: editor.actions.setFontId,
+    get items() {
+      return config.get.fonts
+        .filter(font => font.name.toLowerCase().includes(query().toLowerCase()))
+        .map(font => ({label: font.name, value: font.id}));
+    },
+  });
   return (
     <Inline
+      id="inspector-font-family"
       label="Font family"
       value={editor.computed.selectedFont()?.name ?? 'Choose font'}
     >
-      <div class="inspector-font-sources" role="group" aria-label="Font source">
-        <button
-          class="inspector-chip"
-          aria-pressed={source() === 'web'}
-          onClick={() => setSource('web')}
-        >
-          Web fonts
-        </button>
-        <button
-          class="inspector-chip"
-          aria-pressed={source() === 'system'}
-          onClick={() => setSource('system')}
-        >
-          System fonts
-        </button>
-      </div>
-      <Show when={source() === 'system'}>
-        <p class="inspector-help">
-          {config.localFontsApi.supported
-            ? 'Choose fonts installed on this computer. Your browser asks for permission.'
-            : 'This browser does not support access to installed fonts. Web fonts are available.'}
-        </p>
-        <Show when={config.localFontsApi.supported}>
-          <button
-            class="inspector-action"
-            disabled={request() === 'loading'}
-            onClick={loadSystemFonts}
-          >
-            {request() === 'loading' ? 'Loading fonts…' : 'Load system fonts'}
-          </button>
-          <Show when={request() === 'error'}>
-            <p class="inspector-help" role="status">
-              Font access was unavailable. Allow access in your browser
-              settings, then try again.
-            </p>
-          </Show>
+      <SegmentedField
+        value={source()}
+        onChange={setSource}
+        items={[
+          {label: 'Web fonts', value: 'web'},
+          {label: 'System fonts', value: 'system'},
+        ]}
+        size="sm"
+        adapt
+      />
+      <Show
+        when={source() === 'web'}
+        fallback={
+          <FontSystemPicker
+            value={editor.state.options.fontId}
+            onChange={editor.actions.setFontId}
+            onEsc={() =>
+              document.getElementById('inspector-font-family')?.focus()
+            }
+          />
+        }
+      >
+        <TextField
+          aria-label="Search fonts"
+          placeholder="Search fonts…"
+          ref={element => element.setAttribute('aria-label', 'Search fonts')}
+          value={query()}
+          onChange={setQuery}
+          size="sm"
+        />
+        <div class="inspector-font-list">
+          <Listbox {...list} autoFocus={false} aria-label="Font family" />
+        </div>
+        <Show when={!list.options.length}>
+          <p>No fonts match.</p>
         </Show>
       </Show>
-      <input
-        class="inspector-search"
-        aria-label="Search fonts"
-        placeholder="Search fonts…"
-        value={query()}
-        onInput={event => setQuery(event.currentTarget.value)}
-      />
-      <div class="inspector-font-list" role="group" aria-label="Font family">
-        <For each={fonts()}>
-          {font => (
-            <button
-              class="inspector-font-option"
-              aria-pressed={editor.state.options.fontId === font.id}
-              onClick={() => editor.actions.setFontId(font.id)}
-            >
-              <span>{font.name}</span>
-              <span aria-hidden="true">
-                {editor.state.options.fontId === font.id ? '✓' : 'Aa'}
-              </span>
-            </button>
-          )}
-        </For>
-        <Show
-          when={
-            !fonts().length && (source() === 'web' || request() === 'ready')
-          }
-        >
-          <p class="inspector-help">No fonts match.</p>
-        </Show>
-      </div>
     </Inline>
   );
 }
@@ -277,27 +383,34 @@ function renderCustom(control: CustomControl) {
   if (control.id === 'window.style') return <WindowPicker />;
   if (control.id === 'font.family') return <FontPicker />;
   return (
-    <Inline label={control.label()} value="Choose image">
+    <Inline
+      id="inspector-background-image"
+      label={control.label()}
+      value="Choose image"
+    >
       <control.Control />
     </Inline>
   );
 }
 
 function renderInput(control: Control) {
+  const id = `inspector-${control.id.replace('.', '-')}`;
   switch (control.kind) {
     case 'toggle':
       return (
         <Toggle
+          control={control}
           label={control.label()}
           checked={control.value()}
           onChange={control.set}
         />
       );
-    case 'segmented':
-    case 'select': {
+    case 'select':
+    case 'segmented': {
       if (control.id === 'window.backgroundType')
         return (
           <Toggle
+            control={control}
             label="Alternative background"
             checked={control.value() === 'true'}
             onChange={checked => control.set(String(checked))}
@@ -306,54 +419,32 @@ function renderInput(control: Control) {
       if (control.id === 'window.border')
         return (
           <Toggle
+            control={control}
             label="Glass border"
             checked={control.value() === 'glass'}
             onChange={checked => control.set(checked ? 'glass' : 'none')}
           />
         );
-      if (control.id === 'frame.aspectRatio' || control.id === 'frame.radius')
+      if (control.id === 'frame.aspectRatio' && control.kind === 'select')
+        return <Ratio control={control} />;
+      if (control.kind === 'segmented')
         return (
-          <Inline
-            label={control.label() || 'Radius'}
-            value={
-              control.options().find(option => option.key === control.value())
-                ?.label ?? 'Auto'
-            }
-          >
-            <div
-              class="inspector-choice-grid"
-              role="group"
-              aria-label={control.label() || 'Radius'}
-            >
-              <For each={control.options()}>
-                {option => (
-                  <button
-                    class="inspector-chip"
-                    aria-pressed={control.value() === option.key}
-                    onClick={() => control.set(option.key)}
-                  >
-                    {option.label}
-                  </button>
-                )}
-              </For>
-            </div>
-          </Inline>
+          <PanelRow for={id} label={control.label() || 'Radius'}>
+            <TwoColumnPanelRow>
+              <SegmentedField
+                id={id}
+                value={control.value()}
+                onChange={control.set}
+                items={control
+                  .options()
+                  .map(option => ({label: option.label, value: option.key}))}
+                size="sm"
+                adapt
+              />
+            </TwoColumnPanelRow>
+          </PanelRow>
         );
-      return (
-        <label class="inspector-row">
-          <span class="inspector-label">{control.label()}</span>
-          <select
-            class="inspector-select"
-            value={control.value()}
-            disabled={control.disabled()}
-            onChange={event => control.set(event.currentTarget.value)}
-          >
-            <For each={control.options()}>
-              {option => <option value={option.key}>{option.label}</option>}
-            </For>
-          </select>
-        </label>
-      );
+      return <Choice control={control} />;
     }
     case 'background':
       return <Background control={control} />;
@@ -361,39 +452,42 @@ function renderInput(control: Control) {
       return renderCustom(control);
     case 'range':
       return (
-        <label class="inspector-row">
-          <span class="inspector-label">{control.label()}</span>
-          <input
-            class="inspector-range"
-            type="range"
-            min={control.min}
-            max={control.max}
-            step={control.step}
-            value={control.value()}
-            onInput={event => control.set(event.currentTarget.valueAsNumber)}
-          />
-          <output class="inspector-range-value">{control.value()}%</output>
-        </label>
+        <PanelRow for={id} label={control.label()}>
+          <TwoColumnPanelRow>
+            <div class="inspector-range">
+              <RangeField
+                id={id}
+                min={control.min}
+                max={control.max}
+                step={control.step}
+                value={control.value()}
+                onChange={control.set}
+              />
+              <output>{control.value()}%</output>
+            </div>
+          </TwoColumnPanelRow>
+        </PanelRow>
       );
     case 'number':
       return (
-        <label class="inspector-row">
-          <span class="inspector-label">{control.label()}</span>
-          <input
-            class="inspector-number"
-            type="number"
-            min={control.min}
-            max={control.max}
-            value={control.value()}
-            onChange={event => {
-              const value = event.currentTarget.valueAsNumber;
-              if (Number.isFinite(value))
-                control.set(
-                  Math.min(control.max, Math.max(control.min, value)),
-                );
-            }}
-          />
-        </label>
+        <PanelRow for={`${id}-input`} label={control.label()}>
+          <TwoColumnPanelRow>
+            <NumberField
+              id={id}
+              aria-label={control.label()}
+              size="sm"
+              min={control.min}
+              max={control.max}
+              value={control.value()}
+              ref={element =>
+                element.setAttribute('aria-label', control.label())
+              }
+              onChange={value => {
+                if (typeof value === 'number') control.set(value);
+              }}
+            />
+          </TwoColumnPanelRow>
+        </PanelRow>
       );
     default: {
       const exhaustive: never = control;
