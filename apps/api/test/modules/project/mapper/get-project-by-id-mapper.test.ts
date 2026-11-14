@@ -1,5 +1,5 @@
 import {assert, test} from 'vitest';
-import {toProjectResponse} from '../../../../src/modules/project/project.routes.js';
+import {toProjectResponse} from '../../../../src/modules/project/project.http.js';
 import {asUserId} from '../../../../src/shared/principal.js';
 import type * as SchemaModel from '../../../../src/modules/project/project.contract.js';
 

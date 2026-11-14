@@ -47,6 +47,8 @@ const moduleOf = (path: string) =>
   /^modules\/([^/]+)\//.exec(path)?.[1] ?? null;
 const isPublicEntry = (target: string) =>
   /^modules\/([^/]+)\/(index|\1\.contract)\.ts$/.test(target);
+const isRoute = (path: string) =>
+  /^modules\/[^/]+\/routes\/[^/]+\.ts$/.test(path);
 const role = (name: string) => new RegExp(`\\.${name}(\\.[a-z][a-z-]*)?\\.ts$`);
 
 interface Rule {
@@ -94,7 +96,7 @@ function dbAccesses(ast: ts.SourceFile): string[] {
 const rules: readonly Rule[] = [
   {
     name: 'module internals are private',
-    why: 'Reach another module through its index.ts (fastify.<module>, its routes plugin, exported types) or its *.contract.ts. Everything else in a module folder is private.',
+    why: 'Reach another module through its index.ts (fastify.<module>, exported types) or its *.contract.ts. Everything else in a module folder is private.',
     violations: file =>
       file.imports
         .filter(
@@ -108,7 +110,7 @@ const rules: readonly Rule[] = [
   },
   {
     name: 'the domain is framework-free',
-    why: 'Models and command/query handlers take domain types, never a request, a Fastify instance or a Prisma type. Do the HTTP part in *.routes.ts and the database part in *.repository.ts.',
+    why: 'Models and command/query handlers take domain types, never a request, a Fastify instance or a Prisma type. Do the HTTP part in routes/*.ts and the database part in *.repository.ts.',
     violations: file =>
       role('model').test(file.path) || /\/(commands|queries)\//.test(file.path)
         ? importsOf(
@@ -121,7 +123,12 @@ const rules: readonly Rule[] = [
     name: 'routes dispatch use cases',
     why: 'A route dispatches a command or query. Data access belongs in the repository, behind its handler.',
     violations: file =>
-      role('routes').test(file.path) ? importsOf(file, role('repository')) : [],
+      isRoute(file.path)
+        ? importsOf(
+            file,
+            /\.repository\.ts$|^@codeimage\/prisma-models|^@prisma\/|\/index\.ts$/,
+          )
+        : [],
   },
   {
     name: 'the db decorator stays in composition',
@@ -189,14 +196,15 @@ const rules: readonly Rule[] = [
   },
   {
     name: 'one module layout',
-    why: 'A module folder holds index.ts and <name>.<role>.ts with role in contract | model | repository | routes, plus commands/<verb>-<noun>.ts and queries/<verb>-<noun>.ts.',
+    why: 'A module folder holds index.ts and <name>.<role>.ts with role in contract | model | repository | http, plus routes/<operation>.ts, commands/<verb>-<noun>.ts and queries/<verb>-<noun>.ts.',
     violations: file => {
       const name = moduleOf(file.path);
       if (!name) return [];
       const ok = new RegExp(
-        `^modules/${name}/(index|${name}\\.(contract|model|repository|routes)(\\.[a-z][a-z-]*)?)\\.ts$`,
+        `^modules/${name}/(index|${name}\\.(contract|model|repository|http)(\\.[a-z][a-z-]*)?)\\.ts$`,
       );
       return ok.test(file.path) ||
+        isRoute(file.path) ||
         new RegExp(
           `^modules/${name}/(commands|queries)/[a-z]+(-[a-z]+)+\\.ts$`,
         ).test(file.path)
@@ -266,6 +274,35 @@ function registeredModules(
   return [...registered];
 }
 
+const kebab = (key: string) =>
+  key.replace(/[A-Z]/g, char => `-${char.toLowerCase()}`);
+
+function routeOperations(file: SourceFile): string[] {
+  const operations: string[] = [];
+  const visit = (node: ts.Node): void => {
+    if (
+      ts.isCallExpression(node) &&
+      ts.isPropertyAccessExpression(node.expression) &&
+      node.expression.name.text === 'route'
+    ) {
+      const object = node.arguments[0];
+      const spread =
+        object && ts.isObjectLiteralExpression(object)
+          ? object.properties.filter(ts.isSpreadAssignment)
+          : [];
+      operations.push(
+        spread.length === 1 &&
+          ts.isPropertyAccessExpression(spread[0]!.expression)
+          ? spread[0]!.expression.name.text
+          : '<missing operation>',
+      );
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file.ast);
+  return operations;
+}
+
 describe('architecture', () => {
   for (const rule of rules)
     test(rule.name, () => {
@@ -300,18 +337,87 @@ describe('architecture', () => {
     ).toEqual([]);
   });
 
-  test('every module routes file is registered in http/app-api.ts', () => {
-    const registered = registeredModules(
-      fileAt('http/app-api.ts'),
-      name => `${name}Routes`,
-    );
-    const missing = moduleFolders
-      .filter(name => hasRole(name, 'routes'))
-      .filter(name => !registered.includes(name));
-    expect(
-      missing,
-      "Export `<name>Routes` from the module's index.ts and add `await api.register(<name>Routes, {prefix: '/<name>'})` in src/http/app-api.ts.",
-    ).toEqual([]);
+  test('every module routes directory is autoloaded in http/app-api.ts', () => {
+    const api = fileAt('http/app-api.ts');
+    const modules = moduleFolders.filter(name => hasRole(name, 'contract'));
+    const missing = modules.filter(name => !api.code.includes(`'${name}'`));
+    expect(missing, 'Add the module to the route autoload list.').toEqual([]);
+    expect(api.code).toContain("'routes'");
+    expect(api.code).toContain('dirNameRoutePrefix: false');
+  });
+
+  test('each endpoint file registers exactly one contract operation', () => {
+    const found: string[] = [];
+    for (const file of sources.filter(file => isRoute(file.path))) {
+      const calls = routeOperations(file);
+      const name = file.path.split('/').at(-1)?.replace(/\.ts$/, '');
+      if (calls.length !== 1)
+        found.push(`${file.path}: expected one route, got ${calls.length}`);
+      for (const operation of calls) {
+        if (kebab(operation) !== name)
+          found.push(
+            `${file.path}: expected ${kebab(operation)}.ts for ${operation}`,
+          );
+      }
+      if (!file.code.includes('export default'))
+        found.push(`${file.path}: missing default plugin`);
+    }
+    expect(found).toEqual([]);
+  });
+
+  test('each contract operation has exactly one endpoint file', () => {
+    const found: string[] = [];
+    for (const name of moduleFolders.filter(name =>
+      hasRole(name, 'contract'),
+    )) {
+      const contract = fileAt(`modules/${name}/${name}.contract.ts`);
+      const operations: string[] = [];
+      const visit = (node: ts.Node): void => {
+        if (
+          ts.isCallExpression(node) &&
+          node.expression.getText() === 'defineContract'
+        ) {
+          const object = node.arguments[1];
+          if (object && ts.isObjectLiteralExpression(object))
+            operations.push(
+              ...object.properties.map(
+                property => property.name?.getText() ?? '',
+              ),
+            );
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(contract.ast);
+      const routes = sources.filter(file =>
+        file.path.startsWith(`modules/${name}/routes/`),
+      );
+      for (const operation of operations) {
+        const matches = routes.filter(file =>
+          file.path.endsWith(`/${kebab(operation)}.ts`),
+        );
+        if (matches.length !== 1)
+          found.push(
+            `${name}: missing ${kebab(operation)}.ts for ${operation}`,
+          );
+        const mapped = routes
+          .flatMap(file => routeOperations(file))
+          .filter(key => key === operation);
+        if (mapped.length !== 1)
+          found.push(
+            `${name}.${operation}: expected one route, got ${mapped.length}`,
+          );
+      }
+      for (const file of routes) {
+        const key = file.path.split('/').at(-1)?.replace(/\.ts$/, '');
+        if (!operations.some(operation => kebab(operation) === key))
+          found.push(`${name}: extra ${key}.ts`);
+        for (const operation of routeOperations(file)) {
+          if (!operations.includes(operation))
+            found.push(`${name}: extra operation ${operation}`);
+        }
+      }
+    }
+    expect(found).toEqual([]);
   });
 });
 
@@ -320,18 +426,21 @@ test('module directories contain only allowed entries', () => {
     readdirSync(join(SRC, 'modules', name)).flatMap(entry => {
       const full = join(SRC, 'modules', name, entry);
       if (statSync(full).isDirectory()) {
-        if (!['commands', 'queries'].includes(entry))
+        if (!['commands', 'queries', 'routes'].includes(entry))
           return [`${name}/${entry}`];
         return readdirSync(full)
           .filter(
             file =>
-              !/^[a-z]+(-[a-z]+)+\.ts$/.test(file) ||
-              statSync(join(full, file)).isDirectory(),
+              !(
+                entry === 'routes'
+                  ? /^[a-z]+(-[a-z]+)*\.ts$/
+                  : /^[a-z]+(-[a-z]+)+\.ts$/
+              ).test(file) || statSync(join(full, file)).isDirectory(),
           )
           .map(file => `${name}/${entry}/${file}`);
       }
       return new RegExp(
-        `^(index|${name}\\.(contract|model|repository|routes)(\\.[a-z][a-z-]*)?)\\.ts$`,
+        `^(index|${name}\\.(contract|model|repository|http)(\\.[a-z][a-z-]*)?)\\.ts$`,
       ).test(entry)
         ? []
         : [`${name}/${entry}`];
@@ -339,6 +448,6 @@ test('module directories contain only allowed entries', () => {
   );
   expect(
     invalid,
-    'Use the module role files and commands/ or queries/ only.',
+    'Use the module role files and routes/, commands/ or queries/ only.',
   ).toEqual([]);
 });

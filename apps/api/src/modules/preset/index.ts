@@ -19,7 +19,6 @@ export default fp(
   },
   {name: 'preset', dependencies: ['db', 'config', 'bus']},
 );
-export {default as presetRoutes} from './preset.routes.js';
 export {presetContract} from './preset.contract.js';
 export {createPreset} from './commands/create-preset.js';
 export {updatePreset} from './commands/update-preset.js';
