@@ -3,6 +3,7 @@ import {join} from 'node:path';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import type {FastifyPluginAsync} from 'fastify';
+import {presetRoutes} from '../modules/preset/index.js';
 import {resolveSession} from '../modules/identity/index.js';
 import {CommonErrors} from '../shared/errors.js';
 import {anonymous} from '../shared/principal.js';
@@ -59,8 +60,10 @@ const appApi: FastifyPluginAsync = async fastify => {
           },
         };
       });
+      await api.register(presetRoutes, {prefix: '/preset'});
       await api.register(AutoLoad, {
-        dir: join(import.meta.dirname, '../routes/v1'),
+        dir: join(import.meta.dirname, '../routes/v1/project'),
+        options: {prefix: '/project'},
         forceESM: true,
         ignorePattern: /\.d\.[cm]?ts$/,
       });
