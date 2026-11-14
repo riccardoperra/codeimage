@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, {type FastifyInstance} from 'fastify';
 import fp from 'fastify-plugin';
 import {type TestContext, expect, test} from 'vitest';
 import config from '../../src/config.js';
@@ -53,7 +53,7 @@ test('a rejecting injected verifier returns no session', async t => {
   t.onTestFinished(() => app.close());
   await app.register(config, {overrides: {MOCK_AUTH: false}});
   await app.register(auth0, {
-    authProvider: fp(async server => {
+    authProvider: fp(async (server: FastifyInstance) => {
       server.decorate('authenticate', async () => {
         throw new Error('invalid token');
       });

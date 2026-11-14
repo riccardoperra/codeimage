@@ -5,37 +5,22 @@ import {options} from './app.js';
 
 dotenv.config();
 
-// Instantiate Fastify with some config
-const app = Fastify({
-  ...options,
-});
-// Register your application as a normal plugin.
+const app = Fastify(options);
 app.register(import('./app.js'));
 
-// delay is the number of milliseconds for the graceful close to finish
-const closeListeners = closeWithGrace({delay: 500}, async function ({
-  signal: _signal,
-  err,
-  manual: _manual,
-}) {
-  if (err) {
-    app.log.error(err);
-  }
+const closeListeners = closeWithGrace({delay: 500}, async ({err}) => {
+  if (err) app.log.error(err);
   await app.close();
-} as closeWithGrace.CloseWithGraceAsyncCallback);
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore TODO: Fix types while updating fastify
-app.addHook('onClose', async (instance, done) => {
-  closeListeners.uninstall();
-  done();
 });
 
-// Start listening.
+app.addHook('onClose', async () => {
+  closeListeners.uninstall();
+});
+
 app.listen(
   {
     host: process.env.HOST || '0.0.0.0',
-    port: parseInt(process.env.PORT as string) || 3000,
+    port: parseInt(process.env.PORT ?? '3000') || 3000,
   },
   err => {
     if (err) {

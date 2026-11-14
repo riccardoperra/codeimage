@@ -1,6 +1,6 @@
 import type {Project, User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, test} from 'vitest';
-import type {ProjectGetByIdResponse} from '../../../../src/modules/project/project.contract.js';
+import type {ProjectListItem} from '../../../../src/modules/project/project.contract.js';
 
 import {build} from '../../../helpers/app.js';
 import {clearAllSeeds, projectSeed, userSeed} from '../../../helpers/seed.js';
@@ -30,7 +30,7 @@ test<TestContext>('/v1/project -> 200', async t => {
     method: 'GET',
   });
 
-  const body = response.json<ProjectGetByIdResponse[]>();
+  const body = response.json<ProjectListItem[]>();
 
   assert.ok(body.find(el => el.id === t.project1.id));
   assert.equal(body[0].ownerId, userId);
