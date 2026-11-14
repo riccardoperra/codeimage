@@ -250,10 +250,6 @@
   width: 720px;
 }
 
-.dock-tray[data-panel='commands'] {
-  width: 640px;
-}
-
 .dock-panel {
   padding: 4px 16px 16px;
 }
@@ -372,85 +368,6 @@
 .dock-switch-input:focus-visible + .dock-switch-track {
   outline: 2px solid var(--dock-primary);
   outline-offset: 2px;
-}
-
-/* Command menu */
-
-.dock-commands {
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-}
-
-.dock-commands-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 44px;
-  padding: 0 12px;
-  border-radius: 12px;
-  background: var(--dock-raised);
-  color: var(--dock-muted);
-}
-
-.dock-commands-input input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  outline: none;
-  background: transparent;
-  color: var(--dock-text);
-  font: inherit;
-}
-
-.dock-command-list {
-  max-height: 296px;
-  margin-top: 4px;
-  overflow: auto;
-  overscroll-behavior: contain;
-  scroll-padding: 8px;
-}
-
-.dock-command-group {
-  padding: 14px 12px 6px;
-  color: var(--dock-muted);
-  font-size: var(--dock-text-xs);
-  font-weight: 600;
-}
-
-.dock-command {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.dock-command[data-active] {
-  background: var(--dock-raised);
-}
-
-.dock-command-label {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dock-command .dock-icon {
-  color: var(--dock-primary);
-}
-
-.dock-command-note {
-  color: var(--dock-muted);
-  font-size: var(--dock-text-xs);
-}
-
-.dock-commands-hint {
-  margin: 0;
-  padding: 12px 12px 4px;
 }
 
 .dock-grabber {
@@ -589,35 +506,6 @@
 
   .dock-switch-thumb[data-checked] {
     transform: translateX(18px);
-  }
-
-  /*
-   * The search sheet opens at the top, because the phone keyboard covers the
-   * bottom of the window.
-   */
-  .dock-root[data-panel='commands'] .dock-tray-slot {
-    order: 0;
-  }
-
-  .dock-tray[data-panel='commands'] {
-    border-radius: 0 0 var(--dock-radius) var(--dock-radius);
-    animation-name: dock-fade-in;
-  }
-
-  .dock-tray[data-panel='commands'] .dock-grabber {
-    display: none;
-  }
-
-  .dock-commands-input input {
-    font-size: 16px;
-  }
-
-  .dock-command {
-    height: 44px;
-  }
-
-  .dock-command-list {
-    max-height: calc(40dvh - 130px);
   }
 }
 

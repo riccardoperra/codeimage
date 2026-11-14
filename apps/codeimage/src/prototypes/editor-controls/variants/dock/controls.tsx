@@ -11,10 +11,11 @@ import {
   PanelRow,
   TwoColumnPanelRow,
 } from '../../../../components/PropertyEditor/PanelRow';
+import type {ChoiceControl} from '../../command-menu/listed-model';
+import {isChoice} from '../../command-menu/listed-model';
 import type {Control, SelectControl, ToggleControl} from '../../model';
 import {useDock} from './context';
-import type {ChoiceControl} from './fields';
-import {isChoice, SEGMENTED_CHOICES} from './fields';
+import {SEGMENTED_CHOICES} from './fields';
 
 const fieldId = (control: Control) => `dock-${control.id}`;
 

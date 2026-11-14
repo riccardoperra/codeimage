@@ -1,23 +1,23 @@
 import {Button} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import type {JSX} from 'solid-js';
-import {createSignal, onCleanup, onMount, Show} from 'solid-js';
+import {createSignal, onCleanup, Show} from 'solid-js';
 import {Footer} from '../../../../components/Footer/Footer';
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {Toolbar} from '../../../../components/Toolbar/Toolbar';
+import {shownTheme} from '../../command-menu/listed-model';
+import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import type {ControlId} from '../../model';
 import {ThemeSwatch} from '../../ThemeSwatch';
-import type {Action} from './commands';
 import type {DockApi} from './context';
 import {createMediaQuery, DockContext, isKeyboardClick} from './context';
 import {SegmentedChoice, SelectChoice} from './controls';
 import './dock.css';
 import type {PanelId} from './fields';
-import {createFields} from './fields';
+import {createFields, PLACES} from './fields';
 import {createFrameGuard} from './guard';
 import {CodeIcon, PaddingIcon, SearchIcon, SlidersIcon} from './icons';
-import {shownTheme} from './preview';
 import {tokens} from './tokens.css';
 import {Tray} from './Tray';
 
@@ -25,8 +25,6 @@ export const meta: VariantMeta = {
   name: 'Dock',
   axis: 'Interaction model: a dock of the most used controls, trays that preview, and a command menu',
 };
-
-const isApple = /Mac|iPhone|iPad/.test(navigator.platform);
 
 interface DockItemProps {
   panel: PanelId;
@@ -74,49 +72,26 @@ export default function Dock(props: VariantProps) {
   const canHover = createMediaQuery('(hover: hover) and (pointer: fine)');
 
   const [panel, setPanel] = createSignal<PanelId>();
-  const [previewKey, setPreviewKey] = createSignal<string>();
   const [instant, setInstant] = createSignal(false);
-  const cancel = () => {
-    props.model.endPreview();
-    setPreviewKey(undefined);
-  };
 
   let bar: HTMLDivElement | undefined;
   let canvas: HTMLDivElement | undefined;
-  let root: HTMLDivElement | undefined;
   let trigger: HTMLElement | undefined;
 
   const inset = createFrameGuard(() => canvas);
 
-  const open = (next: PanelId) => {
-    cancel();
-    setPanel(next);
-  };
-  const close = () => {
-    cancel();
-    setPanel(undefined);
-  };
+  const open = (next: PanelId) => setPanel(next);
+  const close = () => setPanel(undefined);
 
   const dock: DockApi = {
     model: props.model,
     stage: props.stage,
     fields,
     ThemePicker: props.ThemePicker,
-    preview: change => {
-      if (previewKey() === change.key) return;
-      change.preview();
-      setPreviewKey(change.key);
-    },
-    cancel,
-    previewKey,
     panel,
     compact,
     open,
     close,
-    keep: change => {
-      change.keep();
-      setPreviewKey(undefined);
-    },
     closeAfterPick: byKeyboard => {
       if (byKeyboard || canHover()) close();
     },
@@ -135,50 +110,10 @@ export default function Dock(props: VariantProps) {
     open(next);
   };
 
-  // Switching variants unmounts the dock with a preview still on the canvas.
-  onCleanup(cancel);
-
-  onMount(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      const modifier = isApple ? event.metaKey : event.ctrlKey;
-      if (!modifier || event.altKey || event.shiftKey) return;
-      if (event.key.toLowerCase() !== 'k') return;
-      event.preventDefault();
-      event.stopPropagation();
-      if (panel() === 'commands') {
-        close();
-        return;
-      }
-      if (!panel() && document.activeElement instanceof HTMLElement) {
-        trigger = document.activeElement;
-      }
-      setInstant(true);
-      open('commands');
-    };
-    // Capture, so that the code editor does not take the key first.
-    window.addEventListener('keydown', onKeyDown, true);
-    onCleanup(() => window.removeEventListener('keydown', onKeyDown, true));
-  });
-
-  // The production Export button owns the dialog, in the header on wide
-  // windows and in the bar on a phone. It is the page's one primary button.
-  // The frame lets the tray close and hand focus back first.
-  const exportImage = () =>
-    requestAnimationFrame(() =>
-      root
-        ?.querySelector<HTMLElement>(
-          '[data-cui="button"][data-theme="primary"]',
-        )
-        ?.click(),
-    );
-
-  const actions = (): Action[] => [
-    {label: 'Export image…', note: 'Ctrl S', run: exportImage},
-    {label: 'Randomize theme and style', run: props.stage.randomize},
-    ...(props.stage.canFormat()
-      ? [{label: 'Format code', run: () => void props.stage.format()}]
-      : []),
-  ];
+  // The command menu needs the screen to itself, so an open tray makes way.
+  onCleanup(commandMenu.beforeOpen(close));
+  // A command for a control without a list of values opens its tray.
+  onCleanup(commandMenu.setReveal(id => open(PLACES[id].panel)));
 
   const isOpen = (id: PanelId) => panel() === id;
   const optionLabel = (id: ControlId) => {
@@ -199,7 +134,6 @@ export default function Dock(props: VariantProps) {
   return (
     <DockContext.Provider value={dock}>
       <div
-        ref={root}
         class={`dock-root ${tokens}`}
         data-panel={panel()}
         data-compact={compact() ? '' : undefined}
@@ -308,10 +242,10 @@ export default function Dock(props: VariantProps) {
                 leftIcon={<SearchIcon />}
                 aria-label="Search themes and options"
                 aria-haspopup="dialog"
-                aria-expanded={isOpen('commands')}
-                onClick={(event: MouseEvent) => toggle('commands', event)}
+                aria-expanded={commandMenu.isOpen()}
+                onClick={commandMenu.open}
               >
-                <kbd class="dock-kbd">{isApple ? '⌘K' : 'Ctrl K'}</kbd>
+                <kbd class="dock-kbd">{commandMenu.shortcut}</kbd>
               </Button>
             </Show>
             <Show when={exportInBar}>
@@ -328,12 +262,7 @@ export default function Dock(props: VariantProps) {
           </Show>
         </div>
 
-        <Tray
-          actions={actions()}
-          bar={() => bar}
-          trigger={() => trigger}
-          instant={instant()}
-        />
+        <Tray bar={() => bar} trigger={() => trigger} instant={instant()} />
 
         <main class="dock-stage dock-island">
           <div

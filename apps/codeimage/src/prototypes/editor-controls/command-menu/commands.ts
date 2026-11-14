@@ -1,8 +1,7 @@
-import type {Control, EditorControlsModel} from '../../model';
-import type {Fields, PanelId} from './fields';
-import {isChoice, PLACES} from './fields';
-import type {Change} from './preview';
-import {shownTheme, themeChange} from './preview';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import type {Control, ControlId, EditorControlsModel} from '../model';
+import type {ListedModel} from './listed-model';
+import {isChoice, shownTheme} from './listed-model';
 
 export interface Command {
   readonly id: string;
@@ -12,10 +11,10 @@ export interface Command {
   readonly note?: string;
   /** True when the command is the value in use. */
   readonly current?: boolean;
-  /** Highlighting the command shows this on the canvas. Enter keeps it. */
-  readonly change?: Change;
-  /** For commands with nothing to preview. */
-  readonly run?: () => void;
+  /** Shows the command on the canvas through the model's preview session. */
+  readonly preview?: () => void;
+  /** Saves the command, or runs it when it has nothing to preview. */
+  readonly run: () => void;
 }
 
 export interface Action {
@@ -29,24 +28,21 @@ const RANGE_STOPS = [0, 0.25, 0.5, 0.75, 1];
 function controlCommands(
   control: Control,
   group: string,
-  fields: Fields,
-  open: (panel: PanelId) => void,
+  model: EditorControlsModel,
+  reveal: ((id: ControlId) => void) | undefined,
 ): Command[] {
   const label = control.label();
-  const base = {group, id: control.id};
 
   if (control.kind === 'toggle') {
     const on = control.value();
     return [
       {
-        ...base,
+        group,
+        id: control.id,
         label: `Toggle ${label.toLowerCase()}`,
         note: on ? 'On' : 'Off',
-        change: {
-          key: control.id,
-          preview: () => control.preview(!on),
-          keep: () => control.set(!on),
-        },
+        preview: () => control.preview(!on),
+        run: () => control.set(!on),
       },
     ];
   }
@@ -59,7 +55,8 @@ function controlCommands(
       id: `${control.id}=${option.key}`,
       label: `${label}: ${option.label}`,
       current: option.key === value,
-      change: fields.change(control, option.key),
+      preview: () => control.preview(option.key),
+      run: () => control.set(option.key),
     }));
   }
 
@@ -74,18 +71,42 @@ function controlCommands(
       id: `${control.id}=${stop}`,
       label: `${label}: ${stop}`,
       current: stop === before,
-      change: {
-        key: `${control.id}=${stop}`,
-        preview: () => control.preview(stop),
-        keep: () => control.set(stop),
-      },
+      preview: () => control.preview(stop),
+      run: () => control.set(stop),
     }));
   }
 
-  // A number, a colour or an upload has no list of values to offer, so the
-  // command opens the place where the control lives.
+  if (control.kind === 'background') {
+    const frame = getFrameState();
+    const value = control.value();
+    const fills = [
+      ...control.gradients.map((fill, index) => ({
+        fill,
+        name: `gradient ${index + 1}`,
+      })),
+      ...control.colors.map(fill => ({fill, name: fill})),
+    ];
+    return fills.map(({fill, name}) => ({
+      group,
+      id: `${control.id}=${fill}`,
+      label: `${label}: ${name}`,
+      current: fill === value,
+      // The model's background has no preview of its own.
+      preview: () => model.preview(() => frame.setBackground(fill)),
+      run: () => control.set(fill),
+    }));
+  }
+
+  // A number or an upload has no list of values to offer. The command shows
+  // where the control lives, in a layout that can say so.
+  if (!reveal) return [];
   return [
-    {...base, label: `${label}…`, run: () => open(PLACES[control.id].panel)},
+    {
+      group,
+      id: control.id,
+      label: `${label}…`,
+      run: () => reveal(control.id),
+    },
   ];
 }
 
@@ -96,11 +117,11 @@ function controlCommands(
  */
 export function buildCommands(input: {
   model: EditorControlsModel;
-  fields: Fields;
+  listed: ListedModel;
   actions: readonly Action[];
-  open: (panel: PanelId) => void;
+  reveal: ((id: ControlId) => void) | undefined;
 }): Command[] {
-  const {model, fields, actions, open} = input;
+  const {model, listed, actions, reveal} = input;
   const shown = shownTheme(model);
 
   return [
@@ -119,14 +140,15 @@ export function buildCommands(input: {
         group: 'Theme',
         label: `Theme: ${theme.name}`,
         current: theme.id === shown?.id,
-        change: themeChange(theme),
+        preview: theme.preview,
+        run: theme.apply,
       }),
     ),
-    ...fields.sections.flatMap(section =>
+    ...listed.sections.flatMap(section =>
       section.controls
         .filter(control => control.visible())
         .flatMap(control =>
-          controlCommands(control, section.label(), fields, open),
+          controlCommands(control, section.label(), model, reveal),
         ),
     ),
   ];

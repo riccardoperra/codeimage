@@ -4,19 +4,12 @@ import type {EditorControlsModel} from '../../model';
 import type {Stage} from '../../stage';
 import type {ThemePickerSlotProps} from '../../theme-styles/ThemePicker';
 import type {Fields, PanelId} from './fields';
-import type {Change} from './preview';
 
 export interface DockApi {
   readonly model: EditorControlsModel;
   readonly stage: Stage;
   readonly fields: Fields;
   readonly ThemePicker: Component<ThemePickerSlotProps>;
-  /** Shows a change on the canvas through the model, without saving it. */
-  readonly preview: (change: Change) => void;
-  /** Takes the previewed change back. */
-  readonly cancel: () => void;
-  /** Key of the change the canvas is previewing, if any. */
-  readonly previewKey: Accessor<string | undefined>;
   /** The panel the tray shows, if it is open. */
   readonly panel: Accessor<PanelId | undefined>;
   /** True on a phone-width window, where the dock is the bottom bar and trays are sheets. */
@@ -24,7 +17,6 @@ export interface DockApi {
   readonly open: (panel: PanelId) => void;
   /** Closes the tray. A preview that was not kept is taken back. */
   readonly close: () => void;
-  readonly keep: (change: Change) => void;
   /**
    * After a pick in a tray that holds one list. A pointer that can hover has
    * already seen the preview, so the pick is final. A finger has not, so the

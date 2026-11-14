@@ -10,8 +10,6 @@ import {
   Switch,
 } from 'solid-js';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
-import {CommandMenu} from './CommandMenu';
-import type {Action} from './commands';
 import {keepFromPicker, useDock} from './context';
 import type {PanelId} from './fields';
 import {
@@ -30,7 +28,6 @@ const TITLES: Record<PanelId, string> = {
   language: 'Language',
   font: 'Font',
   more: 'More options',
-  commands: 'Search themes and options',
 };
 
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
@@ -47,7 +44,6 @@ function rubberband(overshoot: number, dimension: number): number {
 }
 
 interface TrayProps {
-  actions: readonly Action[];
   /** Clicks in here switch or close the tray themselves. */
   bar: () => HTMLElement | undefined;
   /** The element that opened the tray, which gets focus back when it closes. */
@@ -245,9 +241,6 @@ export function Tray(props: TrayProps) {
                 </Match>
                 <Match when={shown() === 'more'}>
                   <MorePanel />
-                </Match>
-                <Match when={shown() === 'commands'}>
-                  <CommandMenu actions={props.actions} />
                 </Match>
               </Switch>
             </Dialog.Content>

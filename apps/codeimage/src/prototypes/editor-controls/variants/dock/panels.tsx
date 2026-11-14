@@ -7,6 +7,7 @@ import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls
 import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
 import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
+import {commandMenu} from '../../command-menu/state';
 import {useDock} from './context';
 import {ControlRow, SegmentedChoice} from './controls';
 import type {GroupId} from './fields';
@@ -213,7 +214,7 @@ function PhoneActions() {
         size={'sm'}
         theme={'secondary'}
         leftIcon={<SearchIcon />}
-        onClick={() => dock.open('commands')}
+        onClick={commandMenu.open}
       >
         Search all options
       </Button>
