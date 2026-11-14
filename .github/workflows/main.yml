@@ -135,9 +135,7 @@ jobs:
 
   build-app-dev:
     name: Build App and Preview (Dev)
-    environment:
-      name: Preview
-      url: ${{ steps.deploy.outputs.url }}
+    environment: Preview
     needs: [build-packages]
     if: ${{ github.head_ref  != 'next' }}
     runs-on: ubuntu-latest
@@ -169,22 +167,16 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - name: Deploy to Cloudflare Pages
-        id: deploy
-        uses: ./.github/actions/cloudflare-pages-deploy
+      - name: Upload preview
+        uses: actions/upload-artifact@v4
         with:
-          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          project-name: codeimage-app
-          directory: apps/codeimage/dist
-          branch: pr-${{ github.event.pull_request.number }}
-          production-branch: main
+          name: preview-app
+          path: apps/codeimage/dist
+          if-no-files-found: error
 
   build-app-next:
     name: Build App and Preview (Next)
-    environment:
-      name: Next
-      url: ${{ steps.deploy.outputs.url }}
+    environment: Next
     needs: [build-packages]
     if: ${{ github.head_ref  == 'next' }}
     runs-on: ubuntu-latest
@@ -216,22 +208,16 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - name: Deploy to Cloudflare Pages
-        id: deploy
-        uses: ./.github/actions/cloudflare-pages-deploy
+      - name: Upload preview
+        uses: actions/upload-artifact@v4
         with:
-          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          project-name: codeimage-next
-          directory: apps/codeimage/dist
-          branch: next
-          production-branch: next
+          name: preview-app
+          path: apps/codeimage/dist
+          if-no-files-found: error
 
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'
-    environment:
-      name: Preview
-      url: ${{ steps.deploy.outputs.url }}
+    environment: Preview
     needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
@@ -251,24 +237,18 @@ jobs:
 
       - name: Build highlight demo
         run: |
-          pnpm --filter=@codeimage/highlight build:dev
+          pnpm --filter=@codeimage/highlight build:dev --base=/highlight/
 
-      - name: Deploy to Cloudflare Pages
-        id: deploy
-        uses: ./.github/actions/cloudflare-pages-deploy
+      - name: Upload preview
+        uses: actions/upload-artifact@v4
         with:
-          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          project-name: codeimage-highlight
-          directory: packages/highlight/dev/dist
-          branch: pr-${{ github.event.pull_request.number }}
-          production-branch: main
+          name: preview-highlight
+          path: packages/highlight/dev/dist
+          if-no-files-found: error
 
   build-website-dev:
     name: '@codeimage/website dev and Preview'
-    environment:
-      name: Preview
-      url: ${{ steps.deploy.outputs.url }}
+    environment: Preview
     needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
@@ -294,18 +274,14 @@ jobs:
           VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
           VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
         run: |
-          pnpm --filter=@codeimage/website build
+          pnpm --filter=@codeimage/website build --base=/website/
 
-      - name: Deploy to Cloudflare Pages
-        id: deploy
-        uses: ./.github/actions/cloudflare-pages-deploy
+      - name: Upload preview
+        uses: actions/upload-artifact@v4
         with:
-          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          project-name: codeimage-website
-          directory: apps/website/dist/client
-          branch: pr-${{ github.event.pull_request.number }}
-          production-branch: main
+          name: preview-website
+          path: apps/website/dist/client
+          if-no-files-found: error
 
       - name: Cache website
         uses: actions/cache/save@v5
@@ -333,10 +309,105 @@ jobs:
 
       - name: run Lighthouse CI
         run: |
+          site_root="$RUNNER_TEMP/lhci-site"
+          mkdir -p "$site_root"
+          cp -R apps/website/dist/client "$site_root/website"
           cd apps/website
-          pnpm lighthouse
+          pnpm lighthouse --collect.staticDistDir="$site_root" --collect.url=http://localhost/website/
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  deploy-preview:
+    name: Deploy preview
+    needs:
+      [build-app-dev, build-app-next, build-highlight-dev, build-website-dev]
+    if: ${{ !cancelled() && contains(needs.*.result, 'success') }}
+    environment:
+      name: ${{ github.head_ref == 'next' && 'Next' || 'Preview' }}
+      url: ${{ steps.deploy.outputs.url }}
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v6
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
+      - uses: pnpm/action-setup@v5
+        with:
+          version: 10.32.1
+
+      - name: Download app
+        if: ${{ needs.build-app-dev.result == 'success' || needs.build-app-next.result == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-app
+          path: site
+      - name: Download website
+        if: ${{ needs.build-website-dev.result == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-website
+          path: site/website
+      - name: Download highlight
+        if: ${{ needs.build-highlight-dev.result == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-highlight
+          path: site/highlight
+
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: ./.github/actions/cloudflare-pages-deploy
+        with:
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          project-name: codeimage-preview
+          directory: site
+          branch: ${{ github.head_ref == 'next' && 'next' || format('pr-{0}', github.event.pull_request.number) }}
+          production-branch: next
+
+      - name: Comment preview links
+        if: ${{ !cancelled() && github.event.pull_request.number }}
+        uses: actions/github-script@v8
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          APP_RESULT: ${{ needs.build-app-dev.result != 'skipped' && needs.build-app-dev.result || needs.build-app-next.result }}
+          WEBSITE_RESULT: ${{ needs.build-website-dev.result }}
+          HIGHLIGHT_RESULT: ${{ needs.build-highlight-dev.result }}
+        with:
+          script: |
+            const marker = '<!-- codeimage-preview -->';
+            const {PREVIEW_URL: url, RUN_URL: runUrl} = process.env;
+            const rows = [
+              ['App', process.env.APP_RESULT, '/'],
+              ['Website', process.env.WEBSITE_RESULT, '/website/'],
+              ['Highlight', process.env.HIGHLIGHT_RESULT, '/highlight/'],
+            ].map(([name, result, path]) => {
+              const status = result === 'success' && !url ? 'not deployed' : result;
+              const link = status === 'success' ? `${url}${path}` : `[logs](${runUrl})`;
+              return `| ${name} | ${status} | ${link} |`;
+            });
+            const body = [
+              marker,
+              '### Preview',
+              '',
+              '| Project | Status | Link |',
+              '| --- | --- | --- |',
+              ...rows,
+              '',
+              `Commit ${context.payload.pull_request.head.sha}`,
+            ].join('\n');
+            const issue = {...context.repo, issue_number: context.payload.pull_request.number};
+            const comments = await github.paginate(github.rest.issues.listComments, issue);
+            const existing = comments.find(c => c.user.type === 'Bot' && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({...context.repo, comment_id: existing.id, body});
+            } else {
+              await github.rest.issues.createComment({...issue, body});
+            }
 
   build-api:
     name: Build Api

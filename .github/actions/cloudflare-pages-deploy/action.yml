@@ -23,7 +23,7 @@ inputs:
 
 outputs:
   url:
-    description: 'Stable branch alias URL'
+    description: 'Production URL or stable branch alias URL'
     value: ${{ steps.deploy.outputs.url }}
 
 runs:
@@ -66,10 +66,15 @@ runs:
         PROJECT_NAME: ${{ inputs.project-name }}
         DIRECTORY: ${{ inputs.directory }}
         BRANCH: ${{ inputs.branch }}
+        PRODUCTION_BRANCH: ${{ inputs.production-branch }}
         SUBDOMAIN: ${{ steps.project.outputs.subdomain }}
         COMMIT_HASH: ${{ github.event.pull_request.head.sha || github.sha }}
       run: |
         pnpm dlx wrangler@4.156.0 pages deploy "$DIRECTORY" --project-name="$PROJECT_NAME" --branch="$BRANCH" --commit-hash="$COMMIT_HASH" --commit-dirty=true
-        url="https://$BRANCH.$SUBDOMAIN"
+        if [ "$BRANCH" = "$PRODUCTION_BRANCH" ]; then
+          url="https://$SUBDOMAIN"
+        else
+          url="https://$BRANCH.$SUBDOMAIN"
+        fi
         echo "url=$url" >> "$GITHUB_OUTPUT"
         echo "Deployed $PROJECT_NAME: $url" >> "$GITHUB_STEP_SUMMARY"
