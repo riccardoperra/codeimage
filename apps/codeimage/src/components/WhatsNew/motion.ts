@@ -26,6 +26,20 @@ export const duration = {
   playAt: 220,
 } as const;
 
+/**
+ * The Showcase's entrance: when each part starts, in ms from the sheet
+ * opening. The title leads. The gaps shrink down the sheet, so the parts
+ * arrive as one wave, and a card past the fifth keeps the fifth's time.
+ */
+export const showcaseAt = {
+  title: 0,
+  subtitle: 80,
+  cards: [160, 240, 300, 340, 370],
+  footer: 400,
+  /** A card's picture starts explaining this long after its card. */
+  play: 350,
+} as const;
+
 export const ms = (value: number) => `${value}ms`;
 
 export const reduceMotion = '(prefers-reduced-motion: reduce)';

@@ -3,8 +3,16 @@ import {createEffect, For, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES} from '../../state/whats-new';
 import {illustrations} from './illustrations';
+import {ms, showcaseAt} from './motion';
 import {releaseDate} from './releaseDate';
 import * as styles from './whats-new.css';
+
+const at = (start: number) => ({'--whats-new-at': ms(start)});
+const cardAt = (index: number) => {
+  const {cards, play} = showcaseAt;
+  const start = cards[Math.min(index, cards.length - 1)];
+  return {...at(start), '--whats-new-play-at': ms(start + play)};
+};
 
 export function Showcase(props: {
   release: (typeof RELEASES)[number];
@@ -27,16 +35,30 @@ export function Showcase(props: {
     >
       <div class={styles.sheet} data-whats-new="showcase">
         <header class={styles.hero}>
-          <time class={styles.tag} datetime={props.release.date}>
+          <time
+            class={`${styles.tag} ${styles.fade}`}
+            style={at(showcaseAt.title)}
+            datetime={props.release.date}
+          >
             {releaseDate(props.release)}
           </time>
-          <h2 class={styles.heroTitle}>{props.release.title}</h2>
-          <p class={styles.body}>New tools and choices for your editor.</p>
+          <h2
+            class={`${styles.heroTitle} ${styles.lead}`}
+            style={at(showcaseAt.title)}
+          >
+            {props.release.title}
+          </h2>
+          <p
+            class={`${styles.body} ${styles.support}`}
+            style={at(showcaseAt.subtitle)}
+          >
+            New tools and choices for your editor.
+          </p>
         </header>
         <div class={styles.grid}>
           <For each={props.release.highlights}>
-            {highlight => (
-              <article class={styles.card}>
+            {(highlight, index) => (
+              <article class={styles.card} style={cardAt(index())}>
                 <Dynamic component={illustrations[highlight.id]} mode="play" />
                 <div class={styles.copy}>
                   <span class={styles.tag}>
@@ -65,7 +87,10 @@ export function Showcase(props: {
             )}
           </For>
         </div>
-        <footer class={styles.sheetFooter}>
+        <footer
+          class={`${styles.sheetFooter} ${styles.fade}`}
+          style={at(showcaseAt.footer)}
+        >
           <Button theme="primary" onClick={props.dismiss}>
             Start creating
           </Button>

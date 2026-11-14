@@ -356,6 +356,23 @@ export const coachmark = style([
     },
   },
 ]);
+/*
+ * The Showcase opens once per major release, so it gets the one entrance
+ * with room to breathe. The kit's sheet only fades, and its content arrives
+ * as one wave: each part starts at its `--whats-new-at`.
+ */
+const fadeIn = keyframes({from: {opacity: 0}});
+const enter = (rise: number, length: number) =>
+  style({
+    animation: `${keyframes({from: {opacity: 0, transform: `translateY(${rise}px)`}})} ${ms(length)} ${ease} var(--whats-new-at, 0ms) both`,
+    '@media': {[reduce]: {animationName: fadeIn, animationDelay: '0ms'}},
+  });
+export const lead = enter(12, 550);
+export const support = enter(8, 500);
+export const fade = style({
+  animation: `${fadeIn} 400ms ${ease} var(--whats-new-at, 0ms) both`,
+  '@media': {[reduce]: {animationDelay: '0ms'}},
+});
 export const sheet = style({
   maxHeight: 'min(760px, calc(100dvh - 32px))',
   overflowY: 'auto',
@@ -367,6 +384,9 @@ export const sheet = style({
       maxHeight: 'calc(100dvh - 32px)',
     },
   },
+});
+globalStyle(`[role="dialog"][data-expanded]:has(> ${sheet})`, {
+  animation: `${fadeIn} 250ms ${ease}`,
 });
 export const hero = style({textAlign: 'center', padding: '28px 0 32px'});
 export const heroTitle = style({
@@ -383,12 +403,15 @@ export const grid = style({
     'screen and (max-width: 768px)': {gridTemplateColumns: 'minmax(0, 1fr)'},
   },
 });
-export const card = style({
-  padding: '12px',
-  borderRadius: '16px',
-  background: c.panel.background,
-  selectors: {'&:first-child': {gridColumn: '1 / -1'}},
-});
+export const card = style([
+  enter(8, 450),
+  {
+    padding: '12px',
+    borderRadius: '16px',
+    background: c.panel.background,
+    selectors: {'&:first-child': {gridColumn: '1 / -1'}},
+  },
+]);
 export const sheetFooter = style({
   display: 'flex',
   alignItems: 'center',
