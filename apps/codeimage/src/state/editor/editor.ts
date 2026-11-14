@@ -4,7 +4,6 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
-import type {Transaction} from '@codemirror/state';
 import type {EditorView} from '@codemirror/view';
 import {appEnvironment} from '@core/configuration';
 import {from, map, shareReplay} from 'rxjs';
