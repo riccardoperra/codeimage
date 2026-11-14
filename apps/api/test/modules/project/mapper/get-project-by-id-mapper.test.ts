@@ -45,17 +45,37 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
       fontWeight: 400,
       enableLigatures: true,
     },
-    editorTabs: [],
+    editorTabs: [
+      {
+        id: 'tabId',
+        projectId: '1',
+        code: 'const n = 1;',
+        languageId: 'typescript',
+        tabName: 'n.ts',
+        lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'highlight'}], focus: true},
+      },
+    ],
   });
 
   assert.deepStrictEqual(result, {
     id: '1',
     name: 'Untitled',
     ownerId: 'userId1',
-    createdAt: date1.toISOString(),
-    updatedAt: date2.toISOString(),
+    createdAt: date2.toISOString(),
+    updatedAt: date1.toISOString(),
     isOwner: false,
-    editorTabs: [],
+    editorTabs: [
+      {
+        id: 'tabId',
+        projectId: '1',
+        code: 'const n = 1;',
+        languageId: 'typescript',
+        tabName: 'n.ts',
+        lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'highlight'}], focus: true},
+      },
+    ],
     frame: {
       id: 'frameId',
       background: '',

@@ -1,4 +1,9 @@
-import type {PrismaClient, Project} from '@codeimage/prisma-models';
+import {parseTabMarks} from '../../../../schemas/marks.js';
+import type {
+  PrismaClient,
+  Project,
+  SnippetEditorTab,
+} from '@codeimage/prisma-models';
 import {
   type PartialProjectGetByIdResponse,
   type ProjectCreateRequest,
@@ -9,11 +14,23 @@ import {
 } from '../../domain/index.js';
 import type {ProjectRepository} from '../../repository/index.js';
 
+function mapProjectMarks<T extends {editorTabs: SnippetEditorTab[]}>(
+  project: T,
+) {
+  return {
+    ...project,
+    editorTabs: project.editorTabs.map(tab => ({
+      ...tab,
+      marks: parseTabMarks(tab.marks),
+    })),
+  };
+}
+
 export function makePrismaProjectRepository(
   client: PrismaClient,
 ): ProjectRepository {
-  function findById(id: string): Promise<ProjectGetByIdResponse | null> {
-    return client.project.findFirst({
+  async function findById(id: string): Promise<ProjectGetByIdResponse | null> {
+    const project = await client.project.findFirst({
       where: {
         id,
       },
@@ -24,6 +41,7 @@ export function makePrismaProjectRepository(
         frame: true,
       },
     });
+    return project ? mapProjectMarks(project) : null;
   }
 
   function findAllByUserId(
@@ -61,11 +79,11 @@ export function makePrismaProjectRepository(
     });
   }
 
-  function createNewProject(
+  async function createNewProject(
     ownerId: string,
     data: ProjectCreateRequest,
   ): Promise<ProjectCreateResponse> {
-    return client.project.create({
+    const project = await client.project.create({
       data: {
         name: data.name,
         owner: {
@@ -116,6 +134,7 @@ export function makePrismaProjectRepository(
         terminal: true,
       },
     });
+    return mapProjectMarks(project);
   }
 
   async function updateProject(
@@ -123,7 +142,7 @@ export function makePrismaProjectRepository(
     projectId: string,
     data: ProjectUpdateRequest,
   ): Promise<ProjectUpdateResponse> {
-    return client.project.update({
+    const project = await client.project.update({
       where: {
         id: projectId,
       },
@@ -140,6 +159,7 @@ export function makePrismaProjectRepository(
           },
           upsert: data.editors.map(editor => {
             const {languageId, code, tabName, lineNumberStart, id} = editor;
+            const marks = editor.marks ?? {lines: [], focus: false};
             return {
               where: {
                 id,
@@ -149,12 +169,14 @@ export function makePrismaProjectRepository(
                 tabName,
                 languageId,
                 lineNumberStart,
+                marks,
               },
               update: {
                 code,
                 tabName,
                 languageId,
                 lineNumberStart,
+                marks,
               },
             };
           }),
@@ -200,6 +222,7 @@ export function makePrismaProjectRepository(
         terminal: true,
       },
     });
+    return mapProjectMarks(project);
   }
 
   async function updateProjectName(projectId: string, name: string) {

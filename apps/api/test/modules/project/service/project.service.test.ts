@@ -150,6 +150,7 @@ test('create project', async () => {
 
   vi.spyOn(repository, 'createNewProject').mockResolvedValue({
     ...data,
+    editorTabs: [],
     updatedAt: new Date(),
     createdAt: new Date(),
     userId: 'userId1',

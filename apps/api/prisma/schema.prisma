@@ -82,6 +82,7 @@ model SnippetEditorTab {
   tabName    String  @default("")
 
   lineNumberStart Int @default(1)
+  marks           Json?
 
   @@unique([id, projectId])
 }

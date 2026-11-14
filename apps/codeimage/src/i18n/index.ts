@@ -1,3 +1,4 @@
+import {lineMarksLocale} from './lineMarks';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
@@ -94,6 +95,7 @@ export const locale = {
     ...bottomBar.it,
     ...notFound.it,
     ...presets.it,
+    ...lineMarksLocale.it,
   },
   en: {
     canvas: {
@@ -180,6 +182,7 @@ export const locale = {
     ...dashboard.en,
     ...notFound.en,
     ...presets.en,
+    ...lineMarksLocale.en,
   },
   de: {
     common: {
@@ -267,6 +270,7 @@ export const locale = {
     ...dashboard.de,
     ...notFound.de,
     ...presets.de,
+    ...lineMarksLocale.de,
   },
   es: {
     common: {
@@ -354,6 +358,7 @@ export const locale = {
     ...dashboard.es,
     ...notFound.es,
     ...presets.es,
+    ...lineMarksLocale.es,
   },
 };
 

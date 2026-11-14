@@ -19,8 +19,8 @@ export function persistMswjs(db: FactoryAPI<any>) {
   }
 
   async function hydrateState() {
-    drop(db);
     const initialState = await idb.get(key);
+    drop(db);
     if (!initialState) {
       return;
     }
@@ -34,5 +34,5 @@ export function persistMswjs(db: FactoryAPI<any>) {
     });
   }
 
-  window.addEventListener('load', hydrateState);
+  return hydrateState();
 }

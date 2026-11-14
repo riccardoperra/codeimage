@@ -1,3 +1,4 @@
+import {TabMarksSchema} from '../../../schemas/marks.js';
 import type {Static} from '@sinclair/typebox';
 import {Type} from '@sinclair/typebox';
 import {Nullable} from '../../../common/typebox/nullable.js';
@@ -29,6 +30,7 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
       languageId: Type.String(),
       tabName: Type.String(),
       lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
+      marks: Type.Optional(Nullable(TabMarksSchema)),
     },
     {title: 'SnippetEditorTabCreateRequest'},
   ),
