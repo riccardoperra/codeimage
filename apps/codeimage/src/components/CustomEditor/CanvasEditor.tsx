@@ -163,6 +163,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
                         languageId: languageId(file.path),
                       });
                     toast.dismiss(activeToast.id);
+                    view.focus();
                   }}
                 >
                   {t('lineMarks.importDiff')}
@@ -212,6 +213,7 @@ export default function CanvasEditor(props: CanvasEditorProps) {
                     )
                       undo(view);
                     toast.dismiss(activeToast.id);
+                    view.focus();
                   }}
                 >
                   {t('lineMarks.undo')}
