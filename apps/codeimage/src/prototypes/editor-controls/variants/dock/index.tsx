@@ -1,4 +1,4 @@
-import {Button} from '@codeui/kit';
+import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Popover} from '@kobalte/core/popover';
 import type {JSX} from 'solid-js';
@@ -9,6 +9,8 @@ import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
+import {SettingsIcon} from '../../shell/icons';
+import {claimSettingsEntry, settings} from '../../shell/settings-state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import type {ControlId} from '../../model';
 import {themeStyle} from '../../theme-styles/style';
@@ -169,6 +171,27 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
         </Popover.Portal>
       </Popover>
     </Show>
+  );
+}
+
+/** The settings entry in the floating bar, beside Search. */
+function BarSettings() {
+  claimSettingsEntry();
+  return (
+    <IconButton
+      class="dock-item"
+      theme={'secondary'}
+      variant={'ghost'}
+      size={'sm'}
+      aria-label="Settings"
+      title="Settings"
+      aria-haspopup="dialog"
+      aria-expanded={settings.isOpen()}
+      data-settings-trigger
+      onClick={() => settings.open()}
+    >
+      <SettingsIcon size={16} />
+    </IconButton>
   );
 }
 
@@ -408,6 +431,7 @@ export default function Dock(props: VariantProps) {
                 >
                   <kbd class="dock-kbd">{commandMenu.shortcut}</kbd>
                 </Button>
+                <BarSettings />
               </Show>
               <Show when={exportInBar}>
                 <div class="dock-bar-export" onClick={close}>

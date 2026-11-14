@@ -18,6 +18,8 @@ import {ExportSettingsButton} from '../../../../components/Toolbar/ExportSetting
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import {commandMenu} from '../../command-menu/state';
+import {SettingsIcon} from '../../shell/icons';
+import {claimSettingsEntry, settings} from '../../shell/settings-state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
@@ -45,6 +47,26 @@ function reducedMotion() {
 
 function rubberband(overshoot: number, dimension: number) {
   return (overshoot * dimension * 0.55) / (dimension + 0.55 * overshoot);
+}
+
+/** The settings entry at the foot of the rail, under Search. */
+function RailSettings() {
+  claimSettingsEntry();
+  return (
+    <button
+      type="button"
+      class={styles.railButton}
+      aria-haspopup="dialog"
+      aria-expanded={settings.isOpen()}
+      data-settings-trigger
+      onClick={() => settings.open()}
+    >
+      <span class={styles.railIcon}>
+        <SettingsIcon size={20} />
+      </span>
+      Settings
+    </button>
+  );
 }
 
 export default function Studio(props: VariantProps) {
@@ -288,6 +310,7 @@ export default function Studio(props: VariantProps) {
               Search
               <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
             </button>
+            <RailSettings />
           </Show>
         </nav>
 
