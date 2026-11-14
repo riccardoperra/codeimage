@@ -99,6 +99,7 @@
     "@vanilla-extract/sprinkles": "^1.6.5",
     "clsx": "^2.1.1",
     "downloadjs": "^1.4.7",
+    "fflate": "0.8.2",
     "idb-keyval": "^6.2.2",
     "inter-ui": "^4.1.1",
     "modern-normalize": "^3.0.1",

@@ -335,6 +335,12 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               size={'md'}
               label={'Show only active tab'}
             />
+            <Checkbox
+              checked={exportCanvasStore.get.oneImagePerTab}
+              onChange={value => exportCanvasStore.set('oneImagePerTab', value)}
+              size={'md'}
+              label={t('export.oneImagePerTab')}
+            />
           </VStack>
         </DynamicSizedContainer>
       </DialogPanelContent>

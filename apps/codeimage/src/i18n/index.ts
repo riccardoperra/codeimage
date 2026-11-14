@@ -56,6 +56,7 @@ export const locale = {
       reload: 'Ricarica',
     },
     export: {
+      oneImagePerTab: 'Una immagine per scheda',
       title: 'Esporta immagine',
       shareMode: 'Condividi il tuo codice',
       shareHint: 'Questa modalità usa la nuova',
@@ -144,6 +145,7 @@ export const locale = {
       reload: 'Reload',
     },
     export: {
+      oneImagePerTab: 'One image per tab',
       title: 'Export image',
       shareMode: 'Share your code',
       shareHint: 'This modality uses the new',
@@ -232,6 +234,7 @@ export const locale = {
       reload: 'Neu laden',
     },
     export: {
+      oneImagePerTab: 'Ein Bild pro Tab',
       title: 'Bild exportieren',
       shareMode: 'Code teilen',
       shareHint: 'Diese Funktion verwendet die neue',
@@ -319,6 +322,7 @@ export const locale = {
       reload: 'Recargar',
     },
     export: {
+      oneImagePerTab: 'Una imagen por pestaña',
       title: 'Exporta imagen',
       shareMode: 'Comparte tu código',
       shareHint: 'Esta modalidad utiliza el nuevo',

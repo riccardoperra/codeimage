@@ -11,6 +11,7 @@ export interface PersistedExportCanvasSettings {
   jpegQuality: number;
   extension: ExportExtension;
   showOnlyActiveTab: boolean;
+  oneImagePerTab: boolean;
 }
 
 export const ExportCanvasStore = defineStore(() => ({
@@ -22,6 +23,7 @@ export const ExportCanvasStore = defineStore(() => ({
   jpegQuality: 100,
   extension: ExportExtension.png,
   showOnlyActiveTab: false,
+  oneImagePerTab: false,
 }))
   .extend(
     withIndexedDbPlugin<PersistedExportCanvasSettings>('exportSettings', {
@@ -29,6 +31,7 @@ export const ExportCanvasStore = defineStore(() => ({
       jpegQuality: 100,
       extension: ExportExtension.png,
       showOnlyActiveTab: false,
+      oneImagePerTab: false,
     }),
   )
   .extend((store, context) => {
@@ -39,6 +42,7 @@ export const ExportCanvasStore = defineStore(() => ({
           jpegQuality: value.jpegQuality,
           extension: value.extension,
           showOnlyActiveTab: value.showOnlyActiveTab,
+          oneImagePerTab: value.oneImagePerTab,
         });
       }),
     );
