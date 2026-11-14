@@ -6,16 +6,16 @@ import type {ProjectRepository} from '../repository/index.js';
 import {
   type ProjectCreateRequest,
   type ProjectCreateResponse,
-  type ProjectGetByIdResponse,
+  type ProjectListItem,
   type ProjectUpdateRequest,
   type ProjectUpdateResponse,
-} from '../schema/index.js';
-import type {ProjectCompleteResponse} from '../schema/project-get-by-id.schema.js';
+} from '../project.contract.js';
+import type {ProjectCompleteResponse} from '../project.contract.js';
 
 export interface ProjectService {
   findById(user: User | null, id: string): Promise<ProjectCompleteResponse>;
 
-  findAllByUserId(userId: string): Promise<ProjectGetByIdResponse[]>;
+  findAllByUserId(userId: string): Promise<ProjectListItem[]>;
 
   createNewProject(
     userId: string,
@@ -62,7 +62,7 @@ export function makeProjectService(
 
       return mappedProject;
     },
-    findAllByUserId(userId: string): Promise<ProjectGetByIdResponse[]> {
+    findAllByUserId(userId: string): Promise<ProjectListItem[]> {
       return repository.findAllByUserId(userId);
     },
     createNewProject(

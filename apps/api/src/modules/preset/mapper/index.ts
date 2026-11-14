@@ -1,5 +1,5 @@
 import type {Preset} from '@codeimage/prisma-models';
-import type {PresetDataDto, PresetDto} from '../schema/preset-dto.schema.js';
+import type {PresetDataDto, PresetDto} from '../preset.contract.js';
 
 // oxlint-disable-next-line typescript/no-unsafe-declaration-merging
 export interface PresetMapper {

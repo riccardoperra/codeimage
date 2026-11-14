@@ -3,7 +3,7 @@ import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 import type {
   ProjectCreateRequest,
   ProjectCreateResponse,
-} from '../../../../src/modules/project/schema/index.js';
+} from '../../../../src/modules/project/project.contract.js';
 
 import {build} from '../../../helper.js';
 import {clearAllSeeds, client, userSeed} from '../../../helpers/seed.js';

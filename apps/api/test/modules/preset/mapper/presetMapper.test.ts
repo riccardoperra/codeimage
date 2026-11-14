@@ -1,6 +1,6 @@
 import {assert, test} from 'vitest';
 import {PresetMapper} from '../../../../src/modules/preset/mapper/index.js';
-import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
 import {PresetTestDataUtils} from '../data-utils.js';
 
 test('fromEntityToDto', async () => {

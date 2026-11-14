@@ -1,6 +1,6 @@
 import type {Project, User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, test} from 'vitest';
-import type {ProjectGetByIdResponse} from '../../../../src/modules/project/schema/index.js';
+import type {ProjectGetByIdResponse} from '../../../../src/modules/project/project.contract.js';
 
 import {build} from '../../../helper.js';
 import {clearAllSeeds, projectSeed, userSeed} from '../../../helpers/seed.js';

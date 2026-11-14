@@ -1,21 +1,11 @@
-import type {FastifyPluginAsync} from 'fastify';
-import type {ProjectGetByIdResponse} from '../../../modules/project/schema/index.js';
-
-const getAllByUserIdRoute: FastifyPluginAsync = async fastify => {
-  fastify.get(
-    '/',
-    {
-      preValidation: (req, reply) => fastify.authorize(req, reply),
-      schema: {
-        tags: ['Project'],
-        summary: 'Get all CodeImage projects by the current user',
-      },
-    },
-    async (request): Promise<ProjectGetByIdResponse[]> => {
-      const {appUser} = request;
-      return fastify.projectService.findAllByUserId(appUser.id);
-    },
-  );
+import type {FastifyPluginAsyncTypebox} from '@fastify/type-provider-typebox';
+import {projectContract as op} from '../../../modules/project/project.contract.js';
+const route: FastifyPluginAsyncTypebox = async fastify => {
+  fastify.route({
+    ...op.list,
+    preValidation: (req, reply) => fastify.authorize(req, reply),
+    handler: request =>
+      fastify.projectService.findAllByUserId(request.appUser.id),
+  });
 };
-
-export default getAllByUserIdRoute;
+export default route;

@@ -4,10 +4,10 @@ import type {PresetHandlerDependencies} from './index.js';
 export const remove =
   HandlerBuilder.withDependencies<PresetHandlerDependencies>()
     .withName('deletePreset')
-    .withImplementation(({repository}, {handlers}) => {
+    .withImplementation(({repository, mapper}, {handlers}) => {
       return async (userId: string, id: string) => {
         const preset = await handlers.findPresetById(userId, id);
-        return repository.deletePreset(preset.id) as unknown;
+        return mapper.fromEntityToDto(await repository.deletePreset(preset.id));
       };
     })
     .build();

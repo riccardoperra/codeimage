@@ -1,7 +1,7 @@
 import type {User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, expect, test} from 'vitest';
-import type {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
-import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
+import type {PresetCreateDto} from '../../../../src/modules/preset/preset.contract.js';
+import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
 import {testPresetUtils} from '../../../helpers/preset.js';
 import {build} from '../../../helper.js';
 import {clearAllSeeds, client, userSeed} from '../../../helpers/seed.js';
