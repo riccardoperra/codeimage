@@ -194,11 +194,7 @@ function StaticWindowTabs(props: TerminalWindowTabListProps) {
         (props.appearance === 'editor' || !!tab.tab.tabName),
     );
   return (
-    <div
-      class={modern.wrapper}
-      data-window-tabs={props.appearance}
-      data-static-tabs="true"
-    >
+    <div class={modern.wrapper} data-window-tabs={props.appearance}>
       <div class={modern.list}>
         <For each={tabs()}>
           {tab => (

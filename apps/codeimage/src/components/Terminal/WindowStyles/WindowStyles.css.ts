@@ -1,7 +1,7 @@
 import {style} from '@vanilla-extract/css';
 import {windowVars as palette} from '../windowPalette.css';
 
-export const mono = 'var(--codeimage-window-font, "JetBrains Mono", monospace)';
+const mono = 'var(--codeimage-window-font, "JetBrains Mono", monospace)';
 export const theme = style({});
 export const body = style({display: 'flex', flexDirection: 'column'});
 export const bar = style({
