@@ -1,5 +1,5 @@
 import type {Static} from '@sinclair/typebox';
-import {ExportTargetSchema, FrameSignatureSchema} from './project.contract.js';
+import {ExportTargetSchema, type FrameSignatureSchema} from './project.contract.js';
 import {defineErrors} from '../../shared/errors.js';
 import {
   isOwnedBy,
