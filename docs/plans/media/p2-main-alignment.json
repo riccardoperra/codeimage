@@ -100,11 +100,308 @@
     }
   ],
   "validation": {
-    "appTests": 57,
+    "appTests": 108,
     "typecheckExit": 0,
     "lintExit": 0,
     "buildExit": 0,
-    "node": "24.14.0"
+    "node": "24.14.0",
+    "latestCodeHead": "66abc153"
   },
-  "probeCorrection": "The first current-main run passed all 112 matrix cells but timed out taking a settings-container screenshot in live lane 8. Capturing the page and closing through Escape removes the container assumption; all eight live checks pass on rerun."
+  "probeCorrection": "The first current-main run passed all 112 matrix cells but timed out taking a settings-container screenshot in live lane 8. Capturing the page and closing through Escape removes the container assumption; all eight live checks pass on rerun.",
+  "lineMarksMain": "1ffe0c9d",
+  "lineMarks": {
+    "results": [
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": false,
+        "terminal": 0,
+        "percent": 0.1296251217137293,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": false,
+        "terminal": 1,
+        "percent": 0.082359623498864,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": false,
+        "terminal": 2,
+        "percent": 0.082359623498864,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": false,
+        "terminal": 3,
+        "percent": 0.082359623498864,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": true,
+        "terminal": 0,
+        "percent": 0.13307367737747486,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": true,
+        "terminal": 1,
+        "percent": 0.08580817916260955,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": true,
+        "terminal": 2,
+        "percent": 0.08580817916260955,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": false,
+        "focus": true,
+        "terminal": 3,
+        "percent": 0.08580817916260955,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": false,
+        "terminal": 0,
+        "percent": 0.12678997613365156,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": false,
+        "terminal": 1,
+        "percent": 0.08223180955877853,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": false,
+        "terminal": 2,
+        "percent": 0.08223180955877853,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": false,
+        "terminal": 3,
+        "percent": 0.08223180955877853,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": true,
+        "terminal": 0,
+        "percent": 0.1281286334985619,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": true,
+        "terminal": 1,
+        "percent": 0.08357046692368889,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": true,
+        "terminal": 2,
+        "percent": 0.08357046692368889,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "Fleet Dark",
+        "numbers": true,
+        "focus": true,
+        "terminal": 3,
+        "percent": 0.08357046692368889,
+        "width": 838,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": false,
+        "terminal": 0,
+        "percent": 0.17567348263550794,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": false,
+        "terminal": 1,
+        "percent": 0.12800227198961375,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": false,
+        "terminal": 2,
+        "percent": 0.11846802986043492,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": false,
+        "terminal": 3,
+        "percent": 0.12759655955858487,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": true,
+        "terminal": 0,
+        "percent": 0.17749918857513794,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": true,
+        "terminal": 1,
+        "percent": 0.13104511522233042,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": true,
+        "terminal": 2,
+        "percent": 0.13104511522233042,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": false,
+        "focus": true,
+        "terminal": 3,
+        "percent": 0.12090230444660824,
+        "width": 790,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": false,
+        "terminal": 0,
+        "percent": 0.15813253012048192,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": false,
+        "terminal": 1,
+        "percent": 0.1133379672536299,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": false,
+        "terminal": 2,
+        "percent": 0.12279888785912882,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": false,
+        "terminal": 3,
+        "percent": 0.12279888785912882,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": true,
+        "terminal": 0,
+        "percent": 0.17126197096076615,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": true,
+        "terminal": 1,
+        "percent": 0.12588816805684275,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": true,
+        "terminal": 2,
+        "percent": 0.12608124806919987,
+        "width": 830,
+        "height": 624
+      },
+      {
+        "theme": "GitHub Light",
+        "numbers": true,
+        "focus": true,
+        "terminal": 3,
+        "percent": 0.12608124806919987,
+        "width": 830,
+        "height": 624
+      }
+    ],
+    "errors": [],
+    "fallback": [],
+    "fontIssues": []
+  }
 }
