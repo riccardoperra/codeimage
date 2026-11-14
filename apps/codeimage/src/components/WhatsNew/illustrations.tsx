@@ -4,11 +4,12 @@ import type {HighlightId} from '../../state/whats-new';
 import * as styles from './whats-new.css';
 
 /**
- * `still` is the picture in a coachmark. `thumb` is the small picture of an
- * archive row, where text would be too small to read, so a picture made of
- * text draws bars instead.
+ * `play` explains the feature once, as a Nudge step or a Showcase card
+ * appears. `still` is the picture in a coachmark, the last frame of `play`.
+ * `thumb` is the small picture of an archive row, where text would be too
+ * small to read, so a picture made of text draws bars instead.
  */
-export type IllustrationMode = 'still' | 'thumb';
+export type IllustrationMode = 'play' | 'still' | 'thumb';
 
 interface IllustrationProps {
   readonly mode?: IllustrationMode;
@@ -36,11 +37,14 @@ function CommandIllustration(props: IllustrationProps) {
             <div class={styles.miniWindow}>
               <div>⌕ Search anything</div>
               <hr />
-              <div>Theme: GitHub Dark</div>
-              <div>Layout: Inspector</div>
-              <div>Export image</div>
+              <div class={styles.commandList}>
+                <div class={styles.commandPick} />
+                <div>Theme: GitHub Dark</div>
+                <div>Layout: Inspector</div>
+                <div>Export image</div>
+              </div>
             </div>
-            <kbd>⌘ K</kbd>
+            <kbd class={styles.keycap}>⌘ K</kbd>
           </>
         }
       >
@@ -109,7 +113,13 @@ function RedactIllustration(props: IllustrationProps) {
             <div>const client = connect({'{'}</div>
             <div>
               &nbsp;&nbsp;token: '
-              <span class={styles.redacted}>••••••••••</span>',
+              <span class={styles.secret}>
+                <span class={styles.plain}>sk_live_51</span>
+                <span class={`${styles.redacted} ${styles.dots}`}>
+                  ••••••••••
+                </span>
+              </span>
+              ',
             </div>
             <div>{'}'});</div>
           </div>
@@ -204,54 +214,60 @@ function TabsIllustration(props: IllustrationProps) {
           stroke-linecap="round"
           stroke-linejoin="round"
         />
-        <rect
-          class={styles.wireCanvas}
-          x="154"
-          y="4"
-          width="96"
-          height="24"
-          rx="6"
-        />
-        <rect
-          class={styles.wireFrame}
-          x="166"
-          y="9"
-          width="44"
-          height="14"
-          rx="3"
-        />
-        <rect
-          class={styles.wireCanvas}
-          x="154"
-          y="36"
-          width="96"
-          height="24"
-          rx="6"
-        />
-        <rect
-          class={styles.wireFrame}
-          x="166"
-          y="41"
-          width="44"
-          height="14"
-          rx="3"
-        />
-        <rect
-          class={styles.wireCanvas}
-          x="154"
-          y="68"
-          width="96"
-          height="24"
-          rx="6"
-        />
-        <rect
-          class={styles.wireFrame}
-          x="166"
-          y="73"
-          width="44"
-          height="14"
-          rx="3"
-        />
+        <g class={styles.tabOut[0]}>
+          <rect
+            class={styles.wireCanvas}
+            x="154"
+            y="4"
+            width="96"
+            height="24"
+            rx="6"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="166"
+            y="9"
+            width="44"
+            height="14"
+            rx="3"
+          />
+        </g>
+        <g class={styles.tabOut[1]}>
+          <rect
+            class={styles.wireCanvas}
+            x="154"
+            y="36"
+            width="96"
+            height="24"
+            rx="6"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="166"
+            y="41"
+            width="44"
+            height="14"
+            rx="3"
+          />
+        </g>
+        <g class={styles.tabOut[2]}>
+          <rect
+            class={styles.wireCanvas}
+            x="154"
+            y="68"
+            width="96"
+            height="24"
+            rx="6"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="166"
+            y="73"
+            width="44"
+            height="14"
+            rx="3"
+          />
+        </g>
       </svg>
     </Frame>
   );
@@ -277,7 +293,15 @@ function LayoutIllustration(props: IllustrationProps) {
           height="30"
           rx="3"
         />
-        <rect fill="currentColor" x="51" y="10" width="21" height="65" rx="5" />
+        <rect
+          class={styles.dockRight}
+          fill="currentColor"
+          x="51"
+          y="10"
+          width="21"
+          height="65"
+          rx="5"
+        />
         <rect
           class={styles.wireCanvas}
           x="89"
@@ -294,7 +318,15 @@ function LayoutIllustration(props: IllustrationProps) {
           height="30"
           rx="3"
         />
-        <rect fill="currentColor" x="99" y="61" width="52" height="8" rx="4" />
+        <rect
+          class={styles.dockBottom}
+          fill="currentColor"
+          x="99"
+          y="61"
+          width="52"
+          height="8"
+          rx="4"
+        />
         <rect
           class={styles.wireCanvas}
           x="178"
@@ -303,7 +335,15 @@ function LayoutIllustration(props: IllustrationProps) {
           height="65"
           rx="6"
         />
-        <rect fill="currentColor" x="178" y="10" width="9" height="65" rx="4" />
+        <rect
+          class={styles.dockLeft}
+          fill="currentColor"
+          x="178"
+          y="10"
+          width="9"
+          height="65"
+          rx="4"
+        />
         <rect
           class={styles.wireFrame}
           x="202"
@@ -321,34 +361,39 @@ function ThemeIllustration(props: IllustrationProps) {
   return (
     <Frame mode={props.mode}>
       <svg width="240" height="100" viewBox="0 0 240 100">
-        <rect
-          class={styles.wireCanvas}
-          x="5"
-          y="16"
-          width="72"
-          height="68"
-          rx="8"
-        />
-        <rect
-          class={styles.wireFrame}
-          x="16"
-          y="27"
-          width="50"
-          height="46"
-          rx="5"
-        />
-        <path
-          d="M24 40h30m-30 8h18m-18 8h25"
-          stroke="currentColor"
-          stroke-width="3"
-        />
-        <circle cx="123" cy="50" r="25" fill="currentColor" opacity=".2" />
-        <path
-          d="M105 44h25m-25 8h35m-35 8h18"
-          stroke="currentColor"
-          stroke-width="4"
-        />
+        <g class={styles.themeStyle[0]}>
+          <rect
+            class={styles.wireCanvas}
+            x="5"
+            y="16"
+            width="72"
+            height="68"
+            rx="8"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="16"
+            y="27"
+            width="50"
+            height="46"
+            rx="5"
+          />
+          <path
+            d="M24 40h30m-30 8h18m-18 8h25"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+        <g class={styles.themeStyle[1]}>
+          <circle cx="123" cy="50" r="25" fill="currentColor" opacity=".2" />
+          <path
+            d="M105 44h25m-25 8h35m-35 8h18"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+        </g>
         <text
+          class={styles.themeStyle[2]}
           x="178"
           y="62"
           fill="currentColor"

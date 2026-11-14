@@ -22,6 +22,8 @@ export const duration = {
   nudgeOut: 200,
   reveal: 260,
   step: 200,
+  /** When a picture starts explaining, after its step or card has settled. */
+  playAt: 220,
 } as const;
 
 export const ms = (value: number) => `${value}ms`;

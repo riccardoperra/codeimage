@@ -125,7 +125,7 @@ export function Nudge(props: {
                     aria-hidden={current() ? undefined : 'true'}
                     inert={!current() || undefined}
                   >
-                    <Dynamic component={illustrations[item().id]} />
+                    <Dynamic component={illustrations[item().id]} mode="play" />
                     <div
                       class={styles.copy}
                       id={current() ? copyId : undefined}

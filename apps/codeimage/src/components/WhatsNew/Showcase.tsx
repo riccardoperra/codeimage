@@ -37,7 +37,7 @@ export function Showcase(props: {
           <For each={props.release.highlights}>
             {highlight => (
               <article class={styles.card}>
-                <Dynamic component={illustrations[highlight.id]} />
+                <Dynamic component={illustrations[highlight.id]} mode="play" />
                 <div class={styles.copy}>
                   <span class={styles.tag}>
                     {'experimental' in highlight ? 'Experiment' : 'New'}
