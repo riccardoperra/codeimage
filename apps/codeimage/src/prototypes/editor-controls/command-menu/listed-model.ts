@@ -44,9 +44,8 @@ const LABELS: Partial<Record<ControlId, string>> = {
   'editor.theme': 'Syntax theme',
 };
 
-const WINDOW_STYLE_LABELS: Record<
-  (typeof AVAILABLE_TERMINAL_THEMES.keys)[number],
-  string
+const WINDOW_STYLE_LABELS: Partial<
+  Record<(typeof AVAILABLE_TERMINAL_THEMES.keys)[number], string>
 > = {
   macOs: 'macOS',
   macOsGrayTheme: 'macOS gray',
@@ -87,7 +86,7 @@ export function createListedModel(model: EditorControlsModel): ListedModel {
     options: () =>
       AVAILABLE_TERMINAL_THEMES.keys.map(key => ({
         key,
-        label: WINDOW_STYLE_LABELS[key],
+        label: WINDOW_STYLE_LABELS[key] ?? key,
       })),
     value: () => terminal.state.type,
     set: type => {
