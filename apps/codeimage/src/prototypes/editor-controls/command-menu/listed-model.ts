@@ -53,11 +53,10 @@ export interface ListedModel {
 
 /**
  * The model with every control that has values as a list of them. The model
- * hands out the window style and the font as production pickers, which cannot
- * be listed. Here they are also plain choices over the same stores, so that a
- * command menu can offer and preview each window style and each font. The two
- * choices that are an on/off question become switches with a name that says
- * what turns on.
+ * hands out the font as a production picker, which cannot be listed. Here it is
+ * also a plain choice over the same store, so that a command menu can offer and
+ * preview each font. The choice that is an on/off question becomes a switch
+ * with a name that says what turns on.
  */
 export function createListedModel(model: EditorControlsModel): ListedModel {
   const editor = getRootEditorStore();
