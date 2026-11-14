@@ -1,0 +1,19 @@
+{
+  "snippet": "300-line TypeScript, Dracula, numbers off, PNG at pixel ratio 1",
+  "timedRegion": "Confirm click to the PNG Blob passed to URL.createObjectURL",
+  "loadAverage": {"before": 15.33, "after": 20.67, "cores": 8},
+  "interleavedRunsMs": {
+    "trunk": [6192.9, 6625.7, 6347.9, 6106.1, 6282.3, 7200.0, 7560.2],
+    "head": [6206.4, 6080.8, 6163.3, 5996.5, 7527.9, 6850.0, 6623.2]
+  },
+  "medianMs": {"trunk": 6348, "head": 6206},
+  "exportNodeElements": {"trunk": 326, "trunkLinesBeforePrinting": 32, "head": 2452, "headLines": 300},
+  "wallVsChromeCpuMs": {
+    "trunk": {"10": [[397, 464], [419, 511]], "100": [[1947, 2574], [1961, 2532]], "300": [[6329, 9267], [6728, 9832]]},
+    "head": {"10": [[410, 527], [391, 476]], "100": [[2397, 3210], [2244, 2987]], "300": [[7357, 10879], [6305, 9360]]}
+  },
+  "cpuProfileSelfShare": {
+    "trunk": {"setAttribute": 20.3, "setProperty": 18.3, "(program)": 15.3, "getPropertyValue": 12.0, "(idle)": 7.1, "getAttribute": 3.9, "serializeToString": 2.5},
+    "head": {"setAttribute": 21.1, "(program)": 17.0, "setProperty": 16.8, "getPropertyValue": 11.1, "(idle)": 8.5, "getAttribute": 4.1, "serializeToString": 1.9}
+  }
+}

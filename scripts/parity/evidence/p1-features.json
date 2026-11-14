@@ -1,8 +1,0 @@
-{
-  "gutterStart": "42",
-  "ligatures": "none",
-  "svgDiffPercent": 0.030406042288723616,
-  "windowsGlass": true,
-  "clipboardDiffPercent": 0,
-  "tabs": "main.ts\nhello.py\nconfig.json\n1\n{\"ready\": true, \"count\": 42}"
-}
