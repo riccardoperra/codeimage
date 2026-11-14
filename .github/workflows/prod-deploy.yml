@@ -96,12 +96,6 @@ jobs:
           pnpm --filter=@codeimage/api build:ts
           pnpm prepare:api:deploy
 
-      - name: Cache api dist
-        uses: actions/cache/save@v5
-        with:
-          path: apps/api/dist
-          key: rest-api-dist-${{ github.run_id }}-${{ github.run_number }}
-
       - name: Cache api bundle
         uses: actions/cache/save@v5
         with:
@@ -164,7 +158,7 @@ jobs:
 
   typecheck-packages:
     name: Type-checking packages/**
-    needs: ['install', 'build-packages', 'build-api']
+    needs: ['install', 'build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -179,12 +173,6 @@ jobs:
         with:
           path: packages
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Restore api dist
-        uses: actions/cache/restore@v5
-        with:
-          path: apps/api/dist
-          key: rest-api-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Typecheck packages
         run: |

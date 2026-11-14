@@ -66,7 +66,7 @@ jobs:
 
   typecheck-packages:
     name: Type-checking
-    needs: [build-packages, build-api]
+    needs: [build-packages]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -81,12 +81,6 @@ jobs:
         with:
           name: packages-dist
           path: packages
-
-      - name: Download api dist
-        uses: actions/download-artifact@v4
-        with:
-          name: api-dist
-          path: apps/api/dist
 
       - name: Typecheck packages
         run: |
@@ -391,14 +385,6 @@ jobs:
         run: |
           pnpm --filter=@codeimage/api build:ts
           pnpm prepare:api:deploy
-
-      - name: Upload api dist
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-dist
-          path: apps/api/dist
-          retention-days: 1
-          if-no-files-found: error
 
       - name: Upload api bundle
         uses: actions/upload-artifact@v4
