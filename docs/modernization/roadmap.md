@@ -14,7 +14,7 @@ The three auditors agree on the first three calls below. They differ on rxjs. On
 - **Remove rxjs and `@codeimage/atomic-state`.** They exist mostly to debounce one save. The two other uses are copy to clipboard and the font permission check.
 - **Fix verification before anything else.** A red `typecheck` and a red `test` command hide every later regression.
 
-Most steps delete code, and most are one small pull request. Steps 10, 27, and 28 are several.
+Most steps delete code, and most are one small pull request. Steps 10, 28, and 29 are several.
 
 ## Phase 0: fix what is broken now
 
@@ -62,19 +62,20 @@ The three tracks below are independent.
 21. **Upgrade tinykeys to 4 and delete its patch.**
 22. **Consume `packages/ui` from source (UI-06).** Either move it into `apps/codeimage/src/ui`, or keep the workspace package and point `exports` at `src`. Delete the Rollup and Babel pipeline.
 23. **Extract CSS at build time (UI-01).** One trial on a scratch branch failed with 75 errors, because app `.css.ts` files import built component code. Two fixes are possible and neither is tested: consume `packages/ui` from source (step 22) and import tokens from a module with no component code, or add a tokens-only entry point to the built package. Try the tokens-only entry point first, because it does not need step 22.
+24. **Keep each theme's syntax colours as data (UI-15).** `defineEditorTheme` takes a `highlight` map and returns only CodeMirror extensions, so the loaded theme does not carry its own colours. Store the map on the theme, for example as `properties.syntax`, and let the three themes that do not use `defineEditorTheme` declare it. A theme picker can then draw a theme from its colours with no code preview.
 
 ### Delivery and export
 
-24. **Put runtime packages in `dependencies` (PLAT-006).** `@prisma/adapter-pg` in `apps/api` and `@prisma/client-runtime-utils` in `packages/prisma-models` are imported at runtime and sit in `devDependencies`.
-25. **Prove the API deploy bundle starts alone (PLAT-006).** Install the bundle with production dependencies outside the workspace and start it. Replace `pnpm-bundle-workspace-package` with `pnpm deploy` only if `pnpm deploy` produces a bundle that passes the same check.
-26. **Add browser fixtures to the exporter, then fix its cleanup (PLAT-007).** Cover fonts, a long snippet, PNG, JPEG, SVG, and two exports in a row. After that, key the resource cache on the full URL and remove both iframes in a `finally` block.
+25. **Put runtime packages in `dependencies` (PLAT-006).** `@prisma/adapter-pg` in `apps/api` and `@prisma/client-runtime-utils` in `packages/prisma-models` are imported at runtime and sit in `devDependencies`.
+26. **Prove the API deploy bundle starts alone (PLAT-006).** Install the bundle with production dependencies outside the workspace and start it. Replace `pnpm-bundle-workspace-package` with `pnpm deploy` only if `pnpm deploy` produces a bundle that passes the same check.
+27. **Add browser fixtures to the exporter, then fix its cleanup (PLAT-007).** Cover fonts, a long snippet, PNG, JPEG, SVG, and two exports in a row. After that, key the resource cache on the full URL and remove both iframes in a `finally` block.
 
 ## Phase 4: decisions that belong to the maintainer
 
 These steps wait for an answer in [Open questions](#open-questions).
 
-27. **`@codeui/kit`.** Either publish a new release on Kobalte 0.13.14 with a clean manifest, or move the 18 components that the app uses into the app on direct Kobalte imports. Then merge the two token systems.
-28. **statebuilder.** Either release a version with `solid-js` as a peer dependency, or inline the nine stores as `createStore` plus plain functions, one store per pull request. Step 15 removes the command lists, and after that each store is a small change.
+28. **`@codeui/kit`.** Either publish a new release on Kobalte 0.13.14 with a clean manifest, or move the 18 components that the app uses into the app on direct Kobalte imports. Then merge the two token systems.
+29. **statebuilder.** Either release a version with `solid-js` as a peer dependency, or inline the nine stores as `createStore` plus plain functions, one store per pull request. Step 15 removes the command lists, and after that each store is a small change.
 
 ## Phase 5: Solid 2.0, later
 
@@ -83,8 +84,8 @@ Start when all of these are true.
 - `solid-js` 2.0 is on the `latest` tag.
 - Kobalte 2 is beta or stable, with a version range as its peer.
 - `@solidjs/router` 2.0 is stable.
-- `solid-codemirror` has a 2.0 release, and so does statebuilder if step 28 kept it.
-- Step 27 is done, or `@codeui/kit` has a 2.0 release.
+- `solid-codemirror` has a 2.0 release, and so does statebuilder if step 29 kept it.
+- Step 28 is done, or `@codeui/kit` has a 2.0 release.
 - `@thisbeyond/solid-dnd` is forked, replaced, or dropped.
 
 Phases 2 and 3 remove `solid-headless`, the app's direct use of `@motionone/solid`, and most of the interop code that 2.0 breaks. Phase 4 decides `@codeui/kit` and statebuilder. Begin the move in `packages/ui`, which has about 45 affected call sites.
@@ -95,12 +96,12 @@ Phases 2 and 3 remove `solid-headless`, the app's direct use of `@motionone/soli
 - **Do not move to Tailwind or Panda.** Neither fixes a problem that step 23 leaves open.
 - **Do not add a state library.** The need is three stores and a debounce.
 - **Do not replace Fastify, Prisma, or Auth0.** The backend findings are configuration drift and packaging. A new framework fixes neither.
-- **Do not swap the image exporter yet.** `packages/dom-export` is the product's core output and has three tests. Step 26 adds browser fixtures. After that, compare a maintained library such as `modern-screenshot` behind the same adapter.
+- **Do not swap the image exporter yet.** `packages/dom-export` is the product's core output and has three tests. Step 27 adds browser fixtures. After that, compare a maintained library such as `modern-screenshot` behind the same adapter.
 - **Do not apply the knip list without checking it.** It has false positives.
 
 ## Open questions
 
-1. Is CodeImage meant to exercise statebuilder, `@codeui/kit`, and `solid-codemirror`? If yes, steps 27 and 28 mean "release those libraries first". If no, both can be inlined.
+1. Is CodeImage meant to exercise statebuilder, `@codeui/kit`, and `solid-codemirror`? If yes, steps 28 and 29 mean "release those libraries first". If no, both can be inlined.
 2. Is offline or PWA support still wanted? Step 10 deletes the service worker if not.
 3. Is `packages/ui` meant to be published? Nobody outside this repository uses it today.
 4. For a saved snippet, may the last three seconds of edits be lost when the tab closes, or must the local copy win when it is newer?
