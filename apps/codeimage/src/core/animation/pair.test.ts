@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {draculaTheme} from '@codeimage/highlight/dracula';
 import {tokenize} from '@core/snapshot/tokenize';
 import {test} from 'vitest';
-import type {Step, TokenTransition} from './model';
+import type {Scene, Step, TokenTransition} from './model';
 import {pairScene, pairSteps} from './pair';
 
 const SOURCE = `function add(a: number, b: number) {
@@ -151,7 +151,7 @@ test('line numbers keep their place when lines are inserted at the top', async (
     await step(`// one\n// two\n${SOURCE}`),
     true,
   );
-  const gutter = scene.gutter!;
+  const gutter = scene.gutter!.numbers;
   assert.deepEqual(
     byKind(gutter, 'enter').map(number => number.text),
     ['6', '7'],
@@ -170,9 +170,9 @@ test('line numbers slide right when the gutter gains a digit', async () => {
     await step(`${nine}\nmore;\nmore;`),
     true,
   );
-  assert.equal(scene.from.gutterColumns, 1);
-  assert.equal(scene.to.gutterColumns, 2);
-  const one = scene.gutter!.find(number => number.text === '1')!;
+  assert.equal(scene.gutter!.fromColumns, 1);
+  assert.equal(scene.gutter!.toColumns, 2);
+  const one = scene.gutter!.numbers.find(number => number.text === '1')!;
   assert.ok(one.kind === 'move');
   assert.deepEqual(
     [one.from, one.to],
@@ -206,10 +206,10 @@ test('a mark both steps keep moves with its line, and the others fade', async ()
   ]);
 });
 
-const markRows = (scene: {marks: TokenTransition[]}) =>
+const markRows = (scene: Scene) =>
   scene.marks.map(mark => [
     mark.kind,
-    mark.classes,
+    mark.mark,
     mark.kind === 'enter' ? null : mark.from.line,
     mark.kind === 'leave' ? null : mark.to.line,
   ]);
@@ -259,10 +259,10 @@ test('diff marks indent the code by two columns and focus dims the other rows', 
   );
   assert.deepEqual(
     {...scene.from, dimmed: [...scene.from.dimmed]},
-    {rows: 3, columns: 5, indent: 2, gutterColumns: 1, dimmed: [0, 1]},
+    {rows: 3, columns: 5, indent: 2, dimmed: [0, 1]},
   );
   assert.deepEqual(
     {...scene.to, dimmed: [...scene.to.dimmed]},
-    {rows: 3, columns: 3, indent: 0, gutterColumns: 1, dimmed: []},
+    {rows: 3, columns: 3, indent: 0, dimmed: []},
   );
 });

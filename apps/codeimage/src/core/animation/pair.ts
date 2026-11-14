@@ -3,16 +3,22 @@ import {syncTokenKeys, toKeyedTokens} from '@shikijs/magic-move/core';
 import type {
   Cell,
   GlyphWidths,
+  Gutter,
+  MarkKind,
+  MarkTransition,
   Scene,
   Step,
   StepBox,
   TokenTransition,
+  Transition,
 } from './model';
 
 // Matches `tab-size` in the static layout.
 const TAB_SIZE = 4;
 
-type Placed = {key: string; text: string; classes: string; cell: Cell};
+type Placed<T> = {item: T; cell: Cell};
+type Token = {key: string; text: string; classes: string};
+type Mark = {key: string; mark: MarkKind};
 
 type CodeToken = {
   content: string;
@@ -70,34 +76,43 @@ function codeTokens(lines: TokenLine[], widths: GlyphWidths): CodeToken[][] {
   });
 }
 
-function pairPlaced(from: Placed[], to: Placed[]): TokenTransition[] {
-  const targets = new Map(to.map(token => [token.key, token]));
+// Items with a key in both steps move, and `keep` merges the two. The others
+// leave or enter.
+function pairPlaced<T extends {key: string}, Moved = unknown>(
+  from: Placed<T>[],
+  to: Placed<T>[],
+  keep: (before: T, after: T) => T & Moved,
+): Transition<T, Moved>[] {
+  const targets = new Map(to.map(placed => [placed.item.key, placed]));
   const kept = new Set<string>();
-  const transitions: TokenTransition[] = [];
-  for (const {key, text, classes, cell} of from) {
-    const target = targets.get(key);
+  const transitions: Transition<T, Moved>[] = [];
+  for (const {item, cell} of from) {
+    const target = targets.get(item.key);
     if (target) {
-      kept.add(key);
+      kept.add(item.key);
       transitions.push({
+        ...keep(item, target.item),
         kind: 'move',
-        key,
-        text,
-        classes: target.classes,
-        ...(target.classes === classes ? {} : {fromClasses: classes}),
         from: cell,
         to: target.cell,
       });
     } else {
-      transitions.push({kind: 'leave', key, text, classes, from: cell});
+      transitions.push({...item, kind: 'leave', from: cell});
     }
   }
-  for (const {key, text, classes, cell} of to) {
-    if (!kept.has(key)) {
-      transitions.push({kind: 'enter', key, text, classes, to: cell});
-    }
+  for (const {item, cell} of to) {
+    if (!kept.has(item.key))
+      transitions.push({...item, kind: 'enter', to: cell});
   }
   return transitions;
 }
+
+const after = <T>(_: T, item: T) => item;
+
+const recolor = (before: Token, token: Token) =>
+  before.classes === token.classes
+    ? token
+    : {...token, fromClasses: before.classes};
 
 export function pairSteps(
   from: TokenLine[],
@@ -113,13 +128,15 @@ export function pairSteps(
   const source = keyed(from, 'from');
   const target = keyed(to, 'to');
   syncTokenKeys(source.info, target.info, {enhanceMatching: true});
-  const placed = (token: CodeToken): Placed => ({
-    key: token.key!,
-    text: token.content,
-    classes: token.classes,
+  const placed = (token: CodeToken): Placed<Token> => ({
+    item: {key: token.key!, text: token.content, classes: token.classes},
     cell: token.cell,
   });
-  return pairPlaced(source.tokens.map(placed), target.tokens.map(placed));
+  return pairPlaced(
+    source.tokens.map(placed),
+    target.tokens.map(placed),
+    recolor,
+  );
 }
 
 function markKinds(step: Step) {
@@ -137,11 +154,7 @@ function gutterColumns(step: Step) {
   return String(largest + step.lineNumberStart - 1).length;
 }
 
-function stepBox(
-  step: Step,
-  lineNumbers: boolean,
-  widths: GlyphWidths,
-): StepBox {
+function stepBox(step: Step, widths: GlyphWidths): StepBox {
   const kinds = markKinds(step);
   const indent = [...kinds.values()].some(kind => kind !== 'highlight') ? 2 : 0;
   return {
@@ -153,7 +166,6 @@ function stepBox(
         ...step.lines.map(line => columnsAfter(0, lineText(line), widths)),
       ),
     indent,
-    gutterColumns: lineNumbers ? gutterColumns(step) : 0,
     dimmed: dimmedRows(step),
   };
 }
@@ -172,20 +184,32 @@ function dimmedRows(step: Step): Set<number> {
 
 // A number keeps its key, so it moves only when its row or the gutter width
 // changes and is never drawn twice.
-function gutterTokens(step: Step, box: StepBox): Placed[] {
+function gutterNumbers(step: Step, columns: number): Placed<Token>[] {
   return step.lines.map((_, row) => {
     const text = String(step.lineNumberStart + row);
     return {
-      key: `gutter:${text}`,
-      text,
-      classes: '',
-      cell: {line: row, col: box.gutterColumns - text.length},
+      item: {key: `gutter:${text}`, text, classes: ''},
+      cell: {line: row, col: columns - text.length},
     };
   });
 }
 
+function pairGutters(from: Step, to: Step): Gutter {
+  const fromColumns = gutterColumns(from);
+  const toColumns = gutterColumns(to);
+  return {
+    numbers: pairPlaced(
+      gutterNumbers(from, fromColumns),
+      gutterNumbers(to, toColumns),
+      after,
+    ),
+    fromColumns,
+    toColumns,
+  };
+}
+
 // Lines with the same kind and text pair in order.
-function markTokens(step: Step): Placed[] {
+function markTokens(step: Step): Placed<Mark>[] {
   const seen = new Map<string, number>();
   return [...markKinds(step)]
     .sort(([a], [b]) => a - b)
@@ -194,9 +218,7 @@ function markTokens(step: Step): Placed[] {
       const occurrence = seen.get(`${kind}:${text}`) ?? 0;
       seen.set(`${kind}:${text}`, occurrence + 1);
       return {
-        key: `mark:${kind}:${occurrence}:${text}`,
-        text,
-        classes: kind,
+        item: {key: `mark:${kind}:${occurrence}:${text}`, mark: kind},
         cell: {line: row, col: 0},
       };
     });
@@ -204,24 +226,31 @@ function markTokens(step: Step): Placed[] {
 
 // Text keys alone would fade a mark out and back in on its row when a step
 // edits the marked line, so leftover marks of one kind on one row pair too.
-function pairMarks(from: Step, to: Step): TokenTransition[] {
+function pairMarks(from: Step, to: Step): MarkTransition[] {
   const source = markTokens(from);
   const target = markTokens(to);
-  const sourceKeys = new Set(source.map(mark => mark.key));
-  const targetKeys = new Set(target.map(mark => mark.key));
-  const row = (mark: Placed) => `${mark.classes}:${mark.cell.line}`;
+  const sourceKeys = new Set(source.map(({item}) => item.key));
+  const targetKeys = new Set(target.map(({item}) => item.key));
+  const row = ({item, cell}: Placed<Mark>) => `${item.mark}:${cell.line}`;
   const unmatched = new Map(
     source
-      .filter(mark => !targetKeys.has(mark.key))
-      .map(mark => [row(mark), mark.key]),
+      .filter(({item}) => !targetKeys.has(item.key))
+      .map(mark => [row(mark), mark.item.key]),
   );
   return pairPlaced(
     source,
     target.map(mark =>
-      sourceKeys.has(mark.key)
+      sourceKeys.has(mark.item.key)
         ? mark
-        : {...mark, key: unmatched.get(row(mark)) ?? mark.key},
+        : {
+            ...mark,
+            item: {
+              ...mark.item,
+              key: unmatched.get(row(mark)) ?? mark.item.key,
+            },
+          },
     ),
+    after,
   );
 }
 
@@ -231,15 +260,11 @@ export function pairScene(
   lineNumbers: boolean,
   widths = NO_WIDTHS,
 ): Scene {
-  const fromBox = stepBox(from, lineNumbers, widths);
-  const toBox = stepBox(to, lineNumbers, widths);
   return {
     code: pairSteps(from.lines, to.lines, widths),
-    gutter: lineNumbers
-      ? pairPlaced(gutterTokens(from, fromBox), gutterTokens(to, toBox))
-      : null,
+    gutter: lineNumbers ? pairGutters(from, to) : null,
     marks: pairMarks(from, to),
-    from: fromBox,
-    to: toBox,
+    from: stepBox(from, widths),
+    to: stepBox(to, widths),
   };
 }

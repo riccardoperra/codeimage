@@ -25,6 +25,7 @@ test('renders one span per visible token and one keyframes rule per move', async
     scene,
     {charWidth: 8, lineHeight: 20},
     {transitionMs: 900, easing: 'smooth'},
+    'a',
   );
   const markup = renderToString(() =>
     createComponent(AnimatedCodeView, {

@@ -1,10 +1,10 @@
-import type {TabMarks} from '@codeimage/store/editor/model';
+import type {LineMark, TabMarks} from '@codeimage/store/editor/model';
 import type {TokenLine} from '@core/snapshot/tokenize';
 
 // Persisted with the project. A step points at a tab, so the tabs stay the
 // only place that holds code.
 export type AnimationSettings = {
-  steps: {editorId: string; holdMs: number}[];
+  steps: NonEmpty<{editorId: string; holdMs: number}>;
   transitionMs: number;
   easing: 'smooth' | 'snappy' | 'linear';
   fps: 24 | 30 | 50 | 60;
@@ -27,20 +27,23 @@ export type Step = {
 // column is fractional after a glyph wider than one cell.
 export type Cell = {line: number; col: number};
 
-// A token a step keeps is a `move`, even when its cell does not change.
-export type TokenTransition =
-  | {
-      kind: 'move';
-      key: string;
-      text: string;
-      classes: string;
-      // The classes the token had, when the step changes its highlighting.
-      fromClasses?: string;
-      from: Cell;
-      to: Cell;
-    }
-  | {kind: 'enter'; key: string; text: string; classes: string; to: Cell}
-  | {kind: 'leave'; key: string; text: string; classes: string; from: Cell};
+// An element a step keeps is a `move`, even when its cell does not change.
+// `Moved` holds what only a kept element carries.
+export type Transition<T, Moved = unknown> =
+  | (T & Moved & {kind: 'move'; from: Cell; to: Cell})
+  | (T & {kind: 'enter'; to: Cell})
+  | (T & {kind: 'leave'; from: Cell});
+
+// `fromClasses` names the classes a kept token had, when the step changes its
+// highlighting.
+export type TokenTransition = Transition<
+  {key: string; text: string; classes: string},
+  {fromClasses?: string}
+>;
+
+export type MarkKind = LineMark['kind'];
+
+export type MarkTransition = Transition<{key: string; mark: MarkKind}>;
 
 // The size and state of one step's code box, in cells.
 export type StepBox = {
@@ -49,8 +52,6 @@ export type StepBox = {
   columns: number;
   // Columns before the code that the diff signs take, 0 or 2.
   indent: number;
-  // Digits of the widest line number, 0 without line numbers.
-  gutterColumns: number;
   // Rows that focus mode dims.
   dimmed: ReadonlySet<number>;
 };
@@ -60,11 +61,17 @@ export type StepBox = {
 export type Scene = {
   code: TokenTransition[];
   // Null when line numbers are off.
-  gutter: TokenTransition[] | null;
-  // A mark's `classes` is its kind, and its `text` is the text of its line.
-  marks: TokenTransition[];
+  gutter: Gutter | null;
+  marks: MarkTransition[];
   from: StepBox;
   to: StepBox;
+};
+
+// Line numbers, and the digits of the widest one in each step.
+export type Gutter = {
+  numbers: TokenTransition[];
+  fromColumns: number;
+  toColumns: number;
 };
 
 // Cells per grapheme, for graphemes the code font does not draw one cell
