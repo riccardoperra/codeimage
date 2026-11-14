@@ -1,0 +1,1256 @@
+{
+  "base": "main",
+  "head": "HEAD",
+  "threshold": 0.1,
+  "maxDiffPercent": 0.5,
+  "rows": [
+    {
+      "theme": "Fleet Dark",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.16025641025641024
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.16025641025641024
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.16025641025641024
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.16025641025641024
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.1387545019620491
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.1387545019620491
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1387545019620491
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1387545019620491
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.13909046927914853
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.13909046927914853
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13909046927914853
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13909046927914853
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.13505886147395582
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.13505886147395582
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13505886147395582
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13505886147395582
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.13304305757135945
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.13304305757135945
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13304305757135945
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13304305757135945
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.1387545019620491
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.1387545019620491
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1387545019620491
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1387545019620491
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.13035531903456432
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.13035531903456432
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13035531903456432
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13035531903456432
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.11053324732570016
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.11053324732570016
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.11053324732570016
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.11053324732570016
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.11590872439929042
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.11590872439929042
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.11590872439929042
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.11590872439929042
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.14144224049884427
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.14144224049884427
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14144224049884427
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14144224049884427
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.13741063269365156
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.13741063269365156
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13741063269365156
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13741063269365156
+    },
+    {
+      "theme": "One dark",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.13942643659624793
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.13942643659624793
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13942643659624793
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13942643659624793
+    },
+    {
+      "theme": "Panda",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.13841853464494974
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.13841853464494974
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13841853464494974
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13841853464494974
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.14278610976724185
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.14278610976724185
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14278610976724185
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14278610976724185
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.12867548244906737
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.12867548244906737
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.12867548244906737
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.12867548244906737
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.14245014245014245
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.14245014245014245
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14245014245014245
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14245014245014245
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.12061226683868194
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.12061226683868194
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.12061226683868194
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.12061226683868194
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.13371499220555824
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.13371499220555824
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13371499220555824
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.13371499220555824
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.1484975541579315
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.1484975541579315
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1484975541579315
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1484975541579315
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.14379401171854003
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.14379401171854003
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14379401171854003
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14379401171854003
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.1353948287910552
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.1353948287910552
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1353948287910552
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1353948287910552
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.14144224049884427
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.14144224049884427
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14144224049884427
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.14144224049884427
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.15118529269472664
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.15118529269472664
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.15118529269472664
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.15118529269472664
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "windows",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "windows",
+      "lineNumbers": true,
+      "diffPercent": 0.1222921034241789
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOs",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOs",
+      "lineNumbers": true,
+      "diffPercent": 0.1222921034241789
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsGrayTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1222921034241789
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": false,
+      "diffPercent": 0
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsOutlineTheme",
+      "lineNumbers": true,
+      "diffPercent": 0.1222921034241789
+    }
+  ]
+}

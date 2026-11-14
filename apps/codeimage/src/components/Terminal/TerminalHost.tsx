@@ -18,6 +18,7 @@ export interface BaseTerminalProps extends Omit<TerminalState, 'type'> {
   onTabChange?: (tab: string) => void;
   lite?: boolean;
   showOnlyActiveTab?: boolean;
+  activeTabId?: string;
   themeId: string;
 }
 

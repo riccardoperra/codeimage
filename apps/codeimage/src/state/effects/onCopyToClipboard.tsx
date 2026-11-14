@@ -6,7 +6,7 @@ import {toast} from '@codeimage/ui';
 import {getUmami} from '@core/constants/umami';
 import {catchError, EMPTY, exhaustMap, from, pipe, switchMap, tap} from 'rxjs';
 import {getOwner, runWithOwner} from 'solid-js';
-import {exportSnippet} from '../../hooks/export-snippet';
+import {exportImage} from '../../hooks/use-export-image';
 import type {ExportOptions} from '../../hooks/use-export-image';
 import {ExportMode} from '../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../i18n';
@@ -28,9 +28,7 @@ export const dispatchCopyToClipboard = effect<CopyToClipboardEvent>(
         extension: exportSettings.get.extension,
       };
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return from(
-        runWithOwner(owner, () => exportSnippet({ref, options}))!,
-      ).pipe(
+      return from(runWithOwner(owner, () => exportImage({ref, options}))!).pipe(
         switchMap(data => {
           if (!(data instanceof Blob)) return EMPTY;
           return from(

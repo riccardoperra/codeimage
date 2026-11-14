@@ -80,7 +80,11 @@
     "tslib": "^2.8.1",
     "tsx": "catalog:next",
     "typescript": "catalog:next",
-    "vite": "catalog:next"
+    "vite": "catalog:next",
+    "playwright": "1.57.0",
+    "pixelmatch": "7.1.0",
+    "pngjs": "7.0.0",
+    "@types/pngjs": "6.0.5"
   },
   "engines": {
     "node": ">=24",
