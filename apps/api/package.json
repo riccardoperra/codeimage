@@ -36,7 +36,8 @@
     "prisma:generate": "prisma generate dev && pnpm --filter=@codeimage/prisma-models build",
     "docker:dev": "docker compose -f docker-compose.dev.yml up",
     "test:architecture:rules": "tsx scripts/verify-architecture.ts",
-    "test:built": "dotenv -e .env.test -- node scripts/smoke-built.ts"
+    "test:built": "dotenv -e .env.test -- node scripts/smoke-built.ts",
+    "test:built:cli": "dotenv -e .env.test -- node scripts/smoke-cli.mjs"
   },
   "keywords": [],
   "author": "Riccardo Perra",
@@ -57,7 +58,7 @@
     "dotenv-cli": "11.1.0",
     "fastify": "5.12.8",
     "fastify-auth0-verify": "4.1.4",
-    "fastify-cli": "^7.4.1",
+    "fastify-cli": "8.0.3",
     "fastify-healthcheck": "^5.1.0",
     "fastify-plugin": "6.0.1"
   },
