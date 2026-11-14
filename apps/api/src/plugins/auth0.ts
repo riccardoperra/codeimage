@@ -1,4 +1,3 @@
-import type {User} from '@codeimage/prisma-models';
 import '@fastify/jwt';
 import type {
   FastifyInstance,
@@ -9,41 +8,45 @@ import type {
 import type {Authenticate} from 'fastify-auth0-verify';
 import fastifyAuth0Verify from 'fastify-auth0-verify';
 import fp from 'fastify-plugin';
+import type {SessionClaims} from '../shared/principal.js';
 
 declare module '@fastify/jwt' {
   interface FastifyJWT {
-    payload: {id: number}; // payload type is used for signing and verifying
-    user: Record<string, unknown>; // user type is return type of `request.user` object
+    payload: {id: number};
+    user: Record<string, unknown>;
   }
 }
 
-interface AuthorizeOptions {
-  mustBeAuthenticated: boolean;
+declare module 'fastify' {
+  interface FastifyInstance {
+    verifySession(
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ): Promise<SessionClaims | null>;
+  }
 }
 
 export function mockAuthProvider(context: {email: string}) {
   return fp(async (fastify: FastifyInstance) => {
-    const auth0Authenticate: Authenticate = async req => {
-      const email = context.email;
-      const clientClaim = fastify.config.AUTH0_CLIENT_CLAIMS;
-      const emailKey = `${clientClaim}/email`;
+    const authenticate: Authenticate = async req => {
       req.user = {
-        [emailKey]: email,
+        [`${fastify.config.AUTH0_CLIENT_CLAIMS}/email`]: context.email,
       };
     };
-
     fastify.decorateRequest('user', null!);
-    fastify.decorate('authenticate', auth0Authenticate);
+    fastify.decorate('authenticate', authenticate);
   });
 }
 
-export default fp<{authProvider?: FastifyPluginAsync}>(
+export interface AuthPluginOptions {
+  readonly authProvider?: FastifyPluginAsync;
+}
+
+export default fp<AuthPluginOptions>(
   async (fastify, options) => {
     if (fastify.config.MOCK_AUTH) {
       await fastify.register(
-        mockAuthProvider({
-          email: fastify.config.MOCK_AUTH_EMAIL as string,
-        }),
+        mockAuthProvider({email: fastify.config.MOCK_AUTH_EMAIL ?? ''}),
       );
     } else if (options.authProvider) {
       await fastify.register(options.authProvider);
@@ -54,70 +57,24 @@ export default fp<{authProvider?: FastifyPluginAsync}>(
         audience: fastify.config.AUDIENCE_AUTH0,
       });
     }
+    fastify.decorateRequest('principal', null!);
 
-    async function authorize(
-      req: FastifyRequest,
-      reply: FastifyReply,
-      options: AuthorizeOptions = {
-        mustBeAuthenticated: true,
-      },
-    ) {
-      try {
-        await fastify.authenticate(req, reply);
-      } catch {
-        if (options.mustBeAuthenticated) {
-          throw fastify.httpErrors.unauthorized();
+    const emailClaim = `${fastify.config.AUTH0_CLIENT_CLAIMS}/email`;
+    fastify.decorate(
+      'verifySession',
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        try {
+          await fastify.authenticate(request, reply);
+        } catch {
+          return null;
         }
-      }
-
-      const emailClaim = `${fastify.config.AUTH0_CLIENT_CLAIMS}/email`;
-
-      if (!req.user) {
-        req.appUserOptional = null;
-        return;
-      }
-
-      const email = req.user[emailClaim] as string;
-
-      if (!email) {
-        throw fastify.httpErrors.badRequest('No valid user data');
-      }
-
-      const user = await fastify.prisma.user.findFirst({
-        where: {
-          email,
-        },
-      });
-
-      if (!user) {
-        req.appUser = await fastify.prisma.user.create({
-          data: {
-            email,
-          },
-        });
-      } else {
-        req.appUser = user;
-      }
-
-      req.appUserOptional = req.appUser;
-    }
-
-    fastify.decorateRequest('appUser', null!);
-    fastify.decorate('authorize', authorize);
+        if (!request.user) return null;
+        const email = request.user[emailClaim];
+        return {
+          email: typeof email === 'string' && email !== '' ? email : null,
+        };
+      },
+    );
   },
+  {name: 'auth', dependencies: ['config']},
 );
-
-declare module 'fastify' {
-  interface FastifyInstance {
-    authorize: (
-      req: FastifyRequest,
-      reply: FastifyReply,
-      options?: AuthorizeOptions,
-    ) => void;
-  }
-
-  interface FastifyRequest {
-    appUser: User;
-    appUserOptional: User | null;
-  }
-}

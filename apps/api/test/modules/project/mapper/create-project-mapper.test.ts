@@ -1,9 +1,9 @@
 import {assert, test} from 'vitest';
-import type * as DomainModel from '../../../../src/modules/project/domain/index.js';
-import {createProjectRequestMapper} from '../../../../src/modules/project/mapper/create-project-mapper.js';
+import type {ProjectDraft} from '../../../../src/modules/project/project.model.js';
+import {draftFromCreateBody} from '../../../../src/modules/project/project.model.js';
 
 test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with default values', async () => {
-  const result = createProjectRequestMapper({
+  const result = draftFromCreateBody({
     frame: {
       visible: null,
       radius: null,
@@ -56,7 +56,7 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
       showHeader: true,
       borderType: null,
     },
-    editors: [],
+    editorTabs: [],
     name: 'Untitled',
     editorOptions: {
       fontId: 'fontId',
@@ -65,5 +65,5 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
       fontWeight: 400,
       enableLigatures: true,
     },
-  } as DomainModel.ProjectCreateRequest);
+  } satisfies ProjectDraft);
 });

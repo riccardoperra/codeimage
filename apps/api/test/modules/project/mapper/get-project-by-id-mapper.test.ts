@@ -1,14 +1,15 @@
 import {assert, test} from 'vitest';
-import {createCompleteProjectGetByIdResponseMapper} from '../../../../src/modules/project/mapper/get-project-by-id-mapper.js';
-import type * as SchemaModel from '../../../../src/modules/project/schema/index.js';
+import {toProjectResponse} from '../../../../src/modules/project/project.http.js';
+import {asUserId} from '../../../../src/shared/principal.js';
+import type * as SchemaModel from '../../../../src/modules/project/project.contract.js';
 
 test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse', async () => {
   const date1 = new Date();
   const date2 = new Date();
 
-  const result = createCompleteProjectGetByIdResponseMapper({
+  const result = toProjectResponse({
     id: '1',
-    ownerId: 'userId1',
+    ownerId: asUserId('userId1'),
     updatedAt: date1,
     createdAt: date2,
     frame: {
@@ -33,9 +34,6 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
       accentVisible: true,
       borderType: 'glass',
     },
-    editorOptionsId: 'editorOptionsId',
-    terminalId: 'terminalId',
-    frameId: 'frameId',
     name: 'Untitled',
     editorOptions: {
       id: 'editorOptionsId',
@@ -45,15 +43,16 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
       fontWeight: 400,
       enableLigatures: true,
     },
+    isOwner: false,
     editorTabs: [],
   });
 
   assert.deepStrictEqual(result, {
     id: '1',
     name: 'Untitled',
-    ownerId: 'userId1',
-    createdAt: date1.toISOString(),
-    updatedAt: date2.toISOString(),
+    ownerId: asUserId('userId1'),
+    createdAt: date2.toISOString(),
+    updatedAt: date1.toISOString(),
     isOwner: false,
     editorTabs: [],
     frame: {
@@ -86,5 +85,5 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
       fontWeight: 400,
       enableLigatures: true,
     },
-  } as SchemaModel.ProjectCompleteResponse);
+  } as SchemaModel.ProjectGetByIdResponse);
 });

@@ -1,4 +1,3 @@
-import * as path from 'path';
 import type {ViteUserConfig} from 'vitest/config';
 import {defineConfig, mergeConfig} from 'vitest/config';
 
@@ -14,13 +13,6 @@ export default defineConfig(() => {
         deps: {
           inline: ['@fastify/autoload'],
         },
-      },
-    },
-    resolve: {
-      alias: {
-        '@api/domain': path.resolve(
-          'src/common/domainFunctions/functions.d.ts',
-        ),
       },
     },
   });

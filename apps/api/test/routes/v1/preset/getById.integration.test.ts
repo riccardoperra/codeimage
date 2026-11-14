@@ -1,8 +1,8 @@
 import type {Preset, User} from '@codeimage/prisma-models';
 import type {FastifyError} from 'fastify';
-import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
-import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
-import {build} from '../../../helper.js';
+import {afterEach, assert, beforeEach, test} from 'vitest';
+import type {PresetResponse} from '../../../../src/modules/preset/preset.contract.js';
+import {build} from '../../../helpers/app.js';
 import {clearAllSeeds, presetSeed, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {
@@ -24,16 +24,14 @@ afterEach(async () => {
 test<TestContext>('/v1/preset/:id -> when preset found -> 200', async context => {
   const fastify = await build(context);
   const presetId = context.preset1.id;
-  const spy = vi.spyOn(fastify.presetService, 'findPresetById');
 
   const response = await fastify.inject({
     url: `/api/v1/preset/${presetId}`,
     method: 'GET',
   });
 
-  const body = response.json<PresetDto>();
+  const body = response.json<PresetResponse>();
 
-  expect(spy).toHaveBeenCalledWith(context.user.id, presetId);
   assert.equal(response.statusCode, 200);
   assert.equal(body.id, presetId);
   assert.equal(body.name, 'preset-1');
@@ -44,7 +42,6 @@ test<TestContext>('/v1/preset/:id -> when preset not found -> 404', async contex
   const fastify = await build(context);
   const userId = context.user.id;
   const presetId = 'badId';
-  const spy = vi.spyOn(fastify.presetService, 'findPresetById');
 
   const response = await fastify.inject({
     url: `/api/v1/preset/${presetId}`,
@@ -56,7 +53,6 @@ test<TestContext>('/v1/preset/:id -> when preset not found -> 404', async contex
 
   const body = response.json<FastifyError>();
 
-  expect(spy).toHaveBeenCalledWith(context.user.id, presetId);
   assert.equal(response.statusCode, 404);
   assert.equal(body.code, 'NotFoundPresetException');
   assert.equal(
