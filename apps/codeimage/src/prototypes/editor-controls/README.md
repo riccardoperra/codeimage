@@ -121,7 +121,6 @@ The left pane has a search field and the sections, each with an icon. The right 
 | About       | CodeImage    | GitHub              | A link to the repository            |
 | About       | Account      | Log out             | A button, only for a signed-in user |
 
-
 - Export reads and writes the production export store, `getExportCanvasStore()`, the one store that today's export settings popover writes. Today's export dialog keeps its own format, quality and scale; here there is one value of each.
 - Experiments holds what is not the default yet. Inspector and Window carry a `Default` tag, and `Restore defaults` goes back to both. The choices are cards and not switches because each is one out of three: two switches would turn each other off.
 - The search filters the rows of every section by title and description, and every word has to match. The results are grouped by section. Escape clears the search, a second Escape closes the dialog, and `/` focuses the field.
@@ -197,11 +196,11 @@ Inspector puts its panel on the right. Set `data-inspector-side="left"` on its r
 
 The harness mounts `components/WhatsNew/WhatsNewHost` once. Its Nudge floats at the bottom left and waits for Settings, the command menu, and other popups to close before appearing. A release with `major: true` uses the Showcase sheet instead. Neither announcement reserves layout space.
 
-The registry and store live in `state/whats-new`. Import that folder's `index.ts` from other folders. The harness binds `command-menu` to `commandMenu.open` and `settings-experiments` to `settings.open('experiments')`. The production `ExportButton` binds `export` to its dialog, in this editor and in `/classic`. A layout puts `NewDot` beside each command-menu button it renders. Settings owns the dots on the Layout and Theme cards rows, and the archive before About. The export dialog owns the dot on One image per tab, and the dot beside its secrets warning, which shows only while the code holds a possible secret.
+The registry and store live in `state/whats-new`. Import that folder's `index.ts` from other folders. The harness binds `command-menu` to `commandMenu.open` and `settings-experiments` to `settings.open('experiments')`. `shell/ExportControl` binds `export` to its arrow's menu, which lists Export one image per tab and, while the code holds a possible secret, Redact secrets. In `/classic`, the production `ExportButton` binds it to its dialog. A layout puts `NewDot` beside each command-menu button it renders. Settings owns the dots on the Layout and Theme cards rows, and the archive before About. The Export control owns the One image per tab dot, on its arrow, and the Hide secrets dot, on its button while the code holds a possible secret. A dot inside the menu could not be reached with Tab, which an open menu keeps for itself.
 
-Only a coachmark opening or a feature being used marks a highlight seen. Show me, Nudge steps, and archive rows keep the dot available. The command menu marks use when a command runs. Layout and theme card choices mark use when a choice is applied. Turning One image per tab on marks `tabs` used. Redact all, or Redact on an editor warning, marks `redact` used.
+Only a coachmark opening or a feature being used marks a highlight seen. Show me, Nudge steps, and archive rows keep the dot available. The command menu marks use when a command runs. Layout and theme card choices mark use when a choice is applied. Exporting one image per tab, from the menu or the command, marks `tabs` used. Redact secrets, or Redact on an editor warning, marks `redact` used. Both go through `shell/export.tsx`.
 
-In development, use `?whatsNew=nudge` or `?whatsNew=showcase` to review a view regardless of saved facts. Run `await window.resetWhatsNew()` and reload for a fresh visit. These aids are removed in production builds. `/classic` has announcements, external release links, and the export dialog's dots, with no archive.
+In development, use `?whatsNew=nudge` or `?whatsNew=showcase` to review a view regardless of saved facts. Run `await window.resetWhatsNew()` and reload for a fresh visit. These aids are removed in production builds. `/classic` has announcements, external release links, and the export dialog's dots, with no archive. There, turning the One image per tab checkbox on marks `tabs` used, and Redact all marks `redact` used.
 
 ## The theme-card lab
 
