@@ -1,8 +1,8 @@
-import {projectRoutes} from '../modules/project/index.js';
+import AutoLoad from '@fastify/autoload';
+import {join} from 'node:path';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import type {FastifyPluginAsync} from 'fastify';
-import {presetRoutes} from '../modules/preset/index.js';
 import {resolveSession} from '../modules/identity/index.js';
 import {CommonErrors} from '../shared/errors.js';
 import {anonymous} from '../shared/principal.js';
@@ -59,8 +59,15 @@ const appApi: FastifyPluginAsync = async fastify => {
           },
         };
       });
-      await api.register(presetRoutes, {prefix: '/preset'});
-      await api.register(projectRoutes, {prefix: '/project'});
+      for (const module of ['preset', 'project']) {
+        await api.register(AutoLoad, {
+          dir: join(import.meta.dirname, '../modules', module, 'routes'),
+          dirNameRoutePrefix: false,
+          options: {prefix: `/${module}`},
+          forceESM: true,
+          ignorePattern: /\.d\.[cm]?ts$/,
+        });
+      }
     },
     {prefix: '/api/v1'},
   );

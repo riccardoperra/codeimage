@@ -42,9 +42,9 @@ const cases: Violation[] = [
   ]),
   {
     rule: 'routes dispatch use cases',
-    path: 'src/modules/preset/preset.routes.ts',
+    path: 'src/modules/preset/routes/create.ts',
     change: append(
-      "import {createPresetRepository} from './preset.repository.js';",
+      "import {createPresetRepository} from '../preset.repository.js';",
     ),
   },
   ...[
@@ -54,7 +54,7 @@ const cases: Violation[] = [
     "const {'db': database} = fastify",
   ].map(code => ({
     rule: 'the db decorator stays in composition',
-    path: 'src/modules/preset/preset.routes.ts',
+    path: 'src/modules/preset/routes/create.ts',
     change: append(`${code};`),
   })),
   {
@@ -112,13 +112,28 @@ const cases: Violation[] = [
       source.replace(/import type \{presetContract\} from '[^']+';/, ''),
   },
   {
-    rule: 'every module routes file is registered in http/app-api.ts',
+    rule: 'every module routes directory is autoloaded in http/app-api.ts',
     path: 'src/http/app-api.ts',
+    change: source => source.replace("['preset', 'project']", "['project']"),
+  },
+  {
+    rule: 'each endpoint file registers exactly one contract operation',
+    path: 'src/modules/preset/routes/create.ts',
     change: source =>
       source.replace(
-        "await api.register(presetRoutes, {prefix: '/preset'});",
-        '',
+        '  fastify.route({',
+        '  fastify.route({...op.list, handler: async () => []});\n  fastify.route({',
       ),
+  },
+  {
+    rule: 'each contract operation has exactly one endpoint file',
+    path: 'src/modules/preset/routes/extra.ts',
+    change: append('export {};'),
+  },
+  {
+    rule: 'each contract operation has exactly one endpoint file',
+    path: 'src/modules/preset/preset.contract.ts',
+    change: source => source.replace('  create: {', '  missing: {'),
   },
 ];
 

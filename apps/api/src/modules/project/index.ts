@@ -16,7 +16,6 @@ export default fp(
   },
   {name: 'project', dependencies: ['db', 'bus']},
 );
-export {default as projectRoutes} from './project.routes.js';
 export {projectContract} from './project.contract.js';
 export {createProject} from './commands/create-project.js';
 export {updateProject} from './commands/update-project.js';
