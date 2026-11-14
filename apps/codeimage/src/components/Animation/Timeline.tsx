@@ -4,7 +4,8 @@ import {For} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import * as styles from './Timeline.css';
 
-export const formatSeconds = (ms: number) => `${(ms / 1000).toFixed(1)} s`;
+export const formatSeconds = (ms: number) =>
+  `${Number((ms / 1000).toFixed(2))} s`;
 
 // The scrubber. Each hold and transition takes width in proportion to its
 // duration, and dragging anywhere moves the playhead there.
