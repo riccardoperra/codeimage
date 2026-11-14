@@ -10,32 +10,45 @@ import * as styles from './whats-new.css';
 const TABBABLE =
   'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-function previousTabbable(from: Element): HTMLElement | undefined {
-  return [...document.querySelectorAll<HTMLElement>(TABBABLE)]
-    .filter(
-      element =>
-        !from.contains(element) &&
-        element.compareDocumentPosition(from) &
-          Node.DOCUMENT_POSITION_FOLLOWING &&
-        element.getClientRects().length > 0,
-    )
-    .at(-1);
+function tabbableBeside(
+  from: Element,
+  side: 'before' | 'after',
+  skip?: Element,
+): HTMLElement | undefined {
+  const position =
+    side === 'before'
+      ? Node.DOCUMENT_POSITION_PRECEDING
+      : Node.DOCUMENT_POSITION_FOLLOWING;
+  const candidates = [
+    ...document.querySelectorAll<HTMLElement>(TABBABLE),
+  ].filter(
+    element =>
+      !from.contains(element) &&
+      !skip?.contains(element) &&
+      from.compareDocumentPosition(element) & position &&
+      element.getClientRects().length > 0,
+  );
+  return side === 'before' ? candidates.at(-1) : candidates[0];
 }
 
 export function NewDot(props: {highlight: LocatedHighlightId}) {
   const news = getWhatsNew();
   let anchor: HTMLSpanElement | undefined;
+  let content: HTMLDivElement | undefined;
   // A seen dot leaves with its coachmark, so focus cannot return to it.
+  // The popover unmounts with the dot, before its own close focus can run.
   let returnTo: HTMLElement | undefined;
   const [open, setOpen] = createSignal(false);
-  const toggle = (value: boolean) => {
+  const toggle = (value: boolean, side: 'before' | 'after' = 'before') => {
+    if (value === open()) return;
     if (value) {
       news.opened(props.highlight, 'coachmark');
       news.seen(props.highlight);
     } else if (anchor && !news.hasDot(props.highlight)) {
-      returnTo = previousTabbable(anchor);
+      returnTo = tabbableBeside(anchor, side, content);
     }
     setOpen(value);
+    if (!value) returnTo?.focus();
   };
   const highlight = () =>
     RELEASES.flatMap(release => release.highlights).find(
@@ -71,7 +84,15 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
                 }
               >
                 <Popover.Content
+                  ref={content}
                   class={styles.coachmark}
+                  // The coachmark is portaled away from its dot, so Tab would
+                  // otherwise leave it for the end of the page.
+                  onKeyDown={(event: KeyboardEvent) => {
+                    if (event.key !== 'Tab') return;
+                    event.preventDefault();
+                    toggle(false, event.shiftKey ? 'before' : 'after');
+                  }}
                   onCloseAutoFocus={event => {
                     if (!returnTo) return;
                     event.preventDefault();
