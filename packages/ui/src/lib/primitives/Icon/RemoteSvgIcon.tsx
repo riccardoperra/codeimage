@@ -1,13 +1,5 @@
 import type {JSXElement} from 'solid-js';
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  createSignal,
-  createUniqueId,
-  on,
-  Suspense,
-} from 'solid-js';
+import {createMemo, createResource, Suspense} from 'solid-js';
 import {Loading} from '../Loader';
 import type {SvgIconProps} from './SvgIcon';
 import {SvgIcon} from './SvgIcon';
@@ -18,6 +10,8 @@ export interface SvgExternalIconProps {
   delay?: number;
   size?: SvgIconProps['size'];
 }
+
+let svgUrlIdCount = 0;
 
 /**
  * Randomize all svg ids of `fill` property when using url(#reference) and defs.
@@ -32,19 +26,27 @@ function randomizeSvgUrlIds(svgContent: string): string {
   const groups = regexpResult.map(result => [result[0], result[1]] as const);
 
   return groups.reduce((acc, [url, id]) => {
-    const uniqueUid = createUniqueId();
+    const uniqueUid = `svg-url-${svgUrlIdCount++}`;
     return acc
       .replaceAll(url, `url(#${uniqueUid})`)
       .replaceAll(`id="${id.split('#')[1]}"`, `id="${uniqueUid}"`);
   }, svgContent);
 }
 
+function parseSvg(svgContent: string) {
+  const [, attributes = '', innerHTML = ''] =
+    /<svg\b([^>]*)>([\s\S]*)<\/svg>/i.exec(svgContent) ?? [];
+  return {
+    innerHTML,
+    viewBox: /\bviewBox="([^"]*)"/i.exec(attributes)?.[1],
+  };
+}
+
 export function RemoteSvgIcon(props: SvgExternalIconProps): JSXElement {
-  const [src, setSrc] = createSignal<SvgExternalIconProps['content'] | null>();
   const content = createMemo(() => props.content);
 
   // oxlint-disable-next-line solid/reactivity
-  const [data] = createResource(src, async content => {
+  const [data] = createResource(content, async content => {
     const svgResponse =
       typeof content === 'string'
         ? await fetch(content).then(res => res.text())
@@ -53,26 +55,8 @@ export function RemoteSvgIcon(props: SvgExternalIconProps): JSXElement {
       // oxlint-disable-next-line solid/reactivity
       await new Promise(r => setTimeout(r, props.delay));
     }
-
-    const innerHTML = randomizeSvgUrlIds(svgResponse);
-
-    const parsedDocument = new DOMParser().parseFromString(
-      innerHTML,
-      'text/html',
-    );
-    const svg = parsedDocument.body.childNodes[0] as SVGElement;
-
-    return {
-      innerHTML: (svg as SVGElement).innerHTML,
-      viewBox: svg.getAttribute('viewBox') || undefined,
-    };
+    return parseSvg(randomizeSvgUrlIds(svgResponse));
   });
-
-  createEffect(
-    on(content, content => {
-      setSrc(() => content as SvgExternalIconProps['content']);
-    }),
-  );
 
   return (
     <Suspense fallback={<Loading size={props.size ?? 'md'} />}>

@@ -91,6 +91,32 @@ jobs:
           pnpm --filter='@codeimage/api' typecheck:ci
           pnpm --filter='@codeimage/app' typecheck
 
+  render-packages:
+    name: Render snapshots in Node
+    needs: [build-packages]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v7
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
+
+      - name: Restore dist
+        uses: actions/cache/restore@v5
+        with:
+          path: packages
+          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+
+      - name: Test renderer
+        run: pnpm --filter=@codeimage/render test
+
+      - name: Compare Takumi with Chrome
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          pnpm exec tsx scripts/parity/takumi-vs-chrome.ts
+
   build-app-preview:
     name: Build App (Preview)
     environment: Preview
