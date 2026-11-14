@@ -2,10 +2,21 @@ import assert from 'node:assert/strict';
 import {readFile, writeFile} from 'node:fs/promises';
 import pixelmatch from 'pixelmatch';
 import type {Page} from 'playwright';
+import {chromium} from 'playwright';
 import {PNG} from 'pngjs';
 
 export const PIXELMATCH_THRESHOLD = 0.1;
 export const MAX_DIFF_PERCENT = 0.5;
+
+// Chrome at a real device scale, like a HiDPI screen. An emulated
+// deviceScaleFactor snaps text baselines to whole CSS pixels instead. Open
+// pages with `viewport: null`, since Playwright's default viewport emulates a
+// scale of 1 again.
+export function launchChrome(scale: number) {
+  return chromium.launch({
+    args: [`--force-device-scale-factor=${scale}`, '--window-size=4000,4000'],
+  });
+}
 
 export async function openEditor(page: Page, url: string) {
   console.log(`Opening ${url}`);
