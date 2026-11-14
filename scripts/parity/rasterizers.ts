@@ -334,16 +334,12 @@ async function main() {
       name: 'Use Takumi rendering engine',
     });
     await control.waitFor();
-    const dialog = control.locator('xpath=ancestor::*[@role="alertdialog"][1]');
     if ((await control.getAttribute('aria-checked')) !== String(enabled))
       await control.click();
     assert.equal(await control.getAttribute('aria-checked'), String(enabled));
-    await dialog.screenshot({path: path.join(out, 'p2-flag.png')});
-    await dialog
-      .getByRole('button', {name: 'Close', exact: true})
-      .last()
-      .click();
-    await dialog.waitFor({state: 'hidden'});
+    await target.screenshot({path: path.join(out, 'p2-flag.png')});
+    await target.keyboard.press('Escape');
+    await control.waitFor({state: 'hidden'});
   }
 
   async function downloadUi(target: Page, name: string, ratio = 2) {

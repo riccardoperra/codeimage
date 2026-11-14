@@ -1,8 +1,8 @@
 {
-  "main": "b52ab947",
-  "head": "0d29af04",
+  "main": "89200f59",
+  "head": "4b96d7ac",
   "parity": {
-    "cells": 104,
+    "cells": 112,
     "worstPercent": 0.33233353545853545,
     "errors": [],
     "fallback": []
@@ -11,14 +11,14 @@
     {
       "target": "x-landscape",
       "engine": "dom-export",
-      "percent": 0.12277777777777778,
+      "percent": 0.220625,
       "width": 1600,
       "height": 900
     },
     {
       "target": "x-landscape",
       "engine": "takumi",
-      "percent": 0.28965277777777776,
+      "percent": 0.3229166666666667,
       "width": 1600,
       "height": 900
     },
@@ -98,5 +98,13 @@
       "lane": 7,
       "passed": true
     }
-  ]
+  ],
+  "validation": {
+    "appTests": 57,
+    "typecheckExit": 0,
+    "lintExit": 0,
+    "buildExit": 0,
+    "node": "24.14.0"
+  },
+  "probeCorrection": "The first current-main run passed all 112 matrix cells but timed out taking a settings-container screenshot in live lane 8. Capturing the page and closing through Escape removes the container assumption; all eight live checks pass on rerun."
 }
