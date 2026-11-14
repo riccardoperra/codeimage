@@ -1,6 +1,13 @@
 import type {AnimationSettings, NonEmpty} from '@core/animation/model';
 import {Subject, map} from 'rxjs';
-import {createEffect, createMemo, createSignal, on, untrack} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  on,
+  onCleanup,
+  untrack,
+} from 'solid-js';
 import type {createEditorsStore} from './editor';
 
 export const ANIMATION_DEFAULTS = {
@@ -212,6 +219,35 @@ export function createAnimationStore(
     setPlayback(playback => nextPlayback(playback, event, durationMs()));
   const edit = () => send({type: 'edit'});
 
+  // The clock ticks once per display frame while playing. The playhead then
+  // steps on the frame times of the export, so the preview shows the frames
+  // the video will hold.
+  const [now, setNow] = createSignal(0);
+  createEffect(() => {
+    const state = playback();
+    if (state.state !== 'playing') return;
+    const duration = untrack(durationMs);
+    let request = 0;
+    const tick = (time: number) => {
+      if (time - state.originMs >= duration) {
+        send({type: 'pause', now: time});
+      } else {
+        setNow(time);
+        request = requestAnimationFrame(tick);
+      }
+    };
+    setNow(performance.now());
+    request = requestAnimationFrame(tick);
+    onCleanup(() => cancelAnimationFrame(request));
+  });
+  const playhead = createMemo(() => {
+    const state = playback();
+    const at = playheadMs(state, now(), durationMs());
+    if (state.state !== 'playing') return at;
+    const frameMs = 1000 / settings().fps;
+    return Math.floor(at / frameMs) * frameMs;
+  });
+
   // Typing shows the tab's code again, never a half-moved token.
   createEffect(
     on(
@@ -235,6 +271,7 @@ export function createAnimationStore(
     settings,
     durationMs,
     playback,
+    playhead,
     open,
     stateToPersist: settings,
     stateToPersist$: changes.pipe(map(() => settings())),
