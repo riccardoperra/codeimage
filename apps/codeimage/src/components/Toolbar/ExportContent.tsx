@@ -97,9 +97,7 @@ export function ExportPopoverContent() {
               <Show when={!fixedSize()}>
                 <SegmentedField
                   size={'sm'}
-                  value={getFrameState().exportPixelRatio(
-                    exportCanvasStore.get.devicePixelRatio,
-                  )}
+                  value={exportCanvasStore.get.devicePixelRatio}
                   onChange={value =>
                     exportCanvasStore.set('devicePixelRatio', value)
                   }
