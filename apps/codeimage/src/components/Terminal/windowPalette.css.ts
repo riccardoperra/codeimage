@@ -11,7 +11,6 @@ export const windowVars = createThemeContract({
   ink90: null,
   accent: null,
   background: null,
-  wash: null,
   status: null,
   accent14: null,
   accent22: null,

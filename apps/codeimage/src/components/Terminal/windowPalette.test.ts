@@ -9,7 +9,6 @@ test('produces literal text alpha steps, opaque accent mixes and an ambient back
   });
   expect(palette.ink04).toBe('rgba(255, 255, 255, 0.04)');
   expect(palette.ink90).toBe('rgba(255, 255, 255, 0.9)');
-  expect(palette.wash).toBe('rgb(36, 0, 0)');
   expect(palette.status).toBe('rgb(41, 0, 0)');
   expect(createAmbientBackground(palette)).toBe(
     'radial-gradient(70% 90% at 12% 8%, rgba(255, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 62%), radial-gradient(70% 90% at 92% 96%, rgba(255, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 62%), rgb(0, 0, 0)',

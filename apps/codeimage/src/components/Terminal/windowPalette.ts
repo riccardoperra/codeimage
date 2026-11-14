@@ -86,7 +86,6 @@ export function createWindowPalette({
     ink90: inkAt(0.9),
     accent: tint ? rgba(tint, 1) : text,
     background: paper ? rgba(paper, 1) : text,
-    wash: tintedPaper(0.14),
     status: tintedPaper(0.16),
     accent14: accentAt(0.14),
     accent22: accentAt(0.22),
