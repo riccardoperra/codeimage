@@ -215,7 +215,7 @@ jobs:
           ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/highlight build:dev
-      - uses: amondnet/vercel-action@v41.1.4
+      - uses: amondnet/vercel-action@v42.3.0
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -299,7 +299,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v41.1.4
+      - uses: amondnet/vercel-action@v42.3.0
         if: ${{ github.event.inputs.deploy-frontend == 'true' }}
         name: Deploy
         with:
