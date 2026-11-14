@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "ESNext"
+    ],
+    "noEmit": true
+  },
+  "include": [
+    "src",
+    "scripts"
+  ]
+}
