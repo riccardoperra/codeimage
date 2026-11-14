@@ -17,7 +17,6 @@ import {NewDot} from '../../../components/WhatsNew/NewDot';
 import {
   commandAnchor,
   filledAnchor,
-  leadingDot,
 } from '../../../components/WhatsNew/whats-new.css';
 import {useHotkey} from '../../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../../i18n';
@@ -44,7 +43,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
   const size = () => props.size ?? 'sm';
   const [menuOpen, setMenuOpen] = createSignal(false);
 
-  // One image per tab and Redact secrets live in the menu. A Show me from
+  // One image per tab lives in the menu. A Show me from
   // the settings waits a frame, so that the settings close first.
   getWhatsNew().bindLocation('export', () => {
     settings.close();
@@ -61,25 +60,18 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
 
   return (
     <div class={styles.group} role="group" aria-label="Export" data-export>
-      {/* Hide secrets points here: while the code shows a secret, an export
-          would carry it. */}
-      <span class={`${commandAnchor} ${filledAnchor} ${leadingDot}`}>
-        <Button
-          class={styles.main}
-          theme={'primary'}
-          size={size()}
-          loading={exporter().busy()}
-          leftIcon={<DownloadIcon />}
-          title={`Export as ${exportSummary()}`}
-          data-export-image
-          onClick={() => exporter().image()}
-        >
-          {t('toolbar.export')}
-        </Button>
-        <Show when={exporter().secrets() > 0}>
-          <NewDot highlight="redact" />
-        </Show>
-      </span>
+      <Button
+        class={styles.main}
+        theme={'primary'}
+        size={size()}
+        loading={exporter().busy()}
+        leftIcon={<DownloadIcon />}
+        title={`Export as ${exportSummary()}`}
+        data-export-image
+        onClick={() => exporter().image()}
+      >
+        {t('toolbar.export')}
+      </Button>
       <DropdownMenu
         placement="bottom-end"
         open={menuOpen()}

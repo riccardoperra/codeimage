@@ -231,14 +231,11 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
           <VStack spacing={'6'}>
             <Show when={secretCount() > 0}>
               <VStack spacing={'2'}>
-                <HStack spacing={'1'} alignItems={'center'}>
-                  <div role="status">
-                    {secretCount() === 1
-                      ? t('secrets.visibleOne')
-                      : t('secrets.visible', {count: String(secretCount())})}
-                  </div>
-                  <NewDot highlight="redact" />
-                </HStack>
+                <div role="status">
+                  {secretCount() === 1
+                    ? t('secrets.visibleOne')
+                    : t('secrets.visible', {count: String(secretCount())})}
+                </div>
                 <FieldLabelHint>{t('secrets.destructiveHint')}</FieldLabelHint>
                 <Button size={'sm'} theme={'secondary'} onClick={redactAll}>
                   {t('secrets.redactAll')}

@@ -63,17 +63,17 @@ Two candidates, one on Opus and one on Fable. No cross-judge ran, because no mod
 
 ## Implementation
 
-The first release is `2026-11`, dated `2026-11-14`. Change its date on shipping day. It announces Hide secrets, One image per tab, Command menu, Editor layouts, and Theme card styles, in that order. Layouts and theme card styles are experiments. Five located highlights compete for three dots, so a first visit holds dots for Hide secrets, One image per tab, and Command menu, and the Experiments dots wait until one of those is seen. A bundle never announces a feature that it does not contain.
+The first release is `2026-11`, dated `2026-11-14`. Change its date on shipping day. It announces Hide secrets, One image per tab, Command menu, Editor layouts, and Theme card styles, in that order. Layouts and theme card styles are experiments. Four located highlights compete for three dots, so a first visit holds dots for One image per tab, Command menu, and Editor layouts, and the Theme card styles dot waits until one of those is seen. A bundle never announces a feature that it does not contain.
 
 `WhatsNewHost` mounts once in the unified editor and once in the classic editor. While a release waits to be shown, and only then, it lets the editor settle for a moment and then watches the DOM for visible dialogs, menus, and expanded popup triggers, at most once a frame. The watcher stops as soon as the announcement shows, so a visit with nothing pending observes nothing. Inline listboxes, including the theme picker, do not block announcements. The announcement then remains latched until dismissal. A major release uses the scrollable Showcase sheet. This release uses the Nudge.
 
-Only opening a coachmark or using a feature records a seen fact. Running a command counts as command-menu use. Choosing a layout or theme card style counts as use of that experiment. Exporting one image per tab counts as its use in the unified editor, and turning its checkbox on counts in the classic editor. Redact secrets in the Export menu, Redact all in the classic export dialog, or Redact on an editor warning, counts as Hide secrets use. Opening the menu through Show me does not consume its dot. The Settings archive renders rows from the same registry, with New tags from `isNew()`. Its Show me buttons reveal a location without changing facts.
+Only opening a coachmark or using a feature records a seen fact. Running a command counts as command-menu use. Choosing a layout or theme card style counts as use of that experiment. Exporting one image per tab counts as its use in the unified editor, and turning its checkbox on counts in the classic editor. Redact secrets in the Export menu, Redact all in the classic export dialog, or Redact on an editor warning, counts as Hide secrets use. Hide secrets has no dot or Show me because its warning appears when needed, and a conditional anchor would waste one of the three dot slots. Opening the menu through Show me does not consume the One image per tab dot. The Settings archive renders rows from the same registry, with New tags from `isNew()`. Its Show me buttons reveal a location without changing facts.
 
 Coachmarks inside a modal mount their portal inside that dialog. A body portal would be hidden from assistive technology by the modal. Dots remain mounted as invisible anchors until their coachmark closes, so opening one can record the seen fact without destroying the popover. Because the dot leaves as the coachmark closes, the dot moves focus itself: to the control before it on close, and to the control after it on Tab.
 
-In the unified editor, Export is one control: a button that exports at once and an arrow whose menu offers one image per tab and, while the code holds a possible secret, Redact secrets. The One image per tab dot sits on the arrow. The Hide secrets dot sits on the button, and only while the code holds a possible secret, since then an export would carry it. Neither dot sits inside the menu, because an open menu keeps Tab for itself and the dot could not be reached from the keyboard. Show me opens the menu. In the classic editor, the Hide secrets dot sits beside the export dialog's secrets warning, and the One image per tab dot beside its checkbox. Without a possible secret, the Hide secrets dot has no anchor and still holds one of the three slots, and its Show me opens a menu or dialog with no warning in it. We accept this, because a dot on any control that is always there would point at something other than the feature.
+In the unified editor, Export is one control: a button that exports at once and an arrow whose menu offers one image per tab and, while the code holds a possible secret, Redact secrets. The One image per tab dot sits on the arrow. It stays outside the menu because an open menu keeps Tab for itself and the dot could not be reached from the keyboard. Show me opens the menu. In the classic editor, the One image per tab dot sits beside its checkbox.
 
-The classic editor has the Nudge and Showcase, with no Settings archive. The Export control binds `export` in the unified editor and the production `ExportButton` binds it in the classic editor, so classic shows Show me and dots for the two export highlights only. A binding ends when the component that made it unmounts. Its Footer and Toolbar link directly to GitHub releases. The former version gate, Changelog, MDX notes and renderer, and the old FeatureBadge are removed together. The unrelated compatibility banner remains.
+The classic editor has the Nudge and Showcase, with no Settings archive. The Export control binds `export` in the unified editor and the production `ExportButton` binds it in the classic editor, so classic shows Show me and dots for One image per tab only. A binding ends when the component that made it unmounts. Its Footer and Toolbar link directly to GitHub releases. The former version gate, Changelog, MDX notes and renderer, and the old FeatureBadge are removed together. The unrelated compatibility banner remains.
 
 The development-only query `?whatsNew=nudge` or `?whatsNew=showcase` forces a review view. `await window.resetWhatsNew()` clears the persisted record. Reload after resetting. Production builds remove these aids.
 
@@ -89,17 +89,16 @@ The development-only query `?whatsNew=nudge` or `?whatsNew=showcase` forces a re
 
 The first release becomes "CodeImage 2.0" in one final PR, opened when the features below are on trunk. That PR renames the release, decides `major`, and adds each highlight with its dot and its illustration. The copy is a draft to check against the shipped behaviour.
 
-| Id | Title | Draft copy | Where the control lives | Source PR |
-| --- | --- | --- | --- | --- |
-| `social` | Social sizes | Frame presets sized for the networks you post on, with an optional handle signature. | Frame controls | #696 |
-| `alt` | Alt text | Copy a description of your snippet to paste along with the image. | Export dialog | #693 |
-| `marks` | Line marks | Mark lines as added, removed, highlighted or focused. | Code controls | #698 |
-| `takumi` | New renderer | A faster export engine. Experimental. | Settings, Experiments | #701 |
-| `cli` | codeimage CLI | Render the same image from your terminal or CI. | No control in the app, link to the docs | #702 |
-| `animate` | Code animations | Animate between code steps and export the result. | Animate panel | #707 and the PRs stacked on it |
+| Id        | Title           | Draft copy                                                                           | Where the control lives                 | Source PR                      |
+| --------- | --------------- | ------------------------------------------------------------------------------------ | --------------------------------------- | ------------------------------ |
+| `social`  | Social sizes    | Frame presets sized for the networks you post on, with an optional handle signature. | Frame controls                          | #696                           |
+| `alt`     | Alt text        | Copy a description of your snippet to paste along with the image.                    | Export dialog                           | #693                           |
+| `marks`   | Line marks      | Mark lines as added, removed, highlighted or focused.                                | Code controls                           | #698                           |
+| `takumi`  | New renderer    | A faster export engine. Experimental.                                                | Settings, Experiments                   | #701                           |
+| `cli`     | codeimage CLI   | Render the same image from your terminal or CI.                                      | No control in the app, link to the docs | #702                           |
+| `animate` | Code animations | Animate between code steps and export the result.                                    | Animate panel                           | #707 and the PRs stacked on it |
 
 Open for that PR:
 
 - Whether 2.0 announces with the Showcase (`major: true`) or the Nudge.
 - Which PR carries the `major` changeset for `@codeimage/app`.
-- `redact` has no anchor while the code holds no possible secret, yet it takes one of the three dot slots. Decide whether it keeps a dot.

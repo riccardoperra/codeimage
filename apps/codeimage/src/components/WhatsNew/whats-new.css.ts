@@ -183,12 +183,6 @@ export const filledAnchor = style({});
 globalStyle(`${filledAnchor} > ${dotAnchor} ${dot}::after`, {
   boxShadow: `0 0 0 2px ${c.background}`,
 });
-// For a control whose right corner touches another control with a dot.
-export const leadingDot = style({});
-globalStyle(`${leadingDot} > ${dotAnchor}`, {
-  right: 'auto',
-  left: '-9px',
-});
 export const coachmark = style([
   surface,
   {

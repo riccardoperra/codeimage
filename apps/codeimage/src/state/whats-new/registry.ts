@@ -15,7 +15,7 @@ export interface Highlight {
   readonly id: string;
   readonly title: string;
   readonly body: string;
-  /** `null` means no control inside the app: no dot and no "Show me". */
+  /** `null` means no location to point to: no dot and no "Show me". */
   readonly where: Where | null;
   readonly experimental?: true;
   readonly learnMore?: `https://${string}`;
@@ -48,7 +48,7 @@ export const RELEASES = [
         id: 'redact',
         title: 'Hide secrets',
         body: 'Code that looks like an API key, token or password gets a warning. Redact replaces it with dots before you export.',
-        where: 'export',
+        where: null,
       },
       {
         id: 'tabs',
