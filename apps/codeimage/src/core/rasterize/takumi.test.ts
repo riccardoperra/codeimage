@@ -151,6 +151,53 @@ describe('Takumi export', () => {
     );
   });
 
+  it('reads a selected system font restored without stored FontData', async () => {
+    const blob = vi.fn(async () => new Blob([new Uint8Array([7, 8, 9])]));
+    const other = vi.fn(async () => new Blob([new Uint8Array([1])]));
+    window.queryLocalFonts = vi.fn(async () => [
+      {
+        family: 'Local Mono',
+        fullName: 'Local Mono Regular',
+        postscriptName: 'LocalMono-Regular',
+        style: 'Regular',
+        blob,
+      },
+      {
+        family: 'Other Mono',
+        fullName: 'Other Mono Regular',
+        postscriptName: 'OtherMono-Regular',
+        style: 'Regular',
+        blob: other,
+      },
+    ]);
+    const {takumi} = await import('./takumi');
+    await expect(
+      takumi(exportNode('code'), {
+        ...options,
+        codeFont: {
+          id: 'Local Mono',
+          name: 'Local Mono',
+          type: 'system',
+          types: [{name: 'Regular', weight: 400}],
+          fontData: {
+            family: 'Local Mono',
+            faces: ['400'],
+            monospaced: true,
+            sources: [],
+          },
+        },
+      }),
+    ).resolves.toBeInstanceOf(Blob);
+    expect(blob).toHaveBeenCalledOnce();
+    expect(other).not.toHaveBeenCalled();
+    expect(renderer.registerFont).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'Local Mono',
+        data: new Uint8Array([7, 8, 9]),
+      }),
+    );
+  });
+
   it('continues rendering when an optional UI font cannot register', async () => {
     const style = document.createElement('style');
     style.textContent =

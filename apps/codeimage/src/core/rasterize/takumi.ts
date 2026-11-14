@@ -255,9 +255,22 @@ function cloneExportNode(node: HTMLElement) {
   return {html: html.outerHTML, text: clone.textContent ?? ''};
 }
 
-function localFontSources(font: CustomFontConfiguration): FontSource[] {
+async function localFontSources(
+  font: CustomFontConfiguration,
+): Promise<FontSource[]> {
   if (font.type !== 'system') return [];
-  return (font.fontData.sources ?? []).map(source => ({
+  let faces = font.fontData.sources ?? [];
+  // Persisted settings drop the native handles, so a font restored after a
+  // reload has none until the font picker loads them again.
+  if (!faces.length && window.queryLocalFonts) {
+    const family = normalizeFamily(font.name);
+    const local = await window.queryLocalFonts().catch(error => {
+      console.warn('[CodeImage] Local export font unavailable.', error);
+      return [];
+    });
+    faces = local.filter(face => normalizeFamily(face.family) === family);
+  }
+  return faces.map(source => ({
     name: font.name,
     key: source.postscriptName,
     weight: Number(determineFontFaceName(source.style)),
@@ -286,12 +299,13 @@ export const takumi: Rasterizer = async (
   const {width, height} = node.getBoundingClientRect();
   const {html, text} = cloneExportNode(node);
   const codeFamily = normalizeFamily(codeFont.name);
-  const [renderer, {css, sources}] = await Promise.all([
+  const [renderer, {css, sources}, localFonts] = await Promise.all([
     getRenderer(),
     collectCss(codeFamily, text),
+    localFontSources(codeFont),
   ]);
   const fontSources = [
-    ...(codeFont.type === 'web' ? sources : localFontSources(codeFont)),
+    ...(codeFont.type === 'web' ? sources : localFonts),
     ...['Inter', 'Inter var'].map(
       (name): FontSource => ({
         name,

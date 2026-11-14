@@ -106,6 +106,35 @@ P2_URL=http://localhost:4446 P2_OUT=/tmp/p2-round3/matrix P2_PERF=0 pnpm exec ts
 P2_URL=http://localhost:4446 P2_REVIEW_CASE=blocked-font P2_OUT=/tmp/p2-round3/font pnpm exec tsx scripts/parity/rasterizers.ts
 ```
 
+## Review round 3 verification
+
+An independent review in Google Chrome 157 on macOS changed two round 3 conclusions.
+
+Takumi rejects Chrome's Menlo faces only because of the sfnt version tag. Chrome returns Menlo's four faces and Monaco with the Apple `true` tag. Andale Mono, Courier New, and PT Mono come back as `00010000` and already registered. Rewriting the first four bytes of a `true` face to `00010000` registers all of them with the correct weights and styles, and Menlo renders correctly. The adapter now rewrites the tag when it reads native FontData, so Menlo uses Takumi instead of falling back.
+
+The second issue was a gap in round 3. After a reload, a selected system font has no FontData handles, because persistence drops them and nothing reloads them until the font picker opens. Every such export fell back with "The font is unavailable." even though the font was installed. When no handles are stored, export now queries local fonts and keeps only the selected family. With stored handles it still makes no query. Menlo and Andale Mono now export through Takumi after a reload, and the Menlo export is pixel-identical to the one taken before the reload.
+
+Results against Chrome, at native display DPR 2 and export scale 2:
+
+| Code font      | Source           | Takumi vs Chrome | Fallback | Native faces read |
+| -------------- | ---------------- | ---------------: | -------- | ----------------- |
+| JetBrains Mono | web              |          0.0323% | none     | none              |
+| Fira Code      | web              |          0.0337% | none     | none              |
+| Geist Mono     | web              |          0.0334% | none     | none              |
+| Menlo          | system, `true`   |          0.0328% | none     | Menlo's 4 faces   |
+| Andale Mono    | system, `.ttf`   |          0.0321% | none     | AndaleMono        |
+| Courier New    | system, `.ttf`   |          0.0319% | none     | Courier New's 4   |
+
+With a web font selected, export read no native font and fetched only the selected family's files and Inter. Monaco and PT Mono are not offered in the System picker, because its monospace check filters them out. That check predates P2, so the blob probe covers them instead. A forced FontData read failure shows "Used browser export for Menlo. The font data could not be read." and produces exactly the dom-export PNG. All 104 matrix cells pass again in Chrome 157, worst 0.0706% and median 0.0321%, with no fallbacks, font issues, or page errors. The app has 28 passing tests, and lint and typecheck pass.
+
+The `local-fonts` case now takes font lists:
+
+```sh
+CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" P2_URL=http://localhost:4447 P2_REVIEW_CASE=local-fonts P2_WEB_FONTS="Jetbrains Mono,Fira Code,Geist Mono" P2_SYSTEM_FONTS="Menlo,Andale Mono" P2_OUT=/tmp/p2-verify/fonts pnpm exec tsx scripts/parity/rasterizers.ts
+```
+
+The System picker's search list sometimes shows the previous search's results on the third consecutive search, so run at most two system fonts per command.
+
 ## Parity matrix
 
 All 104 cells passed again in review round 2. The worst cell was **0.0716%**, the median 0.0315%. No export fell back and no page error occurred. Values below are percentages against Chrome.
