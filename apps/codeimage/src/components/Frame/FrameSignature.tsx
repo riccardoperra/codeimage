@@ -2,6 +2,18 @@ import type {FrameState} from '@codeimage/store/frame/model';
 import {Show} from 'solid-js';
 import * as styles from './Frame.css';
 
+// The signature sits 16px from the bottom and is 34px tall; keep 16px clear above it.
+const SIGNATURE_SPACE = 66;
+
+export function framePadding(
+  padding: number,
+  signature: FrameState['signature'],
+) {
+  return signature
+    ? `${padding}px ${padding}px ${Math.max(padding, SIGNATURE_SPACE)}px`
+    : `${padding}px`;
+}
+
 export function FrameSignature(props: {signature: FrameState['signature']}) {
   return (
     <Show when={props.signature}>

@@ -1,7 +1,7 @@
 import type {getExportTarget} from '@codeimage/config';
 import type {FrameState} from '@codeimage/store/frame/model';
 import {FittedWindow} from './FittedWindow';
-import {FrameSignature} from './FrameSignature';
+import {FrameSignature, framePadding} from './FrameSignature';
 import type {AssetId} from '@codeimage/store/assets/assets';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
@@ -114,7 +114,10 @@ export const Frame: ParentComponent<FrameProps> = props => {
         style={assignInlineVars({
           [styles.frameVars.width]: computedWidth(),
           [styles.frameVars.height]: computedHeight(),
-          [styles.frameVars.padding]: `${props.padding}px`,
+          [styles.frameVars.padding]: framePadding(
+            props.padding,
+            props.signature,
+          ),
           [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
           [styles.frameVars.minHeight]: target() ? '0' : '100%',
         })}
