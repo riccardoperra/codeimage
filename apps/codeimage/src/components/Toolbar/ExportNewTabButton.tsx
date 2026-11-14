@@ -1,3 +1,5 @@
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {toast} from '@codeimage/ui';
@@ -18,6 +20,7 @@ interface ExportButtonProps {
 }
 
 export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
+  const config = provideState(EditorConfigStore);
   const modality = useModality();
   const [t] = useI18n<AppLocaleEntries>();
 
@@ -29,11 +32,12 @@ export const ExportInNewTabButton: Component<ExportButtonProps> = props => {
     getUmami().track('export-new-tab');
     const exportSettings = getExportCanvasStore();
     notify({
+      renderer: config.get.renderer,
       ref: props.canvasRef,
       options: {
         extension: exportSettings.get.extension,
         mode: ExportMode.newTab,
-        quality: exportSettings.get.jpegQuality,
+        quality: exportSettings.get.jpegQuality / 100,
         pixelRatio: Math.floor(exportSettings.get.devicePixelRatio),
       },
     });

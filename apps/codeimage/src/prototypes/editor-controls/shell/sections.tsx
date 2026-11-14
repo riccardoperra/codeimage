@@ -1,3 +1,6 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -196,6 +199,8 @@ function LanguageChoice() {
 export function createSettingSections(
   model: EditorControlsModel,
 ): readonly SettingSection[] {
+  const [t] = useI18n<AppLocaleEntries>();
+  const config = provideState(EditorConfigStore);
   const ui = getUiStore();
   const auth = getAuth0State();
   const navigate = useNavigate();
@@ -289,14 +294,40 @@ export function createSettingSections(
         size={'sm'}
         theme={'secondary'}
         variant={'ghost'}
-        disabled={!preferences.experimenting()}
+        disabled={
+          !preferences.experimenting() && config.get.renderer === 'dom-export'
+        }
         leftIcon={<RestoreIcon size={16} />}
-        onClick={preferences.restoreDefaults}
+        onClick={() => {
+          preferences.restoreDefaults();
+          config.setRenderer('dom-export');
+        }}
       >
         Restore defaults
       </Button>
     ),
     groups: () => [
+      {
+        title: t('rendering.engine'),
+        rows: [
+          {
+            id: 'rendering-engine',
+            title: t('rendering.takumi'),
+            description: () => t('rendering.experimentalDescription'),
+            small: true,
+            control: () => (
+              <SwitchField
+                id="settings-rendering-engine"
+                label={t('rendering.useTakumi')}
+                checked={config.get.renderer === 'takumi'}
+                onChange={checked =>
+                  config.setRenderer(checked ? 'takumi' : 'dom-export')
+                }
+              />
+            ),
+          },
+        ],
+      },
       {
         title: 'Editor',
         rows: [
@@ -358,6 +389,7 @@ export function createSettingSections(
   // Every row reads and writes the production export store, the one that
   // today's export popover and dialog share, so there is one value for each.
   const exportStore = getExportCanvasStore();
+  const frame = getFrameState();
   const exportSection: SettingSection = {
     id: 'export',
     name: nameOf('export'),
@@ -415,16 +447,21 @@ export function createSettingSections(
             description: () =>
               `The image is ${exportStore.canvasResolution()} pixels.`,
             control: () => (
-              <Segmented
-                value={String(exportStore.get.devicePixelRatio)}
-                onChange={value =>
-                  exportStore.set('devicePixelRatio', Number(value))
-                }
-                items={[1, 2, 3, 6].map(scale => ({
-                  label: `${scale}x`,
-                  value: String(scale),
-                }))}
-              />
+              <Show
+                when={!frame.exportTarget()}
+                fallback={<span class={styles.value}>1x</span>}
+              >
+                <Segmented
+                  value={String(exportStore.get.devicePixelRatio)}
+                  onChange={value =>
+                    exportStore.set('devicePixelRatio', Number(value))
+                  }
+                  items={[1, 2, 3, 6].map(scale => ({
+                    label: `${scale}x`,
+                    value: String(scale),
+                  }))}
+                />
+              </Show>
             ),
           },
         ],

@@ -1,10 +1,13 @@
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
+import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {altText} from '@core/altText';
 import {createAsyncAction} from '@core/hooks/async-action';
 import {loadLanguage} from '@core/snapshot/tokenize';
-import {createComponent, getOwner, type Resource} from 'solid-js';
+import {createComponent, getOwner, runWithOwner, type Resource} from 'solid-js';
 import {render} from 'solid-js/web';
 import {PreviewFrame} from '../components/Frame/PreviewFrame';
+import {showExportSuccessToast} from '../components/Toolbar/ExportSuccessToast';
 import type {ExportImagePayload} from './use-export-image';
 import {deliverTabFiles, renderTabFiles} from './export-tabs';
 import {ExportMode, exportImage} from './use-export-image';
@@ -39,6 +42,7 @@ export function useExportSnippet(): [
       );
       try {
         return await exportImage({
+          ...payload,
           ref,
           options: {...payload.options, mode: ExportMode.getBlob},
         });
@@ -51,12 +55,24 @@ export function useExportSnippet(): [
 
   const [data, {notify}] = createAsyncAction(
     async (ref: ExportImagePayload) => {
+      const activeEditor = getActiveEditorStore().editor();
+      const text = activeEditor && altText(activeEditor);
       const eachTab =
         canvas.get.oneImagePerTab &&
         editor.state.editors.length > 1 &&
         (ref.options.mode === ExportMode.export ||
           ref.options.mode === ExportMode.share);
-      return eachTab ? exportEachTab(ref) : exportImage(ref);
+      const result = await (eachTab ? exportEachTab(ref) : exportImage(ref));
+      if (
+        result &&
+        (ref.options.mode === ExportMode.export ||
+          ref.options.mode === ExportMode.share)
+      ) {
+        runWithOwner(owner, () =>
+          showExportSuccessToast('altText.exported', text),
+        );
+      }
+      return result;
     },
   );
 

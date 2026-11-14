@@ -1,6 +1,17 @@
 export default {
   en: {
     frame: {
+      freeSize: 'Free size',
+      signature: 'Signature',
+      signaturePosition: 'Position',
+      bottomLeft: 'Bottom left',
+      bottomRight: 'Bottom right',
+      targets: {
+        'x-landscape': 'X landscape',
+        square: 'Square',
+        'linkedin-portrait': 'LinkedIn portrait',
+        'open-graph': 'Open Graph',
+      },
       frame: 'Frame',
       padding: 'Padding',
       visible: 'Visible',
@@ -31,6 +42,17 @@ export default {
   },
   it: {
     frame: {
+      freeSize: 'Dimensioni libere',
+      signature: 'Firma',
+      signaturePosition: 'Posizione',
+      bottomLeft: 'In basso a sinistra',
+      bottomRight: 'In basso a destra',
+      targets: {
+        'x-landscape': 'X orizzontale',
+        square: 'Quadrato',
+        'linkedin-portrait': 'LinkedIn verticale',
+        'open-graph': 'Open Graph',
+      },
       frame: 'Struttura',
       padding: 'Spaziatura',
       visible: 'Visibilità',
@@ -60,6 +82,17 @@ export default {
   },
   de: {
     frame: {
+      freeSize: 'Freie Größe',
+      signature: 'Signatur',
+      signaturePosition: 'Position',
+      bottomLeft: 'Unten links',
+      bottomRight: 'Unten rechts',
+      targets: {
+        'x-landscape': 'X Querformat',
+        square: 'Quadrat',
+        'linkedin-portrait': 'LinkedIn Hochformat',
+        'open-graph': 'Open Graph',
+      },
       frame: 'Rahmen',
       padding: 'Abstand',
       visible: 'Sichtbar',
@@ -89,6 +122,17 @@ export default {
   },
   es: {
     frame: {
+      freeSize: 'Tamaño libre',
+      signature: 'Firma',
+      signaturePosition: 'Posición',
+      bottomLeft: 'Abajo a la izquierda',
+      bottomRight: 'Abajo a la derecha',
+      targets: {
+        'x-landscape': 'X horizontal',
+        square: 'Cuadrado',
+        'linkedin-portrait': 'LinkedIn vertical',
+        'open-graph': 'Open Graph',
+      },
       frame: 'Estructura',
       padding: 'Espaciado',
       visible: 'Visibilidad',

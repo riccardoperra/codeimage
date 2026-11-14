@@ -1,3 +1,5 @@
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {detectSecrets} from '@codeimage/secrets';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -39,6 +41,7 @@ export interface Exporter {
 export function createExporter(
   ref: Accessor<HTMLElement | undefined>,
 ): Exporter {
+  const config = provideState(EditorConfigStore);
   const canvas = getExportCanvasStore();
   const editor = getRootEditorStore();
   const owner = getOwner();
@@ -75,6 +78,7 @@ export function createExporter(
 
   const eachTab = async () => {
     const payload = options(ExportMode.export);
+    const renderer = config.get.renderer;
     const tabs = editor.state.editors.map(tab => ({
       ...tab,
       tab: {...tab.tab},
@@ -97,6 +101,7 @@ export function createExporter(
       try {
         return await exportImage({
           ref: frame,
+          renderer,
           options: {...payload, mode: ExportMode.getBlob},
         });
       } finally {
@@ -111,7 +116,11 @@ export function createExporter(
     tabs: () => editor.state.editors.length,
     image: () =>
       void run(() =>
-        exportImage({ref: ref(), options: options(ExportMode.export)}),
+        exportImage({
+          ref: ref(),
+          renderer: config.get.renderer,
+          options: options(ExportMode.export),
+        }),
       ),
     eachTab: () => void run(eachTab),
     secrets: () =>

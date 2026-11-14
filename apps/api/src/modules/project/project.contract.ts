@@ -2,6 +2,27 @@ import type {Static} from '@sinclair/typebox';
 import {Type} from '@sinclair/typebox';
 import {defineContract, enumLiteral, Nullable} from '../../shared/contract.js';
 
+export const FrameSignatureSchema = Type.Object({
+  handle: Type.String(),
+  position: Type.Union([
+    Type.Literal('bottom-left'),
+    Type.Literal('bottom-right'),
+  ]),
+});
+
+export const ExportTargetSchema = Type.Union([
+  Type.Literal('x-landscape'),
+  Type.Literal('square'),
+  Type.Literal('linkedin-portrait'),
+  Type.Literal('open-graph'),
+]);
+
+export const FrameExportProperties = {
+  exportTarget: Type.Optional(Nullable(ExportTargetSchema)),
+  aspectRatio: Type.Optional(Type.Union([Type.Null(), Type.String()])),
+  signature: Type.Optional(Nullable(FrameSignatureSchema)),
+};
+
 export const BaseProjectResponseSchema = Type.Object(
   {
     id: Type.String({format: 'uuid'}),
@@ -25,6 +46,7 @@ export const BaseSnippetEditorTabsSchema = Type.Array(
 );
 
 export const BaseSnippetFrameSchema = Type.Object({
+  ...FrameExportProperties,
   id: Type.String({format: 'uuid'}),
   background: Type.String(),
   padding: Type.Number(),
@@ -61,6 +83,7 @@ export const BaseSnippetEditorOptionsSchema = Type.Object({
 
 export const SnippetFrameCreateRequestSchema = Type.Object(
   {
+    ...FrameExportProperties,
     background: Nullable(Type.String()),
     opacity: Nullable(Type.Number({minimum: 0, maximum: 100, default: 100})),
     radius: Nullable(Type.Number({default: 24})),
@@ -124,6 +147,7 @@ export const ProjectCreateRequestSchema = Type.Object(
 
 export const SnippetFrameCreateResponseSchema = Type.Object(
   {
+    ...FrameExportProperties,
     background: Nullable(Type.String()),
     opacity: Type.Number({minimum: 0, maximum: 100, default: 100}),
     radius: Nullable(Type.Number()),
@@ -140,7 +164,7 @@ export const ProjectCreateResponseSchema = Type.Object(
     createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     editorOptions: Type.Required(EditorOptionsCreateRequestSchema),
-    frame: Type.Required(SnippetFrameCreateResponseSchema),
+    frame: SnippetFrameCreateResponseSchema,
     terminal: Type.Required(SnippetTerminalCreateRequestSchema),
     editorTabs: SnippetEditorTabsCreateRequestSchema,
   },
@@ -149,6 +173,7 @@ export const ProjectCreateResponseSchema = Type.Object(
 
 export const SnippetFrameUpdateRequestSchema = Type.Object(
   {
+    ...FrameExportProperties,
     background: Nullable(Type.String()),
     opacity: Type.Number(),
     radius: Nullable(Type.Number()),
@@ -203,7 +228,7 @@ const EditorOptionsUpdateRequestSchema = Type.Object(
 export const ProjectUpdateRequestSchema = Type.Object(
   {
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
-    frame: Type.Required(SnippetFrameUpdateRequestSchema),
+    frame: SnippetFrameUpdateRequestSchema,
     terminal: Type.Required(SnippetTerminalUpdateRequestSchema),
     editors: SnippetEditorTabsUpdateRequestSchema,
   },
@@ -218,7 +243,7 @@ export const ProjectUpdateResponseSchema = Type.Object(
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     ownerId: Type.String({format: 'uuid'}),
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
-    frame: Type.Required(SnippetFrameUpdateRequestSchema),
+    frame: SnippetFrameUpdateRequestSchema,
     terminal: Type.Required(SnippetTerminalUpdateRequestSchema),
     editorTabs: SnippetEditorTabsUpdateRequestSchema,
   },

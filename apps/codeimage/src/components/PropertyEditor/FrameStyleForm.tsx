@@ -11,9 +11,9 @@ import type {AppLocaleEntries} from '../../i18n';
 import {AspectRatioPicker} from './controls/AspectRatioPicker/AspectRatioPicker';
 import {CustomColorPicker} from './controls/ColorPicker/CustomColorPicker';
 import {PanelHeader} from './PanelHeader';
-import {PanelRow, TwoColumnPanelRow} from './PanelRow';
+import {FullWidthPanelRow, PanelRow, TwoColumnPanelRow} from './PanelRow';
 import {SuspenseEditorItem} from './SuspenseEditorItem';
-import {Select, createSelectOptions} from '@codeui/kit';
+import {Select, TextField, createSelectOptions} from '@codeui/kit';
 
 export const FrameStyleForm: ParentComponent = () => {
   const [t] = useI18n<AppLocaleEntries>();
@@ -140,12 +140,56 @@ export const FrameStyleForm: ParentComponent = () => {
         </PanelRow>
       </Show>
 
+      <PanelRow for="signatureHandle-input" label={t('frame.signature')}>
+        <TwoColumnPanelRow>
+          <TextField
+            id="signatureHandle"
+            size="xs"
+            placeholder="@handle"
+            value={frame.store.signature?.handle ?? ''}
+            onChange={handle =>
+              frame.setSignature(
+                handle
+                  ? {
+                      handle,
+                      position:
+                        frame.store.signature?.position ?? 'bottom-right',
+                    }
+                  : null,
+              )
+            }
+          />
+        </TwoColumnPanelRow>
+      </PanelRow>
+      <Show when={frame.store.signature}>
+        <PanelRow for="signaturePosition" label={t('frame.signaturePosition')}>
+          <FullWidthPanelRow>
+            <SegmentedField
+              id="signaturePosition"
+              size="xs"
+              adapt
+              value={frame.store.signature?.position ?? 'bottom-right'}
+              onChange={position => {
+                const signature = frame.store.signature;
+                if (signature) frame.setSignature({...signature, position});
+              }}
+              items={[
+                {label: t('frame.bottomLeft'), value: 'bottom-left' as const},
+                {label: t('frame.bottomRight'), value: 'bottom-right' as const},
+              ]}
+            />
+          </FullWidthPanelRow>
+        </PanelRow>
+      </Show>
+
       <PanelRow for={'aspectRatio'} label={t('frame.aspectRatio')}>
         <TwoColumnPanelRow>
           <SuspenseEditorItem
             fallback={<SkeletonLine width={'100%'} height={'26px'} />}
           >
             <AspectRatioPicker
+              target={frame.exportTarget()}
+              onTargetChange={frame.setExportTarget}
               value={frame.store.aspectRatio}
               onChange={ratio => {
                 frame.setAspectRatio(ratio);

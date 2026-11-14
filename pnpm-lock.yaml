@@ -286,18 +286,10 @@ overrides:
   typescript: ^6.0.3
 
 patchedDependencies:
-  '@codeui/kit':
-    hash: 327124a76affdf8a15e8f8482a05089d0900daa777402d696103afc7e091a449
-    path: patches/@codeui__kit.patch
-  '@motionone/solid':
-    hash: 13f53ad17e8f69f172b2cdc5369102b180a81b8181044aeb4f77dc9f3a31b944
-    path: patches/@motionone__solid.patch
-  solid-headless:
-    hash: b49786ed140172dc3b664c30dae5e1b5bdb8b42e4a6e5c24cc54f663cffbd394
-    path: patches/solid-headless.patch
-  tinykeys:
-    hash: de39c49788d8fa66291f7838d8c6dfb4d10c77c603a670bd5d4b4a20ac253888
-    path: patches/tinykeys.patch
+  '@codeui/kit': 327124a76affdf8a15e8f8482a05089d0900daa777402d696103afc7e091a449
+  '@motionone/solid': 13f53ad17e8f69f172b2cdc5369102b180a81b8181044aeb4f77dc9f3a31b944
+  solid-headless: b49786ed140172dc3b664c30dae5e1b5bdb8b42e4a6e5c24cc54f663cffbd394
+  tinykeys: de39c49788d8fa66291f7838d8c6dfb4d10c77c603a670bd5d4b4a20ac253888
 
 importers:
 
@@ -406,6 +398,9 @@ importers:
       '@fastify/type-provider-typebox':
         specifier: 6.3.0
         version: 6.3.0(ajv-formats@3.0.1(ajv@8.18.0))(typebox@1.1.6)
+      '@prisma/adapter-pg':
+        specifier: 7.10.1
+        version: 7.10.1
       '@prisma/client':
         specifier: 7.10.1
         version: 7.10.1(prisma@7.10.1(@types/node@25.9.9)(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@6.0.3))(typescript@6.0.3)
@@ -437,9 +432,6 @@ importers:
         specifier: 6.0.1
         version: 6.0.1
     devDependencies:
-      '@prisma/adapter-pg':
-        specifier: 7.10.1
-        version: 7.10.1
       '@types/node':
         specifier: catalog:next
         version: 25.9.9
@@ -620,6 +612,9 @@ importers:
       '@solidjs/router':
         specifier: ^0.16.1
         version: 0.16.1(solid-js@1.9.12)
+      '@takumi-rs/wasm':
+        specifier: 2.19.0
+        version: 2.19.0(csstype@3.2.3)(react@19.2.4)
       '@thisbeyond/solid-dnd':
         specifier: 0.7.5
         version: 0.7.5(solid-js@1.9.12)
@@ -717,6 +712,9 @@ importers:
       cross-env:
         specifier: ^10.1.0
         version: 10.1.0
+      happy-dom:
+        specifier: 20.8.8
+        version: 20.8.8
       https-localhost:
         specifier: ^4.7.1
         version: 4.7.1
@@ -5263,6 +5261,27 @@ packages:
   '@szmarczak/http-timer@4.0.6':
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
     engines: {node: '>=10'}
+
+  '@takumi-rs/helpers@2.19.0':
+    resolution: {integrity: sha512-3ycCjYCP31HACXBvlpv4fMLw9vneCVGuttFBfZr4jpL0nHNCt2wlXvt0XFt05FscLMUY2s+5PGKPE6EatXI/mg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      preact: ^10.0.0 || ^11.0.0
+      react: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      preact:
+        optional: true
+      react:
+        optional: true
+
+  '@takumi-rs/wasm@2.19.0':
+    resolution: {integrity: sha512-V9LKPOFVHKZ7lANVQ94WmOkGvgW0EqXUeLEpsWB2Wnnx7WpOWHnbAI9Yb0VnAYeyRicp7nAfG3vF/M7vsw0s2w==}
+    engines: {node: '>=20.19'}
+    peerDependencies:
+      csstype: '*'
+    peerDependenciesMeta:
+      csstype:
+        optional: true
 
   '@tanstack/devtools-client@0.0.6':
     resolution: {integrity: sha512-f85ZJXJnDIFOoykG/BFIixuAevJovCvJF391LPs6YjBAPhGYC50NWlx1y4iF/UmK5/cCMx+/JqI5SBOz7FanQQ==}
@@ -16106,6 +16125,19 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
+  '@takumi-rs/helpers@2.19.0(react@19.2.4)':
+    optionalDependencies:
+      react: 19.2.4
+
+  '@takumi-rs/wasm@2.19.0(csstype@3.2.3)(react@19.2.4)':
+    dependencies:
+      '@takumi-rs/helpers': 2.19.0(react@19.2.4)
+    optionalDependencies:
+      csstype: 3.2.3
+    transitivePeerDependencies:
+      - preact
+      - react
+
   '@tanstack/devtools-client@0.0.6':
     dependencies:
       '@tanstack/devtools-event-client': 0.4.3
@@ -21559,7 +21591,7 @@ snapshots:
       devtools-protocol: 0.0.1581282
       typed-query-selector: 2.12.1
       webdriver-bidi-protocol: 0.4.1
-      ws: 8.19.0
+      ws: 8.20.0
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
