@@ -1,16 +1,17 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
 import {nodeToDataURL} from '../src/lib/util';
 
-const platform = vi.hoisted(() => ({isChromium: true}));
+const platform = vi.hoisted(() => ({isChromium: true, isFirefox: false}));
 vi.mock('@solid-primitives/platform', () => platform);
 
 describe('SVG layout', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     platform.isChromium = true;
+    platform.isFirefox = false;
   });
 
-  it('keeps native SVG coordinates outside Chromium', async () => {
+  it('keeps native SVG coordinates in WebKit', async () => {
     platform.isChromium = false;
     vi.stubGlobal('devicePixelRatio', 2);
     const node = document.createElement('div');
@@ -24,6 +25,24 @@ describe('SVG layout', () => {
 
     expect(svg.documentElement.getAttribute('viewBox')).toBe('0 0 300 100');
     expect(svg.querySelector('div')?.style.zoom).toBe('1.25');
+  });
+
+  it('lays out Firefox content at the display pixel ratio', async () => {
+    platform.isChromium = false;
+    platform.isFirefox = true;
+    vi.stubGlobal('devicePixelRatio', 2);
+    const node = document.createElement('div');
+    node.style.zoom = '1.25';
+
+    const dataUrl = await nodeToDataURL(node, 300, 100);
+    const svg = new DOMParser().parseFromString(
+      decodeURIComponent(dataUrl.split(',')[1]),
+      'image/svg+xml',
+    );
+
+    expect(svg.documentElement.getAttribute('width')).toBe('300');
+    expect(svg.documentElement.getAttribute('viewBox')).toBe('0 0 600 200');
+    expect(svg.querySelector('div')?.style.zoom).toBe('2.5');
   });
 
   it.each([1, 2, 3])(
