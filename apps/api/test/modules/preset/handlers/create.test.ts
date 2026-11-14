@@ -5,7 +5,7 @@ import {create} from '../../../../src/modules/preset/handlers/create.js';
 import type {PresetHandlerDependencies} from '../../../../src/modules/preset/handlers/index.js';
 import type {PresetCreateDto} from '../../../../src/modules/preset/schema/preset-create-dto.schema.js';
 import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
-import {testPresetUtils} from '../../../__internal__/presetUtils.js';
+import {testPresetUtils} from '../../../helpers/preset.js';
 import {dependencies} from './dependencies.js';
 
 const handlersStub = {} as ResolvedDomainHandlerMap<DomainHandlerMap>;

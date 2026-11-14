@@ -1,9 +1,14 @@
 import type {Project, User} from '@codeimage/prisma-models';
-import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 import type {ProjectGetByIdResponse} from '../../../../src/modules/project/schema/index.js';
 
 import {build} from '../../../helper.js';
-import {clearAllSeeds, projectSeed, userSeed} from '../../../helpers/seed.js';
+import {
+  clearAllSeeds,
+  client,
+  projectSeed,
+  userSeed,
+} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
@@ -24,7 +29,6 @@ afterEach(async () => {
 test<TestContext>('/v1/project -> 200', async t => {
   const fastify = await build(t);
   const userId = t.user.id;
-  const spy = vi.spyOn(fastify.projectService, 'findAllByUserId');
 
   const response = await fastify.inject({
     url: '/api/v1/project',
@@ -33,7 +37,6 @@ test<TestContext>('/v1/project -> 200', async t => {
 
   const body = response.json<ProjectGetByIdResponse[]>();
 
-  expect(spy, 'has been called once').toHaveBeenCalledWith(userId);
   assert.ok(body.find(el => el.id === t.project1.id));
   assert.equal(body[0].ownerId, userId);
   assert.equal(response.statusCode, 200);

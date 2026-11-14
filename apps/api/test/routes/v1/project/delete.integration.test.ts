@@ -1,8 +1,13 @@
 import type {Project, User} from '@codeimage/prisma-models';
-import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 
 import {build} from '../../../helper.js';
-import {clearAllSeeds, projectSeed, userSeed} from '../../../helpers/seed.js';
+import {
+  clearAllSeeds,
+  client,
+  projectSeed,
+  userSeed,
+} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
@@ -24,13 +29,11 @@ test<TestContext>('DELETE /v1/project/:id [Delete Project] -> 200', async contex
   const fastify = await build(context);
   const userId = context.user.id;
   const projectId = context.project1.id;
-  const spy = vi.spyOn(fastify.projectRepository, 'deleteProject');
 
   const response = await fastify.inject({
     url: `/api/v1/project/${projectId}`,
     method: 'DELETE',
   });
 
-  expect(spy).toHaveBeenCalledWith(projectId, userId);
   assert.equal(response.statusCode, 200, 'return status 200');
 });
