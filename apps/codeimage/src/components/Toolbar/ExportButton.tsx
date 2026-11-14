@@ -334,7 +334,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}
               size={'md'}
-              label={'Show only active tab'}
+              label={t('exportTabs.showOnlyActiveTab')}
             />
             <Checkbox
               checked={exportCanvasStore.get.oneImagePerTab}
