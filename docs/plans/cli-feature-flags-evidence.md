@@ -44,13 +44,13 @@ The merge keeps the CLI parser's `sourceLines` mapping and adopts P5's
 highlights. Focus can share a line with highlight, added, or removed marks.
 Shiki focus annotations add to the same set. `--lines` clips and remaps the
 set. No focused line in the output means no dimming. The renderer validates
-snapshots and calls P5's shared parser to migrate legacy `focus: true` from
-highlighted lines. The CLI pipeline uses the normalized snapshot type.
+snapshots and defaults a missing `focusedLines` to an empty list. The CLI
+pipeline uses the normalized snapshot type.
 
 - `pnpm install` and `pnpm libs:build` pass. Install reports peer, deprecation,
   and optional build-script warnings, plus a solid-dnd patch warning.
 - CLI tests pass, 77 tests across six files.
-- Renderer tests pass, 48 tests, including legacy migration and focus pixels.
+- Renderer tests pass, 48 tests, including focus pixels.
 - Shared diff, annotation, and alt-text tests pass, 32 tests.
 - `pnpm lint` and full workspace `pnpm typecheck` pass. App lint has 32 existing warnings.
 - All 28 built CLI invocations pass in tmux. Two assert exit 2 for invalid

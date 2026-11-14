@@ -46,7 +46,7 @@ codeimage foo.ts --focus 3-5 --focus 9 --highlight 4 -o focused.png
 ```
 
 `--highlight` and `--focus` accept comma-separated line numbers and inclusive
-ranges such as `3-5,9`. Repeat `--focus` to add ranges. Focus keeps those lines
+ranges such as `3-5,9`. Repeat either flag to add ranges. Focus keeps those lines
 bright and dims the others, independently of highlight, added, or removed
 marks. A line can be both focused and highlighted. If no focused line is in
 the output, dimming stays off. A bare `--focus` is a usage error.
@@ -57,9 +57,6 @@ annotation comments become marks through the language's comment syntax.
 ranges add to `--focus` without adding highlights. The CLI removes annotation
 comments before applying `--lines`. A standalone annotation targets the next
 code line. Existing focus ranges are clipped and remapped to the selection.
-
-The Node renderer also accepts older snapshots with `focus: true`, migrating
-their highlighted lines to focused lines through P5's shared parser.
 
 Secret redaction runs by default. Diagnostics go to stderr with the input
 name, line, column, and rule id, followed by `redacted 1 secret` or `redacted N secrets`. Images and

@@ -135,6 +135,13 @@ describe('marks flag', () => {
       false,
     ]);
   });
+  it('adds repeated highlight ranges', async () => {
+    const {snapshot} = await prepare(['--highlight', '2', '--highlight', '4']);
+    expect(snapshot.editor.editors[0].marks?.lines).toEqual([
+      {line: 2, kind: 'highlight'},
+      {line: 4, kind: 'highlight'},
+    ]);
+  });
   it('keeps focus and highlight on the same line independent', async () => {
     const {snapshot} = await prepare(['--focus', '2', '--highlight', '2,4']);
     expect(snapshot.editor.editors[0].marks).toEqual({
