@@ -11,6 +11,7 @@ export const lineMarksLocale = {
       diffFile: '{{count}} file in unified diff',
       diffFiles: '{{count}} files in unified diff',
       importDiff: 'Import as diff',
+      importedDiff: 'Diff imported',
       notEnoughTabs: 'Not enough tabs. Close a tab before importing this diff.',
       convertedOne: 'Converted {{count}} annotation to line marks',
       convertedMany: 'Converted {{count}} annotations to line marks',
@@ -35,6 +36,7 @@ export const lineMarksLocale = {
       diffFile: '{{count}} file nel diff unificato',
       diffFiles: '{{count}} file nel diff unificato',
       importDiff: 'Importa come diff',
+      importedDiff: 'Diff importato',
       notEnoughTabs:
         'Schede insufficienti. Chiudi una scheda prima di importare questo diff.',
       convertedOne: '{{count}} annotazione convertita in marcature',
@@ -60,6 +62,7 @@ export const lineMarksLocale = {
       diffFile: '{{count}} Datei im Unified Diff',
       diffFiles: '{{count}} Dateien im Unified Diff',
       importDiff: 'Als Diff importieren',
+      importedDiff: 'Diff importiert',
       notEnoughTabs: 'Nicht genügend Tabs. Schließe vor dem Import einen Tab.',
       convertedOne: '{{count}} Annotation in Zeilenmarkierungen umgewandelt',
       convertedMany: '{{count}} Annotationen in Zeilenmarkierungen umgewandelt',
@@ -84,6 +87,7 @@ export const lineMarksLocale = {
       diffFile: '{{count}} archivo en el diff unificado',
       diffFiles: '{{count}} archivos en el diff unificado',
       importDiff: 'Importar como diff',
+      importedDiff: 'Diff importado',
       notEnoughTabs:
         'No hay suficientes pestañas. Cierra una antes de importar este diff.',
       convertedOne: '{{count}} anotación convertida en marcas de línea',

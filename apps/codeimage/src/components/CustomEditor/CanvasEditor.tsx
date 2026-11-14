@@ -3,6 +3,13 @@ import {isolateHistory, undo} from '@codemirror/commands';
 import type {CommentTokens} from '@codemirror/commands';
 import {EditorState} from '@codemirror/state';
 import {parseUnifiedDiff} from '../../core/diff/parseUnifiedDiff';
+import {getInitialEditorState} from '../../state/editor/editor';
+import {createUniqueId} from '../../state/plugins/unique-id';
+import {
+  diffImportHistory,
+  importDiff,
+  restoreDiffImport,
+} from './plugins/lineMarks/diffImportHistory';
 import {pasteAnnotations} from './plugins/lineMarks/paste';
 import {
   lineMarksField,
@@ -18,7 +25,8 @@ import {EditorView} from '@codemirror/view';
 import {Button} from '@codeui/kit';
 import {createCompartmentExtension, createEditorFocus} from 'solid-codemirror';
 import type {Accessor} from 'solid-js';
-import {createEffect, createSignal, on, onCleanup} from 'solid-js';
+import {batch, createEffect, createSignal, on, onCleanup} from 'solid-js';
+import {unwrap} from 'solid-js/store';
 import type {AppLocaleEntries} from '../../i18n';
 import {MAX_EDITOR_TABS} from '../../state/editor/model';
 import {SparklesIcon} from '../Icons/SparklesIcon';
@@ -83,8 +91,27 @@ export default function CanvasEditor(props: CanvasEditorProps) {
     ),
   );
 
+  let activeToastId: string | null = null;
+  createCompartmentExtension(
+    [
+      diffImportHistory,
+      EditorView.updateListener.of(update => {
+        for (const transaction of update.transactions)
+          restoreDiffImport(transaction, snapshot => {
+            batch(() => {
+              const store = getRootEditorStore();
+              store.actions.setActiveEditorId(snapshot.activeEditorId);
+              store.actions.setEditors(structuredClone(snapshot.editors));
+            });
+            if (transaction.isUserEvent('undo') && activeToastId)
+              toast.dismiss(activeToastId);
+          });
+      }),
+    ],
+    editorView,
+  );
+
   createCompartmentExtension(() => {
-    let activeToastId: string | null = null;
     return EditorView.domEventHandlers({
       paste(event, view) {
         if (props.readOnly) return false;
@@ -126,43 +153,87 @@ export default function CanvasEditor(props: CanvasEditorProps) {
                       return;
                     }
                     const first = files[0];
+                    const before = {
+                      activeEditorId: store.state.activeEditorId,
+                      editors: structuredClone(unwrap(store.state.editors)),
+                    };
+                    const languageId = (path: string) =>
+                      inferLanguageFromPath(path) ??
+                      activeEditorStore.editor()?.languageId ??
+                      'typescript';
+                    const after = {
+                      activeEditorId: before.activeEditorId,
+                      editors: [
+                        ...before.editors.map(editor =>
+                          editor.id === tabId
+                            ? {
+                                ...editor,
+                                code: first.code,
+                                marks: first.marks,
+                                tab: {tabName: first.path},
+                                languageId: languageId(first.path),
+                              }
+                            : editor,
+                        ),
+                        ...files.slice(1).map(file => ({
+                          ...getInitialEditorState(),
+                          id: createUniqueId(),
+                          code: file.code,
+                          marks: file.marks,
+                          tab: {tabName: file.path},
+                          languageId: languageId(file.path),
+                        })),
+                      ],
+                    };
                     view.dispatch({
                       changes: {
                         from: 0,
                         to: view.state.doc.length,
                         insert: first.code,
                       },
-                      effects: replaceMarks.of(
-                        marksValue(
-                          EditorState.create({doc: first.code}).doc,
-                          first.marks,
+                      effects: [
+                        replaceMarks.of(
+                          marksValue(
+                            EditorState.create({doc: first.code}).doc,
+                            first.marks,
+                          ),
                         ),
-                      ),
+                        importDiff.of({before, after}),
+                      ],
                       annotations: isolateHistory.of('full'),
                     });
-                    const languageId = (path: string) =>
-                      inferLanguageFromPath(path) ??
-                      activeEditorStore.editor()?.languageId ??
-                      'typescript';
-                    const index = store.state.editors.findIndex(
-                      editor => editor.id === tabId,
-                    );
-                    store.actions.setEditors(index, 'tab', {
-                      tabName: first.path,
-                    });
-                    store.actions.setEditors(
-                      index,
-                      'languageId',
-                      languageId(first.path),
-                    );
-                    for (const file of files.slice(1))
-                      store.actions.addEditor({
-                        code: file.code,
-                        marks: file.marks,
-                        tab: {tabName: file.path},
-                        languageId: languageId(file.path),
-                      });
                     toast.dismiss(activeToast.id);
+                    const importedState = view.state;
+                    activeToastId = toast.success(
+                      undoToast => (
+                        <HStack spacing={5} alignItems="center">
+                          <span>{t('lineMarks.importedDiff')}</span>
+                          <Button
+                            size="xs"
+                            theme="primary"
+                            onClick={() => {
+                              if (
+                                !props.readOnly &&
+                                activeEditorStore.editor()?.id === tabId &&
+                                view.state.doc.eq(importedState.doc) &&
+                                view.state.field(lineMarksField) ===
+                                  importedState.field(lineMarksField)
+                              )
+                                undo(view);
+                              toast.dismiss(undoToast.id);
+                              view.focus();
+                            }}
+                          >
+                            {t('lineMarks.undo')}
+                          </Button>
+                        </HStack>
+                      ),
+                      {
+                        position: 'bottom-center',
+                        duration: 10000,
+                        theme: getUiStore().invertedThemeMode(),
+                      },
+                    );
                     view.focus();
                   }}
                 >
