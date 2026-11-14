@@ -32,21 +32,57 @@ output contents, and writes `feature-flags-results.json`. It saves stdout
 and stderr for every run. The original run also has `tmux-pane.txt` and the
 build and check logs in `/tmp/swarm-cli-flags/`.
 
-## Results
+## Focus redesign verification, 2026-11-14
 
-These results are from the independent review run, after the rebase onto
-P4 head `37665921`.
+Merged P5 head `576b9ea0` into PR #704 head `ffc0827c` with merge commit
+`06ec9fc6`. Both heads remain ancestors. The target branch was occupied by
+another worktree, so this checkout uses `feat/cli-focus-ranges` and pushes
+`HEAD:feat/cli-feature-flags` without a force push.
 
-- CLI tests pass, 70 tests across six files, including one test file per flag.
-- Renderer tests pass, 42 tests.
-- Shared diff, annotation, and alt-text tests pass, 31 tests.
-- `pnpm libs:build`, `pnpm lint`, and `pnpm typecheck` pass. Lint retains the app's existing warnings.
-- A packed tarball installs in an isolated directory and renders a redacted 1200 by 630 image with a signature, a focused highlight, and an alt sidecar.
-- Twenty-three CLI invocations pass in tmux, and their output files satisfy the assertions below. Two of them assert usage errors with exit code 2.
+The merge keeps the CLI parser's `sourceLines` mapping and adopts P5's
+`focusedLines`. `--focus 2-3 --focus 9` adds both ranges without adding
+highlights. Focus can share a line with highlight, added, or removed marks.
+Shiki focus annotations add to the same set. `--lines` clips and remaps the
+set. No focused line in the output means no dimming. The renderer validates
+snapshots and calls P5's shared parser to migrate legacy `focus: true` from
+highlighted lines. The CLI pipeline uses the normalized snapshot type.
+
+- `pnpm install` and `pnpm libs:build` pass. Install reports peer, deprecation,
+  and optional build-script warnings, plus a solid-dnd patch warning.
+- CLI tests pass, 77 tests across six files.
+- Renderer tests pass, 48 tests, including legacy migration and focus pixels.
+- Shared diff, annotation, and alt-text tests pass, 32 tests.
+- `pnpm lint` and full workspace `pnpm typecheck` pass. App lint has 32 existing warnings.
+- All 28 built CLI invocations pass in tmux. Two assert exit 2 for invalid
+  options. Focus without highlight succeeds. Bare `--focus` needs a range.
+- The six-line PNG probe focuses lines 2, 3, and 5. Those rows are pixel-identical
+  to the unmarked baseline. Lines 1, 4, and 6 retain 0.34949 of their original
+  RGB contrast against gray. `focus-pixels.json` records each row.
+- Focus outside the document produces exactly the unmarked PNG. Focus plus
+  highlight and focus plus diff produce distinct images with both marks visible.
+- A packed tarball installs outside the workspace and renders a 1200 by 630
+  PNG with repeated focus ranges, a highlight, redaction, a signature, and a
+  masked alt sidecar. The shared migration parser is bundled with the renderer.
+
+Logs, stdout, stderr, receipts, the packed CLI, and `tmux-pane.txt` are in
+`/tmp/cli-704-focus-ranges/` on the verification machine. The checked-in PNGs
+below were opened and inspected. The final verifier run exits with 0.
+The pixel probes use a square gray frame and Dracula theme to isolate text
+from rounded corners and Fleet Dark's separate code background. Initial
+probe assertions failed on those decorations before the fixtures were corrected.
+
+Reproduce this run in tmux after the build with:
+
+```sh
+tmux new-session -s cli704-focus
+node packages/cli/scripts/verify-feature-flags.mjs /tmp/cli-704-focus-ranges
+```
+
+## Plan coverage
 
 | Plan lane         | CLI evidence                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P5 lane 9         | A two-file diff through stdin and a `.diff` file becomes tabs with inferred languages and added/removed marks. Highlight and focus change rendered pixels. `--focus` with no highlighted line exits with 2. Annotation comments disappear from the alt sidecar.                                                                                                   |
+| P5 lane 9         | A two-file diff through stdin and a `.diff` file becomes tabs with inferred languages and added/removed marks. Repeatable focus ranges stay sharp independently of highlight and diff marks. Bare `--focus` exits with 2. Focus-only, overlapping highlight, diff, and out-of-range PNGs pass. Annotation comments disappear from the alt sidecar.                |
 | P6 lanes 7 and 8  | Three synthetic secrets produce three location/rule diagnostics and one summary. PNG and SVG render successfully. The redacted SVG is byte-identical to an unredacted render of the masked code from the alt sidecar, and that sidecar contains no token. `--no-redact` emits no diagnostics, preserves the original alt text, and produces different PNG pixels. |
 | P7 lane 7         | All four target PNGs have their exact dimensions. `--scale` with `--size` exits with 2, and the renderer still exports a target at its exact size when a snapshot asks for scale 2. Signatures render in both corners. A 60-line snippet fits inside the target. Open Graph also renders as JPEG.                                                                 |
 | P8 lane 7         | Three input files produce `out-01.png` through `out-03.png`. Each sidecar contains its own tab's code. Every PNG remains 1600 by 900 when combined with `--size`. Split SVG also produces numbered files.                                                                                                                                                         |
@@ -75,8 +111,9 @@ Review changes, each verified against the rebased head:
 - `bin.ts` and the flag tests now share one pipeline, so the tests exercise
   the shipped flag order.
 - `--size` with `--scale`, `--signature-position` without a signature, and
-  `--focus` with no highlighted line were silently ignored or dimmed every
-  line. Each is now a usage error naming the flag. The help aligns with the
+  the old boolean `--focus` with no highlighted line were silently ignored or
+  dimmed every line. That review added usage errors. The focus redesign above
+  replaces the boolean validation with required range parsing. The help aligns with the
   P4 options, and one match prints `redacted 1 secret`.
 - The verifier's SVG token search could never fail, because Takumi draws
   glyphs as paths. It is replaced by the masked-render equality above.
@@ -92,7 +129,15 @@ alt text says `lines 1 to 3`.
 ## Reviewed images
 
 The added and removed lines have visible signs and colored backgrounds.
-Focus dims the other lines and preserves the highlighted lines.
+Focus dims the other lines and preserves the focused lines independently of color marks.
+
+![Two focus ranges without highlights](media/cli-feature-flags/p5-focus.png)
+
+![Focus and highlight on the same line](media/cli-feature-flags/p5-focus-highlight.png)
+
+![Focus on an added diff line](media/cli-feature-flags/p5-focus-diff.png)
+
+![Six-line pixel probe](media/cli-feature-flags/p5-probe-focus.png)
 
 ![Imported diff](media/cli-feature-flags/p5-diff-01.png)
 
@@ -111,8 +156,10 @@ window width, and keeps the signature in the selected corner.
 
 The task requires Node-only verification. Web comparison lanes, browser
 recordings, and feature performance benchmarks were not run for this CLI
-integration. The upstream feature PRs own their web verification. An
-independent Opus review ran after the implementation, recorded above.
+integration. The upstream feature PRs own their web verification. The
+earlier independent Opus review is recorded above. This focus update has a
+local diff review and the automated checks above; no fresh independent review
+is claimed.
 
 The root `libs:build` skips Prisma models until the client is generated.
 The API's `build:types` script currently lacks `declaration` in its tsconfig.

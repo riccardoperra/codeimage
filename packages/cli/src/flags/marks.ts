@@ -4,28 +4,30 @@ import {parseUnifiedDiff} from '../../../../apps/codeimage/src/core/diff/parseUn
 import {UsageError} from '../errors';
 import type {Flag, FlagValues} from './index';
 
-function highlights(values: FlagValues) {
-  if (values.highlight === undefined) return [];
-  if (
-    typeof values.highlight !== 'string' ||
-    !/^[1-9]\d*(?:-[1-9]\d*)?(?:,[1-9]\d*(?:-[1-9]\d*)?)*$/.test(
-      values.highlight,
-    )
-  ) {
-    throw new UsageError('--highlight: expected lines such as 3-5,9');
-  }
-  return values.highlight.split(',').map(range => {
-    const [start, end = start] = range.split('-').map(Number);
+function lineRanges(values: FlagValues, flag: 'highlight' | 'focus') {
+  const value = values[flag];
+  if (value === undefined) return [];
+  const entries = Array.isArray(value) ? value : [value];
+  return entries.flatMap(entry => {
     if (
-      !Number.isSafeInteger(start) ||
-      !Number.isSafeInteger(end) ||
-      end < start
+      typeof entry !== 'string' ||
+      !/^[1-9]\d*(?:-[1-9]\d*)?(?:,[1-9]\d*(?:-[1-9]\d*)?)*$/.test(entry)
     ) {
-      throw new UsageError(
-        '--highlight: expected ascending safe integer ranges',
-      );
+      throw new UsageError(`--${flag}: expected lines such as 3-5,9`);
     }
-    return {start, end};
+    return entry.split(',').map(range => {
+      const [start, end = start] = range.split('-').map(Number);
+      if (
+        !Number.isSafeInteger(start) ||
+        !Number.isSafeInteger(end) ||
+        end < start
+      ) {
+        throw new UsageError(
+          `--${flag}: expected ascending safe integer ranges`,
+        );
+      }
+      return {start, end};
+    });
   });
 }
 
@@ -33,14 +35,15 @@ export const marks: Flag = {
   options: {
     diff: {type: 'boolean'},
     highlight: {type: 'string'},
-    focus: {type: 'boolean'},
+    focus: {type: 'string', multiple: true},
   },
   usage: `  --diff               Read a unified diff, one tab per changed file
   --highlight <lines>  Highlight lines such as 3-5,9
-  --focus              Dim every line that is not highlighted
+  --focus <lines>      Focus lines such as 3-5,9; repeat to add ranges
 `,
   validate(values) {
-    highlights(values);
+    lineRanges(values, 'highlight');
+    lineRanges(values, 'focus');
   },
   async prepareInputs(inputs, values) {
     const files = values.diff
@@ -74,24 +77,33 @@ export const marks: Flag = {
             return line ? [[line, {...mark, line}] as const] : [];
           }),
         );
+        const focusedLines = new Set(
+          (input.marks?.focusedLines ?? []).flatMap(sourceLine => {
+            const line = annotated.sourceLines.indexOf(sourceLine) + 1;
+            return line ? [line] : [];
+          }),
+        );
+        for (const line of annotated.marks.focusedLines) focusedLines.add(line);
         for (const mark of annotated.marks.lines) lines.set(mark.line, mark);
         return {
           ...input,
           code: annotated.code,
           marks: {
             lines: [...lines.values()],
-            focus: annotated.marks.focus || input.marks?.focus === true,
+            focusedLines: [...focusedLines].sort((a, b) => a - b),
           },
         };
       }),
     );
   },
   apply(snapshot, values) {
-    const ranges = highlights(values);
+    const ranges = lineRanges(values, 'highlight');
+    const focusRanges = lineRanges(values, 'focus');
     const editors = snapshot.editor.editors.map(tab => {
       const lines = new Map(
         (tab.marks?.lines ?? []).map(mark => [mark.line, mark]),
       );
+      const focusedLines = new Set(tab.marks?.focusedLines ?? []);
       for (let line = 1; line <= tab.code.split('\n').length; line++) {
         const sourceLine = tab.lineNumberStart + line - 1;
         if (
@@ -101,23 +113,22 @@ export const marks: Flag = {
         ) {
           lines.set(line, {line, kind: 'highlight'});
         }
+        if (
+          focusRanges.some(
+            range => sourceLine >= range.start && sourceLine <= range.end,
+          )
+        ) {
+          focusedLines.add(line);
+        }
       }
       return {
         ...tab,
         marks: {
           lines: [...lines.values()].sort((a, b) => a.line - b.line),
-          focus: values.focus === true || tab.marks?.focus === true,
+          focusedLines: [...focusedLines].sort((a, b) => a - b),
         },
       };
     });
-    if (
-      values.focus &&
-      !editors.some(tab => tab.marks.lines.some(m => m.kind === 'highlight'))
-    ) {
-      throw new UsageError(
-        '--focus: no line is highlighted, so every line would be dimmed. Add --highlight or a [!code highlight] comment',
-      );
-    }
     return {...snapshot, editor: {...snapshot.editor, editors}};
   },
 };

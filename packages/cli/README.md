@@ -42,15 +42,24 @@ is a usage error.
 ```sh
 git diff | codeimage --diff -o changes.png
 codeimage changes.diff --diff --split-tabs -o changes.png
-codeimage foo.ts --highlight 3-5,9 --focus -o focused.png
+codeimage foo.ts --focus 3-5 --focus 9 --highlight 4 -o focused.png
 ```
 
-`--highlight` accepts comma-separated line numbers and inclusive ranges.
-With `--lines`, highlight numbers refer to the numbered lines in the output.
-`--focus` dims lines without a highlight mark. With no highlighted line it is
-a usage error, since every line would be dimmed. Shiki annotation comments in
-input code become marks automatically through the language's comment syntax.
-The CLI removes the annotations before applying `--lines`.
+`--highlight` and `--focus` accept comma-separated line numbers and inclusive
+ranges such as `3-5,9`. Repeat `--focus` to add ranges. Focus keeps those lines
+bright and dims the others, independently of highlight, added, or removed
+marks. A line can be both focused and highlighted. If no focused line is in
+the output, dimming stays off. A bare `--focus` is a usage error.
+
+With `--lines`, both flags refer to the numbered lines in the output. Shiki
+annotation comments become marks through the language's comment syntax.
+`[!code focus]` focuses one line and `[!code focus:N]` focuses N lines. These
+ranges add to `--focus` without adding highlights. The CLI removes annotation
+comments before applying `--lines`. A standalone annotation targets the next
+code line. Existing focus ranges are clipped and remapped to the selection.
+
+The Node renderer also accepts older snapshots with `focus: true`, migrating
+their highlighted lines to focused lines through P5's shared parser.
 
 Secret redaction runs by default. Diagnostics go to stderr with the input
 name, line, column, and rule id, followed by `redacted 1 secret` or `redacted N secrets`. Images and

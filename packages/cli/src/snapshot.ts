@@ -7,7 +7,7 @@ import {
   projectSnapshotSchema,
   SUPPORTED_SNAPSHOT_MAJOR,
 } from '@codeimage/render';
-import type {SnapshotInput} from '@codeimage/render';
+import type {SnapshotDocument} from '@codeimage/render';
 
 const presetSchema = z.looseObject({
   frame: projectSnapshotSchema.shape.frame,
@@ -49,7 +49,7 @@ export function parsePreset(text: string): Preset {
 export type CodeInput = {
   name: string;
   code: string;
-  marks?: SnapshotInput['editor']['editors'][number]['marks'];
+  marks?: SnapshotDocument['editor']['editors'][number]['marks'];
 };
 
 export async function buildSnapshot({
@@ -60,7 +60,7 @@ export async function buildSnapshot({
   args: RenderArgs;
   inputs: CodeInput[];
   preset?: Preset;
-}): Promise<SnapshotInput> {
+}): Promise<SnapshotDocument> {
   if (inputs.length === 0)
     throw new UsageError('no input: give a file or pipe code through stdin');
   const theme = await resolveTheme(
@@ -90,6 +90,9 @@ export async function buildSnapshot({
       if (marks) {
         marks = {
           ...marks,
+          focusedLines: marks.focusedLines
+            .filter(line => line >= range.start && line <= range.end)
+            .map(line => line - range.start + 1),
           lines: marks.lines
             .filter(mark => mark.line >= range.start && mark.line <= range.end)
             .map(mark => ({...mark, line: mark.line - range.start + 1})),
