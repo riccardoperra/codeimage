@@ -2,7 +2,7 @@
 
 ## Problem
 
-The in-app "What's new" has to announce features without blocking the editor, point at the control where each feature lives, and keep an archive. Today one store (`state/version/version.store.ts`) does three jobs: it tracks seen app versions, opens the Changelog dialog on mount, and counts feature views for `FeatureBadge`. The dialog opens only when an MDX file exists for the running app version. The app is 1.10.0 and the newest file is 1.9.0, so returning users get nothing. The new design uses three surfaces (Nudge or Showcase, in-place dots, a Settings archive), so "seen" can no longer be one flag per version.
+The in-app "What's new" has to announce features without blocking the editor, point at the control where each feature lives, and keep an archive. The former `VersionStore` did three jobs: it tracked seen app versions, opened the Changelog dialog on mount, and counted feature views for `FeatureBadge`. Its dialog opened only when an MDX file existed for the running app version. The app was 1.10.0 and the newest file was 1.9.0, so returning users received nothing. The new design uses three surfaces (Nudge or Showcase, in-place dots, a Settings archive), so "seen" can no longer be one flag per version.
 
 ## Usage (caller's view)
 
@@ -31,11 +31,11 @@ onChange={value => { preferences.setLayout(value); whatsNew.seen('layouts', 'use
 - **`registry.ts`** is content with zero imports. Releases newest first, each with ordered highlights. `HighlightId`, `ReleaseId` and `LocatedHighlightId` are derived from the data, so a dot on a highlight with no location is a compile error (type-system-discipline).
 - **`decide.ts`** is the whole policy as one pure function, `decide(releases, facts, now)`. It returns the single pending announcement, at most three dots in registry order, and the set of fresh highlights. It never reads the clock or the app version (boundary-discipline).
 - **Facts** are two grow-only sets, `seen` highlight ids and `dismissed` release ids. Merging is a union, so marking seen is idempotent and two tabs converge without locks (separate-before-serializing-shared-state, make-operations-idempotent).
-- **The store** (sketched in `sketch/whats-new.store.ts`) is the thin shell. It owns the one IndexedDB key, the one Umami call site, and the map of location openers.
+- **The store** (`apps/codeimage/src/state/whats-new/whats-new.store.ts`) is the thin shell. It owns the one IndexedDB key, the one Umami call site, and the map of location openers.
 - **Seen means located.** Only opening the coachmark or using the feature marks a highlight seen. Nudge steps, archive rows and "Show me" do not, so the dot is still on the control when the user arrives.
 - **A feature PR adds its own highlight** next to the control it ships. The registry on trunk lists only features that are on trunk.
 
-The public surface is the registry plus eight store members. Callers never see a fact, a storage key or an event name.
+Other folders import only `state/whats-new/index.ts`. The public interface is the registry plus eight store members. Callers never see a fact, a storage key or an event name.
 
 ## Synthesis decision
 
@@ -59,14 +59,24 @@ Two candidates, one on Opus and one on Fable. No cross-judge ran, because no mod
 - **Time-staged surfaces** (Showcase for the first days, then Nudge). A user arriving on day ten gets the reduced surface for no reason of their own.
 - **Remote config or a product analytics SDK for state.** The content ships with the code and Umami already answers which surface is used.
 
-## Open questions and risks
+## Implementation
 
-- Is the 2026 release `major`? It ships as `false`, so it announces with the Nudge.
-- Where does the host's `quiet` signal come from? No global "a dialog is open" signal exists today.
-- Should registry copy follow the app locale? It is English only in this sketch.
-- Should "Show me" later be able to turn a feature on, as the prototype did?
-- The Settings archive depends on the new Settings dialog, which lives on `feat/ui-prototypes`.
+The first release is `2026-11`, dated `2026-11-14`. Change its date on shipping day. It announces Command menu, Editor layouts, and Theme card styles. Layouts and theme card styles are experiments. A bundle never announces a feature that it does not contain.
 
-## Next implementation step
+`WhatsNewHost` mounts once in the unified editor and once in the classic editor. After a short initial delay it waits for the host's quiet accessor and checks the DOM for visible dialogs, menus, and expanded popup triggers. Inline listboxes, including the theme picker, do not block announcements. The announcement then remains latched until dismissal. A major release uses the scrollable Showcase sheet. This release uses the Nudge.
 
-Fill the store shell against the sketch and delete `VersionStore`, the Changelog components, the MDX notes and `FeatureBadge` in the same change.
+Only opening a coachmark or using a feature records a seen fact. Running a command counts as command-menu use. Choosing a layout or theme card style counts as use of that experiment. Opening the menu through Show me does not consume its dot. The Settings archive renders rows from the same registry, with New tags from `isNew()`. Its Show me buttons reveal a location without changing facts.
+
+Coachmarks inside a modal mount their portal inside that dialog. A body portal would be hidden from assistive technology by the modal. Dots remain mounted as invisible anchors until their coachmark closes, so opening one can record the seen fact without destroying the popover.
+
+The classic editor has the Nudge and Showcase, with no located actions, dots, or Settings archive. Its Footer and Toolbar link directly to GitHub releases. The former version gate, Changelog, MDX notes and renderer, and the old FeatureBadge are removed together. The unrelated compatibility banner remains.
+
+The development-only query `?whatsNew=nudge` or `?whatsNew=showcase` forces a review view. `await window.resetWhatsNew()` clears the persisted record. Reload after resetting. Production builds remove these aids.
+
+## Remaining limits
+
+- News copy is English only.
+- Facts remain per device. Tabs merge facts on focus, with transactional union writes to one IndexedDB key.
+- IndexedDB writes are asynchronous. Browser checks wait for the dismissal write before reloading.
+- Floating announcements cover editor controls beneath them. They can be dismissed without changing the layout.
+- The Showcase is built and available for review, but this release is not major.

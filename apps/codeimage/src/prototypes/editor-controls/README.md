@@ -113,27 +113,27 @@ The left pane has a search field and the sections, each with an icon. The right 
 | Experiments | Editor       | Layout      | Cards: Inspector, Dock, Studio      |
 | Experiments | Theme picker | Theme cards | Cards: Window, Orb, Aa list         |
 | About       | CodeImage    | Version     | The version, to read                |
-| About       | CodeImage    | Changelog   | Opens the production changelog      |
+| What's new  | Release      | Highlights  | New tags and Show me actions        |
 | About       | CodeImage    | GitHub      | A link to the repository            |
 | About       | Account      | Log out     | A button, only for a signed-in user |
 
 - Experiments holds what is not the default yet. Inspector and Window carry a `Default` tag, and `Restore defaults` goes back to both. The choices are cards and not switches because each is one out of three: two switches would turn each other off.
 - The search filters the rows of every section by title and description, and every word has to match. The results are grouped by section. Escape clears the search, a second Escape closes the dialog, and `/` focuses the field.
 - Opening the dialog focuses the section on screen, not the search, so a phone does not open its keyboard over the settings.
-- Under 769px the left pane becomes two rows on top: the search with the close button, then the sections as tabs without icons. Four sections do not need a screen of their own, and this keeps every section and the search one tap away.
+- Under 769px the left pane becomes two rows on top: the search with the close button, then the sections as tabs without icons. Five sections do not need a screen of their own, and this keeps every section and the search one tap away.
 - To add a setting, add a row to a group in `sections.tsx`. Use the segmented control or a switch for a choice. The kit's `Select` does not work in this dialog: the dialog is modal, and Kobalte marks the select's list, which it adds outside the dialog, as hidden from assistive technology.
-- Create anything a row opens, such as the changelog, in `SettingsDialog`, which stays mounted. The panel inside it goes away as the dialog closes.
+- Create any dialog a row opens in `SettingsDialog`, which stays mounted. The panel inside it goes away as the dialog closes.
 
 The harness sets `data-layout` on the page root, `.proto-variant`. While Inspector is chosen it also sets `data-inspector-side="left|right"`, on `.proto-variant` and on the root element that the layout renders, so a layout can read it from either.
 
 The old menu at the top left of the header is gone. Its entries moved:
 
-| Old entry | New home                                                         |
-| --------- | ---------------------------------------------------------------- |
-| Settings  | The gear in the header, and the `Settings…` command              |
-| Changelog | Settings, About, and the `Changelog` command                     |
-| GitHub    | Settings, About, and the `CodeImage on GitHub` command           |
-| Logout    | The user badge's menu, Settings, About, and the `Logout` command |
+| Old entry  | New home                                                         |
+| ---------- | ---------------------------------------------------------------- |
+| Settings   | The gear in the header, and the `Settings…` command              |
+| What's new | Settings, What's new, and the `What's new` command               |
+| GitHub     | Settings, About, and the `CodeImage on GitHub` command           |
+| Logout     | The user badge's menu, Settings, About, and the `Logout` command |
 
 ## Shared controls
 
@@ -180,6 +180,16 @@ Inspector puts its panel on the right. Set `data-inspector-side="left"` on its r
 - Render rows with `controls/ControlRow`, not with fields of your own.
 - `SegmentedField` with `adapt` makes the kit control `height: 100%`. Under a parent of auto height that falls back to its line height, about 24px. Give the parent the kit's field height, 36px at `sm` or 40px at `md`.
 - Solid delegates `onKeyDown` to `document`, so `stopPropagation()` in an `onKeyDown` handler does not keep a key from another listener on `document`, such as the command menu's shortcut. Use a native `on:keydown` listener where propagation matters.
+
+## What's new
+
+The harness mounts `components/WhatsNew/WhatsNewHost` once. Its Nudge floats at the bottom left and waits for Settings, the command menu, and other popups to close before appearing. A release with `major: true` uses the Showcase sheet instead. Neither announcement reserves layout space.
+
+The registry and store live in `state/whats-new`. Import that folder's `index.ts` from other folders. The harness binds `command-menu` to `commandMenu.open` and `settings-experiments` to `settings.open('experiments')`. A layout puts `NewDot` beside each command-menu button it renders. Settings owns the dots on the Layout and Theme cards rows, and the archive before About.
+
+Only a coachmark opening or a feature being used marks a highlight seen. Show me, Nudge steps, and archive rows keep the dot available. The command menu marks use when a command runs. Layout and theme card choices mark use when a choice is applied.
+
+In development, use `?whatsNew=nudge` or `?whatsNew=showcase` to review a view regardless of saved facts. Run `await window.resetWhatsNew()` and reload for a fresh visit. These aids are removed in production builds. `/classic` has announcements and external release links, with no dots or archive.
 
 ## The theme-card lab
 
