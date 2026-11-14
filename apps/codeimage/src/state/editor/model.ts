@@ -13,6 +13,11 @@ export interface TabState {
   tabIcon?: string;
 }
 
+export const MAX_EDITOR_TABS = 6;
+
+export type LineMark = {line: number; kind: 'added' | 'removed' | 'highlight'};
+export type TabMarks = {lines: LineMark[]; focus: boolean};
+
 export interface EditorState {
   id: string;
   code: string;
@@ -20,6 +25,7 @@ export interface EditorState {
   formatter?: string | null;
   languageId: string;
   lineNumberStart: number;
+  marks: TabMarks;
 }
 
 export interface EditorUIOptions {
@@ -39,6 +45,7 @@ export interface PersistedEditorState {
     tabName: string;
     languageId: string;
     lineNumberStart: number;
+    marks?: TabMarks;
   }[];
 }
 

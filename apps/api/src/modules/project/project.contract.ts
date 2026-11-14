@@ -1,3 +1,4 @@
+import {TabMarksSchema} from '../../schemas/marks.js';
 import type {Static} from '@sinclair/typebox';
 import {Type} from '@sinclair/typebox';
 import {defineContract, enumLiteral, Nullable} from '../../shared/contract.js';
@@ -21,6 +22,7 @@ export const BaseSnippetEditorTabsSchema = Type.Array(
     languageId: Type.String(),
     tabName: Type.String(),
     lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
+    marks: Type.Optional(Nullable(TabMarksSchema)),
   }),
 );
 
@@ -77,6 +79,7 @@ export const SnippetEditorTabsCreateRequestSchema = Type.Array(
       languageId: Type.String(),
       tabName: Type.String(),
       lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
+      marks: Type.Optional(Nullable(TabMarksSchema)),
     },
     {title: 'SnippetEditorTabCreateRequest'},
   ),
@@ -166,6 +169,7 @@ export const SnippetEditorTabsUpdateRequestSchema = Type.Array(
       languageId: Type.String(),
       tabName: Type.String(),
       lineNumberStart: Type.Integer({minimum: 1, maximum: 999_999}),
+      marks: Type.Optional(Nullable(TabMarksSchema)),
     },
     {title: 'SnippetEditorTabUpdateRequest'},
   ),

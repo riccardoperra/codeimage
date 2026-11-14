@@ -1,3 +1,4 @@
+import {parseTabMarks, type TabMarks} from '../../schemas/marks.js';
 import {defineErrors} from '../../shared/errors.js';
 import {
   isOwnedBy,
@@ -52,6 +53,7 @@ export interface SnippetEditorTab {
   readonly languageId: string;
   readonly tabName: string;
   readonly lineNumberStart: number;
+  readonly marks: TabMarks;
 }
 
 export interface ProjectHeader {
@@ -167,6 +169,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
       code: editor.code,
       tabName: editor.tabName,
       lineNumberStart: editor.lineNumberStart,
+      marks: parseTabMarks(editor.marks),
     })),
   };
 }
@@ -176,7 +179,7 @@ export function changesFromUpdateBody(body: ProjectUpdateBody): ProjectChanges {
     frame: body.frame,
     terminal: body.terminal,
     editorOptions: body.editorOptions,
-    editorTabs: body.editors,
+    editorTabs: body.editors.map(editor => ({...editor, marks: parseTabMarks(editor.marks)})),
   };
 }
 
@@ -193,11 +196,12 @@ export function draftFromClone(
     terminal,
     editorOptions,
     editorTabs: source.editorTabs.map(
-      ({languageId, code, tabName, lineNumberStart}) => ({
+      ({languageId, code, tabName, lineNumberStart, marks}) => ({
         languageId,
         code,
         tabName,
         lineNumberStart,
+        marks,
       }),
     ),
   };

@@ -1,0 +1,50 @@
+[data-line-marks] [data-mark='added'] {
+  background-color: var(--codeimage-line-added, rgba(46, 160, 67, 0.18));
+}
+
+[data-line-marks] [data-mark='removed'] {
+  background-color: var(--codeimage-line-removed, rgba(248, 81, 73, 0.18));
+}
+
+[data-line-marks] [data-mark='highlight'] {
+  background-color: var(--codeimage-line-highlight, rgba(128, 128, 128, 0.16));
+  box-shadow: inset 2px 0 var(--codeimage-line-accent, currentColor);
+}
+
+[data-line-marks][data-line-focus='true']
+  :is(.cm-line, [data-line]):not([data-mark='highlight']) {
+  opacity: 0.35;
+}
+
+[data-line-marks][data-line-diff='true'] :is(.cm-line, [data-line]) {
+  padding-left: calc(8px + 2ch);
+}
+
+[data-line-marks][data-line-diff='true'] [data-mark='added'] {
+  background-image:
+    linear-gradient(
+      var(--codeimage-line-added-sign, #2ea043),
+      var(--codeimage-line-added-sign, #2ea043)
+    ),
+    linear-gradient(
+      var(--codeimage-line-added-sign, #2ea043),
+      var(--codeimage-line-added-sign, #2ea043)
+    );
+  background-size:
+    0.75ch 1px,
+    1px 0.75ch;
+  background-position:
+    0.5ch 0.7em,
+    calc(0.875ch - 0.5px) calc(0.7em - 0.375ch + 0.5px);
+  background-repeat: no-repeat;
+}
+
+[data-line-marks][data-line-diff='true'] [data-mark='removed'] {
+  background-image: linear-gradient(
+    var(--codeimage-line-removed-sign, #f85149),
+    var(--codeimage-line-removed-sign, #f85149)
+  );
+  background-size: 0.75ch 1px;
+  background-position: 0.5ch 0.7em;
+  background-repeat: no-repeat;
+}

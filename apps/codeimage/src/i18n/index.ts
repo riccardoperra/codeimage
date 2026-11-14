@@ -1,4 +1,5 @@
 import {secrets} from './secrets';
+import {lineMarksLocale} from './lineMarks';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
@@ -98,6 +99,7 @@ export const locale = {
     ...notFound.it,
     ...presets.it,
     ...exportTabs.it,
+    ...lineMarksLocale.it,
   },
   en: {
     ...secrets.en,
@@ -186,6 +188,7 @@ export const locale = {
     ...notFound.en,
     ...presets.en,
     ...exportTabs.en,
+    ...lineMarksLocale.en,
   },
   de: {
     ...secrets.de,
@@ -275,6 +278,7 @@ export const locale = {
     ...notFound.de,
     ...presets.de,
     ...exportTabs.de,
+    ...lineMarksLocale.de,
   },
   es: {
     ...secrets.es,
@@ -364,6 +368,7 @@ export const locale = {
     ...notFound.es,
     ...presets.es,
     ...exportTabs.es,
+    ...lineMarksLocale.es,
   },
 };
 
