@@ -164,6 +164,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
               opacity={terminal.opacity}
               alternativeTheme={terminal.alternativeTheme}
               borderType={terminal.borderType}
+              surface={terminal.surface}
               themeId={editor.state.options.themeId}
             >
               <Show when={tab()}>

@@ -72,8 +72,9 @@ function buildUpdateRequest(editorId: string): ProjectUpdateBody {
       shadow: '1px 0px 0px #000',
       alternativeTheme: true,
       accentVisible: false,
-      type: 'windows',
-      borderType: 'glass',
+      type: 'editor',
+      borderType: 'hairline',
+      surface: 'wash',
     },
   };
 }
@@ -143,8 +144,9 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       shadow: '1px 0px 0px #000',
       alternativeTheme: true,
       accentVisible: false,
-      type: 'windows',
-      borderType: 'glass',
+      type: 'editor',
+      borderType: 'hairline',
+      surface: 'wash',
     } satisfies ProjectUpdateResponse['terminal'],
     'return updated terminal',
   );

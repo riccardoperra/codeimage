@@ -38,10 +38,6 @@ const LOOKS: Partial<Record<ControlId, Look>> = {
     label: 'Alternative background',
     asSwitch: {on: 'true', off: 'false'},
   },
-  'window.border': {
-    label: 'Glass border',
-    asSwitch: {on: 'glass', off: 'none'},
-  },
   'window.style': {label: 'Window style'},
 };
 
@@ -71,8 +67,12 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
     labelFor: string;
     full?: boolean;
   } => {
-    if (control.id === 'window.style')
-      return {element: <WindowStyleTiles />, labelFor: id, full: true};
+    if (control.id === 'window.style' && control.kind === 'select')
+      return {
+        element: <WindowStyleTiles control={control} />,
+        labelFor: id,
+        full: true,
+      };
     if (control.kind === 'segmented') {
       if (control.id === 'signature.style')
         return {

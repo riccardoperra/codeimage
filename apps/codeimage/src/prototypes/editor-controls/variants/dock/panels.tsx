@@ -10,6 +10,7 @@ import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/F
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
 import {commandMenu} from '../../command-menu/state';
 import {useDock} from './context';
+import {AmbientSwatch} from '../../controls/AmbientSwatch';
 import {ControlRow} from '../../controls/ControlRow';
 import {fieldId, SegmentedChoice} from '../../controls/fields';
 import type {GroupId, PanelId} from './fields';
@@ -68,6 +69,7 @@ function BackgroundPanel() {
                 </>
               }
             >
+              <AmbientSwatch control={control()} />
               <ColorPickerPopover
                 value={control().value()}
                 onChange={control().set}

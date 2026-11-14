@@ -15,6 +15,7 @@ import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls
 import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
 import {PresetSwitcher} from '../../../../components/Presets/PresetSwitcher/PresetSwitcher';
 import type {VariantProps} from '../../contract';
+import {AmbientSwatch} from '../../controls/AmbientSwatch';
 import {ControlRow} from '../../controls/ControlRow';
 import type {Control, ControlId} from '../../model';
 import type {IconComponent} from './icons';
@@ -92,6 +93,7 @@ function FramePanel(props: PanelProps) {
             const bg = control();
             return bg.kind === 'background' ? (
               <div class={styles.fullWidth}>
+                <AmbientSwatch control={bg} />
                 <ColorPickerPopover
                   value={bg.value()}
                   onChange={bg.set}
@@ -152,6 +154,7 @@ function WindowPanel(props: PanelProps) {
         <Rows
           {...props}
           ids={[
+            'window.surface',
             'window.backgroundType',
             'window.reflection',
             'window.watermark',

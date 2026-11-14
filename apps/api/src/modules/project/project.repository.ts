@@ -12,6 +12,7 @@ import type {
 } from '@codeimage/prisma-models';
 import {type Db, type OwnerScope, orNull} from '../../shared/db.js';
 import {asUserId, type UserId} from '../../shared/principal.js';
+import {readTerminalSurface} from './project.model.js';
 import type {
   Project,
   ProjectChanges,
@@ -103,6 +104,7 @@ export async function createProject(
           textColor: draft.terminal.textColor,
           type: draft.terminal.type,
           borderType: draft.terminal.borderType,
+          surface: draft.terminal.surface,
         },
       },
     },
@@ -172,6 +174,7 @@ export async function updateProject(
             textColor: changes.terminal.textColor,
             type: changes.terminal.type,
             borderType: changes.terminal.borderType,
+            surface: changes.terminal.surface,
           },
         },
       },
@@ -265,6 +268,7 @@ function toProject(
       opacity: row.terminal.opacity,
       alternativeTheme: row.terminal.alternativeTheme,
       borderType: row.terminal.borderType,
+      surface: readTerminalSurface(row.terminal.surface),
     },
     editorOptions: {
       id: row.editorOptions.id,

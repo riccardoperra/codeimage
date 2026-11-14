@@ -89,7 +89,15 @@ export const BaseSnippetFrameSchema = Type.Object({
   opacity: Type.Number(),
 });
 
-export const SnippetTerminalBorderType = enumLiteral(['glass'] as const);
+export const SnippetTerminalBorderType = enumLiteral([
+  'glass',
+  'hairline',
+] as const);
+
+export const SnippetTerminalSurface = Type.Union([
+  Type.Literal('solid'),
+  Type.Literal('wash'),
+]);
 
 export const BaseSnippetTerminalSchema = Type.Object({
   id: Type.String({format: 'uuid'}),
@@ -104,6 +112,7 @@ export const BaseSnippetTerminalSchema = Type.Object({
   opacity: Type.Number(),
   alternativeTheme: Type.Boolean(),
   borderType: Nullable(SnippetTerminalBorderType),
+  surface: Type.Optional(Nullable(SnippetTerminalSurface)),
 });
 
 export const BaseSnippetEditorOptionsSchema = Type.Object({
@@ -153,6 +162,7 @@ export const SnippetTerminalCreateRequestSchema = Type.Object(
     showHeader: Type.Boolean(),
     showWatermark: Nullable(Type.Boolean({default: true})),
     borderType: Nullable(SnippetTerminalBorderType),
+    surface: Type.Optional(Nullable(SnippetTerminalSurface)),
   },
   {title: 'SnippetTerminalCreateRequest'},
 );
@@ -199,7 +209,7 @@ export const ProjectCreateResponseSchema = Type.Object(
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     editorOptions: Type.Required(EditorOptionsCreateRequestSchema),
     frame: SnippetFrameCreateResponseSchema,
-    terminal: Type.Required(SnippetTerminalCreateRequestSchema),
+    terminal: SnippetTerminalCreateRequestSchema,
     editorTabs: SnippetEditorTabsCreateRequestSchema,
   },
   {title: 'ProjectCreateResponse'},
@@ -244,6 +254,7 @@ const SnippetTerminalUpdateRequestSchema = Type.Object(
     textColor: Nullable(Type.String()),
     type: Type.String(),
     borderType: Nullable(SnippetTerminalBorderType),
+    surface: Type.Optional(Nullable(SnippetTerminalSurface)),
   },
   {title: 'SnippetTerminalUpdateRequest'},
 );
@@ -263,7 +274,7 @@ export const ProjectUpdateRequestSchema = Type.Object(
   {
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
     frame: SnippetFrameUpdateRequestSchema,
-    terminal: Type.Required(SnippetTerminalUpdateRequestSchema),
+    terminal: SnippetTerminalUpdateRequestSchema,
     editors: SnippetEditorTabsUpdateRequestSchema,
   },
   {title: 'ProjectUpdateRequest'},
@@ -278,7 +289,7 @@ export const ProjectUpdateResponseSchema = Type.Object(
     ownerId: Type.String({format: 'uuid'}),
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
     frame: SnippetFrameUpdateRequestSchema,
-    terminal: Type.Required(SnippetTerminalUpdateRequestSchema),
+    terminal: SnippetTerminalUpdateRequestSchema,
     editorTabs: SnippetEditorTabsUpdateRequestSchema,
   },
   {title: 'ProjectUpdateResponse'},
