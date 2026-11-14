@@ -85,11 +85,6 @@ export const CommonErrors = defineErrors({
     kind: 'unauthenticated',
     message: () => 'Unauthorized',
   },
-  invalidSession: {
-    code: 'SESSION_WITHOUT_EMAIL',
-    kind: 'invalid',
-    message: () => 'No valid user data',
-  },
   rateLimited: {
     code: 'RATE_LIMITED',
     kind: 'rate_limited',

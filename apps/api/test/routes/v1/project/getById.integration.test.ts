@@ -1,7 +1,7 @@
 import type {Project, User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, test} from 'vitest';
 
-import {build} from '../../../helper.js';
+import {build} from '../../../helpers/app.js';
 import {clearAllSeeds, projectSeed, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {

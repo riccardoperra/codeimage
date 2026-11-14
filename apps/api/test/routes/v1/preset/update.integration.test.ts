@@ -4,7 +4,7 @@ import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
 import type {PresetUpdateDto} from '../../../../src/modules/preset/preset.contract.js';
 import {testPresetUtils} from '../../../helpers/preset.js';
-import {build} from '../../../helper.js';
+import {build} from '../../../helpers/app.js';
 import {
   clearAllSeeds,
   client,

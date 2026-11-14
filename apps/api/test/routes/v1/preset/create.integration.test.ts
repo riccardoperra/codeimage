@@ -3,7 +3,7 @@ import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 import type {PresetCreateDto} from '../../../../src/modules/preset/preset.contract.js';
 import type {PresetDto} from '../../../../src/modules/preset/preset.contract.js';
 import {testPresetUtils} from '../../../helpers/preset.js';
-import {build} from '../../../helper.js';
+import {build} from '../../../helpers/app.js';
 import {clearAllSeeds, client, userSeed} from '../../../helpers/seed.js';
 
 interface TestContext {

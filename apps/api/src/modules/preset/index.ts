@@ -15,10 +15,7 @@ const handlers = [create, remove, findById, update, findAll] as const;
 const preset: FastifyPluginAsync = async fastify => {
   const mapper = new PresetMapper();
 
-  fastify.decorate(
-    'presetRepository',
-    new PrismaPresetRepository(fastify.prisma),
-  );
+  fastify.decorate('presetRepository', new PrismaPresetRepository(fastify.db));
   fastify.decorate(
     'presetService',
     registerHandlers(

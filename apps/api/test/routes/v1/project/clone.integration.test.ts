@@ -2,7 +2,7 @@ import type {Project, User} from '@codeimage/prisma-models';
 import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 import type {ProjectCreateResponse} from '../../../../src/modules/project/project.contract.js';
 
-import {build} from '../../../helper.js';
+import {build} from '../../../helpers/app.js';
 import {
   clearAllSeeds,
   client,

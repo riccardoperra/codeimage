@@ -1,5 +1,10 @@
 import type {AutoloadPluginOptions} from '@fastify/autoload';
 import AutoLoad from '@fastify/autoload';
+import fp from 'fastify-plugin';
+import identity from './modules/identity/index.js';
+import project from './modules/project/index.js';
+import preset from './modules/preset/index.js';
+import appApi from './http/app-api.js';
 import configPlugin, {type Config} from './config.js';
 import type {FastifyServerOptions, FastifyPluginAsync} from 'fastify';
 import {join} from 'node:path';
@@ -37,27 +42,10 @@ const app: FastifyPluginAsync<AppOptions> = async (
     ignorePattern: /\.d\.[cm]?ts$/,
   });
 
-  // This loads all plugins defined in routes
-  // define your routes in one of these
-  await fastify.register(AutoLoad, {
-    dir: join(__dirname, 'routes'),
-    options: {prefix: '/api/'},
-    routeParams: true,
-    forceESM: true,
-    ignorePattern: /\.d\.[cm]?ts$/,
-  });
-
-  await fastify.register(AutoLoad, {
-    dir: join(__dirname, 'modules'),
-    options: opts,
-    encapsulate: false,
-    maxDepth: 1,
-    forceESM: true,
-    ignorePattern: /\.d\.[cm]?ts$/,
-  });
-
-  fastify.ready(() => fastify.log.info(fastify.printRoutes()));
+  await fastify.register(identity);
+  await fastify.register(fp(project));
+  await fastify.register(fp(preset));
+  await fastify.register(appApi);
 };
-
 export default app;
 export {app};

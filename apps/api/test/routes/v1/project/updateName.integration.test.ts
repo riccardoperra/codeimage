@@ -1,6 +1,6 @@
 import {afterAll, assert, beforeEach, expect, test} from 'vitest';
 
-import {build} from '../../../helper.js';
+import {build} from '../../../helpers/app.js';
 import {
   clearAllSeeds,
   client,
