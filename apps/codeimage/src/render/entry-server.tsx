@@ -11,7 +11,7 @@ import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {renderToStringAsync} from 'solid-js/web';
 import {StateProvider} from 'statebuilder';
 import StaticCodeView from '../components/CustomEditor/StaticCodeView';
-import {getStaticTheme} from '../components/CustomEditor/staticTheme';
+import {staticThemeCss} from '../components/CustomEditor/staticTheme';
 import * as styles from '../components/Frame/Frame.css';
 import {DynamicTerminal} from '../components/Terminal/DynamicTerminal/DynamicTerminal';
 
@@ -19,8 +19,8 @@ export const SUPPORTED_FONT_IDS = SUPPORTED_FONTS.map(font => font.id);
 export const SUPPORTED_THEME_IDS = THEME_REGISTRY.map(theme => theme.id);
 
 export interface FrameSize {
-  width?: number;
-  height?: number;
+  width: number;
+  height: number;
 }
 
 export interface FrameMarkup {
@@ -37,11 +37,6 @@ const SSR_OPTIONS = {timeoutMs: 30_000, noScripts: true};
 const EXPORT_EXCLUDE_CSS =
   '[data-export-exclude="true"]{display:none!important}';
 
-// Takumi has no subgrid, so gutter rows do not stretch to the content rows;
-// matching their line height keeps numbers beside their lines.
-const GUTTER_CSS =
-  '.cm-editor .cm-lineNumbers .cm-gutterElement{line-height:inherit}';
-
 // The editor, frame and theme stores are app-wide singletons, so renders run
 // one at a time and each one sees only its own snapshot.
 let queue: Promise<unknown> = Promise.resolve();
@@ -57,10 +52,24 @@ export function renderFrame(
 const cssVar = (variable: string) =>
   variable.replace(/^var\((--[^,)]+).*$/, '$1');
 
-export function frameSizeCss(size: FrameSize): string {
-  const width = size.width ? `${size.width}px` : 'max-content';
-  const height = size.height ? `${size.height}px` : 'auto';
-  return `[data-snapshot-frame]{${cssVar(styles.frameVars.width)}:${width};${cssVar(styles.frameVars.height)}:${height}}`;
+// The web frame's min-width is max-content, so it grows past its width, and
+// past its max-width, rather than wrap a line. Takumi ignores that min-width.
+// Without a size this lets the frame take its content width for measuring;
+// with one it pins the frame to the size the renderer derived from it.
+export function frameSizeCss(size?: FrameSize): string {
+  const declarations = size
+    ? [
+        [styles.frameVars.width, `${size.width}px`],
+        [styles.frameVars.minWidth, `${size.width}px`],
+        [styles.frameVars.height, `${size.height}px`],
+      ]
+    : [
+        [styles.frameVars.width, 'max-content'],
+        [styles.frameVars.maxWidth, 'none'],
+      ];
+  return `[data-snapshot-frame]{${declarations
+    .map(([variable, value]) => `${cssVar(variable)}:${value}`)
+    .join(';')}}`;
 }
 
 async function render(
@@ -80,7 +89,7 @@ async function render(
   }
   const [theme, language] = await Promise.all([
     themeDefinition.load(),
-    loadLanguage(activeEditor.languageId),
+    loadLanguage(activeEditor.languageId, activeEditor.tabName),
   ]);
   const background = frame.background ?? theme.properties.previewBackground;
   const backgroundImage = isAssetLinkUrl(background)
@@ -173,13 +182,9 @@ async function render(
     ),
     SSR_OPTIONS,
   );
-  const themeRules = getStaticTheme(theme)
-    .modules.map(module => module.getRules())
-    .join('\n');
-
   return {
     html: `<html><body>${body}</body></html>`,
-    css: [themeRules, EXPORT_EXCLUDE_CSS, GUTTER_CSS].join('\n'),
+    css: [staticThemeCss(theme), EXPORT_EXCLUDE_CSS].join('\n'),
     fontFamily: font.name,
     backgroundImage,
   };
