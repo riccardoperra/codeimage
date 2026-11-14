@@ -16,7 +16,7 @@ export interface ImageOutput {
 export interface Flag {
   options: ParseArgsOptionsConfig;
   usage: string;
-  apply(snapshot: SnapshotInput, values: FlagValues): SnapshotInput;
+  apply?(snapshot: SnapshotInput, values: FlagValues): SnapshotInput;
   validate?(values: FlagValues): void;
   prepareInputs?(inputs: CodeInput[], values: FlagValues): Promise<CodeInput[]>;
   outputs?(output: ImageOutput, values: FlagValues): ImageOutput[];
