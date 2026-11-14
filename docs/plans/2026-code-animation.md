@@ -471,6 +471,7 @@ Takumi already writes WebP, GIF, and APNG, so `gifenc` and `sharp` are not neede
 - Lezer splits tokens differently from Shiki, for example around punctuation. Matching may move fewer tokens than the magic-move demos. A1 `pair.test.ts` holds real cases.
 - Takumi WASM may be too slow in Safari. A4 measures it. If the 12 s budget fails, render at 30 fps by default in that browser.
 - WebCodecs H.264 support varies by browser and platform. A5 falls back to WebM with VP9 and hides MP4 when there is no `VideoEncoder`.
+- Takumi 2.19 GIF output leaves ghost pixels when the frame shrinks. The A1 verifier found two raised tabs, wrong traffic-light colors, and dark stripes in the last frame of `edge-empty-to.gif`, and macOS ImageIO decodes the same bytes, so the defect is in the encoder. A2 reproduces it, checks a newer Takumi, and otherwise renders GIF at a fixed frame size or reports it upstream before it offers GIF.
 - GIF files are large at 1080p. A4 shows the output size before the download, and the dialog suggests WebP or MP4 for long clips.
 - A dimmed row that also has a line mark draws its glyphs 1 to 3 levels of 255 lighter than the static export, because the mark and the tokens fade as separate boxes. The operator chose to fix it in a small follow-up PR after A1 merges, with one box per row. The A1 row-paint check allows these rows 0.5 levels until then.
 - Animated WebP is lossless by default in Takumi WASM. A4 checks whether `quality` is honored, and otherwise shows the larger size.
