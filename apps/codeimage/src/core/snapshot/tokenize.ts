@@ -48,7 +48,7 @@ export function tokenizeCode(
   const state = EditorState.create({doc: code, extensions: theme.editorTheme});
   const source = state.doc.toString();
   if (!parserLanguage)
-    return source.split('\n').map(text => [{text, classes: ''}]);
+    return source.split('\n').map(text => (text ? [{text, classes: ''}] : []));
   const lines: TokenLine[] = [];
   let line: TokenLine = [];
   // highlightingFor combines every active HighlightStyle, including theme overrides.
