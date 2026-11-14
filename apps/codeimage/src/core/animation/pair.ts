@@ -202,6 +202,29 @@ function markTokens(step: Step): Placed[] {
     });
 }
 
+// Text keys alone would fade a mark out and back in on its row when a step
+// edits the marked line, so leftover marks of one kind on one row pair too.
+function pairMarks(from: Step, to: Step): TokenTransition[] {
+  const source = markTokens(from);
+  const target = markTokens(to);
+  const sourceKeys = new Set(source.map(mark => mark.key));
+  const targetKeys = new Set(target.map(mark => mark.key));
+  const row = (mark: Placed) => `${mark.classes}:${mark.cell.line}`;
+  const unmatched = new Map(
+    source
+      .filter(mark => !targetKeys.has(mark.key))
+      .map(mark => [row(mark), mark.key]),
+  );
+  return pairPlaced(
+    source,
+    target.map(mark =>
+      sourceKeys.has(mark.key)
+        ? mark
+        : {...mark, key: unmatched.get(row(mark)) ?? mark.key},
+    ),
+  );
+}
+
 export function pairScene(
   from: Step,
   to: Step,
@@ -215,7 +238,7 @@ export function pairScene(
     gutter: lineNumbers
       ? pairPlaced(gutterTokens(from, fromBox), gutterTokens(to, toBox))
       : null,
-    marks: pairPlaced(markTokens(from), markTokens(to)),
+    marks: pairMarks(from, to),
     from: fromBox,
     to: toBox,
   };

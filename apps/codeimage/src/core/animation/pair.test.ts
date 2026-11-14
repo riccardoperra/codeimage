@@ -200,18 +200,47 @@ test('a mark both steps keep moves with its line, and the others fade', async ()
     false,
   );
   assert.equal(scene.gutter, null);
-  assert.deepEqual(
-    scene.marks.map(mark => [
-      mark.kind,
-      mark.classes,
-      mark.kind === 'enter' ? null : mark.from.line,
-      mark.kind === 'leave' ? null : mark.to.line,
-    ]),
-    [
-      ['move', 'added', 1, 2],
-      ['leave', 'highlight', 4, null],
-    ],
+  assert.deepEqual(markRows(scene), [
+    ['move', 'added', 1, 2],
+    ['leave', 'highlight', 4, null],
+  ]);
+});
+
+const markRows = (scene: {marks: TokenTransition[]}) =>
+  scene.marks.map(mark => [
+    mark.kind,
+    mark.classes,
+    mark.kind === 'enter' ? null : mark.from.line,
+    mark.kind === 'leave' ? null : mark.to.line,
+  ]);
+
+test('marks on equal lines pair in order', async () => {
+  const marks = (...lines: number[]) => ({
+    lines: lines.map(line => ({line, kind: 'added' as const})),
+    focusedLines: [],
+  });
+  const scene = pairScene(
+    await step('x;\ny;\nx;', {marks: marks(1, 3)}),
+    await step('// note\nx;\ny;\nx;', {marks: marks(2, 4)}),
+    false,
   );
+  assert.deepEqual(markRows(scene), [
+    ['move', 'added', 0, 1],
+    ['move', 'added', 2, 3],
+  ]);
+});
+
+test('a mark keeps its place when its line changes under it', async () => {
+  const marks = {
+    lines: [{line: 2, kind: 'highlight' as const}],
+    focusedLines: [2],
+  };
+  const scene = pairScene(
+    await step('a;\nreturn a + b;', {marks}),
+    await step('a;\nreturn sum(a, b);', {marks}),
+    false,
+  );
+  assert.deepEqual(markRows(scene), [['move', 'highlight', 1, 1]]);
 });
 
 test('diff marks indent the code by two columns and focus dims the other rows', async () => {
