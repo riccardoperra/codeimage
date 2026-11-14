@@ -1,0 +1,219 @@
+import type {
+  Project as ProjectRow,
+  SnippetEditorOptions as EditorOptionsRow,
+  SnippetEditorTab as EditorTabRow,
+  SnippetFrame as FrameRow,
+  SnippetTerminal as TerminalRow,
+} from '@codeimage/prisma-models';
+import {type Db, orNull} from '../../shared/db.js';
+import {asUserId, type UserId} from '../../shared/principal.js';
+import type {
+  Project,
+  ProjectChanges,
+  ProjectDraft,
+  ProjectHeader,
+  ProjectSummary,
+} from './project.model.js';
+
+const fullProject = {
+  frame: true,
+  terminal: true,
+  editorOptions: true,
+  editorTabs: true,
+} as const;
+
+export function createProjectRepository(db: Db) {
+  return {
+    async findById(id: string): Promise<Project | null> {
+      const row = await db.project.findFirst({
+        where: {id},
+        include: fullProject,
+      });
+      return row ? toProject(row) : null;
+    },
+
+    ownedBy(owner: UserId) {
+      const ownedId = (id: string) => ({id_ownerId: {id, ownerId: owner}});
+      return {
+        async list(): Promise<ProjectSummary[]> {
+          const rows = await db.project.findMany({
+            where: {ownerId: owner},
+            orderBy: {updatedAt: 'desc'},
+            include: {editorTabs: {select: {languageId: true, tabName: true}}},
+          });
+          return rows.map(row => ({
+            ...toHeader(row),
+            frameId: row.frameId,
+            terminalId: row.terminalId,
+            editorOptionsId: row.editorOptionsId,
+            editorTabs: row.editorTabs,
+          }));
+        },
+
+        async create(draft: ProjectDraft): Promise<Project> {
+          const row = await db.project.create({
+            data: {
+              name: draft.name,
+              owner: {
+                connect: {id: owner},
+              },
+              editorTabs: {
+                createMany: {
+                  data: [...draft.editorTabs],
+                },
+              },
+              editorOptions: {
+                create: {
+                  fontId: draft.editorOptions.fontId,
+                  fontWeight: draft.editorOptions.fontWeight,
+                  showLineNumbers: draft.editorOptions.showLineNumbers,
+                  themeId: draft.editorOptions.themeId,
+                },
+              },
+              frame: {
+                create: {
+                  background: draft.frame.background,
+                  opacity: draft.frame.opacity,
+                  radius: draft.frame.radius,
+                  padding: draft.frame.padding,
+                  visible: draft.frame.visible,
+                },
+              },
+              terminal: {
+                create: {
+                  accentVisible: draft.terminal.accentVisible,
+                  alternativeTheme: draft.terminal.alternativeTheme,
+                  background: draft.terminal.background,
+                  opacity: draft.terminal.opacity,
+                  shadow: draft.terminal.shadow,
+                  showGlassReflection: draft.terminal.showGlassReflection,
+                  showHeader: draft.terminal.showHeader,
+                  showWatermark: draft.terminal.showWatermark,
+                  textColor: draft.terminal.textColor,
+                  type: draft.terminal.type,
+                  borderType: draft.terminal.borderType,
+                },
+              },
+            },
+            include: {
+              editorOptions: true,
+              editorTabs: true,
+              frame: true,
+              terminal: true,
+            },
+          });
+          return toProject(row);
+        },
+
+        async update(
+          id: string,
+          changes: ProjectChanges,
+        ): Promise<Project | null> {
+          const row = await orNull(
+            db.project.update({
+              where: ownedId(id),
+              data: {
+                id,
+                editorTabs: {
+                  deleteMany: {
+                    NOT: {id: {in: changes.editorTabs.map(tab => tab.id)}},
+                  },
+                  upsert: changes.editorTabs.map(
+                    ({id, code, tabName, languageId, lineNumberStart}) => ({
+                      where: {id},
+                      create: {code, tabName, languageId, lineNumberStart},
+                      update: {code, tabName, languageId, lineNumberStart},
+                    }),
+                  ),
+                },
+                editorOptions: {update: changes.editorOptions},
+                frame: {update: changes.frame},
+                terminal: {update: changes.terminal},
+              },
+              include: fullProject,
+            }),
+          );
+          return row ? toProject(row) : null;
+        },
+
+        async updateName(
+          id: string,
+          name: string,
+        ): Promise<ProjectHeader | null> {
+          const row = await orNull(
+            db.project.update({where: ownedId(id), data: {name}}),
+          );
+          return row ? toHeader(row) : null;
+        },
+
+        async remove(id: string): Promise<ProjectHeader | null> {
+          const row = await orNull(db.project.delete({where: ownedId(id)}));
+          return row ? toHeader(row) : null;
+        },
+      };
+    },
+  };
+}
+
+export type ProjectRepository = ReturnType<typeof createProjectRepository>;
+
+function toHeader(row: ProjectRow): ProjectHeader {
+  return {
+    id: row.id,
+    ownerId: asUserId(row.ownerId),
+    name: row.name,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+function toProject(
+  row: ProjectRow & {
+    frame: FrameRow;
+    terminal: TerminalRow;
+    editorOptions: EditorOptionsRow;
+    editorTabs: EditorTabRow[];
+  },
+): Project {
+  return {
+    ...toHeader(row),
+    frame: {
+      id: row.frame.id,
+      background: row.frame.background,
+      padding: row.frame.padding,
+      radius: row.frame.radius,
+      visible: row.frame.visible,
+      opacity: row.frame.opacity,
+    },
+    terminal: {
+      id: row.terminal.id,
+      type: row.terminal.type,
+      showHeader: row.terminal.showHeader,
+      accentVisible: row.terminal.accentVisible,
+      shadow: row.terminal.shadow,
+      background: row.terminal.background,
+      textColor: row.terminal.textColor,
+      showWatermark: row.terminal.showWatermark,
+      showGlassReflection: row.terminal.showGlassReflection,
+      opacity: row.terminal.opacity,
+      alternativeTheme: row.terminal.alternativeTheme,
+      borderType: row.terminal.borderType,
+    },
+    editorOptions: {
+      id: row.editorOptions.id,
+      fontId: row.editorOptions.fontId,
+      fontWeight: row.editorOptions.fontWeight,
+      showLineNumbers: row.editorOptions.showLineNumbers,
+      themeId: row.editorOptions.themeId,
+      enableLigatures: row.editorOptions.enableLigatures,
+    },
+    editorTabs: row.editorTabs.map(tab => ({
+      id: tab.id,
+      projectId: tab.projectId,
+      code: tab.code,
+      languageId: tab.languageId,
+      tabName: tab.tabName,
+      lineNumberStart: tab.lineNumberStart,
+    })),
+  };
+}
