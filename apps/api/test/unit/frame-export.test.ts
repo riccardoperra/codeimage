@@ -1,11 +1,11 @@
 import {Value} from '@sinclair/typebox/value';
 import Fastify from 'fastify';
 import {describe, expect, it} from 'vitest';
-import {PresetDataSchema} from '../../src/modules/preset/preset.contract';
-import {FrameSignatureSchema} from '../../src/modules/project/project.contract';
-import {readFrameSignature} from '../../src/modules/project/project.model';
-import {SnippetFrameCreateRequestSchema} from '../../src/modules/project/project.contract';
-import {SnippetFrameUpdateRequestSchema} from '../../src/modules/project/project.contract';
+import {PresetDataSchema} from '../../src/modules/preset/preset.contract.js';
+import {FrameSignatureSchema} from '../../src/modules/project/project.contract.js';
+import {readFrameSignature} from '../../src/modules/project/project.model.js';
+import {SnippetFrameCreateRequestSchema} from '../../src/modules/project/project.contract.js';
+import {SnippetFrameUpdateRequestSchema} from '../../src/modules/project/project.contract.js';
 
 const frame = {
   background: '#123456',
