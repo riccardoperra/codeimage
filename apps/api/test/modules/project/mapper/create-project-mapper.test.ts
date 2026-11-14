@@ -25,7 +25,15 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
       borderType: null,
     },
     name: 'Untitled',
-    editors: [],
+    editors: [
+      {
+        code: 'const n = 1;',
+        languageId: 'typescript',
+        tabName: 'n.ts',
+        lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'added'}], focus: true},
+      },
+    ],
     editorOptions: {
       fontId: 'fontId',
       showLineNumbers: null,
@@ -59,7 +67,15 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
       showHeader: true,
       borderType: null,
     },
-    editorTabs: [],
+    editorTabs: [
+      {
+        code: 'const n = 1;',
+        languageId: 'typescript',
+        tabName: 'n.ts',
+        lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'added'}], focus: true},
+      },
+    ],
     name: 'Untitled',
     editorOptions: {
       fontId: 'fontId',

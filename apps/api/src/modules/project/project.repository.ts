@@ -1,4 +1,5 @@
 import {readFrameExportProperties} from './project.model.js';
+import {parseTabMarks} from '../../schemas/marks.js';
 import type * as repository from './project.repository.js';
 import type {
   Project as ProjectRow,
@@ -135,10 +136,10 @@ export async function updateProject(
             NOT: {id: {in: changes.editorTabs.map(tab => tab.id)}},
           },
           upsert: changes.editorTabs.map(
-            ({id, code, tabName, languageId, lineNumberStart}) => ({
+            ({id, code, tabName, languageId, lineNumberStart, marks}) => ({
               where: {id},
-              create: {code, tabName, languageId, lineNumberStart},
-              update: {code, tabName, languageId, lineNumberStart},
+              create: {code, tabName, languageId, lineNumberStart, marks},
+              update: {code, tabName, languageId, lineNumberStart, marks},
             }),
           ),
         },
@@ -292,6 +293,7 @@ function toProject(
       languageId: tab.languageId,
       tabName: tab.tabName,
       lineNumberStart: tab.lineNumberStart,
+      marks: parseTabMarks(tab.marks),
     })),
   };
 }
