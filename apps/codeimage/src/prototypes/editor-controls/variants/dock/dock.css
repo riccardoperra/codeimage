@@ -500,6 +500,7 @@
 
   .dock-root .dock-item .dock-item-text {
     width: auto;
+    min-width: 0;
     overflow: visible;
   }
 
@@ -552,6 +553,12 @@
 
   .dock-panel {
     padding: 0 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* The picker fills the sheet under its grabber, so only its list scrolls. */
+  .dock-themes {
+    height: calc(40dvh - 20px);
+    padding-top: 4px;
   }
 
   .dock-list {
