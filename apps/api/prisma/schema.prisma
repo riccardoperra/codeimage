@@ -42,6 +42,10 @@ model SnippetFrame {
   aspectRatio String?
   signatureHandle String?
   signaturePosition String?
+  signatureStyle String?
+  signaturePlatform String?
+  signatureName String?
+  signatureAvatar String?
   id         String   @id @default(uuid())
   project    Project?
   background String?

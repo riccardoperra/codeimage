@@ -1,5 +1,6 @@
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
+import {createSignature, SIGNATURE_STYLES} from '@codeimage/store/frame/model';
 import {RangeField} from '@codeimage/ui';
 import {getUmami} from '@core/constants/umami';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
@@ -151,9 +152,8 @@ export const FrameStyleForm: ParentComponent = () => {
               frame.setSignature(
                 handle
                   ? {
+                      ...(frame.store.signature ?? createSignature(handle)),
                       handle,
-                      position:
-                        frame.store.signature?.position ?? 'bottom-right',
                     }
                   : null,
               )
@@ -174,9 +174,28 @@ export const FrameStyleForm: ParentComponent = () => {
                 if (signature) frame.setSignature({...signature, position});
               }}
               items={[
-                {label: t('frame.bottomLeft'), value: 'bottom-left' as const},
-                {label: t('frame.bottomRight'), value: 'bottom-right' as const},
+                {label: t('signature.left'), value: 'bottom-left' as const},
+                {label: t('signature.center'), value: 'bottom-center' as const},
+                {label: t('signature.right'), value: 'bottom-right' as const},
               ]}
+            />
+          </FullWidthPanelRow>
+        </PanelRow>
+        <PanelRow for="signatureStyle" label={t('signature.style')}>
+          <FullWidthPanelRow>
+            <SegmentedField
+              id="signatureStyle"
+              size="xs"
+              adapt
+              value={frame.store.signature?.style ?? 'minimal'}
+              onChange={style => {
+                const signature = frame.store.signature;
+                if (signature) frame.setSignature({...signature, style});
+              }}
+              items={SIGNATURE_STYLES.map(style => ({
+                label: t(`signature.${style}`),
+                value: style,
+              }))}
             />
           </FullWidthPanelRow>
         </PanelRow>

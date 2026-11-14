@@ -209,20 +209,3 @@ export const watermark = style({
   right: '32px',
   bottom: '24px',
 });
-
-export const signature = style({
-  position: 'absolute',
-  bottom: '16px',
-  maxWidth: 'calc(100% - 48px)',
-  overflowWrap: 'anywhere',
-  whiteSpace: 'pre-wrap',
-  lineHeight: 1.3,
-  fontFamily: '"Inter var", sans-serif',
-  color: 'white',
-  background: 'rgba(0, 0, 0, 0.65)',
-  borderRadius: '6px',
-  padding: '4px 8px',
-  boxSizing: 'border-box',
-  pointerEvents: 'none',
-  zIndex: 2,
-});

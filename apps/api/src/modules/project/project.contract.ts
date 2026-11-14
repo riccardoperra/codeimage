@@ -2,12 +2,35 @@ import type {Static} from '@sinclair/typebox';
 import {Type} from '@sinclair/typebox';
 import {defineContract, enumLiteral, Nullable} from '../../shared/contract.js';
 
+export const SignaturePositionSchema = Type.Union([
+  Type.Literal('bottom-left'),
+  Type.Literal('bottom-center'),
+  Type.Literal('bottom-right'),
+]);
+
+export const SignatureStyleSchema = Type.Union([
+  Type.Literal('minimal'),
+  Type.Literal('pill'),
+  Type.Literal('card'),
+]);
+
+export const SignaturePlatformSchema = Type.Union([
+  Type.Literal('x'),
+  Type.Literal('bluesky'),
+  Type.Literal('github'),
+  Type.Literal('mastodon'),
+  Type.Literal('linkedin'),
+]);
+
 export const FrameSignatureSchema = Type.Object({
-  handle: Type.String(),
-  position: Type.Union([
-    Type.Literal('bottom-left'),
-    Type.Literal('bottom-right'),
-  ]),
+  handle: Type.String({maxLength: 120}),
+  position: SignaturePositionSchema,
+  // Optional so that a client from before the signature styles still saves.
+  style: Type.Optional(SignatureStyleSchema),
+  platform: Type.Optional(Nullable(SignaturePlatformSchema)),
+  name: Type.Optional(Nullable(Type.String({maxLength: 120}))),
+  /** `github`, or the id of an image the client keeps in its own assets. */
+  avatar: Type.Optional(Nullable(Type.String({maxLength: 200}))),
 });
 
 export const ExportTargetSchema = Type.Union([

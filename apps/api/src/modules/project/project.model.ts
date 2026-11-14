@@ -1,5 +1,11 @@
 import type {Static} from '@sinclair/typebox';
-import {ExportTargetSchema, type FrameSignatureSchema} from './project.contract.js';
+import {
+  ExportTargetSchema,
+  type FrameSignatureSchema,
+  SignaturePlatformSchema,
+  SignaturePositionSchema,
+  SignatureStyleSchema,
+} from './project.contract.js';
 import {defineErrors} from '../../shared/errors.js';
 import {
   isOwnedBy,
@@ -215,21 +221,56 @@ export function viewFor(project: Project, viewer: Principal): ProjectView {
   return {...project, isOwner: isOwnedBy(viewer, project.ownerId)};
 }
 
-export function readFrameSignature(frame: {
+type FrameSignature = Static<typeof FrameSignatureSchema>;
+
+export interface FrameSignatureColumns {
   signatureHandle?: string | null;
   signaturePosition?: string | null;
-}): Static<typeof FrameSignatureSchema> | null {
-  const {signatureHandle: handle, signaturePosition: position} = frame;
-  return handle && (position === 'bottom-left' || position === 'bottom-right')
-    ? {handle, position}
-    : null;
+  signatureStyle?: string | null;
+  signaturePlatform?: string | null;
+  signatureName?: string | null;
+  signatureAvatar?: string | null;
 }
 
-export function readFrameExportProperties(frame: {
-  exportTarget?: string | null;
-  signatureHandle?: string | null;
-  signaturePosition?: string | null;
-}) {
+const literalOf = <T extends string>(
+  schema: {anyOf: readonly {const: T}[]},
+  value: string | null | undefined,
+): T | undefined => schema.anyOf.find(item => item.const === value)?.const;
+
+export function readFrameSignature(
+  frame: FrameSignatureColumns,
+): FrameSignature | null {
+  const handle = frame.signatureHandle;
+  const position = literalOf(SignaturePositionSchema, frame.signaturePosition);
+  if (!handle || !position) return null;
+  return {
+    handle,
+    position,
+    style: literalOf(SignatureStyleSchema, frame.signatureStyle) ?? 'minimal',
+    platform: literalOf(SignaturePlatformSchema, frame.signaturePlatform) ?? null,
+    name: frame.signatureName ?? null,
+    avatar: frame.signatureAvatar ?? null,
+  };
+}
+
+/** The columns to write; `undefined` leaves a stored signature as it is. */
+export function writeFrameSignature(
+  signature: FrameSignature | null | undefined,
+): FrameSignatureColumns {
+  if (signature === undefined) return {};
+  return {
+    signatureHandle: signature?.handle ?? null,
+    signaturePosition: signature?.position ?? null,
+    signatureStyle: signature?.style ?? null,
+    signaturePlatform: signature?.platform ?? null,
+    signatureName: signature?.name ?? null,
+    signatureAvatar: signature?.avatar ?? null,
+  };
+}
+
+export function readFrameExportProperties(
+  frame: {exportTarget?: string | null} & FrameSignatureColumns,
+) {
   return {
     exportTarget:
       ExportTargetSchema.anyOf.find(

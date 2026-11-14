@@ -28,7 +28,14 @@ function buildUpdateRequest(editorId: string): ProjectUpdateBody {
       padding: 0,
       aspectRatio: null,
       exportTarget: 'x-landscape',
-      signature: {handle: '@codeimage', position: 'bottom-left'},
+      signature: {
+        handle: '@codeimage',
+        position: 'bottom-center',
+        style: 'card',
+        platform: 'github',
+        name: 'CodeImage',
+        avatar: 'github',
+      },
     },
     editors: [
       {
@@ -183,6 +190,10 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       aspectRatio: data.frame.aspectRatio,
       signatureHandle: data.frame.signature?.handle ?? null,
       signaturePosition: data.frame.signature?.position ?? null,
+      signatureStyle: data.frame.signature?.style ?? null,
+      signaturePlatform: data.frame.signature?.platform ?? null,
+      signatureName: data.frame.signature?.name ?? null,
+      signatureAvatar: data.frame.signature?.avatar ?? null,
     },
     terminal: data.terminal,
     editorOptions: data.editorOptions,
@@ -280,6 +291,10 @@ test<TestContext>('PUT /v1/project/:id [Update Project] -> ignores keys outside 
       aspectRatio: data.frame.aspectRatio,
       signatureHandle: data.frame.signature?.handle ?? null,
       signaturePosition: data.frame.signature?.position ?? null,
+      signatureStyle: data.frame.signature?.style ?? null,
+      signaturePlatform: data.frame.signature?.platform ?? null,
+      signatureName: data.frame.signature?.name ?? null,
+      signatureAvatar: data.frame.signature?.avatar ?? null,
     },
     terminal: {id: context.project1.terminalId, ...data.terminal},
     editorOptions: {

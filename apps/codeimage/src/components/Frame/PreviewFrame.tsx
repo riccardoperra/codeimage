@@ -185,7 +185,10 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
               </Show>
             </DynamicTerminal>
           </FittedWindow>
-          <FrameSignature signature={frame.signature} />
+          <FrameSignature
+            signature={frame.signature}
+            background={frame.background}
+          />
         </div>
       </div>
     </PreviewPortal>

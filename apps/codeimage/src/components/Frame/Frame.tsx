@@ -166,7 +166,10 @@ export const Frame: ParentComponent<FrameProps> = props => {
         </Show>
 
         <FittedWindow active={!!target()}>{props.children}</FittedWindow>
-        <FrameSignature signature={props.signature} />
+        <FrameSignature
+          signature={props.signature}
+          background={props.background}
+        />
       </div>
 
       <FadeInOutTransition show={resizing()}>

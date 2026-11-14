@@ -3,7 +3,10 @@ import Fastify from 'fastify';
 import {describe, expect, it} from 'vitest';
 import {PresetDataSchema} from '../../src/modules/preset/preset.contract.js';
 import {FrameSignatureSchema} from '../../src/modules/project/project.contract.js';
-import {readFrameSignature} from '../../src/modules/project/project.model.js';
+import {
+  readFrameSignature,
+  writeFrameSignature,
+} from '../../src/modules/project/project.model.js';
 import {SnippetFrameCreateRequestSchema} from '../../src/modules/project/project.contract.js';
 import {SnippetFrameUpdateRequestSchema} from '../../src/modules/project/project.contract.js';
 
@@ -39,7 +42,7 @@ describe('social export persistence', () => {
     },
   );
 
-  it.each(['bottom-left', 'bottom-right'])(
+  it.each(['bottom-left', 'bottom-center', 'bottom-right'])(
     'accepts a %s signature in projects and presets',
     position => {
       const data = {
@@ -67,7 +70,14 @@ describe('social export persistence', () => {
         signatureHandle: '@me',
         signaturePosition: 'bottom-left',
       }),
-    ).toEqual({handle: '@me', position: 'bottom-left'});
+    ).toEqual({
+      handle: '@me',
+      position: 'bottom-left',
+      style: 'minimal',
+      platform: null,
+      name: null,
+      avatar: null,
+    });
     expect(
       readFrameSignature({signatureHandle: null, signaturePosition: null}),
     ).toBeNull();
@@ -79,6 +89,41 @@ describe('social export persistence', () => {
     ).toBeNull();
     expect(
       Value.Check(FrameSignatureSchema, {handle: '@me', position: 'top-left'}),
+    ).toBe(false);
+  });
+
+  it('round-trips every signature field through the frame columns', () => {
+    const signature = {
+      handle: '@octocat',
+      position: 'bottom-center',
+      style: 'card',
+      platform: 'github',
+      name: 'The Octocat',
+      avatar: 'github',
+    } as const;
+    expect(Value.Check(FrameSignatureSchema, signature)).toBe(true);
+    expect(readFrameSignature(writeFrameSignature(signature))).toEqual(
+      signature,
+    );
+    expect(writeFrameSignature(undefined)).toEqual({});
+    expect(readFrameSignature(writeFrameSignature(null))).toBeNull();
+  });
+
+  it('drops a style or platform it does not know instead of the signature', () => {
+    expect(
+      readFrameSignature({
+        signatureHandle: '@me',
+        signaturePosition: 'bottom-right',
+        signatureStyle: 'neon',
+        signaturePlatform: 'myspace',
+      }),
+    ).toMatchObject({style: 'minimal', platform: null});
+    expect(
+      Value.Check(FrameSignatureSchema, {
+        handle: '@me',
+        position: 'bottom-right',
+        style: 'neon',
+      }),
     ).toBe(false);
   });
 });

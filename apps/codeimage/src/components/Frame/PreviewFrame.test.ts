@@ -55,6 +55,7 @@ vi.mock('../Terminal/DynamicTerminal/DynamicTerminal', () => ({
   DynamicTerminal: () => null,
 }));
 vi.mock('./FrameSkeleton', () => ({FrameSkeleton: () => null}));
+vi.mock('./FrameSignature.css', () => ({}));
 vi.mock('./Frame.css', () => ({
   previewPortal: 'portal',
   previewWrapper: 'preview',

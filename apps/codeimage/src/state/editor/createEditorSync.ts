@@ -5,6 +5,7 @@ import { getFrameState } from "@codeimage/store/editor/frame";
 import { getEditorStore } from "@codeimage/store/editor/index";
 import type { ProjectEditorPersistedState } from "@codeimage/store/editor/model";
 import { getTerminalState } from "@codeimage/store/editor/terminal";
+import { parseSignature } from "@codeimage/store/frame/model";
 import { toast } from "@codeimage/ui";
 import { appEnvironment } from "@core/configuration";
 import { createContextProvider } from "@solid-primitives/context";
@@ -129,7 +130,11 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
       ...state,
       ...data.terminal,
     }));
-    frameStore.setStore((state) => ({ ...state, ...data.frame }));
+    frameStore.setStore((state) => ({
+      ...state,
+      ...data.frame,
+      signature: parseSignature(data.frame.signature),
+    }));
   }
 
   async function clone() {
