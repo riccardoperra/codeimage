@@ -19,6 +19,7 @@ import {createSignal, Show} from 'solid-js';
 import {ExportExtension} from '../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../i18n';
 import {ExclamationIcon} from '../Icons/Exclamation';
+import {CopyAltTextButton} from './CopyAltTextButton';
 import * as styles from './ExportContent.css';
 
 export function ExportPopoverContent() {
@@ -124,6 +125,7 @@ export function ExportPopoverContent() {
               </HStack>
             </FlexField>
 
+            <CopyAltTextButton />
             <Checkbox
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}
