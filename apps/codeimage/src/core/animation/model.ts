@@ -1,4 +1,4 @@
-import type {LineMark, TabMarks} from '@codeimage/store/editor/model';
+import type {TabMarks} from '@codeimage/store/editor/model';
 import type {TokenLine} from '@core/snapshot/tokenize';
 
 // Persisted with the project. A step points at a tab, so the tabs stay the
@@ -23,7 +23,8 @@ export type Step = {
   lineNumberStart: number;
 };
 
-// Rows and columns from the top left of the step's code, 0-based.
+// Rows and code-font cells from the top left of the step's code, 0-based. A
+// column is fractional after a glyph wider than one cell.
 export type Cell = {line: number; col: number};
 
 // A token a step keeps is a `move`, even when its cell does not change.
@@ -64,7 +65,9 @@ export type Scene = {
   to: StepBox;
 };
 
-export type MarkKind = LineMark['kind'];
+// Cells per grapheme, for graphemes the code font does not draw one cell
+// wide, such as CJK and emoji from the fallback fonts.
+export type GlyphWidths = ReadonlyMap<string, number>;
 
 // Measured once per font and size, in CSS pixels.
 export type CodeMetrics = {charWidth: number; lineHeight: number};
