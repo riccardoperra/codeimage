@@ -301,12 +301,6 @@
   transition: none;
 }
 @media (max-width: 768px) {
-  .inspector-root {
-    grid-template-rows: 116px minmax(0, 1fr);
-  }
-  .inspector-root .inspector-header {
-    padding-top: 64px;
-  }
   .inspector-root .inspector-workspace {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) auto;
