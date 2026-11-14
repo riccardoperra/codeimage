@@ -97,7 +97,11 @@ export type SnapshotInput = z.input<typeof snapshotDocumentSchema>;
 
 export function parseSnapshotDocument(input: unknown): SnapshotDocument {
   const result = snapshotDocumentSchema.safeParse(input);
-  if (result.success) return result.data;
+  // Like the web export, a named target is exactly its pixel size.
+  if (result.success)
+    return result.data.frame.exportTarget
+      ? {...result.data, scale: 1}
+      : result.data;
   throw new Error(
     result.error.issues
       .map(issue => `${issue.path.join('.')}: ${issue.message}`)

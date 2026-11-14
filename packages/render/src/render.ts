@@ -46,7 +46,10 @@ interface RenderEntry {
     tabName: string,
   ): Promise<AnnotatedCode>;
   frameSizeCss(size?: FrameSize): string;
-  targetSize(id: string | null | undefined): [number, number] | undefined;
+  targetLayout(
+    frame: SnapshotDocument['frame'],
+    natural: FrameSize,
+  ): {size: FrameSize; css: string} | undefined;
 }
 
 interface FontFile {
@@ -204,39 +207,25 @@ export async function snapshotMarkup(
   // Like the web frame, the frame is at least as wide as its code, so no line
   // wraps. The borderless frame's clientWidth/clientHeight round to the nearest
   // CSS pixel before the web exporter applies the scale.
-  const target = entry.targetSize(document.frame.exportTarget);
-  const scale = document.format === 'svg' || target ? 1 : document.scale;
-  const windowCss = target
-    ? '[data-snapshot-window]{display:block!important;min-width:480px;width:max-content}'
-    : '';
+  const scale = document.format === 'svg' ? 1 : document.scale;
   const content = await renderer.measure(html, {
-    css: [...css, entry.frameSizeCss(), windowCss],
+    css: [...css, entry.frameSizeCss()],
     fontFamilies,
     devicePixelRatio: scale,
   });
-  const layoutSize = target
-    ? {width: target[0], height: target[1]}
-    : {
-        width: Math.max(document.width ?? 0, content.width / scale),
-        height: content.height / scale,
-      };
-  let fittedCss = '';
-  if (target) {
-    const padding = document.frame.padding;
-    const bottom = document.frame.signature ? Math.max(padding, 66) : padding;
-    const width = Math.max(1, Math.ceil(content.width) - 2 * padding);
-    const height = Math.max(1, Math.ceil(content.height) - padding - bottom);
-    const availableWidth = Math.max(1, layoutSize.width - 2 * padding);
-    const availableHeight = Math.max(1, layoutSize.height - padding - bottom);
-    const scale = Math.min(1, availableWidth / width, availableHeight / height);
-    const left = padding + (availableWidth - width * scale) / 2;
-    const top = padding + (availableHeight - height * scale) / 2;
-    fittedCss = `[data-snapshot-frame]{padding:0!important;min-width:0!important;max-width:none!important}[data-snapshot-window]{display:block!important;position:absolute;left:${left}px;top:${top}px;width:${width}px;height:${height}px;transform-origin:top left;transform:scale(${scale})}`;
-  }
+  const natural = {
+    width: content.width / scale,
+    height: content.height / scale,
+  };
+  const target = entry.targetLayout(document.frame, natural);
+  const layoutSize = target?.size ?? {
+    width: Math.max(document.width ?? 0, natural.width),
+    height: natural.height,
+  };
   return {
     document,
     html,
-    css: [...css, entry.frameSizeCss(layoutSize), fittedCss],
+    css: [...css, entry.frameSizeCss(layoutSize), target?.css ?? ''],
     naturalCss: css,
     size: {
       width: Math.round(layoutSize.width),
@@ -256,18 +245,17 @@ export async function renderSnapshot(
   const {document, html, css, images, fontFamilies, size} =
     await snapshotMarkup(input);
   const {renderer} = await getRuntime();
-  const pixelRatio = document.frame.exportTarget ? 1 : document.scale;
   if (document.format === 'svg') {
     return renderer.renderSvg(html, {css, images, fontFamilies, ...size});
   }
   const image = await renderer.render(html, {
-    width: Math.floor(size.width * pixelRatio),
-    height: Math.floor(size.height * pixelRatio),
+    width: Math.floor(size.width * document.scale),
+    height: Math.floor(size.height * document.scale),
     css,
     images,
     fontFamilies,
     format: document.format,
-    devicePixelRatio: pixelRatio,
+    devicePixelRatio: document.scale,
   });
   return new Uint8Array(image.buffer, image.byteOffset, image.byteLength);
 }

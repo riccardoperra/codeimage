@@ -5,12 +5,17 @@ import * as styles from './Frame.css';
 // The signature sits 16px from the bottom and is 34px tall; keep 16px clear above it.
 const SIGNATURE_SPACE = 66;
 
+export const frameBottomPadding = (
+  padding: number,
+  signature: FrameState['signature'],
+) => (signature ? Math.max(padding, SIGNATURE_SPACE) : padding);
+
 export function framePadding(
   padding: number,
   signature: FrameState['signature'],
 ) {
   return signature
-    ? `${padding}px ${padding}px ${Math.max(padding, SIGNATURE_SPACE)}px`
+    ? `${padding}px ${padding}px ${frameBottomPadding(padding, signature)}px`
     : `${padding}px`;
 }
 
