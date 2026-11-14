@@ -8,7 +8,6 @@ import {
   FieldLabel,
   FieldLabelHint,
   FlexField,
-  HStack,
   Link,
   RangeField,
   toast,
@@ -46,6 +45,7 @@ import {DownloadIcon} from '../Icons/Download';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {HintIcon} from '../Icons/Hint';
 import {redactTabCode} from '../CustomEditor/plugins/secrets';
+import * as styles from './ExportButton.css';
 import {CopyAltTextButton} from './CopyAltTextButton';
 
 interface ExportButtonProps {
@@ -342,34 +342,36 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               size={'md'}
               label={t('exportTabs.oneImagePerTab')}
             />
-            <CopyAltTextButton />
           </VStack>
         </DynamicSizedContainer>
       </DialogPanelContent>
       <DialogPanelFooter>
-        <HStack spacing={'2'} justifyContent={'flexEnd'}>
-          <Button
-            block
-            size={'md'}
-            type="button"
-            theme={'secondary'}
-            onClick={() => props.onOpenChange?.(false)}
-          >
-            {t('common.close')}
-          </Button>
+        <div class={styles.footer}>
+          <div class={styles.footerSecondary}>
+            <CopyAltTextButton class={styles.altTextAction} />
+          </div>
+          <div class={styles.footerActions}>
+            <Button
+              size={'md'}
+              type="button"
+              theme={'secondary'}
+              onClick={() => props.onOpenChange?.(false)}
+            >
+              {t('common.close')}
+            </Button>
 
-          <Button
-            block
-            size={'md'}
-            type="submit"
-            theme={'primary'}
-            onClick={onConfirm}
-          >
-            {secretCount() > 0
-              ? t('secrets.exportAnyway')
-              : t('common.confirm')}
-          </Button>
-        </HStack>
+            <Button
+              size={'md'}
+              type="submit"
+              theme={'primary'}
+              onClick={onConfirm}
+            >
+              {secretCount() > 0
+                ? t('secrets.exportAnyway')
+                : t('common.confirm')}
+            </Button>
+          </div>
+        </div>
       </DialogPanelFooter>
     </Dialog>
   );
