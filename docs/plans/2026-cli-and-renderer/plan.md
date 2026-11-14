@@ -5,7 +5,7 @@ The rule the program enforces is parity. For any snapshot, the CLI output and th
 The static view also replaces the hidden second CodeMirror editor, which is the core problem in discussion #619.
 The web app can rasterize with Takumi WASM too, behind a renderer flag that defaults to the current `dom-export` path.
 On top of that base the program adds line marks (diff, highlight, focus), secret redaction, social sizes with a signature, one image per tab, and alt text.
-PR ids in order are P1, P2, P3, P4, P5, P6, P7, P8, P9.
+PR ids in order are P1, P2, P3, P4, P5, P6, P7, P8, P9, P10. P10 brings the new editor's window styles and signature to the CLI.
 
 ## How to read this
 
@@ -634,6 +634,71 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Bugbot triage done.
 - [ ] Rebased onto current trunk after the verdict, patch-id unchanged.
 - [ ] The root appends P9 to the stack and the operator lands it bottom-up.
+
+## Render the new editor's window styles and signature in the CLI (P10)
+
+**Depends on.** The new UI (#711, branch `feat/ui-prototypes`) with three PRs merged into it. They are the window styles (#732, `feat/window-styles`), the signature styles (#729, `feat/signature-styles`), and Takumi aligned with the new editor (#731 merged into #701). The CLI (#702) merges last, after all of them. The operator set this order on 2026-11-15.
+
+- [ ] #729 merges into `feat/ui-prototypes` first. Record the merge SHA.
+- [ ] #731 is merged into `feat/p2-takumi-rasterizer-flag`. Then #701 is retargeted to `feat/ui-prototypes` and merged. Record the PR base and the merge SHA.
+- [ ] #732 merges into `feat/ui-prototypes`. Record the merge SHA.
+- [ ] #702 stays rebased onto the branch it merges into and merges last. `packages/cli` stays `"private": true` until the operator picks an npm name.
+
+**Files.**
+
+- [ ] Edit `packages/render/src/document.ts` and `packages/render/src/render.ts`.
+- [ ] Edit `packages/cli/src/flags/**` only if the operator asks for window flags.
+
+**Build.**
+
+- [ ] The snapshot schema reads the new terminal fields. They are the window `type` values `card`, `editor` and `terminal`, `surface` (`solid` or `wash`, where a missing value means `solid`), and `borderType` `hairline`.
+- [ ] The schema reads the signature fields `handle`, `position`, `style`, `platform`, `name`, `avatar` and `profile`. An unknown value falls back to the default instead of failing.
+- [ ] The Node renderer draws the same window and signature components the new UI exports, with no CLI-only copy.
+- [ ] The renderer registers Inter for the signature. It fetches a GitHub, Bluesky or Mastodon avatar before rendering and falls back to initials offline.
+- [ ] A preset copied with **Copy as CLI config** from the new UI carries the window style, surface, border and signature, and `--preset` applies them.
+- [ ] Add `--window card|editor|terminal|macos|windows` and `--surface solid|wash` only if the operator asks. Presets stay the main path.
+
+**You see.**
+
+- [ ] `codeimage foo.ts --preset card-wash.json -o out.png` draws the Card window with the accent wash and the saved signature, like the web export.
+
+**Verify, unit.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
+
+- [ ] `packages/render/src/document.test.ts` covers each new field, a missing `surface`, and an unknown window type. Run `pnpm --filter=@codeimage/render test`.
+- [ ] A render test with the network disabled draws the Card signature with initials.
+
+**Verify, live.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked. Ten lanes on `claude-sonnet-5-5` at the PR head, per the boot recipe.
+
+- [ ] Lane 1. Regression lane against trunk. Gate the classic macOS and Windows styles on every theme against the web export. Save `p10-classic.png`. Pass when every cell is at most 0.5%.
+- [ ] Lane 2. Card on GitHub Dark and Light. Save `p10-card.png`. Pass when both cells are at most 0.5%.
+- [ ] Lane 3. Editor on GitHub Dark and Light. Save `p10-editor.png`. Pass when both cells are at most 0.5%.
+- [ ] Lane 4. Terminal on GitHub Dark and Light. Save `p10-terminal.png`. Pass when both cells are at most 0.5%.
+- [ ] Lane 5. Wash surface on macOS with a hairline border. Save `p10-wash.png`. Pass when the cell is at most 0.5%.
+- [ ] Lane 6. Ambient background with two tabs. Save `p10-ambient.png`. Pass when the cell is at most 0.5%.
+- [ ] Lane 7. No header and radius 0. Save `p10-bare.png`. Pass when the cell is at most 0.5%.
+- [ ] Lane 8. Minimal, Pill and Card signatures with and without an icon at 1600×900 on a dark and a light background. Save `p10-signature.png`. Pass when every cell is at most 0.5%.
+- [ ] Lane 9. A preset from **Copy as CLI config** in the new UI. Save `p10-preset.png`. Pass when the CLI output matches the web export of that preset.
+- [ ] Lane 10. A snapshot saved before #732, with no `surface`. Save `p10-old.png`. Pass when it renders as `solid` and exits with 0.
+
+**Verify, perf.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
+
+- [ ] Metric. Cold wall time of `codeimage foo.ts --preset card-wash.json -o out.png` for a 50-line file.
+- [ ] Probe. `hyperfine --warmup 2 --runs 20` on head and on the P4 head.
+- [ ] Baseline. The P4 cold median.
+- [ ] Rule. The head median is at most 1.5 s, and at most 150 ms above the P4 median without an avatar fetch.
+
+**Review gate.** The operator reviews before merge.
+
+- [ ] Copy lane 2, 5 and 8 screenshots into `docs/plans/media/p10-review-<slug>.png`.
+- [ ] Record a 30 to 60 second terminal video of lanes 2, 8 and 9. Save it as `docs/plans/media/p10-review.mp4`.
+- [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
+
+**Merge.**
+
+- [ ] Root's clean verdict at the exact head SHA.
+- [ ] Bugbot triage done.
+- [ ] Rebased onto the target branch after the verdict, patch-id unchanged.
+- [ ] The operator lands it after #729, #701 and #732.
 
 ## Close the program
 
