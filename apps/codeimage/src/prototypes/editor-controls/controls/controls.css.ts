@@ -1,6 +1,5 @@
-import {createVar} from '@vanilla-extract/css';
 import {themeVars} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {createVar, style} from '@vanilla-extract/css';
 
 const c = themeVars.dynamicColors;
 /** Same breakpoint as the app's `useModality`. */
@@ -154,6 +153,7 @@ export const ambientSwatch = style({
   color: c.baseText,
   fontSize: '12px',
   cursor: 'pointer',
+  ':focus-visible': focusRing,
 });
 export const ambientSample = style({
   width: '40px',
