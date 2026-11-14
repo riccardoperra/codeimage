@@ -4,6 +4,12 @@ packages:
   - 'tools/**'
   - '!**/test/**'
 
+saveExact: true
+savePrefix: ''
+strictPeerDependencies: false
+shellEmulator: true
+enablePrePostScripts: false
+
 catalogs:
   next:
     '@codemirror/autocomplete': '^6.20.1'

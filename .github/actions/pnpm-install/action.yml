@@ -6,8 +6,6 @@ runs:
 
   steps:
     - uses: pnpm/action-setup@v5
-      with:
-        version: 10.32.1
 
     - name: Expose pnpm config(s) through "$GITHUB_OUTPUT"
       id: pnpm-config
