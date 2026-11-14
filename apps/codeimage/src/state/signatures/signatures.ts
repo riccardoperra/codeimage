@@ -12,13 +12,13 @@ import {parseSignature} from '../frame/model';
 import type {FrameSignature} from '../frame/model';
 import {experimental__defineResource} from '../plugins/bindStateBuilderResource';
 import {toSignatureData, withSignatureBridge} from './bridge';
-import type {SavedSignature, SavedSignaturesArray} from './types';
+import type {ApiSignature, SavedSignature, SavedSignaturesArray} from './types';
 
 const idbKey = 'signatures';
 const idb = useIdb();
 
 /** Keeps the saved signatures whose data still reads as a signature. */
-function readable(list: SavedSignaturesArray): SavedSignaturesArray {
+function readable(list: ApiSignature[]): SavedSignaturesArray {
   return list.flatMap(item => {
     const data = parseSignature(item.data);
     return data ? [{...item, data: toSignatureData(data)}] : [];
@@ -28,11 +28,9 @@ function readable(list: SavedSignaturesArray): SavedSignaturesArray {
 async function fetchInitialState(): Promise<SavedSignaturesArray> {
   const useInMemoryStore = !getAuth0State().loggedIn();
   const request = useInMemoryStore
-    ? idb
-        .get<SavedSignaturesArray>(idbKey)
-        .then(data => data ?? ([] as SavedSignaturesArray))
-    : (api.getAllSignatures({}) as Promise<SavedSignaturesArray>);
-  return request.then(readable).catch(() => [] as SavedSignaturesArray);
+    ? idb.get<ApiSignature[]>(idbKey).then(data => data ?? [])
+    : api.getAllSignatures({});
+  return request.then(readable).catch(() => []);
 }
 
 const toastPosition = {position: 'top-center'} as const;
@@ -50,7 +48,7 @@ const SignatureStoreDefinition = experimental__defineResource(fetchInitialState)
     /** Puts a saved signature on the frame, as a copy linked to it. */
     const applyToFrame = (signature: SavedSignature) =>
       frame.setSignature({
-        ...(parseSignature(signature.data) as FrameSignature),
+        ...signature.data,
         savedId: signature.id,
       });
 

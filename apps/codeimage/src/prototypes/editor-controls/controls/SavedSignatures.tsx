@@ -12,18 +12,12 @@ import {
   DropdownMenuTrigger,
   TextField,
 } from '@codeui/kit';
+import type {JSX} from 'solid-js';
 import {createSignal, For, Match, Show, Switch} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import * as styles from './saved-signatures.css';
 
-const same = (a: unknown, b: unknown) =>
-  JSON.stringify(a) === JSON.stringify(b);
-
-/**
- * The user's saved signatures, inline in the Signature section: pick one to
- * put a copy on the snippet, save the current one as new, and rename,
- * delete or make default the one the snippet came from.
- */
+/** Applies and manages the user's saved signatures. */
 export function SavedSignaturesField(props: {id?: string}) {
   const [t] = useI18n<AppLocaleEntries>();
   const frame = getFrameState();
@@ -41,10 +35,11 @@ export function SavedSignaturesField(props: {id?: string}) {
     const saved = linked();
     const signature = current();
     return (
-      !!saved && !!signature && !same(saved.data, toSignatureData(signature))
+      !!saved &&
+      !!signature &&
+      JSON.stringify(saved.data) !== JSON.stringify(toSignatureData(signature))
     );
   };
-  const full = () => store.limit();
 
   const startNaming = (
     next: {mode: 'new'} | {mode: 'rename'; signature: SavedSignature},
@@ -64,6 +59,24 @@ export function SavedSignaturesField(props: {id?: string}) {
     if (!save || !value || !state) return;
     if (state.mode === 'new') void store.actions.saveAsNew({name: value});
     else void store.actions.rename({signature: state.signature, name: value});
+  };
+  const cancelNaming = () => finishNaming(false);
+  const saveAsNew = () => startNaming({mode: 'new'});
+  const submitName: JSX.EventHandler<HTMLFormElement, SubmitEvent> = event => {
+    event.preventDefault();
+    finishNaming(true);
+  };
+  const onKeyDown: JSX.EventHandler<HTMLFormElement, KeyboardEvent> = event => {
+    if (event.key !== 'Escape') return;
+    event.preventDefault();
+    event.stopPropagation();
+    cancelNaming();
+  };
+  const focusName = (element: HTMLInputElement) => {
+    queueMicrotask(() => {
+      element.focus();
+      element.select();
+    });
   };
 
   return (
@@ -125,88 +138,97 @@ export function SavedSignaturesField(props: {id?: string}) {
                   }
                 >
                   <For each={store.list()}>
-                    {saved => (
-                      <DropdownMenuItem
-                        class={styles.item}
-                        data-current={
-                          saved.id === current()?.savedId ? '' : undefined
-                        }
-                        onSelect={() => store.applyToFrame(saved)}
-                      >
-                        <span class={styles.check} aria-hidden="true">
-                          <Show when={saved.id === current()?.savedId}>✓</Show>
-                        </span>
-                        <span class={styles.itemText}>
-                          <span class={styles.name}>{saved.name}</span>
-                          <span class={styles.meta}>{saved.data.handle}</span>
-                        </span>
-                        <Show when={saved.isDefault}>
-                          <span
-                            class={styles.badge}
-                            title={t('savedSignatures.defaultHint')}
-                          >
-                            {t('savedSignatures.default')}
+                    {saved => {
+                      const applySignature = () => store.applyToFrame(saved);
+                      return (
+                        <DropdownMenuItem
+                          class={styles.item}
+                          data-current={
+                            saved.id === current()?.savedId ? '' : undefined
+                          }
+                          onSelect={applySignature}
+                        >
+                          <span class={styles.check} aria-hidden="true">
+                            <Show when={saved.id === current()?.savedId}>
+                              ✓
+                            </Show>
                           </span>
-                        </Show>
-                      </DropdownMenuItem>
-                    )}
+                          <span class={styles.itemText}>
+                            <span class={styles.name}>{saved.name}</span>
+                            <span class={styles.meta}>{saved.data.handle}</span>
+                          </span>
+                          <Show when={saved.isDefault}>
+                            <span
+                              class={styles.badge}
+                              title={t('savedSignatures.defaultHint')}
+                            >
+                              {t('savedSignatures.default')}
+                            </span>
+                          </Show>
+                        </DropdownMenuItem>
+                      );
+                    }}
                   </For>
                 </Show>
                 <DropdownMenuSeparator />
                 <Show when={linked()}>
-                  {saved => (
-                    <>
-                      <Show when={edited()}>
+                  {saved => {
+                    const updateSignature = () =>
+                      void store.actions.updateWithCurrent(saved());
+                    const renameSignature = () =>
+                      startNaming({mode: 'rename', signature: saved()});
+                    const toggleDefault = () =>
+                      void store.actions.toggleDefault(saved());
+                    const removeSignature = () =>
+                      void store.actions.remove(saved());
+                    return (
+                      <>
+                        <Show when={edited()}>
+                          <DropdownMenuItem
+                            class={styles.item}
+                            onSelect={updateSignature}
+                          >
+                            {t('savedSignatures.update', {name: saved().name})}
+                          </DropdownMenuItem>
+                        </Show>
                         <DropdownMenuItem
                           class={styles.item}
-                          onSelect={() =>
-                            void store.actions.updateWithCurrent(saved())
-                          }
+                          onSelect={renameSignature}
                         >
-                          {t('savedSignatures.update', {name: saved().name})}
+                          {t('savedSignatures.rename')}
                         </DropdownMenuItem>
-                      </Show>
-                      <DropdownMenuItem
-                        class={styles.item}
-                        onSelect={() =>
-                          startNaming({mode: 'rename', signature: saved()})
-                        }
-                      >
-                        {t('savedSignatures.rename')}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        class={styles.item}
-                        onSelect={() =>
-                          void store.actions.toggleDefault(saved())
-                        }
-                      >
-                        <Switch>
-                          <Match when={saved().isDefault}>
-                            {t('savedSignatures.unsetDefault')}
-                          </Match>
-                          <Match when={!saved().isDefault}>
-                            {t('savedSignatures.setDefault')}
-                          </Match>
-                        </Switch>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        class={`${styles.item} ${styles.danger}`}
-                        onSelect={() => void store.actions.remove(saved())}
-                      >
-                        {t('savedSignatures.delete')}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
+                        <DropdownMenuItem
+                          class={styles.item}
+                          onSelect={toggleDefault}
+                        >
+                          <Switch>
+                            <Match when={saved().isDefault}>
+                              {t('savedSignatures.unsetDefault')}
+                            </Match>
+                            <Match when={!saved().isDefault}>
+                              {t('savedSignatures.setDefault')}
+                            </Match>
+                          </Switch>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          class={`${styles.item} ${styles.danger}`}
+                          onSelect={removeSignature}
+                        >
+                          {t('savedSignatures.delete')}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    );
+                  }}
                 </Show>
                 <DropdownMenuItem
                   class={styles.item}
-                  disabled={full() || !current()}
-                  onSelect={() => startNaming({mode: 'new'})}
+                  disabled={store.limit() || !current()}
+                  onSelect={saveAsNew}
                 >
                   {t('savedSignatures.saveAsNew')}
                 </DropdownMenuItem>
-                <Show when={full()}>
+                <Show when={store.limit()}>
                   <div class={styles.limit} role="note">
                     {t('savedSignatures.limit')}
                   </div>
@@ -216,30 +238,13 @@ export function SavedSignaturesField(props: {id?: string}) {
           </DropdownMenu>
         }
       >
-        <form
-          class={styles.naming}
-          onSubmit={event => {
-            event.preventDefault();
-            finishNaming(true);
-          }}
-          onKeyDown={event => {
-            if (event.key !== 'Escape') return;
-            event.preventDefault();
-            event.stopPropagation();
-            finishNaming(false);
-          }}
-        >
+        <form class={styles.naming} onSubmit={submitName} onKeyDown={onKeyDown}>
           <TextField
             size="sm"
             aria-label={t('savedSignatures.nameLabel')}
             value={name()}
             onChange={setName}
-            ref={(element: HTMLInputElement) =>
-              queueMicrotask(() => {
-                element.focus();
-                element.select();
-              })
-            }
+            ref={focusName}
             slotClasses={{root: styles.namingField}}
           />
           <button
@@ -254,7 +259,7 @@ export function SavedSignaturesField(props: {id?: string}) {
             class={styles.cancel}
             aria-label={t('savedSignatures.cancel')}
             title={t('savedSignatures.cancel')}
-            onClick={() => finishNaming(false)}
+            onClick={cancelNaming}
           >
             <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
               <path

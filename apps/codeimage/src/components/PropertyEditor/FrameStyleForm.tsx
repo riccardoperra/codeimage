@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {createSignature, SIGNATURE_STYLES} from '@codeimage/store/frame/model';
+import type {FrameSignature} from '@codeimage/store/frame/model';
 import {RangeField} from '@codeimage/ui';
 import {getUmami} from '@core/constants/umami';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
@@ -20,6 +21,21 @@ export const FrameStyleForm: ParentComponent = () => {
   const [t] = useI18n<AppLocaleEntries>();
   const {editorPadding, editorRadius} = appEnvironment;
   const frame = getFrameState();
+  const changeHandle = (handle: string) => {
+    frame.setSignature(
+      handle
+        ? {...(frame.store.signature ?? createSignature(handle)), handle}
+        : null,
+    );
+  };
+  const changePosition = (position: FrameSignature['position']) => {
+    const signature = frame.store.signature;
+    if (signature) frame.setSignature({...signature, position});
+  };
+  const changeStyle = (style: FrameSignature['style']) => {
+    const signature = frame.store.signature;
+    if (signature) frame.setSignature({...signature, style});
+  };
 
   const paddingOptions = createSelectOptions(
     editorPadding.map(padding => ({
@@ -148,16 +164,7 @@ export const FrameStyleForm: ParentComponent = () => {
             size="xs"
             placeholder="@handle"
             value={frame.store.signature?.handle ?? ''}
-            onChange={handle =>
-              frame.setSignature(
-                handle
-                  ? {
-                      ...(frame.store.signature ?? createSignature(handle)),
-                      handle,
-                    }
-                  : null,
-              )
-            }
+            onChange={changeHandle}
           />
         </TwoColumnPanelRow>
       </PanelRow>
@@ -169,10 +176,7 @@ export const FrameStyleForm: ParentComponent = () => {
               size="xs"
               adapt
               value={frame.store.signature?.position ?? 'bottom-right'}
-              onChange={position => {
-                const signature = frame.store.signature;
-                if (signature) frame.setSignature({...signature, position});
-              }}
+              onChange={changePosition}
               items={[
                 {label: t('signature.left'), value: 'bottom-left' as const},
                 {label: t('signature.center'), value: 'bottom-center' as const},
@@ -188,10 +192,7 @@ export const FrameStyleForm: ParentComponent = () => {
               size="xs"
               adapt
               value={frame.store.signature?.style ?? 'minimal'}
-              onChange={style => {
-                const signature = frame.store.signature;
-                if (signature) frame.setSignature({...signature, style});
-              }}
+              onChange={changeStyle}
               items={SIGNATURE_STYLES.map(style => ({
                 label: t(`signature.${style}`),
                 value: style,

@@ -80,7 +80,7 @@ export function SignatureHandleField(props: {id?: string}) {
         size="sm"
         placeholder={t('signature.handlePlaceholder')}
         value={frame.store.signature?.handle ?? ''}
-        onChange={value => write(value)}
+        onChange={write}
       />
       <span class={controls.visuallyHidden} aria-live="polite">
         {announcement()}
@@ -92,16 +92,17 @@ export function SignatureHandleField(props: {id?: string}) {
 export function SignatureNameField(props: {id?: string}) {
   const [t] = useI18n<AppLocaleEntries>();
   const frame = getFrameState();
+  const write = (name: string) => {
+    const current = frame.store.signature;
+    if (current) frame.setSignature({...current, name: name || null});
+  };
   return (
     <TextField
       id={props.id}
       size="sm"
       placeholder={t('signature.namePlaceholder')}
       value={frame.store.signature?.name ?? ''}
-      onChange={name => {
-        const current = frame.store.signature;
-        if (current) frame.setSignature({...current, name: name || null});
-      }}
+      onChange={write}
     />
   );
 }
@@ -160,9 +161,20 @@ export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
   const onFile = async (file: File | undefined) => {
     if (!file) return;
     const stored = await assets.addFile(await squareAvatar(file), 'signature');
-    const id = stored.id as SignatureAvatar;
-    setUploaded(id);
-    setAvatar(id);
+    setUploaded(stored.id);
+    setAvatar(stored.id);
+  };
+  const openFilePicker = () => input.click();
+  const changeAvatar = (next: AvatarChoice) => {
+    if (next === 'initials') return setAvatar(null);
+    if (next === 'profile') return setAvatar('profile');
+    const previous = uploaded() ?? asset();
+    if (previous && assets.getAsset(previous)()) setAvatar(previous);
+    else openFilePicker();
+  };
+  const uploadAvatar: JSX.EventHandler<HTMLInputElement, Event> = event => {
+    void onFile(event.currentTarget.files?.[0]);
+    event.currentTarget.value = '';
   };
 
   return (
@@ -176,13 +188,7 @@ export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
           id={props.id}
           size={props.size ?? 'sm'}
           value={choice()}
-          onChange={next => {
-            if (next === 'initials') return setAvatar(null);
-            if (next === 'profile') return setAvatar('profile');
-            const previous = uploaded() ?? asset();
-            if (previous && assets.getAsset(previous)()) setAvatar(previous);
-            else input.click();
-          }}
+          onChange={changeAvatar}
           items={[
             {label: t('signature.initials'), value: 'initials'},
             {label: t('signature.profileAvatar'), value: 'profile'},
@@ -197,7 +203,7 @@ export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
             class={styles.avatarThumb}
             title={t('signature.replace')}
             aria-label={t('signature.replace')}
-            onClick={() => input.click()}
+            onClick={openFilePicker}
           >
             <img class={styles.avatarImage} src={stored().url} alt="" />
           </button>
@@ -208,10 +214,7 @@ export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
         type="file"
         accept="image/png,image/jpeg,image/webp,image/gif"
         hidden
-        onChange={event => {
-          void onFile(event.currentTarget.files?.[0]);
-          event.currentTarget.value = '';
-        }}
+        onChange={uploadAvatar}
       />
     </div>
   );

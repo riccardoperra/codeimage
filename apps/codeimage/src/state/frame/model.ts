@@ -19,8 +19,8 @@ export type SignatureStyle = (typeof SIGNATURE_STYLES)[number];
 export type SignaturePlatform = (typeof SIGNATURE_PLATFORMS)[number];
 export type SignaturePosition = (typeof SIGNATURE_POSITIONS)[number];
 /**
- * `profile` loads the public avatar of the profile (or of the handle on its
- * platform); an asset id is an uploaded image.
+ * `profile` loads a public avatar from the selected source; an asset id is
+ * an uploaded image.
  */
 export type SignatureAvatar = 'profile' | AssetId;
 

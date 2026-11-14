@@ -26,9 +26,11 @@ export function parseColors(background: string): Rgb[] {
         hex.length <= 4 ? [...hex].map(digit => digit + digit).join('') : hex;
       if (full.length !== 6 && full.length !== 8) return [];
       return [
-        [0, 2, 4].map(i =>
-          parseInt(full.slice(i, i + 2), 16),
-        ) as unknown as Rgb,
+        [
+          parseInt(full.slice(0, 2), 16),
+          parseInt(full.slice(2, 4), 16),
+          parseInt(full.slice(4, 6), 16),
+        ],
       ];
     }
     const parts = token
@@ -45,7 +47,9 @@ export function parseColors(background: string): Rgb[] {
         ),
       ];
     }
-    return [[0, 1, 2].map(i => channel(parts[i], 255)) as unknown as Rgb];
+    return [
+      [channel(parts[0], 255), channel(parts[1], 255), channel(parts[2], 255)],
+    ];
   });
 }
 

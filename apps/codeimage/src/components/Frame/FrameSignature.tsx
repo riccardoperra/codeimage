@@ -76,6 +76,7 @@ function Avatar(props: {signature: Signature}) {
     return assets.getAsset(avatar)()?.url ?? null;
   };
   const [failed, setFailed] = createSignal<string | null>(null);
+  const onError = () => setFailed(url());
   return (
     <Show
       when={url() && failed() !== url()}
@@ -85,12 +86,7 @@ function Avatar(props: {signature: Signature}) {
         </div>
       }
     >
-      <img
-        class={styles.avatar}
-        src={url()!}
-        alt=""
-        onError={() => setFailed(url())}
-      />
+      <img class={styles.avatar} src={url()!} alt="" onError={onError} />
     </Show>
   );
 }
@@ -178,6 +174,15 @@ export function FrameSignature(props: {
   editLabel?: string;
 }) {
   const tone = createSignatureTone(() => props.background);
+  // Keep the editor's focus and selection, and start no drag.
+  const preventSelection = (event: Event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  const editSignature = (event: MouseEvent) => {
+    event.stopPropagation();
+    props.onEdit?.();
+  };
   return (
     <Show when={props.signature}>
       {signature => (
@@ -196,50 +201,21 @@ export function FrameSignature(props: {
             when={props.onEdit}
             fallback={<SignatureMark signature={signature()} />}
           >
-            {onEdit => (
-              <button
-                type="button"
-                class={styles.edit}
-                data-signature-style={signature().style}
-                aria-label={props.editLabel}
-                title={props.editLabel}
-                // Keeps the editor's focus and selection, and starts no drag.
-                onPointerDown={event => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                }}
-                onMouseDown={event => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                }}
-                onClick={event => {
-                  event.stopPropagation();
-                  onEdit()();
-                }}
-              >
-                <SignatureMark signature={signature()} />
-              </button>
-            )}
+            <button
+              type="button"
+              class={styles.edit}
+              data-signature-style={signature().style}
+              aria-label={props.editLabel}
+              title={props.editLabel}
+              onPointerDown={preventSelection}
+              onMouseDown={preventSelection}
+              onClick={editSignature}
+            >
+              <SignatureMark signature={signature()} />
+            </button>
           </Show>
         </div>
       )}
     </Show>
-  );
-}
-
-/** The signature in the ink it would get on a background, for previews outside the frame. */
-export function SignatureSwatch(props: {
-  signature: Signature;
-  background: string | null | undefined;
-  class?: string;
-}) {
-  const tone = createSignatureTone(() => props.background);
-  return (
-    <div
-      class={`${props.class ?? ''} ${styles.tone[tone()]}`}
-      data-position={props.signature.position}
-    >
-      <SignatureMark signature={props.signature} />
-    </div>
   );
 }
