@@ -266,7 +266,12 @@ function FontRows(props: PanelProps) {
             options: () =>
               config.get.fonts.map(font => ({key: font.id, label: font.name})),
             value: fontId,
-            set: editor.actions.setFontId,
+            set: id => {
+              props.model.endPreview();
+              editor.actions.setFontId(id);
+            },
+            preview: id =>
+              props.model.preview(() => editor.actions.setFontId(id)),
           },
           props.size,
         )}

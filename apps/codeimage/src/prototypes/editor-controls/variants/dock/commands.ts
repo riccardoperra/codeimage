@@ -1,8 +1,8 @@
 import type {Control, EditorControlsModel} from '../../model';
 import type {Fields, PanelId} from './fields';
 import {isChoice, PLACES} from './fields';
-import type {Previewable} from './preview';
-import {shownTheme, themePreview} from './preview';
+import type {Change} from './preview';
+import {shownTheme, themeChange} from './preview';
 
 export interface Command {
   readonly id: string;
@@ -13,7 +13,7 @@ export interface Command {
   /** True when the command is the value in use. */
   readonly current?: boolean;
   /** Highlighting the command shows this on the canvas. Enter keeps it. */
-  readonly preview?: Previewable;
+  readonly change?: Change;
   /** For commands with nothing to preview. */
   readonly run?: () => void;
 }
@@ -42,11 +42,10 @@ function controlCommands(
         ...base,
         label: `Toggle ${label.toLowerCase()}`,
         note: on ? 'On' : 'Off',
-        preview: {
-          scope: control.id,
+        change: {
           key: control.id,
-          apply: () => control.set(!on),
-          capture: () => () => control.set(on),
+          preview: () => control.preview(!on),
+          keep: () => control.set(!on),
         },
       },
     ];
@@ -60,7 +59,7 @@ function controlCommands(
       id: `${control.id}=${option.key}`,
       label: `${label}: ${option.label}`,
       current: option.key === value,
-      preview: fields.preview(control, option.key),
+      change: fields.change(control, option.key),
     }));
   }
 
@@ -75,11 +74,10 @@ function controlCommands(
       id: `${control.id}=${stop}`,
       label: `${label}: ${stop}`,
       current: stop === before,
-      preview: {
-        scope: control.id,
+      change: {
         key: `${control.id}=${stop}`,
-        apply: () => control.set(stop),
-        capture: () => () => control.set(before),
+        preview: () => control.preview(stop),
+        keep: () => control.set(stop),
       },
     }));
   }
@@ -121,7 +119,7 @@ export function buildCommands(input: {
         group: 'Theme',
         label: `Theme: ${theme.name}`,
         current: theme.id === shown?.id,
-        preview: themePreview(model, theme),
+        change: themeChange(theme),
       }),
     ),
     ...fields.sections.flatMap(section =>

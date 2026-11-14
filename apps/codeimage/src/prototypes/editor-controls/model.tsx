@@ -17,13 +17,14 @@ import {appEnvironment} from '@core/configuration';
 import {shadowsLabel} from '@core/configuration/shadow';
 import {getUmami} from '@core/constants/umami';
 import type {Accessor, Component} from 'solid-js';
-import {batch, createMemo, createSelector, createSignal} from 'solid-js';
+import {createMemo, createSelector} from 'solid-js';
 import {provideState} from 'statebuilder';
-import {untrackCommand} from 'statebuilder/commands';
 import {FontPicker} from '../../components/PropertyEditor/controls/FontPicker/FontPicker';
 import {ImagePicker} from '../../components/PropertyEditor/controls/ImagePicker/ImagePicker';
 import {TerminalControlField} from '../../components/PropertyEditor/controls/TerminalControlField/TerminalControlField';
 import type {AppLocaleEntries} from '../../i18n';
+import type {PreviewSession} from './preview';
+import {createPreviewSession} from './preview';
 import type {SyntaxColors} from './syntax';
 import {readSyntaxColors} from './syntax';
 
@@ -65,6 +66,8 @@ interface ControlBase<K extends string> {
 export interface ToggleControl extends ControlBase<'toggle'> {
   readonly value: Accessor<boolean>;
   readonly set: (value: boolean) => void;
+  /** Shows the value on the canvas without saving it, until `set()` or `endPreview()`. */
+  readonly preview: (value: boolean) => void;
 }
 
 export interface ChoiceOption {
@@ -80,6 +83,8 @@ interface ChoiceControl<
   /** Key of the selected option. Matches no option when the store holds a value outside the list. */
   readonly value: Accessor<string>;
   readonly set: (key: string) => void;
+  /** Shows the option on the canvas without saving it, until `set()` or `endPreview()`. */
+  readonly preview: (key: string) => void;
   readonly disabled: Accessor<boolean>;
 }
 
@@ -89,6 +94,8 @@ export type SelectControl = ChoiceControl<'select'>;
 export interface RangeControl extends ControlBase<'range'> {
   readonly value: Accessor<number>;
   readonly set: (value: number) => void;
+  /** Shows the value on the canvas without saving it, until `set()` or `endPreview()`. */
+  readonly preview: (value: number) => void;
   readonly min: number;
   readonly max: number;
   readonly step: number;
@@ -145,7 +152,7 @@ export interface ThemeEntry {
   readonly active: Accessor<boolean>;
   /** Same as clicking a theme card today: also replaces the frame background. */
   readonly apply: () => void;
-  /** Shows the theme on the canvas without saving it, until `apply()` or `endThemePreview()`. */
+  /** Shows the theme on the canvas without saving it, until `apply()` or `endPreview()`. */
   readonly preview: () => void;
 }
 
@@ -154,15 +161,13 @@ export interface EditorControlsModel {
   readonly control: (id: ControlId) => Control | undefined;
   /** Registry order. Grows while theme modules load. */
   readonly themes: Accessor<readonly ThemeEntry[]>;
-  /** Puts back the applied theme after `preview()`. Does nothing when no preview runs. */
-  readonly endThemePreview: () => void;
-}
-
-interface ThemeLook {
-  readonly themeId: string;
-  readonly frameBackground: string | null;
-  readonly windowBackground: string;
-  readonly windowText: string;
+  /**
+   * Shows a write to the stores on the canvas without saving it or sending
+   * analytics. Each preview, of a theme or a control, first undoes the last.
+   */
+  readonly preview: (write: () => void) => void;
+  /** Undoes the running preview. Every `set()` and `apply()` also ends it first. */
+  readonly endPreview: () => void;
 }
 
 type OptionValue = string | number | boolean | null;
@@ -172,7 +177,12 @@ interface ChoiceSpec<T extends OptionValue> {
   readonly label: Accessor<string>;
   readonly options: Accessor<readonly {label: string; value: T}[]>;
   readonly value: Accessor<T>;
+  /** Writes the value to the store. A preview runs it too. */
   readonly set: (value: T) => void;
+  /** Writes for a preview when `set` does more than show the value. */
+  readonly show?: (value: T) => void;
+  /** Side effects of a saved change only, such as analytics. */
+  readonly track?: (value: T) => void;
   readonly visible?: Accessor<boolean>;
   readonly disabled?: Accessor<boolean>;
 }
@@ -180,10 +190,13 @@ interface ChoiceSpec<T extends OptionValue> {
 const always = () => true;
 const never = () => false;
 
-function choice<K extends 'segmented' | 'select', T extends OptionValue>(
+function makeChoice<K extends 'segmented' | 'select', T extends OptionValue>(
+  session: PreviewSession,
   kind: K,
   spec: ChoiceSpec<T>,
 ): ChoiceControl<K> {
+  const find = (key: string) =>
+    spec.options().find(option => String(option.value) === key);
   return {
     kind,
     id: spec.id,
@@ -197,11 +210,25 @@ function choice<K extends 'segmented' | 'select', T extends OptionValue>(
       })),
     value: () => String(spec.value()),
     set: key => {
-      const option = spec
-        .options()
-        .find(option => String(option.value) === key);
-      if (option) spec.set(option.value);
+      const option = find(key);
+      if (!option) return;
+      session.commit(() => {
+        spec.set(option.value);
+        spec.track?.(option.value);
+      });
     },
+    preview: key => {
+      const option = find(key);
+      if (option) session.show(() => (spec.show ?? spec.set)(option.value));
+    },
+  };
+}
+
+/** `set` and `preview` for a control whose write has no side effects. */
+function writes<T>(session: PreviewSession, write: (value: T) => void) {
+  return {
+    set: (value: T) => session.commit(() => write(value)),
+    preview: (value: T) => session.show(() => write(value)),
   };
 }
 
@@ -222,36 +249,27 @@ export function createEditorControlsModel(): EditorControlsModel {
   const themeStore = getThemeStore();
   const versionStore = provideState(VersionStore);
   const shadows = createMemo(shadowsLabel);
-  // Set while a preview runs: the look to restore when it ends.
-  const [applied, setApplied] = createSignal<ThemeLook | null>(null);
+  const session = createPreviewSession();
   const isActiveTheme = createSelector(
-    () => applied()?.themeId ?? editor.state.options.themeId,
+    () => session.saved()?.options.themeId ?? editor.state.options.themeId,
   );
+  const choice = <K extends 'segmented' | 'select', T extends OptionValue>(
+    kind: K,
+    spec: ChoiceSpec<T>,
+  ) => makeChoice(session, kind, spec);
+  const write = <T,>(set: (value: T) => void) => writes(session, set);
+  const commit =
+    <T,>(set: (value: T) => void) =>
+    (value: T) =>
+      session.commit(() => set(value));
 
-  const currentLook = (): ThemeLook => ({
-    themeId: editor.state.options.themeId,
-    frameBackground: frame.store.background,
-    windowBackground: terminal.state.background,
-    windowText: terminal.state.textColor,
-  });
-
-  // Untracked commands still update the stores but skip the persistence
-  // watchers, so a preview never reaches IndexedDB.
-  const showLook = (look: ThemeLook) =>
-    batch(() =>
-      untrackCommand(() => {
-        frame.setStore('background', look.frameBackground);
-        terminal.setState('background', look.windowBackground);
-        terminal.setState('textColor', look.windowText);
-        editor.actions.setThemeId(look.themeId);
-      }, false),
-    );
-
-  const endThemePreview = () => {
-    const look = applied();
-    if (!look) return;
-    setApplied(null);
-    showLook(look);
+  // What dispatchUpdateTheme writes, without its analytics and its async load.
+  const showTheme = (theme: CustomTheme, background: boolean) => {
+    if (background)
+      frame.setStore('background', theme.properties.previewBackground);
+    terminal.setState('background', theme.properties.terminal.main);
+    terminal.setState('textColor', theme.properties.terminal.text);
+    editor.actions.setThemeId(theme.id);
   };
 
   // Reading a resource before it is ready would suspend the caller's
@@ -276,20 +294,12 @@ export function createEditorControlsModel(): EditorControlsModel {
           syntax: readSyntaxColors(theme),
         },
         active: () => isActiveTheme(theme.id),
-        apply: () => {
-          setApplied(null);
-          dispatchUpdateTheme({theme, updateBackground: true});
-          getUmami().track('theme-change', {themeId: theme.id});
-        },
-        preview: () => {
-          if (!applied()) setApplied(currentLook());
-          showLook({
-            themeId: theme.id,
-            frameBackground: theme.properties.previewBackground,
-            windowBackground: theme.properties.terminal.main,
-            windowText: theme.properties.terminal.text,
-          });
-        },
+        apply: () =>
+          session.commit(() => {
+            dispatchUpdateTheme({theme, updateBackground: true});
+            getUmami().track('theme-change', {themeId: theme.id});
+          }),
+        preview: () => session.show(() => showTheme(theme, true)),
       }),
     ),
   );
@@ -327,7 +337,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.visible'),
           visible: always,
           value: frameVisible,
-          set: frame.setVisibility,
+          ...write(frame.setVisibility),
         },
         {
           kind: 'range',
@@ -335,7 +345,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.opacity'),
           visible: frameVisible,
           value: () => frame.store.opacity,
-          set: frame.setOpacity,
+          ...write(frame.setOpacity),
           min: 0,
           max: 100,
           step: 1,
@@ -346,7 +356,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.background'),
           visible: frameVisible,
           value: () => frame.store.background ?? '',
-          set: frame.setBackground,
+          set: commit(frame.setBackground),
           colors: AVAILABLE_COLORS,
           gradients: AVAILABLE_GRADIENTS,
         },
@@ -375,10 +385,9 @@ export function createEditorControlsModel(): EditorControlsModel {
             })),
           ],
           value: () => frame.store.aspectRatio,
-          set: ratio => {
-            frame.setAspectRatio(ratio);
-            getUmami().track('aspect-ratio', {ratio: ratio ?? 'unset'});
-          },
+          set: frame.setAspectRatio,
+          track: ratio =>
+            getUmami().track('aspect-ratio', {ratio: ratio ?? 'unset'}),
         }),
       ],
     },
@@ -402,7 +411,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.header'),
           visible: always,
           value: headerVisible,
-          set: terminal.setShowHeader,
+          ...write(terminal.setShowHeader),
         },
         {
           kind: 'custom',
@@ -427,7 +436,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.tabAccent'),
           visible: headerVisible,
           value: () => terminal.state.accentVisible,
-          set: terminal.setAccentVisible,
+          ...write(terminal.setAccentVisible),
         },
         {
           kind: 'toggle',
@@ -435,7 +444,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.reflection'),
           visible: always,
           value: () => terminal.state.showGlassReflection,
-          set: terminal.setShowGlassReflection,
+          ...write(terminal.setShowGlassReflection),
         },
         {
           kind: 'toggle',
@@ -443,17 +452,16 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.watermark'),
           visible: always,
           value: () => terminal.state.showWatermark,
-          set: terminal.setShowWatermark,
+          ...write(terminal.setShowWatermark),
         },
         choice<'select', string | null>('select', {
           id: 'window.shadow',
           label: () => t('frame.shadow'),
           options: shadows,
           value: () => terminal.state.shadow,
-          set: shadow => {
-            getUmami().track('change-shadow', {shadow: shadow ?? 'none'});
-            terminal.setShadow(shadow);
-          },
+          set: terminal.setShadow,
+          track: shadow =>
+            getUmami().track('change-shadow', {shadow: shadow ?? 'none'}),
         }),
         choice('select', {
           id: 'window.border',
@@ -463,10 +471,10 @@ export function createEditorControlsModel(): EditorControlsModel {
             {label: 'Glass', value: 'glass'},
           ],
           value: () => terminal.state.borderType ?? 'none',
-          set: border => {
+          set: border => terminal.setBorder(border === 'none' ? null : border),
+          track: border => {
             versionStore.see('borderType', false);
             getUmami().track('change-border', {border});
-            terminal.setBorder(border === 'none' ? null : border);
           },
         }),
       ],
@@ -484,10 +492,8 @@ export function createEditorControlsModel(): EditorControlsModel {
               value: language.id,
             })),
           value: () => activeEditor.editor()?.languageId ?? '',
-          set: language => {
-            activeEditor.setLanguageId(language);
-            getUmami().track('change-language', {language});
-          },
+          set: activeEditor.setLanguageId,
+          track: language => getUmami().track('change-language', {language}),
         }),
         choice('select', {
           id: 'editor.theme',
@@ -498,9 +504,10 @@ export function createEditorControlsModel(): EditorControlsModel {
               value: theme.id,
             })),
           value: () => editor.state.options.themeId,
-          set: theme => {
-            setApplied(null);
-            dispatchUpdateTheme({theme, updateBackground: false});
+          set: theme => dispatchUpdateTheme({theme, updateBackground: false}),
+          show: id => {
+            const theme = loadedThemes().find(item => item.id === id);
+            if (theme) showTheme(theme, false);
           },
         }),
         choice('select', {
@@ -523,7 +530,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.lineNumbers'),
           visible: always,
           value: () => editor.state.options.showLineNumbers,
-          set: editor.actions.setShowLineNumbers,
+          ...write(editor.actions.setShowLineNumbers),
         },
         {
           kind: 'number',
@@ -531,7 +538,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.lineNumberStart'),
           visible: () => editor.state.options.showLineNumbers,
           value: () => activeEditor.editor()?.lineNumberStart ?? 1,
-          set: activeEditor.setLineNumberStart,
+          set: commit(activeEditor.setLineNumberStart),
           min: appEnvironment.lineNumbers.min,
           max: appEnvironment.lineNumbers.max,
         },
@@ -570,7 +577,7 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('frame.ligatures'),
           visible: always,
           value: () => editor.state.options.enableLigatures,
-          set: editor.actions.setEnableLigatures,
+          ...write(editor.actions.setEnableLigatures),
         },
       ],
     },
@@ -584,6 +591,7 @@ export function createEditorControlsModel(): EditorControlsModel {
     sections,
     control: id => byId.get(id),
     themes,
-    endThemePreview,
+    preview: session.show,
+    endPreview: session.end,
   };
 }

@@ -15,7 +15,7 @@ import type {GroupId} from './fields';
 import {GROUPS} from './fields';
 import {MoonIcon, SearchIcon, SunIcon} from './icons';
 import {OptionGrid} from './OptionGrid';
-import {shownTheme, themePreview} from './preview';
+import {shownTheme, themeChange} from './preview';
 
 type Tone = 'all' | 'dark' | 'light';
 
@@ -123,7 +123,7 @@ export function ThemesPanel() {
           items={themes()}
           id={theme => theme.id}
           selected={theme => theme.id === shownTheme(dock.model)?.id}
-          change={theme => themePreview(dock.model, theme)}
+          change={themeChange}
           onPick={(_, byKeyboard) => dock.closeAfterPick(byKeyboard)}
           search={() => search}
           autofocus

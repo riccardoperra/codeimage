@@ -17,7 +17,7 @@ import type {PanelId} from './fields';
 import {createFields} from './fields';
 import {createFrameGuard} from './guard';
 import {CodeIcon, PaddingIcon, SearchIcon, SlidersIcon} from './icons';
-import {createPreviewSession, shownTheme} from './preview';
+import {shownTheme} from './preview';
 import {tokens} from './tokens.css';
 import {Tray} from './Tray';
 
@@ -76,7 +76,10 @@ export default function Dock(props: VariantProps) {
   const [panel, setPanel] = createSignal<PanelId>();
   const [previewKey, setPreviewKey] = createSignal<string>();
   const [instant, setInstant] = createSignal(false);
-  const session = createPreviewSession(setPreviewKey);
+  const cancel = () => {
+    props.model.endPreview();
+    setPreviewKey(undefined);
+  };
 
   let bar: HTMLDivElement | undefined;
   let canvas: HTMLDivElement | undefined;
@@ -86,11 +89,11 @@ export default function Dock(props: VariantProps) {
   const inset = createFrameGuard(() => canvas);
 
   const open = (next: PanelId) => {
-    session.cancel();
+    cancel();
     setPanel(next);
   };
   const close = () => {
-    session.cancel();
+    cancel();
     setPanel(undefined);
   };
 
@@ -98,15 +101,20 @@ export default function Dock(props: VariantProps) {
     model: props.model,
     stage: props.stage,
     fields,
-    session,
+    preview: change => {
+      if (previewKey() === change.key) return;
+      change.preview();
+      setPreviewKey(change.key);
+    },
+    cancel,
     previewKey,
     panel,
     compact,
     open,
     close,
     keep: change => {
-      session.preview(change);
-      session.commit();
+      change.keep();
+      setPreviewKey(undefined);
     },
     closeAfterPick: byKeyboard => {
       if (byKeyboard || canHover()) close();
@@ -127,7 +135,7 @@ export default function Dock(props: VariantProps) {
   };
 
   // Switching variants unmounts the dock with a preview still on the canvas.
-  onCleanup(session.cancel);
+  onCleanup(cancel);
 
   onMount(() => {
     const onKeyDown = (event: KeyboardEvent) => {

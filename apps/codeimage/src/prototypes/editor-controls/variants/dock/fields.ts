@@ -13,8 +13,8 @@ import type {
   SelectControl,
   ToggleControl,
 } from '../../model';
-import type {Previewable} from './preview';
-import {choicePreview, shownTheme, syntaxThemePreview} from './preview';
+import type {Change} from './preview';
+import {choiceChange, shownTheme} from './preview';
 
 export type PanelId =
   | 'themes'
@@ -124,7 +124,7 @@ export interface Fields {
   ) => Extract<Control, {kind: K}> | undefined;
   readonly choice: (id: ControlId) => ChoiceControl | undefined;
   readonly group: (id: GroupId) => readonly Control[];
-  readonly preview: (control: ChoiceControl, key: string) => Previewable;
+  readonly change: (control: ChoiceControl, key: string) => Change;
   /** Name of the font in use, which may be a system font outside the options. */
   readonly fontName: () => string;
 }
@@ -153,9 +153,11 @@ export function createFields(model: EditorControlsModel): Fields {
       })),
     value: () => terminal.state.type,
     set: type => {
+      model.endPreview();
       terminal.setType(type);
       getUmami().track('change-terminal-type', {type});
     },
+    preview: type => model.preview(() => terminal.setType(type)),
   });
 
   const fontFamily = (base: Control): SelectControl => ({
@@ -167,7 +169,11 @@ export function createFields(model: EditorControlsModel): Fields {
     options: () =>
       config.get.fonts.map(font => ({key: font.id, label: font.name})),
     value: () => editor.computed.selectedFont()?.id ?? '',
-    set: editor.actions.setFontId,
+    set: id => {
+      model.endPreview();
+      editor.actions.setFontId(id);
+    },
+    preview: id => model.preview(() => editor.actions.setFontId(id)),
   });
 
   const asSwitch = (
@@ -180,6 +186,7 @@ export function createFields(model: EditorControlsModel): Fields {
     visible: base.visible,
     value: () => base.value() === spec.on,
     set: on => base.set(on ? spec.on : spec.off),
+    preview: on => base.preview(on ? spec.on : spec.off),
   });
 
   const adapt = (base: Control): Control => {
@@ -226,23 +233,7 @@ export function createFields(model: EditorControlsModel): Fields {
       (Object.keys(PLACES) as ControlId[])
         .filter(controlId => PLACES[controlId].group === id)
         .flatMap(controlId => byId.get(controlId) ?? []),
-    preview: (choice, key) => {
-      if (choice.id === 'editor.theme' && choice.kind === 'select') {
-        return syntaxThemePreview(model, choice, key);
-      }
-      if (choice.id === 'font.family') {
-        // Changing the font can reset the weight, so the weight is part of the undo.
-        return choicePreview(choice, key, () => {
-          const font = choice.value();
-          const weight = editor.state.options.fontWeight;
-          return () => {
-            choice.set(font);
-            editor.actions.setFontWeight(weight);
-          };
-        });
-      }
-      return choicePreview(choice, key);
-    },
+    change: choiceChange,
     fontName: () => editor.computed.selectedFont()?.name ?? '',
   };
 }

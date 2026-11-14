@@ -1,14 +1,14 @@
 import type {JSX} from 'solid-js';
 import {createMemo, createSelector, For, onMount} from 'solid-js';
 import {isKeyboardClick, keepFromPicker, useDock} from './context';
-import type {Previewable} from './preview';
+import type {Change} from './preview';
 
 interface OptionGridProps<T> {
   label: string;
   items: readonly T[];
   id: (item: T) => string;
   selected: (item: T) => boolean;
-  change: (item: T) => Previewable;
+  change: (item: T) => Change;
   onPick: (item: T, byKeyboard: boolean) => void;
   children: (item: T) => JSX.Element;
   class?: string;
@@ -85,8 +85,8 @@ export function OptionGrid<T>(props: OptionGridProps<T>) {
     Array.from(grid.querySelectorAll<HTMLElement>('[role="option"]'));
 
   const highlight = (item: T) => {
-    if (props.id(item) === committedId()) dock.session.cancel();
-    else dock.session.preview(props.change(item));
+    if (props.id(item) === committedId()) dock.cancel();
+    else dock.preview(props.change(item));
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -132,7 +132,7 @@ export function OptionGrid<T>(props: OptionGridProps<T>) {
       class={props.class}
       onKeyDown={onKeyDown}
       onPointerLeave={event => {
-        if (event.pointerType === 'mouse') dock.session.cancel();
+        if (event.pointerType === 'mouse') dock.cancel();
       }}
     >
       <For each={props.items}>

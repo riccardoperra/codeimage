@@ -11,7 +11,6 @@ import {
   on,
   onCleanup,
   onMount,
-  untrack,
 } from 'solid-js';
 import type {JSX, ParentProps} from 'solid-js';
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
@@ -40,7 +39,6 @@ const primaryControls: Record<SectionId, readonly ControlId[]> = {
 };
 type PanelId = SectionId | 'themes';
 type ThemePreview = {
-  base: {id: string; background: string};
   id: string;
   source: 'pointer' | 'keyboard';
 };
@@ -100,10 +98,6 @@ function ThemeGrid(props: VariantProps) {
   const [mode, setMode] = createSignal<'all' | 'dark' | 'light'>('all');
   const [preview, setPreview] = createSignal<ThemePreview>();
   let search: HTMLInputElement | undefined;
-  const themeControl = untrack(() => props.model.control('editor.theme'));
-  const backgroundControl = untrack(() =>
-    props.model.control('frame.background'),
-  );
   const themes = createMemo(() =>
     props.model.themes().filter(theme => {
       const term = query().toLowerCase().replace(/\s/g, '');
@@ -116,33 +110,23 @@ function ThemeGrid(props: VariantProps) {
       );
     }),
   );
-  const active = () => props.model.themes().find(theme => theme.active());
-  const selectedId = () => preview()?.base.id ?? active()?.id;
+  // The editor draws the first theme when the stored id matches none.
+  // `active()` stays on the applied theme while another one is previewed.
+  const selectedId = () =>
+    (
+      props.model.themes().find(theme => theme.active()) ??
+      props.model.themes()[0]
+    )?.id;
   const buttons = new Map<string, HTMLButtonElement>();
   const previewTheme = (theme: ThemeEntry, source: ThemePreview['source']) => {
-    const previous = preview();
-    const selected = active();
-    if (!selected) return;
-    const base = previous?.base ?? {
-      id: selected.id,
-      background:
-        backgroundControl?.kind === 'background'
-          ? backgroundControl.value()
-          : '',
-    };
-    setPreview({base, id: theme.id, source});
-    if (previous?.id !== theme.id) theme.apply();
+    setPreview({id: theme.id, source});
+    if (theme.id === selectedId()) props.model.endPreview();
+    else theme.preview();
   };
   const restore = () => {
-    const previous = preview();
-    if (!previous) return;
+    if (!preview()) return;
     setPreview(undefined);
-    if (themeControl?.kind === 'select') themeControl.set(previous.base.id);
-    // Theme application runs in a microtask. Restore the custom fill after it settles.
-    queueMicrotask(() => {
-      if (backgroundControl?.kind === 'background')
-        backgroundControl.set(previous.base.background);
-    });
+    props.model.endPreview();
   };
   const commit = (theme: ThemeEntry) => {
     setPreview(undefined);

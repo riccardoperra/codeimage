@@ -25,7 +25,7 @@ const modes: {label: string; value: ThemeMode}[] = [
 export function ThemePickerScreen(props: ThemePickerScreenProps) {
   // oxlint-disable-next-line solid/reactivity -- one model lives for the whole session
   const browser = createThemeBrowser(props.model);
-  onCleanup(() => props.model.endThemePreview());
+  onCleanup(() => props.model.endPreview());
 
   return (
     <div class={styles.screen}>

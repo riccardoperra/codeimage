@@ -1,9 +1,6 @@
-import {getRootEditorStore} from '@codeimage/store/editor';
-import {getFrameState} from '@codeimage/store/editor/frame';
-import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {Button, TextField} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {createMemo, createSignal, For, Show} from 'solid-js';
+import {createMemo, createSignal, For, onCleanup, Show} from 'solid-js';
 import type {ThemeEntry} from '../../model';
 import {ThemeSwatch} from '../../ThemeSwatch';
 import {moveInGrid} from './controls';
@@ -21,67 +18,28 @@ const tones: {label: string; value: Tone}[] = [
   {label: 'Light', value: 'light'},
 ];
 
-/** What a theme writes to the editor: the same four values `dispatchUpdateTheme` sets. */
-interface Look {
-  readonly themeId: string;
-  readonly background: string | null;
-  readonly window: string;
-  readonly text: string;
-}
-
-/**
- * The live canvas is the preview. A preview writes a theme's look without
- * committing it; `cancel` puts back the look that was there before.
- */
-function createThemePreview() {
-  const frame = getFrameState();
-  const terminal = getTerminalState();
-  const editor = getRootEditorStore();
-  const [saved, setSaved] = createSignal<Look>();
-
-  const write = (look: Look) => {
-    if (look.background !== null) frame.setBackground(look.background);
-    terminal.setState('background', look.window);
-    terminal.setState('textColor', look.text);
-    editor.actions.setThemeId(look.themeId);
-  };
-
-  return {
-    savedThemeId: () => saved()?.themeId,
-    preview(theme: ThemeEntry) {
-      if (!saved()) {
-        setSaved({
-          themeId: editor.state.options.themeId,
-          background: frame.store.background,
-          window: terminal.state.background,
-          text: terminal.state.textColor,
-        });
-      }
-      write({
-        themeId: theme.id,
-        background: theme.colors.background,
-        window: theme.colors.window,
-        text: theme.colors.text,
-      });
-    },
-    commit(theme: ThemeEntry) {
-      setSaved(undefined);
-      theme.apply();
-    },
-    cancel() {
-      const look = saved();
-      if (!look) return false;
-      setSaved(undefined);
-      write(look);
-      return true;
-    },
-  };
-}
-
 export function ThemesPanel(props: PanelProps) {
   const [query, setQuery] = createSignal('');
   const [tone, setTone] = createSignal<Tone>('all');
-  const preview = createThemePreview();
+  // The canvas is the preview; the model shows a theme without saving it.
+  const [previewing, setPreviewing] = createSignal(false);
+  const preview = {
+    preview(theme: ThemeEntry) {
+      theme.preview();
+      setPreviewing(true);
+    },
+    commit(theme: ThemeEntry) {
+      setPreviewing(false);
+      theme.apply();
+    },
+    cancel() {
+      if (!previewing()) return false;
+      setPreviewing(false);
+      props.model.endPreview();
+      return true;
+    },
+  };
+  onCleanup(preview.cancel);
   const cards = new Map<string, HTMLButtonElement>();
   let grid: HTMLDivElement | undefined;
 
@@ -96,15 +54,9 @@ export function ThemesPanel(props: PanelProps) {
   });
 
   // The editor draws the first theme when the stored id matches none, so that
-  // is the one to mark.
-  const committedId = () => {
-    const control = props.model.control('editor.theme');
-    return control?.kind === 'select' ? control.value() : '';
-  };
-  const selectedId = () => {
-    const id = preview.savedThemeId() ?? committedId();
-    return themes().some(theme => theme.id === id) ? id : themes()[0]?.id;
-  };
+  // is the one to mark. `active()` stays on the applied theme during a preview.
+  const selectedId = () =>
+    (themes().find(theme => theme.active()) ?? themes()[0])?.id;
   const tabbableId = () =>
     visible().some(theme => theme.id === selectedId())
       ? selectedId()

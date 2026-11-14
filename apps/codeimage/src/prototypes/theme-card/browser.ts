@@ -104,7 +104,7 @@ export function createThemeBrowser(model: EditorControlsModel): ThemeBrowser {
   const settle = () => {
     const theme = byId(focusedOption()?.dataset.themeOption);
     if (theme) theme.preview();
-    else model.endThemePreview();
+    else model.endPreview();
   };
 
   return {
@@ -120,7 +120,7 @@ export function createThemeBrowser(model: EditorControlsModel): ThemeBrowser {
       onFocusOut: event => {
         const next = event.relatedTarget;
         if (!(next instanceof Node) || !event.currentTarget.contains(next)) {
-          model.endThemePreview();
+          model.endPreview();
         }
       },
       // A native listener: Solid delegates onKeyDown to the document, where
@@ -129,7 +129,7 @@ export function createThemeBrowser(model: EditorControlsModel): ThemeBrowser {
         const from = focusedOption();
         if (!list || !from) return;
         if (event.key === 'Escape') {
-          model.endThemePreview();
+          model.endPreview();
           from.blur();
           return;
         }

@@ -54,10 +54,10 @@ export function CommandMenu(props: {actions: readonly Action[]}) {
   const highlight = (index: number, scroll: boolean) => {
     setActive(index);
     const command = results()[index];
-    if (command?.preview && !command.current) {
-      dock.session.preview(command.preview);
+    if (command?.change && !command.current) {
+      dock.preview(command.change);
     } else {
-      dock.session.cancel();
+      dock.cancel();
     }
     if (scroll) {
       document.getElementById(optionId(index))?.scrollIntoView({
@@ -68,12 +68,12 @@ export function CommandMenu(props: {actions: readonly Action[]}) {
 
   const run = (command: Command | undefined) => {
     if (!command) return;
-    if (command.preview) {
-      if (!command.current) dock.keep(command.preview);
+    if (command.change) {
+      if (!command.current) dock.keep(command.change);
       dock.close();
       return;
     }
-    dock.session.cancel();
+    dock.cancel();
     command.run?.();
     // A command that opened another panel keeps the tray.
     if (dock.panel() === 'commands') dock.close();
@@ -122,7 +122,7 @@ export function CommandMenu(props: {actions: readonly Action[]}) {
             if (query().trim()) highlight(0, false);
             else {
               setActive(0);
-              dock.session.cancel();
+              dock.cancel();
             }
           }}
           onKeyDown={onKeyDown}
