@@ -46,7 +46,11 @@ export function parsePreset(text: string): Preset {
   return {...preset, editor: {...preset.editor, themeId}};
 }
 
-export type CodeInput = {name: string; code: string};
+export type CodeInput = {
+  name: string;
+  code: string;
+  marks?: SnapshotInput['editor']['editors'][number]['marks'];
+};
 
 export async function buildSnapshot({
   args,
@@ -74,14 +78,23 @@ export async function buildSnapshot({
           terminal: preset.terminal.background,
           text: preset.terminal.textColor,
         };
-  const editors = inputs.map(({name, code}, index) => {
-    if (args.lines) {
+  const editors = inputs.map(({name, code, marks}, index) => {
+    const range = args.lines;
+    if (range) {
       const lines = code.replace(/\r\n?/g, '\n').split('\n');
       if (lines.at(-1) === '') lines.pop();
-      if (args.lines.start > lines.length) {
+      if (range.start > lines.length) {
         throw new UsageError(`--lines: ${name} has only ${lines.length} lines`);
       }
-      code = lines.slice(args.lines.start - 1, args.lines.end).join('\n');
+      code = lines.slice(range.start - 1, range.end).join('\n');
+      if (marks) {
+        marks = {
+          ...marks,
+          lines: marks.lines
+            .filter(mark => mark.line >= range.start && mark.line <= range.end)
+            .map(mark => ({...mark, line: mark.line - range.start + 1})),
+        };
+      }
     }
     return {
       id: `cli-${index + 1}`,
@@ -89,6 +102,7 @@ export async function buildSnapshot({
       tabName: basename(name),
       languageId: args.language ?? inferLanguageFromPath(name) ?? 'plain-text',
       lineNumberStart: args.lines?.start ?? 1,
+      ...(marks && {marks}),
     };
   });
   return {

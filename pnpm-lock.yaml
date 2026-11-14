@@ -871,41 +871,6 @@ importers:
         specifier: catalog:next
         version: 4.1.12(@types/node@25.9.9)(@vitest/ui@4.1.12)(happy-dom@20.8.8)(jsdom@28.1.0)(msw@2.12.14(@types/node@25.9.9)(typescript@6.0.3))(vite@8.3.8(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.23.15)(yaml@2.9.1))
 
-  packages/cli:
-    dependencies:
-      '@codeimage/render':
-        specifier: workspace:*
-        version: link:../render
-      '@takumi-rs/core':
-        specifier: 2.19.0
-        version: 2.19.0(csstype@3.2.3)(react@19.2.4)
-      zod:
-        specifier: ^4.1.12
-        version: 4.6.7
-    devDependencies:
-      '@codeimage/config':
-        specifier: workspace:*
-        version: link:../config
-      '@codeimage/highlight':
-        specifier: workspace:*
-        version: link:../highlight
-      '@types/node':
-        specifier: catalog:next
-        version: 25.9.9
-      oxlint:
-        specifier: catalog:next
-        version: 1.93.0
-      tsdown:
-        specifier: catalog:next
-        version: 0.23.7(@volar/typescript@2.4.28)(tsx@4.23.15)(typescript@6.0.3)(unrun@0.2.33)
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
-      vitest:
-        specifier: catalog:next
-        version: 4.1.12(@types/node@25.9.9)(@vitest/ui@4.1.12)(happy-dom@20.8.8)(jsdom@28.1.0)(msw@2.12.14(@types/node@25.9.9)(typescript@6.0.3))(vite@8.3.8(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.23.15)(yaml@2.8.3))
-    publishDirectory: publish
-
   packages/config:
     dependencies:
       '@codeimage/highlight':
@@ -1221,70 +1186,6 @@ importers:
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
-
-  packages/render:
-    dependencies:
-      '@takumi-rs/core':
-        specifier: 2.19.0
-        version: 2.19.0(csstype@3.2.3)(react@19.2.4)
-      zod:
-        specifier: ^4.1.12
-        version: 4.6.7
-    devDependencies:
-      '@fontsource-variable/cascadia-code':
-        specifier: 5.3.0
-        version: 5.3.0
-      '@fontsource-variable/fira-code':
-        specifier: 5.3.0
-        version: 5.3.0
-      '@fontsource-variable/jetbrains-mono':
-        specifier: 5.3.0
-        version: 5.3.0
-      '@fontsource-variable/noto-sans-kr':
-        specifier: 5.3.1
-        version: 5.3.1
-      '@fontsource-variable/noto-sans-sc':
-        specifier: 5.3.1
-        version: 5.3.1
-      '@fontsource-variable/overpass-mono':
-        specifier: 5.3.0
-        version: 5.3.0
-      '@fontsource-variable/source-code-pro':
-        specifier: 5.3.1
-        version: 5.3.1
-      '@fontsource/space-mono':
-        specifier: 5.3.0
-        version: 5.3.0
-      '@types/node':
-        specifier: catalog:next
-        version: 25.9.9
-      '@types/pngjs':
-        specifier: 6.0.5
-        version: 6.0.5
-      inter-ui:
-        specifier: 4.1.1
-        version: 4.1.1
-      oxlint:
-        specifier: catalog:next
-        version: 1.93.0
-      pngjs:
-        specifier: 7.0.0
-        version: 7.0.0
-      tsdown:
-        specifier: catalog:next
-        version: 0.23.7(@volar/typescript@2.4.28)(tsx@4.23.15)(typescript@6.0.3)(unrun@0.2.33)
-      twemoji-colr-font:
-        specifier: 15.0.3
-        version: 15.0.3
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
-      vite:
-        specifier: catalog:next
-        version: 8.3.8(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.23.15)(yaml@2.8.3)
-      vitest:
-        specifier: catalog:next
-        version: 4.1.12(@types/node@25.9.9)(@vitest/ui@4.1.12)(happy-dom@20.8.8)(jsdom@28.1.0)(msw@2.12.14(@types/node@25.9.9)(typescript@6.0.3))(vite@8.3.8(@types/node@25.9.9)(esbuild@0.28.2)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.23.15)(yaml@2.8.3))
 
   packages/secrets:
     devDependencies:
@@ -3250,30 +3151,6 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
-
-  '@fontsource-variable/cascadia-code@5.3.0':
-    resolution: {integrity: sha512-6I6M029Lum62MGmP0o+rXRrIBiIiptNDC4slPKLPUJiSB7NHZTLb+Ihk9G7jLvUfWziGXHJLjJPJLBzlEPjS1g==}
-
-  '@fontsource-variable/fira-code@5.3.0':
-    resolution: {integrity: sha512-ZhvHeknlicraKVSJBa1NrJnXDVByUkC407zwgELYfmnx3p9g8vwIPfQCxx8YD3K7dAeCdLuHJOHlpMfRsIcApQ==}
-
-  '@fontsource-variable/jetbrains-mono@5.3.0':
-    resolution: {integrity: sha512-F32xpS2NsGYoQi2ADSkKTgpJj7ozajsGgDJ8woTnqjmIB+dxDIqImjl4pXZVEExu8UFZ2ndhmX18EBS/hdz3Lw==}
-
-  '@fontsource-variable/noto-sans-kr@5.3.1':
-    resolution: {integrity: sha512-f5aty6Qgk2LVU5TjCtXHxiYHqUWYW8f75ll0Chn8ucCqoOlIomcACUwf1V47yUt6wTdWZiGr3dcbQk+zlOspMA==}
-
-  '@fontsource-variable/noto-sans-sc@5.3.1':
-    resolution: {integrity: sha512-UB96JJ17HyD5ehEU7Em0hDdh7fvTMB4B4Hzmq5c4QaNwwSLqTrdM2S+coySeBqCkXwh0DxqXT0b0wMrmzorFpQ==}
-
-  '@fontsource-variable/overpass-mono@5.3.0':
-    resolution: {integrity: sha512-qtESPvSFvq7/v7lQIUUsIyDlFZEWapNF1eM9lkQUugO6pmgen0euJOIAMJLyjtGTtOHCbE7XOe2ym0Nh9ccR0w==}
-
-  '@fontsource-variable/source-code-pro@5.3.1':
-    resolution: {integrity: sha512-N0nZDizh8CQ19+AHHA8Ssb1i/aQf4N2lpRl3qZVH4/9f1yNgWzTkBFpc26v+QQr2hm4By4aiv597BCoEg2SDQg==}
-
-  '@fontsource/space-mono@5.3.0':
-    resolution: {integrity: sha512-FrpBMOVWn3PRdRHlrZWC55X3kZG/2BTH7SM5ZyS/bky3iKya2BturI5lk+t0RoDQL2JyHzURsVq/EisCsxpI5A==}
 
   '@formatjs/bigdecimal@0.2.0':
     resolution: {integrity: sha512-GeaxHZbUoYvHL9tC5eltHLs+1zU70aPw0s7LwqgktIzF5oMhNY4o4deEtusJMsq7WFJF3Ye2zQEzdG8beVk73w==}
@@ -5378,79 +5255,6 @@ packages:
   '@szmarczak/http-timer@4.0.6':
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
     engines: {node: '>=10'}
-
-  '@takumi-rs/core-darwin-arm64@2.19.0':
-    resolution: {integrity: sha512-W/SI7Zrxo70dIaKNo+/kOLVr97S3ezkqsi7OM0RWz2CtP+cFgdBTPHXNsrB561gJFPHsuWN/LZ0u8oZxeAYtGw==}
-    engines: {node: '>=18'}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@takumi-rs/core-darwin-x64@2.19.0':
-    resolution: {integrity: sha512-xO/eTwPLrfUZRybMnG4lb6fDa7BjFryFi1TSkRF5KjPhkv21Lr5ovFEYz1y2P5k/4psrk66FJbU2EJDOEjdXiw==}
-    engines: {node: '>=18'}
-    cpu: [x64]
-    os: [darwin]
-
-  '@takumi-rs/core-linux-arm64-gnu@2.19.0':
-    resolution: {integrity: sha512-0PvL5bNTZTkLExjKveI3pOz3mtfjJtECqK49f/KGnp7J0bBmdoi2muszCh/dQQEEFKXcWNe27yfK1tzsO5fm0g==}
-    engines: {node: '>=18'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
-
-  '@takumi-rs/core-linux-arm64-musl@2.19.0':
-    resolution: {integrity: sha512-nwKZMGcNVdmCP+U7+uINtXpgOeyk5m7g5D9EAtttpWc6ImjJm7MaqNK4Q2YBkOFeAIbRkY5dDL8Xcu19ATSj0w==}
-    engines: {node: '>=18'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [musl]
-
-  '@takumi-rs/core-linux-x64-gnu@2.19.0':
-    resolution: {integrity: sha512-gf/U6qxWZk6uX5MFnl5/PTOzxBbISj89UQwbliHa1sflcq2d+SeITDqnGtkUueF/4TlgPVV7JvrPuhAbINy2Gg==}
-    engines: {node: '>=18'}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
-
-  '@takumi-rs/core-linux-x64-musl@2.19.0':
-    resolution: {integrity: sha512-zHD0EdIA2ZMCnKV/KtMgEerUcdvjYU4hGiru9I/x96u+BJXaQGMtHCxXt9Srhj+dlqhPyWdQTMAE3wpflN+0nw==}
-    engines: {node: '>=18'}
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
-
-  '@takumi-rs/core-win32-arm64-msvc@2.19.0':
-    resolution: {integrity: sha512-v1CrPsmzhIe0+v+kIAdaSwrNMqiOpUXgMxHLUo0xDQdPMNML0EefDsL9ADtKDpT1pjhY/r9tvwVl3RhKsdottw==}
-    engines: {node: '>=18'}
-    cpu: [arm64]
-    os: [win32]
-
-  '@takumi-rs/core-win32-x64-msvc@2.19.0':
-    resolution: {integrity: sha512-9HJb2LTDSlehFrGfPw+uKgxM3XCnpy/PYnwtyzcgAiSFJVjwv0zCLl3IvJREakj5Y9rJCg0mMtPje9hlPbJL/A==}
-    engines: {node: '>=18'}
-    cpu: [x64]
-    os: [win32]
-
-  '@takumi-rs/core@2.19.0':
-    resolution: {integrity: sha512-cYxOTb4pOu25Y8GBm3JTyIwenHNAZF11pxEmTxA3Q7VabC0pqeWDo/nOjTc2slTHORaglkvwK4SMmnpzab5BjQ==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      csstype: '*'
-    peerDependenciesMeta:
-      csstype:
-        optional: true
-
-  '@takumi-rs/helpers@2.19.0':
-    resolution: {integrity: sha512-3ycCjYCP31HACXBvlpv4fMLw9vneCVGuttFBfZr4jpL0nHNCt2wlXvt0XFt05FscLMUY2s+5PGKPE6EatXI/mg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      preact: ^10.0.0 || ^11.0.0
-      react: ^18.0.0 || ^19.0.0
-    peerDependenciesMeta:
-      preact:
-        optional: true
-      react:
-        optional: true
 
   '@tanstack/devtools-client@0.0.6':
     resolution: {integrity: sha512-f85ZJXJnDIFOoykG/BFIixuAevJovCvJF391LPs6YjBAPhGYC50NWlx1y4iF/UmK5/cCMx+/JqI5SBOz7FanQQ==}
@@ -11153,10 +10957,6 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
 
-  twemoji-colr-font@15.0.3:
-    resolution: {integrity: sha512-UsK4JUpaczeVoMGeYMnKaMTxKt7fujg1nQOk4NaC0teZmdOo+uAai0DIuaSzsMkShtG4J75F0OEsVdGJ+Q1pHQ==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-
   typanion@3.14.0:
     resolution: {integrity: sha512-ZW/lVMRabETuYCd9O9ZvMhAh8GslSqaUjxmK/JLPCh6l73CvLBiuXswj/+7LdnWOgYsQ130FqLzFz5aGT4I3Ug==}
 
@@ -11859,9 +11659,6 @@ packages:
 
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
-
-  zod@4.6.7:
-    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -13928,22 +13725,6 @@ snapshots:
       '@floating-ui/utils': 0.2.11
 
   '@floating-ui/utils@0.2.11': {}
-
-  '@fontsource-variable/cascadia-code@5.3.0': {}
-
-  '@fontsource-variable/fira-code@5.3.0': {}
-
-  '@fontsource-variable/jetbrains-mono@5.3.0': {}
-
-  '@fontsource-variable/noto-sans-kr@5.3.1': {}
-
-  '@fontsource-variable/noto-sans-sc@5.3.1': {}
-
-  '@fontsource-variable/overpass-mono@5.3.0': {}
-
-  '@fontsource-variable/source-code-pro@5.3.1': {}
-
-  '@fontsource/space-mono@5.3.0': {}
 
   '@formatjs/bigdecimal@0.2.0': {}
 
@@ -16316,51 +16097,6 @@ snapshots:
   '@szmarczak/http-timer@4.0.6':
     dependencies:
       defer-to-connect: 2.0.1
-
-  '@takumi-rs/core-darwin-arm64@2.19.0':
-    optional: true
-
-  '@takumi-rs/core-darwin-x64@2.19.0':
-    optional: true
-
-  '@takumi-rs/core-linux-arm64-gnu@2.19.0':
-    optional: true
-
-  '@takumi-rs/core-linux-arm64-musl@2.19.0':
-    optional: true
-
-  '@takumi-rs/core-linux-x64-gnu@2.19.0':
-    optional: true
-
-  '@takumi-rs/core-linux-x64-musl@2.19.0':
-    optional: true
-
-  '@takumi-rs/core-win32-arm64-msvc@2.19.0':
-    optional: true
-
-  '@takumi-rs/core-win32-x64-msvc@2.19.0':
-    optional: true
-
-  '@takumi-rs/core@2.19.0(csstype@3.2.3)(react@19.2.4)':
-    dependencies:
-      '@takumi-rs/helpers': 2.19.0(react@19.2.4)
-    optionalDependencies:
-      '@takumi-rs/core-darwin-arm64': 2.19.0
-      '@takumi-rs/core-darwin-x64': 2.19.0
-      '@takumi-rs/core-linux-arm64-gnu': 2.19.0
-      '@takumi-rs/core-linux-arm64-musl': 2.19.0
-      '@takumi-rs/core-linux-x64-gnu': 2.19.0
-      '@takumi-rs/core-linux-x64-musl': 2.19.0
-      '@takumi-rs/core-win32-arm64-msvc': 2.19.0
-      '@takumi-rs/core-win32-x64-msvc': 2.19.0
-      csstype: 3.2.3
-    transitivePeerDependencies:
-      - preact
-      - react
-
-  '@takumi-rs/helpers@2.19.0(react@19.2.4)':
-    optionalDependencies:
-      react: 19.2.4
 
   '@tanstack/devtools-client@0.0.6':
     dependencies:
@@ -23183,8 +22919,6 @@ snapshots:
 
   tunnel@0.0.6: {}
 
-  twemoji-colr-font@15.0.3: {}
-
   typanion@3.14.0: {}
 
   type-check@0.4.0:
@@ -23877,7 +23611,5 @@ snapshots:
       graphmatch: 1.1.1
 
   zod@3.25.76: {}
-
-  zod@4.6.7: {}
 
   zwitch@2.0.4: {}
