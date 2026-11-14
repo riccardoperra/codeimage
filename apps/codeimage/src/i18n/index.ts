@@ -54,6 +54,8 @@ export const locale = {
       reload: 'Ricarica',
     },
     export: {
+      copyAltText: 'Copia testo alternativo',
+      altTextCopied: 'Testo alternativo copiato',
       title: 'Esporta immagine',
       shareMode: 'Condividi il tuo codice',
       shareHint: 'Questa modalità usa la nuova',
@@ -141,6 +143,8 @@ export const locale = {
       reload: 'Reload',
     },
     export: {
+      copyAltText: 'Copy alt text',
+      altTextCopied: 'Alt text copied',
       title: 'Export image',
       shareMode: 'Share your code',
       shareHint: 'This modality uses the new',
@@ -228,6 +232,8 @@ export const locale = {
       reload: 'Neu laden',
     },
     export: {
+      copyAltText: 'Alternativtext kopieren',
+      altTextCopied: 'Alternativtext kopiert',
       title: 'Bild exportieren',
       shareMode: 'Code teilen',
       shareHint: 'Diese Funktion verwendet die neue',
@@ -314,6 +320,8 @@ export const locale = {
       reload: 'Recargar',
     },
     export: {
+      copyAltText: 'Copiar texto alternativo',
+      altTextCopied: 'Texto alternativo copiado',
       title: 'Exporta imagen',
       shareMode: 'Comparte tu código',
       shareHint: 'Esta modalidad utiliza el nuevo',
