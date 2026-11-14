@@ -25,12 +25,12 @@ onChange={value => { preferences.setLayout(value); whatsNew.seen('layouts'); }}
 
 // Settings archive renders the registry and asks only for the "New" tag.
 // Show me appears only while the owner of the place is mounted.
-<For each={RELEASES}>{release => … whatsNew.isNew(h.id) … whatsNew.canShowMe(h.id) && whatsNew.showMe(h.id, 'library')}</For>
+<For each={RELEASES}>{release => … whatsNew.isNew(h.id) … h.where !== null && whatsNew.canShowMe(h.id) && whatsNew.showMe(h.id, 'library')}</For>
 ```
 
 ## Shape
 
-- **`registry.ts`** is content with zero imports. Releases newest first, each with ordered highlights. `HighlightId`, `ReleaseId` and `LocatedHighlightId` are derived from the data, so a dot on a highlight with no location is a compile error (type-system-discipline).
+- **`registry.ts`** is content with zero imports. Releases newest first, each with ordered highlights. `HighlightId`, `ReleaseId` and `LocatedHighlightId` are derived from the data, so a dot or Show me action on a highlight with no location is a compile error (type-system-discipline).
 - **`decide.ts`** is the whole policy as one pure function, `decide(releases, facts, now)`. It returns the single pending announcement, at most three dots in registry order, and the set of fresh highlights. It never reads the clock or the app version (boundary-discipline).
 - **Facts** are two grow-only sets, `seen` highlight ids and `dismissed` release ids. Merging is a union, so marking seen is idempotent and two tabs converge without locks (separate-before-serializing-shared-state, make-operations-idempotent).
 - **The store** (`apps/codeimage/src/state/whats-new/whats-new.store.ts`) is the thin shell. It owns the one IndexedDB key, the one Umami call site, and the map of location openers.

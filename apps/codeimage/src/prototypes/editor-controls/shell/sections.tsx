@@ -491,17 +491,20 @@ export function createSettingSections(
             <Dynamic component={illustrations[highlight.id]} mode="thumb" />
           ),
           small: true,
-          control: () => (
-            <Show when={news.canShowMe(highlight.id)}>
-              <Button
-                size="sm"
-                theme="secondary"
-                onClick={() => news.showMe(highlight.id, 'library')}
-              >
-                Show me
-              </Button>
-            </Show>
-          ),
+          control: () => {
+            if (highlight.where === null) return;
+            return (
+              <Show when={news.canShowMe(highlight.id)}>
+                <Button
+                  size="sm"
+                  theme="secondary"
+                  onClick={() => news.showMe(highlight.id, 'library')}
+                >
+                  Show me
+                </Button>
+              </Show>
+            );
+          },
         })),
       })),
   };

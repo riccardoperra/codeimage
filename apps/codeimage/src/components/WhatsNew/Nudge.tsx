@@ -30,6 +30,10 @@ export function Nudge(props: {
   const [instant, setInstant] = createSignal(false);
   const step = () => view().step;
   const highlight = () => props.release.highlights[step()];
+  const located = () => {
+    const item = highlight();
+    return item.where !== null && news.canShowMe(item.id) ? item : null;
+  };
   const last = () => step() === props.release.highlights.length - 1;
   // Only the newest step change fades. Stepping faster drops the older one.
   const slides = () => {
@@ -156,14 +160,16 @@ export function Nudge(props: {
                 )}
               </For>
             </div>
-            <Show when={news.canShowMe(highlight().id)}>
-              <Button
-                size="sm"
-                theme="secondary"
-                onClick={() => news.showMe(highlight().id, 'nudge')}
-              >
-                Show me
-              </Button>
+            <Show when={located()}>
+              {item => (
+                <Button
+                  size="sm"
+                  theme="secondary"
+                  onClick={() => news.showMe(item().id, 'nudge')}
+                >
+                  Show me
+                </Button>
+              )}
             </Show>
             <Button
               ref={element => {

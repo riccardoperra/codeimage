@@ -1,7 +1,8 @@
 import type * as solid from 'solid-js';
 import {createRoot, createSignal, onCleanup} from 'solid-js';
-import {describe, expect, it, vi} from 'vitest';
-import {createWhatsNew} from './whats-new.store';
+import {describe, expect, expectTypeOf, it, vi} from 'vitest';
+import type {LocatedHighlightId} from './registry';
+import {createWhatsNew, type WhatsNew} from './whats-new.store';
 
 // The suite renders snapshots with Solid's server build, where signals never
 // update. The store runs in the browser, so it gets the browser build here.
@@ -223,4 +224,13 @@ describe('release discovery across visits', () => {
     expect(app.store.canShowMe('command-menu')).toBe(false);
     app.dispose();
   });
+});
+
+it('only accepts located highlights for Show me', () => {
+  expectTypeOf<
+    Parameters<WhatsNew['showMe']>[0]
+  >().toEqualTypeOf<LocatedHighlightId>();
+  expectTypeOf<
+    Parameters<WhatsNew['canShowMe']>[0]
+  >().toEqualTypeOf<LocatedHighlightId>();
 });

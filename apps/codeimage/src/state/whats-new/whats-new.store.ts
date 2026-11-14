@@ -35,8 +35,8 @@ export interface WhatsNew {
   opened(id: HighlightId, on: Surface): void;
   seen(id: HighlightId): void;
   /** True while the component that owns the highlight's place is mounted. */
-  canShowMe(id: HighlightId): boolean;
-  showMe(id: HighlightId, from: Surface): void;
+  canShowMe(id: LocatedHighlightId): boolean;
+  showMe(id: LocatedHighlightId, from: Surface): void;
   /** Unbinds when the calling owner is disposed. */
   bindLocation(where: Where, reveal: () => void): void;
 }

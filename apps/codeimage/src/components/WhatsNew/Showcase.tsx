@@ -66,21 +66,25 @@ export function Showcase(props: {
                   </span>
                   <h3 class={styles.title}>{highlight.title}</h3>
                   <p class={styles.body}>{highlight.body}</p>
-                  <Show when={news.canShowMe(highlight.id)}>
-                    <div class={styles.actions}>
-                      <Button
-                        size="sm"
-                        theme="secondary"
-                        onClick={() => {
-                          props.dismiss();
-                          requestAnimationFrame(() =>
-                            news.showMe(highlight.id, 'showcase'),
-                          );
-                        }}
-                      >
-                        Show me
-                      </Button>
-                    </div>
+                  <Show when={highlight.where !== null && highlight}>
+                    {located => (
+                      <Show when={news.canShowMe(located().id)}>
+                        <div class={styles.actions}>
+                          <Button
+                            size="sm"
+                            theme="secondary"
+                            onClick={() => {
+                              props.dismiss();
+                              requestAnimationFrame(() =>
+                                news.showMe(located().id, 'showcase'),
+                              );
+                            }}
+                          >
+                            Show me
+                          </Button>
+                        </div>
+                      </Show>
+                    )}
                   </Show>
                 </div>
               </article>
