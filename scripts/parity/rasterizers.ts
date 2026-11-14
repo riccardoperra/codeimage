@@ -18,7 +18,12 @@ async function main() {
       'Library/Caches/ms-playwright/chromium-1200/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
     );
   mkdirSync(out, {recursive: true});
-  const browser = await chromium.launch({executablePath});
+  // Emulated deviceScaleFactor alone lays out in CSS pixels and snaps text
+  // baselines to whole CSS pixels. A native factor matches a Retina display.
+  const browser = await chromium.launch({
+    executablePath,
+    args: ['--force-device-scale-factor=2'],
+  });
   const context = await browser.newContext({
     viewport: {width: 1440, height: 1000},
     deviceScaleFactor: 2,
@@ -33,9 +38,20 @@ async function main() {
     errors.push(error.stack ?? error.message);
     console.error(error.stack ?? error.message);
   });
+  const fontIssues: string[] = [];
   page.on('console', message => {
     if (message.text().includes('Takumi export failed'))
       fallback.push(message.text());
+    if (message.text().includes('Export font unavailable'))
+      fontIssues.push(message.text());
+  });
+  page.on('requestfailed', request => {
+    const failure = request.failure()?.errorText ?? '';
+    if (
+      /\.(woff2?|ttf|otf)\b|fonts\.googleapis/.test(request.url()) &&
+      !failure.includes('ERR_ABORTED')
+    )
+      fontIssues.push(`${request.url()} ${failure}`);
   });
   page.on('request', request => {
     if (request.url().includes('.wasm')) wasmRequests.push(request.url());
@@ -230,7 +246,7 @@ async function main() {
           ...bounds,
           width: Math.round(bounds.width),
           height: Math.round(bounds.height),
-          scale: 2,
+          scale: 1,
         },
       });
       const png = Buffer.from(data, 'base64');
@@ -284,6 +300,18 @@ async function main() {
     const panel = page.locator(popoverSelector).filter({has: title});
     await panel.locator(radioSelector).nth(index).click();
     await page.keyboard.press('Escape');
+  }
+
+  async function setLineNumbers(show: boolean) {
+    const row = page
+      .getByText('Line number', {exact: true})
+      .locator('xpath=ancestor::*[.//*[normalize-space(text())="Show"]][1]');
+    await row.getByText(show ? 'Show' : 'Hide', {exact: true}).click();
+    await page.waitForFunction(
+      ({show, wrapperSelector}) =>
+        !!document.querySelector(wrapperSelector + ' .cm-lineNumbers') === show,
+      {show, wrapperSelector},
+    );
   }
 
   async function setCode(code: string, target: Page = page) {
@@ -479,7 +507,16 @@ async function main() {
       assert.equal(docLines, 300);
       assert.equal(chrome.width, diff.width);
       assert.equal(chrome.height, diff.height);
-      return {domExport: diff, chromeInformational: chrome, docLines};
+      assert.ok(chrome.percent <= 0.5, JSON.stringify(chrome));
+      await setLineNumbers(true);
+      const numbered = compare(
+        (await render('takumi', 'p2-long-numbers')).data,
+        await reference('p2-long-numbers-chrome'),
+        'long-numbers-on-chrome',
+      );
+      await setLineNumbers(false);
+      assert.ok(numbered.percent <= 0.5, JSON.stringify(numbered));
+      return {domExport: diff, chrome, numbered, docLines};
     });
     await lane(5, async () => {
       await setCode(originalCode);
@@ -770,7 +807,9 @@ async function main() {
       offVsChrome: compare(off.data, chrome, 'default-off-chrome'),
       onVsOff: compare(on.data, off.data, 'default-on-off'),
     };
-    console.log(JSON.stringify({initial, fallback, errors, wasmRequests}));
+    console.log(
+      JSON.stringify({initial, fallback, fontIssues, errors, wasmRequests}),
+    );
     if (!quick) {
       const themes = await page
         .locator(themeSelector + '[data-selected]')
@@ -808,11 +847,16 @@ async function main() {
     }
     writeFileSync(
       path.join(out, 'parity.json'),
-      JSON.stringify({initial, rows, errors, fallback, wasmRequests}, null, 2),
+      JSON.stringify(
+        {initial, rows, errors, fallback, fontIssues, wasmRequests},
+        null,
+        2,
+      ),
     );
     console.table(rows);
     if (process.env.P2_LIVE === '1') await runLive();
     assert.equal(fallback.length, 0, 'Takumi fell back during parity.');
+    assert.deepEqual(fontIssues, [], 'An export font did not load.');
     assert.ok(
       initial.onVsChrome.percent <= 0.5,
       'Default Takumi exceeds 0.5% from Chrome.',
@@ -825,7 +869,7 @@ async function main() {
     writeFileSync(workerPath, originalWorker);
     writeFileSync(
       path.join(out, 'diagnostics.json'),
-      JSON.stringify({errors, fallback, wasmRequests}, null, 2),
+      JSON.stringify({errors, fallback, fontIssues, wasmRequests}, null, 2),
     );
     await page
       .screenshot({path: path.join(out, 'p2-final-ui.png')})
