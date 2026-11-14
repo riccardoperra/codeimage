@@ -1137,6 +1137,75 @@ async function main() {
   );
   try {
     await boot(page);
+    if (process.env.P2_MARKS === '1') {
+      await setCode(
+        'const before = 1;\nconst after = 2;\nconst highlighted = 3;\nconst unchanged = 4;',
+      );
+      const results = [];
+      for (const theme of ['Fleet Dark', 'GitHub Light']) {
+        await page
+          .locator(themeSelector + '[data-selected]')
+          .filter({has: page.getByText(theme, {exact: true})})
+          .click();
+        for (const numbers of [false, true]) {
+          await setLineNumbers(numbers);
+          for (const focus of [false, true]) {
+            await page.evaluate(async focus => {
+              const {getRootEditorStore} =
+                await import('/src/state/editor/index.ts');
+              const {setLineMarks} =
+                await import('/src/components/CustomEditor/plugins/lineMarks/state.ts');
+              const view = getRootEditorStore().activeEditorView();
+              if (!view) throw new Error('Missing active editor view.');
+              setLineMarks(
+                view,
+                {
+                  lines: [
+                    {line: 1, kind: 'removed'},
+                    {line: 2, kind: 'added'},
+                    {line: 3, kind: 'highlight'},
+                  ],
+                  focusedLines: focus ? [2, 3] : [],
+                },
+                false,
+              );
+            }, focus);
+            await page.waitForFunction(
+              ({wrapperSelector, focus}) => {
+                const node = document.querySelector(
+                  wrapperSelector + ' [data-line-marks]',
+                );
+                return (
+                  node?.querySelectorAll('[data-mark]').length === 3 &&
+                  (node.getAttribute('data-line-focus') === 'true') === focus
+                );
+              },
+              {wrapperSelector, focus},
+            );
+            for (let terminal = 0; terminal < 4; terminal++) {
+              await setTerminal(terminal);
+              const name = `marks-${theme.replace(/ /g, '-')}-${numbers}-${focus}-${terminal}`;
+              const image = await render('takumi', name);
+              const diff = compare(
+                image.data,
+                await reference(name + '-chrome'),
+                name + '-chrome',
+              );
+              results.push({theme, numbers, focus, terminal, ...diff});
+              assert.ok(diff.percent <= 0.5, JSON.stringify(results.at(-1)));
+            }
+          }
+        }
+      }
+      assert.deepEqual(errors, []);
+      assert.deepEqual(fallback, []);
+      assert.deepEqual(fontIssues, []);
+      writeFileSync(
+        path.join(out, 'marks.json'),
+        JSON.stringify({results, errors, fallback, fontIssues}, null, 2),
+      );
+      return;
+    }
     if (process.env.P2_TARGETS === '1') {
       const targets = [
         {id: 'x-landscape', width: 1600, height: 900},

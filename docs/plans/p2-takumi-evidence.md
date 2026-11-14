@@ -267,3 +267,11 @@ All 112 theme and terminal comparisons pass with no matrix errors, font issues o
 The first live run timed out capturing the settings container after reload. It did not report a failed flag assertion. The probe now captures the page and closes settings through Escape instead of depending on that ancestor container. The complete live run then passed. This changes only the probe.
 
 All four social targets were rerun after the latest main merge. Both engines produce the exact target dimensions at requested scale 3, including the P7 signature. All eight image comparisons stay below 0.5%.
+
+## Line marks from main
+
+The branch also includes main through `1ffe0c9d` (PR #698). The merge applied without conflicts. After rebuilding the updated config package and API declarations, code head `66abc153` passes 108 app tests, typecheck, lint and the production build on Node 24.14.0. Earlier stale-config failures are not counted as validation passes.
+
+The 112-cell theme matrix and eight live checks above were run before this merge. The added `P2_MARKS=1` probe exercises the changed static export with added, removed and highlighted lines, focus on and off, line numbers on and off, light and dark themes and all four terminals.
+
+All 32 marked-code combinations pass against Chrome. The worst difference is 0.1775%, with no page errors, font issues or fallback. A light, numbered, focused export was also visually inspected. Reproduce with `P2_MARKS=1 P2_PERF=0 pnpm exec tsx scripts/parity/rasterizers.ts`.
