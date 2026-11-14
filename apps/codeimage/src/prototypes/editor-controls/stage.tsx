@@ -6,6 +6,7 @@ import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import type {Accessor, Component} from 'solid-js';
 import {createSignal, lazy, onMount, Suspense} from 'solid-js';
+import {untrackCommand} from 'statebuilder/commands';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {PreviewFrame} from '../../components/Frame/PreviewFrame';
 import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItem';
@@ -85,6 +86,10 @@ function ThemePreview(props: {theme: ThemeEntry}) {
 export function createStage(): Stage {
   const [exportRef, setExportRef] = createSignal<HTMLElement>();
   const frame = getFrameState();
+  // The scale is not saved, but its command makes the store save everything
+  // the canvas shows, a preview included. Production sets it only on phones.
+  const setScale = (scale: number) =>
+    untrackCommand(() => frame.setScale(scale), false);
   const activeEditor = getActiveEditorStore();
 
   return {
@@ -92,7 +97,7 @@ export function createStage(): Stage {
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
       return (
         <SuspenseEditorItem fallback={<FrameSkeleton />}>
-          <FitFrame onScaleChange={frame.setScale}>
+          <FitFrame onScaleChange={setScale}>
             <Suspense fallback={<FrameSkeleton />}>
               <ManagedFrame />
             </Suspense>
