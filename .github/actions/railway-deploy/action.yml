@@ -1,0 +1,36 @@
+name: 'Railway deploy'
+description: 'Upload a directory to a Railway service and wait for the build result'
+
+inputs:
+  token:
+    description: 'Railway project token'
+    required: true
+  project-id:
+    description: 'Railway project id'
+    required: true
+  environment:
+    description: 'Railway environment name'
+    required: true
+  service:
+    description: 'Railway service name'
+    required: false
+    default: 'codeimage'
+  directory:
+    description: 'Directory to upload'
+    required: false
+    default: 'dist/api-bundle'
+
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Deploy to Railway
+      shell: bash
+      working-directory: ${{ inputs.directory }}
+      env:
+        RAILWAY_TOKEN: ${{ inputs.token }}
+        PROJECT_ID: ${{ inputs.project-id }}
+        ENVIRONMENT: ${{ inputs.environment }}
+        SERVICE: ${{ inputs.service }}
+      run: |
+        npx -y @railway/cli@4.35.0 up --project "$PROJECT_ID" --environment "$ENVIRONMENT" --service "$SERVICE" --no-gitignore --ci

@@ -383,10 +383,27 @@ jobs:
     name: Build Api
     needs: [build-packages]
     runs-on: ubuntu-latest
+    outputs:
+      api-changed: ${{ steps.changes.outputs.api }}
 
     steps:
       - name: Checkout PR
         uses: actions/checkout@v7
+      - name: Detect api changes
+        id: changes
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            api:
+              - 'apps/api/**'
+              - 'packages/prisma-models/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/main.yml'
+              - '.github/actions/railway-deploy/**'
+              - '.github/actions/pnpm-install/**'
+              - '.github/actions/setup-job/**'
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -465,7 +482,7 @@ jobs:
         run: pnpm --filter=@codeimage/api test:integration
 
   deploy-api-rc:
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' && needs.build-api.outputs.api-changed == 'true' }}
     environment: Next
     name: Deploy API (RC)
     needs: [lint, build-packages, build-api, be-test, build-app-rc]
@@ -496,15 +513,12 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.NEXT_DATABASE_URL }}
 
-      - name: Deploy
-        run: |
-          find -type f -name '.gitignore' -delete
-          pnpm railway link --environment next $RAILWAY_API_PROJECT_ID
-          cd dist/api-bundle
-          pnpm railway up --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_API_PROJECT_ID: ${{ secrets.RAILWAY_API_PROJECT_ID }}
+      - name: Deploy to Railway
+        uses: ./.github/actions/railway-deploy
+        with:
+          token: ${{ secrets.RAILWAY_TOKEN }}
+          project-id: ${{ secrets.RAILWAY_API_PROJECT_ID }}
+          environment: next
 
 concurrency:
   group: main-${{ github.head_ref || github.ref }}
