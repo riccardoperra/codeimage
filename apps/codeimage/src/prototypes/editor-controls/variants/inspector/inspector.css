@@ -90,6 +90,9 @@
   overflow: hidden;
 }
 .inspector-root .inspector-panel-scroll {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -103,7 +106,7 @@
   display: flex;
   width: 100%;
   justify-content: space-between;
-  min-height: 40px;
+  min-height: 36px;
   gap: 8px;
   padding: 0 4px;
   font-size: 14px;
@@ -133,15 +136,31 @@
 .inspector-root .inspector-section-content {
   padding: 6px 0 8px;
 }
-/* Four rows of orb cards, twelve themes, with the whole panel inside 1440x900. */
+/*
+ * Only one section is open, so the open theme section takes what the other
+ * headers leave, and the picker fills it.
+ */
+.inspector-root .inspector-section[data-section='themes'][data-expanded] {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
 .inspector-root
   .inspector-section[data-section='themes']
   .inspector-section-content {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
   padding-bottom: 2px;
 }
 .inspector-root .inspector-themes {
-  height: 576px;
-  padding: 0 4px;
+  position: relative;
+  flex: 1 0 auto;
+  min-height: 360px;
+}
+.inspector-root .inspector-themes > * {
+  position: absolute;
+  inset: 0 4px;
 }
 .inspector-root .inspector-control > div:not(.inspector-inline),
 .inspector-root .inspector-inline > div:first-child {
@@ -354,7 +373,7 @@
     grid-template-rows: minmax(0, 1fr);
   }
   .inspector-root .inspector-themes {
-    height: 436px;
+    min-height: 436px;
   }
   .inspector-root .inspector-inline-content input,
   .inspector-root .inspector-control input:not([type='checkbox']) {

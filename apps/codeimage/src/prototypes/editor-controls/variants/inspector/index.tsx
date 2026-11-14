@@ -28,6 +28,25 @@ const primaryControls: Record<SectionId, readonly ControlId[]> = {
 };
 type PanelId = SectionId | 'themes';
 
+// The arrow keys, Home and End move between the section headers.
+function moveBetweenHeaders(event: KeyboardEvent) {
+  const headers = [
+    ...(event.currentTarget as HTMLElement)
+      .closest('.inspector-panel-scroll')!
+      .querySelectorAll<HTMLElement>(':scope > .inspector-section > button'),
+  ];
+  const index = headers.indexOf(event.currentTarget as HTMLElement);
+  const next = {
+    ArrowDown: headers[(index + 1) % headers.length],
+    ArrowUp: headers[(index - 1 + headers.length) % headers.length],
+    Home: headers[0],
+    End: headers[headers.length - 1],
+  }[event.key];
+  if (!next) return;
+  event.preventDefault();
+  next.focus();
+}
+
 function Section(
   props: ParentProps<{
     id: string;
@@ -57,6 +76,7 @@ function Section(
         size="sm"
         theme="secondary"
         variant="ghost"
+        onKeyDown={moveBetweenHeaders}
         ref={element => {
           trigger = element;
         }}
@@ -88,9 +108,8 @@ function summary(control: Control | undefined): string {
 }
 
 export default function Inspector(props: VariantProps) {
-  const [openSections, setOpenSections] = createSignal<ReadonlySet<PanelId>>(
-    new Set(['themes']),
-  );
+  // One section at a time. All may be closed, which leaves the summaries.
+  const [openSection, setOpenSection] = createSignal<PanelId | null>('themes');
   const [moreSections, setMoreSections] = createSignal<ReadonlySet<SectionId>>(
     new Set(),
   );
@@ -111,12 +130,7 @@ export default function Inspector(props: VariantProps) {
     onCleanup(() => media.removeEventListener('change', update));
   });
   const toggleSection = (id: PanelId, open: boolean) =>
-    setOpenSections(current => {
-      const next = new Set(current);
-      if (open) next.add(id);
-      else next.delete(id);
-      return next;
-    });
+    setOpenSection(current => (open ? id : current === id ? null : current));
   const selectedTheme = () =>
     props.model.themes().find(theme => theme.active()) ??
     props.model.themes()[0];
@@ -295,7 +309,7 @@ export default function Inspector(props: VariantProps) {
               id="themes"
               title="Theme"
               summary={selectedTheme()?.name}
-              open={openSections().has('themes')}
+              open={openSection() === 'themes'}
               onOpenChange={open => toggleSection('themes', open)}
             >
               <div class="inspector-themes">
@@ -314,7 +328,7 @@ export default function Inspector(props: VariantProps) {
                         : section.label()
                   }
                   summary={summaries[section.id]()}
-                  open={openSections().has(section.id)}
+                  open={openSection() === section.id}
                   onOpenChange={open => toggleSection(section.id, open)}
                 >
                   <For
