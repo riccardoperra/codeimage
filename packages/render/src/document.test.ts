@@ -24,7 +24,11 @@ describe('parseSnapshotDocument', () => {
     const document = {
       ...sampleDocument,
       metadata: {label: 'future'},
-      frame: {...sampleDocument.frame, signature: 'name', target: 'square'},
+      frame: {
+        ...sampleDocument.frame,
+        futureSignature: 'name',
+        target: 'square',
+      },
       terminal: {...sampleDocument.terminal, future: true},
       editor: {
         ...sampleDocument.editor,
@@ -32,7 +36,7 @@ describe('parseSnapshotDocument', () => {
         options: {...sampleDocument.editor.options, future: true},
         editors: sampleDocument.editor.editors.map(editor => ({
           ...editor,
-          marks: [{line: 1, kind: 'added'}],
+          futureMarks: [{line: 1, kind: 'added'}],
         })),
       },
     };

@@ -26,6 +26,18 @@ export const projectSnapshotSchema = z.looseObject({
     radius: z.number().finite().nonnegative(),
     visible: z.boolean(),
     opacity: z.number().min(0).max(100),
+    exportTarget: z
+      .enum(['x-landscape', 'square', 'linkedin-portrait', 'open-graph'])
+      .nullable()
+      .optional(),
+    aspectRatio: z.string().nullable().optional(),
+    signature: z
+      .object({
+        handle: z.string(),
+        position: z.enum(['bottom-left', 'bottom-right']),
+      })
+      .nullable()
+      .optional(),
   }),
   terminal: z.looseObject({
     showHeader: z.boolean(),
@@ -56,6 +68,17 @@ export const projectSnapshotSchema = z.looseObject({
           tabName: z.string(),
           languageId: z.string(),
           lineNumberStart: z.number().int().positive(),
+          marks: z
+            .object({
+              lines: z.array(
+                z.object({
+                  line: z.number().int().positive(),
+                  kind: z.enum(['added', 'removed', 'highlight']),
+                }),
+              ),
+              focus: z.boolean(),
+            })
+            .optional(),
         }),
       )
       .min(1, 'A snapshot needs at least one editor'),

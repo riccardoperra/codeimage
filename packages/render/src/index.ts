@@ -10,9 +10,10 @@ export type {
   SnapshotInput,
 } from './document';
 export {
+  annotateCode,
   renderSnapshot,
   snapshotMarkup,
   supportedFontIds,
   supportedThemeIds,
 } from './render';
-export type {SnapshotFont, SnapshotMarkup} from './render';
+export type {AnnotatedCode, SnapshotFont, SnapshotMarkup} from './render';

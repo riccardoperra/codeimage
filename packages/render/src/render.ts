@@ -9,6 +9,21 @@ import type {
 } from './document';
 import {parseSnapshotDocument} from './document';
 
+export interface AnnotatedCode {
+  code: string;
+  marks: NonNullable<SnapshotInput['editor']['editors'][number]['marks']>;
+  count: number;
+  sourceLines: number[];
+}
+
+export async function annotateCode(
+  code: string,
+  languageId: string,
+  tabName: string,
+): Promise<AnnotatedCode> {
+  return (await getRuntime()).entry.annotateCode(code, languageId, tabName);
+}
+
 interface FrameMarkup {
   html: string;
   css: string;
@@ -25,7 +40,13 @@ interface RenderEntry {
   SUPPORTED_FONT_IDS: string[];
   SUPPORTED_THEME_IDS: string[];
   renderFrame(snapshot: ProjectSnapshot): Promise<FrameMarkup>;
+  annotateCode(
+    code: string,
+    languageId: string,
+    tabName: string,
+  ): Promise<AnnotatedCode>;
   frameSizeCss(size?: FrameSize): string;
+  targetSize(id: string | null | undefined): [number, number] | undefined;
 }
 
 interface FontFile {
@@ -183,20 +204,39 @@ export async function snapshotMarkup(
   // Like the web frame, the frame is at least as wide as its code, so no line
   // wraps. The borderless frame's clientWidth/clientHeight round to the nearest
   // CSS pixel before the web exporter applies the scale.
-  const scale = document.format === 'svg' ? 1 : document.scale;
+  const target = entry.targetSize(document.frame.exportTarget);
+  const scale = document.format === 'svg' || target ? 1 : document.scale;
+  const windowCss = target
+    ? '[data-snapshot-window]{display:block!important;min-width:480px;width:max-content}'
+    : '';
   const content = await renderer.measure(html, {
-    css: [...css, entry.frameSizeCss()],
+    css: [...css, entry.frameSizeCss(), windowCss],
     fontFamilies,
     devicePixelRatio: scale,
   });
-  const layoutSize = {
-    width: Math.max(document.width ?? 0, content.width / scale),
-    height: content.height / scale,
-  };
+  const layoutSize = target
+    ? {width: target[0], height: target[1]}
+    : {
+        width: Math.max(document.width ?? 0, content.width / scale),
+        height: content.height / scale,
+      };
+  let fittedCss = '';
+  if (target) {
+    const padding = document.frame.padding;
+    const bottom = document.frame.signature ? Math.max(padding, 66) : padding;
+    const width = Math.max(1, Math.ceil(content.width) - 2 * padding);
+    const height = Math.max(1, Math.ceil(content.height) - padding - bottom);
+    const availableWidth = Math.max(1, layoutSize.width - 2 * padding);
+    const availableHeight = Math.max(1, layoutSize.height - padding - bottom);
+    const scale = Math.min(1, availableWidth / width, availableHeight / height);
+    const left = padding + (availableWidth - width * scale) / 2;
+    const top = padding + (availableHeight - height * scale) / 2;
+    fittedCss = `[data-snapshot-frame]{padding:0!important;min-width:0!important;max-width:none!important}[data-snapshot-window]{display:block!important;position:absolute;left:${left}px;top:${top}px;width:${width}px;height:${height}px;transform-origin:top left;transform:scale(${scale})}`;
+  }
   return {
     document,
     html,
-    css: [...css, entry.frameSizeCss(layoutSize)],
+    css: [...css, entry.frameSizeCss(layoutSize), fittedCss],
     naturalCss: css,
     size: {
       width: Math.round(layoutSize.width),
@@ -216,17 +256,18 @@ export async function renderSnapshot(
   const {document, html, css, images, fontFamilies, size} =
     await snapshotMarkup(input);
   const {renderer} = await getRuntime();
+  const pixelRatio = document.frame.exportTarget ? 1 : document.scale;
   if (document.format === 'svg') {
     return renderer.renderSvg(html, {css, images, fontFamilies, ...size});
   }
   const image = await renderer.render(html, {
-    width: Math.floor(size.width * document.scale),
-    height: Math.floor(size.height * document.scale),
+    width: Math.floor(size.width * pixelRatio),
+    height: Math.floor(size.height * pixelRatio),
     css,
     images,
     fontFamilies,
     format: document.format,
-    devicePixelRatio: document.scale,
+    devicePixelRatio: pixelRatio,
   });
   return new Uint8Array(image.buffer, image.byteOffset, image.byteLength);
 }
