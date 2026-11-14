@@ -139,6 +139,7 @@ export function planTimeline(
     ] as const) {
       const timing = {transitionMs, easing, offsetMs};
       const compiled = compileScene(scene, metrics, timing, name);
+      // The second half plays the keyframes of the first, from its offset.
       if (offsetMs === 0) css.push(compiled.css);
       scenes.push({
         kind: 'transition',
