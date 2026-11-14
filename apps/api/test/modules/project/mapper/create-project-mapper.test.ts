@@ -31,7 +31,7 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
         languageId: 'typescript',
         tabName: 'n.ts',
         lineNumberStart: 1,
-        marks: {lines: [{line: 1, kind: 'added'}], focus: true},
+        marks: {lines: [{line: 1, kind: 'added'}], focusedLines: [2]},
       },
     ],
     editorOptions: {
@@ -73,7 +73,7 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
         languageId: 'typescript',
         tabName: 'n.ts',
         lineNumberStart: 1,
-        marks: {lines: [{line: 1, kind: 'added'}], focus: true},
+        marks: {lines: [{line: 1, kind: 'added'}], focusedLines: [2]},
       },
     ],
     name: 'Untitled',

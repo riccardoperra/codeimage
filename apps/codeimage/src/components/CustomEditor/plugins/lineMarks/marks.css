@@ -12,7 +12,7 @@
 }
 
 [data-line-marks][data-line-focus='true']
-  :is(.cm-line, [data-line]):not([data-mark='highlight']),
+  :is(.cm-line, [data-line]):not([data-focused='true']),
 [data-line-marks][data-line-focus='true'] .cm-lineMarkDim {
   opacity: 0.35;
 }

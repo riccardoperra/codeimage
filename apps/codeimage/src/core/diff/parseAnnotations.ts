@@ -38,8 +38,12 @@ export function parseAnnotations(
 ): AnnotatedCode {
   const source = input.replace(/\r\n/g, '\n').split('\n');
   const output: string[] = [];
-  const pending: {line: number; kind: LineMark['kind']; count: number}[] = [];
-  let focus = false;
+  const pending: {
+    line: number;
+    kind: LineMark['kind'] | 'focus';
+    count: number;
+  }[] = [];
+  const focusedLines = new Set<number>();
   let count = 0;
   let template = '';
   for (const line of source) {
@@ -89,7 +93,6 @@ export function parseAnnotations(
     const target = output.length + 1;
     for (const match of annotations) {
       const notation = match[1];
-      focus ||= notation === 'focus';
       pending.push({
         line: target,
         kind:
@@ -97,7 +100,9 @@ export function parseAnnotations(
             ? 'added'
             : notation === '--'
               ? 'removed'
-              : 'highlight',
+              : notation === 'focus'
+                ? 'focus'
+                : 'highlight',
         count: Math.min(Number(match[2] ?? 1), source.length),
       });
       count++;
@@ -111,12 +116,16 @@ export function parseAnnotations(
       line < mark.line + mark.count && line <= output.length;
       line++
     ) {
-      lines.set(line, {line, kind: mark.kind});
+      if (mark.kind === 'focus') focusedLines.add(line);
+      else lines.set(line, {line, kind: mark.kind});
     }
   }
   return {
     code: output.join('\n'),
-    marks: {lines: [...lines.values()].sort((a, b) => a.line - b.line), focus},
+    marks: {
+      lines: [...lines.values()].sort((a, b) => a.line - b.line),
+      focusedLines: [...focusedLines].sort((a, b) => a - b),
+    },
     count,
   };
 }

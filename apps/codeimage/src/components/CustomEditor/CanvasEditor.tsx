@@ -279,8 +279,8 @@ export default function CanvasEditor(props: CanvasEditorProps) {
                       view.state.doc.eq(convertedState.doc) &&
                       view.state.field(lineMarksField).decorations ===
                         convertedState.field(lineMarksField).decorations &&
-                      view.state.field(lineMarksField).focus ===
-                        convertedState.field(lineMarksField).focus
+                      view.state.field(lineMarksField).focused ===
+                        convertedState.field(lineMarksField).focused
                     )
                       undo(view);
                     toast.dismiss(activeToast.id);
