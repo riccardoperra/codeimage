@@ -3,7 +3,6 @@ export default {
     frame: {
       freeSize: 'Free size',
       signature: 'Signature',
-      handle: 'Handle',
       signaturePosition: 'Position',
       bottomLeft: 'Bottom left',
       bottomRight: 'Bottom right',
@@ -45,7 +44,6 @@ export default {
     frame: {
       freeSize: 'Dimensioni libere',
       signature: 'Firma',
-      handle: 'Handle',
       signaturePosition: 'Posizione',
       bottomLeft: 'In basso a sinistra',
       bottomRight: 'In basso a destra',
@@ -86,7 +84,6 @@ export default {
     frame: {
       freeSize: 'Freie Größe',
       signature: 'Signatur',
-      handle: 'Handle',
       signaturePosition: 'Position',
       bottomLeft: 'Unten links',
       bottomRight: 'Unten rechts',
@@ -127,7 +124,6 @@ export default {
     frame: {
       freeSize: 'Tamaño libre',
       signature: 'Firma',
-      handle: 'Usuario',
       signaturePosition: 'Posición',
       bottomLeft: 'Abajo a la izquierda',
       bottomRight: 'Abajo a la derecha',
