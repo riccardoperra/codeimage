@@ -17,6 +17,16 @@ export const THEME_REGISTRY: ReadonlyArray<ThemeRegistryEntry> = [
     load: () => import('@codeimage/highlight/themes').then(m => m.vsCodeDarkTheme),
   },
   {
+    id: 'vsCodeDark2026',
+    load: () =>
+      import('@codeimage/highlight/themes').then(m => m.vsCodeDark2026Theme),
+  },
+  {
+    id: 'vsCodeLight2026',
+    load: () =>
+      import('@codeimage/highlight/themes').then(m => m.vsCodeLight2026Theme),
+  },
+  {
     id: 'xCodeDark',
     // prettier-ignore
     load: () => import('@codeimage/highlight/themes').then(m => m.xCodeDarkTheme),
