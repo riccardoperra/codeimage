@@ -50,6 +50,14 @@ export function makePrismaProjectRepository(
     });
   }
 
+  async function isOwnedBy(id: string, ownerId: string): Promise<boolean> {
+    const project = await client.project.findUnique({
+      where: {id_ownerId: {id, ownerId}},
+      select: {id: true},
+    });
+    return project !== null;
+  }
+
   function deleteProject(id: string, ownerId: string): Promise<Project> {
     return client.project.delete({
       where: {
@@ -122,10 +130,12 @@ export function makePrismaProjectRepository(
     userId: string,
     projectId: string,
     data: ProjectUpdateRequest,
-  ): Promise<ProjectUpdateResponse> {
+  ): Promise<ProjectUpdateResponse | null> {
+    if (!(await isOwnedBy(projectId, userId))) return null;
+
     return client.project.update({
       where: {
-        id: projectId,
+        id_ownerId: {id: projectId, ownerId: userId},
       },
       data: {
         // Update automatically the `updatedAt` field
@@ -202,13 +212,19 @@ export function makePrismaProjectRepository(
     });
   }
 
-  async function updateProjectName(projectId: string, name: string) {
+  async function updateProjectName(
+    userId: string,
+    projectId: string,
+    name: string,
+  ): Promise<Project | null> {
+    if (!(await isOwnedBy(projectId, userId))) return null;
+
     return client.project.update({
       data: {
         name,
       },
       where: {
-        id: projectId,
+        id_ownerId: {id: projectId, ownerId: userId},
       },
     });
   }

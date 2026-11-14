@@ -6,31 +6,20 @@ import type {
 } from '../../../../src/modules/project/schema/index.js';
 
 import {build} from '../../../helper.js';
-import {clearAllSeeds, projectSeed, userSeed} from '../../../helpers/seed.js';
+import {
+  clearAllSeeds,
+  client,
+  projectSeed,
+  userSeed,
+} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
   project1: Awaited<ReturnType<typeof projectSeed.createProject>>;
 }
 
-beforeEach<TestContext>(async context => {
-  context.user = await userSeed.createUser();
-  context.project1 = await projectSeed.createProject(
-    'project to update',
-    context.user.id,
-  );
-});
-
-afterEach(async () => {
-  await clearAllSeeds();
-});
-
-test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context => {
-  const fastify = await build(context);
-  const userId = context.user.id;
-  const spy = vi.spyOn(fastify.projectService, 'update');
-
-  const data: ProjectUpdateRequest = {
+function buildUpdateRequest(editorId: string): ProjectUpdateRequest {
+  return {
     frame: {
       background: '#fff',
       opacity: 100,
@@ -40,7 +29,7 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
     },
     editors: [
       {
-        id: context.project1.editorTabs[0].id,
+        id: editorId,
         code: '## title',
         languageId: 'markdown',
         tabName: 'README.md',
@@ -75,6 +64,26 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       borderType: 'glass',
     },
   };
+}
+
+beforeEach<TestContext>(async context => {
+  context.user = await userSeed.createUser();
+  context.project1 = await projectSeed.createProject(
+    'project to update',
+    context.user.id,
+  );
+});
+
+afterEach(async () => {
+  await clearAllSeeds();
+});
+
+test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context => {
+  const fastify = await build(context);
+  const userId = context.user.id;
+  const spy = vi.spyOn(fastify.projectService, 'update');
+
+  const data = buildUpdateRequest(context.project1.editorTabs[0].id);
 
   const response = await fastify.inject({
     url: `/api/v1/project/${context.project1.id}`,
@@ -152,4 +161,33 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
   );
   assert.notEqual(body.updatedAt, context.project1.updatedAt.toISOString());
   assert.equal(body.name, 'project to update', 'return same name');
+});
+
+test<TestContext>('PUT /v1/project/:id [Update Project] -> 404 when the project belongs to another user', async context => {
+  const fastify = await build(context);
+  const otherUser = await userSeed.createUser();
+  const otherProject = await projectSeed.createProject(
+    'owned by another user',
+    otherUser.id,
+  );
+
+  const response = await fastify.inject({
+    url: `/api/v1/project/${otherProject.id}`,
+    method: 'PUT',
+    payload: buildUpdateRequest(otherProject.editorTabs[0].id),
+  });
+
+  const stored = await client.project.findUniqueOrThrow({
+    where: {id: otherProject.id},
+    include: {editorTabs: true, frame: true},
+  });
+
+  assert.equal(response.statusCode, 404, 'return status 404');
+  assert.equal(stored.editorTabs.length, 1, 'keeps the stored editor tabs');
+  assert.equal(stored.editorTabs[0].code, 'code', 'keeps the stored code');
+  assert.equal(
+    stored.frame.background,
+    otherProject.frame.background,
+    'keeps the stored frame',
+  );
 });
