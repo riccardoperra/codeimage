@@ -1,0 +1,440 @@
+{
+  "lane1": {
+    "main": [
+      832,
+      468
+    ],
+    "head": [
+      832,
+      468
+    ],
+    "diff": {
+      "mismatched": 0,
+      "percent": 0
+    }
+  },
+  "lane2": {
+    "x-landscape": [
+      1600,
+      900
+    ],
+    "square": [
+      1080,
+      1080
+    ],
+    "linkedin-portrait": [
+      1080,
+      1350
+    ],
+    "open-graph": [
+      1200,
+      630
+    ]
+  },
+  "lane3": {
+    "dims": [
+      1600,
+      900
+    ],
+    "geom": [
+      {
+        "frame": {
+          "l": 400,
+          "t": 327,
+          "r": 1040,
+          "b": 687,
+          "w": 640,
+          "h": 360
+        },
+        "window": {
+          "l": 667.1,
+          "t": 352.6,
+          "r": 772.9,
+          "b": 661.4,
+          "w": 105.9,
+          "h": 308.9
+        },
+        "fitted": {
+          "l": 667.1,
+          "t": 352.6,
+          "r": 772.9,
+          "b": 661.4,
+          "w": 105.9,
+          "h": 308.9
+        },
+        "transform": "translate(-50%, -50%) scale(0.536484)",
+        "sig": null,
+        "staticView": false,
+        "cmLines": 60,
+        "scrollClip": [
+          1353,
+          1353,
+          461,
+          461
+        ]
+      },
+      {
+        "frame": {
+          "l": 0,
+          "t": 0,
+          "r": 1600,
+          "b": 900,
+          "w": 1600,
+          "h": 900
+        },
+        "window": {
+          "l": 667.5,
+          "t": 63.9,
+          "r": 932.5,
+          "b": 836.1,
+          "w": 265,
+          "h": 772.2
+        },
+        "fitted": {
+          "l": 667.5,
+          "t": 63.9,
+          "r": 932.5,
+          "b": 836.1,
+          "w": 265,
+          "h": 772.2
+        },
+        "transform": "translate(-50%, -50%) scale(0.53723)",
+        "sig": null,
+        "staticView": true,
+        "cmLines": 60,
+        "scrollClip": [
+          1351,
+          1351,
+          461,
+          461
+        ]
+      }
+    ],
+    "windowInsideFrame": [
+      true,
+      true
+    ],
+    "cmLinesPreview": 60
+  },
+  "lane4": {
+    "bottom-left": {
+      "dims": [
+        1600,
+        900
+      ],
+      "geom": [
+        {
+          "sigPos": "bottom-left",
+          "sig": {
+            "l": 409.6,
+            "t": 667,
+            "r": 463.2,
+            "b": 680.6,
+            "w": 53.6,
+            "h": 13.6
+          },
+          "frame": {
+            "l": 400,
+            "t": 327,
+            "r": 1040,
+            "b": 687,
+            "w": 640,
+            "h": 360
+          },
+          "inside": true,
+          "corner": true,
+          "overlapsWindow": false
+        },
+        {
+          "sigPos": "bottom-left",
+          "sig": {
+            "l": 24,
+            "t": 850,
+            "r": 158.2,
+            "b": 884,
+            "w": 134.2,
+            "h": 34
+          },
+          "frame": {
+            "l": 0,
+            "t": 0,
+            "r": 1600,
+            "b": 900,
+            "w": 1600,
+            "h": 900
+          },
+          "inside": true,
+          "corner": true,
+          "overlapsWindow": false
+        }
+      ]
+    },
+    "bottom-right": {
+      "dims": [
+        1600,
+        900
+      ],
+      "geom": [
+        {
+          "sigPos": "bottom-right",
+          "sig": {
+            "l": 976.8,
+            "t": 667,
+            "r": 1030.4,
+            "b": 680.6,
+            "w": 53.6,
+            "h": 13.6
+          },
+          "frame": {
+            "l": 400,
+            "t": 327,
+            "r": 1040,
+            "b": 687,
+            "w": 640,
+            "h": 360
+          },
+          "inside": true,
+          "corner": true,
+          "overlapsWindow": false
+        },
+        {
+          "sigPos": "bottom-right",
+          "sig": {
+            "l": 1441.8,
+            "t": 850,
+            "r": 1576,
+            "b": 884,
+            "w": 134.2,
+            "h": 34
+          },
+          "frame": {
+            "l": 0,
+            "t": 0,
+            "r": 1600,
+            "b": 900,
+            "w": 1600,
+            "h": 900
+          },
+          "inside": true,
+          "corner": true,
+          "overlapsWindow": false
+        }
+      ]
+    }
+  },
+  "lane5": {
+    "len": 40,
+    "dims": [
+      1600,
+      900
+    ],
+    "geom": [
+      {
+        "sig": {
+          "l": 871.8,
+          "t": 667,
+          "r": 1030.4,
+          "b": 680.6,
+          "w": 158.6,
+          "h": 13.6
+        },
+        "frame": {
+          "l": 400,
+          "t": 327,
+          "r": 1040,
+          "b": 687,
+          "w": 640,
+          "h": 360
+        },
+        "inside": true
+      },
+      {
+        "sig": {
+          "l": 1179.4,
+          "t": 850,
+          "r": 1576,
+          "b": 884,
+          "w": 396.6,
+          "h": 34
+        },
+        "frame": {
+          "l": 0,
+          "t": 0,
+          "r": 1600,
+          "b": 900,
+          "w": 1600,
+          "h": 900
+        },
+        "inside": true
+      }
+    ]
+  },
+  "lane10": {
+    "dims": [
+      1200,
+      630
+    ]
+  },
+  "lane9": {
+    "head": {
+      "before": 621,
+      "after": 741,
+      "dims": [
+        741,
+        446
+      ]
+    },
+    "main": {
+      "before": 621,
+      "after": 741,
+      "dims": [
+        741,
+        446
+      ]
+    }
+  },
+  "lane6": {
+    "before": {
+      "ratio": "Free size",
+      "handle": ""
+    },
+    "after": {
+      "ratio": "X landscape",
+      "handle": "@preset",
+      "pos": "bottom-left"
+    },
+    "dims": [
+      1600,
+      900
+    ]
+  },
+  "lane8": {
+    "dimensions": [
+      1600,
+      900
+    ],
+    "centerCrop": [
+      0,
+      0,
+      1600,
+      900
+    ],
+    "geometry": [
+      {
+        "frame": {
+          "l": 400,
+          "t": 327,
+          "r": 1040,
+          "b": 687,
+          "w": 640,
+          "h": 360
+        },
+        "window": {
+          "l": 667.2,
+          "t": 352.6,
+          "r": 772.8,
+          "b": 660.6,
+          "w": 105.6,
+          "h": 308.1
+        },
+        "fitted": {
+          "l": 667.2,
+          "t": 352.6,
+          "r": 772.8,
+          "b": 660.6,
+          "w": 105.6,
+          "h": 308.1
+        },
+        "transform": "translate(-50%, -50%) scale(0.535094)",
+        "sig": {
+          "l": 409.6,
+          "t": 667,
+          "r": 463.2,
+          "b": 680.6,
+          "w": 53.6,
+          "h": 13.6
+        },
+        "sigPos": "bottom-left",
+        "staticView": false,
+        "cmLines": 60,
+        "scrollClip": [
+          1353,
+          1353,
+          461,
+          461
+        ]
+      },
+      {
+        "frame": {
+          "l": 0,
+          "t": 0,
+          "r": 1600,
+          "b": 900,
+          "w": 1600,
+          "h": 900
+        },
+        "window": {
+          "l": 667.8,
+          "t": 63.9,
+          "r": 932.2,
+          "b": 834.1,
+          "w": 264.3,
+          "h": 770.2
+        },
+        "fitted": {
+          "l": 667.8,
+          "t": 63.9,
+          "r": 932.2,
+          "b": 834.1,
+          "w": 264.3,
+          "h": 770.2
+        },
+        "transform": "translate(-50%, -50%) scale(0.535839)",
+        "sig": {
+          "l": 24,
+          "t": 850,
+          "r": 158.2,
+          "b": 884,
+          "w": 134.2,
+          "h": 34
+        },
+        "sigPos": "bottom-left",
+        "staticView": true,
+        "cmLines": 60,
+        "scrollClip": [
+          1351,
+          1351,
+          461,
+          461
+        ]
+      }
+    ],
+    "signatureGap": 15.899999999999977
+  },
+  "environment": {
+    "base": "17233c9353d5f1f7c27eaeab50470a5a3eb21c0d",
+    "trunk": "27b185f18d36f2baec3a8cc5a43e8794586096c3",
+    "browser": "Playwright Chromium 1200",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "flags": [
+      "--force-device-scale-factor=1",
+      "--host-resolver-rules=MAP localhost [::1]"
+    ],
+    "headUrl": "http://localhost:4425",
+    "trunkUrl": "http://127.0.0.1:4426",
+    "mockAuth": true,
+    "msw": true
+  },
+  "checks": {
+    "configTests": 5,
+    "appTests": 10,
+    "apiUnitTests": 33,
+    "apiIntegrationTests": 17,
+    "lintWarnings": 33,
+    "lintErrors": 0,
+    "typecheck": "pass"
+  }
+}

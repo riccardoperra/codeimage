@@ -1,4 +1,5 @@
 import {Value} from '@sinclair/typebox/value';
+import Fastify from 'fastify';
 import {describe, expect, it} from 'vitest';
 import {PresetDataSchema} from '../../src/modules/preset/preset.contract';
 import {FrameSignatureSchema} from '../../src/modules/project/project.contract';
@@ -15,6 +16,29 @@ const frame = {
 };
 
 describe('social export persistence', () => {
+  it.each([null, '16:9'])(
+    'preserves aspect ratio %s through request validation',
+    async aspectRatio => {
+      const app = Fastify();
+      app.post(
+        '/',
+        {schema: {body: SnippetFrameUpdateRequestSchema}},
+        request => request.body,
+      );
+      try {
+        const response = await app.inject({
+          method: 'POST',
+          url: '/',
+          payload: {...frame, aspectRatio},
+        });
+        expect(response.statusCode).toBe(200);
+        expect(response.json().aspectRatio).toBe(aspectRatio);
+      } finally {
+        await app.close();
+      }
+    },
+  );
+
   it.each(['bottom-left', 'bottom-right'])(
     'accepts a %s signature in projects and presets',
     position => {
