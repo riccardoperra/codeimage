@@ -25,6 +25,7 @@ export default {
       profileAvatar: 'Profile',
       profile: 'Profile',
       profilePlaceholder: 'username',
+      profileSource: 'Avatar source',
       profileHint: 'Where the avatar comes from. Empty uses the handle.',
       noPublicAvatar:
         '{{platform}} has no public avatar. Paste a GitHub, Bluesky or Mastodon profile, or upload an image.',
@@ -96,6 +97,7 @@ export default {
       profileAvatar: 'Profilo',
       profile: 'Profilo',
       profilePlaceholder: 'nome utente',
+      profileSource: "Origine dell'avatar",
       profileHint: "Da dove arriva l'avatar. Vuoto usa l'handle.",
       noPublicAvatar:
         "{{platform}} non ha un avatar pubblico. Incolla un profilo GitHub, Bluesky o Mastodon, oppure carica un'immagine.",
@@ -166,6 +168,7 @@ export default {
       profileAvatar: 'Profile',
       profile: 'Profile',
       profilePlaceholder: 'username',
+      profileSource: 'Avatar source',
       profileHint: 'Where the avatar comes from. Empty uses the handle.',
       noPublicAvatar:
         '{{platform}} has no public avatar. Paste a GitHub, Bluesky or Mastodon profile, or upload an image.',
@@ -236,6 +239,7 @@ export default {
       profileAvatar: 'Profile',
       profile: 'Profile',
       profilePlaceholder: 'username',
+      profileSource: 'Avatar source',
       profileHint: 'Where the avatar comes from. Empty uses the handle.',
       noPublicAvatar:
         '{{platform}} has no public avatar. Paste a GitHub, Bluesky or Mastodon profile, or upload an image.',

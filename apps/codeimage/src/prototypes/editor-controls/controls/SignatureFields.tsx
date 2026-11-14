@@ -10,12 +10,15 @@ import type {
 import {createSignature} from '@codeimage/store/frame/model';
 import {
   avatarSource,
+  AVATAR_PLATFORMS,
+  changeProfileSource,
+  defaultAvatarPlatform,
   parseProfile,
   PROFILE_PREFIX,
   readProfile,
   writeProfile,
 } from '@codeimage/store/frame/signature';
-import {TextField} from '@codeui/kit';
+import {Select, TextField} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {JSX} from 'solid-js';
 import {createSignal, Show} from 'solid-js';
@@ -214,17 +217,14 @@ export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
   );
 }
 
-/**
- * Where the profile avatar comes from, for a handle that is not the right
- * account. The prefix shows the platform; a pasted link names its own.
- */
+/** The avatar source, independent of the displayed icon and handle. */
 export function SignatureProfileField(props: {id?: string}) {
   const [t] = useI18n<AppLocaleEntries>();
   const frame = getFrameState();
   const signature = () => frame.store.signature;
   const stored = () => readProfile(signature()?.profile ?? null);
   const platform = (): SignaturePlatform =>
-    stored()?.platform ?? signature()?.platform ?? 'github';
+    stored()?.platform ?? defaultAvatarPlatform(signature()?.platform ?? null);
   const unavailable = () => {
     const current = signature();
     return !!current && !avatarSource(current);
@@ -234,15 +234,35 @@ export function SignatureProfileField(props: {id?: string}) {
   const write = (value: string) => {
     const current = signature();
     if (!current) return;
-    frame.setSignature({...current, profile: writeProfile(value, platform())});
+    frame.setSignature({
+      ...current,
+      profile: writeProfile(value, platform()) ?? PROFILE_PREFIX[platform()],
+    });
+  };
+  const changeSource = (value: SignaturePlatform | null) => {
+    const current = signature();
+    const source = AVATAR_PLATFORMS.find(platform => platform === value);
+    if (!current || !source || source === platform()) return;
+    frame.setSignature({
+      ...current,
+      profile: changeProfileSource(current.profile, source),
+    });
   };
 
   return (
     <div class={styles.profile}>
       <div class={styles.prefixed}>
-        <span class={styles.prefix} aria-hidden="true">
-          {PROFILE_PREFIX[platform()]}
-        </span>
+        <Select<SignaturePlatform>
+          size="sm"
+          aria-label={t('signature.profileSource')}
+          options={[...AVATAR_PLATFORMS]}
+          value={platform()}
+          onChange={changeSource}
+          itemLabel={source => PLATFORM_NAMES[source]}
+          valueComponent={() => PROFILE_PREFIX[platform()]}
+          disallowEmptySelection
+          slotClasses={{root: styles.prefix}}
+        />
         <TextField
           id={props.id}
           size="sm"

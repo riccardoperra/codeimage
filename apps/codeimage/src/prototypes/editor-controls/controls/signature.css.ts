@@ -53,7 +53,7 @@ export const avatarImage = style({
   objectFit: 'cover',
 });
 
-// Profile: the platform's prefix sits inside the field, before the account.
+// The source selector and account share one field background.
 
 export const profile = style({
   display: 'flex',
@@ -80,11 +80,19 @@ export const prefix = style({
   alignItems: 'center',
   gap: '5px',
   flexShrink: 0,
-  paddingLeft: '10px',
   fontSize: themeVars.fontSize.sm,
   color: c.descriptionTextColor,
   whiteSpace: 'nowrap',
   userSelect: 'none',
+});
+
+globalStyle(`${prefix} button`, {
+  width: 'auto',
+  padding: '0 4px 0 8px',
+  gap: '2px',
+  background: 'transparent',
+  boxShadow: 'none',
+  color: c.descriptionTextColor,
 });
 
 export const prefixedRoot = style({flex: 1, minWidth: 0});

@@ -2,6 +2,8 @@ import {describe, expect, it} from 'vitest';
 import {createSignature, parseSignature} from './model';
 import {
   avatarSource,
+  changeProfileSource,
+  defaultAvatarPlatform,
   displayHandle,
   githubLogin,
   initials,
@@ -107,6 +109,44 @@ describe('avatar helpers', () => {
 });
 
 describe('profile field', () => {
+  it.each(['github', 'bluesky', 'mastodon'] as const)(
+    'defaults to the %s icon when it supports avatars',
+    platform => expect(defaultAvatarPlatform(platform)).toBe(platform),
+  );
+
+  it.each(['x', 'linkedin', null] as const)(
+    'defaults to GitHub for the %s icon',
+    platform => expect(defaultAvatarPlatform(platform)).toBe('github'),
+  );
+
+  it('keeps the account text when changing sources without detecting it again', () => {
+    const profile = changeProfileSource('x.com/octocat', 'github');
+    expect(profile).toBe('github.com/octocat');
+    expect(avatarSource({handle: 'other', platform: 'x', profile})).toEqual({
+      provider: 'github',
+      login: 'octocat',
+    });
+    expect(changeProfileSource('@ada@hachyderm.io', 'bluesky')).toBe(
+      'bsky.app/profile/ada@hachyderm.io',
+    );
+    expect(changeProfileSource('linkedin.com/in/ada', 'github')).toBe(
+      'github.com/ada',
+    );
+  });
+
+  it('keeps an empty source selection and uses the signature handle', () => {
+    const profile = changeProfileSource(null, 'bluesky');
+    expect(readProfile(profile)).toEqual({platform: 'bluesky', account: ''});
+    expect(avatarSource({handle: 'ada.dev', platform: 'x', profile})).toEqual({
+      provider: 'bluesky',
+      actor: 'ada.dev',
+    });
+    expect(readProfile(changeProfileSource(null, 'mastodon'))).toEqual({
+      platform: 'mastodon',
+      account: '',
+    });
+  });
+
   it('stores the account behind the platform prefix', () => {
     expect(writeProfile('octocat', 'github')).toBe('github.com/octocat');
     expect(writeProfile('ada.bsky.social', 'bluesky')).toBe(
@@ -126,6 +166,15 @@ describe('profile field', () => {
     expect(writeProfile('https://bsky.app/profile/ada.dev', 'github')).toBe(
       'bsky.app/profile/ada.dev',
     );
+    expect(writeProfile('https://mastodon.social/@ada', 'github')).toBe(
+      '@ada@mastodon.social',
+    );
+    for (const link of ['https://x.com/ada', 'https://linkedin.com/in/ada']) {
+      const profile = writeProfile(link, 'github');
+      expect(
+        avatarSource({handle: 'ada', platform: 'github', profile}),
+      ).toBeNull();
+    }
   });
 
   it('reads back the platform and the account', () => {
@@ -161,9 +210,23 @@ describe('avatarSource', () => {
     ).toEqual({provider: 'mastodon', user: 'ada', instance: 'hachyderm.io'});
   });
 
-  it('gives no avatar for X and LinkedIn, which have no public one', () => {
-    expect(avatarSource({...base, platform: 'x'})).toBeNull();
-    expect(avatarSource({...base, platform: 'linkedin'})).toBeNull();
+  it('uses GitHub when the icon has no public avatar', () => {
+    expect(avatarSource({...base, platform: 'x'})).toEqual({
+      provider: 'github',
+      login: 'octocat',
+    });
+    expect(avatarSource({...base, platform: 'linkedin'})).toEqual({
+      provider: 'github',
+      login: 'octocat',
+    });
+  });
+
+  it('updates the avatar for a new account on the chosen source', () => {
+    const profile = writeProfile('monalisa', 'github');
+    expect(avatarSource({...base, platform: 'x', profile})).toEqual({
+      provider: 'github',
+      login: 'monalisa',
+    });
   });
 
   it('prefers the profile over the handle', () => {

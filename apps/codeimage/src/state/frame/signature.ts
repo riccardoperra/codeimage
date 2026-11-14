@@ -1,4 +1,14 @@
 import type {FrameSignature, SignaturePlatform} from './model';
+import {SIGNATURE_PLATFORMS} from './model';
+
+export const AVATAR_PLATFORMS = ['github', 'bluesky', 'mastodon'] as const;
+export type AvatarPlatform = (typeof AVATAR_PLATFORMS)[number];
+
+export function defaultAvatarPlatform(
+  platform: SignaturePlatform | null,
+): AvatarPlatform {
+  return AVATAR_PLATFORMS.find(source => source === platform) ?? 'github';
+}
 
 /** The handle as the frame shows it: `@` in front, except where a platform writes it otherwise. */
 export function displayHandle(
@@ -101,11 +111,23 @@ export function profileString(profile: ProfileMatch): string {
 export function readProfile(
   profile: string | null,
 ): {platform: SignaturePlatform; account: string} | null {
+  // Keep an explicitly chosen source while its account is empty.
+  const empty = SIGNATURE_PLATFORMS.find(
+    platform => profile === PROFILE_PREFIX[platform],
+  );
+  if (empty) return {platform: empty, account: ''};
   const match = profile ? parseProfile(profile) : null;
   if (!match) return null;
   const prefix = PROFILE_PREFIX[match.platform];
   const stored = profileString(match);
   return {platform: match.platform, account: stored.slice(prefix.length)};
+}
+
+export function changeProfileSource(
+  profile: string | null,
+  platform: AvatarPlatform,
+): string {
+  return `${PROFILE_PREFIX[platform]}${readProfile(profile)?.account ?? ''}`;
 }
 
 /**
@@ -140,17 +162,16 @@ export type AvatarSource =
 
 /**
  * Where the `profile` avatar comes from: the profile when one is set, else
- * the handle on its platform, and GitHub for a handle without a platform.
- * X and LinkedIn have no public, keyless avatar, so they give none.
+ * the handle on an avatar-capable platform, falling back to GitHub.
+ * Explicit X and LinkedIn links have no public, keyless avatar.
  */
 export function avatarSource(
   signature: Pick<FrameSignature, 'handle' | 'platform' | 'profile'>,
 ): AvatarSource | null {
-  const fromProfile = signature.profile
-    ? parseProfile(signature.profile)
-    : null;
-  const handle = fromProfile?.handle ?? signature.handle.trim();
-  const platform = fromProfile?.platform ?? signature.platform ?? 'github';
+  const fromProfile = readProfile(signature.profile);
+  const handle = fromProfile?.account || signature.handle.trim();
+  const platform =
+    fromProfile?.platform ?? defaultAvatarPlatform(signature.platform);
   switch (platform) {
     case 'github': {
       const login = githubLogin(handle);
