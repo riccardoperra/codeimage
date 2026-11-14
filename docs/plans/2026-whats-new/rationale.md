@@ -50,7 +50,7 @@ Two candidates, one on Opus and one on Fable. No cross-judge ran, because no mod
 
 ## Tradeoffs accepted
 
-- We accept that an ignored, undismissed Nudge returns on the next visit, in exchange for never losing an announcement to a reload. Expiry caps it at 45 days.
+- We accept that an ignored, undismissed Nudge returns on the next visit, in exchange for never losing an announcement to a reload. Expiry caps it at 45 days. The store reads the clock again on focus, alongside its fact reload, so tags, dots, and waiting announcements expire during long visits without a timer.
 - We accept per-device state, in exchange for no server sync.
 - We accept that "Show me" only reveals the place and does not turn the feature on, in exchange for a core with no dependency on editor stores.
 - We accept that two tabs opened together both show the Nudge, in exchange for no cross-tab channel. A dismissal reaches the other tab on its next focus and closes an already shown announcement without another write or dismissal event.

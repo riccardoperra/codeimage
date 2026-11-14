@@ -58,8 +58,9 @@ function track(
 
 export function createWhatsNew(
   storage: Storage = idb,
-  now = Date.now(),
+  clock = Date.now,
 ): WhatsNew {
+  const [now, setNow] = createSignal(clock());
   const [facts, setFacts] = createSignal<Facts>(NO_FACTS);
   const [loaded, setLoaded] = createSignal(false);
   const [announcement, setAnnouncement] = createSignal<Announcement>(null);
@@ -67,7 +68,7 @@ export function createWhatsNew(
     ReadonlyMap<Where, () => void>
   >(new Map());
   const decision = createMemo(() =>
-    decide(loaded() ? RELEASES : [], facts(), now),
+    decide(loaded() ? RELEASES : [], facts(), now()),
   );
   const pending = createMemo(() => decision().announcement, null, {
     equals: (a, b) => a?.release.id === b?.release.id,
@@ -82,6 +83,7 @@ export function createWhatsNew(
   const attempt = <T>(work: () => Promise<T>) => Promise.resolve().then(work);
 
   async function load() {
+    setNow(clock());
     try {
       const raw = await attempt(() => storage.get('whats-new'));
       setFacts(current => mergeFacts(current, parseFacts(raw)));

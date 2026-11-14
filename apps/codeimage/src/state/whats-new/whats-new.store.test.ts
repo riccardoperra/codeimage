@@ -26,7 +26,7 @@ function database() {
 const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 const boot = (db: ReturnType<typeof database>) =>
   createRoot(dispose => ({
-    store: createWhatsNew(db, Date.parse('2026-11-14')),
+    store: createWhatsNew(db, () => Date.parse('2026-11-14')),
     dispose,
   }));
 
@@ -34,7 +34,7 @@ describe('release discovery across visits', () => {
   it('waits for a quiet editor and keeps a shown announcement until dismissal', async () => {
     const db = database();
     const app = createRoot(dispose => {
-      const store = createWhatsNew(db, Date.parse('2026-11-14'));
+      const store = createWhatsNew(db, () => Date.parse('2026-11-14'));
       const [quiet, setQuiet] = createSignal(false);
       return {
         store,
@@ -52,7 +52,7 @@ describe('release discovery across visits', () => {
     app.store.dismiss();
     await settle();
     const next = createRoot(dispose => {
-      const store = createWhatsNew(db, Date.parse('2026-11-14'));
+      const store = createWhatsNew(db, () => Date.parse('2026-11-14'));
       return {announcement: store.announce(() => () => true), dispose};
     });
     await settle();
@@ -72,7 +72,7 @@ describe('release discovery across visits', () => {
       return quiet;
     };
     const first = createRoot(dispose => {
-      const store = createWhatsNew(db, Date.parse('2026-11-14'));
+      const store = createWhatsNew(db, () => Date.parse('2026-11-14'));
       return {announcement: store.announce(watch), store, dispose};
     });
     await settle();
@@ -83,7 +83,7 @@ describe('release discovery across visits', () => {
     first.store.dismiss();
     await settle();
     const returning = createRoot(dispose => {
-      createWhatsNew(db, Date.parse('2026-11-14')).announce(watch);
+      createWhatsNew(db, () => Date.parse('2026-11-14')).announce(watch);
       return dispose;
     });
     await settle();
@@ -120,7 +120,7 @@ describe('release discovery across visits', () => {
     Object.assign(window, {umami: {track}});
     const visit = () =>
       createRoot(dispose => {
-        const store = createWhatsNew(db, Date.parse('2026-11-14'));
+        const store = createWhatsNew(db, () => Date.parse('2026-11-14'));
         return {store, announcement: store.announce(() => () => true), dispose};
       });
     const a = visit();
@@ -147,6 +147,36 @@ describe('release discovery across visits', () => {
     }
   });
 
+  it('expires tags, dots and a waiting announcement on focus during a long visit', async () => {
+    const now = vi.spyOn(Date, 'now');
+    now.mockReturnValue(Date.parse('2026-12-28T23:59:59Z'));
+    const app = createRoot(dispose => {
+      const store = createWhatsNew(database());
+      const [quiet, setQuiet] = createSignal(false);
+      return {
+        store,
+        setQuiet,
+        announcement: store.announce(() => quiet),
+        dispose,
+      };
+    });
+    try {
+      await settle();
+      expect(app.store.isNew('tabs')).toBe(true);
+      expect(app.store.hasDot('tabs')).toBe(true);
+      now.mockReturnValue(Date.parse('2026-12-29T00:00:00Z'));
+      window.dispatchEvent(new Event('focus'));
+      await settle();
+      expect(app.store.isNew('tabs')).toBe(false);
+      expect(app.store.hasDot('tabs')).toBe(false);
+      app.setQuiet(true);
+      expect(app.announcement()).toBeNull();
+    } finally {
+      app.dispose();
+      now.mockRestore();
+    }
+  });
+
   it('keeps working when the browser refuses storage', async () => {
     const refusing = {
       get: () => {
@@ -160,7 +190,7 @@ describe('release discovery across visits', () => {
       },
     };
     const app = createRoot(dispose => {
-      const store = createWhatsNew(refusing, Date.parse('2026-11-14'));
+      const store = createWhatsNew(refusing, () => Date.parse('2026-11-14'));
       return {store, announcement: store.announce(() => () => true), dispose};
     });
     await settle();
