@@ -8,7 +8,11 @@ import type {
 export interface ProjectRepository {
   findById(id: string): Promise<ProjectGetByIdResponse | null>;
 
-  updateProjectName(projectId: string, newName: string): Promise<Project>;
+  updateProjectName(
+    userId: string,
+    projectId: string,
+    newName: string,
+  ): Promise<Project | null>;
 
   createNewProject(
     userId: string,
@@ -19,7 +23,7 @@ export interface ProjectRepository {
     userId: string,
     projectId: string,
     data: DomainModel.ProjectUpdateRequest,
-  ): Promise<DomainModel.ProjectUpdateResponse>;
+  ): Promise<DomainModel.ProjectUpdateResponse | null>;
 
   deleteProject(id: string, userId: string): Promise<Project>;
 

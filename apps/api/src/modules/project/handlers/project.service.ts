@@ -75,11 +75,23 @@ export function makeProjectService(
         createProjectRequestMapper(data),
       );
     },
-    updateName(userId: string, projectId: string, newName: string) {
-      return repository.updateProjectName(projectId, newName);
+    async updateName(userId: string, projectId: string, newName: string) {
+      const project = await repository.updateProjectName(
+        userId,
+        projectId,
+        newName,
+      );
+      if (!project) {
+        throw httpErrors.notFound(`Project with id ${projectId} not found`);
+      }
+      return project;
     },
-    update(userId, projectId, data) {
-      return repository.updateProject(userId, projectId, data);
+    async update(userId, projectId, data) {
+      const project = await repository.updateProject(userId, projectId, data);
+      if (!project) {
+        throw httpErrors.notFound(`Project with id ${projectId} not found`);
+      }
+      return project;
     },
     async clone(
       user: User,
