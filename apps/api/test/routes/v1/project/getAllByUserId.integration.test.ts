@@ -35,4 +35,7 @@ test<TestContext>('/v1/project -> 200', async t => {
   assert.ok(body.find(el => el.id === t.project1.id));
   assert.equal(body[0].ownerId, userId);
   assert.equal(response.statusCode, 200);
+  assert.equal(body[0].frameId, t.project1.frameId);
+  assert.equal(body[0].terminalId, t.project1.terminalId);
+  assert.equal(body[0].editorOptionsId, t.project1.editorOptionsId);
 });

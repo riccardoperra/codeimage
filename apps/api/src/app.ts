@@ -1,6 +1,5 @@
 import type {AutoloadPluginOptions} from '@fastify/autoload';
 import AutoLoad from '@fastify/autoload';
-import fp from 'fastify-plugin';
 import identity from './modules/identity/index.js';
 import project from './modules/project/index.js';
 import preset from './modules/preset/index.js';
@@ -43,8 +42,8 @@ const app: FastifyPluginAsync<AppOptions> = async (
   });
 
   await fastify.register(identity);
-  await fastify.register(fp(project));
-  await fastify.register(fp(preset));
+  await fastify.register(project);
+  await fastify.register(preset);
   await fastify.register(appApi);
 };
 export default app;
