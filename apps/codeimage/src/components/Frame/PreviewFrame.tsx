@@ -1,5 +1,5 @@
 import {FittedWindow} from './FittedWindow';
-import {FrameSignature, framePadding} from './FrameSignature';
+import {FrameSignature, framePadding, signatureScale} from './FrameSignature';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -49,6 +49,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   let ref!: HTMLDivElement;
   const frame = getFrameState().store;
   const target = () => getFrameState().exportTarget();
+  const scale = () => signatureScale(target()?.resolution[0] ?? frame.width);
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
@@ -113,6 +114,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
             [styles.frameVars.padding]: framePadding(
               frame.padding,
               frame.signature,
+              scale(),
             ),
           })}
         >
@@ -188,6 +190,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
           <FrameSignature
             signature={frame.signature}
             background={frame.background}
+            scale={scale()}
           />
         </div>
       </div>

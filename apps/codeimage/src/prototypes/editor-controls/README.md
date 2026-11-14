@@ -150,20 +150,33 @@ The old menu at the top left of the header is gone. Its entries moved:
 
 The model's `signature` section edits the frame's signature, the handle drawn in a bottom corner of the frame and of the exported image. The frame draws it with `components/Frame/FrameSignature.tsx`, a production component, so `/classic` and the downloads show the same thing.
 
-| Row      | Control                                                              | Shown         |
-| -------- | -------------------------------------------------------------------- | ------------- |
-| Handle   | Text field. Empty means no signature                                 | always        |
-| Style    | Three tiles, Minimal, Pill and Card, drawn on the frame's background | with a handle |
-| Icon     | No icon, X, Bluesky, GitHub, Mastodon, LinkedIn, as icons            | with a handle |
-| Name     | Text field, the card's bold line                                     | Card          |
-| Avatar   | Initials, GitHub (the handle's avatar), or an uploaded image         | Card          |
-| Position | Bottom left, centre or right, drawn as small frames                  | with a handle |
+| Row      | Control                                                                          | Shown                |
+| -------- | -------------------------------------------------------------------------------- | -------------------- |
+| Saved    | The user's saved signatures, as a menu (see below)                               | always               |
+| Handle   | Text field. Empty means no signature                                             | always               |
+| Style    | Minimal, Pill and Card, as small drawings in a segmented control                 | with a handle        |
+| Icon     | No icon, X, Bluesky, GitHub, Mastodon, LinkedIn, as icons                        | with a handle        |
+| Name     | Text field, the card's bold line                                                 | Card                 |
+| Avatar   | Initials, Profile (a public avatar) or an uploaded image                         | Card                 |
+| Profile  | Where the Profile avatar comes from, with the platform's prefix inside the field | Card, Profile avatar |
+| Position | Bottom left, centre or right, drawn as small frames                              | with a handle        |
+
+Every row keeps its control in the value column, so the controls line up.
 
 - Pasting a profile link into Handle, such as `https://x.com/octocat` or `https://bsky.app/profile/ada.bsky.social`, keeps the handle and picks the icon. Typing is never rewritten.
 - Clearing the handle hides the signature. Typing a handle again in the same session brings back its style, icon, name and avatar.
-- The ink is white on dark and mid-tone fills and dark on light ones. An uploaded background image is sampled at its bottom third.
+- The ink is white on dark and mid-tone fills and dark on light ones. An uploaded background image is sampled at its bottom third, and over an image Pill and Card get a denser scrim.
+- The signature grows with the frame: its sizes are set for a 640px frame and scale by the frame width, between 0.85 and 2 (`components/Frame/signatureLayout.ts`). The space kept free under the code window scales with it.
+- The Profile avatar comes from the profile field, or else from the handle on its platform, and from GitHub for a handle without a platform. GitHub, Bluesky and Mastodon have public avatars that need no key; X and LinkedIn do not, so they show initials. The avatar is fetched once, shrunk to 192px and kept as a data URL, so the download never depends on the avatar host (`state/frame/avatar.ts`). Any failure shows initials.
 - An uploaded avatar is cropped to a square of at most 256px and kept as an asset, like an uploaded background.
 - Style, Icon and Position are choices, so the command menu lists them and previews them. Inspector shows the section with `@handle · Style` as its summary, Dock as a group of More, Studio inside its Frame panel.
+- Clicking the signature on the canvas, or focusing it and pressing Enter, opens the section in the layout on screen: Inspector expands it, Dock opens More at Signature, Studio opens Frame at its Signature group. Each focuses Handle. Layouts register with `signatureEditor` (`state/frame/signatureEditor.ts`); without one, as on `/classic`, the signature is not a button. The export draws its own copy of the frame, which never has the button.
+
+### Saved signatures
+
+A user keeps up to three signatures (`VITE_SIGNATURE_LIMIT`, and `SIGNATURES_LIMIT` in the API). A signed-in user's live in the API (`/api/v1/signature`), a guest's in IndexedDB, as presets do (`state/signatures/`). The Saved menu applies one to the snippet, and for the one the snippet came from offers Update (when the snippet's copy differs), Rename, Set as default and Delete. Save as new and Rename name the signature in the row itself. At three, Save as new is disabled with a hint.
+
+A snippet stores its own copy of the signature and the id of the saved one (`savedId`), so editing or deleting a saved signature never changes a snippet or a shared link. The default applies to a new local document and to a project created from the dashboard.
 
 ## Shared controls
 

@@ -29,10 +29,12 @@ import {provideState} from 'statebuilder';
 import {FontPicker} from '../../components/PropertyEditor/controls/FontPicker/FontPicker';
 import {ImagePicker} from '../../components/PropertyEditor/controls/ImagePicker/ImagePicker';
 import {TerminalControlField} from '../../components/PropertyEditor/controls/TerminalControlField/TerminalControlField';
+import {SavedSignaturesField} from './controls/SavedSignatures';
 import {
   SignatureAvatarField,
   SignatureHandleField,
   SignatureNameField,
+  SignatureProfileField,
 } from './controls/SignatureFields';
 import type {AppLocaleEntries} from '../../i18n';
 import type {PreviewSession} from './preview';
@@ -50,11 +52,13 @@ export type ControlId =
   | 'frame.background'
   | 'frame.backgroundImage'
   | 'frame.aspectRatio'
+  | 'signature.saved'
   | 'signature.handle'
   | 'signature.style'
   | 'signature.platform'
   | 'signature.name'
   | 'signature.avatar'
+  | 'signature.profile'
   | 'signature.position'
   | 'window.backgroundType'
   | 'window.header'
@@ -421,6 +425,13 @@ export function createEditorControlsModel(): EditorControlsModel {
       controls: [
         {
           kind: 'custom',
+          id: 'signature.saved',
+          label: () => t('savedSignatures.saved'),
+          visible: always,
+          Control: SavedSignaturesField,
+        },
+        {
+          kind: 'custom',
           id: 'signature.handle',
           label: () => t('signature.handle'),
           visible: always,
@@ -466,6 +477,13 @@ export function createEditorControlsModel(): EditorControlsModel {
           label: () => t('signature.avatar'),
           visible: isCard,
           Control: SignatureAvatarField,
+        },
+        {
+          kind: 'custom',
+          id: 'signature.profile',
+          label: () => t('signature.profile'),
+          visible: () => isCard() && signature()?.avatar === 'profile',
+          Control: SignatureProfileField,
         },
         choice<'segmented', SignaturePosition>('segmented', {
           id: 'signature.position',

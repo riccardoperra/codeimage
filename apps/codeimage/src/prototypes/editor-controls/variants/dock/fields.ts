@@ -40,11 +40,13 @@ export const PLACES: Record<ControlId, Place> = {
   'frame.radius': inGroup('frame'),
   'frame.aspectRatio': inGroup('frame'),
 
+  'signature.saved': inGroup('signature'),
   'signature.handle': inGroup('signature'),
   'signature.style': inGroup('signature'),
   'signature.platform': inGroup('signature'),
   'signature.name': inGroup('signature'),
   'signature.avatar': inGroup('signature'),
+  'signature.profile': inGroup('signature'),
   'signature.position': inGroup('signature'),
 
   'window.header': inGroup('window'),

@@ -26,7 +26,7 @@ export function initials(signature: Pick<FrameSignature, 'handle' | 'name'>) {
   return letters.map(word => Array.from(word)[0]?.toUpperCase() ?? '').join('');
 }
 
-interface ProfileMatch {
+export interface ProfileMatch {
   readonly handle: string;
   readonly platform: SignaturePlatform;
 }
@@ -72,4 +72,107 @@ export function parseProfile(input: string): ProfileMatch | null {
   return first.startsWith('@') && first.length > 1
     ? {handle: `${first}@${host}`, platform: 'mastodon'}
     : null;
+}
+
+/** What the profile field shows before the account, for each platform. */
+export const PROFILE_PREFIX: Record<SignaturePlatform, string> = {
+  x: 'x.com/',
+  bluesky: 'bsky.app/profile/',
+  github: 'github.com/',
+  mastodon: '@',
+  linkedin: 'linkedin.com/in/',
+};
+
+/** The stored form of a profile: the prefix, then the account. */
+export function profileString(profile: ProfileMatch): string {
+  switch (profile.platform) {
+    case 'mastodon':
+      return profile.handle.startsWith('@')
+        ? profile.handle
+        : `@${profile.handle}`;
+    case 'linkedin':
+      return `linkedin.com/${profile.handle}`;
+    default:
+      return `${PROFILE_PREFIX[profile.platform]}${profile.handle}`;
+  }
+}
+
+/** The platform and the account part of a stored profile, for the field. */
+export function readProfile(
+  profile: string | null,
+): {platform: SignaturePlatform; account: string} | null {
+  const match = profile ? parseProfile(profile) : null;
+  if (!match) return null;
+  const prefix = PROFILE_PREFIX[match.platform];
+  const stored = profileString(match);
+  return {platform: match.platform, account: stored.slice(prefix.length)};
+}
+
+/**
+ * Turns what the profile field holds into the stored profile. A pasted link
+ * or a fediverse address names its own platform; anything else is the
+ * account on the platform the field shows.
+ */
+export function writeProfile(
+  value: string,
+  platform: SignaturePlatform,
+): string | null {
+  const input = value.trim();
+  if (!input) return null;
+  const pasted = /[/@]/.test(input.replace(/^@/, ''))
+    ? parseProfile(input)
+    : null;
+  if (pasted) return profileString(pasted);
+  const account = input.replace(/^@/, '');
+  if (platform === 'mastodon') return `@${account}`;
+  if (platform === 'linkedin') return `linkedin.com/in/${account}`;
+  return `${PROFILE_PREFIX[platform]}${account}`;
+}
+
+export type AvatarSource =
+  | {readonly provider: 'github'; readonly login: string}
+  | {readonly provider: 'bluesky'; readonly actor: string}
+  | {
+      readonly provider: 'mastodon';
+      readonly user: string;
+      readonly instance: string;
+    };
+
+/**
+ * Where the `profile` avatar comes from: the profile when one is set, else
+ * the handle on its platform, and GitHub for a handle without a platform.
+ * X and LinkedIn have no public, keyless avatar, so they give none.
+ */
+export function avatarSource(
+  signature: Pick<FrameSignature, 'handle' | 'platform' | 'profile'>,
+): AvatarSource | null {
+  const fromProfile = signature.profile
+    ? parseProfile(signature.profile)
+    : null;
+  const handle = fromProfile?.handle ?? signature.handle.trim();
+  const platform = fromProfile?.platform ?? signature.platform ?? 'github';
+  switch (platform) {
+    case 'github': {
+      const login = githubLogin(handle);
+      return login ? {provider: 'github', login} : null;
+    }
+    case 'bluesky': {
+      const actor = handle.replace(/^@/, '').toLowerCase();
+      return /^(?:did:[a-z]+:[\w.:%-]+|[a-z\d-]+(?:\.[a-z\d-]+)+)$/.test(actor)
+        ? {provider: 'bluesky', actor}
+        : null;
+    }
+    case 'mastodon': {
+      const match = handle.match(/^@?([\w.-]+)@([a-z\d-]+(?:\.[a-z\d-]+)+)$/i);
+      return match
+        ? {
+            provider: 'mastodon',
+            user: match[1],
+            instance: match[2].toLowerCase(),
+          }
+        : null;
+    }
+    default:
+      return null;
+  }
 }

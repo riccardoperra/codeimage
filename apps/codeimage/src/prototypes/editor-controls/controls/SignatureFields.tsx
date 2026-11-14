@@ -8,22 +8,25 @@ import type {
   SignaturePosition,
 } from '@codeimage/store/frame/model';
 import {createSignature} from '@codeimage/store/frame/model';
-import {parseProfile} from '@codeimage/store/frame/signature';
-import {TextField} from '@codeui/kit';
-import {RadioGroup} from '@kobalte/core/radio-group';
-import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
-import {createSignal, For, Show} from 'solid-js';
 import {
-  PlatformIcon,
-  SignatureSwatch,
-} from '../../../components/Frame/FrameSignature';
+  avatarSource,
+  parseProfile,
+  PROFILE_PREFIX,
+  readProfile,
+  writeProfile,
+} from '@codeimage/store/frame/signature';
+import {TextField} from '@codeui/kit';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
+import type {JSX} from 'solid-js';
+import {createSignal, Show} from 'solid-js';
+import {PlatformIcon} from '../../../components/Frame/FrameSignature';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {SegmentedControl} from '../model';
 import * as controls from './controls.css';
 import type {FieldSize} from './fields';
 import * as styles from './signature.css';
 
-const PLATFORM_NAMES: Record<SignaturePlatform, string> = {
+export const PLATFORM_NAMES: Record<SignaturePlatform, string> = {
   x: 'X',
   bluesky: 'Bluesky',
   github: 'GitHub',
@@ -130,7 +133,7 @@ async function squareAvatar(file: File): Promise<File> {
   return new File([blob], 'avatar', {type: blob.type});
 }
 
-type AvatarChoice = 'initials' | 'github' | 'upload';
+type AvatarChoice = 'initials' | 'profile' | 'upload';
 
 export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
   const [t] = useI18n<AppLocaleEntries>();
@@ -145,7 +148,7 @@ export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
     return value && isAssetUrl(value) ? value : null;
   };
   const choice = (): AvatarChoice =>
-    avatar() === 'github' ? 'github' : asset() ? 'upload' : 'initials';
+    avatar() === 'profile' ? 'profile' : asset() ? 'upload' : 'initials';
   const setAvatar = (value: FrameSignature['avatar']) => {
     const current = frame.store.signature;
     if (current) frame.setSignature({...current, avatar: value});
@@ -161,7 +164,10 @@ export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
 
   return (
     <div class={styles.avatarRow}>
-      <div class={`${controls.segmented} ${styles.avatarChoice}`}>
+      <div
+        class={`${controls.segmented} ${styles.avatarChoice}`}
+        data-size={props.size ?? 'sm'}
+      >
         <SegmentedField<AvatarChoice>
           adapt
           id={props.id}
@@ -169,14 +175,14 @@ export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
           value={choice()}
           onChange={next => {
             if (next === 'initials') return setAvatar(null);
-            if (next === 'github') return setAvatar('github');
+            if (next === 'profile') return setAvatar('profile');
             const previous = uploaded() ?? asset();
             if (previous && assets.getAsset(previous)()) setAvatar(previous);
             else input.click();
           }}
           items={[
             {label: t('signature.initials'), value: 'initials'},
-            {label: t('signature.github'), value: 'github'},
+            {label: t('signature.profileAvatar'), value: 'profile'},
             {label: t('signature.upload'), value: 'upload'},
           ]}
         />
@@ -208,58 +214,168 @@ export function SignatureAvatarField(props: {id?: string; size?: FieldSize}) {
   );
 }
 
-/** Every style drawn on a small copy of the frame, in place of a word for each. */
-export function SignatureStyleTiles(props: {control: SegmentedControl}) {
+/**
+ * Where the profile avatar comes from, for a handle that is not the right
+ * account. The prefix shows the platform; a pasted link names its own.
+ */
+export function SignatureProfileField(props: {id?: string}) {
+  const [t] = useI18n<AppLocaleEntries>();
   const frame = getFrameState();
-  const assets = getAssetsStore();
-  const background = () => frame.store.background;
-  const swatchBackground = () => {
-    const value = background();
-    if (!value) return 'transparent';
-    if (!isAssetUrl(value)) return value;
-    const url = assets.getAsset(value)()?.url;
-    return url ? `center / cover url("${url}")` : 'transparent';
+  const signature = () => frame.store.signature;
+  const stored = () => readProfile(signature()?.profile ?? null);
+  const platform = (): SignaturePlatform =>
+    stored()?.platform ?? signature()?.platform ?? 'github';
+  const unavailable = () => {
+    const current = signature();
+    return !!current && !avatarSource(current);
+  };
+  const hintId = () => `${props.id ?? 'signature-profile'}-hint`;
+
+  const write = (value: string) => {
+    const current = signature();
+    if (!current) return;
+    frame.setSignature({...current, profile: writeProfile(value, platform())});
   };
 
   return (
-    <Show when={frame.store.signature}>
-      {signature => (
-        <RadioGroup
-          class={styles.tiles}
-          aria-label={props.control.label()}
-          value={props.control.value()}
-          onChange={props.control.set}
-        >
-          <For each={props.control.options()}>
-            {option => (
-              <RadioGroup.Item value={option.key} class={styles.tile}>
-                <RadioGroup.ItemInput />
-                <RadioGroup.ItemLabel class={styles.tileLabel}>
-                  <span class={controls.visuallyHidden}>{option.label}</span>
-                </RadioGroup.ItemLabel>
-                <div
-                  class={styles.swatch}
-                  style={{background: swatchBackground()}}
-                  aria-hidden="true"
-                >
-                  <SignatureSwatch
-                    class={styles.swatchMark}
-                    signature={{
-                      ...signature(),
-                      style: option.key as FrameSignature['style'],
-                    }}
-                    background={background()}
-                  />
-                </div>
-                <span class={styles.tileCaption} aria-hidden="true">
-                  {option.label}
-                </span>
-              </RadioGroup.Item>
-            )}
-          </For>
-        </RadioGroup>
-      )}
-    </Show>
+    <div class={styles.profile}>
+      <div class={styles.prefixed}>
+        <span class={styles.prefix} aria-hidden="true">
+          {PROFILE_PREFIX[platform()]}
+        </span>
+        <TextField
+          id={props.id}
+          size="sm"
+          aria-describedby={hintId()}
+          placeholder={t('signature.profilePlaceholder')}
+          value={stored()?.account ?? ''}
+          onChange={write}
+          slotClasses={{root: styles.prefixedRoot, input: styles.prefixedInput}}
+        />
+      </div>
+      <span
+        id={hintId()}
+        class={styles.hint}
+        data-tone={unavailable() ? 'warning' : undefined}
+      >
+        {unavailable()
+          ? t('signature.noPublicAvatar', {
+              platform: PLATFORM_NAMES[platform()],
+            })
+          : t('signature.profileHint')}
+      </span>
+    </div>
+  );
+}
+
+// Functions, since a Solid element is one DOM node and each option needs its own.
+const STYLE_GLYPHS: Record<FrameSignature['style'], () => JSX.Element> = {
+  minimal: () => (
+    <svg class={styles.glyph} width={22} height={17} viewBox="0 0 18 14">
+      <rect
+        x="2"
+        y="8.5"
+        width="14"
+        height="2.5"
+        rx="1.25"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  pill: () => (
+    <svg
+      class={styles.glyph}
+      width={22}
+      height={17}
+      viewBox="0 0 18 14"
+      fill="none"
+    >
+      <rect
+        x="1"
+        y="3.5"
+        width="16"
+        height="8"
+        rx="4"
+        stroke="currentColor"
+        stroke-width="1.5"
+      />
+      <rect
+        x="5"
+        y="6.75"
+        width="8"
+        height="1.5"
+        rx="0.75"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  card: () => (
+    <svg
+      class={styles.glyph}
+      width={22}
+      height={17}
+      viewBox="0 0 18 14"
+      fill="none"
+    >
+      <rect
+        x="0.75"
+        y="1.75"
+        width="16.5"
+        height="10.5"
+        rx="3"
+        stroke="currentColor"
+        stroke-width="1.5"
+      />
+      <circle cx="5.5" cy="7" r="2" fill="currentColor" />
+      <rect
+        x="9"
+        y="5.25"
+        width="5.5"
+        height="1.5"
+        rx="0.75"
+        fill="currentColor"
+      />
+      <rect
+        x="9"
+        y="7.75"
+        width="3.5"
+        height="1.5"
+        rx="0.75"
+        fill="currentColor"
+        opacity="0.6"
+      />
+    </svg>
+  ),
+};
+
+/**
+ * The style as a small drawing of each, in the value column like the icon
+ * and the position. The name is the tooltip and the accessible label, and
+ * the canvas shows the real result.
+ */
+export function SignatureStyleChoice(props: {
+  control: SegmentedControl;
+  id: string;
+  size?: FieldSize;
+}) {
+  return (
+    <div class={controls.segmented} data-size={props.size ?? 'sm'}>
+      <SegmentedField
+        adapt
+        id={props.id}
+        size={props.size ?? 'sm'}
+        value={props.control.value()}
+        onChange={props.control.set}
+        items={props.control.options().map(option => ({
+          value: option.key,
+          label: (
+            <span title={option.label} role="img" aria-label={option.label}>
+              {STYLE_GLYPHS[option.key as FrameSignature['style']]()}
+            </span>
+          ),
+        }))}
+      />
+    </div>
   );
 }
 

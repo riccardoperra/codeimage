@@ -1,36 +1,34 @@
-import {getAssetsStore} from '@codeimage/store/assets/assets';
+import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import type {
   FrameSignature as Signature,
   FrameState,
   SignaturePlatform,
-  SignatureStyle,
 } from '@codeimage/store/frame/model';
+import {avatarKey, loadAvatar} from '@codeimage/store/frame/avatar';
 import {
+  avatarSource,
   displayHandle,
-  githubLogin,
   initials,
 } from '@codeimage/store/frame/signature';
-import {createSignal, Match, Show, Switch} from 'solid-js';
+import {assignInlineVars} from '@vanilla-extract/dynamic';
+import type {ParentProps} from 'solid-js';
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  Match,
+  on,
+  onCleanup,
+  onMount,
+  Show,
+  Switch,
+  untrack,
+} from 'solid-js';
 import * as styles from './FrameSignature.css';
 import {platformIconPaths} from './platformIcons';
 import {createSignatureTone} from './signatureTone';
 
-// Height of each style plus 20px under it and 16px over it, so the code
-// window never runs under the signature.
-const RESERVED_SPACE: Record<SignatureStyle, number> = {
-  minimal: 20 + 23 + 16,
-  pill: 20 + 36 + 16,
-  card: 20 + 64 + 16,
-};
-
-export function framePadding(
-  padding: number,
-  signature: FrameState['signature'],
-) {
-  if (!signature) return `${padding}px`;
-  const bottom = Math.max(padding, RESERVED_SPACE[signature.style]);
-  return `${padding}px ${padding}px ${bottom}px`;
-}
+export {framePadding, signatureScale} from './signatureLayout';
 
 export function PlatformIcon(props: {
   platform: SignaturePlatform | null;
@@ -42,8 +40,7 @@ export function PlatformIcon(props: {
       {platform => (
         <svg
           class={props.class ?? styles.icon}
-          width={props.size}
-          height={props.size}
+          style={{width: styles.px(props.size), height: styles.px(props.size)}}
           viewBox="0 0 24 24"
           fill="currentColor"
           aria-hidden="true"
@@ -57,14 +54,26 @@ export function PlatformIcon(props: {
 
 function Avatar(props: {signature: Signature}) {
   const assets = getAssetsStore();
+  const source = () =>
+    props.signature.avatar === 'profile' ? avatarSource(props.signature) : null;
+  const key = () => {
+    const value = source();
+    return value ? avatarKey(value) : null;
+  };
+  // Keyed by the source, so typing a handle does not refetch the same
+  // avatar, and an avatar is only shown for the account it was loaded for.
+  const [profileAvatar] = createResource(key, async loading => {
+    const value = untrack(source);
+    return {key: loading, url: value ? await loadAvatar(value) : null};
+  });
   const url = () => {
     const avatar = props.signature.avatar;
     if (!avatar) return null;
-    if (avatar !== 'github') return assets.getAsset(avatar)()?.url ?? null;
-    const login = githubLogin(props.signature.handle);
-    return login
-      ? `https://avatars.githubusercontent.com/${login}?s=128`
-      : null;
+    if (avatar === 'profile') {
+      const loaded = profileAvatar.latest;
+      return loaded && loaded.key === key() ? loaded.url : null;
+    }
+    return assets.getAsset(avatar)()?.url ?? null;
   };
   const [failed, setFailed] = createSignal<string | null>(null);
   return (
@@ -80,10 +89,38 @@ function Avatar(props: {signature: Signature}) {
         class={styles.avatar}
         src={url()!}
         alt=""
-        crossOrigin="anonymous"
         onError={() => setFailed(url())}
       />
     </Show>
+  );
+}
+
+/** Text that shows an ellipsis only when it measures wider than its box. */
+function FitText(props: ParentProps<{class?: string}>) {
+  let ref!: HTMLSpanElement;
+  const [overflow, setOverflow] = createSignal(false);
+  const measure = () => setOverflow(ref.scrollWidth > ref.clientWidth + 1);
+  onMount(() => {
+    const observer = new ResizeObserver(measure);
+    observer.observe(ref);
+    if (ref.parentElement) observer.observe(ref.parentElement);
+    void document.fonts?.ready.then(measure);
+    onCleanup(() => observer.disconnect());
+  });
+  createEffect(
+    on(
+      () => props.children,
+      () => queueMicrotask(measure),
+    ),
+  );
+  return (
+    <span
+      ref={ref}
+      class={`${styles.text} ${props.class ?? ''}`}
+      data-overflow={overflow() ? '' : undefined}
+    >
+      {props.children}
+    </span>
   );
 }
 
@@ -94,8 +131,8 @@ export function SignatureMark(props: {signature: Signature}) {
     <Switch>
       <Match when={props.signature.style === 'minimal'}>
         <div class={styles.minimal}>
-          <PlatformIcon platform={props.signature.platform} size={17} />
-          <span class={styles.text}>{handle()}</span>
+          <PlatformIcon platform={props.signature.platform} size={16} />
+          <FitText>{handle()}</FitText>
         </div>
       </Match>
       <Match when={props.signature.style === 'pill'}>
@@ -103,21 +140,26 @@ export function SignatureMark(props: {signature: Signature}) {
           class={styles.pill}
           classList={{[styles.pillWithIcon]: !!props.signature.platform}}
         >
-          <PlatformIcon platform={props.signature.platform} size={16} />
-          <span class={styles.text}>{handle()}</span>
+          <PlatformIcon platform={props.signature.platform} size={14} />
+          <FitText>{handle()}</FitText>
         </div>
       </Match>
       <Match when={props.signature.style === 'card'}>
         <div class={styles.card}>
           <Avatar signature={props.signature} />
           <div class={styles.cardText}>
-            <span class={styles.cardName}>
+            <FitText class={styles.cardName}>
               {props.signature.name?.trim() ||
                 props.signature.handle.trim().replace(/^@/, '')}
-            </span>
+            </FitText>
             <span class={styles.cardHandle}>
-              <PlatformIcon platform={props.signature.platform} size={13} />
-              <span class={styles.text}>{handle()}</span>
+              {/* As tall as the handle's capitals: Inter's cap height is 0.73em of 14px. */}
+              <PlatformIcon
+                class={styles.cardIcon}
+                platform={props.signature.platform}
+                size={10.5}
+              />
+              <FitText>{handle()}</FitText>
             </span>
           </div>
         </div>
@@ -129,6 +171,11 @@ export function SignatureMark(props: {signature: Signature}) {
 export function FrameSignature(props: {
   signature: FrameState['signature'];
   background: string | null | undefined;
+  /** From `signatureScale()`. */
+  scale: number;
+  /** Makes the signature a button that opens its settings, in the editor only. */
+  onEdit?: () => void;
+  editLabel?: string;
 }) {
   const tone = createSignatureTone(() => props.background);
   return (
@@ -137,12 +184,43 @@ export function FrameSignature(props: {
         <div
           class={`${styles.slot} ${styles.align[signature().position]} ${
             styles.tone[tone()]
-          }`}
+          } ${isAssetUrl(props.background) ? styles.imageTone[tone()] : ''}`}
           data-frame-signature={signature().position}
           data-signature-style={signature().style}
           data-signature-tone={tone()}
+          style={assignInlineVars({
+            [styles.signatureScale]: String(props.scale),
+          })}
         >
-          <SignatureMark signature={signature()} />
+          <Show
+            when={props.onEdit}
+            fallback={<SignatureMark signature={signature()} />}
+          >
+            {onEdit => (
+              <button
+                type="button"
+                class={styles.edit}
+                data-signature-style={signature().style}
+                aria-label={props.editLabel}
+                title={props.editLabel}
+                // Keeps the editor's focus and selection, and starts no drag.
+                onPointerDown={event => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+                onMouseDown={event => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+                onClick={event => {
+                  event.stopPropagation();
+                  onEdit()();
+                }}
+              >
+                <SignatureMark signature={signature()} />
+              </button>
+            )}
+          </Show>
         </div>
       )}
     </Show>

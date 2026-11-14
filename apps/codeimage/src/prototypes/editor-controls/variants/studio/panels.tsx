@@ -122,11 +122,13 @@ function FramePanel(props: PanelProps) {
         <Rows
           {...props}
           ids={[
+            'signature.saved',
             'signature.handle',
             'signature.style',
             'signature.platform',
             'signature.name',
             'signature.avatar',
+            'signature.profile',
             'signature.position',
           ]}
         />

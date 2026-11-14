@@ -26,6 +26,7 @@ export function ManagedFrame() {
       aspectRatio={frame.aspectRatio}
       exportTarget={getFrameState().exportTarget()}
       signature={frame.signature}
+      measuredWidth={frame.width}
       onWidthChange={getFrameState().setWidth}
       onHeightChange={getFrameState().setHeight}
     >

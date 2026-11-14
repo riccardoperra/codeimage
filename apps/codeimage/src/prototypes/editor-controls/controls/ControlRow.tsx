@@ -21,7 +21,7 @@ import {
 import {
   SignatureIconChoice,
   SignaturePositionChoice,
-  SignatureStyleTiles,
+  SignatureStyleChoice,
 } from './SignatureFields';
 import {WindowStyleTiles} from './WindowStyleTiles';
 
@@ -76,9 +76,10 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
     if (control.kind === 'segmented') {
       if (control.id === 'signature.style')
         return {
-          element: <SignatureStyleTiles control={control} />,
+          element: (
+            <SignatureStyleChoice control={control} id={id} size={size()} />
+          ),
           labelFor: id,
-          full: true,
         };
       if (control.id === 'signature.platform')
         return {
@@ -181,18 +182,18 @@ export function ControlRow(props: ControlRowProps): JSX.Element {
           labelFor: `${id}-input`,
         };
       case 'custom':
-        // The image uploads take the whole row; the font picker and the
-        // signature's text fields fit the value column, and name their
+        // The image upload takes the whole row; the font picker and every
+        // signature field fit the value column. The text fields name their
         // input `<id>-input`.
         return {
           element: <Dynamic component={control.Control} id={id} />,
           labelFor:
-            control.id === 'signature.handle' || control.id === 'signature.name'
+            control.id === 'signature.handle' ||
+            control.id === 'signature.name' ||
+            control.id === 'signature.profile'
               ? `${id}-input`
               : id,
-          full:
-            control.id === 'frame.backgroundImage' ||
-            control.id === 'signature.avatar',
+          full: control.id === 'frame.backgroundImage',
         };
       case 'background':
         return {element: null, labelFor: id};

@@ -1,7 +1,7 @@
 import type {getExportTarget} from '@codeimage/config';
 import type {FrameState} from '@codeimage/store/frame/model';
 import {FittedWindow} from './FittedWindow';
-import {FrameSignature, framePadding} from './FrameSignature';
+import {FrameSignature, framePadding, signatureScale} from './FrameSignature';
 import type {AssetId} from '@codeimage/store/assets/assets';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
 import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
@@ -15,6 +15,9 @@ import {createResizeObserver} from '@solid-primitives/resize-observer';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {ParentComponent} from 'solid-js';
 import {onMount, Show} from 'solid-js';
+import {useI18n} from '@codeimage/locale';
+import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
+import type {AppLocaleEntries} from '../../i18n';
 import * as styles from './Frame.css';
 
 export const exportExclude = _exportExclude;
@@ -29,11 +32,14 @@ interface FrameProps {
   signature: FrameState['signature'];
   exportTarget?: ReturnType<typeof getExportTarget>;
   aspectRatio: string | null | undefined;
+  /** The width the frame last measured, which sizes the signature. */
+  measuredWidth?: number;
   onWidthChange: (width: number) => void;
   onHeightChange: (height: number) => void;
 }
 
 export const Frame: ParentComponent<FrameProps> = props => {
+  const [t] = useI18n<AppLocaleEntries>();
   const target = () => props.exportTarget;
   const targetWidth = () => Math.min(640, target()?.resolution[0] ?? 640);
   const targetScale = () => targetWidth() / (target()?.resolution[0] ?? 640);
@@ -49,6 +55,10 @@ export const Frame: ParentComponent<FrameProps> = props => {
     });
 
   const assetsStore = getAssetsStore();
+  const scale = () =>
+    signatureScale(
+      target()?.resolution[0] ?? (width() || props.measuredWidth || 0),
+    );
 
   const computedWidth = () => {
     if (target()) return `${target()!.resolution[0]}px`;
@@ -117,6 +127,7 @@ export const Frame: ParentComponent<FrameProps> = props => {
           [styles.frameVars.padding]: framePadding(
             props.padding,
             props.signature,
+            scale(),
           ),
           [styles.frameVars.minWidth]: target() ? '0' : 'max-content',
           [styles.frameVars.minHeight]: target() ? '0' : '100%',
@@ -169,6 +180,13 @@ export const Frame: ParentComponent<FrameProps> = props => {
         <FrameSignature
           signature={props.signature}
           background={props.background}
+          scale={scale()}
+          onEdit={
+            !props.readOnly && signatureEditor.available()
+              ? signatureEditor.open
+              : undefined
+          }
+          editLabel={t('signature.edit')}
         />
       </div>
 

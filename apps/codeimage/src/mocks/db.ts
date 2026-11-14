@@ -45,6 +45,8 @@ export const db = factory({
           platform: nullable((): SignaturePlatform | null => null),
           name: nullable(String),
           avatar: nullable(String),
+          profile: nullable(String),
+          savedId: nullable(String),
         },
         {defaultsToNull: true},
       ),

@@ -1,6 +1,14 @@
 import {describe, expect, it} from 'vitest';
 import {createSignature, parseSignature} from './model';
-import {displayHandle, githubLogin, initials, parseProfile} from './signature';
+import {
+  avatarSource,
+  displayHandle,
+  githubLogin,
+  initials,
+  parseProfile,
+  readProfile,
+  writeProfile,
+} from './signature';
 
 describe('parseSignature', () => {
   it('fills the new fields of a signature saved by P7', () => {
@@ -33,8 +41,20 @@ describe('parseSignature', () => {
       platform: 'github',
       name: 'The Octocat',
       avatar: 'asset:abc',
+      profile: 'github.com/octocat',
+      savedId: 'sig-1',
     } as const;
     expect(parseSignature(signature)).toEqual(signature);
+  });
+
+  it("reads the first styles' GitHub avatar as the profile avatar", () => {
+    expect(
+      parseSignature({
+        handle: 'octocat',
+        position: 'bottom-right',
+        avatar: 'github',
+      })?.avatar,
+    ).toBe('profile');
   });
 });
 
@@ -83,5 +103,75 @@ describe('avatar helpers', () => {
       'AL',
     );
     expect(initials({handle: '@octocat', name: null})).toBe('O');
+  });
+});
+
+describe('profile field', () => {
+  it('stores the account behind the platform prefix', () => {
+    expect(writeProfile('octocat', 'github')).toBe('github.com/octocat');
+    expect(writeProfile('ada.bsky.social', 'bluesky')).toBe(
+      'bsky.app/profile/ada.bsky.social',
+    );
+    expect(writeProfile('ada@hachyderm.io', 'mastodon')).toBe(
+      '@ada@hachyderm.io',
+    );
+    expect(writeProfile('ada', 'linkedin')).toBe('linkedin.com/in/ada');
+    expect(writeProfile('  ', 'x')).toBeNull();
+  });
+
+  it('takes a pasted link on another platform as it is', () => {
+    expect(writeProfile('https://github.com/octocat', 'x')).toBe(
+      'github.com/octocat',
+    );
+    expect(writeProfile('https://bsky.app/profile/ada.dev', 'github')).toBe(
+      'bsky.app/profile/ada.dev',
+    );
+  });
+
+  it('reads back the platform and the account', () => {
+    expect(readProfile('bsky.app/profile/ada.dev')).toEqual({
+      platform: 'bluesky',
+      account: 'ada.dev',
+    });
+    expect(readProfile('@ada@hachyderm.io')).toEqual({
+      platform: 'mastodon',
+      account: 'ada@hachyderm.io',
+    });
+    expect(readProfile(null)).toBeNull();
+  });
+});
+
+describe('avatarSource', () => {
+  const base = {handle: 'octocat', platform: null, profile: null} as const;
+
+  it('uses the handle as a GitHub login by default', () => {
+    expect(avatarSource(base)).toEqual({provider: 'github', login: 'octocat'});
+  });
+
+  it('follows the platform of the handle', () => {
+    expect(
+      avatarSource({...base, handle: 'ada.bsky.social', platform: 'bluesky'}),
+    ).toEqual({provider: 'bluesky', actor: 'ada.bsky.social'});
+    expect(
+      avatarSource({
+        ...base,
+        handle: '@ada@hachyderm.io',
+        platform: 'mastodon',
+      }),
+    ).toEqual({provider: 'mastodon', user: 'ada', instance: 'hachyderm.io'});
+  });
+
+  it('gives no avatar for X and LinkedIn, which have no public one', () => {
+    expect(avatarSource({...base, platform: 'x'})).toBeNull();
+    expect(avatarSource({...base, platform: 'linkedin'})).toBeNull();
+  });
+
+  it('prefers the profile over the handle', () => {
+    expect(
+      avatarSource({...base, platform: 'x', profile: 'github.com/monalisa'}),
+    ).toEqual({provider: 'github', login: 'monalisa'});
+    expect(
+      avatarSource({...base, platform: 'github', profile: 'x.com/octocat'}),
+    ).toBeNull();
   });
 });

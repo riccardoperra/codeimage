@@ -13,6 +13,7 @@ import type {JSX, ParentProps} from 'solid-js';
 import {useI18n} from '@codeimage/locale';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {displayHandle} from '@codeimage/store/frame/signature';
+import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import type {AppLocaleEntries} from '../../../../i18n';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
@@ -30,7 +31,7 @@ export const meta: VariantMeta = {
 // What a section shows first; the rest follow in the model's order.
 const primaryControls: Record<SectionId, readonly ControlId[]> = {
   frame: ['frame.padding', 'frame.visible', 'frame.background'],
-  signature: ['signature.handle', 'signature.style'],
+  signature: ['signature.saved', 'signature.handle', 'signature.style'],
   window: [
     'window.header',
     'window.style',
@@ -238,6 +239,12 @@ export default function Inspector(props: VariantProps) {
         ?.focus({preventScroll: true});
     });
   };
+  // A click on the signature in the canvas opens its section at the handle.
+  onCleanup(
+    signatureEditor.register(() =>
+      openQuickControl('signature', 'signature.handle'),
+    ),
+  );
   const signatureSummary = () => {
     const signature = getFrameState().store.signature;
     if (!signature) return t('signature.off');

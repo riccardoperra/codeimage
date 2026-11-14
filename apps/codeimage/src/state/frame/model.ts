@@ -18,8 +18,11 @@ export const SIGNATURE_POSITIONS = [
 export type SignatureStyle = (typeof SIGNATURE_STYLES)[number];
 export type SignaturePlatform = (typeof SIGNATURE_PLATFORMS)[number];
 export type SignaturePosition = (typeof SIGNATURE_POSITIONS)[number];
-/** `github` loads the avatar of the handle from GitHub; an asset id is an uploaded image. */
-export type SignatureAvatar = 'github' | AssetId;
+/**
+ * `profile` loads the public avatar of the profile (or of the handle on its
+ * platform); an asset id is an uploaded image.
+ */
+export type SignatureAvatar = 'profile' | AssetId;
 
 export interface FrameSignature {
   handle: string;
@@ -30,6 +33,17 @@ export interface FrameSignature {
   name: string | null;
   /** Shown by the card style only; initials stand in for a missing one. */
   avatar: SignatureAvatar | null;
+  /**
+   * Where the `profile` avatar comes from when the handle is not the right
+   * account, as `github.com/<login>`, `bsky.app/profile/<handle>`,
+   * `@<user>@<instance>`, `x.com/<user>` or `linkedin.com/in/<user>`.
+   */
+  profile: string | null;
+  /**
+   * The saved signature this copy came from. The snippet keeps its own copy,
+   * so editing the saved signature never changes it.
+   */
+  savedId: string | null;
 }
 
 export interface FrameState {
@@ -77,11 +91,19 @@ export function parseSignature(value: unknown): FrameSignature | null {
     style: oneOf(SIGNATURE_STYLES, raw.style) ?? 'minimal',
     platform: oneOf(SIGNATURE_PLATFORMS, raw.platform) ?? null,
     name: typeof raw.name === 'string' && raw.name.trim() ? raw.name : null,
+    // `github` is how the first signature styles named the profile avatar.
     avatar:
-      avatar === 'github' ||
-      (typeof avatar === 'string' && avatar.startsWith('asset:'))
-        ? (avatar as SignatureAvatar)
+      avatar === 'profile' || avatar === 'github'
+        ? 'profile'
+        : typeof avatar === 'string' && avatar.startsWith('asset:')
+          ? (avatar as SignatureAvatar)
+          : null,
+    profile:
+      typeof raw.profile === 'string' && raw.profile.trim()
+        ? raw.profile.trim().slice(0, 200)
         : null,
+    savedId:
+      typeof raw.savedId === 'string' && raw.savedId ? raw.savedId : null,
   };
 }
 
@@ -93,5 +115,7 @@ export function createSignature(handle: string): FrameSignature {
     platform: null,
     name: null,
     avatar: null,
+    profile: null,
+    savedId: null,
   };
 }
