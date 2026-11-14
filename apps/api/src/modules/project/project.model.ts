@@ -230,6 +230,9 @@ export interface FrameSignatureColumns {
   signaturePlatform?: string | null;
   signatureName?: string | null;
   signatureAvatar?: string | null;
+  signatureProfile?: string | null;
+  /** The saved signature the copy came from; not a foreign key, so deleting it keeps the copy. */
+  signatureId?: string | null;
 }
 
 const literalOf = <T extends string>(
@@ -247,9 +250,12 @@ export function readFrameSignature(
     handle,
     position,
     style: literalOf(SignatureStyleSchema, frame.signatureStyle) ?? 'minimal',
-    platform: literalOf(SignaturePlatformSchema, frame.signaturePlatform) ?? null,
+    platform:
+      literalOf(SignaturePlatformSchema, frame.signaturePlatform) ?? null,
     name: frame.signatureName ?? null,
     avatar: frame.signatureAvatar ?? null,
+    profile: frame.signatureProfile ?? null,
+    savedId: frame.signatureId ?? null,
   };
 }
 
@@ -265,6 +271,8 @@ export function writeFrameSignature(
     signaturePlatform: signature?.platform ?? null,
     signatureName: signature?.name ?? null,
     signatureAvatar: signature?.avatar ?? null,
+    signatureProfile: signature?.profile ?? null,
+    signatureId: signature?.savedId ?? null,
   };
 }
 

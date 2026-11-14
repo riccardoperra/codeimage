@@ -34,7 +34,9 @@ function buildUpdateRequest(editorId: string): ProjectUpdateBody {
         style: 'card',
         platform: 'github',
         name: 'CodeImage',
-        avatar: 'github',
+        avatar: 'profile',
+        profile: 'bsky.app/profile/codeimage.dev',
+        savedId: 'b8f1d0a4-0a39-4b8e-8f0e-6f0d6c9e8b11',
       },
     },
     editors: [
@@ -114,7 +116,7 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       padding: 0,
       aspectRatio: null,
       exportTarget: 'x-landscape',
-      signature: {handle: '@codeimage', position: 'bottom-left'},
+      signature: data.frame.signature,
     } as ProjectUpdateResponse['frame'],
     'return updated frame',
   );
@@ -194,6 +196,8 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       signaturePlatform: data.frame.signature?.platform ?? null,
       signatureName: data.frame.signature?.name ?? null,
       signatureAvatar: data.frame.signature?.avatar ?? null,
+      signatureProfile: data.frame.signature?.profile ?? null,
+      signatureId: data.frame.signature?.savedId ?? null,
     },
     terminal: data.terminal,
     editorOptions: data.editorOptions,

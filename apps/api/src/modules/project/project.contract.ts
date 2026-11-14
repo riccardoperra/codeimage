@@ -29,8 +29,19 @@ export const FrameSignatureSchema = Type.Object({
   style: Type.Optional(SignatureStyleSchema),
   platform: Type.Optional(Nullable(SignaturePlatformSchema)),
   name: Type.Optional(Nullable(Type.String({maxLength: 120}))),
-  /** `github`, or the id of an image the client keeps in its own assets. */
+  /**
+   * `profile` (the public avatar of the profile or handle; `github` from
+   * older clients means the same), or the id of an image the client keeps in
+   * its own assets.
+   */
   avatar: Type.Optional(Nullable(Type.String({maxLength: 200}))),
+  /** Where the `profile` avatar comes from, such as `bsky.app/profile/ada.dev`. */
+  profile: Type.Optional(Nullable(Type.String({maxLength: 200}))),
+  /**
+   * The saved signature this copy came from. The snippet keeps its own copy,
+   * so editing the saved signature never changes it.
+   */
+  savedId: Type.Optional(Nullable(Type.String({maxLength: 64}))),
 });
 
 export const ExportTargetSchema = Type.Union([

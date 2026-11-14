@@ -77,6 +77,8 @@ describe('social export persistence', () => {
       platform: null,
       name: null,
       avatar: null,
+      profile: null,
+      savedId: null,
     });
     expect(
       readFrameSignature({signatureHandle: null, signaturePosition: null}),
@@ -99,7 +101,9 @@ describe('social export persistence', () => {
       style: 'card',
       platform: 'github',
       name: 'The Octocat',
-      avatar: 'github',
+      avatar: 'profile',
+      profile: 'bsky.app/profile/octocat.bsky.social',
+      savedId: '0b7d0a59-6c4f-4f43-9d55-0d2b1f6f1b4e',
     } as const;
     expect(Value.Check(FrameSignatureSchema, signature)).toBe(true);
     expect(readFrameSignature(writeFrameSignature(signature))).toEqual(
