@@ -1,3 +1,4 @@
+import {secrets} from './secrets';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
@@ -7,6 +8,7 @@ import {bottomBar} from './bottombar';
 
 export const locale = {
   it: {
+    ...secrets.it,
     common: {
       close: 'Chiudi',
       confirm: 'Conferma',
@@ -96,6 +98,7 @@ export const locale = {
     ...presets.it,
   },
   en: {
+    ...secrets.en,
     canvas: {
       copiedToClipboard: 'Snippet copied to clipboard',
       linkGeneratedToClipboard: 'Link copied to clipboard',
@@ -182,6 +185,7 @@ export const locale = {
     ...presets.en,
   },
   de: {
+    ...secrets.de,
     common: {
       close: 'Schließen',
       confirm: 'Bestätigen',
@@ -269,6 +273,7 @@ export const locale = {
     ...presets.de,
   },
   es: {
+    ...secrets.es,
     common: {
       close: 'Cerrar',
       confirm: 'Confirmar',

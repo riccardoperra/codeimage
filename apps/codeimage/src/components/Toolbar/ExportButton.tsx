@@ -1,5 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {detectSecrets} from '@codeimage/secrets';
 import type {SegmentedFieldItem} from '@codeimage/ui';
 import {
   Box,
@@ -27,7 +29,15 @@ import {useWebshare} from '@core/hooks/use-webshare';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
-import {createEffect, createSignal, onMount, Show, untrack} from 'solid-js';
+import {
+  batch,
+  createEffect,
+  createMemo,
+  createSignal,
+  onMount,
+  Show,
+  untrack,
+} from 'solid-js';
 import {useExportSnippet} from '../../hooks/export-snippet';
 import {ExportExtension, ExportMode} from '../../hooks/use-export-image';
 import {useHotkey} from '../../hooks/use-hotkey';
@@ -35,6 +45,7 @@ import type {AppLocaleEntries} from '../../i18n';
 import {DownloadIcon} from '../Icons/Download';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {HintIcon} from '../Icons/Hint';
+import {redactTabCode} from '../CustomEditor/plugins/secrets';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -127,6 +138,28 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const [supportWebShare] = useWebshare();
   const exportCanvasStore = getExportCanvasStore();
+  const editorStore = getRootEditorStore();
+  const secretCount = createMemo(() =>
+    props.open
+      ? editorStore.state.editors.reduce(
+          (count, editor) => count + detectSecrets(editor.code).length,
+          0,
+        )
+      : 0,
+  );
+  const redactAll = () =>
+    batch(() => {
+      editorStore.state.editors.forEach((editor, index) => {
+        const redacted = redactTabCode(
+          editor.code,
+          editorStore.isActive(editor.id)
+            ? editorStore.activeEditorView()
+            : undefined,
+        );
+        if (redacted !== editor.code)
+          editorStore.actions.setEditors(index, 'code', redacted);
+      });
+    });
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.export);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
@@ -191,6 +224,17 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
       <DialogPanelContent>
         <DynamicSizedContainer>
           <VStack spacing={'6'}>
+            <Show when={secretCount() > 0}>
+              <VStack spacing={'2'}>
+                <div role="status">
+                  {t('secrets.visible', {count: String(secretCount())})}
+                </div>
+                <FieldLabelHint>{t('secrets.destructiveHint')}</FieldLabelHint>
+                <Button size={'sm'} theme={'secondary'} onClick={redactAll}>
+                  {t('secrets.redactAll')}
+                </Button>
+              </VStack>
+            </Show>
             <Show when={supportWebShare()}>
               <FlexField size={'lg'}>
                 <SegmentedField
@@ -311,7 +355,9 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
             theme={'primary'}
             onClick={onConfirm}
           >
-            {t('common.confirm')}
+            {secretCount() > 0
+              ? t('secrets.exportAnyway')
+              : t('common.confirm')}
           </Button>
         </HStack>
       </DialogPanelFooter>

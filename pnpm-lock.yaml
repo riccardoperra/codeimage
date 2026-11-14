@@ -360,6 +360,9 @@ importers:
       '@codeimage/prisma-models':
         specifier: workspace:*
         version: link:../../packages/prisma-models
+      '@codeimage/secrets':
+        specifier: workspace:*
+        version: link:../../packages/secrets
       '@codeimage/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -1045,6 +1048,21 @@ importers:
       '@prisma/client-runtime-utils':
         specifier: 7.5.0
         version: 7.5.0
+
+  packages/secrets:
+    devDependencies:
+      '@types/node':
+        specifier: catalog:next
+        version: 25.5.0
+      oxlint:
+        specifier: catalog:next
+        version: 1.57.0
+      tsx:
+        specifier: catalog:next
+        version: 4.21.0
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.2
 
   packages/ui:
     dependencies:
