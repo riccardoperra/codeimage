@@ -10,8 +10,8 @@ import {EASING_CURVES} from './model';
 
 // The magic-move defaults: leaving tokens are gone at 30% of the transition,
 // and entering tokens start at 70%.
-export const LEAVE_END = 0.3;
-export const ENTER_START = 0.7;
+const LEAVE_END = 0.3;
+const ENTER_START = 0.7;
 
 // Matches the focus dimming in marks.css.
 const DIM_OPACITY = 0.35;
