@@ -1,0 +1,16 @@
+/*
+ * PICKER.md places the pill at the top or the bottom only. Below 768px it
+ * would cover the production header, and every variant keeps its own bar at
+ * the bottom, so the page starts under the pill instead: 24px offset, 36px
+ * pill, 12px gap. The variant's root fills what is left in place of 100dvh.
+ */
+@media (max-width: 767px) {
+  .proto-variant {
+    position: fixed;
+    inset: 72px 0 0;
+  }
+
+  .proto-variant.proto-variant > * {
+    height: 100%;
+  }
+}

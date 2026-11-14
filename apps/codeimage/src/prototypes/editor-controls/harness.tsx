@@ -7,6 +7,7 @@ import {createSignal, Show, Suspense} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {provideState} from 'statebuilder';
 import {EditorPageSkeleton} from '../../pages/Editor/components/EditorSkeleton';
+import './harness.css';
 import {createEditorControlsModel} from './model';
 import type {Variant} from './contract';
 import {Picker} from './picker/Picker';
@@ -42,20 +43,22 @@ function Harness(props: HarnessProps) {
 
   return (
     <>
-      <Show when={mounted()} keyed>
-        {({index}) => {
-          // Created outside the JSX: a call in a prop compiles to a getter
-          // and would build a new stage on every read.
-          const stage = createStage();
-          return (
-            <Dynamic
-              component={props.variants[index].component}
-              model={model}
-              stage={stage}
-            />
-          );
-        }}
-      </Show>
+      <div class="proto-variant">
+        <Show when={mounted()} keyed>
+          {({index}) => {
+            // Created outside the JSX: a call in a prop compiles to a getter
+            // and would build a new stage on every read.
+            const stage = createStage();
+            return (
+              <Dynamic
+                component={props.variants[index].component}
+                model={model}
+                stage={stage}
+              />
+            );
+          }}
+        </Show>
+      </div>
       <Picker
         names={props.variants.map(variant => variant.name)}
         active={mounted().index}
