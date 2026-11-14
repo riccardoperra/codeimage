@@ -30,6 +30,8 @@ export interface FrameMarkup {
   backgroundImage: string | null;
 }
 
+type RenderSnapshot = ProjectEditorPersistedState & {width?: number};
+
 // Solid's client typings, which the app type-checks against, omit this
 // server-only option.
 const SSR_OPTIONS = {timeoutMs: 30_000, noScripts: true};
@@ -41,9 +43,7 @@ const EXPORT_EXCLUDE_CSS =
 // one at a time and each one sees only its own snapshot.
 let queue: Promise<unknown> = Promise.resolve();
 
-export function renderFrame(
-  snapshot: ProjectEditorPersistedState,
-): Promise<FrameMarkup> {
+export function renderFrame(snapshot: RenderSnapshot): Promise<FrameMarkup> {
   const result = queue.then(() => render(snapshot));
   queue = result.catch(() => undefined);
   return result;
@@ -72,9 +72,7 @@ export function frameSizeCss(size?: FrameSize): string {
     .join(';')}}`;
 }
 
-async function render(
-  snapshot: ProjectEditorPersistedState,
-): Promise<FrameMarkup> {
+async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
   const {frame, terminal, editor} = snapshot;
   const {themeId, fontId} = editor.options;
   const activeEditor = editor.editors[0];
@@ -184,7 +182,13 @@ async function render(
   );
   return {
     html: `<html><body>${body}</body></html>`,
-    css: [staticThemeCss(theme), EXPORT_EXCLUDE_CSS].join('\n'),
+    css: [
+      staticThemeCss(theme),
+      EXPORT_EXCLUDE_CSS,
+      `[data-snapshot-frame]{${cssVar(styles.frameVars.width)}:${
+        snapshot.width === undefined ? 'max-content' : `${snapshot.width}px`
+      }}`,
+    ].join('\n'),
     fontFamily: font.name,
     backgroundImage,
   };
