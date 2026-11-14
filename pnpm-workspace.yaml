@@ -8,8 +8,14 @@ saveExact: true
 shellEmulator: true
 
 allowBuilds:
+  '@parcel/watcher': false
+  '@prisma/engines': false
+  browser-tabs-lock: false
   esbuild: true
   lightningcss: true
+  msw: false
+  prisma: false
+  workerd: false
 
 patchedDependencies:
   '@codeui/kit': patches/@codeui__kit.patch
