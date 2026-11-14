@@ -2,7 +2,7 @@
 import {readFile, writeFile} from 'node:fs/promises';
 import {parseArgs, UsageError, USAGE} from './args';
 import {FLAGS} from './flags';
-import {renderSnapshot} from './render';
+import {renderSnapshot} from '@codeimage/render';
 import {buildSnapshot, parsePreset} from './snapshot';
 
 async function readInput(path: string, prefix = '') {

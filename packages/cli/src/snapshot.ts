@@ -3,8 +3,11 @@ import {basename} from 'node:path';
 import {z} from 'zod';
 import {resolveTheme, UsageError} from './args';
 import type {RenderArgs} from './args';
-import {projectSnapshotSchema, SUPPORTED_SNAPSHOT_MAJOR} from './document';
-import type {SnapshotInput} from './document';
+import {
+  projectSnapshotSchema,
+  SUPPORTED_SNAPSHOT_MAJOR,
+} from '@codeimage/render';
+import type {SnapshotInput} from '@codeimage/render';
 
 const presetSchema = z.looseObject({
   frame: projectSnapshotSchema.shape.frame,
@@ -127,6 +130,5 @@ export async function buildSnapshot({
     },
     format: args.format,
     scale: args.scale,
-    width: 960,
   };
 }
