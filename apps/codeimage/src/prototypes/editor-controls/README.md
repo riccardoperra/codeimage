@@ -200,6 +200,30 @@ The registry and store live in `state/whats-new`. Import that folder's `index.ts
 
 Only a coachmark opening or a feature being used marks a highlight seen. Show me, Nudge steps, and archive rows keep the dot available. The command menu marks use when a command runs. Layout and theme card choices mark use when a choice is applied. Exporting one image per tab, from the menu or the command, marks `tabs` used. Redact secrets, or Redact on an editor warning, marks `redact` used. Both go through `shell/export.tsx`.
 
+Each archive row in Settings shows its highlight's illustration as a thumbnail. An illustration takes a `mode`: `play` in a Nudge step or a Showcase card, `still` in a coachmark, and `thumb` in the archive, where a picture made of text draws bars instead. A new highlight adds one illustration to `components/WhatsNew/illustrations.tsx` with all three modes.
+
+### Motion
+
+`components/WhatsNew/motion.ts` holds every curve and duration below, and the styles and the exit timers read it. Extend it, and add a row here. `out` is `cubic-bezier(0.23, 1, 0.32, 1)`, `inOut` is `cubic-bezier(0.77, 0, 0.175, 1)`, and `toast` is `ease`. An action from the keyboard does not animate. With reduced motion only opacity changes, with no delays, and a picture shows its last frame.
+
+| Element                  | When it moves                                                            | Duration                                 | Curve                                                    | What moves                                         |
+| ------------------------ | ------------------------------------------------------------------------ | ---------------------------------------- | -------------------------------------------------------- | -------------------------------------------------- |
+| Nudge                    | It appears                                                               | 400ms                                    | `toast`                                                  | Opacity, rises its own height from the bottom edge |
+| Nudge                    | Done or dismiss                                                          | 200ms                                    | `out`                                                    | Opacity, drops its own height                      |
+| Nudge card               | See                                                                      | 260ms                                    | `out`                                                    | Clip-path reveals it upward from the bar's height  |
+| Nudge step               | Next                                                                     | 200ms                                    | `out`                                                    | Opacity, 8px in from the right, out to the left    |
+| Illustration             | 220ms after its Nudge step appears, 350ms after its Showcase card starts | 240 to 450ms per part, done within 850ms | `out`, `inOut` for a wipe or a highlight moving in place | Opacity, transform, clip-path                      |
+| Coachmark                | Its dot opens it                                                         | 180ms                                    | `out`                                                    | Opacity, scale from .96 at the dot                 |
+| Coachmark                | It closes                                                                | 120ms                                    | `out`                                                    | Opacity, scale back to .96                         |
+| Dot                      | Its coachmark opens                                                      | 180ms                                    | `out`                                                    | Opacity                                            |
+| Dot                      | Press                                                                    | 120ms                                    | `out`                                                    | Scale to .97                                       |
+| Showcase sheet           | It opens                                                                 | 250ms                                    | `out`                                                    | Opacity                                            |
+| Showcase title           | It opens, at 0ms                                                         | 550ms                                    | `out`                                                    | Opacity, 12px rise                                 |
+| Showcase subtitle, cards | At 80, 160, 240, 300, 340, 370ms                                         | 500ms, cards 450ms                       | `out`                                                    | Opacity, 8px rise                                  |
+| Showcase date, footer    | At 0 and 400ms                                                           | 400ms                                    | `out`                                                    | Opacity                                            |
+
+The archive rows and the step indicator stay still, since Settings opens many times a day and has its own entrance. A dot does not pulse, since it stays on screen for days. The kit's buttons keep the kit's press, a 200ms `ease` scale to .97.
+
 In development, use `?whatsNew=nudge` or `?whatsNew=showcase` to review a view regardless of saved facts. Run `await window.resetWhatsNew()` and reload for a fresh visit. These aids are removed in production builds. `/classic` has announcements, external release links, and the export dialog's One image per tab dot, with no archive. There, turning the One image per tab checkbox on marks `tabs` used, and Redact all marks `redact` used.
 
 ## The theme-card lab
