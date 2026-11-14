@@ -8,7 +8,7 @@ export const wrapper = style({
   flex: '1 1 auto',
   selectors: {
     '&[data-window-tabs=editor]': {height: '40px'},
-    '&[data-window-tabs=shell]': {justifyContent: 'center', margin: '0 58px'},
+    '&[data-window-tabs=shell]': {justifyContent: 'center', margin: '0 76px'},
   },
 });
 export const list = style({
