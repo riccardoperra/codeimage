@@ -88,6 +88,10 @@ export function Bootstrap() {
       },
     },
     {
+      path: "prototypes/editor-controls",
+      component: lazyWithNoLauncher(() => import("./prototypes/editor-controls")),
+    },
+    {
       path: ":snippetId",
       component: Editor,
     },
