@@ -308,7 +308,7 @@
   [data-theme-list]
   > div {
   grid-template-columns: none;
-  /* Twelve orb or palette cards across the dock at 1440px. */
+  /* Twelve orb cards across the dock at 1440px. */
   grid-auto-columns: var(--dock-card, 109px);
   grid-auto-flow: column;
   gap: 4px;
@@ -317,11 +317,6 @@
 
 .dock-popover [data-theme-style='window'] {
   --dock-card: 148px;
-}
-
-/* Wide enough for the preview's longest line, so its five lines stay five. */
-.dock-popover [data-theme-style='code'] {
-  --dock-card: 280px;
 }
 
 /* Twelve rows on a 900px window. The list is narrow and sits beside the frame there. */
