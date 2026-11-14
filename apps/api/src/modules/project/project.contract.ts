@@ -333,9 +333,6 @@ export type ProjectGetByIdResponse = Static<
   typeof ProjectGetByIdResponseSchema
 >;
 
-export type ProjectCreateRequest = ProjectCreateBody;
 export type ProjectCreateResponse = Static<typeof ProjectCreateResponseSchema>;
-export type ProjectUpdateRequest = ProjectUpdateBody;
 export type ProjectUpdateResponse = Static<typeof ProjectUpdateResponseSchema>;
-export type ProjectCompleteResponse = ProjectGetByIdResponse;
 export type ProjectListItem = Static<typeof ProjectSummarySchema>;

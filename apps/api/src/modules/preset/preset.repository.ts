@@ -57,7 +57,6 @@ export function createPresetRepository(db: Db) {
 }
 
 export type PresetRepository = ReturnType<typeof createPresetRepository>;
-export type OwnedPresets = ReturnType<PresetRepository['ownedBy']>;
 
 function toPreset(row: PresetRow): Preset {
   const data = row.data;

@@ -75,10 +75,6 @@ export function defineErrors<
   };
 }
 
-export function errorCatalog(): ReadonlyMap<string, ErrorKind> {
-  return catalog;
-}
-
 export const CommonErrors = defineErrors({
   unauthenticated: {
     code: 'UNAUTHENTICATED',
