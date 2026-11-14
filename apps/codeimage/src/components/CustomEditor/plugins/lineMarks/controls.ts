@@ -17,7 +17,6 @@ import {
   tooltips,
   ViewPlugin,
 } from '@codemirror/view';
-import type {LineMark} from '../../../../state/editor/model';
 import type {MarkKind} from './state';
 import {hasMark, markLines, readMarks, toggleMark} from './state';
 
@@ -203,7 +202,7 @@ const previewGutter = {
   clear: new PreviewClass('cm-lineMarkPreview-clear'),
 };
 
-type GutterPreview = {from: number; to: number; kind: LineMark['kind'] | null};
+type GutterPreview = {from: number; to: number; kind: 'highlight' | null};
 
 const setGutterPreview = StateEffect.define<GutterPreview | null>();
 
@@ -232,14 +231,17 @@ const gutterPreviewField = StateField.define<DecorationSet>({
     EditorView.decorations.from(field),
     gutterLineClass.compute([field], state => {
       const markers = [];
-      for (let cursor = state.field(field).iter(); cursor.value; cursor.next())
-        markers.push(
-          previewGutter[
-            cursor.value.spec.attributes['data-mark-preview'] as
-              | 'highlight'
-              | 'clear'
-          ].range(cursor.from),
-        );
+      for (
+        let cursor = state.field(field).iter();
+        cursor.value;
+        cursor.next()
+      ) {
+        const marker =
+          cursor.value.spec.attributes['data-mark-preview'] === 'highlight'
+            ? previewGutter.highlight
+            : previewGutter.clear;
+        markers.push(marker.range(cursor.from));
+      }
       return RangeSet.of(markers);
     }),
   ],
@@ -255,9 +257,7 @@ export function gutterMarkMouseDown(
   if (!view.state.field(gutterPreviewField, false)) return false;
   event.preventDefault();
   const start = view.state.doc.lineAt(line.from).number;
-  const kind = readMarks(view.state).lines.some(
-    mark => mark.line === start && mark.kind === 'highlight',
-  )
+  const kind = hasMark(readMarks(view.state), start, 'highlight')
     ? null
     : 'highlight';
   let end = start;
