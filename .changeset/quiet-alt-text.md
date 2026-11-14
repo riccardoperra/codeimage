@@ -2,4 +2,4 @@
 "@codeimage/app": minor
 ---
 
-Copy deterministic alt text for the active snippet from the export controls.
+Add a Copy alt text button that copies the snippet's language, tab name, line range, and code for use as image alt text.
