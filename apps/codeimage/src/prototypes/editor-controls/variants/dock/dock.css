@@ -107,11 +107,11 @@
 }
 
 /*
- * A fixed width, because the name changes while themes are previewed. A dock
- * that grew with it would wrap its row and move the cards under the pointer.
+ * The name follows the applied theme, not the previewed one, so the label can
+ * fit it: the bar only moves when a theme is applied.
  */
 .dock-item[data-panel='themes'] .dock-item-text {
-  width: 116px;
+  min-width: 116px;
   text-align: left;
 }
 
