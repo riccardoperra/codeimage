@@ -82,7 +82,8 @@ function pairPlaced(from: Placed[], to: Placed[]): TokenTransition[] {
         kind: 'move',
         key,
         text,
-        classes,
+        classes: target.classes,
+        ...(target.classes === classes ? {} : {fromClasses: classes}),
         from: cell,
         to: target.cell,
       });
@@ -111,27 +112,14 @@ export function pairSteps(
   };
   const source = keyed(from, 'from');
   const target = keyed(to, 'to');
-  const ownKeys = new Map(target.tokens.map(token => [token, token.key!]));
   syncTokenKeys(source.info, target.info, {enhanceMatching: true});
-  const sourceTokens = new Map(source.tokens.map(token => [token.key!, token]));
-  const placed = (token: CodeToken, key = token.key!): Placed => ({
-    key,
+  const placed = (token: CodeToken): Placed => ({
+    key: token.key!,
     text: token.content,
     classes: token.classes,
     cell: token.cell,
   });
-  // A matched token that changes classes changes color, so it fades from one
-  // color to the other instead of moving under one of them.
-  const recolored = (token: CodeToken) => {
-    const match = sourceTokens.get(token.key!);
-    return match !== undefined && match.classes !== token.classes;
-  };
-  return pairPlaced(
-    source.tokens.map(token => placed(token)),
-    target.tokens.map(token =>
-      recolored(token) ? placed(token, ownKeys.get(token)) : placed(token),
-    ),
-  );
+  return pairPlaced(source.tokens.map(placed), target.tokens.map(placed));
 }
 
 function markKinds(step: Step) {

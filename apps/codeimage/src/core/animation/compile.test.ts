@@ -115,6 +115,37 @@ test('a token that keeps its cell and opacity is not animated', () => {
   assert.doesNotMatch(animationOf(compiled, 'same').style, /animation/);
 });
 
+test('a token that changes classes slides in both colors while they crossfade', () => {
+  const compiled = compileScene(
+    scene([
+      {
+        kind: 'move',
+        key: 'k',
+        text: 'x',
+        classes: 'new',
+        fromClasses: 'old',
+        from: {line: 0, col: 0},
+        to: {line: 1, col: 2},
+      },
+    ]),
+    metrics,
+    timing,
+  );
+  const spans = Array.from(
+    compiled.html.matchAll(
+      /<span class="(\w+)" style="[^"]*animation:(\S+) [^"]*">x<\/span>/g,
+    ),
+    ([, classes, name]) => [
+      classes,
+      compiled.css.match(new RegExp(`@keyframes ${name}\\{(.*)\\}`))?.[1],
+    ],
+  );
+  assert.deepEqual(spans, [
+    ['old', 'from{left:0px;top:0px;opacity:1}to{left:20px;top:20px;opacity:0}'],
+    ['new', 'from{left:0px;top:0px;opacity:0}to{left:20px;top:20px;opacity:1}'],
+  ]);
+});
+
 test('code shifts by the diff indent and fades with focus dimming', () => {
   const compiled = compileScene(
     scene(
