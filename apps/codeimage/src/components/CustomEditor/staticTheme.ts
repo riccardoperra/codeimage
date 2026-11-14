@@ -79,10 +79,32 @@ const themes = new WeakMap<
   {classes: string; modules: readonly StyleModule[]}
 >();
 
+const staticExtensions = (theme: CustomTheme) => [
+  theme.editorTheme,
+  baseEditorTheme,
+  staticLayout,
+];
+
+type MountStyles = (this: {state: EditorState; root: unknown}) => void;
+
+// CodeMirror mounts its base theme, which sets the default gutter color, only
+// from an EditorView and does not export it. Running that mount on a root with
+// no DOM returns the stylesheet an editor with this theme would add, in order.
+export function staticThemeCss(theme: CustomTheme): string {
+  const style = {textContent: ''};
+  const root = {head: {insertBefore() {}}, createElement: () => style};
+  const {mountStyles} = EditorView.prototype as unknown as {
+    mountStyles: MountStyles;
+  };
+  const state = EditorState.create({extensions: staticExtensions(theme)});
+  mountStyles.call({state, root});
+  return style.textContent;
+}
+
 export function getStaticTheme(theme: CustomTheme) {
   let resolved = themes.get(theme);
   if (!resolved) {
-    const extensions = [theme.editorTheme, baseEditorTheme, staticLayout];
+    const extensions = staticExtensions(theme);
     const state = EditorState.create({extensions});
     const modules = state.facet(EditorView.styleModule).slice().reverse();
     const classes = [

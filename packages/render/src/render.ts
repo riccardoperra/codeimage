@@ -18,15 +18,15 @@ interface FrameMarkup {
 }
 
 interface FrameSize {
-  width?: number;
-  height?: number;
+  width: number;
+  height: number;
 }
 
 interface RenderEntry {
   SUPPORTED_FONT_IDS: string[];
   SUPPORTED_THEME_IDS: string[];
   renderFrame(snapshot: ProjectSnapshot): Promise<FrameMarkup>;
-  frameSizeCss(size: FrameSize): string;
+  frameSizeCss(size?: FrameSize): string;
 }
 
 interface FontFile {
@@ -202,13 +202,14 @@ export async function snapshotMarkup(
       .map(editor => `${editor.tabName}\n${editor.code}`)
       .join('\n'),
   );
-  // The web export sizes the frame to the editor's integer client size.
-  const measured = await renderer.measure(html, {
-    css: [...css, entry.frameSizeCss({width: document.width})],
+  // Like the web frame, the frame is at least as wide as its code, so no line
+  // wraps, and it is sized to whole CSS pixels like the editor's client size.
+  const content = await renderer.measure(html, {
+    css: [...css, entry.frameSizeCss()],
   });
   const size = {
-    width: document.width ?? Math.ceil(measured.width),
-    height: Math.ceil(measured.height),
+    width: Math.max(document.width ?? 0, Math.ceil(content.width)),
+    height: Math.ceil(content.height),
   };
   return {
     document,
