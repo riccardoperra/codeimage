@@ -1,0 +1,64 @@
+import {describe, expect, it} from 'vitest';
+import {parseSnapshotDocument} from './document';
+import {sampleDocument} from './sample';
+
+describe('parseSnapshotDocument', () => {
+  it('parses a saved project and defaults export settings', () => {
+    const {format, scale, ...project} = sampleDocument;
+    expect(parseSnapshotDocument(project)).toEqual({
+      ...project,
+      format: 'png',
+      scale: 2,
+    });
+    expect(parseSnapshotDocument(project).width).toBeUndefined();
+  });
+  it.each(['0.8.0', '1.9.0', '1.10.1', '1.99.0', '1.11.0-rc.1'])(
+    'accepts compatible version %s',
+    $version => {
+      expect(
+        parseSnapshotDocument({...sampleDocument, $version}).$version,
+      ).toBe($version);
+    },
+  );
+  it('preserves future fields at every snapshot level', () => {
+    const document = {
+      ...sampleDocument,
+      metadata: {label: 'future'},
+      frame: {...sampleDocument.frame, signature: 'name', target: 'square'},
+      terminal: {...sampleDocument.terminal, future: true},
+      editor: {
+        ...sampleDocument.editor,
+        future: true,
+        options: {...sampleDocument.editor.options, future: true},
+        editors: sampleDocument.editor.editors.map(editor => ({
+          ...editor,
+          marks: [{line: 1, kind: 'added'}],
+        })),
+      },
+    };
+    expect(parseSnapshotDocument(document)).toEqual(document);
+  });
+  it('requires an editor', () => {
+    const {editor, ...project} = sampleDocument;
+    expect(() => parseSnapshotDocument(project)).toThrow();
+    expect(() =>
+      parseSnapshotDocument({...project, editor: {...editor, editors: []}}),
+    ).toThrow('at least one editor');
+  });
+  it.each([999, '999', '2.0.0'])(
+    'names an unsupported version %s',
+    $version => {
+      expect(() =>
+        parseSnapshotDocument({...sampleDocument, $version}),
+      ).toThrow(`Unsupported snapshot $version ${JSON.stringify($version)}`);
+    },
+  );
+  it.each([{scale: 0}, {width: -1}, {format: 'gif'}])(
+    'rejects invalid export options %s',
+    options => {
+      expect(() =>
+        parseSnapshotDocument({...sampleDocument, ...options}),
+      ).toThrow();
+    },
+  );
+});

@@ -3,6 +3,7 @@ import mdx from '@mdx-js/rollup';
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
+import {fileURLToPath} from 'node:url';
 import type {Plugin, UserConfigExport} from 'vite';
 import {defineConfig} from 'vite';
 import solidPlugin from 'vite-plugin-solid';
@@ -20,10 +21,18 @@ const config: UserConfigExport = defineConfig(({mode}) => ({
       }),
       enforce: 'pre',
     },
-    vanillaExtractPlugin({
-      unstable_mode: 'transform',
-    }),
+    vanillaExtractPlugin(
+      mode === 'render'
+        ? {
+            unstable_mode: 'emitCss',
+            unstable_pluginFilter: ({name}) =>
+              name === 'solid' || name === 'vite-tsconfig-paths',
+          }
+        : {unstable_mode: 'transform'},
+    ),
     solidPlugin({
+      ssr: mode === 'render',
+      solid: mode === 'render' ? {hydratable: false} : undefined,
       extensions: ['.mdx', '.tsx', '.ts'],
     }),
     tsconfigPaths(),
@@ -63,8 +72,11 @@ const config: UserConfigExport = defineConfig(({mode}) => ({
         }, {});
       },
     },
-    withStaticVercelPreview() as unknown as Plugin,
+    ...(mode === 'render'
+      ? []
+      : [withStaticVercelPreview() as unknown as Plugin]),
   ],
+  publicDir: mode === 'render' ? false : undefined,
   server: {
     strictPort: true,
     port: 4200,
@@ -80,13 +92,42 @@ const config: UserConfigExport = defineConfig(({mode}) => ({
     },
   },
   build: {
+    ...(mode === 'render'
+      ? {
+          ssr: 'src/render/entry-server.tsx',
+          outDir: '../../packages/render/dist/ssr',
+          cssCodeSplit: false,
+          cssMinify: false,
+          ssrEmitAssets: true,
+          rollupOptions: {
+            output: {
+              entryFileNames: 'entry-server.js',
+              assetFileNames: 'assets/[name][extname]',
+            },
+          },
+        }
+      : {}),
     sourcemap: false,
     minify: true,
     polyfillModulePreload: false,
     polyfillDynamicImport: false,
-    cssCodeSplit: true,
+    cssCodeSplit: mode !== 'render',
     reportCompressedSize: true,
   },
+  resolve:
+    mode === 'render'
+      ? {
+          alias: [
+            {
+              find: /^@codeimage\/ui$/,
+              replacement: fileURLToPath(
+                new URL('../../packages/ui/src/index.tsx', import.meta.url),
+              ),
+            },
+          ],
+        }
+      : undefined,
+  ssr: mode === 'render' ? {noExternal: true} : undefined,
   optimizeDeps: {
     include: ['@codemirror/state', '@codemirror/view', '@codemirror/language'],
   },
