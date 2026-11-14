@@ -47,3 +47,11 @@ P2_URL=http://localhost:4403 P2_PATH=/classic P2_REVIEW_CASE=local-fonts P2_WEB_
 ```
 
 The [recorded results](media/takumi-new-editor.json) include the original font failure, current signature and code-font comparisons, UI checks and adapter source hash. Performance was not measured again.
+
+## Main line-mark merge
+
+Main through `1ffe0c9d` is included. After rebuilding the updated config package and API declarations, the resulting app passes 110 tests, typecheck, lint and the production build on Node 24.14.0. PR #701 additionally checks 32 marked-code combinations against Chrome, with a worst difference of 0.1775% and no errors or fallback.
+
+The first repeat of the UI probe after this merge completed its export actions but failed its page-error gate because a dynamic editor module failed to load during development-server startup. That run is retained separately and is not a pass.
+
+At a running server, the repeat passes Inspector, Dock and Studio with one persisted and hydrated reload per layout, target picker and scale summaries, 1080×1080 PNGs, Restore defaults and the per-tab ZIP. Two actual WASM renders are observed, with no page errors or fallback. The earlier five-reload-per-layout result remains recorded separately.

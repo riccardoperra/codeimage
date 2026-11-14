@@ -1,6 +1,6 @@
 {
   "uiBase": "0254e0bb",
-  "takumiBase": "c072a1d4",
+  "takumiBase": "6ea6df12",
   "signatureFrontendSnapshot": "24a636d8",
   "adapterSha256": "e0ffb83a20737776bce4f3922b8f277aee220c8ee9daa28c5e20015ffd9f8439",
   "signatureBefore": {
@@ -303,14 +303,15 @@
     "wasm": 3
   },
   "validation": {
-    "unitTests": 59,
+    "unitTests": 110,
     "testsExit": 0,
     "typecheckExit": 0,
     "lintExit": 0,
     "buildExit": 0,
     "node": "24.14.0",
     "codeHead": "bda4e87f",
-    "dependencies": "frozen lockfile"
+    "dependencies": "frozen lockfile",
+    "latestCodeHead": "ce04d7f8"
   },
   "signatureBeforeSnapshot": "83be16ad",
   "signatureAt1x": {
@@ -710,5 +711,56 @@
     "A revised 2x probe omitted its ratio argument and produced NaN. Its results were discarded.",
     "Native display scale now matches export scale, avoiding resampled Retina screenshots as the native 1x reference."
   ],
-  "main": "89200f59"
+  "main": "1ffe0c9d",
+  "uiAfterLineMarksFailure": {
+    "error": "Failed to fetch dynamically imported module: /src/prototypes/editor-controls/index.tsx",
+    "fallbacks": [],
+    "countedAsPass": false
+  },
+  "uiAfterLineMarks": {
+    "rows": [
+      {
+        "reloads": 1,
+        "picker": "square",
+        "summary": "1x",
+        "layout": "inspector",
+        "persisted": true,
+        "width": 1080,
+        "height": 1080,
+        "restored": true
+      },
+      {
+        "reloads": 1,
+        "picker": "square",
+        "summary": "1x",
+        "layout": "dock",
+        "persisted": true,
+        "width": 1080,
+        "height": 1080,
+        "restored": true
+      },
+      {
+        "reloads": 1,
+        "picker": "square",
+        "summary": "1x",
+        "layout": "studio",
+        "persisted": true,
+        "width": 1080,
+        "height": 1080,
+        "restored": true
+      }
+    ],
+    "tabs": [
+      "01-index.tsx.png",
+      "02-second.ts.png"
+    ],
+    "tabRenders": 2,
+    "errors": [],
+    "fallbacks": [],
+    "wasm": [
+      "http://localhost:4403/@fs/Users/riccardoperra/.t3/worktrees/codeimage/takumi-new-editor/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
+      "http://localhost:4403/@fs/Users/riccardoperra/.t3/worktrees/codeimage/takumi-new-editor/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm",
+      "http://localhost:4403/@fs/Users/riccardoperra/.t3/worktrees/codeimage/takumi-new-editor/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm"
+    ]
+  }
 }
