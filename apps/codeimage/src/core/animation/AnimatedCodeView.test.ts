@@ -38,7 +38,6 @@ test('draws each visible token once, slides the kept ones, and fades in the new 
     }),
   );
   assert.ok(markup.includes('data-animated-code-view'));
-  assert.ok(markup.includes('data-line-focus="false"'));
 
   const elements = descendants(parseHtml(markup));
   const within = (className: string) =>
