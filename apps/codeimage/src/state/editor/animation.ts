@@ -10,7 +10,7 @@ import {
 } from 'solid-js';
 import type {createEditorsStore} from './editor';
 
-export const ANIMATION_DEFAULTS = {
+const ANIMATION_DEFAULTS = {
   holdMs: 800,
   transitionMs: 900,
   easing: 'smooth',
@@ -53,7 +53,7 @@ const clampDuration = (
   {min, max}: {readonly min: number; readonly max: number},
 ) => Math.min(max, Math.max(min, Math.round(value)));
 
-export const totalDurationMs = ({steps, transitionMs}: AnimationSettings) =>
+const totalDurationMs = ({steps, transitionMs}: AnimationSettings) =>
   steps.reduce((total, step) => total + step.holdMs, 0) +
   (steps.length - 1) * transitionMs;
 
@@ -68,7 +68,7 @@ export const stepStartsMs = ({steps, transitionMs}: AnimationSettings) =>
 // Keeps the steps whose tab still exists, in their order, and appends a step
 // for every other tab in tab order. A timeline of 0 ms has no frame to show,
 // so a lone step held for 0 ms takes the default hold.
-export function reconcileSteps(
+function reconcileSteps(
   draft: AnimationDraft,
   editorIds: NonEmpty<string>,
 ): AnimationSettings {
@@ -133,8 +133,8 @@ export const parseAnimationSettings = (
   editorIds: NonEmpty<string>,
 ): AnimationSettings => reconcileSteps(parseDraft(value), editorIds);
 
-// `playing` stores the clock time at which the playhead was at 0, so the
-// playhead moves without an update per frame.
+// `playing` keeps the clock time at which the playhead was at 0, so the
+// state stays the same while the playhead moves.
 export type Playback =
   | {state: 'editing'}
   | {state: 'playing'; originMs: number}
@@ -226,10 +226,9 @@ export function createAnimationStore(
   createEffect(() => {
     const state = playback();
     if (state.state !== 'playing') return;
-    const duration = untrack(durationMs);
     let request = 0;
     const tick = (time: number) => {
-      if (time - state.originMs >= duration) {
+      if (time - state.originMs >= durationMs()) {
         send({type: 'pause', now: time});
       } else {
         setNow(time);
@@ -319,8 +318,6 @@ export function createAnimationStore(
       setFps(fps: AnimationSettings['fps']) {
         update(settings => ({...settings, fps}));
       },
-      play: () => send({type: 'play', now: performance.now()}),
-      pause: () => send({type: 'pause', now: performance.now()}),
       toggle: () => send({type: 'toggle', now: performance.now()}),
       scrub: (atMs: number) => send({type: 'scrub', atMs}),
       seek: (atMs: number) => send({type: 'seek', atMs}),
