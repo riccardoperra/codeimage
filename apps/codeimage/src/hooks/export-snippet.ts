@@ -39,6 +39,7 @@ export function useExportSnippet(): [
       );
       try {
         return await exportImage({
+          ...payload,
           ref,
           options: {...payload.options, mode: ExportMode.getBlob},
         });

@@ -1,0 +1,751 @@
+{
+  "initial": {
+    "onVsChrome": {
+      "percent": 0.24718582897335006,
+      "width": 1186,
+      "height": 936
+    },
+    "offVsChrome": {
+      "percent": 0.6395843242386244,
+      "width": 1186,
+      "height": 936
+    },
+    "onVsOff": {
+      "percent": 0.8814552975598506,
+      "width": 1186,
+      "height": 936
+    }
+  },
+  "rows": [
+    {
+      "theme": "Fleet Dark",
+      "terminal": "windows",
+      "takumi": 0.2670940170940171,
+      "domExport": 0.6395843242386244,
+      "onVsOff": 0.9013634856805177
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOs",
+      "takumi": 0.24718582897335006,
+      "domExport": 0.6395843242386244,
+      "onVsOff": 0.8814552975598506
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24718582897335006,
+      "domExport": 0.6395843242386244,
+      "onVsOff": 0.8814552975598506
+    },
+    {
+      "theme": "Fleet Dark",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24772632276848128,
+      "domExport": 0.6395843242386244,
+      "onVsOff": 0.881995791354982
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "windows",
+      "takumi": 0.2641213012207953,
+      "domExport": 0.6369719375621568,
+      "onVsOff": 0.8988411813032386
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOs",
+      "takumi": 0.24421311310012828,
+      "domExport": 0.6369719375621568,
+      "onVsOff": 0.8789329931825716
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24421311310012828,
+      "domExport": 0.6369719375621568,
+      "onVsOff": 0.8789329931825716
+    },
+    {
+      "theme": "VSCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24475360689525952,
+      "domExport": 0.6369719375621568,
+      "onVsOff": 0.8794734869777028
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "windows",
+      "takumi": 0.26529237111024634,
+      "domExport": 0.6349901269800089,
+      "onVsOff": 0.8969494530202793
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOs",
+      "takumi": 0.24538418298957929,
+      "domExport": 0.6349901269800089,
+      "onVsOff": 0.8770412648996123
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24538418298957929,
+      "domExport": 0.6349901269800089,
+      "onVsOff": 0.8770412648996123
+    },
+    {
+      "theme": "XCode Dark",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.2459246767847105,
+      "domExport": 0.6349901269800089,
+      "onVsOff": 0.8775817586947435
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "windows",
+      "takumi": 0.2641213012207953,
+      "domExport": 0.6284141191392456,
+      "onVsOff": 0.9209113446044306
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOs",
+      "takumi": 0.24421311310012828,
+      "domExport": 0.6284141191392456,
+      "onVsOff": 0.9010031564837636
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24421311310012828,
+      "domExport": 0.6284141191392456,
+      "onVsOff": 0.9010031564837636
+    },
+    {
+      "theme": "Night Owl",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24475360689525952,
+      "domExport": 0.6284141191392456,
+      "onVsOff": 0.9015436502788948
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "windows",
+      "takumi": 0.2684452515818452,
+      "domExport": 0.6399446534353785,
+      "onVsOff": 0.8998320865943126
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOs",
+      "takumi": 0.24853706346117813,
+      "domExport": 0.6399446534353785,
+      "onVsOff": 0.8799238984736455
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24853706346117813,
+      "domExport": 0.6399446534353785,
+      "onVsOff": 0.8799238984736455
+    },
+    {
+      "theme": "GitHub Dark",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24907755725630937,
+      "domExport": 0.6399446534353785,
+      "onVsOff": 0.8804643922687767
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "windows",
+      "takumi": 0.2632204782289099,
+      "domExport": 0.6346297977832548,
+      "onVsOff": 0.8961387123275825
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOs",
+      "takumi": 0.2433122901082429,
+      "domExport": 0.6346297977832548,
+      "onVsOff": 0.8762305242069154
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.2433122901082429,
+      "domExport": 0.6346297977832548,
+      "onVsOff": 0.8762305242069154
+    },
+    {
+      "theme": "GitHub Dark Dimmed",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24385278390337412,
+      "domExport": 0.6346297977832548,
+      "onVsOff": 0.8767710180020467
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "windows",
+      "takumi": 0.26258990213459016,
+      "domExport": 0.6318372465084101,
+      "onVsOff": 0.8940668194462461
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOs",
+      "takumi": 0.24268171401392313,
+      "domExport": 0.6318372465084101,
+      "onVsOff": 0.874158631325579
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24268171401392313,
+      "domExport": 0.6318372465084101,
+      "onVsOff": 0.874158631325579
+    },
+    {
+      "theme": "Dracula",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24322220780905435,
+      "domExport": 0.6318372465084101,
+      "onVsOff": 0.8746991251207102
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "windows",
+      "takumi": 0.29060549718222567,
+      "domExport": 0.6376025136564766,
+      "onVsOff": 0.9165873942433808
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOs",
+      "takumi": 0.27069730906155864,
+      "domExport": 0.6376025136564766,
+      "onVsOff": 0.8966792061227137
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.27069730906155864,
+      "domExport": 0.6376025136564766,
+      "onVsOff": 0.8966792061227137
+    },
+    {
+      "theme": "XCode Light",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.27123780285668986,
+      "domExport": 0.6376025136564766,
+      "onVsOff": 0.8972196999178449
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "windows",
+      "takumi": 0.26204940833945894,
+      "domExport": 0.6340893039881236,
+      "onVsOff": 0.8956883008316397
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOs",
+      "takumi": 0.2421412202187919,
+      "domExport": 0.6340893039881236,
+      "onVsOff": 0.8757801127109728
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.2421412202187919,
+      "domExport": 0.6340893039881236,
+      "onVsOff": 0.8757801127109728
+    },
+    {
+      "theme": "Material Ocean",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24268171401392313,
+      "domExport": 0.6340893039881236,
+      "onVsOff": 0.876320606506104
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "windows",
+      "takumi": 0.26475187731511507,
+      "domExport": 0.637332266758911,
+      "onVsOff": 0.9006428272870094
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "macOs",
+      "takumi": 0.24484368919444804,
+      "domExport": 0.637332266758911,
+      "onVsOff": 0.8807346391663424
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24484368919444804,
+      "domExport": 0.637332266758911,
+      "onVsOff": 0.8807346391663424
+    },
+    {
+      "theme": "Synthwave '84",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24538418298957929,
+      "domExport": 0.637332266758911,
+      "onVsOff": 0.8812751329614736
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "windows",
+      "takumi": 0.2606080915524423,
+      "domExport": 0.6348099623816319,
+      "onVsOff": 0.8970395353194679
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOs",
+      "takumi": 0.24069990343177528,
+      "domExport": 0.6348099623816319,
+      "onVsOff": 0.8771313471988008
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24069990343177528,
+      "domExport": 0.6348099623816319,
+      "onVsOff": 0.8771313471988008
+    },
+    {
+      "theme": "Poimandres",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.2412403972269065,
+      "domExport": 0.6348099623816319,
+      "onVsOff": 0.877671840993932
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "windows",
+      "takumi": 0.26502212421268073,
+      "domExport": 0.6367016906645911,
+      "onVsOff": 0.8978502760121647
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOs",
+      "takumi": 0.24511393609201365,
+      "domExport": 0.6367016906645911,
+      "onVsOff": 0.8779420878914976
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24511393609201365,
+      "domExport": 0.6367016906645911,
+      "onVsOff": 0.8779420878914976
+    },
+    {
+      "theme": "Material Volcano",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.2456544298871449,
+      "domExport": 0.6367016906645911,
+      "onVsOff": 0.8784825816866288
+    },
+    {
+      "theme": "One dark",
+      "terminal": "windows",
+      "takumi": 0.2570948818840893,
+      "domExport": 0.6171538317406783,
+      "onVsOff": 0.8930759141551722
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOs",
+      "takumi": 0.23718669376342227,
+      "domExport": 0.6171538317406783,
+      "onVsOff": 0.8731677260345051
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.23718669376342227,
+      "domExport": 0.6171538317406783,
+      "onVsOff": 0.8731677260345051
+    },
+    {
+      "theme": "One dark",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.2377271875585535,
+      "domExport": 0.6171538317406783,
+      "onVsOff": 0.8737082198296363
+    },
+    {
+      "theme": "Panda",
+      "terminal": "windows",
+      "takumi": 0.26610311180294316,
+      "domExport": 0.6366116083654026,
+      "onVsOff": 0.8979403583113532
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOs",
+      "takumi": 0.24619492368227613,
+      "domExport": 0.6366116083654026,
+      "onVsOff": 0.8780321701906862
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24619492368227613,
+      "domExport": 0.6366116083654026,
+      "onVsOff": 0.8780321701906862
+    },
+    {
+      "theme": "Panda",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24673541747740735,
+      "domExport": 0.6366116083654026,
+      "onVsOff": 0.8785726639858175
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "windows",
+      "takumi": 0.26556261800781195,
+      "domExport": 0.6395843242386244,
+      "onVsOff": 0.8988411813032386
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOs",
+      "takumi": 0.2456544298871449,
+      "domExport": 0.6395843242386244,
+      "onVsOff": 0.8789329931825716
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.2456544298871449,
+      "domExport": 0.6395843242386244,
+      "onVsOff": 0.8789329931825716
+    },
+    {
+      "theme": "Aura Dark",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24619492368227613,
+      "domExport": 0.6395843242386244,
+      "onVsOff": 0.8794734869777028
+    },
+    {
+      "theme": "One light",
+      "terminal": "windows",
+      "takumi": 0.40840118965118966,
+      "domExport": 0.6356115731115731,
+      "onVsOff": 1.037876819126819
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOs",
+      "takumi": 0.3841281185031185,
+      "domExport": 0.6356115731115731,
+      "onVsOff": 1.013603747978748
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.3841281185031185,
+      "domExport": 0.6356115731115731,
+      "onVsOff": 1.013603747978748
+    },
+    {
+      "theme": "One light",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.3846695252945253,
+      "domExport": 0.6356115731115731,
+      "onVsOff": 1.0141451547701548
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "windows",
+      "takumi": 0.26096842074919646,
+      "domExport": 0.6329182340986725,
+      "onVsOff": 0.8958684654300169
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOs",
+      "takumi": 0.24106023262852944,
+      "domExport": 0.6329182340986725,
+      "onVsOff": 0.8759602773093498
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24106023262852944,
+      "domExport": 0.6329182340986725,
+      "onVsOff": 0.8759602773093498
+    },
+    {
+      "theme": "Material Palenight",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24160072642366065,
+      "domExport": 0.6329182340986725,
+      "onVsOff": 0.8765007711044811
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "windows",
+      "takumi": 0.28871376889926637,
+      "domExport": 0.6359810322710828,
+      "onVsOff": 0.9158667358498724
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOs",
+      "takumi": 0.26880558077859934,
+      "domExport": 0.6359810322710828,
+      "onVsOff": 0.8959585477292054
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.26880558077859934,
+      "domExport": 0.6359810322710828,
+      "onVsOff": 0.8959585477292054
+    },
+    {
+      "theme": "GitHub Light",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.26934607457373055,
+      "domExport": 0.6359810322710828,
+      "onVsOff": 0.8964990415243367
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "windows",
+      "takumi": 0.2668237701964515,
+      "domExport": 0.6393140773410588,
+      "onVsOff": 0.9010031564837636
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOs",
+      "takumi": 0.24691558207578443,
+      "domExport": 0.6393140773410588,
+      "onVsOff": 0.8810949683630965
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24691558207578443,
+      "domExport": 0.6393140773410588,
+      "onVsOff": 0.8810949683630965
+    },
+    {
+      "theme": "Moonlight",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24745607587091567,
+      "domExport": 0.6393140773410588,
+      "onVsOff": 0.8816354621582277
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "windows",
+      "takumi": 0.25853619867110594,
+      "domExport": 0.6291347775327539,
+      "onVsOff": 0.8955081362332628
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOs",
+      "takumi": 0.2386280105504389,
+      "domExport": 0.6291347775327539,
+      "onVsOff": 0.8755999481125957
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.2386280105504389,
+      "domExport": 0.6291347775327539,
+      "onVsOff": 0.8755999481125957
+    },
+    {
+      "theme": "Vitesse Dark",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.2391685043455701,
+      "domExport": 0.6291347775327539,
+      "onVsOff": 0.8761404419077269
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "windows",
+      "takumi": 0.2615089145443277,
+      "domExport": 0.6322876580043528,
+      "onVsOff": 0.8948775601389429
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOs",
+      "takumi": 0.24160072642366065,
+      "domExport": 0.6322876580043528,
+      "onVsOff": 0.8749693720182758
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24160072642366065,
+      "domExport": 0.6322876580043528,
+      "onVsOff": 0.8749693720182758
+    },
+    {
+      "theme": "Duotone Sea",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.2421412202187919,
+      "domExport": 0.6322876580043528,
+      "onVsOff": 0.8755098658134072
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "windows",
+      "takumi": 0.25691471728571225,
+      "domExport": 0.6226488519911791,
+      "onVsOff": 0.8914544327697784
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOs",
+      "takumi": 0.2370065291650452,
+      "domExport": 0.6226488519911791,
+      "onVsOff": 0.8715462446491115
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.2370065291650452,
+      "domExport": 0.6226488519911791,
+      "onVsOff": 0.8715462446491115
+    },
+    {
+      "theme": "Duotone Dark",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.2375470229601764,
+      "domExport": 0.6226488519911791,
+      "onVsOff": 0.8720867384442427
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "windows",
+      "takumi": 0.26376097202404114,
+      "domExport": 0.633008316397861,
+      "onVsOff": 0.8963188769259596
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOs",
+      "takumi": 0.24385278390337412,
+      "domExport": 0.633008316397861,
+      "onVsOff": 0.8764106888052925
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24385278390337412,
+      "domExport": 0.633008316397861,
+      "onVsOff": 0.8764106888052925
+    },
+    {
+      "theme": "Shades Of Purple",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24439327769850536,
+      "domExport": 0.633008316397861,
+      "onVsOff": 0.8769511826004237
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "windows",
+      "takumi": 0.2872724521122498,
+      "domExport": 0.6392239950418702,
+      "onVsOff": 0.9174882172352662
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOs",
+      "takumi": 0.2673642639915827,
+      "domExport": 0.6392239950418702,
+      "onVsOff": 0.8975800291145991
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.2673642639915827,
+      "domExport": 0.6392239950418702,
+      "onVsOff": 0.8975800291145991
+    },
+    {
+      "theme": "Coldark Cold",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.26790475778671397,
+      "domExport": 0.6392239950418702,
+      "onVsOff": 0.8981205229097303
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "windows",
+      "takumi": 0.2672741816923942,
+      "domExport": 0.6377826782548537,
+      "onVsOff": 0.8992015104999928
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOs",
+      "takumi": 0.24736599357172712,
+      "domExport": 0.6377826782548537,
+      "onVsOff": 0.8792933223793258
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.24736599357172712,
+      "domExport": 0.6377826782548537,
+      "onVsOff": 0.8792933223793258
+    },
+    {
+      "theme": "Coldark Dark",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.24790648736685836,
+      "domExport": 0.6377826782548537,
+      "onVsOff": 0.879833816174457
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "windows",
+      "takumi": 0.2845699831365936,
+      "domExport": 0.6344496331848777,
+      "onVsOff": 0.9145155013620444
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOs",
+      "takumi": 0.26466179501592657,
+      "domExport": 0.6344496331848777,
+      "onVsOff": 0.8946073132413773
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsGrayTheme",
+      "takumi": 0.26466179501592657,
+      "domExport": 0.6344496331848777,
+      "onVsOff": 0.8946073132413773
+    },
+    {
+      "theme": "Material Light",
+      "terminal": "macOsOutlineTheme",
+      "takumi": 0.2652022888110578,
+      "domExport": 0.6344496331848777,
+      "onVsOff": 0.8951478070365085
+    }
+  ],
+  "errors": [],
+  "fallback": []
+}

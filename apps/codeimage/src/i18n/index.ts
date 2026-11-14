@@ -1,4 +1,5 @@
 import {secrets} from './secrets';
+import {rendering} from './rendering';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
@@ -98,6 +99,7 @@ export const locale = {
     ...notFound.it,
     ...presets.it,
     ...exportTabs.it,
+    ...rendering.it,
   },
   en: {
     ...secrets.en,
@@ -186,6 +188,7 @@ export const locale = {
     ...notFound.en,
     ...presets.en,
     ...exportTabs.en,
+    ...rendering.en,
   },
   de: {
     ...secrets.de,
@@ -275,6 +278,7 @@ export const locale = {
     ...notFound.de,
     ...presets.de,
     ...exportTabs.de,
+    ...rendering.de,
   },
   es: {
     ...secrets.es,
@@ -364,6 +368,7 @@ export const locale = {
     ...notFound.es,
     ...presets.es,
     ...exportTabs.es,
+    ...rendering.es,
   },
 };
 

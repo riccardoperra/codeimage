@@ -1,12 +1,8 @@
-import {type HtmlExportOptions} from '@codeimage/dom-export';
-import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
+import {createRasterizer} from '@core/rasterize';
+import type {RasterizerName, RasterizeOptions} from '@core/rasterize';
 import {useWebshare} from '@core/hooks/use-webshare';
 import {isIOS} from '@solid-primitives/platform';
 import download from 'downloadjs';
-
-function loadDomExport() {
-  return import('@codeimage/dom-export');
-}
 
 export const enum ExportMode {
   export = 'export',
@@ -29,6 +25,8 @@ export interface ExportOptions {
 }
 
 export interface ExportImagePayload {
+  renderer: RasterizerName;
+  rasterizeOptions?: Partial<Pick<RasterizeOptions, 'pixelRatio'>>;
   ref: HTMLElement | null | undefined;
   options: ExportOptions;
 }
@@ -63,43 +61,30 @@ export async function exportImage(
   const fileNameWithExtension = `${resolvedFileName}.${extension}`;
   const previewNode = ref.firstChild as HTMLElement;
 
-  const toImageOptions: HtmlExportOptions = {
-    type: mimeType,
-    filter: (node: Node | undefined) => {
-      const isNotExcluded = () => {
-        const el = node as Element | null;
-        if (!el) return true;
-        const attr = el?.getAttribute?.('data-export-exclude');
-        return !attr || attr === 'false';
-      };
-
-      return (
-        isNotExcluded() &&
-        (!node?.hasOwnProperty(EXPORT_EXCLUDE) ||
-          !(node as Node & {[EXPORT_EXCLUDE]: boolean})[EXPORT_EXCLUDE])
-      );
-    },
-    pixelRatio: pixelRatio,
-    quality: quality,
-    experimental_optimizeFontLoading: true,
-    experimental_safariResourceFix: true,
-    experimental_includeExternalFonts: ['inter var'],
+  const rasterize = createRasterizer(
+    data.renderer,
+    mode === ExportMode.export ? 'dataUrl' : 'blob',
+  );
+  const rasterizeOptions = {
+    format: extension,
+    pixelRatio: data.rasterizeOptions?.pixelRatio ?? pixelRatio,
+    quality,
   };
 
-  async function exportByMode(ref: HTMLElement) {
-    const {toBlob, toJpeg, toSvg, toPng} = await loadDomExport();
+  async function getBlob(node: HTMLElement) {
+    const result = await rasterize(node, rasterizeOptions);
+    if (!(result instanceof Blob)) throw new Error('Error on blob file save.');
+    return result;
+  }
 
+  async function exportByMode(ref: HTMLElement) {
     switch (mode) {
       case 'share': {
         if (!supported()) {
           throw new Error('WebShare api is not supported.');
         }
 
-        const blob = await toBlob(ref, toImageOptions);
-
-        if (!blob) {
-          throw new Error('Error on blob file save.');
-        }
+        const blob = await getBlob(ref);
 
         const file = new File([blob], fileNameWithExtension, {
           type: mimeType,
@@ -145,20 +130,14 @@ export async function exportImage(
         return blob;
       }
       case 'export': {
-        const fn = {
-          [ExportExtension.jpeg]: toJpeg,
-          [ExportExtension.png]: toPng,
-          [ExportExtension.svg]: toSvg,
-        } as const;
-
-        const result = await fn[extension](ref, toImageOptions);
+        const result = await rasterize(ref, rasterizeOptions);
         download(result, fileNameWithExtension);
 
         return result;
       }
       case ExportMode.newTab: {
         const link = document.createElement('a');
-        return toBlob(ref, toImageOptions)
+        return getBlob(ref)
           .then(blob => {
             return [blob, window.URL.createObjectURL(blob as Blob)] as [
               Blob,
@@ -177,7 +156,7 @@ export async function exportImage(
           });
       }
       case ExportMode.getBlob: {
-        const blob = await toBlob(ref, toImageOptions);
+        const blob = await getBlob(ref);
         return blob as Blob;
       }
       default: {

@@ -1,0 +1,126 @@
+{
+  "warm": {
+    "domExport": {
+      "runs": 10,
+      "median": 6534.650000020862,
+      "min": 6132.300000011921,
+      "max": 7834.4000000059605,
+      "values": [
+        7349.0999999940395, 7834.4000000059605, 6132.300000011921,
+        6494.199999988079, 6868.4000000059605, 6621.699999988079,
+        6261.300000011921, 6574.600000023842, 6145.300000011921,
+        6494.700000017881
+      ]
+    },
+    "takumi": {
+      "runs": 10,
+      "median": 665,
+      "min": 579.0999999940395,
+      "max": 902.7000000178814,
+      "values": [
+        902.7000000178814, 668.5, 595.2000000178814, 579.0999999940395,
+        690.0999999940395, 596.0999999940395, 727.8000000119209,
+        772.2999999821186, 661.5, 587.9000000059605
+      ]
+    }
+  },
+  "cold": {
+    "runs": 5,
+    "median": 1029.6000000238419,
+    "min": 927.3000000119209,
+    "max": 1231.800000011921,
+    "values": [
+      1231.800000011921, 1032.800000011921, 927.3000000119209,
+      949.0999999940395, 1029.6000000238419
+    ]
+  },
+  "profiles": [
+    {
+      "engine": "dom-export",
+      "hot": [
+        {
+          "name": "setAttribute",
+          "hits": 964
+        },
+        {
+          "name": "setProperty",
+          "hits": 822
+        },
+        {
+          "name": "(program)",
+          "hits": 564
+        },
+        {
+          "name": "getPropertyValue",
+          "hits": 327
+        },
+        {
+          "name": "_e",
+          "hits": 209
+        },
+        {
+          "name": "O",
+          "hits": 181
+        },
+        {
+          "name": "getAttribute",
+          "hits": 176
+        },
+        {
+          "name": "(idle)",
+          "hits": 172
+        }
+      ]
+    },
+    {
+      "engine": "takumi",
+      "hot": [
+        {
+          "name": "wasm-function[880]",
+          "hits": 23
+        },
+        {
+          "name": "wasm-function[1373]",
+          "hits": 21
+        },
+        {
+          "name": "wasm-function[356]",
+          "hits": 20
+        },
+        {
+          "name": "wasm-function[1373]",
+          "hits": 19
+        },
+        {
+          "name": "wasm-function[206]",
+          "hits": 19
+        },
+        {
+          "name": "wasm-function[603]",
+          "hits": 12
+        },
+        {
+          "name": "wasm-function[650]",
+          "hits": 11
+        },
+        {
+          "name": "(garbage collector)",
+          "hits": 11
+        }
+      ]
+    }
+  ],
+  "machine": {
+    "at": "2026-11-14T10:53:33.511Z",
+    "cpu": "Apple M3",
+    "logicalCores": 8,
+    "loadAverage": [23.04296875, 24.9853515625, 30.48974609375],
+    "platform": "darwin",
+    "architecture": "arm64",
+    "app": "Vite development server on localhost:4402",
+    "browser": "Chromium 1200, Playwright 1.57.0",
+    "wasm": "@takumi-rs/wasm 2.19.0 package release binary",
+    "pixelRatio": 2,
+    "codeLines": 300
+  }
+}
