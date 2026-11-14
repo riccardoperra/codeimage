@@ -1,6 +1,7 @@
 {
   "name": "@codeimage/render",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "description": "Render saved CodeImage projects in Node.",
   "license": "MIT",
