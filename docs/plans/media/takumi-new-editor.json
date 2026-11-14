@@ -1,6 +1,6 @@
 {
   "uiBase": "0254e0bb",
-  "takumiBase": "052c6562",
+  "takumiBase": "c072a1d4",
   "signatureFrontendSnapshot": "24a636d8",
   "adapterSha256": "e0ffb83a20737776bce4f3922b8f277aee220c8ee9daa28c5e20015ffd9f8439",
   "signatureBefore": {
@@ -293,7 +293,10 @@
         "restored": true
       }
     ],
-    "tabs": ["01-index.tsx.png", "02-second.ts.png"],
+    "tabs": [
+      "01-index.tsx.png",
+      "02-second.ts.png"
+    ],
     "tabRenders": 2,
     "errors": [],
     "fallbacks": [],
@@ -305,7 +308,9 @@
     "typecheckExit": 0,
     "lintExit": 0,
     "buildExit": 0,
-    "node": "24.14.0"
+    "node": "24.14.0",
+    "codeHead": "bda4e87f",
+    "dependencies": "frozen lockfile"
   },
   "signatureBeforeSnapshot": "83be16ad",
   "signatureAt1x": {
@@ -649,7 +654,9 @@
   "variableCodeFonts": [
     {
       "family": "Geist Mono",
-      "weights": ["700"],
+      "weights": [
+        "700"
+      ],
       "chrome": {
         "percent": 0.23767758142758144,
         "width": 1184,
@@ -659,7 +666,9 @@
     },
     {
       "family": "Monaspace Argon",
-      "weights": ["700"],
+      "weights": [
+        "700"
+      ],
       "chrome": {
         "percent": 0.24368478857770456,
         "width": 1214,
@@ -700,5 +709,6 @@
     "The first immediate reload checks did not wait for IndexedDB completion. Current checks confirm the stored renderer and wait for hydrated UI state.",
     "A revised 2x probe omitted its ratio argument and produced NaN. Its results were discarded.",
     "Native display scale now matches export scale, avoiding resampled Retina screenshots as the native 1x reference."
-  ]
+  ],
+  "main": "89200f59"
 }

@@ -2,7 +2,7 @@
 
 The renderer preference from PR #701 controls the new editor from PR #711. The integration has its own branch so the editor and signature workers keep their checkouts.
 
-The final branch passes 59 app tests, typecheck, lint, and the production build on Node 24. Exit codes are recorded; lint retains existing warnings.
+With main through `89200f59`, code head `bda4e87f` passes 59 app tests, typecheck, lint, and the production build on Node 24 with the frozen lockfile. Exit codes are recorded; lint retains existing warnings.
 
 ## Export behavior
 
