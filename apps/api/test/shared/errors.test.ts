@@ -89,7 +89,7 @@ test('responses and errors echo safe request ids and replace unsafe ids', async 
   });
   expect(invalid.json()).toMatchObject({
     statusCode: 400,
-    code: 'INVALID_REQUEST',
+    code: 'FST_ERR_VALIDATION',
     details: [{path: '', message: "must have required property 'name'"}],
   });
 });

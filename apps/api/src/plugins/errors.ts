@@ -31,7 +31,7 @@ export function classify(thrown: unknown): Failure {
   if ('validation' in error && Array.isArray(error.validation)) {
     return {
       statusCode: 400,
-      code: 'INVALID_REQUEST',
+      code: 'FST_ERR_VALIDATION',
       message: error.message,
       logLevel: 'warn',
       details: error.validation.map(v => ({
