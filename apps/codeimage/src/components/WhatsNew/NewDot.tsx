@@ -7,10 +7,36 @@ import {getWhatsNew, RELEASES} from '../../state/whats-new';
 import {illustrations} from './illustrations';
 import * as styles from './whats-new.css';
 
+const TABBABLE =
+  'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function previousTabbable(from: Element): HTMLElement | undefined {
+  return [...document.querySelectorAll<HTMLElement>(TABBABLE)]
+    .filter(
+      element =>
+        !from.contains(element) &&
+        element.compareDocumentPosition(from) &
+          Node.DOCUMENT_POSITION_FOLLOWING &&
+        element.getClientRects().length > 0,
+    )
+    .at(-1);
+}
+
 export function NewDot(props: {highlight: LocatedHighlightId}) {
   const news = getWhatsNew();
   let anchor: HTMLSpanElement | undefined;
+  // A seen dot leaves with its coachmark, so focus cannot return to it.
+  let returnTo: HTMLElement | undefined;
   const [open, setOpen] = createSignal(false);
+  const toggle = (value: boolean) => {
+    if (value) {
+      news.opened(props.highlight, 'coachmark');
+      news.seen(props.highlight);
+    } else if (anchor && !news.hasDot(props.highlight)) {
+      returnTo = previousTabbable(anchor);
+    }
+    setOpen(value);
+  };
   const highlight = () =>
     RELEASES.flatMap(release => release.highlights).find(
       item => item.id === props.highlight,
@@ -28,13 +54,7 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
           >
             <Popover
               open={open()}
-              onOpenChange={value => {
-                setOpen(value);
-                if (value) {
-                  news.opened(props.highlight, 'coachmark');
-                  news.seen(props.highlight);
-                }
-              }}
+              onOpenChange={toggle}
               placement="bottom-start"
               gutter={10}
             >
@@ -50,7 +70,15 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
                   ) ?? document.body
                 }
               >
-                <Popover.Content class={styles.coachmark}>
+                <Popover.Content
+                  class={styles.coachmark}
+                  onCloseAutoFocus={event => {
+                    if (!returnTo) return;
+                    event.preventDefault();
+                    returnTo.focus();
+                    returnTo = undefined;
+                  }}
+                >
                   <Dynamic component={illustrations[item().id]} />
                   <div class={styles.copy}>
                     <Popover.Title class={styles.title}>
@@ -65,7 +93,7 @@ export function NewDot(props: {highlight: LocatedHighlightId}) {
                     <Button
                       size="sm"
                       theme="secondary"
-                      onClick={() => setOpen(false)}
+                      onClick={() => toggle(false)}
                     >
                       Got it
                     </Button>

@@ -1,5 +1,5 @@
 import {Button, IconButton} from '@codeui/kit';
-import {createEffect, createSignal, For, Show} from 'solid-js';
+import {createEffect, createSignal, createUniqueId, For, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES} from '../../state/whats-new';
 import {illustrations} from './illustrations';
@@ -13,6 +13,8 @@ export function Nudge(props: {
   const [expanded, setExpanded] = createSignal(false);
   const [step, setStep] = createSignal(0);
   const highlight = () => props.release.highlights[step()];
+  const copyId = createUniqueId();
+  let primary: HTMLButtonElement | undefined;
   createEffect(() => {
     if (expanded()) news.opened(highlight().id, 'nudge');
   });
@@ -27,7 +29,15 @@ export function Nudge(props: {
               <strong>{props.release.highlights.length} new things</strong>
               <span class={styles.muted}>{props.release.title}</span>
             </div>
-            <Button size="sm" theme="primary" onClick={() => setExpanded(true)}>
+            <Button
+              size="sm"
+              theme="primary"
+              onClick={() => {
+                setExpanded(true);
+                // The button that had focus is gone, so keep the keyboard here.
+                primary?.focus();
+              }}
+            >
               See
             </Button>
             <IconButton
@@ -44,7 +54,7 @@ export function Nudge(props: {
       >
         <div class={styles.expanded}>
           <Dynamic component={illustrations[highlight().id]} />
-          <div class={styles.copy}>
+          <div class={styles.copy} id={copyId}>
             <span class={styles.tag}>
               {'experimental' in highlight() ? 'Experiment' : 'New'}
             </span>
@@ -54,6 +64,7 @@ export function Nudge(props: {
           <div class={styles.actions}>
             <div
               class={styles.steps}
+              role="img"
               aria-label={`Step ${step() + 1} of ${props.release.highlights.length}`}
             >
               <For each={props.release.highlights}>
@@ -75,8 +86,12 @@ export function Nudge(props: {
               </Button>
             </Show>
             <Button
+              ref={element => {
+                primary = element;
+              }}
               size="sm"
               theme="primary"
+              aria-describedby={copyId}
               onClick={() =>
                 step() === props.release.highlights.length - 1
                   ? props.dismiss()
