@@ -1,15 +1,21 @@
+import {Button} from '@codeui/kit';
+import {useModality} from '@core/hooks/isMobile';
 import type {JSX} from 'solid-js';
 import {createSignal, onCleanup, onMount, Show} from 'solid-js';
-import {CodeImageLogoV2} from '../../../../components/Icons/CodeImageLogoV2';
-import {ToolbarSettingsButton} from '../../../../components/Toolbar/ToolbarSettings';
+import {Footer} from '../../../../components/Footer/Footer';
+import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
+import {Toolbar} from '../../../../components/Toolbar/Toolbar';
 import type {VariantMeta, VariantProps} from '../../contract';
+import type {ControlId} from '../../model';
+import {ThemeSwatch} from '../../ThemeSwatch';
 import type {Action} from './commands';
 import type {DockApi} from './context';
 import {createMediaQuery, DockContext, isKeyboardClick} from './context';
-import {Segmented} from './controls';
+import {SegmentedChoice, SelectChoice} from './controls';
 import './dock.css';
-import type {PanelId, View} from './fields';
+import type {PanelId} from './fields';
 import {createFields} from './fields';
+import {createFrameGuard} from './guard';
 import {CodeIcon, PaddingIcon, SearchIcon, SlidersIcon} from './icons';
 import {createPreviewSession, shownTheme} from './preview';
 import {tokens} from './tokens.css';
@@ -17,66 +23,75 @@ import {Tray} from './Tray';
 
 export const meta: VariantMeta = {
   name: 'Dock',
-  axis: 'Interaction model: a dock of six controls, trays that preview, and a command menu',
+  axis: 'Interaction model: a dock of the most used controls, trays that preview, and a command menu',
 };
 
 const isApple = /Mac|iPhone|iPad/.test(navigator.platform);
 
 interface DockItemProps {
   panel: PanelId;
+  /** What the item sets. The phone bar shows it under the icon. */
   label: string;
+  /** The value in use. Wide windows show it in place of the label. */
   value?: string;
-  art?: JSX.Element;
-  class?: string;
-  onToggle: (panel: PanelId, event: MouseEvent) => void;
+  /** For a value the icon already shows, which then stays out of the text. */
+  quiet?: boolean;
+  icon: JSX.Element;
   open: boolean;
+  compact: boolean;
+  onToggle: (panel: PanelId, event: MouseEvent) => void;
 }
 
 function DockItem(props: DockItemProps) {
   return (
-    <button
-      type="button"
-      class={`dock-item ${props.class ?? ''}`}
+    <Button
+      class="dock-item"
+      theme={'secondary'}
+      variant={'ghost'}
+      size={'sm'}
+      leftIcon={props.icon}
       data-panel={props.panel}
+      aria-label={props.value ? `${props.label}: ${props.value}` : props.label}
       aria-haspopup="dialog"
       aria-expanded={props.open}
-      onClick={event => props.onToggle(props.panel, event)}
+      onClick={(event: MouseEvent) => props.onToggle(props.panel, event)}
     >
-      <Show when={props.art}>
-        <span class="dock-item-art">{props.art}</span>
-      </Show>
       <span class="dock-item-text">
-        <span class="dock-item-label">{props.label}</span>
-        <Show when={props.value}>
-          <span class="dock-item-value">{props.value}</span>
-        </Show>
+        {props.compact || props.quiet
+          ? props.label
+          : (props.value ?? props.label)}
       </span>
-    </button>
+    </Button>
   );
 }
 
 export default function Dock(props: VariantProps) {
   const fields = createFields(props.model);
+  // The production header shows Export only when the page loaded on a wide
+  // window, so the bar offers it in exactly the other case.
+  const exportInBar = useModality() === 'mobile';
   const compact = createMediaQuery('(max-width: 767px)');
   const canHover = createMediaQuery('(hover: hover) and (pointer: fine)');
 
-  const [view, setView] = createSignal<View>();
+  const [panel, setPanel] = createSignal<PanelId>();
   const [previewKey, setPreviewKey] = createSignal<string>();
   const [instant, setInstant] = createSignal(false);
   const session = createPreviewSession(setPreviewKey);
 
   let bar: HTMLDivElement | undefined;
+  let canvas: HTMLDivElement | undefined;
   let exportSlot: HTMLDivElement | undefined;
-  let copySlot: HTMLSpanElement | undefined;
   let trigger: HTMLElement | undefined;
 
-  const open = (next: View) => {
+  const inset = createFrameGuard(() => canvas);
+
+  const open = (next: PanelId) => {
     session.cancel();
-    setView(next);
+    setPanel(next);
   };
   const close = () => {
     session.cancel();
-    setView(undefined);
+    setPanel(undefined);
   };
 
   const dock: DockApi = {
@@ -85,14 +100,10 @@ export default function Dock(props: VariantProps) {
     fields,
     session,
     previewKey,
-    view,
+    panel,
     compact,
     open,
     close,
-    back: () => {
-      const current = view();
-      if (current?.detail) open({panel: current.panel});
-    },
     keep: change => {
       session.preview(change);
       session.commit();
@@ -102,16 +113,17 @@ export default function Dock(props: VariantProps) {
     },
   };
 
-  const toggle = (panel: PanelId, event: MouseEvent) => {
-    if (view()?.panel === panel) {
+  const toggle = (next: PanelId, event: MouseEvent) => {
+    if (panel() === next) {
       close();
       return;
     }
-    if (event.currentTarget instanceof HTMLElement) {
-      trigger = event.currentTarget;
+    // The kit's button does not hand its element to the handler.
+    if (event.target instanceof Element) {
+      trigger = event.target.closest<HTMLElement>('button') ?? undefined;
     }
     setInstant(isKeyboardClick(event));
-    open({panel});
+    open(next);
   };
 
   // Switching variants unmounts the dock with a preview still on the canvas.
@@ -124,62 +136,194 @@ export default function Dock(props: VariantProps) {
       if (event.key.toLowerCase() !== 'k') return;
       event.preventDefault();
       event.stopPropagation();
-      if (view()?.panel === 'commands') {
+      if (panel() === 'commands') {
         close();
         return;
       }
-      if (!view() && document.activeElement instanceof HTMLElement) {
+      if (!panel() && document.activeElement instanceof HTMLElement) {
         trigger = document.activeElement;
       }
       setInstant(true);
-      open({panel: 'commands'});
+      open('commands');
     };
     // Capture, so that the code editor does not take the key first.
     window.addEventListener('keydown', onKeyDown, true);
     onCleanup(() => window.removeEventListener('keydown', onKeyDown, true));
   });
 
-  // The production buttons own the export dialog and the clipboard call, so
-  // the command menu presses them. The frame lets the tray close first.
-  const press = (slot: () => HTMLElement | undefined) => () =>
-    requestAnimationFrame(() => slot()?.querySelector('button')?.click());
+  // The production Export button owns the dialog. It listens for Ctrl+S on
+  // wide windows, and on a phone it is the button in the bar.
+  const exportImage = () =>
+    requestAnimationFrame(() => {
+      const button = exportSlot?.querySelector('button');
+      if (button) {
+        button.click();
+        return;
+      }
+      document.body.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 's',
+          code: 'KeyS',
+          ctrlKey: true,
+          bubbles: true,
+        }),
+      );
+    });
 
   const actions = (): Action[] => [
-    {label: 'Export image…', note: 'Ctrl S', run: press(() => exportSlot)},
-    {label: 'Copy image to clipboard', run: press(() => copySlot)},
+    {label: 'Export image…', note: 'Ctrl S', run: exportImage},
     {label: 'Randomize theme and style', run: props.stage.randomize},
     ...(props.stage.canFormat()
       ? [{label: 'Format code', run: () => void props.stage.format()}]
       : []),
   ];
 
-  const isOpen = (panel: PanelId) => view()?.panel === panel;
-  const optionLabel = (id: Parameters<typeof fields.choice>[0]) => {
+  const isOpen = (id: PanelId) => panel() === id;
+  const optionLabel = (id: ControlId) => {
     const choice = fields.choice(id);
     return choice?.options().find(option => option.key === choice.value())
       ?.label;
   };
-  const background = () => fields.control('frame.background', 'background');
-  const padding = () => fields.choice('frame.padding');
-  const label = (id: Parameters<typeof fields.choice>[0], fallback: string) =>
+  const label = (id: ControlId, fallback: string) =>
     props.model.control(id)?.label() ?? fallback;
+  const background = () => fields.control('frame.background', 'background');
+  const item = (id: PanelId) => ({
+    panel: id,
+    open: isOpen(id),
+    compact: compact(),
+    onToggle: toggle,
+  });
 
   return (
     <DockContext.Provider value={dock}>
       <div
         class={`dock-root ${tokens}`}
-        data-panel={view()?.panel}
+        data-panel={panel()}
         data-compact={compact() ? '' : undefined}
       >
-        <main class="dock-stage">
-          <CodeImageLogoV2 class="dock-brand" aria-label="CodeImage" />
-          <div class="dock-menu">
-            <ToolbarSettingsButton />
+        <Toolbar canvasRef={props.stage.exportRef()} />
+
+        {/*
+          The dock and its tray come before the canvas in the document, and
+          CSS puts them under it. The code editor keeps the Tab key, so
+          controls after it could not be reached from the keyboard.
+        */}
+        <div class="dock-bar-row" ref={bar}>
+          <div
+            class="dock-bar dock-island"
+            role="toolbar"
+            aria-label="Editor controls"
+          >
+            <DockItem
+              {...item('themes')}
+              label={label('editor.theme', 'Theme')}
+              value={shownTheme(props.model)?.name}
+              icon={
+                <Show when={shownTheme(props.model)}>
+                  {theme => <ThemeSwatch theme={theme()} size={22} />}
+                </Show>
+              }
+            />
+            <DockItem
+              {...item('background')}
+              label={label('frame.background', 'Background')}
+              icon={
+                <span
+                  class="dock-fill"
+                  data-hidden={background()?.visible() ? undefined : ''}
+                  style={{background: background()?.value()}}
+                />
+              }
+            />
+            <Show
+              when={!compact()}
+              fallback={
+                <>
+                  <DockItem
+                    {...item('padding')}
+                    label={label('frame.padding', 'Padding')}
+                    value={optionLabel('frame.padding')}
+                    icon={<PaddingIcon />}
+                  />
+                  <DockItem
+                    {...item('language')}
+                    label={label('editor.language', 'Language')}
+                    value={optionLabel('editor.language')}
+                    icon={<CodeIcon />}
+                  />
+                </>
+              }
+            >
+              <Show when={fields.choice('frame.padding')}>
+                {control => (
+                  <div
+                    class="dock-field dock-field-padding"
+                    role="group"
+                    aria-label={control().label()}
+                    title={control().label()}
+                  >
+                    <PaddingIcon />
+                    <div class="dock-segmented">
+                      <SegmentedChoice control={control()} />
+                    </div>
+                  </div>
+                )}
+              </Show>
+              <Show when={fields.choice('editor.language')}>
+                {control => (
+                  <div
+                    class="dock-field dock-field-language"
+                    title={control().label()}
+                    onPointerDown={close}
+                  >
+                    <SelectChoice control={control()} />
+                  </div>
+                )}
+              </Show>
+            </Show>
+            <DockItem
+              {...item('font')}
+              label={label('font.family', 'Font')}
+              value={fields.fontName()}
+              quiet
+              icon={
+                <span
+                  class="dock-font-icon"
+                  style={{'font-family': `"${fields.fontName()}", monospace`}}
+                >
+                  Aa
+                </span>
+              }
+            />
+            <DockItem {...item('more')} label="More" icon={<SlidersIcon />} />
+            <Show when={!compact()}>
+              <Button
+                class="dock-item"
+                theme={'secondary'}
+                variant={'ghost'}
+                size={'sm'}
+                leftIcon={<SearchIcon />}
+                aria-label="Search themes and options"
+                aria-haspopup="dialog"
+                aria-expanded={isOpen('commands')}
+                onClick={(event: MouseEvent) => toggle('commands', event)}
+              >
+                <kbd class="dock-kbd">{isApple ? '⌘K' : 'Ctrl K'}</kbd>
+              </Button>
+            </Show>
+            <Show when={exportInBar}>
+              <div class="dock-bar-export" ref={exportSlot} onClick={close}>
+                <props.stage.ExportButton />
+              </div>
+            </Show>
           </div>
-          <div class="dock-canvas">
-            <props.stage.Canvas />
-          </div>
-        </main>
+
+          <Show when={!compact()}>
+            <div class="dock-frame-actions dock-island">
+              <FrameToolbar frameRef={props.stage.exportRef()} />
+            </div>
+          </Show>
+        </div>
 
         <Tray
           actions={actions()}
@@ -188,115 +332,18 @@ export default function Dock(props: VariantProps) {
           instant={instant()}
         />
 
-        <div class="dock-bar-slot">
+        <main class="dock-stage dock-island">
           <div
-            ref={bar}
-            class="dock-bar"
-            role="toolbar"
-            aria-label="Editor controls"
+            class="dock-canvas"
+            ref={canvas}
+            style={{'padding-bottom': `${inset()}px`}}
           >
-            <DockItem
-              panel="themes"
-              label={label('editor.theme', 'Theme')}
-              value={shownTheme(props.model)?.name}
-              open={isOpen('themes')}
-              onToggle={toggle}
-              art={
-                <span
-                  class="dock-art-theme"
-                  style={{
-                    background: shownTheme(props.model)?.colors.background,
-                  }}
-                >
-                  <span
-                    style={{
-                      background: shownTheme(props.model)?.colors.window,
-                    }}
-                  />
-                </span>
-              }
-            />
-            <DockItem
-              panel="background"
-              label={label('frame.background', 'Background')}
-              open={isOpen('background')}
-              onToggle={toggle}
-              art={
-                <span
-                  class="dock-art-fill"
-                  data-hidden={background()?.visible() ? undefined : ''}
-                  style={{background: background()?.value()}}
-                />
-              }
-            />
-            <Show when={padding()}>
-              {control => (
-                <Segmented
-                  control={control()}
-                  class="dock-item dock-bar-padding"
-                />
-              )}
-            </Show>
-            <DockItem
-              panel="padding"
-              class="dock-bar-padding-button"
-              label={label('frame.padding', 'Padding')}
-              value={optionLabel('frame.padding')}
-              open={isOpen('padding')}
-              onToggle={toggle}
-              art={<PaddingIcon />}
-            />
-            <DockItem
-              panel="language"
-              label={label('editor.language', 'Language')}
-              value={optionLabel('editor.language')}
-              open={isOpen('language')}
-              onToggle={toggle}
-              art={<CodeIcon />}
-            />
-            <DockItem
-              panel="font"
-              label={label('font.family', 'Font')}
-              value={fields.fontName()}
-              open={isOpen('font')}
-              onToggle={toggle}
-              art={
-                <span
-                  class="dock-art-font"
-                  style={{'font-family': `"${fields.fontName()}", monospace`}}
-                >
-                  Aa
-                </span>
-              }
-            />
-            <span class="dock-separator" role="separator" />
-            <DockItem
-              panel="more"
-              label="More"
-              open={isOpen('more')}
-              onToggle={toggle}
-              art={<SlidersIcon />}
-            />
-            <button
-              type="button"
-              class="dock-item dock-bar-search"
-              aria-label="Search themes and options"
-              aria-haspopup="dialog"
-              aria-expanded={isOpen('commands')}
-              onClick={event => toggle('commands', event)}
-            >
-              <SearchIcon />
-              <kbd class="dock-kbd">{isApple ? '⌘K' : 'Ctrl K'}</kbd>
-            </button>
-            <span class="dock-separator" role="separator" />
-            <span class="dock-bar-copy" ref={copySlot} onClick={close}>
-              <props.stage.CopyToClipboardButton />
-            </span>
-            <div class="dock-bar-export" ref={exportSlot} onClick={close}>
-              <props.stage.ExportButton />
-            </div>
+            <props.stage.Canvas />
           </div>
-        </div>
+          <Show when={!compact()}>
+            <Footer />
+          </Show>
+        </main>
       </div>
     </DockContext.Provider>
   );

@@ -2,7 +2,7 @@ import type {Accessor} from 'solid-js';
 import {createContext, createSignal, onCleanup, useContext} from 'solid-js';
 import type {EditorControlsModel} from '../../model';
 import type {Stage} from '../../stage';
-import type {Fields, View} from './fields';
+import type {Fields, PanelId} from './fields';
 import type {Previewable, PreviewSession} from './preview';
 
 export interface DockApi {
@@ -12,12 +12,11 @@ export interface DockApi {
   readonly session: PreviewSession;
   /** Key of the change the canvas is previewing, if any. */
   readonly previewKey: Accessor<string | undefined>;
-  readonly view: Accessor<View | undefined>;
+  /** The panel the tray shows, if it is open. */
+  readonly panel: Accessor<PanelId | undefined>;
   /** True on a phone-width window, where the dock is the bottom bar and trays are sheets. */
   readonly compact: Accessor<boolean>;
-  readonly open: (view: View) => void;
-  /** Leaves a list of options for the panel it was opened from. */
-  readonly back: () => void;
+  readonly open: (panel: PanelId) => void;
   /** Closes the tray. A preview that was not kept is taken back. */
   readonly close: () => void;
   readonly keep: (change: Previewable) => void;

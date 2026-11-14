@@ -27,21 +27,13 @@ export type PanelId =
 
 export type GroupId = 'frame' | 'window' | 'code';
 
-/** A list of options that takes over the tray. `font.system` is the system font browser. */
-export type DetailId = ControlId | 'font.system';
-
-export interface View {
-  readonly panel: PanelId;
-  readonly detail?: DetailId;
-}
-
 interface Place {
-  readonly view: View;
+  readonly panel: PanelId;
   /** The More group that shows the control as a row. */
   readonly group?: GroupId;
 }
 
-const inGroup = (group: GroupId): Place => ({view: {panel: 'more'}, group});
+const inGroup = (group: GroupId): Place => ({panel: 'more', group});
 
 /**
  * Where every control of the model lives in the dock. The record is keyed by
@@ -49,13 +41,14 @@ const inGroup = (group: GroupId): Place => ({view: {panel: 'more'}, group});
  * a place. Rows of a group follow the order of this list.
  */
 export const PLACES: Record<ControlId, Place> = {
-  'frame.background': {view: {panel: 'background'}},
-  'frame.backgroundImage': {view: {panel: 'background'}},
-  'frame.padding': {view: {panel: 'padding'}},
-  'editor.language': {view: {panel: 'language'}},
-  'font.family': {view: {panel: 'font'}},
-  'font.weight': {view: {panel: 'font'}},
-  'font.ligatures': {view: {panel: 'font'}},
+  // The production colour picker sets both the background and its image.
+  'frame.background': {panel: 'background'},
+  'frame.backgroundImage': {panel: 'background'},
+  'frame.padding': {panel: 'padding'},
+  'editor.language': {panel: 'language'},
+  'font.family': {panel: 'font'},
+  'font.weight': {panel: 'font'},
+  'font.ligatures': {panel: 'font'},
 
   'frame.visible': inGroup('frame'),
   'frame.opacity': inGroup('frame'),
@@ -64,8 +57,8 @@ export const PLACES: Record<ControlId, Place> = {
 
   'window.header': inGroup('window'),
   'window.style': inGroup('window'),
-  // As today, the tab accent sits with the window styles it changes.
-  'window.accent': {view: {panel: 'more', detail: 'window.style'}},
+  // As today, the tab accent is a checkbox inside the window style picker.
+  'window.accent': {panel: 'more'},
   'window.backgroundType': inGroup('window'),
   'window.reflection': inGroup('window'),
   'window.watermark': inGroup('window'),
@@ -89,11 +82,10 @@ export type ChoiceControl = SegmentedControl | SelectControl;
 export const isChoice = (control: Control): control is ChoiceControl =>
   control.kind === 'select' || control.kind === 'segmented';
 
-/** Choices short enough to show all options in the row. The rest open a list. */
-export const INLINE_CHOICES: ReadonlySet<ControlId> = new Set([
+/** Choices that show all options in the row, as a segmented field. The rest are selects. */
+export const SEGMENTED_CHOICES: ReadonlySet<ControlId> = new Set([
   'frame.padding',
   'frame.radius',
-  'font.weight',
 ]);
 
 // Two-option choices of the model that are an on/off question.
@@ -138,10 +130,10 @@ export interface Fields {
 }
 
 /**
- * The model as the dock shows it. The model hands out the window style and
- * the font as production pickers that open a popover beside their trigger,
- * which would land on the frame. Here they are plain choices over the same
- * stores, so the tray can list them and the command menu can search them.
+ * The model as the dock reads it. The model hands out the window style and
+ * the font as production pickers, which cannot be listed. Here they are also
+ * plain choices over the same stores, so that the command menu can offer and
+ * preview each window style and each font.
  */
 export function createFields(model: EditorControlsModel): Fields {
   const terminal = getTerminalState();

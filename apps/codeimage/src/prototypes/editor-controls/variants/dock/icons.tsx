@@ -19,18 +19,6 @@ function Icon(props: {children: JSX.Element; size?: number}) {
   );
 }
 
-export const ChevronIcon = () => (
-  <Icon size={12}>
-    <path d="m6 3.5 4.5 4.5L6 12.5" />
-  </Icon>
-);
-
-export const BackIcon = () => (
-  <Icon>
-    <path d="M10 3.5 5.5 8l4.5 4.5" />
-  </Icon>
-);
-
 export const SearchIcon = () => (
   <Icon>
     <circle cx="7" cy="7" r="4.25" />
@@ -65,15 +53,15 @@ export const CheckIcon = () => (
   </Icon>
 );
 
-export const ShuffleIcon = () => (
-  <Icon>
-    <path d="M2 4.5h2.2c1 0 1.9.5 2.5 1.3l2.6 4.4c.6.8 1.5 1.3 2.5 1.3H14M2 11.5h2.2c1 0 1.9-.5 2.5-1.3M9.3 5.8c.6-.8 1.5-1.3 2.5-1.3H14" />
-    <path d="m12 2.5 2 2-2 2M12 9.5l2 2-2 2" />
+export const SunIcon = () => (
+  <Icon size={12}>
+    <circle cx="8" cy="8" r="2.75" />
+    <path d="M8 1.5v1.75M8 12.75v1.75M1.5 8h1.75M12.75 8h1.75M3.4 3.4l1.25 1.25M11.35 11.35l1.25 1.25M3.4 12.6l1.25-1.25M11.35 4.65l1.25-1.25" />
   </Icon>
 );
 
-export const WandIcon = () => (
-  <Icon>
-    <path d="m2.5 13.5 8-8M9 4l3 3M12.5 1.5v2M11.5 2.5h2M4 2.5v1.5M3.25 3.25h1.5M13 10v1.5M12.25 10.75h1.5" />
+export const MoonIcon = () => (
+  <Icon size={12}>
+    <path d="M13.5 9.6A5.75 5.75 0 0 1 6.4 2.5a5.75 5.75 0 1 0 7.1 7.1Z" />
   </Icon>
 );

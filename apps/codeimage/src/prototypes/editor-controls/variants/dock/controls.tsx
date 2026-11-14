@@ -1,29 +1,36 @@
-import {RadioGroup} from '@kobalte/core/radio-group';
+import {RangeField} from '@codeimage/ui';
+import {createSelectOptions, NumberField, Select} from '@codeui/kit';
 import {Switch as KSwitch} from '@kobalte/core/switch';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {JSX} from 'solid-js';
-import {For, Match, Show, Switch} from 'solid-js';
-import type {
-  Control,
-  NumberControl,
-  RangeControl,
-  ToggleControl,
-} from '../../model';
+import {Match, Show, Switch} from 'solid-js';
+import {Dynamic} from 'solid-js/web';
+import {AspectRatioPicker} from '../../../../components/PropertyEditor/controls/AspectRatioPicker/AspectRatioPicker';
+import {
+  FullWidthPanelRow,
+  PanelRow,
+  TwoColumnPanelRow,
+} from '../../../../components/PropertyEditor/PanelRow';
+import type {Control, SelectControl, ToggleControl} from '../../model';
 import {useDock} from './context';
 import type {ChoiceControl} from './fields';
-import {INLINE_CHOICES, isChoice, PLACES} from './fields';
-import {ChevronIcon} from './icons';
+import {isChoice, SEGMENTED_CHOICES} from './fields';
 
-export function SwitchRow(props: {control: ToggleControl}) {
+const fieldId = (control: Control) => `dock-${control.id}`;
+
+/** The kit has no switch, so this one is Kobalte's, drawn with the app's tokens. */
+export function SwitchField(props: {control: ToggleControl}) {
   return (
     <KSwitch
-      class="dock-row dock-switch"
+      class="dock-switch"
       checked={props.control.value()}
       onChange={props.control.set}
     >
-      <KSwitch.Label class="dock-row-label">
-        {props.control.label()}
-      </KSwitch.Label>
-      <KSwitch.Input class="dock-switch-input" />
+      <KSwitch.Input
+        id={fieldId(props.control)}
+        class="dock-switch-input"
+        aria-label={props.control.label()}
+      />
       <KSwitch.Control class="dock-switch-track">
         <KSwitch.Thumb class="dock-switch-thumb" />
       </KSwitch.Control>
@@ -31,150 +38,146 @@ export function SwitchRow(props: {control: ToggleControl}) {
   );
 }
 
-export function Segmented(props: {
-  control: ChoiceControl;
-  class?: string;
-  hideLabel?: boolean;
-}) {
+export function SegmentedChoice(props: {control: ChoiceControl}) {
   return (
-    <RadioGroup
-      class={`dock-segmented ${props.class ?? ''}`}
-      orientation="horizontal"
+    <SegmentedField
+      adapt
+      id={fieldId(props.control)}
+      size={'sm'}
       value={props.control.value()}
       onChange={props.control.set}
+      items={props.control
+        .options()
+        .map(option => ({label: option.label, value: option.key}))}
+    />
+  );
+}
+
+export function SelectChoice(props: {control: ChoiceControl}) {
+  const options = createSelectOptions(
+    () =>
+      props.control
+        .options()
+        .map(option => ({label: option.label, value: option.key})),
+    {key: 'label', valueKey: 'value'},
+  );
+  return (
+    // @ts-expect-error The kit's Select types reject the props its own helper returns.
+    <Select
+      disallowEmptySelection
+      {...options.props()}
+      {...options.controlled(
+        () => props.control.value(),
+        key => {
+          if (key !== undefined) props.control.set(key);
+        },
+      )}
+      options={options.options()}
       disabled={props.control.disabled()}
-    >
-      <RadioGroup.Label
-        class={props.hideLabel ? 'dock-sr-only' : 'dock-row-label'}
-      >
-        {props.control.label()}
-      </RadioGroup.Label>
-      <div class="dock-segments" role="presentation">
-        <For each={props.control.options()}>
-          {option => (
-            <RadioGroup.Item value={option.key} class="dock-segment">
-              <RadioGroup.ItemInput class="dock-segment-input" />
-              <RadioGroup.ItemLabel class="dock-segment-label">
-                {option.label}
-              </RadioGroup.ItemLabel>
-            </RadioGroup.Item>
-          )}
-        </For>
-      </div>
-    </RadioGroup>
+      aria-label={props.control.label()}
+      id={fieldId(props.control)}
+      size={'sm'}
+    />
   );
 }
 
-/** A choice with too many options for the row. It opens the list in the tray. */
-export function ListRow(props: {
-  label: string;
-  value: string;
-  disabled?: boolean;
-  onOpen: () => void;
-}) {
+/** Today's aspect ratio picker, bound to the model's select. `null` is Auto. */
+function AspectRatioField(props: {control: SelectControl}) {
   return (
-    <button
-      type="button"
-      class="dock-row dock-list-row"
-      disabled={props.disabled}
-      onClick={() => props.onOpen()}
-    >
-      <span class="dock-row-label">{props.label}</span>
-      <span class="dock-row-value">{props.value}</span>
-      <ChevronIcon />
-    </button>
+    <AspectRatioPicker
+      value={props.control.value() === 'null' ? null : props.control.value()}
+      onChange={ratio => props.control.set(String(ratio))}
+    />
   );
 }
 
-function ChoiceRow(props: {control: ChoiceControl}) {
-  const dock = useDock();
-  const value = () =>
-    props.control.options().find(o => o.key === props.control.value())?.label ??
-    '';
-  return (
-    <Show
-      when={!INLINE_CHOICES.has(props.control.id)}
-      fallback={<Segmented control={props.control} class="dock-row" />}
-    >
-      <ListRow
-        label={props.control.label()}
-        value={value()}
-        disabled={props.control.disabled()}
-        onOpen={() =>
-          dock.open({
-            panel: PLACES[props.control.id].view.panel,
-            detail: props.control.id,
-          })
-        }
-      />
-    </Show>
-  );
-}
-
-function RangeRow(props: {control: RangeControl}) {
-  const id = () => `dock-${props.control.id}`;
-  return (
-    <div class="dock-row dock-range">
-      <label class="dock-row-label" for={id()}>
-        {props.control.label()}
-      </label>
-      <input
-        id={id()}
-        type="range"
-        min={props.control.min}
-        max={props.control.max}
-        step={props.control.step}
-        value={props.control.value()}
-        onInput={e => props.control.set(e.currentTarget.valueAsNumber)}
-      />
-      <output class="dock-row-value" for={id()}>
-        {props.control.value()}
-      </output>
-    </div>
-  );
-}
-
-function NumberRow(props: {control: NumberControl}) {
-  const id = () => `dock-${props.control.id}`;
-  return (
-    <div class="dock-row dock-number">
-      <label class="dock-row-label" for={id()}>
-        {props.control.label()}
-      </label>
-      <input
-        id={id()}
-        type="number"
-        inputmode="numeric"
-        min={props.control.min}
-        max={props.control.max}
-        value={props.control.value()}
-        onChange={e => {
-          const next = e.currentTarget.valueAsNumber;
-          if (!Number.isNaN(next)) props.control.set(next);
-        }}
-      />
-    </div>
-  );
-}
-
-/** One row of a group. Kinds that need more room than a row have their own panel. */
+/**
+ * One option as a row of today's sidebar: the same row components and the
+ * same kit controls, bound to the harness model.
+ */
 export function ControlRow(props: {control: Control}): JSX.Element {
+  const dock = useDock();
+  // The model's own entry: for the window style it is the production picker.
+  const picker = () => {
+    const original = dock.model.control(props.control.id);
+    return original?.kind === 'custom' ? original : undefined;
+  };
+
   return (
     <Show when={props.control.visible()}>
-      <Switch>
-        <Match when={props.control.kind === 'toggle' && props.control}>
-          {control => <SwitchRow control={control()} />}
-        </Match>
-        <Match when={isChoice(props.control) && props.control}>
-          {control => <ChoiceRow control={control()} />}
-        </Match>
-        <Match when={props.control.kind === 'range' && props.control}>
-          {control => <RangeRow control={control()} />}
-        </Match>
-        <Match when={props.control.kind === 'number' && props.control}>
-          {control => <NumberRow control={control()} />}
-        </Match>
-      </Switch>
+      <PanelRow for={fieldId(props.control)} label={props.control.label()}>
+        <Switch>
+          <Match when={picker()}>
+            {custom => (
+              <FullWidthPanelRow>
+                <Dynamic component={custom().Control} />
+              </FullWidthPanelRow>
+            )}
+          </Match>
+          <Match when={props.control.kind === 'toggle' && props.control}>
+            {control => (
+              <TwoColumnPanelRow>
+                <SwitchField control={control()} />
+              </TwoColumnPanelRow>
+            )}
+          </Match>
+          <Match
+            when={
+              props.control.id === 'frame.aspectRatio' &&
+              props.control.kind === 'select' &&
+              props.control
+            }
+          >
+            {control => (
+              <TwoColumnPanelRow>
+                <AspectRatioField control={control()} />
+              </TwoColumnPanelRow>
+            )}
+          </Match>
+          <Match when={isChoice(props.control) && props.control}>
+            {control => (
+              <TwoColumnPanelRow>
+                <Show
+                  when={SEGMENTED_CHOICES.has(control().id)}
+                  fallback={<SelectChoice control={control()} />}
+                >
+                  <SegmentedChoice control={control()} />
+                </Show>
+              </TwoColumnPanelRow>
+            )}
+          </Match>
+          <Match when={props.control.kind === 'range' && props.control}>
+            {control => (
+              <TwoColumnPanelRow>
+                <RangeField
+                  id={fieldId(control())}
+                  value={control().value()}
+                  min={control().min}
+                  max={control().max}
+                  step={control().step}
+                  onChange={control().set}
+                />
+              </TwoColumnPanelRow>
+            )}
+          </Match>
+          <Match when={props.control.kind === 'number' && props.control}>
+            {control => (
+              <TwoColumnPanelRow>
+                <NumberField
+                  size={'sm'}
+                  id={fieldId(control())}
+                  min={control().min}
+                  max={control().max}
+                  value={control().value()}
+                  onChange={value => {
+                    if (typeof value === 'number') control().set(value);
+                  }}
+                />
+              </TwoColumnPanelRow>
+            )}
+          </Match>
+        </Switch>
+      </PanelRow>
     </Show>
   );
 }

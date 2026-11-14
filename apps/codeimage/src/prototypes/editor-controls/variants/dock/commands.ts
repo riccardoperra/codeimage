@@ -1,5 +1,5 @@
 import type {Control, EditorControlsModel} from '../../model';
-import type {Fields, View} from './fields';
+import type {Fields, PanelId} from './fields';
 import {isChoice, PLACES} from './fields';
 import type {Previewable} from './preview';
 import {shownTheme, themePreview} from './preview';
@@ -30,7 +30,7 @@ function controlCommands(
   control: Control,
   group: string,
   fields: Fields,
-  open: (view: View) => void,
+  open: (panel: PanelId) => void,
 ): Command[] {
   const label = control.label();
   const base = {group, id: control.id};
@@ -87,7 +87,7 @@ function controlCommands(
   // A number, a colour or an upload has no list of values to offer, so the
   // command opens the place where the control lives.
   return [
-    {...base, label: `${label}…`, run: () => open(PLACES[control.id].view)},
+    {...base, label: `${label}…`, run: () => open(PLACES[control.id].panel)},
   ];
 }
 
@@ -100,7 +100,7 @@ export function buildCommands(input: {
   model: EditorControlsModel;
   fields: Fields;
   actions: readonly Action[];
-  open: (view: View) => void;
+  open: (panel: PanelId) => void;
 }): Command[] {
   const {model, fields, actions, open} = input;
   const shown = shownTheme(model);

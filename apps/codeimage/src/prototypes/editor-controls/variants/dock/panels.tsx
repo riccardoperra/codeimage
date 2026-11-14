@@ -1,113 +1,51 @@
-import {Tabs} from '@kobalte/core/tabs';
-import type {JSX} from 'solid-js';
+import {Button, Listbox, TextField} from '@codeui/kit';
+import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createMemo, createSignal, For, Match, Show, Switch} from 'solid-js';
-import {Dynamic} from 'solid-js/web';
+import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
+import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
+import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls/ColorPicker/ColorPicker';
+import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
 import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
+import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
 import type {ThemeEntry} from '../../model';
+import {ThemeSwatch} from '../../ThemeSwatch';
 import {useDock} from './context';
-import {ControlRow, ListRow, Segmented, SwitchRow} from './controls';
-import type {ChoiceControl, DetailId, GroupId} from './fields';
+import {ControlRow, SegmentedChoice} from './controls';
+import type {GroupId} from './fields';
 import {GROUPS} from './fields';
-import {BackIcon, CheckIcon, SearchIcon, ShuffleIcon, WandIcon} from './icons';
+import {MoonIcon, SearchIcon, SunIcon} from './icons';
 import {OptionGrid} from './OptionGrid';
-import {choicePreview, shownTheme, themePreview} from './preview';
-import {WindowStyleArt} from './WindowStyleArt';
+import {shownTheme, themePreview} from './preview';
 
-const PREVIEW_HINT = 'Arrow keys preview. Enter applies. Esc cancels.';
+type Tone = 'all' | 'dark' | 'light';
 
-function SearchField(props: {
-  ref: (element: HTMLInputElement) => void;
-  label: string;
-  value: string;
-  onInput: (value: string) => void;
-  /** Arrow down leaves the field for the list. */
-  onDown: () => void;
-  onEnter: () => void;
-}) {
-  return (
-    <label class="dock-search">
-      <SearchIcon />
-      <input
-        ref={props.ref}
-        type="search"
-        placeholder={props.label}
-        aria-label={props.label}
-        autocomplete="off"
-        spellcheck={false}
-        value={props.value}
-        onInput={e => props.onInput(e.currentTarget.value)}
-        onKeyDown={e => {
-          if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            props.onDown();
-          } else if (e.key === 'Enter') {
-            e.preventDefault();
-            props.onEnter();
-          }
-        }}
-      />
-    </label>
-  );
-}
+const TONES: {label: string; value: Tone}[] = [
+  {label: 'All', value: 'all'},
+  {label: 'Dark', value: 'dark'},
+  {label: 'Light', value: 'light'},
+];
 
-function PanelHead(props: {
-  title: string;
-  children?: JSX.Element;
-  hint?: boolean;
-}) {
-  return (
-    <header class="dock-panel-head">
-      <h2 class="dock-panel-title">{props.title}</h2>
-      {props.children}
-      <Show when={props.hint}>
-        <p class="dock-hint">{PREVIEW_HINT}</p>
-      </Show>
-    </header>
-  );
-}
-
-function ThemeTile(props: {theme: ThemeEntry}) {
+function ThemeCard(props: {theme: ThemeEntry}) {
   const dock = useDock();
   return (
-    <Show
-      when={!dock.compact()}
-      fallback={
-        <span
-          class="dock-theme-chip"
-          style={{background: props.theme.colors.background}}
-        >
-          <span
-            class="dock-theme-chip-name"
-            style={{
-              background: props.theme.colors.window,
-              color: props.theme.colors.text,
-            }}
-          >
-            {props.theme.name}
-          </span>
-        </span>
-      }
-    >
-      <span
-        class="dock-theme-art"
-        style={{background: props.theme.colors.background}}
-        inert
-      >
-        <span class="dock-theme-code">
-          <dock.stage.ThemePreview theme={props.theme} />
-        </span>
+    <>
+      <span class="dock-theme-orb">
+        <ThemeSwatch theme={props.theme} size={dock.compact() ? 36 : 56} />
       </span>
-      <span class="dock-theme-name" title={props.theme.name}>
-        <span class="dock-theme-name-text">{props.theme.name}</span>
-        <CheckIcon />
+      <span class="dock-theme-name">
+        <Show when={props.theme.dark} fallback={<SunIcon />}>
+          <MoonIcon />
+        </Show>
+        {props.theme.name}
       </span>
-    </Show>
+    </>
   );
 }
 
 export function ThemesPanel() {
   const dock = useDock();
   const [query, setQuery] = createSignal('');
+  const [tone, setTone] = createSignal<Tone>('all');
   let search: HTMLInputElement | undefined;
   let panel!: HTMLDivElement;
 
@@ -115,48 +53,67 @@ export function ThemesPanel() {
     const words = query().trim().toLowerCase();
     return dock.model
       .themes()
+      .filter(theme => tone() === 'all' || theme.dark === (tone() === 'dark'))
       .filter(theme => theme.name.toLowerCase().includes(words));
   });
   const firstOption = () => panel.querySelector<HTMLElement>('[role="option"]');
 
   return (
     <div class="dock-panel dock-themes" ref={panel}>
-      <Show when={!dock.compact()}>
-        <PanelHead title="Theme" hint>
-          <SearchField
-            ref={element => (search = element)}
-            label={`Search ${dock.model.themes().length} themes`}
-            value={query()}
-            onInput={setQuery}
-            onDown={() => firstOption()?.focus()}
-            onEnter={() => firstOption()?.click()}
+      <header class="dock-panel-head">
+        <div class="dock-segmented dock-theme-tone">
+          <SegmentedField
+            adapt
+            size={'sm'}
+            value={tone()}
+            onChange={setTone}
+            items={TONES}
           />
-          <button
-            type="button"
-            class="dock-button"
-            onClick={() => dock.stage.randomize()}
+        </div>
+        <Show when={!dock.compact()}>
+          <div
+            class="dock-theme-search"
+            onKeyDown={event => {
+              if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                firstOption()?.focus();
+              } else if (event.key === 'Enter') {
+                event.preventDefault();
+                firstOption()?.click();
+              }
+            }}
           >
-            <ShuffleIcon />
-            Randomize
-          </button>
-        </PanelHead>
-      </Show>
+            <TextField
+              ref={element => (search = element)}
+              size={'sm'}
+              aria-label="Search themes"
+              placeholder={`Search ${dock.model.themes().length} themes`}
+              value={query()}
+              onChange={setQuery}
+            />
+          </div>
+          <p class="dock-hint">
+            Hover or use the arrow keys to preview. Enter applies. Esc cancels.
+          </p>
+        </Show>
+      </header>
       <Show
         when={themes().length > 0}
         fallback={
-          <p class="dock-empty">
-            No theme matches “{query()}”.{' '}
-            <button
-              type="button"
-              class="dock-link"
+          <div class="dock-empty">
+            <p>No theme matches “{query()}”.</p>
+            <Button
+              size={'sm'}
+              theme={'secondary'}
               onClick={() => {
                 setQuery('');
+                setTone('all');
                 search?.focus();
               }}
             >
-              Clear the search
-            </button>
-          </p>
+              Show all themes
+            </Button>
+          </div>
         }
       >
         <OptionGrid
@@ -171,99 +128,48 @@ export function ThemesPanel() {
           search={() => search}
           autofocus
         >
-          {theme => <ThemeTile theme={theme} />}
+          {theme => <ThemeCard theme={theme} />}
         </OptionGrid>
       </Show>
     </div>
   );
 }
 
-interface ChoiceListProps {
-  control: ChoiceControl;
-  onPick: (byKeyboard: boolean) => void;
-  class?: string;
-  /** Shows the search field on windows wide enough for a keyboard. */
-  searchable?: boolean;
-  title: string;
-  head?: JSX.Element;
-  children?: (option: {key: string; label: string}) => JSX.Element;
-}
-
-/** The options of one choice as a grid that previews on the canvas. */
-function ChoiceList(props: ChoiceListProps) {
+/** Today's colour picker without its popover: gradients, colours and the image upload. */
+export function BackgroundPanel() {
   const dock = useDock();
-  const [query, setQuery] = createSignal('');
-  let search: HTMLInputElement | undefined;
-  let panel!: HTMLDivElement;
-
-  const options = createMemo(() => {
-    const words = query().trim().toLowerCase();
-    return props.control
-      .options()
-      .filter(option => option.label.toLowerCase().includes(words));
-  });
-  const firstOption = () => panel.querySelector<HTMLElement>('[role="option"]');
+  const frameVisible = () => dock.fields.control('frame.visible', 'toggle');
 
   return (
-    <div class="dock-choice" ref={panel}>
-      <PanelHead title={props.title} hint={!dock.compact()}>
-        {props.head}
-        <Show when={props.searchable && !dock.compact()}>
-          <SearchField
-            ref={element => (search = element)}
-            label={`Search ${props.control.options().length} options`}
-            value={query()}
-            onInput={setQuery}
-            onDown={() => firstOption()?.focus()}
-            onEnter={() => firstOption()?.click()}
-          />
-        </Show>
-      </PanelHead>
-      <Show
-        when={options().length > 0}
-        fallback={<p class="dock-empty">Nothing matches “{query()}”.</p>}
-      >
-        <OptionGrid
-          label={props.control.label()}
-          class={`dock-chip-grid ${props.class ?? ''}`}
-          optionClass="dock-chip"
-          items={options()}
-          id={option => option.key}
-          selected={option => option.key === props.control.value()}
-          change={option => dock.fields.preview(props.control, option.key)}
-          onPick={(_, byKeyboard) => props.onPick(byKeyboard)}
-          search={() => search}
-          autofocus
-        >
-          {option =>
-            props.children?.(option) ?? (
-              <>
-                <span class="dock-chip-label">{option.label}</span>
-                <CheckIcon />
-              </>
-            )
-          }
-        </OptionGrid>
+    <div class="dock-panel dock-background">
+      <Show when={dock.fields.control('frame.background', 'background')}>
+        {control => (
+          <>
+            <PanelHeader label={control().label()} />
+            <Show
+              when={control().visible()}
+              fallback={
+                <>
+                  <p class="dock-empty">
+                    The frame is hidden, so there is no background to set.
+                  </p>
+                  <Show when={frameVisible()}>
+                    {toggle => <ControlRow control={toggle()} />}
+                  </Show>
+                </>
+              }
+            >
+              <ColorPickerPopover
+                value={control().value()}
+                onChange={control().set}
+                colors={[...control().colors]}
+                gradientColors={[...control().gradients]}
+              />
+            </Show>
+          </>
+        )}
       </Show>
     </div>
-  );
-}
-
-export function LanguagePanel() {
-  const dock = useDock();
-  return (
-    <Show when={dock.fields.choice('editor.language')}>
-      {control => (
-        <div class="dock-panel dock-language">
-          <ChoiceList
-            control={control()}
-            title={control().label()}
-            searchable
-            onPick={dock.closeAfterPick}
-          />
-        </div>
-      )}
-    </Show>
   );
 }
 
@@ -273,150 +179,121 @@ export function PaddingPanel() {
     <Show when={dock.fields.choice('frame.padding')}>
       {control => (
         <div class="dock-panel dock-padding-panel">
-          <ChoiceList
-            control={control()}
-            title={control().label()}
-            onPick={dock.closeAfterPick}
-          />
+          <PanelHeader label={control().label()} />
+          <div class="dock-segmented">
+            <SegmentedChoice control={control()} />
+          </div>
         </div>
       )}
     </Show>
   );
 }
 
-const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+interface Item {
+  label: string;
+  value: string;
+}
 
-export function BackgroundPanel() {
+/** The phone's language sheet. On wider windows the dock holds the kit's select. */
+export function LanguagePanel() {
   const dock = useDock();
-  const background = () =>
-    dock.fields.control('frame.background', 'background');
-  const image = () => dock.fields.control('frame.backgroundImage', 'custom');
-  const frameVisible = () => dock.fields.control('frame.visible', 'toggle');
-
   return (
-    <div class="dock-panel dock-background">
-      <Show when={background()}>
-        {control => {
-          const swatches = [
-            ...control().gradients.map((value, index) => ({
-              value,
-              name: `Gradient ${index + 1}`,
-            })),
-            ...control().colors.map(value => ({value, name: value})),
-          ];
-          return (
-            <Show
-              when={control().visible()}
-              fallback={
-                <div class="dock-background-hidden">
-                  <p class="dock-empty">
-                    The frame is hidden, so there is no background to set.
-                  </p>
-                  <Show when={frameVisible()}>
-                    {toggle => <SwitchRow control={toggle()} />}
-                  </Show>
-                </div>
-              }
-            >
-              <div class="dock-background-main">
-                <PanelHead title={control().label()} hint={!dock.compact()} />
-                <OptionGrid
-                  label={control().label()}
-                  class="dock-swatches"
-                  optionClass="dock-swatch"
-                  items={swatches}
-                  id={swatch => swatch.value}
-                  selected={swatch => swatch.value === control().value()}
-                  change={swatch => choicePreview(control(), swatch.value)}
-                  onPick={() => undefined}
-                  autofocus
-                >
-                  {swatch => (
-                    <span
-                      class="dock-swatch-fill"
-                      style={{background: swatch.value}}
-                    >
-                      <span class="dock-sr-only">{swatch.name}</span>
-                    </span>
-                  )}
-                </OptionGrid>
-              </div>
-              <div class="dock-background-side">
-                <label class="dock-row dock-color">
-                  <span class="dock-row-label">Custom color</span>
-                  <input
-                    type="color"
-                    value={
-                      HEX_COLOR.test(control().value())
-                        ? control().value()
-                        : '#000000'
-                    }
-                    onInput={e => control().set(e.currentTarget.value)}
-                  />
-                </label>
-                <Show when={image()}>
-                  {picker => (
-                    <div class="dock-image">
-                      <span class="dock-row-label">{picker().label()}</span>
-                      <Dynamic component={picker().Control} />
-                    </div>
-                  )}
-                </Show>
-              </div>
-            </Show>
-          );
-        }}
-      </Show>
-    </div>
+    <Show when={dock.fields.choice('editor.language')}>
+      {control => (
+        <div class="dock-panel dock-language">
+          <PanelHeader label={control().label()} />
+          <div class="dock-list">
+            <Listbox<Item>
+              size={'md'}
+              selectionMode={'single'}
+              disallowEmptySelection
+              autoFocus
+              shouldFocusWrap={false}
+              options={control()
+                .options()
+                .map(option => ({label: option.label, value: option.key}))}
+              optionValue={item => item.value}
+              optionTextValue={item => item.label}
+              itemLabel={item => item.label}
+              value={[control().value()]}
+              onChange={values => {
+                const next = values.keys().next().value;
+                if (typeof next === 'string') control().set(next);
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </Show>
   );
 }
 
+type FontSource = 'default' | 'system';
+
+/** The content of today's font picker without its popover, with the two font rows under it. */
 export function FontPanel() {
   const dock = useDock();
-  const family = () => dock.fields.choice('font.family');
+  const [source, setSource] = createSignal<FontSource>('default');
   const weight = () => dock.fields.choice('font.weight');
   const ligatures = () => dock.fields.control('font.ligatures', 'toggle');
-  const isSystemFont = () =>
-    !family()
-      ?.options()
-      .some(option => option.key === family()?.value());
 
   return (
     <div class="dock-panel dock-font">
-      <Show when={family()}>
-        {control => (
-          <ChoiceList
-            control={control()}
-            title={control().label()}
-            class="dock-font-grid"
-            onPick={() => undefined}
-          >
-            {option => (
-              <>
-                <span
-                  class="dock-chip-label"
-                  style={{'font-family': `"${option.label}", monospace`}}
-                >
-                  {option.label}
-                </span>
-                <CheckIcon />
-              </>
-            )}
-          </ChoiceList>
-        )}
+      <Show when={dock.fields.choice('font.family')}>
+        {family => {
+          const fonts = createFontPickerListboxProps({
+            onEsc: dock.close,
+            onChange: family().set,
+            get value() {
+              return family().value();
+            },
+            get items() {
+              return family()
+                .options()
+                .map(option => ({label: option.label, value: option.key}));
+            },
+          });
+          return (
+            <div class="dock-font-family">
+              <PanelHeader label={family().label()} />
+              <div class="dock-segmented">
+                <SegmentedField<FontSource>
+                  adapt
+                  size={'sm'}
+                  value={source()}
+                  onChange={setSource}
+                  items={[
+                    {label: 'Default', value: 'default'},
+                    {label: 'System', value: 'system'},
+                  ]}
+                />
+              </div>
+              <div class="dock-list">
+                <Switch>
+                  <Match when={source() === 'default'}>
+                    <Listbox {...fonts} />
+                  </Match>
+                  <Match when={source() === 'system'}>
+                    <FontSystemPicker
+                      onEsc={dock.close}
+                      value={family().value()}
+                      onChange={family().set}
+                    />
+                  </Match>
+                </Switch>
+              </div>
+            </div>
+          );
+        }}
       </Show>
-      <div class="dock-font-side">
+      <div class="dock-font-style">
+        <PanelHeader label="Style" />
         <Show when={weight()}>
-          {control => <Segmented control={control()} class="dock-row" />}
+          {control => <ControlRow control={control()} />}
         </Show>
         <Show when={ligatures()}>
-          {control => <SwitchRow control={control()} />}
+          {control => <ControlRow control={control()} />}
         </Show>
-        <ListRow
-          label="System fonts"
-          value={isSystemFont() ? dock.fields.fontName() : ''}
-          onOpen={() => dock.open({panel: 'font', detail: 'font.system'})}
-        />
       </div>
     </div>
   );
@@ -431,44 +308,48 @@ function Group(props: {id: GroupId}) {
   );
 }
 
-function Actions() {
+/**
+ * The frame actions for the phone, where the production frame toolbar is not
+ * shown. Same buttons as the production phone toolbar, with their labels.
+ */
+function PhoneActions() {
   const dock = useDock();
   return (
-    <div class="dock-actions-row">
-      <button
-        type="button"
-        class="dock-button"
+    <div class="dock-phone-actions">
+      <Button
+        size={'sm'}
+        theme={'secondary'}
+        leftIcon={<SearchIcon />}
+        onClick={() => dock.open('commands')}
+      >
+        Search all options
+      </Button>
+      <Button
+        size={'sm'}
+        theme={'secondary'}
+        leftIcon={<ColorSwatchIcon />}
         onClick={() => dock.stage.randomize()}
       >
-        <ShuffleIcon />
         Randomize
-      </button>
-      <button
-        type="button"
-        class="dock-button"
+      </Button>
+      <Button
+        size={'sm'}
+        theme={'secondary'}
+        leftIcon={<SparklesIcon />}
         disabled={!dock.stage.canFormat()}
         onClick={() => void dock.stage.format()}
       >
-        <WandIcon />
-        Format code
-      </button>
-      <span class="dock-actions-copy">
-        <dock.stage.CopyToClipboardButton />
-      </span>
-      <button
-        type="button"
-        class="dock-button dock-actions-search"
-        onClick={() => dock.open({panel: 'commands'})}
-      >
-        <SearchIcon />
-        Search all options
-      </button>
+        Format
+      </Button>
+      <dock.stage.CopyToClipboardButton />
     </div>
   );
 }
 
 export function MorePanel() {
   const dock = useDock();
+  // The phone sheet shows one group at a time.
+  const [group, setGroup] = createSignal<GroupId>(GROUPS[0].id);
   return (
     <div class="dock-panel dock-more">
       <Show
@@ -478,140 +359,28 @@ export function MorePanel() {
             <For each={GROUPS}>
               {group => (
                 <section class="dock-group" aria-label={group.label}>
-                  <h2 class="dock-group-title">{group.label}</h2>
+                  <PanelHeader label={group.label} />
                   <Group id={group.id} />
-                  <Show when={group.id === 'code'}>
-                    <Actions />
-                  </Show>
                 </section>
               )}
             </For>
           </div>
         }
       >
-        <Tabs class="dock-tabs" defaultValue={GROUPS[0].id}>
-          <Tabs.List class="dock-tab-list" aria-label="More options">
-            <For each={GROUPS}>
-              {group => (
-                <Tabs.Trigger class="dock-tab" value={group.id}>
-                  {group.label}
-                </Tabs.Trigger>
-              )}
-            </For>
-          </Tabs.List>
-          <For each={GROUPS}>
-            {group => (
-              <Tabs.Content class="dock-group" value={group.id}>
-                <Group id={group.id} />
-              </Tabs.Content>
-            )}
-          </For>
-          <Actions />
-        </Tabs>
-      </Show>
-    </div>
-  );
-}
-
-function BackButton(props: {label: string}) {
-  const dock = useDock();
-  return (
-    <button
-      type="button"
-      class="dock-button dock-back"
-      onClick={() => dock.back()}
-    >
-      <BackIcon />
-      {props.label}
-    </button>
-  );
-}
-
-function WindowStyleDetail() {
-  const dock = useDock();
-  const accent = () => dock.fields.control('window.accent', 'toggle');
-  return (
-    <Show when={dock.fields.choice('window.style')}>
-      {control => (
-        <>
-          <ChoiceList
-            control={control()}
-            title={control().label()}
-            class="dock-window-grid"
-            head={<BackButton label="More" />}
-            onPick={() => undefined}
-          >
-            {option => (
-              <>
-                <span class="dock-window-art" inert>
-                  <WindowStyleArt type={option.key} />
-                </span>
-                <span class="dock-chip-label">{option.label}</span>
-                <CheckIcon />
-              </>
-            )}
-          </ChoiceList>
-          <Show when={accent()}>
-            {toggle => (
-              <div class="dock-detail-side">
-                <ControlRow control={toggle()} />
-              </div>
-            )}
-          </Show>
-        </>
-      )}
-    </Show>
-  );
-}
-
-function SystemFontsDetail() {
-  const dock = useDock();
-  return (
-    <Show when={dock.fields.choice('font.family')}>
-      {control => (
-        <div class="dock-system-fonts">
-          <PanelHead title="System fonts">
-            <BackButton label="Font" />
-          </PanelHead>
-          <FontSystemPicker
-            value={control().value()}
-            onChange={control().set}
-            onEsc={dock.back}
+        <div class="dock-segmented">
+          <SegmentedField
+            adapt
+            size={'sm'}
+            value={group()}
+            onChange={setGroup}
+            items={GROUPS.map(({id, label}) => ({label, value: id}))}
           />
         </div>
-      )}
-    </Show>
-  );
-}
-
-/** A list of options that took over the tray. Picking one goes back. */
-export function DetailPanel(props: {detail: DetailId}) {
-  const dock = useDock();
-  const choice = () =>
-    props.detail === 'font.system'
-      ? undefined
-      : dock.fields.choice(props.detail);
-
-  return (
-    <div class="dock-panel dock-detail">
-      <Switch>
-        <Match when={props.detail === 'font.system'}>
-          <SystemFontsDetail />
-        </Match>
-        <Match when={props.detail === 'window.style'}>
-          <WindowStyleDetail />
-        </Match>
-        <Match when={choice()}>
-          {control => (
-            <ChoiceList
-              control={control()}
-              title={control().label()}
-              head={<BackButton label="More" />}
-              onPick={dock.back}
-            />
-          )}
-        </Match>
-      </Switch>
+        <section class="dock-group" aria-label={group()}>
+          <Group id={group()} />
+        </section>
+        <PhoneActions />
+      </Show>
     </div>
   );
 }

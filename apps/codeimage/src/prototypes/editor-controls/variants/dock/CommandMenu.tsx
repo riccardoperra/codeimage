@@ -74,9 +74,9 @@ export function CommandMenu(props: {actions: readonly Action[]}) {
       return;
     }
     dock.session.cancel();
-    const before = dock.view();
     command.run?.();
-    if (dock.view() === before) dock.close();
+    // A command that opened another panel keeps the tray.
+    if (dock.panel() === 'commands') dock.close();
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -97,7 +97,7 @@ export function CommandMenu(props: {actions: readonly Action[]}) {
 
   return (
     <div class="dock-panel dock-commands">
-      <label class="dock-search dock-commands-input">
+      <label class="dock-commands-input">
         <SearchIcon />
         <input
           ref={input}

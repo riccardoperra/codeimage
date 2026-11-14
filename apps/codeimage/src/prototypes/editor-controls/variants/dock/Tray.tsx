@@ -1,12 +1,21 @@
 import {Dialog} from '@kobalte/core/dialog';
-import {createEffect, createMemo, Match, on, Show, Switch} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  Match,
+  on,
+  onCleanup,
+  Show,
+  Switch,
+} from 'solid-js';
+import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import {CommandMenu} from './CommandMenu';
 import type {Action} from './commands';
 import {keepFromPicker, useDock} from './context';
-import type {PanelId, View} from './fields';
+import type {PanelId} from './fields';
 import {
   BackgroundPanel,
-  DetailPanel,
   FontPanel,
   LanguagePanel,
   MorePanel,
@@ -39,6 +48,7 @@ function rubberband(overshoot: number, dimension: number): number {
 
 interface TrayProps {
   actions: readonly Action[];
+  /** Clicks in here switch or close the tray themselves. */
   bar: () => HTMLElement | undefined;
   /** The element that opened the tray, which gets focus back when it closes. */
   trigger: () => HTMLElement | undefined;
@@ -47,41 +57,50 @@ interface TrayProps {
 }
 
 /**
- * The one surface every dock item opens. It sits in the layout between the
+ * The one surface the dock opens. It is an island in the layout between the
  * canvas and the dock, so the canvas gives up the room and the frame zooms to
  * fit above it. A tray can therefore never lie on the frame it changes.
  */
 export function Tray(props: TrayProps) {
   const dock = useDock();
+  const [slot, setSlot] = createSignal<HTMLDivElement>();
   let content: HTMLDivElement | undefined;
   let dismissedOutside = false;
 
   // The sheet keeps its content while it slides out.
-  const shown = createMemo<View | undefined>(
-    previous => dock.view() ?? previous,
+  const shown = createMemo<PanelId | undefined>(
+    previous => dock.panel() ?? previous,
   );
 
   const inBar = (target: EventTarget | null) =>
     target instanceof Node && !!props.bar()?.contains(target);
 
+  // A tray narrower than the window sits above the dock item that opened it.
+  const align = () => {
+    const trigger = props.trigger()?.getBoundingClientRect();
+    const area = slot()?.getBoundingClientRect();
+    if (!content || !trigger || !area) return;
+    const width = content.offsetWidth;
+    const centre = trigger.left + trigger.width / 2 - area.left;
+    const room = Math.max(area.width - width, 0);
+    const offset = Math.round(Math.min(Math.max(centre - width / 2, 0), room));
+    content.style.marginLeft = `${offset}px`;
+    content.style.transformOrigin = `${centre - offset}px 100%`;
+  };
+
+  const resize = new ResizeObserver(align);
+  onCleanup(() => resize.disconnect());
+
   createEffect(
-    on(dock.view, view => {
-      if (!view) return;
+    on(dock.panel, panel => {
+      if (!panel) return;
       queueMicrotask(() => {
+        align();
         if (!content || content.contains(document.activeElement)) return;
         (content.querySelector<HTMLElement>(FOCUSABLE) ?? content).focus();
       });
     }),
   );
-
-  const setOrigin = (element: HTMLDivElement) => {
-    content = element;
-    const trigger = props.trigger()?.getBoundingClientRect();
-    if (!trigger) return;
-    const tray = element.getBoundingClientRect();
-    const x = trigger.left + trigger.width / 2 - tray.left;
-    element.style.transformOrigin = `${x}px 100%`;
-  };
 
   let drag:
     | {pointer: number; y: number; time: number; moved: number}
@@ -142,97 +161,95 @@ export function Tray(props: TrayProps) {
 
   return (
     <Dialog
-      open={dock.view() !== undefined}
+      open={dock.panel() !== undefined}
       onOpenChange={open => {
         if (!open) dock.close();
       }}
       modal={false}
     >
-      <div class="dock-tray-slot">
-        <Dialog.Content
-          ref={setOrigin}
-          class="dock-tray"
-          aria-label={TITLES[shown()?.panel ?? 'more']}
-          data-panel={shown()?.panel}
-          data-detail={shown()?.detail}
-          data-instant={props.instant ? '' : undefined}
-          onOpenAutoFocus={event => event.preventDefault()}
-          onCloseAutoFocus={event => {
-            event.preventDefault();
-            if (!dismissedOutside) props.trigger()?.focus();
-            dismissedOutside = false;
-          }}
-          onPointerDownOutside={event => {
-            if (inBar(event.target)) event.preventDefault();
-          }}
-          onFocusOutside={event => {
-            if (inBar(event.target)) event.preventDefault();
-          }}
-          onInteractOutside={event => {
-            if (!event.defaultPrevented) dismissedOutside = true;
-          }}
-          onEscapeKeyDown={(event: KeyboardEvent) => {
-            if (!dock.view()?.detail) return;
-            event.preventDefault();
-            dock.back();
-          }}
-          onKeyDown={(event: KeyboardEvent) => {
-            const typed =
-              event.key.length === 1 || event.key.startsWith('Arrow');
-            if (typed && !event.metaKey && !event.ctrlKey)
-              keepFromPicker(event);
-          }}
-        >
-          <Show when={dock.compact()}>
-            <button
-              type="button"
-              class="dock-grabber"
-              aria-label="Close"
-              onPointerDown={onGrab}
-              onPointerMove={onDrag}
-              onPointerUp={onRelease}
-              onPointerCancel={onRelease}
-              onClick={event => {
-                if (event.detail === 0) dock.close();
+      <div class="dock-tray-slot" ref={setSlot} />
+      {/*
+        Kobalte starts its focus handling when the content is created, so the
+        content has to be created on open. The portal does that, and it
+        mounts into the slot, which keeps the tray in the layout.
+      */}
+      <Show when={slot()}>
+        {mount => (
+          <Dialog.Portal mount={mount()}>
+            <Dialog.Content
+              ref={(element: HTMLDivElement) => {
+                content = element;
+                resize.observe(element);
+                align();
               }}
-            />
-          </Show>
-          <Show when={shown()} keyed>
-            {view => (
-              <Show
-                when={view.detail}
-                fallback={
-                  <Switch>
-                    <Match when={view.panel === 'themes'}>
-                      <ThemesPanel />
-                    </Match>
-                    <Match when={view.panel === 'background'}>
-                      <BackgroundPanel />
-                    </Match>
-                    <Match when={view.panel === 'padding'}>
-                      <PaddingPanel />
-                    </Match>
-                    <Match when={view.panel === 'language'}>
-                      <LanguagePanel />
-                    </Match>
-                    <Match when={view.panel === 'font'}>
-                      <FontPanel />
-                    </Match>
-                    <Match when={view.panel === 'more'}>
-                      <MorePanel />
-                    </Match>
-                    <Match when={view.panel === 'commands'}>
-                      <CommandMenu actions={props.actions} />
-                    </Match>
-                  </Switch>
+              class={`dock-tray dock-island ${sidebarTheme}`}
+              aria-label={TITLES[shown() ?? 'more']}
+              data-panel={shown()}
+              data-instant={props.instant ? '' : undefined}
+              onOpenAutoFocus={event => event.preventDefault()}
+              onCloseAutoFocus={event => {
+                event.preventDefault();
+                if (!dismissedOutside) props.trigger()?.focus();
+                dismissedOutside = false;
+              }}
+              onPointerDownOutside={event => {
+                if (inBar(event.target)) event.preventDefault();
+              }}
+              onFocusOutside={event => {
+                if (inBar(event.target)) event.preventDefault();
+              }}
+              onInteractOutside={event => {
+                if (!event.defaultPrevented) dismissedOutside = true;
+              }}
+              onKeyDown={(event: KeyboardEvent) => {
+                const typed =
+                  event.key.length === 1 || event.key.startsWith('Arrow');
+                if (typed && !event.metaKey && !event.ctrlKey) {
+                  keepFromPicker(event);
                 }
-              >
-                {detail => <DetailPanel detail={detail()} />}
+              }}
+            >
+              <Show when={dock.compact()}>
+                <button
+                  type="button"
+                  class="dock-grabber"
+                  aria-label="Close"
+                  onPointerDown={onGrab}
+                  onPointerMove={onDrag}
+                  onPointerUp={onRelease}
+                  onPointerCancel={onRelease}
+                  onClick={event => {
+                    if (event.detail === 0) dock.close();
+                  }}
+                />
               </Show>
-            )}
-          </Show>
-        </Dialog.Content>
-      </div>
+              <Switch>
+                <Match when={shown() === 'themes'}>
+                  <ThemesPanel />
+                </Match>
+                <Match when={shown() === 'background'}>
+                  <BackgroundPanel />
+                </Match>
+                <Match when={shown() === 'padding'}>
+                  <PaddingPanel />
+                </Match>
+                <Match when={shown() === 'language'}>
+                  <LanguagePanel />
+                </Match>
+                <Match when={shown() === 'font'}>
+                  <FontPanel />
+                </Match>
+                <Match when={shown() === 'more'}>
+                  <MorePanel />
+                </Match>
+                <Match when={shown() === 'commands'}>
+                  <CommandMenu actions={props.actions} />
+                </Match>
+              </Switch>
+            </Dialog.Content>
+          </Dialog.Portal>
+        )}
+      </Show>
     </Dialog>
   );
 }
