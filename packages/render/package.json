@@ -28,6 +28,8 @@
     "@fontsource-variable/cascadia-code": "5.3.0",
     "@fontsource-variable/fira-code": "5.3.0",
     "@fontsource-variable/jetbrains-mono": "5.3.0",
+    "@fontsource-variable/noto-sans-kr": "5.3.1",
+    "@fontsource-variable/noto-sans-sc": "5.3.1",
     "@fontsource-variable/overpass-mono": "5.3.0",
     "@fontsource-variable/source-code-pro": "5.3.1",
     "@fontsource/space-mono": "5.3.0",
@@ -37,6 +39,7 @@
     "oxlint": "catalog:next",
     "pngjs": "7.0.0",
     "tsdown": "catalog:next",
+    "twemoji-colr-font": "15.0.3",
     "typescript": "catalog:next",
     "vite": "catalog:next",
     "vitest": "catalog:next"

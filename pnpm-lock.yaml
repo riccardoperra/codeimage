@@ -1085,6 +1085,12 @@ importers:
       '@fontsource-variable/jetbrains-mono':
         specifier: 5.3.0
         version: 5.3.0
+      '@fontsource-variable/noto-sans-kr':
+        specifier: 5.3.1
+        version: 5.3.1
+      '@fontsource-variable/noto-sans-sc':
+        specifier: 5.3.1
+        version: 5.3.1
       '@fontsource-variable/overpass-mono':
         specifier: 5.3.0
         version: 5.3.0
@@ -1112,6 +1118,9 @@ importers:
       tsdown:
         specifier: catalog:next
         version: 0.21.5(typescript@6.0.2)
+      twemoji-colr-font:
+        specifier: 15.0.3
+        version: 15.0.3
       typescript:
         specifier: ^6.0.2
         version: 6.0.2
@@ -2956,6 +2965,12 @@ packages:
 
   '@fontsource-variable/jetbrains-mono@5.3.0':
     resolution: {integrity: sha512-F32xpS2NsGYoQi2ADSkKTgpJj7ozajsGgDJ8woTnqjmIB+dxDIqImjl4pXZVEExu8UFZ2ndhmX18EBS/hdz3Lw==}
+
+  '@fontsource-variable/noto-sans-kr@5.3.1':
+    resolution: {integrity: sha512-f5aty6Qgk2LVU5TjCtXHxiYHqUWYW8f75ll0Chn8ucCqoOlIomcACUwf1V47yUt6wTdWZiGr3dcbQk+zlOspMA==}
+
+  '@fontsource-variable/noto-sans-sc@5.3.1':
+    resolution: {integrity: sha512-UB96JJ17HyD5ehEU7Em0hDdh7fvTMB4B4Hzmq5c4QaNwwSLqTrdM2S+coySeBqCkXwh0DxqXT0b0wMrmzorFpQ==}
 
   '@fontsource-variable/overpass-mono@5.3.0':
     resolution: {integrity: sha512-qtESPvSFvq7/v7lQIUUsIyDlFZEWapNF1eM9lkQUugO6pmgen0euJOIAMJLyjtGTtOHCbE7XOe2ym0Nh9ccR0w==}
@@ -10589,6 +10604,10 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
 
+  twemoji-colr-font@15.0.3:
+    resolution: {integrity: sha512-UsK4JUpaczeVoMGeYMnKaMTxKt7fujg1nQOk4NaC0teZmdOo+uAai0DIuaSzsMkShtG4J75F0OEsVdGJ+Q1pHQ==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+
   typanion@3.14.0:
     resolution: {integrity: sha512-ZW/lVMRabETuYCd9O9ZvMhAh8GslSqaUjxmK/JLPCh6l73CvLBiuXswj/+7LdnWOgYsQ130FqLzFz5aGT4I3Ug==}
 
@@ -13178,6 +13197,10 @@ snapshots:
   '@fontsource-variable/fira-code@5.3.0': {}
 
   '@fontsource-variable/jetbrains-mono@5.3.0': {}
+
+  '@fontsource-variable/noto-sans-kr@5.3.1': {}
+
+  '@fontsource-variable/noto-sans-sc@5.3.1': {}
 
   '@fontsource-variable/overpass-mono@5.3.0': {}
 
@@ -22199,6 +22222,8 @@ snapshots:
       fsevents: 2.3.3
 
   tunnel@0.0.6: {}
+
+  twemoji-colr-font@15.0.3: {}
 
   typanion@3.14.0: {}
 

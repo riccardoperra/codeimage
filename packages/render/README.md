@@ -16,7 +16,15 @@ const png = await renderSnapshot(project); // Uint8Array, or a string for SVG
 2. The CSS is the build's vanilla-extract output plus the stylesheet a CodeMirror editor with the theme would mount, CodeMirror's base theme included.
 3. Takumi measures the frame, the frame is sized to whole CSS pixels as the web export is, and Takumi rasterizes it at `scale`.
 
-Fonts come from `dist/fonts`: the app's own font files and the fontsource packages for the families the app loads from Google Fonts. Emoji and CJK text fall back to the host's system fonts, as in a browser.
+Fonts come from `dist/fonts`: the app's own font files and the fontsource packages for the families the app loads from Google Fonts. The renderer never reads host fonts. Glyphs the snapshot's fonts lack fall back to bundled fonts, tried in this order:
+
+| Family                        | Covers                         | License                                                      | Size                  |
+| ----------------------------- | ------------------------------ | ------------------------------------------------------------ | --------------------- |
+| Twemoji (`twemoji-colr-font`) | Emoji and flags                | Font OFL 1.1, art CC-BY 4.0 by Twitter, Inc and contributors | 0.5 MB                |
+| Noto Sans SC Variable         | Chinese, kana, Latin, Cyrillic | OFL 1.1                                                      | 4.5 MB in 101 subsets |
+| Noto Sans KR Variable         | Hangul                         | OFL 1.1                                                      | 3.5 MB in 124 subsets |
+
+They and the UI font register once when the renderer starts, and every render uses the same fallback chain, so an image never depends on what rendered before it. Japanese text draws with Noto Sans SC glyph shapes, and rare kanji outside its subsets are missing. License texts are in `dist/fonts/licenses`.
 
 ## Develop
 
