@@ -1,5 +1,5 @@
 import type {ParseArgsOptionsConfig} from 'node:util';
-import type {SnapshotInput} from '../document';
+import type {SnapshotInput} from '@codeimage/render';
 
 export type FlagValues = Record<string, string | boolean | undefined>;
 

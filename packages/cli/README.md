@@ -1,7 +1,7 @@
 # CodeImage CLI
 
 Render source files or stdin with the same themes and presets as the web app.
-Requires Node.js 24 or later and `@codeimage/render`.
+Requires Node.js 24 or later. The package includes `@codeimage/render`.
 
 ```sh
 codeimage src/example.ts -o example.png
@@ -25,8 +25,8 @@ Save the JSON to a file and pass it to `--preset`. It holds the preset's
 `--theme` also replaces the preset's background and terminal colors.
 
 The format comes from `--format`, else from the `-o` extension, else PNG.
-`--scale` is the pixel ratio, above 0 and at most 3, default 1. The snapshot is
-960 CSS pixels wide.
+`--scale` is the pixel ratio, above 0 and at most 3, default 1. The image width
+follows the content.
 
 `-o -` writes only image data to stdout. A file output prints its path once
 written. Errors go to stderr. Exit codes are 0 for success, 1 for render or
@@ -44,7 +44,17 @@ node packages/cli/dist/bin.js README.md -o /tmp/readme.png
 ```
 
 `src/args.ts` parses options. `src/snapshot.ts` builds the snapshot and reads
-presets. `src/document.ts` mirrors the snapshot schema from `@codeimage/render`
-until that package is in the workspace. `src/render.ts` is the one call into the
-renderer. `src/bin.ts` owns files, streams, and exit codes. Feature flags live in
+presets using the schema exported by `@codeimage/render`. `src/bin.ts` calls
+`renderSnapshot` and owns files, streams, and exit codes. Feature flags live in
 `src/flags/`, one file each.
+
+## Packed distribution
+
+Run `pnpm --filter=@codeimage/cli pack` after `pnpm libs:build`. The build
+bundles the renderer JavaScript and copies its SSR assets and fonts into the
+CLI distribution. `scripts/package.mjs` creates the publish manifest from the
+CLI metadata and the renderer's runtime dependencies. npm installs Takumi and
+its platform-specific native binding. No browser is needed.
+
+`publish/` is generated and excluded from the workspace. `DEFAULT_SCALE` in
+`src/args.ts` controls both argument parsing and the help text.

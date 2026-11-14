@@ -17,8 +17,11 @@ export default defineConfig({
     ),
   },
   deps: {
-    neverBundle: ['@codeimage/render'],
-    alwaysBundle: [/@codeimage\/highlight/, /@primer\/primitives/],
+    alwaysBundle: [
+      /@codeimage\/render/,
+      /@codeimage\/highlight/,
+      /@primer\/primitives/,
+    ],
   },
   plugins: [
     {
