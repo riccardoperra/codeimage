@@ -1,54 +1,22 @@
 import type {AutoloadPluginOptions} from '@fastify/autoload';
 import AutoLoad from '@fastify/autoload';
-import fastifyEnv from '@fastify/env';
-import {Type} from '@sinclair/typebox';
+import configPlugin, {type Config} from './config.js';
 import type {FastifyPluginAsync} from 'fastify';
 import {join} from 'node:path';
-
-declare module 'fastify' {
-  interface FastifyInstance {
-    config: {
-      DATABASE_URL: string;
-      MOCK_AUTH: boolean;
-      MOCK_AUTH_EMAIL?: string;
-      CLIENT_ID_AUTH0?: string;
-      CLIENT_SECRET_AUTH0?: string;
-      DOMAIN_AUTH0?: string;
-      AUTH0_CLIENT_CLAIMS?: string;
-      AUDIENCE_AUTH0?: string;
-      CLIENT_SECRET_AUTH?: string;
-      GRANT_TYPE_AUTH0?: string;
-      ALLOWED_ORIGINS?: string;
-      PRESETS_LIMIT?: number;
-    };
-  }
-}
 
 const __dirname = import.meta.dirname;
 
 export type AppOptions = {
-  authProvider: FastifyPluginAsync;
+  authProvider?: FastifyPluginAsync;
+  config?: Partial<Config>;
   // Place your custom options for app below here.
 } & Partial<AutoloadPluginOptions>;
 
-const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  // Do not touch the following lines
-
-  await fastify.register(fastifyEnv, {
-    dotenv: true,
-    schema: Type.Object({
-      DATABASE_URL: Type.String(),
-      MOCK_AUTH: Type.Boolean(),
-      CLIENT_ID_AUTH0: Type.String(),
-      CLIENT_SECRET_AUTH0: Type.String(),
-      DOMAIN_AUTH0: Type.String(),
-      AUTH0_CLIENT_CLAIMS: Type.String({pattern: '^https?:'}),
-      AUDIENCE_AUTH0: Type.String({pattern: '^https?:'}),
-      GRANT_TYPE_AUTH0: Type.String(),
-      ALLOWED_ORIGINS: Type.String(),
-      PRESETS_LIMIT: Type.Number({default: Number.MAX_SAFE_INTEGER}),
-    }),
-  });
+const app: FastifyPluginAsync<AppOptions> = async (
+  fastify,
+  opts,
+): Promise<void> => {
+  await fastify.register(configPlugin, {overrides: opts.config});
 
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused

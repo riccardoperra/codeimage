@@ -42,9 +42,8 @@ test<TestContext>('POST /v1/preset [Create Preset] -> 200', async t => {
 });
 
 test('POST /v1/preset [Create Preset] -> Exceed presets limit > 422', async t => {
-  const fastify = await build(t);
+  const fastify = await build(t, {config: {PRESETS_LIMIT: -1}});
   const data = testPresetUtils.buildPresetData();
-  fastify.config.PRESETS_LIMIT = -1;
 
   const request: PresetCreateDto = {
     name: 'Data',
