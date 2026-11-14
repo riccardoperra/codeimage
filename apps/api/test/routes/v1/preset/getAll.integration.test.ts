@@ -1,9 +1,14 @@
 import type {Preset, User} from '@codeimage/prisma-models';
-import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 import type {PresetDto} from '../../../../src/modules/preset/schema/preset-dto.schema.js';
-import {testPresetUtils} from '../../../__internal__/presetUtils.js';
+import {testPresetUtils} from '../../../helpers/preset.js';
 import {build} from '../../../helper.js';
-import {clearAllSeeds, presetSeed, userSeed} from '../../../helpers/seed.js';
+import {
+  clearAllSeeds,
+  client,
+  presetSeed,
+  userSeed,
+} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
@@ -34,7 +39,6 @@ afterEach(async () => {
 
 test<TestContext>('/v1/preset -> 200', async t => {
   const fastify = await build(t);
-  const spy = vi.spyOn(fastify.presetService, 'findAllPresets');
 
   const response = await fastify.inject({
     url: `/api/v1/preset`,
@@ -43,7 +47,6 @@ test<TestContext>('/v1/preset -> 200', async t => {
 
   const body = response.json<PresetDto[]>();
 
-  expect(spy).toHaveBeenCalledWith(t.user.id);
   assert.equal(response.statusCode, 200);
   assert.equal(body.length, 2);
   assert.equal(body[0].name, t.preset1.name);

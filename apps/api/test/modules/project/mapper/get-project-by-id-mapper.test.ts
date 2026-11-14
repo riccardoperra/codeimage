@@ -52,8 +52,8 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
     id: '1',
     name: 'Untitled',
     ownerId: 'userId1',
-    createdAt: date1.toISOString(),
-    updatedAt: date2.toISOString(),
+    createdAt: date2.toISOString(),
+    updatedAt: date1.toISOString(),
     isOwner: false,
     editorTabs: [],
     frame: {

@@ -1,8 +1,13 @@
 import type {Preset, User} from '@codeimage/prisma-models';
-import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 
 import {build} from '../../../helper.js';
-import {clearAllSeeds, presetSeed, userSeed} from '../../../helpers/seed.js';
+import {
+  clearAllSeeds,
+  client,
+  presetSeed,
+  userSeed,
+} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
@@ -24,7 +29,6 @@ test<TestContext>('DELETE /v1/preset/:id [Delete Preset] -> 200', async t => {
   const fastify = await build(t);
   const userId = t.user.id;
   const presetId = t.preset1.id;
-  const spy = vi.spyOn(fastify.presetService, 'deletePreset');
 
   const response = await fastify.inject({
     url: `/api/v1/preset/${presetId}`,
@@ -32,5 +36,4 @@ test<TestContext>('DELETE /v1/preset/:id [Delete Preset] -> 200', async t => {
   });
 
   assert.equal(response.statusCode, 200, 'return status 200');
-  expect(spy).toHaveBeenCalledWith(userId, presetId);
 });

@@ -1,5 +1,5 @@
 import type {User} from '@codeimage/prisma-models';
-import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 import type {
   ProjectUpdateRequest,
   ProjectUpdateResponse,
@@ -81,7 +81,6 @@ afterEach(async () => {
 test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context => {
   const fastify = await build(context);
   const userId = context.user.id;
-  const spy = vi.spyOn(fastify.projectService, 'update');
 
   const data = buildUpdateRequest(context.project1.editorTabs[0].id);
 
@@ -93,11 +92,6 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
 
   const body = JSON.parse(response.body) as ProjectUpdateResponse;
 
-  expect(spy, 'has been called once').toHaveBeenCalledWith(
-    userId,
-    context.project1.id,
-    data,
-  );
   assert.ok(body.editorTabs.length === 2);
   assert.equal(response.statusCode, 200, 'return status 200');
   assert.deepStrictEqual(

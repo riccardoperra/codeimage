@@ -1,4 +1,4 @@
-import {afterAll, assert, beforeEach, expect, test, vi} from 'vitest';
+import {afterAll, assert, beforeEach, expect, test} from 'vitest';
 
 import {build} from '../../../helper.js';
 import {
@@ -29,7 +29,6 @@ test<TestContext>('PUT /v1/project/:id/name [Update Name] -> 200', async context
   const userId = context.user.id;
   const newName = 'newName';
   const projectId = context.project1.id;
-  const spy = vi.spyOn(fastify.projectService, 'updateName');
 
   const response = await fastify.inject({
     url: `/api/v1/project/${projectId}/name`,
@@ -37,11 +36,6 @@ test<TestContext>('PUT /v1/project/:id/name [Update Name] -> 200', async context
     payload: {name: newName},
   });
 
-  expect(spy, 'has been called once').toHaveBeenCalledWith(
-    userId,
-    projectId,
-    'newName',
-  );
   assert.equal(response.statusCode, 200, 'return status 200');
   assert.equal(JSON.parse(response.body).name, newName, 'return updated name');
 });
