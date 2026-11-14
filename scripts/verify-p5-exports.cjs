@@ -13,6 +13,13 @@ fs.mkdirSync(out, {recursive: true});
 async function open(browser, url, head) {
   process.stdout.write(`Opening ${url}\n`);
   const page = await browser.newPage({viewport: {width: 1440, height: 1000}});
+  if (process.env.P5_WORKER_PATH)
+    await page.route('**/mockServiceWorker.js', route =>
+      route.fulfill({
+        path: process.env.P5_WORKER_PATH,
+        contentType: 'text/javascript',
+      }),
+    );
   page.setDefaultTimeout(120000);
   await page.addInitScript(() =>
     performance.setResourceTimingBufferSize(10000),
@@ -25,6 +32,9 @@ async function open(browser, url, head) {
     await close.click();
     await page.getByRole('dialog').waitFor({state: 'hidden'});
   }
+  await page.getByRole('button', {name: 'Export', exact: true}).click();
+  await page.getByRole('button', {name: 'Confirm', exact: true}).waitFor();
+  await page.keyboard.press('Escape');
   await page.evaluate(async head => {
     const resource = name =>
       performance
@@ -36,10 +46,15 @@ async function open(browser, url, head) {
       document.querySelector('[contenteditable=true]'),
     );
     window.p5Exporter = await import(resource('/hooks/export-snippet.ts'));
+    window.p5ExportImage = await import(resource('/hooks/use-export-image.ts'));
     if (head)
       window.p5Marks = await import(resource('/plugins/lineMarks/state.ts'));
   }, head);
-  await page.waitForFunction(() => window.p5Exporter.previewEditorView);
+  await page.waitForFunction(
+    () =>
+      document.querySelector('[data-static-code-view]') ||
+      window.p5Exporter.previewEditorView,
+  );
   const fonts = await page.evaluate(async () => {
     const style = getComputedStyle(
       window.p5View.contentDOM.querySelector('.cm-line'),
@@ -90,17 +105,24 @@ async function marks(page, count) {
 
 async function measure(page) {
   return page.evaluate(async () => {
-    const {exportSnippet, previewEditorView: view} = window.p5Exporter;
+    const root =
+      document.querySelector('[data-static-code-view]') ??
+      window.p5Exporter.previewEditorView.dom;
+    const render =
+      window.p5Exporter.exportSnippet ?? window.p5ExportImage.exportImage;
+    performance.mark('p5-export-start');
     const start = performance.now();
-    const pending = exportSnippet({
-      ref: view.dom.closest('[class*=previewWrapper]'),
+    const pending = render({
+      ref: root.closest('[class*=previewWrapper]'),
       options: {extension: 'png', mode: 'getBlob', pixelRatio: 1, quality: 1},
     });
-    const renderedLines = view.dom.querySelectorAll('.cm-line').length;
-    const renderedMarks = view.dom.querySelectorAll('[data-mark]').length;
-    const lastLine = view.dom.querySelector('.cm-line:last-child')?.textContent;
+    const renderedLines = root.querySelectorAll('.cm-line').length;
+    const renderedMarks = root.querySelectorAll('[data-mark]').length;
+    const lastLine = root.querySelector('.cm-line:last-child')?.textContent;
     const blob = await pending;
     const ms = performance.now() - start;
+    performance.mark('p5-export-ready');
+    performance.measure('p5-export', 'p5-export-start', 'p5-export-ready');
     const bitmap = await createImageBitmap(blob);
     const result = {
       ms,
@@ -120,22 +142,32 @@ async function main() {
   const browser = await chromium.launch({
     headless: true,
     executablePath: process.env.P5_CHROMIUM,
+    args: ['--force-device-scale-factor=1'],
   });
   try {
     const trunk = await open(
       browser,
-      process.env.P5_TRUNK_URL ?? 'http://localhost:4415',
+      process.env.P5_TRUNK_URL ?? 'http://localhost:4426',
       false,
     );
     const head = await open(
       browser,
-      process.env.P5_HEAD_URL ?? 'http://localhost:4405',
+      process.env.P5_HEAD_URL ?? 'http://localhost:4428',
       true,
     );
     await marks(head, 0);
     await measure(trunk);
     await measure(head);
     await marks(head, 100);
+    if (process.env.P5_PROFILE_PATH) {
+      const session = await head.context().newCDPSession(head);
+      await session.send('Profiler.enable');
+      await session.send('Profiler.start');
+      await measure(head);
+      const {profile} = await session.send('Profiler.stop');
+      fs.writeFileSync(process.env.P5_PROFILE_PATH, JSON.stringify(profile));
+      await session.detach();
+    }
     await measure(head);
     const rows = [];
     for (let run = 1; run <= 10; run++) {
