@@ -1,62 +1,76 @@
+import type * as repository from './preset.repository.js';
 import type {Preset as PresetRow} from '@codeimage/prisma-models';
-import {type Db, orNull} from '../../shared/db.js';
+import {type OwnerScope, orNull} from '../../shared/db.js';
 import {asUserId, type UserId} from '../../shared/principal.js';
 import type {Preset, PresetChanges, PresetDraft} from './preset.model.js';
 
-export function createPresetRepository(db: Db) {
-  return {
-    ownedBy(owner: UserId) {
-      const ownedId = (id: string) => ({id_ownerId: {id, ownerId: owner}});
-
-      return {
-        async get(id: string): Promise<Preset | null> {
-          const row = await db.preset.findUnique({where: ownedId(id)});
-          return row ? toPreset(row) : null;
-        },
-
-        async list(): Promise<Preset[]> {
-          const rows = await db.preset.findMany({where: {ownerId: owner}});
-          return rows.map(toPreset);
-        },
-
-        count(): Promise<number> {
-          return db.preset.count({where: {ownerId: owner}});
-        },
-
-        async create(draft: PresetDraft): Promise<Preset> {
-          const row = await db.preset.create({
-            data: {
-              name: draft.name,
-              data: draft.data,
-              owner: {connect: {id: owner}},
-            },
-          });
-          return toPreset(row);
-        },
-
-        async update(
-          id: string,
-          changes: PresetChanges,
-        ): Promise<Preset | null> {
-          const row = await orNull(
-            db.preset.update({
-              where: ownedId(id),
-              data: {name: changes.name, data: changes.data},
-            }),
-          );
-          return row ? toPreset(row) : null;
-        },
-
-        async remove(id: string): Promise<Preset | null> {
-          const row = await orNull(db.preset.delete({where: ownedId(id)}));
-          return row ? toPreset(row) : null;
-        },
-      };
-    },
-  };
+export async function getPreset(
+  scope: OwnerScope,
+  id: string,
+): Promise<Preset | null> {
+  const row = await scope.client.preset.findUnique({
+    where: {id_ownerId: {id, ownerId: scope.ownerId}},
+  });
+  return row ? toPreset(row) : null;
 }
 
-export type PresetRepository = ReturnType<typeof createPresetRepository>;
+export async function listPresets(scope: OwnerScope): Promise<Preset[]> {
+  const rows = await scope.client.preset.findMany({
+    where: {ownerId: scope.ownerId},
+  });
+  return rows.map(toPreset);
+}
+
+export function countPresets(scope: OwnerScope): Promise<number> {
+  return scope.client.preset.count({where: {ownerId: scope.ownerId}});
+}
+
+export async function createPreset(
+  scope: OwnerScope,
+  draft: PresetDraft,
+): Promise<Preset> {
+  const row = await scope.client.preset.create({
+    data: {
+      name: draft.name,
+      data: draft.data,
+      owner: {connect: {id: scope.ownerId}},
+    },
+  });
+  return toPreset(row);
+}
+
+export async function updatePreset(
+  scope: OwnerScope,
+  id: string,
+  changes: PresetChanges,
+): Promise<Preset | null> {
+  const row = await orNull(
+    scope.client.preset.update({
+      where: {id_ownerId: {id, ownerId: scope.ownerId}},
+      data: {name: changes.name, data: changes.data},
+    }),
+  );
+  return row ? toPreset(row) : null;
+}
+
+export async function removePreset(
+  scope: OwnerScope,
+  id: string,
+): Promise<Preset | null> {
+  const row = await orNull(
+    scope.client.preset.delete({
+      where: {id_ownerId: {id, ownerId: scope.ownerId}},
+    }),
+  );
+  return row ? toPreset(row) : null;
+}
+
+export type PresetRepository = typeof repository;
+
+export interface PresetDependencies {
+  readonly presets: PresetRepository;
+  readonly scopeFor: (userId: UserId) => OwnerScope;
+}
 
 function toPreset(row: PresetRow): Preset {
   const data = row.data;

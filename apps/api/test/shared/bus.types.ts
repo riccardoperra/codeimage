@@ -11,6 +11,6 @@ export function checkBusTypes(projects: ProjectRepository) {
   // @ts-expect-error A command's payload is checked at its call site.
   command({name: 1});
   // @ts-expect-error Writes require an owner scope.
-  projects.update('id', {});
+  projects.renameProject('owner', 'id', 'name');
   return bus.execute(command({name: 'Ada'})) satisfies Promise<number>;
 }

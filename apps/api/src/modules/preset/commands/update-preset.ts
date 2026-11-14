@@ -5,16 +5,20 @@ import {
   type PresetChanges,
   PresetErrors,
 } from '../preset.model.js';
-import type {PresetRepository} from '../preset.repository.js';
+import type {PresetDependencies} from '../preset.repository.js';
 export const updatePreset = defineCommand<
   {actor: Actor; id: string; changes: PresetChanges},
   Preset
 >('preset.updatePreset');
 export default defineHandler(
   updatePreset,
-  ({presets}: {presets: PresetRepository}) =>
+  ({presets, scopeFor}: PresetDependencies) =>
     async ({actor, id, changes}) => {
-      const updated = await presets.ownedBy(actor.userId).update(id, changes);
+      const updated = await presets.updatePreset(
+        scopeFor(actor.userId),
+        id,
+        changes,
+      );
       if (!updated) throw PresetErrors.notFound({id, ownerId: actor.userId});
       return updated;
     },

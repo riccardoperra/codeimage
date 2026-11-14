@@ -1,11 +1,14 @@
 import AutoLoad from '@fastify/autoload';
 import fp from 'fastify-plugin';
 import {join} from 'node:path';
-import {createPresetRepository} from './preset.repository.js';
+import * as presets from './preset.repository.js';
+import {ownerScope} from '../../shared/db.js';
+import type {UserId} from '../../shared/principal.js';
 export default fp(
   async fastify => {
     const dependencies = {
-      presets: createPresetRepository(fastify.db),
+      presets,
+      scopeFor: (userId: UserId) => ownerScope(fastify.db, userId),
       limit: fastify.config.PRESETS_LIMIT,
     };
     for (const kind of ['commands', 'queries']) {
