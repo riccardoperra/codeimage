@@ -169,10 +169,12 @@ export const navItem = style({
       transition: 'none',
       selectors: {'&:active': {transform: 'none'}},
     },
+    // Five sections share one row of a phone: less padding, and they may shrink.
     [phone]: {
-      flex: '1 0 auto',
+      flex: '1 1 auto',
       justifyContent: 'center',
       height: '40px',
+      padding: '0 4px',
     },
   },
 });
@@ -372,6 +374,17 @@ export const rowControl = style({
 // The kit's segmented control fills its parent, so it gets one with a size.
 // Its tabs are 8px lower than the track, so the track grows on a phone to
 // keep each tab a 36px target.
+// A slider as wide as a segmented control of three options.
+export const range = style({
+  display: 'flex',
+  alignItems: 'center',
+  flex: 'none',
+  width: '252px',
+  '@media': {
+    [narrow]: {width: '100%'},
+  },
+});
+
 export const segmented = style({
   display: 'flex',
   flex: 'none',

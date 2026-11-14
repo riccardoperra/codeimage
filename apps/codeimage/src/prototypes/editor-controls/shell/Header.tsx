@@ -57,18 +57,21 @@ export function Header(props: {stage: Stage}) {
       </Show>
 
       <div class={styles.actions}>
-        <IconButton
-          size={'sm'}
-          theme={'secondary'}
-          variant={'ghost'}
-          aria-label={'Settings'}
-          title={'Settings'}
-          aria-haspopup="dialog"
-          data-settings-trigger
-          onClick={() => settings.open()}
-        >
-          <SettingsIcon />
-        </IconButton>
+        {/* Studio and Dock have a better home for it on a wide window. */}
+        <Show when={!settings.inLayout()}>
+          <IconButton
+            size={'sm'}
+            theme={'secondary'}
+            variant={'ghost'}
+            aria-label={'Settings'}
+            title={'Settings'}
+            aria-haspopup="dialog"
+            data-settings-trigger
+            onClick={() => settings.open()}
+          >
+            <SettingsIcon />
+          </IconButton>
+        </Show>
         {/* As today, a phone gets Export from the layout, beside the canvas. */}
         <Show when={modality === 'full'}>
           <ShareButton showLabel={false} />

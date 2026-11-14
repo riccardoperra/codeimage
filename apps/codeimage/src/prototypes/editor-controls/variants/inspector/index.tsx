@@ -12,9 +12,9 @@ import {
   onMount,
 } from 'solid-js';
 import type {JSX, ParentProps} from 'solid-js';
-import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
+import {FrameActions} from '../../controls/FrameActions';
 import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
 import {createOverlayPlacement} from './overlays';
@@ -284,7 +284,7 @@ export default function Inspector(props: VariantProps) {
             <props.stage.Canvas />
           </div>
           <div class="inspector-frame-actions">
-            <FrameToolbar frameRef={props.stage.exportRef()} />
+            <FrameActions frameRef={props.stage.exportRef()} />
             <Show
               when={mobile()}
               fallback={

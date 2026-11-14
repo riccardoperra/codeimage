@@ -1,6 +1,6 @@
 import {NewDot} from '../../../../components/WhatsNew/NewDot';
 import {commandAnchor} from '../../../../components/WhatsNew/whats-new.css';
-import {Button} from '@codeui/kit';
+import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
 import {Popover} from '@kobalte/core/popover';
 import type {JSX} from 'solid-js';
@@ -8,10 +8,12 @@ import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {Footer} from '../../../../components/Footer/Footer';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
-import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
+import {SettingsIcon} from '../../shell/icons';
+import {claimSettingsEntry, settings} from '../../shell/settings-state';
 import type {VariantMeta, VariantProps} from '../../contract';
+import {FrameActions} from '../../controls/FrameActions';
 import type {ControlId} from '../../model';
 import {themeStyle} from '../../theme-styles/style';
 import {ThemeSwatch} from '../../ThemeSwatch';
@@ -171,6 +173,27 @@ function DockItem(props: DockItemProps & {host: DockItemHost}) {
         </Popover.Portal>
       </Popover>
     </Show>
+  );
+}
+
+/** The settings entry in the floating bar, beside Search. */
+function BarSettings() {
+  claimSettingsEntry();
+  return (
+    <IconButton
+      class="dock-item"
+      theme={'secondary'}
+      variant={'ghost'}
+      size={'sm'}
+      aria-label="Settings"
+      title="Settings"
+      aria-haspopup="dialog"
+      aria-expanded={settings.isOpen()}
+      data-settings-trigger
+      onClick={() => settings.open()}
+    >
+      <SettingsIcon size={16} />
+    </IconButton>
   );
 }
 
@@ -413,6 +436,7 @@ export default function Dock(props: VariantProps) {
                   </Button>
                   <NewDot highlight="command-menu" />
                 </span>
+                <BarSettings />
               </Show>
               <Show when={exportInBar}>
                 <div class="dock-bar-export" onClick={close}>
@@ -423,7 +447,7 @@ export default function Dock(props: VariantProps) {
 
             <Show when={!compact()}>
               <div class="dock-frame-actions dock-float">
-                <FrameToolbar frameRef={props.stage.exportRef()} />
+                <FrameActions frameRef={props.stage.exportRef()} />
               </div>
             </Show>
           </div>

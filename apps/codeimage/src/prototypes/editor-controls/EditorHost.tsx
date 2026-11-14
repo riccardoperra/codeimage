@@ -4,16 +4,19 @@ import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import type {JSX} from 'solid-js';
 import {Show, Suspense} from 'solid-js';
 import {provideState} from 'statebuilder';
-import {EditorPageSkeleton} from '../../pages/Editor/components/EditorSkeleton';
 
-/** Loads the editor stores as the production editor route does, then shows the page. */
+/**
+ * Loads the editor stores as the production editor route does, then shows the
+ * page. It shows nothing while they load: today's page skeleton draws a frame
+ * between two sidebars, away from where any of these layouts puts it.
+ */
 export function EditorHost(props: {children: JSX.Element}): JSX.Element {
   getThemeStore().loadThemes();
   const editorConfig = provideState(EditorConfigStore);
 
   return (
-    <Suspense fallback={<EditorPageSkeleton />}>
-      <Show when={editorConfig.get.ready} fallback={<EditorPageSkeleton />}>
+    <Suspense>
+      <Show when={editorConfig.get.ready}>
         {/* Same as the production route, which passes an undefined snippet id
             despite the string type: this editor edits the local document. */}
         <EditorSyncProvider snippetId={undefined!}>

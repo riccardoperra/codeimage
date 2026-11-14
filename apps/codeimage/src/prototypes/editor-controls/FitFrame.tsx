@@ -27,30 +27,40 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
     const available = {width: 0, height: 0};
     const natural = {width: 0, height: 0};
 
+    /** Applies the scale that fits, and says whether it changed. */
     const fit = () => {
-      if (!natural.width || !natural.height) return;
+      if (!natural.width || !natural.height) return false;
       const next = Math.min(
         1,
         (available.width - GUTTER * 2) / natural.width,
         (available.height - GUTTER * 2) / natural.height,
       );
       const rounded = Math.max(0.1, Math.round(next * 1000) / 1000);
-      if (rounded === scale()) return;
+      if (rounded === scale()) return false;
       setScale(rounded);
       props.onScaleChange(rounded);
+      return true;
     };
 
-    // Changing the zoom resizes the observed content. Applying it in the next
-    // frame keeps the observer from reporting a resize loop.
+    // The fit runs in the observer's callback, after layout and before the
+    // paint, so new content, the placeholder or the frame, never shows once
+    // at its full size. A new zoom moves the content's size by a fraction of
+    // a pixel, so after one the content is observed again only from the next
+    // frame, which keeps the observer from reporting a resize loop.
     let frame = 0;
     const observer = new ResizeObserver(entries => {
+      let resized = false;
       for (const entry of entries) {
         const target = entry.target === wrapper ? available : natural;
-        target.width = entry.contentRect.width;
-        target.height = entry.contentRect.height;
+        const {width, height} = entry.contentRect;
+        if (target.width !== width || target.height !== height) resized = true;
+        target.width = width;
+        target.height = height;
       }
+      if (!resized || !fit()) return;
+      observer.unobserve(content);
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(fit);
+      frame = requestAnimationFrame(() => observer.observe(content));
     });
     observer.observe(wrapper);
     observer.observe(content);
@@ -64,7 +74,10 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
     <div class={styles.wrapper} ref={wrapper} style={{overflow: 'hidden'}}>
       <div
         class={styles.handler}
-        style={{zoom: scale(), 'margin-bottom': 0}}
+        style={{
+          zoom: scale(),
+          'margin-bottom': 0,
+        }}
         data-fit-scale={scale()}
       >
         <div class={styles.content} ref={content}>

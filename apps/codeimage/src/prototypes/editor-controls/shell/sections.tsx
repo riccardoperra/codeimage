@@ -1,6 +1,8 @@
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
+import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getUiStore} from '@codeimage/store/ui';
+import {RangeField} from '@codeimage/ui';
 import {Button, buttonStyles} from '@codeui/kit';
 import {appEnvironment} from '@core/configuration';
 import {getUmami} from '@core/constants/umami';
@@ -12,13 +14,16 @@ import {createMemo, For, Match, Show, Switch} from 'solid-js';
 import {releaseDate} from '../../../components/WhatsNew/releaseDate';
 import {getWhatsNew, RELEASES} from '../../../state/whats-new';
 import type {HighlightId, LocatedHighlightId} from '../../../state/whats-new';
+import {ExportExtension} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
+import {SwitchField} from '../controls/fields';
 import type {EditorControlsModel, ThemeEntry} from '../model';
 import {ThemeSwatch} from '../ThemeSwatch';
 import {
   AboutIcon,
   AppearanceIcon,
   ExperimentsIcon,
+  ExportIcon,
   ExternalIcon,
   GeneralIcon,
   NewsIcon,
@@ -357,6 +362,103 @@ export function createSettingSections(
     ],
   };
 
+  // Every row reads and writes the production export store, the one that
+  // today's export popover and dialog share, so there is one value for each.
+  const exportStore = getExportCanvasStore();
+  const exportSection: SettingSection = {
+    id: 'export',
+    name: nameOf('export'),
+    icon: ExportIcon,
+    intro: 'What Export gives. The Export button uses these at once.',
+    groups: () => [
+      {
+        title: 'Image',
+        rows: [
+          {
+            id: 'export-format',
+            title: 'Format',
+            description: () =>
+              exportStore.get.extension === ExportExtension.jpeg
+                ? 'The file type. JPEG keeps no transparency.'
+                : 'The file type of the image.',
+            control: () => (
+              <Segmented
+                value={exportStore.get.extension}
+                onChange={value => exportStore.set('extension', value)}
+                items={[
+                  {label: 'PNG', value: ExportExtension.png},
+                  {label: 'SVG', value: ExportExtension.svg},
+                  {label: 'JPEG', value: ExportExtension.jpeg},
+                ]}
+              />
+            ),
+          },
+          ...(exportStore.get.extension === ExportExtension.jpeg
+            ? [
+                {
+                  id: 'export-quality',
+                  title: 'Quality',
+                  description: () =>
+                    `${exportStore.get.jpegQuality}%. Lower makes a smaller file.`,
+                  control: () => (
+                    <div class={styles.range}>
+                      <RangeField
+                        value={exportStore.get.jpegQuality}
+                        onChange={value =>
+                          exportStore.set('jpegQuality', value)
+                        }
+                        min={70}
+                        max={100}
+                        step={2}
+                      />
+                    </div>
+                  ),
+                },
+              ]
+            : []),
+          {
+            id: 'export-scale',
+            title: 'Scale',
+            description: () =>
+              `The image is ${exportStore.canvasResolution()} pixels.`,
+            control: () => (
+              <Segmented
+                value={String(exportStore.get.devicePixelRatio)}
+                onChange={value =>
+                  exportStore.set('devicePixelRatio', Number(value))
+                }
+                items={[1, 2, 3, 6].map(scale => ({
+                  label: `${scale}x`,
+                  value: String(scale),
+                }))}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        title: 'Tabs',
+        rows: [
+          {
+            id: 'export-active-tab',
+            title: 'Only the active tab',
+            description: () =>
+              'The window shows the active tab alone, without the other tabs.',
+            small: true,
+            control: () => (
+              <SwitchField
+                id="settings-export-active-tab"
+                label="Only the active tab"
+                checked={exportStore.get.showOnlyActiveTab}
+                onChange={exportStore.setShowOnlyActiveTab}
+              />
+            ),
+          },
+        ],
+      },
+    ],
+  };
+
   const library: SettingSection = {
     id: 'whats-new',
     name: nameOf('whats-new'),
@@ -472,8 +574,10 @@ export function createSettingSections(
 
   // One list of rows per section for as long as nothing they read changes,
   // so that a search keeps the rows, and their controls, that still match.
-  return [general, appearance, experiments, library, about].map(section => {
-    const groups = createMemo(section.groups);
-    return {...section, groups};
-  });
+  return [general, appearance, exportSection, experiments, library, about].map(
+    section => {
+      const groups = createMemo(section.groups);
+      return {...section, groups};
+    },
+  );
 }

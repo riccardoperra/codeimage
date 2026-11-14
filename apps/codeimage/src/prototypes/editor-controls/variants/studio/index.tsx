@@ -16,11 +16,12 @@ import {Footer} from '../../../../components/Footer/Footer';
 import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ExportInNewTabButton} from '../../../../components/Toolbar/ExportNewTabButton';
-import {ExportSettingsButton} from '../../../../components/Toolbar/ExportSettingsButton';
-import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import {commandMenu} from '../../command-menu/state';
+import {SettingsIcon} from '../../shell/icons';
+import {claimSettingsEntry, settings} from '../../shell/settings-state';
 import type {VariantMeta, VariantProps} from '../../contract';
+import {FrameActions} from '../../controls/FrameActions';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import type {Panel, PanelId} from './panels';
@@ -47,6 +48,26 @@ function reducedMotion() {
 
 function rubberband(overshoot: number, dimension: number) {
   return (overshoot * dimension * 0.55) / (dimension + 0.55 * overshoot);
+}
+
+/** The settings entry at the foot of the rail, under Search. */
+function RailSettings() {
+  claimSettingsEntry();
+  return (
+    <button
+      type="button"
+      class={styles.railButton}
+      aria-haspopup="dialog"
+      aria-expanded={settings.isOpen()}
+      data-settings-trigger
+      onClick={() => settings.open()}
+    >
+      <span class={styles.railIcon}>
+        <SettingsIcon size={20} />
+      </span>
+      Settings
+    </button>
+  );
 }
 
 export default function Studio(props: VariantProps) {
@@ -293,6 +314,7 @@ export default function Studio(props: VariantProps) {
               </button>
               <NewDot highlight="command-menu" />
             </span>
+            <RailSettings />
           </Show>
         </nav>
 
@@ -359,7 +381,6 @@ export default function Studio(props: VariantProps) {
             when={modality === 'full'}
             fallback={
               <div class={styles.compactActions}>
-                <ExportSettingsButton />
                 <ShareButton showLabel={false} />
                 <Button
                   size="xs"
@@ -382,7 +403,7 @@ export default function Studio(props: VariantProps) {
             }
           >
             <div class={styles.frameActions}>
-              <FrameToolbar frameRef={props.stage.exportRef()} />
+              <FrameActions frameRef={props.stage.exportRef()} />
             </div>
             <div class={styles.footer}>
               <Footer />
