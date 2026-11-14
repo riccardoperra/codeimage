@@ -40,7 +40,6 @@
     "vite": "catalog:next",
     "vite-plugin-solid": "catalog:next",
     "vite-tsconfig-paths": "catalog:next",
-    "vitest": "catalog:next",
     "workbox-core": "^7.4.0",
     "workbox-window": "^7.4.0",
     "vitest": "catalog:next"
