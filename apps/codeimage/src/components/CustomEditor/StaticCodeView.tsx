@@ -33,6 +33,14 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
           .map(mark => [mark.line, mark.kind]),
       ),
   );
+  const focused = createMemo(
+    () =>
+      new Set(
+        props.marks.focusedLines.filter(
+          line => line >= 1 && line <= lines().length,
+        ),
+      ),
+  );
   const hasDiff = () =>
     Array.from(marks().values()).some(kind => kind !== 'highlight');
   if (!isServer) createEffect(() => mountStaticTheme(document, props.theme));
@@ -48,7 +56,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
         class={`cm-editor ${theme().classes}`}
         data-static-code-view
         data-line-marks="true"
-        data-line-focus={String(props.marks.focus)}
+        data-line-focus={String(focused().size > 0)}
         data-line-diff={String(hasDiff())}
         style={{
           '--codeimage-font-family': `${props.fontFamily}, monospace`,
@@ -75,8 +83,7 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
                       class="cm-gutterElement"
                       classList={{
                         'cm-lineMarkDim':
-                          props.marks.focus &&
-                          marks().get(index() + 1) !== 'highlight',
+                          focused().size > 0 && !focused().has(index() + 1),
                       }}
                       style={{'grid-row': `${index() + 1}`}}
                     >
@@ -90,7 +97,11 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
           <div class="cm-content cm-lineWrapping">
             <For each={lines()}>
               {(line, index) => (
-                <div class="cm-line" data-mark={marks().get(index() + 1)}>
+                <div
+                  class="cm-line"
+                  data-mark={marks().get(index() + 1)}
+                  data-focused={focused().has(index() + 1) ? 'true' : undefined}
+                >
                   <For each={line}>
                     {span => (
                       <Show when={span.classes} fallback={span.text}>

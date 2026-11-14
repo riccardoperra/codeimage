@@ -1,7 +1,14 @@
+import {parseTabMarks} from '@codeimage/api/schemas';
 import type * as ApiTypes from '@codeimage/api/api-types';
 import {HttpResponse, type RequestHandler} from 'msw';
 import {http} from 'msw';
 import {db} from './db';
+
+function normalizeTab(tab: unknown) {
+  return typeof tab === 'object' && tab !== null
+    ? {...tab, marks: parseTabMarks('marks' in tab ? tab.marks : undefined)}
+    : tab;
+}
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -17,7 +24,12 @@ function getProjectByIdOrThrowNotFound(id: string, ownerId?: string) {
       where: whereClause,
     });
     return {
-      data: project,
+      data: project
+        ? {
+            ...project,
+            editorTabs: project.editorTabs.map(normalizeTab),
+          }
+        : project,
       error: null,
     };
   } catch {
@@ -50,7 +62,12 @@ const handlers: RequestHandler[] = [
       },
     });
 
-    return HttpResponse.json(projects);
+    return HttpResponse.json(
+      projects.map(project => ({
+        ...project,
+        editorTabs: project.editorTabs.map(normalizeTab),
+      })),
+    );
   }),
   http.get(`${BASE_URL}/api/v1/project/:id`, ({params}) => {
     const id = params['id'] as string;
@@ -165,7 +182,7 @@ const handlers: RequestHandler[] = [
             languageId: editor.languageId,
             code: editor.code,
             lineNumberStart: editor.lineNumberStart,
-            marks: editor.marks ?? {lines: [], focus: false},
+            marks: parseTabMarks(editor.marks),
           })),
         },
         where: {
@@ -230,7 +247,7 @@ const handlers: RequestHandler[] = [
         languageId: editor.languageId,
         code: editor.code,
         lineNumberStart: editor.lineNumberStart,
-        marks: editor.marks ?? {lines: [], focus: false},
+        marks: parseTabMarks(editor.marks),
       })),
     });
     return HttpResponse.json(project);

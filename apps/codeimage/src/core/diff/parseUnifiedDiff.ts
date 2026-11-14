@@ -22,7 +22,7 @@ export function parseUnifiedDiff(input: string): DiffFile[] {
       files.push({
         path,
         code: code.join('\n') + (trailingNewline && code.length ? '\n' : ''),
-        marks: {lines: marks, focus: false},
+        marks: {lines: marks, focusedLines: []},
       });
     }
     code = [];

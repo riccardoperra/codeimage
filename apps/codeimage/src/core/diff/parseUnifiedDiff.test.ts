@@ -14,7 +14,7 @@ describe('parseUnifiedDiff', () => {
             {line: 1, kind: 'removed'},
             {line: 2, kind: 'added'},
           ],
-          focus: false,
+          focusedLines: [],
         },
       },
     ]);

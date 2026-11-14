@@ -7,7 +7,7 @@ import StaticCodeView from '../../components/CustomEditor/StaticCodeView';
 import {loadLanguage} from './tokenize';
 
 const props = {
-  marks: {lines: [], focus: false},
+  marks: {lines: [], focusedLines: []},
   languageId: 'typescript',
   theme: draculaTheme,
   showLineNumbers: true,
@@ -60,7 +60,7 @@ test('exports diff and highlight marks with focused code and gutter numbers', ()
           {line: 2, kind: 'added'},
           {line: 3, kind: 'highlight'},
         ],
-        focus: true,
+        focusedLines: [3],
       },
     }),
   );
@@ -89,7 +89,7 @@ test('highlight-only exports omit the sign column and work without a gutter', ()
       code: 'first\nlast',
       language: null,
       showLineNumbers: false,
-      marks: {lines: [{line: 2, kind: 'highlight'}], focus: false},
+      marks: {lines: [{line: 2, kind: 'highlight'}], focusedLines: []},
     }),
   );
   assert.ok(html.includes('data-line-diff="false"'));

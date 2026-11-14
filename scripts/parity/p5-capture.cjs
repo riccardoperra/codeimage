@@ -113,7 +113,7 @@ async function main() {
         };
       });
       assert.equal(row.focus, 'true');
-      assert.equal(row.marks.length, 4);
+      assert.equal(row.marks.length, 2);
       assert.equal(row.dimmed.length, 5);
       rows.push({theme, ...row});
       console.log(phase, theme, 'exported');

@@ -171,3 +171,33 @@ The two history regression tests failed without the import's inverted effect and
 Run `node scripts/verify-p5-import-undo.cjs` against port 4433. `P5_URL`, `P5_OUT`, and `P5_CHROMIUM` override the URL, evidence directory, and browser executable. Screenshots, state snapshots, and logs are in `/tmp/swarm-p5-undo/`. The copied local environment enables MSW and mock auth. Temporary Vite middleware serves the installed MSW worker without changing the checked-in worker.
 
 All 49 app tests pass. `pnpm lint` passes with the existing 32 warnings and no errors. `pnpm typecheck` passes across the workspace. P1 remains at `17233c93`, already contained in P5, so no rebase was needed.
+
+## Focus redesign, 2026-11-14
+
+Focus now belongs to individual lines. `TabMarks` stores independent `lines` and `focusedLines` collections. Focus adds the selected lines to the existing set. Dimming stops when that set is empty. Added, removed, and highlighted lines can also be focused.
+
+Persisted `{focus: true}` records migrate their highlighted lines into `focusedLines`. The API JSON reader, local editor state, and MSW responses use the same parser. No database column migration is required. Shiki focus annotations produce focused lines without adding highlights. PR #704 owns the CLI `--focus` flag and must adopt this shape separately.
+
+The inline overlay appears on a marked line under the caret or pointer. Each button names its mark and clears only that mark on that line. Clearing Focus preserves the line's color mark. The overlay hides during typing and stays outside StaticCodeView exports. Focus uses `Mod-Alt-4` and appears in the shortcuts dialog. All four locales include the updated action and hint.
+
+Verification completed for this change:
+
+- 55 app tests, 30 API unit tests, and 17 API integration tests pass. Integration tests use an isolated PostgreSQL container.
+- `pnpm lint` passes with the same 32 existing warnings. `pnpm typecheck` passes.
+- The new StaticCodeView focus tests fail twice against the original renderer. The updated schema suite fails four tests against the original schema, including legacy migration. Both suites pass after the implementation.
+- Chromium verifies two separate focus ranges, per-kind inline clearing, undo, the Focus shortcut, pointer hover, and typing on an unmarked line.
+- The exported PNG keeps lines 2, 3, 6, and 7 at full brightness. Only the other rows change compared with focus disabled. The PNG is identical with and without the clear overlay visible in the editor.
+- Chromium verifies the selection toolbar and clear overlay at 390 px. Both remain within the viewport. CodeImage chooses its mobile layout at mount, so the probe reloads after changing the viewport.
+
+Run the browser probe with `P5_URL=http://127.0.0.1:4447 P5_OUT=/tmp/p5-focus node scripts/verify-p5-focus.cjs`. Add `P5_STEP_MS=1100` for the review recording. It opens one Chromium and closes it on completion. It serves the installed MSW worker through a test route because the checked-in worker predates MSW 2.
+
+Local setup used `pnpm install`, `pnpm libs:build`, Prisma client generation, and `pnpm --filter=@codeimage/api build:ts`. The copied app environment enables MSW and mock authentication. Environment files stay uncommitted.
+
+Review artifacts:
+
+- [Desktop clear overlay](media/p5-focus-clear-desktop.png).
+- [Mobile clear overlay](media/p5-focus-clear-mobile.png).
+- [Focus export](media/p5-focus-redesign.png).
+- [Focus disabled export](media/p5-focus-off.png).
+- [PNG assertions](media/p5-focus-png-check.json).
+- [Review video](media/p5-focus-redesign.webm).
