@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@1.6.4/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
   "changelog": [
     "@changesets/changelog-github",
     {"repo": "riccardoperra/codeimage"}
@@ -9,5 +9,6 @@
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
+  "privatePackages": {"version": true, "tag": false},
   "ignore": []
 }
