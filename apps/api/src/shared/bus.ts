@@ -18,10 +18,15 @@ export type ActionCreator<Payload, Result> = ((
   readonly kind: ActionKind;
 };
 
+const definedActions = new Map<string, ActionKind>();
+
 function defineAction<Payload, Result>(
   kind: ActionKind,
   name: string,
 ): ActionCreator<Payload, Result> {
+  if (definedActions.has(name))
+    throw new Error(`Action already defined: ${name}`);
+  definedActions.set(name, kind);
   return Object.assign(
     (payload: Payload): Action<Payload, Result> => ({kind, name, payload}),
     {actionName: name, kind},
@@ -43,6 +48,9 @@ export function createBus({
 }: {middlewares?: readonly Middleware[]} = {}) {
   const handlers = new Map<string, (payload: unknown) => Promise<unknown>>();
   return {
+    has(name: string): boolean {
+      return handlers.has(name);
+    },
     register<Payload, Result>(
       creator: ActionCreator<Payload, Result>,
       handler: (payload: Payload) => Promise<Result>,
@@ -66,6 +74,15 @@ export function createBus({
 }
 
 export type Bus = ReturnType<typeof createBus>;
+
+export function unregisteredActions(buses: {
+  readonly command: Bus;
+  readonly query: Bus;
+}): string[] {
+  return [...definedActions]
+    .filter(([name, kind]) => !buses[kind].has(name))
+    .map(([name]) => name);
+}
 
 export function defineHandler<
   Payload,
