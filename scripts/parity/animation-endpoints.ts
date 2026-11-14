@@ -1262,7 +1262,7 @@ const label = 'a much longer label that pushes the code past the width of the ta
           const last = played.scenes.at(-1)!;
           return {scene: last, timeMs: last.durationMs};
         };
-        const reference = async (scene: {html: string}, timeMs: number) =>
+        const renderAt = async (scene: {html: string}, timeMs: number) =>
           decode(
             await renderer.render(normalizeStyleAttributes(scene.html), {
               width: played.width * scale,
@@ -1284,7 +1284,7 @@ const label = 'a much longer label that pushes the code past the width of the ta
         for (const {png, startMs} of decoded.frames) {
           const index = Math.round((startMs * fps) / 1000);
           const {scene, timeMs} = sceneAt(frameTimeMs(index, fps));
-          const direct = await reference(scene, timeMs);
+          const direct = await renderAt(scene, timeMs);
           worst = Math.max(worst, await diffPercent(png, direct));
           if (format !== 'gif') continue;
           for (let alpha = 3; alpha < png.data.length; alpha += 4) {
