@@ -1,4 +1,5 @@
 .inspector-root {
+  --inspector-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   height: 100dvh;
   display: grid;
   grid-template-rows: 52px minmax(0, 1fr);
@@ -102,24 +103,49 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+  gap: 4px;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: var(--inspector-hover) transparent;
 }
+/*
+ * A header is a 36px row with its own weight and a hover surface. The open
+ * section sits on a quieter inner island with its content inset, so the
+ * group reads apart from the rows it holds and from the closed headers.
+ */
 .inspector-root .inspector-section {
-  margin-bottom: 4px;
+  flex: none;
+  border-radius: 16px;
+}
+.inspector-root .inspector-section[data-open] {
+  background: var(--inspector-app);
 }
 .inspector-root .inspector-section-trigger {
   display: flex;
-  width: 100%;
+  align-items: center;
   justify-content: space-between;
-  min-height: 36px;
   gap: 8px;
-  padding: 0 4px;
+  width: 100%;
+  min-height: 36px;
+  padding: 0 12px 0 8px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
   font-size: 14px;
   font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .inspector-root
+    .inspector-section:not([data-open])
+    > .inspector-section-trigger:hover {
+    background: var(--inspector-hover);
+  }
 }
 .inspector-root .inspector-section-name {
   display: flex;
@@ -127,10 +153,16 @@
   gap: 8px;
 }
 .inspector-root .inspector-chevron {
+  display: inline-block;
+  width: 16px;
   font: 20px/1 system-ui;
+  text-align: center;
   color: var(--inspector-muted);
+  transition: transform 200ms var(--inspector-ease-out);
 }
-.inspector-root .inspector-section-trigger[data-expanded] .inspector-chevron {
+.inspector-root
+  .inspector-section-trigger[aria-expanded='true']
+  .inspector-chevron {
   transform: rotate(90deg);
 }
 .inspector-root .inspector-summary {
@@ -142,34 +174,38 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.inspector-root .inspector-section-content {
-  padding: 6px 0 8px;
-}
 /*
- * Only one section is open, so the open theme section takes what the other
- * headers leave, and the picker fills it.
+ * The body animates its measured height, the one layout property the
+ * accordion recipe allows, with opacity, so a click retargets mid-way.
  */
-.inspector-root .inspector-section[data-section='themes'][data-expanded] {
-  display: flex;
-  flex: 1 0 auto;
-  flex-direction: column;
+.inspector-root .inspector-section-body {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    height 200ms var(--inspector-ease-out),
+    opacity 200ms var(--inspector-ease-out);
 }
+.inspector-root .inspector-section[data-open] > .inspector-section-body {
+  height: var(--inspector-body-height);
+  opacity: 1;
+}
+.inspector-root .inspector-section-content {
+  padding: 0 8px 8px;
+}
+/* The theme list keeps its own bottom padding for the focus ring. */
 .inspector-root
   .inspector-section[data-section='themes']
   .inspector-section-content {
-  display: flex;
-  flex: 1 0 auto;
-  flex-direction: column;
-  padding-bottom: 2px;
+  padding-bottom: 0;
 }
 .inspector-root .inspector-themes {
   position: relative;
-  flex: 1 0 auto;
-  min-height: 360px;
+  height: var(--inspector-body-height);
 }
 .inspector-root .inspector-themes > * {
   position: absolute;
-  inset: 0 4px;
+  inset: 0;
 }
 .inspector-root [data-control] > div {
   grid-template-columns: minmax(100px, 1fr) minmax(0, 1.5fr);
@@ -233,15 +269,6 @@
   outline: 2px solid Highlight;
   outline-offset: 3px;
 }
-.inspector-root .inspector-more-trigger {
-  width: 100%;
-  min-height: 36px;
-  justify-content: space-between;
-  padding: 4px 8px;
-  font-size: 12px;
-  color: var(--inspector-muted);
-  margin: 6px 0;
-}
 .inspector-root .inspector-sheet-handle,
 .inspector-root .inspector-quick-controls {
   display: none;
@@ -298,9 +325,6 @@
   .inspector-root[data-sheet='tall'] .inspector-canvas {
     grid-template-rows: minmax(0, 1fr);
   }
-  .inspector-root .inspector-themes {
-    min-height: 436px;
-  }
   .inspector-root [data-control] input:not([type='checkbox']) {
     min-height: 40px;
     font-size: 16px;
@@ -352,10 +376,6 @@
     transition: none !important;
     scroll-behavior: auto !important;
   }
-}
-
-.inspector-root .inspector-section:last-child {
-  margin-bottom: 0;
 }
 
 /* Overlays render outside the root, so these rules are global. */
