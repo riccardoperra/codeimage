@@ -17,19 +17,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout PR
-        uses: actions/checkout@v7
-      - name: 📥 Setup
-        uses: ./.github/actions/setup-job
-      - name: 📥 Monorepo install
-        uses: ./.github/actions/pnpm-install
-
   lint:
     name: Lint
-    needs: ['install']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -47,7 +36,6 @@ jobs:
 
   build-packages:
     name: Build packages/**
-    needs: ['install']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -74,7 +62,7 @@ jobs:
 
   build-api:
     name: 'Build @codeimage/api'
-    needs: ['install', 'build-packages']
+    needs: ['build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -105,7 +93,6 @@ jobs:
 
   test-api:
     name: Api test
-    needs: [install]
     runs-on: ubuntu-latest
 
     services:
@@ -158,7 +145,7 @@ jobs:
 
   typecheck-packages:
     name: Type-checking packages/**
-    needs: ['install', 'build-packages']
+    needs: ['build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -186,7 +173,7 @@ jobs:
   deploy-highlight-package:
     name: Deploy @codeimage/highlight app
     environment: Production
-    needs: ['install', 'lint', 'build-packages']
+    needs: ['lint', 'build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -217,7 +204,7 @@ jobs:
   deploy-api:
     name: Build and Deploy Api
     environment: Production
-    needs: [install, lint, typecheck-packages, test-api, build-api]
+    needs: [lint, typecheck-packages, test-api, build-api]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -258,7 +245,7 @@ jobs:
   deploy-app:
     name: Deploy @codeimage/app
     environment: Production
-    needs: [install, lint, typecheck-packages, build-packages, deploy-api]
+    needs: [lint, typecheck-packages, build-packages, deploy-api]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
@@ -306,7 +293,7 @@ jobs:
     if: ${{ github.event.inputs.deploy-website == 'true' }}
     name: Deploy @codeimage/website
     environment: Production
-    needs: [install, lint, typecheck-packages, build-packages]
+    needs: [lint, typecheck-packages, build-packages]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
