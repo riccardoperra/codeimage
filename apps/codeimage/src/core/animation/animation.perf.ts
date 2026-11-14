@@ -36,7 +36,7 @@ async function main() {
   for (let i = 0; i < 35; i++) {
     const start = performance.now();
     scene = pairScene(a, b, true);
-    css = compileScene(scene, metrics, timing).css.length;
+    css = compileScene(scene, metrics, timing, 'a').css.length;
     if (i >= 5) samples.push(performance.now() - start);
   }
   assert.ok(css > 0, 'compiled keyframes');

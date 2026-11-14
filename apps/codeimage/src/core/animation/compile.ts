@@ -1,11 +1,13 @@
 import type {
   Cell,
   CodeMetrics,
+  MarkTransition,
   Point,
   Scene,
   SceneTiming,
   StepBox,
   TokenTransition,
+  Transition,
 } from './model';
 import {EASING_CURVES} from './model';
 
@@ -33,16 +35,22 @@ export const animationCss = (
 
 type Pose = Point & {opacity: number};
 
-type Layer = {
+type Motion = Transition<unknown>;
+
+type Layer<T> = {
   place: (cell: Cell, box: StepBox) => Point;
-  element: (text: string, classes: string, style: string) => string;
+  element: (item: T, style: string) => string;
+  // How a kept item looked in the step it leaves, when its looks change.
+  before?: (item: T) => T | undefined;
 };
 
+// `name` prefixes every keyframes rule, so scenes that share a stylesheet
+// need distinct names.
 export function compileScene(
   scene: Scene,
   metrics: CodeMetrics,
   timing: SceneTiming,
-  name = 'a',
+  name: string,
 ): {html: string; css: string} {
   const {charWidth, lineHeight} = metrics;
   const {from, to} = scene;
@@ -54,7 +62,10 @@ export function compileScene(
   };
   const at = ({x, y}: Point) => `left:${px(x)};top:${px(y)}`;
 
-  const compileLayer = (transitions: TokenTransition[], layer: Layer) => {
+  const compileLayer = <T extends Motion>(
+    transitions: readonly T[],
+    layer: Layer<T>,
+  ) => {
     const pose = (cell: Cell, box: StepBox): Pose => ({
       ...layer.place(cell, box),
       opacity: box.dimmed.has(cell.line) ? DIM_OPACITY : 1,
@@ -62,7 +73,7 @@ export function compileScene(
     // Takumi rounds layout positions to device pixels but not transforms, so
     // a move animates `left` and `top`. Both endpoints then land on the pixels
     // the static layout uses.
-    const glide = (text: string, classes: string, start: Pose, end: Pose) => {
+    const glide = (item: T, start: Pose, end: Pose) => {
       const fades = start.opacity !== end.opacity;
       const frame = (pose: Pose) =>
         `{${at(pose)}${fades ? `;opacity:${pose.opacity}` : ''}}`;
@@ -71,41 +82,41 @@ export function compileScene(
         style.push(animate(`from${frame(start)}to${frame(end)}`));
       }
       if (!fades && end.opacity !== 1) style.push(`opacity:${end.opacity}`);
-      return layer.element(text, classes, style.join(';'));
+      return layer.element(item, style.join(';'));
     };
     return transitions
-      .map(transition => {
-        const {text, classes} = transition;
-        if (transition.kind === 'leave') {
-          const start = pose(transition.from, from);
+      .map(item => {
+        const motion: Motion = item;
+        if (motion.kind === 'leave') {
+          const start = pose(motion.from, from);
           const fade = `0%{opacity:${start.opacity}}${percent(LEAVE_END)}{opacity:0}100%{opacity:0}`;
-          return layer.element(text, classes, `${at(start)};${animate(fade)}`);
+          return layer.element(item, `${at(start)};${animate(fade)}`);
         }
-        const end = pose(transition.to, to);
-        if (transition.kind === 'enter') {
+        const end = pose(motion.to, to);
+        if (motion.kind === 'enter') {
           const fade = `0%{opacity:0}${percent(ENTER_START)}{opacity:0}100%{opacity:${end.opacity}}`;
-          return layer.element(text, classes, `${at(end)};${animate(fade)}`);
+          return layer.element(item, `${at(end)};${animate(fade)}`);
         }
-        const start = pose(transition.from, from);
-        if (transition.fromClasses === undefined) {
-          return glide(text, classes, start, end);
-        }
+        const start = pose(motion.from, from);
+        const before = layer.before?.(item);
+        if (!before) return glide(item, start, end);
         return (
-          glide(text, transition.fromClasses, start, {...end, opacity: 0}) +
-          glide(text, classes, {...start, opacity: 0}, end)
+          glide(before, start, {...end, opacity: 0}) +
+          glide(item, {...start, opacity: 0}, end)
         );
       })
       .join('');
   };
 
-  const sizedBox = (id: string, width: (box: StepBox) => number) => {
-    const size = (box: StepBox) =>
-      `width:${px(width(box) * charWidth)};height:${px(box.rows * lineHeight)}`;
-    return `position:relative;${size(to)};${animate(`from{${size(from)}}to{${size(to)}}`, id)}`;
+  const sizedBox = (id: string, fromColumns: number, toColumns: number) => {
+    const size = (columns: number, rows: number) =>
+      `width:${px(columns * charWidth)};height:${px(rows * lineHeight)}`;
+    const end = size(toColumns, to.rows);
+    return `position:relative;${end};${animate(`from{${size(fromColumns, from.rows)}}to{${end}}`, id)}`;
   };
 
-  const token: Layer['element'] = (text, classes, style) =>
-    `<span class="${escapeAttribute(classes)}" style="position:absolute;white-space:pre;${style}">${escapeHtml(text)}</span>`;
+  const token = (token: TokenTransition, style: string) =>
+    `<span class="${escapeAttribute(token.classes)}" style="position:absolute;white-space:pre;${style}">${escapeHtml(token.text)}</span>`;
 
   const code = compileLayer(scene.code, {
     place: (cell, box) => ({
@@ -113,18 +124,23 @@ export function compileScene(
       y: cell.line * lineHeight,
     }),
     element: token,
+    before: token =>
+      token.kind === 'move' && token.fromClasses !== undefined
+        ? {...token, classes: token.fromClasses}
+        : undefined,
   });
   const marks = compileLayer(scene.marks, {
     place: cell => ({x: 0, y: cell.line * lineHeight}),
-    element: (_, kind, style) =>
-      `<div data-mark="${escapeAttribute(kind)}" style="position:absolute;right:0;height:${px(lineHeight)};${style}"></div>`,
+    element: ({mark}: MarkTransition, style) =>
+      `<div data-mark="${mark}" style="position:absolute;right:0;height:${px(lineHeight)};${style}"></div>`,
   });
-  const gutter = scene.gutter
-    ? compileLayer(scene.gutter, {
-        place: cell => ({x: cell.col * charWidth, y: cell.line * lineHeight}),
-        element: token,
-      })
-    : null;
+  const {gutter} = scene;
+  const numbers =
+    gutter &&
+    compileLayer(gutter.numbers, {
+      place: cell => ({x: cell.col * charWidth, y: cell.line * lineHeight}),
+      element: token,
+    });
 
   // Each layer sits in the box of the static layout that holds it, so the
   // theme's paddings place it. The diff signs in marks.css draw only inside a
@@ -132,8 +148,8 @@ export function compileScene(
   const html = [
     gutter === null
       ? ''
-      : `<div class="cm-gutters" aria-hidden="true"><div class="cm-gutter cm-lineNumbers"><div class="cm-gutterElement" style="grid-row:1"><div style="${sizedBox(`${name}-gutter`, box => box.gutterColumns)}">${gutter}</div></div></div></div>`,
-    `<div class="cm-content cm-lineWrapping"><div class="cm-line" style="position:relative"><div data-line-marks="true" data-line-diff="true" style="position:absolute;left:0;top:0;right:0;bottom:0">${marks}</div><div style="${sizedBox(`${name}-box`, box => box.columns)}">${code}</div></div></div>`,
+      : `<div class="cm-gutters" aria-hidden="true"><div class="cm-gutter cm-lineNumbers"><div class="cm-gutterElement" style="grid-row:1"><div style="${sizedBox(`${name}-gutter`, gutter.fromColumns, gutter.toColumns)}">${numbers}</div></div></div></div>`,
+    `<div class="cm-content cm-lineWrapping"><div class="cm-line" style="position:relative"><div data-line-marks="true" data-line-diff="true" style="position:absolute;left:0;top:0;right:0;bottom:0">${marks}</div><div style="${sizedBox(`${name}-box`, from.columns, to.columns)}">${code}</div></div></div>`,
   ].join('');
   return {html, css: keyframes.join('\n')};
 }

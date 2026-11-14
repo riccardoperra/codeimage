@@ -10,7 +10,6 @@ const box = (overrides: Partial<StepBox> = {}): StepBox => ({
   rows: 3,
   columns: 8,
   indent: 0,
-  gutterColumns: 0,
   dimmed: new Set(),
   ...overrides,
 });
@@ -54,6 +53,7 @@ test('a move starts at its old cell and ends at its new one', () => {
     ]),
     metrics,
     timing,
+    'a',
   );
   const {style, keyframes} = animationOf(compiled, 'x');
   assert.match(style, /left:40px;top:40px/);
@@ -82,6 +82,7 @@ test('leaving tokens fade out by 30% and entering tokens fade in from 70%', () =
     ]),
     metrics,
     timing,
+    'a',
   );
   const leave = animationOf(compiled, 'old');
   assert.match(leave.style, /left:20px;top:20px/);
@@ -111,6 +112,7 @@ test('a token that keeps its cell and opacity is not animated', () => {
     ]),
     metrics,
     timing,
+    'a',
   );
   assert.doesNotMatch(animationOf(compiled, 'same').style, /animation/);
 });
@@ -130,6 +132,7 @@ test('a token that changes classes slides in both colors while they crossfade', 
     ]),
     metrics,
     timing,
+    'a',
   );
   const spans = Array.from(
     compiled.html.matchAll(
@@ -163,6 +166,7 @@ test('code shifts by the diff indent and fades with focus dimming', () => {
     ),
     metrics,
     timing,
+    'a',
   );
   const {style, keyframes} = animationOf(compiled, 'x');
   assert.match(style, /left:0px/);
@@ -203,6 +207,7 @@ test('a scene that shows the second half starts every animation late', () => {
     ]),
     metrics,
     {...timing, offsetMs: 400},
+    'a',
   );
   assert.match(animationOf(compiled, 'new').style, /1000ms linear -400ms both/);
 });
@@ -220,25 +225,29 @@ test('escapes token text and renders line numbers only with a gutter', () => {
     ]),
     metrics,
     timing,
+    'a',
   );
   assert.ok(withoutGutter.html.includes('>&lt;a&amp;b&gt;</span>'));
   assert.ok(!withoutGutter.html.includes('cm-gutters'));
   const withGutter = compileScene(
     scene([], {
-      gutter: [
-        {
-          kind: 'enter',
-          key: 'gutter:9',
-          text: '9',
-          classes: '',
-          to: {line: 0, col: 1},
-        },
-      ],
-      from: box({gutterColumns: 1}),
-      to: box({gutterColumns: 2}),
+      gutter: {
+        numbers: [
+          {
+            kind: 'enter',
+            key: 'gutter:9',
+            text: '9',
+            classes: '',
+            to: {line: 0, col: 1},
+          },
+        ],
+        fromColumns: 1,
+        toColumns: 2,
+      },
     }),
     metrics,
     timing,
+    'a',
   );
   assert.ok(withGutter.html.includes('class="cm-gutters"'));
   assert.ok(
