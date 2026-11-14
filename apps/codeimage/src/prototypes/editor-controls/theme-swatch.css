@@ -1,0 +1,44 @@
+.proto-theme-swatch {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: var(--swatch-size, 56px);
+  height: var(--swatch-size, 56px);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--swatch-frame);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 1px 3px rgba(0, 0, 0, 0.28);
+}
+
+.proto-theme-swatch-window {
+  position: absolute;
+  inset: 34% -14% -14% 34%;
+  border-radius: 50%;
+  background: var(--swatch-window);
+  filter: blur(calc(var(--swatch-size, 56px) * 0.1));
+}
+
+.proto-theme-swatch-text {
+  position: absolute;
+  right: 22%;
+  bottom: 24%;
+  width: 22%;
+  height: 7%;
+  border-radius: 999px;
+  background: var(--swatch-text);
+  opacity: 0.85;
+}
+
+.proto-theme-swatch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 28% 22%,
+    rgba(255, 255, 255, 0.32),
+    transparent 46%
+  );
+}

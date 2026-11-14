@@ -3,6 +3,7 @@ import type {JSX} from 'solid-js';
 import {For, Show} from 'solid-js';
 import type {VariantProps} from './contract';
 import type {Control} from './model';
+import {ThemeSwatch} from './ThemeSwatch';
 
 const swatch = (background: string): JSX.CSSProperties => ({
   background,
@@ -148,7 +149,8 @@ export function ModelDump(props: VariantProps) {
               aria-pressed={theme.active()}
               onClick={() => theme.apply()}
             >
-              {theme.name} ({theme.dark ? 'dark' : 'light'})
+              <ThemeSwatch theme={theme} size={40} /> {theme.name} (
+              {theme.dark ? 'dark' : 'light'})
             </button>
           )}
         </For>
