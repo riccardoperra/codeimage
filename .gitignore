@@ -9,3 +9,4 @@ dist
 .idea
 .pnpm-store/
 .DS_STORE
+.audit/
