@@ -8,7 +8,11 @@
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 2147483647;
+  /*
+   * Above the page (the production header is at 30), below what the page
+   * opens on top of it: the kit's popovers and dialogs sit at 40 and 50.
+   */
+  z-index: 35;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
