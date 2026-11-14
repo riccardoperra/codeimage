@@ -135,7 +135,9 @@ jobs:
 
   build-app-dev:
     name: Build App and Preview (Dev)
-    environment: Preview
+    environment:
+      name: Preview
+      url: ${{ steps.deploy.outputs.url }}
     needs: [build-packages]
     if: ${{ github.head_ref  != 'next' }}
     runs-on: ubuntu-latest
@@ -164,24 +166,25 @@ jobs:
           VITE_PRESET_LIMIT_GUEST: 5
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
           UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
-          ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v42.3.0
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: ./.github/actions/cloudflare-pages-deploy
         with:
-          vercel-token: ${{secrets.VERCEL_TOKEN}} # Required
-          github-token: ${{secrets.GITHUB_TOKEN}} #Optional
-          vercel-args: '--prebuilt' #Optional
-          working-directory: apps/codeimage
-          vercel-org-id: ${{secrets.VERCEL_ORG_ID}} #Required
-          vercel-project-id: ${{secrets.VERCEL_PROJECT_ID}} #Required
-          alias-domains: | #Optional
-            codeimage-app-pr-{{PR_NUMBER}}.vercel.app
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          project-name: codeimage-app
+          directory: apps/codeimage/dist
+          branch: pr-${{ github.event.pull_request.number }}
+          production-branch: main
 
   build-app-next:
     name: Build App and Preview (Next)
-    environment: Next
+    environment:
+      name: Next
+      url: ${{ steps.deploy.outputs.url }}
     needs: [build-packages]
     if: ${{ github.head_ref  == 'next' }}
     runs-on: ubuntu-latest
@@ -210,25 +213,25 @@ jobs:
           VITE_PRESET_LIMIT_GUEST: 5
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
           UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
-          ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v42.3.0
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: ./.github/actions/cloudflare-pages-deploy
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-args: '--prebuilt' #Optional
-          working-directory: apps/codeimage
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}} #Required
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} #Required
-          alias-domains: | #Optional
-            codeimage-app-pr-{{PR_NUMBER}}.vercel.app
-            next.codeimage.dev
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          project-name: codeimage-next
+          directory: apps/codeimage/dist
+          branch: next
+          production-branch: next
 
   build-highlight-dev:
     name: '@codeimage/highlight dev and Preview'
-    environment: Preview
+    environment:
+      name: Preview
+      url: ${{ steps.deploy.outputs.url }}
     needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
@@ -247,25 +250,25 @@ jobs:
           key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Build highlight demo
-        env:
-          ENABLE_VERCEL_BUILD: true
         run: |
           pnpm --filter=@codeimage/highlight build:dev
 
-      - uses: amondnet/vercel-action@v42.3.0
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: ./.github/actions/cloudflare-pages-deploy
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-args: '--prebuilt' #Optional
-          working-directory: packages/highlight/dev
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} #Required
-          vercel-project-id: ${{ secrets.VERCEL_HIGHLIGHT_DEV_PROJECT_ID}} #Required
-          alias-domains: | #Optional
-            codeimage-highlight-pr-{{PR_NUMBER}}.vercel.app
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          project-name: codeimage-highlight
+          directory: packages/highlight/dev/dist
+          branch: pr-${{ github.event.pull_request.number }}
+          production-branch: main
 
   build-website-dev:
     name: '@codeimage/website dev and Preview'
-    environment: Preview
+    environment:
+      name: Preview
+      url: ${{ steps.deploy.outputs.url }}
     needs: [build-packages]
     if: (${{ needs.install.outputs.app-change == 'true' }} || ${{ needs.install.outputs.libs-change == 'true' }})
     runs-on: ubuntu-latest
@@ -293,16 +296,16 @@ jobs:
         run: |
           pnpm --filter=@codeimage/website build
 
-      - uses: amondnet/vercel-action@v42.3.0
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: ./.github/actions/cloudflare-pages-deploy
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
-          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional
-          vercel-args: '--prebuilt' #Optional
-          working-directory: apps/website
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }} #Required
-          vercel-project-id: ${{ secrets.VERCEL_WEBSITE_DEV_PROJECT_ID}} #Required
-          alias-domains: | #Optional
-            codeimage-website-pr-{{PR_NUMBER}}.vercel.app
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          project-name: codeimage-website
+          directory: apps/website/dist/client
+          branch: pr-${{ github.event.pull_request.number }}
+          production-branch: main
 
       - name: Cache website
         uses: actions/cache/save@v5

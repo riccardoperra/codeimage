@@ -1,0 +1,75 @@
+name: 'Cloudflare Pages deploy'
+description: 'Create the Pages project if missing and deploy a static directory to a branch'
+
+inputs:
+  api-token:
+    description: 'Cloudflare API token with Pages edit permission'
+    required: true
+  account-id:
+    description: 'Cloudflare account id'
+    required: true
+  project-name:
+    description: 'Pages project name'
+    required: true
+  directory:
+    description: 'Static output directory to upload'
+    required: true
+  branch:
+    description: 'Pages branch to deploy to'
+    required: true
+  production-branch:
+    description: 'Production branch used when the project is created'
+    required: true
+
+outputs:
+  url:
+    description: 'Stable branch alias URL'
+    value: ${{ steps.deploy.outputs.url }}
+
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Ensure Pages project
+      id: project
+      shell: bash
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ inputs.api-token }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ inputs.account-id }}
+        PROJECT_NAME: ${{ inputs.project-name }}
+        PRODUCTION_BRANCH: ${{ inputs.production-branch }}
+      run: |
+        fetch_project() {
+          curl -sS -o project.json -w '%{http_code}' \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PROJECT_NAME"
+        }
+        status=$(fetch_project)
+        if [ "$status" = 404 ]; then
+          pnpm dlx wrangler@4.156.0 pages project create "$PROJECT_NAME" --production-branch="$PRODUCTION_BRANCH"
+          status=$(fetch_project)
+        fi
+        if [ "$status" != 200 ]; then
+          echo "Cloudflare API returned HTTP $status for project $PROJECT_NAME"
+          cat project.json
+          exit 1
+        fi
+        echo "subdomain=$(jq -r '.result.subdomain' project.json)" >> "$GITHUB_OUTPUT"
+        rm project.json
+
+    - name: Deploy to Pages
+      id: deploy
+      shell: bash
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ inputs.api-token }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ inputs.account-id }}
+        PROJECT_NAME: ${{ inputs.project-name }}
+        DIRECTORY: ${{ inputs.directory }}
+        BRANCH: ${{ inputs.branch }}
+        SUBDOMAIN: ${{ steps.project.outputs.subdomain }}
+        COMMIT_HASH: ${{ github.event.pull_request.head.sha || github.sha }}
+      run: |
+        pnpm dlx wrangler@4.156.0 pages deploy "$DIRECTORY" --project-name="$PROJECT_NAME" --branch="$BRANCH" --commit-hash="$COMMIT_HASH" --commit-dirty=true
+        url="https://$BRANCH.$SUBDOMAIN"
+        echo "url=$url" >> "$GITHUB_OUTPUT"
+        echo "Deployed $PROJECT_NAME: $url" >> "$GITHUB_STEP_SUMMARY"
