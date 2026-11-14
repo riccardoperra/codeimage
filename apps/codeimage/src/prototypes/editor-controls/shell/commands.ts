@@ -1,7 +1,7 @@
 import {getUiStore} from '@codeimage/store/ui';
 import type {Command} from '../command-menu/commands';
 import {LAYOUTS, preferences, THEME_CARDS} from './preferences';
-import {settings} from './settings-state';
+import {SECTIONS, settings} from './settings-state';
 
 const GROUP = 'Settings';
 
@@ -25,7 +25,21 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
   ] as const;
 
   return [
-    {id: 'settings', group: GROUP, label: 'Settings…', run: settings.open},
+    {
+      id: 'settings',
+      group: GROUP,
+      label: 'Settings…',
+      run: () => settings.open(),
+    },
+    // A link to each section of the dialog.
+    ...SECTIONS.map(
+      (section): Command => ({
+        id: `settings=${section.id}`,
+        group: GROUP,
+        label: `Settings: ${section.name}`,
+        run: () => settings.open(section.id),
+      }),
+    ),
     ...LAYOUTS.map(
       (entry): Command => ({
         id: `layout=${entry.id}`,
