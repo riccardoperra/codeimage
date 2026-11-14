@@ -3,6 +3,7 @@ export const altText = {
     altText: {
       copy: 'Copia testo alternativo',
       copied: 'Testo alternativo copiato',
+      exported: 'Immagine esportata',
       copyError: 'Impossibile copiare il testo alternativo',
     },
   },
@@ -10,6 +11,7 @@ export const altText = {
     altText: {
       copy: 'Copy alt text',
       copied: 'Alt text copied',
+      exported: 'Image exported',
       copyError: "Couldn't copy alt text",
     },
   },
@@ -17,6 +19,7 @@ export const altText = {
     altText: {
       copy: 'Alternativtext kopieren',
       copied: 'Alternativtext kopiert',
+      exported: 'Bild exportiert',
       copyError: 'Alternativtext konnte nicht kopiert werden',
     },
   },
@@ -24,6 +27,7 @@ export const altText = {
     altText: {
       copy: 'Copiar texto alternativo',
       copied: 'Texto alternativo copiado',
+      exported: 'Imagen exportada',
       copyError: 'No se pudo copiar el texto alternativo',
     },
   },

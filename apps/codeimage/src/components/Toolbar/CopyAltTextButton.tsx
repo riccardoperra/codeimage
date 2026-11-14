@@ -5,15 +5,20 @@ import {Button} from '@codeui/kit';
 import {altText} from '@core/altText';
 import type {AppLocaleEntries} from '../../i18n';
 
-export function CopyAltTextButton() {
+export function CopyAltTextButton(props: {text?: string; onCopy?: () => void}) {
   const [t] = useI18n<AppLocaleEntries>();
   const activeEditor = getActiveEditorStore();
 
   function copy() {
     const editor = activeEditor.editor();
-    if (!editor) return;
-    navigator.clipboard.writeText(altText(editor)).then(
-      () => toast.success(() => t('altText.copied')),
+    const text = props.text ?? (editor && altText(editor));
+    const onCopy = props.onCopy;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(
+      () => {
+        onCopy?.();
+        toast.success(() => t('altText.copied'));
+      },
       () => toast.error(() => t('altText.copyError')),
     );
   }
@@ -22,7 +27,10 @@ export function CopyAltTextButton() {
     <Button
       size={'xs'}
       theme={'secondary'}
-      disabled={!activeEditor.editor() || !navigator.clipboard?.writeText}
+      disabled={
+        (!props.text && !activeEditor.editor()) ||
+        !navigator.clipboard?.writeText
+      }
       onClick={copy}
     >
       {t('altText.copy')}
