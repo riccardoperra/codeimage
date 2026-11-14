@@ -5,6 +5,7 @@ import {For, Show, createSignal, onCleanup, onMount} from 'solid-js';
 import type {JSX, ParentProps} from 'solid-js';
 import {FrameToolbar} from '../../../../components/Toolbar/FrameToolbar';
 import {Toolbar} from '../../../../components/Toolbar/Toolbar';
+import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
@@ -220,7 +221,22 @@ export default function Inspector(props: VariantProps) {
           </div>
           <div class="inspector-frame-actions">
             <FrameToolbar frameRef={props.stage.exportRef()} />
-            <Show when={mobile()}>
+            <Show
+              when={mobile()}
+              fallback={
+                <Button
+                  class="inspector-command"
+                  size="sm"
+                  theme="secondary"
+                  aria-haspopup="dialog"
+                  aria-expanded={commandMenu.isOpen()}
+                  onClick={commandMenu.open}
+                >
+                  Search
+                  <kbd>{commandMenu.shortcut}</kbd>
+                </Button>
+              }
+            >
               <props.stage.ExportButton />
             </Show>
           </div>

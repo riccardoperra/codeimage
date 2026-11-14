@@ -89,6 +89,15 @@
   background: var(--inspector-island);
   overflow: hidden;
 }
+.inspector-root .inspector-command {
+  flex: none;
+  gap: 8px;
+}
+.inspector-root .inspector-command kbd {
+  font: inherit;
+  font-size: 11px;
+  color: var(--inspector-muted);
+}
 .inspector-root .inspector-panel-scroll {
   display: flex;
   flex: 1 1 auto;
