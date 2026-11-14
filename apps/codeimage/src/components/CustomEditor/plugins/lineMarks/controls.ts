@@ -1,14 +1,22 @@
-import type {Extension} from '@codemirror/state';
-import {StateField} from '@codemirror/state';
+import type {EditorState, Extension} from '@codemirror/state';
+import {StateEffect, StateField} from '@codemirror/state';
 import type {
   BlockInfo,
-  EditorView,
+  DecorationSet,
   KeyBinding,
   Tooltip,
+  TooltipView,
 } from '@codemirror/view';
-import {keymap, showTooltip} from '@codemirror/view';
+import {
+  Decoration,
+  EditorView,
+  keymap,
+  showTooltip,
+  tooltips,
+  ViewPlugin,
+} from '@codemirror/view';
 import type {LineMark} from '../../../../state/editor/model';
-import {markLines, readMarks, setLineMarks} from './state';
+import {lineMarksField, markLines, readMarks, setLineMarks} from './state';
 
 export interface LineMarkLabels {
   toolbar: string;
@@ -31,7 +39,16 @@ export const markCommands: {
   {id: 'clear', key: 'Mod-Alt-0', kind: null},
 ];
 
-export function selectedLines(state: EditorView['state']): number[] {
+const isApple = () =>
+  /Mac|iPhone|iPad/.test(globalThis.navigator?.platform ?? '');
+
+/** Key caps for a `Mod-Alt-N` binding, as the platform prints them. */
+export function shortcutKeys(key: string): string[] {
+  const digit = key.slice(-1);
+  return isApple() ? ['⌘', '⌥', digit] : ['Ctrl', 'Alt', digit];
+}
+
+export function selectedLines(state: EditorState): number[] {
   const lines = new Set<number>();
   for (const range of state.selection.ranges) {
     const first = state.doc.lineAt(range.from).number;
@@ -49,62 +66,164 @@ export const lineMarkKeymap: KeyBinding[] = markCommands.map(({key, kind}) => ({
   preventDefault: true,
 }));
 
-function selectionBar(labels: LineMarkLabels) {
-  return StateField.define<readonly Tooltip[]>({
-    create: () => [],
-    update(_value, tr) {
+const pointerSelecting = StateEffect.define<boolean>();
+
+interface SelectionBar {
+  pointer: boolean;
+  tooltip: Tooltip | null;
+}
+
+function toolbarView(labels: LineMarkLabels) {
+  return (view: EditorView): TooltipView => {
+    const dom = document.createElement('div');
+    dom.className = 'cm-lineMarkToolbar';
+    dom.setAttribute('role', 'toolbar');
+    dom.setAttribute('aria-label', labels.toolbar);
+    dom.addEventListener('mousedown', event => event.preventDefault());
+    const button = (label: string, title: string, run: () => void) => {
+      const element = dom.appendChild(document.createElement('button'));
+      element.type = 'button';
+      element.textContent = label;
+      element.title = title;
+      element.onclick = () => {
+        run();
+        view.focus();
+      };
+      return element;
+    };
+    for (const command of markCommands) {
+      const keys = shortcutKeys(command.key);
+      const element = button(
+        labels[command.id],
+        `${labels[command.id]} (${keys.join(isApple() ? '' : '+')})`,
+        () => markLines(view, selectedLines(view.state), command.kind),
+      );
+      element.setAttribute(
+        'aria-keyshortcuts',
+        `${isApple() ? 'Meta' : 'Control'}+Alt+${command.key.slice(-1)}`,
+      );
+    }
+    const focus = button(labels.focus, labels.focusHint, () => {
+      const marks = readMarks(view.state);
+      setLineMarks(view, {...marks, focus: !marks.focus});
+    });
+    const syncFocus = () =>
+      focus.setAttribute(
+        'aria-pressed',
+        String(view.state.field(lineMarksField).focus),
+      );
+    // Focus is read from the view: a focus change effect can arrive stale.
+    const syncVisibility = () => {
+      dom.style.visibility = view.hasFocus ? '' : 'hidden';
+    };
+    syncFocus();
+    syncVisibility();
+    return {
+      dom,
+      offset: {x: 0, y: 4},
+      update: update => {
+        syncVisibility();
+        if (
+          update.startState.field(lineMarksField).focus !==
+          update.state.field(lineMarksField).focus
+        )
+          syncFocus();
+      },
+    };
+  };
+}
+
+/**
+ * Shows the toolbar above the first selected line once a selection settles,
+ * hidden while the mouse button is held and while the editor is blurred.
+ */
+function selectionBar(labels: LineMarkLabels): Extension {
+  const create = toolbarView(labels);
+  const field = StateField.define<SelectionBar>({
+    create: () => ({pointer: false, tooltip: null}),
+    update(value, tr) {
+      let {pointer} = value;
+      for (const effect of tr.effects)
+        if (effect.is(pointerSelecting)) pointer = effect.value;
       const range = tr.state.selection.main;
-      if (range.empty || tr.state.readOnly) return [];
-      return [
-        {
-          pos: range.from,
-          end: range.to,
-          above: true,
-          strictSide: false,
-          create(view) {
-            const dom = document.createElement('div');
-            dom.className = 'cm-lineMarkToolbar';
-            dom.setAttribute('role', 'toolbar');
-            dom.setAttribute('aria-label', labels.toolbar);
-            dom.addEventListener('mousedown', event => event.preventDefault());
-            for (const command of markCommands) {
-              const button = dom.appendChild(document.createElement('button'));
-              button.type = 'button';
-              button.textContent = labels[command.id];
-              const shortcut = command.key
-                .replace(
-                  'Mod',
-                  /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl',
-                )
-                .replaceAll('-', '+');
-              button.title = `${labels[command.id]} (${shortcut})`;
-              button.onclick = () => {
-                markLines(view, selectedLines(view.state), command.kind);
-                view.focus();
-              };
-            }
-            const focus = dom.appendChild(document.createElement('button'));
-            focus.type = 'button';
-            focus.textContent = labels.focus;
-            focus.title = labels.focusHint;
-            focus.setAttribute(
-              'aria-pressed',
-              String(readMarks(view.state).focus),
-            );
-            focus.onclick = () => {
-              const marks = readMarks(view.state);
-              setLineMarks(view, {...marks, focus: !marks.focus});
-              view.focus();
-            };
-            return {dom};
-          },
-        },
-      ];
+      if (pointer || range.empty || tr.state.readOnly)
+        return {pointer, tooltip: null};
+      const pos = tr.state.doc.lineAt(range.from).from;
+      const tooltip =
+        value.tooltip?.pos === pos
+          ? value.tooltip
+          : {pos, above: true, strictSide: false, create};
+      return {pointer, tooltip};
     },
     provide: field =>
-      showTooltip.computeN([field], state => state.field(field)),
+      showTooltip.compute([field], state => state.field(field).tooltip),
   });
+  // Touch selection uses native handles, so only a held mouse button hides the bar.
+  const pointerTracker = ViewPlugin.define(view => {
+    const press = (event: PointerEvent) => {
+      if (event.pointerType === 'mouse' && event.button === 0)
+        view.dispatch({effects: pointerSelecting.of(true)});
+    };
+    const release = () => {
+      if (view.state.field(field).pointer)
+        view.dispatch({effects: pointerSelecting.of(false)});
+    };
+    const doc = view.dom.ownerDocument;
+    view.contentDOM.addEventListener('pointerdown', press);
+    doc.addEventListener('pointerup', release);
+    return {
+      destroy: () => {
+        view.contentDOM.removeEventListener('pointerdown', press);
+        doc.removeEventListener('pointerup', release);
+      },
+    };
+  });
+  return [
+    field,
+    pointerTracker,
+    // The code window clips its overflow and is scaled on small screens.
+    tooltips({
+      parent: document.body,
+      tooltipSpace: view => {
+        const {innerWidth, innerHeight} = view.dom.ownerDocument.defaultView!;
+        return {
+          left: 8,
+          top: 8,
+          right: innerWidth - 8,
+          bottom: innerHeight - 8,
+        };
+      },
+    }),
+  ];
 }
+
+type GutterPreview = {from: number; to: number; kind: LineMark['kind'] | null};
+
+const setGutterPreview = StateEffect.define<GutterPreview | null>();
+
+const gutterPreviewField = StateField.define<DecorationSet>({
+  create: () => Decoration.none,
+  update(value, tr) {
+    value = value.map(tr.changes);
+    for (const effect of tr.effects) {
+      if (!effect.is(setGutterPreview)) continue;
+      const preview = effect.value;
+      if (!preview) {
+        value = Decoration.none;
+        continue;
+      }
+      const decoration = Decoration.line({
+        attributes: {'data-mark-preview': preview.kind ?? 'clear'},
+      });
+      const ranges = [];
+      for (let line = preview.from; line <= preview.to; line++)
+        ranges.push(decoration.range(tr.state.doc.line(line).from));
+      value = Decoration.set(ranges);
+    }
+    return value;
+  },
+  provide: field => EditorView.decorations.from(field),
+});
 
 export function gutterMarkMouseDown(
   view: EditorView,
@@ -113,26 +232,39 @@ export function gutterMarkMouseDown(
 ): boolean {
   if (!(event instanceof MouseEvent)) return false;
   if (view.state.readOnly || event.button !== 0) return false;
+  if (!view.state.field(gutterPreviewField, false)) return false;
   event.preventDefault();
   const start = view.state.doc.lineAt(line.from).number;
-  const before = readMarks(view.state);
-  const kind = before.lines.some(
+  const kind = readMarks(view.state).lines.some(
     mark => mark.line === start && mark.kind === 'highlight',
   )
     ? null
     : 'highlight';
   let end = start;
+  const preview = () =>
+    view.dispatch({
+      effects: setGutterPreview.of({
+        from: Math.min(start, end),
+        to: Math.max(start, end),
+        kind,
+      }),
+    });
   const move = (moveEvent: MouseEvent) => {
     const pos = view.posAtCoords({
       x: view.contentDOM.getBoundingClientRect().left + 1,
       y: moveEvent.clientY,
     });
-    if (pos !== null) end = view.state.doc.lineAt(pos).number;
+    if (pos === null) return;
+    const next = view.state.doc.lineAt(pos).number;
+    if (next === end) return;
+    end = next;
+    preview();
   };
   const up = () => {
     window.removeEventListener('mousemove', move);
     window.removeEventListener('mouseup', up);
     window.removeEventListener('blur', up);
+    view.dispatch({effects: setGutterPreview.of(null)});
     const lines = Array.from(
       {length: Math.abs(end - start) + 1},
       (_, i) => Math.min(start, end) + i,
@@ -143,9 +275,67 @@ export function gutterMarkMouseDown(
   window.addEventListener('mousemove', move);
   window.addEventListener('mouseup', up, {once: true});
   window.addEventListener('blur', up, {once: true});
+  preview();
   return true;
 }
 
+const controlsTheme = EditorView.theme({
+  '.cm-lineNumbers .cm-gutterElement': {cursor: 'pointer', borderRadius: '4px'},
+  '.cm-lineNumbers .cm-gutterElement:hover': {backgroundColor: '#8883'},
+  // The preview has to win over any mark it is about to replace.
+  '.cm-line[data-mark-preview="highlight"]': {
+    background:
+      'var(--codeimage-line-highlight, rgba(128, 128, 128, 0.16)) !important',
+    boxShadow:
+      'inset 2px 0 var(--codeimage-line-accent, currentColor) !important',
+  },
+  '.cm-line[data-mark-preview="clear"]': {
+    background: 'none !important',
+    boxShadow: 'none !important',
+  },
+  '.cm-tooltip.cm-lineMarkToolbar': {
+    display: 'flex',
+    gap: '2px',
+    padding: '3px',
+    borderRadius: '8px',
+    fontFamily: 'inherit',
+    fontSize: '12px',
+    lineHeight: '1',
+    boxShadow: '0 4px 16px #0005',
+    animation: 'cm-lineMarkToolbar-in 120ms ease-out',
+  },
+  '@keyframes cm-lineMarkToolbar-in': {
+    from: {opacity: 0, transform: 'translateY(2px)'},
+  },
+  '.cm-lineMarkToolbar button': {
+    border: '0',
+    borderRadius: '5px',
+    background: 'transparent',
+    color: 'inherit',
+    padding: '6px 8px',
+    cursor: 'pointer',
+    font: 'inherit',
+    whiteSpace: 'nowrap',
+  },
+  '.cm-lineMarkToolbar button:hover': {background: '#8883'},
+  '.cm-lineMarkToolbar button:focus-visible': {
+    outline: '2px solid currentColor',
+    outlineOffset: '-2px',
+  },
+  '.cm-lineMarkToolbar button[aria-pressed="true"]': {background: '#8885'},
+  '@media (pointer: coarse)': {
+    '.cm-lineMarkToolbar button': {padding: '10px 12px'},
+  },
+  '@media (prefers-reduced-motion: reduce)': {
+    '.cm-tooltip.cm-lineMarkToolbar': {animation: 'none'},
+  },
+});
+
 export function lineMarkControls(labels: LineMarkLabels): Extension {
-  return [selectionBar(labels), keymap.of(lineMarkKeymap)];
+  return [
+    selectionBar(labels),
+    gutterPreviewField,
+    controlsTheme,
+    keymap.of(lineMarkKeymap),
+  ];
 }
