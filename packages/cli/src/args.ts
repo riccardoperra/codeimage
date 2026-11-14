@@ -1,24 +1,16 @@
 import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {extname} from 'node:path';
 import {parseArgs as parseNodeArgs} from 'node:util';
-import type {ParseArgsOptionsConfig} from 'node:util';
-import {parseArgs as parseCittyArgs} from 'citty';
-import type {ParsedArgs} from 'citty';
+import {defineCommand} from 'citty';
 import {THEME_REGISTRY} from '../../../apps/codeimage/src/state/theme/themeRegistry';
 import {FLAGS} from './flags';
-import type {Flag, FlagValues} from './flags';
+import type {FlagArg, FlagValues} from './flags';
 import {UsageError} from './errors';
 export {UsageError} from './errors';
 
 const DEFAULT_SCALE = 1;
 
-export const ARGS = {
-  'file...': {
-    type: 'positional',
-    required: false,
-    description:
-      'Each file becomes a tab. With no files, or with -, read stdin',
-  },
+const CORE_ARGS = {
   output: {
     type: 'string',
     alias: 'o',
@@ -56,57 +48,40 @@ export const ARGS = {
     description: `Pixel ratio, at most 3 (default: ${DEFAULT_SCALE})`,
   },
   help: {type: 'boolean', alias: 'h', description: 'Show this help'},
-  ...Object.fromEntries(FLAGS.flatMap(flag => Object.entries(flag.args))),
 } as const;
 
-// Citty is permissive. Validate syntax from the same definitions, then pass
-// canonical names and inline values to preserve aliases and dashed values.
-// Camel case keeps literal --no-redact from becoming citty boolean negation.
-export function normalizeArgs(argv: string[]) {
-  const options: ParseArgsOptionsConfig = {};
-  for (const [name, arg] of Object.entries<Flag['args'][string]>(ARGS)) {
-    if (arg.type === 'string' || arg.type === 'boolean') {
-      options[name] = {
-        type: arg.type,
-        ...(typeof arg.alias === 'string' && {short: arg.alias}),
-        ...(arg.multiple !== undefined && {multiple: arg.multiple}),
-      };
-    }
-  }
-  try {
-    const {tokens, positionals} = parseNodeArgs({
-      args: argv,
-      allowPositionals: true,
-      tokens: true,
-      options,
-    });
-    const flags = tokens
-      .filter(token => token.kind === 'option')
-      .map(token =>
-        token.value === undefined
-          ? `--${token.name.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase())}`
-          : `--${token.name}=${token.value}`,
-      );
-    return [...flags, '--', ...positionals];
-  } catch (error) {
-    throw new UsageError(
-      error instanceof Error ? error.message : String(error),
-    );
-  }
-}
+const ARGS: Record<string, FlagArg> = Object.assign(
+  {},
+  CORE_ARGS,
+  ...FLAGS.map(flag => flag.args),
+);
 
-const FORMATS = {
-  png: 'png',
-  jpeg: 'jpeg',
-  jpg: 'jpeg',
-  webp: 'webp',
-  svg: 'svg',
-} as const;
+export const COMMAND = defineCommand({
+  meta: {name: 'codeimage', description: 'Render code as an image'},
+  args: {
+    'file...': {
+      type: 'positional',
+      required: false,
+      description:
+        'Each file becomes a tab. With no files, or with -, read stdin',
+    },
+    ...ARGS,
+  },
+});
+
+// Citty's parser accepts unknown flags and missing values, so Node parses the
+// same definitions strictly. The type covers the options read in this file.
+const OPTIONS = Object.fromEntries(
+  Object.entries(ARGS).map(([name, {alias, ...arg}]) => [
+    name,
+    alias ? {...arg, short: alias} : arg,
+  ]),
+) as typeof CORE_ARGS;
+
+const FORMATS = ['png', 'jpeg', 'webp', 'svg'] as const;
 
 function formatOf(name: string) {
-  return Object.hasOwn(FORMATS, name)
-    ? FORMATS[name as keyof typeof FORMATS]
-    : undefined;
+  return FORMATS.find(format => format === (name === 'jpg' ? 'jpeg' : name));
 }
 
 export function resolveTheme(id: string, flag = '--theme') {
@@ -120,12 +95,19 @@ export function resolveTheme(id: string, flag = '--theme') {
 }
 
 export function parseArgs(argv: string[]) {
-  const rawArgs = normalizeArgs(argv);
-  return renderArgs(parseCittyArgs<typeof ARGS>(rawArgs, ARGS), rawArgs);
-}
-
-export function renderArgs(values: ParsedArgs<typeof ARGS>, rawArgs: string[]) {
-  const files = values._;
+  let parsed;
+  try {
+    parsed = parseNodeArgs({
+      args: argv,
+      allowPositionals: true,
+      options: OPTIONS,
+    });
+  } catch (error) {
+    throw new UsageError(
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+  const {values, positionals: files} = parsed;
   if (values.help) return {kind: 'help'} as const;
 
   if (values.output === '') throw new UsageError('-o: expected a path or -');
@@ -172,23 +154,7 @@ export function renderArgs(values: ParsedArgs<typeof ARGS>, rawArgs: string[]) {
   if (files.filter(file => file === '-').length > 1) {
     throw new UsageError('stdin (-) can be given only once');
   }
-  const flagValues: FlagValues = Object.fromEntries(
-    Object.entries(values).filter(
-      (entry): entry is [string, string | boolean] =>
-        typeof entry[1] === 'string' || typeof entry[1] === 'boolean',
-    ),
-  );
-  // Citty keeps only the last value. Restore repeatable options from the
-  // normalized arguments, before the positional separator.
-  const options = rawArgs.slice(0, rawArgs.indexOf('--'));
-  for (const [name, arg] of Object.entries<Flag['args'][string]>(ARGS)) {
-    if (!arg.multiple) continue;
-    const prefix = `--${name}=`;
-    const entries = options.filter(option => option.startsWith(prefix));
-    if (entries.length)
-      flagValues[name] = entries.map(option => option.slice(prefix.length));
-  }
-  for (const flag of FLAGS) flag.validate?.(flagValues);
+  for (const flag of FLAGS) flag.validate?.(values);
   return {
     kind: 'render',
     files,
@@ -199,7 +165,7 @@ export function renderArgs(values: ParsedArgs<typeof ARGS>, rawArgs: string[]) {
     format,
     scale,
     output: values.output ?? `codeimage.${format}`,
-    values: flagValues,
+    values: values as FlagValues,
   } as const;
 }
 
