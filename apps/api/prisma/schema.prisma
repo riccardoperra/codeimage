@@ -38,6 +38,10 @@ model Project {
 }
 
 model SnippetFrame {
+  exportTarget String?
+  aspectRatio String?
+  signatureHandle String?
+  signaturePosition String?
   id         String   @id @default(uuid())
   project    Project?
   background String?

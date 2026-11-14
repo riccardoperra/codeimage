@@ -1,3 +1,4 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {type HtmlExportOptions} from '@codeimage/dom-export';
 import {EXPORT_EXCLUDE} from '@core/directives/exportExclude';
 import {useWebshare} from '@core/hooks/use-webshare';
@@ -79,7 +80,7 @@ export async function exportImage(
           !(node as Node & {[EXPORT_EXCLUDE]: boolean})[EXPORT_EXCLUDE])
       );
     },
-    pixelRatio: pixelRatio,
+    pixelRatio: getFrameState().exportPixelRatio(pixelRatio),
     quality: quality,
     experimental_optimizeFontLoading: true,
     experimental_safariResourceFix: true,

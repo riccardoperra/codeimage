@@ -45,6 +45,9 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
 
   assert.deepStrictEqual(result, {
     frame: {
+      aspectRatio: null,
+      exportTarget: null,
+      signature: null,
       background: null,
       visible: true,
       padding: 32,

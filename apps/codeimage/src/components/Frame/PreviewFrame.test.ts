@@ -7,8 +7,16 @@ import {test, vi} from 'vitest';
 import {PreviewFrame} from './PreviewFrame';
 
 const frame = vi.hoisted(() => ({width: 775, height: 289}));
+const exportState = vi.hoisted(() => {
+  const state: {resolution: [number, number] | null} = {resolution: null};
+  return state;
+});
 vi.mock('@codeimage/store/editor/frame', () => ({
-  getFrameState: () => ({store: frame}),
+  getFrameState: () => ({
+    store: frame,
+    exportTarget: () =>
+      exportState.resolution ? {resolution: exportState.resolution} : undefined,
+  }),
 }));
 vi.mock('@codeimage/store/assets/assets', () => ({
   getAssetsStore: () => ({isAssetUrl: () => false}),
@@ -60,6 +68,8 @@ vi.mock('./Frame.css', () => ({
     backgroundColor: '--background',
     opacity: '--opacity',
     visibility: '--visibility',
+    minWidth: '--min-width',
+    minHeight: '--min-height',
   },
 }));
 
@@ -72,12 +82,17 @@ const tab: EditorState = {
   marks: {lines: [], focusedLines: []},
 };
 
-for (const [width, height] of [
-  [775, 289],
-  [975, 420],
-  [0, 0],
-]) {
-  test(`uses the same ${width} × ${height} frame for active and explicit tabs`, () => {
+for (const [width, height, resolution] of [
+  [775, 289, null],
+  [975, 420, null],
+  [0, 0, null],
+  [775, 289, [1200, 630]],
+  [0, 0, [1080, 1080]],
+] satisfies [number, number, [number, number] | null][]) {
+  test(`uses ${resolution?.join(' × ') ?? `${width} × ${height}`} for active and explicit tabs`, () => {
+    exportState.resolution = resolution;
+    const expectedWidth = resolution?.[0] ?? width;
+    const expectedHeight = resolution?.[1] ?? height;
     Object.assign(frame, {width, height});
     for (const selectedTab of [undefined, tab]) {
       const html = renderToString(() =>
@@ -88,11 +103,15 @@ for (const [width, height] of [
         }),
       );
       assert.ok(
-        html.includes(`--width:${width ? `${width}px` : 'auto'}`),
+        html.includes(
+          `--width:${expectedWidth ? `${expectedWidth}px` : 'auto'}`,
+        ),
         html,
       );
       assert.ok(
-        html.includes(`--height:${height ? `${height}px` : 'auto'}`),
+        html.includes(
+          `--height:${expectedHeight ? `${expectedHeight}px` : 'auto'}`,
+        ),
         html,
       );
     }
