@@ -140,12 +140,11 @@ export const FrameStyleForm: ParentComponent = () => {
         </PanelRow>
       </Show>
 
-      <PanelRow for="signatureHandle" label={t('frame.signature')}>
+      <PanelRow for="signatureHandle-input" label={t('frame.signature')}>
         <TwoColumnPanelRow>
           <TextField
             id="signatureHandle"
             size="xs"
-            aria-label={t('frame.handle')}
             placeholder="@handle"
             value={frame.store.signature?.handle ?? ''}
             onChange={handle =>
