@@ -223,6 +223,24 @@ export const PresetSwitcher: ParentComponent<
                                   {t('presets.share.label')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
+                                  onClick={async () => {
+                                    try {
+                                      await navigator.clipboard.writeText(
+                                        JSON.stringify(theme.data, null, 2),
+                                      );
+                                      toast.success('CLI config copied', {
+                                        position: 'bottom-center',
+                                      });
+                                    } catch {
+                                      toast.error('Could not copy CLI config', {
+                                        position: 'bottom-center',
+                                      });
+                                    }
+                                  }}
+                                >
+                                  Copy as CLI config
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
                                   onClick={() => {
                                     openDialog(ConfirmDialog, {
                                       title: t(
