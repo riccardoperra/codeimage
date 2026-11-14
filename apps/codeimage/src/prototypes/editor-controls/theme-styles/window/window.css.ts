@@ -4,7 +4,9 @@ import {card} from '../picker.css';
 
 export const grid = style({
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))',
+  // Never fewer than two per row: a visible scrollbar takes about 15px from the
+  // panel, which dropped a 148px minimum to one column.
+  gridTemplateColumns: `repeat(auto-fill, minmax(min(148px, calc((100% - ${themeVars.spacing['2']}) / 2)), 1fr))`,
   gap: themeVars.spacing['2'],
 });
 
