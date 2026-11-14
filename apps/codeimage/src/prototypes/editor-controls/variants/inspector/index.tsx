@@ -10,6 +10,10 @@ import {
   onMount,
 } from 'solid-js';
 import type {JSX, ParentProps} from 'solid-js';
+import {useI18n} from '@codeimage/locale';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {displayHandle} from '@codeimage/store/frame/signature';
+import type {AppLocaleEntries} from '../../../../i18n';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {FrameActions} from '../../controls/FrameActions';
@@ -26,6 +30,7 @@ export const meta: VariantMeta = {
 // What a section shows first; the rest follow in the model's order.
 const primaryControls: Record<SectionId, readonly ControlId[]> = {
   frame: ['frame.padding', 'frame.visible', 'frame.background'],
+  signature: ['signature.handle', 'signature.style'],
   window: [
     'window.header',
     'window.style',
@@ -162,6 +167,7 @@ function summary(control: Control | undefined): string {
 }
 
 export default function Inspector(props: VariantProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   // One section at a time. All may be closed, which leaves the summaries.
   const [openSection, setOpenSection] = createSignal<PanelId | null>('themes');
   const [sheet, setSheet] = createSignal<'short' | 'tall'>('short');
@@ -232,8 +238,14 @@ export default function Inspector(props: VariantProps) {
         ?.focus({preventScroll: true});
     });
   };
+  const signatureSummary = () => {
+    const signature = getFrameState().store.signature;
+    if (!signature) return t('signature.off');
+    return `${displayHandle(signature)} · ${summary(props.model.control('signature.style'))}`;
+  };
   const summaries: Record<SectionId, () => string> = {
     frame: () => `${summary(props.model.control('frame.padding'))} px padding`,
+    signature: () => signatureSummary(),
     window: () => summary(props.model.control('window.shadow')),
     editor: () => summary(props.model.control('editor.language')),
     font: () => summary(props.model.control('font.weight')),

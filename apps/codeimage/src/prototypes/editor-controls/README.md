@@ -146,6 +146,25 @@ The old menu at the top left of the header is gone. Its entries moved:
 
 `shell/export.tsx` runs them. The image is production's `exportImage` with the format, scale and quality of the export store. One image per tab runs what production's `useExportSnippet` runs when its stored `oneImagePerTab` flag is on, on demand: a `PreviewFrame` per tab, `renderTabFiles` and `deliverTabFiles`. The stored flag itself is not used here, since the menu offers both exports.
 
+## Signature
+
+The model's `signature` section edits the frame's signature, the handle drawn in a bottom corner of the frame and of the exported image. The frame draws it with `components/Frame/FrameSignature.tsx`, a production component, so `/classic` and the downloads show the same thing.
+
+| Row      | Control                                                              | Shown         |
+| -------- | -------------------------------------------------------------------- | ------------- |
+| Handle   | Text field. Empty means no signature                                 | always        |
+| Style    | Three tiles, Minimal, Pill and Card, drawn on the frame's background | with a handle |
+| Icon     | No icon, X, Bluesky, GitHub, Mastodon, LinkedIn, as icons            | with a handle |
+| Name     | Text field, the card's bold line                                     | Card          |
+| Avatar   | Initials, GitHub (the handle's avatar), or an uploaded image         | Card          |
+| Position | Bottom left, centre or right, drawn as small frames                  | with a handle |
+
+- Pasting a profile link into Handle, such as `https://x.com/octocat` or `https://bsky.app/profile/ada.bsky.social`, keeps the handle and picks the icon. Typing is never rewritten.
+- Clearing the handle hides the signature. Typing a handle again in the same session brings back its style, icon, name and avatar.
+- The ink is white on dark and mid-tone fills and dark on light ones. An uploaded background image is sampled at its bottom third.
+- An uploaded avatar is cropped to a square of at most 256px and kept as an asset, like an uploaded background.
+- Style, Icon and Position are choices, so the command menu lists them and previews them. Inspector shows the section with `@handle · Style` as its summary, Dock as a group of More, Studio inside its Frame panel.
+
 ## Shared controls
 
 `controls/` holds the controls the three layouts share, so a row looks and behaves the same everywhere:

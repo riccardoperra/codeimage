@@ -111,6 +111,26 @@ function FramePanel(props: PanelProps) {
           ids={['frame.padding', 'frame.radius', 'frame.aspectRatio']}
         />
       </section>
+      <section class={styles.section}>
+        <PanelHeader
+          label={
+            props.model.sections
+              .find(section => section.id === 'signature')
+              ?.label() ?? 'Signature'
+          }
+        />
+        <Rows
+          {...props}
+          ids={[
+            'signature.handle',
+            'signature.style',
+            'signature.platform',
+            'signature.name',
+            'signature.avatar',
+            'signature.position',
+          ]}
+        />
+      </section>
     </Form>
   );
 }
