@@ -348,10 +348,7 @@ const controlsTheme = EditorView.theme({
     whiteSpace: 'nowrap',
   },
   '.cm-lineMarkToolbar button:hover': {background: '#8883'},
-  '.cm-lineMarkToolbar button[aria-pressed="true"]': {
-    background: '#8884',
-    boxShadow: 'inset 0 -2px currentColor',
-  },
+  '.cm-lineMarkToolbar button[aria-pressed="true"]': {background: '#8884'},
   '.cm-lineMarkToolbar button:focus-visible': {
     outline: '2px solid currentColor',
     outlineOffset: '-2px',
