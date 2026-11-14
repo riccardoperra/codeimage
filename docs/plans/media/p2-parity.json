@@ -1,5 +1,4 @@
 {
-  "reference": "Chromium 1200 with --force-device-scale-factor=2",
   "initial": {
     "onVsChrome": {
       "percent": 0.0316722972972973,
@@ -78,7 +77,7 @@
       "theme": "XCode Dark",
       "terminal": "windows",
       "takumi": 0.05161411411411412,
-      "domExport": 0.9391603141603142,
+      "domExport": 0.939701720951721,
       "onVsOff": 0.995195917070917
     },
     {
@@ -748,5 +747,9 @@
     }
   ],
   "errors": [],
-  "fallback": []
+  "fallback": [],
+  "fontIssues": [],
+  "wasmRequests": [
+    "http://localhost:4435/@fs/Users/riccardoperra/.t3/worktrees/codeimage/t3-d05c4f40-47f75368dfb60d46/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm"
+  ]
 }

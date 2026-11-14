@@ -11,6 +11,7 @@ async function main() {
   const out = process.env.P2_OUT ?? '/tmp/swarm-p2';
   const baseUrl = process.env.P2_URL ?? 'http://localhost:4402';
   const quick = process.env.P2_QUICK === '1';
+  const displayDpr = Number(process.env.P2_DISPLAY_DPR ?? 2);
   const executablePath =
     process.env.CHROMIUM_PATH ??
     path.join(
@@ -22,11 +23,11 @@ async function main() {
   // baselines to whole CSS pixels. A native factor matches a Retina display.
   const browser = await chromium.launch({
     executablePath,
-    args: ['--force-device-scale-factor=2'],
+    args: [`--force-device-scale-factor=${displayDpr}`],
   });
   const context = await browser.newContext({
     viewport: {width: 1440, height: 1000},
-    deviceScaleFactor: 2,
+    deviceScaleFactor: displayDpr,
     permissions: ['clipboard-read', 'clipboard-write'],
   });
   const page = await context.newPage();
@@ -39,9 +40,20 @@ async function main() {
     console.error(error.stack ?? error.message);
   });
   const fontIssues: string[] = [];
-  page.on('console', message => {
-    if (message.text().includes('Takumi export failed'))
+  page.on('console', async message => {
+    if (message.text().includes('Takumi export failed')) {
       fallback.push(message.text());
+      for (const arg of message.args()) {
+        const cause = await arg
+          .evaluate(value =>
+            value instanceof Error && value.cause instanceof Error
+              ? value.cause.message
+              : null,
+          )
+          .catch(() => null);
+        if (cause) console.error('Fallback cause:', cause);
+      }
+    }
     if (message.text().includes('Export font unavailable'))
       fontIssues.push(message.text());
   });
@@ -639,7 +651,7 @@ async function main() {
     await lane(7, async () => {
       const isolated = await browser.newContext({
         viewport: {width: 1440, height: 1000},
-        deviceScaleFactor: 2,
+        deviceScaleFactor: displayDpr,
       });
       try {
         const target = await isolated.newPage();
@@ -722,7 +734,7 @@ async function main() {
     for (let run = 0; run < 5; run++) {
       const isolated = await browser.newContext({
         viewport: {width: 1440, height: 1000},
-        deviceScaleFactor: 2,
+        deviceScaleFactor: displayDpr,
       });
       try {
         const target = await isolated.newPage();
@@ -774,6 +786,173 @@ async function main() {
     );
   }
 
+  async function runReviewCases() {
+    await setCode(
+      Array.from(
+        {length: 300},
+        (_, i) => `const line${i + 1}: number = ${i + 1};`,
+      ).join('\n'),
+    );
+    await setLineNumbers(true);
+    await page.waitForTimeout(300);
+    const geometry = await page.evaluate(async wrapperSelector => {
+      const modulePath =
+        performance
+          .getEntriesByType('resource')
+          .map(entry => entry.name)
+          .filter(name => name.includes('/src/hooks/export-snippet.ts'))
+          .at(-1) ?? '/src/hooks/export-snippet.ts';
+      const {previewEditorView: view} = await import(modulePath);
+      view.viewState.printing = true;
+      view.measure();
+      const frame = document.querySelector(wrapperSelector + ' > *');
+      const code = frame?.querySelector('.cm-line');
+      const gutter = frame?.querySelector('.cm-lineNumbers');
+      if (!frame || !code || !gutter) throw new Error('Missing numbered code.');
+      const bounds = frame.getBoundingClientRect();
+      const codeBounds = code.getBoundingClientRect();
+      const gutterBounds = gutter.getBoundingClientRect();
+      const row = gutter.querySelector('.cm-gutterElement:last-child');
+      return {
+        displayDpr: devicePixelRatio,
+        codeX: codeBounds.x - bounds.x,
+        gutterX: gutterBounds.x - bounds.x,
+        top: codeBounds.y - bounds.y,
+        codeLineHeight: getComputedStyle(code).lineHeight,
+        gutterHeight: row?.getBoundingClientRect().height,
+      };
+    }, wrapperSelector);
+    const crossovers = [];
+    for (const ratio of [1, 2]) {
+      const name = `numbered-display-${displayDpr}-export-${ratio}`;
+      const result = await render('takumi', name, 'png', page, ratio);
+      const png = PNG.sync.read(result.data);
+      function glyphBottoms(kind: 'code' | 'number', bottom = png.height) {
+        const x0 = Math.ceil(
+          (kind === 'code' ? geometry.codeX + 10 : geometry.gutterX + 5) *
+            ratio,
+        );
+        const x1 = Math.floor(
+          (kind === 'code' ? geometry.codeX + 50 : geometry.codeX - 5) * ratio,
+        );
+        const bottoms: number[] = [];
+        let ink = false;
+        for (let y = Math.floor(geometry.top * ratio); y < bottom; y++) {
+          let count = 0;
+          for (let x = x0; x < x1; x++) {
+            const i = (y * png.width + x) * 4;
+            const [r, g, b] = png.data.subarray(i, i + 3);
+            if (
+              kind === 'code'
+                ? g > 100 && g - r > 20 && b - r > 20
+                : r > 60 &&
+                  r < 170 &&
+                  Math.abs(r - g) < 8 &&
+                  Math.abs(g - b) < 8
+            )
+              count++;
+          }
+          if (count === 0 && ink) bottoms.push(y - 1);
+          ink = count > 0;
+        }
+        return bottoms;
+      }
+      const code = glyphBottoms('code');
+      const numbers = glyphBottoms('number', code[299] + 8 * ratio);
+      assert.equal(code.length, 300, 'Expected 300 code baselines.');
+      assert.equal(numbers.length, 300, 'Expected 300 number baselines.');
+      const offsets = numbers.map((bottom, i) => bottom - code[i]);
+      const drift = offsets[299] - offsets[0];
+      const chrome =
+        ratio === displayDpr
+          ? compare(
+              result.data,
+              await reference(name + '-chrome'),
+              name + '-chrome',
+            )
+          : null;
+      crossovers.push({
+        displayDpr,
+        ratio,
+        drift,
+        firstOffset: offsets[0],
+        lastOffset: offsets[299],
+        minOffset: Math.min(...offsets),
+        maxOffset: Math.max(...offsets),
+        chrome,
+      });
+    }
+    writeFileSync(
+      path.join(out, 'crossovers.json'),
+      JSON.stringify({geometry, crossovers}, null, 2),
+    );
+    console.log('CROSSOVERS', JSON.stringify(crossovers));
+    assert.ok(
+      crossovers.every(row => Math.abs(row.drift) <= 1),
+      'Gutter baselines drift over 300 lines.',
+    );
+    assert.ok(
+      crossovers.every(row => !row.chrome || row.chrome.percent <= 0.5),
+      'Numbered export exceeds Chrome parity gate.',
+    );
+  }
+
+  async function runBlockedFont() {
+    const originalFetch = await page.evaluateHandle(() => window.fetch);
+    await page.evaluate(() => {
+      const original = window.fetch;
+      window.fetch = (input, init) => {
+        if (
+          String(input instanceof Request ? input.url : input).includes(
+            'fonts.gstatic.com',
+          )
+        )
+          return Promise.reject(
+            new TypeError('P2 verification blocks code font download.'),
+          );
+        return original(input, init);
+      };
+    });
+    const expected = await render('dom-export', 'font-fallback-reference');
+    const blocked = await render('takumi', 'font-blocked');
+    const diff = compare(
+      blocked.data,
+      expected.data,
+      'font-blocked-dom-export',
+    );
+    const messages = [...fallback];
+    writeFileSync(
+      path.join(out, 'blocked-font.json'),
+      JSON.stringify({diff, messages}, null, 2),
+    );
+    assert.equal(
+      messages.length,
+      1,
+      'Missing font must trigger exactly one fallback.',
+    );
+    assert.ok(
+      messages[0].includes('font'),
+      'Fallback must explain the missing font.',
+    );
+    assert.equal(diff.percent, 0, 'Blocked font export must equal dom-export.');
+    await page.evaluate(original => {
+      window.fetch = original;
+    }, originalFetch);
+    await originalFetch.dispose();
+    const recovered = await render('takumi', 'font-recovered');
+    const chrome = compare(
+      recovered.data,
+      await reference('font-recovered-chrome'),
+      'font-recovered',
+    );
+    assert.ok(chrome.percent <= 0.5);
+    assert.equal(fallback.length, 1);
+    writeFileSync(
+      path.join(out, 'blocked-font.json'),
+      JSON.stringify({diff, messages, recovered: chrome}, null, 2),
+    );
+  }
+
   const rows: {
     theme: string;
     terminal: string;
@@ -797,6 +976,16 @@ async function main() {
   );
   try {
     await boot(page);
+    if (process.env.P2_REVIEW_CASE === 'crossovers') {
+      await runReviewCases();
+      assert.deepEqual(fallback, []);
+      assert.deepEqual(fontIssues, []);
+      return;
+    }
+    if (process.env.P2_REVIEW_CASE === 'blocked-font') {
+      await runBlockedFont();
+      return;
+    }
     await render('dom-export', 'p2-off-first');
     const off = await render('dom-export', 'p2-off');
     assert.equal(wasmRequests.length, 0, 'Flag-off export requested WASM.');
@@ -810,6 +999,8 @@ async function main() {
     console.log(
       JSON.stringify({initial, fallback, fontIssues, errors, wasmRequests}),
     );
+    assert.deepEqual(fallback, [], 'Takumi fell back before the matrix.');
+    assert.deepEqual(fontIssues, [], 'An export font did not load.');
     if (!quick) {
       const themes = await page
         .locator(themeSelector + '[data-selected]')

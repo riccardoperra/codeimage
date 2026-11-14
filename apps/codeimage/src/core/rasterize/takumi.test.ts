@@ -149,6 +149,40 @@ describe('Takumi export', () => {
     expect(warn).not.toHaveBeenCalled();
   });
 
+  it('rejects a selected code font with no available source', async () => {
+    const node = exportNode(
+      '<div class="cm-line" style="font-family: Missing Mono, monospace">code</div>',
+    );
+    const {takumi} = await import('./takumi');
+    await expect(takumi(node, options)).rejects.toThrow(
+      'Export font unavailable: missing mono',
+    );
+    expect(renderer.prepare).not.toHaveBeenCalled();
+  });
+
+  it('rejects a missing Latin subset even when another subset loads', async () => {
+    const style = document.createElement('style');
+    style.textContent =
+      '@font-face { font-family: "JetBrains Mono"; src: url("https://example.test/cyrillic.woff2"); unicode-range: U+0400-04FF; } @font-face { font-family: "JetBrains Mono"; src: url("https://example.test/latin.woff2"); unicode-range: U+0000-00FF; }';
+    document.head.append(style);
+    vi.mocked(fetch).mockImplementation(async input => {
+      if (String(input).includes('latin.woff2'))
+        return new Response(null, {status: 404});
+      return new Response(new Uint8Array([0, 1, 2]));
+    });
+    const node = exportNode(
+      '<div class="cm-line" style="font-family: JetBrains Mono, monospace">const code = 1;</div>',
+    );
+    const {takumi} = await import('./takumi');
+    await expect(takumi(node, options)).rejects.toThrow(
+      'Export font unavailable: JetBrains Mono',
+    );
+    expect(renderer.prepare).not.toHaveBeenCalled();
+    expect(renderer.registerFont).toHaveBeenCalledWith(
+      expect.objectContaining({unicodeRange: [[0x400, 0x4ff]]}),
+    );
+  });
+
   it('registers fonts in stylesheet order when downloads finish out of order', async () => {
     vi.mocked(fetch).mockImplementation(async input => {
       if (String(input).includes('slow.woff2'))

@@ -52,17 +52,17 @@ async function registerFont(renderer: Renderer, source: FontSource) {
     data.catch(() => undefined);
     // Takumi falls back through fonts in registration order, so register in
     // call order rather than in the order the downloads finish.
-    pending = registered = registered
+    pending = registered
       .then(async () => {
         await renderer.registerFont({...source, data: await data});
       })
       .catch(error => {
         fonts.delete(source.key);
-        console.warn(
-          `[CodeImage] Export font unavailable: ${source.name}`,
-          error,
-        );
+        throw new Error(`Export font unavailable: ${source.name}`, {
+          cause: error,
+        });
       });
+    registered = pending.catch(() => undefined);
     fonts.set(source.key, pending);
   }
   await pending;
@@ -186,6 +186,7 @@ function cloneExportNode(node: HTMLElement) {
   const originals = [node, ...node.querySelectorAll('*')];
   const copies = [clone, ...clone.querySelectorAll('*')];
   const usedFamilies = new Set<string>(['inter', 'inter var']);
+  const codeFamilies = new Set<string>();
   originals.forEach((original, index) => {
     const copy = copies[index];
     if (original.closest('[data-export-exclude="true"]')) {
@@ -193,6 +194,9 @@ function cloneExportNode(node: HTMLElement) {
       return;
     }
     const computed = getComputedStyle(original);
+    if (original.matches('.cm-line')) {
+      codeFamilies.add(normalizeFamily(computed.fontFamily.split(',')[0]));
+    }
     if (/to (left|right) (top|bottom)/.test(computed.backgroundImage)) {
       // Takumi 2.19 drops `to right bottom` but draws `to bottom right`.
       appendStyle(
@@ -204,9 +208,12 @@ function cloneExportNode(node: HTMLElement) {
       );
     }
     if (original.matches('.cm-gutterElement')) {
-      // CodeMirror sizes gutter rows to the measured line height. Pass it
-      // exactly, or line numbers drift in long snippets.
-      appendStyle(copy, `height: ${original.getBoundingClientRect().height}px`);
+      const line = original.closest('.cm-editor')?.querySelector('.cm-line');
+      // CodeMirror measured this height at the display DPR. Let Takumi resolve
+      // the code line height at the export DPR, preserving the zero-height spacer.
+      if (line && original.getBoundingClientRect().height > 0) {
+        appendStyle(copy, `height: ${getComputedStyle(line).lineHeight}`);
+      }
     }
     computed.fontFamily
       .split(',')
@@ -218,7 +225,7 @@ function cloneExportNode(node: HTMLElement) {
     throw new Error('Invalid document.');
   body.append(clone);
   html.append(body);
-  return {html: html.outerHTML, usedFamilies};
+  return {html: html.outerHTML, usedFamilies, codeFamilies};
 }
 
 async function localFontSources(usedFamilies: Set<string>) {
@@ -264,27 +271,31 @@ export const takumi: Rasterizer = async (
   {format, pixelRatio, quality},
 ) => {
   const {width, height} = node.getBoundingClientRect();
-  const {html, usedFamilies} = cloneExportNode(node);
+  const {html, usedFamilies, codeFamilies} = cloneExportNode(node);
   const [renderer, {css, sources}, localFonts] = await Promise.all([
     getRenderer(),
     collectCss(usedFamilies),
     localFontSources(usedFamilies),
   ]);
-  await Promise.all(
-    [
-      ...sources,
-      ...localFonts,
-      ...['Inter', 'Inter var'].map(
-        (name): FontSource => ({
-          name,
-          key: name,
-          weight: 400,
-          style: 'normal',
-          data: () => readBytes(interUrl),
-        }),
-      ),
-    ].map(source => registerFont(renderer, source)),
-  );
+  const fontSources = [
+    ...sources,
+    ...localFonts,
+    ...['Inter', 'Inter var'].map(
+      (name): FontSource => ({
+        name,
+        key: name,
+        weight: 400,
+        style: 'normal',
+        data: () => readBytes(interUrl),
+      }),
+    ),
+  ];
+  for (const family of codeFamilies) {
+    if (!fontSources.some(source => normalizeFamily(source.name) === family)) {
+      throw new Error(`Export font unavailable: ${family}`);
+    }
+  }
+  await Promise.all(fontSources.map(source => registerFont(renderer, source)));
   const options = {
     width: Math.round(width) * pixelRatio,
     height: Math.round(height) * pixelRatio,
