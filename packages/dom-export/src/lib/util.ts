@@ -270,16 +270,16 @@ export async function nodeToDataURL(
   const xmlns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(xmlns, 'svg');
   const foreignObject = document.createElementNS(xmlns, 'foreignObject');
-  const pixelRatio = isChromium ? window.devicePixelRatio || 1 : 1;
-
-  // Chromium lays out SVG images at DPR 1, which can wrap text from a high-DPR page.
-  node.style.zoom = `${(Number(node.style.zoom) || 1) * pixelRatio}`;
+  // Chromium lays out SVG images at DPR 1, where text can measure wider than on
+  // a high-DPR page and wrap inside the widths copied from it.
+  const layoutScale = isChromium ? window.devicePixelRatio || 1 : 1;
+  node.style.zoom = `${(Number(node.style.zoom) || 1) * layoutScale}`;
 
   svg.setAttribute('width', `${width}`);
   svg.setAttribute('height', `${height}`);
   svg.setAttribute(
     'viewBox',
-    `0 0 ${width * pixelRatio} ${height * pixelRatio}`,
+    `0 0 ${width * layoutScale} ${height * layoutScale}`,
   );
 
   foreignObject.setAttribute('width', '100%');
