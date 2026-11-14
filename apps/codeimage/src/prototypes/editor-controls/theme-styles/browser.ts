@@ -35,6 +35,8 @@ export interface ThemeBrowser {
 export interface ThemeBrowserOptions {
   /** After a click or Enter applied a theme. */
   readonly onPick?: (theme: ThemeEntry, byKeyboard: boolean) => void;
+  /** Lets the Escape that ends a preview reach the layout too, so a tray closes with one press. */
+  readonly releaseEscape?: boolean;
 }
 
 const OPTION = '[data-theme-option]';
@@ -162,8 +164,15 @@ export function createThemeBrowser(
         const from = focusedOption();
         if (!list || !from) return;
         if (event.key === 'Escape') {
+          const previewing = from.dataset.themeOption !== selectedId();
           model.endPreview();
-          from.blur();
+          // Ends the preview and stays in the list; the next Escape is the layout's.
+          if (previewing && !options.releaseEscape) {
+            event.stopPropagation();
+            optionsIn(list)
+              .find(el => el.dataset.themeOption === selectedId())
+              ?.focus();
+          }
           return;
         }
         const next = neighbour(optionsIn(list), from, event.key);

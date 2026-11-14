@@ -42,6 +42,8 @@ export interface ThemePickerSlotProps {
   readonly autofocus?: boolean;
   /** After a click or Enter applied a theme. */
   readonly onPick?: (theme: ThemeEntry, byKeyboard: boolean) => void;
+  /** Lets the Escape that ends a preview reach the layout too, so a tray closes with one press. */
+  readonly releaseEscape?: boolean;
 }
 
 export interface ThemePickerProps extends ThemePickerSlotProps {
@@ -59,6 +61,8 @@ export function ThemePicker(props: ThemePickerProps) {
   // oxlint-disable-next-line solid/reactivity -- one model lives for the whole session
   const browser = createThemeBrowser(props.model, {
     onPick: (theme, byKeyboard) => props.onPick?.(theme, byKeyboard),
+    // oxlint-disable-next-line solid/reactivity -- a layout sets it once
+    releaseEscape: props.releaseEscape,
   });
   onCleanup(() => props.model.endPreview());
   onMount(() => {

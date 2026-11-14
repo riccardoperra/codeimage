@@ -21,6 +21,7 @@ export function ThemesPanel() {
       <dock.ThemePicker
         size={dock.compact() ? 'md' : 'sm'}
         autofocus
+        releaseEscape
         onPick={(_, byKeyboard) => dock.closeAfterPick(byKeyboard)}
       />
     </div>
