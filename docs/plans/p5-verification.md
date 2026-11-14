@@ -1,6 +1,6 @@
 # P5 web verification
 
-CodeImage users can mark added, removed, and highlighted lines, keep those marks through edits, and export them today. CLI flags and StaticCodeView rendering remain deferred until P4 and P1 merge.
+CodeImage users can mark added, removed, and highlighted lines, keep those marks through edits, and export them today. P5 is now stacked on P1 and renders marks through StaticCodeView. CLI flags remain deferred until P4.
 
 ## Checks
 
@@ -36,9 +36,9 @@ The checked-in worker remains unchanged at MSW 0.47.4, as requested by the coord
 
 The mock database now hydrates before the worker starts. New mock IDs use the browser's `crypto.randomUUID()`.
 
-## Reuse after P1
+## Shared static and editor styles
 
-`plugins/lineMarks/marks.css` contains the global mark colors, focus rules, and sign rules. The root carries `data-line-marks`, `data-line-focus`, and `data-line-diff`. CodeMirror lines use `.cm-line`; a static renderer can use `data-line` with `data-mark` on the marked lines. The stylesheet accepts theme overrides through `--codeimage-line-added`, `--codeimage-line-removed`, `--codeimage-line-highlight`, `--codeimage-line-accent`, and the sign color variables.
+`plugins/lineMarks/marks.css` contains the global mark colors, focus rules, and sign rules. The root carries `data-line-marks`, `data-line-focus`, and `data-line-diff`. Both CodeMirror and StaticCodeView use `.cm-line` with `data-mark` on marked lines. StaticCodeView receives the selected tab's marks through PreviewFrame, including its explicit tab override. The stylesheet accepts theme overrides through `--codeimage-line-added`, `--codeimage-line-removed`, `--codeimage-line-highlight`, `--codeimage-line-accent`, and the sign color variables.
 
 `inferLanguageFromPath(path)` is exported from `@codeimage/config` and returns a language id or undefined. The UI and P4 can share it.
 
@@ -82,3 +82,80 @@ An independent review reran the web lanes at the review head in Chromium 143 aga
 The mock API lane served the installed MSW 2.12.14 worker through Playwright routing and started Vite with `VITE_ENABLE_MSW=true`. The repository worker is unchanged.
 
 The perf probe ran 10 interleaved exports per variant with load average near 10 on 8 cores. Head with 100 marks has a median of 4,635 ms against 4,393 ms on trunk, a ratio of 1.055. Head without marks has a median of 4,641 ms, so the marks add no measurable time. A CPU profile of one marked export spends 46% of samples in `setAttribute`, `setProperty`, and `getPropertyValue` inside `@codeimage/dom-export`, which copies computed styles for every cloned node. Raw runs are in [p5-review-perf-runs.json](media/p5-review-perf-runs.json).
+
+## Stack on P1, 2026-11-14
+
+P5 now builds on P1 `17233c9353d5f1f7c27eaeab50470a5a3eb21c0d`. The reference renderer is Opus's reviewed P5 head `3e437b2b89304853f396a408d596bbb597feecbe`. P1's deletion of PreviewExportEditor and its shared Vitest setup are retained.
+
+StaticCodeView accepts the selected tab's `TabMarks`, indexes them by physical line, and emits the same root attributes and per-line `data-mark` as CodeMirror. It imports the existing global `marks.css`. The sign column uses the same gradients and padding. Unfocused gutter numbers use the existing `cm-lineMarkDim` class. The editor controls, mapping, paste handlers, and undo logic have no changes against the reviewed P5 head.
+
+### Export parity
+
+The same seven-line TypeScript project contains removed and added lines, two highlighted lines, focus mode, an empty line, and continuous numbers. Both renderers download PNGs through the real export dialog. Chromium 143 uses `--force-device-scale-factor=1`, without an emulated deviceScaleFactor. Pixelmatch uses P1's shared helper at threshold 0.1.
+
+| Theme          | Changed pixels | Pixel difference |
+| -------------- | -------------: | ---------------: |
+| Fleet Dark     |   20 / 202,386 |        0.009882% |
+| VSCode Dark    |    0 / 202,386 |               0% |
+| XCode Dark     |    0 / 202,386 |               0% |
+| Night Owl      |    0 / 202,386 |               0% |
+| Material Light |    0 / 202,386 |               0% |
+
+No result exceeds 0.1%. The Fleet Dark difference is confined to the bright gutter digit 5. It follows P1's existing line-number baseline correction. Code, mark backgrounds, accent bars, signs, and all other pixels match. The unmarked default export is identical both to old P5 and to trunk `27b185f1`, with 0 changed pixels out of 277,524.
+
+[Before PNGs](media/p5-static/before) · [After PNGs](media/p5-static/after) · [Diff PNGs](media/p5-static/diff) · [Raw parity](media/p5-static/parity.json).
+
+Rerun `node scripts/parity/p5-capture.cjs before <old-P5-url>` and `node scripts/parity/p5-capture.cjs after <head-url>`, then `pnpm exec tsx scripts/parity/p5-diff.ts`. `P5_OUT` selects the output directory. `P5_CHROMIUM` overrides the cached Chromium executable. Use `trunk` as the capture phase to export only the unmarked default. The fixture and assertions are identical on both renderers.
+
+### Live lanes after the rebase
+
+| Lane | Result                                                                                                                                                                               |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | Pass. The default unmarked PNG matches trunk with 0 changed pixels.                                                                                                                  |
+| 2    | Pass. A two-file diff imports two syntax-colored tabs with added and removed marks. Plain code starting with a minus gets no import offer.                                           |
+| 3    | Pass. Inserting two lines above a highlight on line 5 moves it to line 7.                                                                                                            |
+| 4    | Pass. Focus dims unhighlighted code and gutter numbers in the static export. The parity fixture retains two bright highlighted lines.                                                |
+| 5    | Pass. Local reload restores marks. A signed-in mock project sends marks in PUT and restores them from GET after reload.                                                              |
+| 6    | Pass. The selection toolbar marks lines 3 to 5 as added and enables the sign column.                                                                                                 |
+| 7    | Chromium pass. Mod-Alt-1 applies a highlight and Mod-Z removes it. Firefox launch failed with a sandbox permission error and a SWGL framebuffer error. No Firefox result is claimed. |
+| 8    | Pass. Shiki annotations become marks and toast Undo restores the comments.                                                                                                           |
+| 9    | Deferred with the CLI flags.                                                                                                                                                         |
+| 10   | Pass. All three mark kinds remain readable in all five exported themes, including focus mode.                                                                                        |
+
+The live lane scripts and screenshots are in `/tmp/p5-stack/lanes`, with logs in `/tmp/p5-stack-live.log` and `/tmp/p5-stack-remote.log`. [Firefox launch diagnostics](media/p5-static/firefox.txt).
+
+### Workspace checks and setup
+
+- 47 app tests passed under P1's unchanged Vitest configuration, including two new static-mark rendering tests.
+- 28 API unit tests passed with the required test environment values.
+- `pnpm lint` passed with 32 existing warnings and no errors.
+- `pnpm typecheck` passed across the workspace.
+- `pnpm install` and `pnpm libs:build` completed. Prisma generation and `@codeimage/prisma-models` build supply fresh-worktree types. `pnpm --filter=@codeimage/api build:ts` supplies API declaration exports for app typecheck.
+
+The extra `pnpm --filter=@codeimage/api build:types` command hits the existing TS5069 error in tsconfig.schema.json because emitDeclarationOnly lacks declaration. It is not required for the successful workspace typecheck and was left outside this change.
+
+The copied `.env.local` enables MSW and mock auth and remains ignored. The repository service worker is unchanged. Temporary Vite middleware serves the installed MSW worker. Both comparison servers use the same temporary scanner alias from react/jsx-runtime to solid-js/jsx-runtime to avoid an MDX dependency-scan error. Initial optimizer hash changes invalidated language imports; fresh browser contexts after optimization completed produced the recorded captures.
+
+The requested branch was already checked out elsewhere, so this work uses `t3/static-export-line-marks` and pushes HEAD to `feat/p5-line-marks`. Port 4426 was initially occupied by another baseline server. Old P5 uses 4427 and head uses 4428. After that baseline server stopped, a source archive of trunk `27b185f1` ran on 4426 with a separate Vite cache. The read-only source checkout was not changed.
+
+### Performance after the rebase
+
+Pass, with no measurable difference between variants. Head with 100 marks is **1.0081 times** the trunk median, within the 1.1 limit. The ranges overlap. This run does not establish a general speedup or slowdown.
+
+| Variant                | Runs |     Median |                 Range |
+| ---------------------- | ---: | ---------: | --------------------: |
+| Trunk, no marks        |   10 | 4,794.5 ms | 4,326.1 to 5,121.4 ms |
+| Static head, no marks  |   10 | 4,790.1 ms | 4,292.2 to 5,055.7 ms |
+| Static head, 100 marks |   10 | 4,833.3 ms | 4,163.2 to 5,307.0 ms |
+
+The existing `scripts/verify-p5-exports.cjs` now handles both the old hidden editor and P1's static root. It times the real export call until the PNG blob resolves, with performance marks around that interval. The 300-line file uses 100 marks, alternating added, removed, and highlight. The order reverses each round for ten interleaved runs per variant. Three warm-up exports and one separately profiled export are excluded. Every measured run checks 300 rendered lines, the last line's text, the expected 0 or 100 marks, a tall image, and non-empty PNG bytes. All 30 runs passed. Both pages loaded the same 400-weight, 16 px JetBrains Mono face.
+
+The machine had a load average around 48 to 57 on eight cores during setup and other program work. These are development-server exports with identical rasterizer/library builds on both sides. The separate CPU profile records 2,112 samples. `setAttribute`, `setProperty`, and `getPropertyValue` account for 40.3% of all samples, with stacks in `@codeimage/dom-export`'s clone/style copy. Idle samples account for 30.2%. The mark renderer adds no nodes for its signs. Rasterizer style copying remains the largest sampled cost.
+
+[Raw runs](media/p5-static/perf-runs.json) · [Summary](media/p5-static/perf-summary.json) · [CPU profile](media/p5-static/export.cpuprofile) · [Live screenshots](media/p5-static/lanes) · [App tests](media/p5-static/tests.txt) · [API unit tests](media/p5-static/api-tests.txt) · [Lint](media/p5-static/lint.txt) · [Typecheck](media/p5-static/typecheck.txt).
+
+Rerun the perf script with `P5_HEAD_URL`, `P5_TRUNK_URL`, `P5_CHROMIUM`, and `P5_OUT`. `P5_PROFILE_PATH` enables the separate profile. `P5_WORKER_PATH` optionally routes the installed MSW worker without changing the repository worker.
+
+The implementation follows Model the Domain by indexing `TabMarks` by physical line. Type System Discipline reuses the existing `TabMarks` type. Laziness Protocol keeps the existing CSS and editor logic. Build the Lever and Prove It Works keep the capture, pixel comparison, and real export probe rerunnable. Attack the Premise replaced the assumption of slow startup with a direct check of the optimizer hashes and failed import URLs.
+
+The remaining review limits are Firefox availability and the fresh stack review. No merge was attempted.
