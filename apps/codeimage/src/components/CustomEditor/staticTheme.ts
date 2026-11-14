@@ -30,7 +30,8 @@ export const staticLayout = EditorView.theme({
   },
   '&.cm-editor .cm-content, &.cm-editor .cm-gutters, &.cm-editor .cm-lineNumbers':
     {
-      display: 'grid',
+      // Beats CodeMirror's `.cm-gutter {display: flex !important}`, which would misalign numbers and lines.
+      display: 'grid !important',
       gridTemplateRows: 'subgrid',
       gridRow: '1 / -1',
       margin: 0,
@@ -56,8 +57,8 @@ export const staticLayout = EditorView.theme({
     fontWeight: 400,
     fontVariantLigatures: 'var(--codeimage-font-ligatures)',
   },
-  '&.cm-editor .cm-gutterElement': {minHeight: '21px'},
-  '&.cm-editor .cm-line': {display: 'block', minHeight: '21px'},
+  '&.cm-editor .cm-gutterElement': {gridColumn: '1'},
+  '&.cm-editor .cm-line': {display: 'block'},
 });
 
 // Keep the probe rules unmounted; only their shared scope names belong on the view.
@@ -87,7 +88,8 @@ export function getStaticTheme(theme: CustomTheme) {
     const classes = [
       ...themeClasses(extensions),
       baseScopes[0],
-      baseScopes[theme.properties.darkMode ? 2 : 1],
+      // CodeMirror picks the scope from this facet. Themes from defineEditorTheme never set it, even dark ones.
+      baseScopes[state.facet(EditorView.darkTheme) ? 2 : 1],
     ];
     resolved = {classes: Array.from(new Set(classes)).join(' '), modules};
     themes.set(theme, resolved);
