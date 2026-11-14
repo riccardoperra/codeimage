@@ -13,6 +13,7 @@ describe('parseAnnotations', () => {
     ).toEqual({
       code: 'const n = 1;',
       count: 1,
+      sourceLines: [1],
       marks: {
         lines: notation === 'focus' ? [] : [{line: 1, kind}],
         focusedLines: notation === 'focus' ? [1] : [],
@@ -44,6 +45,7 @@ describe('parseAnnotations', () => {
     expect(parseAnnotations('# [!code ++]\nprint("hi")', {line: '#'})).toEqual({
       code: 'print("hi")',
       count: 1,
+      sourceLines: [2],
       marks: {lines: [{line: 1, kind: 'added'}], focusedLines: []},
     });
   });
@@ -75,6 +77,7 @@ describe('parseAnnotations', () => {
     expect(parseAnnotations(code, {line: '//'})).toEqual({
       code,
       count: 0,
+      sourceLines: [1],
       marks: {lines: [], focusedLines: []},
     });
   });

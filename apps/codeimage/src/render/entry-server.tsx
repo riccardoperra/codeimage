@@ -1,4 +1,10 @@
 import '../assets/styles/app.scss';
+import {getExportTarget} from '@codeimage/config';
+import type {CommentTokens} from '@codemirror/commands';
+import {EditorState} from '@codemirror/state';
+import {parseAnnotations} from '../core/diff/parseAnnotations';
+import {FrameSignature, framePadding} from '../components/Frame/FrameSignature';
+
 import '../theme/global.css';
 import {isAssetLinkUrl, isAssetUrl} from '@codeimage/store/assets/assets';
 import {getEditorStore} from '@codeimage/store/editor';
@@ -14,6 +20,25 @@ import StaticCodeView from '../components/CustomEditor/StaticCodeView';
 import {staticThemeCss} from '../components/CustomEditor/staticTheme';
 import * as styles from '../components/Frame/Frame.css';
 import {DynamicTerminal} from '../components/Terminal/DynamicTerminal/DynamicTerminal';
+
+export const targetSize = (id: string | null | undefined) =>
+  getExportTarget(id)?.resolution;
+
+export async function annotateCode(
+  code: string,
+  languageId: string,
+  tabName: string,
+) {
+  const language = await loadLanguage(languageId, tabName);
+  const state = EditorState.create({
+    doc: code,
+    extensions: language ? [language] : [],
+  });
+  return parseAnnotations(
+    code,
+    state.languageDataAt<CommentTokens>('commentTokens', 0)[0] ?? {},
+  );
+}
 
 export const SUPPORTED_FONT_IDS = SUPPORTED_FONTS.map(font => font.id);
 export const SUPPORTED_THEME_IDS = THEME_REGISTRY.map(theme => theme.id);
@@ -109,7 +134,10 @@ async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
           style={assignInlineVars({
             overflow: 'hidden',
             [styles.frameVars.radius]: `${frame.radius}px`,
-            [styles.frameVars.padding]: `${frame.padding}px`,
+            [styles.frameVars.padding]: framePadding(
+              frame.padding,
+              frame.signature,
+            ),
           })}
         >
           <div
@@ -138,35 +166,39 @@ async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
               />
             )}
           </div>
-          <DynamicTerminal
-            type={terminal.type}
-            readonlyTab={true}
-            showTab={true}
-            showOnlyActiveTab={false}
-            shadow={terminal.shadow}
-            background={terminal.background || theme.properties.terminal.main}
-            accentVisible={terminal.accentVisible}
-            textColor={terminal.textColor || theme.properties.terminal.text}
-            showHeader={terminal.showHeader}
-            showGlassReflection={terminal.showGlassReflection}
-            showWatermark={terminal.showWatermark}
-            opacity={terminal.opacity}
-            alternativeTheme={terminal.alternativeTheme}
-            borderType={terminal.borderType}
-            themeId={theme.id}
-          >
-            <StaticCodeView
-              code={activeEditor.code}
-              languageId={activeEditor.languageId}
-              language={language}
-              theme={theme}
-              showLineNumbers={editor.options.showLineNumbers}
-              lineNumberStart={activeEditor.lineNumberStart}
-              fontFamily={font.name}
-              fontWeight={editor.options.fontWeight}
-              enableLigatures={editor.options.enableLigatures}
-            />
-          </DynamicTerminal>
+          <div data-snapshot-window style={{display: 'contents'}}>
+            <DynamicTerminal
+              type={terminal.type}
+              readonlyTab={true}
+              showTab={true}
+              showOnlyActiveTab={false}
+              shadow={terminal.shadow}
+              background={terminal.background || theme.properties.terminal.main}
+              accentVisible={terminal.accentVisible}
+              textColor={terminal.textColor || theme.properties.terminal.text}
+              showHeader={terminal.showHeader}
+              showGlassReflection={terminal.showGlassReflection}
+              showWatermark={terminal.showWatermark}
+              opacity={terminal.opacity}
+              alternativeTheme={terminal.alternativeTheme}
+              borderType={terminal.borderType}
+              themeId={theme.id}
+            >
+              <StaticCodeView
+                code={activeEditor.code}
+                marks={activeEditor.marks ?? {lines: [], focus: false}}
+                languageId={activeEditor.languageId}
+                language={language}
+                theme={theme}
+                showLineNumbers={editor.options.showLineNumbers}
+                lineNumberStart={activeEditor.lineNumberStart}
+                fontFamily={font.name}
+                fontWeight={editor.options.fontWeight}
+                enableLigatures={editor.options.enableLigatures}
+              />
+            </DynamicTerminal>
+          </div>
+          <FrameSignature signature={frame.signature ?? null} />
         </div>
       </div>
     );
