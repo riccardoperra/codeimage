@@ -1,13 +1,17 @@
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {Renderer} from '@takumi-rs/core';
-import type {ImageSource} from '@takumi-rs/core';
+import type {ImageSource, MeasuredNode} from '@takumi-rs/core';
 import type {
+  AnimationDocument,
+  AnimationInput,
+  AnimationSettings,
   ProjectSnapshot,
   SnapshotDocument,
   SnapshotInput,
 } from './document';
-import {parseSnapshotDocument} from './document';
+import {parseAnimationDocument, parseSnapshotDocument} from './document';
+import {clearGifFrames} from './gif';
 
 export interface AnnotatedCode {
   code: string;
@@ -36,10 +40,33 @@ interface FrameSize {
   height: number;
 }
 
+// A laid-out page in CSS pixels, with the text runs it draws.
+interface PageLayout {
+  width: number;
+  height: number;
+  children: PageLayout[];
+  runs: {text: string; width: number}[];
+}
+
+interface AnimationScenes {
+  scenes: {html: string; durationMs: number}[];
+  // One stylesheet for every scene.
+  css: string;
+  // The largest frame over all steps, in CSS pixels.
+  width: number;
+  height: number;
+  backgroundImage: string | null;
+}
+
 interface RenderEntry {
   SUPPORTED_FONT_IDS: string[];
   SUPPORTED_THEME_IDS: string[];
   renderFrame(snapshot: ProjectSnapshot): Promise<FrameMarkup>;
+  renderAnimationScenes(
+    snapshot: ProjectSnapshot,
+    settings: Omit<AnimationSettings, 'fps'> & {fps: number},
+    measure: (html: string, css: string) => Promise<PageLayout>,
+  ): Promise<AnimationScenes>;
   annotateCode(
     code: string,
     languageId: string,
@@ -256,4 +283,77 @@ export async function renderSnapshot(
     devicePixelRatio: document.scale,
   });
   return new Uint8Array(image.buffer, image.byteOffset, image.byteLength);
+}
+
+// The frame rate a file of `format` plays at when the settings ask for `fps`.
+// A GIF frame lasts whole hundredths of a second, and Takumi rejects one
+// shorter than two of them, so a GIF plays at 50, 25 or 20 fps.
+export function animationFps(
+  format: AnimationDocument['format'],
+  fps: number,
+): number {
+  return format === 'gif' ? 100 / Math.ceil(100 / Math.min(fps, 50)) : fps;
+}
+
+const inCssPixels = (node: MeasuredNode, scale: number): PageLayout => ({
+  width: node.width / scale,
+  height: node.height / scale,
+  children: node.children.map(child => inCssPixels(child, scale)),
+  runs: node.runs.map(run => ({text: run.text, width: run.width / scale})),
+});
+
+// Each step holds its tab, then morphs into the next one. The first and last
+// frame of a transition are the static exports of the two steps. WebP is
+// lossless: Takumi writes lossy animated WebP without an alpha channel, which
+// fills the frame's rounded corners and paints the margin of a smaller step
+// black.
+export async function renderAnimation(
+  input: AnimationInput,
+): Promise<Uint8Array> {
+  const document = parseAnimationDocument(input);
+  const {entry, stylesheet, renderer, registerAppFont, fontFamilies} =
+    await getRuntime();
+  const {scale, format} = document;
+  // The entry lays out the scenes through this renderer, so the code font
+  // registers first. renderFrame names its family.
+  const {fontFamily} = await entry.renderFrame(document);
+  await registerAppFont(document.editor.options.fontId, fontFamily);
+  const pageCss = (css: string) => [stylesheet, css].map(normalizeGradients);
+  const fps = animationFps(format, document.animation.fps);
+  const animation = await entry.renderAnimationScenes(
+    document,
+    {...document.animation, fps},
+    async (html, css) =>
+      inCssPixels(
+        await renderer.measure(normalizeStyleAttributes(html), {
+          css: pageCss(css),
+          fontFamilies,
+          devicePixelRatio: scale,
+        }),
+        scale,
+      ),
+  );
+  const image = await renderer.renderAnimation({
+    scenes: animation.scenes.map(({html, durationMs}) => ({
+      node: normalizeStyleAttributes(html),
+      durationMs,
+    })),
+    width: Math.floor(animation.width * scale),
+    height: Math.floor(animation.height * scale),
+    css: pageCss(animation.css),
+    images: animation.backgroundImage
+      ? [await fetchImage(animation.backgroundImage)]
+      : [],
+    fontFamilies,
+    fps,
+    format,
+    devicePixelRatio: scale,
+  });
+  const bytes = new Uint8Array(
+    image.buffer,
+    image.byteOffset,
+    image.byteLength,
+  );
+  if (format === 'gif') clearGifFrames(bytes);
+  return bytes;
 }

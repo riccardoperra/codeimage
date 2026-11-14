@@ -85,18 +85,91 @@ export const projectSnapshotSchema = z.looseObject({
   }),
 });
 
-export const snapshotDocumentSchema = projectSnapshotSchema.extend({
-  format: z.enum(['png', 'jpeg', 'webp', 'svg']).default('png'),
+const exportSize = {
   scale: z.number().finite().positive().max(3).default(2),
   width: z.number().finite().int().min(1).max(1920).optional(),
+};
+
+export const snapshotDocumentSchema = projectSnapshotSchema.extend({
+  format: z.enum(['png', 'jpeg', 'webp', 'svg']).default('png'),
+  ...exportSize,
 });
+
+// The timing of a project that stores no `animation`.
+export const ANIMATION_DEFAULTS = {
+  holdMs: 800,
+  transitionMs: 900,
+  easing: 'smooth',
+  fps: 30,
+} as const;
+
+// Takumi plays scenes of whole milliseconds.
+const durationMs = z.number().finite().nonnegative().transform(Math.round);
+
+const animationStepSchema = z.looseObject({
+  editorId: z.string(),
+  holdMs: durationMs,
+});
+
+// The `animation` a project stores. A step is a tab, by its id.
+export const animationSettingsSchema = z.looseObject({
+  steps: z.tuple([animationStepSchema], animationStepSchema),
+  transitionMs: durationMs,
+  easing: z.enum(['smooth', 'snappy', 'linear']),
+  fps: z.union([z.literal(24), z.literal(30), z.literal(50), z.literal(60)]),
+});
+
+export const animationDocumentSchema = projectSnapshotSchema
+  .extend({
+    animation: animationSettingsSchema.optional(),
+    format: z.enum(['webp', 'gif', 'apng']).default('webp'),
+    ...exportSize,
+  })
+  .transform(document => {
+    const [first, ...rest] = document.editor.editors;
+    const step = ({id}: typeof first) => ({
+      editorId: id,
+      holdMs: ANIMATION_DEFAULTS.holdMs,
+    });
+    const animation: AnimationSettings = document.animation ?? {
+      ...ANIMATION_DEFAULTS,
+      steps: [step(first), ...rest.map(step)],
+    };
+    return {...document, animation};
+  })
+  .superRefine(({animation, editor}, context) => {
+    for (const [index, {editorId}] of animation.steps.entries()) {
+      if (!editor.editors.some(({id}) => id === editorId)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['animation', 'steps', index, 'editorId'],
+          message: `The snapshot has no tab ${JSON.stringify(editorId)}`,
+        });
+      }
+    }
+    const holdMs = animation.steps.reduce((sum, step) => sum + step.holdMs, 0);
+    const transitions = animation.steps.length - 1;
+    if (holdMs + transitions * animation.transitionMs === 0) {
+      context.addIssue({
+        code: 'custom',
+        path: ['animation'],
+        message: 'The holds and transitions add up to 0 ms',
+      });
+    }
+  });
 
 export type ProjectSnapshot = z.output<typeof projectSnapshotSchema>;
 export type SnapshotDocument = z.output<typeof snapshotDocumentSchema>;
 export type SnapshotInput = z.input<typeof snapshotDocumentSchema>;
+export type AnimationSettings = z.output<typeof animationSettingsSchema>;
+export type AnimationDocument = z.output<typeof animationDocumentSchema>;
+export type AnimationInput = z.input<typeof animationDocumentSchema>;
 
-export function parseSnapshotDocument(input: unknown): SnapshotDocument {
-  const result = snapshotDocumentSchema.safeParse(input);
+function parseDocument<Document extends ProjectSnapshot & {scale: number}>(
+  schema: z.ZodType<Document>,
+  input: unknown,
+): Document {
+  const result = schema.safeParse(input);
   // Like the web export, a named target is exactly its pixel size.
   if (result.success)
     return result.data.frame.exportTarget
@@ -109,3 +182,10 @@ export function parseSnapshotDocument(input: unknown): SnapshotDocument {
     {cause: result.error},
   );
 }
+
+export const parseSnapshotDocument = (input: unknown): SnapshotDocument =>
+  parseDocument(snapshotDocumentSchema, input);
+
+// Without `animation`, every tab is a step, in tab order.
+export const parseAnimationDocument = (input: unknown): AnimationDocument =>
+  parseDocument(animationDocumentSchema, input);
