@@ -17,7 +17,7 @@ import type {SummaryWords, ToolCall, ToolSource} from './activity';
 import {activity} from './activity';
 import * as styles from './tool-activity.css';
 
-const HIDE_AFTER_MS = 5000;
+const HIDE_AFTER_MS = 10000;
 const EXIT_MS = 200;
 
 const SOURCE_KEY = {
@@ -109,25 +109,30 @@ export function ToolActivity() {
   const [hovered, setHovered] = createSignal(false);
   const [focused, setFocused] = createSignal(false);
   const [closing, setClosing] = createSignal(false);
-  const shown = () => activity.calls().length > 0;
+  // Hiding keeps the calls: an agent that thinks between calls brings the
+  // card back with its whole run, not one row at a time.
+  const [hidden, setHidden] = createSignal(false);
+  const shown = () => activity.calls().length > 0 && !hidden();
   const latest = () => activity.calls().at(-1);
   const room = nudgeClearance(shown);
   let exit: ReturnType<typeof setTimeout> | undefined;
 
-  const dismiss = () => {
+  const leave = (forget: boolean) => {
     clearTimeout(exit);
     setClosing(true);
     exit = setTimeout(() => {
-      activity.clear();
+      if (forget) activity.clear();
+      setHidden(true);
       setClosing(false);
       setHovered(false);
       setFocused(false);
     }, EXIT_MS);
   };
+  const dismiss = () => leave(true);
 
   createEffect(() => {
     if (!shown() || activity.running() || hovered() || focused()) return;
-    const timer = setTimeout(dismiss, HIDE_AFTER_MS);
+    const timer = setTimeout(() => leave(false), HIDE_AFTER_MS);
     onCleanup(() => clearTimeout(timer));
   });
 
@@ -138,6 +143,7 @@ export function ToolActivity() {
       () => {
         clearTimeout(exit);
         setClosing(false);
+        setHidden(false);
       },
       {defer: true},
     ),

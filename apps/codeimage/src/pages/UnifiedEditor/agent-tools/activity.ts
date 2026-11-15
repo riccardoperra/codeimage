@@ -26,7 +26,7 @@ export interface SummaryWords {
 }
 
 /** The calls kept on screen. Older ones leave as new ones arrive. */
-export const MAX_CALLS = 6;
+export const MAX_CALLS = 10;
 
 const [calls, setCalls] = createSignal<readonly ToolCall[]>([]);
 let nextId = 0;

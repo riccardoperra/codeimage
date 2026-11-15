@@ -266,7 +266,7 @@ async function rows(page) {
 // The card that shows the person watching what an agent calls.
 async function verifyActivity({page, call, out, padding}) {
   const card = page.locator(CARD);
-  await card.waitFor({state: 'detached', timeout: 15000});
+  await card.waitFor({state: 'detached', timeout: 20000});
 
   const exporting = call('export_image', {
     format: 'png',
@@ -291,7 +291,12 @@ async function verifyActivity({page, call, out, padding}) {
   const failed = await call('apply_theme', {theme: 'Dracul Night'});
   await call('list_themes', {});
 
-  assert.deepEqual(await rows(page), [
+  const listed = await rows(page);
+  assert.ok(
+    listed.length > 6,
+    'calls from before the card hid come back with the next call',
+  );
+  assert.deepEqual(listed.slice(-6), [
     {
       tool: 'export_image',
       status: 'done',
@@ -354,9 +359,9 @@ async function verifyActivity({page, call, out, padding}) {
   await page.waitForTimeout(6000);
   assert.ok(await card.isVisible(), 'hovering keeps the card open');
   await page.mouse.move(1000, 400);
-  await page.waitForTimeout(3500);
+  await page.waitForTimeout(7000);
   assert.ok(await card.isVisible(), 'the card waits after the last call');
-  await card.waitFor({state: 'detached', timeout: 5000});
+  await card.waitFor({state: 'detached', timeout: 6000});
 
   await page.setViewportSize({width: 390, height: 844});
   const devtools = await page.evaluate(() => {
@@ -370,8 +375,12 @@ async function verifyActivity({page, call, out, padding}) {
       .then(result => result.ok);
   });
   assert.equal(devtools, true);
-  await card.locator('li[data-status="done"]').waitFor();
+  await card.locator('li[data-status="done"]').first().waitFor();
   assert.equal(await card.locator('[data-source]').innerText(), 'DevTools MCP');
+  assert.ok(
+    (await rows(page)).length > 1,
+    'the hidden card kept its calls for the next one',
+  );
   await page.waitForTimeout(300);
   const phone = await card.boundingBox();
   assert.ok(
