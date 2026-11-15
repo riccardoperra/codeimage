@@ -9,6 +9,7 @@ import {createFontStore, FontFileError} from './fontCache';
 import type {FontCacheOptions} from './fontCache';
 import {findFont} from './fontManifest';
 import {Renderer} from '@takumi-rs/core';
+import {positionWatermark} from './watermarkGeometry';
 import type {ImageSource} from '@takumi-rs/core';
 import type {
   ProjectSnapshot,
@@ -181,8 +182,22 @@ export function createRenderer(options: RendererOptions = {}) {
         });
       },
     });
-    const html = normalizeStyleAttributes(frame.html);
     const css = [...frame.css, stylesheet].map(normalizeGradients);
+    const html = await positionWatermark({
+      html: normalizeStyleAttributes(frame.html),
+      ...frame.watermarkFrame,
+      measure: html =>
+        renderer.measure(html, {
+          css,
+          images: frame.images,
+          fonts,
+          fontFamilies,
+          width: frame.size.width,
+          height: frame.size.height,
+          devicePixelRatio: 1,
+          signal: options.signal,
+        }),
+    });
     const prepared = await renderer.prepare(html, {
       css,
       images: options.offline

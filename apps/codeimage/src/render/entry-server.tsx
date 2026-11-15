@@ -3,6 +3,7 @@ import type {PersistedFrameState} from '../state/frame/model';
 import '../assets/styles/app.scss';
 import '../theme/global.css';
 import {getExportTarget} from '@codeimage/config';
+import {signatureScale} from '../components/Frame/signatureLayout';
 import type {CommentTokens} from '@codemirror/commands';
 import {EditorState} from '@codemirror/state';
 import type {
@@ -138,6 +139,16 @@ export async function composeFrame(
     host.offline,
   );
   const target = getExportTarget(frame.exportTarget);
+  const watermarkFrame = {
+    painted:
+      normalized.visible &&
+      normalized.opacity > 0 &&
+      (!!media.backgroundImage ||
+        (!!normalized.background &&
+          normalized.background.trim().toLowerCase() !== 'transparent' &&
+          !/^#(?:[a-f\d]{3}0|[a-f\d]{6}00)$/i.test(normalized.background) &&
+          !/(?:,|\/)\s*0(?:\.0+)?\s*\)$/.test(normalized.background))),
+  };
   const renderPass = (
     appearance: typeof normalized,
     placement?: FittedPlacement,
@@ -210,6 +221,10 @@ export async function composeFrame(
     return {
       ...markup,
       browserCss: markup.css,
+      watermarkFrame: {
+        ...watermarkFrame,
+        inset: 24 * signatureScale(target.resolution[0]),
+      },
       size: {width: target.resolution[0], height: target.resolution[1]},
     };
   }
@@ -226,6 +241,7 @@ export async function composeFrame(
     ...markup,
     css: [...markup.css, frameSizeCss(size)],
     browserCss: markup.css,
+    watermarkFrame: {...watermarkFrame, inset: 24 * signatureScale(size.width)},
     size: {width: Math.round(size.width), height: Math.round(size.height)},
   };
 }

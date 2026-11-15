@@ -24,6 +24,7 @@ export interface FrameHost {
 export interface ComposedFrame extends FrameMarkup {
   size: FrameSize;
   browserCss: string[];
+  watermarkFrame: {painted: boolean; inset: number};
 }
 
 export interface RenderEntry<Snapshot, Annotation> {

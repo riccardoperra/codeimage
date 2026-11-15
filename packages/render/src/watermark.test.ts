@@ -1,6 +1,6 @@
 import {expect, test} from 'vitest';
-import {intersects, placeWatermark} from './placement';
-import type {Rect, WatermarkScene} from './placement';
+import {intersects, placeWatermark} from './watermark';
+import type {Rect, WatermarkScene} from './watermark';
 
 const home: Rect = {x: 300, y: 150, width: 125, height: 25};
 const scene: WatermarkScene = {

@@ -483,6 +483,9 @@ importers:
       '@codeimage/prisma-models':
         specifier: workspace:*
         version: link:../../packages/prisma-models
+      '@codeimage/render':
+        specifier: workspace:*
+        version: link:../../packages/render
       '@codeimage/secrets':
         specifier: workspace:*
         version: link:../../packages/secrets
@@ -1215,6 +1218,9 @@ importers:
       '@takumi-rs/core':
         specifier: 2.19.0
         version: 2.19.0(csstype@3.2.3)(react@19.2.4)
+      parse5:
+        specifier: 7.3.0
+        version: 7.3.0
       zod:
         specifier: ^4.1.12
         version: 4.6.7

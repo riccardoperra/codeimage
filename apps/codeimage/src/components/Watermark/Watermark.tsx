@@ -3,8 +3,8 @@ import {createSignal, onCleanup, onMount, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import type {JSX} from 'solid-js';
 import {registerWatermark} from '../../core/watermark/browser';
-import {placeWatermark} from '../../core/watermark/placement';
-import type {Rect} from '../../core/watermark/placement';
+import {placeWatermark} from '@codeimage/render/watermark';
+import type {Rect} from '@codeimage/render/watermark';
 import {signatureScale} from '../Frame/signatureLayout';
 import {CodeImageLogoV2} from '../Icons/CodeImageLogoV2';
 import * as styles from '../Terminal/terminal.css';
@@ -213,11 +213,9 @@ function MountedWatermark(props: {darkMode: boolean}) {
       mutation.disconnect();
       root.removeEventListener('scroll', schedule, true);
       document.fonts.removeEventListener('loadingdone', schedule);
+      disposed = true;
+      cancelAnimationFrame(pending);
     });
-  });
-  onCleanup(() => {
-    disposed = true;
-    cancelAnimationFrame(pending);
   });
 
   const logo = () => (
