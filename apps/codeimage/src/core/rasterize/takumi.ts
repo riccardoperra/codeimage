@@ -39,10 +39,7 @@ async function getRenderer() {
 
 async function readBytes(url: string) {
   const response = await fetch(url);
-  if (
-    !response.ok ||
-    response.headers.get('content-type')?.includes('text/html')
-  ) {
+  if (!response.ok) {
     throw new Error(`Cannot load export font: ${response.status}`);
   }
   return new Uint8Array(await response.arrayBuffer());

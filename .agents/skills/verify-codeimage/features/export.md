@@ -20,7 +20,7 @@ Run `export-options` for actual 1x and 2x PNG dimensions, JPEG magic bytes and a
 
 ## Gotchas
 
-Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation core exists but no animation editor UI is wired at this HEAD; CLI and animation preview on other branches are excluded.
+Clipboard is available for PNG/SVG and needs permission. Share requires navigator.share. Do not mock those browser APIs to claim native sharing. Redaction modifies documents. Animation is available in the unified guest editor; the classic editor and CLI are outside this export surface.
 
 ## MP4 animation
 
@@ -33,5 +33,3 @@ Video fields are buttons named Frame rate and Output size, with kit listbox opti
 ## Animation audit
 
 `animation-mp4` builds three steps through the Editor window's tab controls, opens Animate and Export animation, waits for the support check, exports a real MP4, checks its ftyp signature and moov-before-mdat faststart order, and confirms that the editor remains usable. It does not substitute for ffprobe, decoded-frame comparisons, the layout/error/cancel matrix or a performance run. Set `VERIFY_BROWSER_CHANNEL=chrome` to exercise branded Chrome with the same helper; otherwise it uses Playwright Chromium.
-
-Video fields are buttons named Frame rate and Output size, with kit listbox options. `[data-animation-export]` is the dialog; its progress element reports frames completed and total. Its alert includes preparation, WASM or encoder causes. After a failure, reopen the dialog or change a field to check support again. FPS is set only here, never in Animate.
