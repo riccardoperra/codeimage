@@ -204,7 +204,7 @@ Each archive row in Settings shows its highlight's illustration as a thumbnail. 
 
 ### Motion
 
-`components/WhatsNew/motion.ts` holds every curve and duration below, and the styles and the exit timers read it. Extend it, and add a row here. `out` is `cubic-bezier(0.23, 1, 0.32, 1)`, `inOut` is `cubic-bezier(0.77, 0, 0.175, 1)`, and `toast` is `ease`. An action from the keyboard does not animate. With reduced motion only opacity changes, with no delays, and a picture shows its last frame.
+`components/WhatsNew/motion.ts` holds every curve, duration, and stagger delay below, and the styles and the exit timers read it. Extend it, and add a row here. `out` is `cubic-bezier(0.23, 1, 0.32, 1)`, `inOut` is `cubic-bezier(0.77, 0, 0.175, 1)`, and `toast` is `ease`. An action from the keyboard does not animate. With reduced motion only opacity changes, with no delays, and a picture shows its last frame.
 
 | Element                  | When it moves                                                            | Duration                                 | Curve                                                    | What moves                                         |
 | ------------------------ | ------------------------------------------------------------------------ | ---------------------------------------- | -------------------------------------------------------- | -------------------------------------------------- |
@@ -221,6 +221,8 @@ Each archive row in Settings shows its highlight's illustration as a thumbnail. 
 | Showcase title           | It opens, at 0ms                                                         | 550ms                                    | `out`                                                    | Opacity, 12px rise                                 |
 | Showcase subtitle, cards | At 80, 160, 240, 300, 340, 370ms                                         | 500ms, cards 450ms                       | `out`                                                    | Opacity, 8px rise                                  |
 | Showcase date, footer    | At 0 and 400ms                                                           | 400ms                                    | `out`                                                    | Opacity                                            |
+
+Illustration part lengths live in `illustrationFor`; offsets from `duration.playAt` live in `illustrationAt`. Redact takes 450ms at +150ms. Tabs take 360ms at +0, +90, and +160ms. The shortcut takes 240ms at +0ms, then the command selection takes 420ms at +180ms. Layout panels take 360ms at +0, +110, and +190ms. Theme styles take 360ms at +0, +90, and +150ms.
 
 The archive rows and the step indicator stay still, since Settings opens many times a day and has its own entrance. A dot does not pulse, since it stays on screen for days. The kit's buttons keep the kit's press, a 200ms `ease` scale to .97.
 

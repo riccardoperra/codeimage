@@ -49,6 +49,25 @@ export const showcaseFor = {
   fade: 400,
 } as const;
 
+/** One-shot illustration parts, in milliseconds after playAt. */
+export const illustrationFor = {
+  redact: 450,
+  tabs: 360,
+  shortcut: 240,
+  commandPick: 420,
+  layout: 360,
+  theme: 360,
+} as const;
+
+export const illustrationAt = {
+  redact: 150,
+  tabs: [0, 90, 160],
+  shortcut: 0,
+  commandPick: 180,
+  layout: [0, 110, 190],
+  theme: [0, 90, 150],
+} as const;
+
 export const ms = (value: number) => `${value}ms`;
 
 export const reduceMotion = '(prefers-reduced-motion: reduce)';

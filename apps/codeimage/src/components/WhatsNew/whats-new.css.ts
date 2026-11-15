@@ -3,6 +3,8 @@ import {globalStyle, keyframes, style} from '@vanilla-extract/css';
 import {
   curve,
   duration,
+  illustrationAt,
+  illustrationFor,
   ms,
   reduceMotion as reduce,
   showcaseFor,
@@ -230,21 +232,33 @@ const wipeOut = keyframes({from: {clipPath: 'inset(0)'}});
 export const secret = style({display: 'inline-grid'});
 globalStyle(`${secret} > *`, {gridArea: '1 / 1'});
 export const plain = style([
-  plays(wipeOut, 450, 150, curve.inOut),
+  plays(wipeOut, illustrationFor.redact, illustrationAt.redact, curve.inOut),
   {clipPath: 'inset(0 0 0 100%)'},
 ]);
-export const dots = plays(wipeIn, 450, 150, curve.inOut);
+export const dots = plays(
+  wipeIn,
+  illustrationFor.redact,
+  illustrationAt.redact,
+  curve.inOut,
+);
 // Tabs: one image per tab leaves the arrow, one after the other.
-export const tabOut = [
-  plays(fromLeft, 360, 0),
-  plays(fromLeft, 360, 90),
-  plays(fromLeft, 360, 160),
-] as const;
+export const tabOut = illustrationAt.tabs.map(at =>
+  plays(fromLeft, illustrationFor.tabs, at),
+);
 // Command menu: the shortcut is pressed, then a row is picked.
-export const keycap = plays(press, 240, 0);
+export const keycap = plays(
+  press,
+  illustrationFor.shortcut,
+  illustrationAt.shortcut,
+);
 export const commandList = style({position: 'relative'});
 export const commandPick = style([
-  plays(down, 420, 180, curve.inOut),
+  plays(
+    down,
+    illustrationFor.commandPick,
+    illustrationAt.commandPick,
+    curve.inOut,
+  ),
   {
     position: 'absolute',
     insetInline: '-6px',
@@ -255,15 +269,25 @@ export const commandPick = style([
   },
 ]);
 // Layouts: each layout's panel docks from its own edge.
-export const dockRight = plays(fromRight, 360, 0);
-export const dockBottom = plays(rise, 360, 110);
-export const dockLeft = plays(fromLeft, 360, 190);
+export const dockRight = plays(
+  fromRight,
+  illustrationFor.layout,
+  illustrationAt.layout[0],
+);
+export const dockBottom = plays(
+  rise,
+  illustrationFor.layout,
+  illustrationAt.layout[1],
+);
+export const dockLeft = plays(
+  fromLeft,
+  illustrationFor.layout,
+  illustrationAt.layout[2],
+);
 // Theme cards: the three styles arrive in reading order.
-export const themeStyle = [
-  plays(rise, 360, 0),
-  plays(rise, 360, 90),
-  plays(rise, 360, 150),
-] as const;
+export const themeStyle = illustrationAt.theme.map(at =>
+  plays(rise, illustrationFor.theme, at),
+);
 export const commandAnchor = style({
   position: 'relative',
   display: 'inline-flex',
