@@ -239,7 +239,7 @@ To add a highlight for an existing place:
 4. Call `seen(id)` where the feature is used.
 5. Run the typecheck. `places.ts` rejects a registry place that names a missing model control, settings row, or Export item. Setting row IDs come from the actual definitions in `shell/sections.tsx`.
 
-No layout or dot JSX changes for an existing place. To introduce a new kind, extend the registry vocabulary and `places.ts`, then render `NewDot at` once in its shared owner. Controls that bypass `ControlRow` do not receive dots. This includes Dock's background, padding, language, and font family, Inspector's background and image, and Studio's system-font fallback.
+No layout or dot JSX changes for an existing place. To introduce a new kind, extend the registry vocabulary and `places.ts`, then render `NewDot at` once in its shared owner. Controls that bypass `ControlRow` do not receive dots. This includes Dock's background, padding, language, and font family, and Studio's system-font fallback.
 
 `dotAt(place)` selects the first eligible highlight held by that place. The same `holds` rule resolves Show me against the most specific bound owner. An owner binds once it is mounted, so a placement or route that replaces another takes over after the old one is disposed. A second owner mounted beside the first is rejected loudly in development. `CommandMenu` binds `command-menu`; Settings binds `setting` and clears search before selecting the row's section. Each `ExportControl` binds `export` to its own menu. Header and layouts share `stage.compact` so exactly one Export control is visible at every width. `control` has no reveal binding in this change, so its highlights have dots but no Show me.
 
