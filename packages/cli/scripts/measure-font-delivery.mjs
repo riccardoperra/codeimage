@@ -27,7 +27,9 @@ try {
     }),
   );
   const results = {P10: [], P11: []};
-  let expected;
+  // Each build must repeat its own image. The builds may differ: the adaptive
+  // watermark moves off code that an older baseline draws it over.
+  const expected = {};
   for (let iteration = 0; iteration < 7; iteration++) {
     for (const [name, binary] of [
       ['P10', process.argv[2]],
@@ -42,8 +44,8 @@ try {
       const elapsed = performance.now() - started;
       assert.equal(result.status, 0, result.stderr);
       const image = await readFile(output);
-      expected ??= image;
-      assert.deepEqual(image, expected, `${name} image differs`);
+      expected[name] ??= image;
+      assert.deepEqual(image, expected[name], `${name} image differs`);
       assert.deepEqual(
         image.subarray(0, 8),
         Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
