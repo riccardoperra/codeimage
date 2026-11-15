@@ -12,6 +12,7 @@ import {
   shift,
 } from '@floating-ui/dom';
 import {HintIcon} from '../../../components/Icons/Hint';
+import {isKeyOwnedByFocus} from '../../../hooks/use-hotkey';
 import type {AppLocaleEntries} from '../../../i18n';
 import {commandMenu} from '../command-menu/state';
 import * as styles from './shortcut-help.css';
@@ -78,10 +79,7 @@ export function ShortcutHelp(props: {
         event.ctrlKey ||
         event.altKey ||
         getRootEditorStore().state.options.focused ||
-        (event.target instanceof Element &&
-          event.target.closest(
-            'input, textarea, [contenteditable=true], [role=dialog], [role=alertdialog]',
-          ))
+        isKeyOwnedByFocus(event)
       )
         return;
       event.preventDefault();
