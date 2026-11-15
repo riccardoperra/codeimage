@@ -9,7 +9,7 @@ import {createEffect, createMemo, createSignal, Show, untrack} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {EasingField} from './EasingField';
 import * as styles from './AnimatePanel.css';
-function DurationInput(props: {
+export function DurationInput(props: {
   id: string;
   label: string;
   value: number;
