@@ -470,6 +470,9 @@ export default function Dock(props: VariantProps) {
                   )}
                 </CommandMenuButton>
                 <BarSettings />
+                <Show when={props.pageState().kind === 'read-only'}>
+                  <ShortcutHelp editable={false} />
+                </Show>
               </Show>
               <Show when={props.stage.compact()}>
                 <div class={styles.barExport} onClick={close}>
@@ -478,15 +481,17 @@ export default function Dock(props: VariantProps) {
               </Show>
             </div>
 
-            <EditingControls state={props.pageState()}>
-              <ShortcutHelp editable={props.pageState().editable} />
-            </EditingControls>
+            <Show when={props.pageState().kind !== 'read-only'}>
+              <EditingControls state={props.pageState()}>
+                <ShortcutHelp editable={props.pageState().editable} />
+              </EditingControls>
+            </Show>
             <Show when={!compact()}>
-              <div class={`${styles.frameActions} ${styles.float}`}>
-                <EditingControls state={props.pageState()}>
+              <EditingControls state={props.pageState()}>
+                <div class={`${styles.frameActions} ${styles.float}`}>
                   <FrameActions />
-                </EditingControls>
-              </div>
+                </div>
+              </EditingControls>
             </Show>
           </div>
 

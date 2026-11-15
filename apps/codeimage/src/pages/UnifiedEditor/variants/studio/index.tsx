@@ -106,7 +106,9 @@ export default function Studio(props: VariantProps) {
     ),
   });
   const sheetHeight = () =>
-    isPhone() && openId() ? sheetHeights()[stop()] : 0;
+    isPhone() && openId() && props.pageState().kind !== 'read-only'
+      ? sheetHeights()[stop()]
+      : 0;
 
   const stopAnimations = () =>
     panelEl.getAnimations().forEach(animation => animation.cancel());
@@ -260,12 +262,14 @@ export default function Studio(props: VariantProps) {
     const onQuery = (e: MediaQueryListEvent) => setIsPhone(e.matches);
     compactQuery.addEventListener('change', onQuery);
 
-    const measure = () =>
+    const measure = () => {
+      if (!railEl?.isConnected) return;
       setAvailable(
         railEl.getBoundingClientRect().top -
           bodyEl.getBoundingClientRect().top -
           GAP,
       );
+    };
     const observer = new ResizeObserver(measure);
     observer.observe(bodyEl);
     measure();
@@ -281,58 +285,61 @@ export default function Studio(props: VariantProps) {
       <div
         ref={bodyEl}
         class={styles.body}
+        data-read-only={props.pageState().kind === 'read-only' ? '' : undefined}
         style={assignInlineVars({
           [styles.sheetHeight]: `${sheetHeight()}px`,
           [styles.sheetSpace]: `${sheetHeight() ? sheetHeight() + GAP : 0}px`,
         })}
       >
-        <nav
-          ref={railEl}
-          class={styles.rail}
-          aria-label={t('editor.editorPanels')}
-        >
-          <EditingControls state={props.pageState()}>
-            <For each={PANELS}>
-              {panel => (
-                <button
-                  ref={el => openers.set(panel.id, el)}
-                  type="button"
-                  class={styles.railButton}
-                  aria-controls={PANEL_ID}
-                  aria-expanded={openId() === panel.id}
-                  onClick={() => toggle(panel)}
-                >
-                  <span class={styles.railIcon}>
-                    <panel.Icon />
-                  </span>
-                  {t(panel.label)}
-                </button>
-              )}
-            </For>
-          </EditingControls>
-          <Show when={!isPhone()}>
-            <CommandMenuButton>
-              {trigger => (
-                <button
-                  {...trigger}
-                  type="button"
-                  class={`${styles.railButton} ${styles.railSearch}`}
-                  title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
-                >
-                  <span class={styles.railIcon}>
-                    <SearchIcon />
-                  </span>
-                  {t('editor.search')}
-                  <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
-                </button>
-              )}
-            </CommandMenuButton>
-            <RailSettings />
-          </Show>
-          <EditingControls state={props.pageState()}>
-            <ShortcutHelp editable={props.pageState().editable} />
-          </EditingControls>
-        </nav>
+        <Show when={!isPhone() || props.pageState().kind !== 'read-only'}>
+          <nav
+            ref={railEl}
+            class={styles.rail}
+            aria-label={t('editor.editorPanels')}
+          >
+            <EditingControls state={props.pageState()}>
+              <For each={PANELS}>
+                {panel => (
+                  <button
+                    ref={el => openers.set(panel.id, el)}
+                    type="button"
+                    class={styles.railButton}
+                    aria-controls={PANEL_ID}
+                    aria-expanded={openId() === panel.id}
+                    onClick={() => toggle(panel)}
+                  >
+                    <span class={styles.railIcon}>
+                      <panel.Icon />
+                    </span>
+                    {t(panel.label)}
+                  </button>
+                )}
+              </For>
+            </EditingControls>
+            <Show when={!isPhone()}>
+              <CommandMenuButton>
+                {trigger => (
+                  <button
+                    {...trigger}
+                    type="button"
+                    class={`${styles.railButton} ${styles.railSearch}`}
+                    title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
+                  >
+                    <span class={styles.railIcon}>
+                      <SearchIcon />
+                    </span>
+                    {t('editor.search')}
+                    <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
+                  </button>
+                )}
+              </CommandMenuButton>
+              <RailSettings />
+            </Show>
+            <EditingControls state={props.pageState()}>
+              <ShortcutHelp editable={props.pageState().editable} />
+            </EditingControls>
+          </nav>
+        </Show>
 
         <EditingControls state={props.pageState()}>
           <section
@@ -434,11 +441,11 @@ export default function Studio(props: VariantProps) {
               </div>
             }
           >
-            <div class={styles.frameActions}>
-              <EditingControls state={props.pageState()}>
+            <EditingControls state={props.pageState()}>
+              <div class={styles.frameActions}>
                 <FrameActions />
-              </EditingControls>
-            </div>
+              </div>
+            </EditingControls>
             <div class={styles.footer}>
               <Footer />
             </div>

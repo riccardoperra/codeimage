@@ -194,15 +194,31 @@ try {
         `${tag}: dashboard creation opens a unified snippet`,
       );
 
+      const saved = page.waitForRequest(
+        request => {
+          if (
+            request.method() !== 'PUT' ||
+            !/\/api\/v1\/project\/[^/]+$/.test(request.url())
+          )
+            return false;
+          const body = request.postDataJSON();
+          return (
+            body.frame.padding === 32 &&
+            body.editorOptions.themeId === 'dracula'
+          );
+        },
+        {timeout: 60000},
+      );
       await command(page, 'Padding: 32');
       await command(page, 'Theme: Dracula');
-      await page.waitForTimeout(4200);
+      const savedResponse = await (await saved).response();
       check(
-        saves.some(
-          body =>
-            body.frame.padding === 32 &&
-            body.editorOptions.themeId === 'dracula',
-        ),
+        savedResponse?.ok() &&
+          saves.some(
+            body =>
+              body.frame.padding === 32 &&
+              body.editorOptions.themeId === 'dracula',
+          ),
         `${tag}: owner changes save to the account`,
       );
       await page.reload();
@@ -255,14 +271,9 @@ try {
         `${tag}: command previews send no save request`,
       );
 
-      // The same snippet and layout after a fresh load are the ownership comparison.
+      // Reload before testing the saved snippet in its read-only page mode.
       await page.reload();
       await ready(page);
-      const editableBox = await frame(page).boundingBox();
-      const editableCanvasBox = await page
-        .locator('[data-fit-scale]')
-        .locator('..')
-        .boundingBox();
       await page.getByRole('button', {name: 'Share', exact: true}).click();
       check(
         await page.evaluate(() => window.__shared?.url === location.href),
@@ -323,31 +334,68 @@ try {
         .locator('..')
         .boundingBox();
       check(
-        JSON.stringify(editableCanvasBox) === JSON.stringify(readonlyCanvasBox),
-        `${tag}: read-only ownership leaves the canvas area identical`,
+        (await page.locator('[data-editing-controls]').count()) === 0 &&
+          (await page.locator('[data-control-panel]').count()) === 0,
+        `${tag}: read-only renders no editing controls or panel containers`,
       );
-      const frameEqual =
-        JSON.stringify(editableBox) === JSON.stringify(readonlyBox);
-      geometryComparisons.push({
-        tag,
-        editableBox,
-        readonlyBox,
-        frameEqual,
-        editableCanvasBox,
-        readonlyCanvasBox,
-      });
-      if (frameEqual) {
+      if (layout === 'inspector') {
         check(
-          true,
-          `${tag}: read-only ownership leaves the frame box identical`,
-        );
-      } else {
-        console.log(
-          'INTRINSIC FRAME DIFFERENCE',
-          tag,
-          JSON.stringify({editableBox, readonlyBox}),
+          (await page.locator('aside').count()) === 0,
+          `${tag}: Inspector has no empty panel or bottom sheet`,
         );
       }
+      if (layout === 'studio') {
+        check(
+          (await page.locator('#studio-panel').count()) === 0 &&
+            (width !== 390 ||
+              (await page
+                .getByRole('navigation', {name: 'Editor panels'})
+                .count()) === 0),
+          `${tag}: Studio has no empty panel or phone rail`,
+        );
+      }
+      if (layout === 'dock' && width === 1440) {
+        const pill = await page
+          .getByRole('toolbar', {name: 'Editor controls'})
+          .boundingBox();
+        check(
+          (await page.locator('[data-control-dock] > div').count()) === 1 &&
+            pill.width < 400 &&
+            Math.abs(pill.x + pill.width / 2 - width / 2) < 1 &&
+            (await page
+              .locator('[data-control-dock] [data-shortcut-help]')
+              .count()) === 1,
+          `${tag}: Dock has one compact centred pill with Search, Settings and help`,
+        );
+      }
+      if (layout === 'inspector' || layout === 'studio') {
+        const canvas = await page.locator('main').boundingBox();
+        const rail =
+          layout === 'studio' && width === 1440
+            ? await page
+                .getByRole('navigation', {name: 'Editor panels'})
+                .boundingBox()
+            : null;
+        const left = rail ? rail.x + rail.width + 8 : 8;
+        check(
+          canvas.x === left && canvas.x + canvas.width === width - 8,
+          `${tag}: read-only canvas spans the available width`,
+        );
+      }
+      check(
+        Math.abs(
+          readonlyBox.x +
+            readonlyBox.width / 2 -
+            (readonlyCanvasBox.x + readonlyCanvasBox.width / 2),
+        ) < 1 &&
+          Math.abs(
+            readonlyBox.y +
+              readonlyBox.height / 2 -
+              (readonlyCanvasBox.y + readonlyCanvasBox.height / 2),
+          ) < 1,
+        `${tag}: read-only frame is centred in the canvas`,
+      );
+      geometryComparisons.push({tag, readonlyBox, readonlyCanvasBox});
       const withBanner = await frame(page).boundingBox();
       await page.locator('[data-read-only-banner]').evaluate(element => {
         element.style.display = 'none';
@@ -361,6 +409,19 @@ try {
         element.style.display = '';
       });
       await page.screenshot({path: `${out}/${tag}.png`});
+
+      if (layout === 'dock' && width === 1440) {
+        await page
+          .locator('[data-control-dock] [data-shortcut-help] button')
+          .click();
+        await page.getByRole('dialog').waitFor();
+        check(
+          (await page.getByRole('dialog').count()) === 1,
+          `${tag}: read-only help opens one dialog`,
+        );
+        await page.keyboard.press('Escape');
+        await page.getByRole('dialog').waitFor({state: 'hidden'});
+      }
 
       await page.keyboard.press('Meta+k');
       await commands.waitFor();

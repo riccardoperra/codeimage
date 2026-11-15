@@ -1,9 +1,9 @@
 import type {ParentProps} from 'solid-js';
-import {children, createEffect} from 'solid-js';
+import {children, createEffect, Show} from 'solid-js';
 import type {EditorPageState} from './page-state';
 import * as styles from './snippet.css';
 
-/** Keep the controls' footprint so ownership never changes the frame's box. */
+/** Loading keeps the owner's geometry; a read-only page gives that space back. */
 export function EditingControls(props: ParentProps<{state: EditorPageState}>) {
   const content = children(() => props.children);
   createEffect(() => {
@@ -16,5 +16,5 @@ export function EditingControls(props: ParentProps<{state: EditorPageState}>) {
       element.inert = !editable;
     }
   });
-  return <>{content()}</>;
+  return <Show when={props.state.kind !== 'read-only'}>{content()}</Show>;
 }

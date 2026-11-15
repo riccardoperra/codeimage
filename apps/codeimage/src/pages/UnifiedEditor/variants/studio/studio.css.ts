@@ -72,11 +72,24 @@ export const body = style({
   gap,
   padding: `0 ${gap} ${gap}`,
   vars: {[sheetHeight]: '0px', [sheetSpace]: '0px'},
+  selectors: {
+    '&[data-read-only]': {
+      gridTemplateAreas: '"rail main"',
+      gridTemplateColumns: 'auto minmax(0, 1fr)',
+    },
+  },
   '@media': {
     [compact]: {
       gridTemplateAreas: '"main" "rail"',
       gridTemplateColumns: 'minmax(0, 1fr)',
       gridTemplateRows: 'minmax(0, 1fr) auto',
+      selectors: {
+        '&[data-read-only]': {
+          gridTemplateAreas: '"main"',
+          gridTemplateColumns: 'minmax(0, 1fr)',
+          gridTemplateRows: 'minmax(0, 1fr)',
+        },
+      },
       paddingBottom: `calc(${gap} + env(safe-area-inset-bottom, 0px))`,
     },
   },
