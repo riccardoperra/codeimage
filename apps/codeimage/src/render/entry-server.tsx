@@ -1,3 +1,8 @@
+import {
+  frameMediaRequest,
+  resolveFrameMedia,
+} from '../components/Frame/frameMedia';
+import type {ImageBytes} from '../components/Frame/frameMedia';
 import '../assets/styles/app.scss';
 import {getExportTarget} from '@codeimage/config';
 import type {CommentTokens} from '@codemirror/commands';
@@ -55,7 +60,7 @@ export interface FrameMarkup {
   html: string;
   css: string;
   fontFamily: string;
-  backgroundImage: string | null;
+  images: ImageBytes[];
 }
 
 type RenderSnapshot = ProjectEditorPersistedState & {width?: number};
@@ -71,8 +76,11 @@ const EXPORT_EXCLUDE_CSS =
 // one at a time and each one sees only its own snapshot.
 let queue: Promise<unknown> = Promise.resolve();
 
-export function renderFrame(snapshot: RenderSnapshot): Promise<FrameMarkup> {
-  const result = queue.then(() => render(snapshot));
+export function renderFrame(
+  snapshot: RenderSnapshot,
+  sample: (image: ImageBytes) => Promise<Uint8Array>,
+): Promise<FrameMarkup> {
+  const result = queue.then(() => render(snapshot, sample));
   queue = result.catch(() => undefined);
   return result;
 }
@@ -139,7 +147,10 @@ export function targetLayout(
   };
 }
 
-async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
+async function render(
+  snapshot: RenderSnapshot,
+  sample: (image: ImageBytes) => Promise<Uint8Array>,
+): Promise<FrameMarkup> {
   const {frame, terminal, editor} = snapshot;
   const {themeId, fontId} = editor.options;
   const activeEditor = editor.editors[0];
@@ -157,9 +168,14 @@ async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
     loadLanguage(activeEditor.languageId, activeEditor.tabName),
   ]);
   const background = frame.background ?? theme.properties.previewBackground;
-  const backgroundImage = isAssetLinkUrl(background)
-    ? background.slice('link:'.length)
-    : null;
+  const {media, images} = await resolveFrameMedia(
+    frameMediaRequest({
+      ...frame,
+      background,
+      signature: parseSignature(frame.signature),
+    }),
+    sample,
+  );
 
   const SnapshotFrame = () => {
     const store = getEditorStore();
@@ -182,6 +198,7 @@ async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
       <FrameView
         tab={store.editor.state.editors[0]}
         language={language}
+        media={media}
         showOnlyActiveTab={false}
       />
     );
@@ -208,6 +225,6 @@ async function render(snapshot: RenderSnapshot): Promise<FrameMarkup> {
         : '',
     ].join('\n'),
     fontFamily: font.name,
-    backgroundImage,
+    images,
   };
 }

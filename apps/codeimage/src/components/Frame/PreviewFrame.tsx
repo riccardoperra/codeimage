@@ -1,3 +1,5 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {createFrameMedia} from './frameMedia';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
@@ -65,12 +67,14 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
     });
   });
 
+  const media = createFrameMedia(() => getFrameState().store);
   const exportCanvas = getExportCanvasStore();
   return (
     <PreviewPortal>
       <FrameView
         ref={createRef<'div'>(props, el => (ref = el))}
         tab={props.tab}
+        media={media()}
         language={
           props.language === undefined ? language.latest : props.language
         }

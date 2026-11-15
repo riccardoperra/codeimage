@@ -1,7 +1,7 @@
 import {FittedWindow} from './FittedWindow';
 import {FrameSignature, framePadding, signatureScale} from './FrameSignature';
-import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
-import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
+import {isAssetUrl} from '@codeimage/store/assets/assetIds';
+import type {FrameMedia} from './frameMedia';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -20,6 +20,7 @@ export interface FrameViewProps {
   ref?: Ref<HTMLDivElement>;
   tab?: EditorState;
   language: Language | null;
+  media: FrameMedia;
   showOnlyActiveTab?: boolean;
 }
 
@@ -30,7 +31,6 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const tab = () => props.tab ?? getActiveEditorStore().editor();
-  const assetsStore = getAssetsStore();
   const theme = createMemo(() => {
     const themes = getThemeStore().themeArray();
     return (
@@ -69,9 +69,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
         <div
           class={styles.previewOverlay}
           style={assignInlineVars({
-            [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
-              frame.background,
-            )
+            [styles.frameVars.backgroundColor]: isAssetUrl(frame.background)
               ? 'transparent'
               : (frame.background ?? 'transparent'),
             [styles.frameVars.opacity]: `${frame.opacity}%`,
@@ -80,16 +78,18 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
             }`,
           })}
         >
-          <Show when={isAssetUrl(frame.background) && frame.background}>
-            {assetId => (
-              <AssetsImage
+          <Show when={props.media.backgroundImage}>
+            {src => (
+              <img
+                src={src()}
                 style={{
                   position: 'absolute',
                   left: 0,
                   top: 0,
+                  width: '100%',
+                  height: '100%',
                   'object-fit': 'cover',
                 }}
-                assetId={assetId()}
               />
             )}
           </Show>
@@ -137,6 +137,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
         </div>
         <FrameSignature
           signature={frame.signature}
+          media={props.media}
           background={frame.background}
           scale={scale()}
         />

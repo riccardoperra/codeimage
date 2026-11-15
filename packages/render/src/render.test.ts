@@ -1,8 +1,8 @@
 import {readFile} from 'node:fs/promises';
 import type {MeasuredNode} from '@takumi-rs/core';
 import {Renderer} from '@takumi-rs/core';
-import type {PNG} from 'pngjs';
-import {describe, expect, it} from 'vitest';
+import {PNG} from 'pngjs';
+import {describe, expect, it, vi} from 'vitest';
 import type {SnapshotInput} from './document';
 import type {SnapshotMarkup} from './render';
 import {renderSnapshot, snapshotMarkup} from './render';
@@ -126,6 +126,81 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
       expect(html).toContain(sampleDocument.editor.editors[0].tabName);
     },
   );
+  it('renders a card signature offline with initials and no image I/O in the view', async () => {
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new TypeError('offline'));
+    try {
+      const document = {
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          signature: {
+            handle: 'octocat',
+            name: 'The Octocat',
+            style: 'card',
+            platform: 'github',
+            avatar: 'profile',
+            position: 'bottom-center',
+          },
+        },
+      };
+      const markup = await snapshotMarkup(document);
+      expect(markup.html).toContain('data-signature-style="card"');
+      expect(markup.html).toContain('>TO</div>');
+      expect(markup.images).toEqual([]);
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(decode(await renderSnapshot(document)).width).toBeGreaterThan(0);
+    } finally {
+      fetch.mockRestore();
+    }
+  });
+  it('preloads a fixture avatar and samples the background tone before SSR', async () => {
+    const fixture = new PNG({width: 24, height: 24});
+    fixture.data.fill(255);
+    const bytes = PNG.sync.write(fixture);
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(
+        async () =>
+          new Response(bytes, {headers: {'content-type': 'image/png'}}),
+      );
+    try {
+      const document = {
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          background: 'link:https://fixture.test/light.png',
+          signature: {
+            handle: 'octocat',
+            style: 'card',
+            platform: 'github',
+            avatar: 'profile',
+          },
+        },
+      };
+      const markup = await snapshotMarkup(document);
+      expect(markup.images).toHaveLength(2);
+      expect(markup.html).toContain('data-signature-tone="light"');
+      expect(markup.html).toContain(
+        'src="https://avatars.githubusercontent.com/octocat?s=192"',
+      );
+      expect(
+        markup.images.every(image =>
+          Buffer.from(new Uint8Array(image.data)).equals(bytes),
+        ),
+      ).toBe(true);
+      expect(fetch).toHaveBeenCalledTimes(2);
+    } finally {
+      fetch.mockRestore();
+    }
+  });
+  it('defaults an omitted surface to the same pixels as solid', async () => {
+    const {surface, ...terminal} = sampleDocument.terminal;
+    expect(await renderSnapshot({...sampleDocument, terminal})).toEqual(
+      await renderSnapshot(sampleDocument),
+    );
+  });
   it('scales the frame by whole multiples', async () => {
     const [one, two, three] = await Promise.all(
       [1, 2, 3].map(scale => png({...sampleDocument, scale})),

@@ -28,7 +28,7 @@ interface FrameMarkup {
   html: string;
   css: string;
   fontFamily: string;
-  backgroundImage: string | null;
+  images: ImageSource[];
 }
 
 interface FrameSize {
@@ -39,7 +39,10 @@ interface FrameSize {
 interface RenderEntry {
   SUPPORTED_FONT_IDS: string[];
   SUPPORTED_THEME_IDS: string[];
-  renderFrame(snapshot: ProjectSnapshot): Promise<FrameMarkup>;
+  renderFrame(
+    snapshot: ProjectSnapshot,
+    sample: (image: ImageSource) => Promise<Uint8Array>,
+  ): Promise<FrameMarkup>;
   annotateCode(
     code: string,
     languageId: string,
@@ -168,14 +171,6 @@ const normalizeStyleAttributes = (html: string) =>
     ),
   );
 
-async function fetchImage(url: string): Promise<ImageSource> {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Background image ${url} answered ${response.status}`);
-  }
-  return {src: url, data: await response.arrayBuffer()};
-}
-
 export async function supportedThemeIds(): Promise<string[]> {
   return (await getRuntime()).entry.SUPPORTED_THEME_IDS;
 }
@@ -197,7 +192,18 @@ export async function snapshotMarkup(
     registerAppFont,
     fontFamilies,
   } = await getRuntime();
-  const frame = await entry.renderFrame(document);
+  const frame = await entry.renderFrame(document, async image =>
+    renderer.render(
+      '<img src="sample" style="display:block;width:24px;height:24px"/>',
+      {
+        width: 24,
+        height: 24,
+        format: 'raw',
+        devicePixelRatio: 1,
+        images: [{...image, src: 'sample'}],
+      },
+    ),
+  );
   const html = normalizeStyleAttributes(frame.html);
   const css = [frame.css, stylesheet].map(normalizeGradients);
   const {fontId} = document.editor.options;
@@ -210,6 +216,7 @@ export async function snapshotMarkup(
     css: [...css, entry.frameSizeCss()],
     fontFamilies,
     devicePixelRatio: scale,
+    images: frame.images,
   });
   const natural = {
     width: content.width / scale,
@@ -231,9 +238,7 @@ export async function snapshotMarkup(
     },
     fonts: [...uiFonts, ...fontsFor(fontId, frame.fontFamily)],
     fontFamilies,
-    images: frame.backgroundImage
-      ? [await fetchImage(frame.backgroundImage)]
-      : [],
+    images: frame.images,
   };
 }
 

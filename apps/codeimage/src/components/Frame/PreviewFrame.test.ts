@@ -105,7 +105,7 @@ for (const [width, height, resolution] of [
       );
       assert.ok(
         html.includes(
-          `--width:${expectedWidth ? `${expectedWidth}px` : 'auto'}`,
+          `--width:${expectedWidth ? `${expectedWidth}px` : 'max-content'}`,
         ),
         html,
       );
