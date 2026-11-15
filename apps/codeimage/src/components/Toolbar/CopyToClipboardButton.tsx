@@ -1,3 +1,5 @@
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {Link} from '@codeimage/ui';
@@ -10,11 +12,15 @@ interface ExportButtonProps {
 }
 
 export const CopyToClipboardButton: Component<ExportButtonProps> = props => {
+  const config = provideState(EditorConfigStore);
   const label = () => 'Copy to clipboard';
 
   function copyToClipboard() {
     if (props.canvasRef) {
-      return dispatchCopyToClipboard({ref: props.canvasRef});
+      return dispatchCopyToClipboard({
+        ref: props.canvasRef,
+        renderer: config.get.renderer,
+      });
     }
     return Promise.resolve(true);
   }

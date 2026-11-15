@@ -1,3 +1,5 @@
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -206,6 +208,7 @@ function LanguageChoice() {
  */
 export function createSettingSections(model: EditorControlsModel) {
   const [t, {locale}] = useI18n<AppLocaleEntries>();
+  const config = provideState(EditorConfigStore);
   const nameOf = (id: SectionId) =>
     t(SECTIONS.find(entry => entry.id === id)!.name);
   const ui = getUiStore();
@@ -308,14 +311,40 @@ export function createSettingSections(model: EditorControlsModel) {
         size={'sm'}
         theme={'secondary'}
         variant={'ghost'}
-        disabled={!preferences.experimenting()}
+        disabled={
+          !preferences.experimenting() && config.get.renderer === 'dom-export'
+        }
         leftIcon={<RestoreIcon size={16} />}
-        onClick={preferences.restoreDefaults}
+        onClick={() => {
+          preferences.restoreDefaults();
+          config.setRenderer('dom-export');
+        }}
       >
         {t('editor.restoreDefaults')}
       </Button>
     ),
     groups: createMemo(() => [
+      {
+        title: t('rendering.engine'),
+        rows: [
+          {
+            id: 'rendering-engine' as const,
+            title: t('rendering.takumi'),
+            description: () => t('rendering.experimentalDescription'),
+            small: true,
+            control: () => (
+              <SwitchField
+                id="settings-rendering-engine"
+                label={t('rendering.useTakumi')}
+                checked={config.get.renderer === 'takumi'}
+                onChange={checked =>
+                  config.setRenderer(checked ? 'takumi' : 'dom-export')
+                }
+              />
+            ),
+          },
+        ],
+      },
       {
         title: t('frame.editor'),
         rows: [

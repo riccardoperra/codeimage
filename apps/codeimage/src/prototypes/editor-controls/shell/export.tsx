@@ -1,3 +1,5 @@
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
 import {useI18n} from '@codeimage/locale';
 import {detectSecrets} from '@codeimage/secrets';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -64,6 +66,7 @@ export interface Exporter {
 export function createExporter(
   ref: Accessor<HTMLElement | undefined>,
 ): Exporter {
+  const config = provideState(EditorConfigStore);
   const [t] = useI18n<AppLocaleEntries>();
   const canvas = getExportCanvasStore();
   const editor = getRootEditorStore();
@@ -85,6 +88,7 @@ export function createExporter(
 
   const eachTab = async () => {
     const payload = options(ExportMode.export);
+    const renderer = config.get.renderer;
     const tabs = editor.state.editors.map(tab => ({
       ...tab,
       tab: {...tab.tab},
@@ -107,6 +111,7 @@ export function createExporter(
       try {
         return await exportImage({
           ref: frame,
+          renderer,
           options: {...payload, mode: ExportMode.getBlob},
         });
       } finally {
@@ -127,7 +132,8 @@ export function createExporter(
     if (busy() || dispatchCopyToClipboard.loading()) return;
     if (action === 'copy') {
       const element = ref();
-      if (element) dispatchCopyToClipboard({ref: element});
+      if (element)
+        dispatchCopyToClipboard({ref: element, renderer: config.get.renderer});
       return;
     }
     setBusy(true);
@@ -150,7 +156,11 @@ export function createExporter(
       const result = await (action === 'eachTab'
         ? eachTab()
         : runWithOwner(owner, () =>
-            exportImage({ref: ref(), options: options(mode)}),
+            exportImage({
+              ref: ref(),
+              renderer: config.get.renderer,
+              options: options(mode),
+            }),
           ));
       if (result && mode !== ExportMode.newTab) {
         runWithOwner(owner, () =>

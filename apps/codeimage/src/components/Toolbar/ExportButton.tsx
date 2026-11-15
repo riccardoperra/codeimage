@@ -1,3 +1,5 @@
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
@@ -58,6 +60,7 @@ interface ExportButtonProps {
 
 export const ExportButton: Component<ExportButtonProps> = props => {
   const [t] = useI18n<AppLocaleEntries>();
+  const config = provideState(EditorConfigStore);
   const modality = useModality();
   const buttonSize = () => (modality === 'full' ? 'sm' : 'xs');
   const [open, setOpen] = createSignal(false);
@@ -109,6 +112,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         size={modality === 'mobile' ? 'full' : 'md'}
         onConfirm={payload => {
           notify({
+            renderer: config.get.renderer,
             options: {
               extension: payload.extension,
               mode: payload.type,

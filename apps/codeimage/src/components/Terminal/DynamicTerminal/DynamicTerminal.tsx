@@ -8,6 +8,7 @@ import {omitProps} from 'solid-use/props';
 import {CodeImageLogoV2} from '../../Icons/CodeImageLogoV2';
 import * as styles from '../terminal.css';
 import type {BaseTerminalProps} from '../TerminalHost';
+import {createTabTheme} from '../Tabs/createTabTheme';
 
 interface DynamicTerminalProps extends BaseTerminalProps {
   type: string;
@@ -17,6 +18,7 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
   props,
 ): JSXElement => {
   const terminalThemes = AVAILABLE_TERMINAL_THEMES;
+  const tabTheme = createTabTheme(() => props.themeId);
 
   // The type comes from a stored document, which a newer build may have
   // written with a style this build does not know.
@@ -37,7 +39,11 @@ export const DynamicTerminal: ParentComponent<DynamicTerminalProps> = (
 
       <FadeInOutTransition show={props.showWatermark}>
         <Box class={styles.watermark}>
-          <CodeImageLogoV2 width={125} withGradient={false} />
+          <CodeImageLogoV2
+            width={125}
+            withGradient={false}
+            data-theme-mode={tabTheme().darkMode ? 'dark' : 'light'}
+          />
         </Box>
       </FadeInOutTransition>
     </Dynamic>
