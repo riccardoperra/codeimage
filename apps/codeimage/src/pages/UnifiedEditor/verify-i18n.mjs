@@ -214,6 +214,9 @@ try {
           .waitFor();
         await noEnglish(page, locale, `${layout}/${width} export menu`);
         await page.keyboard.press('Escape');
+        await page
+          .locator('[data-cui=dropdown-menu-content]')
+          .waitFor({state: 'detached'});
         await page.keyboard.press('Meta+k');
         await page.locator('[data-command-menu]').waitFor();
         const commands = page.getByRole('combobox', {
@@ -238,6 +241,7 @@ try {
           )
           .waitFor();
         await page.keyboard.press('Escape');
+        await page.locator('[data-command-menu]').waitFor({state: 'detached'});
         if (layout === 'inspector') {
           await expandInspector(page, messages);
           const themes = page.locator('[data-section=themes] > button');

@@ -27,7 +27,8 @@ export function Header(props: {stage: Stage}) {
   // The production buttons pick their size once, at load, from this.
   const modality = useModality();
   const loggedIn = () => getAuth0State().loggedIn();
-  const isRemote = () => !!getEditorSyncAdapter()?.snippetId();
+  const adapter = getEditorSyncAdapter()!;
+  const isRemote = () => !!adapter.snippetId();
 
   return (
     <header class={styles.header}>
@@ -77,8 +78,14 @@ export function Header(props: {stage: Stage}) {
         </Show>
         {/* As today, a phone gets Export from the layout, beside the canvas. */}
         <Show when={!props.stage.compact()}>
-          <ShareButton showLabel={false} />
+          <ShareButton
+            showLabel={false}
+            url={isRemote() ? window.location.href : undefined}
+          />
           <props.stage.ExportButton />
+        </Show>
+        <Show when={props.stage.compact() && isRemote()}>
+          <ShareButton showLabel={false} url={window.location.href} />
         </Show>
         <UserBadge />
       </div>

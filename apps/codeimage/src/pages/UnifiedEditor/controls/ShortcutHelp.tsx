@@ -13,7 +13,7 @@ import {bindEditorShortcuts, shortcuts} from './shortcuts';
 const [open, setOpen] = createSignal(false);
 export const shortcutHelp = {open: () => setOpen(true)};
 
-export function ShortcutHelp() {
+export function ShortcutHelp(props: {editable: boolean}) {
   const [t] = useI18n<AppLocaleEntries>();
   let trigger: HTMLButtonElement | undefined;
   const close = () => setOpen(false);
@@ -22,12 +22,13 @@ export function ShortcutHelp() {
     event.preventDefault();
     trigger?.focus();
   };
-  bindEditorShortcuts();
+  bindEditorShortcuts(() => props.editable);
   onCleanup(commandMenu.beforeOpen(close));
   onCleanup(close);
   onMount(() => {
     const keydown = (event: KeyboardEvent) => {
       if (
+        !props.editable ||
         event.key !== '?' ||
         event.metaKey ||
         event.ctrlKey ||

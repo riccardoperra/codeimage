@@ -11,6 +11,7 @@ import {ShareIcon} from '../Icons/ShareIcon';
 
 interface ShareButtonProps {
   showLabel?: boolean;
+  url?: string;
 }
 
 export const ShareButton: Component<ShareButtonProps> = props => {
@@ -22,7 +23,7 @@ export const ShareButton: Component<ShareButtonProps> = props => {
   function getData(): ShareData {
     return {
       title: 'Snippet shared with codeimage.dev',
-      url: window.location.search,
+      url: props.url ?? window.location.search,
     };
   }
 

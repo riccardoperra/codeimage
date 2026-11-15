@@ -1,11 +1,13 @@
 import type {LocaleKeys} from '@codeimage/locale';
 import type {AppLocaleEntries} from '../../i18n';
-import type {Component} from 'solid-js';
+import type {EditorPageState} from './page-state';
+import type {Accessor, Component} from 'solid-js';
 import type {EditorControlsModel} from './model';
 import type {Stage} from './stage';
 import type {ThemePickerSlotProps} from './theme-styles/ThemePicker';
 
 export interface VariantProps {
+  readonly pageState: Accessor<EditorPageState>;
   readonly model: EditorControlsModel;
   readonly stage: Stage;
   /**

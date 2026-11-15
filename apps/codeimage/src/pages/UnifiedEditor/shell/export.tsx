@@ -57,6 +57,7 @@ export interface Exporter {
   readonly secrets: Accessor<number>;
   /** Hides every secret in every tab. */
   readonly redactSecrets: () => void;
+  readonly canRedact: Accessor<boolean>;
 }
 
 /**
@@ -65,6 +66,7 @@ export interface Exporter {
  */
 export function createExporter(
   ref: Accessor<HTMLElement | undefined>,
+  editable: Accessor<boolean>,
 ): Exporter {
   const config = provideState(EditorConfigStore);
   const [t] = useI18n<AppLocaleEntries>();
@@ -216,7 +218,9 @@ export function createExporter(
     canCopyAltText: () =>
       !!getActiveEditorStore().editor() && !!navigator.clipboard?.writeText,
     secrets,
+    canRedact: editable,
     redactSecrets: () => {
+      if (!editable()) return;
       getWhatsNew().seen('redact');
       batch(() => {
         editor.state.editors.forEach((tab, index) => {

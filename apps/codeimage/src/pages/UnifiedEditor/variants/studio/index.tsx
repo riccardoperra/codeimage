@@ -15,6 +15,7 @@ import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ShareButton} from '../../../../components/Toolbar/ShareButton';
 import type {AppLocaleEntries} from '../../../../i18n';
+import {EditingControls} from '../../EditingControls';
 import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
@@ -290,23 +291,25 @@ export default function Studio(props: VariantProps) {
           class={styles.rail}
           aria-label={t('editor.editorPanels')}
         >
-          <For each={PANELS}>
-            {panel => (
-              <button
-                ref={el => openers.set(panel.id, el)}
-                type="button"
-                class={styles.railButton}
-                aria-controls={PANEL_ID}
-                aria-expanded={openId() === panel.id}
-                onClick={() => toggle(panel)}
-              >
-                <span class={styles.railIcon}>
-                  <panel.Icon />
-                </span>
-                {t(panel.label)}
-              </button>
-            )}
-          </For>
+          <EditingControls state={props.pageState()}>
+            <For each={PANELS}>
+              {panel => (
+                <button
+                  ref={el => openers.set(panel.id, el)}
+                  type="button"
+                  class={styles.railButton}
+                  aria-controls={PANEL_ID}
+                  aria-expanded={openId() === panel.id}
+                  onClick={() => toggle(panel)}
+                >
+                  <span class={styles.railIcon}>
+                    <panel.Icon />
+                  </span>
+                  {t(panel.label)}
+                </button>
+              )}
+            </For>
+          </EditingControls>
           <Show when={!isPhone()}>
             <CommandMenuButton>
               {trigger => (
@@ -326,70 +329,78 @@ export default function Studio(props: VariantProps) {
             </CommandMenuButton>
             <RailSettings />
           </Show>
-          <ShortcutHelp />
+          <EditingControls state={props.pageState()}>
+            <ShortcutHelp editable={props.pageState().editable} />
+          </EditingControls>
         </nav>
 
-        <section
-          ref={panelEl}
-          data-control-panel
-          id={PANEL_ID}
-          role="region"
-          aria-label={openPanel() ? t(openPanel()!.label) : undefined}
-          class={styles.panel}
-          data-wide={openPanel()?.wide ? '' : undefined}
-          hidden={!openPanel()}
-          onKeyDown={onPanelKeyDown}
-        >
-          <div
-            class={styles.panelGrabArea}
-            onPointerDown={onGrabStart}
-            onPointerMove={onGrabMove}
-            onPointerUp={onGrabEnd}
-            onPointerCancel={onGrabEnd}
+        <EditingControls state={props.pageState()}>
+          <section
+            ref={panelEl}
+            data-control-panel
+            id={PANEL_ID}
+            role="region"
+            aria-label={openPanel() ? t(openPanel()!.label) : undefined}
+            class={styles.panel}
+            data-wide={openPanel()?.wide ? '' : undefined}
+            hidden={!openPanel()}
+            onKeyDown={onPanelKeyDown}
           >
-            <div class={styles.sheetGrip} />
-            <Show when={!openPanel()?.ownHeader}>
-              <div class={styles.panelHeader}>
-                <h2 class={styles.panelTitle}>
-                  {openPanel() ? t(openPanel()!.label) : ''}
-                </h2>
-                <IconButton
-                  size={size()}
-                  theme="secondary"
-                  variant="ghost"
-                  aria-label={t('editor.closePanel', {
-                    panel: openPanel()
-                      ? t(openPanel()!.label)
-                      : t('editor.panel'),
-                  })}
-                  title={t('editor.closeEscape')}
-                  onClick={() => close(true)}
-                >
-                  <Show when={isPhone()} fallback={<CollapseIcon size={18} />}>
-                    <CloseIcon size={18} />
-                  </Show>
-                </IconButton>
-              </div>
-            </Show>
-          </div>
-          <For each={PANELS}>
-            {panel => (
-              <Show when={mounted().has(panel.id)}>
-                <div class={styles.panelPage} hidden={openId() !== panel.id}>
-                  <Dynamic
-                    component={panel.Body}
-                    model={props.model}
-                    stage={props.stage}
-                    ThemePicker={props.ThemePicker}
-                    size={size}
-                    phone={isPhone}
-                    close={() => close(true)}
-                  />
+            <div
+              class={styles.panelGrabArea}
+              onPointerDown={onGrabStart}
+              onPointerMove={onGrabMove}
+              onPointerUp={onGrabEnd}
+              onPointerCancel={onGrabEnd}
+            >
+              <div class={styles.sheetGrip} />
+              <Show when={!openPanel()?.ownHeader}>
+                <div class={styles.panelHeader}>
+                  <h2 class={styles.panelTitle}>
+                    {openPanel() ? t(openPanel()!.label) : ''}
+                  </h2>
+                  <IconButton
+                    size={size()}
+                    theme="secondary"
+                    variant="ghost"
+                    aria-label={t('editor.closePanel', {
+                      panel: openPanel()
+                        ? t(openPanel()!.label)
+                        : t('editor.panel'),
+                    })}
+                    title={t('editor.closeEscape')}
+                    onClick={() => close(true)}
+                  >
+                    <Show
+                      when={isPhone()}
+                      fallback={<CollapseIcon size={18} />}
+                    >
+                      <CloseIcon size={18} />
+                    </Show>
+                  </IconButton>
                 </div>
               </Show>
-            )}
-          </For>
-        </section>
+            </div>
+            <For each={PANELS}>
+              {panel => (
+                <Show when={mounted().has(panel.id)}>
+                  <div class={styles.panelPage} hidden={openId() !== panel.id}>
+                    <Dynamic
+                      component={panel.Body}
+                      model={props.model}
+                      pageState={props.pageState}
+                      stage={props.stage}
+                      ThemePicker={props.ThemePicker}
+                      size={size}
+                      phone={isPhone}
+                      close={() => close(true)}
+                    />
+                  </div>
+                </Show>
+              )}
+            </For>
+          </section>
+        </EditingControls>
 
         <main class={styles.main}>
           <div class={styles.stage}>
@@ -399,28 +410,34 @@ export default function Studio(props: VariantProps) {
             when={!props.stage.compact()}
             fallback={
               <div class={styles.compactActions}>
-                <ShareButton showLabel={false} />
-                <Button
-                  size="xs"
-                  theme="secondary"
-                  aria-label={t('shortcut.pickRandomTheme')}
-                  leftIcon={<ColorSwatchIcon />}
-                  onClick={() => props.stage.randomize()}
-                />
-                <Button
-                  size="xs"
-                  theme="secondary"
-                  aria-label={t('editor.formatCode')}
-                  leftIcon={<SparklesIcon />}
-                  disabled={!props.stage.canFormat()}
-                  onClick={() => props.stage.format()}
-                />
+                <Show when={props.pageState().kind === 'local'}>
+                  <ShareButton showLabel={false} />
+                </Show>
+                <EditingControls state={props.pageState()}>
+                  <Button
+                    size="xs"
+                    theme="secondary"
+                    aria-label={t('shortcut.pickRandomTheme')}
+                    leftIcon={<ColorSwatchIcon />}
+                    onClick={() => props.stage.randomize()}
+                  />
+                  <Button
+                    size="xs"
+                    theme="secondary"
+                    aria-label={t('editor.formatCode')}
+                    leftIcon={<SparklesIcon />}
+                    disabled={!props.stage.canFormat()}
+                    onClick={() => props.stage.format()}
+                  />
+                </EditingControls>
                 <props.stage.ExportButton />
               </div>
             }
           >
             <div class={styles.frameActions}>
-              <FrameActions />
+              <EditingControls state={props.pageState()}>
+                <FrameActions />
+              </EditingControls>
             </div>
             <div class={styles.footer}>
               <Footer />

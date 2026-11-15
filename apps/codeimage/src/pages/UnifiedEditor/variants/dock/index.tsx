@@ -8,6 +8,7 @@ import type {JSX} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {sidebarTheme} from '../../../../components/PropertyEditor/EditorSidebar.css';
 import type {AppLocaleEntries} from '../../../../i18n';
+import {EditingControls} from '../../EditingControls';
 import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {shownTheme} from '../../command-menu/listed-model';
 import {commandMenu} from '../../command-menu/state';
@@ -336,110 +337,112 @@ export default function Dock(props: VariantProps) {
               role="toolbar"
               aria-label={t('editor.editorControls')}
             >
-              <DockItem
-                host={host}
-                panel="themes"
-                label={label('editor.theme', t('frame.theme'))}
-                value={shownTheme(props.model)?.name}
-                values={props.model.themes().map(theme => theme.name)}
-                icon={
-                  <Show when={shownTheme(props.model)}>
-                    {theme => <ThemeSwatch theme={theme()} size={22} />}
-                  </Show>
-                }
-              />
-              <DockItem
-                host={host}
-                panel="background"
-                label={label('frame.background', t('frame.background'))}
-                icon={
-                  <span
-                    class={styles.fill}
-                    data-hidden={background()?.visible() ? undefined : ''}
-                    style={{background: background()?.value()}}
-                  />
-                }
-              />
-              <Show
-                when={!compact()}
-                fallback={
-                  <>
-                    <DockItem
-                      host={host}
-                      panel="padding"
-                      label={label('frame.padding', t('frame.padding'))}
-                      value={optionLabel('frame.padding')}
-                      icon={<PaddingIcon />}
+              <EditingControls state={props.pageState()}>
+                <DockItem
+                  host={host}
+                  panel="themes"
+                  label={label('editor.theme', t('frame.theme'))}
+                  value={shownTheme(props.model)?.name}
+                  values={props.model.themes().map(theme => theme.name)}
+                  icon={
+                    <Show when={shownTheme(props.model)}>
+                      {theme => <ThemeSwatch theme={theme()} size={22} />}
+                    </Show>
+                  }
+                />
+                <DockItem
+                  host={host}
+                  panel="background"
+                  label={label('frame.background', t('frame.background'))}
+                  icon={
+                    <span
+                      class={styles.fill}
+                      data-hidden={background()?.visible() ? undefined : ''}
+                      style={{background: background()?.value()}}
                     />
-                    <DockItem
-                      host={host}
-                      panel="language"
-                      label={label('editor.language', t('frame.language'))}
-                      value={optionLabel('editor.language')}
-                      icon={<CodeIcon />}
-                    />
-                  </>
-                }
-              >
-                <Show when={fields.choice('frame.padding')}>
-                  {control => (
-                    <div
-                      class={`${styles.field} ${styles.fieldPadding}`}
-                      role="group"
-                      aria-label={control().label()}
-                      title={control().label()}
-                    >
-                      <PaddingIcon />
+                  }
+                />
+                <Show
+                  when={!compact()}
+                  fallback={
+                    <>
+                      <DockItem
+                        host={host}
+                        panel="padding"
+                        label={label('frame.padding', t('frame.padding'))}
+                        value={optionLabel('frame.padding')}
+                        icon={<PaddingIcon />}
+                      />
+                      <DockItem
+                        host={host}
+                        panel="language"
+                        label={label('editor.language', t('frame.language'))}
+                        value={optionLabel('editor.language')}
+                        icon={<CodeIcon />}
+                      />
+                    </>
+                  }
+                >
+                  <Show when={fields.choice('frame.padding')}>
+                    {control => (
                       <div
-                        class={`${styles.segmented} ${styles.paddingChoice}`}
+                        class={`${styles.field} ${styles.fieldPadding}`}
+                        role="group"
+                        aria-label={control().label()}
+                        title={control().label()}
                       >
-                        <SegmentedChoice
+                        <PaddingIcon />
+                        <div
+                          class={`${styles.segmented} ${styles.paddingChoice}`}
+                        >
+                          <SegmentedChoice
+                            control={control()}
+                            id={fieldId('dock', control().id)}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </Show>
+                  <Show when={fields.choice('editor.language')}>
+                    {control => (
+                      <div
+                        class={`${styles.field} ${styles.fieldLanguage}`}
+                        title={control().label()}
+                      >
+                        {/* Clears the bar, so the list starts where the popovers do. */}
+                        <SelectChoice
                           control={control()}
                           id={fieldId('dock', control().id)}
+                          gutter={18}
                         />
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </Show>
                 </Show>
-                <Show when={fields.choice('editor.language')}>
-                  {control => (
-                    <div
-                      class={`${styles.field} ${styles.fieldLanguage}`}
-                      title={control().label()}
+                <DockItem
+                  host={host}
+                  panel="font"
+                  label={label('font.family', t('frame.font'))}
+                  value={fields.fontName()}
+                  quiet
+                  icon={
+                    <span
+                      class={styles.fontIcon}
+                      style={{
+                        'font-family': `"${fields.fontName()}", monospace`,
+                      }}
                     >
-                      {/* Clears the bar, so the list starts where the popovers do. */}
-                      <SelectChoice
-                        control={control()}
-                        id={fieldId('dock', control().id)}
-                        gutter={18}
-                      />
-                    </div>
-                  )}
-                </Show>
-              </Show>
-              <DockItem
-                host={host}
-                panel="font"
-                label={label('font.family', t('frame.font'))}
-                value={fields.fontName()}
-                quiet
-                icon={
-                  <span
-                    class={styles.fontIcon}
-                    style={{
-                      'font-family': `"${fields.fontName()}", monospace`,
-                    }}
-                  >
-                    Aa
-                  </span>
-                }
-              />
-              <DockItem
-                host={host}
-                panel="more"
-                label={t('editor.more')}
-                icon={<SlidersIcon />}
-              />
+                      Aa
+                    </span>
+                  }
+                />
+                <DockItem
+                  host={host}
+                  panel="more"
+                  label={t('editor.more')}
+                  icon={<SlidersIcon />}
+                />
+              </EditingControls>
               <Show when={!compact()}>
                 <CommandMenuButton>
                   {trigger => (
@@ -465,10 +468,14 @@ export default function Dock(props: VariantProps) {
               </Show>
             </div>
 
-            <ShortcutHelp />
+            <EditingControls state={props.pageState()}>
+              <ShortcutHelp editable={props.pageState().editable} />
+            </EditingControls>
             <Show when={!compact()}>
               <div class={`${styles.frameActions} ${styles.float}`}>
-                <FrameActions />
+                <EditingControls state={props.pageState()}>
+                  <FrameActions />
+                </EditingControls>
               </div>
             </Show>
           </div>

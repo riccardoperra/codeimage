@@ -201,7 +201,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
               >
                 {t('altText.copy')}
               </DropdownMenuItem>
-              <Show when={exporter().secrets() > 0}>
+              <Show when={exporter().secrets() > 0 && exporter().canRedact()}>
                 <DropdownMenuItem onSelect={redactSecrets}>
                   <span class={styles.item}>
                     {t('secrets.redactAll')}
@@ -242,10 +242,16 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
                             count: String(exporter().secrets()),
                           })}
                     </div>
-                    <p class={styles.hint}>{t('secrets.destructiveHint')}</p>
-                    <Button size="sm" theme="secondary" onClick={redactSecrets}>
-                      {t('secrets.redactAll')}
-                    </Button>
+                    <Show when={exporter().canRedact()}>
+                      <p class={styles.hint}>{t('secrets.destructiveHint')}</p>
+                      <Button
+                        size="sm"
+                        theme="secondary"
+                        onClick={redactSecrets}
+                      >
+                        {t('secrets.redactAll')}
+                      </Button>
+                    </Show>
                   </Show>
                   <Show when={exporter().secrets() === 0}>
                     <div role="status">{redactedLabel()}</div>

@@ -8,7 +8,7 @@ The route table in `apps/codeimage/src/index.tsx` selects the page.
 | ------------- | ------------------------------------------------------------------- |
 | `/`           | Unified editor for signed-out users. Dashboard for signed-in users. |
 | `/classic`    | Classic editor.                                                     |
-| `/:snippetId` | Classic editor for a saved snippet.                                 |
+| `/:snippetId` | Unified editor for a saved snippet.                                 |
 
 `/dashboard` redirects to `/`. `/login` keeps the existing sign-in flow.
 The unified editor and the classic editor use the same stores and local document.
@@ -30,11 +30,13 @@ Changing a preference leaves the URL unchanged.
 `index.tsx` exports the page from `harness.tsx`.
 `EditorHost.tsx` loads the editor stores and local document before the page mounts.
 The page creates one model and a new stage whenever the layout changes.
+`page-state.ts` maps the route id and sync adapter into `EditorPageState`: local, loading, owner, read-only, or unavailable.
+The shared sync provider reacts when the route id changes and redirects failed or missing snippets to `/404`.
 It mounts the header, command menu, settings dialog, and What's new host once.
 
 `registry.ts` maps layout ids to `variants/<layout>/index.tsx`.
 Each layout exports `meta` and a default component with `VariantProps`.
-The props contain `model`, `stage`, and `ThemePicker`.
+The props contain `model`, `stage`, `pageState`, and `ThemePicker`.
 
 The page root has class `unified-editor` and a `data-layout` attribute.
 Inspector also sets `data-inspector-side` on the page and layout roots.
@@ -67,6 +69,10 @@ Tokens without a colour use the base text colour.
 
 `stage.tsx` supplies the live `Canvas`, `ExportButton`, `exporter`, `ThemePreview`, and frame actions.
 Each layout renders `Canvas` once inside a container with a definite size.
+A snippet load uses the same frame placeholder as a lazy editor load.
+`ReadOnlyNotice` floats at the top of that container, outside the fitted frame.
+`EditingControls` hides and makes the existing controls inert while preserving their footprint.
+Read-only commands contain only export and settings; editing shortcuts and destructive redaction are disabled.
 `FitFrame.tsx` scales the frame to the available space.
 `exportRef()` supplies the element that export captures.
 
@@ -148,6 +154,7 @@ From the repository root, with the dev server running on port 4347:
 node apps/codeimage/src/pages/UnifiedEditor/verify-locale-parity.mjs
 node apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs http://localhost:4347 /tmp/codeimage-i18n-shots
 node apps/codeimage/src/pages/UnifiedEditor/verify-review.mjs http://localhost:4347 /tmp/codeimage-review-shots
+node apps/codeimage/src/pages/UnifiedEditor/verify-snippets.mjs http://localhost:4347 /tmp/codeimage-snippet-shots
 ```
 
 The live scripts set the layout in saved preferences before opening `/`.
@@ -156,3 +163,5 @@ The locale script changes language through Settings and checks visible text and 
 The parity script checks keys, placeholders, empty translations, and hard-coded UI text.
 Its negative controls prove that missing keys and hard-coded text fail.
 The review script checks secrets review, focus restoration, overlay geometry, row values, and shortcut help.
+
+The snippet script needs the mock API and mock auth enabled, with the installed MSW worker served at `/mockServiceWorker.js`. It creates projects through the dashboard and checks loading, account saves, previews, read-only geometry, Share, export, Clone, missing/failed loads, and route navigation in all six layout/viewport combinations.
