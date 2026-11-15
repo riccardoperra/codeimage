@@ -2,6 +2,7 @@ import {
   AVAILABLE_COLORS,
   AVAILABLE_GRADIENTS,
   DEFAULT_ASPECT_RATIOS,
+  getExportTarget,
   SUPPORTED_LANGUAGES,
 } from '@codeimage/config';
 import type {CustomTheme} from '@codeimage/highlight';
@@ -432,14 +433,21 @@ export function createEditorControlsModel(): EditorControlsModel {
           id: 'frame.aspectRatio',
           label: () => t('frame.aspectRatio'),
           options: () => [
-            {label: 'Auto', value: null},
+            {label: t('frame.freeSize'), value: null},
             ...DEFAULT_ASPECT_RATIOS.map(ratio => ({
-              label: ratio.name,
-              value: ratio.ratio,
+              label:
+                ratio.kind === 'target'
+                  ? t(`frame.targets.${ratio.id}`)
+                  : ratio.name,
+              value: ratio.kind === 'target' ? ratio.id : ratio.ratio,
             })),
           ],
-          value: () => frame.store.aspectRatio,
-          set: frame.setAspectRatio,
+          value: () => frame.store.exportTarget ?? frame.store.aspectRatio,
+          set: value => {
+            const target = getExportTarget(value);
+            if (target) frame.setExportTarget(target.id);
+            else frame.setAspectRatio(value);
+          },
           track: ratio =>
             getUmami().track('aspect-ratio', {ratio: ratio ?? 'unset'}),
         }),
