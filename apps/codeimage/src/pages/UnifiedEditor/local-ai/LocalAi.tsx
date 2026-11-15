@@ -4,8 +4,10 @@ import {Button, IconButton, icons, TextArea} from '@codeui/kit';
 import {Dialog} from '@kobalte/core/dialog';
 import {createSignal, For, Match, onCleanup, Show, Switch} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
+import {withActivity} from '../agent-tools/activity';
 import type {AgentTool} from '../agent-tools/tools';
 import {createEditorReader} from '../agent-tools/tools';
+import {useSummaryWords} from '../agent-tools/ToolActivity';
 import {describeControl} from '../agent-tools/values';
 import type {ListedModel} from '../command-menu/listed-model';
 import {commandMenu} from '../command-menu/state';
@@ -53,7 +55,9 @@ export function LocalAi(props: {
 }) {
   const [t] = useI18n<AppLocaleEntries>();
   const reader = createEditorReader(props.listed);
-  const tools = plannable(props.tools);
+  const tools = plannable(
+    withActivity(props.tools, 'local-ai', useSummaryWords()),
+  );
   const [request, setRequest] = createSignal('');
   const [phase, setPhase] = createSignal<Phase>({kind: 'idle'});
   const [steps, setSteps] = createSignal<readonly StepResult[]>([]);

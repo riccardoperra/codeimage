@@ -234,13 +234,170 @@ export async function verifyAgentTools({fresh, out}) {
       assert.match(full.error, /6 tabs/);
       assert.equal((await state()).tabs.length, 6);
 
+      const activity = await verifyActivity({page, call, out, padding: target});
+
       return {
         png1x: [one.width, one.height],
         png2x: [two.width, two.height],
         padding: target,
         devtoolsTheme: devtools.result.theme.id,
         tabs: tabCount,
+        activity,
       };
     },
   );
+}
+
+const CARD = '[data-tool-activity]';
+const PROBE = 'activityProbe';
+
+async function rows(page) {
+  return page.locator(`${CARD} li`).evaluateAll(items =>
+    items.map(item => ({
+      tool: item.querySelector('[data-tool-name]')?.textContent,
+      status: item.dataset.status,
+      summary: item.querySelector('[data-summary]')?.textContent ?? '',
+      error: item.querySelector('[data-error]')?.textContent,
+      readOnly: item.hasAttribute('data-read-only'),
+    })),
+  );
+}
+
+// The card that shows the person watching what an agent calls.
+async function verifyActivity({page, call, out, padding}) {
+  const card = page.locator(CARD);
+  await card.waitFor({state: 'detached', timeout: 15000});
+
+  const exporting = call('export_image', {
+    format: 'png',
+    scale: 2,
+    delivery: 'download',
+  });
+  await page
+    .locator(`${CARD} li[data-tool="export_image"][data-status="running"]`)
+    .waitFor({timeout: 5000});
+  const [download] = await Promise.all([
+    page.waitForEvent('download', {timeout: 60000}),
+    exporting,
+  ]);
+  await download.cancel().catch(() => {});
+
+  await call('set_code', {
+    code: `const ${PROBE} = 1;\nconsole.log(${PROBE});`,
+    language: 'TypeScript',
+  });
+  await call('apply_theme', {theme: 'Dracula'});
+  await call('set_controls', {values: {'frame.padding': padding}});
+  const failed = await call('apply_theme', {theme: 'Dracul Night'});
+  await call('list_themes', {});
+
+  assert.deepEqual(await rows(page), [
+    {
+      tool: 'export_image',
+      status: 'done',
+      summary: 'PNG · 2x · download',
+      error: undefined,
+      readOnly: false,
+    },
+    {
+      tool: 'set_code',
+      status: 'done',
+      summary: 'TypeScript · 2 lines',
+      error: undefined,
+      readOnly: false,
+    },
+    {
+      tool: 'apply_theme',
+      status: 'done',
+      summary: 'Dracula',
+      error: undefined,
+      readOnly: false,
+    },
+    {
+      tool: 'set_controls',
+      status: 'done',
+      summary: `padding ${padding}`,
+      error: undefined,
+      readOnly: false,
+    },
+    {
+      tool: 'apply_theme',
+      status: 'failed',
+      summary: 'Dracul Night',
+      error: failed.error,
+      readOnly: false,
+    },
+    {
+      tool: 'list_themes',
+      status: 'done',
+      summary: '',
+      error: undefined,
+      readOnly: true,
+    },
+  ]);
+  const text = await card.innerText();
+  assert.ok(!text.includes(PROBE), 'the card never shows the code');
+  assert.match(text, /Export the image/, 'rows carry the localized title');
+  assert.equal(
+    await card.locator('[data-source]').innerText(),
+    'WebMCP',
+    'the chip names the route',
+  );
+  assert.equal(
+    await card.getByRole('status').count(),
+    1,
+    'the rows sit in a polite live region',
+  );
+  await page.screenshot({path: resolve(out, 'agent-activity.png')});
+
+  await card.hover();
+  await page.waitForTimeout(6000);
+  assert.ok(await card.isVisible(), 'hovering keeps the card open');
+  await page.mouse.move(1000, 400);
+  await page.waitForTimeout(3500);
+  assert.ok(await card.isVisible(), 'the card waits after the last call');
+  await card.waitFor({state: 'detached', timeout: 5000});
+
+  await page.setViewportSize({width: 390, height: 844});
+  const devtools = await page.evaluate(() => {
+    let group;
+    const event = new Event('devtoolstooldiscovery');
+    event.respondWith = value => (group = value);
+    window.dispatchEvent(event);
+    return group.tools
+      .find(tool => tool.name === 'apply_theme')
+      .execute({theme: 'Night Owl'})
+      .then(result => result.ok);
+  });
+  assert.equal(devtools, true);
+  await card.locator('li[data-status="done"]').waitFor();
+  assert.equal(await card.locator('[data-source]').innerText(), 'DevTools MCP');
+  await page.waitForTimeout(300);
+  const phone = await card.boundingBox();
+  assert.ok(
+    Math.abs(phone.x - 16) <= 1 && Math.abs(phone.width - (390 - 32)) <= 1,
+    `phone card spans the width less 16px gutters: ${JSON.stringify(phone)}`,
+  );
+  await page.screenshot({path: resolve(out, 'agent-activity-phone.png')});
+  await card.getByRole('button', {name: 'Dismiss'}).click();
+  await card.waitFor({state: 'detached', timeout: 1000});
+  await page.setViewportSize({width: 1440, height: 1000});
+
+  await page.goto(`${new URL(page.url()).origin}/?whatsNew=nudge`);
+  await page.waitForFunction(() => window.__webmcpTools?.size === 8);
+  const nudge = page.locator('[data-whats-new="nudge"]');
+  await nudge.waitFor();
+  await page.waitForTimeout(600);
+  await call('get_editor_state', {});
+  await card.waitFor();
+  await page.waitForTimeout(400);
+  const above = await card.boundingBox();
+  const below = await nudge.boundingBox();
+  assert.ok(
+    above.y + above.height <= below.y,
+    `the card sits above the What's new Nudge: ${JSON.stringify({above, below})}`,
+  );
+  await page.screenshot({path: resolve(out, 'agent-activity-nudge.png')});
+
+  return {rows: 6, phoneWidth: phone.width};
 }

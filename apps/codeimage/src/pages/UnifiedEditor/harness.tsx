@@ -6,6 +6,7 @@ import type {JSX} from 'solid-js';
 import {createEffect, createMemo, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {AgentTools} from './agent-tools/AgentTools';
+import {ToolActivity} from './agent-tools/ToolActivity';
 import {createAgentTools} from './agent-tools/tools';
 import {CommandMenu} from './command-menu/CommandMenu';
 import {createListedModel} from './command-menu/listed-model';
@@ -119,6 +120,7 @@ function Editor() {
       </div>
       {/* Outside the layout, so it stays open while the layout under it changes. */}
       <SettingsDialog model={model} />
+      <ToolActivity />
       <WhatsNewHost quiet={() => !settings.isOpen() && !commandMenu.isOpen()} />
     </>
   );
