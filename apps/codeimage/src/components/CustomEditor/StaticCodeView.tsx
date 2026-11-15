@@ -101,7 +101,10 @@ export default function StaticCodeView(props: StaticCodeViewProps) {
               </div>
             </div>
           </Show>
-          <div class="cm-content cm-lineWrapping">
+          <div
+            class="cm-content cm-lineWrapping"
+            style={{'white-space': 'pre'}}
+          >
             <For each={lines()}>
               {(line, index) => (
                 <div
