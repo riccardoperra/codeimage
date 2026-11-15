@@ -12,3 +12,9 @@ export type UnifiedWhere =
 
 export type EveryHighlightIsPlaced = Placed<ShippedWhere>;
 type Placed<W extends UnifiedWhere> = W;
+
+// A row id written without `as const` widens every id to string, and then
+// any `setting:` place would compile.
+export type SettingRowIdsAreLiteral = Literal<SettingRowId>;
+type Literal<T extends (string extends T ? 'every row id as const' : string)> =
+  T;
