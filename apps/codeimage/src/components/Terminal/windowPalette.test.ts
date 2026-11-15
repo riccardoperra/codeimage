@@ -1,7 +1,7 @@
 import {expect, test} from 'vitest';
 import {createAmbientBackground, createWindowPalette} from './windowPalette';
 
-test('produces literal text alpha steps, opaque accent mixes and an ambient background', () => {
+test('produces literal text alpha steps, a translucent status tint and an ambient background', () => {
   const palette = createWindowPalette({
     background: '#000000',
     text: '#fff',
@@ -9,7 +9,7 @@ test('produces literal text alpha steps, opaque accent mixes and an ambient back
   });
   expect(palette.ink04).toBe('rgba(255, 255, 255, 0.04)');
   expect(palette.ink90).toBe('rgba(255, 255, 255, 0.9)');
-  expect(palette.status).toBe('rgb(41, 0, 0)');
+  expect(palette.status).toBe('rgba(255, 0, 0, 0.16)');
   expect(createAmbientBackground(palette)).toBe(
     'radial-gradient(70% 90% at 12% 8%, rgba(255, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 62%), radial-gradient(70% 90% at 92% 96%, rgba(255, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 62%), rgb(0, 0, 0)',
   );
@@ -51,7 +51,7 @@ test('falls back to text for a missing accent and leaves unsupported colours unc
   expect(palette.status).toBe('var(--ink)');
 });
 
-test('darkens the ambient base and composites a translucent accent into the status bar', () => {
+test('darkens the ambient base and keeps a translucent accent translucent in the status bar', () => {
   expect(
     createWindowPalette({background: '#ffffff', text: '#000'}).ambientBase,
   ).toBe('rgb(209, 209, 209)');
@@ -61,7 +61,7 @@ test('darkens the ambient base and composites a translucent accent into the stat
       text: '#fff',
       accent: 'rgba(255, 0, 0, .5)',
     }).status,
-  ).toBe('rgb(20, 0, 0)');
+  ).toBe('rgba(255, 0, 0, 0.08)');
 });
 
 test('gives a window lighter than its text a neutral status bar', () => {
@@ -71,5 +71,5 @@ test('gives a window lighter than its text a neutral status bar', () => {
       text: '#1F2328',
       accent: '#cf222e',
     }).status,
-  ).toBe('rgb(246, 246, 246)');
+  ).toBe('rgba(31, 35, 40, 0.04)');
 });
