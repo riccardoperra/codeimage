@@ -11,6 +11,7 @@ import {layouts} from './registry';
 import {Header} from './shell/Header';
 import {page as pageClass} from './shell/header.css';
 import {preferences} from './shell/preferences';
+import {ExportVariantPicker} from './shell/export-variants/picker';
 import {SettingsDialog} from './shell/SettingsDialog';
 import {createStage} from './stage';
 import type {ThemePickerSlotProps} from './theme-styles/ThemePicker';
@@ -79,6 +80,9 @@ function Editor() {
       {/* Outside the layout, so it stays open while the layout under it changes. */}
       <SettingsDialog model={model} />
       <WhatsNewHost quiet={() => !settings.isOpen() && !commandMenu.isOpen()} />
+      <Show when={import.meta.env.DEV}>
+        <ExportVariantPicker />
+      </Show>
     </>
   );
 }

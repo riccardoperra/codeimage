@@ -147,13 +147,6 @@ export const more = style({
   borderBottomLeftRadius: '4px',
 });
 
-export const item = style({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  gap: '2px',
-});
-
 export const hint = style({
   color: c.descriptionTextColor,
   fontSize: themeVars.fontSize.xs,
