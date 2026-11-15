@@ -119,12 +119,14 @@ export function AnimationPreview(props: ParentProps) {
   );
 
   // The editor frame keeps its layout under the stage. Its size is measured
-  // into the frame store, which sizes the export frame.
+  // into the frame store, which sizes the export frame. Opacity hides it,
+  // since its background sets its own visibility.
   return (
     <div class={styles.layers}>
       <div
         class={styles.layer}
-        style={{visibility: ready() ? 'hidden' : undefined}}
+        inert={ready() || undefined}
+        style={{opacity: ready() ? 0 : undefined}}
       >
         {props.children}
       </div>
@@ -223,8 +225,8 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
       role={'group'}
       aria-roledescription={t('animation.previewRole')}
       aria-label={t('animation.previewLabel')}
+      hidden={!props.visible}
       style={{
-        display: props.visible ? undefined : 'none',
         zoom: target
           ? Math.min(640, target.resolution[0]) / target.resolution[0]
           : undefined,

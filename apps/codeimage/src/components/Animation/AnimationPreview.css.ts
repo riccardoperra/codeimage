@@ -1,5 +1,6 @@
 import {themeVars} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {globalStyle, style} from '@vanilla-extract/css';
+import {checkerboard} from '../Frame/FrameHandler.css';
 
 export const layers = style({
   display: 'grid',
@@ -23,3 +24,7 @@ export const stage = style({
     },
   },
 });
+
+// A transparent or translucent frame shows the squares the editor shows
+// behind it, and nothing paints outside it.
+globalStyle(`${stage} [data-animation-frame]`, checkerboard);
