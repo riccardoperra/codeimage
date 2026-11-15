@@ -195,3 +195,28 @@ Open for A4:
 
 - A GIF with a hidden frame background draws the window shadow as a solid black slab, because GIF alpha is on or off. A4 should offer WebP or APNG when the background is hidden, or flatten the shadow for GIF.
 - A GIF without `--fps` plays at 25 fps, by design, with no note.
+
+## Restack on the split core
+
+On 2026-11-15 the animation core moved to #734, and A1 (#707) became the Node part on P3. This branch was rebased from `ca0ad024` onto the new A1 head `ea3c8041`. The ten A2 commits replayed without a conflict, and `git range-diff` reports each of them unchanged. `dbafcff3`, the frame stops of [Window keyframe stops](#window-keyframe-stops), was left out, because the core now carries it as `df7e2448`. A2 changes no file under `apps/` any more, so its changeset no longer names `@codeimage/app` or the keyframe stops. The runs below used Node 24.14.0 and Takumi 2.19.0, with the load average between 9 and 20.
+
+**CSS order in `renderAnimation`.** `renderAnimation` passed the app stylesheet before the scene CSS. The scene CSS holds the CodeMirror rules, so `.cm-gutter {overflow: hidden}` came last and beat `marks.css`. P5 draws the diff sign and the start of a mark band in the window inset, and an exported animation clipped both. `snapshotMarkup` and the endpoint script already load the CodeMirror CSS first, and `renderAnimation` now does the same. `media/a2-restack-marks.png` shows the first frame of the new test before and after.
+
+| Check                                                                                     | Old order   | New order |
+| ----------------------------------------------------------------------------------------- | ----------- | --------- |
+| New render test: pixels of the first and the last frame that differ from the step's still | 368 and 368 | 0 and 0   |
+| `--encode`, `marks`, WebP and APNG                                                        | 0.025%      | 0.000%    |
+| `--encode`, `edge-focus-change`, WebP and APNG                                            | 0.027%      | 0.000%    |
+| `--encode`, `edge-mark-edit`, WebP and APNG                                               | 0.000%      | 0.000%    |
+
+The new test renders two tabs of one size with line numbers as APNG, 319 by 239 px. The middle line is removed in the first tab and added in the second. The 368 pixels are the 16 px of inset left of the line number, over the 23 rows of the marked line. The old `--encode` numbers come from a run with the order swapped back in the built `dist/index.mjs`. The encode gate allows 0.5%, so it passed on the old order too, and the unit test is the check that fails.
+
+**Results.**
+
+- All 43 endpoint cases pass. `reference` is 0.000% in every case, the largest start is 0.008%, the largest end is 0.161% in `edge-line-2000`, and the frame center stays within 0.705 px.
+- `--encode` ran on 41 cases, without the two widest. WebP and APNG are 0.000% on every frame. Every GIF has 0 ghost pixels, the holes are 4,599 in `edge-target` and 545 in `edge-target-scale` as before, and the GIF color diff is 0.001% to 0.484%.
+- Lane 7, `codeimage changes.diff --animate --diff --size x-landscape --signature @riccardoperra -o lane7.webp` on a `git diff` of two files, writes 1600 by 900 px, 29 frames, and 2500 ms. Frame 0 equals the still of the same command without `--animate` in all 1,440,000 pixels. The band of the removed line runs from x 562 to x 1038, the inner width of the window, with the minus sign in the left inset.
+- `pnpm lint` exits 0 with 0 errors and the same 16 warnings. `pnpm typecheck` exits 0 after `prisma generate` and the API build. `pnpm why shiki --filter=@codeimage/app` prints nothing. `animation-endpoints.ts` typechecks by hand with the two expected TS1470 errors.
+- `pnpm --filter=@codeimage/app test` passes 121 tests in 20 files, `@codeimage/render` passes 78 in 4 files, and `@codeimage/cli` passes 122 in 7 files.
+
+Lanes 1 to 6 and 8 to 10 and the perf lane were not run again.
