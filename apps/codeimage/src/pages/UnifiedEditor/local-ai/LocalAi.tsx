@@ -2,7 +2,7 @@ import {SUPPORTED_LANGUAGES} from '@codeimage/config';
 import {useI18n} from '@codeimage/locale';
 import {Button, IconButton, icons, TextArea} from '@codeui/kit';
 import {Dialog} from '@kobalte/core/dialog';
-import {createSignal, For, Match, onCleanup, onMount, Switch} from 'solid-js';
+import {createSignal, For, Match, onCleanup, Show, Switch} from 'solid-js';
 import type {AppLocaleEntries} from '../../../i18n';
 import type {AgentTool} from '../agent-tools/tools';
 import {createEditorReader} from '../agent-tools/tools';
@@ -11,7 +11,8 @@ import type {ListedModel} from '../command-menu/listed-model';
 import {commandMenu} from '../command-menu/state';
 import type {EditorControlsModel} from '../model';
 import {preferences} from '../shell/preferences';
-import {availability, checkAvailability, openSession} from './language-model';
+import {settings} from '../shell/settings-state';
+import {languageModel} from './language-model';
 import type {StepResult} from './plan';
 import {
   describeSettings,
@@ -27,7 +28,6 @@ import * as styles from './local-ai.css';
 
 type Phase =
   | {readonly kind: 'idle'}
-  | {readonly kind: 'downloading'; readonly loaded: number}
   | {readonly kind: 'thinking'}
   | {readonly kind: 'running'}
   | {readonly kind: 'failed'; readonly error: string};
@@ -40,8 +40,9 @@ const [open, setOpen] = createSignal(false);
 
 /** The local AI dialog, which the command menu opens. */
 export const localAi = {
-  /** On when the experiment is on and the browser has, or can get, a model. */
-  enabled: () => preferences.localAi() && availability() !== 'unavailable',
+  /** On when the experiment is on and the model is on this device. */
+  enabled: () =>
+    preferences.localAi() && languageModel.state().kind === 'available',
   open: () => setOpen(true),
 };
 
@@ -57,17 +58,12 @@ export function LocalAi(props: {
   const [phase, setPhase] = createSignal<Phase>({kind: 'idle'});
   const [steps, setSteps] = createSignal<readonly StepResult[]>([]);
   const busy = () => phase().kind !== 'idle' && phase().kind !== 'failed';
-  const progress = () => {
-    const now = phase();
-    return now.kind === 'downloading' ? now.loaded : undefined;
-  };
   const failure = () => {
     const now = phase();
     return now.kind === 'failed' ? now.error : undefined;
   };
   let controller: AbortController | undefined;
 
-  onMount(() => void checkAvailability());
   onCleanup(commandMenu.beforeOpen(() => setOpen(false)));
   onCleanup(() => controller?.abort());
 
@@ -77,24 +73,20 @@ export function LocalAi(props: {
     const {signal} = controller;
     const {text, blocks} = extractCodeBlocks(request());
     setSteps([]);
-    setPhase(
-      availability() === 'available'
-        ? {kind: 'thinking'}
-        : {kind: 'downloading', loaded: 0},
-    );
-    let session: Awaited<ReturnType<typeof openSession>> | undefined;
+    setPhase({kind: 'thinking'});
+    let session:
+      | Awaited<ReturnType<typeof languageModel.openSession>>
+      | undefined;
     try {
-      session = await openSession(
+      session = await languageModel.openSession(
         systemPrompt(tools, {
           themes: props.model.themes().map(theme => theme.name),
           languages: FEATURED,
           settings: describeSettings(reader.usable().map(describeControl)),
           tabs: reader.tabs(),
         }),
-        loaded => setPhase({kind: 'downloading', loaded}),
         signal,
       );
-      setPhase({kind: 'thinking'});
       const plan = parsePlan(
         await session.prompt(requestPrompt(text, blocks), {
           responseConstraint: planSchema(tools),
@@ -146,54 +138,65 @@ export function LocalAi(props: {
           <Dialog.Description class={styles.intro}>
             {t('localAi.intro')}
           </Dialog.Description>
-          <form
-            class={styles.form}
-            onSubmit={event => {
-              event.preventDefault();
-              void run();
-            }}
+          <Show
+            when={languageModel.state().kind === 'available'}
+            fallback={
+              <div class={styles.actions}>
+                <p class={styles.status}>{t('localAi.notReady')}</p>
+                <Button
+                  size="sm"
+                  theme="secondary"
+                  onClick={() => {
+                    setOpen(false);
+                    settings.open('experiments');
+                  }}
+                >
+                  {t('editor.openExperiments')}
+                </Button>
+              </div>
+            }
           >
-            <TextArea
-              label={t('localAi.request')}
-              placeholder={t('localAi.placeholder')}
-              value={request()}
-              onChange={setRequest}
-              options={{autoResize: true}}
-              slotClasses={{input: styles.request}}
-            />
-            <div class={styles.actions}>
-              <p class={styles.status} role="status">
-                <Switch>
-                  <Match when={progress() !== undefined}>
-                    {t('localAi.downloading')}
-                    <progress
-                      class={styles.progress}
-                      value={progress()}
-                      max={1}
-                    />
-                  </Match>
-                  <Match when={phase().kind === 'thinking'}>
-                    {t('localAi.thinking')}
-                  </Match>
-                  <Match when={phase().kind === 'running'}>
-                    {t('localAi.running')}
-                  </Match>
-                  <Match when={failure()}>
-                    {error => <span class={styles.error}>{error()}</span>}
-                  </Match>
-                </Switch>
-              </p>
-              <Button
-                type="submit"
-                size="sm"
-                theme="primary"
-                loading={busy()}
-                disabled={busy() || !request().trim()}
-              >
-                {t('localAi.run')}
-              </Button>
-            </div>
-          </form>
+            <form
+              class={styles.form}
+              onSubmit={event => {
+                event.preventDefault();
+                void run();
+              }}
+            >
+              <TextArea
+                label={t('localAi.request')}
+                placeholder={t('localAi.placeholder')}
+                value={request()}
+                onChange={setRequest}
+                options={{autoResize: true}}
+                slotClasses={{input: styles.request}}
+              />
+              <div class={styles.actions}>
+                <p class={styles.status} role="status">
+                  <Switch>
+                    <Match when={phase().kind === 'thinking'}>
+                      {t('localAi.thinking')}
+                    </Match>
+                    <Match when={phase().kind === 'running'}>
+                      {t('localAi.running')}
+                    </Match>
+                    <Match when={failure()}>
+                      {error => <span class={styles.error}>{error()}</span>}
+                    </Match>
+                  </Switch>
+                </p>
+                <Button
+                  type="submit"
+                  size="sm"
+                  theme="primary"
+                  loading={busy()}
+                  disabled={busy() || !request().trim()}
+                >
+                  {t('localAi.run')}
+                </Button>
+              </div>
+            </form>
+          </Show>
           <ol class={styles.steps} aria-label={t('localAi.steps')}>
             <For each={steps()}>
               {step => (

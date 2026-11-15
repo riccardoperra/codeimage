@@ -371,6 +371,17 @@ export const rowControl = style({
   },
 });
 
+export const progress = style({width: '120px', accentColor: c.primary});
+
+export const progressValue = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: themeVars.spacing['2'],
+  color: c.descriptionTextColor,
+  fontSize: themeVars.fontSize.xs,
+  fontVariantNumeric: 'tabular-nums',
+});
+
 // The picture of an archive row, before its text. On a phone it gets
 // smaller and the button goes under the text, so the text keeps its width.
 export const rowPicture = style({

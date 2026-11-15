@@ -73,8 +73,6 @@ export const status = style({
   fontSize: themeVars.fontSize.sm,
 });
 
-export const progress = style({width: '96px', accentColor: c.primary});
-
 export const error = style({color: c.button.danger.backgroundColor});
 
 // The steps as one island, as the settings draw their rows.

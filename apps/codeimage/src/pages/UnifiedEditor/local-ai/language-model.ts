@@ -1,11 +1,21 @@
 import {createSignal} from 'solid-js';
 
 /** What Chrome's Prompt API says about its on-device model. */
-export type Availability =
+type Availability =
   | 'unavailable'
   | 'downloadable'
   | 'downloading'
   | 'available';
+
+/** Where the on-device model stands on this device, as the page shows it. */
+export type ModelState =
+  | {readonly kind: 'unsupported'}
+  | {readonly kind: 'unavailable'}
+  | {readonly kind: 'downloadable'}
+  /** `loaded` stays undefined until Chrome reports real progress. */
+  | {readonly kind: 'downloading'; readonly loaded: number | undefined}
+  | {readonly kind: 'available'}
+  | {readonly kind: 'failed'; readonly error: string};
 
 interface Session {
   prompt(
@@ -22,8 +32,8 @@ interface Monitor {
   ): void;
 }
 
-/** The part of the Prompt API (`LanguageModel`) that the panel uses. */
-interface LanguageModelApi {
+/** The part of the Prompt API (`LanguageModel`) that the page uses. */
+export interface LanguageModelApi {
   availability(options?: object): Promise<Availability>;
   create(options: {
     expectedInputs?: readonly object[];
@@ -40,45 +50,111 @@ const LANGUAGES = {
   expectedOutputs: [{type: 'text', languages: ['en']}],
 };
 
-const api = () =>
-  (globalThis as {LanguageModel?: LanguageModelApi}).LanguageModel;
+// Chrome often reports download progress only at 0 and 1, so the page also
+// asks again while a download runs.
+export const POLL_MS = 5000;
 
-const [availability, setAvailability] =
-  createSignal<Availability>('unavailable');
-export {availability};
+export function createLanguageModel(api: LanguageModelApi | undefined) {
+  const [state, setState] = createSignal<ModelState>(
+    api ? {kind: 'unavailable'} : {kind: 'unsupported'},
+  );
+  let creating = false;
+  let poll: ReturnType<typeof setInterval> | undefined;
 
-/** Asks the browser whether its model can run here, once the page needs to know. */
-export async function checkAvailability() {
-  const model = api();
-  if (!model) return;
-  try {
-    setAvailability(await model.availability(LANGUAGES));
-  } catch {
-    setAvailability('unavailable');
+  const set = (next: ModelState) => {
+    setState(next);
+    if (next.kind === 'downloading') {
+      poll ??= setInterval(() => void refresh(), POLL_MS);
+    } else if (poll !== undefined) {
+      clearInterval(poll);
+      poll = undefined;
+    }
+  };
+
+  // Chrome's sample asks with the options it then creates with, and never
+  // creates when the answer is 'unavailable'.
+  async function check(): Promise<Availability> {
+    try {
+      return (await api?.availability(LANGUAGES)) ?? 'unavailable';
+    } catch {
+      return 'unavailable';
+    }
   }
+
+  function apply(next: Availability) {
+    const now = state();
+    // Our own download decides when it ends, and a failure stays on screen
+    // with its Retry until a download succeeds.
+    if (creating && next !== 'available') return;
+    if (now.kind === 'failed' && next === 'downloadable') return;
+    if (next === 'downloading') {
+      if (now.kind !== 'downloading') {
+        set({kind: 'downloading', loaded: undefined});
+      }
+      return;
+    }
+    set({kind: next});
+  }
+
+  /** Asks Chrome again where the model stands. */
+  async function refresh() {
+    if (api) apply(await check());
+  }
+
+  /** Downloads the model. Chrome needs a user gesture, so call it from a click. */
+  async function download() {
+    if (!api || creating || state().kind === 'available') return;
+    creating = true;
+    try {
+      const before = await check();
+      if (before === 'unavailable' || before === 'available') {
+        set({kind: before});
+        return;
+      }
+      set({kind: 'downloading', loaded: undefined});
+      const session = await api.create({
+        ...LANGUAGES,
+        monitor: monitor =>
+          monitor.addEventListener('downloadprogress', event => {
+            if (state().kind !== 'downloading') return;
+            set({kind: 'downloading', loaded: event.loaded || undefined});
+          }),
+      });
+      session.destroy();
+      set({kind: 'available'});
+    } catch (error) {
+      set({
+        kind: 'failed',
+        error: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      creating = false;
+    }
+  }
+
+  /** Opens a session with the given instructions, once the model is available. */
+  async function openSession(
+    system: string,
+    signal: AbortSignal,
+  ): Promise<Session> {
+    if (!api) throw new Error('This browser has no on-device model.');
+    const now = await check();
+    apply(now);
+    if (now !== 'available') {
+      throw new Error('The on-device model is not available.');
+    }
+    return api.create({
+      ...LANGUAGES,
+      initialPrompts: [{role: 'system', content: system}],
+      signal,
+    });
+  }
+
+  void refresh();
+  return {state, refresh, download, openSession};
 }
 
-/**
- * Opens a session with the given instructions. When the model still has to
- * download, Chrome downloads it first and `onProgress` hears from 0 to 1.
- * Needs a user gesture while the model is not yet available.
- */
-export async function openSession(
-  system: string,
-  onProgress: (loaded: number) => void,
-  signal: AbortSignal,
-): Promise<Session> {
-  const model = api();
-  if (!model) throw new Error('This browser has no on-device model.');
-  const session = await model.create({
-    ...LANGUAGES,
-    initialPrompts: [{role: 'system', content: system}],
-    monitor: monitor =>
-      monitor.addEventListener('downloadprogress', event =>
-        onProgress(event.loaded),
-      ),
-    signal,
-  });
-  if (availability() !== 'available') void checkAvailability();
-  return session;
-}
+/** Chrome's on-device model, shared by Settings and the local AI dialog. */
+export const languageModel = createLanguageModel(
+  (globalThis as {LanguageModel?: LanguageModelApi}).LanguageModel,
+);

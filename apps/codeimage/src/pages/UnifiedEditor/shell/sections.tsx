@@ -13,7 +13,7 @@ import {RadioGroup} from '@kobalte/core/radio-group';
 import {useNavigate} from '@solidjs/router';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component, JSX} from 'solid-js';
-import {createMemo, For, Match, Show, Switch} from 'solid-js';
+import {createMemo, For, Match, onMount, Show, Switch} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {illustrations} from '../../../components/WhatsNew/illustrations';
 import {releaseDate} from '../../../components/WhatsNew/releaseDate';
@@ -45,7 +45,7 @@ import {
   preferences,
   THEME_CARDS,
 } from './preferences';
-import {availability} from '../local-ai/language-model';
+import {languageModel} from '../local-ai/language-model';
 import {LayoutPreview} from './previews';
 import type {SectionId} from './settings-state';
 import {SECTIONS, settings} from './settings-state';
@@ -202,6 +202,80 @@ function LanguageChoice() {
   );
 }
 
+/** Where the on-device model stands, in words. */
+function modelStatus(t: ReturnType<typeof useI18n<AppLocaleEntries>>[0]) {
+  const state = languageModel.state();
+  switch (state.kind) {
+    case 'available':
+      return t('localAi.modelReady');
+    case 'downloadable':
+      return t('localAi.modelDownloadable');
+    case 'downloading':
+      return state.loaded === undefined
+        ? t('localAi.modelStarting')
+        : t('localAi.modelDownloading');
+    case 'failed':
+      return t('localAi.modelFailed', {message: state.error});
+    default:
+      return t('localAi.modelUnavailable');
+  }
+}
+
+/** What the on-device model needs next: a download, its progress, or nothing. */
+function ModelControl() {
+  const [t] = useI18n<AppLocaleEntries>();
+  // Each visit to Experiments asks Chrome again, so the row is never stale.
+  onMount(() => void languageModel.refresh());
+  const downloading = () => {
+    const state = languageModel.state();
+    return state.kind === 'downloading' ? state : undefined;
+  };
+  const download = (label: string) => (
+    <Button
+      size="sm"
+      theme="secondary"
+      onClick={() => void languageModel.download()}
+    >
+      {label}
+    </Button>
+  );
+  return (
+    <Switch>
+      <Match when={languageModel.state().kind === 'downloadable'}>
+        {download(t('localAi.download'))}
+      </Match>
+      <Match when={languageModel.state().kind === 'failed'}>
+        {download(t('localAi.retry'))}
+      </Match>
+      <Match when={downloading()}>
+        {state => (
+          <Show
+            when={state().loaded}
+            fallback={
+              <progress
+                class={styles.progress}
+                aria-label={t('localAi.modelDownloading')}
+              />
+            }
+          >
+            {loaded => (
+              <span class={styles.progressValue}>
+                <progress
+                  class={styles.progress}
+                  aria-label={t('localAi.modelDownloading')}
+                  value={loaded()}
+                  max={1}
+                />
+                {Math.round(loaded() * 100)}%
+              </span>
+            )}
+          </Show>
+        )}
+      </Match>
+    </Switch>
+  );
+}
+
 /**
  * Every setting of the editor, as data: the dialog draws the sections, and
  * its search reads the same rows. Call it inside a component, since the rows
@@ -318,6 +392,9 @@ export function createSettingSections(model: EditorControlsModel) {
     ]),
   } satisfies SettingSection;
 
+  const supported = createMemo(
+    () => languageModel.state().kind !== 'unsupported',
+  );
   const experiments = {
     id: 'experiments' as const,
     get name() {
@@ -345,7 +422,7 @@ export function createSettingSections(model: EditorControlsModel) {
       </Button>
     ),
     groups: createMemo(() => [
-      ...(availability() === 'unavailable'
+      ...(!supported()
         ? []
         : [
             {
@@ -364,6 +441,14 @@ export function createSettingSections(model: EditorControlsModel) {
                       onChange={preferences.setLocalAi}
                     />
                   ),
+                },
+                {
+                  id: 'local-ai-model' as const,
+                  title: t('localAi.model'),
+                  description: () =>
+                    `${modelStatus(t)} ${t('localAi.modelDetails')}`,
+                  small: true,
+                  control: () => <ModelControl />,
                 },
               ],
             },
