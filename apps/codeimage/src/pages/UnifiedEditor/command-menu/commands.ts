@@ -134,6 +134,18 @@ export function buildCommands(input: {
   const {model, listed, actions, settings, reveal} = input;
   const shown = shownTheme(model);
   const {animation} = getEditorStore();
+  const toggleAnimation = () => {
+    animation.actions.setOpen(!animation.open());
+    requestAnimationFrame(() =>
+      document
+        .querySelector<HTMLElement>(
+          animation.open()
+            ? '[data-animate-panel] [role="slider"][tabindex="0"]'
+            : '[data-animate-toggle]',
+        )
+        ?.focus(),
+    );
+  };
 
   return [
     ...actions.map((action, index): Command => ({
@@ -147,7 +159,7 @@ export function buildCommands(input: {
       id: 'animate',
       group: t('animation.panel'),
       label: t('animation.toolbar'),
-      run: () => animation.actions.setOpen(!animation.open()),
+      run: toggleAnimation,
     },
     {
       id: 'animate.play',

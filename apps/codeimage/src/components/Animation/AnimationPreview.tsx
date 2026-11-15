@@ -5,17 +5,16 @@ import {getEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {toast} from '@codeimage/ui';
-import type {AnimationSettings, NonEmpty} from '@core/animation/model';
 import {frameRules, type FrameSelectors} from '@core/animation/timeline';
 import type {ParentProps} from 'solid-js';
 import {
   createEffect,
   createMemo,
-  createResource,
   createSignal,
   For,
   getOwner,
   on,
+  onCleanup,
   Show,
   untrack,
 } from 'solid-js';
@@ -26,6 +25,10 @@ import {FITTED_WINDOW_MIN_WIDTH} from '../Frame/FittedWindow';
 import {FrameView, useFrameCodeStyle} from '../Frame/PreviewFrame';
 import * as styles from './AnimationPreview.css';
 import {PreviewPill} from './PreviewPill';
+import {
+  createPreviewSnapshot,
+  type PreviewRequest,
+} from './createPreviewSnapshot';
 import {
   type CodeStyle,
   measurePreview,
@@ -39,14 +42,6 @@ const sceneSelectors = (scene: number): FrameSelectors => ({
   frame: `[data-animation-stage] [data-animation-scene="${scene}"] [data-animation-frame]`,
   window: `[data-animation-stage] [data-animation-scene="${scene}"] [data-animation-window]`,
 });
-
-// What a plan is made from. `key` is equal for equal inputs.
-interface PlanRequest {
-  settings: AnimationSettings;
-  tabs: NonEmpty<PreviewTab>;
-  style: CodeStyle;
-  key: string;
-}
 
 // Shows the editor frame, or the animation in its place once a preview has
 // planned it.
@@ -66,7 +61,7 @@ export function AnimationPreview(
 
   // Reads the tabs only while previewing, so typing plans nothing. Equal
   // inputs keep the last plan, and closing the panel drops it.
-  const request = createMemo<PlanRequest | undefined>(previous => {
+  const request = createMemo<PreviewRequest | undefined>(previous => {
     if (!animation.open()) return undefined;
     if (!previewing() || animation.resizing()) return previous;
     const settings = animation.settings();
@@ -99,19 +94,28 @@ export function AnimationPreview(
       terminal: terminal.state,
       showOnlyActiveTab: exportCanvas.get.showOnlyActiveTab,
     });
-    return previous?.key === key
-      ? previous
-      : {settings, tabs: [first, ...rest], style: codeStyle, key};
+    return {settings, tabs: [first, ...rest], style: codeStyle, key};
   });
-  const [measurement] = createResource(request, ({settings, tabs, style}) =>
-    measurePreview(owner, tabs, style, settings.header),
+  const {measurement, snapshot} = createPreviewSnapshot(
+    () => request(),
+    ({settings, tabs, style}) =>
+      measurePreview(owner, tabs, style, settings.header),
   );
   const planned = createMemo<PreviewPlan | undefined>(previous => {
     if (animation.resizing()) return previous;
-    if (!request() || measurement.state !== 'ready') return undefined;
-    return planPreviewTimeline(animation.settings(), measurement()!);
+    const current = snapshot();
+    return current
+      ? planPreviewTimeline(current.settings, current.measured)
+      : request()
+        ? previous
+        : undefined;
   });
   const ready = () => previewing() && planned() !== undefined;
+  const [focusPreview, setFocusPreview] = createSignal(false);
+  createEffect(
+    on(() => animation.playback().state === 'playing', setFocusPreview),
+  );
+  const focused = () => setFocusPreview(false);
 
   createEffect(
     on(
@@ -145,18 +149,81 @@ export function AnimationPreview(
           </Portal>
         )}
       </Show>
-      <Show when={planned()} keyed>
-        {plan => <AnimationStage plan={plan} visible={ready()} />}
+      <AnimationStage
+        plan={planned()}
+        visible={ready()}
+        focus={focusPreview()}
+        onFocused={focused}
+      />
+    </div>
+  );
+}
+
+function AnimationStage(props: {
+  plan: PreviewPlan | undefined;
+  visible: boolean;
+  focus: boolean;
+  onFocused: () => void;
+}) {
+  const {animation} = getEditorStore();
+  const [t] = useI18n<AppLocaleEntries>();
+  let stage!: HTMLDivElement;
+  createEffect(() => {
+    if (!props.visible || !props.focus) return;
+    const request = requestAnimationFrame(() => {
+      stage.focus({preventScroll: true});
+      props.onFocused();
+    });
+    onCleanup(() => cancelAnimationFrame(request));
+  });
+  const target = () => getFrameState().exportTarget();
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    const frameMs = 1000 / animation.settings().fps;
+    if (event.key === ' ') animation.actions.toggle();
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      const amount = event.shiftKey ? 100 : frameMs;
+      const step = event.key === 'ArrowLeft' ? -amount : amount;
+      animation.actions.seek(animation.playhead() + step);
+    } else if (event.key === 'Escape' || event.key === 'Enter') {
+      animation.actions.editStep(animation.currentStep());
+    } else if (event.key.length === 1)
+      animation.actions.editStep(animation.currentStep(), event.key);
+    else return;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  return (
+    <div
+      data-animation-stage
+      ref={stage}
+      class={styles.stage}
+      tabIndex={0}
+      role={'group'}
+      aria-roledescription={t('animation.previewRole')}
+      aria-label={t('animation.previewLabel')}
+      hidden={!props.visible}
+      style={{
+        zoom: target()
+          ? Math.min(640, target()!.resolution[0]) / target()!.resolution[0]
+          : undefined,
+      }}
+      // The app's hotkeys listen on the body, which a key reaches before
+      // Solid's delegated handlers run. A native listener stops it first.
+      on:keydown={onKeyDown}
+    >
+      <Show when={props.plan} keyed>
+        {plan => <AnimationScenes plan={plan} visible={props.visible} />}
       </Show>
     </div>
   );
 }
 
-function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
+function AnimationScenes(props: {plan: PreviewPlan; visible: boolean}) {
   const {animation} = getEditorStore();
   const style = useFrameCodeStyle();
-  const [t] = useI18n<AppLocaleEntries>();
-  // A new plan or target mounts a new stage, so both are read once.
+  // Each plan owns its scenes; replacing them preserves the focused stage.
   const target = untrack(() => getFrameState().exportTarget());
   const {timeline, tabs, languages} = untrack(() => props.plan);
   const scenes: HTMLElement[] = [];
@@ -207,41 +274,8 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
     }
   });
 
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (event.ctrlKey || event.metaKey || event.altKey) return;
-    const frameMs = 1000 / animation.settings().fps;
-    if (event.key === ' ') animation.actions.toggle();
-    else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      const amount = event.shiftKey ? 100 : frameMs;
-      const step = event.key === 'ArrowLeft' ? -amount : amount;
-      animation.actions.seek(animation.playhead() + step);
-    } else if (event.key === 'Escape' || event.key === 'Enter') {
-      animation.actions.editStep(animation.currentStep());
-    } else if (event.key.length === 1)
-      animation.actions.editStep(animation.currentStep(), event.key);
-    else return;
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
   return (
-    <div
-      data-animation-stage
-      class={styles.stage}
-      tabIndex={0}
-      role={'group'}
-      aria-roledescription={t('animation.previewRole')}
-      aria-label={t('animation.previewLabel')}
-      hidden={!props.visible}
-      style={{
-        zoom: target
-          ? Math.min(640, target.resolution[0]) / target.resolution[0]
-          : undefined,
-      }}
-      // The app's hotkeys listen on the body, which a key reaches before
-      // Solid's delegated handlers run. A native listener stops it first.
-      on:keydown={onKeyDown}
-    >
+    <>
       <style>{css}</style>
       <For each={timeline.scenes}>
         {(scene, index) => {
@@ -287,6 +321,6 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
           );
         }}
       </For>
-    </div>
+    </>
   );
 }

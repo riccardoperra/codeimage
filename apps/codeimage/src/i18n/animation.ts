@@ -45,8 +45,8 @@ export const animationLocale = {
       previewRole: 'animation preview',
       previewFailed: 'The animation preview could not be prepared',
       shortcut: {
-        togglePlayback: 'Play or pause the animation (preview focused)',
-        backToEditor: 'Back to the editor (preview focused)',
+        togglePlayback: 'Play or pause the animation',
+        backToEditor: 'Back to the editor',
       },
     },
   },
@@ -97,8 +97,7 @@ export const animationLocale = {
       previewRole: 'anteprima animazione',
       previewFailed: "Impossibile preparare l'anteprima dell'animazione",
       shortcut: {
-        togglePlayback:
-          "Riproduci o metti in pausa l'animazione (anteprima selezionata)",
+        togglePlayback: "Riproduci o metti in pausa l'animazione",
         backToEditor: "Torna all'editor (anteprima selezionata)",
       },
     },
@@ -150,8 +149,7 @@ export const animationLocale = {
       previewRole: 'Animationsvorschau',
       previewFailed: 'Die Animationsvorschau konnte nicht vorbereitet werden',
       shortcut: {
-        togglePlayback:
-          'Animation abspielen oder pausieren (Vorschau fokussiert)',
+        togglePlayback: 'Animation abspielen oder pausieren',
         backToEditor: 'Zurück zum Editor (Vorschau fokussiert)',
       },
     },
@@ -203,8 +201,7 @@ export const animationLocale = {
       previewRole: 'vista previa de la animación',
       previewFailed: 'No se pudo preparar la vista previa de la animación',
       shortcut: {
-        togglePlayback:
-          'Reproducir o pausar la animación (vista previa enfocada)',
+        togglePlayback: 'Reproducir o pausar la animación',
         backToEditor: 'Volver al editor (vista previa enfocada)',
       },
     },

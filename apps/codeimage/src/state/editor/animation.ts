@@ -371,11 +371,13 @@ export function createAnimationStore(
       },
       removeStep(stepId: string) {
         if (settings().steps.length === 1) return;
-        update(settings => ({
-          ...settings,
-          steps: settings.steps.filter(step => step.id !== stepId),
-        }));
-        if (selection()?.stepId === stepId) setSelection(null);
+        batch(() => {
+          if (selection()?.stepId === stepId) setSelection(null);
+          update(settings => ({
+            ...settings,
+            steps: settings.steps.filter(step => step.id !== stepId),
+          }));
+        });
       },
       moveStep(stepId: string, direction: -1 | 1) {
         const index = settings().steps.findIndex(step => step.id === stepId);
