@@ -258,6 +258,7 @@ export function localeUsage(messages, sources) {
   const keys = Object.keys(flatten(messages));
   const used = new Set();
   const unknown = new Set();
+  let nonLiteralCalls = 0;
   for (const source of sources) {
     function visit(node) {
       // Include keys in metadata passed indirectly to t(), as well as direct calls.
@@ -269,12 +270,13 @@ export function localeUsage(messages, sources) {
       if (
         ts.isCallExpression(node) &&
         ts.isIdentifier(node.expression) &&
-        ['t', 'tUnsafe'].includes(node.expression.text) &&
-        node.arguments[0] &&
-        ts.isStringLiteralLike(node.arguments[0]) &&
-        !keys.includes(node.arguments[0].text)
-      )
-        unknown.add(node.arguments[0].text);
+        ['t', 'tUnsafe'].includes(node.expression.text)
+      ) {
+        if (!node.arguments[0] || !ts.isStringLiteralLike(node.arguments[0]))
+          nonLiteralCalls++;
+        else if (!keys.includes(node.arguments[0].text))
+          unknown.add(node.arguments[0].text);
+      }
       ts.forEachChild(node, visit);
     }
     visit(source);
@@ -282,6 +284,7 @@ export function localeUsage(messages, sources) {
   return {
     unknown: [...unknown].sort(),
     unused: keys.filter(key => !used.has(key)).sort(),
+    nonLiteralCalls,
   };
 }
 const appDirectory = fileURLToPath(new URL('../../', import.meta.url));
@@ -298,18 +301,31 @@ const usage = localeUsage(
       ),
     ),
 );
-assert.deepEqual(usage.unknown, [], 'Unknown locale keys');
-assert.deepEqual(
-  localeUsage({used: 'Used', group: {one: 'One'}, unused: 'Unused'}, [
+assert.deepEqual(usage.unknown, [], 'Unknown literal locale keys');
+const negativeUsage = localeUsage(
+  {used: 'Used', group: {one: 'One'}, unused: 'Unused'},
+  [
     ts.createSourceFile(
       'usage-negative.ts',
-      "t('used'); t(`group.${id}`); t('missing');",
+      "t('used'); const label = 'missing'; t(label); tUnsafe(label); t(`group.${id}`); t('missing');",
       ts.ScriptTarget.Latest,
       true,
     ),
-  ]),
-  {unknown: ['missing'], unused: ['unused']},
+  ],
+);
+assert.deepEqual(negativeUsage, {
+  unknown: ['missing'],
+  unused: ['unused'],
+  nonLiteralCalls: 3,
+});
+function nonLiteralUsageMessage(count) {
+  return `UNCHECKED: ${count} non-literal t()/tUnsafe() call sites (variable or interpolated keys).`;
+}
+assert.equal(
+  nonLiteralUsageMessage(negativeUsage.nonLiteralCalls),
+  'UNCHECKED: 3 non-literal t()/tUnsafe() call sites (variable or interpolated keys).',
 );
 console.log(
-  `PASS: no unknown locale keys; usage negative controls passed. Unused locale keys (${usage.unused.length}): ${usage.unused.join(', ')}`,
+  `PASS: no unknown literal locale keys (literal t()/tUnsafe() arguments only); usage negative controls passed. Unused locale keys (${usage.unused.length}): ${usage.unused.join(', ')}`,
 );
+console.log(nonLiteralUsageMessage(usage.nonLiteralCalls));
