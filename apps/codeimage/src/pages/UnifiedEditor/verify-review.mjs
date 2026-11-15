@@ -2,6 +2,8 @@
 import assert from 'node:assert/strict';
 import {mkdirSync, readFileSync, writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
+import {PNG} from 'pngjs';
+import pixelmatch from 'pixelmatch';
 const base = process.argv[2] ?? 'http://localhost:4345';
 const out = process.argv[3] ?? '/tmp/codeimage-review-fixes';
 mkdirSync(out, {recursive: true});
@@ -14,6 +16,123 @@ const check = (ok, message) => {
   console.log('PASS', message);
 };
 const source = path => readFileSync(new URL(path, import.meta.url), 'utf8');
+
+async function verifyExportParity(page, tag) {
+  await page.evaluate(async () => {
+    window.__terminal = (
+      await import('/src/state/editor/terminal.ts')
+    ).getTerminalState();
+  });
+  await page.evaluate(() => document.fonts.ready);
+  for (const tabs of [1, 2]) {
+    if (tabs === 2)
+      await page.evaluate(() =>
+        window.__editor.actions.addEditor(
+          {code: '', tab: {tabName: 'second.ts'}},
+          true,
+        ),
+      );
+    await page
+      .locator('.cm-content[contenteditable=true]')
+      .fill('const message = "CodeImage parity";\nconsole.log(message);');
+    for (const header of [true, false]) {
+      await page.evaluate(
+        value => window.__terminal.setShowHeader(value),
+        header,
+      );
+      await page.locator('[data-export-image]').hover();
+      await page.locator('[data-export-image]').focus();
+      await page.waitForTimeout(350);
+      const live = page
+        .locator('[data-fit-scale] [data-frame-content]')
+        .locator('..');
+      const box = await live.boundingBox();
+      const watermarkDelta = await page.evaluate(() => {
+        const live = document.querySelector(
+          '[data-fit-scale] [data-frame-content]',
+        ).parentElement;
+        const copy = document.querySelector(
+          '[class*=Frame_previewWrapper] > div',
+        );
+        const measure = root => {
+          const box = root.getBoundingClientRect();
+          const mark = root
+            .querySelector('[class*=terminal_watermark]')
+            .getBoundingClientRect();
+          return {y: mark.y - box.y, height: mark.height};
+        };
+        const a = measure(live),
+          b = measure(copy);
+        return Math.max(Math.abs(a.y - b.y), Math.abs(a.height - b.height));
+      });
+      check(
+        watermarkDelta < 1,
+        `${tag}: live/export watermark geometry differs by ${watermarkDelta.toFixed(3)}px`,
+      );
+      check(
+        (await page
+          .locator('[data-fit-scale]')
+          .getAttribute('data-fit-scale')) === '1',
+        `${tag}: live/export parity is measured at zoom 1`,
+      );
+      // Put the live origin on a device pixel without transforming its text.
+      // Locator screenshots otherwise include an extra row/column at fractional origins.
+      await live.evaluate(element => {
+        const box = element.getBoundingClientRect();
+        element.style.left = `${Math.round(box.x) - box.x}px`;
+        element.style.top = `${Math.round(box.y) - box.y}px`;
+        element.style.width = getComputedStyle(element).width;
+      });
+      const name = `${out}/${tag}-${tabs}-tabs-header-${header}`;
+      const screenshot = await page.screenshot({
+        path: `${name}-live.png`,
+        clip: {
+          x: Math.round(box.x),
+          y: Math.round(box.y),
+          width: Math.round(box.width),
+          height: Math.round(box.height),
+        },
+        style:
+          '[data-export-exclude=true], .cm-cursorLayer, .cm-selectionLayer {display:none !important}',
+      });
+      await live.evaluate(element => {
+        element.style.removeProperty('left');
+        element.style.removeProperty('top');
+        element.style.removeProperty('width');
+      });
+      const pending = page.waitForEvent('download');
+      await page.locator('[data-export-image]').click();
+      const download = await pending;
+      await download.saveAs(`${name}-export.png`);
+      const actual = PNG.sync.read(readFileSync(`${name}-export.png`));
+      const expected = PNG.sync.read(screenshot);
+      assert.equal(actual.width, expected.width, `${name}: exported width`);
+      assert.equal(actual.height, expected.height, `${name}: exported height`);
+      const diff = new PNG({width: actual.width, height: actual.height});
+      const percent =
+        (pixelmatch(
+          expected.data,
+          actual.data,
+          diff.data,
+          actual.width,
+          actual.height,
+          {threshold: 0.1},
+        ) /
+          (actual.width * actual.height)) *
+        100;
+      writeFileSync(`${name}-diff.png`, PNG.sync.write(diff));
+      check(
+        percent <= 0.5,
+        `${tag}: ${tabs} tabs, header ${header}: ${actual.width}x${actual.height}, ${percent.toFixed(3)}% live/export difference`,
+      );
+    }
+  }
+  await page.evaluate(() => {
+    const editor = window.__editor;
+    editor.actions.removeEditor(editor.state.editors[1].id);
+    window.__terminal.setShowHeader(true);
+  });
+}
 check(
   !source('./command-menu/state.ts').includes('setReveal'),
   '6: dead reveal registration removed',
@@ -136,6 +255,9 @@ try {
         ).getExportCanvasStore();
         canvas.set('extension', 'png');
         canvas.set('devicePixelRatio', 1);
+      });
+      if (width === 1440) await verifyExportParity(page, tag);
+      await page.evaluate(() => {
         const e = window.__editor;
         const view = e.activeEditorView();
         view.dispatch({
