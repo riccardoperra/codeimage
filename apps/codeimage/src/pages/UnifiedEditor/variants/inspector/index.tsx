@@ -306,7 +306,7 @@ export default function Inspector(props: VariantProps) {
                       size="sm"
                       theme="secondary"
                     >
-                      {t('editor.search')}
+                      {t('editor.commands')}
                       <kbd class={styles.commandKey}>
                         {commandMenu.shortcut}
                       </kbd>

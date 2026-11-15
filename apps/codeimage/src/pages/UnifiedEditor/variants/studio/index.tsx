@@ -346,7 +346,7 @@ export default function Studio(props: VariantProps) {
                     <span class={styles.railIcon}>
                       <SearchIcon />
                     </span>
-                    {t('editor.search')}
+                    {t('editor.commands')}
                     <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
                   </button>
                 )}
