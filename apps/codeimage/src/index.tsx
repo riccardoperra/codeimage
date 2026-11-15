@@ -64,7 +64,7 @@ const Editor = () => {
 };
 
 // The editor in the layout the user chose.
-const UnifiedEditor = lazyWithNoLauncher(() => import("./prototypes/editor-controls"));
+const UnifiedEditor = lazyWithNoLauncher(() => import("./pages/UnifiedEditor"));
 
 const NotFoundPage = lazyWithNoLauncher(() => import("./pages/NotFound/NotFoundPage"));
 
