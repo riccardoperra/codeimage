@@ -27,7 +27,7 @@ import {
 } from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {provideState} from 'statebuilder';
-import {useHotkey} from '../../hooks/use-hotkey';
+import {isKeyOwnedByFocus, useHotkey} from '../../hooks/use-hotkey';
 import {DynamicTerminal} from '../Terminal/DynamicTerminal/DynamicTerminal';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
 import {
@@ -89,8 +89,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
   });
 
   const filterHotKey = () =>
-    editor.state.options.focused ||
-    document.activeElement?.nodeName === 'INPUT';
+    editor.state.options.focused || isKeyOwnedByFocus();
 
   onMount(() => {
     useHotkey(document.body, {
