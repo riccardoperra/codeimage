@@ -49,16 +49,20 @@ export function Nudge(props: {
   let timer: number | undefined;
   const restoreFocus = () => {
     if (!card?.contains(document.activeElement)) return;
-    const editor = [
+    const target = [
       ...document.querySelectorAll<HTMLElement>(
         '.cm-content[contenteditable="true"]',
+      ),
+      ...document.querySelectorAll<HTMLButtonElement>(
+        'button:not(:disabled):not([tabindex="-1"])',
       ),
     ].find(
       element =>
         element.getClientRects().length > 0 &&
+        !card?.contains(element) &&
         !element.closest('[inert], [aria-hidden="true"]'),
     );
-    editor?.focus({preventScroll: true});
+    target?.focus({preventScroll: true});
   };
   onCleanup(() => {
     clearTimeout(timer);
