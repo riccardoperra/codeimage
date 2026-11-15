@@ -1,5 +1,6 @@
 import {getExportTarget} from '@codeimage/config';
-import type {SnapshotInput} from '@codeimage/render';
+import {createSignature} from '../../../../apps/codeimage/src/state/frame/model';
+import type {SignaturePosition} from '../../../../apps/codeimage/src/state/frame/model';
 import {UsageError} from '../errors';
 import type {Flag, FlagValues} from './index';
 
@@ -16,9 +17,7 @@ function target(values: FlagValues) {
   return target;
 }
 
-function position(
-  values: FlagValues,
-): NonNullable<SnapshotInput['frame']['signature']>['position'] {
+function position(values: FlagValues): SignaturePosition {
   const value = values['signature-position'] ?? 'bottom-right';
   if (value !== 'bottom-left' && value !== 'bottom-right') {
     throw new UsageError(
@@ -64,6 +63,21 @@ export const size: Flag = {
   apply(snapshot, values) {
     const selected = target(values);
     const current = snapshot.frame.signature;
+    if (
+      values.signature === undefined &&
+      values['signature-position'] === undefined
+    ) {
+      return {
+        ...snapshot,
+        frame: {
+          ...snapshot.frame,
+          ...(selected && {
+            exportTarget: selected.id,
+            aspectRatio: selected.ratio,
+          }),
+        },
+      };
+    }
     const handle =
       typeof values.signature === 'string'
         ? values.signature.trim()
@@ -83,6 +97,7 @@ export const size: Flag = {
         }),
         ...(handle && {
           signature: {
+            ...(current ?? createSignature(handle)),
             handle,
             position:
               values['signature-position'] === undefined && current
