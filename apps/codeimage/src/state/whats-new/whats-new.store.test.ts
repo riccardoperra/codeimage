@@ -357,3 +357,35 @@ it('binds editor places and lets the most recent Show me request win', async () 
   unbind();
   app.dispose();
 });
+
+it('gives the optional engine its Settings pointer without consuming it on reveal', async () => {
+  const app = boot(database());
+  await settle();
+  for (const id of [
+    'tabs',
+    'social',
+    'signature',
+    'marks',
+    'alt',
+    'window-styles',
+    'command-menu',
+  ] as const)
+    app.store.seen(id);
+  expect(app.store.dotAt('setting:rendering-engine')).toBe('takumi');
+  expect(app.store.canShowMe('takumi')).toBe(false);
+  const reveal = vi.fn();
+  const dispose = createRoot(dispose => {
+    app.store.bindLocation('setting', reveal);
+    return dispose;
+  });
+  app.store.showMe('takumi', 'library');
+  await settle();
+  expect(reveal).toHaveBeenCalledWith('rendering-engine');
+  expect(app.store.isNew('takumi')).toBe(true);
+  expect(app.store.revealedAt('setting:rendering-engine')).toBe('takumi');
+  app.store.seen('takumi');
+  expect(app.store.dotAt('setting:rendering-engine')).toBeUndefined();
+  expect(app.store.isNew('takumi')).toBe(false);
+  dispose();
+  app.dispose();
+});

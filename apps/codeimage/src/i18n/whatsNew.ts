@@ -61,6 +61,10 @@ const en = {
       title: 'Command menu',
       body: 'Find a control or run an action with Cmd/Ctrl+K.',
     },
+    takumi: {
+      title: 'Takumi export engine',
+      body: 'Try the optional Takumi engine in Settings, Experiments. If it cannot render an export, CodeImage automatically uses the current exporter.',
+    },
     layouts: {
       title: 'Editor layouts',
       body: 'Choose Inspector, Dock or Studio in Settings, Experiments.',
@@ -124,6 +128,10 @@ const it = {
     'command-menu': {
       title: 'Menu dei comandi',
       body: "Trova un controllo o esegui un'azione con Cmd/Ctrl+K.",
+    },
+    takumi: {
+      title: 'Motore di esportazione Takumi',
+      body: 'Prova il motore opzionale Takumi in Impostazioni, Esperimenti. Se non riesce a generare un’esportazione, CodeImage usa automaticamente il motore attuale.',
     },
     layouts: {
       title: "Disposizioni dell'editor",
@@ -189,6 +197,10 @@ const de = {
       title: 'Befehlsmenü',
       body: 'Finde ein Steuerelement oder führe eine Aktion mit Cmd/Ctrl+K aus.',
     },
+    takumi: {
+      title: 'Takumi-Exportengine',
+      body: 'Probiere die optionale Takumi-Engine unter Einstellungen, Experimente aus. Kann sie einen Export nicht rendern, nutzt CodeImage automatisch den bisherigen Exporter.',
+    },
     layouts: {
       title: 'Editor-Layouts',
       body: 'Wähle Inspektor, Dock oder Studio unter Einstellungen, Experimente.',
@@ -252,6 +264,10 @@ const es = {
     'command-menu': {
       title: 'Menú de comandos',
       body: 'Busca un control o ejecuta una acción con Cmd/Ctrl+K.',
+    },
+    takumi: {
+      title: 'Motor de exportación Takumi',
+      body: 'Prueba el motor opcional Takumi en Ajustes, Experimentos. Si no puede generar una exportación, CodeImage usa automáticamente el exportador actual.',
     },
     layouts: {
       title: 'Diseños del editor',

@@ -278,6 +278,91 @@ function TabsIllustration(props: IllustrationProps) {
   );
 }
 
+function TakumiIllustration(props: IllustrationProps) {
+  return (
+    <Frame mode={props.mode}>
+      <svg viewBox="0 0 250 100">
+        <rect
+          class={styles.wireCanvas}
+          x="10"
+          y="16"
+          width="110"
+          height="68"
+          rx="8"
+        />
+        <Show
+          when={props.mode !== 'thumb'}
+          fallback={
+            <rect
+              class={styles.wireFrame}
+              x="24"
+              y="32"
+              width="42"
+              height="5"
+              rx="2.5"
+            />
+          }
+        >
+          <text x="24" y="38" fill="currentColor" font-size="12">
+            Takumi
+          </text>
+        </Show>
+        <rect
+          class={styles.wireFrame}
+          x="24"
+          y="52"
+          width="54"
+          height="5"
+          rx="2.5"
+        />
+        <g class={styles.engineSwitch}>
+          <rect
+            fill="currentColor"
+            x="84"
+            y="30"
+            width="24"
+            height="14"
+            rx="7"
+          />
+          <circle class={styles.thumbWindow} cx="101" cy="37" r="5" />
+        </g>
+        <path
+          class={styles.engineRoute}
+          d="M128 50h24m-7-7 7 7-7 7"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <g class={styles.engineImage}>
+          <rect
+            class={styles.wireCanvas}
+            x="164"
+            y="16"
+            width="76"
+            height="68"
+            rx="8"
+          />
+          <rect
+            class={styles.wireFrame}
+            x="174"
+            y="30"
+            width="56"
+            height="40"
+            rx="4"
+          />
+          <path
+            d="M182 42h34m-34 9h24m-24 9h29"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </g>
+      </svg>
+    </Frame>
+  );
+}
+
 function LayoutIllustration(props: IllustrationProps) {
   return (
     <Frame mode={props.mode}>
@@ -726,6 +811,7 @@ export const illustrations: Record<
   redact: RedactIllustration,
   tabs: TabsIllustration,
   'command-menu': CommandIllustration,
+  takumi: TakumiIllustration,
   layouts: LayoutIllustration,
   'theme-cards': ThemeIllustration,
 };

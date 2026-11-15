@@ -67,6 +67,11 @@ export const RELEASES = [
         where: 'command-menu',
       },
       {
+        id: 'takumi',
+        where: 'setting:rendering-engine',
+        experimental: true,
+      },
+      {
         id: 'layouts',
         where: 'setting:layout',
         experimental: true,

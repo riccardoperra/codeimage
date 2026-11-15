@@ -473,3 +473,19 @@ globalStyle(
   `${nudge} button:active, ${coachmark} button:active, ${sheet} button:active`,
   {'@media': {[reduce]: {transform: 'none'}}},
 );
+
+export const engineSwitch = plays(
+  press,
+  illustrationFor.engine,
+  illustrationAt.engine[0],
+);
+export const engineRoute = plays(
+  wipeIn,
+  illustrationFor.engine,
+  illustrationAt.engine[1],
+);
+export const engineImage = plays(
+  fromLeft,
+  illustrationFor.engine,
+  illustrationAt.engine[2],
+);

@@ -29,7 +29,14 @@ it('shows one dot per place and gives the next export item its turn within the t
     store: createWhatsNew(
       {
         get: async () => ({
-          seen: ['social', 'signature', 'marks', 'alt', 'window-styles'],
+          seen: [
+            'social',
+            'signature',
+            'marks',
+            'alt',
+            'window-styles',
+            'takumi',
+          ],
         }),
         update: async () => {},
         del: async () => {},
@@ -61,7 +68,14 @@ it('draws a highlight only at its place or the place that contains it', async ()
     store: createWhatsNew(
       {
         get: async () => ({
-          seen: ['social', 'signature', 'marks', 'alt', 'window-styles'],
+          seen: [
+            'social',
+            'signature',
+            'marks',
+            'alt',
+            'window-styles',
+            'takumi',
+          ],
         }),
         update: async () => {},
         del: async () => {},

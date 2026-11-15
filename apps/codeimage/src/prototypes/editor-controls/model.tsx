@@ -575,7 +575,7 @@ export function createEditorControlsModel(): EditorControlsModel {
         choice('select', {
           id: 'window.style',
           label: () => t('frame.terminal'),
-          visible: always,
+          visible: headerVisible,
           options: () =>
             Object.values(AVAILABLE_TERMINAL_THEMES.entries).map(entry => ({
               label: t(entry.label),

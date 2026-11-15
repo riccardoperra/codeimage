@@ -57,6 +57,7 @@ export const illustrationFor = {
   commandPick: 420,
   layout: 360,
   theme: 360,
+  engine: 360,
 } as const;
 
 export const illustrationAt = {
@@ -66,6 +67,7 @@ export const illustrationAt = {
   commandPick: 180,
   layout: [0, 110, 190],
   theme: [0, 90, 150],
+  engine: [0, 120, 220],
 } as const;
 
 export const ms = (value: number) => `${value}ms`;

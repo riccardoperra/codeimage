@@ -337,9 +337,10 @@ export function createSettingSections(model: EditorControlsModel) {
                 id="settings-rendering-engine"
                 label={t('rendering.useTakumi')}
                 checked={config.get.renderer === 'takumi'}
-                onChange={checked =>
-                  config.setRenderer(checked ? 'takumi' : 'dom-export')
-                }
+                onChange={checked => {
+                  config.setRenderer(checked ? 'takumi' : 'dom-export');
+                  getWhatsNew().seen('takumi');
+                }}
               />
             ),
           },

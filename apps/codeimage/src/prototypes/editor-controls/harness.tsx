@@ -3,7 +3,7 @@ import {WhatsNewHost} from '../../components/WhatsNew/WhatsNewHost';
 import {commandMenu} from './command-menu/state';
 import {settings} from './shell/settings-state';
 import type {JSX} from 'solid-js';
-import {createEffect, Show} from 'solid-js';
+import {createEffect, For, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {CommandMenu} from './command-menu/CommandMenu';
 import {EditorHost} from './EditorHost';
@@ -23,14 +23,6 @@ export {PickerRoute as PrototypeRoute} from './picker/PickerRoute';
 function Editor() {
   const model = createEditorControlsModel();
   let page!: HTMLDivElement;
-  getWhatsNew().bindLocation('control', item => {
-    const control = model.sections
-      .flatMap(section => section.controls)
-      .find(control => control.id === item);
-    if (!control) return;
-    settings.close();
-    return model.controls.reveal(control.id);
-  });
 
   const side = () =>
     preferences.layout() === 'inspector'
@@ -51,6 +43,23 @@ function Editor() {
 
   return (
     <>
+      <For
+        each={model.sections
+          .flatMap(section => section.controls)
+          .filter(control => control.visible())}
+      >
+        {control => {
+          getWhatsNew().bindLocation(`control:${control.id}`, async () => {
+            settings.close();
+            // Let Settings return focus before opening a dismissable panel.
+            await new Promise<void>(resolve =>
+              requestAnimationFrame(() => resolve()),
+            );
+            return model.controls.reveal(control.id);
+          });
+          return null;
+        }}
+      </For>
       <div
         class={`proto-variant ${pageClass}`}
         ref={page}

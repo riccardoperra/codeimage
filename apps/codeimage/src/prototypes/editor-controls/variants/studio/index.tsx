@@ -28,6 +28,7 @@ import {claimSettingsEntry, settings} from '../../shell/settings-state';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import {PANELS} from './panels';
+import {PLACES} from './places';
 import type {Panel, PanelId} from './panels';
 import * as styles from './studio.css';
 
@@ -159,19 +160,11 @@ export default function Studio(props: VariantProps) {
   onMount(() => {
     onCleanup(
       props.model.controls.register(id => {
-        const group = id.split('.')[0];
-        const panel = PANELS.find(
-          panel =>
-            panel.id ===
-            (group === 'signature'
-              ? 'frame'
-              : group === 'editor' || group === 'font'
-                ? 'code'
-                : group),
-        );
+        const place = PLACES[id];
+        const panel = PANELS.find(panel => panel.id === place.panel);
         if (panel) open(panel);
         setStop('tall');
-        if (group === 'signature') controlOverlay.open('signature');
+        if (place.group === 'signature') controlOverlay.open('signature');
       }),
     );
   });
