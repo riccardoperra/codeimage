@@ -35,6 +35,7 @@ export const settings = {
   open: (target?: unknown) => {
     // A click handler passes its event here, which is not a section.
     const found = SECTIONS.find(entry => entry.id === target);
+    setQuery('');
     if (isOpen()) {
       if (found) setSection(found.id);
       // As on opening, the section on screen takes the focus, here from a
