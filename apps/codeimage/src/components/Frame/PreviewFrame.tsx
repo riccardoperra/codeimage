@@ -94,6 +94,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
       type={terminal.type}
       activeTabId={props.activeTabId}
       readonlyTab={true}
+      staticTabs={!!props.header}
       headerMode={props.header?.mode}
       title={props.header?.mode === 'title' ? props.header.title : undefined}
       showTab={props.header?.mode !== 'title'}

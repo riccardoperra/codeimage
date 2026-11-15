@@ -9,7 +9,7 @@ import {TerminalGlassReflection} from './GlassReflection/TerminalGlassReflection
 import {createTabTheme} from './Tabs/createTabTheme';
 import * as styles from './terminal.css';
 import {getThemeStore} from '@codeimage/store/theme/theme.store';
-import {createMemo} from 'solid-js';
+import {createMemo, Show} from 'solid-js';
 import {createWindowPalette} from './windowPalette';
 import {windowVars} from './windowPalette.css';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -24,6 +24,7 @@ export interface BaseTerminalProps extends Omit<
   title?: string;
   headerMode?: AnimationHeader['mode'];
   readonlyTab: boolean;
+  staticTabs?: boolean;
   preview?: boolean;
   tabIcon?: LanguageIconDefinition['content'];
   onTabChange?: (tab: string) => void;
@@ -118,6 +119,10 @@ export const TerminalHost: FlowComponent<TerminalHostProps> = props => {
       </FadeInOutTransition>
 
       {props.children}
+
+      <Show when={props.surface === 'wash'}>
+        <div class={styles.wash} />
+      </Show>
     </div>
   );
 };
