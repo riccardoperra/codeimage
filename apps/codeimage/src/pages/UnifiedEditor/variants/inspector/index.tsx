@@ -299,11 +299,7 @@ export default function Inspector(props: VariantProps) {
           >
             <div class={styles.frameActions}>
               <EditingControls state={props.pageState()}>
-                <CanvasToolbar
-                  stage={props.stage}
-                  help={!mobile()}
-                  editable={props.pageState().editable}
-                />
+                <CanvasToolbar stage={props.stage} />
               </EditingControls>
               <Show when={props.stage.compact()}>
                 <props.stage.ExportButton />
