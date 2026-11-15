@@ -1,7 +1,12 @@
 import type {getEditorStore} from '../../apps/codeimage/src/state/editor/index';
 import assert from 'node:assert/strict';
 import {parseArgs} from 'node:util';
-import {chromium, type BrowserContext, type Page} from 'playwright';
+import {
+  chromium,
+  type BrowserContext,
+  type Locator,
+  type Page,
+} from 'playwright';
 import {mkdir} from 'node:fs/promises';
 
 const {values: args} = parseArgs({
@@ -383,6 +388,9 @@ async function hotkeys(page: Page) {
   await title.click();
   await title.pressSequentially('FPBDHW');
   await title.press('Enter');
+  assert.ok(
+    await title.evaluate(element => element === document.activeElement),
+  );
   assert.deepEqual(
     await page.evaluate(() => [
       window.editorStore.frame.store.padding,
@@ -488,20 +496,25 @@ async function resize(page: Page) {
 async function nudge(page: Page) {
   const segment = page.locator('[data-animation-segment]').nth(1);
   await segment.focus();
+  const input = page.locator('#animationDuration-input');
+  assert.equal(await input.inputValue(), '700');
   await page.keyboard.press('ArrowRight');
   assert.equal(await segment.getAttribute('aria-valuenow'), '800');
   await page.keyboard.press('Alt+ArrowLeft');
   assert.equal(await segment.getAttribute('aria-valuenow'), '790');
+  assert.equal(await input.inputValue(), '790');
   assert.ok(
     await segment.evaluate(element => element === document.activeElement),
   );
-  const input = page.locator('#animationDuration-input');
   await input.click();
   await input.press('ControlOrMeta+A');
   await input.pressSequentially('1350');
   assert.equal(await segment.getAttribute('aria-valuenow'), '790');
   await input.press('Enter');
   assert.equal(await segment.getAttribute('aria-valuenow'), '1350');
+  assert.ok(
+    await input.evaluate(element => element === document.activeElement),
+  );
   await input.click();
   await input.press('Escape');
   assert.ok(
@@ -514,11 +527,48 @@ async function nudge(page: Page) {
   );
 }
 
+async function fullyVisible(locator: Locator) {
+  assert.ok(
+    await locator.evaluate(element => {
+      const box = element.getBoundingClientRect();
+      const dialog = element
+        .closest('[role="dialog"]')!
+        .getBoundingClientRect();
+      const inside =
+        box.width > 0 &&
+        box.height > 0 &&
+        box.left >= Math.max(0, dialog.left) &&
+        box.top >= Math.max(0, dialog.top) &&
+        box.right <= Math.min(innerWidth, dialog.right) &&
+        box.bottom <= Math.min(innerHeight, dialog.bottom);
+      const x = (box.left + box.right) / 2;
+      const y = (box.top + box.bottom) / 2;
+      return (
+        inside &&
+        [
+          [box.left + 2, y],
+          [box.right - 2, y],
+          [x, box.top + 2],
+          [x, box.bottom - 2],
+          [x, y],
+        ].every(([x, y]) => element.contains(document.elementFromPoint(x, y)))
+      );
+    }),
+    `${(await locator.getAttribute('aria-label')) ?? (await locator.textContent())} is inside the visible popover and hit-testable`,
+  );
+}
+
 async function easing(page: Page) {
   const segment = page.locator('[data-animation-segment]').nth(1);
   await segment.click();
   const trigger = page.locator('[data-easing-trigger]');
   await trigger.click();
+  await fullyVisible(
+    page.getByRole('img', {name: 'Easing curve', exact: true}),
+  );
+  await fullyVisible(
+    page.getByRole('button', {name: 'Play transition', exact: true}),
+  );
   await page.getByRole('tab', {name: 'Strong', exact: true}).click();
   assert.equal(
     await page.evaluate(
@@ -528,6 +578,13 @@ async function easing(page: Page) {
   );
   await page.getByRole('tab', {name: 'Custom', exact: true}).click();
   const input = page.getByRole('textbox', {name: 'Custom', exact: true});
+  await fullyVisible(input);
+  await fullyVisible(
+    page.getByRole('img', {name: 'Easing curve', exact: true}),
+  );
+  await fullyVisible(
+    page.getByRole('button', {name: 'Play transition', exact: true}),
+  );
   await input.fill('cubic-bezier(0.25, -2, 0.3, 8)');
   await input.press('Enter');
   assert.equal(
@@ -539,6 +596,12 @@ async function easing(page: Page) {
   await input.fill('cubic-bezier(-1, 0, 1, 1)');
   await input.press('Enter');
   assert.equal(await input.getAttribute('aria-invalid'), 'true');
+  await fullyVisible(
+    page.getByText('Use four numbers with x between 0 and 1.', {exact: true}),
+  );
+  await fullyVisible(
+    page.getByRole('button', {name: 'Play transition', exact: true}),
+  );
   assert.equal(
     await page.evaluate(
       () => window.editorStore.animation.settings().steps[1].transition?.easing,
@@ -560,10 +623,11 @@ async function easing(page: Page) {
     await page.evaluate(() => window.editorStore.animation.playhead()),
     1500,
   );
-  await input.press('Escape');
-  await page.waitForFunction(() =>
-    document.activeElement?.hasAttribute('data-easing-trigger'),
-  );
+  await page.keyboard.press('Escape');
+  await page
+    .getByRole('dialog', {name: 'Easing', exact: true})
+    .waitFor({state: 'hidden'});
+  await trigger.focus();
   await trigger.click();
   await page.getByRole('tab', {name: 'Strong', exact: true}).focus();
   await page.keyboard.press('Escape');
@@ -581,7 +645,262 @@ async function easing(page: Page) {
     'cubic-bezier(0.25, 0, 0.3, 1)',
   );
 }
+
+async function removeDuringPreview(page: Page) {
+  for (const playing of [false, true])
+    for (let index = 0; index < 3; index++) {
+      await seed(page);
+      const holds = page.locator('[data-animation-segment][data-kind="hold"]');
+      const removed = await holds.nth(index).getAttribute('data-step-id');
+      await holds.nth(index).click();
+      if (playing)
+        await page
+          .getByRole('button', {name: 'Play animation', exact: true})
+          .click();
+      else
+        await page
+          .getByRole('slider', {name: 'Playhead', exact: true})
+          .click({position: {x: 25, y: 18}});
+      await page.locator('[data-animation-stage]:visible').waitFor();
+      await page.getByRole('button', {name: 'Steps', exact: true}).click();
+      await page
+        .getByRole('menuitem', {name: 'Remove step', exact: true})
+        .click();
+      await page.getByRole('menu').waitFor({state: 'hidden'});
+      assert.equal(await holds.count(), 2);
+      assert.equal(
+        await page
+          .locator(`[data-animation-segment][data-step-id="${removed}"]`)
+          .count(),
+        0,
+      );
+      await page.locator('[data-animation-stage]:visible').waitFor();
+      await page.waitForFunction(async removed => {
+        const db = await new Promise<IDBDatabase>(resolve => {
+          const request = indexedDB.open('keyval-store');
+          request.onsuccess = () => resolve(request.result);
+        });
+        try {
+          const saved = await new Promise<{
+            animation?: {steps: {id: string}[]};
+          }>(resolve => {
+            const request = db
+              .transaction('keyval')
+              .objectStore('keyval')
+              .get('document');
+            request.onsuccess = () => resolve(request.result);
+          });
+          return (
+            saved?.animation?.steps.length === 2 &&
+            saved.animation.steps.every(step => step.id !== removed)
+          );
+        } finally {
+          db.close();
+        }
+      }, removed);
+      await page.getByRole('button', {name: 'Steps', exact: true}).click();
+      for (const name of [
+        'Duplicate as next step',
+        'Move earlier',
+        'Move later',
+        'Remove step',
+      ])
+        assert.equal(
+          await page
+            .getByRole('menuitem', {name, exact: true})
+            .getAttribute('aria-disabled'),
+          'true',
+        );
+      await page.keyboard.press('Escape');
+    }
+}
+
+async function keyboardDetails(page: Page) {
+  const holds = page.locator('[data-animation-segment]');
+  await holds.first().focus();
+  await page.keyboard.press('ArrowDown');
+  const transition = holds.nth(1);
+  assert.ok(
+    await transition.evaluate(element => element === document.activeElement),
+  );
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('Tab');
+  const input = page.locator('#animationDuration-input');
+  assert.ok(
+    await input.evaluate(element => element === document.activeElement),
+  );
+  assert.equal(await input.inputValue(), '800');
+  const easing = page.locator('[data-easing-trigger]');
+  for (
+    let i = 0;
+    i < 4 &&
+    !(await easing.evaluate(element => element === document.activeElement));
+    i++
+  )
+    await page.keyboard.press('Tab');
+  assert.ok(
+    await easing.evaluate(element => element === document.activeElement),
+  );
+  await page.keyboard.press('Tab');
+  assert.ok(
+    await page
+      .getByRole('button', {name: 'Apply to all', exact: true})
+      .evaluate(element => element === document.activeElement),
+  );
+}
+
+async function playFocus(page: Page) {
+  for (const command of [false, true]) {
+    await seed(page);
+    if (command) {
+      await page.keyboard.press('ControlOrMeta+k');
+      await page.getByRole('combobox').fill('Play or pause the animation');
+      await page.keyboard.press('Enter');
+    } else
+      await page
+        .getByRole('button', {name: 'Play animation', exact: true})
+        .click();
+    const stage = page.locator('[data-animation-stage]:visible');
+    await stage.waitFor();
+    await page.waitForFunction(() =>
+      document.activeElement?.hasAttribute('data-animation-stage'),
+    );
+    await page.keyboard.press('b');
+    await page.waitForFunction(
+      () => window.editorStore.animation.playback().state === 'editing',
+    );
+    assert.ok(
+      await page
+        .locator('.cm-content[contenteditable="true"]')
+        .first()
+        .evaluate(element => element === document.activeElement),
+    );
+    assert.ok(
+      await page
+        .locator('.cm-content[contenteditable="true"]')
+        .first()
+        .innerText()
+        .then(text => text.includes('b')),
+    );
+  }
+}
+
+async function customBlur(page: Page) {
+  await page.locator('[data-animation-segment]').nth(1).click();
+  await page.locator('[data-easing-trigger]').click();
+  await page.getByRole('tab', {name: 'Custom', exact: true}).click();
+  const input = page.getByRole('textbox', {name: 'Custom', exact: true});
+  await input.fill('cubic-bezier(0.3, 0.2, 0.7, 0.8)');
+  await input.press('Tab');
+  assert.equal(
+    await page.evaluate(
+      () => window.editorStore.animation.settings().steps[1].transition?.easing,
+    ),
+    'cubic-bezier(0.3, 0.2, 0.7, 0.8)',
+  );
+  await input.fill('cubic-bezier(0, 0, 1, 1)');
+  await input.press('Enter');
+  assert.ok(
+    await input.evaluate(element => element === document.activeElement),
+  );
+  await input.press('Escape');
+}
+
+async function overflow(page: Page) {
+  // Repeated tabs are legitimate steps; setup a long document, then use its controls.
+  await page.evaluate(() => {
+    for (let i = 0; i < 37; i++)
+      window.editorStore.animation.actions.addStep('a');
+  });
+  const track = page.locator('[data-animation-track]');
+  const scroller = track.locator('../..');
+  assert.ok(
+    await scroller.evaluate(
+      element => element.scrollWidth > element.clientWidth,
+    ),
+  );
+  await page.locator('[data-animation-segment]').last().focus();
+  assert.ok(await scroller.evaluate(element => element.scrollLeft > 0));
+  const before = Number(
+    await page
+      .locator('[data-animation-segment]')
+      .last()
+      .getAttribute('aria-valuenow'),
+  );
+  await page.keyboard.press('ArrowRight');
+  assert.equal(
+    Number(await page.locator('#animationDuration-input').inputValue()),
+    before + 100,
+  );
+  const boxes = await track.evaluate(element => {
+    const track = element.getBoundingClientRect();
+    const ruler = element.previousElementSibling!.getBoundingClientRect();
+    const last = element.lastElementChild!.getBoundingClientRect();
+    return {
+      track: {left: track.left, right: track.right},
+      ruler: {left: ruler.left, right: ruler.right},
+      last: last.right,
+    };
+  });
+  assert.equal(boxes.track.left, boxes.ruler.left);
+  assert.equal(boxes.track.right, boxes.ruler.right);
+  assert.ok(Math.abs(boxes.last - boxes.track.right) < 1);
+  await page
+    .getByRole('slider', {name: 'Playhead', exact: true})
+    .click({position: {x: boxes.track.right - boxes.track.left - 10, y: 18}});
+  assert.ok(
+    await page.evaluate(
+      () =>
+        window.editorStore.animation.playhead() >
+        window.editorStore.animation.durationMs() * 0.95,
+    ),
+  );
+}
+async function controls(page: Page) {
+  await page.keyboard.press('ControlOrMeta+k');
+  await page.getByRole('combobox').fill('Animate');
+  await page.getByRole('option', {name: 'Animate', exact: true}).click();
+  await page.waitForFunction(() =>
+    document.activeElement?.hasAttribute('data-animate-toggle'),
+  );
+  await page.keyboard.press('ControlOrMeta+k');
+  await page.getByRole('combobox').fill('Animate');
+  await page.getByRole('option', {name: 'Animate', exact: true}).click();
+  await page.waitForFunction(() =>
+    document
+      .querySelector('[data-animate-panel]')
+      ?.contains(document.activeElement),
+  );
+  await page.locator('[data-animation-segment]').nth(1).click();
+  if (page.viewportSize()!.width < 768) {
+    for (const control of [
+      page.getByRole('button', {name: 'Steps', exact: true}),
+      page.locator('[data-animate-panel] button[aria-label=Header]:visible'),
+      page.locator('[data-easing-trigger]'),
+      page.getByRole('button', {name: 'Apply to all', exact: true}),
+    ])
+      assert.ok((await control.boundingBox())!.height >= 40);
+  }
+  await page.locator('[data-settings-trigger]').click();
+  await page.locator('[data-settings-section="export"]').click();
+  const png = page
+    .locator('[data-setting=export-format]')
+    .getByRole('tab', {name: 'PNG', exact: true});
+  await png.focus();
+  await page.keyboard.press('Escape');
+  assert.ok(
+    await page.locator('[data-settings-section=general]').isVisible(),
+    'Escape on ordinary segmented controls retains the Settings dialog',
+  );
+  await page.getByRole('button', {name: 'Close', exact: true}).click();
+}
 const lanes = {
+  Controls: controls,
+  RemoveDuringPreview: removeDuringPreview,
+  KeyboardDetails: keyboardDetails,
+  PlayFocus: playFocus,
+  CustomBlur: customBlur,
+  Overflow: overflow,
   Easing: easing,
   Resize: resize,
   Nudge: nudge,
@@ -645,17 +964,22 @@ try {
       const page = await openEditor(context, layout);
       page.setDefaultTimeout(10000);
       page.setDefaultNavigationTimeout(120000);
-      page.on('pageerror', error =>
-        console.error(`PAGE ${layout}`, error.message),
-      );
+      const errors: string[] = [];
+      page.on('pageerror', error => errors.push(error.stack ?? error.message));
+      page.on('console', message => {
+        if (message.text().includes('Cannot remove nonexistent'))
+          errors.push(message.text());
+      });
       try {
         await load(page);
         for (const [name, run] of Object.entries(lanes)) {
           if (args.lane && !args.lane.includes(name)) continue;
           const label = `${name} ${layout} ${viewport.width}`;
           try {
+            errors.length = 0;
             await seed(page);
             await run(page);
+            assert.deepEqual(errors, [], 'no uncaught browser errors');
             console.log(`PASS ${label}`);
             passed++;
           } catch (error) {
