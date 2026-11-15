@@ -177,12 +177,12 @@ export default function Inspector(props: VariantProps) {
   // One section at a time. All may be closed, which leaves the summaries.
   const [openSection, setOpenSection] = createSignal<PanelId | null>('themes');
   const {animation} = getEditorStore();
+  const [sheet, setSheet] = createSignal<'short' | 'tall'>('short');
   createEffect(
     on(animation.open, open => {
       if (open) setSheet('short');
     }),
   );
-  const [sheet, setSheet] = createSignal<'short' | 'tall'>('short');
   // How far down the page the layout ends, which sets how tall the sheet
   // may grow. The page's header is above the root.
   const [rootHeight, setRootHeight] = createSignal(innerHeight);

@@ -17,7 +17,6 @@ export const DURATION_LIMITS = {
   transitionMs: {min: 100, max: 5_000},
 } as const;
 export const EASINGS = ['smooth', 'snappy', 'strong', 'linear'] as const;
-export const FRAME_RATES = [24, 30, 50, 60] as const;
 export type AnimationDraft = Omit<AnimationSettings, 'steps'> & {
   steps: readonly AnimationStepSettings[];
 };
@@ -29,9 +28,9 @@ export type AnimationSegment = SegmentSelection & {
 };
 export const EMPTY_DRAFT: AnimationDraft = {
   steps: [],
-  transitionMs: 700,
-  easing: 'smooth',
-  fps: 30,
+  transitionMs: ANIMATION_DEFAULTS.transitionMs,
+  easing: ANIMATION_DEFAULTS.easing,
+  fps: ANIMATION_DEFAULTS.fps,
   header: {mode: 'tab', title: ''},
 };
 export const clampDuration = (
@@ -90,18 +89,18 @@ export function parseDraft(value: unknown): AnimationDraft {
     steps,
     transitionMs: finite(value.transitionMs)
       ? clampDuration(value.transitionMs, DURATION_LIMITS.transitionMs)
-      : 700,
+      : ANIMATION_DEFAULTS.transitionMs,
     easing:
       typeof value.easing === 'string'
-        ? (parseEasing(value.easing) ?? 'smooth')
-        : 'smooth',
+        ? (parseEasing(value.easing) ?? ANIMATION_DEFAULTS.easing)
+        : ANIMATION_DEFAULTS.easing,
     fps:
       value.fps === 24 ||
       value.fps === 30 ||
       value.fps === 50 ||
       value.fps === 60
         ? value.fps
-        : 30,
+        : ANIMATION_DEFAULTS.fps,
     header: {
       mode:
         header.mode === 'title' || header.mode === 'tabs' ? header.mode : 'tab',
@@ -114,23 +113,27 @@ export function parseDraft(value: unknown): AnimationDraft {
 }
 
 export const seedSteps = (editorIds: readonly string[]) =>
-  editorIds.map(editorId => ({id: editorId, editorId, holdMs: 800}));
+  editorIds.map(editorId => ({
+    id: editorId,
+    editorId,
+    holdMs: ANIMATION_DEFAULTS.holdMs,
+  }));
 export function reconcileSteps(
   draft: AnimationDraft,
   editorIds: NonEmpty<string>,
 ): AnimationSettings {
   const tabs = new Set(editorIds);
   const kept = draft.steps.filter(step => tabs.has(step.editorId));
-  const [
-    first = {id: editorIds[0], editorId: editorIds[0], holdMs: 800},
-    ...rest
-  ] = kept;
+  const [first = seedSteps([editorIds[0]])[0], ...rest] = kept;
   return {
     ...draft,
     steps: [
       {
         ...first,
-        holdMs: rest.length === 0 && first.holdMs === 0 ? 800 : first.holdMs,
+        holdMs:
+          rest.length === 0 && first.holdMs === 0
+            ? ANIMATION_DEFAULTS.holdMs
+            : first.holdMs,
       },
       ...rest,
     ],

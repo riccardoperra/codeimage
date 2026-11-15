@@ -32,12 +32,6 @@ import {
   type AnimationDraft,
   type SegmentSelection,
 } from './animationSettings';
-export {
-  DURATION_LIMITS,
-  EASINGS,
-  FRAME_RATES,
-  parseAnimationSettings,
-} from './animationSettings';
 
 // `playing` keeps the clock time at which the playhead was at 0, so the
 // state stays the same while the playhead moves.
@@ -415,9 +409,6 @@ export function createAnimationStore(
               : {title: header.title.trim().slice(0, 80)}),
           },
         }));
-      },
-      setFps(fps: AnimationSettings['fps']) {
-        update(settings => ({...settings, fps}));
       },
       playTransition(stepId: string) {
         cancelEditingFocus();
