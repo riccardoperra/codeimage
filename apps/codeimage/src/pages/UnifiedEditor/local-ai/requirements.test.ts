@@ -63,10 +63,10 @@ describe('checkRequirements', () => {
     expect(find({cores: 2}, 'cpu').status).toBe('unmet');
   });
 
-  it('proves too little memory only under the 8 GB that deviceMemory reports at most', () => {
+  it('never rules on memory, since a GPU can stand in for the RAM', () => {
     expect(find({memory: 4}, 'memory')).toEqual({
       id: 'memory',
-      status: 'unmet',
+      status: 'unknown',
       gb: 4,
     });
     expect(find({memory: 8}, 'memory').status).toBe('unknown');

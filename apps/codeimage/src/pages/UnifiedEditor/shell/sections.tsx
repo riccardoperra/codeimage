@@ -60,7 +60,11 @@ import {
 import type {ModelState} from '../local-ai/language-model';
 import {languageModel} from '../local-ai/language-model';
 import type {Requirement, RequirementStatus} from '../local-ai/requirements';
-import {checkRequirements, readEnvironment} from '../local-ai/requirements';
+import {
+  checkRequirements,
+  MEMORY_CAP,
+  readEnvironment,
+} from '../local-ai/requirements';
 import {LayoutPreview} from './previews';
 import type {SectionId} from './settings-state';
 import {SECTIONS, settings} from './settings-state';
@@ -318,7 +322,7 @@ function requirementNote(t: Translate, requirement: Requirement) {
         ? t('localAi.unknown.cpu')
         : t('localAi.found.cpu', {cores: String(requirement.cores)});
     case 'memory':
-      return requirement.status === 'unmet'
+      return requirement.gb !== undefined && requirement.gb < MEMORY_CAP
         ? t('localAi.found.memory', {gb: String(requirement.gb)})
         : t('localAi.unknown.memory');
     case 'disk':

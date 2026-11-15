@@ -418,8 +418,8 @@ function verifyFailedDownload({fresh, out}) {
       assert.equal(await statusOf(row, 'cpu'), 'met', '8 cores are enough');
       assert.equal(
         await statusOf(row, 'memory'),
-        'unmet',
-        '4 GB is too little',
+        'unknown',
+        'a GPU can stand in for 4 GB of RAM',
       );
       assert.equal(await statusOf(row, 'disk'), 'unknown');
       assert.equal(await statusOf(row, 'setting'), 'unknown');

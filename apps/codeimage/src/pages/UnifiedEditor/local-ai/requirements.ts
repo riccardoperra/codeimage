@@ -29,7 +29,7 @@ export type Requirement =
       readonly status: RequirementStatus;
       readonly cores?: number;
     }
-  | {readonly id: 'memory'; readonly status: 'unmet'; readonly gb: number}
+  /** Never met or unmet: a GPU with more than 4 GB of VRAM also qualifies, and no page can read VRAM. */
   | {readonly id: 'memory'; readonly status: 'unknown'; readonly gb?: number}
   | {readonly id: 'disk'; readonly status: 'unknown'}
   | {readonly id: 'setting'; readonly status: 'unknown'};
@@ -38,7 +38,7 @@ export const MIN_CHROME = 148;
 const MIN_MACOS = 13;
 const MIN_CORES = 4;
 // deviceMemory stops at 8, so only a lower value proves less than 16 GB.
-const MEMORY_CAP = 8;
+export const MEMORY_CAP = 8;
 
 const major = (version: string | undefined) => {
   const value = Number.parseInt(version ?? '', 10);
@@ -102,9 +102,7 @@ export function checkRequirements(env: Environment): readonly Requirement[] {
     cores === undefined
       ? {id: 'cpu', status: 'unknown'}
       : {id: 'cpu', status: cores >= MIN_CORES ? 'met' : 'unmet', cores},
-    memory === undefined || memory >= MEMORY_CAP
-      ? {id: 'memory', status: 'unknown', gb: memory}
-      : {id: 'memory', status: 'unmet', gb: memory},
+    {id: 'memory', status: 'unknown', gb: memory},
     {id: 'disk', status: 'unknown'},
     {id: 'setting', status: 'unknown'},
   ];
