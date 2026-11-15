@@ -52,7 +52,7 @@ export function mp4Config(size: Size, fps: VideoFps): Mp4Config {
         Math.max(500_000, Math.round(width * height * fps * 0.075)),
       ),
       bitrateMode: 'variable',
-      latencyMode: 'realtime',
+      latencyMode: 'quality',
       hardwareAcceleration: 'no-preference',
       avc: {format: 'avc'},
     },
@@ -163,7 +163,13 @@ export async function createMp4Encoder(config: Mp4Config) {
   const encoder = new VideoEncoder({
     output: (chunk, meta) => {
       writing = writing.then(() =>
-        source.add(EncodedPacket.fromEncodedChunk(chunk), meta),
+        source.add(EncodedPacket.fromEncodedChunk(chunk), {
+          ...meta,
+          decoderConfig: meta?.decoderConfig && {
+            ...meta.decoderConfig,
+            colorSpace: config.colorSpace,
+          },
+        }),
       );
       writing.catch(error => {
         failure = error;
