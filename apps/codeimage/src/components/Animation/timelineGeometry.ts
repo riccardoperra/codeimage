@@ -65,6 +65,18 @@ export function timelineGeometry(
     gap,
     timeToX,
     xToTime,
+    ticks: (stepMs: number, spacing = 64) => {
+      let previous = -Infinity;
+      return Array.from(
+        {length: Math.floor(durationMs / stepMs) + 1},
+        (_, index) => index * stepMs,
+      ).filter(ms => {
+        const x = timeToX(ms);
+        if (x - previous < spacing) return false;
+        previous = x;
+        return true;
+      });
+    },
     resizedDuration: (initial: number, deltaX: number) =>
       initial + deltaX / Math.max(Number.EPSILON, scale),
   };

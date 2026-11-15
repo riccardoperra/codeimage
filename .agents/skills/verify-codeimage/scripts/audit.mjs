@@ -1159,8 +1159,18 @@ export async function audit({page, context, base, out, server}) {
           await page.getByRole('button', {name: 'Steps', exact: true}).count(),
           0,
         );
-        await rows.nth(1).tap();
-        await sheet.waitFor();
+        // The sheet takes focus just after it shows and returns it just after
+        // it leaves. Typing or reading focus sooner races the dialog.
+        const openSheet = async row => {
+          await row.tap();
+          await sheet.waitFor();
+          await page.waitForFunction(() =>
+            document
+              .querySelector('[data-animation-step-sheet]')
+              ?.contains(document.activeElement),
+          );
+        };
+        await openSheet(rows.nth(1));
         await hold.fill('1234');
         await hold.press('Escape');
         assert.equal(await hold.inputValue(), '800', 'first Escape reverts');
@@ -1168,10 +1178,19 @@ export async function audit({page, context, base, out, server}) {
         await hold.press('Escape');
         await sheet.waitFor({state: 'hidden'});
         assert.ok(
-          await rows.nth(1).evaluate(el => el === document.activeElement),
+          await page
+            .waitForFunction(
+              row => row === document.activeElement,
+              await rows.nth(1).elementHandle(),
+              {timeout: 2000},
+            )
+            .then(
+              () => true,
+              () => false,
+            ),
           'sheet returns focus to row',
         );
-        await rows.nth(1).tap();
+        await openSheet(rows.nth(1));
         await hold.fill('0');
         await hold.press('Enter');
         assert.equal(await hold.inputValue(), '0');
@@ -1220,6 +1239,11 @@ export async function audit({page, context, base, out, server}) {
           .getByRole('button', {name: 'Close step settings', exact: true})
           .tap();
         await sheet.waitFor({state: 'hidden'});
+        assert.match(
+          await rows.nth(1).ariaSnapshot(),
+          /Hold \(ms\): 0 ms/,
+          'row exposes its hold duration to assistive technology',
+        );
         for (const control of [
           ruler,
           page.getByRole('button', {name: 'Play animation', exact: true}),
@@ -1571,6 +1595,20 @@ export async function audit({page, context, base, out, server}) {
               target * 2 - 1,
             'short segments lose their labels',
           );
+        const labels = await page
+          .locator('[data-animation-tick]')
+          .evaluateAll(ticks =>
+            ticks.map(tick => {
+              const box = tick.getBoundingClientRect();
+              return {left: box.left, right: box.right};
+            }),
+          );
+        assert.ok(
+          labels.every(
+            (box, index) => index === 0 || box.left >= labels[index - 1].right,
+          ),
+          `${target} steps: ruler labels stay apart`,
+        );
         await shot(`animate-desktop-${name}-${target}-steps`);
         const indices = [
           ...new Set([

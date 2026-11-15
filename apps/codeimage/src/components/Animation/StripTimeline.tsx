@@ -195,10 +195,7 @@ export function StripTimeline(props: {overview?: boolean}) {
       [500, 1000, 2000, 5000, 10000, 30000, 60000, 120000, 300000].find(
         ms => axis() / ms <= count,
       ) ?? axis();
-    return Array.from(
-      {length: Math.floor(axis() / step) + 1},
-      (_, i) => i * step,
-    );
+    return geometry().ticks(step);
   });
   const at = (event: PointerEvent) => {
     const box = ruler.getBoundingClientRect();
