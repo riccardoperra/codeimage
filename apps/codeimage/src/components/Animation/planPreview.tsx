@@ -121,6 +121,7 @@ export async function measurePreview(
   style: CodeStyle,
   header: AnimationHeader,
   targetSize?: Size,
+  natural = true,
 ): Promise<PreviewMeasurement> {
   const languages = await Promise.all(
     tabs.map(tab => loadLanguage(tab.languageId, tab.tabName)),
@@ -168,7 +169,7 @@ export async function measurePreview(
         () => (
           <FrameView
             targetSize={targetSize}
-            natural
+            natural={natural}
             header={header}
             activeTabId={tab.id}
             code={codeView(tab, languages[index])}

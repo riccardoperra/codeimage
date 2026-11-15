@@ -114,9 +114,10 @@ export function createAnimationExporter() {
 }
 export type AnimationExporter = ReturnType<typeof createAnimationExporter>;
 
-export function AnimationExportDialog(props: {
+export function AnimationExportContent(props: {
   exporter: AnimationExporter;
   onStart: () => void;
+  onImage?: () => void;
 }) {
   const [t, {locale}] = useI18n<AppLocaleEntries>();
   const exporter = () => props.exporter;
@@ -194,10 +195,6 @@ export function AnimationExportDialog(props: {
   const colorInput = (input: HTMLInputElement) => {
     input.type = 'color';
   };
-  const keepOpen = (event: Event) => event.preventDefault();
-  const closeChanged = (open: boolean) => {
-    if (!open) exporter().close();
-  };
   const close = () => exporter().close();
   const save = () => {
     const value = done();
@@ -225,180 +222,205 @@ export function AnimationExportDialog(props: {
     }
   };
   return (
-    <Dialog open={exporter().open()} onOpenChange={closeChanged} modal={false}>
+    <div data-animation-export>
+      <p class={styles.hint}>{t('animation.export.description')}</p>
+      <DialogPanelContent>
+        <div class={styles.videoFields}>
+          <div class={styles.videoRow}>
+            <span>{t('animation.export.format')}</span>
+            <RadioList
+              size="sm"
+              value="mp4"
+              aria-label={t('animation.export.format')}
+              disabled={!!unsupported()}
+            >
+              <RadioListItem value="mp4" label="MP4" />
+            </RadioList>
+          </div>
+          <div class={styles.videoRow}>
+            <span>{t('animation.export.fps')}</span>
+            <Select<VideoFps>
+              size="sm"
+              aria-label={t('animation.export.fps')}
+              options={[24, 30, 50, 60]}
+              value={exporter().fps()}
+              onChange={exporter().changeFps}
+              itemLabel={fpsLabel}
+              optionTextValue={fpsLabel}
+              valueComponent={fpsValue}
+              disabled={exporter().busy()}
+              disallowEmptySelection
+            />
+          </div>
+          <div class={styles.videoRow}>
+            <span>{t('animation.export.outputSize')}</span>
+            <Select<'current' | '1080p'>
+              size="sm"
+              aria-label={t('animation.export.outputSize')}
+              options={['current', '1080p']}
+              value={exporter().size()}
+              onChange={exporter().changeSize}
+              itemLabel={sizeLabel}
+              optionTextValue={sizeLabel}
+              valueComponent={sizeValue}
+              disabled={exporter().busy()}
+              disallowEmptySelection
+            />
+          </div>
+          <Show when={exporter().scalable()}>
+            <div class={styles.videoRow}>
+              <span>{t('animation.export.scale')}</span>
+              <Select<1 | 2 | 3>
+                size="sm"
+                aria-label={t('animation.export.scale')}
+                options={[1, 2, 3]}
+                value={exporter().scale()}
+                onChange={exporter().changeScale}
+                itemLabel={scaleLabel}
+                optionTextValue={scaleLabel}
+                valueComponent={scaleValue}
+                disabled={exporter().busy()}
+                disallowEmptySelection
+              />
+            </div>
+          </Show>
+          <Show when={exporter().needsMatte()}>
+            <TextField
+              size="sm"
+              label={t('animation.export.background')}
+              description={t('animation.export.backgroundHint')}
+              ref={colorInput}
+              value={exporter().matte()}
+              onChange={exporter().changeMatte}
+              disabled={exporter().busy()}
+            />
+          </Show>
+          <Show when={summary()}>
+            <div class={styles.hint}>{summaryLabel()}</div>
+          </Show>
+          <Show when={state().kind === 'checking'}>
+            <div role="status">{t('animation.export.checking')}</div>
+          </Show>
+          <Show when={unsupported()}>
+            {reason => (
+              <p role="status" class={styles.hint}>
+                {reason()}
+              </p>
+            )}
+          </Show>
+          <Show when={failure()}>
+            {cause => (
+              <p role="alert">
+                {t('animation.export.failed', {cause: cause()})}
+              </p>
+            )}
+          </Show>
+          <Show
+            when={state().kind === 'preparing' || state().kind === 'encoding'}
+          >
+            <div role="status" class={styles.videoFields}>
+              <Progress
+                aria-label={t('animation.export.progress')}
+                maxValue={progress().total}
+                value={progress().done}
+              >
+                <Progress.Track class={styles.videoProgress}>
+                  <Progress.Fill class={styles.videoProgressFill} />
+                </Progress.Track>
+              </Progress>
+              <span class={styles.hint}>
+                {t('animation.export.frames', {
+                  done: number(progress().done),
+                  total: number(progress().total),
+                })}
+              </span>
+            </div>
+          </Show>
+          <Show when={done()}>
+            <div role="status">{doneLabel()}</div>
+          </Show>
+        </div>
+      </DialogPanelContent>
+      <DialogPanelFooter>
+        <div class={styles.confirmActions}>
+          <Button size="sm" theme="secondary" onClick={close}>
+            {exporter().busy()
+              ? t('animation.export.cancel')
+              : t('common.close')}
+          </Button>
+          <Show when={failure()}>
+            <Button size="sm" theme="primary" onClick={retry}>
+              {t('animation.export.retry')}
+            </Button>
+          </Show>
+          <Show
+            when={!failure() && done()}
+            fallback={
+              <Button
+                size="sm"
+                theme="primary"
+                hidden={!!failure()}
+                disabled={!canStart()}
+                onClick={props.onStart}
+              >
+                {t('animation.export.start')}
+              </Button>
+            }
+          >
+            <Show when={canShare()}>
+              <Button size="sm" theme="secondary" onClick={share}>
+                {t('animation.export.share')}
+              </Button>
+            </Show>
+            <Button size="sm" theme="primary" onClick={save}>
+              {t('animation.export.download')}
+            </Button>
+          </Show>
+        </div>
+      </DialogPanelFooter>
+      <Show when={props.onImage}>
+        <Button
+          theme="secondary"
+          size="sm"
+          onClick={props.onImage}
+          disabled={exporter().busy()}
+        >
+          {t('animation.export.asImage')}
+        </Button>
+      </Show>
+    </div>
+  );
+}
+
+export function AnimationExportDialog(props: {
+  exporter: AnimationExporter;
+  onStart: () => void;
+}) {
+  const [t] = useI18n<AppLocaleEntries>();
+  const keepOpen = (event: Event) => event.preventDefault();
+  const closeChanged = (open: boolean) => {
+    if (!open) props.exporter.close();
+  };
+  return (
+    <Dialog
+      open={props.exporter.open()}
+      onOpenChange={closeChanged}
+      modal={false}
+    >
       <Dialog.Portal>
-        <Show when={!exporter().busy()}>
+        <Show when={!props.exporter.busy()}>
           <div class={styles.videoBackdrop} />
         </Show>
         <div
           class={styles.videoDialog}
-          data-video-running={exporter().busy() ? '' : undefined}
+          data-video-running={props.exporter.busy() ? '' : undefined}
         >
           <Dialog.Content
             class={styles.confirmationPanel}
-            data-animation-export
             onInteractOutside={keepOpen}
           >
             <Dialog.Title>{t('animation.export.title')}</Dialog.Title>
-            <Dialog.Description class={styles.hint}>
-              {t('animation.export.description')}
-            </Dialog.Description>
-            <DialogPanelContent>
-              <div class={styles.videoFields}>
-                <div class={styles.videoRow}>
-                  <span>{t('animation.export.format')}</span>
-                  <RadioList
-                    size="sm"
-                    value="mp4"
-                    aria-label={t('animation.export.format')}
-                    disabled={!!unsupported()}
-                  >
-                    <RadioListItem value="mp4" label="MP4" />
-                  </RadioList>
-                </div>
-                <div class={styles.videoRow}>
-                  <span>{t('animation.export.fps')}</span>
-                  <Select<VideoFps>
-                    size="sm"
-                    aria-label={t('animation.export.fps')}
-                    options={[24, 30, 50, 60]}
-                    value={exporter().fps()}
-                    onChange={exporter().changeFps}
-                    itemLabel={fpsLabel}
-                    optionTextValue={fpsLabel}
-                    valueComponent={fpsValue}
-                    disabled={exporter().busy()}
-                    disallowEmptySelection
-                  />
-                </div>
-                <div class={styles.videoRow}>
-                  <span>{t('animation.export.outputSize')}</span>
-                  <Select<'current' | '1080p'>
-                    size="sm"
-                    aria-label={t('animation.export.outputSize')}
-                    options={['current', '1080p']}
-                    value={exporter().size()}
-                    onChange={exporter().changeSize}
-                    itemLabel={sizeLabel}
-                    optionTextValue={sizeLabel}
-                    valueComponent={sizeValue}
-                    disabled={exporter().busy()}
-                    disallowEmptySelection
-                  />
-                </div>
-                <Show when={exporter().scalable()}>
-                  <div class={styles.videoRow}>
-                    <span>{t('animation.export.scale')}</span>
-                    <Select<1 | 2 | 3>
-                      size="sm"
-                      aria-label={t('animation.export.scale')}
-                      options={[1, 2, 3]}
-                      value={exporter().scale()}
-                      onChange={exporter().changeScale}
-                      itemLabel={scaleLabel}
-                      optionTextValue={scaleLabel}
-                      valueComponent={scaleValue}
-                      disabled={exporter().busy()}
-                      disallowEmptySelection
-                    />
-                  </div>
-                </Show>
-                <Show when={exporter().needsMatte()}>
-                  <TextField
-                    size="sm"
-                    label={t('animation.export.background')}
-                    description={t('animation.export.backgroundHint')}
-                    ref={colorInput}
-                    value={exporter().matte()}
-                    onChange={exporter().changeMatte}
-                    disabled={exporter().busy()}
-                  />
-                </Show>
-                <Show when={summary()}>
-                  <div class={styles.hint}>{summaryLabel()}</div>
-                </Show>
-                <Show when={state().kind === 'checking'}>
-                  <div role="status">{t('animation.export.checking')}</div>
-                </Show>
-                <Show when={unsupported()}>
-                  {reason => (
-                    <p role="status" class={styles.hint}>
-                      {reason()}
-                    </p>
-                  )}
-                </Show>
-                <Show when={failure()}>
-                  {cause => (
-                    <p role="alert">
-                      {t('animation.export.failed', {cause: cause()})}
-                    </p>
-                  )}
-                </Show>
-                <Show
-                  when={
-                    state().kind === 'preparing' || state().kind === 'encoding'
-                  }
-                >
-                  <div role="status" class={styles.videoFields}>
-                    <Progress
-                      aria-label={t('animation.export.progress')}
-                      maxValue={progress().total}
-                      value={progress().done}
-                    >
-                      <Progress.Track class={styles.videoProgress}>
-                        <Progress.Fill class={styles.videoProgressFill} />
-                      </Progress.Track>
-                    </Progress>
-                    <span class={styles.hint}>
-                      {t('animation.export.frames', {
-                        done: number(progress().done),
-                        total: number(progress().total),
-                      })}
-                    </span>
-                  </div>
-                </Show>
-                <Show when={done()}>
-                  <div role="status">{doneLabel()}</div>
-                </Show>
-              </div>
-            </DialogPanelContent>
-            <DialogPanelFooter>
-              <div class={styles.confirmActions}>
-                <Button size="sm" theme="secondary" onClick={close}>
-                  {exporter().busy()
-                    ? t('animation.export.cancel')
-                    : t('common.close')}
-                </Button>
-                <Show when={failure()}>
-                  <Button size="sm" theme="primary" onClick={retry}>
-                    {t('animation.export.retry')}
-                  </Button>
-                </Show>
-                <Show
-                  when={!failure() && done()}
-                  fallback={
-                    <Button
-                      size="sm"
-                      theme="primary"
-                      hidden={!!failure()}
-                      disabled={!canStart()}
-                      onClick={props.onStart}
-                    >
-                      {t('animation.export.start')}
-                    </Button>
-                  }
-                >
-                  <Show when={canShare()}>
-                    <Button size="sm" theme="secondary" onClick={share}>
-                      {t('animation.export.share')}
-                    </Button>
-                  </Show>
-                  <Button size="sm" theme="primary" onClick={save}>
-                    {t('animation.export.download')}
-                  </Button>
-                </Show>
-              </div>
-            </DialogPanelFooter>
+            <AnimationExportContent {...props} />
           </Dialog.Content>
         </div>
       </Dialog.Portal>

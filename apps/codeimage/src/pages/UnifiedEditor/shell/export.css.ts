@@ -230,3 +230,17 @@ export const videoBackdrop = style([
   backdrop,
   {zIndex: `calc(${themeVars.zIndex['50']} - 2)`},
 ]);
+
+export const videoPopover = style([
+  surface,
+  {
+    selectors: {
+      '&&': {
+        width: 'min(448px, calc(100vw - 32px))',
+        maxHeight: 'calc(100dvh - 80px)',
+        overflowY: 'auto',
+        padding: themeVars.spacing['4'],
+      },
+    },
+  },
+]);

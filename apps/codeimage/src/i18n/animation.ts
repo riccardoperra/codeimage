@@ -19,6 +19,8 @@ export const animationLocale = {
         background: 'Solid background',
         backgroundHint:
           'MP4 has no transparency. This colour fills the canvas.',
+        video: 'Export video',
+        asImage: 'Export as image',
         format: 'Format',
         fps: 'Frame rate',
         outputSize: 'Output size',
@@ -107,6 +109,8 @@ export const animationLocale = {
         background: 'Sfondo pieno',
         backgroundHint:
           'MP4 non supporta la trasparenza. Questo colore riempie il video.',
+        video: 'Esporta video',
+        asImage: 'Esporta come immagine',
         format: 'Formato',
         fps: 'Fotogrammi al secondo',
         outputSize: 'Dimensioni video',
@@ -196,6 +200,8 @@ export const animationLocale = {
         background: 'Einfarbiger Hintergrund',
         backgroundHint:
           'MP4 unterstützt keine Transparenz. Diese Farbe füllt die Videofläche.',
+        video: 'Video exportieren',
+        asImage: 'Als Bild exportieren',
         format: 'Format',
         fps: 'Bildrate',
         outputSize: 'Videoabmessungen',
@@ -285,6 +291,8 @@ export const animationLocale = {
         background: 'Fondo sólido',
         backgroundHint:
           'MP4 no admite transparencia. Este color rellena el vídeo.',
+        video: 'Exportar vídeo',
+        asImage: 'Exportar como imagen',
         format: 'Formato',
         fps: 'Fotogramas por segundo',
         outputSize: 'Dimensiones del vídeo',

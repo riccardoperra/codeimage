@@ -85,6 +85,7 @@ export function animationSnapshot() {
       codeStyle,
       settings.header,
       output,
+      false,
     );
     const {timeline, languages} = planPreviewTimeline(settings, measured);
     const contentSize = {
@@ -317,6 +318,9 @@ export function animationSnapshot() {
         contentSize,
         css: [
           `html,body{margin:0;padding:0;background:transparent} [data-video-root]{position:relative;overflow:hidden;width:${config.width / pixelRatio}px!important;height:${config.height / pixelRatio}px!important} .cm-editor .cm-scroller{overflow:hidden}`,
+          // A fixed scene box must not reflow a code run at a token boundary.
+          // Takumi needs the intrinsic minimum on both lines and runs.
+          '.cm-content .cm-line,.cm-content .cm-line span{white-space:pre!important;min-width:max-content;word-break:normal;overflow-wrap:normal}',
           windowCss,
           motionCss,
         ].join('\n'),
