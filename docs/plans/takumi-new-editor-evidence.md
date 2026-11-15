@@ -71,3 +71,7 @@ The new UI export flow now includes share, new-tab, clipboard, alt text and secr
 ## Compact panels and line marks through f58f886f
 
 The UI merge applied without conflicts and includes the social-target control fix and compact panel/line-mark integration. 170 app tests, typecheck, lint and production build pass. The actual three-layout probe passes target selection, one durable reload each, exact Square PNGs, Restore defaults and two WASM renders in the ZIP, with no errors or fallback. The earlier image matrices were not rerun.
+
+## UI/main animation-core alignment through 08737514
+
+The merge applies without conflicts, including the animation-core dependency and Plain Text blank-line tokenization fix. A frozen-lockfile install, 214 app tests, typecheck, lint and production build pass. A quick static export comparison passes against Chrome with no page errors, font issues or fallback. Two preceding development probes were interrupted by Vite dependency-optimizer reloads; the server log records reloads during the WASM load. The passing probe disables HMR only on the verification server, with no application config change. The full matrices and three-layout UI probe were not rerun.

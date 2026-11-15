@@ -764,11 +764,40 @@
     ]
   },
   "latestUiAlignment": {
-    "uiHead": "f58f886f",
-    "appTests": 170,
+    "uiHead": "08737514",
+    "appTests": 214,
     "typecheckExit": 0,
     "lintExit": 0,
     "buildExit": 0,
+    "staticParity": {
+      "initial": {
+        "onVsChrome": {
+          "percent": 0.2598752598752599,
+          "width": 1184,
+          "height": 936
+        },
+        "offVsChrome": {
+          "percent": 0.016242203742203743,
+          "width": 1184,
+          "height": 936
+        },
+        "onVsOff": {
+          "percent": 0.27548582236082236,
+          "width": 1184,
+          "height": 936
+        }
+      },
+      "rows": [],
+      "errors": [],
+      "fallback": [],
+      "fontIssues": [],
+      "wasmRequests": [
+        "http://localhost:4403/@fs/Users/riccardoperra/.t3/worktrees/codeimage/takumi-new-editor/node_modules/.pnpm/@takumi-rs+wasm@2.19.0_csstype@3.2.3_react@19.2.4/node_modules/@takumi-rs/wasm/pkg/takumi_wasm_bg.wasm"
+      ]
+    },
+    "staticProbeServerHmr": false,
+    "abortedDevelopmentProbes": 2,
+    "uiProbeHead": "f58f886f",
     "ui": {
       "rows": [
         {
