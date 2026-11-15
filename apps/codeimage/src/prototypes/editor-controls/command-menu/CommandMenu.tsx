@@ -1,3 +1,14 @@
+import {useI18n} from '@codeimage/locale';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import type {AppLocaleEntries} from '../../../i18n';
+import {
+  markCommands,
+  selectedLines,
+  shortcutKeys,
+} from '../../../components/CustomEditor/plugins/lineMarks/controls';
+import {toggleMark} from '../../../components/CustomEditor/plugins/lineMarks/state';
+import {ControlOverlay, controlOverlay} from '../controls/ControlOverlay';
+import {shortcutHelp} from '../controls/ShortcutHelp';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {icons} from '@codeui/kit';
 import {Dialog} from '@kobalte/core/dialog';
@@ -60,6 +71,8 @@ function Commands(
   props: CommandMenuProps & {onRun: (command: Command) => void},
 ) {
   const listId = createUniqueId();
+  const [t] = useI18n<AppLocaleEntries>();
+  const editor = getRootEditorStore();
   const auth = getAuth0State();
   const navigate = useNavigate();
   let input!: HTMLInputElement;
@@ -68,6 +81,17 @@ function Commands(
   const commands = untrack(() => {
     const actions: Action[] = [
       {label: 'Randomize theme and style', run: props.stage.randomize},
+      {label: t('shortcut.buttonAction'), note: '?', run: shortcutHelp.open},
+      ...markCommands.map(command => ({
+        label: t(`lineMarks.shortcut.${command.id}`),
+        note: shortcutKeys(command.key).join(' '),
+        run: () => {
+          const view = editor.activeEditorView();
+          if (!view) return;
+          toggleMark(view, selectedLines(view.state), command.kind);
+          view.focus();
+        },
+      })),
     ];
     if (props.stage.canFormat()) {
       actions.push({
@@ -107,7 +131,7 @@ function Commands(
         ...exportCommands(props.stage.exporter),
         ...settingsCommands(fromOldMenu),
       ],
-      reveal: commandMenu.reveal(),
+      reveal: controlOverlay.open,
     });
   });
 
@@ -290,31 +314,34 @@ export function CommandMenu(props: CommandMenuProps) {
   const run = (command: Command) => {
     getWhatsNew().seen('command-menu');
     giveFocusBack = command.preview !== undefined;
-    if (!command.current) command.run();
     commandMenu.close();
+    if (!command.current) command.run();
   };
 
   return (
-    <Dialog
-      open={commandMenu.isOpen()}
-      onOpenChange={open => {
-        if (!open) commandMenu.close();
-      }}
-    >
-      <Dialog.Portal>
-        <Dialog.Content
-          class={styles.menu}
-          aria-label="Search themes and options"
-          data-command-menu
-          onCloseAutoFocus={event => {
-            event.preventDefault();
-            if (giveFocusBack) commandMenu.opener()?.focus();
-            giveFocusBack = true;
-          }}
-        >
-          <Commands model={props.model} stage={props.stage} onRun={run} />
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
+    <>
+      <ControlOverlay model={props.model} />
+      <Dialog
+        open={commandMenu.isOpen()}
+        onOpenChange={open => {
+          if (!open) commandMenu.close();
+        }}
+      >
+        <Dialog.Portal>
+          <Dialog.Content
+            class={styles.menu}
+            aria-label="Search themes and options"
+            data-command-menu
+            onCloseAutoFocus={event => {
+              event.preventDefault();
+              if (giveFocusBack) commandMenu.opener()?.focus();
+              giveFocusBack = true;
+            }}
+          >
+            <Commands model={props.model} stage={props.stage} onRun={run} />
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog>
+    </>
   );
 }

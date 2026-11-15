@@ -19,7 +19,7 @@ const closing = new Set<() => void>();
 // focus to itself, so a menu opened over one would fight it for focus. A
 // dialog still fading out has already let focus go.
 const OPEN_POPUP =
-  '[aria-haspopup]:not([aria-haspopup="false"])[aria-expanded="true"], [role="alertdialog"]:not([data-closed])';
+  '[aria-haspopup]:not([aria-haspopup="false"])[aria-expanded="true"], [role="alertdialog"]:not([data-closed]), [data-control-overlay]';
 
 /**
  * One command menu for the page. The harness mounts it once for every layout

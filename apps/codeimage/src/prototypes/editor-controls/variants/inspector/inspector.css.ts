@@ -479,7 +479,7 @@ export const quickControls = style({
   '@media': {
     [phone]: {
       display: 'grid',
-      gridTemplateColumns: '0.85fr 1.3fr 0.9fr 1fr',
+      gridTemplateColumns: '40px 0.85fr 1.3fr 0.9fr 1fr',
       gap: '2px',
       selectors: {
         [`${root}[data-sheet='tall'] &`]: {display: 'none'},

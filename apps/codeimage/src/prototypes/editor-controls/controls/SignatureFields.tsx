@@ -256,6 +256,7 @@ export function SignatureProfileField(props: {id?: string}) {
     <div class={styles.profile}>
       <div class={styles.prefixed}>
         <Select<SignaturePlatform>
+          modal
           size="sm"
           aria-label={t('signature.profileSource')}
           options={[...AVATAR_PLATFORMS]}
