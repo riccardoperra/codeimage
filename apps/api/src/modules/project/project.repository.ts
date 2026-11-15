@@ -1,3 +1,7 @@
+import {
+  readFrameExportProperties,
+  writeFrameSignature,
+} from './project.model.js';
 import type * as repository from './project.repository.js';
 import type {
   Project as ProjectRow,
@@ -77,6 +81,9 @@ export async function createProject(
       },
       frame: {
         create: {
+          exportTarget: draft.frame.exportTarget,
+          aspectRatio: draft.frame.aspectRatio,
+          ...writeFrameSignature(draft.frame.signature),
           background: draft.frame.background,
           opacity: draft.frame.opacity,
           radius: draft.frame.radius,
@@ -144,6 +151,9 @@ export async function updateProject(
         },
         frame: {
           update: {
+            exportTarget: changes.frame.exportTarget,
+            aspectRatio: changes.frame.aspectRatio,
+            ...writeFrameSignature(changes.frame.signature),
             background: changes.frame.background,
             opacity: changes.frame.opacity,
             radius: changes.frame.radius,
@@ -236,6 +246,8 @@ function toProject(
   return {
     ...toHeader(row),
     frame: {
+      ...readFrameExportProperties(row.frame),
+      aspectRatio: row.frame.aspectRatio,
       id: row.frame.id,
       background: row.frame.background,
       padding: row.frame.padding,

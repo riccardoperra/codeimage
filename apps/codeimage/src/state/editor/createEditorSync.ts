@@ -5,6 +5,8 @@ import {getFrameState} from '@codeimage/store/editor/frame';
 import {getEditorStore} from '@codeimage/store/editor/index';
 import type {ProjectEditorPersistedState} from '@codeimage/store/editor/model';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
+import {parseSignature} from '@codeimage/store/frame/model';
+import {loadDefaultSignature} from '@codeimage/store/signatures/signatures';
 import {toast} from '@codeimage/ui';
 import {appEnvironment} from '@core/configuration';
 import {createContextProvider} from '@solid-primitives/context';
@@ -83,6 +85,15 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
             editorStore.actions.setFromPersistedState(idbState.editor);
             frameStore.setFromPersistedState(idbState.frame);
             terminalStore.setFromPersistedState(idbState.terminal);
+            return;
+          }
+          // A new local document starts with the default saved signature.
+          if (!idbState) {
+            return loadDefaultSignature().then(signature => {
+              if (signature && !frameStore.store.signature) {
+                frameStore.setSignature(signature);
+              }
+            });
           }
         })
         .catch(() => null);
@@ -143,7 +154,11 @@ function createEditorSyncAdapter(props: ParentProps<{snippetId: string}>) {
       ...data.terminal,
       surface: data.terminal.surface ?? 'solid',
     }));
-    frameStore.setStore(state => ({...state, ...data.frame}));
+    frameStore.setStore(state => ({
+      ...state,
+      ...data.frame,
+      signature: parseSignature(data.frame.signature),
+    }));
   }
 
   async function clone() {

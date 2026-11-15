@@ -9,6 +9,7 @@ import {
   onCleanup,
   onMount,
   Show,
+  untrack,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {Footer} from '../../../../components/Footer/Footer';
@@ -24,6 +25,7 @@ import {FrameActions} from '../../controls/FrameActions';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import type {Panel, PanelId} from './panels';
+import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {PANELS} from './panels';
 import * as styles from './studio.css';
 
@@ -149,6 +151,23 @@ export default function Studio(props: VariantProps) {
         );
     exit.onfinish = () => finishClose(id, returnFocus);
   };
+
+  // A click on the signature in the canvas opens Frame at its Signature group.
+  onCleanup(
+    signatureEditor.register(() => {
+      const frame = PANELS.find(panel => panel.id === 'frame');
+      if (!frame) return;
+      if (untrack(openId) !== 'frame') open(frame);
+      requestAnimationFrame(() => {
+        const row = bodyEl?.querySelector<HTMLElement>(
+          '[data-control="signature.handle"]',
+        );
+        const target = row?.closest('section') ?? row;
+        target?.scrollIntoView({block: 'start', behavior: 'smooth'});
+        row?.querySelector<HTMLElement>('input')?.focus({preventScroll: true});
+      });
+    }),
+  );
 
   const toggle = (panel: Panel) =>
     openId() === panel.id ? close() : open(panel);

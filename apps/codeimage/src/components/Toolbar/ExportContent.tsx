@@ -1,3 +1,4 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import type {SegmentedFieldItem} from '@codeimage/ui';
@@ -18,11 +19,13 @@ import {createSignal, Show} from 'solid-js';
 import {ExportExtension} from '../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../i18n';
 import {ExclamationIcon} from '../Icons/Exclamation';
+import {CopyAltTextButton} from './CopyAltTextButton';
 import * as styles from './ExportContent.css';
 
 export function ExportPopoverContent() {
   const [t] = useI18n<AppLocaleEntries>();
   const exportCanvasStore = getExportCanvasStore();
+  const fixedSize = () => !!getFrameState().exportTarget();
   const [quality, setQuality] = createSignal<number>(100);
 
   const extensionItems: SegmentedFieldItem<ExportExtension>[] = [
@@ -85,23 +88,28 @@ export function ExportPopoverContent() {
                 {t('export.pixelRatio')}
                 <Box as={'span'} marginLeft={3}>
                   <FieldLabelHint>
-                    {exportCanvasStore.get.devicePixelRatio}x
+                    {getFrameState().exportPixelRatio(
+                      exportCanvasStore.get.devicePixelRatio,
+                    )}
+                    x
                   </FieldLabelHint>
                 </Box>
               </FieldLabel>
-              <SegmentedField
-                size={'sm'}
-                value={exportCanvasStore.get.devicePixelRatio}
-                onChange={value =>
-                  exportCanvasStore.set('devicePixelRatio', value)
-                }
-                items={[
-                  {label: '1x', value: 1},
-                  {label: '2x', value: 2},
-                  {label: '3x', value: 3},
-                  {label: '6x', value: 6},
-                ]}
-              />
+              <Show when={!fixedSize()}>
+                <SegmentedField
+                  size={'sm'}
+                  value={exportCanvasStore.get.devicePixelRatio}
+                  onChange={value =>
+                    exportCanvasStore.set('devicePixelRatio', value)
+                  }
+                  items={[
+                    {label: '1x', value: 1},
+                    {label: '2x', value: 2},
+                    {label: '3x', value: 3},
+                    {label: '6x', value: 6},
+                  ]}
+                />
+              </Show>
 
               <HStack
                 spacing={6}
@@ -117,11 +125,14 @@ export function ExportPopoverContent() {
               </HStack>
             </FlexField>
 
+            <div>
+              <CopyAltTextButton />
+            </div>
             <Checkbox
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}
               size={'md'}
-              label={'(Export) Show only active tab'}
+              label={t('exportTabs.showOnlyActiveTab')}
             />
             <Checkbox
               checked={exportCanvasStore.get.oneImagePerTab}

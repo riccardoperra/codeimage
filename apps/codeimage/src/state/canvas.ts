@@ -1,3 +1,4 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {provideAppState} from '@codeimage/store/index';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
@@ -58,6 +59,8 @@ export const ExportCanvasStore = defineStore(() => ({
   })
   .extend(store => ({
     canvasResolution() {
+      const target = getFrameState().exportTarget();
+      if (target) return target.resolution.join('x');
       const canvasSize = store.get.canvasSize;
       const height = Math.ceil(canvasSize.height) * store.get.devicePixelRatio;
       const width = Math.ceil(canvasSize.width) * store.get.devicePixelRatio;

@@ -10,7 +10,7 @@ export interface ExportTab {
 
 export async function renderTabFiles<T extends ExportTab>(
   tabs: readonly T[],
-  render: (tab: T) => Promise<Blob | string>,
+  render: (tab: T) => Promise<Blob | string | undefined>,
 ): Promise<File[]> {
   const files: File[] = [];
   for (const [index, tab] of tabs.entries()) {
@@ -31,13 +31,11 @@ export async function renderTabFiles<T extends ExportTab>(
 export async function deliverTabFiles(
   files: File[],
   mode: ExportMode,
-): Promise<Blob> {
-  if (
-    mode === ExportMode.share &&
-    navigator.canShare?.({files}) &&
-    (await shareFiles(files))
-  ) {
-    return files[0];
+): Promise<Blob | undefined> {
+  if (mode === ExportMode.share && navigator.canShare?.({files})) {
+    const shared = await shareFiles(files);
+    if (shared === null) return undefined;
+    if (shared) return files[0];
   }
   const entries: Record<string, Uint8Array> = {};
   for (const file of files)
@@ -52,12 +50,12 @@ export async function deliverTabFiles(
 // Rendering several tabs can outlast the click's user activation, so a
 // NotAllowedError falls back to the zip. On iOS, "Save image" never settles
 // the share promise (https://bugs.webkit.org/show_bug.cgi?id=231995).
-function shareFiles(files: File[]): Promise<boolean> {
+function shareFiles(files: File[]): Promise<boolean | null> {
   const shared = navigator.share({files}).then(
     () => true,
     (error: unknown) => {
       const name = (error as {name?: string} | null)?.name;
-      if (name === 'AbortError') return true;
+      if (name === 'AbortError') return null;
       if (name === 'NotAllowedError') return false;
       throw error;
     },
@@ -65,6 +63,6 @@ function shareFiles(files: File[]): Promise<boolean> {
   if (!isIOS) return shared;
   return Promise.race([
     shared,
-    new Promise<boolean>(resolve => setTimeout(() => resolve(true), 3000)),
+    new Promise<null>(resolve => setTimeout(() => resolve(null), 3000)),
   ]);
 }

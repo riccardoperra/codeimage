@@ -1,3 +1,4 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -48,6 +49,8 @@ import {ExclamationIcon} from '../Icons/Exclamation';
 import {HintIcon} from '../Icons/Hint';
 import {redactTabCode} from '../CustomEditor/plugins/secrets';
 import {NewDot} from '../WhatsNew/NewDot';
+import * as styles from './ExportButton.css';
+import {CopyAltTextButton} from './CopyAltTextButton';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -165,6 +168,7 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
       });
     });
   };
+  const target = () => getFrameState().exportTarget();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.export);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
@@ -322,23 +326,34 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               <FieldLabel size={'sm'}>
                 {t('export.pixelRatio')}
                 <Box as={'span'} marginLeft={3}>
-                  <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
+                  <FieldLabelHint>
+                    {getFrameState().exportPixelRatio(devicePixelRatio())}x
+                  </FieldLabelHint>
                 </Box>
               </FieldLabel>
-              <RangeField
-                value={devicePixelRatio()}
-                onChange={setDevicePixelRatio}
-                max={3}
-                min={1}
-                step={1}
-              />
+              <Show
+                when={!target()}
+                fallback={
+                  <FieldLabelHint>
+                    {target()?.resolution.join(' × ')}
+                  </FieldLabelHint>
+                }
+              >
+                <RangeField
+                  value={devicePixelRatio()}
+                  onChange={setDevicePixelRatio}
+                  max={3}
+                  min={1}
+                  step={1}
+                />
+              </Show>
             </FlexField>
 
             <Checkbox
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}
               size={'md'}
-              label={'Show only active tab'}
+              label={t('exportTabs.showOnlyActiveTab')}
             />
             <HStack spacing={'1'} alignItems={'center'}>
               <Checkbox
@@ -353,29 +368,32 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
         </DynamicSizedContainer>
       </DialogPanelContent>
       <DialogPanelFooter>
-        <HStack spacing={'2'} justifyContent={'flexEnd'}>
-          <Button
-            block
-            size={'md'}
-            type="button"
-            theme={'secondary'}
-            onClick={() => props.onOpenChange?.(false)}
-          >
-            {t('common.close')}
-          </Button>
+        <div class={styles.footer}>
+          <div class={styles.footerSecondary}>
+            <CopyAltTextButton class={styles.altTextAction} />
+          </div>
+          <div class={styles.footerActions}>
+            <Button
+              size={'md'}
+              type="button"
+              theme={'secondary'}
+              onClick={() => props.onOpenChange?.(false)}
+            >
+              {t('common.close')}
+            </Button>
 
-          <Button
-            block
-            size={'md'}
-            type="submit"
-            theme={'primary'}
-            onClick={onConfirm}
-          >
-            {secretCount() > 0
-              ? t('secrets.exportAnyway')
-              : t('common.confirm')}
-          </Button>
-        </HStack>
+            <Button
+              size={'md'}
+              type="submit"
+              theme={'primary'}
+              onClick={onConfirm}
+            >
+              {secretCount() > 0
+                ? t('secrets.exportAnyway')
+                : t('common.confirm')}
+            </Button>
+          </div>
+        </div>
       </DialogPanelFooter>
     </Dialog>
   );

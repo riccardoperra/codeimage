@@ -2,6 +2,61 @@ import type {Static} from '@sinclair/typebox';
 import {Type} from '@sinclair/typebox';
 import {defineContract, enumLiteral, Nullable} from '../../shared/contract.js';
 
+export const SignaturePositionSchema = Type.Union([
+  Type.Literal('bottom-left'),
+  Type.Literal('bottom-center'),
+  Type.Literal('bottom-right'),
+]);
+
+export const SignatureStyleSchema = Type.Union([
+  Type.Literal('minimal'),
+  Type.Literal('pill'),
+  Type.Literal('card'),
+]);
+
+export const SignaturePlatformSchema = Type.Union([
+  Type.Literal('x'),
+  Type.Literal('bluesky'),
+  Type.Literal('github'),
+  Type.Literal('mastodon'),
+  Type.Literal('linkedin'),
+]);
+
+export const FrameSignatureSchema = Type.Object({
+  handle: Type.String({maxLength: 120}),
+  position: SignaturePositionSchema,
+  // Optional so that a client from before the signature styles still saves.
+  style: Type.Optional(SignatureStyleSchema),
+  platform: Type.Optional(Nullable(SignaturePlatformSchema)),
+  name: Type.Optional(Nullable(Type.String({maxLength: 120}))),
+  /**
+   * `profile` (the public avatar of the profile or handle; `github` from
+   * older clients means the same), or the id of an image the client keeps in
+   * its own assets.
+   */
+  avatar: Type.Optional(Nullable(Type.String({maxLength: 200}))),
+  /** Where the `profile` avatar comes from, such as `bsky.app/profile/ada.dev`. */
+  profile: Type.Optional(Nullable(Type.String({maxLength: 200}))),
+  /**
+   * The saved signature this copy came from. The snippet keeps its own copy,
+   * so editing the saved signature never changes it.
+   */
+  savedId: Type.Optional(Nullable(Type.String({maxLength: 64}))),
+});
+
+export const ExportTargetSchema = Type.Union([
+  Type.Literal('x-landscape'),
+  Type.Literal('square'),
+  Type.Literal('linkedin-portrait'),
+  Type.Literal('open-graph'),
+]);
+
+export const FrameExportProperties = {
+  exportTarget: Type.Optional(Nullable(ExportTargetSchema)),
+  aspectRatio: Type.Optional(Type.Union([Type.Null(), Type.String()])),
+  signature: Type.Optional(Nullable(FrameSignatureSchema)),
+};
+
 export const BaseProjectResponseSchema = Type.Object(
   {
     id: Type.String({format: 'uuid'}),
@@ -25,6 +80,7 @@ export const BaseSnippetEditorTabsSchema = Type.Array(
 );
 
 export const BaseSnippetFrameSchema = Type.Object({
+  ...FrameExportProperties,
   id: Type.String({format: 'uuid'}),
   background: Type.String(),
   padding: Type.Number(),
@@ -70,6 +126,7 @@ export const BaseSnippetEditorOptionsSchema = Type.Object({
 
 export const SnippetFrameCreateRequestSchema = Type.Object(
   {
+    ...FrameExportProperties,
     background: Nullable(Type.String()),
     opacity: Nullable(Type.Number({minimum: 0, maximum: 100, default: 100})),
     radius: Nullable(Type.Number({default: 24})),
@@ -134,6 +191,7 @@ export const ProjectCreateRequestSchema = Type.Object(
 
 export const SnippetFrameCreateResponseSchema = Type.Object(
   {
+    ...FrameExportProperties,
     background: Nullable(Type.String()),
     opacity: Type.Number({minimum: 0, maximum: 100, default: 100}),
     radius: Nullable(Type.Number()),
@@ -150,7 +208,7 @@ export const ProjectCreateResponseSchema = Type.Object(
     createdAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     editorOptions: Type.Required(EditorOptionsCreateRequestSchema),
-    frame: Type.Required(SnippetFrameCreateResponseSchema),
+    frame: SnippetFrameCreateResponseSchema,
     terminal: SnippetTerminalCreateRequestSchema,
     editorTabs: SnippetEditorTabsCreateRequestSchema,
   },
@@ -159,6 +217,7 @@ export const ProjectCreateResponseSchema = Type.Object(
 
 export const SnippetFrameUpdateRequestSchema = Type.Object(
   {
+    ...FrameExportProperties,
     background: Nullable(Type.String()),
     opacity: Type.Number(),
     radius: Nullable(Type.Number()),
@@ -214,7 +273,7 @@ const EditorOptionsUpdateRequestSchema = Type.Object(
 export const ProjectUpdateRequestSchema = Type.Object(
   {
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
-    frame: Type.Required(SnippetFrameUpdateRequestSchema),
+    frame: SnippetFrameUpdateRequestSchema,
     terminal: SnippetTerminalUpdateRequestSchema,
     editors: SnippetEditorTabsUpdateRequestSchema,
   },
@@ -229,7 +288,7 @@ export const ProjectUpdateResponseSchema = Type.Object(
     updatedAt: Type.Unsafe<Date | string>({format: 'date-time'}),
     ownerId: Type.String({format: 'uuid'}),
     editorOptions: Type.Required(EditorOptionsUpdateRequestSchema),
-    frame: Type.Required(SnippetFrameUpdateRequestSchema),
+    frame: SnippetFrameUpdateRequestSchema,
     terminal: SnippetTerminalUpdateRequestSchema,
     editorTabs: SnippetEditorTabsUpdateRequestSchema,
   },
