@@ -1,9 +1,9 @@
 import {assert, test} from 'vitest';
-import type * as DomainModel from '../../../../src/modules/project/domain/index.js';
-import {createProjectRequestMapper} from '../../../../src/modules/project/mapper/create-project-mapper.js';
+import type {ProjectDraft} from '../../../../src/modules/project/project.model.js';
+import {draftFromCreateBody} from '../../../../src/modules/project/project.model.js';
 
 test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with default values', async () => {
-  const result = createProjectRequestMapper({
+  const result = draftFromCreateBody({
     frame: {
       visible: null,
       radius: null,
@@ -25,7 +25,15 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
       borderType: null,
     },
     name: 'Untitled',
-    editors: [],
+    editors: [
+      {
+        code: 'const n = 1;',
+        languageId: 'typescript',
+        tabName: 'n.ts',
+        lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'added'}], focusedLines: [2]},
+      },
+    ],
     editorOptions: {
       fontId: 'fontId',
       showLineNumbers: null,
@@ -37,6 +45,9 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
 
   assert.deepStrictEqual(result, {
     frame: {
+      aspectRatio: null,
+      exportTarget: null,
+      signature: null,
       background: null,
       visible: true,
       padding: 32,
@@ -55,8 +66,17 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
       opacity: 100,
       showHeader: true,
       borderType: null,
+      surface: 'solid',
     },
-    editors: [],
+    editorTabs: [
+      {
+        code: 'const n = 1;',
+        languageId: 'typescript',
+        tabName: 'n.ts',
+        lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'added'}], focusedLines: [2]},
+      },
+    ],
     name: 'Untitled',
     editorOptions: {
       fontId: 'fontId',
@@ -65,5 +85,5 @@ test('should map ProjectCreateRequest to Prisma ProjectCreateRequest with defaul
       fontWeight: 400,
       enableLigatures: true,
     },
-  } as DomainModel.ProjectCreateRequest);
+  } satisfies ProjectDraft);
 });

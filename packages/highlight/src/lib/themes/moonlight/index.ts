@@ -9,6 +9,7 @@ export const moonlightTheme = createTheme({
     label: 'Moonlight',
     previewBackground: `linear-gradient(135deg, #6a3cc0 0%, #240573 100%)`,
     terminal: {
+      accent: '#c5a0eb',
       main: palette.foreground,
       text: '#e4f3fa',
     },

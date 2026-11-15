@@ -173,6 +173,29 @@
         "browser": true,
         "node": true
       }
+    },
+    {
+      "files": ["**/prototypes/editor-controls/variants/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "**/components/WhatsNew",
+                  "**/components/WhatsNew/**",
+                  "**/state/whats-new",
+                  "**/state/whats-new/**",
+                  "@codeimage/store/whats-new",
+                  "@codeimage/store/whats-new/**"
+                ],
+                "message": "Render shared controls or CommandMenuButton. Layouts must not place What's new dots."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

@@ -7,6 +7,7 @@ import {
   websiteTitle,
   websiteUrl,
 } from '~/core/constants';
+import {publicAsset} from '~/core/publicAsset';
 import {breakpoints} from '~/theme/breakpoints';
 import {loadMainData} from '../components/Main/MainData.tsx';
 
@@ -43,7 +44,7 @@ export const Route = createFileRoute('/')({
       {rel: 'canonical', href: websiteUrl},
       {
         rel: 'preload',
-        href: '/landing/codeimage_preview_mobile.webp',
+        href: publicAsset('landing/codeimage_preview_mobile.webp'),
         as: 'image',
         media: `(min-width: ${breakpoints.tablet}px) and (max-width: ${
           breakpoints.desktop - 1
@@ -51,7 +52,7 @@ export const Route = createFileRoute('/')({
       },
       {
         rel: 'preload',
-        href: '/landing/codeimage_preview_desktop.webp',
+        href: publicAsset('landing/codeimage_preview_desktop.webp'),
         as: 'image',
         media: `(min-width: ${breakpoints.desktop}px)`,
       },

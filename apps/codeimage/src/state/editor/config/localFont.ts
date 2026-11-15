@@ -55,8 +55,8 @@ export function withLocalFontManagementPlugin() {
           switchMap(permissionState => {
             setState(state => ({...state, permissionState}));
             if (permissionState === 'granted') {
-              if (useCache && untrack(() => _.get.systemFonts.length > 0)) {
-                return of(_.get.systemFonts).pipe(
+              if (useCache && untrack(() => state().fonts.length > 0)) {
+                return of(state().fonts).pipe(
                   tap(() => setState(state => ({...state, loading: false}))),
                 );
               }

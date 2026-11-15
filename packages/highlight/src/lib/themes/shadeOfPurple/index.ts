@@ -9,6 +9,7 @@ export const shadeOfPurpleTheme = createTheme({
     label: 'Shades Of Purple',
     previewBackground: `#8663ed`,
     terminal: {
+      accent: '#FF9D00',
       main: palette.foreground,
       text: palette.text,
     },

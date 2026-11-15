@@ -10,6 +10,8 @@ interface ImportMetaEnv {
   readonly VITE_API_BASE_URL: string | null;
   readonly VITE_PRESET_LIMIT: number;
   readonly VITE_PRESET_LIMIT_GUEST: number;
+  /** Saved signatures per user; 3 when unset, like the API's SIGNATURES_LIMIT. */
+  readonly VITE_SIGNATURE_LIMIT?: number;
 }
 
 interface ImportMeta {

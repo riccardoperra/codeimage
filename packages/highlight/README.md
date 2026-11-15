@@ -33,22 +33,22 @@ The script will do the following:
 
 ## Available themes
 
-| Feature                                                |        Name        |
-| :----------------------------------------------------- | :----------------: |
-| ![Arc Dark](./assets/arc-dark.png)                     |      Arc Dark      |
-| ![Aura Dark](./assets/aura-dark.png)                   |     Aura Dark      |
-| ![Coldark Cold](./assets/coldark-cold.png)             |    Coldark Cold    |
-| ![Coldark Dark](./assets/coldark-dark.png)             |    Coldark Dark    |
-| ![Dracula](./assets/dracula.png)                       |      Dracula       |
-| ![Duotone Dark](./assets/duotone-dark.png)             |    Duotone Dark    |
-| ![Duotone Sea](./assets/duotone-sea.png)               |    Duotone Sea     |
-| ![Holi dark](./assets/holi-dark.png)                   |     Holi dark      |
-| ![One Light](./assets/light.png)                       |     One Light      |
-| ![Material Light](./assets/material-light.png)         |   Material Light   |
-| ![Material Ocean](./assets/material-ocean.png)         |   Material Ocean   |
-| ![Material Palenight](./assets/material-palenight.png) | Material Palenight |
-| ![Material Volcano](./assets/material-volcano.png)     |  Material Volcano  |
-| ![Night owl](./assets/night-owl.png)                   |     Night Owl      |
-| ![One Dark](./assets/one-dark.png)                     |      One Dark      |
-| ![Synthwave84](./assets/synthwave84.png)               |    Synthwave 84    |
-| ![VSCodeDark](./assets/vscode-dark.png)                |    VSCode Dark     |
+| Feature                                                |         Name          |
+| :----------------------------------------------------- | :-------------------: |
+| ![Arc Dark](./assets/arc-dark.png)                     |       Arc Dark        |
+| ![Aura Dark](./assets/aura-dark.png)                   |       Aura Dark       |
+| ![Coldark Cold](./assets/coldark-cold.png)             |     Coldark Cold      |
+| ![Coldark Dark](./assets/coldark-dark.png)             |     Coldark Dark      |
+| ![Dracula](./assets/dracula.png)                       |        Dracula        |
+| ![Duotone Dark](./assets/duotone-dark.png)             |     Duotone Dark      |
+| ![Duotone Sea](./assets/duotone-sea.png)               |      Duotone Sea      |
+| ![Holi dark](./assets/holi-dark.png)                   |       Holi dark       |
+| ![One Light](./assets/light.png)                       |       One Light       |
+| ![Material Light](./assets/material-light.png)         |    Material Light     |
+| ![Material Ocean](./assets/material-ocean.png)         |    Material Ocean     |
+| ![Material Palenight](./assets/material-palenight.png) |  Material Palenight   |
+| ![Material Volcano](./assets/material-volcano.png)     |   Material Volcano    |
+| ![Night owl](./assets/night-owl.png)                   |       Night Owl       |
+| ![One Dark](./assets/one-dark.png)                     |       One Dark        |
+| ![Synthwave84](./assets/synthwave84.png)               |     Synthwave 84      |
+| ![VSCodeDark](./assets/vscode-dark.png)                | VSCode Dark (classic) |

@@ -4,15 +4,15 @@ import {EditorConfigStore} from '@codeimage/store/editor/config.store';
 import {provideAppState} from '@codeimage/store/index';
 import {createUniqueId} from '@codeimage/store/plugins/unique-id';
 import type {PresetData} from '@codeimage/store/presets/types';
-import type {Transaction} from '@codemirror/state';
+import type {EditorView} from '@codemirror/view';
 import {appEnvironment} from '@core/configuration';
-import {createEventBus} from '@solid-primitives/event-bus';
 import {from, map, shareReplay} from 'rxjs';
-import {createSelector} from 'solid-js';
+import {createSelector, createSignal} from 'solid-js';
 import type {SetStoreFunction} from 'solid-js/store';
 import {defineStore, provideState} from 'statebuilder';
 import {createCommand, withProxyCommands} from 'statebuilder/commands';
 import type {EditorState, EditorUIOptions, PersistedEditorState} from './model';
+import {MAX_EDITOR_TABS} from './model';
 
 const defaultId = createUniqueId();
 
@@ -23,6 +23,7 @@ export function getInitialEditorState(): EditorState {
     languageId: appEnvironment.defaultState.editor.languageId,
     formatter: null,
     lineNumberStart: 1,
+    marks: {lines: [], focusedLines: []},
     tab: {
       tabName: 'index.tsx',
       tabIcon: undefined,
@@ -42,7 +43,7 @@ export function getInitialEditorUiOptions(): EditorUIOptions {
 }
 
 export function createEditorsStore() {
-  const MAX_TABS = 6;
+  const [activeEditorView, setActiveEditorView] = createSignal<EditorView>();
 
   const config = defineStore(() => ({
     editors: [getInitialEditorState()],
@@ -99,13 +100,14 @@ export function createEditorsStore() {
     })
     .hold(store.commands.setFromPersistedState, (persistedState, {state}) => {
       const editors = (persistedState.editors ?? [])
-        .slice(0, MAX_TABS)
+        .slice(0, MAX_EDITOR_TABS)
         .map(editor => ({
           tabName: editor.tabName,
           languageId: editor.languageId,
           id: editor.id,
           code: editor.code,
           lineNumberStart: editor.lineNumberStart,
+          marks: editor.marks ?? {lines: [], focusedLines: []},
         }));
       return {
         options: {...state.options, ...persistedState.options},
@@ -117,6 +119,7 @@ export function createEditorsStore() {
             tab: {tabName: editor.tabName},
             id: editor.id,
             lineNumberStart: editor.lineNumberStart,
+            marks: editor.marks ?? {lines: [], focusedLines: []},
           };
         }),
       };
@@ -140,6 +143,7 @@ export function createEditorsStore() {
           tabName: editor.tab.tabName ?? '',
           id: editor.id,
           lineNumberStart: editor.lineNumberStart ?? 1,
+          marks: editor.marks ?? {lines: [], focusedLines: []},
         };
       }),
       options: {
@@ -171,7 +175,7 @@ export function createEditorsStore() {
     editorState?: Partial<EditorState> | null,
     active?: boolean,
   ) => {
-    if (store.get.editors.length === MAX_TABS) return;
+    if (store.get.editors.length === MAX_EDITOR_TABS) return;
     const id = createUniqueId();
     const editor: EditorState = {
       ...getInitialEditorState(),
@@ -186,7 +190,7 @@ export function createEditorsStore() {
     store.dispatch(editorUpdateCommand, void 0);
   };
 
-  const canAddEditor = () => store.get.editors.length < MAX_TABS;
+  const canAddEditor = () => store.get.editors.length < MAX_EDITOR_TABS;
 
   const removeEditor = (id: string) => {
     if (store.get.editors.length === 1) {
@@ -250,6 +254,7 @@ export function createEditorsStore() {
             id: editor.id,
             code: editor.code,
             lineNumberStart: editor.lineNumberStart ?? 1,
+            marks: editor.marks ?? {lines: [], focusedLines: []},
           }) as EditorState,
       ),
     );
@@ -277,11 +282,13 @@ export function createEditorsStore() {
       return mapToStateToPersistState(state);
     },
     stateToPersist$,
+    activeEditorView,
     computed: {
       selectedFont,
       canAddEditor,
     },
     actions: {
+      setActiveEditorView,
       setEditors: setEditorsWithCommand,
       addEditor,
       removeEditor,
@@ -304,6 +311,5 @@ export function createEditorsStore() {
         }
       },
     },
-    canvasEditorEvents: createEventBus<Transaction>(),
   } as const;
 }

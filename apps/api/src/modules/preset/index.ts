@@ -1,42 +1,30 @@
-import type {ComposeHandlers} from '@api/domain';
-import type {FastifyPluginAsync} from 'fastify';
-import {registerHandlers} from '../../common/domainFunctions/handlers.js';
-import {create} from './handlers/create.js';
-import {remove} from './handlers/delete.js';
-import {findAll} from './handlers/findAll.js';
-import {findById} from './handlers/findById.js';
-import {update} from './handlers/update.js';
-import {PresetMapper} from './mapper/index.js';
-import type {PresetRepository} from './repository/index.js';
-import {PrismaPresetRepository} from './repository/prisma-preset.repository.js';
-
-const handlers = [create, remove, findById, update, findAll] as const;
-
-const preset: FastifyPluginAsync = async fastify => {
-  const mapper = new PresetMapper();
-
-  fastify.decorate(
-    'presetRepository',
-    new PrismaPresetRepository(fastify.prisma),
-  );
-  fastify.decorate(
-    'presetService',
-    registerHandlers(
-      handlers,
-      {
-        repository: fastify.presetRepository,
-        mapper,
-        config: fastify.config,
-      },
-      fastify.handlerRegistry,
-    ),
-  );
-};
-
-declare module 'fastify' {
-  interface FastifyInstance {
-    presetRepository: PresetRepository;
-    presetService: ComposeHandlers<typeof handlers>;
-  }
-}
-export default preset;
+import AutoLoad from '@fastify/autoload';
+import fp from 'fastify-plugin';
+import {join} from 'node:path';
+import * as presets from './preset.repository.js';
+import {ownerScope} from '../../shared/db.js';
+import type {UserId} from '../../shared/principal.js';
+export default fp(
+  async fastify => {
+    const dependencies = {
+      presets,
+      scopeFor: (userId: UserId) => ownerScope(fastify.db, userId),
+      limit: fastify.config.PRESETS_LIMIT,
+    };
+    for (const kind of ['commands', 'queries']) {
+      await fastify.register(AutoLoad, {
+        dir: join(import.meta.dirname, kind),
+        options: dependencies,
+        forceESM: true,
+        ignorePattern: /\.d\.[cm]?ts$/,
+      });
+    }
+  },
+  {name: 'preset', dependencies: ['db', 'config', 'bus']},
+);
+export {presetContract} from './preset.contract.js';
+export {createPreset} from './commands/create-preset.js';
+export {updatePreset} from './commands/update-preset.js';
+export {removePreset} from './commands/remove-preset.js';
+export {getPreset} from './queries/get-preset.js';
+export {listPresets} from './queries/list-presets.js';

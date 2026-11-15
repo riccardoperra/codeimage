@@ -9,6 +9,7 @@ export const lightTheme = createTheme({
     label: 'One light',
     previewBackground: 'linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%)',
     terminal: {
+      accent: '#708',
       main: '#ffffff',
       text: '#000000',
       tabs: {

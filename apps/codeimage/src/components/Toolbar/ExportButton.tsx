@@ -1,5 +1,11 @@
+import {EditorConfigStore} from '@codeimage/store/editor/config.store';
+import {provideState} from 'statebuilder';
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
+import {getRootEditorStore} from '@codeimage/store/editor';
+import {getWhatsNew} from '@codeimage/store/whats-new';
+import {detectSecrets} from '@codeimage/secrets';
 import type {SegmentedFieldItem} from '@codeimage/ui';
 import {
   Box,
@@ -27,7 +33,15 @@ import {useWebshare} from '@core/hooks/use-webshare';
 import {DynamicSizedContainer} from '@ui/DynamicSizedContainer/DynamicSizedContainer';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
-import {createEffect, createSignal, onMount, Show, untrack} from 'solid-js';
+import {
+  batch,
+  createEffect,
+  createMemo,
+  createSignal,
+  onMount,
+  Show,
+  untrack,
+} from 'solid-js';
 import {useExportSnippet} from '../../hooks/export-snippet';
 import {ExportExtension, ExportMode} from '../../hooks/use-export-image';
 import {useHotkey} from '../../hooks/use-hotkey';
@@ -35,6 +49,10 @@ import type {AppLocaleEntries} from '../../i18n';
 import {DownloadIcon} from '../Icons/Download';
 import {ExclamationIcon} from '../Icons/Exclamation';
 import {HintIcon} from '../Icons/Hint';
+import {redactTabCode} from '../CustomEditor/plugins/secrets';
+import {NewDot} from '../WhatsNew/NewDot';
+import * as styles from './ExportButton.css';
+import {CopyAltTextButton} from './CopyAltTextButton';
 
 interface ExportButtonProps {
   canvasRef: HTMLElement | undefined;
@@ -42,12 +60,14 @@ interface ExportButtonProps {
 
 export const ExportButton: Component<ExportButtonProps> = props => {
   const [t] = useI18n<AppLocaleEntries>();
+  const config = provideState(EditorConfigStore);
   const modality = useModality();
   const buttonSize = () => (modality === 'full' ? 'sm' : 'xs');
   const [open, setOpen] = createSignal(false);
   const [data, notify] = useExportSnippet();
 
   const label = () => t('toolbar.export');
+  getWhatsNew().bindLocation('export', () => setOpen(true));
 
   createEffect(() => {
     if (data.error) {
@@ -90,6 +110,7 @@ export const ExportButton: Component<ExportButtonProps> = props => {
         size={modality === 'mobile' ? 'full' : 'md'}
         onConfirm={payload => {
           notify({
+            renderer: config.get.renderer,
             options: {
               extension: payload.extension,
               mode: payload.type,
@@ -127,6 +148,31 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
   const [t] = useI18n<AppLocaleEntries>();
   const [supportWebShare] = useWebshare();
   const exportCanvasStore = getExportCanvasStore();
+  const editorStore = getRootEditorStore();
+  const secretCount = createMemo(() =>
+    props.open
+      ? editorStore.state.editors.reduce(
+          (count, editor) => count + detectSecrets(editor.code).length,
+          0,
+        )
+      : 0,
+  );
+  const redactAll = () => {
+    getWhatsNew().seen('redact');
+    batch(() => {
+      editorStore.state.editors.forEach((editor, index) => {
+        const redacted = redactTabCode(
+          editor.code,
+          editorStore.isActive(editor.id)
+            ? editorStore.activeEditorView()
+            : undefined,
+        );
+        if (redacted !== editor.code)
+          editorStore.actions.setEditors(index, 'code', redacted);
+      });
+    });
+  };
+  const target = () => getFrameState().exportTarget();
   const [mode, setMode] = createSignal<ExportMode>(ExportMode.export);
   const [extension, setExtension] = createSignal<ExportExtension>(
     ExportExtension.png,
@@ -191,6 +237,19 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
       <DialogPanelContent>
         <DynamicSizedContainer>
           <VStack spacing={'6'}>
+            <Show when={secretCount() > 0}>
+              <VStack spacing={'2'}>
+                <div role="status">
+                  {secretCount() === 1
+                    ? t('secrets.visibleOne')
+                    : t('secrets.visible', {count: String(secretCount())})}
+                </div>
+                <FieldLabelHint>{t('secrets.destructiveHint')}</FieldLabelHint>
+                <Button size={'sm'} theme={'secondary'} onClick={redactAll}>
+                  {t('secrets.redactAll')}
+                </Button>
+              </VStack>
+            </Show>
             <Show when={supportWebShare()}>
               <FlexField size={'lg'}>
                 <SegmentedField
@@ -271,49 +330,74 @@ export function ExportDialog(props: ExportDialogProps & DialogProps) {
               <FieldLabel size={'sm'}>
                 {t('export.pixelRatio')}
                 <Box as={'span'} marginLeft={3}>
-                  <FieldLabelHint>{devicePixelRatio()}x</FieldLabelHint>
+                  <FieldLabelHint>
+                    {getFrameState().exportPixelRatio(devicePixelRatio())}x
+                  </FieldLabelHint>
                 </Box>
               </FieldLabel>
-              <RangeField
-                value={devicePixelRatio()}
-                onChange={setDevicePixelRatio}
-                max={3}
-                min={1}
-                step={1}
-              />
+              <Show
+                when={!target()}
+                fallback={
+                  <FieldLabelHint>
+                    {target()?.resolution.join(' × ')}
+                  </FieldLabelHint>
+                }
+              >
+                <RangeField
+                  value={devicePixelRatio()}
+                  onChange={setDevicePixelRatio}
+                  max={3}
+                  min={1}
+                  step={1}
+                />
+              </Show>
             </FlexField>
 
             <Checkbox
               checked={exportCanvasStore.get.showOnlyActiveTab}
               onChange={exportCanvasStore.setShowOnlyActiveTab}
               size={'md'}
-              label={'Show only active tab'}
+              label={t('exportTabs.showOnlyActiveTab')}
             />
+            <HStack spacing={'1'} alignItems={'center'}>
+              <Checkbox
+                checked={exportCanvasStore.get.oneImagePerTab}
+                onChange={exportCanvasStore.setOneImagePerTab}
+                size={'md'}
+                label={t('exportTabs.oneImagePerTab')}
+              />
+              <NewDot at="export:tabs" />
+            </HStack>
           </VStack>
         </DynamicSizedContainer>
       </DialogPanelContent>
       <DialogPanelFooter>
-        <HStack spacing={'2'} justifyContent={'flexEnd'}>
-          <Button
-            block
-            size={'md'}
-            type="button"
-            theme={'secondary'}
-            onClick={() => props.onOpenChange?.(false)}
-          >
-            {t('common.close')}
-          </Button>
+        <div class={styles.footer}>
+          <div class={styles.footerSecondary}>
+            <CopyAltTextButton class={styles.altTextAction} />
+          </div>
+          <div class={styles.footerActions}>
+            <Button
+              size={'md'}
+              type="button"
+              theme={'secondary'}
+              onClick={() => props.onOpenChange?.(false)}
+            >
+              {t('common.close')}
+            </Button>
 
-          <Button
-            block
-            size={'md'}
-            type="submit"
-            theme={'primary'}
-            onClick={onConfirm}
-          >
-            {t('common.confirm')}
-          </Button>
-        </HStack>
+            <Button
+              size={'md'}
+              type="submit"
+              theme={'primary'}
+              onClick={onConfirm}
+            >
+              {secretCount() > 0
+                ? t('secrets.exportAnyway')
+                : t('common.confirm')}
+            </Button>
+          </div>
+        </div>
       </DialogPanelFooter>
     </Dialog>
   );

@@ -1,50 +1,52 @@
 import type {User} from '@codeimage/prisma-models';
-import {afterEach, assert, beforeEach, expect, test, vi} from 'vitest';
+import {afterEach, assert, beforeEach, expect, test} from 'vitest';
 import type {
-  ProjectUpdateRequest,
+  ProjectUpdateBody,
   ProjectUpdateResponse,
-} from '../../../../src/modules/project/schema/index.js';
+} from '../../../../src/modules/project/project.contract.js';
 
-import {build} from '../../../helper.js';
-import {clearAllSeeds, projectSeed, userSeed} from '../../../helpers/seed.js';
+import {build} from '../../../helpers/app.js';
+import {
+  clearAllSeeds,
+  client,
+  projectSeed,
+  userSeed,
+} from '../../../helpers/seed.js';
 
 interface TestContext {
   user: User;
   project1: Awaited<ReturnType<typeof projectSeed.createProject>>;
 }
 
-beforeEach<TestContext>(async context => {
-  context.user = await userSeed.createUser();
-  context.project1 = await projectSeed.createProject(
-    'project to update',
-    context.user.id,
-  );
-});
-
-afterEach(async () => {
-  await clearAllSeeds();
-});
-
-test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context => {
-  const fastify = await build(context);
-  const userId = context.user.id;
-  const spy = vi.spyOn(fastify.projectService, 'update');
-
-  const data: ProjectUpdateRequest = {
+function buildUpdateRequest(editorId: string): ProjectUpdateBody {
+  return {
     frame: {
       background: '#fff',
       opacity: 100,
       visible: true,
       radius: 0,
       padding: 0,
+      aspectRatio: null,
+      exportTarget: 'x-landscape',
+      signature: {
+        handle: '@codeimage',
+        position: 'bottom-center',
+        style: 'card',
+        platform: 'github',
+        name: 'CodeImage',
+        avatar: 'profile',
+        profile: 'bsky.app/profile/codeimage.dev',
+        savedId: 'b8f1d0a4-0a39-4b8e-8f0e-6f0d6c9e8b11',
+      },
     },
     editors: [
       {
-        id: context.project1.editorTabs[0].id,
+        id: editorId,
         code: '## title',
         languageId: 'markdown',
         tabName: 'README.md',
         lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
       },
       {
         id: 'temp',
@@ -71,10 +73,30 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       shadow: '1px 0px 0px #000',
       alternativeTheme: true,
       accentVisible: false,
-      type: 'windows',
-      borderType: 'glass',
+      type: 'editor',
+      borderType: 'hairline',
+      surface: 'wash',
     },
   };
+}
+
+beforeEach<TestContext>(async context => {
+  context.user = await userSeed.createUser();
+  context.project1 = await projectSeed.createProject(
+    'project to update',
+    context.user.id,
+  );
+});
+
+afterEach(async () => {
+  await clearAllSeeds();
+});
+
+test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context => {
+  const fastify = await build(context);
+  const userId = context.user.id;
+
+  const data = buildUpdateRequest(context.project1.editorTabs[0].id);
 
   const response = await fastify.inject({
     url: `/api/v1/project/${context.project1.id}`,
@@ -84,11 +106,6 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
 
   const body = JSON.parse(response.body) as ProjectUpdateResponse;
 
-  expect(spy, 'has been called once').toHaveBeenCalledWith(
-    userId,
-    context.project1.id,
-    data,
-  );
   assert.ok(body.editorTabs.length === 2);
   assert.equal(response.statusCode, 200, 'return status 200');
   assert.deepStrictEqual(
@@ -99,6 +116,9 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       visible: true,
       radius: 0,
       padding: 0,
+      aspectRatio: null,
+      exportTarget: 'x-landscape',
+      signature: data.frame.signature,
     } as ProjectUpdateResponse['frame'],
     'return updated frame',
   );
@@ -125,8 +145,9 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
       shadow: '1px 0px 0px #000',
       alternativeTheme: true,
       accentVisible: false,
-      type: 'windows',
-      borderType: 'glass',
+      type: 'editor',
+      borderType: 'hairline',
+      surface: 'wash',
     } satisfies ProjectUpdateResponse['terminal'],
     'return updated terminal',
   );
@@ -139,6 +160,7 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
         languageId: 'markdown',
         tabName: 'README.md',
         lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
       },
       {
         id: body.editorTabs[1].id,
@@ -146,10 +168,147 @@ test<TestContext>('POST /v1/project/:id [Update Project] -> 200', async context 
         languageId: 'typescript',
         tabName: 'index.tsx',
         lineNumberStart: 300,
+        marks: {lines: [], focusedLines: []},
       },
     ] as ProjectUpdateResponse['editorTabs'],
     'return updated editor tabs',
   );
   assert.notEqual(body.updatedAt, context.project1.updatedAt.toISOString());
   assert.equal(body.name, 'project to update', 'return same name');
+  expect(
+    await client.project.findUnique({
+      where: {id: context.project1.id},
+      include: {
+        editorTabs: true,
+        frame: true,
+        terminal: true,
+        editorOptions: true,
+      },
+    }),
+  ).toMatchObject({
+    ownerId: userId,
+    frame: {
+      background: data.frame.background,
+      opacity: data.frame.opacity,
+      radius: data.frame.radius,
+      padding: data.frame.padding,
+      visible: data.frame.visible,
+      exportTarget: data.frame.exportTarget,
+      aspectRatio: data.frame.aspectRatio,
+      signatureHandle: data.frame.signature?.handle ?? null,
+      signaturePosition: data.frame.signature?.position ?? null,
+      signatureStyle: data.frame.signature?.style ?? null,
+      signaturePlatform: data.frame.signature?.platform ?? null,
+      signatureName: data.frame.signature?.name ?? null,
+      signatureAvatar: data.frame.signature?.avatar ?? null,
+      signatureProfile: data.frame.signature?.profile ?? null,
+      signatureId: data.frame.signature?.savedId ?? null,
+    },
+    terminal: data.terminal,
+    editorOptions: data.editorOptions,
+    editorTabs: body.editorTabs,
+  });
+});
+
+test<TestContext>('PUT /v1/project/:id [Update Project] -> 404 when the project belongs to another user', async context => {
+  const fastify = await build(context);
+  const otherUser = await userSeed.createUser();
+  const otherProject = await projectSeed.createProject(
+    'owned by another user',
+    otherUser.id,
+  );
+
+  const response = await fastify.inject({
+    url: `/api/v1/project/${otherProject.id}`,
+    method: 'PUT',
+    payload: buildUpdateRequest(otherProject.editorTabs[0].id),
+  });
+
+  const stored = await client.project.findUniqueOrThrow({
+    where: {id: otherProject.id},
+    include: {editorTabs: true, frame: true},
+  });
+
+  assert.equal(response.statusCode, 404, 'return status 404');
+  assert.equal(stored.editorTabs.length, 1, 'keeps the stored editor tabs');
+  assert.equal(stored.editorTabs[0].code, 'code', 'keeps the stored code');
+  assert.equal(
+    stored.frame.background,
+    otherProject.frame.background,
+    'keeps the stored frame',
+  );
+});
+
+test<TestContext>('PUT /v1/project/:id [Update Project] -> keeps editor tabs of other projects untouched', async context => {
+  const fastify = await build(context);
+  const otherUser = await userSeed.createUser();
+  const otherProject = await projectSeed.createProject(
+    'owned by another user',
+    otherUser.id,
+  );
+  const otherTab = otherProject.editorTabs[0];
+
+  const response = await fastify.inject({
+    url: `/api/v1/project/${context.project1.id}`,
+    method: 'PUT',
+    payload: buildUpdateRequest(otherTab.id),
+  });
+
+  assert.equal(response.statusCode, 200, 'return status 200');
+  expect(
+    await client.snippetEditorTab.findUniqueOrThrow({
+      where: {id: otherTab.id},
+    }),
+  ).toEqual(otherTab);
+  const ownTabs = await client.snippetEditorTab.findMany({
+    where: {projectId: context.project1.id},
+  });
+  expect(ownTabs.map(tab => tab.id)).not.toContain(otherTab.id);
+});
+
+test<TestContext>('PUT /v1/project/:id [Update Project] -> ignores keys outside the update contract', async context => {
+  const fastify = await build(context);
+  const data = buildUpdateRequest(context.project1.editorTabs[0].id);
+
+  const response = await fastify.inject({
+    url: `/api/v1/project/${context.project1.id}`,
+    method: 'PUT',
+    payload: {
+      ...data,
+      frame: {...data.frame, id: crypto.randomUUID()},
+      terminal: {...data.terminal, unknownKey: true},
+      editorOptions: {...data.editorOptions, id: crypto.randomUUID()},
+    },
+  });
+
+  assert.equal(response.statusCode, 200, 'return status 200');
+  expect(
+    await client.project.findUniqueOrThrow({
+      where: {id: context.project1.id},
+      include: {frame: true, terminal: true, editorOptions: true},
+    }),
+  ).toMatchObject({
+    frameId: context.project1.frameId,
+    frame: {
+      id: context.project1.frameId,
+      background: data.frame.background,
+      opacity: data.frame.opacity,
+      radius: data.frame.radius,
+      padding: data.frame.padding,
+      visible: data.frame.visible,
+      exportTarget: data.frame.exportTarget,
+      aspectRatio: data.frame.aspectRatio,
+      signatureHandle: data.frame.signature?.handle ?? null,
+      signaturePosition: data.frame.signature?.position ?? null,
+      signatureStyle: data.frame.signature?.style ?? null,
+      signaturePlatform: data.frame.signature?.platform ?? null,
+      signatureName: data.frame.signature?.name ?? null,
+      signatureAvatar: data.frame.signature?.avatar ?? null,
+    },
+    terminal: {id: context.project1.terminalId, ...data.terminal},
+    editorOptions: {
+      id: context.project1.editorOptionsId,
+      ...data.editorOptions,
+    },
+  });
 });

@@ -1,9 +1,11 @@
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {provideAppState} from '@codeimage/store/index';
 import {withIndexedDbPlugin} from '@codeimage/store/plugins/withIndexedDbPlugin';
 import {createResizeObserver} from '@solid-primitives/resize-observer';
 import type {Accessor} from 'solid-js';
 import {createEffect, on} from 'solid-js';
 import {defineStore} from 'statebuilder';
+import {getWhatsNew} from './whats-new';
 import {ExportExtension} from '../hooks/use-export-image';
 
 export interface PersistedExportCanvasSettings {
@@ -11,6 +13,7 @@ export interface PersistedExportCanvasSettings {
   jpegQuality: number;
   extension: ExportExtension;
   showOnlyActiveTab: boolean;
+  oneImagePerTab: boolean;
 }
 
 export const ExportCanvasStore = defineStore(() => ({
@@ -22,6 +25,7 @@ export const ExportCanvasStore = defineStore(() => ({
   jpegQuality: 100,
   extension: ExportExtension.png,
   showOnlyActiveTab: false,
+  oneImagePerTab: false,
 }))
   .extend(
     withIndexedDbPlugin<PersistedExportCanvasSettings>('exportSettings', {
@@ -29,6 +33,7 @@ export const ExportCanvasStore = defineStore(() => ({
       jpegQuality: 100,
       extension: ExportExtension.png,
       showOnlyActiveTab: false,
+      oneImagePerTab: false,
     }),
   )
   .extend((store, context) => {
@@ -39,6 +44,7 @@ export const ExportCanvasStore = defineStore(() => ({
           jpegQuality: value.jpegQuality,
           extension: value.extension,
           showOnlyActiveTab: value.showOnlyActiveTab,
+          oneImagePerTab: value.oneImagePerTab,
         });
       }),
     );
@@ -53,6 +59,8 @@ export const ExportCanvasStore = defineStore(() => ({
   })
   .extend(store => ({
     canvasResolution() {
+      const target = getFrameState().exportTarget();
+      if (target) return target.resolution.join('x');
       const canvasSize = store.get.canvasSize;
       const height = Math.ceil(canvasSize.height) * store.get.devicePixelRatio;
       const width = Math.ceil(canvasSize.width) * store.get.devicePixelRatio;
@@ -63,6 +71,10 @@ export const ExportCanvasStore = defineStore(() => ({
     },
     setShowOnlyActiveTab(value: boolean) {
       store.set('showOnlyActiveTab', value);
+    },
+    setOneImagePerTab(value: boolean) {
+      if (value) getWhatsNew().seen('tabs');
+      store.set('oneImagePerTab', value);
     },
     initCanvas(el: Accessor<HTMLElement | undefined>) {
       createResizeObserver(el, ref => {

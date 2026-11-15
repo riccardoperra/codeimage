@@ -1,7 +1,11 @@
 import {setupWorker} from 'msw/browser';
-import {db} from './db';
-import {persistMswjs} from './persist';
+import {hydrateDb} from './persist';
 import projectHandlers from './projectMockHandlers';
+import signatureHandlers, {hydrateSignatures} from './signatureMockHandlers';
 
-export const worker = setupWorker(...projectHandlers);
-persistMswjs(db);
+export const worker = setupWorker(...projectHandlers, ...signatureHandlers);
+
+export async function startMockApi() {
+  await Promise.all([hydrateDb(), hydrateSignatures()]);
+  await worker.start();
+}

@@ -13,27 +13,16 @@ on:
         description: Deploy website
 
 concurrency:
-  group: deploy-${{ github.head_ref }}
-  cancel-in-progress: true
+  group: deploy-production
+  cancel-in-progress: false
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout PR
-        uses: actions/checkout@v6
-      - name: 📥 Setup
-        uses: ./.github/actions/setup-job
-      - name: 📥 Monorepo install
-        uses: ./.github/actions/pnpm-install
-
   lint:
     name: Lint
-    needs: ['install']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -47,11 +36,10 @@ jobs:
 
   build-packages:
     name: Build packages/**
-    needs: ['install']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -66,55 +54,56 @@ jobs:
         run: |
           pnpm libs:build
 
-      - name: Cache packages
-        uses: actions/cache/save@v5
+      - name: Upload libs dist
+        uses: actions/upload-artifact@v7
         with:
-          path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
+          name: libs-dist
+          path: |
+            packages/*/dist
+            packages/prisma-models/generated
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
 
   build-api:
     name: 'Build @codeimage/api'
-    needs: ['install', 'build-packages']
+    needs: ['build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: '[API] Generate Prisma Migration'
-        run: |
-          pnpm --filter=@codeimage/api exec prisma generate
-          pnpm --filter=@codeimage/prisma-models build
+      - name: Download libs dist
+        uses: actions/download-artifact@v8
+        with:
+          name: libs-dist
+          path: packages
 
       - name: Build
         run: |
           pnpm --filter=@codeimage/api build:ts
           pnpm prepare:api:deploy
 
-      - name: Cache api dist
-        uses: actions/cache/save@v5
+      - name: Upload api deploy bundle
+        uses: actions/upload-artifact@v7
         with:
-          path: apps/api/dist
-          key: rest-api-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Cache api bundle
-        uses: actions/cache/save@v5
-        with:
-          path: |
-            dist/api-bundle/**
-          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
+          name: api-deploy-bundle
+          path: dist/api-bundle
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
 
   test-api:
     name: Api test
-    needs: [install]
     runs-on: ubuntu-latest
 
     services:
       postgres:
-        image: postgres:13-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -141,7 +130,7 @@ jobs:
 
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -162,27 +151,21 @@ jobs:
 
   typecheck-packages:
     name: Type-checking packages/**
-    needs: ['install', 'build-packages', 'build-api']
+    needs: ['build-packages']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore packages
-        uses: actions/cache/restore@v5
+      - name: Download libs dist
+        uses: actions/download-artifact@v8
         with:
+          name: libs-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-
-      - name: Restore api dist
-        uses: actions/cache/restore@v5
-        with:
-          path: apps/api/dist
-          key: rest-api-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Typecheck packages
         run: |
@@ -193,60 +176,28 @@ jobs:
           pnpm --filter='@codeimage/api' typecheck:ci
           pnpm --filter='@codeimage/app' typecheck
 
-  deploy-highlight-package:
-    name: Deploy @codeimage/highlight app
-    environment: Production
-    needs: ['install', 'lint', 'build-packages']
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout PR
-        uses: actions/checkout@v6
-      - name: 📥 Setup
-        uses: ./.github/actions/setup-job
-      - name: 📥 Monorepo install
-        uses: ./.github/actions/pnpm-install
-      - name: Restore packages
-        uses: actions/cache/restore@v5
-        with:
-          path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-      - name: Build @codeimage/highlight/dev
-        env:
-          ENABLE_VERCEL_BUILD: true
-        run: |
-          pnpm --filter=@codeimage/highlight build:dev
-      - uses: amondnet/vercel-action@v41.1.4
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: packages/highlight/dev
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_HIGHLIGHT_DEV_PROJECT_ID }}
-          vercel-args: '--prebuilt --prod'
-
   deploy-api:
     name: Build and Deploy Api
     environment: Production
-    needs: [install, lint, typecheck-packages, test-api, build-api]
+    needs: [lint, typecheck-packages, test-api, build-api]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
-      - name: Restore packages
-        uses: actions/cache/restore@v5
+      - name: Download libs dist
+        uses: actions/download-artifact@v8
         with:
+          name: libs-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
-      - name: Restore api build
-        uses: actions/cache/restore@v5
+      - name: Download api deploy bundle
+        uses: actions/download-artifact@v8
         with:
-          path: |
-            dist/api-bundle/**
-          key: rest-api-bundle-${{ github.run_id }}-${{ github.run_number }}
+          name: api-deploy-bundle
+          path: dist/api-bundle
       - name: Run prod migrations
         if: ${{ github.event.inputs.deploy-backend == 'true' }}
         run: |
@@ -256,33 +207,31 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy to Railway
-        run: |
-          npx @railway/cli@3.3.1 link --environment production $RAILWAY_API_PROJECT_ID
-          cd dist/api-bundle
-          find -type f -name '.gitignore' -delete
-          npx @railway/cli@3.3.1 up -s codeimage
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_API_PROJECT_ID: ${{ secrets.RAILWAY_API_PROJECT_ID }}
+        if: ${{ github.event.inputs.deploy-backend == 'true' }}
+        uses: ./.github/actions/railway-deploy
+        with:
+          token: ${{ secrets.RAILWAY_TOKEN }}
+          project-id: ${{ secrets.RAILWAY_API_PROJECT_ID }}
+          environment: production
 
   deploy-app:
     name: Deploy @codeimage/app
     environment: Production
-    needs: [install, lint, typecheck-packages, build-packages, deploy-api]
+    needs: [lint, typecheck-packages, build-packages, deploy-api]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
 
-      - name: Restore packages
-        uses: actions/cache/restore@v5
+      - name: Download libs dist
+        uses: actions/download-artifact@v8
         with:
+          name: libs-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
 
       - name: Build @codeimage/app
         env:
@@ -290,7 +239,7 @@ jobs:
           VITE_PUBLIC_AUTH0_CLIENT_ID: ${{ secrets.VITE_PUBLIC_AUTH0_CLIENT_ID }}
           VITE_PUBLIC_AUTH0_AUDIENCE: ${{ secrets.VITE_PUBLIC_AUTH0_AUDIENCE }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_ENABLE_MSW: ${{ env.IS_NEXT_BRANCH == 'false' }}
+          VITE_ENABLE_MSW: false
           VITE_PRESET_LIMIT: 10
           VITE_PRESET_LIMIT_GUEST: 5
           UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_SCRIPT_SRC }}
@@ -299,7 +248,7 @@ jobs:
         run: |
           pnpm --filter=@codeimage/app build
 
-      - uses: amondnet/vercel-action@v41.1.4
+      - uses: amondnet/vercel-action@v42.3.0
         if: ${{ github.event.inputs.deploy-frontend == 'true' }}
         name: Deploy
         with:
@@ -316,20 +265,20 @@ jobs:
     if: ${{ github.event.inputs.deploy-website == 'true' }}
     name: Deploy @codeimage/website
     environment: Production
-    needs: [install, lint, typecheck-packages, build-packages]
+    needs: [lint, typecheck-packages, build-packages]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
         uses: ./.github/actions/pnpm-install
-      - name: Restore packages
-        uses: actions/cache/restore@v5
+      - name: Download libs dist
+        uses: actions/download-artifact@v8
         with:
+          name: libs-dist
           path: packages
-          key: packages-dist-${{ github.run_id }}-${{ github.run_number }}
       - name: Build
         env:
           VITE_UMAMI_SCRIPT_SRC: ${{ secrets.UMAMI_LANDING_SCRIPT_SRC }}

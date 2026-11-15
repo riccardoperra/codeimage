@@ -47,6 +47,9 @@ export const withPresetBridge = (idbKey: string) =>
             padding: frameState.padding,
             visible: frameState.visible,
             radius: frameState.radius,
+            signature: frameState.signature,
+            aspectRatio: frameState.aspectRatio,
+            exportTarget: frameState.exportTarget,
           },
           terminal: {
             opacity: terminalState.opacity,
@@ -60,6 +63,7 @@ export const withPresetBridge = (idbKey: string) =>
             showWatermark: terminalState.showWatermark,
             textColor: terminalState.textColor,
             borderType: terminalState.borderType,
+            surface: terminalState.surface,
           },
           editor: {
             fontId: editorState.options.fontId,

@@ -19,6 +19,8 @@ export const aspectRatioPopover = style([
   {
     width: '360px',
     maxWidth: '360px',
+    maxHeight: '80vh',
+    overflowY: 'auto',
   },
   responsiveStyle({
     md: {
@@ -50,7 +52,12 @@ export const aspectRatioPreviewBox = style({
 
 export const aspectRatioCard = style([
   {
-    flex: '1 0 33%',
+    flex: '0 0 calc((100% - 2px) / 3)',
+    minWidth: 0,
+    border: 0,
+    background: 'transparent',
+    font: 'inherit',
+    cursor: 'pointer',
     borderRadius: themeVars.borderRadius.lg,
     padding: themeVars.spacing['2'],
     color: themeVars.dynamicColors.baseText,

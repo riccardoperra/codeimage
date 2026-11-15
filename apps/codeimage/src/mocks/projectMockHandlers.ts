@@ -1,8 +1,8 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {randUuid} from '@ngneat/falso';
 import {HttpResponse, type RequestHandler} from 'msw';
 import {http} from 'msw';
 import {db} from './db';
+import {persistDb} from './persist';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -16,6 +16,7 @@ function getProjectByIdOrThrowNotFound(id: string, ownerId?: string) {
   try {
     const project = db.project.findFirst({
       where: whereClause,
+      strict: true,
     });
     return {
       data: project,
@@ -63,7 +64,7 @@ const handlers: RequestHandler[] = [
     }
     return HttpResponse.json(data);
   }),
-  http.delete(`${BASE_URL}/api/v1/project/:id`, ({request, params}) => {
+  http.delete(`${BASE_URL}/api/v1/project/:id`, async ({request, params}) => {
     const id = params['id'] as string;
     const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
@@ -78,6 +79,7 @@ const handlers: RequestHandler[] = [
           ownerId: {equals: ownerId},
         },
       });
+      await persistDb();
       return HttpResponse.json(deleteResult);
     } catch (e) {
       return HttpResponse.json(
@@ -110,6 +112,7 @@ const handlers: RequestHandler[] = [
           ownerId: {equals: ownerId},
         },
       });
+      await persistDb();
       return HttpResponse.json(updateNameResult);
     } catch (e) {
       return HttpResponse.json(
@@ -143,6 +146,18 @@ const handlers: RequestHandler[] = [
           },
           frame: {
             background: body?.frame.background,
+            aspectRatio:
+              body?.frame.aspectRatio === undefined
+                ? (data?.frame.aspectRatio ?? null)
+                : body.frame.aspectRatio,
+            exportTarget:
+              body?.frame.exportTarget === undefined
+                ? (data?.frame.exportTarget ?? null)
+                : body.frame.exportTarget,
+            signature:
+              body?.frame.signature === undefined
+                ? (data?.frame.signature ?? null)
+                : body.frame.signature,
             opacity: body?.frame.opacity ?? 100,
             padding: body?.frame.padding ?? 32,
             radius: body?.frame.radius ?? 24,
@@ -156,6 +171,8 @@ const handlers: RequestHandler[] = [
             textColor: body?.terminal.textColor ?? '',
             accentVisible: body?.terminal.accentVisible ?? true,
             alternativeTheme: body?.terminal.alternativeTheme ?? false,
+            surface: body?.terminal.surface ?? 'solid',
+            borderType: body?.terminal.borderType ?? null,
             showGlassReflection: body?.terminal.showGlassReflection ?? false,
             showHeader: body?.terminal.showHeader ?? false,
             showWatermark: body?.terminal.showWatermark ?? false,
@@ -165,6 +182,8 @@ const handlers: RequestHandler[] = [
             tabName: editor.tabName,
             languageId: editor.languageId,
             code: editor.code,
+            lineNumberStart: editor.lineNumberStart,
+            marks: editor.marks ?? {lines: [], focusedLines: []},
           })),
         },
         where: {
@@ -172,6 +191,7 @@ const handlers: RequestHandler[] = [
           ownerId: {equals: ownerId},
         },
       });
+      await persistDb();
       return HttpResponse.json(updateNameResult);
     } catch (e) {
       return HttpResponse.json(
@@ -190,20 +210,23 @@ const handlers: RequestHandler[] = [
     const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
     const project = db.project.create({
-      id: randUuid(),
+      id: crypto.randomUUID(),
       name: body?.name,
       ownerId: ownerId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       editorOptions: {
-        id: randUuid(),
+        id: crypto.randomUUID(),
         fontId: body?.editorOptions.fontId,
         fontWeight: body?.editorOptions.fontWeight ?? 400,
         themeId: body?.editorOptions.themeId,
         showLineNumbers: body?.editorOptions.showLineNumbers ?? false,
       },
       frame: {
-        id: randUuid(),
+        aspectRatio: body?.frame.aspectRatio ?? null,
+        exportTarget: body?.frame.exportTarget ?? null,
+        signature: body?.frame.signature ?? null,
+        id: crypto.randomUUID(),
         background: body?.frame.background,
         opacity: body?.frame.opacity ?? 100,
         padding: body?.frame.padding ?? 32,
@@ -212,24 +235,29 @@ const handlers: RequestHandler[] = [
       },
       isOwner: true,
       terminal: {
-        id: randUuid(),
+        id: crypto.randomUUID(),
         opacity: body?.terminal.opacity ?? 100,
         shadow: body?.terminal.shadow,
         type: body?.terminal.type,
         textColor: body?.terminal.textColor ?? '',
         accentVisible: body?.terminal.accentVisible ?? true,
         alternativeTheme: body?.terminal.alternativeTheme ?? false,
+        surface: body?.terminal.surface ?? 'solid',
+        borderType: body?.terminal.borderType ?? null,
         showGlassReflection: body?.terminal.showGlassReflection ?? false,
         showHeader: body?.terminal.showHeader ?? false,
         showWatermark: body?.terminal.showWatermark ?? false,
       },
       editorTabs: body?.editors.map(editor => ({
-        id: randUuid(),
+        id: crypto.randomUUID(),
         tabName: editor.tabName,
         languageId: editor.languageId,
         code: editor.code,
+        lineNumberStart: editor.lineNumberStart,
+        marks: editor.marks ?? {lines: [], focusedLines: []},
       })),
     });
+    await persistDb();
     return HttpResponse.json(project);
   }),
   http.post(
@@ -250,13 +278,14 @@ const handlers: RequestHandler[] = [
       if (data) {
         const {id: _id, name, ...others} = data;
 
-        return HttpResponse.json(
-          db.project.create({
-            ...others,
-            name: body?.newName ?? name,
-            isOwner: true,
-          }),
-        );
+        const project = db.project.create({
+          ...others,
+          id: crypto.randomUUID(),
+          name: body?.newName ?? name,
+          isOwner: true,
+        });
+        await persistDb();
+        return HttpResponse.json(project);
       }
 
       return HttpResponse.json(
