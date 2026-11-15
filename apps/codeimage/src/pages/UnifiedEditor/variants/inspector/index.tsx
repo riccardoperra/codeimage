@@ -292,7 +292,7 @@ export default function Inspector(props: VariantProps) {
             <props.stage.Canvas />
           </div>
           <div class={styles.frameActions}>
-            <CanvasToolbar stage={props.stage} help={!mobile()} />
+            <CanvasToolbar stage={props.stage} />
             <Show when={props.stage.compact()}>
               <props.stage.ExportButton />
             </Show>

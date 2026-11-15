@@ -1,3 +1,4 @@
+import {editorLinks, trackEditorLink} from '../shell/links';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
@@ -107,13 +108,15 @@ function Commands(
         label: t('editor.whatsNew'),
         run: () => settings.open('whats-new'),
       },
-      {
-        id: 'github',
+      ...editorLinks.map(link => ({
+        id: link.id,
         group: t('editor.settings'),
-        label: t('editor.github'),
-        run: () =>
-          window.open('https://github.com/riccardoperra/codeimage', '_blank'),
-      },
+        label: t(link.label),
+        run: () => {
+          trackEditorLink(link.id);
+          window.open(link.href, '_blank', 'noopener,noreferrer');
+        },
+      })),
     ];
     if (auth.loggedIn()) {
       fromOldMenu.push({
