@@ -5,6 +5,7 @@ import {settings} from './shell/settings-state';
 import type {JSX} from 'solid-js';
 import {createEffect, createMemo, on, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
+import {AgentTools} from './agent-tools/AgentTools';
 import {CommandMenu} from './command-menu/CommandMenu';
 import {EditorHost} from './EditorHost';
 import {createEditorControlsModel} from './model';
@@ -99,6 +100,7 @@ function Editor() {
                   stage={stage}
                   pageState={pageState}
                 />
+                <AgentTools model={model} stage={stage} pageState={pageState} />
               </>
             );
           }}
