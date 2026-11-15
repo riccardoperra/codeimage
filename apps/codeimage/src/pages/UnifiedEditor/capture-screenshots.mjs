@@ -62,48 +62,17 @@ const settings = section => async page => {
   await page.keyboard.press('Enter');
   await page.getByRole('alertdialog').waitFor();
 };
-const click = (role, name) => page =>
-  page.getByRole(role, {name}).first().click();
 
 const I = {layout: 'inspector'},
   D = {layout: 'dock'},
   St = {layout: 'studio'};
 await view('01-inspector-1440', I, 1440);
-await view(
-  '02-inspector-section-open-1440',
-  I,
-  1440,
-  click('button', /^Window/),
-);
-await view('03-inspector-left-1440', {...I, inspectorSide: 'left'}, 1440);
-await view('04-settings-appearance-1440', I, 1440, settings('Appearance'));
-await view('05-settings-export-1440', I, 1440, settings('Export'));
 await view('06-settings-experiments-1440', I, 1440, settings('Experiments'));
 await view('07-command-menu-1440', I, 1440, async page => {
   await page.keyboard.press(`${mod}+k`);
   await page.keyboard.type('dracula');
 });
-await view(
-  '08-export-menu-1440',
-  I,
-  1440,
-  click('button', 'More ways to export'),
-);
 await view('09-dock-1440', D, 1440);
-await view('10-dock-themes-1440', D, 1440, click('button', /^Theme:/));
-await view('11-dock-more-1440', D, 1440, click('button', /^More$/));
 await view('12-studio-themes-1440', St, 1440);
-await view('13-studio-frame-panel-1440', St, 1440, click('button', /^Frame$/));
-await view('14-theme-cards-orb-1440', {...I, themeCards: 'orb'}, 1440);
-await view('15-theme-cards-aa-1440', {...I, themeCards: 'aa'}, 1440);
-await view('20-inspector-1024', I, 1024);
-await view('21-dock-1024', D, 1024);
-await view('22-studio-1024', St, 1024);
 await view('30-inspector-390', I, 390);
-await view('31-dock-390', D, 390);
-await view('32-studio-390', St, 390);
-await view('33-settings-390', I, 390, async page => {
-  await page.getByRole('button', {name: 'Settings'}).first().click();
-  await page.getByRole('alertdialog').waitFor();
-});
 await browser.close();
