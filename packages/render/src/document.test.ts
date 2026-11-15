@@ -77,6 +77,70 @@ describe('parseSnapshotDocument', () => {
       }),
     ).toThrow('marks.focusedLines');
   });
+  it.each(['card', 'editor', 'shell', 'terminal', 'future', null])(
+    'normalizes window %s',
+    type => {
+      const parsed = parseSnapshotDocument({
+        ...sampleDocument,
+        terminal: {
+          ...sampleDocument.terminal,
+          type,
+          surface: 'wash',
+          borderType: 'hairline',
+        },
+      });
+      expect(parsed.terminal.type).toBe(
+        type === 'terminal'
+          ? 'shell'
+          : ['card', 'editor', 'shell'].includes(type ?? '')
+            ? type
+            : 'macOs',
+      );
+      expect(parsed.terminal.surface).toBe('wash');
+      expect(parsed.terminal.borderType).toBe('hairline');
+    },
+  );
+  it.each([undefined, null, 'future'])('defaults surface %s', surface => {
+    expect(
+      parseSnapshotDocument({
+        ...sampleDocument,
+        terminal: {...sampleDocument.terminal, surface},
+      }).terminal.surface,
+    ).toBe('solid');
+  });
+  it('parses signatures with app defaults and is idempotent', () => {
+    const parsed = parseSnapshotDocument({
+      ...sampleDocument,
+      frame: {
+        ...sampleDocument.frame,
+        signature: {
+          handle: 'octocat',
+          position: 'bottom-center',
+          style: 'card',
+          platform: 'github',
+          name: 'The Octocat',
+          avatar: 'profile',
+          profile: 'github.com/octocat',
+          savedId: 'one',
+        },
+      },
+    });
+    expect(parsed.frame.signature).toMatchObject({
+      style: 'card',
+      position: 'bottom-center',
+      name: 'The Octocat',
+    });
+    expect(parseSnapshotDocument(parsed)).toEqual(parsed);
+    expect(
+      parseSnapshotDocument({
+        ...sampleDocument,
+        frame: {
+          ...sampleDocument.frame,
+          signature: {handle: 'me', style: 'future'},
+        },
+      }).frame.signature,
+    ).toMatchObject({style: 'minimal', position: 'bottom-right'});
+  });
   it('requires an editor', () => {
     const {editor, ...project} = sampleDocument;
     expect(() => parseSnapshotDocument(project)).toThrow();
