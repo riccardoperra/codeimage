@@ -32,12 +32,16 @@ test('draws each visible token once, slides the kept ones, and fades in the new 
       html,
       languageId: 'typescript',
       theme: draculaTheme,
+      showLineNumbers: true,
       fontFamily: 'Jetbrains Mono',
       fontWeight: 400,
       enableLigatures: true,
     }),
   );
   assert.ok(markup.includes('data-animated-code-view'));
+  // marks.css draws the bands and signs of a numbered view from these.
+  assert.ok(markup.includes('data-line-marks="true"'));
+  assert.ok(markup.includes('data-line-numbers="true"'));
 
   const elements = descendants(parseHtml(markup));
   const within = (className: string) =>

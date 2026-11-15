@@ -54,10 +54,8 @@ export type MarkTransition = Transition<Mark>;
 // The size and state of one step's code box, in cells.
 export type StepBox = {
   rows: number;
-  // The widest line, diff indent included.
+  // The widest line.
   columns: number;
-  // Columns before the code that the diff signs take, 0 or 2.
-  indent: number;
   // Rows that focus mode dims.
   dimmed: ReadonlySet<number>;
 };

@@ -124,21 +124,19 @@ export function compileScene(
     `<span class="${escapeAttribute(token.classes)}" style="position:absolute;white-space:pre;${style}">${escapeHtml(token.text)}</span>`;
 
   const code = compileLayer(scene.code, {
-    place: (cell, box) => ({
-      x: (cell.col + box.indent) * charWidth,
-      y: cell.line * lineHeight,
-    }),
+    place: cell => ({x: cell.col * charWidth, y: cell.line * lineHeight}),
     element: token,
     before: token =>
       token.kind === 'move' && token.fromClasses !== undefined
         ? {...token, classes: token.fromClasses}
         : undefined,
   });
-  const marks = compileLayer(scene.marks, {
-    place: cell => ({x: 0, y: cell.line * lineHeight}),
-    element: ({mark}: MarkTransition, style) =>
-      `<div data-mark="${mark}" style="position:absolute;right:0;height:${px(lineHeight)};${style}"></div>`,
-  });
+  const bands = (attributes: (mark: MarkTransition['mark']) => string) =>
+    compileLayer(scene.marks, {
+      place: cell => ({x: 0, y: cell.line * lineHeight}),
+      element: ({mark}: MarkTransition, style) =>
+        `<div ${attributes(mark)} style="position:absolute;right:0;height:${px(lineHeight)};${style}"></div>`,
+    });
   const {gutter} = scene;
   const numbers =
     gutter &&
@@ -148,13 +146,14 @@ export function compileScene(
     });
 
   // Each layer sits in the box of the static layout that holds it, so the
-  // theme's paddings place it. The diff signs in marks.css draw only inside a
-  // diff root, and only added or removed marks have them.
+  // theme's paddings place it. A band spans the padding box of its line or
+  // line number. marks.css draws its part in the window inset and its sign
+  // from the attributes of the AnimatedCodeView root.
   const html = [
     gutter === null
       ? ''
-      : `<div class="cm-gutters" aria-hidden="true"><div class="cm-gutter cm-lineNumbers"><div class="cm-gutterElement" style="grid-row:1"><div style="${sizedBox(`${name}-gutter`, gutter.fromColumns, gutter.toColumns)}">${numbers}</div></div></div></div>`,
-    `<div class="cm-content cm-lineWrapping"><div class="cm-line" style="position:relative"><div data-line-marks="true" data-line-diff="true" style="position:absolute;left:0;top:0;right:0;bottom:0">${marks}</div><div style="${sizedBox(`${name}-box`, from.columns, to.columns)}">${code}</div></div></div>`,
+      : `<div class="cm-gutters" aria-hidden="true"><div class="cm-gutter cm-lineNumbers"><div class="cm-gutterElement" style="grid-row:1">${bands(mark => `class="cm-gutterElement cm-lineMark-${mark}"`)}<div style="${sizedBox(`${name}-gutter`, gutter.fromColumns, gutter.toColumns)}">${numbers}</div></div></div></div>`,
+    `<div class="cm-content cm-lineWrapping"><div class="cm-line" style="position:relative"><div style="position:absolute;left:0;top:0;right:0;bottom:0">${bands(mark => `data-mark="${mark}"`)}</div><div style="${sizedBox(`${name}-box`, from.columns, to.columns)}">${code}</div></div></div>`,
   ].join('');
   return {html, css: keyframes.join('\n')};
 }
