@@ -1,14 +1,9 @@
 import {createSignal} from 'solid-js';
-import type {ControlId} from '../model';
 
 const isApple = /Mac|iPhone|iPad/.test(navigator.platform);
 
 const [isOpen, setOpen] = createSignal(false);
 let opener: HTMLElement | undefined;
-
-/** Shows where a control lives in the layout, for one that has no values to list. */
-type Reveal = (id: ControlId) => void;
-let reveal: Reveal | undefined;
 
 // Run before the menu opens, so that a layout can close what it has open.
 const makeWay = new Set<() => void>();
@@ -60,12 +55,4 @@ export const commandMenu = {
     makeWay.add(close);
     return () => makeWay.delete(close);
   },
-  /** Lets the layout that is on screen answer "where is this control?". Returns the undo. */
-  setReveal: (handler: Reveal) => {
-    reveal = handler;
-    return () => {
-      if (reveal === handler) reveal = undefined;
-    };
-  },
-  reveal: () => reveal,
 };

@@ -1,9 +1,9 @@
 import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
+import {getRootEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {
   Button,
-  Dialog,
   DialogPanelContent,
   DialogPanelFooter,
   DropdownMenu,
@@ -15,6 +15,7 @@ import {
   IconButton,
   icons,
 } from '@codeui/kit';
+import {Dialog} from '@kobalte/core/dialog';
 import {createSignal, Show} from 'solid-js';
 import {DownloadIcon} from '../../../components/Icons/Download';
 import {NewDot} from '../../../components/WhatsNew/NewDot';
@@ -81,20 +82,41 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
   const cancel = () => exporter().cancel();
   const confirm = () => exporter().confirm();
 
-  // Studio still mounts production's Ctrl+O button on the body.
-  useHotkey(window, {
-    'Control+o': event => {
-      if (event.defaultPrevented) return;
-      event.preventDefault();
-      newTab();
+  const restoreFocus = (event: Event) => {
+    event.preventDefault();
+    requestAnimationFrame(() => {
+      if (!exporter().confirming())
+        document.querySelector<HTMLElement>('[data-export-image]')?.focus();
+    });
+  };
+  // Capture before PreviewFrame's production clipboard shortcut on the body.
+  useHotkey(
+    window,
+    {
+      'Control+o': event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        newTab();
+      },
+      'Control+s': event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        exportImage();
+      },
+      'Control+c': event => {
+        if (
+          getRootEditorStore().state.options.focused ||
+          (event.target instanceof Element &&
+            event.target.closest('input, textarea, [contenteditable=true]'))
+        )
+          return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (exporter().canCopy()) copy();
+      },
     },
-  });
-  useHotkey(document.body, {
-    'Control+s': event => {
-      event.preventDefault();
-      exportImage();
-    },
-  });
+    {capture: true},
+  );
 
   return (
     <>
@@ -171,7 +193,7 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
                 {copyLabel()}
               </DropdownMenuItem>
               <DropdownMenuItem disabled={exporter().busy()} onSelect={newTab}>
-                {t('toolbar.openNewTab')}
+                {t('editor.openImageTab')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 disabled={!exporter().canCopyAltText()}
@@ -201,42 +223,50 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
           </DropdownMenuPortal>
         </DropdownMenu>
       </div>
-      <Dialog
-        open={exporter().confirming()}
-        onOpenChange={closeConfirmation}
-        title={t('export.title')}
-        size="sm"
-      >
-        <DialogPanelContent>
-          <div class={styles.warning}>
-            <Show when={exporter().secrets() > 0}>
-              <div role="status">
-                {exporter().secrets() === 1
-                  ? t('secrets.visibleOne')
-                  : t('secrets.visible', {count: String(exporter().secrets())})}
-              </div>
-              <p class={styles.hint}>{t('secrets.destructiveHint')}</p>
-              <Button size="sm" theme="secondary" onClick={redactSecrets}>
-                {t('secrets.redactAll')}
-              </Button>
-            </Show>
-            <Show when={exporter().secrets() === 0}>
-              <div role="status">{redactedLabel()}</div>
-            </Show>
+      <Dialog open={exporter().confirming()} onOpenChange={closeConfirmation}>
+        <Dialog.Portal>
+          <Dialog.Overlay class={styles.backdrop} />
+          <div class={styles.confirmation}>
+            <Dialog.Content
+              class={styles.confirmationPanel}
+              onCloseAutoFocus={restoreFocus}
+            >
+              <Dialog.Title>{t('export.title')}</Dialog.Title>
+              <DialogPanelContent>
+                <div class={styles.warning}>
+                  <Show when={exporter().secrets() > 0}>
+                    <div role="status">
+                      {exporter().secrets() === 1
+                        ? t('secrets.visibleOne')
+                        : t('secrets.visible', {
+                            count: String(exporter().secrets()),
+                          })}
+                    </div>
+                    <p class={styles.hint}>{t('secrets.destructiveHint')}</p>
+                    <Button size="sm" theme="secondary" onClick={redactSecrets}>
+                      {t('secrets.redactAll')}
+                    </Button>
+                  </Show>
+                  <Show when={exporter().secrets() === 0}>
+                    <div role="status">{redactedLabel()}</div>
+                  </Show>
+                </div>
+              </DialogPanelContent>
+              <DialogPanelFooter>
+                <div class={styles.confirmActions}>
+                  <Button size="sm" theme="secondary" onClick={cancel}>
+                    {t('common.close')}
+                  </Button>
+                  <Button size="sm" theme="primary" onClick={confirm}>
+                    {exporter().secrets() > 0
+                      ? t('secrets.exportAnyway')
+                      : t('common.confirm')}
+                  </Button>
+                </div>
+              </DialogPanelFooter>
+            </Dialog.Content>
           </div>
-        </DialogPanelContent>
-        <DialogPanelFooter>
-          <div class={styles.confirmActions}>
-            <Button size="sm" theme="secondary" onClick={cancel}>
-              {t('common.close')}
-            </Button>
-            <Button size="sm" theme="primary" onClick={confirm}>
-              {exporter().secrets() > 0
-                ? t('secrets.exportAnyway')
-                : t('common.confirm')}
-            </Button>
-          </div>
-        </DialogPanelFooter>
+        </Dialog.Portal>
       </Dialog>
     </>
   );

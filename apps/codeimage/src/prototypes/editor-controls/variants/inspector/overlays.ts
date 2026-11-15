@@ -1,5 +1,4 @@
-import type {Accessor} from 'solid-js';
-import {createSignal, onCleanup, onMount} from 'solid-js';
+import {onCleanup, onMount} from 'solid-js';
 
 // The pickers' popovers and the kit selects' lists.
 const OPEN_TRIGGER = [
@@ -25,16 +24,6 @@ function reachable(element: HTMLElement) {
     element.click();
   });
 }
-/** The frame keeps at least this much room, however large the overlay is. */
-const MIN_ROOM = 160;
-const GAP = 8;
-
-export interface OverlayInset {
-  readonly left: number;
-  readonly right: number;
-  readonly bottom: number;
-}
-
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
@@ -43,19 +32,13 @@ const clamp = (value: number, min: number, max: number) =>
  * trigger, made for a sidebar on the left. Inspector's panel is on the right,
  * so the popover would land on the canvas, and a select's list flips up over
  * it near the bottom of a phone sheet. This moves each overlay opened from
- * the panel inside the panel, its collision boundary. Where one cannot
- * fit there, it returns the room the overlay still takes from the canvas, so
- * that the canvas ends before it and the frame zooms clear of it.
+ * the panel inside the panel, its collision boundary. Tall content scrolls
+ * inside that boundary while the canvas keeps its size.
  */
 export function createOverlayPlacement(
   panel: () => HTMLElement | undefined,
   canvas: () => HTMLElement | undefined,
-): Accessor<OverlayInset> {
-  const [inset, setInset] = createSignal<OverlayInset>({
-    left: 0,
-    right: 0,
-    bottom: 0,
-  });
+): void {
   let frame = 0;
   // Places a popover in the same task that the popover moved it, before a
   // paint could show it where it started.
@@ -74,9 +57,6 @@ export function createOverlayPlacement(
     const triggers = host
       ? [...host.querySelectorAll<HTMLElement>(OPEN_TRIGGER)]
       : [];
-    let fromLeft = 0;
-    let right = 0;
-    let bottom = 0;
     for (const trigger of triggers) {
       const content = document.getElementById(
         trigger.getAttribute('aria-controls') ?? '',
@@ -152,26 +132,7 @@ export function createOverlayPlacement(
         positioner.dataset.shiftY = String(dy);
         positioner.style.translate = `${dx}px ${dy}px`;
       }
-      const covers =
-        x < area.right &&
-        x + rect.width > area.left &&
-        y < area.bottom &&
-        y + rect.height > area.top;
-      if (!covers) continue;
-      // The panel sits beside the canvas on wide windows and under it on phones.
-      if (panelFirst)
-        fromLeft = Math.max(fromLeft, x + rect.width - area.left + GAP);
-      else if (box.left >= area.right - 1)
-        right = Math.max(right, area.right - x + GAP);
-      else bottom = Math.max(bottom, area.bottom - y + GAP);
     }
-    const room = (size: number, taken: number) =>
-      Math.round(Math.max(0, Math.min(taken, size - MIN_ROOM)));
-    setInset({
-      left: area ? room(area.width, fromLeft) : 0,
-      right: area ? room(area.width, right) : 0,
-      bottom: area ? room(area.height, bottom) : 0,
-    });
     // Popovers move and resize while their content loads.
     if (triggers.length && !frame) frame = requestAnimationFrame(tick);
   };
@@ -212,6 +173,4 @@ export function createOverlayPlacement(
       cancelAnimationFrame(frame);
     });
   });
-
-  return inset;
 }

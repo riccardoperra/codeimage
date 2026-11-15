@@ -5,7 +5,6 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {useModality} from '@core/hooks/isMobile';
-import type {Accessor, Component} from 'solid-js';
 import {
   createEffect,
   createSignal,
@@ -14,6 +13,7 @@ import {
   onMount,
   Suspense,
 } from 'solid-js';
+import type {Accessor, Component} from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {PreviewFrame} from '../../components/Frame/PreviewFrame';
@@ -21,12 +21,11 @@ import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditor
 import {TerminalHost} from '../../components/Terminal/TerminalHost';
 import {ThemeBoxSkeleton} from '../../components/ThemeSwitcher/ThemeBoxSkeleton';
 import {themeBoxTerminalHost} from '../../components/ThemeSwitcher/ThemeSwitcher.css';
-import {CopyToClipboardButton} from './localized/CopyToClipboardButton';
 import {FitFrame} from './FitFrame';
 import * as placeholderStyles from './frame-placeholder.css';
 import type {ThemeEntry} from './model';
-import type {Exporter} from './shell/export';
 import {createExporter} from './shell/export';
+import type {Exporter} from './shell/export';
 import {ExportControl} from './shell/ExportControl';
 
 const ManagedFrame = lazy(() =>
@@ -57,7 +56,6 @@ export interface Stage {
   readonly ExportButton: Component;
   /** What the Export control runs, for the command menu. */
   readonly exporter: Exporter;
-  readonly CopyToClipboardButton: Component;
   /** The mini editor that today's theme cards show, drawn in the given theme. */
   readonly ThemePreview: Component<{theme: ThemeEntry}>;
   readonly randomize: () => void;
@@ -184,9 +182,6 @@ export function createStage(): Stage {
     exportRef,
     ExportButton: () => <ExportControl exporter={exporter} size={size} />,
     exporter,
-    CopyToClipboardButton: () => (
-      <CopyToClipboardButton canvasRef={exportRef()} />
-    ),
     ThemePreview,
     randomize: () => dispatchRandomTheme(),
     format: () => activeEditor.format(),

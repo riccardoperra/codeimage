@@ -1,5 +1,7 @@
-import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
-import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
+import {useI18n} from '@codeimage/locale';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {displayHandle} from '@codeimage/store/frame/signature';
+import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import {Button} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -12,20 +14,18 @@ import {
   onMount,
 } from 'solid-js';
 import type {ParentProps} from 'solid-js';
-import {useI18n} from '@codeimage/locale';
-import {getFrameState} from '@codeimage/store/editor/frame';
-import {displayHandle} from '@codeimage/store/frame/signature';
-import {signatureEditor} from '@codeimage/store/frame/signatureEditor';
 import type {AppLocaleEntries} from '../../../../i18n';
+import {CommandMenuButton} from '../../command-menu/CommandMenuButton';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
-import {FrameActions} from '../../controls/FrameActions';
 import {controlOverlay, SignatureRow} from '../../controls/ControlOverlay';
+import {FrameActions} from '../../controls/FrameActions';
+import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
-import {createOverlayPlacement} from './overlays';
 import * as styles from './inspector.css';
+import {createOverlayPlacement} from './overlays';
 
 export const meta: VariantMeta = {
   name: 'editor.inspector',
@@ -51,7 +51,6 @@ function sectionControls(id: SectionId, controls: readonly Control[]) {
   const primary = primaryControls[id];
   return [
     ...primary.flatMap(controlId => controls.filter(c => c.id === controlId)),
-    // The syntax theme follows the Theme section.
     ...controls.filter(c => !primary.includes(c.id)),
   ];
 }
@@ -210,7 +209,7 @@ export default function Inspector(props: VariantProps) {
     setFill(Math.max(mobile() ? 436 : 360, Math.floor(inner - chrome - gaps)));
   };
   let handle: HTMLButtonElement | undefined;
-  const overlayInset = createOverlayPlacement(
+  createOverlayPlacement(
     () => panel,
     () => canvas,
   );
@@ -285,21 +284,14 @@ export default function Inspector(props: VariantProps) {
             if (mobile() && sheet() === 'tall') setSheet('short');
           }}
         >
-          <div
-            class={styles.stage}
-            style={{
-              'padding-left': `${overlayInset().left}px`,
-              'padding-right': `${overlayInset().right}px`,
-              'padding-bottom': `${overlayInset().bottom}px`,
-            }}
-          >
+          <div class={styles.stage}>
             <props.stage.Canvas />
           </div>
           <div class={styles.frameActions}>
             <Show when={!mobile()}>
               <ShortcutHelp />
             </Show>
-            <FrameActions frameRef={props.stage.exportRef()} />
+            <FrameActions />
             <Show
               when={props.stage.compact()}
               fallback={
@@ -326,6 +318,7 @@ export default function Inspector(props: VariantProps) {
         </main>
         <aside
           class={styles.panel}
+          data-control-panel
           aria-label={t('editor.imageInspector')}
           ref={element => {
             panel = element;

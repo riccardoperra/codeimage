@@ -64,8 +64,8 @@ Each layout is a folder, `variants/<slug>/index.tsx`, that exports two things:
 The stage, from `stage.tsx`, holds the parts of the real editor that a layout places:
 
 - `Canvas` renders the live frame with the CodeMirror editor. It fills its parent and zooms the frame out when the frame is larger than the space it gets, so give it a parent with a definite size. Render it exactly once.
-- `ExportButton` is the Export control (see [Export](#export)), and `CopyToClipboardButton` the production button, both bound to the canvas. `exporter` runs the exports for anything else, such as the command menu.
-- `randomize()`, `format()`, and `canFormat()` are the frame toolbar actions. `controls/FrameActions` draws today's frame toolbar without its export settings button.
+- `ExportButton` is the Export control (see [Export](#export)), bound to the canvas. `exporter` runs the exports for anything else, such as the command menu.
+- `randomize()`, `format()`, and `canFormat()` are the frame toolbar actions. `controls/FrameActions` draws the Randomize and Format actions. Copy and Open in new tab live once in the Export menu.
 - `ThemePreview` draws the mini editor of today's theme cards for one entry of `model.themes()`.
 - `exportRef()` is the element that export captures. Pass it to any other production component that takes a `canvasRef` or a `frameRef`, such as `FrameToolbar`.
 
@@ -212,7 +212,6 @@ Inspector puts its panel on the right. Change Panel side in Settings → Appeara
 - It floats at the bottom centre with no scrim and is six rows tall, so the frame stays in view while the list is walked.
 - It does not open over an open list, menu, popover or modal dialog. A layout that wants it to open anyway closes what it has open first: `commandMenu.beforeOpen(close)`.
 - A layout renders `command-menu/CommandMenuButton` with a render prop for its button. Spread the supplied trigger props on that button and show `commandMenu.shortcut` beside it. The layout keeps its own element and styling.
-- `commandMenu.setReveal(id => ...)` lets a layout answer a command for a control that has no values to list, such as the image upload, by showing where the control lives. Without it the menu leaves those commands out.
 
 ## Rules for builders
 
@@ -242,7 +241,7 @@ To add a highlight for an existing place:
 
 No layout or dot JSX changes for an existing place. To introduce a new kind, extend the registry vocabulary and `places.ts`, then render `NewDot at` once in its shared owner. Controls that bypass `ControlRow` do not receive dots. This includes Dock's background, padding, language, and font family, Inspector's background and image, and Studio's system-font fallback.
 
-`dotAt(place)` selects the first eligible highlight held by that place. The same `holds` rule resolves Show me against the most specific bound owner. An owner binds once it is mounted, so a placement or route that replaces another takes over after the old one is disposed. A second owner mounted beside the first is rejected loudly in development. `CommandMenu` binds `command-menu`; Settings binds `setting` and clears search before selecting the row's section. Each `ExportControl` binds `export` to its own menu. Header and layouts share `stage.compact` so exactly one Export control is visible at every width. `control` has no reveal binding in this change, so its highlights have dots but no Show me. `commandMenu.setReveal` remains for commands only.
+`dotAt(place)` selects the first eligible highlight held by that place. The same `holds` rule resolves Show me against the most specific bound owner. An owner binds once it is mounted, so a placement or route that replaces another takes over after the old one is disposed. A second owner mounted beside the first is rejected loudly in development. `CommandMenu` binds `command-menu`; Settings binds `setting` and clears search before selecting the row's section. Each `ExportControl` binds `export` to its own menu. Header and layouts share `stage.compact` so exactly one Export control is visible at every width. `control` has no reveal binding in this change, so its highlights have dots but no Show me.
 
 `NewDot` accepts `children` for a corner dot and `filled` for its ring on a blue control. When highlights share a place, it keeps the opened highlight pinned until the coachmark finishes closing, then presents the next on the same trigger element. `decide` still caps eligible highlights at three in registry order. Hide secrets has no dot or Show me because its warning appears when needed. A dot inside the Export menu could not be reached with Tab, which an open menu keeps for itself.
 
@@ -298,3 +297,7 @@ The parity check compares every merged locale key and interpolation placeholder.
 The phone Dock keeps each label inside its button and preserves its full accessible name. Long labels use an ellipsis.
 
 `ModelDump` and the artificial `frame-delay` parameter have been removed. Placeholder checks delay the frame module in Playwright instead. The `v` and `t` parameters, the `prototypes` directory, and the theme-card route stay unchanged. Riccardo owns any rename or removal.
+
+All image actions and Ctrl+S, Ctrl+O and Ctrl+C pass through `createExporter.request` for the secrets review. Shortcut help uses the typed `controls/shortcuts.ts` module. It copies the production definitions because production does not export its list or hotkey hook.
+
+`verify-review.mjs <base-url> <screenshot-directory>` checks the review fixes across all three layouts at desktop and phone sizes. It covers each image action with secrets, focus after review, overlay placement and frame geometry, row values, shortcut help, and the cleanup checks.

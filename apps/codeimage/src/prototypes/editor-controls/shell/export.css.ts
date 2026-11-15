@@ -46,3 +46,29 @@ export const confirmActions = style({
   justifyContent: 'flex-end',
   gap: themeVars.spacing['2'],
 });
+
+export const backdrop = style({
+  position: 'fixed',
+  inset: 0,
+  zIndex: 100,
+  background: c.dialog.overlayBackgroundColor,
+});
+export const confirmation = style({
+  position: 'fixed',
+  inset: 0,
+  zIndex: 101,
+  display: 'grid',
+  placeItems: 'center',
+  padding: themeVars.spacing['4'],
+  pointerEvents: 'none',
+});
+
+export const confirmationPanel = style({
+  width: 'min(448px, 100%)',
+  pointerEvents: 'auto',
+  padding: themeVars.spacing['4'],
+  borderRadius: themeVars.borderRadius.xl,
+  background: c.panel.background,
+  color: c.baseText,
+  boxShadow: c.dialog.panelShadow,
+});
