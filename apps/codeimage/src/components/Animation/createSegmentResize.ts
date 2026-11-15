@@ -1,25 +1,20 @@
 import type {AnimationSegment} from '@codeimage/store/editor/animationSettings';
+import type {TimelineGeometry} from './timelineGeometry';
 import {onCleanup} from 'solid-js';
-export const resizedDuration = (
-  initial: number,
-  pixels: number,
-  width: number,
-  total: number,
+export const snapDuration = (
+  value: number,
   alt: boolean,
   limits: {min: number; max: number},
 ) => {
   const snap = alt ? 10 : 100;
   return Math.min(
     limits.max,
-    Math.max(
-      limits.min,
-      Math.round((initial + (pixels / width) * total) / snap) * snap,
-    ),
+    Math.max(limits.min, Math.round(value / snap) * snap),
   );
 };
 export function createSegmentResize(options: {
   total: () => number;
-  width: () => number;
+  geometry: () => TimelineGeometry;
   limits: (segment: AnimationSegment) => {min: number; max: number};
   begin: (total: number) => void;
   end: () => void;
@@ -30,18 +25,17 @@ export function createSegmentResize(options: {
         segment: AnimationSegment;
         pointerId: number;
         x: number;
-        total: number;
-        width: number;
+        geometry: TimelineGeometry;
         value: number;
       }
     | undefined;
   const move = (event: PointerEvent) => {
     if (!drag || event.pointerId !== drag.pointerId) return;
-    drag.value = resizedDuration(
-      drag.segment.durationMs,
-      event.clientX - drag.x,
-      drag.width,
-      drag.total,
+    drag.value = snapDuration(
+      drag.geometry.resizedDuration(
+        drag.segment.durationMs,
+        event.clientX - drag.x,
+      ),
       event.altKey,
       options.limits(drag.segment),
     );
@@ -87,8 +81,7 @@ export function createSegmentResize(options: {
       segment,
       pointerId: event.pointerId,
       x: event.clientX,
-      total,
-      width: Math.max(1, options.width()),
+      geometry: options.geometry(),
       value: segment.durationMs,
     };
     options.begin(total);
