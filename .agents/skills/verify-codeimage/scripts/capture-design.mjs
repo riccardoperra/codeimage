@@ -1,8 +1,12 @@
-// node apps/codeimage/src/pages/UnifiedEditor/capture-screenshots.mjs <base URL> <output directory> [name filter]
-// Captures the views in docs/design/screenshots from a running dev server.
+#!/usr/bin/env node
+// node .agents/skills/verify-codeimage/scripts/capture-design.mjs <base URL> [output directory] [name filter]
+// Captures the six reference views that DESIGN.md shows, from a dev server you started.
 import {mkdirSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
-const base = process.argv[2] ?? 'http://localhost:4343';
+process.chdir(fileURLToPath(new URL('../../../..', import.meta.url)));
+const base = process.argv[2];
+if (!base) throw new Error('Pass the base URL of a dev server you started');
 const out = process.argv[3] ?? 'docs/design/screenshots';
 mkdirSync(out, {recursive: true});
 const browser = await chromium.launch();

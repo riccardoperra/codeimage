@@ -134,7 +134,7 @@ The What's new surfaces keep their own table of durations in `components/WhatsNe
 `docs/design/screenshots/` holds six reference views: the three layouts, the settings, the command menu and the default layout on a phone. Refresh them in the pull request that changes the look, with a dev server running:
 
 ```sh
-node apps/codeimage/src/pages/UnifiedEditor/capture-screenshots.mjs http://localhost:4343 docs/design/screenshots
+node .agents/skills/verify-codeimage/scripts/capture-design.mjs http://localhost:4343
 ```
 
 | Inspector, the default                                      | Dock                                              | Studio                                                       |
