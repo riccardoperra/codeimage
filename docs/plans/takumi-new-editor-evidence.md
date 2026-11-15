@@ -75,3 +75,7 @@ The UI merge applied without conflicts and includes the social-target control fi
 ## UI/main animation-core alignment through 08737514
 
 The merge applies without conflicts, including the animation-core dependency and Plain Text blank-line tokenization fix. A frozen-lockfile install, 214 app tests, typecheck, lint and production build pass. A quick static export comparison passes against Chrome with no page errors, font issues or fallback. Two preceding development probes were interrupted by Vite dependency-optimizer reloads; the server log records reloads during the WASM load. The passing probe disables HMR only on the verification server, with no application config change. The full matrices and three-layout UI probe were not rerun.
+
+## UI localization through b4c0d64e
+
+The merge preserves both the Takumi experiments control and localized section names. The newly localized clipboard button now supplies the persisted renderer, as required by the shared effect payload. On the final source, 214 tests, typecheck, lint and production build pass. The locale checker confirms 448 matching keys/placeholders in it/en/de/es and passes its missing-key and hardcoded-message negative controls. Browser/image checks were not rerun for this localization update; their earlier source snapshots remain recorded.

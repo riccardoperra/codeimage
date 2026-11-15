@@ -1,12 +1,15 @@
+import type {LocaleKeys} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {Button, Listbox} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
 import {createSignal, For, Match, Show, Switch} from 'solid-js';
 import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
-import {ColorPickerPopover} from '../../../../components/PropertyEditor/controls/ColorPicker/ColorPicker';
+import {ColorPickerPopover} from '../../localized/ColorPicker';
 import {createFontPickerListboxProps} from '../../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
-import {FontSystemPicker} from '../../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
+import {FontSystemPicker} from '../../localized/FontSystemPicker';
 import {PanelHeader} from '../../../../components/PropertyEditor/PanelHeader';
 import {commandMenu} from '../../command-menu/state';
 import {useDock} from './context';
@@ -48,6 +51,7 @@ function ThemesPanel() {
 
 /** Today's colour picker without its popover: gradients, colours and the image upload. */
 function BackgroundPanel() {
+  const [t] = useI18n<AppLocaleEntries>();
   const dock = useDock();
   const frameVisible = () => dock.fields.control('frame.visible', 'toggle');
 
@@ -61,9 +65,7 @@ function BackgroundPanel() {
               when={control().visible()}
               fallback={
                 <>
-                  <p class={styles.empty}>
-                    The frame is hidden, so there is no background to set.
-                  </p>
+                  <p class={styles.empty}>{t('editor.hiddenFrame')}</p>
                   <Show when={frameVisible()}>
                     {toggle => <ControlRow control={toggle()} prefix="dock" />}
                   </Show>
@@ -147,6 +149,7 @@ type FontSource = 'default' | 'system';
 
 /** The content of today's font picker, with the two font rows under it. */
 function FontPanel() {
+  const [t] = useI18n<AppLocaleEntries>();
   const dock = useDock();
   const [source, setSource] = createSignal<FontSource>('default');
   const weight = () => dock.fields.choice('font.weight');
@@ -178,8 +181,8 @@ function FontPanel() {
                   value={source()}
                   onChange={setSource}
                   items={[
-                    {label: 'Default', value: 'default'},
-                    {label: 'System', value: 'system'},
+                    {label: t('editor.default'), value: 'default'},
+                    {label: t('editor.system'), value: 'system'},
                   ]}
                 />
               </div>
@@ -227,6 +230,7 @@ function Group(props: {id: GroupId}) {
  * shown. Same buttons as the production phone toolbar, with their labels.
  */
 function PhoneActions() {
+  const [t] = useI18n<AppLocaleEntries>();
   const dock = useDock();
   return (
     <div class={styles.phoneActions}>
@@ -236,7 +240,7 @@ function PhoneActions() {
         leftIcon={<SearchIcon />}
         onClick={commandMenu.open}
       >
-        Search all options
+        {t('editor.searchAllOptions')}
       </Button>
       <Button
         size={'sm'}
@@ -244,7 +248,7 @@ function PhoneActions() {
         leftIcon={<ColorSwatchIcon />}
         onClick={() => dock.stage.randomize()}
       >
-        Randomize
+        {t('editor.randomizeShort')}
       </Button>
       <Button
         size={'sm'}
@@ -253,7 +257,7 @@ function PhoneActions() {
         disabled={!dock.stage.canFormat()}
         onClick={() => void dock.stage.format()}
       >
-        Format
+        {t('editor.formatShort')}
       </Button>
       <dock.stage.CopyToClipboardButton />
     </div>
@@ -266,6 +270,7 @@ export const showMoreGroup = setGroup;
 
 /** Frame, Window and Code, one group at a time, so the panel stays as narrow as a popover. */
 function MorePanel() {
+  const [t] = useI18n<AppLocaleEntries>();
   const dock = useDock();
   return (
     <div class={`${styles.panel} ${styles.more}`}>
@@ -275,10 +280,13 @@ function MorePanel() {
           size={'sm'}
           value={group()}
           onChange={setGroup}
-          items={GROUPS.map(({id, label}) => ({label, value: id}))}
+          items={GROUPS.map(({id, label}) => ({label: t(label), value: id}))}
         />
       </div>
-      <section class={styles.group} aria-label={group()}>
+      <section
+        class={styles.group}
+        aria-label={t(GROUPS.find(entry => entry.id === group())!.label)}
+      >
         <Group id={group()} />
       </section>
       <Show when={dock.compact()}>
@@ -289,11 +297,14 @@ function MorePanel() {
 }
 
 /** What each dock item opens: in a popover on wide windows, in the sheet on a phone. */
-export const PANELS: Record<PanelId, {title: string; Body: Component}> = {
-  themes: {title: 'Theme', Body: ThemesPanel},
-  background: {title: 'Background', Body: BackgroundPanel},
-  padding: {title: 'Padding', Body: PaddingPanel},
-  language: {title: 'Language', Body: LanguagePanel},
-  font: {title: 'Font', Body: FontPanel},
-  more: {title: 'More options', Body: MorePanel},
+export const PANELS: Record<
+  PanelId,
+  {title: LocaleKeys<AppLocaleEntries>; Body: Component}
+> = {
+  themes: {title: 'frame.theme', Body: ThemesPanel},
+  background: {title: 'frame.background', Body: BackgroundPanel},
+  padding: {title: 'frame.padding', Body: PaddingPanel},
+  language: {title: 'frame.language', Body: LanguagePanel},
+  font: {title: 'frame.font', Body: FontPanel},
+  more: {title: 'editor.moreOptions', Body: MorePanel},
 };

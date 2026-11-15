@@ -1,12 +1,14 @@
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {Button, TextField} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import type {Component} from 'solid-js';
-import {onCleanup, onMount, Show} from 'solid-js';
+import {createEffect, onCleanup, onMount, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import type {EditorControlsModel, ThemeEntry} from '../model';
 import type {Stage} from '../stage';
 import {AaList} from './aa-list';
-import type {ThemeBrowser, ThemeMode} from './browser';
+import type {ThemeBrowser} from './browser';
 import {createThemeBrowser} from './browser';
 import {OrbList} from './orb';
 import * as styles from './picker.css';
@@ -23,12 +25,6 @@ const LISTS: Record<ThemeStyleId, Component<ThemeListProps>> = {
   aa: AaList,
   window: WindowList,
 };
-
-const MODES: {label: string; value: ThemeMode}[] = [
-  {label: 'All', value: 'all'},
-  {label: 'Dark', value: 'dark'},
-  {label: 'Light', value: 'light'},
-];
 
 /** What a layout sets on the theme picker it places. */
 export interface ThemePickerSlotProps {
@@ -54,6 +50,7 @@ export interface ThemePickerProps extends ThemePickerSlotProps {
  * and the arrow keys preview through the model; a click or Enter applies.
  */
 export function ThemePicker(props: ThemePickerProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   // oxlint-disable-next-line solid/reactivity -- one model lives for the whole session
   const browser = createThemeBrowser(props.model, {
     onPick: (theme, byKeyboard) => props.onPick?.(theme, byKeyboard),
@@ -88,9 +85,13 @@ export function ThemePicker(props: ThemePickerProps) {
         >
           <TextField
             size={props.size ?? 'sm'}
-            placeholder="Search themes…"
+            placeholder={t('themeSwitcher.search')}
             // The kit labels its root, not the input.
-            ref={input => input.setAttribute('aria-label', 'Search themes')}
+            ref={input =>
+              createEffect(() =>
+                input.setAttribute('aria-label', t('editor.searchThemes')),
+              )
+            }
             value={browser.query()}
             onChange={browser.setQuery}
           />
@@ -101,7 +102,11 @@ export function ThemePicker(props: ThemePickerProps) {
             adapt
             value={browser.mode()}
             onChange={browser.setMode}
-            items={MODES}
+            items={[
+              {label: t('editor.all'), value: 'all'},
+              {label: t('editor.dark'), value: 'dark'},
+              {label: t('editor.light'), value: 'light'},
+            ]}
           />
         </div>
       </div>
@@ -116,9 +121,9 @@ export function ThemePicker(props: ThemePickerProps) {
           when={browser.themes().length > 0}
           fallback={
             <div class={styles.empty}>
-              <p>No theme matches “{browser.query()}”.</p>
+              <p>{t('editor.noTheme', {query: browser.query()})}</p>
               <Button size="sm" theme="secondary" onClick={showAll}>
-                Show all themes
+                {t('editor.showThemes')}
               </Button>
             </div>
           }

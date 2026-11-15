@@ -1,11 +1,11 @@
-# Editor controls prototype
+# Unified editor
 
-This folder holds the editor in three layouts and several ways to draw a theme. The user picks a layout and a theme card style in the settings, as in a real app. No prototype chrome sits on the page. It follows the `prototype` skill from [emilkowalski/skills](https://github.com/emilkowalski/skills). A second route, `../theme-card/`, shows the theme pickers alone next to the canvas. Nothing in production imports from `prototypes/`. The only production change is the route table in `apps/codeimage/src/index.tsx`.
+This folder holds the unified editor in three layouts and three theme card styles. The route table in `apps/codeimage/src/index.tsx` serves it at `/` for guests and at `/prototypes/editor-controls` for everyone. The historical folder and route names stay in place. The `../theme-card/` route shows the shared theme pickers beside the canvas.
 
 ## Run it
 
-1. Start the app as usual, for example `pnpm exec vite --port 4321 --strictPort` from `apps/codeimage`.
-2. Open `http://localhost:4321/`.
+1. Start the app as usual, for example `fnm exec --using=v24.14.0 ../../node_modules/.bin/vite --port 4343 --strictPort` from `apps/codeimage`.
+2. Open `http://localhost:4343/`.
 
 | Route                         | What it shows                                                                             |
 | ----------------------------- | ----------------------------------------------------------------------------------------- |
@@ -73,7 +73,7 @@ The stage, from `stage.tsx`, holds the parts of the real editor that a layout pl
 
 `ThemeSwatch`, from `ThemeSwatch.tsx`, draws one theme as a small mark, for example in a button that shows the applied theme. Without a `variant` it draws the mark of the chosen style. The marks are `syntax-orb`, `aa`, and `window`. `window` also takes a `width`, in px or `fill`. With `fill`, `window` keeps the default frame's shape, about 5 to 4, and grows with its card.
 
-`harness.tsx` exports `UnifiedEditor`, the page behind `/` and `/prototypes/editor-controls`. It renders the chosen layout, the command menu and the settings dialog. It creates a new stage for each mount of a layout and keeps one model for the whole session. `registry.ts` maps each layout id to its folder and reads `meta` from it. Today's editor is no longer a layout: it is the production route `/classic`. `ModelDump.tsx`, a plain list of every control with native inputs, is no longer used by a layout and can start a new one.
+`harness.tsx` exports `UnifiedEditor`, the page behind `/` and `/prototypes/editor-controls`. It renders the chosen layout, the command menu and the settings dialog. It creates a new stage for each mount of a layout and keeps one model for the whole session. `registry.ts` maps each layout id to its folder and reads `meta` from it. Today's editor is no longer a layout: it is the production route `/classic`.
 
 ## The shell
 
@@ -190,7 +190,7 @@ A snippet stores its own copy of the signature and the id of the saved one (`sav
 
 ## Inspector's panel side
 
-Inspector puts its panel on the right. Set `data-inspector-side="left"` on its root, `.inspector-root`, or on any element around it, and the panel moves before the canvas; `right` or no attribute keeps it on the right. Phones keep the bottom sheet either way. The pickers that open over the panel follow it to either side.
+Inspector puts its panel on the right. Change Panel side in Settings → Appearance to move it. The harness sets `data-inspector-side="left|right"` on `.proto-variant`; the layout styles read that attribute without relying on generated class names. Phones keep the bottom sheet either way. The pickers that open over the panel follow it to either side.
 
 ## Theme styles
 
@@ -217,7 +217,7 @@ Inspector puts its panel on the right. Set `data-inspector-side="left"` on its r
 ## Rules for builders
 
 - Edit only your own `variants/<slug>/` folder. Set your `axis` in your `meta`.
-- Style with the tokens from `@codeimage/ui` (`themeVars`) in vanilla-extract `.css.ts` files inside your folder. Plain CSS is fine if every selector starts with a class that belongs to your folder.
+- Style with `themeVars` from `@codeimage/ui` in vanilla-extract `.css.ts` files inside your folder. Do not add plain CSS.
 - Add no dependency without saying so in your report.
 - Show themes with `props.ThemePicker`, not with a grid of your own, so that the Theme cards setting reaches your layout.
 - Do not render a header: the harness renders `shell/Header` above your layout. Size your root with `flex: 1; min-height: 0`, start your islands at its top edge, and keep them 8px from the sides.
@@ -230,7 +230,21 @@ Inspector puts its panel on the right. Set `data-inspector-side="left"` on its r
 
 `../theme-card/` still uses `picker/PickerRoute.tsx`, the old harness with one pill over the page, to step through the theme styles side by side. The pill takes `1` to `9`, the arrows and `R` to re-mount. It is review chrome for that route only and is not part of the editor.
 
-## Delete the prototype
+## Locales and verification
 
-1. Delete the `apps/codeimage/src/prototypes/` folder.
-2. In `apps/codeimage/src/index.tsx`, delete the `UnifiedEditor` import, put `<Editor />` back as the fallback of the `/` route, and delete the `classic`, `prototypes/editor-controls` and `prototypes/theme-card` routes.
+Every editor label, hint, tooltip and accessible name uses `useI18n<AppLocaleEntries>()`. Reuse classic editor keys where the meaning matches. New editor messages live in `src/i18n/editor.ts` and are merged into all four shipped locales by `src/i18n/index.ts`. Metadata stores typed locale keys; resolve them where it renders so an open Settings dialog changes language immediately.
+
+The presentation adapters in `localized/` bind production stores and actions and keep production styles. They exist because those components embed English copy and expose no label props. Other production components are used directly.
+
+From the repository root:
+
+```sh
+node apps/codeimage/src/prototypes/editor-controls/verify-locale-parity.mjs
+node apps/codeimage/src/prototypes/editor-controls/verify-i18n.mjs http://localhost:4343 /tmp/codeimage-i18n-shots
+```
+
+The parity check compares every merged locale key and interpolation placeholder. It checks for empty translations, unknown keys, hard-coded UI text, and unresolved i18n markers. Negative controls prove that missing keys and hard-coded text fail the check. The live check changes language through Settings in Italian, German, Spanish and English, across all three layouts at 1440×900 and 390×844. It checks the header, all settings sections, export menu, command menu, empty states and an open panel against an English-leftover list derived from the dictionaries. Passing a screenshot directory saves one reloaded Italian view per layout and viewport.
+
+The phone Dock keeps each label inside its button and preserves its full accessible name. Long labels use an ellipsis.
+
+`ModelDump` and the artificial `frame-delay` parameter have been removed. Placeholder checks delay the frame module in Playwright instead. The `v` and `t` parameters, the `prototypes` directory, and the theme-card route stay unchanged. Riccardo owns any rename or removal.

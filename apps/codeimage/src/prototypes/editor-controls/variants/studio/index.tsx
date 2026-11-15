@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {Button, IconButton} from '@codeui/kit';
 import {useModality} from '@core/hooks/isMobile';
@@ -11,7 +13,7 @@ import {
   Show,
 } from 'solid-js';
 import {Dynamic} from 'solid-js/web';
-import {Footer} from '../../../../components/Footer/Footer';
+import {Footer} from '../../localized/Footer';
 import {ColorSwatchIcon} from '../../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../../components/Icons/SparklesIcon';
 import {ExportInNewTabButton} from '../../../../components/Toolbar/ExportNewTabButton';
@@ -31,7 +33,7 @@ import {PANELS} from './panels';
 import * as styles from './studio.css';
 
 export const meta: VariantMeta = {
-  name: 'Studio',
+  name: 'editor.studio',
   axis: 'Structure: one named room per area, picked from a rail',
 };
 
@@ -54,6 +56,7 @@ function rubberband(overshoot: number, dimension: number) {
 
 /** The settings entry at the foot of the rail, under Search. */
 function RailSettings() {
+  const [t] = useI18n<AppLocaleEntries>();
   claimSettingsEntry();
   return (
     <button
@@ -67,12 +70,13 @@ function RailSettings() {
       <span class={styles.railIcon}>
         <SettingsIcon size={20} />
       </span>
-      Settings
+      {t('editor.settings')}
     </button>
   );
 }
 
 export default function Studio(props: VariantProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   keepMarkToolbarAboveSelection();
   // The production header and buttons pick their layout once, at load.
   const modality = useModality();
@@ -284,7 +288,11 @@ export default function Studio(props: VariantProps) {
           [styles.sheetSpace]: `${sheetHeight() ? sheetHeight() + GAP : 0}px`,
         })}
       >
-        <nav ref={railEl} class={styles.rail} aria-label="Editor panels">
+        <nav
+          ref={railEl}
+          class={styles.rail}
+          aria-label={t('editor.editorPanels')}
+        >
           <For each={PANELS}>
             {panel => (
               <button
@@ -298,7 +306,7 @@ export default function Studio(props: VariantProps) {
                 <span class={styles.railIcon}>
                   <panel.Icon />
                 </span>
-                {panel.label}
+                {t(panel.label)}
               </button>
             )}
           </For>
@@ -308,13 +316,13 @@ export default function Studio(props: VariantProps) {
               class={`${styles.railButton} ${styles.railSearch}`}
               aria-haspopup="dialog"
               aria-expanded={commandMenu.isOpen()}
-              title={`Search themes and options (${commandMenu.shortcut})`}
+              title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
               onClick={commandMenu.open}
             >
               <span class={styles.railIcon}>
                 <SearchIcon />
               </span>
-              Search
+              {t('editor.search')}
               <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
             </button>
             <RailSettings />
@@ -326,7 +334,7 @@ export default function Studio(props: VariantProps) {
           ref={panelEl}
           id={PANEL_ID}
           role="region"
-          aria-label={openPanel()?.label}
+          aria-label={openPanel() ? t(openPanel()!.label) : undefined}
           class={styles.panel}
           data-wide={openPanel()?.wide ? '' : undefined}
           hidden={!openPanel()}
@@ -342,13 +350,19 @@ export default function Studio(props: VariantProps) {
             <div class={styles.sheetGrip} />
             <Show when={!openPanel()?.ownHeader}>
               <div class={styles.panelHeader}>
-                <h2 class={styles.panelTitle}>{openPanel()?.label}</h2>
+                <h2 class={styles.panelTitle}>
+                  {openPanel() ? t(openPanel()!.label) : ''}
+                </h2>
                 <IconButton
                   size={size()}
                   theme="secondary"
                   variant="ghost"
-                  aria-label={`Close ${openPanel()?.label ?? 'panel'}`}
-                  title="Close (Esc)"
+                  aria-label={t('editor.closePanel', {
+                    panel: openPanel()
+                      ? t(openPanel()!.label)
+                      : t('editor.panel'),
+                  })}
+                  title={t('editor.closeEscape')}
                   onClick={() => close(true)}
                 >
                   <Show when={isPhone()} fallback={<CollapseIcon size={18} />}>
@@ -389,14 +403,14 @@ export default function Studio(props: VariantProps) {
                 <Button
                   size="xs"
                   theme="secondary"
-                  aria-label="Random theme"
+                  aria-label={t('shortcut.pickRandomTheme')}
                   leftIcon={<ColorSwatchIcon />}
                   onClick={() => props.stage.randomize()}
                 />
                 <Button
                   size="xs"
                   theme="secondary"
-                  aria-label="Format code"
+                  aria-label={t('editor.formatCode')}
                   leftIcon={<SparklesIcon />}
                   disabled={!props.stage.canFormat()}
                   onClick={() => props.stage.format()}

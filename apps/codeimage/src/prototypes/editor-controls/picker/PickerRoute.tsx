@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import type {JSX} from 'solid-js';
 import {createSignal, onCleanup, onMount, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
@@ -72,6 +74,7 @@ function initialIndex(count: number): number {
 }
 
 function Variants(props: PickerRouteProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   const model = createEditorControlsModel();
   // A fresh object on every switch or replay, so the keyed Show re-mounts.
   const [mounted, setMounted] = createSignal({
@@ -132,8 +135,8 @@ function Variants(props: PickerRouteProps) {
       <div class={styles.pickers} ref={pills}>
         <Picker
           class={styles.pill}
-          label="Prototype variants"
-          names={props.variants.map(variant => variant.name)}
+          label={t('editor.prototypeVariants')}
+          names={props.variants.map(variant => t(variant.name))}
           active={mounted().index}
           onSelect={select}
           keys={numberKeys}

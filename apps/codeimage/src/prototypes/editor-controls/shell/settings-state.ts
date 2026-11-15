@@ -2,11 +2,11 @@ import {createSignal, onCleanup} from 'solid-js';
 
 /** The sections of the settings, in the order of the navigation. */
 export const SECTIONS = [
-  {id: 'general', name: 'General'},
-  {id: 'appearance', name: 'Appearance'},
-  {id: 'export', name: 'Export'},
-  {id: 'experiments', name: 'Experiments'},
-  {id: 'about', name: 'About'},
+  {id: 'general', name: 'editor.general'},
+  {id: 'appearance', name: 'editor.appearance'},
+  {id: 'export', name: 'toolbar.export'},
+  {id: 'experiments', name: 'editor.experiments'},
+  {id: 'about', name: 'editor.about'},
 ] as const;
 
 export type SectionId = (typeof SECTIONS)[number]['id'];

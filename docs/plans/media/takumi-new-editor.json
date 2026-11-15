@@ -764,7 +764,7 @@
     ]
   },
   "latestUiAlignment": {
-    "uiHead": "08737514",
+    "uiHead": "b4c0d64e",
     "appTests": 214,
     "typecheckExit": 0,
     "lintExit": 0,
@@ -839,6 +839,18 @@
       "errors": [],
       "fallbacks": [],
       "wasm": 3
+    },
+    "staticProbeHead": "08737514",
+    "localeParity": {
+      "keys": 448,
+      "locales": [
+        "it",
+        "en",
+        "de",
+        "es"
+      ],
+      "placeholdersMatch": true,
+      "negativeControlsPass": true
     }
   }
 }

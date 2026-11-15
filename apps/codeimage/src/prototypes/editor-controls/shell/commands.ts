@@ -10,12 +10,10 @@ import {exportSummary} from './ExportControl';
 import {LAYOUTS, preferences, THEME_CARDS} from './preferences';
 import {SECTIONS, settings} from './settings-state';
 
-const GROUP = 'Settings';
-
 const MODES = [
-  {id: 'dark', name: 'Dark'},
-  {id: 'light', name: 'Light'},
-  {id: 'system', name: 'System'},
+  {id: 'dark', name: 'editor.dark'},
+  {id: 'light', name: 'editor.light'},
+  {id: 'system', name: 'editor.system'},
 ] as const;
 
 /**
@@ -25,7 +23,7 @@ const MODES = [
 export function exportCommands(exporter: Exporter): Command[] {
   const [t] = useI18n<AppLocaleEntries>();
   const store = getExportCanvasStore();
-  const group = 'Export';
+  const group = t('toolbar.export');
   const tabs = exporter.tabs();
   const formats = [
     {id: ExportExtension.png, name: 'PNG'},
@@ -36,7 +34,7 @@ export function exportCommands(exporter: Exporter): Command[] {
     {
       id: 'export=image',
       group,
-      label: 'Export image',
+      label: t('export.title'),
       note: exportSummary(),
       run: exporter.image,
     },
@@ -45,8 +43,8 @@ export function exportCommands(exporter: Exporter): Command[] {
           {
             id: 'export=each-tab',
             group,
-            label: 'Export one image per tab',
-            note: `${tabs} images`,
+            label: t('editor.exportEachTab'),
+            note: t('editor.images', {count: String(tabs)}),
             run: exporter.eachTab,
           },
         ]
@@ -66,7 +64,7 @@ export function exportCommands(exporter: Exporter): Command[] {
           {
             id: 'export=copy',
             group,
-            label: 'Copy to clipboard', // i18n
+            label: t('toolbar.copyToCliboard'),
             run: exporter.copy,
           },
         ]
@@ -90,7 +88,7 @@ export function exportCommands(exporter: Exporter): Command[] {
     ...formats.map((format): Command => ({
       id: `export-format=${format.id}`,
       group,
-      label: `Export format: ${format.name}`,
+      label: t('editor.exportFormat', {value: format.name}),
       current: format.id === store.get.extension,
       run: () => store.set('extension', format.id),
     })),
@@ -98,7 +96,7 @@ export function exportCommands(exporter: Exporter): Command[] {
       (scale): Command => ({
         id: `export-scale=${scale}`,
         group,
-        label: `Export scale: ${scale}x`,
+        label: t('editor.exportScale', {value: `${scale}x`}),
         current: scale === store.get.devicePixelRatio,
         run: () => store.set('devicePixelRatio', scale),
       }),
@@ -106,17 +104,17 @@ export function exportCommands(exporter: Exporter): Command[] {
     ...[70, 80, 90, 100].map((quality): Command => ({
       id: `export-quality=${quality}`,
       group,
-      label: `JPEG quality: ${quality}%`,
+      label: t('editor.jpegQuality', {value: `${quality}%`}),
       current: quality === store.get.jpegQuality,
       run: () => store.set('jpegQuality', quality),
     })),
     ...[
-      {on: true, name: 'Only the active tab'},
-      {on: false, name: 'All tabs'},
+      {on: true, name: t('exportTabs.showOnlyActiveTab')},
+      {on: false, name: t('editor.allTabs')},
     ].map((choice): Command => ({
       id: `export-tabs=${choice.on}`,
       group,
-      label: `Export tabs: ${choice.name}`,
+      label: t('editor.exportTabs', {value: choice.name}),
       current: choice.on === store.get.showOnlyActiveTab,
       run: () => store.setShowOnlyActiveTab(choice.on),
     })),
@@ -129,54 +127,55 @@ export function exportCommands(exporter: Exporter): Command[] {
  * are the entries of the old menu at the top left that need the page to run.
  */
 export function settingsCommands(extra: readonly Command[]): Command[] {
+  const [t] = useI18n<AppLocaleEntries>();
   const ui = getUiStore();
   const layout = preferences.layout();
   const sides = [
-    {id: 'left', name: 'Left'},
-    {id: 'right', name: 'Right'},
+    {id: 'left', name: t('signature.left')},
+    {id: 'right', name: t('signature.right')},
   ] as const;
 
   return [
     {
       id: 'settings',
-      group: GROUP,
-      label: 'Settings…',
+      group: t('editor.settings'),
+      label: t('editor.settingsCommand'),
       run: () => settings.open(),
     },
     // A link to each section of the dialog.
     ...SECTIONS.map((section): Command => ({
       id: `settings=${section.id}`,
-      group: GROUP,
-      label: `Settings: ${section.name}`,
+      group: t('editor.settings'),
+      label: t('editor.settingSection', {value: t(section.name)}),
       run: () => settings.open(section.id),
     })),
     ...LAYOUTS.map((entry): Command => ({
       id: `layout=${entry.id}`,
-      group: GROUP,
-      label: `Layout: ${entry.name}`,
+      group: t('editor.settings'),
+      label: t('editor.layoutCommand', {value: t(entry.name)}),
       current: entry.id === layout,
       run: () => preferences.setLayout(entry.id),
     })),
     ...(layout === 'inspector'
       ? sides.map((side): Command => ({
           id: `inspector-side=${side.id}`,
-          group: GROUP,
-          label: `Inspector side: ${side.name}`,
+          group: t('editor.settings'),
+          label: t('editor.sideCommand', {value: side.name}),
           current: side.id === preferences.inspectorSide(),
           run: () => preferences.setInspectorSide(side.id),
         }))
       : []),
     ...THEME_CARDS.map((cards): Command => ({
       id: `theme-cards=${cards.id}`,
-      group: GROUP,
-      label: `Theme cards: ${cards.name}`,
+      group: t('editor.settings'),
+      label: t('editor.cardsCommand', {value: t(cards.name)}),
       current: cards.id === preferences.themeCards(),
       run: () => preferences.setThemeCards(cards.id),
     })),
     ...MODES.map((mode): Command => ({
       id: `colour-mode=${mode.id}`,
-      group: GROUP,
-      label: `Colour mode: ${mode.name}`,
+      group: t('editor.settings'),
+      label: t('editor.modeCommand', {value: t(mode.name)}),
       current: mode.id === ui.get.themeMode,
       run: () => ui.setThemeMode(mode.id),
     })),

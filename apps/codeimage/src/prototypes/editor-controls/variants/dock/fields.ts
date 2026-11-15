@@ -1,3 +1,5 @@
+import type {LocaleKeys} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../../../i18n';
 import type {ListedModel} from '../../command-menu/listed-model';
 import {createListedModel} from '../../command-menu/listed-model';
 import type {Control, ControlId, EditorControlsModel} from '../../model';
@@ -66,11 +68,14 @@ export const PLACES: Record<ControlId, Place> = {
   'editor.lineNumberStart': inGroup('code'),
 };
 
-export const GROUPS: readonly {id: GroupId; label: string}[] = [
-  {id: 'frame', label: 'Frame'},
-  {id: 'signature', label: 'Signature'},
-  {id: 'window', label: 'Window'},
-  {id: 'code', label: 'Code'},
+export const GROUPS: readonly {
+  id: GroupId;
+  label: LocaleKeys<AppLocaleEntries>;
+}[] = [
+  {id: 'frame', label: 'frame.frame'},
+  {id: 'signature', label: 'signature.title'},
+  {id: 'window', label: 'frame.terminal'},
+  {id: 'code', label: 'editor.code'},
 ];
 
 export interface Fields extends ListedModel {

@@ -217,7 +217,7 @@ export const item = style({
     [phone]: {
       selectors: {
         [`${root} &`]: {
-          flex: '1 1 auto',
+          flex: '1 1 0',
           flexDirection: 'column',
           gap: '4px',
           minWidth: '40px',
@@ -235,11 +235,27 @@ export const itemText = style({
   display: 'inline-grid',
   textAlign: 'left',
   whiteSpace: 'nowrap',
+  '@media': {
+    [phone]: {
+      minWidth: 0,
+      maxWidth: '100%',
+      width: '100%',
+      gridTemplateColumns: 'minmax(0, 1fr)',
+      textAlign: 'center',
+    },
+  },
 });
 
 // The label and the hidden copies of the other values share one cell.
 export const itemCell = style({
   gridArea: '1 / 1',
+  '@media': {
+    [phone]: {
+      minWidth: 0,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    },
+  },
 });
 
 export const itemSizer = style([itemCell, {visibility: 'hidden'}]);

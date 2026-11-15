@@ -1,3 +1,5 @@
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {
   createEffect,
   createSignal,
@@ -91,6 +93,7 @@ function pageOwnsKey(event: KeyboardEvent): boolean {
 // data-position="top" because the reference editor keeps its frame toolbar
 // at the bottom center.
 export function Picker(props: PickerProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   let highlight: HTMLSpanElement | undefined;
   const items: HTMLButtonElement[] = [];
   const [ready, setReady] = createSignal(false);
@@ -154,7 +157,7 @@ export function Picker(props: PickerProps) {
             <span class={styles.divider} aria-hidden="true" />
             <button
               class={clsx(styles.item, styles.replay)}
-              aria-label="Replay animation (R)"
+              aria-label={t('editor.replay')}
               onClick={() => replay()()}
             >
               ↻

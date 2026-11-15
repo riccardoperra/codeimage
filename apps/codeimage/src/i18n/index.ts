@@ -1,3 +1,4 @@
+import {editorLocale} from './editor';
 import {secrets} from './secrets';
 import {rendering} from './rendering';
 import {altText} from './altText';
@@ -47,7 +48,7 @@ export const locale = {
       openNewTab: 'Apri',
       loadingNewTab: 'Preparando link...',
       share: 'Condividi',
-      copyToCliboard: 'Copy to clipboard',
+      copyToCliboard: 'Copia negli appunti',
       generateLink: 'Genera link',
       toggleTheme: 'Modifica tema',
       changeLanguage: 'Modifica lingua',
@@ -77,19 +78,19 @@ export const locale = {
     shortcut: {
       esc: 'Esc',
       buttonAction: 'Scorciatoie tastiera',
-      focusCodeEditor: 'Focus editor di codice',
-      unFocusCodeEditor: 'Unfocus editor di codice',
-      toggleBackground: 'Attiva/disattiva background',
-      toggleDarkMode: 'Attiva/disattiva modalitá dark',
+      focusCodeEditor: 'Attiva l’editor di codice',
+      unFocusCodeEditor: 'Esci dall’editor di codice',
+      toggleBackground: 'Attiva/disattiva sfondo',
+      toggleDarkMode: 'Attiva/disattiva modalità scura',
       toggleHeader: 'Mostra/nascondi intestazione',
-      toggleWatermark: 'Mostra/nascondi watermark',
+      toggleWatermark: 'Mostra/nascondi filigrana',
       selectLanguage: 'Seleziona lingua',
-      changePadding: 'Modifica padding',
-      pickRandomTheme: 'Seleziona tema random',
+      changePadding: 'Modifica spaziatura',
+      pickRandomTheme: 'Scegli un tema casuale',
       export: 'Esporta',
       exportNewTab: 'Esporta in una nuova tab',
       copyLink: 'Copia link',
-      copySnippet: 'Copy snippet',
+      copySnippet: 'Copia snippet',
       openShortcuts: 'Apri scorciatoie',
     },
     themeSwitcher: {
@@ -106,6 +107,7 @@ export const locale = {
     ...rendering.it,
     ...altText.it,
     ...lineMarksLocale.it,
+    ...editorLocale.it,
   },
   en: {
     ...secrets.en,
@@ -138,6 +140,7 @@ export const locale = {
         'You are viewing the editor in read-only modality. Clone the snippet to save in your workspace and edit it.',
     },
     toolbar: {
+      copyToCliboard: 'Copy to clipboard',
       export: 'Export',
       openNewTab: 'Open',
       loadingNewTab: 'Preparing link...',
@@ -168,6 +171,7 @@ export const locale = {
       quality: 'Quality',
     },
     shortcut: {
+      selectLanguage: 'Select language',
       esc: 'Esc',
       buttonAction: 'Keyboard shortcuts',
       focusCodeEditor: 'Focus code editor',
@@ -198,6 +202,7 @@ export const locale = {
     ...rendering.en,
     ...altText.en,
     ...lineMarksLocale.en,
+    ...editorLocale.en,
   },
   de: {
     ...secrets.de,
@@ -208,16 +213,16 @@ export const locale = {
       no: 'Nein',
       show: 'Anzeigen',
       hide: 'Verstecken',
-      reload: 'Reload',
-      clone: 'Clone',
+      reload: 'Neu laden',
+      clone: 'Klonen',
       new: 'Neu',
     },
     canvas: {
       copiedToClipboard: 'Code-Schnipsel in Zwischenablage kopiert',
       linkGeneratedToClipboard: 'Link in Zwischenablage kopiert',
-      formattedCode: 'Code has been formatted',
-      pastedCode: 'Code has been pasted',
-      errorFormattedCode: 'Invalid code while formatting',
+      formattedCode: 'Code wurde formatiert',
+      pastedCode: 'Code wurde eingefügt',
+      errorFormattedCode: 'Ungültiger Code beim Formatieren',
     },
     readOnlyBanner: {
       title:
@@ -230,6 +235,7 @@ export const locale = {
       es: 'Spanisch',
     },
     toolbar: {
+      copyToCliboard: 'In die Zwischenablage kopieren',
       export: 'Export',
       share: 'Teilen',
       openNewTab: 'Öffnen',
@@ -261,8 +267,9 @@ export const locale = {
       quality: 'Qualität',
     },
     shortcut: {
+      selectLanguage: 'Sprache wählen',
       esc: 'Esc',
-      buttonAction: 'Tastatürkürzel',
+      buttonAction: 'Tastaturkürzel',
       focusCodeEditor: 'Code Editor fokussieren',
       unFocusCodeEditor: 'Fokus von Code Editor nehmen',
       toggleBackground: 'Hintergrund umschalten',
@@ -291,6 +298,7 @@ export const locale = {
     ...rendering.de,
     ...altText.de,
     ...lineMarksLocale.de,
+    ...editorLocale.de,
   },
   es: {
     ...secrets.es,
@@ -301,16 +309,16 @@ export const locale = {
       no: 'No',
       show: 'Mostrar',
       hide: 'Esconder',
-      reload: 'Reload',
-      clone: 'Clone',
+      reload: 'Recargar',
+      clone: 'Clonar',
       new: 'Nuevo',
     },
     canvas: {
       copiedToClipboard: 'Snippet copiado al portapapeles',
       linkGeneratedToClipboard: 'Link copiado al portapapeles',
-      formattedCode: 'Code has been formatted',
-      pastedCode: 'Code has been pasted',
-      errorFormattedCode: 'Invalid code while formatting',
+      formattedCode: 'Se ha formateado el código',
+      pastedCode: 'Se ha pegado el código',
+      errorFormattedCode: 'Código no válido al formatear',
     },
     readOnlyBanner: {
       title:
@@ -323,6 +331,7 @@ export const locale = {
       es: 'Español',
     },
     toolbar: {
+      copyToCliboard: 'Copiar al portapapeles',
       export: 'Exportar',
       openNewTab: 'Abrir',
       loadingNewTab: 'Preparando enlace...',
@@ -355,17 +364,17 @@ export const locale = {
     shortcut: {
       esc: 'Esc',
       buttonAction: 'Atajos de teclado',
-      focusCodeEditor: 'Focus editor de codigo',
-      unFocusCodeEditor: 'Unfocus editor de codigo',
+      focusCodeEditor: 'Activar el editor de código',
+      unFocusCodeEditor: 'Salir del editor de código',
       toggleBackground: 'Activa/Desactiva fondo',
-      toggleDarkMode: 'Activa/Desactiva modalitá dark',
-      toggleHeader: 'Muestra/Esconde intestazione',
-      toggleWatermark: 'Muestra/Esconde watermark',
+      toggleDarkMode: 'Activar/desactivar el modo oscuro',
+      toggleHeader: 'Mostrar/ocultar la cabecera',
+      toggleWatermark: 'Mostrar/ocultar la marca de agua',
       selectLanguage: 'Selecciona lenguaje',
-      changePadding: 'Modifica padding',
-      pickRandomTheme: 'Selecciona tema random',
+      changePadding: 'Cambiar el espaciado',
+      pickRandomTheme: 'Elegir un tema al azar',
       export: 'Exporta',
-      exportNewTab: 'Exporta en una nueva tab',
+      exportNewTab: 'Exportar en una pestaña nueva',
       copyLink: 'Copia enlace',
       copySnippet: 'Copia snippet',
       openShortcuts: 'Abre atajo',
@@ -384,6 +393,7 @@ export const locale = {
     ...rendering.es,
     ...altText.es,
     ...lineMarksLocale.es,
+    ...editorLocale.es,
   },
 };
 

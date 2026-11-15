@@ -6,7 +6,7 @@ import {Dialog} from '@kobalte/core/dialog';
 import {createSignal, For, Show, onCleanup} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import type {AppLocaleEntries} from '../../../i18n';
-import {ColorPickerPopover} from '../../../components/PropertyEditor/controls/ColorPicker/ColorPicker';
+import {ColorPickerPopover} from '../localized/ColorPicker';
 import {
   PanelRow,
   TwoColumnPanelRow,
@@ -67,13 +67,14 @@ export function SignatureRow() {
 }
 
 export function PickerField(props: {control: Control; id: string}) {
+  const [t] = useI18n<AppLocaleEntries>();
   const open = () => controlOverlay.open(props.control.id);
   const value = () => {
     const control = props.control;
     if (control.kind === 'select' || control.kind === 'segmented')
       return control.options().find(option => option.key === control.value())
         ?.label;
-    return 'Choose…'; // i18n
+    return t('editor.choose');
   };
   return (
     <Button

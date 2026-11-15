@@ -1,8 +1,10 @@
+import type {AppLocaleEntries} from '../../../i18n';
+import {useI18n} from '@codeimage/locale';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {Listbox} from '@codeui/kit';
 import {SegmentedField} from '@ui/SegmentedField/SegmentedField';
 import {createSignal, Show} from 'solid-js';
-import {FontSystemPicker} from '../../../components/PropertyEditor/controls/FontPicker/FontSystemPicker';
+import {FontSystemPicker} from '../localized/FontSystemPicker';
 import {createFontPickerListboxProps} from '../../../components/PropertyEditor/controls/FontPicker/FontPickerListbox';
 import {createListedModel} from '../command-menu/listed-model';
 import type {EditorControlsModel} from '../model';
@@ -36,6 +38,7 @@ export function FontEditor(props: {
   model: EditorControlsModel;
   close: () => void;
 }) {
+  const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
   const family = createListedModel(props.model).choice('font.family');
   const [source, setSource] = createSignal<'default' | 'system'>(
@@ -61,8 +64,8 @@ export function FontEditor(props: {
         value={source()}
         onChange={setSource}
         items={[
-          {label: 'Default', value: 'default'}, // i18n
-          {label: 'System', value: 'system'}, // i18n
+          {label: t('editor.default'), value: 'default'},
+          {label: t('editor.system'), value: 'system'},
         ]}
       />
       <Show
