@@ -5,7 +5,7 @@ The rule the program enforces is parity. For any snapshot, the CLI output and th
 The static view also replaces the hidden second CodeMirror editor, which is the core problem in discussion #619.
 The web app can rasterize with Takumi WASM too, behind a renderer flag that defaults to the current `dom-export` path.
 On top of that base the program adds line marks (diff, highlight, focus), secret redaction, social sizes with a signature, one image per tab, and alt text.
-PR ids in order are P1, P2, P3, P4, P5, P6, P7, P8, P9, P10. P10 brings the new editor's window styles and signature to the CLI.
+PR ids in order are P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11. P10 brings the new editor's window styles and signature to the CLI. P11 fetches fonts on demand and polishes the CLI output with clack.
 
 ## How to read this
 
@@ -637,12 +637,12 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 ## Render the new editor's window styles and signature in the CLI (P10)
 
-**Depends on.** The new UI (#711, branch `feat/ui-prototypes`) with three PRs merged into it. They are the window styles (#732, `feat/window-styles`), the signature styles (#729, `feat/signature-styles`), and Takumi aligned with the new editor (#731 merged into #701). The CLI (#702) merges last, after all of them. The operator set this order on 2026-11-15.
+**Depends on.** The new UI with the window styles (#732), the signature styles (#729) and Takumi aligned with the new editor (#731). All of them are in main since 2026-11-15, through #711 and #737. The CLI (#702) merges last. The operator set this order on 2026-11-15.
 
-- [ ] #729 merges into `feat/ui-prototypes` first. Record the merge SHA.
-- [ ] #731 is merged into `feat/p2-takumi-rasterizer-flag`. Then #701 is retargeted to `feat/ui-prototypes` and merged. Record the PR base and the merge SHA.
-- [ ] #732 merges into `feat/ui-prototypes`. Record the merge SHA.
-- [ ] #702 stays rebased onto the branch it merges into and merges last. `packages/cli` stays `"private": true` until the operator picks an npm name.
+- [x] #729 and #732 merged into `feat/ui-prototypes`, which merged into main through #737.
+- [x] #731 merged into main on 2026-11-15. #701 was closed as superseded.
+- [x] #702 merged main at 46fc3400. The renderer reads the signature with `parseSignature`, and the snapshot schema keeps the new signature fields.
+- [ ] #702 stays aligned with main and merges last. `packages/cli` stays `"private": true` until the operator picks an npm name.
 
 **Files.**
 
@@ -699,6 +699,80 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 - [ ] Bugbot triage done.
 - [ ] Rebased onto the target branch after the verdict, patch-id unchanged.
 - [ ] The operator lands it after #729, #701 and #732.
+
+## Fetch fonts on demand and polish the CLI output with clack (P11)
+
+**Depends on.** P10 merged into the CLI branch. P11 touches the font loading and the terminal output only, so it does not overlap the window and signature work. The operator chose this design on 2026-11-15. The package ships only the fonts every render needs and fetches the rest once into a user cache.
+
+- [ ] P10 is merged. Record its merge SHA.
+- [ ] A spike confirms which fonts Fontsource serves. It records the version and the file list for each font in `core/configuration/font.ts` plus Inter, Noto Sans SC and Noto Sans KR. Monaspace and Agave are unverified, and Twemoji is not on Fontsource.
+
+**Files.**
+
+- [ ] Edit `packages/render/build.mjs` to bundle only Inter and JetBrains Mono, and to write the full font manifest with a version, a URL and a SHA-256 for every file.
+- [ ] Edit `packages/render/src/render.ts` to take font files from the bundle or from the cache through one resolver.
+- [ ] Add `packages/render/src/fontCache.ts` with the cache directory, the download and the checksum check.
+- [ ] Add `packages/cli/src/commands/fonts.ts` for `fonts install`, `fonts list` and `fonts clean`.
+- [ ] Add `packages/cli/src/ui.ts`, the only module that imports `@clack/prompts`.
+
+**Build.**
+
+- [ ] The package bundles Inter for the UI and JetBrains Mono, the default code font. A default render works offline on a fresh install.
+- [ ] Every other code font and the Twemoji and Noto fallbacks download on first use from the source in the manifest. A font missing from Fontsource uses the same mechanism from its npm package on jsDelivr, or stays bundled.
+- [ ] Only the files a render needs download. A snippet with no CJK text fetches no Noto file, because the resolver reads the snippet's code points against each file's unicode range.
+- [ ] Files land in the user cache and never in `node_modules`. The resolver uses `env-paths` (`~/Library/Caches/codeimage`, `$XDG_CACHE_HOME/codeimage` or `~/.cache/codeimage`, `%LOCALAPPDATA%\codeimage`). `CODEIMAGE_CACHE_DIR` overrides it.
+- [ ] Each file is pinned to a version and checked against its SHA-256 before use. A mismatch deletes the file and fails with a clear error, so the same snapshot draws the same image on every machine.
+- [ ] Downloads write to a temporary file and rename it, so two parallel renders never read half a font.
+- [ ] `codeimage fonts install [name...] [--all]` prefetches fonts. `codeimage fonts list` shows each font as bundled, cached or missing, with its size. `codeimage fonts clean` empties the cache.
+- [ ] `--offline` never touches the network. A missing font fails with the command that installs it, such as `codeimage fonts install fira-code`.
+- [ ] Add `--font-file <path>` to draw the code with any local font file, including an installed system font. It is opt-in, and the output then depends on that file.
+- [ ] `@clack/prompts` draws a spinner for downloads and rendering, a short summary with the output path, size and time, and readable errors.
+- [ ] All decorative output goes to stderr, so `codeimage foo.ts > out.png` stays a valid PNG.
+- [ ] Without a TTY, in CI, or with `--quiet`, the CLI prints plain lines and never prompts. Prompts are optional in a TTY and never block a script.
+
+**You see.**
+
+- [ ] On a fresh cache, `codeimage foo.ts --font fira-code -o out.png` shows a spinner while Fira Code downloads, then a summary line. The second run renders without the spinner step.
+- [ ] `codeimage fonts list` shows Inter and JetBrains Mono as bundled and Fira Code as cached.
+
+**Verify, unit.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
+
+- [ ] `fontCache.test.ts` covers the cache directory per platform, `CODEIMAGE_CACHE_DIR`, a checksum mismatch, an interrupted download, and two parallel downloads of one file, against a local HTTP server. Run `pnpm --filter=@codeimage/render test`.
+- [ ] A resolver test asserts that an ASCII snippet requests no Noto file and that a snippet with Hangul requests only the Noto Sans KR files it needs.
+- [ ] `packages/cli` tests assert that with stdout piped the bytes are a valid PNG, that `--quiet` and a non-TTY print no spinner, and that `--offline` with a missing font exits non-zero with the install hint. Run `pnpm --filter=@codeimage/cli test`.
+
+**Verify, live.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked. Ten lanes on `claude-sonnet-5-5` at the PR head, per the boot recipe.
+
+- [ ] Lane 1. Regression lane against trunk. Rerun `scripts/parity/takumi-vs-chrome.ts` with every font taken from the cache. Save `p11-parity.txt`. Pass when every cell matches the P10 result.
+- [ ] Lane 2. A fresh cache in a new `HOME`. Render with each code font once. Save `p11-fonts.png`. Pass when each output uses the named font and the cache holds only the files those renders needed.
+- [ ] Lane 3. A snippet with emoji, Chinese and Korean text. Save `p11-fallbacks.png`. Pass when it matches the P10 render of the same snippet within 0.5%.
+- [ ] Lane 4. Network off. Run the default render, then `--font fira-code --offline` on an empty cache. Save `p11-offline.txt`. Pass when the first succeeds and the second fails with the install hint.
+- [ ] Lane 5. `npx` and a global install from a packed tarball. Save `p11-install.txt`. Pass when both render, both share one cache, and nothing is written inside the installed package.
+- [ ] Lane 6. A terminal recording of a first run, a cached run, and `codeimage foo.ts > out.png`. Save `p11-ui.mp4`. Pass when the spinner shows on stderr only and `out.png` opens.
+- [ ] Lane 7. `CODEIMAGE_CACHE_DIR` set to a scratch folder and a read-only `HOME`. Save `p11-cache-dir.txt`. Pass when the render succeeds and writes only inside that folder.
+- [ ] Lane 8. Corrupt one cached font file, then render with that font. Save `p11-checksum.txt`. Pass when the CLI deletes the file, downloads it again and renders the same image as before.
+- [ ] Lane 9. Start four renders with the same uncached font in parallel. Save `p11-parallel.txt`. Pass when all four succeed and their PNGs are identical.
+- [ ] Lane 10. Render with `--font-file` pointing to an installed system monospace font. Save `p11-font-file.png`. Pass when the output uses that font and `codeimage fonts list` is unchanged.
+
+**Verify, perf.** Tests alone are not sufficient verification. A PR is verified only when its unit, live, and perf boxes are all checked.
+
+- [ ] Metric. The packed size of the CLI and render tarballs, and the cold wall time of a 50-line render with a cached font.
+- [ ] Probe. `npm pack --dry-run` on each package, and `hyperfine --warmup 2 --runs 20` on head and on the P10 head.
+- [ ] Baseline. The P10 tarball sizes and cold median.
+- [ ] Rule. The tarballs shrink by at least 80% of the font bytes the P10 package carries, and the cached cold median is at most 50 ms above P10.
+
+**Review gate.** The operator reviews before merge.
+
+- [ ] Copy the lane 2 and 3 screenshots into `docs/plans/media/p11-review-<slug>.png`.
+- [ ] Save the lane 6 recording as `docs/plans/media/p11-review.mp4`.
+- [ ] Post the screenshots, the video and the tarball sizes in chat. Stop at merge-ready. Wait for the operator's click.
+
+**Merge.**
+
+- [ ] Root's clean verdict at the exact head SHA.
+- [ ] Bugbot triage done.
+- [ ] Rebased onto the target branch after the verdict, patch-id unchanged.
+- [ ] The operator lands it after P10.
 
 ## Close the program
 
