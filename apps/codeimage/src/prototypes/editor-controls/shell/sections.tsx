@@ -203,9 +203,7 @@ function LanguageChoice() {
  * its search reads the same rows. Call it inside a component, since the rows
  * read the stores and the router.
  */
-export function createSettingSections(
-  model: EditorControlsModel,
-): readonly SettingSection[] {
+export function createSettingSections(model: EditorControlsModel) {
   const [t] = useI18n<AppLocaleEntries>();
   const ui = getUiStore();
   const auth = getAuth0State();
@@ -218,16 +216,16 @@ export function createSettingSections(
     return themes.find(entry => entry.active()) ?? themes[0];
   };
 
-  const general: SettingSection = {
-    id: 'general',
+  const general = {
+    id: 'general' as const,
     name: nameOf('general'),
     icon: GeneralIcon,
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: 'Interface',
         rows: [
           {
-            id: 'language',
+            id: 'language' as const,
             title: 'Language',
             description: () =>
               'The language of the menus, labels and messages.',
@@ -235,19 +233,19 @@ export function createSettingSections(
           },
         ],
       },
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
-  const appearance: SettingSection = {
-    id: 'appearance',
+  const appearance = {
+    id: 'appearance' as const,
     name: nameOf('appearance'),
     icon: AppearanceIcon,
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: 'Colours',
         rows: [
           {
-            id: 'colour-mode',
+            id: 'colour-mode' as const,
             title: 'Colour mode',
             description: () => 'Dark, light, or the same as your system.',
             control: () => (
@@ -268,7 +266,7 @@ export function createSettingSections(
         title: 'Inspector',
         rows: [
           {
-            id: 'panel-side',
+            id: 'panel-side' as const,
             title: 'Panel side',
             description: () =>
               preferences.layout() === 'inspector'
@@ -287,11 +285,11 @@ export function createSettingSections(
           },
         ],
       },
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
-  const experiments: SettingSection = {
-    id: 'experiments',
+  const experiments = {
+    id: 'experiments' as const,
     name: nameOf('experiments'),
     icon: ExperimentsIcon,
     intro: 'Previews of what may come next. They can change or go away.',
@@ -307,12 +305,12 @@ export function createSettingSections(
         Restore defaults
       </Button>
     ),
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: 'Editor',
         rows: [
           {
-            id: 'layout',
+            id: 'layout' as const,
             title: 'Layout',
             description: () =>
               'Where the controls sit around the canvas. Inspector is the default, Dock and Studio are experiments.',
@@ -339,7 +337,7 @@ export function createSettingSections(
         title: 'Theme picker',
         rows: [
           {
-            id: 'theme-cards',
+            id: 'theme-cards' as const,
             title: 'Theme cards',
             description: () =>
               'How the theme picker draws each theme. Window is the default, Orb and Aa list are experiments.',
@@ -363,24 +361,24 @@ export function createSettingSections(
           },
         ],
       },
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
   // Every row reads and writes the production export store, the one that
   // today's export popover and dialog share, so there is one value for each.
   const exportStore = getExportCanvasStore();
   const target = () => getFrameState().exportTarget();
-  const exportSection: SettingSection = {
-    id: 'export',
+  const exportSection = {
+    id: 'export' as const,
     name: nameOf('export'),
     icon: ExportIcon,
     intro: 'What Export gives. The Export button uses these at once.',
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: 'Image',
         rows: [
           {
-            id: 'export-format',
+            id: 'export-format' as const,
             title: 'Format',
             description: () =>
               exportStore.get.extension === ExportExtension.jpeg
@@ -401,7 +399,7 @@ export function createSettingSections(
           ...(exportStore.get.extension === ExportExtension.jpeg
             ? [
                 {
-                  id: 'export-quality',
+                  id: 'export-quality' as const,
                   title: 'Quality',
                   description: () =>
                     `${exportStore.get.jpegQuality}%. Lower makes a smaller file.`,
@@ -422,7 +420,7 @@ export function createSettingSections(
               ]
             : []),
           {
-            id: 'export-scale',
+            id: 'export-scale' as const,
             title: 'Scale',
             description: () =>
               target()
@@ -454,7 +452,7 @@ export function createSettingSections(
             ),
           },
           {
-            id: 'export-alt-text',
+            id: 'export-alt-text' as const,
             title: t('altText.copy'),
             description: () => t('altText.hint'),
             small: true,
@@ -466,7 +464,7 @@ export function createSettingSections(
         title: 'Tabs',
         rows: [
           {
-            id: 'export-active-tab',
+            id: 'export-active-tab' as const,
             title: 'Only the active tab',
             description: () =>
               'The window shows the active tab alone, without the other tabs.',
@@ -482,11 +480,11 @@ export function createSettingSections(
           },
         ],
       },
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
-  const library: SettingSection = {
-    id: 'whats-new',
+  const library = {
+    id: 'whats-new' as const,
     name: nameOf('whats-new'),
     icon: NewsIcon,
     intro: 'Features added to CodeImage, newest first.',
@@ -500,11 +498,11 @@ export function createSettingSections(
         Older releases on GitHub ↗
       </a>
     ),
-    groups: () =>
+    groups: createMemo(() =>
       RELEASES.map(release => ({
         title: `${release.title} · ${releaseDate(release)}`,
         rows: release.highlights.map(highlight => ({
-          id: `news-${highlight.id}`,
+          id: `news-${highlight.id}` as const,
           title: highlight.title,
           description: () => highlight.body,
           fresh: highlight.id,
@@ -529,18 +527,19 @@ export function createSettingSections(
           },
         })),
       })),
-  };
+    ),
+  } satisfies SettingSection;
 
-  const about: SettingSection = {
-    id: 'about',
+  const about = {
+    id: 'about' as const,
     name: nameOf('about'),
     icon: AboutIcon,
-    groups: () => [
+    groups: createMemo(() => [
       {
         title: 'CodeImage',
         rows: [
           {
-            id: 'version',
+            id: 'version' as const,
             small: true,
             title: 'Version',
             description: () => 'The release of CodeImage you are using.',
@@ -549,7 +548,7 @@ export function createSettingSections(
             ),
           },
           {
-            id: 'github',
+            id: 'github' as const,
             small: true,
             title: 'GitHub',
             description: () => 'The source code, issues and feedback.',
@@ -575,7 +574,7 @@ export function createSettingSections(
               title: 'Account',
               rows: [
                 {
-                  id: 'logout',
+                  id: 'logout' as const,
                   small: true,
                   title: 'Log out',
                   description: () => {
@@ -601,15 +600,21 @@ export function createSettingSections(
             },
           ]
         : []),
-    ],
-  };
+    ]),
+  } satisfies SettingSection;
 
   // One list of rows per section for as long as nothing they read changes,
   // so that a search keeps the rows, and their controls, that still match.
-  return [general, appearance, exportSection, experiments, library, about].map(
-    section => {
-      const groups = createMemo(section.groups);
-      return {...section, groups};
-    },
-  );
+  return [
+    general,
+    appearance,
+    exportSection,
+    experiments,
+    library,
+    about,
+  ] satisfies readonly SettingSection[];
 }
+
+export type SettingRowId = ReturnType<
+  ReturnType<typeof createSettingSections>[number]['groups']
+>[number]['rows'][number]['id'];

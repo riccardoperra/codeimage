@@ -25,6 +25,25 @@ import type {Exporter} from './export';
 import * as styles from './export.css';
 import {settings} from './settings-state';
 
+export type ExportItem =
+  | 'image'
+  | 'tabs'
+  | 'share'
+  | 'copy'
+  | 'new-tab'
+  | 'alt'
+  | 'redact'
+  | 'settings';
+
+export function createExportMenu() {
+  const [menuOpen, setMenuOpen] = createSignal(false);
+  getWhatsNew().bindLocation('export', () => {
+    settings.close();
+    requestAnimationFrame(() => setMenuOpen(true));
+  });
+  return {isOpen: menuOpen, setOpen: setMenuOpen};
+}
+
 /** What an export gives with the settings now, such as `PNG at 3x`. */
 export function exportSummary(): string {
   const canvas = getExportCanvasStore();
@@ -41,15 +60,14 @@ export function exportSummary(): string {
  * One image per tab stays in the list with its reason while the snippet has
  * one tab, so that it can be found before it is needed.
  */
-export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
+export function ExportControl(props: {
+  exporter: Exporter;
+  menu: ReturnType<typeof createExportMenu>;
+  size?: 'sm' | 'xs';
+}) {
   const [t] = useI18n<AppLocaleEntries>();
   const exporter = () => props.exporter;
   const size = () => props.size ?? 'sm';
-  const [menuOpen, setMenuOpen] = createSignal(false);
-  getWhatsNew().bindLocation('export', () => {
-    settings.close();
-    requestAnimationFrame(() => setMenuOpen(true));
-  });
   const copyLabel = 'Copy to clipboard'; // i18n
   const redactedLabel = 'Secrets redacted. Ready to export.'; // i18n
 
@@ -104,8 +122,8 @@ export function ExportControl(props: {exporter: Exporter; size?: 'sm' | 'xs'}) {
         </Button>
         <DropdownMenu
           placement="bottom-end"
-          open={menuOpen()}
-          onOpenChange={setMenuOpen}
+          open={props.menu.isOpen()}
+          onOpenChange={props.menu.setOpen}
         >
           <NewDot at="export" filled>
             <DropdownMenuTrigger

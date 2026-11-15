@@ -27,7 +27,7 @@ import * as placeholderStyles from './frame-placeholder.css';
 import type {ThemeEntry} from './model';
 import type {Exporter} from './shell/export';
 import {createExporter} from './shell/export';
-import {ExportControl} from './shell/ExportControl';
+import {createExportMenu, ExportControl} from './shell/ExportControl';
 
 // `?frame-delay=<ms>` holds the lazy frame back, to look at its placeholder
 // as a slow network shows it.
@@ -153,6 +153,9 @@ function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
 }
 
 export function createStage(): Stage {
+  // Responsive placements can mount before the previous placement disposes.
+  // Their shared stage owns the reveal for the lifetime of both placements.
+  const exportMenu = createExportMenu();
   const media = matchMedia('(max-width: 768px)');
   const [compact, setCompact] = createSignal(media.matches);
   const updateCompact = () => setCompact(media.matches);
@@ -187,7 +190,9 @@ export function createStage(): Stage {
       );
     },
     exportRef,
-    ExportButton: () => <ExportControl exporter={exporter} size={size} />,
+    ExportButton: () => (
+      <ExportControl menu={exportMenu} exporter={exporter} size={size} />
+    ),
     exporter,
     CopyToClipboardButton: () => (
       <CopyToClipboardButton canvasRef={exportRef()} />
