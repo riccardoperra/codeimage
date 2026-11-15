@@ -8,9 +8,9 @@ export const animationLocale = {
       holdShort: 'Hold',
       export: {
         title: 'Export animation',
-        description: 'MP4 video, rendered on your device.',
+        description: '{{format}} animation, rendered on your device.',
         retry: 'Retry',
-        share: 'Share MP4',
+        share: 'Share {{format}}',
         fpsValue: '{{fps}} fps',
         errors: {
           renderer:
@@ -18,7 +18,7 @@ export const animationLocale = {
           fonts:
             'A required export font could not load. Check your connection and retry.',
           encoder:
-            'The H.264 encoder or MP4 writer failed. Retry or choose a smaller size.',
+            'The animation encoder failed. Retry or choose a smaller size.',
           workerLoad:
             'The video worker could not load. A file may be unavailable after an update, or you may be offline. Reconnect and retry; reload the page if needed.',
           workerMessage:
@@ -29,7 +29,7 @@ export const animationLocale = {
         scale: 'Scale',
         background: 'Solid background',
         backgroundHint:
-          'MP4 has no transparency. This colour fills the canvas.',
+          'Animation exports are opaque. This colour fills the canvas.',
         video: 'Export video',
         asImage: 'Export as image',
         colorInvalid: 'Use an opaque hex colour, such as #f0a020.',
@@ -47,8 +47,11 @@ export const animationLocale = {
         frames: '{{done}} / {{total}} frames',
         done: 'Ready · {{size}} · {{duration}}',
         cancel: 'Cancel',
-        start: 'Export MP4',
-        download: 'Download MP4',
+        start: 'Export {{format}}',
+        download: 'Download {{format}}',
+        gifFpsNote: 'GIF plays at 50 fps when 60 fps is selected.',
+        estimate: 'Estimated size · {{size}}',
+        suggestMp4: 'This GIF may exceed 8 MB. Choose MP4 for a smaller file.',
       },
       increaseDuration: 'Increase duration by 100 ms',
       decreaseDuration: 'Decrease duration by 100 ms',
@@ -110,9 +113,9 @@ export const animationLocale = {
       holdShort: 'Pausa',
       export: {
         title: 'Esporta animazione',
-        description: 'Video MP4, generato sul tuo dispositivo.',
+        description: 'Animazione {{format}}, generata sul tuo dispositivo.',
         retry: 'Riprova',
-        share: 'Condividi MP4',
+        share: 'Condividi {{format}}',
         fpsValue: '{{fps}} fps',
         errors: {
           renderer:
@@ -120,7 +123,7 @@ export const animationLocale = {
           fonts:
             'Impossibile caricare un carattere necessario per il video. Controlla la connessione e riprova.',
           encoder:
-            'Errore del codificatore H.264 o del file MP4. Riprova o scegli dimensioni inferiori.',
+            'Errore del codificatore dell’animazione. Riprova o scegli dimensioni inferiori.',
           workerLoad:
             'Impossibile caricare il worker video. Un file potrebbe non essere disponibile dopo un aggiornamento, oppure sei offline. Riconnettiti e riprova; se necessario ricarica la pagina.',
           workerMessage:
@@ -131,7 +134,7 @@ export const animationLocale = {
         scale: 'Scala',
         background: 'Sfondo pieno',
         backgroundHint:
-          'MP4 non supporta la trasparenza. Questo colore riempie il video.',
+          'Le animazioni esportate sono opache. Questo colore riempie il riquadro.',
         video: 'Esporta video',
         asImage: 'Esporta come immagine',
         colorInvalid: 'Usa un colore esadecimale opaco, ad esempio #f0a020.',
@@ -149,8 +152,12 @@ export const animationLocale = {
         frames: '{{done}} / {{total}} fotogrammi',
         done: 'Pronto · {{size}} · {{duration}}',
         cancel: 'Annulla',
-        start: 'Esporta MP4',
-        download: 'Scarica MP4',
+        start: 'Esporta {{format}}',
+        download: 'Scarica {{format}}',
+        gifFpsNote: 'Se selezioni 60 fps, la GIF viene riprodotta a 50 fps.',
+        estimate: 'Dimensione stimata · {{size}}',
+        suggestMp4:
+          'Questa GIF potrebbe superare 8 MB. Scegli MP4 per un file più piccolo.',
       },
       increaseDuration: 'Aumenta la durata di 100 ms',
       decreaseDuration: 'Riduci la durata di 100 ms',
@@ -213,9 +220,9 @@ export const animationLocale = {
       holdShort: 'Halten',
       export: {
         title: 'Animation exportieren',
-        description: 'MP4-Video, auf deinem Gerät gerendert.',
+        description: '{{format}}-Animation, auf deinem Gerät gerendert.',
         retry: 'Erneut versuchen',
-        share: 'MP4 teilen',
+        share: '{{format}} teilen',
         fpsValue: '{{fps}} Bilder/s',
         errors: {
           renderer:
@@ -223,7 +230,7 @@ export const animationLocale = {
           fonts:
             'Eine benötigte Schriftart konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.',
           encoder:
-            'Der H.264-Encoder oder MP4-Writer ist fehlgeschlagen. Versuche es erneut oder wähle eine kleinere Größe.',
+            'Der Animationsencoder ist fehlgeschlagen. Versuche es erneut oder wähle eine kleinere Größe.',
           workerLoad:
             'Der Video-Worker konnte nicht geladen werden. Nach einem Update fehlt möglicherweise eine Datei, oder du bist offline. Verbinde dich und versuche es erneut; lade bei Bedarf die Seite neu.',
           workerMessage:
@@ -234,7 +241,7 @@ export const animationLocale = {
         scale: 'Skalierung',
         background: 'Einfarbiger Hintergrund',
         backgroundHint:
-          'MP4 unterstützt keine Transparenz. Diese Farbe füllt die Videofläche.',
+          'Animationen werden deckend exportiert. Diese Farbe füllt die Fläche.',
         video: 'Video exportieren',
         asImage: 'Als Bild exportieren',
         colorInvalid: 'Verwende eine deckende Hex-Farbe, zum Beispiel #f0a020.',
@@ -252,8 +259,12 @@ export const animationLocale = {
         frames: '{{done}} / {{total}} Bilder',
         done: 'Fertig · {{size}} · {{duration}}',
         cancel: 'Abbrechen',
-        start: 'MP4 exportieren',
-        download: 'MP4 herunterladen',
+        start: '{{format}} exportieren',
+        download: '{{format}} herunterladen',
+        gifFpsNote: 'Bei 60 fps wird das GIF mit 50 fps abgespielt.',
+        estimate: 'Geschätzte Größe · {{size}}',
+        suggestMp4:
+          'Dieses GIF könnte größer als 8 MB werden. Wähle MP4 für eine kleinere Datei.',
       },
       increaseDuration: 'Dauer um 100 ms erhöhen',
       decreaseDuration: 'Dauer um 100 ms verringern',
@@ -316,9 +327,9 @@ export const animationLocale = {
       holdShort: 'Pausa',
       export: {
         title: 'Exportar animación',
-        description: 'Vídeo MP4, renderizado en tu dispositivo.',
+        description: 'Animación {{format}}, renderizada en tu dispositivo.',
         retry: 'Reintentar',
-        share: 'Compartir MP4',
+        share: 'Compartir {{format}}',
         fpsValue: '{{fps}} fps',
         errors: {
           renderer:
@@ -326,7 +337,7 @@ export const animationLocale = {
           fonts:
             'No se pudo cargar una fuente necesaria para el vídeo. Comprueba la conexión y reintenta.',
           encoder:
-            'Error del codificador H.264 o del archivo MP4. Reintenta o elige un tamaño menor.',
+            'Error del codificador de animación. Reintenta o elige un tamaño menor.',
           workerLoad:
             'No se pudo cargar el worker de vídeo. Puede faltar un archivo tras una actualización, o puede que estés sin conexión. Conéctate y reintenta; recarga la página si es necesario.',
           workerMessage:
@@ -337,7 +348,7 @@ export const animationLocale = {
         scale: 'Escala',
         background: 'Fondo sólido',
         backgroundHint:
-          'MP4 no admite transparencia. Este color rellena el vídeo.',
+          'Las animaciones exportadas son opacas. Este color rellena el lienzo.',
         video: 'Exportar vídeo',
         asImage: 'Exportar como imagen',
         colorInvalid: 'Usa un color hexadecimal opaco, como #f0a020.',
@@ -355,8 +366,12 @@ export const animationLocale = {
         frames: '{{done}} / {{total}} fotogramas',
         done: 'Listo · {{size}} · {{duration}}',
         cancel: 'Cancelar',
-        start: 'Exportar MP4',
-        download: 'Descargar MP4',
+        start: 'Exportar {{format}}',
+        download: 'Descargar {{format}}',
+        gifFpsNote: 'Al seleccionar 60 fps, el GIF se reproduce a 50 fps.',
+        estimate: 'Tamaño estimado · {{size}}',
+        suggestMp4:
+          'Este GIF puede superar los 8 MB. Elige MP4 para un archivo más pequeño.',
       },
       increaseDuration: 'Aumentar la duración en 100 ms',
       decreaseDuration: 'Reducir la duración en 100 ms',

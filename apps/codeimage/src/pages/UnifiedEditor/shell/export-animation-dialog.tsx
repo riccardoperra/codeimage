@@ -8,19 +8,50 @@ import {
   DialogPanelFooter,
   Select,
   RadioList,
-  RadioListItem,
   TextField,
 } from '@codeui/kit';
 import {Dialog} from '@kobalte/core/dialog';
 import {Progress} from '@kobalte/core/progress';
+import {RadioGroup} from '@kobalte/core/radio-group';
 import {type Accessor, createEffect, createSignal, Show} from 'solid-js';
 import download from 'downloadjs';
 import {parseToRgb, rgb} from 'polished';
 import {useExportAnimation} from '../../../hooks/use-export-animation';
-import {type VideoFps} from '../../../core/video/encode';
+import {
+  mp4Config,
+  checkMp4Support,
+  type Mp4Support,
+} from '../../../core/video/encode';
+import {
+  ANIMATION_FORMATS,
+  GIF_SUGGEST_MP4_BYTES,
+  preferredAnimationFormat,
+  type AnimationFps,
+  type AnimationFormat,
+} from '../../../core/video/formats';
 import type {AppLocaleEntries} from '../../../i18n';
 import {animationSnapshot} from './export-animation';
 import * as styles from './export.css';
+
+// Kit 0.1.5's RadioListItem drops its disabled prop. Keep the kit group and
+// use its underlying Kobalte parts so unavailable formats are disabled.
+function FormatItem(props: {format: AnimationFormat; disabled?: boolean}) {
+  return (
+    <RadioGroup.Item
+      value={props.format}
+      disabled={props.disabled}
+      class={styles.videoFormatItem}
+    >
+      <RadioGroup.ItemInput />
+      <RadioGroup.ItemControl class={styles.videoFormatRadio}>
+        <RadioGroup.ItemIndicator class={styles.videoFormatIndicator} />
+      </RadioGroup.ItemControl>
+      <RadioGroup.ItemLabel>
+        {ANIMATION_FORMATS[props.format].label}
+      </RadioGroup.ItemLabel>
+    </RadioGroup.Item>
+  );
+}
 
 export function createAnimationExporter() {
   const {animation} = getEditorStore();
@@ -29,7 +60,9 @@ export function createAnimationExporter() {
   const style = useFrameCodeStyle();
   const snapshot = animationSnapshot();
   const [open, setOpen] = createSignal(false);
-  const [fps, setFps] = createSignal<VideoFps>(30);
+  const [fps, setFps] = createSignal<AnimationFps>(30);
+  const [format, setFormat] = createSignal<AnimationFormat>('mp4');
+  const [mp4Support, setMp4Support] = createSignal<Mp4Support>();
   const [scale, setScale] = createSignal<1 | 2 | 3>(2);
   const [matte, setMatte] = createSignal<string>();
   const defaultBackground = () => {
@@ -51,10 +84,29 @@ export function createAnimationExporter() {
     const current = ++generation;
     setSummary(undefined);
     const frameRate = fps();
+    const outputFormat = format();
     const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
     const outputScale = scale();
     await job.check(async () => {
-      const value = await snapshot.describe(frameRate, output, outputScale);
+      let value = await snapshot.describe(
+        frameRate,
+        output,
+        outputScale,
+        outputFormat,
+      );
+      const support = await checkMp4Support(
+        mp4Config(value.config, frameRate === 25 ? 30 : frameRate),
+      );
+      if (current !== generation) return value.config;
+      setMp4Support(support);
+      const selected = preferredAnimationFormat(outputFormat, support);
+      if (selected !== outputFormat) {
+        setFormat(selected);
+        const rate =
+          frameRate === 60 ? 60 : ANIMATION_FORMATS[selected].defaultFps;
+        setFps(rate);
+        value = await snapshot.describe(rate, output, outputScale, selected);
+      }
       if (current === generation) setSummary(value);
       return value.config;
     });
@@ -62,11 +114,17 @@ export function createAnimationExporter() {
   createEffect(() => {
     const value = job.state();
     if (value.kind === 'done')
-      download(value.blob, 'codeimage-animation.mp4', 'video/mp4');
+      download(
+        value.blob,
+        `codeimage-animation.${ANIMATION_FORMATS[value.format].extension}`,
+        value.blob.type,
+      );
   });
   const show = () => {
     setOpen(true);
-    setFps(animation.settings().fps);
+    setFormat('mp4');
+    const rate = animation.settings().fps;
+    setFps(rate);
     void refresh();
   };
   const close = () => {
@@ -75,10 +133,16 @@ export function createAnimationExporter() {
     setSummary(undefined);
     setOpen(false);
   };
-  const changeFps = (value: VideoFps | null) => {
+  const changeFps = (value: AnimationFps | null) => {
     if (!value) return;
     setFps(value);
-    animation.actions.setFps(value);
+    if (value !== 25) animation.actions.setFps(value);
+    void refresh();
+  };
+  const changeFormat = (value: string) => {
+    if (value !== 'mp4' && value !== 'gif') return;
+    setFormat(value);
+    setFps(fps() === 60 ? 60 : ANIMATION_FORMATS[value].defaultFps);
     void refresh();
   };
   const changeSize = (value: 'current' | '1080p' | null) => {
@@ -100,7 +164,7 @@ export function createAnimationExporter() {
     const outputScale = scale();
     const background = needsMatte() ? solidBackground() : defaultBackground();
     void job.start(() =>
-      snapshot.capture(frameRate, output, outputScale, background),
+      snapshot.capture(frameRate, output, outputScale, background, format()),
     );
   };
   return {
@@ -109,6 +173,9 @@ export function createAnimationExporter() {
     show,
     close,
     fps,
+    format,
+    changeFormat,
+    mp4Support,
     size,
     scale,
     changeScale,
@@ -142,11 +209,10 @@ export function AnimationExportContent(props: {
     return value.kind === 'done' ? value : undefined;
   };
   const unsupported = () => {
-    const value = state();
-    if (value.kind !== 'ready' || value.support.kind !== 'unsupported')
-      return undefined;
+    const value = exporter().mp4Support();
+    if (value?.kind !== 'unsupported') return undefined;
     return t(
-      `animation.export.${value.support.reason === 'missing' ? 'missing' : 'unsupported'}`,
+      `animation.export.${value.reason === 'missing' ? 'missing' : 'unsupported'}`,
     );
   };
   const failure = () => {
@@ -157,7 +223,7 @@ export function AnimationExportContent(props: {
   };
   const canStart = () =>
     state().kind === 'ready' &&
-    !unsupported() &&
+    (exporter().format() !== 'mp4' || !unsupported()) &&
     !exporter().busy() &&
     (!exporter().needsMatte() || exporter().validMatte());
   const progress = () => {
@@ -201,23 +267,26 @@ export function AnimationExportContent(props: {
     size === 'current'
       ? t('animation.export.currentSize')
       : `${number(1920)} × ${number(1080)}`;
-  const fpsLabel = (fps: VideoFps) =>
+  const fpsLabel = (fps: AnimationFps) =>
     t('animation.export.fpsValue', {fps: number(fps)});
-  const fpsValue = (value: Accessor<VideoFps>) => fpsLabel(value());
+  const fpsValue = (value: Accessor<AnimationFps>) => fpsLabel(value());
   const sizeValue = (value: Accessor<'current' | '1080p'>) =>
     sizeLabel(value());
   const retry = () => void exporter().retry();
   const scaleLabel = (value: 1 | 2 | 3) => `${number(value)}×`;
   const scaleValue = (value: Accessor<1 | 2 | 3>) => scaleLabel(value());
   const close = () => exporter().close();
+  const format = () => ANIMATION_FORMATS[exporter().format()];
+  const filename = () =>
+    `codeimage-animation.${ANIMATION_FORMATS[done()?.format ?? exporter().format()].extension}`;
   const save = () => {
     const value = done();
-    if (value) download(value.blob, 'codeimage-animation.mp4', 'video/mp4');
+    if (value) download(value.blob, filename(), value.blob.type);
   };
   const file = () => {
     const value = done();
     return value
-      ? new File([value.blob], 'codeimage-animation.mp4', {type: 'video/mp4'})
+      ? new File([value.blob], filename(), {type: value.blob.type})
       : undefined;
   };
   const canShare = () => {
@@ -237,26 +306,30 @@ export function AnimationExportContent(props: {
   };
   return (
     <div data-animation-export>
-      <p class={styles.hint}>{t('animation.export.description')}</p>
+      <p class={styles.hint}>
+        {t('animation.export.description', {format: format().label})}
+      </p>
       <DialogPanelContent>
         <div class={styles.videoFields}>
           <div class={styles.videoRow}>
             <span>{t('animation.export.format')}</span>
             <RadioList
               size="sm"
-              value="mp4"
+              value={exporter().format()}
+              onChange={exporter().changeFormat}
               aria-label={t('animation.export.format')}
-              disabled={!!unsupported()}
+              disabled={exporter().busy()}
             >
-              <RadioListItem value="mp4" label="MP4" />
+              <FormatItem format="mp4" disabled={!!unsupported()} />
+              <FormatItem format="gif" />
             </RadioList>
           </div>
           <div class={styles.videoRow}>
             <span>{t('animation.export.fps')}</span>
-            <Select<VideoFps>
+            <Select<AnimationFps>
               size="sm"
               aria-label={t('animation.export.fps')}
-              options={[24, 30, 50, 60]}
+              options={format().fpsOptions}
               value={exporter().fps()}
               onChange={exporter().changeFps}
               itemLabel={fpsLabel}
@@ -315,8 +388,30 @@ export function AnimationExportContent(props: {
               disabled={exporter().busy()}
             />
           </Show>
+          <Show when={exporter().format() === 'gif' && exporter().fps() === 60}>
+            <p class={styles.hint} data-gif-fps-note>
+              {t('animation.export.gifFpsNote')}
+            </p>
+          </Show>
           <Show when={summary()}>
-            <div class={styles.hint}>{summaryLabel()}</div>
+            {value => (
+              <div class={styles.hint}>
+                <div>{summaryLabel()}</div>
+                <div data-animation-size-estimate>
+                  {t('animation.export.estimate', {
+                    size: megabytes(value().estimatedBytes),
+                  })}
+                </div>
+                <Show
+                  when={
+                    exporter().format() === 'gif' &&
+                    value().estimatedBytes > GIF_SUGGEST_MP4_BYTES
+                  }
+                >
+                  <p data-gif-suggestion>{t('animation.export.suggestMp4')}</p>
+                </Show>
+              </div>
+            )}
           </Show>
           <Show when={state().kind === 'checking'}>
             <div role="status">{t('animation.export.checking')}</div>
@@ -383,17 +478,17 @@ export function AnimationExportContent(props: {
                 disabled={!canStart()}
                 onClick={props.onStart}
               >
-                {t('animation.export.start')}
+                {t('animation.export.start', {format: format().label})}
               </Button>
             }
           >
             <Show when={canShare()}>
               <Button size="sm" theme="secondary" onClick={share}>
-                {t('animation.export.share')}
+                {t('animation.export.share', {format: format().label})}
               </Button>
             </Show>
             <Button size="sm" theme="primary" onClick={save}>
-              {t('animation.export.download')}
+              {t('animation.export.download', {format: format().label})}
             </Button>
           </Show>
         </div>
