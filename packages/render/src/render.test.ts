@@ -211,7 +211,7 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
     const faces = markup.fonts.filter(
       font => font.family === 'CodeImage Signature',
     );
-    expect(faces.map(font => font.path.split('/').at(-1))).toEqual([
+    expect(faces.map(font => font.file)).toEqual([
       'inter-latin-wght-normal.woff2',
       'inter-latin-ext-wght-normal.woff2',
     ]);

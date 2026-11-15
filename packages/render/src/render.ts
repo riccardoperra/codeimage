@@ -35,7 +35,6 @@ export async function annotateCode(
 
 export interface SnapshotFont {
   family: string;
-  path: string;
   file: string;
   data: Uint8Array;
   weight?: number;
@@ -138,7 +137,6 @@ export function createRenderer(options: RendererOptions = {}) {
         if (!registered.length) throw new Error('No usable font faces');
         local = {
           family: code.family,
-          path,
           file: `${createHash('sha256').update(data).digest('hex')}.${format}`,
           data,
         };
