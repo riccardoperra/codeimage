@@ -17,8 +17,6 @@ import type {ThemePickerSlotProps} from './theme-styles/ThemePicker';
 import {ThemePicker} from './theme-styles/ThemePicker';
 import {themeStyle} from './theme-styles/style';
 
-export {PickerRoute as PrototypeRoute} from './picker/PickerRoute';
-
 function Editor() {
   const model = createEditorControlsModel();
   let page!: HTMLDivElement;
@@ -86,10 +84,8 @@ function Editor() {
 }
 
 /**
- * The editor in the layout the user chose, with no prototype chrome: the
- * layout, the Inspector's side and the theme cards are settings, changed in
- * the settings dialog and the command menu. The `v` and `t` URL parameters
- * still pick a layout and a theme card style for a link.
+ * The editor in the layout the user chose. The layout, Inspector side and
+ * theme cards are settings, changed in the settings dialog and command menu.
  */
 export function UnifiedEditor(): JSX.Element {
   return (
