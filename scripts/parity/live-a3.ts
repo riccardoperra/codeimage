@@ -265,6 +265,32 @@ const lanes: Record<string, (page: Page) => Promise<void>> = {
     await stageShown(page);
   },
 
+  async 'a measuring frame whose render fails leaves the page'(page) {
+    await openPanel(page);
+    const children = await page.evaluate(() => document.body.children.length);
+    await page.evaluate(() => {
+      const append = document.body.append.bind(document.body);
+      let failures = 1;
+      document.body.append = (...nodes) => {
+        append(...nodes);
+        const [host] = nodes;
+        if (failures-- > 0 && host instanceof HTMLElement) {
+          host.appendChild = () => {
+            throw new Error('lane: the render fails once');
+          };
+        }
+      };
+    });
+    await play(page);
+    await page
+      .getByText('The animation preview could not be prepared')
+      .waitFor();
+    assert.equal(
+      await page.evaluate(() => document.body.children.length),
+      children,
+    );
+  },
+
   async 'Stop returns the focus to the code'(page) {
     await openPanel(page);
     await play(page);

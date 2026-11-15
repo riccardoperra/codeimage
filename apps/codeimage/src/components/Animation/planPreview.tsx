@@ -51,12 +51,13 @@ async function measureHidden<T>(
   host.style.cssText =
     'position:fixed;left:0;top:0;visibility:hidden;pointer-events:none';
   document.body.append(host);
-  const dispose = runWithOwner(owner, () => render(view, host))!;
+  let dispose: (() => void) | undefined;
   try {
+    dispose = runWithOwner(owner, () => render(view, host));
     await document.fonts.ready;
     return read(host);
   } finally {
-    dispose();
+    dispose?.();
     host.remove();
   }
 }
