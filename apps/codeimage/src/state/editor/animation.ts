@@ -265,14 +265,17 @@ export function createAnimationStore(
     edit();
   }
 
+  // The API types take a plain list of steps.
+  const stateToPersist = () => ({...settings(), steps: [...settings().steps]});
+
   return {
     settings,
     durationMs,
     playback,
     playhead,
     open,
-    stateToPersist: settings,
-    stateToPersist$: changes.pipe(map(() => settings())),
+    stateToPersist,
+    stateToPersist$: changes.pipe(map(stateToPersist)),
     actions: {
       setOpen(value: boolean) {
         if (value) setOpen(true);

@@ -90,9 +90,5 @@ export interface ProjectEditorPersistedState {
   terminal: PersistedTerminalState;
   editor: PersistedEditorState;
   // Missing in snapshots saved before animations.
-  animation?: PersistedAnimationSettings;
+  animation?: ApiAnimationSettings;
 }
-
-export type PersistedAnimationSettings = Omit<ApiAnimationSettings, 'steps'> & {
-  readonly steps: readonly ApiAnimationSettings['steps'][number][];
-};

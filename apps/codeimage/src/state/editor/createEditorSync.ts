@@ -170,7 +170,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
             terminal,
             editors,
             editorOptions: options,
-            animation: { ...animation, steps: [...animation.steps] },
+            animation,
           };
           return from(
             API.project.updateSnippet({
@@ -198,10 +198,7 @@ function createEditorSyncAdapter(props: ParentProps<{ snippetId: string }>) {
               terminal: terminalStore.stateToPersist(),
               editors: editorStore.stateToPersist().editors,
               editorOptions: editorStore.stateToPersist().options,
-              animation: {
-                ...animationStore.stateToPersist(),
-                steps: [...animationStore.stateToPersist().steps],
-              },
+              animation: animationStore.stateToPersist(),
             },
             params: { id: workspace.id },
           })
