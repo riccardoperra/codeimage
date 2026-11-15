@@ -237,6 +237,14 @@ export async function audit({page, context, base, out, server}) {
     const {verifyExportScreen} = await import('./frame-regressions.mjs');
     return verifyExportScreen({fresh, out});
   });
+  await feature('agent-tools', async () => {
+    const {verifyAgentTools} = await import('./agent-tools.mjs');
+    return verifyAgentTools({fresh, out});
+  });
+  await feature('local-ai', async () => {
+    const {verifyLocalAi} = await import('./local-ai.mjs');
+    return verifyLocalAi({fresh, out});
+  });
   await feature('retired-classic-route', () =>
     fresh(
       {

@@ -30,6 +30,7 @@ import {toggleMark} from '../../../components/CustomEditor/plugins/lineMarks/sta
 import type {AppLocaleEntries} from '../../../i18n';
 import {getWhatsNew} from '../../../state/whats-new';
 import {ControlOverlay, controlOverlay} from '../controls/ControlOverlay';
+import {localAi} from '../local-ai/LocalAi';
 import {shortcutHelp} from '../controls/ShortcutHelp';
 import type {EditorControlsModel} from '../model';
 import {exportCommands, settingsCommands} from '../shell/commands';
@@ -144,6 +145,9 @@ function Commands(
         },
       })),
     ];
+    if (localAi.enabled()) {
+      actions.push({label: t('localAi.command'), run: localAi.open});
+    }
     if (props.stage.canFormat()) {
       actions.push({
         label: t('editor.formatCode'),

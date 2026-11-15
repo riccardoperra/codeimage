@@ -20,12 +20,14 @@ export function SwitchField(props: {
   onChange: (checked: boolean) => void;
   /** For a switch outside a labelled row. */
   label?: string;
+  disabled?: boolean;
 }) {
   return (
     <Switch
       class={styles.switchRoot}
       checked={props.checked}
       onChange={props.onChange}
+      disabled={props.disabled}
     >
       <Switch.Input id={props.id} aria-label={props.label} />
       <Switch.Control class={styles.switchControl}>
