@@ -1,8 +1,6 @@
 import {createI18nContext, I18nContext, useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getRootEditorStore} from '@codeimage/store/editor';
-import {EditorConfigStore} from '@codeimage/store/editor/config.store';
-import {getThemeStore} from '@codeimage/store/theme/theme.store';
 import {getUiStore} from '@codeimage/store/ui';
 import type {ThemeProviderProps} from '@codeimage/ui';
 import {
@@ -16,14 +14,12 @@ import {Router, Navigate, type RouteDefinition} from '@solidjs/router';
 import {snackbarHostAppStyleCss} from '@ui/snackbarHostAppStyle.css';
 import {setElementVars} from '@vanilla-extract/dynamic';
 import type {Component} from 'solid-js';
-import {createEffect, lazy, on, Show, Suspense} from 'solid-js';
+import {createEffect, lazy, on, Show} from 'solid-js';
 import {render} from 'solid-js/web';
-import {provideState, StateProvider} from 'statebuilder';
+import {StateProvider} from 'statebuilder';
 import './assets/styles/app.scss';
-import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
-import {EditorPageSkeleton} from './pages/Editor/components/EditorSkeleton';
 import './theme/global.css';
 
 console.debug('💻 CodeImage version:', appEnvironment.version);
@@ -55,21 +51,6 @@ const Dashboard = lazyWithNoLauncher(
   () => import('./pages/Dashboard/Dashboard'),
 );
 
-const Editor = () => {
-  const Page = lazyWithNoLauncher(() => import('./pages/Editor/Editor'));
-  getThemeStore().loadThemes();
-
-  const editorConfig = provideState(EditorConfigStore);
-
-  return (
-    <Suspense fallback={<EditorPageSkeleton />}>
-      <Show fallback={<EditorPageSkeleton />} when={editorConfig.get.ready}>
-        <Page />
-      </Show>
-    </Suspense>
-  );
-};
-
 // The editor in the layout the user chose.
 const UnifiedEditor = lazyWithNoLauncher(() => import('./pages/UnifiedEditor'));
 
@@ -96,11 +77,6 @@ export function Bootstrap() {
           </Show>
         );
       },
-    },
-    {
-      // The classic editor.
-      path: 'classic',
-      component: Editor,
     },
     {
       path: ':snippetId',
@@ -150,7 +126,6 @@ export function Bootstrap() {
         <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
         <Router>{routes}</Router>
       </CodeImageThemeProvider>
-      <SidebarPopoverHost />
     </Scaffold>
   );
 }

@@ -4,8 +4,7 @@ import Dock, {meta as dock} from './variants/dock';
 import Inspector, {meta as inspector} from './variants/inspector';
 import Studio, {meta as studio} from './variants/studio';
 
-// Names and axes live in each layout's folder. Today's editor is no longer a
-// layout here: it is the production route `/classic`.
+// Names and axes live in each layout's folder.
 export const layouts: Record<LayoutId, Variant> = {
   inspector: {...inspector, component: Inspector},
   dock: {...dock, component: Dock},

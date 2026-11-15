@@ -80,9 +80,6 @@ async function main() {
   let portalSelector = '';
   let themeSelector = '';
   let themeFooterSelector = '';
-  let terminalSelector = '';
-  let radioSelector = '';
-  let popoverSelector = '';
 
   async function boot(page: Page, query = '') {
     await page.route('**/mockServiceWorker.js', route =>
@@ -109,52 +106,41 @@ async function main() {
         ? route.fulfill({body: readFileSync(file), contentType: 'font/woff2'})
         : route.continue();
     });
-    await page.addInitScript(() =>
-      performance.setResourceTimingBufferSize(10000),
-    );
+    await page.addInitScript(() => {
+      performance.setResourceTimingBufferSize(10000);
+      localStorage.setItem('@store/ui', JSON.stringify({locale: 'en'}));
+      localStorage.setItem(
+        'codeimage:editor-settings',
+        JSON.stringify({layout: 'inspector', themeCards: 'window'}),
+      );
+    });
     await page.goto(baseUrl + (process.env.P2_PATH ?? '/') + query, {
       waitUntil: 'domcontentloaded',
       timeout: 180000,
     });
     await page
-      .getByRole('button', {name: 'Menu', exact: true, includeHidden: true})
+      .locator('.cm-content[contenteditable="true"]')
+      .first()
       .waitFor({timeout: 180000});
     await page.keyboard.press('Escape');
-    const selectors = await page.evaluate(async root => {
+    const selectors = await page.evaluate(async () => {
       const framePath = '/src/components/Frame/Frame.css.ts';
-      const themePath = '/src/components/ThemeSwitcher/ThemeSwitcher.css.ts';
-      const terminalPath =
-        '/src/components/PropertyEditor/controls/TerminalControlField/TerminalControlField.css.ts';
-      const radioPath =
-        '/@fs' +
-        root +
-        '/packages/ui/dist/esm/lib/primitives/RadioBlock/RadioBlock.css.vanilla.js';
-      const popoverPath =
-        '/src/components/PropertyEditor/SidebarPopover/SidebarPopover.css.ts';
-      const [frame, theme, terminal, radio, popover] = await Promise.all([
+      const themePath = '/src/pages/UnifiedEditor/theme-styles/picker.css.ts';
+      const [frame, theme] = await Promise.all([
         import(framePath),
         import(themePath),
-        import(terminalPath),
-        import(radioPath),
-        import(popoverPath),
       ]);
       return {
         wrapper: '.' + CSS.escape(frame.previewWrapper.split(' ')[0]),
         portal: '.' + CSS.escape(frame.previewPortal),
-        theme: '.' + CSS.escape(theme.themeBox),
-        footer: '.' + CSS.escape(theme.themeBoxFooter.split(' ')[0]),
-        terminal: '.' + CSS.escape(terminal.input.split(' ')[0]),
-        radio: '.' + CSS.escape(radio.radioBlock({}).split(' ')[0]),
-        popover: '.' + CSS.escape(popover.sidebarPopover.split(' ')[0]),
+        theme: '[data-theme-option]',
+        footer: '.' + CSS.escape(theme.name),
       };
-    }, root);
+    });
     wrapperSelector = selectors.wrapper;
     portalSelector = selectors.portal;
     themeSelector = selectors.theme;
     themeFooterSelector = selectors.footer;
-    terminalSelector = selectors.terminal;
-    radioSelector = selectors.radio;
-    popoverSelector = selectors.popover;
     console.log({
       selectors,
       contentNodes: await page.locator('.cm-content').count(),
@@ -170,6 +156,12 @@ async function main() {
       );
     });
     await page.waitForTimeout(250);
+    const dismiss = page.getByRole('button', {
+      name: "Dismiss what's new",
+      exact: true,
+    });
+    if (await dismiss.isVisible()) await dismiss.click();
+    await section('themes', page);
     console.log('App ready');
   }
 
@@ -290,20 +282,30 @@ async function main() {
     };
   }
 
+  async function section(id: string, target: Page = page) {
+    const trigger = target.locator(`[data-section="${id}"] > button`);
+    if ((await trigger.getAttribute('aria-expanded')) !== 'true')
+      await trigger.click();
+  }
+
   async function setTerminal(index: number) {
-    await page.locator(terminalSelector).click();
-    const title = page.getByText('Window style', {exact: true});
-    await title.waitFor();
-    const panel = page.locator(popoverSelector).filter({has: title});
-    await panel.locator(radioSelector).nth(index).click();
+    await section('window');
+    await page.locator('[data-control="window.style"] button').click();
+    const labels = ['Windows', 'macOS', 'macOS gray', 'macOS outline'];
+    await page.getByRole('radio', {name: labels[index], exact: true}).focus();
+    await page.keyboard.press('Space');
     await page.keyboard.press('Escape');
   }
 
   async function setLineNumbers(show: boolean) {
-    const row = page
-      .getByText('Line number', {exact: true})
-      .locator('xpath=ancestor::*[.//*[normalize-space(text())="Show"]][1]');
-    await row.getByText(show ? 'Show' : 'Hide', {exact: true}).click();
+    await section('editor');
+    const control = page
+      .locator('[data-control="editor.lineNumbers"]')
+      .getByRole('switch');
+    if ((await control.isChecked()) !== show) {
+      await control.focus();
+      await control.press('Space');
+    }
     await page.waitForFunction(
       ({show, wrapperSelector}) =>
         !!document.querySelector(wrapperSelector + ' .cm-lineNumbers') === show,
@@ -328,30 +330,41 @@ async function main() {
   }
 
   async function settings(target: Page, enabled: boolean) {
-    await target.getByRole('button', {name: 'Menu', exact: true}).click();
-    await target.getByRole('menuitem', {name: 'Settings', exact: true}).click();
+    await target.locator('[data-settings-trigger]').click();
+    await target.locator('[data-settings-section=experiments]').click();
     const control = target.getByRole('switch', {
       name: 'Use Takumi rendering engine',
     });
     await control.waitFor();
-    if ((await control.getAttribute('aria-checked')) !== String(enabled))
-      await control.click();
-    assert.equal(await control.getAttribute('aria-checked'), String(enabled));
+    if ((await control.isChecked()) !== enabled) {
+      await control.focus();
+      await control.press('Space');
+    }
+    assert.equal(await control.isChecked(), enabled);
     await target.screenshot({path: path.join(out, 'p2-flag.png')});
-    await target.keyboard.press('Escape');
+    await target
+      .locator('[data-settings]')
+      .getByRole('button', {name: 'Close', exact: true})
+      .click();
     await control.waitFor({state: 'hidden'});
   }
 
   async function downloadUi(target: Page, name: string, ratio = 2) {
-    await target.getByRole('button', {name: 'Export', exact: true}).click();
-    const dialog = target.getByRole('alertdialog').last();
-    const slider = dialog.getByRole('slider');
-    await slider.focus();
-    await slider.press('Home');
-    for (let i = 1; i < ratio; i++) await slider.press('ArrowRight');
-    const downloading = target.waitForEvent('download');
-    await dialog.getByRole('button', {name: 'Confirm', exact: true}).click();
-    const download = await downloading;
+    await target.locator('[data-settings-trigger]').click();
+    await target.locator('[data-settings-section=export]').click();
+    await target
+      .locator('[data-setting=export-scale]')
+      .getByRole('tab', {name: `${ratio}x`, exact: true})
+      .click();
+    await target
+      .locator('[data-settings]')
+      .getByRole('button', {name: 'Close', exact: true})
+      .click();
+    await target.locator('[data-settings]').waitFor({state: 'hidden'});
+    const [download] = await Promise.all([
+      target.waitForEvent('download'),
+      target.locator('[data-export-image]').click(),
+    ]);
     const file = path.join(out, name + '.png');
     await download.saveAs(file);
     assert.equal(await download.failure(), null);
@@ -533,7 +546,8 @@ async function main() {
       await boot(page, '?renderer=takumi');
       await page.reload({waitUntil: 'domcontentloaded'});
       await page
-        .getByRole('button', {name: 'Menu', exact: true, includeHidden: true})
+        .locator('.cm-content[contenteditable="true"]')
+        .first()
         .waitFor();
       await page.keyboard.press('Escape');
       await settings(page, true);
@@ -542,16 +556,16 @@ async function main() {
         await runLocalFonts();
         return;
       }
-      await page.getByRole('button', {name: 'Menu', exact: true}).click();
-      await page.getByRole('menuitem', {name: 'Settings', exact: true}).click();
+      await page.locator('[data-settings-trigger]').click();
+      await page.locator('[data-settings-section=experiments]').click();
       const control = page.getByRole('switch', {
         name: 'Use Takumi rendering engine',
       });
       assert.equal(await control.getAttribute('aria-checked'), 'true');
       await page.keyboard.press('Escape');
       await boot(page, '?renderer=dom-export');
-      await page.getByRole('button', {name: 'Menu', exact: true}).click();
-      await page.getByRole('menuitem', {name: 'Settings', exact: true}).click();
+      await page.locator('[data-settings-trigger]').click();
+      await page.locator('[data-settings-section=experiments]').click();
       assert.equal(
         await page
           .getByRole('switch', {name: 'Use Takumi rendering engine'})
@@ -565,8 +579,9 @@ async function main() {
     });
     await lane(9, async () => {
       await setCode(originalCode);
+      await page.locator('[data-export-menu]').click();
       await page
-        .getByRole('button', {name: 'Copy to clipboard', exact: true})
+        .getByRole('menuitem', {name: 'Copy to clipboard', exact: true})
         .click();
       const b64 = await page.evaluate(async () => {
         for (let attempt = 0; attempt < 100; attempt++) {
@@ -591,13 +606,8 @@ async function main() {
       return diff;
     });
     await lane(10, async () => {
-      const colorSelector = await page.evaluate(async () => {
-        const modulePath =
-          '/src/components/PropertyEditor/controls/ColorPicker/CustomColorPicker.css.ts';
-        const styles = await import(modulePath);
-        return '.' + CSS.escape(styles.input.split(' ')[0]);
-      });
-      await page.locator(colorSelector).first().click();
+      await section('frame');
+      await page.locator('[data-control="frame.background"] button').click();
       await page.getByText('Custom', {exact: true}).click();
       const fixture = new PNG({width: 64, height: 64});
       for (let y = 0; y < 64; y++)
@@ -670,8 +680,9 @@ async function main() {
       'A live lane failed.',
     );
     if (process.env.P2_PERF === '0') return;
+    await section('themes');
     await page
-      .locator(themeSelector + '[data-selected]')
+      .locator(themeSelector)
       .filter({has: page.getByText('Fleet Dark', {exact: true})})
       .click();
     await setCode(longCode);
@@ -929,6 +940,7 @@ async function main() {
     });
     console.log('NATIVE FONT DIAGNOSTIC', JSON.stringify(diagnostic));
     async function chooseFont(name: string, system = false) {
+      await section('font');
       const trigger = page.locator('[class*="FontPicker_inputValue"]').first();
       await trigger.click();
       const tab = page
@@ -1160,14 +1172,24 @@ async function main() {
   );
   try {
     await boot(page);
+    if (process.env.P2_SETUP_ONLY === '1') {
+      await setTerminal(0);
+      await setLineNumbers(true);
+      await setLineNumbers(false);
+      await settings(page, false);
+      PNG.sync.read(await downloadUi(page, 'setup-export'));
+      console.log('Setup passed: unified controls and PNG download');
+      return;
+    }
     if (process.env.P2_MARKS === '1') {
       await setCode(
         'const before = 1;\nconst after = 2;\nconst highlighted = 3;\nconst unchanged = 4;',
       );
       const results = [];
       for (const theme of ['Fleet Dark', 'GitHub Light']) {
+        await section('themes');
         await page
-          .locator(themeSelector + '[data-selected]')
+          .locator(themeSelector)
           .filter({has: page.getByText(theme, {exact: true})})
           .click();
         for (const numbers of [false, true]) {
@@ -1315,14 +1337,16 @@ async function main() {
     assert.deepEqual(fallback, [], 'Takumi fell back before the matrix.');
     assert.deepEqual(fontIssues, [], 'An export font did not load.');
     if (!quick) {
+      await section('themes');
       const themes = await page
-        .locator(themeSelector + '[data-selected]')
+        .locator(themeSelector)
         .locator(themeFooterSelector)
         .allTextContents();
       assert.ok(themes.length > 5, 'Theme matrix is empty.');
       for (const theme of themes) {
+        await section('themes');
         await page
-          .locator(themeSelector + '[data-selected]')
+          .locator(themeSelector)
           .filter({has: page.getByText(theme.trim(), {exact: true})})
           .click();
         for (const [index, terminal] of [
