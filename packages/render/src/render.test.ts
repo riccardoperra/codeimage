@@ -216,6 +216,22 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
     ]);
     expect(faces.every(font => font.unicodeRange?.length)).toBe(true);
   });
+  it('returns buffers for signature-only glyphs added after target sizing', async () => {
+    const markup = await snapshotMarkup({
+      ...sampleDocument,
+      frame: {
+        ...sampleDocument.frame,
+        exportTarget: 'x-landscape',
+        signature: {handle: '안녕', style: 'minimal'},
+      },
+    });
+    expect(
+      markup.fonts.some(font => font.family === 'CodeImage Signature'),
+    ).toBe(true);
+    expect(markup.fonts.some(font => font.family === 'Noto Sans KR')).toBe(
+      true,
+    );
+  });
   it('never fetches avatars or remote backgrounds offline', async () => {
     const fetch = vi
       .spyOn(globalThis, 'fetch')

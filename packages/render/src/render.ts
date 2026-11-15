@@ -179,17 +179,28 @@ export function createRenderer(options: RendererOptions = {}) {
         });
       },
     });
+    const html = normalizeStyleAttributes(frame.html);
+    const css = [...frame.css, stylesheet].map(normalizeGradients);
+    const prepared = await renderer.prepare(html, {
+      css,
+      images: frame.images,
+      fontFamilies,
+      fonts,
+      width: Math.floor(frame.size.width * scale),
+      height: Math.floor(frame.size.height * scale),
+      devicePixelRatio: scale,
+    });
     const markup: SnapshotMarkup = {
       document,
-      html: normalizeStyleAttributes(frame.html),
-      css: [...frame.css, stylesheet].map(normalizeGradients),
+      html,
+      css,
       naturalCss: [...frame.browserCss, stylesheet].map(normalizeGradients),
       size: frame.size,
       fonts: [...(await resources.faces()), ...(local ? [local] : [])],
       fontFamilies,
       images: frame.images,
     };
-    return {markup, renderer, fonts};
+    return {markup, renderer, prepared};
   }
 
   return {
@@ -197,25 +208,10 @@ export function createRenderer(options: RendererOptions = {}) {
       return (await prepare(input)).markup;
     },
     async render(input: SnapshotInput): Promise<Uint8Array | string> {
-      const {markup, renderer, fonts} = await prepare(input);
-      const {document, html, css, images, fontFamilies, size} = markup;
-      if (document.format === 'svg')
-        return renderer.renderSvg(html, {
-          css,
-          images,
-          fontFamilies,
-          fonts,
-          ...size,
-        });
-      const image = await renderer.render(html, {
-        width: Math.floor(size.width * document.scale),
-        height: Math.floor(size.height * document.scale),
-        css,
-        images,
-        fontFamilies,
-        fonts,
-        format: document.format,
-        devicePixelRatio: document.scale,
+      const {markup, renderer, prepared} = await prepare(input);
+      if (markup.document.format === 'svg') return renderer.renderSvg(prepared);
+      const image = await renderer.render(prepared, {
+        format: markup.document.format,
       });
       return new Uint8Array(image.buffer, image.byteOffset, image.byteLength);
     },
