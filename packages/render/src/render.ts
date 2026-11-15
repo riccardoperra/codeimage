@@ -163,6 +163,7 @@ export function createRenderer(options: RendererOptions = {}) {
             images: markup.images,
             fontFamilies,
             fonts,
+            signal: options.signal,
             devicePixelRatio: scale,
           },
         );
@@ -176,6 +177,7 @@ export function createRenderer(options: RendererOptions = {}) {
           height: size,
           format: 'raw',
           devicePixelRatio: 1,
+          signal: options.signal,
         });
       },
     });
@@ -183,7 +185,17 @@ export function createRenderer(options: RendererOptions = {}) {
     const css = [...frame.css, stylesheet].map(normalizeGradients);
     const prepared = await renderer.prepare(html, {
       css,
-      images: frame.images,
+      images: options.offline
+        ? {
+            sources: frame.images,
+            fetch: async () => {
+              throw new Error(
+                'Remote background is unavailable with --offline',
+              );
+            },
+          }
+        : frame.images,
+      signal: options.signal,
       fontFamilies,
       fonts,
       width: Math.floor(frame.size.width * scale),
@@ -209,9 +221,11 @@ export function createRenderer(options: RendererOptions = {}) {
     },
     async render(input: SnapshotInput): Promise<Uint8Array | string> {
       const {markup, renderer, prepared} = await prepare(input);
-      if (markup.document.format === 'svg') return renderer.renderSvg(prepared);
+      if (markup.document.format === 'svg')
+        return renderer.renderSvg(prepared, {signal: options.signal});
       const image = await renderer.render(prepared, {
         format: markup.document.format,
+        signal: options.signal,
       });
       return new Uint8Array(image.buffer, image.byteOffset, image.byteLength);
     },

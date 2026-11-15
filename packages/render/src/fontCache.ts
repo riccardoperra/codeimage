@@ -103,10 +103,21 @@ export function createFontStore(
   const temporary = join(managed, 'tmp');
   const pending = new Map<string, Promise<Buffer>>();
   let unwritable = false;
+  let swept = false;
   let active = 0;
   const waiting: (() => void)[] = [];
   const emit = (event: FontEvent) => options.onEvent?.(event);
   const pathOf = (file: CatalogFile) => join(objects, file.sha256);
+  async function checkDirectories() {
+    for (const path of [managed, objects, temporary]) {
+      try {
+        if ((await lstat(path)).isSymbolicLink())
+          throw new Error(`Refusing font cache symlink: ${path}`);
+      } catch (error) {
+        if (!hasCode(error, 'ENOENT')) throw error;
+      }
+    }
+  }
   async function directories() {
     await mkdir(dir, {recursive: true});
     for (const path of [managed, objects, temporary]) {
@@ -115,11 +126,31 @@ export function createFontStore(
         throw new Error(`Refusing font cache symlink: ${path}`);
     }
   }
+  async function sweepParts() {
+    if (swept) return;
+    swept = true;
+    const entries = await readdir(temporary);
+    await Promise.all(
+      entries
+        .filter(name => name.endsWith('.part'))
+        .map(async name => {
+          const path = join(temporary, name);
+          try {
+            const entry = await lstat(path);
+            if (entry.mtimeMs < Date.now() - 86_400_000)
+              await rm(path, {force: true});
+          } catch (error) {
+            if (!hasCode(error, 'ENOENT')) throw error;
+          }
+        }),
+    );
+  }
   async function publish(bytes: Buffer, file: CatalogFile) {
     for (let attempt = 0; attempt < 3; attempt++) {
       let part: string | undefined;
       try {
         await directories();
+        await sweepParts();
         part = join(
           temporary,
           `${file.sha256}.${process.pid}.${randomUUID()}.part`,
@@ -245,6 +276,7 @@ export function createFontStore(
         );
       return data;
     }
+    await checkDirectories();
     const data = await cached(pathOf(file), file);
     if (data) return data;
     if (options.offline)
@@ -269,6 +301,7 @@ export function createFontStore(
     return acquisition;
   }
   async function list(): Promise<FontStatus[]> {
+    await checkDirectories();
     return Promise.all(
       catalog.fonts.map(async font => {
         const local = await Promise.all(
@@ -364,7 +397,9 @@ export function createFontStore(
         return Promise.all(
           selected.flatMap(font =>
             font.files
-              .filter(file => held.has(file))
+              .filter(
+                file => held.has(file) || (font.role === 'ui' && !file.url),
+              )
               .map(async file => ({
                 family: font.family,
                 path: file.url

@@ -259,6 +259,15 @@ describe('renderSnapshot', {timeout: 30_000}, () => {
           },
         }),
       ).rejects.toThrow('--offline');
+      await expect(
+        renderer.render({
+          ...sampleDocument,
+          frame: {
+            ...sampleDocument.frame,
+            background: 'url(https://example.com/image.png)',
+          },
+        }),
+      ).rejects.toThrow('--offline');
       expect(fetch).not.toHaveBeenCalled();
     } finally {
       fetch.mockRestore();

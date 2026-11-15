@@ -10,6 +10,7 @@ import {
   writeFile,
   symlink,
   chmod,
+  utimes,
 } from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
@@ -167,13 +168,65 @@ describe('font cache', () => {
   it('rejects cache symlinks without writing into their targets', async () => {
     const target = await mkdtemp(join(tmpdir(), 'codeimage-target-'));
     try {
+      await mkdir(join(target, 'sha256'));
+      await writeFile(
+        join(target, 'sha256', sha256),
+        Buffer.alloc(data.length),
+      );
       await symlink(target, join(dir, 'fonts'));
       await expect(store().install(['test'])).rejects.toThrow();
-      expect(await readdir(target)).toEqual([]);
+      expect(await readFile(join(target, 'sha256', sha256))).toEqual(
+        Buffer.alloc(data.length),
+      );
       await store().clean();
-      expect(await readdir(target)).toEqual([]);
+      expect(await readFile(join(target, 'sha256', sha256))).toEqual(
+        Buffer.alloc(data.length),
+      );
     } finally {
       await rm(target, {recursive: true, force: true});
+    }
+  });
+  it('bounds concurrent downloads and sweeps only old part files', async () => {
+    let active = 0;
+    let maximum = 0;
+    const server = createServer((request, response) => {
+      active++;
+      maximum = Math.max(maximum, active);
+      setTimeout(() => {
+        active--;
+        response.end(request.url);
+      }, 30);
+    });
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+    try {
+      const address = server.address();
+      if (!address || typeof address === 'string')
+        throw new Error('No server address');
+      const files = Array.from({length: 18}, (_, index) => {
+        const payload = Buffer.from(`/font-${index}`);
+        return {
+          ...font.files[0],
+          file: `font-${index}.ttf`,
+          bytes: payload.length,
+          sha256: createHash('sha256').update(payload).digest('hex'),
+          url: `http://127.0.0.1:${address.port}/font-${index}`,
+        };
+      });
+      await mkdir(join(dir, 'fonts/tmp'), {recursive: true});
+      const old = join(dir, 'fonts/tmp/old.part');
+      await writeFile(old, 'partial');
+      await utimes(old, new Date(0), new Date(0));
+      const cache = createFontStore({
+        cacheDir: dir,
+        catalog: {schema: 1, fonts: [{...font, files}]},
+      });
+      await cache.install('all');
+      expect(maximum).toBeGreaterThan(1);
+      expect(maximum).toBeLessThanOrEqual(6);
+      expect(await readdir(join(dir, 'fonts/tmp'))).toEqual([]);
+      expect((await cache.list())[0].filesLocal).toBe(18);
+    } finally {
+      await new Promise<void>(resolve => server.close(() => resolve()));
     }
   });
   it('returns verified bytes when a cache cannot be written', async () => {
