@@ -35,9 +35,28 @@ jobs:
   build-packages:
     name: Build packages
     runs-on: ubuntu-latest
+    outputs:
+      render-changed: ${{ steps.changes.outputs.render }}
     steps:
       - name: Checkout PR
         uses: actions/checkout@v7
+      - name: Detect render changes
+        id: changes
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            render:
+              - 'packages/render/**'
+              - 'packages/cli/**'
+              - 'apps/codeimage/src/render/**'
+              - 'apps/codeimage/vite.config.ts'
+              - 'scripts/parity/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/main.yml'
+              - '.github/actions/pnpm-install/**'
+              - '.github/actions/setup-job/**'
       - name: 📥 Setup
         uses: ./.github/actions/setup-job
       - name: 📥 Monorepo install
@@ -124,6 +143,77 @@ jobs:
         run: |
           pnpm exec playwright install --with-deps chromium
           pnpm exec tsx scripts/parity/takumi-vs-chrome.ts
+
+  render-cross-os:
+    name: Takumi snapshots (${{ matrix.os }})
+    needs: [build-packages]
+    if: ${{ needs.build-packages.outputs.render-changed == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v7
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
+
+      - name: Download Linux-built libs dist
+        uses: actions/download-artifact@v8
+        with:
+          name: libs-dist
+          path: packages
+
+      - name: Render with the local Takumi binary
+        run: node_modules/.bin/tsx scripts/parity/takumi-cross-os.ts --out dist/takumi-cross-os
+
+      - name: Upload Takumi snapshots
+        uses: actions/upload-artifact@v7
+        with:
+          name: takumi-cross-os-${{ runner.os }}
+          path: dist/takumi-cross-os
+          retention-days: 7
+          if-no-files-found: error
+
+  compare-render-cross-os:
+    name: Compare Takumi across OSes
+    needs: [render-cross-os]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v7
+      - name: 📥 Setup
+        uses: ./.github/actions/setup-job
+      - name: 📥 Monorepo install
+        uses: ./.github/actions/pnpm-install
+
+      - name: Download Takumi snapshots
+        uses: actions/download-artifact@v8
+        with:
+          pattern: takumi-cross-os-*
+          path: dist/takumi-cross-os
+
+      - name: Compare with Linux
+        run: |
+          for os in Linux macOS Windows; do
+            mv "dist/takumi-cross-os/takumi-cross-os-$os" "dist/takumi-cross-os/$os"
+          done
+          node_modules/.bin/tsx scripts/parity/compare-takumi-cross-os.ts
+
+      - name: Upload comparison and diff images
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: takumi-cross-os-comparison
+          path: dist/takumi-cross-os-comparison
+          retention-days: 7
+          if-no-files-found: error
 
   build-app-preview:
     name: Build App (Preview)
