@@ -1,7 +1,8 @@
 import {exportExclude as _exportExclude} from '@core/directives/exportExclude';
-import type {ParentProps} from 'solid-js';
+import type {JSX, ParentProps} from 'solid-js';
 import {createSignal, onCleanup, onMount} from 'solid-js';
 import * as styles from '../../components/Frame/FrameHandler.css';
+import {canvas} from './snippet.css';
 
 const exportExclude = _exportExclude;
 void exportExclude;
@@ -9,6 +10,7 @@ void exportExclude;
 const GUTTER = 24;
 
 interface FitFrameProps {
+  overlay?: JSX.Element;
   onScaleChange: (scale: number) => void;
 }
 
@@ -92,7 +94,12 @@ export function FitFrame(props: ParentProps<FitFrameProps>) {
   });
 
   return (
-    <div class={styles.wrapper} ref={wrapper} style={{overflow: 'hidden'}}>
+    <div
+      class={`${styles.wrapper} ${canvas}`}
+      ref={wrapper}
+      style={{overflow: 'hidden'}}
+    >
+      {props.overlay}
       <div
         class={styles.handler}
         style={{

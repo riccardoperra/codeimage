@@ -8,7 +8,7 @@ Animate toggle and island in Inspector, Dock and Studio; steps seeded from the t
 
 ## How to get to it (user POV)
 
-Guest `/`, with two tabs or more to have something to play. Press Animate in the frame actions under the canvas (Inspector, Studio, Dock desktop), the play icon after More in Dock's phone bar, or the play icon in Studio's phone actions. The command menu also lists Animate, Play or pause the animation and one command per header mode. The island docks under the canvas. Saved project URLs open the classic editor, which has no Animate.
+Guest `/`, with two tabs or more to have something to play. Press Animate in the frame actions under the canvas (Inspector, Studio, Dock desktop), the play icon after More in Dock's phone bar, or the play icon in Studio's phone actions. The command menu also lists Animate, Play or pause the animation and one command per header mode. The island docks under the canvas. Editable saved projects use the same unified editor; read-only pages hide editing controls.
 
 ## Driving it with Playwright
 

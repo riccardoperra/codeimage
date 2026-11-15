@@ -32,28 +32,16 @@ async function open(browser, url, head) {
     await close.click();
     await page.getByRole('dialog').waitFor({state: 'hidden'});
   }
-  await page.getByRole('button', {name: 'Export', exact: true}).click();
-  await page.getByRole('button', {name: 'Confirm', exact: true}).waitFor();
-  await page.keyboard.press('Escape');
   await page.evaluate(async head => {
-    const resource = name =>
-      performance
-        .getEntriesByType('resource')
-        .find(entry => entry.name.includes(name)).name;
-    const {EditorView} =
-      await import('/node_modules/.vite/deps/@codemirror_view.js');
-    window.p5View = EditorView.findFromDOM(
-      document.querySelector('[contenteditable=true]'),
-    );
-    window.p5Exporter = await import(resource('/hooks/export-snippet.ts'));
-    window.p5ExportImage = await import(resource('/hooks/use-export-image.ts'));
+    const {getRootEditorStore} = await import('/src/state/editor/index.ts');
+    window.p5View = getRootEditorStore().activeEditorView();
+    window.p5ExportImage = await import('/src/hooks/use-export-image.ts');
     if (head)
-      window.p5Marks = await import(resource('/plugins/lineMarks/state.ts'));
+      window.p5Marks =
+        await import('/src/components/CustomEditor/plugins/lineMarks/state.ts');
   }, head);
-  await page.waitForFunction(
-    () =>
-      document.querySelector('[data-static-code-view]') ||
-      window.p5Exporter.previewEditorView,
+  await page.waitForFunction(() =>
+    document.querySelector('[data-static-code-view]'),
   );
   const fonts = await page.evaluate(async () => {
     const style = getComputedStyle(
@@ -82,6 +70,11 @@ async function open(browser, url, head) {
       }),
     code,
   );
+  await page.waitForFunction(
+    () =>
+      document.querySelectorAll('[data-static-code-view] .cm-line').length ===
+      300,
+  );
   return page;
 }
 
@@ -105,14 +98,12 @@ async function marks(page, count) {
 
 async function measure(page) {
   return page.evaluate(async () => {
-    const root =
-      document.querySelector('[data-static-code-view]') ??
-      window.p5Exporter.previewEditorView.dom;
-    const render =
-      window.p5Exporter.exportSnippet ?? window.p5ExportImage.exportImage;
+    const root = document.querySelector('[data-static-code-view]');
+    const render = window.p5ExportImage.exportImage;
     performance.mark('p5-export-start');
     const start = performance.now();
     const pending = render({
+      renderer: 'dom-export',
       ref: root.closest('[class*=previewWrapper]'),
       options: {extension: 'png', mode: 'getBlob', pixelRatio: 1, quality: 1},
     });
@@ -156,6 +147,18 @@ async function main() {
       true,
     );
     await marks(head, 0);
+    if (process.env.P5_SETUP_ONLY === '1') {
+      await marks(head, 100);
+      await head.waitForFunction(
+        () =>
+          document.querySelectorAll('[data-static-code-view] [data-mark]')
+            .length === 100,
+      );
+      process.stdout.write(
+        'Setup passed: two 300-line static previews and 100 head marks\n',
+      );
+      return;
+    }
     await measure(trunk);
     await measure(head);
     await marks(head, 100);

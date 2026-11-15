@@ -21,6 +21,7 @@ const [open, setOpen] = createSignal(false);
 export const shortcutHelp = {open: () => setOpen(true)};
 
 export function ShortcutHelp(props: {
+  editable: boolean;
   canvas?: Accessor<HTMLElement | undefined>;
 }) {
   const [t] = useI18n<AppLocaleEntries>();
@@ -38,7 +39,7 @@ export function ShortcutHelp(props: {
         : document.querySelector<HTMLElement>('[data-settings-trigger]')
       )?.focus();
   };
-  bindEditorShortcuts();
+  bindEditorShortcuts(() => props.editable);
   onCleanup(commandMenu.beforeOpen(close));
   onCleanup(close);
   onMount(() => {
@@ -71,6 +72,7 @@ export function ShortcutHelp(props: {
     }
     const keydown = (event: KeyboardEvent) => {
       if (
+        !props.editable ||
         event.key !== shortcutHelpKey ||
         event.metaKey ||
         event.ctrlKey ||

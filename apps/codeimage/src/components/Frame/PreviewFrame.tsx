@@ -17,7 +17,20 @@ import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboar
 import {createRef} from '@core/helpers/create-ref';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import type {JSX, ParentProps, Ref, VoidProps} from 'solid-js';
-import {createMemo, createResource, onMount, Show, Suspense} from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  on,
+  onMount,
+  Show,
+  Suspense,
+} from 'solid-js';
+import {
+  bindWatermarkExport,
+  createWatermarkScope,
+  WatermarkContext,
+} from '../../core/watermark/scope';
 import {Portal} from 'solid-js/web';
 import {provideState} from 'statebuilder';
 import {useHotkey} from '../../hooks/use-hotkey';
@@ -87,6 +100,8 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
   const terminal = getTerminalState().state;
   const editor = getRootEditorStore();
   const assetsStore = getAssetsStore();
+  const watermark = createWatermarkScope();
+  createEffect(on(() => frame.signature?.position, watermark.invalidate));
   const exportCanvasStore = getExportCanvasStore();
 
   const terminalView = () => (
@@ -121,9 +136,15 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
   );
 
   return (
-    <div class={styles.previewWrapper} ref={props.ref}>
+    <div
+      class={styles.previewWrapper}
+      ref={createRef<'div'>(props, element =>
+        bindWatermarkExport(element, watermark),
+      )}
+    >
       <div
         class={styles.container}
+        ref={element => watermark.attach('frame', element)}
         data-watermark-frame
         data-animation-frame={props.animated ? '' : undefined}
         style={assignInlineVars({
@@ -151,6 +172,7 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
       >
         <div
           class={styles.previewOverlay}
+          ref={element => watermark.attach('background', element)}
           data-watermark-background
           style={assignInlineVars({
             [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
@@ -182,17 +204,22 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
         <Show
           when={props.animated}
           fallback={
-            <FittedWindow active={!!target()}>{terminalView()}</FittedWindow>
+            <FittedWindow active={!!target()} watermark={watermark}>
+              {terminalView()}
+            </FittedWindow>
           }
         >
           <div data-animation-window style={{display: 'contents'}}>
-            {terminalView()}
+            <WatermarkContext.Provider value={watermark}>
+              {terminalView()}
+            </WatermarkContext.Provider>
           </div>
         </Show>
         <FrameSignature
           signature={frame.signature}
           background={frame.background}
           scale={scale()}
+          markRef={element => watermark.attach('signature', element)}
         />
       </div>
     </div>

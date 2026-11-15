@@ -19,7 +19,7 @@ export async function verifyWatermark({
   const originalCode = await editor.innerText();
   const long = 'export const greet = (name: string) => `Hello, ${name}!`;';
   const records = [];
-  const sample = async name => {
+  const sample = async (name, record = true) => {
     await page.evaluate(
       () =>
         new Promise(resolve =>
@@ -109,7 +109,7 @@ export async function verifyWatermark({
       frames[1].slot,
       `${name}: live/export slot parity`,
     );
-    records.push({name, frames});
+    if (record) records.push({name, frames});
     await writeFile(
       resolve(out, 'watermark.json'),
       JSON.stringify(records, null, 2),
@@ -144,6 +144,28 @@ export async function verifyWatermark({
     await download(`watermark-${style.replaceAll(' ', '-')}.png`);
   }
   await windowStyle('Editor');
+  if (process.env.VERIFY_WATERMARK_EXTRA === '1') {
+    const fixed = 'x'.repeat(60);
+    await editor.fill(`${fixed}\nx${' '.repeat(59)}`);
+    const free = await sample('same-size-code-left', false);
+    assert.ok(free.every(frame => frame.slot === 'home'));
+    const size = () =>
+      page.evaluate(() =>
+        Array.from(document.querySelectorAll('[data-watermark-frame]')).map(
+          frame => {
+            const rect = frame
+              .querySelector('.cm-content')
+              .getBoundingClientRect();
+            return [rect.width, rect.height];
+          },
+        ),
+      );
+    const before = await size();
+    await editor.fill(`${fixed}\n${' '.repeat(59)}x`);
+    const moved = await sample('same-size-code-right', false);
+    assert.deepEqual(await size(), before, 'code dimensions stay unchanged');
+    assert.ok(moved.every(frame => frame.slot !== 'home'));
+  }
   await editor.fill(
     Array.from({length: 15}, (_, i) =>
       i === 14 ? long : `const line${i} = ${i};`,
@@ -164,6 +186,22 @@ export async function verifyWatermark({
     'without header use painted frame',
   );
   await section('frame');
+  if (process.env.VERIFY_WATERMARK_EXTRA === '1') {
+    await page.locator('#signature-options').click();
+    await page
+      .getByPlaceholder('@handle or profile link', {exact: true})
+      .fill('@r');
+    await page.keyboard.press('Escape');
+    for (const position of ['Right', 'Left', 'Right']) {
+      await page.locator('#signature-options').click();
+      await page
+        .locator('[data-control="signature.position"]')
+        .getByRole('tab', {name: position, exact: true})
+        .click();
+      await page.keyboard.press('Escape');
+      await sample(`short-signature-${position}`, false);
+    }
+  }
   await page.locator('#signature-options').click();
   await page
     .getByPlaceholder('@handle or profile link', {exact: true})

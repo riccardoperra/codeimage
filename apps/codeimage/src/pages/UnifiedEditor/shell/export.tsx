@@ -21,6 +21,7 @@ import type {Accessor} from 'solid-js';
 import {render} from 'solid-js/web';
 import {redactTabCode} from '../../../components/CustomEditor/plugins/secrets';
 import {PreviewFrame} from '../../../components/Frame/PreviewFrame';
+import type {EditorPageState} from '../page-state';
 import {showExportSuccessToast} from '../../../components/Toolbar/ExportSuccessToast';
 import {deliverTabFiles, renderTabFiles} from '../../../hooks/export-tabs';
 import {ExportMode, exportImage} from '../../../hooks/use-export-image';
@@ -37,6 +38,7 @@ interface PendingExport {
 }
 
 export interface Exporter {
+  readonly ready: Accessor<boolean>;
   /** True while an export runs. */
   readonly busy: Accessor<boolean>;
   /** The number of tabs of the snippet. */
@@ -64,6 +66,7 @@ export interface Exporter {
   readonly secrets: Accessor<number>;
   /** Hides every secret in every tab. */
   readonly redactSecrets: () => void;
+  readonly canRedact: Accessor<boolean>;
 }
 
 /**
@@ -72,7 +75,10 @@ export interface Exporter {
  */
 export function createExporter(
   ref: Accessor<HTMLElement | undefined>,
+  pageState: Accessor<EditorPageState>,
 ): Exporter {
+  const editable = () => pageState().editable;
+  const ready = () => pageState().ready;
   const config = provideState(EditorConfigStore);
   const [t] = useI18n<AppLocaleEntries>();
   const editor = getRootEditorStore();
@@ -135,7 +141,7 @@ export function createExporter(
     );
 
   const run = async (action: ExportAction, choice: ExportChoice) => {
-    if (busy() || dispatchCopyToClipboard.loading()) return;
+    if (!ready() || busy() || dispatchCopyToClipboard.loading()) return;
     if (action === 'copy') {
       const element = ref();
       if (element)
@@ -185,7 +191,8 @@ export function createExporter(
   };
 
   const request = (action: ExportAction, choice?: ExportChoice) => {
-    if (busy() || pending() || dispatchCopyToClipboard.loading()) return;
+    if (!ready() || busy() || pending() || dispatchCopyToClipboard.loading())
+      return;
     if (secrets() > 0) setPending({action, choice});
     else void run(action, choice ?? savedExportChoice());
   };
@@ -211,23 +218,28 @@ export function createExporter(
   };
 
   return {
-    busy: () => busy() || dispatchCopyToClipboard.loading(),
+    ready,
+    busy: () => !ready() || busy() || dispatchCopyToClipboard.loading(),
     tabs: () => editor.state.editors.length,
     image: choice => request('image', choice),
     eachTab: choice => request('eachTab', choice),
     share: choice => request('share', choice),
     newTab: choice => request('newTab', choice),
     copy: choice => request('copy', choice),
-    canCopy: () => !!navigator.clipboard?.write,
+    canCopy: () => ready() && !!navigator.clipboard?.write,
     canShare: () => !!navigator.share,
     confirming: () => pending() !== undefined,
     confirm,
     cancel: () => setPending(undefined),
     copyAltText,
     canCopyAltText: () =>
-      !!getActiveEditorStore().editor() && !!navigator.clipboard?.writeText,
+      ready() &&
+      !!getActiveEditorStore().editor() &&
+      !!navigator.clipboard?.writeText,
     secrets,
+    canRedact: editable,
     redactSecrets: () => {
+      if (!editable()) return;
       getWhatsNew().seen('redact');
       batch(() => {
         editor.state.editors.forEach((tab, index) => {

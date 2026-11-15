@@ -67,6 +67,11 @@ export const workspace = style({
   // The page's inset, which the header shares, on the sides and between the islands.
   gap: '8px',
   padding: '0 8px 8px',
+  selectors: {
+    "[data-page-state='read-only'] &": {
+      gridTemplateRows: 'minmax(0, 1fr)',
+    },
+  },
   '@media': {
     [wide]: {
       selectors: {[left]: {gridTemplateColumns: '360px minmax(0, 1fr)'}},
@@ -88,6 +93,9 @@ export const canvas = style({
   overflow: 'hidden',
   borderRadius: '22px',
   background: c.background,
+  selectors: {
+    "[data-page-state='read-only'] &": {gridColumn: '1 / -1'},
+  },
   '@media': {
     [phone]: {
       selectors: {

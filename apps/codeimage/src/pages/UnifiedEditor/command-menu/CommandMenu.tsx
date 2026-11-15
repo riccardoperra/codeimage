@@ -1,3 +1,5 @@
+import type {Accessor} from 'solid-js';
+import type {EditorPageState} from '../page-state';
 import {editorLinks, trackEditorLink} from '../shell/links';
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
@@ -36,6 +38,7 @@ import {createListedModel} from './listed-model';
 import {commandMenu} from './state';
 
 interface CommandMenuProps {
+  pageState: Accessor<EditorPageState>;
   model: EditorControlsModel;
   stage: Stage;
 }
@@ -126,14 +129,16 @@ function Commands(
         run: () => void auth.signOut().then(() => navigate('/')),
       });
     }
+    const safeCommands = [
+      ...exportCommands(props.stage.exporter),
+      ...settingsCommands(fromOldMenu),
+    ];
+    if (!props.pageState().editable) return safeCommands;
     return buildCommands({
       model: props.model,
       listed: createListedModel(props.model),
       actions,
-      settings: [
-        ...exportCommands(props.stage.exporter),
-        ...settingsCommands(fromOldMenu),
-      ],
+      settings: safeCommands,
       reveal: controlOverlay.open,
     });
   });
@@ -324,7 +329,9 @@ export function CommandMenu(props: CommandMenuProps) {
 
   return (
     <>
-      <ControlOverlay model={props.model} />
+      <Show when={props.pageState().editable}>
+        <ControlOverlay model={props.model} />
+      </Show>
       <Dialog
         open={commandMenu.isOpen()}
         onOpenChange={open => {
@@ -342,7 +349,12 @@ export function CommandMenu(props: CommandMenuProps) {
               giveFocusBack = true;
             }}
           >
-            <Commands model={props.model} stage={props.stage} onRun={run} />
+            <Commands
+              model={props.model}
+              stage={props.stage}
+              pageState={props.pageState}
+              onRun={run}
+            />
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog>

@@ -28,6 +28,8 @@ import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditor
 import {TerminalHost} from '../../components/Terminal/TerminalHost';
 import {ThemeBoxSkeleton} from '../../components/ThemeSwitcher/ThemeBoxSkeleton';
 import {themeBoxTerminalHost} from '../../components/ThemeSwitcher/ThemeSwitcher.css';
+import type {EditorPageState} from './page-state';
+import {ReadOnlyNotice} from './ReadOnlyNotice';
 import {FitFrame} from './FitFrame';
 import * as placeholderStyles from './frame-placeholder.css';
 import type {ThemeEntry} from './model';
@@ -163,7 +165,7 @@ function FramePlaceholder(props: {frame: Accessor<HTMLElement | undefined>}) {
   );
 }
 
-export function createStage(): Stage {
+export function createStage(pageState: Accessor<EditorPageState>): Stage {
   const media = matchMedia('(max-width: 768px)');
   const [compact, setCompact] = createSignal(media.matches);
   const updateCompact = () => setCompact(media.matches);
@@ -176,7 +178,7 @@ export function createStage(): Stage {
   const setScale = (scale: number) =>
     untrackCommand(() => frame.setScale(scale), false);
   const activeEditor = getActiveEditorStore();
-  const exporter = createExporter(exportRef);
+  const exporter = createExporter(exportRef, pageState);
   // As today, a phone gets the smaller buttons.
   const size = useModality() === 'full' ? 'sm' : 'xs';
 
@@ -195,9 +197,14 @@ export function createStage(): Stage {
       // Every placeholder sits inside FitFrame, where the frame will be. The
       // export copy renders into a portal, so its place in the tree is free.
       return (
-        <div class={shortcutStyles.canvas} ref={setPillHost}>
-          <FitFrame onScaleChange={setScale}>
-            <SuspenseEditorItem fallback={null}>
+        <div ref={setPillHost} class={shortcutStyles.canvas}>
+          <FitFrame
+            onScaleChange={setScale}
+            overlay={<ReadOnlyNotice state={pageState()} />}
+          >
+            <SuspenseEditorItem
+              fallback={<FramePlaceholder frame={exportRef} />}
+            >
               <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
                 <Show when={fontsReady()}>
                   <AnimationPreview pillHost={pillHost()}>
@@ -205,11 +212,11 @@ export function createStage(): Stage {
                   </AnimationPreview>
                 </Show>
               </Suspense>
-              <PreviewFrame ref={setExportRef} />
             </SuspenseEditorItem>
+            <PreviewFrame ref={setExportRef} />
           </FitFrame>
-          <Show when={!compact()}>
-            <ShortcutHelp canvas={pillHost} />
+          <Show when={!compact() && pageState().kind !== 'read-only'}>
+            <ShortcutHelp canvas={pillHost} editable={pageState().editable} />
           </Show>
         </div>
       );
