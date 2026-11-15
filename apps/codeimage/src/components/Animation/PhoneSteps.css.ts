@@ -67,12 +67,12 @@ export const add = style({
 export const overlay = style({
   position: 'fixed',
   inset: 0,
-  zIndex: 90,
+  zIndex: 43,
   background: c.dialog.overlayBackgroundColor,
 });
 export const sheet = style({
   position: 'fixed',
-  zIndex: 91,
+  zIndex: 44,
   left: 0,
   right: 0,
   bottom: 0,

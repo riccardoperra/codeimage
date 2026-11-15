@@ -30,7 +30,8 @@ export function timelineGeometry(
       ? 'none'
       : width >= (segment.kind === 'hold' ? 88 : 72)
         ? 'full'
-        : segment.kind === 'hold' && width >= 16
+        : segment.kind === 'hold' &&
+            width >= String(segment.index + 1).length * 7
           ? 'number'
           : 'none';
     const entry = {segment, x, width, label};

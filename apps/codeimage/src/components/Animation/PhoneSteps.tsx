@@ -13,9 +13,9 @@ import {
   DropdownMenuItem,
   IconButton,
 } from '@codeui/kit';
-import {Dialog} from '@kobalte/core/dialog';
+import {Dialog, Content as DialogContent} from '@kobalte/core/dialog';
 import {easingOf} from '@core/animation/easing';
-import {createMemo, createSignal, For, Show} from 'solid-js';
+import {createEffect, createMemo, createSignal, For, on, Show} from 'solid-js';
 import type {AppLocaleEntries} from '../../i18n';
 import {CloseIcon} from '../Icons/CloseIcon';
 import {DurationInput} from './SegmentDetails';
@@ -41,6 +41,7 @@ function StepRow(props: {id: string; open: (id: string) => void}) {
         type="button"
         class={styles.row}
         data-animation-step-row
+        aria-haspopup="dialog"
         data-step-id={props.id}
         data-selected={
           animation.selection()?.stepId === props.id ? '' : undefined
@@ -134,7 +135,7 @@ function StepFields(props: {
           onEscape={props.escape}
         />
         <div class={styles.actions}>
-          <EasingField stepId={props.id} />
+          <EasingField stepId={props.id} modal />
           <Button size="sm" theme="secondary" onClick={apply}>
             {t('animation.applyAll')}
           </Button>
@@ -187,6 +188,16 @@ export function PhoneSteps() {
   const ids = createMemo(() => animation.settings().steps.map(step => step.id));
   const sheetId = () => open() && ids().find(id => id === selectedId());
   let list!: HTMLOListElement;
+  createEffect(
+    on(selectedId, id => {
+      const row = [
+        ...list.querySelectorAll<HTMLButtonElement>(
+          '[data-animation-step-row]',
+        ),
+      ].find(row => row.dataset.stepId === id);
+      row?.scrollIntoView({block: 'nearest'});
+    }),
+  );
   let anchorId: string | undefined;
   let escapedInput: EventTarget | null = null;
   const show = (id: string) => {
@@ -264,7 +275,7 @@ export function PhoneSteps() {
       <Dialog open={!!sheetId()} onOpenChange={changeOpen}>
         <Dialog.Portal>
           <Dialog.Overlay class={styles.overlay} />
-          <Dialog.Content
+          <DialogContent
             class={styles.sheet}
             data-animation-step-sheet
             onCloseAutoFocus={restoreFocus}
@@ -274,7 +285,7 @@ export function PhoneSteps() {
             <Show when={sheetId()} keyed>
               {id => <StepFields id={id} close={close} escape={escape} />}
             </Show>
-          </Dialog.Content>
+          </DialogContent>
         </Dialog.Portal>
       </Dialog>
     </>
