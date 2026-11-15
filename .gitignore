@@ -10,3 +10,6 @@ dist
 .pnpm-store/
 .DS_STORE
 .audit/
+
+/docs/plans/media/
+/docs/ui-prototypes/screenshots/
