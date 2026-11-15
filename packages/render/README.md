@@ -10,6 +10,23 @@ const png = await renderSnapshot(project); // Uint8Array, or a string for SVG
 
 `project` is the `ProjectEditorPersistedState` the app stores, plus optional `format` (default `png`), `scale` (default 2) and `width` in CSS pixels. As in the web export, the frame is never narrower than its longest line, so `width` is a minimum and code never wraps. Without `width` the frame is as wide as its content. `snapshotDocumentSchema` is the shared zod 4 schema; it accepts any version in the supported major and keeps unknown fields.
 
+## Animation
+
+```ts
+import {renderAnimation} from '@codeimage/render';
+
+const webp = await renderAnimation({...project, format: 'webp'}); // Uint8Array
+```
+
+`renderAnimation` plays the `animation` the project stores: each step holds its tab for `holdMs`, then morphs into the next step for `transitionMs`. A project without `animation` plays every tab in order with 800 ms holds, 900 ms transitions, the `smooth` easing, and 30 fps. `format` is `webp` (default), `gif`, or `apng`, and `scale` and `width` work as for a still image. `animationDocumentSchema` is the zod schema. It rounds durations to whole milliseconds and rejects an animation that lasts 0 ms or names a tab the project lacks.
+
+The image is as large as the largest step. The first and last frame of a transition match the still export of the step it leaves and the step it reaches.
+
+- WebP is lossless. Takumi writes lossy animated WebP without an alpha channel, so the clear pixels around the frame would turn opaque: its rounded corners fill in, and the margin around a smaller step turns black.
+- A GIF frame lasts whole hundredths of a second, so GIF plays at 50, 25, or 20 fps. `animationFps(format, fps)` returns the rate a file plays at.
+- Takumi 2.19 marks no GIF frame to be cleared before the next one, so a frame that shrinks left its old edges behind. `clearGifFrames` in `src/gif.ts` sets that mark. Remove it when Takumi sets it.
+- Takumi gives each GIF frame its own 256 colors from a sparse sample, so small details change color between frames, and near-black pixels can turn transparent. WebP and APNG keep every pixel.
+
 ## How it renders
 
 1. `dist/ssr/entry-server.js` is a Vite SSR build of `apps/codeimage/src/render/entry-server.tsx`. It server-renders the app's own frame and terminal components and P1's `StaticCodeView` with `renderToStringAsync`.
@@ -57,6 +74,7 @@ Cache policy and CLI commands are documented in [the CLI README](../cli/README.m
 - `pnpm exec tsx scripts/perf.ts` from this package times a 300-line render.
 - `pnpm exec tsx scripts/parity/takumi-vs-chrome.ts` from the repository root compares every theme and terminal against Chrome.
 - `pnpm exec tsx scripts/parity/live-p3.ts` from the repository root runs the renderer's live checks.
+- `pnpm exec tsx scripts/parity/animation-endpoints.ts --encode` from the repository root compares every frame of each animated format with a direct render. It needs `webpmux`, `dwebp`, and `gif2webp` from libwebp.
 
 Font source recipes live in `build-fonts.mjs`. Package versions must match exact
 `devDependencies` pins. The generator derives every hash and Unicode range.

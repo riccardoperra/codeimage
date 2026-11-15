@@ -79,6 +79,7 @@ export function createUi(quiet = false) {
     text,
     usage: (message: string) => text(formatUsage(message)),
     success,
+    warn,
     async run<T>(label: string, work: () => Promise<T>): Promise<T> {
       phase = status = label;
       if (mode === 'interactive') {
