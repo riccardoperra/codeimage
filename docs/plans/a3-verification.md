@@ -1,5 +1,7 @@
 # A3 verification
 
+> `scripts/parity/animation-preview.ts` imports `packages/render`, which is not on `main` or #734, so it runs from a checkout of #707 plus A3. `scripts/parity/live-a3.ts` needs only the web app and also runs on this branch. Neither is part of any gate here.
+
 A3 of `docs/plans/2026-code-animation.md` adds the Animate panel and a live preview of the tab-to-tab morph in the editor. This file records the unit, parity, and live evidence. The base is A1 at `29521428`, which did not move during the work. The lanes, the parity run, and the video ran at `546bd8f0`. The head adds `45f6d606`, which changes types only, and lane 1, lane 2, and lane 9 ran again there.
 
 Every pixel diff uses pixelmatch at threshold 0.1, and the limit is 0.5% of pixels.
@@ -238,3 +240,42 @@ The stage inherits that canvas. With a second tab that holds a line of 96 charac
 | `scripts/parity/animation-preview.ts` | 24 of 25 cells pass |
 
 Perf did not run. The 1-minute load average read 7.2 once, at the start, and 8.5 to 15 after that.
+
+## Restack on the core
+
+A1 split in two. The animation core is now #734 (`feat/animation-core`), and the Node renderer stays in #707. A3 was rebased with `git rebase --onto origin/feat/animation-core 29521428`, so it sits on #734 at `c8dfe236`.
+
+**Conflicts.** `state/editor/model.ts` conflicted twice, on its imports. Both resolutions keep the base's `@codeimage/store/frame/model` path and A3's animation types. `i18n/index.ts` conflicted in each locale. The resolution keeps `animationLocale` and drops `cliConfig`, which comes from #702 and is not on this base.
+
+**Core interface.** The core places transition frames on the export's frame clock and draws the gutter in `AnimatedCodeView`. `planPreview.tsx` passes `fps: settings.fps` to `planTimeline`, and `AnimationPreview.tsx` passes `showLineNumbers` to `AnimatedCodeView`. `planPreview.tsx` imports `fitScale` and `AnimationPreview.tsx` imports `FITTED_WINDOW_MIN_WIDTH` from `FittedWindow.tsx`, and neither exists on this base. Without them `tsc` fails, so the change from `d4ab2a2c` on #707 is applied as is. It names the scale rule and the 480 px minimum that `FittedWindow` already used, so the editor and its export do not change. Lane 1 confirms it.
+
+**Read-only sync.** The review found that a signed-in user could change the timing of a project they do not own, and the sync then sent a PUT that the API rejects. The save stream moved to `state/editor/remoteSync.ts`, since the app's tests run Solid's server build, where the sync adapter's effects never run. `remoteSync.test.ts` failed on the moved code, with the read-only change saved, and passes once the stream drops changes while the project is read-only. The flush on leave only runs for a pending save, so it is covered too. Randomize in the frame toolbar used the same path and is fixed with it.
+
+### Gates
+
+| Gate | Result |
+|---|---|
+| `pnpm lint` | 0 errors, no warning in a changed file |
+| `pnpm typecheck` | passes |
+| App tests | 134 passed in 22 files |
+| API unit tests | 63 passed in 13 files, with the CI environment |
+| `@codeimage/render` tests | Not on this base |
+| `pnpm why shiki --filter=@codeimage/app` | prints nothing |
+| `scripts/parity/live-a3.ts` | 12 of 12 lanes pass. The first lane timed out once on a cold Vite and passed twice on its own. |
+
+### Lanes
+
+Chrome from Playwright 1.57, against Vite with the mock API, driven by a scratch script that is not in the repository.
+
+| Lane | Result |
+|---|---|
+| 1 | Pass. With one tab there is no Animate button. The PNG export is 410x244 on `c8dfe236` and on the head, with 0 px different. |
+| 2 | Pass. Paused at 1216 ms, in a transition scene with 9 animations. A seek to 1250 ms matches the pre-restack head `a1a27231` with 0 px different over the stage and the panel. |
+| 3 | Pass. The steps are c, a, b, and the first scene shows `c.ts`. |
+| 5 | Pass. Playback returns to `editing`, the key lands in the active tab, and the focus is in the code. |
+| 6 | Pass. One PUT carried the animation. After a reload the order, a 1200 ms hold, 650 ms, linear, and 24 fps came back. |
+| 9 | Pass. Space pauses and plays on the stage and types a space in the editor. |
+| 10 | Pass. The island spans 340 to 1100 of 1440 px and 16 to 374 of 390 px, with 40 px rows and no horizontal overflow. |
+| Read-only sync | Pass. A timing change sends no PUT on a project the user does not own and one PUT on their own project, with no save error. With the fix reverted, the read-only project sent one PUT. |
+
+A transition scene with line numbers on draws the gutter, 1 to 3, with the new lines fading in. The screenshots in `media/` were not replaced, since the stage and the panel did not change.
