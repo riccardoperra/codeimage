@@ -16,7 +16,8 @@ type NewDotProps =
 
 export function NewDot(props: NewDotProps) {
   return (
-    <Show when={props.children !== undefined} fallback={<Dot at={props.at} />}>
+    // Testing the value would build the control a second time.
+    <Show when={'children' in props} fallback={<Dot at={props.at} />}>
       <span
         class={`${styles.commandAnchor} ${props.filled ? styles.filledAnchor : ''}`}
       >

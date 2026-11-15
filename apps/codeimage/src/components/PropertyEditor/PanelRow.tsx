@@ -22,16 +22,17 @@ export const PanelRow: FlowComponent<PanelRowProps> = props => {
   return (
     <div class={styles.panelRow}>
       <Show when={props.label}>
+        {/* Testing the value would build the accessory a second time. */}
         <Show
-          when={props.labelAccessory !== undefined}
+          when={'labelAccessory' in props}
           fallback={
             <Text
               as="label"
               for={props.for}
-              size="xs"
+              size={'xs'}
               class={styles.titleWrapper}
             >
-              <Box as="span" position="relative">
+              <Box as={'span'} position={'relative'}>
                 {props.label}
               </Box>
             </Text>
