@@ -12,6 +12,11 @@ const frame = page =>
 const code = page => page.locator('[data-fit-scale] .cm-content').first();
 
 async function dismissNews(page) {
+  const showcase = page.getByRole('dialog', {name: "What\'s new", exact: true});
+  if (await showcase.isVisible()) {
+    await showcase.getByRole('button', {name: 'Close', exact: true}).click();
+    await showcase.waitFor({state: 'hidden'});
+  }
   const dismiss = page.getByRole('button', {
     name: "Dismiss what's new",
     exact: true,
@@ -26,10 +31,11 @@ async function ready(page, kind = 'owner') {
   await page.locator(`.unified-editor[data-page-state="${kind}"]`).waitFor();
   await code(page).waitFor();
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(800);
   await dismissNews(page);
   const close = page.getByRole('button', {name: /^close$/i}).first();
   if (await close.isVisible()) await close.click();
+  await page.locator('[data-whats-new="showcase"]').waitFor({state: 'hidden'});
 }
 
 async function command(page, label) {

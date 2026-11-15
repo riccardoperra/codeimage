@@ -9,6 +9,7 @@ import type {
   CodeMetrics,
   GlyphWidths,
   NonEmpty,
+  Size,
 } from '@core/animation/model';
 import {
   planTimeline,
@@ -21,7 +22,7 @@ import type {JSX, Owner} from 'solid-js';
 import {runWithOwner} from 'solid-js';
 import {render} from 'solid-js/web';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
-import {fitScale} from '../Frame/FittedWindow';
+import {targetLayout} from '@core/animation/target-layout';
 import * as frameStyles from '../Frame/Frame.css';
 import {FrameView} from '../Frame/PreviewFrame';
 
@@ -55,6 +56,7 @@ async function measureHidden<T>(
   view: () => JSX.Element,
   read: (host: HTMLElement) => T,
 ): Promise<T> {
+  await new Promise<void>(resolve => setTimeout(resolve, 0));
   const host = document.createElement('div');
   host.style.cssText =
     'position:fixed;left:0;top:0;visibility:hidden;pointer-events:none';
@@ -63,6 +65,7 @@ async function measureHidden<T>(
   try {
     dispose = runWithOwner(owner, () => render(view, host));
     await document.fonts.ready;
+    await new Promise<void>(resolve => setTimeout(resolve, 0));
     return read(host);
   } finally {
     dispose?.();
@@ -95,21 +98,25 @@ function stepLayout(host: HTMLElement): StepLayout {
   const {width, height} = frame.getBoundingClientRect();
   const viewport = frame.querySelector<HTMLElement>('[data-fit-window]');
   const content = frame.querySelector<HTMLElement>('[data-fitted-window]');
-  if (!viewport || !content) return {size: {width, height}, window: null};
+  if (!viewport || !content)
+    return {
+      size: {
+        width: Math.max(width, frame.scrollWidth),
+        height: Math.max(height, frame.scrollHeight),
+      },
+      window: null,
+    };
   const natural = {
     width: Math.max(content.offsetWidth, content.scrollWidth),
     height: Math.max(content.offsetHeight, content.scrollHeight),
   };
   const box = {width: viewport.clientWidth, height: viewport.clientHeight};
-  const scale = fitScale(box, natural);
   return {
     size: {width, height},
-    window: {
-      left: viewport.offsetLeft + (box.width - natural.width * scale) / 2,
-      top: viewport.offsetTop + (box.height - natural.height * scale) / 2,
-      ...natural,
-      scale,
-    },
+    window: targetLayout(box, natural, {
+      x: viewport.offsetLeft,
+      y: viewport.offsetTop,
+    }),
   };
 }
 
@@ -120,6 +127,8 @@ export async function measurePreview(
   tabs: NonEmpty<PreviewTab>,
   style: CodeStyle,
   header: AnimationHeader,
+  targetSize?: Size,
+  natural = true,
 ): Promise<PreviewMeasurement> {
   const languages = await Promise.all(
     tabs.map(tab => loadLanguage(tab.languageId, tab.tabName)),
@@ -166,7 +175,8 @@ export async function measurePreview(
         owner,
         () => (
           <FrameView
-            natural
+            targetSize={targetSize}
+            natural={natural}
             header={header}
             activeTabId={tab.id}
             code={codeView(tab, languages[index])}
