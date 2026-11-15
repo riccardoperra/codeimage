@@ -1,0 +1,38 @@
+{
+  "root": {
+    "x": 80,
+    "y": 134.046875,
+    "width": 226,
+    "height": 231.90625,
+    "top": 134.046875,
+    "right": 306,
+    "bottom": 365.953125,
+    "left": 80
+  },
+  "line": {
+    "x": 80,
+    "y": 138.046875,
+    "width": 226,
+    "height": 22.390625,
+    "top": 138.046875,
+    "right": 306,
+    "bottom": 160.4375,
+    "left": 80
+  },
+  "font": [
+    "\"Geist Mono\", monospace",
+    "16px",
+    "400",
+    "normal"
+  ],
+  "frame": {
+    "x": 0,
+    "y": 0,
+    "width": 386,
+    "height": 446,
+    "top": 0,
+    "right": 386,
+    "bottom": 446,
+    "left": 0
+  }
+}

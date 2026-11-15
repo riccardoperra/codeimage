@@ -1,3 +1,11 @@
+import type {Static} from '@sinclair/typebox';
+import {Value} from '@sinclair/typebox/value';
+import {
+  ExportTargetSchema,
+  type FrameSignatureSchema,
+  TabMarksSchema,
+  type TabMarks,
+} from './project.contract.js';
 import {defineErrors} from '../../shared/errors.js';
 import {
   isOwnedBy,
@@ -13,6 +21,9 @@ import {
 } from './project.contract.js';
 
 export interface SnippetFrame {
+  readonly exportTarget?: Static<typeof ExportTargetSchema> | null;
+  readonly aspectRatio?: string | null;
+  readonly signature?: Static<typeof FrameSignatureSchema> | null;
   readonly id: string;
   readonly background: string | null;
   readonly padding: number;
@@ -53,6 +64,7 @@ export interface SnippetEditorTab {
   readonly languageId: string;
   readonly tabName: string;
   readonly lineNumberStart: number;
+  readonly marks: TabMarks;
 }
 
 export interface ProjectHeader {
@@ -119,6 +131,9 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
   return {
     name: body.name,
     frame: {
+      aspectRatio: body.frame.aspectRatio ?? null,
+      exportTarget: body.frame.exportTarget ?? null,
+      signature: body.frame.signature ?? null,
       padding:
         body.frame.padding ??
         SnippetFrameCreateRequestSchema.properties.padding.default,
@@ -172,6 +187,7 @@ export function draftFromCreateBody(body: ProjectCreateBody): ProjectDraft {
       code: editor.code,
       tabName: editor.tabName,
       lineNumberStart: editor.lineNumberStart,
+      marks: parseTabMarks(editor.marks),
     })),
   };
 }
@@ -181,7 +197,10 @@ export function changesFromUpdateBody(body: ProjectUpdateBody): ProjectChanges {
     frame: body.frame,
     terminal: {...body.terminal, surface: body.terminal.surface ?? undefined},
     editorOptions: body.editorOptions,
-    editorTabs: body.editors,
+    editorTabs: body.editors.map(editor => ({
+      ...editor,
+      marks: parseTabMarks(editor.marks),
+    })),
   };
 }
 
@@ -198,11 +217,12 @@ export function draftFromClone(
     terminal,
     editorOptions,
     editorTabs: source.editorTabs.map(
-      ({languageId, code, tabName, lineNumberStart}) => ({
+      ({languageId, code, tabName, lineNumberStart, marks}) => ({
         languageId,
         code,
         tabName,
         lineNumberStart,
+        marks,
       }),
     ),
   };
@@ -216,4 +236,34 @@ export function readTerminalSurface(
   value: string | null | undefined,
 ): SnippetTerminal['surface'] {
   return value === 'wash' ? 'wash' : 'solid';
+}
+
+export function readFrameSignature(frame: {
+  signatureHandle?: string | null;
+  signaturePosition?: string | null;
+}): Static<typeof FrameSignatureSchema> | null {
+  const {signatureHandle: handle, signaturePosition: position} = frame;
+  return handle && (position === 'bottom-left' || position === 'bottom-right')
+    ? {handle, position}
+    : null;
+}
+
+export function readFrameExportProperties(frame: {
+  exportTarget?: string | null;
+  signatureHandle?: string | null;
+  signaturePosition?: string | null;
+}) {
+  return {
+    exportTarget:
+      ExportTargetSchema.anyOf.find(
+        target => target.const === frame.exportTarget,
+      )?.const ?? null,
+    signature: readFrameSignature(frame),
+  };
+}
+
+export function parseTabMarks(value: unknown): TabMarks {
+  return Value.Check(TabMarksSchema, value)
+    ? value
+    : {lines: [], focusedLines: []};
 }

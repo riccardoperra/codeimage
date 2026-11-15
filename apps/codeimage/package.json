@@ -40,9 +40,9 @@
     "vite": "catalog:next",
     "vite-plugin-solid": "catalog:next",
     "vite-tsconfig-paths": "catalog:next",
+    "vitest": "catalog:next",
     "workbox-core": "^7.4.0",
-    "workbox-window": "^7.4.0",
-    "vitest": "catalog:next"
+    "workbox-window": "^7.4.0"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.18.2",

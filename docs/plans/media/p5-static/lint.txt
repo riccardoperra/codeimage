@@ -1,0 +1,280 @@
+
+> codeimage@1.10.0 lint /Users/riccardoperra/.t3/worktrees/codeimage/t3-3ebc7362-749891be7d5422a9
+> pnpm --filter='@codeimage/*' --parallel -r lint
+
+Scope: 10 of 11 workspace projects
+apps/api lint$ oxlint
+apps/codeimage lint$ oxlint
+packages/config lint$ oxlint
+packages/dom-export lint$ oxlint
+packages/highlight lint$ oxlint
+packages/locale lint$ oxlint
+packages/ui lint$ oxlint
+packages/atomic-state lint$ oxlint
+packages/dom-export lint: Found 0 warnings and 0 errors.
+packages/dom-export lint: Finished in 2.5s on 18 files using 8 threads.
+apps/api lint: Found 0 warnings and 0 errors.
+apps/api lint: Finished in 2.6s on 106 files using 8 threads.
+packages/dom-export lint: Done
+apps/api lint: Done
+packages/locale lint: Found 0 warnings and 0 errors.
+packages/locale lint: Finished in 2.7s on 4 files using 8 threads.
+packages/atomic-state lint: Found 0 warnings and 0 errors.
+packages/atomic-state lint: Finished in 2.7s on 12 files using 8 threads.
+packages/highlight lint: Found 0 warnings and 0 errors.
+packages/highlight lint: Finished in 2.7s on 78 files using 8 threads.
+packages/config lint: Found 0 warnings and 0 errors.
+packages/config lint: Finished in 2.8s on 10 files using 8 threads.
+packages/locale lint: Done
+packages/atomic-state lint: Done
+packages/config lint: Done
+packages/highlight lint: Done
+packages/ui lint: Found 0 warnings and 0 errors.
+packages/ui lint: Finished in 4.4s on 109 files using 8 threads.
+packages/ui lint: Done
+apps/codeimage lint:   ! eslint(no-unassigned-vars): 'ref' is always 'undefined' because it's never assigned.
+apps/codeimage lint:    ,-[src/mdx/Video.tsx:8:7]
+apps/codeimage lint:  7 | ) {
+apps/codeimage lint:  8 |   let ref!: HTMLVideoElement;
+apps/codeimage lint:    :       ^^^
+apps/codeimage lint:  9 | 
+apps/codeimage lint:    `----
+apps/codeimage lint:   help: Variable declared without assignment. Either assign a value or remove the declaration.
+apps/codeimage lint:   ! eslint(no-extra-boolean-cast): Redundant double negation
+apps/codeimage lint:     ,-[src/state/editor/activeEditor.ts:80:11]
+apps/codeimage lint:  79 |       const editor = currentEditorIndex();
+apps/codeimage lint:  80 |       if (!!unsubscribe) unsubscribe();
+apps/codeimage lint:     :           ^^^^^^^^^^^^^
+apps/codeimage lint:  81 |       if (!isNonNullable(editor) || editor === -1) return;
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Remove the double negation as it will already be coerced to a boolean
+apps/codeimage lint:   ! eslint(no-async-promise-executor): Promise executor functions should not be `async`.
+apps/codeimage lint:      ,-[src/state/editor/activeEditor.ts:108:28]
+apps/codeimage lint:  107 |       format(code = currentEditor()?.code ?? '') {
+apps/codeimage lint:  108 |         return new Promise(async r => {
+apps/codeimage lint:      :                            ^^^^^
+apps/codeimage lint:  109 |           try {
+apps/codeimage lint:      `----
+apps/codeimage lint:   help: Remove the `async` keyword from the Promise executor function.
+apps/codeimage lint:   ! eslint(no-async-promise-executor): Promise executor functions should not be `async`.
+apps/codeimage lint:      ,-[src/state/assets/assets.ts:188:38]
+apps/codeimage lint:  187 |           }
+apps/codeimage lint:  188 |           return new Promise<string>(async (resolve, reject) => {
+apps/codeimage lint:      :                                      ^^^^^
+apps/codeimage lint:  189 |             return await fetch(asset.url, {
+apps/codeimage lint:      `----
+apps/codeimage lint:   help: Remove the `async` keyword from the Promise executor function.
+apps/codeimage lint:   ! solid(reactivity): This function should be passed to a tracked scope (like createEffect) or an event handler because it contains reactivity, or else changes will be ignored.
+apps/codeimage lint:     ,-[src/state/assets/AssetsImage.tsx:22:40]
+apps/codeimage lint:  21 |   const store = getAssetsStore();
+apps/codeimage lint:  22 |   const [resolve] = store.loadAsync(() => props.assetId);
+apps/codeimage lint:     :                                        ^^
+apps/codeimage lint:  23 | 
+apps/codeimage lint:     `----
+apps/codeimage lint:   ! solid(components-return-once): Solid components run once, so an early return breaks reactivity. Move the condition inside a JSX element, such as a fragment or <Show />.
+apps/codeimage lint:      ,-[src/index.tsx:106:11]
+apps/codeimage lint:  105 |         if (auth0.loggedIn()) {
+apps/codeimage lint:  106 |           return <Navigate href={"/"} />;
+apps/codeimage lint:      :           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+apps/codeimage lint:  107 |         } else {
+apps/codeimage lint:      `----
+apps/codeimage lint:   ! eslint(no-unassigned-vars): 'imageInputRef' is always 'undefined' because it's never assigned.
+apps/codeimage lint:     ,-[src/components/PropertyEditor/controls/ImagePicker/ImagePickerInput.tsx:17:7]
+apps/codeimage lint:  16 | export function ImagePickerInput(props: ImagePickerInputProps) {
+apps/codeimage lint:  17 |   let imageInputRef!: HTMLInputElement;
+apps/codeimage lint:     :       ^^^^^^^^^^^^^
+apps/codeimage lint:  18 |   const [value, setValue] = createSignal('');
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Variable declared without assignment. Either assign a value or remove the declaration.
+apps/codeimage lint:   ! solid(reactivity): This function should be passed to a tracked scope (like createEffect) or an event handler because it contains reactivity, or else changes will be ignored.
+apps/codeimage lint:     ,-[src/components/PropertyEditor/controls/ImagePicker/ImagePickerInput.tsx:90:30]
+apps/codeimage lint:  89 |                   )
+apps/codeimage lint:  90 |                   .then(file => file && props.onUpload(file.value));
+apps/codeimage lint:     :                              ^^
+apps/codeimage lint:  91 |               }}
+apps/codeimage lint:     `----
+apps/codeimage lint:   ! eslint(no-unassigned-vars): 'ref' is always 'undefined' because it's never assigned.
+apps/codeimage lint:     ,-[src/ui/DynamicSizedContainer/DynamicSizedContainer.tsx:16:7]
+apps/codeimage lint:  15 | ) {
+apps/codeimage lint:  16 |   let ref!: HTMLDivElement;
+apps/codeimage lint:     :       ^^^
+apps/codeimage lint:  17 |   let animation: AnimationControls | null = null;
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Variable declared without assignment. Either assign a value or remove the declaration.
+apps/codeimage lint:   ! eslint(no-extra-boolean-cast): Redundant double negation
+apps/codeimage lint:     ,-[src/hooks/createPrettierFormatter.ts:41:10]
+apps/codeimage lint:  40 |   }
+apps/codeimage lint:  41 |   return !!formatterName
+apps/codeimage lint:     :          ^^^^^^^^^^^^^^^
+apps/codeimage lint:  42 |     ? pluginDef.find(def => def.parser === formatterName)
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Remove the double negation as it will already be coerced to a boolean
+apps/codeimage lint:   ! eslint(no-async-promise-executor): Promise executor functions should not be `async`.
+apps/codeimage lint:     ,-[src/hooks/createPrettierFormatter.ts:23:40]
+apps/codeimage lint:  22 | ) => {
+apps/codeimage lint:  23 |   return new Promise<PrettierPlugin[]>(async r => {
+apps/codeimage lint:     :                                        ^^^^^
+apps/codeimage lint:  24 |     if (!plugins) return Promise.resolve([]);
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Remove the `async` keyword from the Promise executor function.
+apps/codeimage lint:   ! solid(reactivity): The reactive variable 'terminalShadows' should be used within JSX, a tracked scope (like createEffect), or inside an event handler function, or else changes will be ignored.
+apps/codeimage lint:     ,-[src/components/PropertyEditor/WindowStyleForm.tsx:27:53]
+apps/codeimage lint:  26 | 
+apps/codeimage lint:  27 |   const terminalShadowsSelect = createSelectOptions(terminalShadows(), {
+apps/codeimage lint:     :                                                     ^^^^^^^^^^^^^^^^^
+apps/codeimage lint:  28 |     key: 'label',
+apps/codeimage lint:     `----
+apps/codeimage lint:   ! eslint(no-unassigned-vars): 'editorEl' is always 'undefined' because it's never assigned.
+apps/codeimage lint:     ,-[src/components/CustomEditor/CustomEditorPreview.tsx:23:7]
+apps/codeimage lint:  22 | ) {
+apps/codeimage lint:  23 |   let editorEl!: HTMLDivElement;
+apps/codeimage lint:     :       ^^^^^^^^
+apps/codeimage lint:  24 |   const {themeArray: themes} = getThemeStore();
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Variable declared without assignment. Either assign a value or remove the declaration.
+apps/codeimage lint:   ! solid(reactivity): The reactive variable 'props.value' should be wrapped in a function for reactivity. This includes event handler bindings on native elements, which are not reactive like other JSX props.
+apps/codeimage lint:     ,-[src/components/PropertyEditor/controls/ColorPicker/ColorPicker.tsx:38:25]
+apps/codeimage lint:  37 |   const [, {tUnsafe}] = useI18n();
+apps/codeimage lint:  38 |   createEffect(on(() => props.value ?? '', setInternalColor));
+apps/codeimage lint:     :                         ^^^^^^^^^^^
+apps/codeimage lint:  39 | 
+apps/codeimage lint:     `----
+apps/codeimage lint:   ! eslint(no-unassigned-vars): 'wrapperRef' is always 'undefined' because it's never assigned.
+apps/codeimage lint:     ,-[src/components/Terminal/Tabs/TerminalWindowTabList.tsx:45:7]
+apps/codeimage lint:  44 | ) {
+apps/codeimage lint:  45 |   let wrapperRef!: HTMLDivElement;
+apps/codeimage lint:     :       ^^^^^^^^^^
+apps/codeimage lint:  46 | 
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Variable declared without assignment. Either assign a value or remove the declaration.
+apps/codeimage lint:   ! eslint(no-extra-boolean-cast): Redundant double negation
+apps/codeimage lint:      ,-[src/components/CustomEditor/CustomEditor.tsx:153:34]
+apps/codeimage lint:  152 | 
+apps/codeimage lint:  153 |     const fontVariantLigatures = !!enableLigatures ? 'normal' : 'none';
+apps/codeimage lint:      :                                  ^^^^^^^^^^^^^^^^^
+apps/codeimage lint:  154 | 
+apps/codeimage lint:      `----
+apps/codeimage lint:   help: Remove the double negation as it will already be coerced to a boolean
+apps/codeimage lint:   ! eslint(no-unassigned-vars): 'hiddenTextEl' is always 'undefined' because it's never assigned.
+apps/codeimage lint:     ,-[src/components/Terminal/Tabs/TabName/TabName.tsx:28:7]
+apps/codeimage lint:  27 | export default function TabName(props: TabNameProps): JSXElement {
+apps/codeimage lint:  28 |   let hiddenTextEl!: HTMLInputElement;
+apps/codeimage lint:     :       ^^^^^^^^^^^^
+apps/codeimage lint:  29 |   let inputEl!: HTMLInputElement;
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Variable declared without assignment. Either assign a value or remove the declaration.
+apps/codeimage lint:   ! eslint(no-unassigned-vars): 'inputEl' is always 'undefined' because it's never assigned.
+apps/codeimage lint:     ,-[src/components/Terminal/Tabs/TabName/TabName.tsx:29:7]
+apps/codeimage lint:  28 |   let hiddenTextEl!: HTMLInputElement;
+apps/codeimage lint:  29 |   let inputEl!: HTMLInputElement;
+apps/codeimage lint:     :       ^^^^^^^
+apps/codeimage lint:  30 |   let portal!: HTMLDivElement;
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Variable declared without assignment. Either assign a value or remove the declaration.
+apps/codeimage lint:   ! eslint(no-unassigned-vars): 'portal' is always 'undefined' because it's never assigned.
+apps/codeimage lint:     ,-[src/components/Terminal/Tabs/TabName/TabName.tsx:30:7]
+apps/codeimage lint:  29 |   let inputEl!: HTMLInputElement;
+apps/codeimage lint:  30 |   let portal!: HTMLDivElement;
+apps/codeimage lint:     :       ^^^^^^
+apps/codeimage lint:  31 |   const [width, setWidth] = createSignal(0);
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Variable declared without assignment. Either assign a value or remove the declaration.
+apps/codeimage lint:   ! solid(reactivity): The reactive variable 'props.onChange' should be used within JSX, a tracked scope (like createEffect), or inside an event handler function, or else changes will be ignored.
+apps/codeimage lint:     ,-[src/components/PropertyEditor/controls/FontPicker/FontSystemPicker.tsx:69:15]
+apps/codeimage lint:  68 |     onEsc: () => props.onEsc(),
+apps/codeimage lint:  69 |     onChange: props.onChange,
+apps/codeimage lint:     :               ^^^^^^^^^^^^^^
+apps/codeimage lint:  70 |     get value() {
+apps/codeimage lint:     `----
+apps/codeimage lint:   ! solid(reactivity): This function should be passed to a tracked scope (like createEffect) or an event handler because it contains reactivity, or else changes will be ignored.
+apps/codeimage lint:     ,-[src/components/FeatureBadge/FeatureBadge.tsx:15:46]
+apps/codeimage lint:  14 | 
+apps/codeimage lint:  15 |   const feature = versionStore.getFeature(() => props.featureName);
+apps/codeimage lint:     :                                              ^^
+apps/codeimage lint:  16 | 
+apps/codeimage lint:     `----
+apps/codeimage lint:   ! solid(reactivity): This function should be passed to a tracked scope (like createEffect) or an event handler because it contains reactivity, or else changes will be ignored.
+apps/codeimage lint:      ,-[src/pages/Dashboard/components/ProjectItem/ProjectItem.tsx:100:40]
+apps/codeimage lint:   99 |   function onRename() {
+apps/codeimage lint:  100 |     openDialog(RenameContentDialog, () => ({
+apps/codeimage lint:      :                                        ^^
+apps/codeimage lint:  101 |       title: t('dashboard.renameProject.confirmTitle'),
+apps/codeimage lint:      `----
+apps/codeimage lint:   ! solid(reactivity): This function should be passed to a tracked scope (like createEffect) or an event handler because it contains reactivity, or else changes will be ignored.
+apps/codeimage lint:     ,-[src/components/Terminal/Tabs/Tab/DraggableWindowTab.tsx:55:30]
+apps/codeimage lint:  54 |         sortable(ref);
+apps/codeimage lint:  55 |         exportExclude(el, () => props.exportExclude);
+apps/codeimage lint:     :                              ^^
+apps/codeimage lint:  56 |       }}
+apps/codeimage lint:     `----
+apps/codeimage lint:   ! eslint(no-unassigned-vars): 'ref' is always 'undefined' because it's never assigned.
+apps/codeimage lint:     ,-[src/components/Toolbar/ToolbarSnippetName.tsx:82:21]
+apps/codeimage lint:  81 |               {(() => {
+apps/codeimage lint:  82 |                 let ref: HTMLInputElement | undefined;
+apps/codeimage lint:     :                     ^^^
+apps/codeimage lint:  83 |                 onMount(() => {
+apps/codeimage lint:     `----
+apps/codeimage lint:   help: Variable declared without assignment. Either assign a value or remove the declaration.
+apps/codeimage lint:   ! solid(reactivity): The reactive variable 'submit' should be called as a function when used in JSX.
+apps/codeimage lint:     ,-[src/components/Toolbar/ToolbarSnippetName.tsx:80:37]
+apps/codeimage lint:  79 |           >
+apps/codeimage lint:  80 |             <form use:clickOutside={submit} onSubmit={submit}>
+apps/codeimage lint:     :                                     ^^^^^^
+apps/codeimage lint:  81 |               {(() => {
+apps/codeimage lint:     `----
+apps/codeimage lint:   ! eslint(no-extra-boolean-cast): Redundant double negation
+apps/codeimage lint:      ,-[src/components/FeatureBadge/FeatureCheckBanner.tsx:131:23]
+apps/codeimage lint:  130 |       class={styles.supportedTableGridItem}
+apps/codeimage lint:  131 |       data-supported={!!version() ? '' : undefined}
+apps/codeimage lint:      :                       ^^^^^^^^^^^
+apps/codeimage lint:  132 |       data-unsupported={version() === false ? '' : undefined}
+apps/codeimage lint:      `----
+apps/codeimage lint:   help: Remove the double negation as it will already be coerced to a boolean
+apps/codeimage lint:   ! solid(components-return-once): Solid components run once, so an early return breaks reactivity. Move the condition inside a JSX element, such as a fragment or <Show />.
+apps/codeimage lint:     ,-[src/components/FeatureBadge/FeatureCheckBanner.tsx:95:9]
+apps/codeimage lint:  94 |           case 'chrome':
+apps/codeimage lint:  95 | ,->         return (
+apps/codeimage lint:  96 | |             <img alt={'Chrome logo'} src={ChromeUrl} width={20} height={20} />
+apps/codeimage lint:  97 | `->         );
+apps/codeimage lint:  98 |           case 'safari':
+apps/codeimage lint:     `----
+apps/codeimage lint:   ! solid(components-return-once): Solid components run once, so an early return breaks reactivity. Move the condition inside a JSX element, such as a fragment or <Show />.
+apps/codeimage lint:      ,-[src/components/FeatureBadge/FeatureCheckBanner.tsx:99:9]
+apps/codeimage lint:   98 |           case 'safari':
+apps/codeimage lint:   99 | ,->         return (
+apps/codeimage lint:  100 | |             <img alt={'Safari logo'} src={SafariUrl} width={20} height={20} />
+apps/codeimage lint:  101 | `->         );
+apps/codeimage lint:  102 |           case 'firefox':
+apps/codeimage lint:      `----
+apps/codeimage lint:   ! solid(components-return-once): Solid components run once, so an early return breaks reactivity. Move the condition inside a JSX element, such as a fragment or <Show />.
+apps/codeimage lint:      ,-[src/components/FeatureBadge/FeatureCheckBanner.tsx:103:9]
+apps/codeimage lint:  102 |           case 'firefox':
+apps/codeimage lint:  103 | ,->         return (
+apps/codeimage lint:  104 | |             <img alt={'Firefox logo'} src={FirefoxUrl} width={20} height={20} />
+apps/codeimage lint:  105 | `->         );
+apps/codeimage lint:  106 |           case 'opera':
+apps/codeimage lint:      `----
+apps/codeimage lint:   ! solid(components-return-once): Solid components run once, so an early return breaks reactivity. Move the condition inside a JSX element, such as a fragment or <Show />.
+apps/codeimage lint:      ,-[src/components/FeatureBadge/FeatureCheckBanner.tsx:107:9]
+apps/codeimage lint:  106 |       case 'opera':
+apps/codeimage lint:  107 |         return <img alt={'Opera logo'} src={OperaUrl} width={20} height={20} />;
+apps/codeimage lint:      :         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+apps/codeimage lint:  108 |       case 'edge':
+apps/codeimage lint:      `----
+apps/codeimage lint:   ! solid(components-return-once): Solid components run once, so an early return breaks reactivity. Move the condition inside a JSX element, such as a fragment or <Show />.
+apps/codeimage lint:      ,-[src/components/FeatureBadge/FeatureCheckBanner.tsx:109:9]
+apps/codeimage lint:  108 |       case 'edge':
+apps/codeimage lint:  109 |         return <img alt={'Edge logo'} src={EdgeUrl} width={20} height={20} />;
+apps/codeimage lint:      :         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+apps/codeimage lint:  110 |     }
+apps/codeimage lint:      `----
+apps/codeimage lint:   ! solid(reactivity): The reactive variable 'props.onChange' should be used within JSX, a tracked scope (like createEffect), or inside an event handler function, or else changes will be ignored.
+apps/codeimage lint:     ,-[src/components/PropertyEditor/controls/FontPicker/FontPicker.tsx:49:15]
+apps/codeimage lint:  48 |     onEsc: () => setOpen(false),
+apps/codeimage lint:  49 |     onChange: props.onChange,
+apps/codeimage lint:     :               ^^^^^^^^^^^^^^
+apps/codeimage lint:  50 |     get value() {
+apps/codeimage lint:     `----
+apps/codeimage lint: Found 32 warnings and 0 errors.
+apps/codeimage lint: Finished in 7.3s on 303 files using 8 threads.
+apps/codeimage lint: Done

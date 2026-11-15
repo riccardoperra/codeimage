@@ -24,6 +24,8 @@ export function ManagedFrame() {
       opacity={frame.opacity}
       visible={frame.visible}
       aspectRatio={frame.aspectRatio}
+      exportTarget={getFrameState().exportTarget()}
+      signature={frame.signature}
       onWidthChange={getFrameState().setWidth}
       onHeightChange={getFrameState().setHeight}
     >

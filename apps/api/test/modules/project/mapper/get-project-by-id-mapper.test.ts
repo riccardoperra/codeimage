@@ -14,6 +14,9 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
     createdAt: date2,
     frame: {
       id: 'frameId',
+      aspectRatio: null,
+      exportTarget: 'x-landscape',
+      signature: {handle: '@me', position: 'bottom-left'},
       visible: true,
       radius: 24,
       padding: 32,
@@ -45,7 +48,17 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
       enableLigatures: true,
     },
     isOwner: false,
-    editorTabs: [],
+    editorTabs: [
+      {
+        id: 'tabId',
+        projectId: '1',
+        code: 'const n = 1;',
+        languageId: 'typescript',
+        tabName: 'n.ts',
+        lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
+      },
+    ],
   });
 
   assert.deepStrictEqual(result, {
@@ -55,9 +68,22 @@ test('should map Prisma ProjectGetByIdResponse to schema ProjectGetByIdResponse'
     createdAt: date2.toISOString(),
     updatedAt: date1.toISOString(),
     isOwner: false,
-    editorTabs: [],
+    editorTabs: [
+      {
+        id: 'tabId',
+        projectId: '1',
+        code: 'const n = 1;',
+        languageId: 'typescript',
+        tabName: 'n.ts',
+        lineNumberStart: 1,
+        marks: {lines: [{line: 1, kind: 'highlight'}], focusedLines: [2]},
+      },
+    ],
     frame: {
       id: 'frameId',
+      aspectRatio: null,
+      exportTarget: 'x-landscape',
+      signature: {handle: '@me', position: 'bottom-left'},
       background: '',
       visible: true,
       padding: 32,

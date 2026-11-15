@@ -1,4 +1,6 @@
 import {secrets} from './secrets';
+import {altText} from './altText';
+import {lineMarksLocale} from './lineMarks';
 import {notFound} from './ notFound';
 import {dashboard} from './dashboard';
 import {presets} from './presets';
@@ -39,7 +41,7 @@ export const locale = {
       es: 'Spagnolo',
     },
     toolbar: {
-      export: 'Exporta',
+      export: 'Esporta',
       openNewTab: 'Apri',
       loadingNewTab: 'Preparando link...',
       share: 'Condividi',
@@ -98,6 +100,8 @@ export const locale = {
     ...notFound.it,
     ...presets.it,
     ...exportTabs.it,
+    ...altText.it,
+    ...lineMarksLocale.it,
   },
   en: {
     ...secrets.en,
@@ -186,6 +190,8 @@ export const locale = {
     ...notFound.en,
     ...presets.en,
     ...exportTabs.en,
+    ...altText.en,
+    ...lineMarksLocale.en,
   },
   de: {
     ...secrets.de,
@@ -275,6 +281,8 @@ export const locale = {
     ...notFound.de,
     ...presets.de,
     ...exportTabs.de,
+    ...altText.de,
+    ...lineMarksLocale.de,
   },
   es: {
     ...secrets.es,
@@ -364,6 +372,8 @@ export const locale = {
     ...notFound.es,
     ...presets.es,
     ...exportTabs.es,
+    ...altText.es,
+    ...lineMarksLocale.es,
   },
 };
 

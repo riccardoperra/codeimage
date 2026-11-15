@@ -1,5 +1,4 @@
 import type * as ApiTypes from '@codeimage/api/api-types';
-import {randUuid} from '@ngneat/falso';
 import {HttpResponse, type RequestHandler} from 'msw';
 import {http} from 'msw';
 import {db} from './db';
@@ -147,6 +146,18 @@ const handlers: RequestHandler[] = [
           },
           frame: {
             background: body?.frame.background,
+            aspectRatio:
+              body?.frame.aspectRatio === undefined
+                ? (data?.frame.aspectRatio ?? null)
+                : body.frame.aspectRatio,
+            exportTarget:
+              body?.frame.exportTarget === undefined
+                ? (data?.frame.exportTarget ?? null)
+                : body.frame.exportTarget,
+            signature:
+              body?.frame.signature === undefined
+                ? (data?.frame.signature ?? null)
+                : body.frame.signature,
             opacity: body?.frame.opacity ?? 100,
             padding: body?.frame.padding ?? 32,
             radius: body?.frame.radius ?? 24,
@@ -171,6 +182,8 @@ const handlers: RequestHandler[] = [
             tabName: editor.tabName,
             languageId: editor.languageId,
             code: editor.code,
+            lineNumberStart: editor.lineNumberStart,
+            marks: editor.marks ?? {lines: [], focusedLines: []},
           })),
         },
         where: {
@@ -197,20 +210,23 @@ const handlers: RequestHandler[] = [
     const ownerId = request.headers.get('auth-mock-user-id') ?? 'default-user';
 
     const project = db.project.create({
-      id: randUuid(),
+      id: crypto.randomUUID(),
       name: body?.name,
       ownerId: ownerId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       editorOptions: {
-        id: randUuid(),
+        id: crypto.randomUUID(),
         fontId: body?.editorOptions.fontId,
         fontWeight: body?.editorOptions.fontWeight ?? 400,
         themeId: body?.editorOptions.themeId,
         showLineNumbers: body?.editorOptions.showLineNumbers ?? false,
       },
       frame: {
-        id: randUuid(),
+        aspectRatio: body?.frame.aspectRatio ?? null,
+        exportTarget: body?.frame.exportTarget ?? null,
+        signature: body?.frame.signature ?? null,
+        id: crypto.randomUUID(),
         background: body?.frame.background,
         opacity: body?.frame.opacity ?? 100,
         padding: body?.frame.padding ?? 32,
@@ -219,7 +235,7 @@ const handlers: RequestHandler[] = [
       },
       isOwner: true,
       terminal: {
-        id: randUuid(),
+        id: crypto.randomUUID(),
         opacity: body?.terminal.opacity ?? 100,
         shadow: body?.terminal.shadow,
         type: body?.terminal.type,
@@ -233,10 +249,12 @@ const handlers: RequestHandler[] = [
         showWatermark: body?.terminal.showWatermark ?? false,
       },
       editorTabs: body?.editors.map(editor => ({
-        id: randUuid(),
+        id: crypto.randomUUID(),
         tabName: editor.tabName,
         languageId: editor.languageId,
         code: editor.code,
+        lineNumberStart: editor.lineNumberStart,
+        marks: editor.marks ?? {lines: [], focusedLines: []},
       })),
     });
     await persistDb();
@@ -262,7 +280,7 @@ const handlers: RequestHandler[] = [
 
         const project = db.project.create({
           ...others,
-          id: randUuid(),
+          id: crypto.randomUUID(),
           name: body?.newName ?? name,
           isOwner: true,
         });

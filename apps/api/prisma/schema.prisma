@@ -38,6 +38,10 @@ model Project {
 }
 
 model SnippetFrame {
+  exportTarget String?
+  aspectRatio String?
+  signatureHandle String?
+  signaturePosition String?
   id         String   @id @default(uuid())
   project    Project?
   background String?
@@ -83,6 +87,7 @@ model SnippetEditorTab {
   tabName    String  @default("")
 
   lineNumberStart Int @default(1)
+  marks           Json?
 
   @@unique([id, projectId])
 }
