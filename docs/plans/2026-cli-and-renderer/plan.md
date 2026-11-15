@@ -193,8 +193,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 3, and 6 screenshots into `docs/plans/media/p2-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of turning the switch on in Settings and exporting a long snippet. Save it as `docs/plans/media/p2-review.mp4`.
+- [ ] Copy lane 2, 3, and 6 screenshots into `/tmp/codeimage-verification/p2-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of turning the switch on in Settings and exporting a long snippet. Save it as `/tmp/codeimage-verification/p2-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -311,8 +311,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 5, and 7 screenshots into `docs/plans/media/p4-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of a terminal session that runs lanes 2, 3, and 5. Save it as `docs/plans/media/p4-review.mp4`.
+- [ ] Copy lane 2, 5, and 7 screenshots into `/tmp/codeimage-verification/p4-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of a terminal session that runs lanes 2, 3, and 5. Save it as `/tmp/codeimage-verification/p4-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -382,8 +382,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 6, and 9 screenshots into `docs/plans/media/p5-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of pasting a diff, marking lines with the selection bar and the gutter, toggling focus, and exporting. Save it as `docs/plans/media/p5-review.mp4`.
+- [ ] Copy lane 2, 6, and 9 screenshots into `/tmp/codeimage-verification/p5-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of pasting a diff, marking lines with the selection bar and the gutter, toggling focus, and exporting. Save it as `/tmp/codeimage-verification/p5-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -448,8 +448,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 3, and 7 screenshots into `docs/plans/media/p6-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of pasting a token, redacting it, and exporting. Save it as `docs/plans/media/p6-review.mp4`.
+- [ ] Copy lane 2, 3, and 7 screenshots into `/tmp/codeimage-verification/p6-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of pasting a token, redacting it, and exporting. Save it as `/tmp/codeimage-verification/p6-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -509,8 +509,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 4, and 7 screenshots into `docs/plans/media/p7-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of picking a target, adding a signature, and exporting. Save it as `docs/plans/media/p7-review.mp4`.
+- [ ] Copy lane 2, 4, and 7 screenshots into `/tmp/codeimage-verification/p7-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of picking a target, adding a signature, and exporting. Save it as `/tmp/codeimage-verification/p7-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -567,8 +567,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 3, and 7 screenshots into `docs/plans/media/p8-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of exporting four tabs and opening the zip. Save it as `docs/plans/media/p8-review.mp4`.
+- [ ] Copy lane 2, 3, and 7 screenshots into `/tmp/codeimage-verification/p8-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of exporting four tabs and opening the zip. Save it as `/tmp/codeimage-verification/p8-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**
@@ -624,8 +624,8 @@ Each live lane runs in its own git worktree at the PR head. There is no `control
 
 **Review gate.** The operator reviews before merge.
 
-- [ ] Copy lane 2, 3, and 6 screenshots into `docs/plans/media/p9-review-<slug>.png`.
-- [ ] Record a 30 to 60 second video of copying alt text and pasting it into an X post draft. Save it as `docs/plans/media/p9-review.mp4`.
+- [ ] Copy lane 2, 3, and 6 screenshots into `/tmp/codeimage-verification/p9-review-<slug>.png`.
+- [ ] Record a 30 to 60 second video of copying alt text and pasting it into an X post draft. Save it as `/tmp/codeimage-verification/p9-review.mp4`.
 - [ ] Post the screenshots and the video in chat. Stop at merge-ready. Wait for the operator's click.
 
 **Merge.**

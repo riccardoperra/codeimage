@@ -97,6 +97,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
       >
         <div
           class={styles.container}
+          data-watermark-frame
           style={assignInlineVars({
             overflow: 'hidden',
             [styles.frameVars.radius]: `${frame.radius}px`,
@@ -121,6 +122,7 @@ export function PreviewFrame(props: VoidProps<PreviewFrameProps>) {
         >
           <div
             class={styles.previewOverlay}
+            data-watermark-background
             style={assignInlineVars({
               [styles.frameVars.backgroundColor]: assetsStore.isAssetUrl(
                 frame.background,
