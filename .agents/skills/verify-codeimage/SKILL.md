@@ -20,13 +20,13 @@ pnpm exec playwright install chromium
 node .agents/skills/verify-codeimage/scripts/verify.mjs
 ```
 
-The executable helper starts the same Vite app as `pnpm dev`, bound to `127.0.0.1:4437` with strict port ownership, and runs launch → doctor → editor/export → cleanup. Override with `VERIFY_PORT=4438`; select a persistent evidence directory with `ARTIFACT_DIR=/tmp/codeimage-proof`. Use a new directory for each run.
+The executable helper starts the same Vite app as `pnpm dev`, bound to `127.0.0.1:4437` with strict port ownership, and runs launch → doctor → editor/export → cleanup. Override with `VERIFY_PORT=4438`; use `VERIFY_BROWSER_CHANNEL=chrome` for installed Google Chrome (default: Playwright Chromium); select a persistent evidence directory with `ARTIFACT_DIR=/tmp/codeimage-proof`. Use a new directory for each run.
 
 It sets `VITE_ENABLE_MSW=true`, `VITE_MOCK_AUTH=true`, `VITE_API_BASE_URL=''`, and preset limits in the child environment. It creates an empty browser context (English, 1440×1000), with no user storage or project seed. No DB migration or Docker is needed for this supported mock boundary. Auth0 and project HTTP traffic use the app's existing development adapters; real authentication, PostgreSQL persistence and production API behavior remain unverified. No private credentials are needed.
 
 Ready means MSW has enabled AND the actual editable CodeMirror surface is visible, fonts loaded, and the welcome dialog dismissed. An HTTP 200 alone is insufficient. The checked-in worker is older than installed MSW; the helper serves the installed `msw/mockServiceWorker.js` from a temporary public directory containing copies of the app assets. This scaffolding never edits `public/`. The helper uses Vite’s createServer API with the repository configuration to override only publicDir, host and port.
 
-Two runs can coexist on distinct ports and browser contexts. Never drive the user's existing browser profile or occupied port. Workspace dependencies and library builds are shared: finish setup before concurrent runs; do not run competing builds.
+Two runs can coexist on distinct ports and browser contexts. Each helper run uses its own temporary Vite dependency cache, so another checkout cannot invalidate its optimized dependencies mid-journey. Never drive the user's existing browser profile or occupied port. Workspace dependencies and library builds are shared: finish setup before concurrent runs; do not run competing builds.
 
 ## Doctor
 
