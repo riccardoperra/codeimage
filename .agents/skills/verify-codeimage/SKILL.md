@@ -61,3 +61,7 @@ The feature map follows this checkout, not proposals or unmerged branches. Sourc
 ## Legacy check migration
 
 Read [the retirement plan](references/legacy-checks.md) before deleting another verification script. Functional journeys do not replace renderer parity, geometry matrices, locale matrices or performance measurements. The extended `projects` journey includes the unique MSW persistence checks required to retire its old smoke script.
+
+## Specialist checks and stored artifacts
+
+Read [specialist checks](references/specialist-checks.md) for retained renderer, line-mark and locale commands. The skill stores reproducible procedures, not the screenshots and logs from earlier runs. Keep reviewed test inputs beside their consuming scripts. Store per-run evidence outside the checkout; Git history retains retired reports.
