@@ -1,4 +1,6 @@
 import {getEditorStore} from '@codeimage/store/editor';
+import {getAssetsStore} from '@codeimage/store/assets/assets';
+import {AssetsImage} from '@codeimage/store/assets/AssetsImage';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {
   useFrameCodeStyle,
@@ -26,7 +28,7 @@ import {
 } from '../../../core/rasterize/takumi';
 import {mp4Config, type VideoFps} from '../../../core/video/encode';
 import type {AnimationExport} from '../../../core/video/protocol';
-import {createSignal, getOwner, runWithOwner} from 'solid-js';
+import {createSignal, getOwner, runWithOwner, Show} from 'solid-js';
 import {render} from 'solid-js/web';
 
 const yieldToEditor = () =>
@@ -37,7 +39,11 @@ export function animationSnapshot() {
   const frame = getFrameState();
   const style = useFrameCodeStyle();
   const owner = getOwner();
-  const measure = async (fps: VideoFps, output?: Size) => {
+  const measure = async (
+    fps: VideoFps,
+    output: Size | undefined,
+    scale: number,
+  ) => {
     const settings: AnimationSettings = structuredClone({
       ...animation.settings(),
       fps,
@@ -72,7 +78,7 @@ export function animationSnapshot() {
     };
     const font = editor.computed.selectedFont();
     const target = output ?? frame.exportTarget();
-    const pixelRatio = frame.exportPixelRatio(1);
+    const pixelRatio = output ? 1 : frame.exportPixelRatio(scale);
     const measured = await measurePreview(
       owner,
       tabs,
@@ -99,8 +105,12 @@ export function animationSnapshot() {
       config,
     };
   };
-  const describe = async (fps: VideoFps, output?: Size) => {
-    const {config, timeline} = await measure(fps, output);
+  const describe = async (
+    fps: VideoFps,
+    output: Size | undefined,
+    scale: number,
+  ) => {
+    const {config, timeline} = await measure(fps, output, scale);
     const ms = timeline.scenes.reduce(
       (sum, scene) => sum + scene.durationMs,
       0,
@@ -109,7 +119,9 @@ export function animationSnapshot() {
   };
   const capture = async (
     fps: VideoFps,
-    output?: Size,
+    output: Size | undefined,
+    scale: number,
+    matte: string,
   ): Promise<AnimationExport> => {
     const {
       settings,
@@ -122,7 +134,13 @@ export function animationSnapshot() {
       languages,
       contentSize,
       config,
-    } = await measure(fps, output);
+    } = await measure(fps, output, scale);
+    const assets = getAssetsStore();
+    const background = frame.store.background;
+    const backgroundImage = assets.isAssetUrl(background)
+      ? background
+      : undefined;
+    const visibleBackground = frame.store.visible && frame.store.opacity > 0;
     const host = document.createElement('div');
     host.style.cssText =
       'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-9999';
@@ -163,8 +181,34 @@ export function animationSnapshot() {
               overflow: 'hidden',
               width: `${config.width / pixelRatio}px`,
               height: `${config.height / pixelRatio}px`,
+              'background-color': matte,
             }}
           >
+            <Show when={visibleBackground}>
+              <div
+                data-video-background
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: backgroundImage
+                    ? undefined
+                    : (background ?? undefined),
+                }}
+              >
+                <Show when={backgroundImage}>
+                  <AssetsImage
+                    assetId={backgroundImage!}
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      'object-fit': 'cover',
+                    }}
+                  />
+                </Show>
+              </div>
+            </Show>
             <FrameView
               ref={element => frames.push(element)}
               targetSize={output}

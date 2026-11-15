@@ -15,6 +15,10 @@ export const animationLocale = {
           export:
             'Rendering or encoding failed. Check your connection for fonts and renderer files, then retry.',
         },
+        scale: 'Scale',
+        background: 'Solid background',
+        backgroundHint:
+          'MP4 has no transparency. This colour fills the canvas.',
         format: 'Format',
         fps: 'Frame rate',
         outputSize: 'Output size',
@@ -99,6 +103,10 @@ export const animationLocale = {
           export:
             'Rendering o codifica non riusciti. Controlla la connessione per i caratteri e il renderer, poi riprova.',
         },
+        scale: 'Scala',
+        background: 'Sfondo pieno',
+        backgroundHint:
+          'MP4 non supporta la trasparenza. Questo colore riempie il video.',
         format: 'Formato',
         fps: 'Fotogrammi al secondo',
         outputSize: 'Dimensioni video',
@@ -184,6 +192,10 @@ export const animationLocale = {
           export:
             'Rendering oder Kodierung fehlgeschlagen. Prüfe die Verbindung für Schriftarten und Renderer-Dateien und versuche es erneut.',
         },
+        scale: 'Skalierung',
+        background: 'Einfarbiger Hintergrund',
+        backgroundHint:
+          'MP4 unterstützt keine Transparenz. Diese Farbe füllt die Videofläche.',
         format: 'Format',
         fps: 'Bildrate',
         outputSize: 'Videoabmessungen',
@@ -269,6 +281,10 @@ export const animationLocale = {
           export:
             'Error de renderizado o codificación. Comprueba la conexión para las fuentes y el renderizador, y reintenta.',
         },
+        scale: 'Escala',
+        background: 'Fondo sólido',
+        backgroundHint:
+          'MP4 no admite transparencia. Este color rellena el vídeo.',
         format: 'Formato',
         fps: 'Fotogramas por segundo',
         outputSize: 'Dimensiones del vídeo',

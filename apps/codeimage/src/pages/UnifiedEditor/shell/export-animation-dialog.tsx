@@ -1,5 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getEditorStore} from '@codeimage/store/editor';
+import {getFrameState} from '@codeimage/store/editor/frame';
+import {useFrameCodeStyle} from '../../../components/Frame/PreviewFrame';
 import {
   Button,
   DialogPanelContent,
@@ -7,6 +9,7 @@ import {
   Select,
   RadioList,
   RadioListItem,
+  TextField,
 } from '@codeui/kit';
 import {Dialog} from '@kobalte/core/dialog';
 import {Progress} from '@kobalte/core/progress';
@@ -21,9 +24,15 @@ import * as styles from './export.css';
 export function createAnimationExporter() {
   const {animation} = getEditorStore();
   const job = useExportAnimation();
+  const frame = getFrameState();
+  const style = useFrameCodeStyle();
   const snapshot = animationSnapshot();
   const [open, setOpen] = createSignal(false);
   const [fps, setFps] = createSignal<VideoFps>(30);
+  const [scale, setScale] = createSignal<1 | 2 | 3>(2);
+  const [matte, setMatte] = createSignal<string>();
+  const solidBackground = () =>
+    matte() ?? style.theme()!.properties.terminal.main;
   const [size, setSize] = createSignal<'current' | '1080p'>('current');
   const [summary, setSummary] =
     createSignal<Awaited<ReturnType<typeof snapshot.describe>>>();
@@ -35,7 +44,7 @@ export function createAnimationExporter() {
     const frameRate = fps();
     const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
     await job.check(async () => {
-      const value = await snapshot.describe(frameRate, output);
+      const value = await snapshot.describe(frameRate, output, scale());
       if (current === generation) setSummary(value);
       return value.config;
     });
@@ -67,11 +76,19 @@ export function createAnimationExporter() {
     setSize(value);
     void refresh();
   };
+  const changeScale = (value: 1 | 2 | 3 | null) => {
+    if (!value) return;
+    setScale(value);
+    void refresh();
+  };
+  const changeMatte = (value: string) => setMatte(value);
   const start = () => {
     // Read again after the secrets review, including any redaction it made.
     const frameRate = fps();
     const output = size() === '1080p' ? {width: 1920, height: 1080} : undefined;
-    void job.start(() => snapshot.capture(frameRate, output));
+    void job.start(() =>
+      snapshot.capture(frameRate, output, scale(), solidBackground()),
+    );
   };
   return {
     job,
@@ -80,6 +97,12 @@ export function createAnimationExporter() {
     close,
     fps,
     size,
+    scale,
+    changeScale,
+    matte: solidBackground,
+    changeMatte,
+    needsMatte: () => !frame.store.visible || frame.store.opacity === 0,
+    scalable: () => size() === 'current' && !frame.exportTarget(),
     changeFps,
     changeSize,
     summary,
@@ -166,6 +189,11 @@ export function AnimationExportDialog(props: {
   const sizeValue = (value: Accessor<'current' | '1080p'>) =>
     sizeLabel(value());
   const retry = () => void exporter().retry();
+  const scaleLabel = (value: 1 | 2 | 3) => `${number(value)}×`;
+  const scaleValue = (value: Accessor<1 | 2 | 3>) => scaleLabel(value());
+  const colorInput = (input: HTMLInputElement) => {
+    input.type = 'color';
+  };
   const keepOpen = (event: Event) => event.preventDefault();
   const closeChanged = (open: boolean) => {
     if (!open) exporter().close();
@@ -258,6 +286,34 @@ export function AnimationExportDialog(props: {
                     disallowEmptySelection
                   />
                 </div>
+                <Show when={exporter().scalable()}>
+                  <div class={styles.videoRow}>
+                    <span>{t('animation.export.scale')}</span>
+                    <Select<1 | 2 | 3>
+                      size="sm"
+                      aria-label={t('animation.export.scale')}
+                      options={[1, 2, 3]}
+                      value={exporter().scale()}
+                      onChange={exporter().changeScale}
+                      itemLabel={scaleLabel}
+                      optionTextValue={scaleLabel}
+                      valueComponent={scaleValue}
+                      disabled={exporter().busy()}
+                      disallowEmptySelection
+                    />
+                  </div>
+                </Show>
+                <Show when={exporter().needsMatte()}>
+                  <TextField
+                    size="sm"
+                    label={t('animation.export.background')}
+                    description={t('animation.export.backgroundHint')}
+                    ref={colorInput}
+                    value={exporter().matte()}
+                    onChange={exporter().changeMatte}
+                    disabled={exporter().busy()}
+                  />
+                </Show>
                 <Show when={summary()}>
                   <div class={styles.hint}>{summaryLabel()}</div>
                 </Show>
