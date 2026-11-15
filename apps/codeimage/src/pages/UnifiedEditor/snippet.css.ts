@@ -29,4 +29,10 @@ export const notice = style({
 
 globalStyle(`${notice} button`, {minHeight: '36px', flexShrink: 0});
 
-export const canvas = style({position: 'relative'});
+export const canvas = style({
+  selectors: {
+    "[data-page-state]:not([data-page-state='local']) &": {
+      position: 'relative',
+    },
+  },
+});
