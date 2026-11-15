@@ -19,7 +19,12 @@ function fakeApi(initial: Availability) {
         });
         finish = ok =>
           ok
-            ? resolve({prompt: async () => '', destroy() {}})
+            ? resolve({
+                promptStreaming: () => new ReadableStream(),
+                append: async () => {},
+                clone: () => Promise.reject(new Error('not cloned here')),
+                destroy() {},
+              })
             : reject(new Error('Not enough disk space'));
       }),
   );
@@ -102,9 +107,6 @@ describe('createLanguageModel', () => {
     fake.setAvailability('unavailable');
     await model.download();
     expect(model.state()).toEqual({kind: 'unavailable'});
-    await expect(
-      model.openSession('system', new AbortController().signal),
-    ).rejects.toThrow();
     expect(fake.create).not.toHaveBeenCalled();
   });
 

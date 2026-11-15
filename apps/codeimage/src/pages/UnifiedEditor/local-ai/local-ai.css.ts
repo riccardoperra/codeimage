@@ -1,103 +1,144 @@
 import {themeVars} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {createVar, style} from '@vanilla-extract/css';
 
 const c = themeVars.dynamicColors;
+const ease = 'cubic-bezier(0.23, 1, 0.32, 1)';
+const reduce = '(prefers-reduced-motion: reduce)';
 
-export const backdrop = style({
-  position: 'fixed',
-  inset: 0,
-  zIndex: 109,
-  background: c.dialog.overlayBackgroundColor,
-});
+/** The height of the action bar the prompt bar takes the place of. */
+export const barHeight = createVar();
 
-export const content = style({
-  position: 'fixed',
-  left: '50%',
-  top: '50%',
-  transform: 'translate(-50%, -50%)',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: themeVars.spacing['4'],
-  boxSizing: 'border-box',
-  width: 'min(560px, calc(100vw - 32px))',
-  maxHeight: 'calc(100dvh - 32px)',
-  overflowY: 'auto',
-  zIndex: 110,
-  padding: themeVars.spacing['5'],
-  borderRadius: themeVars.borderRadius.xl,
-  background: c.panel.background,
-  color: c.baseText,
-  boxShadow: c.dialog.panelShadow,
-});
+const enter = {
+  transition: `opacity 200ms ${ease}, transform 200ms ${ease}`,
+  '@starting-style': {opacity: 0, transform: 'translateY(6px)'},
+  '@media': {
+    [reduce]: {
+      transitionProperty: 'opacity',
+      '@starting-style': {transform: 'none'},
+    },
+  },
+} as const;
 
-export const header = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-});
-
-export const title = style({
-  margin: 0,
-  fontSize: themeVars.fontSize.base,
-  fontWeight: themeVars.fontWeight.semibold,
-});
-
-export const intro = style({
-  margin: 0,
-  color: c.descriptionTextColor,
-  fontSize: themeVars.fontSize.sm,
-});
-
-export const form = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: themeVars.spacing['3'],
-});
-
-export const request = style({minHeight: '112px'});
-
-export const actions = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: themeVars.spacing['3'],
-});
-
-export const status = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: themeVars.spacing['2'],
+// As tall as the action bar, so the canvas keeps its size. The bar grows
+// upward from it, over the canvas, with the todo list above.
+export const slot = style({
+  vars: {[barHeight]: '48px'},
+  position: 'relative',
+  flex: '0 1 560px',
   minWidth: 0,
-  margin: 0,
-  color: c.descriptionTextColor,
-  fontSize: themeVars.fontSize.sm,
+  height: barHeight,
+  pointerEvents: 'auto',
 });
 
-export const error = style({color: c.button.danger.backgroundColor});
-
-// The steps as one island, as the settings draw their rows.
-export const steps = style({
+export const stack = style({
+  position: 'absolute',
+  right: 0,
+  bottom: 0,
+  left: 0,
+  zIndex: 3,
   display: 'flex',
   flexDirection: 'column',
-  margin: 0,
-  padding: '6px 0',
-  listStyle: 'none',
-  borderRadius: '16px',
-  background: c.background,
-  selectors: {'&:empty': {display: 'none'}},
+  gap: '8px',
 });
 
-export const step = style({
+/** The island of the canvas toolbar, with the field in place of its buttons. */
+export const bar = style({
+  ...enter,
   display: 'flex',
-  alignItems: 'baseline',
-  gap: themeVars.spacing['3'],
-  padding: `${themeVars.spacing['2']} ${themeVars.spacing['4']}`,
-  fontSize: themeVars.fontSize.sm,
-  selectors: {'&[data-ok=false]': {color: c.button.danger.backgroundColor}},
+  alignItems: 'flex-end',
+  gap: '4px',
+  boxSizing: 'border-box',
+  minHeight: barHeight,
+  padding: '6px',
+  borderRadius: '18px',
+  background: c.panel.background,
+  color: c.panel.textColor,
 });
 
-export const tool = style({
-  flex: 'none',
-  fontFamily: 'ui-monospace, monospace',
-  fontSize: themeVars.fontSize.xs,
+export const field = style({flex: 1, minWidth: 0});
+
+export const input = style({
+  boxSizing: 'border-box',
+  minHeight: `calc(${barHeight} - 12px)`,
+  maxHeight: '132px',
+  padding: '8px 12px',
+  borderRadius: '12px',
+  fontSize: '14px',
+  lineHeight: '20px',
+  resize: 'none',
+  overflowY: 'auto',
 });
+
+/** The run, as the agent activity card draws its calls. */
+export const panel = style({
+  ...enter,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+  boxSizing: 'border-box',
+  maxHeight: 'min(360px, 50dvh)',
+  overflowY: 'auto',
+  overscrollBehavior: 'contain',
+  padding: '10px 10px 12px',
+  borderRadius: '18px',
+  color: c.baseText,
+  background: c.dialog.panelBackgroundColor,
+  boxShadow: c.dialog.panelShadow,
+  fontSize: '13px',
+  scrollbarWidth: 'thin',
+});
+
+export const asked = style({
+  margin: 0,
+  padding: '0 6px',
+  overflow: 'hidden',
+  color: c.descriptionTextColor,
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+});
+
+export const thinking = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+  margin: 0,
+  padding: '6px 8px',
+  fontWeight: themeVars.fontWeight.medium,
+});
+
+export const list = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2px',
+  margin: 0,
+  padding: 0,
+  listStyle: 'none',
+});
+
+export const outcome = style({
+  margin: 0,
+  padding: '0 6px',
+  color: c.descriptionTextColor,
+  fontSize: '12px',
+  selectors: {
+    '&:empty': {display: 'none'},
+    '&[data-failed]': {color: c.button.danger.backgroundColor},
+  },
+});
+
+/** What the model wrote between its calls. */
+export const note = style({
+  padding: '4px 8px',
+  color: c.descriptionTextColor,
+  whiteSpace: 'pre-wrap',
+});
+
+/** The model's last words, under its calls. */
+export const answer = style({
+  margin: 0,
+  padding: '6px 8px 2px',
+  whiteSpace: 'pre-wrap',
+  overflowWrap: 'anywhere',
+});
+
+export const panelAction = style({alignSelf: 'flex-start'});

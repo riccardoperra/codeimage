@@ -1,11 +1,5 @@
 import {createSignal} from 'solid-js';
-
-/** What Chrome's Prompt API says about its on-device model. */
-type Availability =
-  | 'unavailable'
-  | 'downloadable'
-  | 'downloading'
-  | 'available';
+import type {Availability} from './model';
 
 /** Where the on-device model stands on this device, as the page shows it. */
 export type ModelState =
@@ -17,11 +11,17 @@ export type ModelState =
   | {readonly kind: 'available'}
   | {readonly kind: 'failed'; readonly error: string};
 
-interface Session {
-  prompt(
-    input: string,
-    options?: {responseConstraint?: object; signal?: AbortSignal},
-  ): Promise<string>;
+/**
+ * A Prompt API session. With tool calls expected, the stream yields
+ * `{type, value}` parts.
+ */
+export interface Session {
+  promptStreaming(
+    input: unknown,
+    options?: {signal?: AbortSignal},
+  ): ReadableStream<unknown>;
+  append(input: unknown, options?: {signal?: AbortSignal}): Promise<void>;
+  clone(options?: {signal?: AbortSignal}): Promise<Session>;
   destroy(): void;
 }
 
@@ -36,6 +36,7 @@ interface Monitor {
 export interface LanguageModelApi {
   availability(options?: object): Promise<Availability>;
   create(options: {
+    tools?: readonly object[];
     expectedInputs?: readonly object[];
     expectedOutputs?: readonly object[];
     initialPrompts?: readonly {role: 'system'; content: string}[];
@@ -147,25 +148,6 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
     }
   }
 
-  /** Opens a session with the given instructions, once the model is available. */
-  async function openSession(
-    system: string,
-    signal: AbortSignal,
-  ): Promise<Session> {
-    if (!api) throw new Error('This browser has no on-device model.');
-    const now = await check();
-    apply(now);
-    if (now !== 'available') {
-      throw new Error('The on-device model is not available.');
-    }
-    log('create() a session');
-    return api.create({
-      ...LANGUAGES,
-      initialPrompts: [{role: 'system', content: system}],
-      signal,
-    });
-  }
-
   if (!api) log('this browser has no LanguageModel');
   void refresh();
   return {
@@ -174,11 +156,13 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
     requesting: creating,
     refresh,
     download,
-    openSession,
   };
 }
 
-/** Chrome's on-device model, shared by Settings and the local AI dialog. */
-export const languageModel = createLanguageModel(
-  (globalThis as {LanguageModel?: LanguageModelApi}).LanguageModel,
-);
+/** The Prompt API, when this browser has it. */
+export const chromeLanguageModel = (
+  globalThis as {LanguageModel?: LanguageModelApi}
+).LanguageModel;
+
+/** Chrome's on-device model, shared by Settings and the local AI bar. */
+export const languageModel = createLanguageModel(chromeLanguageModel);

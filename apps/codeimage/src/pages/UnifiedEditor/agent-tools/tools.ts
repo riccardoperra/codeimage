@@ -126,7 +126,7 @@ function exportMessage(outcome: ExportOutcome): ToolResult {
 }
 
 /** The settings and tabs as an agent reads them. */
-export function createEditorReader(listed: ListedModel) {
+function createEditorReader(listed: ListedModel) {
   const editors = getRootEditorStore();
   const controls = listed.sections
     .flatMap(section => section.controls)

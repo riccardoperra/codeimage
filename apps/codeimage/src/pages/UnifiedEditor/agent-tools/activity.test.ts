@@ -131,7 +131,7 @@ describe('withActivity', () => {
           throw new Error('boom');
         }),
       ],
-      'local-ai',
+      'webmcp',
       words,
     );
     await expect(wrapped.execute({})).rejects.toThrow('boom');

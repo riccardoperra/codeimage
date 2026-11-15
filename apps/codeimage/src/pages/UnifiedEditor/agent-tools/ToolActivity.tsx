@@ -23,7 +23,6 @@ const EXIT_MS = 200;
 const SOURCE_KEY = {
   webmcp: 'webmcp',
   devtools: 'devtools',
-  'local-ai': 'localAi',
 } as const satisfies Record<ToolSource, string>;
 
 type TitledTool = keyof typeof agentActivity.en.agentActivity.tool;
@@ -48,6 +47,71 @@ export function useSummaryWords(): SummaryWords {
             ? t('agentActivity.delivery.newTab')
             : delivery,
   };
+}
+
+/**
+ * One tool call: its status, its title in the page's language, the tool's own
+ * name and what it was called with.
+ */
+export function ToolRow(props: {
+  tool: string;
+  summary: string;
+  status: ToolCall['status'];
+  error?: string;
+  readOnly?: boolean;
+}) {
+  const [t] = useI18n<AppLocaleEntries>();
+  return (
+    <li
+      class={styles.row}
+      data-status={props.status}
+      data-tool={props.tool}
+      data-read-only={props.readOnly ? '' : undefined}
+    >
+      <span
+        class={styles.status}
+        data-status={props.status}
+        role="img"
+        aria-label={t(`agentActivity.status.${props.status}`)}
+      >
+        <Switch>
+          <Match when={props.status === 'running'}>
+            <span class={styles.spinner} />
+          </Match>
+          <Match when={props.status === 'done'}>
+            <icons.CheckIcon class={styles.icon} />
+          </Match>
+          <Match when={props.status === 'failed'}>
+            <icons.CloseIcon class={styles.icon} />
+          </Match>
+        </Switch>
+      </span>
+      <span class={styles.body}>
+        <span class={styles.titleLine}>
+          <span class={styles.title}>
+            {titled(props.tool)
+              ? t(`agentActivity.tool.${props.tool}`)
+              : props.tool}
+          </span>
+          <code class={styles.name} data-tool-name>
+            {props.tool}
+          </code>
+        </span>
+        <Show when={props.summary}>
+          <span class={styles.summary} data-summary>
+            {props.summary}
+          </span>
+        </Show>
+        <Show when={props.error}>
+          {error => (
+            <span class={styles.error} data-error title={error()}>
+              {error()}
+            </span>
+          )}
+        </Show>
+      </span>
+    </li>
+  );
 }
 
 /**
@@ -151,8 +215,6 @@ export function ToolActivity() {
   onCleanup(() => clearTimeout(exit));
 
   const call = (id: number) => activity.calls().find(call => call.id === id);
-  const title = (tool: string) =>
-    titled(tool) ? t(`agentActivity.tool.${tool}`) : tool;
   const failure = (call: ToolCall) =>
     call.status === 'failed' ? call.error : undefined;
 
@@ -199,57 +261,13 @@ export function ToolActivity() {
               {id => (
                 <Show when={call(id)}>
                   {entry => (
-                    <li
-                      class={styles.row}
-                      data-status={entry().status}
-                      data-tool={entry().tool}
-                      data-read-only={entry().readOnly ? '' : undefined}
-                    >
-                      <span
-                        class={styles.status}
-                        data-status={entry().status}
-                        role="img"
-                        aria-label={t(`agentActivity.status.${entry().status}`)}
-                      >
-                        <Switch>
-                          <Match when={entry().status === 'running'}>
-                            <span class={styles.spinner} />
-                          </Match>
-                          <Match when={entry().status === 'done'}>
-                            <icons.CheckIcon class={styles.icon} />
-                          </Match>
-                          <Match when={entry().status === 'failed'}>
-                            <icons.CloseIcon class={styles.icon} />
-                          </Match>
-                        </Switch>
-                      </span>
-                      <span class={styles.body}>
-                        <span class={styles.titleLine}>
-                          <span class={styles.title}>
-                            {title(entry().tool)}
-                          </span>
-                          <code class={styles.name} data-tool-name>
-                            {entry().tool}
-                          </code>
-                        </span>
-                        <Show when={entry().summary}>
-                          <span class={styles.summary} data-summary>
-                            {entry().summary}
-                          </span>
-                        </Show>
-                        <Show when={failure(entry())}>
-                          {error => (
-                            <span
-                              class={styles.error}
-                              data-error
-                              title={error()}
-                            >
-                              {error()}
-                            </span>
-                          )}
-                        </Show>
-                      </span>
-                    </li>
+                    <ToolRow
+                      tool={entry().tool}
+                      summary={entry().summary}
+                      status={entry().status}
+                      error={failure(entry())}
+                      readOnly={entry().readOnly}
+                    />
                   )}
                 </Show>
               )}

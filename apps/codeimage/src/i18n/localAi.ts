@@ -2,22 +2,25 @@ export const localAi = {
   en: {
     localAi: {
       command: 'Ask local AI…',
+      ask: 'Ask AI',
       title: 'Local AI',
-      intro:
-        "Describe the change. Chrome's on-device model plans it and the editor runs each step, without leaving your browser.",
       request: 'Request',
-      placeholder:
-        'Add a tab with ```print("hi")```, use Dracula, padding 32, export PNG 2x',
-      run: 'Run',
-      thinking: 'Planning…',
-      running: 'Running the steps…',
-      noSteps: 'The model found nothing to do. Try saying it another way.',
+      placeholder: 'Use Dracula, padding 64, export PNG 2x',
+      send: 'Send',
+      thinking: 'Thinking…',
+      turnLimit:
+        'Stopped after {{count}} turns without an answer. Try a smaller request.',
+      cannotStart: {
+        resources:
+          'Chrome could not start the on-device model. Check free disk space and chrome://on-device-internals.',
+        unsupported:
+          "Chrome's on-device model can't run tools in this browser. The console has the details.",
+      },
       failed: 'The model could not answer. {{message}}',
       steps: 'Steps',
-      done: 'Done',
       experiment: 'Local AI',
       experimentHint:
-        "Adds Ask local AI to the command menu: Chrome's on-device model turns a request into editor changes.",
+        "Adds Ask AI under the canvas and in the command menu, on a computer: Chrome's on-device model makes the change with the editor's tools.",
       experimentSwitch: 'Use local AI',
       model: 'On-device model',
       modelReady: 'Ready on this device.',
@@ -69,23 +72,25 @@ export const localAi = {
   it: {
     localAi: {
       command: "Chiedi all'AI locale…",
+      ask: "Chiedi all'AI",
       title: 'AI locale',
-      intro:
-        "Descrivi la modifica. Il modello on-device di Chrome la pianifica e l'editor esegue ogni passo, senza uscire dal browser.",
       request: 'Richiesta',
-      placeholder:
-        'Aggiungi una tab con ```print("hi")```, usa Dracula, padding 32, esporta PNG 2x',
-      run: 'Esegui',
-      thinking: 'Pianificazione…',
-      running: 'Esecuzione dei passi…',
-      noSteps:
-        'Il modello non ha trovato nulla da fare. Prova a dirlo in un altro modo.',
+      placeholder: 'Usa Dracula, padding 64, esporta PNG 2x',
+      send: 'Invia',
+      thinking: 'Ragionamento…',
+      turnLimit:
+        'Interrotto dopo {{count}} turni senza risposta. Prova una richiesta più piccola.',
+      cannotStart: {
+        resources:
+          'Chrome non è riuscito ad avviare il modello on-device. Controlla lo spazio libero su disco e chrome://on-device-internals.',
+        unsupported:
+          'Il modello on-device di Chrome non può usare strumenti in questo browser. La console ha i dettagli.',
+      },
       failed: 'Il modello non ha risposto. {{message}}',
       steps: 'Passi',
-      done: 'Fatto',
       experiment: 'AI locale',
       experimentHint:
-        "Aggiunge Chiedi all'AI locale al menu dei comandi: il modello on-device di Chrome trasforma una richiesta in modifiche all'editor.",
+        "Aggiunge Chiedi all'AI sotto il canvas e nel menu dei comandi, su computer: il modello on-device di Chrome fa la modifica con gli strumenti dell'editor.",
       experimentSwitch: "Usa l'AI locale",
       model: 'Modello on-device',
       modelReady: 'Pronto su questo dispositivo.',
@@ -144,23 +149,25 @@ export const localAi = {
   de: {
     localAi: {
       command: 'Lokale KI fragen…',
+      ask: 'KI fragen',
       title: 'Lokale KI',
-      intro:
-        'Beschreibe die Änderung. Das On-Device-Modell von Chrome plant sie und der Editor führt jeden Schritt aus, ohne deinen Browser zu verlassen.',
       request: 'Anfrage',
-      placeholder:
-        'Füge einen Tab mit ```print("hi")``` hinzu, nutze Dracula, Abstand 32, exportiere PNG 2x',
-      run: 'Ausführen',
-      thinking: 'Planung…',
-      running: 'Schritte werden ausgeführt…',
-      noSteps:
-        'Das Modell hat nichts zu tun gefunden. Versuche es anders zu formulieren.',
+      placeholder: 'Nutze Dracula, Abstand 64, exportiere PNG 2x',
+      send: 'Senden',
+      thinking: 'Denkt nach…',
+      turnLimit:
+        'Nach {{count}} Runden ohne Antwort abgebrochen. Versuche eine kleinere Anfrage.',
+      cannotStart: {
+        resources:
+          'Chrome konnte das On-Device-Modell nicht starten. Prüfe den freien Speicherplatz und chrome://on-device-internals.',
+        unsupported:
+          'Das On-Device-Modell von Chrome kann in diesem Browser keine Werkzeuge nutzen. Details stehen in der Konsole.',
+      },
       failed: 'Das Modell konnte nicht antworten. {{message}}',
       steps: 'Schritte',
-      done: 'Erledigt',
       experiment: 'Lokale KI',
       experimentHint:
-        'Fügt Lokale KI fragen zum Befehlsmenü hinzu: Das On-Device-Modell von Chrome setzt eine Anfrage in Änderungen am Editor um.',
+        'Fügt KI fragen unter der Leinwand und im Befehlsmenü hinzu, auf dem Computer: Das On-Device-Modell von Chrome nimmt die Änderung mit den Werkzeugen des Editors vor.',
       experimentSwitch: 'Lokale KI verwenden',
       model: 'On-Device-Modell',
       modelReady: 'Bereit auf diesem Gerät.',
@@ -218,23 +225,25 @@ export const localAi = {
   es: {
     localAi: {
       command: 'Preguntar a la IA local…',
+      ask: 'Preguntar a la IA',
       title: 'IA local',
-      intro:
-        'Describe el cambio. El modelo en el dispositivo de Chrome lo planifica y el editor ejecuta cada paso, sin salir de tu navegador.',
       request: 'Petición',
-      placeholder:
-        'Añade una pestaña con ```print("hi")```, usa Dracula, espaciado 32, exporta PNG 2x',
-      run: 'Ejecutar',
-      thinking: 'Planificando…',
-      running: 'Ejecutando los pasos…',
-      noSteps:
-        'El modelo no encontró nada que hacer. Prueba a decirlo de otra forma.',
+      placeholder: 'Usa Dracula, espaciado 64, exporta PNG 2x',
+      send: 'Enviar',
+      thinking: 'Pensando…',
+      turnLimit:
+        'Detenido tras {{count}} turnos sin respuesta. Prueba con una petición más pequeña.',
+      cannotStart: {
+        resources:
+          'Chrome no pudo iniciar el modelo en el dispositivo. Revisa el espacio libre en disco y chrome://on-device-internals.',
+        unsupported:
+          'El modelo en el dispositivo de Chrome no puede usar herramientas en este navegador. La consola tiene los detalles.',
+      },
       failed: 'El modelo no pudo responder. {{message}}',
       steps: 'Pasos',
-      done: 'Hecho',
       experiment: 'IA local',
       experimentHint:
-        'Añade Preguntar a la IA local al menú de comandos: el modelo en el dispositivo de Chrome convierte una petición en cambios del editor.',
+        'Añade Preguntar a la IA bajo el lienzo y en el menú de comandos, en un ordenador: el modelo en el dispositivo de Chrome hace el cambio con las herramientas del editor.',
       experimentSwitch: 'Usar la IA local',
       model: 'Modelo en el dispositivo',
       modelReady: 'Listo en este dispositivo.',

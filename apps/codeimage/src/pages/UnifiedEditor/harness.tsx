@@ -11,7 +11,7 @@ import {createAgentTools} from './agent-tools/tools';
 import {CommandMenu} from './command-menu/CommandMenu';
 import {createListedModel} from './command-menu/listed-model';
 import {EditorHost} from './EditorHost';
-import {LocalAi} from './local-ai/LocalAi';
+import {LocalAi, localAi} from './local-ai/LocalAi';
 import {createEditorControlsModel} from './model';
 import {controlOverlay} from './controls/ControlOverlay';
 import {resolveEditorPageState} from './page-state';
@@ -41,6 +41,7 @@ function Editor() {
       () => {
         commandMenu.close();
         controlOverlay.close();
+        localAi.close();
         model.endPreview();
       },
       {defer: true},
@@ -112,7 +113,11 @@ function Editor() {
                   pageState={pageState}
                 />
                 <AgentTools tools={tools} />
-                <LocalAi tools={tools} model={model} listed={listed} />
+                <LocalAi
+                  tools={tools}
+                  compact={stage.compact}
+                  pageState={pageState}
+                />
               </>
             );
           }}
@@ -121,7 +126,11 @@ function Editor() {
       {/* Outside the layout, so it stays open while the layout under it changes. */}
       <SettingsDialog model={model} />
       <ToolActivity />
-      <WhatsNewHost quiet={() => !settings.isOpen() && !commandMenu.isOpen()} />
+      <WhatsNewHost
+        quiet={() =>
+          !settings.isOpen() && !commandMenu.isOpen() && !localAi.isOpen()
+        }
+      />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import {createSignal} from 'solid-js';
 import type {AgentTool} from './tools';
 
-export type ToolSource = 'webmcp' | 'devtools' | 'local-ai';
+export type ToolSource = 'webmcp' | 'devtools';
 
 export type CallStatus =
   | {readonly status: 'running'}
