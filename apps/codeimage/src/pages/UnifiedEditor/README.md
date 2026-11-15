@@ -76,15 +76,26 @@ Each layout renders `Canvas` once inside a container with a definite size.
 `controls/fields.tsx` supplies shared fields.
 `ControlOverlay.tsx` opens pickers without changing the frame's rectangle or zoom.
 `WindowStyleTiles.tsx` renders window previews.
-`ShortcutHelp.tsx` uses the definitions in `controls/shortcuts.ts`.
+`ShortcutHelp.tsx` uses the definitions in `controls/shortcuts.ts`, including the `?` opening key.
+The shared stage places its labelled desktop trigger at the top left of the canvas, outside the export frame.
+It opens an anchored overlay without a backdrop and leaves the frame rectangle and zoom unchanged.
+A resize observer hides the trigger if it would overlap the frame or extend beyond the canvas.
+The keyboard shortcut and command-menu entry still open help when the trigger is hidden.
+Phones keep their existing help trigger, placement, and dialog.
 
 `shell/Header.tsx` contains the logo, account controls, Share, and Export.
-The settings trigger moves into Dock or Studio when that layout has room for it.
-`claimSettingsEntry()` keeps exactly one trigger visible.
+`shell/header-actions.ts` lets mounted layout entries claim Settings or Experiments.
+The header renders only unclaimed actions, and cleanup returns ownership when an entry unmounts.
+Dock claims Settings; Studio claims Settings and Experiments in its desktop rail.
+Studio groups Search, Settings, Experiments, and GitHub at the bottom, retaining `CommandMenuButton` and its announcement dot.
+Phones claim neither action and keep the existing header.
 
 `shell/SettingsDialog.tsx` stays mounted while layouts change.
 `shell/sections.tsx` defines the sections, groups, and rows.
 Search reads those same rows.
+About contains the repository, Bugs and feedback, Releases, and Better Comments for GitHub links.
+`shell/links.ts` shares their destinations with the existing external-link commands and Studio's repository button.
+Better Comments retains its Umami event. Dock and Studio have no footer.
 `shell/settings-state.ts` controls the open section and restores focus when the dialog closes.
 Dialogs opened by a settings row live in `SettingsDialog`, so closing the row's panel cannot dispose them.
 
@@ -135,7 +146,8 @@ Each snippet keeps its own signature copy, so later edits to a saved signature l
 Shared controls render the dots and bind reveal actions.
 Layouts do not import What's new modules. The root oxlint override enforces that boundary.
 
-The shared header offers a permanent Experiments button that opens Settings on that section.
+The shell offers a permanent Experiments button that opens Settings on that section.
+Studio hosts it beside Settings in the desktop rail; Inspector and Dock keep it in the header.
 Its labelled, secondary ghost What's new button is available for `NEW_FOR_DAYS` (45 days)
 from the newest release's date, only while neither Nudge nor Showcase is on screen.
 It reopens the newest release expanded for this session, without resetting stored facts.

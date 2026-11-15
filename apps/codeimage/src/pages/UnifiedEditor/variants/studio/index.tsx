@@ -22,9 +22,10 @@ import {controlOverlay} from '../../controls/ControlOverlay';
 import {FrameActions} from '../../controls/FrameActions';
 import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {ShortcutHelp} from '../../controls/ShortcutHelp';
-import {Footer} from '../../localized/Footer';
-import {SettingsIcon} from '../../shell/icons';
-import {claimSettingsEntry, settings} from '../../shell/settings-state';
+import {ExperimentsIcon, SettingsIcon, GitHubIcon} from '../../shell/icons';
+import {editorLinks} from '../../shell/links';
+import {settings} from '../../shell/settings-state';
+import {claimHeaderActions} from '../../shell/header-actions';
 import {ownCompositeKeys} from './controls';
 import {CloseIcon, CollapseIcon, SearchIcon} from './icons';
 import {PANELS} from './panels';
@@ -53,24 +54,49 @@ function rubberband(overshoot: number, dimension: number) {
   return (overshoot * dimension * 0.55) / (dimension + 0.55 * overshoot);
 }
 
-/** The settings entry at the foot of the rail, under Search. */
-function RailSettings() {
+/** Layout-hosted header actions, followed by the repository link. */
+function RailActions() {
   const [t] = useI18n<AppLocaleEntries>();
-  claimSettingsEntry();
+  claimHeaderActions(['settings', 'experiments']);
   return (
-    <button
-      type="button"
-      class={styles.railButton}
-      aria-haspopup="dialog"
-      aria-expanded={settings.isOpen()}
-      data-settings-trigger
-      onClick={() => settings.open()}
-    >
-      <span class={styles.railIcon}>
-        <SettingsIcon size={20} />
-      </span>
-      {t('editor.settings')}
-    </button>
+    <>
+      <button
+        type="button"
+        class={styles.railButton}
+        aria-haspopup="dialog"
+        aria-expanded={settings.isOpen()}
+        data-settings-trigger
+        onClick={() => settings.open()}
+      >
+        <span class={styles.railIcon}>
+          <SettingsIcon size={20} />
+        </span>
+        {t('editor.settings')}
+      </button>
+      <button
+        type="button"
+        class={`${styles.railButton} ${styles.railLink}`}
+        aria-label={t('editor.experiments')}
+        title={t('editor.experiments')}
+        aria-haspopup="dialog"
+        data-experiments-trigger
+        onClick={() => settings.open('experiments')}
+      >
+        <span class={styles.railIcon}>
+          <ExperimentsIcon size={20} />
+        </span>
+      </button>
+      <a
+        class={`${styles.railButton} ${styles.railLink}`}
+        href={editorLinks[0].href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={t('editor.openGithub')}
+        title={t('editor.openGithub')}
+      >
+        <GitHubIcon size={20} />
+      </a>
+    </>
   );
 }
 
@@ -308,25 +334,29 @@ export default function Studio(props: VariantProps) {
             )}
           </For>
           <Show when={!isPhone()}>
-            <CommandMenuButton>
-              {trigger => (
-                <button
-                  {...trigger}
-                  type="button"
-                  class={`${styles.railButton} ${styles.railSearch}`}
-                  title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
-                >
-                  <span class={styles.railIcon}>
-                    <SearchIcon />
-                  </span>
-                  {t('editor.search')}
-                  <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
-                </button>
-              )}
-            </CommandMenuButton>
-            <RailSettings />
+            <div class={styles.railUtilities}>
+              <CommandMenuButton>
+                {trigger => (
+                  <button
+                    {...trigger}
+                    type="button"
+                    class={styles.railButton}
+                    title={`${t('editor.searchOptions')} (${commandMenu.shortcut})`}
+                  >
+                    <span class={styles.railIcon}>
+                      <SearchIcon />
+                    </span>
+                    {t('editor.search')}
+                    <kbd class={styles.railHint}>{commandMenu.shortcut}</kbd>
+                  </button>
+                )}
+              </CommandMenuButton>
+              <RailActions />
+            </div>
           </Show>
-          <ShortcutHelp />
+          <Show when={isPhone()}>
+            <ShortcutHelp />
+          </Show>
         </nav>
 
         <section
@@ -421,9 +451,6 @@ export default function Studio(props: VariantProps) {
           >
             <div class={styles.frameActions}>
               <FrameActions />
-            </div>
-            <div class={styles.footer}>
-              <Footer />
             </div>
           </Show>
         </main>

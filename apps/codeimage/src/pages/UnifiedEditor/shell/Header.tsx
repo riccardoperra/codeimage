@@ -24,6 +24,7 @@ import * as newsStyles from '../../../components/WhatsNew/whats-new.css';
 import {getWhatsNew} from '../../../state/whats-new';
 import {ExperimentsIcon, SettingsIcon} from './icons';
 import {settings} from './settings-state';
+import {headerHosts} from './header-actions';
 
 /**
  * The page header of the unified editor, in place of today's `Toolbar`. It
@@ -70,21 +71,23 @@ export function Header(props: {stage: Stage}) {
 
       <div class={styles.actions}>
         <WhatsNewButton />
-        <IconButton
-          class={styles.extraButton}
-          size="sm"
-          theme="secondary"
-          variant="ghost"
-          aria-label={t('editor.experiments')}
-          title={t('editor.experiments')}
-          aria-haspopup="dialog"
-          data-experiments-trigger
-          onClick={() => settings.open('experiments')}
-        >
-          <ExperimentsIcon />
-        </IconButton>
+        <Show when={headerHosts('experiments')}>
+          <IconButton
+            class={styles.extraButton}
+            size="sm"
+            theme="secondary"
+            variant="ghost"
+            aria-label={t('editor.experiments')}
+            title={t('editor.experiments')}
+            aria-haspopup="dialog"
+            data-experiments-trigger
+            onClick={() => settings.open('experiments')}
+          >
+            <ExperimentsIcon />
+          </IconButton>
+        </Show>
         {/* Studio and Dock have a better home for it on a wide window. */}
-        <Show when={!settings.inLayout()}>
+        <Show when={headerHosts('settings')}>
           <IconButton
             size={'sm'}
             theme={'secondary'}

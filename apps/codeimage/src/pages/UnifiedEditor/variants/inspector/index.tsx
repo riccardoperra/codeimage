@@ -294,9 +294,6 @@ export default function Inspector(props: VariantProps) {
             <props.stage.Canvas />
           </div>
           <div class={styles.frameActions}>
-            <Show when={!mobile()}>
-              <ShortcutHelp />
-            </Show>
             <FrameActions />
             <Show
               when={props.stage.compact()}

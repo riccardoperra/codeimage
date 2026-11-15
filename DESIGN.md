@@ -51,6 +51,7 @@ The editor has three layouts. A layout decides where the canvas, the controls an
 The header holds, in order: the logo, the dashboard link and snippet name where they apply, the settings gear, Share, Export, and the sign-in button or user badge.
 
 - The settings gear appears in the header only when the layout has no entry of its own. Studio opens the settings from the foot of its rail. Dock opens them from its bar. On a phone the gear is always in the header.
+- Studio keeps Search, Settings, Experiments, and a GitHub icon link together at the bottom of its desktop rail. The shell tracks action ownership, so Experiments stays in the header in Inspector and Dock.
 - There is no menu behind the logo. Its entries moved to the settings and the command menu.
 
 ## Theme picker
@@ -71,6 +72,14 @@ A theme is drawn as a small window in the theme's own colours, with its full nam
 - The command menu floats at the bottom centre, six rows tall, with no scrim, so the frame stays in view while a list is walked.
 - A modal dialog is for the settings and for a decision that blocks, such as the secrets review before an export.
 
+## Keyboard shortcuts
+
+- Desktop help has a labelled **Shortcuts** button with a `?` keycap at the top left of the shared canvas.
+- The trigger sits outside the exported frame. It never reserves canvas space or changes frame zoom.
+- If the trigger would touch the frame or exceed the canvas, hide it. The `?` key and command-menu entry remain available.
+- One shared help component renders the shortcut definitions. Desktop help opens below its trigger, without a backdrop or an opening animation.
+- Phone help keeps its existing trigger and dialog while the mobile redesign proceeds separately.
+
 ## Settings
 
 One dialog in two panes, with sections on the left and rows on the right. The sections are General, Appearance, Export, Experiments, What's new and About.
@@ -80,6 +89,8 @@ One dialog in two panes, with sections on the left and rows on the right. The se
 - Do not use the kit `Select` inside the dialog. The dialog is modal, and the list that the select adds outside it is hidden from assistive technology.
 - Export settings live here, not in a popover beside the Export button.
 - Experiments holds every option that is not the default yet, with a `Default` tag on the current default and one `Restore defaults` action.
+- About holds GitHub, Bugs and feedback, Releases, and Better Comments for GitHub. External-link commands use the same destinations. Better Comments retains its analytics event.
+- Dock and Studio have no footer. What's new remains in the shared header and Settings archive.
 - Under 769px the left pane becomes two rows on top: the search, then the sections as tabs.
 
 ## Export
