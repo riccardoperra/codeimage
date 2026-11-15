@@ -7,6 +7,8 @@ import * as styles from './Timeline.css';
 export const formatSeconds = (ms: number) =>
   `${Number((ms / 1000).toFixed(2))} s`;
 
+type TrackPointerEvent = PointerEvent & {currentTarget: HTMLElement};
+
 // The scrubber. Each hold and transition takes width in proportion to its
 // duration, and dragging anywhere moves the playhead there.
 export function Timeline() {
@@ -20,21 +22,17 @@ export function Timeline() {
     return ((clientX - left) / width) * duration();
   };
 
-  const onPointerDown = (
-    event: PointerEvent & {currentTarget: HTMLElement},
-  ) => {
+  const onPointerDown = (event: TrackPointerEvent) => {
     const track = event.currentTarget;
     track.setPointerCapture(event.pointerId);
     track.focus();
     animation.actions.scrub(timeAt(track, event.clientX));
   };
-  const onPointerMove = (
-    event: PointerEvent & {currentTarget: HTMLElement},
-  ) => {
+  const onPointerMove = (event: TrackPointerEvent) => {
     if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
     animation.actions.scrub(timeAt(event.currentTarget, event.clientX));
   };
-  const onPointerUp = (event: PointerEvent & {currentTarget: HTMLElement}) => {
+  const onPointerUp = (event: TrackPointerEvent) => {
     if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
     animation.actions.seek(timeAt(event.currentTarget, event.clientX));
   };

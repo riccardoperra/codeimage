@@ -4,7 +4,7 @@ import {getEditorStore} from '@codeimage/store/editor';
 import {getFrameState} from '@codeimage/store/editor/frame';
 import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {toast} from '@codeimage/ui';
-import type {NonEmpty} from '@core/animation/model';
+import type {AnimationSettings, NonEmpty} from '@core/animation/model';
 import {frameRules, type FrameSelectors} from '@core/animation/timeline';
 import type {ParentProps} from 'solid-js';
 import {
@@ -37,6 +37,14 @@ const sceneSelectors = (scene: number): FrameSelectors => ({
   window: `[data-animation-stage] [data-animation-scene="${scene}"] [data-animation-window]`,
 });
 
+// What a plan is made from. `key` is equal for equal inputs.
+interface PlanRequest {
+  settings: AnimationSettings;
+  tabs: NonEmpty<PreviewTab>;
+  style: CodeStyle;
+  key: string;
+}
+
 // Shows the editor frame, or the animation in its place once a preview has
 // planned it.
 export function AnimationPreview(props: ParentProps) {
@@ -53,15 +61,7 @@ export function AnimationPreview(props: ParentProps) {
 
   // Reads the tabs only while previewing, so typing plans nothing. Equal
   // inputs keep the last plan, and closing the panel drops it.
-  const request = createMemo<
-    | {
-        settings: ReturnType<typeof animation.settings>;
-        tabs: NonEmpty<PreviewTab>;
-        style: CodeStyle;
-        key: string;
-      }
-    | undefined
-  >(previous => {
+  const request = createMemo<PlanRequest | undefined>(previous => {
     if (!animation.open()) return undefined;
     if (!previewing()) return previous;
     const settings = animation.settings();
