@@ -3,6 +3,7 @@ import {globalStyle, style} from '@vanilla-extract/css';
 import {checkerboard} from '../Frame/FrameHandler.css';
 
 export const layers = style({
+  position: 'relative',
   display: 'grid',
   placeItems: 'center',
 });
@@ -28,3 +29,20 @@ export const stage = style({
 // A transparent or translucent frame shows the squares the editor shows
 // behind it, and nothing paints outside it.
 globalStyle(`${stage} [data-animation-frame]`, checkerboard);
+
+export const pill = style({
+  position: 'absolute',
+  top: 12,
+  left: '50%',
+  transform: 'translateX(-50%)',
+  zIndex: 2,
+  border: 0,
+  borderRadius: themeVars.borderRadius.xl,
+  padding: '10px 16px',
+  background: themeVars.backgroundColor.gray['800'],
+  color: themeVars.backgroundColor.white,
+  fontFamily: 'inherit',
+  fontSize: 13,
+  whiteSpace: 'nowrap',
+  cursor: 'pointer',
+});

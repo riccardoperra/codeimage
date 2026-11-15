@@ -24,9 +24,11 @@ import StaticCodeView from '../CustomEditor/StaticCodeView';
 import {FITTED_WINDOW_MIN_WIDTH} from '../Frame/FittedWindow';
 import {FrameView, useFrameCodeStyle} from '../Frame/PreviewFrame';
 import * as styles from './AnimationPreview.css';
+import {PreviewPill} from './PreviewPill';
 import {
   type CodeStyle,
-  planPreview,
+  measurePreview,
+  planPreviewTimeline,
   type PreviewPlan,
   type PreviewTab,
 } from './planPreview';
@@ -63,7 +65,7 @@ export function AnimationPreview(props: ParentProps) {
   // inputs keep the last plan, and closing the panel drops it.
   const request = createMemo<PlanRequest | undefined>(previous => {
     if (!animation.open()) return undefined;
-    if (!previewing()) return previous;
+    if (!previewing() || animation.resizing()) return previous;
     const settings = animation.settings();
     const [first, ...rest] = settings.steps.map((step): PreviewTab => {
       const tab = editor.state.editors.find(({id}) => id === step.editorId)!;
@@ -85,7 +87,7 @@ export function AnimationPreview(props: ParentProps) {
     };
     const key = JSON.stringify({
       failures: failures(),
-      settings,
+      header: settings.header,
       tabs: [first, ...rest],
       style: {...codeStyle, theme: codeStyle.theme.id},
       tabNames: editor.state.editors.map(tab => tab.tab.tabName),
@@ -98,19 +100,22 @@ export function AnimationPreview(props: ParentProps) {
       ? previous
       : {settings, tabs: [first, ...rest], style: codeStyle, key};
   });
-  const [plan] = createResource(request, ({settings, tabs, style}) =>
-    planPreview(owner, settings, tabs, style),
+  const [measurement] = createResource(request, ({settings, tabs, style}) =>
+    measurePreview(owner, tabs, style, settings.header),
   );
-  const planned = () =>
-    request() && plan.state === 'ready' ? plan() : undefined;
+  const planned = createMemo<PreviewPlan | undefined>(previous => {
+    if (animation.resizing()) return previous;
+    if (!request() || measurement.state !== 'ready') return undefined;
+    return planPreviewTimeline(animation.settings(), measurement()!);
+  });
   const ready = () => previewing() && planned() !== undefined;
 
   createEffect(
     on(
-      () => plan.state === 'errored',
+      () => measurement.state === 'errored',
       errored => {
         if (!errored) return;
-        console.error(plan.error);
+        console.error(measurement.error);
         toast.error(t('animation.previewFailed'));
         animation.actions.edit();
         setFailures(count => count + 1);
@@ -130,6 +135,9 @@ export function AnimationPreview(props: ParentProps) {
       >
         {props.children}
       </div>
+      <Show when={ready()}>
+        <PreviewPill />
+      </Show>
       <Show when={planned()} keyed>
         {plan => <AnimationStage plan={plan} visible={ready()} />}
       </Show>
@@ -138,7 +146,7 @@ export function AnimationPreview(props: ParentProps) {
 }
 
 function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
-  const {animation, editor} = getEditorStore();
+  const {animation} = getEditorStore();
   const style = useFrameCodeStyle();
   const [t] = useI18n<AppLocaleEntries>();
   // A new plan or target mounts a new stage, so both are read once.
@@ -192,26 +200,18 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
     }
   });
 
-  const returnToEditor = (text?: string) => {
-    animation.actions.edit();
-    const view = editor.activeEditorView();
-    if (!view) return;
-    view.focus();
-    if (text && !view.state.readOnly) {
-      view.dispatch(view.state.replaceSelection(text));
-    }
-  };
-
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     const frameMs = 1000 / animation.settings().fps;
     if (event.key === ' ') animation.actions.toggle();
     else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      const step = event.key === 'ArrowLeft' ? -frameMs : frameMs;
+      const amount = event.shiftKey ? 100 : frameMs;
+      const step = event.key === 'ArrowLeft' ? -amount : amount;
       animation.actions.seek(animation.playhead() + step);
     } else if (event.key === 'Escape' || event.key === 'Enter') {
-      returnToEditor();
-    } else if (event.key.length === 1) returnToEditor(event.key);
+      animation.actions.editStep(animation.currentStep());
+    } else if (event.key.length === 1)
+      animation.actions.editStep(animation.currentStep(), event.key);
     else return;
     event.preventDefault();
     event.stopPropagation();
@@ -247,7 +247,7 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
             >
               <FrameView
                 animated
-                header={animation.settings().header}
+                header={props.plan.header}
                 activeTabId={tab.id}
                 code={
                   scene.kind === 'hold' ? (

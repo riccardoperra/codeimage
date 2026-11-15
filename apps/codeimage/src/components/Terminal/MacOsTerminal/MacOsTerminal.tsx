@@ -51,6 +51,11 @@ export const MacOsTerminal: ParentComponent<MacOsTerminalProps> = props => {
             />
           </div>
 
+          <Show when={!props.showTab && props.title}>
+            <span class={baseStyles.title} data-animation-title>
+              {props.title}
+            </span>
+          </Show>
           <Show when={props.showTab && (!props.lite || props.preview)}>
             <TerminalWindowTabList
               activeTabId={props.activeTabId}

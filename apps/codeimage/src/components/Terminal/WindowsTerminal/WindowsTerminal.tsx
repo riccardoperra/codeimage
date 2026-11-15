@@ -17,9 +17,15 @@ export const WindowsTerminal: ParentComponent<BaseTerminalProps> = props => {
     <TerminalHost {...props} themeClass={styles.theme}>
       <Show when={props.showHeader}>
         <div class={baseStyles.header} data-accent-visible={showTab()}>
+          <Show when={!props.showTab && props.title}>
+            <span class={baseStyles.title} data-animation-title>
+              {props.title}
+            </span>
+          </Show>
           <Show when={props.showTab && (!props.lite || props.preview)}>
             <TerminalWindowTabList
               activeTabId={props.activeTabId}
+              showOnlyActiveTab={props.showOnlyActiveTab}
               lite={props.lite}
               preview={props.preview ?? false}
               readOnly={props.readonlyTab}

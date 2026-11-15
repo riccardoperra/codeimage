@@ -344,3 +344,12 @@ A4 adds an "Export animation…" entry to the Export menu (`prototypes/editor-co
 - Dock's `safe` inset grows with the island; a resize loop between the measured island and `FitFrame` would flicker. Measure the island only, with one `ResizeObserver`.
 - Re-measuring a long animation on every content change is slow. The split in slice 3 keeps timing edits off that path; content edits only happen in editing mode, where no plan runs.
 - #711 is owned by another chat and keeps moving. Merge its tip into this branch at the start of each slice, never rebase, and pin the SHA you merged in the commit message.
+
+## Changes during implementation
+
+- Slice 3: regenerate the checked-in MSW worker from the installed MSW 2.12.14.
+  The old worker was 0.47.4 and produced `deserializeRequest` errors before the
+  editor could load in the requested mock-API live lanes.
+- Database integration verification deploys migrations and uses the unit setup
+  with the integration test include list, avoiding a reset of the shared local
+  Docker test database. The real update/GET routes and Postgres still run.

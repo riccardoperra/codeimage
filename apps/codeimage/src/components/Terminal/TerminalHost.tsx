@@ -20,6 +20,7 @@ export interface BaseTerminalProps extends Omit<
   surface?: TerminalState['surface'];
   ref?: Ref<HTMLDivElement>;
   showTab: boolean;
+  title?: string;
   readonlyTab: boolean;
   preview?: boolean;
   tabIcon?: LanguageIconDefinition['content'];

@@ -23,6 +23,7 @@ export const animationLocale = {
       moveEarlier: 'Move earlier',
       moveLater: 'Move later',
       untitledTab: 'Untitled',
+      previewPill: 'Preview · click or type to edit step {{n}}',
       previewLabel: 'Animation preview',
       previewRole: 'animation preview',
       previewFailed: 'The animation preview could not be prepared',
@@ -56,6 +57,8 @@ export const animationLocale = {
       moveEarlier: 'Sposta prima',
       moveLater: 'Sposta dopo',
       untitledTab: 'Senza titolo',
+      previewPill:
+        'Anteprima · fai clic o scrivi per modificare il passaggio {{n}}',
       previewLabel: 'Anteprima animazione',
       previewRole: 'anteprima animazione',
       previewFailed: "Impossibile preparare l'anteprima dell'animazione",
@@ -90,6 +93,8 @@ export const animationLocale = {
       moveEarlier: 'Nach vorne',
       moveLater: 'Nach hinten',
       untitledTab: 'Unbenannt',
+      previewPill:
+        'Vorschau · klicken oder tippen, um Schritt {{n}} zu bearbeiten',
       previewLabel: 'Animationsvorschau',
       previewRole: 'Animationsvorschau',
       previewFailed: 'Die Animationsvorschau konnte nicht vorbereitet werden',
@@ -124,6 +129,8 @@ export const animationLocale = {
       moveEarlier: 'Mover antes',
       moveLater: 'Mover después',
       untitledTab: 'Sin título',
+      previewPill:
+        'Vista previa · haz clic o escribe para editar el paso {{n}}',
       previewLabel: 'Vista previa de la animación',
       previewRole: 'vista previa de la animación',
       previewFailed: 'No se pudo preparar la vista previa de la animación',

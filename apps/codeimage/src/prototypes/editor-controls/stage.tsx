@@ -1,3 +1,4 @@
+import {AnimationPreview} from '../../components/Animation/AnimationPreview';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
 import {getFrameState} from '@codeimage/store/editor/frame';
@@ -164,7 +165,9 @@ export function createStage(): Stage {
         <FitFrame onScaleChange={setScale}>
           <SuspenseEditorItem fallback={null}>
             <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
-              <ManagedFrame />
+              <AnimationPreview>
+                <ManagedFrame />
+              </AnimationPreview>
             </Suspense>
             <PreviewFrame ref={setExportRef} />
           </SuspenseEditorItem>

@@ -3,7 +3,13 @@ import type {CustomTheme} from '@codeimage/highlight';
 import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
 import {measureCode, type MeasuredNode} from '@core/animation/measure';
-import type {AnimationSettings, NonEmpty} from '@core/animation/model';
+import type {
+  AnimationHeader,
+  AnimationSettings,
+  CodeMetrics,
+  GlyphWidths,
+  NonEmpty,
+} from '@core/animation/model';
 import {
   planTimeline,
   type StepLayout,
@@ -34,6 +40,7 @@ export interface CodeStyle {
 
 export interface PreviewPlan {
   timeline: Timeline;
+  header: AnimationHeader;
   // The tab of each step, as the timeline was planned from it.
   tabs: PreviewTab[];
   languages: (Language | null)[];
@@ -108,12 +115,12 @@ function stepLayout(host: HTMLElement): StepLayout {
 
 // The browser side of renderAnimationScenes: measures the code font and each
 // step's static frame in the page, then plans the same timeline.
-export async function planPreview(
+export async function measurePreview(
   owner: Owner | null,
-  settings: AnimationSettings,
   tabs: NonEmpty<PreviewTab>,
   style: CodeStyle,
-): Promise<PreviewPlan> {
+  header: AnimationHeader,
+): Promise<PreviewMeasurement> {
   const languages = await Promise.all(
     tabs.map(tab => loadLanguage(tab.languageId, tab.tabName)),
   );
@@ -160,7 +167,7 @@ export async function planPreview(
         () => (
           <FrameView
             natural
-            header={settings.header}
+            header={header}
             activeTabId={tab.id}
             code={codeView(tab, languages[index])}
           />
@@ -170,31 +177,77 @@ export async function planPreview(
     ),
   );
 
-  const step = (index: number): TimelineStep => ({
+  const step = (index: number) => ({
     lines: tokenizeCode(tabs[index].code, languages[index], style.theme),
     marks: tabs[index].marks,
     lineNumberStart: tabs[index].lineNumberStart,
     layout: layouts[index],
-    holdMs: settings.steps[index].holdMs,
-    transition: settings.steps[index].transition && {
-      ms: settings.steps[index].transition.ms,
-      easing: easingOf(settings.steps[index].transition.easing),
-    },
   });
   const [, ...rest] = tabs;
   return {
+    steps: [step(0), ...rest.map((_, index) => step(index + 1))],
+    tabs: [...tabs],
+    languages,
+    metrics,
+    widths,
+    lineNumbers: style.showLineNumbers,
+  };
+}
+
+export interface PreviewMeasurement {
+  steps: NonEmpty<Omit<TimelineStep, 'holdMs'>>;
+  tabs: PreviewTab[];
+  languages: (Language | null)[];
+  metrics: CodeMetrics;
+  widths: GlyphWidths;
+  lineNumbers: boolean;
+}
+
+export function planPreviewTimeline(
+  settings: AnimationSettings,
+  measured: PreviewMeasurement,
+): PreviewPlan {
+  const step = (
+    value: PreviewMeasurement['steps'][number],
+    index: number,
+  ): TimelineStep => {
+    const timing = settings.steps[index];
+    return {
+      ...value,
+      holdMs: timing.holdMs,
+      transition: timing.transition && {
+        ms: timing.transition.ms,
+        easing: easingOf(timing.transition.easing),
+      },
+    };
+  };
+  const [first, ...rest] = measured.steps;
+  return {
     timeline: planTimeline(
-      [step(0), ...rest.map((_, index) => step(index + 1))],
+      [step(first, 0), ...rest.map((value, index) => step(value, index + 1))],
       {
         transitionMs: settings.transitionMs,
         easing: easingOf(settings.easing),
         fps: settings.fps,
-        lineNumbers: style.showLineNumbers,
-        metrics,
-        widths,
+        lineNumbers: measured.lineNumbers,
+        metrics: measured.metrics,
+        widths: measured.widths,
       },
     ),
-    tabs: [...tabs],
-    languages,
+    tabs: measured.tabs,
+    languages: measured.languages,
+    header: settings.header,
   };
+}
+
+export async function planPreview(
+  owner: Owner | null,
+  settings: AnimationSettings,
+  tabs: NonEmpty<PreviewTab>,
+  style: CodeStyle,
+): Promise<PreviewPlan> {
+  return planPreviewTimeline(
+    settings,
+    await measurePreview(owner, tabs, style, settings.header),
+  );
 }
