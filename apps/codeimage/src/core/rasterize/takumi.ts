@@ -311,16 +311,26 @@ async function localFontSources(
   }));
 }
 
-export const takumi: Rasterizer = async (
-  node,
-  {format, pixelRatio, quality, codeFont},
-) => {
-  const {width, height} = node.getBoundingClientRect();
-  const {html, text, fontFamilies} = cloneExportNode(node);
+export interface RasterizeResources {
+  css: string[];
+  fonts: {
+    name: string;
+    data: Uint8Array<ArrayBuffer>;
+    weight?: number;
+    style?: 'normal' | 'italic';
+    unicodeRange?: [number, number][];
+  }[];
+  fontFamilies: string[];
+}
+
+async function fontResources(
+  fontFamilies: Set<string>,
+  text: string,
+  codeFont: CustomFontConfiguration,
+) {
   const codeFamily = normalizeFamily(codeFont.name);
   fontFamilies.add(codeFamily);
-  const [renderer, {css, sources}, localFonts] = await Promise.all([
-    getRenderer(),
+  const [{css, sources}, localFonts] = await Promise.all([
     collectCss(fontFamilies, text),
     localFontSources(codeFont),
   ]);
@@ -345,6 +355,66 @@ export const takumi: Rasterizer = async (
   const requiredFamilies = new Set([
     codeFamily,
     ...sources.map(source => normalizeFamily(source.name)),
+  ]);
+  return {css, fontSources, requiredFamilies};
+}
+
+export async function collectRasterizeResources(
+  node: HTMLElement,
+  codeFont: CustomFontConfiguration,
+) {
+  const {html, text, fontFamilies} = cloneExportNode(node);
+  const {css, fontSources, requiredFamilies} = await fontResources(
+    fontFamilies,
+    text,
+    codeFont,
+  );
+  const fonts = [];
+  for (const source of fontSources) {
+    try {
+      const data = new Uint8Array(await source.data());
+      const collection =
+        data[0] === 0x74 &&
+        data[1] === 0x74 &&
+        data[2] === 0x63 &&
+        data[3] === 0x66;
+      fonts.push(
+        collection
+          ? {name: source.name, data}
+          : {
+              name: source.name,
+              data,
+              weight: source.weight,
+              style: source.style,
+              unicodeRange: source.unicodeRange,
+            },
+      );
+    } catch (error) {
+      if (requiredFamilies.has(normalizeFamily(source.name)))
+        throw new ExportFontError(source.name, 'read', error);
+    }
+  }
+  return {
+    html,
+    resources: {
+      css,
+      fonts,
+      fontFamilies: [
+        ...new Set([codeFont.name, ...fontSources.map(source => source.name)]),
+      ],
+    },
+  } satisfies {html: string; resources: RasterizeResources};
+}
+
+export const takumi: Rasterizer = async (
+  node,
+  {format, pixelRatio, quality, codeFont},
+) => {
+  const {width, height} = node.getBoundingClientRect();
+  const {html, text, fontFamilies} = cloneExportNode(node);
+  const [renderer, {css, fontSources, requiredFamilies}] = await Promise.all([
+    getRenderer(),
+    fontResources(fontFamilies, text, codeFont),
   ]);
   await Promise.all(
     fontSources.map(async source => {

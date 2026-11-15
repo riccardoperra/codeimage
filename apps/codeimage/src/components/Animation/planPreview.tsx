@@ -21,7 +21,7 @@ import type {JSX, Owner} from 'solid-js';
 import {runWithOwner} from 'solid-js';
 import {render} from 'solid-js/web';
 import StaticCodeView from '../CustomEditor/StaticCodeView';
-import {fitScale} from '../Frame/FittedWindow';
+import {targetLayout} from '@core/animation/target-layout';
 import * as frameStyles from '../Frame/Frame.css';
 import {FrameView} from '../Frame/PreviewFrame';
 
@@ -101,15 +101,12 @@ function stepLayout(host: HTMLElement): StepLayout {
     height: Math.max(content.offsetHeight, content.scrollHeight),
   };
   const box = {width: viewport.clientWidth, height: viewport.clientHeight};
-  const scale = fitScale(box, natural);
   return {
     size: {width, height},
-    window: {
-      left: viewport.offsetLeft + (box.width - natural.width * scale) / 2,
-      top: viewport.offsetTop + (box.height - natural.height * scale) / 2,
-      ...natural,
-      scale,
-    },
+    window: targetLayout(box, natural, {
+      x: viewport.offsetLeft,
+      y: viewport.offsetTop,
+    }),
   };
 }
 
