@@ -51,9 +51,6 @@ export const wrapper = style([
           [terminalVars.headerColor]: `0, 0, 0`,
         },
       },
-      '&[data-surface=wash]': {
-        backgroundImage: `radial-gradient(120% 90% at 0% 0%, ${windowVars.accent22} 0%, rgba(0, 0, 0, 0) 55%), radial-gradient(90% 80% at 100% 100%, ${windowVars.accent14} 0%, rgba(0, 0, 0, 0) 60%)`,
-      },
       '&[data-custom-border=hairline]': {
         boxShadow: `0 0 0 1px ${windowVars.ink14}, inset 0 1px 0 ${windowVars.ink08}, ${terminalVars.boxShadow}`,
       },
@@ -64,6 +61,16 @@ export const wrapper = style([
     },
   },
 ]);
+
+// The wash lights the whole window, so it lies over the title bar, tabs and
+// status bar instead of under their fills, and below the code, which keeps
+// its theme colours.
+export const wash = style({
+  position: 'absolute',
+  inset: 0,
+  pointerEvents: 'none',
+  backgroundImage: `radial-gradient(120% 90% at 0% 0%, ${windowVars.accent22} 0%, rgba(0, 0, 0, 0) 55%), radial-gradient(90% 80% at 100% 100%, ${windowVars.accent14} 0%, rgba(0, 0, 0, 0) 60%)`,
+});
 
 export const content = style({
   vars: {'--codeimage-content-inset': themeVars.spacing['4']},
@@ -76,6 +83,7 @@ export const content = style({
   paddingInlineEnd: 'var(--codeimage-content-inset)',
 
   selectors: {
+    [`[data-surface=wash] &`]: {zIndex: 1},
     [`[data-lite=true] &`]: {
       vars: {'--codeimage-content-inset': themeVars.spacing['2']},
       paddingBottom: themeVars.spacing['2'],
