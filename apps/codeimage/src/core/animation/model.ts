@@ -10,15 +10,17 @@ export type AnimationSettings = {
   fps: 24 | 30 | 50 | 60;
 };
 
-// The cubic-bezier() control points x1, y1, x2, y2 of each easing.
-export const EASING_CURVES: Record<
-  AnimationSettings['easing'],
-  readonly [number, number, number, number]
-> = {
+export type EasingName = 'smooth' | 'snappy' | 'strong' | 'linear';
+export type EasingValue = EasingName | `cubic-bezier(${string})`;
+export type EasingCurve = readonly [number, number, number, number];
+export type Easing = EasingName | EasingCurve;
+
+export const EASING_CURVES = {
   smooth: [0.65, 0, 0.35, 1],
   snappy: [0.2, 0, 0, 1],
+  strong: [0.77, 0, 0.175, 1],
   linear: [0, 0, 1, 1],
-};
+} as const satisfies Record<EasingName, EasingCurve>;
 
 // One tab as an animation step sees it.
 export type Step = {
@@ -93,7 +95,7 @@ export type NonEmpty<T> = readonly [T, ...T[]];
 
 export type SceneTiming = {
   transitionMs: number;
-  easing: AnimationSettings['easing'];
+  easing: Easing;
   // Starts every animation this far into the transition. A scene that shows
   // the second half of a transition uses it.
   offsetMs?: number;

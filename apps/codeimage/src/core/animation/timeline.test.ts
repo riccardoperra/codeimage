@@ -406,3 +406,58 @@ test('a rescaling window starts and ends on the placements of its holds', () => 
   assert.deepEqual(placement(early, 0), rounded(from));
   assert.deepEqual(placement(late, late.durationMs), rounded(to));
 });
+
+test('transitions belong to the destination and default independently', () => {
+  const first = {
+    ...step('a'),
+    transition: {ms: 333, easing: 'strong' as const},
+  };
+  const second = {
+    ...step('b'),
+    transition: {ms: 701, easing: [0.25, 0.1, 0.25, 1] as const},
+  };
+  const timeline = planTimeline([first, second, step('c')], options);
+  assert.deepEqual(
+    order(timeline).filter(([kind]) => kind === 'transition'),
+    [
+      ['transition', 0, 351, 0],
+      ['transition', 1, 350, 351],
+      ['transition', 1, 451, 0],
+      ['transition', 2, 450, 451],
+    ],
+  );
+  assert.ok(
+    timeline.scenes.some(
+      scene =>
+        scene.kind === 'transition' &&
+        scene.code.includes('701ms cubic-bezier(0.25, 0.1, 0.25, 1)'),
+    ),
+  );
+  assert.deepEqual(
+    planTimeline([first, step('b')], options),
+    planTimeline([step('a'), step('b')], options),
+  );
+});
+
+test('explicit default transitions preserve the complete timeline bytes', () => {
+  const steps = [step('a'), step('a\nb'), step('b')] as const;
+  assert.equal(
+    JSON.stringify(planTimeline(steps, options)),
+    JSON.stringify(
+      planTimeline(
+        [
+          steps[0],
+          {
+            ...steps[1],
+            transition: {ms: options.transitionMs, easing: options.easing},
+          },
+          {
+            ...steps[2],
+            transition: {ms: options.transitionMs, easing: options.easing},
+          },
+        ],
+        options,
+      ),
+    ),
+  );
+});
