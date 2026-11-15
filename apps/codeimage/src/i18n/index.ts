@@ -1,3 +1,4 @@
+import {whatsNewLocale} from './whatsNew';
 import {editorLocale} from './editor';
 import {secrets} from './secrets';
 import {altText} from './altText';
@@ -106,6 +107,7 @@ export const locale = {
     ...altText.it,
     ...lineMarksLocale.it,
     ...editorLocale.it,
+    ...whatsNewLocale.it,
   },
   en: {
     ...secrets.en,
@@ -200,6 +202,7 @@ export const locale = {
     ...altText.en,
     ...lineMarksLocale.en,
     ...editorLocale.en,
+    ...whatsNewLocale.en,
   },
   de: {
     ...secrets.de,
@@ -295,6 +298,7 @@ export const locale = {
     ...altText.de,
     ...lineMarksLocale.de,
     ...editorLocale.de,
+    ...whatsNewLocale.de,
   },
   es: {
     ...secrets.es,
@@ -389,6 +393,7 @@ export const locale = {
     ...altText.es,
     ...lineMarksLocale.es,
     ...editorLocale.es,
+    ...whatsNewLocale.es,
   },
 };
 

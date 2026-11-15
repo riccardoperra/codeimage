@@ -1,3 +1,5 @@
+import {useI18n} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../i18n';
 import type {Component, JSX} from 'solid-js';
 import {Show} from 'solid-js';
 import type {HighlightId} from '../../state/whats-new';
@@ -28,6 +30,7 @@ function Frame(props: IllustrationProps & {children: JSX.Element}) {
 }
 
 function CommandIllustration(props: IllustrationProps) {
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <Frame mode={props.mode}>
       <Show
@@ -35,13 +38,15 @@ function CommandIllustration(props: IllustrationProps) {
         fallback={
           <>
             <div class={styles.miniWindow}>
-              <div>⌕ Search anything</div>
+              <div>⌕ {t('editor.searchOptions')}</div>
               <hr />
               <div class={styles.commandList}>
                 <div class={styles.commandPick} />
-                <div>Theme: GitHub Dark</div>
-                <div>Layout: Inspector</div>
-                <div>Export image</div>
+                <div>{t('frame.theme')}: GitHub Dark</div>
+                <div>
+                  {t('editor.layoutCommand', {value: t('editor.inspector')})}
+                </div>
+                <div>{t('export.title')}</div>
               </div>
             </div>
             <kbd class={styles.keycap}>⌘ K</kbd>

@@ -104,7 +104,7 @@ function Commands(
       {
         id: 'whats-new',
         group: t('editor.settings'),
-        label: "What's new",
+        label: t('editor.whatsNew'),
         run: () => settings.open('whats-new'),
       },
       {

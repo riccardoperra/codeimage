@@ -1,4 +1,7 @@
-import {Button, Dialog} from '@codeui/kit';
+import {useI18n} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../i18n';
+import {Button, Dialog, IconButton, icons} from '@codeui/kit';
+import {Dialog as KDialog} from '@kobalte/core/dialog';
 import {createEffect, For, Show} from 'solid-js';
 import {Dynamic} from 'solid-js/web';
 import {getWhatsNew, type RELEASES} from '../../state/whats-new';
@@ -19,6 +22,7 @@ export function Showcase(props: {
   dismiss: () => void;
 }) {
   const news = getWhatsNew();
+  const [t, {locale}] = useI18n<AppLocaleEntries>();
   createEffect(() =>
     props.release.highlights.forEach(highlight =>
       news.opened(highlight.id, 'showcase'),
@@ -26,13 +30,23 @@ export function Showcase(props: {
   );
   return (
     <Dialog
-      title="What's new"
       size="xl"
       open
       onOpenChange={open => {
         if (!open) props.dismiss();
       }}
     >
+      <div class={styles.sheetTitle}>
+        <KDialog.Title>{t('editor.whatsNew')}</KDialog.Title>
+        <KDialog.CloseButton
+          as={IconButton}
+          aria-label={t('common.close')}
+          size="xs"
+          theme="secondary"
+        >
+          <icons.CloseIcon />
+        </KDialog.CloseButton>
+      </div>
       <div class={styles.sheet} data-whats-new="showcase">
         <header class={styles.hero}>
           <time
@@ -40,19 +54,19 @@ export function Showcase(props: {
             style={at(showcaseAt.title)}
             datetime={props.release.date}
           >
-            {releaseDate(props.release)}
+            {releaseDate(props.release, locale())}
           </time>
           <h2
             class={`${styles.heroTitle} ${styles.lead}`}
             style={at(showcaseAt.title)}
           >
-            {props.release.title}
+            {t(`whatsNew.releases.${props.release.id}.title`)}
           </h2>
           <p
             class={`${styles.body} ${styles.support}`}
             style={at(showcaseAt.subtitle)}
           >
-            New tools and choices for your editor.
+            {t('whatsNew.hero')}
           </p>
         </header>
         <div class={styles.grid}>
@@ -62,10 +76,18 @@ export function Showcase(props: {
                 <Dynamic component={illustrations[highlight.id]} mode="play" />
                 <div class={styles.copy}>
                   <span class={styles.tag}>
-                    {'experimental' in highlight ? 'Experiment' : 'New'}
+                    {t(
+                      'experimental' in highlight
+                        ? 'whatsNew.experiment'
+                        : 'common.new',
+                    )}
                   </span>
-                  <h3 class={styles.title}>{highlight.title}</h3>
-                  <p class={styles.body}>{highlight.body}</p>
+                  <h3 class={styles.title}>
+                    {t(`whatsNew.highlights.${highlight.id}.title`)}
+                  </h3>
+                  <p class={styles.body}>
+                    {t(`whatsNew.highlights.${highlight.id}.body`)}
+                  </p>
                   <Show when={highlight.where !== null && highlight}>
                     {located => (
                       <Show when={news.canShowMe(located().id)}>
@@ -80,7 +102,7 @@ export function Showcase(props: {
                               );
                             }}
                           >
-                            Show me
+                            {t('whatsNew.showMe')}
                           </Button>
                         </div>
                       </Show>
@@ -96,7 +118,7 @@ export function Showcase(props: {
           style={at(showcaseAt.footer)}
         >
           <Button theme="primary" onClick={props.dismiss}>
-            Start creating
+            {t('whatsNew.start')}
           </Button>
           <a
             class={styles.link}
@@ -104,7 +126,7 @@ export function Showcase(props: {
             target="_blank"
             rel="noreferrer"
           >
-            Older releases on GitHub ↗
+            {t('whatsNew.older')} ↗
           </a>
         </footer>
       </div>

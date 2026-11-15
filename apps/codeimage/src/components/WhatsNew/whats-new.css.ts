@@ -403,6 +403,18 @@ export const fade = style({
   animation: `${fadeIn} ${ms(showcaseFor.fade)} ${ease} var(--whats-new-at, 0ms) both`,
   '@media': {[reduce]: {animationDelay: '0ms'}},
 });
+export const sheetTitle = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexShrink: 0,
+  height: '56px',
+  padding: '0 24px',
+  borderBottom: `1px solid ${c.input.backgroundColor}`,
+  color: c.baseText,
+  fontSize: themeVars.fontSize.lg,
+  fontWeight: 500,
+});
 export const sheet = style({
   maxHeight: 'min(760px, calc(100dvh - 32px))',
   overflowY: 'auto',

@@ -1,11 +1,7 @@
 import type {Release} from '../../state/whats-new';
 
-// News copy is English only, so the date matches it. UTC, because the
-// registry date is UTC midnight and would read as the day before in the west.
-const format = new Intl.DateTimeFormat('en', {
-  dateStyle: 'long',
-  timeZone: 'UTC',
-});
-
-export const releaseDate = (release: Release) =>
-  format.format(Date.parse(release.date));
+// Read the registry date as UTC midnight, including west of UTC.
+export const releaseDate = (release: Release, locale: string) =>
+  new Intl.DateTimeFormat(locale, {dateStyle: 'long', timeZone: 'UTC'}).format(
+    Date.parse(release.date),
+  );

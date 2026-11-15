@@ -1,5 +1,4 @@
-// Pure content with zero imports, so the Settings archive and the tests can
-// render from this file alone.
+// Pure metadata with zero imports. Policy and presentation share these ids.
 
 export type Place = 'command-menu' | 'export' | 'control' | 'setting';
 
@@ -16,8 +15,6 @@ export interface Highlight {
    * once shipped.
    */
   readonly id: string;
-  readonly title: string;
-  readonly body: string;
   /** `null` means no location to point to: no dot and no "Show me". */
   readonly where: Where | null;
   readonly experimental?: true;
@@ -27,7 +24,6 @@ export interface Highlight {
 export interface Release {
   /** Not an app version. A highlight in the bundle means the feature shipped. */
   readonly id: string;
-  readonly title: string;
   /** `YYYY-MM-DD`, read as UTC midnight. Newness expires from this date. */
   readonly date: `${number}-${number}-${number}`;
   /** Major releases announce with the Showcase sheet instead of the Nudge. */
@@ -43,39 +39,28 @@ export interface Release {
 export const RELEASES = [
   {
     id: '2026-11',
-    title: 'CodeImage 2026',
     date: '2026-11-14',
     major: false,
     highlights: [
       {
         id: 'redact',
-        title: 'Hide secrets',
-        body: 'Code that looks like an API key, token or password gets a warning. Redact replaces it with dots before you export.',
         where: null,
       },
       {
         id: 'tabs',
-        title: 'One image per tab',
-        body: 'Export each tab as its own image, together in one zip. It needs two tabs or more.',
         where: 'export:tabs',
       },
       {
         id: 'command-menu',
-        title: 'Command menu',
-        body: 'Find a control or run an action with Cmd/Ctrl+K.',
         where: 'command-menu',
       },
       {
         id: 'layouts',
-        title: 'Editor layouts',
-        body: 'Choose Inspector, Dock or Studio in Settings, Experiments.',
         where: 'setting:layout',
         experimental: true,
       },
       {
         id: 'theme-cards',
-        title: 'Theme card styles',
-        body: 'Choose Window, Orb or Aa list for the theme picker in Settings, Experiments.',
         where: 'setting:theme-cards',
         experimental: true,
       },

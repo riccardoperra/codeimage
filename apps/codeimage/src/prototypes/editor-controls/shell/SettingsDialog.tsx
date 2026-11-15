@@ -15,6 +15,7 @@ import {settings} from './settings-state';
 import * as styles from './settings.css';
 
 function Row(props: {row: SettingRow}) {
+  const [t] = useI18n<AppLocaleEntries>();
   createEffect(() => {
     const id = props.row.fresh;
     if (id) getWhatsNew().opened(id, 'library');
@@ -39,11 +40,11 @@ function Row(props: {row: SettingRow}) {
         <span id={titleId()} class={styles.rowTitle}>
           {props.row.title}
           <Show when={props.row.experimental}>
-            <span class={styles.tag}>Experiment</span>
+            <span class={styles.tag}>{t('whatsNew.experiment')}</span>
           </Show>
           <NewDot at={`setting:${props.row.id}`} />
           <Show when={props.row.fresh && getWhatsNew().isNew(props.row.fresh)}>
-            <span class={styles.tag}>New</span>
+            <span class={styles.tag}>{t('common.new')}</span>
           </Show>
         </span>
         <span id={descriptionId()} class={styles.rowDescription}>

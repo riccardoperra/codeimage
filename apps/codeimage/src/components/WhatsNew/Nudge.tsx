@@ -1,3 +1,5 @@
+import {useI18n} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../i18n';
 import {Button, IconButton, icons} from '@codeui/kit';
 import {
   createEffect,
@@ -26,6 +28,7 @@ export function Nudge(props: {
   dismiss: () => void;
 }) {
   const news = getWhatsNew();
+  const [t] = useI18n<AppLocaleEntries>();
   const [expanded, setExpanded] = createSignal(false);
   const [view, setView] = createSignal<View>({step: 0});
   const [closing, setClosing] = createSignal(false);
@@ -36,6 +39,7 @@ export function Nudge(props: {
     const item = highlight();
     return item.where !== null && news.canShowMe(item.id) ? item : null;
   };
+  const count = (): number => props.release.highlights.length;
   const last = () => step() === props.release.highlights.length - 1;
   // Only the newest step change fades. Stepping faster drops the older one.
   const slides = () => {
@@ -95,7 +99,7 @@ export function Nudge(props: {
         close(true);
       }}
       class={styles.nudge}
-      aria-label="What's new"
+      aria-label={t('editor.whatsNew')}
       data-whats-new="nudge"
       data-closing={closing() ? '' : undefined}
       data-instant={instant() ? '' : undefined}
@@ -107,8 +111,14 @@ export function Nudge(props: {
           <div ref={bar} class={styles.collapsed}>
             <span aria-hidden="true">✦</span>
             <div class={styles.summary}>
-              <strong>{props.release.highlights.length} new things</strong>
-              <span class={styles.muted}>{props.release.title}</span>
+              <strong>
+                {t(count() === 1 ? 'whatsNew.newOne' : 'whatsNew.newMany', {
+                  count: String(props.release.highlights.length),
+                })}
+              </strong>
+              <span class={styles.muted}>
+                {t(`whatsNew.releases.${props.release.id}.title`)}
+              </span>
             </div>
             <Button
               size="sm"
@@ -121,13 +131,13 @@ export function Nudge(props: {
                 primary?.focus();
               }}
             >
-              See
+              {t('whatsNew.see')}
             </Button>
             <IconButton
               size="sm"
               theme="secondary"
               variant="ghost"
-              aria-label="Dismiss what's new"
+              aria-label={t('whatsNew.dismiss')}
               onClick={event => close(fromKeyboard(event))}
             >
               <icons.CloseIcon />
@@ -154,10 +164,18 @@ export function Nudge(props: {
                       id={current() ? copyId : undefined}
                     >
                       <span class={styles.tag}>
-                        {'experimental' in item() ? 'Experiment' : 'New'}
+                        {t(
+                          'experimental' in item()
+                            ? 'whatsNew.experiment'
+                            : 'common.new',
+                        )}
                       </span>
-                      <h3 class={styles.title}>{item().title}</h3>
-                      <p class={styles.body}>{item().body}</p>
+                      <h3 class={styles.title}>
+                        {t(`whatsNew.highlights.${item().id}.title`)}
+                      </h3>
+                      <p class={styles.body}>
+                        {t(`whatsNew.highlights.${item().id}.body`)}
+                      </p>
                     </div>
                   </div>
                 );
@@ -168,7 +186,10 @@ export function Nudge(props: {
             <div
               class={styles.steps}
               role="img"
-              aria-label={`Step ${step() + 1} of ${props.release.highlights.length}`}
+              aria-label={t('whatsNew.step', {
+                step: String(step() + 1),
+                count: String(props.release.highlights.length),
+              })}
             >
               <For each={props.release.highlights}>
                 {(_, index) => (
@@ -186,7 +207,7 @@ export function Nudge(props: {
                   theme="secondary"
                   onClick={() => news.showMe(item().id, 'nudge')}
                 >
-                  Show me
+                  {t('whatsNew.showMe')}
                 </Button>
               )}
             </Show>
@@ -199,13 +220,13 @@ export function Nudge(props: {
               aria-describedby={copyId}
               onClick={next}
             >
-              {last() ? 'Done' : 'Next'}
+              {t(last() ? 'whatsNew.done' : 'whatsNew.next')}
             </Button>
             <IconButton
               size="sm"
               theme="secondary"
               variant="ghost"
-              aria-label="Dismiss what's new"
+              aria-label={t('whatsNew.dismiss')}
               onClick={event => close(fromKeyboard(event))}
             >
               <icons.CloseIcon />

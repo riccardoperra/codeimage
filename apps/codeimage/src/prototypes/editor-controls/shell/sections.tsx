@@ -202,7 +202,7 @@ function LanguageChoice() {
  * read the stores and the router.
  */
 export function createSettingSections(model: EditorControlsModel) {
-  const [t] = useI18n<AppLocaleEntries>();
+  const [t, {locale}] = useI18n<AppLocaleEntries>();
   const nameOf = (id: SectionId) =>
     t(SECTIONS.find(entry => entry.id === id)!.name);
   const ui = getUiStore();
@@ -508,9 +508,13 @@ export function createSettingSections(model: EditorControlsModel) {
 
   const library = {
     id: 'whats-new' as const,
-    name: nameOf('whats-new'),
+    get name() {
+      return nameOf('whats-new');
+    },
     icon: NewsIcon,
-    intro: 'Features added to CodeImage, newest first.',
+    get intro() {
+      return t('whatsNew.intro');
+    },
     action: () => (
       <a
         class={styles.historyLink}
@@ -518,16 +522,16 @@ export function createSettingSections(model: EditorControlsModel) {
         target="_blank"
         rel="noreferrer"
       >
-        Older releases on GitHub ↗
+        {t('whatsNew.older')} ↗
       </a>
     ),
     groups: createMemo(() =>
       RELEASES.map(release => ({
-        title: `${release.title} · ${releaseDate(release)}`,
+        title: `${t(`whatsNew.releases.${release.id}.title`)} · ${releaseDate(release, locale())}`,
         rows: release.highlights.map(highlight => ({
           id: `news-${highlight.id}` as const,
-          title: highlight.title,
-          description: () => highlight.body,
+          title: t(`whatsNew.highlights.${highlight.id}.title`),
+          description: () => t(`whatsNew.highlights.${highlight.id}.body`),
           fresh: highlight.id,
           experimental: 'experimental' in highlight,
           picture: () => (
@@ -543,7 +547,7 @@ export function createSettingSections(model: EditorControlsModel) {
                   theme="secondary"
                   onClick={() => news.showMe(highlight.id, 'library')}
                 >
-                  Show me
+                  {t('whatsNew.showMe')}
                 </Button>
               </Show>
             );

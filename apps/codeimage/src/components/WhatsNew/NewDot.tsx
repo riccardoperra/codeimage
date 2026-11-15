@@ -1,3 +1,5 @@
+import {useI18n} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../i18n';
 import {Button} from '@codeui/kit';
 import {Popover} from '@kobalte/core/popover';
 import type {JSX} from 'solid-js';
@@ -29,6 +31,7 @@ export function NewDot(props: NewDotProps) {
 }
 
 function Dot(props: {at: Where}) {
+  const [t] = useI18n<AppLocaleEntries>();
   const news = getWhatsNew();
   // The opened highlight stays on this dot until its coachmark has shrunk
   // back into it, even once seen and another highlight holds the place.
@@ -94,7 +97,9 @@ function Dot(props: {at: Where}) {
               class={styles.dot}
               onClick={(event: MouseEvent) => setInstant(fromKeyboard(event))}
               data-instant={instant() ? '' : undefined}
-              aria-label={`New: ${item().title}`}
+              aria-label={t('whatsNew.newLabel', {
+                title: t(`whatsNew.highlights.${item().id}.title`),
+              })}
               data-seen={news.dotAt(props.at) !== current() ? '' : undefined}
             />
             <Popover.Portal
@@ -128,10 +133,10 @@ function Dot(props: {at: Where}) {
                 <Dynamic component={illustrations[item().id]} />
                 <div class={styles.copy}>
                   <Popover.Title class={styles.title}>
-                    {item().title}
+                    {t(`whatsNew.highlights.${item().id}.title`)}
                   </Popover.Title>
                   <Popover.Description class={styles.body}>
-                    {item().body}
+                    {t(`whatsNew.highlights.${item().id}.body`)}
                   </Popover.Description>
                 </div>
                 <div class={styles.actions}>
@@ -144,7 +149,7 @@ function Dot(props: {at: Where}) {
                       toggle(false);
                     }}
                   >
-                    Got it
+                    {t('whatsNew.gotIt')}
                   </Button>
                 </div>
               </Popover.Content>

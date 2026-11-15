@@ -18,24 +18,22 @@ const facts = (seen: string[] = [], dismissed: string[] = []): Facts => ({
 
 const latest = {
   id: 'r2',
-  title: 'Second',
   date: '2026-11-14',
   major: false,
   highlights: [
-    {id: 'a', title: 'A', body: '', where: 'command-menu'},
-    {id: 'b', title: 'B', body: '', where: null},
-    {id: 'c', title: 'C', body: '', where: 'command-menu'},
-    {id: 'd', title: 'D', body: '', where: 'command-menu'},
-    {id: 'e', title: 'E', body: '', where: 'command-menu'},
+    {id: 'a', where: 'command-menu'},
+    {id: 'b', where: null},
+    {id: 'c', where: 'command-menu'},
+    {id: 'd', where: 'command-menu'},
+    {id: 'e', where: 'command-menu'},
   ],
 } as const satisfies Release;
 
 const older = {
   id: 'r1',
-  title: 'First',
   date: '2026-10-20',
   major: true,
-  highlights: [{id: 'z', title: 'Z', body: '', where: 'command-menu'}],
+  highlights: [{id: 'z', where: 'command-menu'}],
 } as const satisfies Release;
 
 const releases = [latest, older];

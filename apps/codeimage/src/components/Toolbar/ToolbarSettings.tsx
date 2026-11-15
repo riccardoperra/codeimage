@@ -1,3 +1,5 @@
+import {useI18n} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../i18n';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 
 import {
@@ -16,6 +18,7 @@ import {ExternalLinkIcon} from '../Icons/ExternalLink';
 import {SettingsDialog} from './SettingsDialog';
 
 export function ToolbarSettingsButton() {
+  const [t] = useI18n<AppLocaleEntries>();
   const navigate = useNavigate();
   const openDialog = createControlledDialog();
   const {signOut, loggedIn} = getAuth0State();
@@ -45,7 +48,7 @@ export function ToolbarSettingsButton() {
             rel="noreferrer"
             style={{'text-decoration': 'unset'}}
           >
-            What's new
+            {t('editor.whatsNew')}
           </DropdownMenuItem>
           <DropdownMenuItem
             rightSlot={<ExternalLinkIcon />}

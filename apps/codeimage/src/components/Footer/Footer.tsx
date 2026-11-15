@@ -1,9 +1,12 @@
+import {useI18n} from '@codeimage/locale';
+import type {AppLocaleEntries} from '../../i18n';
 import {Box, Link} from '@codeimage/ui';
 import {getUmami} from '@core/constants/umami';
 import {link} from './Footer.css';
 import * as styles from './Footer.css';
 
 export const Footer = () => {
+  const [t] = useI18n<AppLocaleEntries>();
   return (
     <div class={styles.wrapper}>
       <Box display={'inlineFlex'} justifyContent={'flexEnd'} padding={1}>
@@ -61,7 +64,7 @@ export const Footer = () => {
             rel="noreferrer"
           >
             <Box as={'span'} marginLeft={1}>
-              What's new
+              {t('editor.whatsNew')}
             </Box>
           </Link>
         </Box>
