@@ -192,15 +192,32 @@ export async function audit({page, context, base, out, server}) {
     const {verifyExportScreen} = await import('./frame-regressions.mjs');
     return verifyExportScreen({fresh, out});
   });
+  await feature('retired-classic-route', () =>
+    fresh(
+      {
+        name: 'retired-classic-route',
+        layout: 'inspector',
+        viewport: {width: 1440, height: 900},
+      },
+      async ({page}) => {
+        await page.goto(`${base}/classic`, {waitUntil: 'domcontentloaded'});
+        await page.waitForURL('**/404');
+        await page.getByText('404', {exact: true}).waitFor();
+        assert.equal(await page.locator('.unified-editor').count(), 0);
+        await page.screenshot({
+          path: resolve(out, 'retired-classic-route-404.png'),
+        });
+        return {url: page.url(), editorMounted: false};
+      },
+    ),
+  );
   await feature('editor', async () => {
-    for (const route of ['/', '/classic']) {
-      await doctor(route);
-      await editor().fill('const audit = 1;');
-      await editor().press('End');
-      await page.keyboard.type('x');
-      await page.keyboard.press('ControlOrMeta+z');
-      assert.equal(await editor().innerText(), 'const audit = 1;');
-    }
+    await doctor();
+    await editor().fill('const audit = 1;');
+    await editor().press('End');
+    await page.keyboard.type('x');
+    await page.keyboard.press('ControlOrMeta+z');
+    assert.equal(await editor().innerText(), 'const audit = 1;');
   });
   await feature('appearance', async () => {
     await section('themes');

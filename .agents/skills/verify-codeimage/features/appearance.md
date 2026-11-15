@@ -20,7 +20,7 @@ The surface choice asserts the checked radio. Modern window controls and exact Z
 
 ## Gotchas
 
-The old Syntax highlight button applies to `/classic`. Turning `window.header` off hides the style and tab-accent controls. Baseline does not cover appearance; audit covers theme commit and surface. Hover cancellation, every window style, fonts and social dimensions remain targeted follow-ups.
+Turning `window.header` off hides the style and tab-accent controls. Baseline does not cover appearance; audit covers theme commit and surface. Hover cancellation, every window style, fonts and social dimensions remain targeted follow-ups.
 
 ## Watermark placement
 
