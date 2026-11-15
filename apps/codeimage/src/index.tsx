@@ -18,7 +18,6 @@ import {createEffect, lazy, on, Show} from 'solid-js';
 import {render} from 'solid-js/web';
 import {StateProvider} from 'statebuilder';
 import './assets/styles/app.scss';
-import {SidebarPopoverHost} from './components/PropertyEditor/SidebarPopoverHost';
 import {Scaffold} from './components/Scaffold/Scaffold';
 import {locale} from './i18n';
 import './theme/global.css';
@@ -127,7 +126,6 @@ export function Bootstrap() {
         <SnackbarHost containerClassName={snackbarHostAppStyleCss} />
         <Router>{routes}</Router>
       </CodeImageThemeProvider>
-      <SidebarPopoverHost />
     </Scaffold>
   );
 }
