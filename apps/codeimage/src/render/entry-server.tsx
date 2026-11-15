@@ -56,6 +56,7 @@ export async function annotateCode(
   );
 }
 
+export {SUPPORTED_FONTS};
 export const SUPPORTED_FONT_IDS = SUPPORTED_FONTS.map(font => font.id);
 export const SUPPORTED_THEME_IDS = THEME_REGISTRY.map(theme => theme.id);
 
