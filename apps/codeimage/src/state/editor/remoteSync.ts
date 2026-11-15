@@ -22,7 +22,7 @@ export function remoteSaves<T>(
 ): Observable<unknown> {
   return changes$.pipe(
     debounceTime(150),
-    filter(() => project.loggedIn()),
+    filter(() => project.loggedIn() && !project.readOnly()),
     tap(() => setPending(true)),
     debounceTime(3000),
     tap(() => setPending(false)),
