@@ -3,17 +3,34 @@ import {detectSecrets} from '@codeimage/secrets';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
 import {getRootEditorStore} from '@codeimage/store/editor';
 import {getWhatsNew} from '@codeimage/store/whats-new';
+import {getActiveEditorStore} from '@codeimage/store/editor/activeEditor';
+import {dispatchCopyToClipboard} from '@codeimage/store/effects/onCopyToClipboard';
 import {toast} from '@codeimage/ui';
+import {altText} from '@core/altText';
 import {getUmami} from '@core/constants/umami';
 import {loadLanguage} from '@core/snapshot/tokenize';
 import type {Accessor} from 'solid-js';
-import {batch, createComponent, createSignal, getOwner} from 'solid-js';
+import {
+  batch,
+  createComponent,
+  createMemo,
+  createSignal,
+  getOwner,
+  runWithOwner,
+} from 'solid-js';
 import {render} from 'solid-js/web';
 import {redactTabCode} from '../../../components/CustomEditor/plugins/secrets';
+import {showExportSuccessToast} from '../../../components/Toolbar/ExportSuccessToast';
 import {PreviewFrame} from '../../../components/Frame/PreviewFrame';
 import {deliverTabFiles, renderTabFiles} from '../../../hooks/export-tabs';
-import {ExportMode, exportImage} from '../../../hooks/use-export-image';
+import {
+  ExportExtension,
+  ExportMode,
+  exportImage,
+} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
+
+type ExportAction = 'image' | 'eachTab' | 'share' | 'newTab' | 'copy';
 
 export interface Exporter {
   /** True while an export runs. */
@@ -24,6 +41,17 @@ export interface Exporter {
   readonly image: () => void;
   /** Exports one image per tab with the export settings, in a zip. */
   readonly eachTab: () => void;
+  readonly share: () => void;
+  readonly newTab: () => void;
+  readonly copy: () => void;
+  readonly canCopy: Accessor<boolean>;
+  readonly canShare: Accessor<boolean>;
+  /** A requested export waits here while the user reviews visible secrets. */
+  readonly confirming: Accessor<boolean>;
+  readonly confirm: () => void;
+  readonly cancel: () => void;
+  readonly copyAltText: () => void;
+  readonly canCopyAltText: Accessor<boolean>;
   /** How many secrets the tabs show, which the export would carry. */
   readonly secrets: Accessor<number>;
   /** Hides every secret in every tab. */
@@ -31,19 +59,24 @@ export interface Exporter {
 }
 
 /**
- * Exports at once with the settings of the production export store: no
- * dialog in between. The image is production's `exportImage`. One image per
- * tab mirrors production's `useExportSnippet`, which picks it from the
- * stored `oneImagePerTab` flag and does not export its own path: the same
- * `PreviewFrame` per tab, the same files and the same zip, on demand.
+ * Uses production's renderer, with an explicit per-tab alternative instead
+ * of its persisted `oneImagePerTab` toggle. Secrets are reviewed first.
  */
 export function createExporter(
   ref: Accessor<HTMLElement | undefined>,
 ): Exporter {
+  const [t] = useI18n<AppLocaleEntries>();
   const canvas = getExportCanvasStore();
   const editor = getRootEditorStore();
   const owner = getOwner();
   const [busy, setBusy] = createSignal(false);
+  const [pending, setPending] = createSignal<ExportAction>();
+  const secrets = createMemo(() =>
+    editor.state.editors.reduce(
+      (count, tab) => count + detectSecrets(tab.code).length,
+      0,
+    ),
+  );
 
   const options = (mode: ExportMode) => ({
     extension: canvas.get.extension,
@@ -51,28 +84,6 @@ export function createExporter(
     pixelRatio: canvas.get.devicePixelRatio,
     quality: canvas.get.jpegQuality / 100,
   });
-
-  const run = async (task: () => Promise<unknown>) => {
-    if (busy()) return;
-    setBusy(true);
-    getUmami().track('export-confirm', {
-      mode: ExportMode.export,
-      extension: canvas.get.extension,
-    });
-    try {
-      await task();
-    } catch {
-      toast.error(
-        () => {
-          const [t] = useI18n<AppLocaleEntries>();
-          return <>{t('export.genericSaveError')}</>;
-        },
-        {position: 'bottom-center'},
-      );
-    } finally {
-      setBusy(false);
-    }
-  };
 
   const eachTab = async () => {
     const payload = options(ExportMode.export);
@@ -107,22 +118,98 @@ export function createExporter(
     return deliverTabFiles(files, payload.mode);
   };
 
+  const showError = () =>
+    runWithOwner(owner, () =>
+      toast.error(() => t('export.genericSaveError'), {
+        position: 'bottom-center',
+      }),
+    );
+
+  const run = async (action: ExportAction) => {
+    if (busy() || dispatchCopyToClipboard.loading()) return;
+    if (action === 'copy') {
+      const element = ref();
+      if (element) dispatchCopyToClipboard({ref: element});
+      return;
+    }
+    setBusy(true);
+    const mode =
+      action === 'share'
+        ? ExportMode.share
+        : action === 'newTab'
+          ? ExportMode.newTab
+          : ExportMode.export;
+    const activeEditor = getActiveEditorStore().editor();
+    const text = activeEditor && altText(activeEditor);
+    if (mode === ExportMode.newTab) getUmami().track('export-new-tab');
+    else
+      getUmami().track('export-confirm', {
+        mode,
+        extension: canvas.get.extension,
+      });
+    try {
+      const result = await (action === 'eachTab'
+        ? eachTab()
+        : runWithOwner(owner, () =>
+            exportImage({ref: ref(), options: options(mode)}),
+          ));
+      if (result && mode !== ExportMode.newTab) {
+        runWithOwner(owner, () =>
+          showExportSuccessToast('altText.exported', text),
+        );
+      }
+    } catch {
+      showError();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const request = (action: ExportAction) => {
+    if (busy() || pending() || dispatchCopyToClipboard.loading()) return;
+    if (secrets() > 0) setPending(action);
+    else void run(action);
+  };
+
+  const confirm = () => {
+    const action = pending();
+    setPending(undefined);
+    // Let the export preview catch up with redaction before capturing it.
+    if (action) requestAnimationFrame(() => void run(action));
+  };
+
+  const copyAltText = () => {
+    const activeEditor = getActiveEditorStore().editor();
+    if (!activeEditor || !navigator.clipboard?.writeText) return;
+    const text = altText(activeEditor);
+    navigator.clipboard.writeText(text).then(
+      () => toast.success(() => t('altText.copied')),
+      () => toast.error(() => t('altText.copyError')),
+    );
+  };
+
   return {
-    busy,
+    busy: () => busy() || dispatchCopyToClipboard.loading(),
     tabs: () => editor.state.editors.length,
-    image: () =>
-      void run(() =>
-        exportImage({ref: ref(), options: options(ExportMode.export)}),
-      ),
+    image: () => request('image'),
     eachTab: () => {
       getWhatsNew().seen('tabs');
-      void run(eachTab);
+      request('eachTab');
     },
-    secrets: () =>
-      editor.state.editors.reduce(
-        (count, tab) => count + detectSecrets(tab.code).length,
-        0,
-      ),
+    share: () => request('share'),
+    newTab: () => request('newTab'),
+    copy: () => request('copy'),
+    canCopy: () =>
+      !!navigator.clipboard?.write &&
+      [ExportExtension.png, ExportExtension.svg].includes(canvas.get.extension),
+    canShare: () => !!navigator.share,
+    confirming: () => pending() !== undefined,
+    confirm,
+    cancel: () => setPending(undefined),
+    copyAltText,
+    canCopyAltText: () =>
+      !!getActiveEditorStore().editor() && !!navigator.clipboard?.writeText,
+    secrets,
     redactSecrets: () => {
       getWhatsNew().seen('redact');
       batch(() => {

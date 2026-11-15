@@ -33,3 +33,16 @@ export const hint = style({
   fontSize: themeVars.fontSize.xs,
   fontWeight: themeVars.fontWeight.normal,
 });
+
+export const warning = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: themeVars.spacing['3'],
+});
+
+export const confirmActions = style({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: themeVars.spacing['2'],
+});

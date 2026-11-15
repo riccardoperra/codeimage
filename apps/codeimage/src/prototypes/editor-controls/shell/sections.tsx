@@ -1,6 +1,7 @@
 import {useI18n} from '@codeimage/locale';
 import {getAuth0State} from '@codeimage/store/auth/auth0';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {getUiStore} from '@codeimage/store/ui';
 import {RangeField} from '@codeimage/ui';
 import {Button, buttonStyles} from '@codeui/kit';
@@ -16,6 +17,7 @@ import {illustrations} from '../../../components/WhatsNew/illustrations';
 import {releaseDate} from '../../../components/WhatsNew/releaseDate';
 import {getWhatsNew, RELEASES} from '../../../state/whats-new';
 import type {HighlightId, LocatedHighlightId} from '../../../state/whats-new';
+import {CopyAltTextButton} from '../../../components/Toolbar/CopyAltTextButton';
 import {ExportExtension} from '../../../hooks/use-export-image';
 import type {AppLocaleEntries} from '../../../i18n';
 import {SwitchField} from '../controls/fields';
@@ -205,6 +207,7 @@ function LanguageChoice() {
 export function createSettingSections(
   model: EditorControlsModel,
 ): readonly SettingSection[] {
+  const [t] = useI18n<AppLocaleEntries>();
   const ui = getUiStore();
   const auth = getAuth0State();
   const navigate = useNavigate();
@@ -369,6 +372,7 @@ export function createSettingSections(
   // Every row reads and writes the production export store, the one that
   // today's export popover and dialog share, so there is one value for each.
   const exportStore = getExportCanvasStore();
+  const target = () => getFrameState().exportTarget();
   const exportSection: SettingSection = {
     id: 'export',
     name: nameOf('export'),
@@ -424,19 +428,40 @@ export function createSettingSections(
             id: 'export-scale',
             title: 'Scale',
             description: () =>
-              `The image is ${exportStore.canvasResolution()} pixels.`,
+              target()
+                ? `${target()?.name}: ${target()?.resolution.join(' × ')} pixels.` // i18n
+                : `The image is ${exportStore.canvasResolution()} pixels.`,
             control: () => (
-              <Segmented
-                value={String(exportStore.get.devicePixelRatio)}
-                onChange={value =>
-                  exportStore.set('devicePixelRatio', Number(value))
+              <Show
+                when={!target()}
+                fallback={
+                  <span class={styles.value}>
+                    {getFrameState().exportPixelRatio(
+                      exportStore.get.devicePixelRatio,
+                    )}
+                    x
+                  </span>
                 }
-                items={[1, 2, 3, 6].map(scale => ({
-                  label: `${scale}x`,
-                  value: String(scale),
-                }))}
-              />
+              >
+                <Segmented
+                  value={String(exportStore.get.devicePixelRatio)}
+                  onChange={value =>
+                    exportStore.set('devicePixelRatio', Number(value))
+                  }
+                  items={[1, 2, 3, 6].map(scale => ({
+                    label: `${scale}x`,
+                    value: String(scale),
+                  }))}
+                />
+              </Show>
             ),
+          },
+          {
+            id: 'export-alt-text',
+            title: t('altText.copy'),
+            description: () => t('altText.hint'),
+            small: true,
+            control: () => <CopyAltTextButton />,
           },
         ],
       },

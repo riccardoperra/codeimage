@@ -1,6 +1,9 @@
+import {useI18n} from '@codeimage/locale';
 import {getExportCanvasStore} from '@codeimage/store/canvas';
+import {getFrameState} from '@codeimage/store/editor/frame';
 import {getUiStore} from '@codeimage/store/ui';
 import {ExportExtension} from '../../../hooks/use-export-image';
+import type {AppLocaleEntries} from '../../../i18n';
 import type {Command} from '../command-menu/commands';
 import type {Exporter} from './export';
 import {exportSummary} from './ExportControl';
@@ -20,6 +23,7 @@ const MODES = [
  * production export store, as the Export section of the settings does.
  */
 export function exportCommands(exporter: Exporter): Command[] {
+  const [t] = useI18n<AppLocaleEntries>();
   const store = getExportCanvasStore();
   const group = 'Export';
   const tabs = exporter.tabs();
@@ -47,6 +51,42 @@ export function exportCommands(exporter: Exporter): Command[] {
           },
         ]
       : []),
+    ...(exporter.canCopyAltText()
+      ? [
+          {
+            id: 'export=alt-text',
+            group,
+            label: t('altText.copy'),
+            run: exporter.copyAltText,
+          },
+        ]
+      : []),
+    ...(exporter.canCopy()
+      ? [
+          {
+            id: 'export=copy',
+            group,
+            label: 'Copy to clipboard', // i18n
+            run: exporter.copy,
+          },
+        ]
+      : []),
+    {
+      id: 'export=new-tab',
+      group,
+      label: t('toolbar.openNewTab'),
+      run: exporter.newTab,
+    },
+    ...(exporter.canShare()
+      ? [
+          {
+            id: 'export=share',
+            group,
+            label: t('export.shareMode'),
+            run: exporter.share,
+          },
+        ]
+      : []),
     ...formats.map((format): Command => ({
       id: `export-format=${format.id}`,
       group,
@@ -54,13 +94,15 @@ export function exportCommands(exporter: Exporter): Command[] {
       current: format.id === store.get.extension,
       run: () => store.set('extension', format.id),
     })),
-    ...[1, 2, 3, 6].map((scale): Command => ({
-      id: `export-scale=${scale}`,
-      group,
-      label: `Export scale: ${scale}x`,
-      current: scale === store.get.devicePixelRatio,
-      run: () => store.set('devicePixelRatio', scale),
-    })),
+    ...(getFrameState().exportTarget() ? [] : [1, 2, 3, 6]).map(
+      (scale): Command => ({
+        id: `export-scale=${scale}`,
+        group,
+        label: `Export scale: ${scale}x`,
+        current: scale === store.get.devicePixelRatio,
+        run: () => store.set('devicePixelRatio', scale),
+      }),
+    ),
     ...[70, 80, 90, 100].map((quality): Command => ({
       id: `export-quality=${quality}`,
       group,
