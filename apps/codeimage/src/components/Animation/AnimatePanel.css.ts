@@ -74,6 +74,7 @@ export const field = style({
   minWidth: 0,
 });
 export const number = style({
+  position: 'relative',
   width: 110,
   '@media': {'(max-width: 768px)': {width: 142}},
 });
@@ -83,12 +84,31 @@ globalStyle(`${island} input`, {
   '@media': {'(max-width: 768px)': {minHeight: 40}},
 });
 globalStyle(`${number} input`, {
+  paddingRight: 28,
   '@media': {'(max-width: 768px)': {paddingRight: 84}},
 });
-globalStyle(`${number} input + div`, {
-  '@media': {'(max-width: 768px)': {flexDirection: 'row', right: 4}},
+export const durationSteppers = style({
+  position: 'absolute',
+  right: 4,
+  top: '50%',
+  transform: 'translateY(-50%)',
+  display: 'flex',
+  flexDirection: 'column',
+  '@media': {'(max-width: 768px)': {flexDirection: 'row'}},
+});
+globalStyle(`${durationSteppers} button`, {
+  height: 14,
+  minHeight: 14,
+  width: 20,
+  minWidth: 20,
+  padding: 0,
+  '@media': {
+    '(max-width: 768px)': {height: 40, minHeight: 40, width: 40, minWidth: 40},
+  },
 });
 globalStyle(`${number} button svg`, {
+  width: 12,
+  height: 12,
   '@media': {'(max-width: 768px)': {width: 16, height: 16}},
 });
 globalStyle('[data-animation-steps-menu] [role="menuitem"]', {

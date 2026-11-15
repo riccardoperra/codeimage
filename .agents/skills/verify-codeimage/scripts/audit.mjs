@@ -1063,7 +1063,7 @@ export async function audit({page, context, base, out, server}) {
           .locator('[data-easing-trigger]')
           .evaluate(el => el === document.activeElement),
         true,
-        'Tab skips the transient number steppers and reaches Easing',
+        'Tab skips the duration steppers and reaches Easing',
       );
       await page.keyboard.press('Shift+Tab');
       assert.ok(
@@ -1247,6 +1247,7 @@ export async function audit({page, context, base, out, server}) {
       await page.mouse.move(x - 1200, y, {steps: 8});
       await page.mouse.up();
       assert.equal(await hold.getAttribute('aria-valuenow'), '0');
+      assert.equal(await durationInput().inputValue(), '0');
       assert.ok(
         (await hold.boundingBox()).width >= 8,
         'zero hold keeps a visible slot',
@@ -1258,6 +1259,7 @@ export async function audit({page, context, base, out, server}) {
         '',
         'zero hold selectable with a click',
       );
+      assert.equal(await durationInput().inputValue(), '0');
       if (viewport.width === 390) {
         await transition.tap();
         await hold.tap();
@@ -1266,11 +1268,18 @@ export async function audit({page, context, base, out, server}) {
           '',
           'zero hold selectable with touch',
         );
+        assert.equal(await durationInput().inputValue(), '0');
         assert.ok(
           (await hold.locator('[data-segment-resize]').boundingBox()).width >=
             40,
         );
       }
+      await typeDuration(100);
+      assert.equal(await hold.getAttribute('aria-valuenow'), '100');
+      await typeDuration(0);
+      await durationInput().press('Tab');
+      assert.equal(await durationInput().inputValue(), '0');
+      assert.equal(await hold.getAttribute('aria-valuenow'), '0');
       await typeDuration(10000);
       await transition.click();
       await typeDuration(100);
