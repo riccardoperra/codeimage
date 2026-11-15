@@ -713,6 +713,7 @@ export async function audit({page, context, base, out, server}) {
             '[data-animation-export] [role="status"]',
           ),
         ].some(el => el.textContent.includes('Ready')),
+      undefined,
       {timeout: 30000},
     );
     const failure = dialog.getByRole('alert');
