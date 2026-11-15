@@ -41,24 +41,42 @@ export function Nudge(props: {
     return leaving === undefined ? [step] : [leaving, step];
   };
   const copyId = createUniqueId();
+  let card: HTMLElement | undefined;
   let primary: HTMLButtonElement | undefined;
   let bar: HTMLDivElement | undefined;
   let barHeight = 0;
   let timer: number | undefined;
-  onCleanup(() => clearTimeout(timer));
+  const restoreFocus = () => {
+    if (!card?.contains(document.activeElement)) return;
+    const editor = [
+      ...document.querySelectorAll<HTMLElement>(
+        '.cm-content[contenteditable="true"]',
+      ),
+    ].find(
+      element =>
+        element.getClientRects().length > 0 &&
+        !element.closest('[inert], [aria-hidden="true"]'),
+    );
+    editor?.focus({preventScroll: true});
+  };
+  onCleanup(() => {
+    clearTimeout(timer);
+    restoreFocus();
+  });
   createEffect(() => {
     if (expanded()) news.opened(highlight().id, 'nudge');
   });
 
-  const close = (event: MouseEvent) => {
+  const close = (keyboard: boolean) => {
     if (closing()) return;
     clearTimeout(timer);
-    if (fromKeyboard(event)) return props.dismiss();
+    restoreFocus();
+    if (keyboard) return props.dismiss();
     setClosing(true);
     timer = window.setTimeout(props.dismiss, duration.nudgeOut);
   };
   const next = (event: MouseEvent) => {
-    if (last()) return close(event);
+    if (last()) return close(fromKeyboard(event));
     clearTimeout(timer);
     const keyboard = fromKeyboard(event);
     setInstant(keyboard);
@@ -75,6 +93,13 @@ export function Nudge(props: {
 
   return (
     <aside
+      ref={card}
+      on:keydown={event => {
+        if (event.key !== 'Escape' || !expanded()) return;
+        event.preventDefault();
+        event.stopPropagation();
+        close(true);
+      }}
       class={styles.nudge}
       aria-label="What's new"
       data-whats-new="nudge"
@@ -109,7 +134,7 @@ export function Nudge(props: {
               theme="secondary"
               variant="ghost"
               aria-label="Dismiss what's new"
-              onClick={close}
+              onClick={event => close(fromKeyboard(event))}
             >
               <icons.CloseIcon />
             </IconButton>
@@ -187,7 +212,7 @@ export function Nudge(props: {
               theme="secondary"
               variant="ghost"
               aria-label="Dismiss what's new"
-              onClick={close}
+              onClick={event => close(fromKeyboard(event))}
             >
               <icons.CloseIcon />
             </IconButton>
