@@ -81,6 +81,7 @@ export const workspace = style({
 });
 
 export const canvas = style({
+  position: 'relative',
   minWidth: 0,
   minHeight: 0,
   display: 'grid',

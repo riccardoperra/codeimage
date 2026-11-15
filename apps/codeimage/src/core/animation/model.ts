@@ -20,6 +20,13 @@ export const EASING_CURVES: Record<
   linear: [0, 0, 1, 1],
 };
 
+// A preset name, or the x1, y1, x2, y2 of a custom cubic-bezier().
+export type EasingCurve = readonly [number, number, number, number];
+export type Easing = AnimationSettings['easing'] | EasingCurve;
+
+export const curveOf = (easing: Easing): EasingCurve =>
+  typeof easing === 'string' ? EASING_CURVES[easing] : easing;
+
 // One tab as an animation step sees it.
 export type Step = {
   lines: TokenLine[];
@@ -93,7 +100,7 @@ export type NonEmpty<T> = readonly [T, ...T[]];
 
 export type SceneTiming = {
   transitionMs: number;
-  easing: AnimationSettings['easing'];
+  easing: Easing;
   // Starts every animation this far into the transition. A scene that shows
   // the second half of a transition uses it.
   offsetMs?: number;

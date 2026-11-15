@@ -9,7 +9,7 @@ import type {
   TokenTransition,
   Transition,
 } from './model';
-import {EASING_CURVES} from './model';
+import {curveOf} from './model';
 
 // The magic-move defaults: leaving tokens are gone at 30% of the transition,
 // and entering tokens start at 70%.
@@ -30,7 +30,7 @@ const escapeAttribute = (text: string) =>
 const timingFunction = (easing: SceneTiming['easing']) =>
   easing === 'linear'
     ? 'linear'
-    : `cubic-bezier(${EASING_CURVES[easing].join(', ')})`;
+    : `cubic-bezier(${curveOf(easing).join(', ')})`;
 
 export const animationCss = (
   id: string,

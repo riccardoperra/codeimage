@@ -18,6 +18,8 @@ import type {AppLocaleEntries} from '../../../../i18n';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {FrameActions} from '../../controls/FrameActions';
+import {getEditorStore} from '@codeimage/store/editor';
+import {AnimationPanel} from '../../../../components/Animation/AnimationPanel';
 import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
 import {createOverlayPlacement} from './overlays';
@@ -291,6 +293,9 @@ export default function Inspector(props: VariantProps) {
           >
             <props.stage.Canvas />
           </div>
+          <Show when={getEditorStore().animation.open()}>
+            <AnimationPanel />
+          </Show>
           <div class={styles.frameActions}>
             <FrameActions frameRef={props.stage.exportRef()} />
             <Show

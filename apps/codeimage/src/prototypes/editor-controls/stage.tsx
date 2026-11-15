@@ -5,7 +5,7 @@ import {getTerminalState} from '@codeimage/store/editor/terminal';
 import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {TERMINAL_SHADOWS} from '@core/configuration/shadow';
 import {useModality} from '@core/hooks/isMobile';
-import type {Accessor, Component} from 'solid-js';
+import type {Accessor, Component, ParentProps} from 'solid-js';
 import {
   createEffect,
   createSignal,
@@ -15,6 +15,7 @@ import {
   Suspense,
 } from 'solid-js';
 import {untrackCommand} from 'statebuilder/commands';
+import {AnimationPreview} from '../../components/Animation/AnimationPreview';
 import {FrameSkeleton} from '../../components/Frame/FrameSkeleton';
 import {PreviewFrame} from '../../components/Frame/PreviewFrame';
 import {SuspenseEditorItem} from '../../components/PropertyEditor/SuspenseEditorItem';
@@ -49,7 +50,7 @@ export interface Stage {
    * The live frame with the real CodeMirror editor. Render it once; it fills its
    * parent and zooms out when the frame is larger than the space it gets.
    */
-  readonly Canvas: Component;
+  readonly Canvas: Component<{wrap?: Component<ParentProps>}>;
   /** The hidden copy of the frame that export and copy capture. Set once Canvas mounts. */
   readonly exportRef: Accessor<HTMLElement | undefined>;
   /**
@@ -163,15 +164,19 @@ export function createStage(): Stage {
   const size = useModality() === 'full' ? 'sm' : 'xs';
 
   return {
-    Canvas: () => {
+    Canvas: props => {
       onMount(() => getExportCanvasStore().initCanvas(exportRef));
+      // The animation preview takes the frame's place while it plays.
+      const Wrap = props.wrap ?? AnimationPreview;
       // Every placeholder sits inside FitFrame, where the frame will be. The
       // export copy renders into a portal, so its place in the tree is free.
       return (
         <FitFrame onScaleChange={setScale}>
           <SuspenseEditorItem fallback={null}>
             <Suspense fallback={<FramePlaceholder frame={exportRef} />}>
-              <ManagedFrame />
+              <Wrap>
+                <ManagedFrame />
+              </Wrap>
             </Suspense>
             <PreviewFrame ref={setExportRef} />
           </SuspenseEditorItem>

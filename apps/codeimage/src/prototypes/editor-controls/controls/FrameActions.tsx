@@ -3,6 +3,7 @@ import {dispatchRandomTheme} from '@codeimage/store/effects/onThemeChange';
 import {HStack} from '@codeimage/ui';
 import {Button} from '@codeui/kit';
 import {createAsyncAction} from '@core/hooks/async-action';
+import {AnimateButton} from '../../../components/Animation/AnimateButton';
 import {ColorSwatchIcon} from '../../../components/Icons/ColorSwatch';
 import {SparklesIcon} from '../../../components/Icons/SparklesIcon';
 import {CopyToClipboardButton} from '../../../components/Toolbar/CopyToClipboardButton';
@@ -23,6 +24,7 @@ export function FrameActions(props: {frameRef: HTMLElement | undefined}) {
   return (
     <div class={styles.frameToolbar}>
       <HStack spacing={2}>
+        <AnimateButton showLabel={true} />
         <CopyToClipboardButton canvasRef={props.frameRef} />
         <Button
           size={'xs'}
