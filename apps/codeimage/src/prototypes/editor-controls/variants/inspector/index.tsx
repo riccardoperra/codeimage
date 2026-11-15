@@ -1,3 +1,4 @@
+import {keepMarkToolbarAboveSelection} from '../../controls/mark-toolbar';
 import {Button} from '@codeui/kit';
 import {assignInlineVars} from '@vanilla-extract/dynamic';
 import {
@@ -18,6 +19,8 @@ import type {AppLocaleEntries} from '../../../../i18n';
 import {commandMenu} from '../../command-menu/state';
 import type {VariantMeta, VariantProps} from '../../contract';
 import {FrameActions} from '../../controls/FrameActions';
+import {controlOverlay, SignatureRow} from '../../controls/ControlOverlay';
+import {ShortcutHelp} from '../../controls/ShortcutHelp';
 import type {Control, ControlId, SectionId} from '../../model';
 import {ControlRow} from './controls';
 import {createOverlayPlacement} from './overlays';
@@ -48,7 +51,7 @@ function sectionControls(id: SectionId, controls: readonly Control[]) {
   return [
     ...primary.flatMap(controlId => controls.filter(c => c.id === controlId)),
     // The syntax theme follows the Theme section.
-    ...controls.filter(c => !primary.includes(c.id) && c.id !== 'editor.theme'),
+    ...controls.filter(c => !primary.includes(c.id)),
   ];
 }
 
@@ -168,6 +171,7 @@ function summary(control: Control | undefined): string {
 }
 
 export default function Inspector(props: VariantProps) {
+  keepMarkToolbarAboveSelection();
   const [t] = useI18n<AppLocaleEntries>();
   // One section at a time. All may be closed, which leaves the summaries.
   const [openSection, setOpenSection] = createSignal<PanelId | null>('themes');
@@ -240,11 +244,7 @@ export default function Inspector(props: VariantProps) {
     });
   };
   // A click on the signature in the canvas opens its section at the handle.
-  onCleanup(
-    signatureEditor.register(() =>
-      openQuickControl('signature', 'signature.handle'),
-    ),
-  );
+  onCleanup(signatureEditor.register(() => controlOverlay.open('signature')));
   const signatureSummary = () => {
     const signature = getFrameState().store.signature;
     if (!signature) return t('signature.off');
@@ -292,6 +292,9 @@ export default function Inspector(props: VariantProps) {
             <props.stage.Canvas />
           </div>
           <div class={styles.frameActions}>
+            <Show when={!mobile()}>
+              <ShortcutHelp />
+            </Show>
             <FrameActions frameRef={props.stage.exportRef()} />
             <Show
               when={mobile()}
@@ -385,6 +388,9 @@ export default function Inspector(props: VariantProps) {
             <span class={styles.sheetGrip} />
           </Button>
           <div class={styles.quickControls}>
+            <Show when={mobile()}>
+              <ShortcutHelp />
+            </Show>
             <Button
               theme="secondary"
               size="sm"
@@ -445,7 +451,11 @@ export default function Inspector(props: VariantProps) {
                 <props.ThemePicker size={mobile() ? 'md' : 'sm'} />
               </div>
             </Section>
-            <For each={props.model.sections}>
+            <For
+              each={props.model.sections.filter(
+                section => section.id !== 'signature',
+              )}
+            >
               {section => (
                 <Section
                   id={section.id}
@@ -463,6 +473,9 @@ export default function Inspector(props: VariantProps) {
                   <For each={sectionControls(section.id, section.controls)}>
                     {control => <ControlRow control={control} />}
                   </For>
+                  <Show when={section.id === 'frame'}>
+                    <SignatureRow />
+                  </Show>
                 </Section>
               )}
             </For>
