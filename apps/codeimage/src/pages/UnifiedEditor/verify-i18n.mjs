@@ -59,7 +59,7 @@ async function noEnglish(page, locale, surface) {
   assert.deepEqual(leftovers, [], `${locale} ${surface}: English leftovers`);
 }
 async function ready(page) {
-  await page.waitForSelector('.proto-variant [data-fit-scale]', {
+  await page.waitForSelector('.unified-editor [data-fit-scale]', {
     timeout: 60000,
   });
   await page.waitForTimeout(2500);

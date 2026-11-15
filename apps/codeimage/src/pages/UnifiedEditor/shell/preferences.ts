@@ -39,7 +39,7 @@ interface Stored {
   themeCards?: ThemeCardsId;
 }
 
-const STORAGE_KEY = 'codeimage:prototype-settings';
+const STORAGE_KEY = 'codeimage:editor-settings';
 /** What the editor shows before any choice. The other layouts and cards are experiments. */
 export const DEFAULT_LAYOUT: LayoutId = 'inspector';
 const DEFAULT_SIDE: InspectorSide = 'right';

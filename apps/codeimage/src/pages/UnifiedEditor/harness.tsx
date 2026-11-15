@@ -41,7 +41,7 @@ function Editor() {
   return (
     <>
       <div
-        class={`proto-variant ${pageClass}`}
+        class={`unified-editor ${pageClass}`}
         ref={page}
         data-layout={preferences.layout()}
         data-inspector-side={side()}
