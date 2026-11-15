@@ -331,9 +331,13 @@ export function parseAnimationSettings(
 ): AnimationSettings | null {
   if (!Value.Check(AnimationSettingsSchema, value)) return null;
   const {steps, transitionMs} = value;
-  const totalMs =
-    steps.reduce((total, step) => total + step.holdMs, 0) +
-    (steps.length - 1) * transitionMs;
+  const totalMs = steps.reduce(
+    (total, step, index) =>
+      total +
+      step.holdMs +
+      (index === 0 ? 0 : (step.transition?.ms ?? transitionMs)),
+    0,
+  );
   return totalMs > 0 ? value : null;
 }
 

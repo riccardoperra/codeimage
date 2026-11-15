@@ -26,7 +26,8 @@ export const db = factory({
       {
         steps: Array,
         transitionMs: Number,
-        easing: (): 'smooth' | 'snappy' | 'linear' => 'smooth',
+        easing: String,
+        header: nullable({mode: String, title: String}),
         fps: (): 24 | 30 | 50 | 60 => 30,
       },
       {defaultsToNull: true},

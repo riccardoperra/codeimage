@@ -247,6 +247,7 @@ function AnimationStage(props: {plan: PreviewPlan; visible: boolean}) {
             >
               <FrameView
                 animated
+                header={animation.settings().header}
                 activeTabId={tab.id}
                 code={
                   scene.kind === 'hold' ? (

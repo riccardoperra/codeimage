@@ -1,102 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'vitest';
-import {
-  nextPlayback,
-  parseAnimationSettings,
-  playheadMs,
-  type Playback,
-} from './animation';
-
-const step = (editorId: string, holdMs = 800) => ({editorId, holdMs});
-
-test('the default steps are every tab in tab order', () => {
-  assert.deepEqual(parseAnimationSettings(undefined, ['a', 'b', 'c']), {
-    steps: [step('a'), step('b'), step('c')],
-    transitionMs: 900,
-    easing: 'smooth',
-    fps: 30,
-  });
-});
-
-test('deleting a tab drops its step and keeps the order of the rest', () => {
-  const saved = {
-    steps: [step('c', 100), step('a', 200), step('b', 300)],
-    transitionMs: 500,
-    easing: 'linear',
-    fps: 60,
-  };
-  assert.deepEqual(parseAnimationSettings(saved, ['a', 'b']), {
-    ...saved,
-    steps: [step('a', 200), step('b', 300)],
-  });
-});
-
-test('a new tab is appended as the last step', () => {
-  const saved = {
-    steps: [step('b', 100), step('a', 200)],
-    transitionMs: 500,
-    easing: 'snappy',
-    fps: 24,
-  };
-  assert.deepEqual(parseAnimationSettings(saved, ['a', 'new', 'b']).steps, [
-    step('b', 100),
-    step('a', 200),
-    step('new'),
-  ]);
-});
-
-test('durations are whole milliseconds within their limits', () => {
-  const settings = parseAnimationSettings(
-    {
-      steps: [step('a', 120.6), step('b', -5), step('c', 99_999)],
-      transitionMs: 333.4,
-      easing: 'smooth',
-      fps: 30,
-    },
-    ['a', 'b', 'c'],
-  );
-  assert.deepEqual(
-    settings.steps.map(({holdMs}) => holdMs),
-    [121, 0, 10_000],
-  );
-  assert.equal(settings.transitionMs, 333);
-  assert.equal(
-    parseAnimationSettings({transitionMs: 1}, ['a', 'b']).transitionMs,
-    100,
-  );
-});
-
-test('a timeline of 0 ms is clamped to one that shows a frame', () => {
-  assert.deepEqual(
-    parseAnimationSettings({steps: [step('a', 0)]}, ['a']).steps,
-    [step('a', 800)],
-  );
-  assert.deepEqual(
-    parseAnimationSettings({steps: [step('a', 0), step('b', 0)]}, ['a', 'b'])
-      .steps,
-    [step('a', 0), step('b', 0)],
-  );
-});
-
-test('invalid fields take their defaults and duplicate steps collapse', () => {
-  assert.deepEqual(
-    parseAnimationSettings(
-      {
-        steps: [step('b', 10), {editorId: 'a'}, step('b', 20), 'x'],
-        transitionMs: '900',
-        easing: 'bounce',
-        fps: 25,
-      },
-      ['a', 'b'],
-    ),
-    {
-      steps: [step('b', 10), step('a')],
-      transitionMs: 900,
-      easing: 'smooth',
-      fps: 30,
-    },
-  );
-});
+import {nextPlayback, playheadMs, type Playback} from './animation';
 
 const DURATION = 2_500;
 const send = (
@@ -161,4 +65,13 @@ test('typing in the editor returns every state to editing', () => {
   for (const state of states) {
     assert.deepEqual(send(state, {type: 'edit'}), editing);
   }
+});
+
+test('bounded transition playback pauses exactly at its end', () => {
+  const playing: Playback = {state: 'playing', originMs: 100, untilMs: 1001};
+  assert.equal(playheadMs(playing, 9999, DURATION), 1001);
+  assert.deepEqual(
+    nextPlayback(playing, {type: 'pause', now: 9999}, DURATION),
+    {state: 'paused', atMs: 1001},
+  );
 });

@@ -157,3 +157,21 @@ test('a clone points its animation steps at its own tabs', () => {
     {editorId: 'new-a', holdMs: 0},
   ]);
 });
+
+test('new timing, ids, repeated tabs and headers survive boundary parsing', () => {
+  const next = {
+    ...animation,
+    header: {mode: 'title', title: 'Example'},
+    steps: [
+      {id: 'one', editorId: 'a', holdMs: 0},
+      {
+        id: 'two',
+        editorId: 'a',
+        holdMs: 0,
+        transition: {ms: 701, easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'},
+      },
+    ],
+  };
+  expect(parseAnimationSettings(next)).toEqual(next);
+  expect(parseAnimationSettings({...next, steps: [next.steps[0]]})).toBeNull();
+});

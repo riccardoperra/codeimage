@@ -1,3 +1,4 @@
+import type {AnimationHeader} from '@core/animation/model';
 import {FittedWindow} from './FittedWindow';
 import {FrameSignature, framePadding, signatureScale} from './FrameSignature';
 import {getAssetsStore, isAssetUrl} from '@codeimage/store/assets/assets';
@@ -66,6 +67,7 @@ export function useFrameCodeStyle() {
 }
 
 export interface FrameViewProps {
+  header?: AnimationHeader;
   ref?: Ref<HTMLDivElement>;
   activeTabId?: string;
   code: JSX.Element;
@@ -92,8 +94,12 @@ export function FrameView(props: VoidProps<FrameViewProps>) {
       type={terminal.type}
       activeTabId={props.activeTabId}
       readonlyTab={true}
-      showTab={true}
-      showOnlyActiveTab={exportCanvasStore.get.showOnlyActiveTab}
+      showTab={props.header?.mode !== 'title'}
+      showOnlyActiveTab={
+        props.header
+          ? props.header.mode === 'tab'
+          : exportCanvasStore.get.showOnlyActiveTab
+      }
       shadow={terminal.shadow}
       background={terminal.background}
       accentVisible={terminal.accentVisible}

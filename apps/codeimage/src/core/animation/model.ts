@@ -1,13 +1,19 @@
 import type {LineMark, TabMarks} from '@codeimage/store/editor/model';
 import type {TokenLine} from '@core/snapshot/tokenize';
 
-// Persisted with the project. A step points at a tab, so the tabs stay the
-// only place that holds code.
+export type AnimationStepSettings = {
+  id: string;
+  editorId: string;
+  holdMs: number;
+  transition?: {ms: number; easing: EasingValue};
+};
+export type AnimationHeader = {mode: 'tab' | 'title' | 'tabs'; title: string};
 export type AnimationSettings = {
-  steps: NonEmpty<{editorId: string; holdMs: number}>;
+  steps: NonEmpty<AnimationStepSettings>;
   transitionMs: number;
-  easing: 'smooth' | 'snappy' | 'linear';
+  easing: EasingValue;
   fps: 24 | 30 | 50 | 60;
+  header: AnimationHeader;
 };
 
 export type EasingName = 'smooth' | 'snappy' | 'strong' | 'linear';

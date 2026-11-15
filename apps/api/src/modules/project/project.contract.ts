@@ -75,20 +75,45 @@ export type TabMarks = Static<typeof TabMarksSchema>;
 
 // Steps name tabs by id. Takumi samples whole milliseconds, so durations are
 // integers.
+export const AnimationEasingSchema = Type.Union([
+  Type.Literal('smooth'),
+  Type.Literal('snappy'),
+  Type.Literal('strong'),
+  Type.Literal('linear'),
+  Type.String({
+    pattern:
+      '^cubic-bezier\\((?:0(?:\\.\\d{1,3})?|1(?:\\.0{1,3})?), (?:0(?:\\.\\d{1,3})?|1(?:\\.0{1,3})?), (?:0(?:\\.\\d{1,3})?|1(?:\\.0{1,3})?), (?:0(?:\\.\\d{1,3})?|1(?:\\.0{1,3})?)\\)$',
+    maxLength: 64,
+  }),
+]);
+
 export const AnimationSettingsSchema = Type.Object({
   steps: Type.Array(
     Type.Object({
+      id: Type.Optional(Type.String({minLength: 1, maxLength: 64})),
+      transition: Type.Optional(
+        Type.Object({
+          ms: Type.Integer({minimum: 1}),
+          easing: AnimationEasingSchema,
+        }),
+      ),
       editorId: Type.String(),
       holdMs: Type.Integer({minimum: 0}),
     }),
     {minItems: 1},
   ),
   transitionMs: Type.Integer({minimum: 1}),
-  easing: Type.Union([
-    Type.Literal('smooth'),
-    Type.Literal('snappy'),
-    Type.Literal('linear'),
-  ]),
+  easing: AnimationEasingSchema,
+  header: Type.Optional(
+    Type.Object({
+      mode: Type.Union([
+        Type.Literal('tab'),
+        Type.Literal('title'),
+        Type.Literal('tabs'),
+      ]),
+      title: Type.String({maxLength: 80}),
+    }),
+  ),
   fps: Type.Union([
     Type.Literal(24),
     Type.Literal(30),

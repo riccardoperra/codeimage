@@ -328,11 +328,17 @@ test<TestContext>('PUT /v1/project/:id [Update Project] -> saves and loads the a
 
   const animation = {
     steps: [
-      {editorId: 'temp', holdMs: 1200},
-      {editorId: storedTab, holdMs: 0},
+      {id: 'first', editorId: 'temp', holdMs: 1200},
+      {
+        id: 'second',
+        editorId: storedTab,
+        holdMs: 0,
+        transition: {ms: 701, easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'},
+      },
     ],
     transitionMs: 650,
-    easing: 'linear',
+    easing: 'strong',
+    header: {mode: 'title', title: 'A story'},
     fps: 24,
   } satisfies ProjectUpdateBody['animation'];
   const response = await fastify.inject({
@@ -348,8 +354,13 @@ test<TestContext>('PUT /v1/project/:id [Update Project] -> saves and loads the a
   assert.deepStrictEqual(project.animation, {
     ...animation,
     steps: [
-      {editorId: newTab.id, holdMs: 1200},
-      {editorId: storedTab, holdMs: 0},
+      {id: 'first', editorId: newTab.id, holdMs: 1200},
+      {
+        id: 'second',
+        editorId: storedTab,
+        holdMs: 0,
+        transition: {ms: 701, easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'},
+      },
     ],
   });
 

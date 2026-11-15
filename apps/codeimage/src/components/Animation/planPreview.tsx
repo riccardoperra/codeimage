@@ -1,3 +1,4 @@
+import {easingOf} from '@core/animation/easing';
 import type {CustomTheme} from '@codeimage/highlight';
 import type {EditorState} from '@codeimage/store/editor/model';
 import type {Language} from '@codemirror/language';
@@ -159,6 +160,7 @@ export async function planPreview(
         () => (
           <FrameView
             natural
+            header={settings.header}
             activeTabId={tab.id}
             code={codeView(tab, languages[index])}
           />
@@ -174,6 +176,10 @@ export async function planPreview(
     lineNumberStart: tabs[index].lineNumberStart,
     layout: layouts[index],
     holdMs: settings.steps[index].holdMs,
+    transition: settings.steps[index].transition && {
+      ms: settings.steps[index].transition.ms,
+      easing: easingOf(settings.steps[index].transition.easing),
+    },
   });
   const [, ...rest] = tabs;
   return {
@@ -181,7 +187,7 @@ export async function planPreview(
       [step(0), ...rest.map((_, index) => step(index + 1))],
       {
         transitionMs: settings.transitionMs,
-        easing: settings.easing,
+        easing: easingOf(settings.easing),
         fps: settings.fps,
         lineNumbers: style.showLineNumbers,
         metrics,

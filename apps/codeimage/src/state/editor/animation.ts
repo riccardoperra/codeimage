@@ -1,142 +1,49 @@
-import type {AnimationSettings, NonEmpty} from '@core/animation/model';
+import type {
+  AnimationSettings,
+  AnimationHeader,
+  EasingValue,
+} from '@core/animation/model';
 import {Subject, map} from 'rxjs';
 import {
+  batch,
   createEffect,
   createMemo,
+  createRoot,
   createSignal,
+  getOwner,
   on,
   onCleanup,
+  runWithOwner,
   untrack,
 } from 'solid-js';
 import type {createEditorsStore} from './editor';
-
-const ANIMATION_DEFAULTS = {
-  holdMs: 800,
-  transitionMs: 900,
-  easing: 'smooth',
-  fps: 30,
-} as const;
-
-// Takumi rejects a fractional `timeMs`, so every duration is a whole number
-// of milliseconds.
-export const DURATION_LIMITS = {
-  holdMs: {min: 0, max: 10_000},
-  transitionMs: {min: 100, max: 5_000},
-} as const;
-
-export const EASINGS = [
-  'smooth',
-  'snappy',
-  'linear',
-] as const satisfies readonly AnimationSettings['easing'][];
-
-export const FRAME_RATES = [
-  24, 30, 50, 60,
-] as const satisfies readonly AnimationSettings['fps'][];
-
-type AnimationStep = AnimationSettings['steps'][number];
-
-// Settings whose steps may name tabs that no longer exist, or miss new ones.
-type AnimationDraft = Omit<AnimationSettings, 'steps'> & {
-  steps: readonly AnimationStep[];
-};
-
-const EMPTY_DRAFT: AnimationDraft = {
-  steps: [],
-  transitionMs: ANIMATION_DEFAULTS.transitionMs,
-  easing: ANIMATION_DEFAULTS.easing,
-  fps: ANIMATION_DEFAULTS.fps,
-};
-
-const clampDuration = (
-  value: number,
-  {min, max}: {readonly min: number; readonly max: number},
-) => Math.min(max, Math.max(min, Math.round(value)));
-
-const totalDurationMs = ({steps, transitionMs}: AnimationSettings) =>
-  steps.reduce((total, step) => total + step.holdMs, 0) +
-  (steps.length - 1) * transitionMs;
-
-export const stepStartsMs = ({steps, transitionMs}: AnimationSettings) =>
-  steps.map((_, index) =>
-    steps
-      .slice(0, index)
-      .reduce((start, step) => start + step.holdMs + transitionMs, 0),
-  );
-
-// Keeps the steps whose tab still exists, in their order, and appends a step
-// for every other tab in tab order. A timeline of 0 ms has no frame to show,
-// so a lone step held for 0 ms takes the default hold.
-function reconcileSteps(
-  draft: AnimationDraft,
-  editorIds: NonEmpty<string>,
-): AnimationSettings {
-  const tabs = new Set(editorIds);
-  const kept = new Map<string, AnimationStep>();
-  for (const step of draft.steps) {
-    if (tabs.has(step.editorId) && !kept.has(step.editorId)) {
-      kept.set(step.editorId, step);
-    }
-  }
-  const added = editorIds
-    .filter(editorId => !kept.has(editorId))
-    .map(editorId => ({editorId, holdMs: ANIMATION_DEFAULTS.holdMs}));
-  const [first, ...rest] = [...kept.values(), ...added] as [
-    AnimationStep,
-    ...AnimationStep[],
-  ];
-  const settings = {...draft, steps: [first, ...rest] as const};
-  return totalDurationMs(settings) > 0
-    ? settings
-    : {...settings, steps: [{...first, holdMs: ANIMATION_DEFAULTS.holdMs}]};
-}
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
-
-const includes = <T>(values: readonly T[], value: unknown): value is T =>
-  values.includes(value as T);
-
-// Reads settings saved by any version of the app, field by field. A field
-// that is missing or invalid takes its default, and durations are rounded
-// and clamped.
-function parseDraft(value: unknown): AnimationDraft {
-  if (!isRecord(value)) return EMPTY_DRAFT;
-  const steps = Array.isArray(value.steps) ? value.steps : [];
-  return {
-    steps: steps.flatMap(step =>
-      isRecord(step) &&
-      typeof step.editorId === 'string' &&
-      typeof step.holdMs === 'number' &&
-      Number.isFinite(step.holdMs)
-        ? [
-            {
-              editorId: step.editorId,
-              holdMs: clampDuration(step.holdMs, DURATION_LIMITS.holdMs),
-            },
-          ]
-        : [],
-    ),
-    transitionMs:
-      typeof value.transitionMs === 'number' &&
-      Number.isFinite(value.transitionMs)
-        ? clampDuration(value.transitionMs, DURATION_LIMITS.transitionMs)
-        : EMPTY_DRAFT.transitionMs,
-    easing: includes(EASINGS, value.easing) ? value.easing : EMPTY_DRAFT.easing,
-    fps: includes(FRAME_RATES, value.fps) ? value.fps : EMPTY_DRAFT.fps,
-  };
-}
-
-export const parseAnimationSettings = (
-  value: unknown,
-  editorIds: NonEmpty<string>,
-): AnimationSettings => reconcileSteps(parseDraft(value), editorIds);
+import {
+  ANIMATION_DEFAULTS,
+  DURATION_LIMITS,
+  EMPTY_DRAFT,
+  clampDuration,
+  parseDraft,
+  reconcileSteps,
+  seedSteps,
+  segmentsOf,
+  stepAt,
+  totalDurationMs,
+  transitionOf,
+  type AnimationDraft,
+  type SegmentSelection,
+} from './animationSettings';
+export {
+  DURATION_LIMITS,
+  EASINGS,
+  FRAME_RATES,
+  parseAnimationSettings,
+} from './animationSettings';
 
 // `playing` keeps the clock time at which the playhead was at 0, so the
 // state stays the same while the playhead moves.
 export type Playback =
   | {state: 'editing'}
-  | {state: 'playing'; originMs: number}
+  | {state: 'playing'; originMs: number; untilMs?: number}
   | {state: 'paused'; atMs: number}
   | {state: 'scrubbing'; atMs: number};
 
@@ -160,7 +67,12 @@ export function playheadMs(
       : playback.state === 'playing'
         ? now - playback.originMs
         : playback.atMs;
-  return Math.min(durationMs, Math.max(0, at));
+  return Math.min(
+    playback.state === 'playing'
+      ? (playback.untilMs ?? durationMs)
+      : durationMs,
+    Math.max(0, at),
+  );
 }
 
 export function nextPlayback(
@@ -197,39 +109,55 @@ export function nextPlayback(
 }
 
 export function createAnimationStore(
-  editor: ReturnType<typeof createEditorsStore>,
+  editor: Pick<ReturnType<typeof createEditorsStore>, 'activeEditorView'> & {
+    state: Pick<
+      ReturnType<typeof createEditorsStore>['state'],
+      'editors' | 'activeEditorId'
+    >;
+    actions: Pick<
+      ReturnType<typeof createEditorsStore>['actions'],
+      'setActiveEditorId' | 'addEditor'
+    >;
+    computed: Pick<
+      ReturnType<typeof createEditorsStore>['computed'],
+      'canAddEditor'
+    >;
+  },
 ) {
-  // The editor always keeps at least one tab.
-  const editorIds = createMemo(
-    () => editor.state.editors.map(({id}) => id) as [string, ...string[]],
-  );
+  const owner = getOwner();
+  const editorIds = createMemo(() => {
+    const [first, ...rest] = editor.state.editors;
+    return [first.id, ...rest.map(tab => tab.id)] as const;
+  });
   const [draft, setDraft] = createSignal<AnimationDraft>(EMPTY_DRAFT);
   const settings = createMemo(() => reconcileSteps(draft(), editorIds()));
+  const segments = createMemo(() => segmentsOf(settings()));
   const durationMs = createMemo(() => totalDurationMs(settings()));
   const [playback, setPlayback] = createSignal<Playback>({state: 'editing'});
   const [open, setOpen] = createSignal(false);
+  const [selection, setSelection] = createSignal<SegmentSelection | null>(null);
+  const [resizing, setResizing] = createSignal(false);
   const changes = new Subject<void>();
-
-  const update = (change: (settings: AnimationSettings) => AnimationDraft) => {
+  onCleanup(() => changes.complete());
+  const update = (
+    change: (settings: AnimationSettings) => AnimationDraft,
+    options: {commit?: boolean} = {},
+  ) => {
     setDraft(change(settings()));
-    changes.next();
+    if (options.commit !== false) changes.next();
   };
   const send = (event: PlaybackEvent) =>
     setPlayback(playback => nextPlayback(playback, event, durationMs()));
   const edit = () => send({type: 'edit'});
-
-  // The clock ticks once per display frame while playing. The playhead then
-  // steps on the frame times of the export, so the preview shows the frames
-  // the video will hold.
   const [now, setNow] = createSignal(0);
   createEffect(() => {
     const state = playback();
     if (state.state !== 'playing') return;
     let request = 0;
     const tick = (time: number) => {
-      if (time - state.originMs >= durationMs()) {
+      if (time - state.originMs >= (state.untilMs ?? durationMs()))
         send({type: 'pause', now: time});
-      } else {
+      else {
         setNow(time);
         request = requestAnimationFrame(tick);
       }
@@ -245,8 +173,37 @@ export function createAnimationStore(
     const frameMs = 1000 / settings().fps;
     return Math.floor(at / frameMs) * frameMs;
   });
-
-  // Typing shows the tab's code again, never a half-moved token.
+  const currentStep = createMemo(() => stepAt(settings(), playhead()));
+  let cancelFocus: (() => void) | undefined;
+  onCleanup(() => cancelFocus?.());
+  function editStep(index: number, text?: string) {
+    const step = settings().steps[index];
+    if (!step) return;
+    edit();
+    cancelFocus?.();
+    const previousId = editor.state.activeEditorId;
+    const previousView = editor.activeEditorView();
+    editor.actions.setActiveEditorId(step.editorId);
+    runWithOwner(owner, () =>
+      createRoot(dispose => {
+        cancelFocus = dispose;
+        createEffect(() => {
+          const view = editor.activeEditorView();
+          if (
+            !view ||
+            editor.state.activeEditorId !== step.editorId ||
+            (previousId !== step.editorId && view === previousView)
+          )
+            return;
+          view.focus();
+          if (text && !view.state.readOnly)
+            view.dispatch(view.state.replaceSelection(text));
+          dispose();
+          cancelFocus = undefined;
+        });
+      }),
+    );
+  }
   createEffect(
     on(
       () => editor.state.editors.map(({code}) => code),
@@ -256,71 +213,220 @@ export function createAnimationStore(
       {defer: true},
     ),
   );
-  createEffect(() => {
-    if (editorIds().length < 2) untrack(close);
-  });
-
-  function close() {
-    setOpen(false);
-    edit();
-  }
-
-  // The API types take a plain list of steps.
-  const stateToPersist = () => ({...settings(), steps: [...settings().steps]});
-
+  createEffect(
+    on(
+      editorIds,
+      ids => {
+        if (!untrack(draft).steps.length) return;
+        const reconciled = reconcileSteps(untrack(draft), ids);
+        if (
+          JSON.stringify(reconciled.steps) !==
+          JSON.stringify(untrack(draft).steps)
+        )
+          update(() => reconciled);
+        const selected = untrack(selection);
+        if (
+          selected &&
+          !reconciled.steps.some(step => step.id === selected.stepId)
+        )
+          setSelection(null);
+      },
+      {defer: true},
+    ),
+  );
+  const stateToPersist = () =>
+    draft().steps.length
+      ? {...settings(), steps: [...settings().steps]}
+      : undefined;
+  const setHoldMs = (
+    stepId: string,
+    holdMs: number,
+    options?: {commit?: boolean},
+  ) => {
+    if (!Number.isFinite(holdMs)) return;
+    update(
+      settings => ({
+        ...settings,
+        steps: settings.steps.map(step =>
+          step.id === stepId
+            ? {...step, holdMs: clampDuration(holdMs, DURATION_LIMITS.holdMs)}
+            : step,
+        ),
+      }),
+      options,
+    );
+  };
+  const setTransition = (
+    stepId: string,
+    transition: {ms?: number; easing?: EasingValue},
+    options?: {commit?: boolean},
+  ) => {
+    if (transition.ms !== undefined && !Number.isFinite(transition.ms)) return;
+    update(
+      settings => ({
+        ...settings,
+        steps: settings.steps.map(step =>
+          step.id === stepId
+            ? {
+                ...step,
+                transition: {
+                  ...transitionOf(settings, step),
+                  ...transition,
+                  ...(transition.ms === undefined
+                    ? {}
+                    : {
+                        ms: clampDuration(
+                          transition.ms,
+                          DURATION_LIMITS.transitionMs,
+                        ),
+                      }),
+                },
+              }
+            : step,
+        ),
+      }),
+      options,
+    );
+  };
+  const select = (value: SegmentSelection | null) => {
+    setSelection(value);
+    if (value?.kind === 'hold' && playback().state === 'editing') {
+      const step = settings().steps.find(step => step.id === value.stepId);
+      if (step) editor.actions.setActiveEditorId(step.editorId);
+    }
+  };
   return {
     settings,
+    segments,
     durationMs,
     playback,
     playhead,
+    currentStep,
     open,
+    selection,
+    resizing,
     stateToPersist,
     stateToPersist$: changes.pipe(map(stateToPersist)),
     actions: {
       setOpen(value: boolean) {
-        if (value) setOpen(true);
-        else close();
+        batch(() => {
+          if (value && !draft().steps.length)
+            update(settings => ({...settings, steps: seedSteps(editorIds())}));
+          setOpen(value);
+          if (!value) {
+            edit();
+            setSelection(null);
+          }
+        });
       },
       setFromPersistedState(value: unknown) {
         setDraft(parseDraft(value));
+        setSelection(null);
+        edit();
       },
-      moveStep(from: number, to: number) {
+      select,
+      setResizing,
+      setHoldMs,
+      setTransition,
+      editStep,
+      addStep(editorId: string) {
+        if (!editorIds().includes(editorId)) return;
+        const id = crypto.randomUUID();
+        update(settings => ({
+          ...settings,
+          steps: [
+            ...settings.steps,
+            {id, editorId, holdMs: ANIMATION_DEFAULTS.holdMs},
+          ],
+        }));
+        select({stepId: id, kind: 'hold'});
+      },
+      duplicateAsNext(stepId: string) {
+        const index = settings().steps.findIndex(step => step.id === stepId);
+        const step = settings().steps[index];
+        const tab = editor.state.editors.find(tab => tab.id === step?.editorId);
+        if (!tab || !editor.computed.canAddEditor()) return;
+        batch(() => {
+          editor.actions.addEditor(
+            {
+              ...tab,
+              marks: {
+                lines: tab.marks.lines.map(mark => ({...mark})),
+                focusedLines: [...tab.marks.focusedLines],
+              },
+            },
+            true,
+          );
+          const editorId = editor.state.editors.at(-1)!.id;
+          const id = crypto.randomUUID();
+          update(settings => {
+            const steps = [...settings.steps];
+            steps.splice(index + 1, 0, {id, editorId, holdMs: step.holdMs});
+            return {...settings, steps};
+          });
+          select({stepId: id, kind: 'hold'});
+          editStep(index + 1);
+        });
+      },
+      removeStep(stepId: string) {
+        if (settings().steps.length === 1) return;
+        update(settings => ({
+          ...settings,
+          steps: settings.steps.filter(step => step.id !== stepId),
+        }));
+        if (selection()?.stepId === stepId) setSelection(null);
+      },
+      moveStep(stepId: string, direction: -1 | 1) {
+        const index = settings().steps.findIndex(step => step.id === stepId);
+        const to = index + direction;
+        if (index < 0 || to < 0 || to >= settings().steps.length) return;
         update(settings => {
           const steps = [...settings.steps];
-          const [step] = steps.splice(from, 1);
-          steps.splice(to, 0, step);
+          [steps[index], steps[to]] = [steps[to], steps[index]];
           return {...settings, steps};
         });
       },
-      setHoldMs(editorId: string, holdMs: number) {
+      applyToAll(stepId: string) {
+        const step = settings().steps.find(step => step.id === stepId);
+        if (!step) return;
+        const {ms, easing} = transitionOf(settings(), step);
         update(settings => ({
           ...settings,
-          steps: settings.steps.map(step =>
-            step.editorId === editorId
-              ? {
-                  ...step,
-                  holdMs: clampDuration(holdMs, DURATION_LIMITS.holdMs),
-                }
-              : step,
-          ),
+          transitionMs: ms,
+          easing,
+          steps: settings.steps.map(({transition: _, ...step}) => step),
         }));
       },
-      setTransitionMs(transitionMs: number) {
+      setHeader(header: Partial<AnimationHeader>) {
         update(settings => ({
           ...settings,
-          transitionMs: clampDuration(
-            transitionMs,
-            DURATION_LIMITS.transitionMs,
-          ),
+          header: {
+            ...settings.header,
+            ...header,
+            ...(header.title === undefined
+              ? {}
+              : {title: header.title.trim().slice(0, 80)}),
+          },
         }));
-      },
-      setEasing(easing: AnimationSettings['easing']) {
-        update(settings => ({...settings, easing}));
       },
       setFps(fps: AnimationSettings['fps']) {
         update(settings => ({...settings, fps}));
       },
-      toggle: () => send({type: 'toggle', now: performance.now()}),
+      playTransition(stepId: string) {
+        const segment = segments().find(
+          segment => segment.kind === 'transition' && segment.stepId === stepId,
+        );
+        if (!segment) return;
+        setPlayback({
+          state: 'playing',
+          originMs: performance.now() - Math.max(0, segment.startMs - 300),
+          untilMs: segment.startMs + segment.durationMs,
+        });
+      },
+      toggle: () => {
+        if (settings().steps.length >= 2)
+          send({type: 'toggle', now: performance.now()});
+      },
       scrub: (atMs: number) => send({type: 'scrub', atMs}),
       seek: (atMs: number) => send({type: 'seek', atMs}),
       edit,
