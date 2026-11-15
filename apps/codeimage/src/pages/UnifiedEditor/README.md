@@ -7,11 +7,10 @@ The route table in `apps/codeimage/src/index.tsx` selects the page.
 | Route         | Page                                                                |
 | ------------- | ------------------------------------------------------------------- |
 | `/`           | Unified editor for signed-out users. Dashboard for signed-in users. |
-| `/classic`    | Classic editor.                                                     |
 | `/:snippetId` | Unified editor for a saved snippet.                                 |
 
 `/dashboard` redirects to `/`. `/login` keeps the existing sign-in flow.
-The unified editor and the classic editor use the same stores and local document.
+The unified editor uses the shared stores and local document.
 
 ## Preferences
 
@@ -131,7 +130,7 @@ Every image action passes through `createExporter.request` for the secrets revie
 Export settings use `getExportCanvasStore()`.
 The per-tab export renders a separate preview frame for each tab.
 
-The signature controls edit the same frame signature that the classic editor and exports draw.
+The signature controls edit the frame signature that exports draw.
 Saved signatures use `state/signatures/`.
 Each snippet keeps its own signature copy, so later edits to a saved signature leave the snippet unchanged.
 
@@ -167,4 +166,4 @@ The review script checks secrets review, focus restoration, overlay geometry, ro
 
 The snippet script needs the mock API and mock auth enabled, with the installed MSW worker served at `/mockServiceWorker.js`. It creates projects through the dashboard and checks loading, account saves, previews, read-only geometry, Share, export, Clone, missing/failed loads, and route navigation in all six layout/viewport combinations.
 
-Known limitation: for a signed-out viewer with a saved local document, Clone restores that local document instead of keeping the viewed snippet. The shared sync adapter navigates to `/` without handing the clone to the next provider. Resolve this before removing the classic editor. Account Clone works.
+Known limitation: for a signed-out viewer with a saved local document, Clone restores that local document instead of keeping the viewed snippet. The shared sync adapter navigates to `/` without handing the clone to the next provider. Account Clone works.

@@ -2,7 +2,7 @@
 
 | Feature                              | User entry points                                    | Executable audit journey                                                                                    |
 | ------------------------------------ | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| [Edit code](editor.md)               | Guest `/`, `/classic`, saved project URL             | Edit and undo on unified/classic; `editor-options` checks language and Format                               |
+| [Edit code](editor.md)               | Guest `/`, saved project URL             | Edit and undo in the unified editor; `editor-options` checks language and Format                               |
 | [Appearance](appearance.md)          | Inspector Theme/Frame/Window/Code/Font               | Theme commit, real PNG, accent wash                                                                         |
 | [Files](tabs.md)                     | Window tab strip                                     | Add/name/switch/close, per-tab ZIP                                                                          |
 | [Exports](export.md)                 | Export, arrow menu, Settings → Export                | PNG/SVG and Takumi; `export-options` checks JPEG, 1x/2x and alt text                                        |
@@ -20,7 +20,7 @@ Source paths in feature files are relative to `apps/codeimage/src/` unless expli
 
 Every feature requires both source review and live evidence during maintenance. Each file distinguishes the executable journey from additional sub-features needing targeted proof. Do not claim complete matrix coverage from one convenient entry point.
 
-Scope follows current checkout HEAD, including the November 14–15 unified editor, line marks, signatures, window styles, What's new and Takumi merges. `pages/UnifiedEditor/` now implements the production guest `/` editor; its folder name is not a reason to exclude it. Authenticated `/` is Dashboard; saved project URLs still use classic Editor. The theme-card and editor-controls prototype routes are gone. Animation core is present, but animation UI and CLI from separate branch histories are not reachable features at this HEAD.
+Scope follows current checkout HEAD, including the November 14–15 unified editor, line marks, signatures, window styles, What's new and Takumi merges. `pages/UnifiedEditor/` now implements the production guest `/` editor; its folder name is not a reason to exclude it. Authenticated `/` is Dashboard; saved project URLs use the unified editor. The theme-card and editor-controls prototype routes are gone. Animation core is present, but animation UI and CLI from separate branch histories are not reachable features at this HEAD.
 
 Additional case names are `export-options`, `settings-persistence`, `annotations`, `signature-management`, `editor-options`, and `preset-management`. With the original eleven this is seventeen selectable journeys. Source paths are unchanged by the check migration. Read [the legacy-check retirement plan](../references/legacy-checks.md) before deleting old scripts.
 

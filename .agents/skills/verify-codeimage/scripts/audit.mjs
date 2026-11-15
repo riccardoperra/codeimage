@@ -106,14 +106,12 @@ export async function audit({page, context, base, out, server}) {
       await button.click();
   }
   await feature('editor', async () => {
-    for (const route of ['/', '/classic']) {
-      await doctor(route);
-      await editor().fill('const audit = 1;');
-      await editor().press('End');
-      await page.keyboard.type('x');
-      await page.keyboard.press('ControlOrMeta+z');
-      assert.equal(await editor().innerText(), 'const audit = 1;');
-    }
+    await doctor();
+    await editor().fill('const audit = 1;');
+    await editor().press('End');
+    await page.keyboard.type('x');
+    await page.keyboard.press('ControlOrMeta+z');
+    assert.equal(await editor().innerText(), 'const audit = 1;');
   });
   await feature('appearance', async () => {
     await section('themes');
