@@ -305,17 +305,11 @@ function verifyBackgroundDownload({fresh}) {
       await settings('experiments');
       const row = modelRow(page);
       await row.locator('progress:not([value])').waitFor();
-      await turnOn(page);
-      await closeSettings();
       assert.equal(
-        await (await commandFor(page)).count(),
-        0,
-        'no command while the model downloads',
+        await page.locator('#settings-local-ai').isDisabled(),
+        true,
+        'the switch waits for the model',
       );
-      await closeMenu(page);
-
-      await settings('experiments');
-      await row.locator('progress:not([value])').waitFor();
       const checks = await page.evaluate(() => window.__localAi.checks);
       await row.getByText('Ready on this device.').waitFor({timeout: 15000});
       const readyAfter = Date.now() - loaded;
@@ -323,6 +317,7 @@ function verifyBackgroundDownload({fresh}) {
         (await page.evaluate(() => window.__localAi.checks)) > checks,
         'a poll, not the visit, found the model ready',
       );
+      await turnOn(page);
       await closeSettings();
       assert.equal(
         await (await commandFor(page)).count(),
@@ -376,8 +371,18 @@ function verifyFailedDownload({fresh, out}) {
       await closeSettings();
       await page.evaluate(() => (window.__localAi.forced = 'unavailable'));
       await settings('experiments');
-      await row.getByText('This device or Chrome version cannot run').waitFor();
-      assert.equal(await row.locator('button, progress').count(), 0);
+      await row
+        .getByText(
+          'Not available. Turn on On-device AI in chrome://settings/ai.',
+        )
+        .waitFor();
+      assert.equal(
+        await page.locator('#settings-local-ai').isDisabled(),
+        true,
+        'the switch is off while the model cannot run',
+      );
+      await row.getByRole('button', {name: 'Check again'}).click();
+      assert.equal(await row.locator('progress').count(), 0);
       await modelGroup(page).screenshot({
         path: resolve(out, 'local-ai-row-unavailable.png'),
       });

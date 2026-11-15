@@ -247,6 +247,15 @@ function ModelControl() {
       <Match when={languageModel.state().kind === 'failed'}>
         {download(t('localAi.retry'))}
       </Match>
+      <Match when={languageModel.state().kind === 'unavailable'}>
+        <Button
+          size="sm"
+          theme="secondary"
+          onClick={() => void languageModel.refresh()}
+        >
+          {t('localAi.checkAgain')}
+        </Button>
+      </Match>
       <Match when={downloading()}>
         {state => (
           <Show
@@ -437,7 +446,11 @@ export function createSettingSections(model: EditorControlsModel) {
                     <SwitchField
                       id="settings-local-ai"
                       label={t('localAi.experimentSwitch')}
-                      checked={preferences.localAi()}
+                      checked={
+                        preferences.localAi() &&
+                        languageModel.state().kind === 'available'
+                      }
+                      disabled={languageModel.state().kind !== 'available'}
                       onChange={preferences.setLocalAi}
                     />
                   ),
@@ -446,7 +459,9 @@ export function createSettingSections(model: EditorControlsModel) {
                   id: 'local-ai-model' as const,
                   title: t('localAi.model'),
                   description: () =>
-                    `${modelStatus(t)} ${t('localAi.modelDetails')}`,
+                    languageModel.state().kind === 'unavailable'
+                      ? modelStatus(t)
+                      : `${modelStatus(t)} ${t('localAi.modelDetails')}`,
                   small: true,
                   control: () => <ModelControl />,
                 },

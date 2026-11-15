@@ -27,7 +27,8 @@ export const localAi = {
         'Downloading. You can keep editing, the progress shows here.',
       modelStarting: 'Starting download…',
       modelUnavailable:
-        'This device or Chrome version cannot run the on-device model.',
+        'Not available. Turn on On-device AI in chrome://settings/ai.',
+      checkAgain: 'Check again',
       modelFailed: 'The download failed ({{message}}).',
       modelDetails:
         'Chrome shows its own status at chrome://on-device-internals.',
@@ -66,7 +67,8 @@ export const localAi = {
         "Download in corso. Puoi continuare a modificare, l'avanzamento è qui.",
       modelStarting: 'Avvio del download…',
       modelUnavailable:
-        'Questo dispositivo o questa versione di Chrome non può eseguire il modello on-device.',
+        'Non disponibile. Attiva On-device AI in chrome://settings/ai.',
+      checkAgain: 'Controlla di nuovo',
       modelFailed: 'Il download non è riuscito ({{message}}).',
       modelDetails:
         'Chrome mostra il suo stato in chrome://on-device-internals.',
@@ -105,7 +107,8 @@ export const localAi = {
         'Wird heruntergeladen. Du kannst weiter bearbeiten, der Fortschritt steht hier.',
       modelStarting: 'Download wird gestartet…',
       modelUnavailable:
-        'Dieses Gerät oder diese Chrome-Version kann das On-Device-Modell nicht ausführen.',
+        'Nicht verfügbar. Aktiviere On-device AI unter chrome://settings/ai.',
+      checkAgain: 'Erneut prüfen',
       modelFailed: 'Der Download ist fehlgeschlagen ({{message}}).',
       modelDetails:
         'Chrome zeigt seinen Status unter chrome://on-device-internals.',
@@ -144,7 +147,8 @@ export const localAi = {
         'Descargando. Puedes seguir editando, el progreso se ve aquí.',
       modelStarting: 'Iniciando la descarga…',
       modelUnavailable:
-        'Este dispositivo o esta versión de Chrome no puede ejecutar el modelo en el dispositivo.',
+        'No disponible. Activa On-device AI en chrome://settings/ai.',
+      checkAgain: 'Comprobar de nuevo',
       modelFailed: 'La descarga falló ({{message}}).',
       modelDetails: 'Chrome muestra su estado en chrome://on-device-internals.',
       download: 'Descargar el modelo',
