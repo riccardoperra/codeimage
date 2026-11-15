@@ -6,6 +6,7 @@ describe('editor page state', () => {
     expect(resolveEditorPageState(undefined, 'ready', true)).toEqual({
       kind: 'local',
       editable: true,
+      ready: true,
     });
   });
 
@@ -15,6 +16,7 @@ describe('editor page state', () => {
       expect(resolveEditorPageState('snippet', state, false)).toEqual({
         kind: 'loading',
         editable: false,
+        ready: false,
         snippetId: 'snippet',
       });
     },
@@ -24,6 +26,7 @@ describe('editor page state', () => {
     expect(resolveEditorPageState('snippet', 'ready', false)).toEqual({
       kind: 'owner',
       editable: true,
+      ready: true,
       snippetId: 'snippet',
     });
   });
@@ -32,6 +35,7 @@ describe('editor page state', () => {
     expect(resolveEditorPageState('snippet', 'ready', true)).toEqual({
       kind: 'read-only',
       editable: false,
+      ready: true,
       snippetId: 'snippet',
     });
   });
@@ -42,6 +46,7 @@ describe('editor page state', () => {
       expect(resolveEditorPageState('snippet', state, false)).toEqual({
         kind: 'unavailable',
         editable: false,
+        ready: false,
         snippetId: 'snippet',
       });
     },

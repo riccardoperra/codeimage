@@ -72,6 +72,7 @@ Each layout renders `Canvas` once inside a container with a definite size.
 A snippet load uses the same frame placeholder as a lazy editor load.
 `ReadOnlyNotice` floats at the top of that container, outside the fitted frame.
 `EditingControls` hides and makes the existing controls inert while preserving their footprint.
+Export waits for a snippet to load, so it cannot capture the previous document.
 Read-only commands contain only export and settings; editing shortcuts and destructive redaction are disabled.
 `FitFrame.tsx` scales the frame to the available space.
 `exportRef()` supplies the element that export captures.

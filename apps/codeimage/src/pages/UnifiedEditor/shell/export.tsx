@@ -22,6 +22,7 @@ import type {Accessor} from 'solid-js';
 import {render} from 'solid-js/web';
 import {redactTabCode} from '../../../components/CustomEditor/plugins/secrets';
 import {PreviewFrame} from '../../../components/Frame/PreviewFrame';
+import type {EditorPageState} from '../page-state';
 import {showExportSuccessToast} from '../../../components/Toolbar/ExportSuccessToast';
 import {deliverTabFiles, renderTabFiles} from '../../../hooks/export-tabs';
 import {
@@ -66,8 +67,10 @@ export interface Exporter {
  */
 export function createExporter(
   ref: Accessor<HTMLElement | undefined>,
-  editable: Accessor<boolean>,
+  pageState: Accessor<EditorPageState>,
 ): Exporter {
+  const editable = () => pageState().editable;
+  const ready = () => pageState().ready;
   const config = provideState(EditorConfigStore);
   const [t] = useI18n<AppLocaleEntries>();
   const canvas = getExportCanvasStore();
@@ -131,7 +134,7 @@ export function createExporter(
     );
 
   const run = async (action: ExportAction) => {
-    if (busy() || dispatchCopyToClipboard.loading()) return;
+    if (!ready() || busy() || dispatchCopyToClipboard.loading()) return;
     if (action === 'copy') {
       const element = ref();
       if (element)
@@ -177,7 +180,8 @@ export function createExporter(
   };
 
   const request = (action: ExportAction) => {
-    if (busy() || pending() || dispatchCopyToClipboard.loading()) return;
+    if (!ready() || busy() || pending() || dispatchCopyToClipboard.loading())
+      return;
     if (secrets() > 0) setPending(action);
     else void run(action);
   };
@@ -200,7 +204,7 @@ export function createExporter(
   };
 
   return {
-    busy: () => busy() || dispatchCopyToClipboard.loading(),
+    busy: () => !ready() || busy() || dispatchCopyToClipboard.loading(),
     tabs: () => editor.state.editors.length,
     image: () => request('image'),
     eachTab: () => request('eachTab'),
@@ -208,6 +212,7 @@ export function createExporter(
     newTab: () => request('newTab'),
     copy: () => request('copy'),
     canCopy: () =>
+      ready() &&
       !!navigator.clipboard?.write &&
       [ExportExtension.png, ExportExtension.svg].includes(canvas.get.extension),
     canShare: () => !!navigator.share,
@@ -216,7 +221,9 @@ export function createExporter(
     cancel: () => setPending(undefined),
     copyAltText,
     canCopyAltText: () =>
-      !!getActiveEditorStore().editor() && !!navigator.clipboard?.writeText,
+      ready() &&
+      !!getActiveEditorStore().editor() &&
+      !!navigator.clipboard?.writeText,
     secrets,
     canRedact: editable,
     redactSecrets: () => {

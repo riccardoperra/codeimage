@@ -160,7 +160,7 @@ export function createStage(pageState: Accessor<EditorPageState>): Stage {
   const setScale = (scale: number) =>
     untrackCommand(() => frame.setScale(scale), false);
   const activeEditor = getActiveEditorStore();
-  const exporter = createExporter(exportRef, () => pageState().editable);
+  const exporter = createExporter(exportRef, pageState);
   // As today, a phone gets the smaller buttons.
   const size = useModality() === 'full' ? 'sm' : 'xs';
 

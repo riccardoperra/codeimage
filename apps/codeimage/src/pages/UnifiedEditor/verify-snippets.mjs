@@ -160,6 +160,10 @@ try {
       await page.getByRole('button', {name: 'New', exact: true}).click();
       await page.locator('.unified-editor[data-page-state=loading]').waitFor();
       await page.locator('[data-frame-placeholder]').waitFor();
+      check(
+        await page.locator('[data-export-image]').isDisabled(),
+        `${tag}: Export waits for the snippet instead of exporting the previous document`,
+      );
       const loadingHeader = await page
         .locator('.unified-editor > header')
         .boundingBox();
