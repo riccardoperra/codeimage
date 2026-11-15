@@ -22,10 +22,22 @@ export async function audit({page, context, base, out, server}) {
     page.locator('.cm-content[contenteditable="true"]').first();
   const shot = name =>
     page.screenshot({path: resolve(out, `${name}.png`), fullPage: true});
-  async function doctor(route = '/', expected = 'editor') {
+  // `layout` saves that layout as the preference first. Without it the
+  // stored preference stands, which the persistence case relies on.
+  async function doctor(route = '/', expected = 'editor', layout) {
     assert.equal(server.exitCode, null);
     assert.ok((await fetch(base)).ok);
     await page.goto(base + route);
+    const changed =
+      layout !== undefined &&
+      (await page.evaluate(layout => {
+        const key = 'codeimage:editor-settings';
+        const stored = JSON.parse(localStorage.getItem(key) ?? '{}');
+        if ((stored.layout ?? 'inspector') === layout) return false;
+        localStorage.setItem(key, JSON.stringify({...stored, layout}));
+        return true;
+      }, layout));
+    if (changed) await page.reload();
     if (expected === 'dashboard') {
       await page
         .getByRole('button', {name: 'New', exact: true})
@@ -42,7 +54,7 @@ export async function audit({page, context, base, out, server}) {
   async function feature(name, run) {
     if (requested.size && !requested.has(name)) return;
     try {
-      await doctor('/?v=2');
+      await doctor('/', 'editor', 'inspector');
       await run();
       await shot(name);
       results.push({feature: name, status: 'passed'});
@@ -58,7 +70,11 @@ export async function audit({page, context, base, out, server}) {
       );
       results.push({feature: name, status: 'failed', error: String(error)});
       console.log(`FAIL ${name}: ${String(error).slice(0, 400)}`);
-      await doctor('/?v=2', name === 'projects' ? 'dashboard' : 'editor');
+      await doctor(
+        '/',
+        name === 'projects' ? 'dashboard' : 'editor',
+        'inspector',
+      );
     }
     await writeFile(
       resolve(out, 'audit.json'),
@@ -90,7 +106,7 @@ export async function audit({page, context, base, out, server}) {
       await button.click();
   }
   await feature('editor', async () => {
-    for (const route of ['/?v=2', '/classic']) {
+    for (const route of ['/', '/classic']) {
       await doctor(route);
       await editor().fill('const audit = 1;');
       await editor().press('End');
@@ -388,7 +404,7 @@ export async function audit({page, context, base, out, server}) {
     page.off('download', count);
   });
   await feature('presets', async () => {
-    await doctor('/?v=4');
+    await doctor('/', 'editor', 'studio');
     await page.getByRole('button', {name: 'Presets', exact: true}).click();
     await page
       .getByRole('button', {name: 'Add preset', exact: true})
@@ -457,7 +473,7 @@ export async function audit({page, context, base, out, server}) {
         /exportOptions/,
       );
     } finally {
-      await doctor('/?v=2');
+      await doctor('/', 'editor', 'inspector');
       await settings('export');
       await page
         .locator('[data-setting=export-format]')
@@ -516,7 +532,7 @@ export async function audit({page, context, base, out, server}) {
       );
       await closeSettings();
     } finally {
-      await doctor('/?v=2');
+      await doctor('/', 'editor', 'inspector');
       await settings('experiments');
       const restore = page.getByRole('button', {
         name: 'Restore defaults',
@@ -609,7 +625,7 @@ export async function audit({page, context, base, out, server}) {
     assert.match(await editor().innerText(), /const value = \{.*answer: 42/);
   });
   await feature('preset-management', async () => {
-    await doctor('/?v=4');
+    await doctor('/', 'editor', 'studio');
     await page.getByRole('button', {name: 'Presets', exact: true}).click();
     await page
       .getByRole('button', {name: 'Add preset', exact: true})

@@ -8,13 +8,13 @@ Create, apply, update, rename and delete presets; guest IndexedDB persistence an
 
 ## How to get to it (user POV)
 
-Switch Settings → Experiments → Layout to Studio, then choose Presets from the rail. Inspector does not expose this panel. The public `/?v=4` route selects Studio too.
+Switch Settings → Experiments → Layout to Studio, then choose Presets from the rail. Inspector does not expose this panel.
 
 ## Driving it with Playwright
 
-The audit opens `/?v=4`, clicks button Presets, then the first Add preset button (the empty state exposes a second). Scope to alertdialog Add a new preset, fill its textbox and click Confirm. Assert the `li` containing Verification preset. Reload the same context, reopen Presets and click the saved item. Capture before/after and exported appearance. For an application regression, change a conspicuous theme before applying, then assert the previous theme returns while code remains unchanged. Menu actions live under each item's Preset menu.
+The audit saves Studio as the layout preference, opens `/`, clicks button Presets, then the first Add preset button (the empty state exposes a second). Scope to alertdialog Add a new preset, fill its textbox and click Confirm. Assert the `li` containing Verification preset. Reload the same context, reopen Presets and click the saved item. Capture before/after and exported appearance. For an application regression, change a conspicuous theme before applying, then assert the previous theme returns while code remains unchanged. Menu actions live under each item's Preset menu.
 
-Source: `apps/codeimage/src/prototypes/editor-controls/variants/studio/panels.tsx`, `localized/PresetSwitcher.tsx`, `state/presets/bridge.ts`.
+Source: `apps/codeimage/src/pages/UnifiedEditor/variants/studio/panels.tsx`, `localized/PresetSwitcher.tsx`, `state/presets/bridge.ts`.
 
 Run `preset-management` to create a preset, rename it in the naming alertdialog, delete it through the menu and reload to assert absence. Applying a preset after deliberately changing appearance, sharing and the limit remain separate coverage.
 

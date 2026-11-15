@@ -1,4 +1,4 @@
-// node apps/codeimage/src/prototypes/editor-controls/verify-i18n.mjs [base URL] [screenshot directory]
+// node apps/codeimage/src/pages/UnifiedEditor/verify-i18n.mjs [base URL] [screenshot directory]
 import assert from 'node:assert/strict';
 import {mkdirSync} from 'node:fs';
 import {chromium} from 'playwright';
@@ -9,11 +9,7 @@ if (output) mkdirSync(output, {recursive: true});
 const browser = await chromium.launch();
 const errors = [];
 const allEnglish = flatten(dictionaries.en);
-const routes = [
-  ['inspector', 2],
-  ['dock', 3],
-  ['studio', 4],
-];
+const layouts = ['inspector', 'dock', 'studio'];
 
 async function noEnglish(page, locale, surface) {
   if (locale === 'en') return;
@@ -59,10 +55,15 @@ async function noEnglish(page, locale, surface) {
   assert.deepEqual(leftovers, [], `${locale} ${surface}: English leftovers`);
 }
 async function ready(page) {
-  await page.waitForSelector('.proto-variant [data-fit-scale]', {
+  await page.waitForSelector('.unified-editor [data-fit-scale]', {
     timeout: 60000,
   });
   await page.waitForTimeout(2500);
+  const nudge = page.locator('[data-whats-new=nudge]');
+  if (await nudge.isVisible()) {
+    await nudge.locator('button[aria-label]').last().click();
+    await nudge.waitFor({state: 'hidden'});
+  }
   const close = page.getByRole('button', {name: /^close$/i}).first();
   if (await close.isVisible().catch(() => false)) {
     await close.click();
@@ -105,7 +106,7 @@ try {
     [1440, 900],
     [390, 844],
   ]) {
-    for (const [layout, variant] of routes) {
+    for (const layout of layouts) {
       const ctx = await browser.newContext({
         viewport: {width, height},
         colorScheme: 'dark',
@@ -114,7 +115,13 @@ try {
       page.on('pageerror', error => {
         if (!/reading 'url'/.test(error.message)) errors.push(error.message);
       });
-      await page.goto(`${base}/?v=${variant}`, {waitUntil: 'load'});
+      await page.addInitScript(layout => {
+        localStorage.setItem(
+          'codeimage:editor-settings',
+          JSON.stringify({layout}),
+        );
+      }, layout);
+      await page.goto(`${base}/`, {waitUntil: 'load'});
       await page.reload({waitUntil: 'load'});
       await ready(page);
       let current = 'en';
