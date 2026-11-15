@@ -26,6 +26,12 @@ export const localAi = {
       experimentHint:
         "Adds Ask AI under the canvas and in the command menu, on a computer: Chrome's on-device model makes the change with the editor's tools.",
       experimentSwitch: 'Use local AI',
+      provider: 'Tool calling',
+      providerHint:
+        "Native needs Chrome's tool use flag; structured asks the model for JSON steps. Auto picks native when Chrome can run it.",
+      providerAuto: 'Auto',
+      providerNative: 'Native',
+      providerStructured: 'Structured',
       model: 'On-device model',
       modelReady: 'Ready on this device.',
       modelDownloadable: 'Chrome downloads it once, a few GB.',
@@ -100,6 +106,12 @@ export const localAi = {
       experimentHint:
         "Aggiunge Chiedi all'AI sotto il canvas e nel menu dei comandi, su computer: il modello on-device di Chrome fa la modifica con gli strumenti dell'editor.",
       experimentSwitch: "Usa l'AI locale",
+      provider: 'Chiamata degli strumenti',
+      providerHint:
+        'La nativa richiede il flag tool use di Chrome; la strutturata chiede al modello passi in JSON. Auto sceglie la nativa quando Chrome la supporta.',
+      providerAuto: 'Auto',
+      providerNative: 'Nativa',
+      providerStructured: 'Strutturata',
       model: 'Modello on-device',
       modelReady: 'Pronto su questo dispositivo.',
       modelDownloadable: 'Chrome lo scarica una volta, qualche GB.',
@@ -181,6 +193,12 @@ export const localAi = {
       experimentHint:
         'Fügt KI fragen unter der Leinwand und im Befehlsmenü hinzu, auf dem Computer: Das On-Device-Modell von Chrome nimmt die Änderung mit den Werkzeugen des Editors vor.',
       experimentSwitch: 'Lokale KI verwenden',
+      provider: 'Tool-Aufrufe',
+      providerHint:
+        'Nativ braucht Chromes Tool-Use-Flag; strukturiert lässt das Modell JSON-Schritte antworten. Auto wählt nativ, wenn Chrome es ausführen kann.',
+      providerAuto: 'Auto',
+      providerNative: 'Nativ',
+      providerStructured: 'Strukturiert',
       model: 'On-Device-Modell',
       modelReady: 'Bereit auf diesem Gerät.',
       modelDownloadable: 'Chrome lädt es einmal herunter, einige GB.',
@@ -261,6 +279,12 @@ export const localAi = {
       experimentHint:
         'Añade Preguntar a la IA bajo el lienzo y en el menú de comandos, en un ordenador: el modelo en el dispositivo de Chrome hace el cambio con las herramientas del editor.',
       experimentSwitch: 'Usar la IA local',
+      provider: 'Llamada a herramientas',
+      providerHint:
+        'La nativa necesita el flag tool use de Chrome; la estructurada pide al modelo pasos en JSON. Auto elige la nativa cuando Chrome puede ejecutarla.',
+      providerAuto: 'Auto',
+      providerNative: 'Nativa',
+      providerStructured: 'Estructurada',
       model: 'Modelo en el dispositivo',
       modelReady: 'Listo en este dispositivo.',
       modelDownloadable: 'Chrome lo descarga una vez, unos pocos GB.',

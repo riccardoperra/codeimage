@@ -84,6 +84,40 @@ const SCRIPTS = {
   ]),
 };
 
+// What the fake model answers a structured session (no native tools, a
+// responseConstraint on every prompt): one JSON step per prompt, the first as
+// cumulative chunks. Prompts that are not requests (results, "Continue")
+// take the next step.
+const step = value => JSON.stringify(value);
+const REASON = 'Add the tab first, then style and export it.';
+const STRUCTURED_ANSWER =
+  'Added test.tsx with Dracula, padding 32, and a 2x PNG.';
+const STRUCTURED_SCRIPTS = {
+  [REQUEST]: [
+    [
+      step({kind: 'reason', text: REASON}).slice(0, 20),
+      step({kind: 'reason', text: REASON}),
+    ],
+    [
+      step({
+        kind: 'tool',
+        name: 'add_tab',
+        args: {name: 'test.tsx', language: 'typescript', code: CODE},
+      }),
+    ],
+    [step({kind: 'tool', name: 'apply_theme', args: {theme: 'Dracula'}})],
+    [step({kind: 'tool', name: 'set_controls', args: {frame_padding: '32'}})],
+    [
+      step({
+        kind: 'tool',
+        name: 'export_image',
+        args: {format: 'png', scale: 2},
+      }),
+    ],
+    [step({kind: 'answer', text: STRUCTURED_ANSWER})],
+  ],
+};
+
 // A stand-in for Chrome's Prompt API with tool calling. In `click` mode the
 // model starts downloadable and a create() downloads it with progress 0, then
 // 0.5. In `background` mode Chrome is already downloading at load and the
@@ -91,7 +125,7 @@ const SCRIPTS = {
 // create() fails. In `ready` mode the model is available from the start.
 // `window.__localAi.forced` overrides what availability() answers, and
 // `thinkMs`, `chunkMs` pace the stream.
-function installLanguageModel({mode, scripts}) {
+function installLanguageModel({mode, scripts, structuredScripts}) {
   const record = {
     forced: undefined,
     createError: undefined,
@@ -100,6 +134,10 @@ function installLanguageModel({mode, scripts}) {
     checks: 0,
     creates: 0,
     bases: [],
+    // Base sessions created without tools, for structured output.
+    structuredBases: [],
+    // The responseConstraint of each structured prompt.
+    constraints: [],
     clones: 0,
     appended: [],
     prompts: [],
@@ -152,14 +190,25 @@ function installLanguageModel({mode, scripts}) {
       async clone() {
         return session(++record.clones);
       },
-      promptStreaming(input) {
+      promptStreaming(input, options) {
         record.prompts.push(plain(input));
         record.log.push([clone, 'prompt', plain(input)]);
-        if (typeof input === 'string') {
+        const constraint = options?.responseConstraint;
+        if (constraint) {
+          record.constraints.push(plain(constraint));
+          if (structuredScripts[input] || !script) {
+            script = structuredScripts[input] ?? [];
+            turn = 0;
+          }
+        } else if (typeof input === 'string') {
           script = scripts[input] ?? [['I cannot help with that.']];
           turn = 0;
         }
-        const chunks = script[turn++] ?? ['Nothing more to do.'];
+        const chunks =
+          script[turn++] ??
+          (constraint
+            ? [JSON.stringify({kind: 'answer', text: 'Nothing more to do.'})]
+            : ['Nothing more to do.']);
         return new ReadableStream({
           async start(controller) {
             await wait(record.thinkMs);
@@ -202,6 +251,14 @@ function installLanguageModel({mode, scripts}) {
           'The device is unable to create a session to run the model.',
           record.createError,
         );
+      if (!options.tools)
+        record.structuredBases.push(
+          plain({
+            initialPrompts: options.initialPrompts,
+            expectedInputs: options.expectedInputs,
+            expectedOutputs: options.expectedOutputs,
+          }),
+        );
       if (options.tools)
         record.bases.push(
           plain({
@@ -219,7 +276,11 @@ function installLanguageModel({mode, scripts}) {
 }
 
 const install = mode => context =>
-  context.addInitScript(installLanguageModel, {mode, scripts: SCRIPTS});
+  context.addInitScript(installLanguageModel, {
+    mode,
+    scripts: SCRIPTS,
+    structuredScripts: STRUCTURED_SCRIPTS,
+  });
 
 const modelRow = page => page.locator('[data-setting="local-ai-model"]');
 const requirements = row => row.getByRole('list', {name: 'What Chrome needs'});
@@ -308,12 +369,13 @@ export async function verifyLocalAi({fresh, out}) {
   const states = await verifyDownload({fresh, out});
   const background = await verifyBackgroundDownload({fresh});
   const failed = await verifyFailedDownload({fresh, out});
+  const structured = await verifyStructured({fresh, out});
   const layouts = {};
   for (const target of LAYOUTS)
     layouts[target.name] = await verifyLayout({fresh, out, ...target});
   for (const layout of ['inspector', 'dock', 'studio'])
     layouts[`${layout}-phone`] = await verifyNoPhone({fresh, layout});
-  return {...states, background, failed, layouts};
+  return {...states, background, failed, structured, layouts};
 }
 
 const LAYOUTS = [
@@ -402,6 +464,153 @@ function verifyLayout({fresh, out, name, layout}) {
       await page.keyboard.press('Escape');
       await bar(page).waitFor({state: 'detached'});
       return {bar: [Math.round(box.width), Math.round(box.height)]};
+    },
+  );
+}
+
+// The same request through structured output: the model replies with JSON
+// steps under a responseConstraint and no native tools, with the same effects.
+function verifyStructured({fresh, out}) {
+  return fresh(
+    {
+      name: 'local-ai-structured',
+      layout: 'inspector',
+      viewport: {width: 1440, height: 1000},
+      initialize: async context => {
+        await install('ready')(context);
+        await context.addInitScript(() => {
+          const key = 'codeimage:editor-settings';
+          const stored = JSON.parse(localStorage.getItem(key) ?? '{}');
+          localStorage.setItem(
+            key,
+            JSON.stringify({
+              ...stored,
+              localAi: true,
+              localAiProvider: 'structured',
+            }),
+          );
+        });
+      },
+    },
+    async ({page, doctor, editor}) => {
+      await doctor();
+      await dismissNudge(page);
+      const providers = [];
+      page.on('console', message => {
+        const used = /^\[local-ai\] provider (\w+)/.exec(message.text());
+        if (used) providers.push(used[1]);
+      });
+      const framePadding = () =>
+        page
+          .locator('[data-fit-scale] [data-watermark-frame]')
+          .first()
+          .evaluate(element => getComputedStyle(element).paddingLeft);
+      const paddingBefore = await framePadding();
+      await page.locator('[data-ask-ai]').click();
+      await field(page).waitFor();
+      const [download] = await Promise.all([
+        page.waitForEvent('download', {timeout: 60000}),
+        send(page, REQUEST),
+      ]);
+      const file = resolve(out, 'local-ai-structured-2x.png');
+      await download.saveAs(file);
+      const png = PNG.sync.read(await readFile(file));
+      await bar(page)
+        .locator('[data-local-ai-run="answered"]')
+        .waitFor({timeout: 15000});
+      assert.deepEqual(
+        providers,
+        ['structured'],
+        'the structured provider runs it',
+      );
+
+      assert.deepEqual(
+        await rows(page).evaluateAll(items =>
+          items.map(item => [item.dataset.tool, item.dataset.status]),
+        ),
+        [
+          ['get_editor_state', 'done'],
+          ['add_tab', 'done'],
+          ['apply_theme', 'done'],
+          ['set_controls', 'done'],
+          ['export_image', 'done'],
+        ],
+        'one row per tool step',
+      );
+      assert.equal(
+        await run(page).locator('[data-local-ai-note]').innerText(),
+        REASON,
+        'the reason step shows once as a note, from cumulative chunks',
+      );
+      assert.equal(
+        await run(page).locator('[data-local-ai-answer]').innerText(),
+        STRUCTURED_ANSWER,
+      );
+      await page.screenshot({path: resolve(out, 'local-ai-structured.png')});
+
+      const sent = await page.evaluate(() => window.__localAi);
+      assert.equal(sent.bases.length, 0, 'no session with native tools');
+      assert.equal(sent.structuredBases.length, 1);
+      const [base] = sent.structuredBases;
+      assert.deepEqual(
+        [base.expectedInputs, base.expectedOutputs],
+        [
+          [{type: 'text', languages: ['en']}],
+          [{type: 'text', languages: ['en']}],
+        ],
+      );
+      const system = base.initialPrompts[0].content;
+      assert.match(system, /- set_controls: /, 'the tools are in the prompt');
+      assert.match(system, /Reply with exactly one JSON step per turn/);
+      assert.equal(
+        sent.constraints.length,
+        sent.prompts.length,
+        'every prompt carries the step schema',
+      );
+      const branches = sent.constraints[0].oneOf.map(
+        branch =>
+          branch.properties.name?.enum[0] ?? branch.properties.kind.enum[0],
+      );
+      assert.equal(branches.length, 13, 'reason, eleven tools, answer');
+      const [seed] = sent.appended;
+      assert.deepEqual(
+        [seed[0].role, JSON.parse(seed[0].content)],
+        ['assistant', {kind: 'tool', name: 'get_editor_state', args: {}}],
+        'the editor state goes in as a tool step',
+      );
+      const result = JSON.parse(seed[1].content);
+      assert.equal(result.tool, 'get_editor_state');
+      assert.ok(result.ok && Array.isArray(result.result.tabs));
+      assert.deepEqual(
+        sent.prompts.slice(0, 3).map(prompt => prompt.slice(0, 40)),
+        [
+          REQUEST.slice(0, 40),
+          'Continue with the next step.',
+          '{"tool":"add_tab","ok":true,"result":{"t',
+        ],
+        'the request, a nudge after the reason, then the results as JSON',
+      );
+
+      const themed = JSON.parse(
+        sent.prompts.find(prompt => prompt.startsWith('{"tool":"apply_theme"')),
+      );
+      assert.ok(themed.ok, 'the theme applied');
+      assert.equal(themed.result.theme.name, 'Dracula');
+      assert.equal(await editor().innerText(), CODE, 'the new tab is active');
+      assert.notEqual(await framePadding(), paddingBefore);
+      const frame = await page
+        .locator('[data-fit-scale] [data-watermark-frame]')
+        .first()
+        .evaluate(element => [element.offsetWidth, element.offsetHeight]);
+      assert.ok(
+        Math.abs(png.width - frame[0] * 2) <= 2 &&
+          Math.abs(png.height - frame[1] * 2) <= 2,
+        `PNG ${png.width}x${png.height} is the ${frame.join('x')} frame at 2x`,
+      );
+      return {
+        constraint: JSON.stringify(sent.constraints[0]).length,
+        system: system.length,
+      };
     },
   );
 }
@@ -514,6 +723,32 @@ function verifyDownload({fresh, out}) {
       await group.screenshot({path: resolve(out, 'local-ai-row-ready.png')});
 
       await turnOn(page);
+      const choice = name =>
+        page
+          .locator('[data-setting="local-ai-provider"]')
+          .getByRole('tab', {name, exact: true});
+      const chosen = async name =>
+        (await choice(name).getAttribute('aria-selected')) === 'true';
+      assert.ok(await chosen('Auto'), 'tool calling starts on Auto');
+      await choice('Native').click();
+      assert.ok(await chosen('Native'), 'Native is chosen');
+      assert.equal(
+        await page.evaluate(
+          () =>
+            JSON.parse(localStorage.getItem('codeimage:editor-settings'))
+              .localAiProvider,
+        ),
+        'native',
+        'the choice is saved',
+      );
+      await row.getByText('Ready on this device.').waitFor();
+      await page.waitForTimeout(300);
+      await group.screenshot({path: resolve(out, 'local-ai-provider-row.png')});
+      const providers = [];
+      page.on('console', message => {
+        const used = /^\[local-ai\] provider (\w+)/.exec(message.text());
+        if (used) providers.push(used[1]);
+      });
       await closeSettings();
       await dismissNudge(page);
 
@@ -572,6 +807,7 @@ function verifyDownload({fresh, out}) {
         '',
         'Enter sent the request',
       );
+      assert.deepEqual(providers, ['native'], 'the native provider runs it');
 
       const runs = await page.evaluate(() => window.__runs);
       assert.equal(runs[0].phase, 'thinking', 'the run starts by thinking');

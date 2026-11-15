@@ -52,6 +52,8 @@ export type TurnInput =
 export type ModelEvent =
   | {readonly type: 'text-delta'; readonly text: string}
   | {readonly type: 'tool-call'; readonly call: ModelToolCall}
+  /** The text since the last call was the model's reasoning, not its answer. */
+  | {readonly type: 'reasoned'}
   | {readonly type: 'done'; readonly reason: 'stop' | 'tool-calls'};
 
 /**

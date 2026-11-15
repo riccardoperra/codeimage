@@ -57,11 +57,12 @@ import {
   DEFAULT_LAYOUT,
   EXPORT_STYLES,
   LAYOUTS,
+  LOCAL_AI_PROVIDERS,
   preferences,
   THEME_CARDS,
 } from './preferences';
 import type {ModelState} from '../local-ai/language-model';
-import {languageModel} from '../local-ai/language-model';
+import {languageModel} from '../local-ai/providers';
 import type {Requirement, RequirementStatus} from '../local-ai/requirements';
 import {
   checkRequirements,
@@ -639,6 +640,25 @@ export function createSettingSections(model: EditorControlsModel) {
                       }
                       disabled={languageModel.state().kind !== 'available'}
                       onChange={preferences.setLocalAi}
+                    />
+                  ),
+                },
+                {
+                  id: 'local-ai-provider' as const,
+                  title: t('localAi.provider'),
+                  description: () => t('localAi.providerHint'),
+                  small: true,
+                  control: () => (
+                    <Segmented
+                      value={preferences.localAiProvider()}
+                      onChange={id => {
+                        preferences.setLocalAiProvider(id);
+                        void languageModel.refresh();
+                      }}
+                      items={LOCAL_AI_PROVIDERS.map(provider => ({
+                        label: t(provider.name),
+                        value: provider.id,
+                      }))}
                     />
                   ),
                 },

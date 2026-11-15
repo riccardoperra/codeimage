@@ -3,6 +3,7 @@ import type {ListedModel} from '../command-menu/listed-model';
 import type {EditorControlsModel, SelectControl, ToggleControl} from '../model';
 import type {AgentToolsContext} from './tools';
 import {SYSTEM_PROMPT} from '../local-ai/agent';
+import {stepSchema} from '../local-ai/structured-provider';
 import {copyName, createAgentTools, createEditorBrief} from './tools';
 
 const editors = {
@@ -270,6 +271,17 @@ describe('the system prompt', () => {
         'set_code',
         'set_controls',
       ].sort(),
+    );
+  });
+});
+
+describe('structured steps', () => {
+  it('give every tool its own branch', () => {
+    const {oneOf} = stepSchema(tools, true) as {
+      oneOf: {properties: {name?: {enum: string[]}}}[];
+    };
+    expect(oneOf.flatMap(branch => branch.properties.name?.enum ?? [])).toEqual(
+      tools.map(tool => tool.name),
     );
   });
 });

@@ -156,6 +156,25 @@ describe('a chat request', () => {
     expect(fake.opened[0].destroy).not.toHaveBeenCalled();
   });
 
+  it('shows reasoning as a note before the answer', async () => {
+    const fake = fakeProvider([
+      [
+        text('The user wants a theme.'),
+        {type: 'reasoned'},
+        text('Applied Dracula.'),
+        done('stop'),
+      ],
+    ]);
+
+    const {last} = await run(fake.provider, []);
+
+    expect(last.entries).toEqual([
+      {kind: 'note', text: 'The user wants a theme.'},
+    ]);
+    expect(last.text).toBe('Applied Dracula.');
+    expect(last.phase.kind).toBe('answered');
+  });
+
   it('starts the request with the brief as the editor state, so the first turn can act', async () => {
     const state = tool('get_editor_state');
     const theme = tool('apply_theme');

@@ -23,8 +23,8 @@ import {preferences} from '../shell/preferences';
 import {settings} from '../shell/settings-state';
 import type {Entry, Run} from './agent';
 import {createChat, initialRun, MAX_TURNS} from './agent';
-import {chromeProvider} from './chrome-provider';
-import {languageModel, log} from './language-model';
+import {log} from './language-model';
+import {languageModel, localAiProvider} from './providers';
 import * as styles from './local-ai.css';
 
 /** What the bar needs from the editor it sits in. */
@@ -102,7 +102,7 @@ export function LocalAi(props: {
 }) {
   let controller: AbortController | undefined;
   const chat = createChat({
-    provider: chromeProvider,
+    provider: localAiProvider,
     // Not through withActivity: the bar lists these calls itself.
     tools: props.tools,
     brief: props.brief,
@@ -137,6 +137,8 @@ export function LocalAi(props: {
   createEffect(() => {
     if (!localAi.enabled()) localAi.close();
   });
+  // A conversation lives in one provider's session.
+  createEffect(on(preferences.localAiProvider, endChat, {defer: true}));
   onCleanup(() => {
     end();
     setExchanges([]);

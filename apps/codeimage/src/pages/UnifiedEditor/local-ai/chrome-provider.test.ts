@@ -1,5 +1,6 @@
 import {describe, expect, it, vi} from 'vitest';
-import {createChromeProvider, plainSchema} from './chrome-provider';
+import {createChromeProvider} from './chrome-provider';
+import {plainSchema} from './prompt-api';
 import type {LanguageModelApi, Session} from './language-model';
 import type {ModelEvent, ModelSession} from './model';
 import {ContextFullError} from './model';

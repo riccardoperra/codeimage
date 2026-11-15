@@ -41,12 +41,22 @@ export const EXPORT_STYLES = [
 
 export type ExportStyleId = (typeof EXPORT_STYLES)[number]['id'];
 
+/** How local AI gets tool calls from the model. */
+export const LOCAL_AI_PROVIDERS = [
+  {id: 'auto', name: 'localAi.providerAuto'},
+  {id: 'native', name: 'localAi.providerNative'},
+  {id: 'structured', name: 'localAi.providerStructured'},
+] as const;
+
+export type LocalAiProviderId = (typeof LOCAL_AI_PROVIDERS)[number]['id'];
+
 interface Stored {
   layout?: LayoutId;
   inspectorSide?: InspectorSide;
   themeCards?: ThemeCardsId;
   exportStyle?: ExportStyleId;
   localAi?: boolean;
+  localAiProvider?: LocalAiProviderId;
 }
 
 const STORAGE_KEY = 'codeimage:editor-settings';
@@ -62,14 +72,22 @@ const isCards = (value: unknown): value is ThemeCardsId =>
   THEME_CARDS.some(cards => cards.id === value);
 const isExportStyle = (value: unknown): value is ExportStyleId =>
   EXPORT_STYLES.some(style => style.id === value);
+const isLocalAiProvider = (value: unknown): value is LocalAiProviderId =>
+  LOCAL_AI_PROVIDERS.some(provider => provider.id === value);
 
 // Storage is outside the program: read it as unknown and keep what is valid.
 function readStored(): Stored {
   try {
     const raw: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
     if (typeof raw !== 'object' || raw === null) return {};
-    const {layout, inspectorSide, themeCards, exportStyle, localAi} =
-      raw as Record<string, unknown>;
+    const {
+      layout,
+      inspectorSide,
+      themeCards,
+      exportStyle,
+      localAi,
+      localAiProvider,
+    } = raw as Record<string, unknown>;
     return {
       layout: isLayout(layout) ? layout : undefined,
       inspectorSide:
@@ -79,6 +97,9 @@ function readStored(): Stored {
       themeCards: isCards(themeCards) ? themeCards : undefined,
       exportStyle: isExportStyle(exportStyle) ? exportStyle : undefined,
       localAi: typeof localAi === 'boolean' ? localAi : undefined,
+      localAiProvider: isLocalAiProvider(localAiProvider)
+        ? localAiProvider
+        : undefined,
     };
   } catch {
     return {};
@@ -99,6 +120,9 @@ const [exportStyle, setExportStyleId] = createSignal<ExportStyleId>(
 );
 
 const [localAi, setLocalAiOn] = createSignal(stored.localAi ?? false);
+const [localAiProvider, setProvider] = createSignal<LocalAiProviderId>(
+  stored.localAiProvider ?? 'auto',
+);
 
 setThemeStyle(stored.themeCards ?? DEFAULT_CARDS);
 
@@ -147,13 +171,22 @@ export const preferences = {
     setLocalAiOn(on);
     save({localAi: on});
   },
+  localAiProvider,
+  setLocalAiProvider: (id: LocalAiProviderId) => {
+    setProvider(id);
+    save({localAiProvider: id});
+  },
   /** True while a layout, a theme card style or local AI that is not the default is on. */
   experimenting: () =>
-    layout() !== DEFAULT_LAYOUT || themeStyle() !== DEFAULT_CARDS || localAi(),
+    layout() !== DEFAULT_LAYOUT ||
+    themeStyle() !== DEFAULT_CARDS ||
+    localAi() ||
+    localAiProvider() !== 'auto',
   /** Turns every experiment off: back to the default layout and theme cards, without local AI. */
   restoreDefaults: () => {
     preferences.setLayout(DEFAULT_LAYOUT);
     preferences.setThemeCards(DEFAULT_CARDS);
     preferences.setLocalAi(false);
+    preferences.setLocalAiProvider('auto');
   },
 };

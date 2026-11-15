@@ -101,6 +101,8 @@ type AgentEvent =
   | {readonly type: 'restart'}
   | {readonly type: 'turn'}
   | {readonly type: 'text'; readonly text: string}
+  /** The text so far was a note, not the answer. */
+  | {readonly type: 'note'}
   | {
       readonly type: 'call';
       /** Unique in the run: models reuse call ids across turns, or send none. */
@@ -122,6 +124,11 @@ export const initialRun: Run = {
   text: '',
 };
 
+const noted = (run: Run): readonly Entry[] => {
+  const note = run.text.trim();
+  return note ? [...run.entries, {kind: 'note', text: note}] : run.entries;
+};
+
 export function reduce(run: Run, event: AgentEvent): Run {
   switch (event.type) {
     case 'restart':
@@ -130,14 +137,14 @@ export function reduce(run: Run, event: AgentEvent): Run {
       return {...run, phase: {kind: 'thinking'}};
     case 'text':
       return {...run, text: run.text + event.text};
-    case 'call': {
-      const note = run.text.trim();
+    case 'note':
+      return {...run, text: '', entries: noted(run)};
+    case 'call':
       return {
         phase: {kind: 'calling'},
         text: '',
         entries: [
-          ...run.entries,
-          ...(note ? [{kind: 'note' as const, text: note}] : []),
+          ...noted(run),
           {
             kind: 'call',
             id: event.id,
@@ -148,7 +155,6 @@ export function reduce(run: Run, event: AgentEvent): Run {
           },
         ],
       };
-    }
     case 'settled':
       return {
         ...run,
@@ -298,6 +304,8 @@ export function createChat(options: {
               if (signal.aborted) break;
               if (event.type === 'text-delta') {
                 dispatch({type: 'text', text: event.text});
+              } else if (event.type === 'reasoned') {
+                dispatch({type: 'note'});
               } else if (event.type === 'tool-call') {
                 const tool = tools.find(tool => tool.name === event.call.name);
                 const id = `call-${++calls}`;

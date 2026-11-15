@@ -18,7 +18,11 @@ export type ModelState =
 export interface Session {
   promptStreaming(
     input: unknown,
-    options?: {signal?: AbortSignal},
+    options?: {
+      signal?: AbortSignal;
+      responseConstraint?: object;
+      omitResponseConstraintInput?: boolean;
+    },
   ): ReadableStream<unknown>;
   append(input: unknown, options?: {signal?: AbortSignal}): Promise<void>;
   clone(options?: {signal?: AbortSignal}): Promise<Session>;
@@ -52,7 +56,7 @@ export interface LanguageModelApi {
 }
 
 // Chrome warns, and may refuse, when a session does not name its languages.
-const LANGUAGES = {
+export const LANGUAGES = {
   expectedInputs: [{type: 'text', languages: ['en']}],
   expectedOutputs: [{type: 'text', languages: ['en']}],
 };
@@ -64,7 +68,14 @@ export const POLL_MS = 5000;
 /** Console trace of the model's life, filtered with "[local-ai]". */
 export const log = (...args: unknown[]) => console.info('[local-ai]', ...args);
 
-export function createLanguageModel(api: LanguageModelApi | undefined) {
+/**
+ * Where the model stands for the sessions `probe()` names the options of: the
+ * options availability() and the download's create() take.
+ */
+export function createLanguageModel(
+  api: LanguageModelApi | undefined,
+  probe: () => Promise<object> = async () => LANGUAGES,
+) {
   const [state, setState] = createSignal<ModelState>(
     api ? {kind: 'unavailable'} : {kind: 'unsupported'},
   );
@@ -86,7 +97,7 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
   // creates when the answer is 'unavailable'.
   async function check(): Promise<Availability> {
     try {
-      const answer = (await api?.availability(LANGUAGES)) ?? 'unavailable';
+      const answer = (await api?.availability(await probe())) ?? 'unavailable';
       log('availability()', answer);
       return answer;
     } catch (error) {
@@ -132,7 +143,7 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
       set({kind: 'downloading', loaded: undefined});
       log('create() to download the model');
       const session = await api.create({
-        ...LANGUAGES,
+        ...(await probe()),
         monitor: monitor =>
           monitor.addEventListener('downloadprogress', event => {
             log('downloadprogress', event.loaded);
@@ -169,6 +180,3 @@ export function createLanguageModel(api: LanguageModelApi | undefined) {
 export const chromeLanguageModel = (
   globalThis as {LanguageModel?: LanguageModelApi}
 ).LanguageModel;
-
-/** Chrome's on-device model, shared by Settings and the local AI bar. */
-export const languageModel = createLanguageModel(chromeLanguageModel);
