@@ -22,15 +22,9 @@ import {
   ShareIcon,
   StackIcon,
 } from './icons';
-import {LAYOUTS, preferences, THEME_CARDS} from './preferences';
+import {COLOUR_MODES, LAYOUTS, preferences, THEME_CARDS} from './preferences';
 import {SECTIONS, settings} from './settings-state';
 import type {SectionId} from './settings-state';
-
-const MODES = [
-  {id: 'dark', name: 'editor.dark'},
-  {id: 'light', name: 'editor.light'},
-  {id: 'system', name: 'editor.system'},
-] as const;
 
 const icon = (value: Component<IconProps>) =>
   ({kind: 'icon', icon: value}) as const;
@@ -222,7 +216,7 @@ export function settingsCommands(extra: readonly Command[]): Command[] {
       current: cards.id === preferences.themeCards(),
       run: () => preferences.setThemeCards(cards.id),
     })),
-    ...MODES.map((mode): Command => ({
+    ...COLOUR_MODES.map((mode): Command => ({
       ...choice(t('editor.colourMode'), t(mode.name)),
       id: `colour-mode=${mode.id}`,
       label: t('editor.modeCommand', {value: t(mode.name)}),
