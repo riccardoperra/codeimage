@@ -75,7 +75,7 @@ const it = {
   highlights: {
     redact: {
       title: 'Nascondi i segreti',
-      body: 'Il codice che sembra una chiave API, un token o una password riceve un avviso. Oscura lo sostituisce con puntini prima di esportare.',
+      body: "Il codice che sembra una chiave API, un token o una password riceve un avviso. L'oscuramento lo sostituisce con dei puntini prima dell'esportazione.",
     },
     tabs: {
       title: "Un'immagine per scheda",
@@ -162,7 +162,7 @@ const es = {
   },
   highlights: {
     redact: {
-      title: 'Oculta los secretos',
+      title: 'Ocultar secretos',
       body: 'El código que parece una clave API, un token o una contraseña recibe un aviso. Ocultar lo sustituye por puntos antes de exportar.',
     },
     tabs: {
