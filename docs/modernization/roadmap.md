@@ -79,9 +79,9 @@ These steps do not depend on each other. Do them first.
 
     **Status: partly done.** #721 (`247b72ec`) deleted the `@thisbeyond/solid-dnd` patch. `patches/` still holds five files, including the `@codeui/kit` patch and `csstype@3.1.1.patch`. `.oxlintrc.json.bak`, `polished`, `@corvu/utils`, `@kobalte/utils`, and `@types/prettier` remain. `src/sw.ts`, the workbox packages, and `build-sw` remain. knip was not run again.
 
-11. **Fix the small bugs (APP-11, PLAT-013, UI-10, UI-11).** One pull request each. PLAT-013 gets a test now, because `apps/api` has a test runner. Remove `maximum-scale=1.0, user-scalable=no` from `index.html`, which blocks zoom. UI-10 and UI-11 change exported images slightly: `Group` writes `[object Object]` into `data-orientation`, and two editor themes carry invalid font values.
+11. **Fix the small bugs (APP-11, PLAT-013, UI-10, UI-11).** One pull request each. PLAT-013 gets a test now, because `apps/api` has a test runner. UI-10 and UI-11 change exported images slightly: `Group` writes `[object Object]` into `data-orientation`, and two editor themes carry invalid font values.
 
-    **Status: open.** `apps/codeimage/index.html:22` still has `user-scalable=no`. The four APP-11 bugs are still there (`state/editor/editor.ts:212-214` and `:76-79`, `hooks/use-export-image.ts:58`, `i18n/ notFound.ts`). PLAT-013 moved to `apps/api/src/modules/project/project.repository.ts:75-81` and is unchanged. UI-10 is still at `packages/ui/src/lib/primitives/Group/Group.tsx:20`. UI-11 was not checked again. UI-10 and UI-11 have no row in the audit tables.
+    **Status: open.** An earlier version of this step also removed `user-scalable=no` from `index.html`. The maintainer keeps it on purpose, so it is no longer part of the step. The four APP-11 bugs are still there (`state/editor/editor.ts:212-214` and `:76-79`, `hooks/use-export-image.ts:58`, `i18n/ notFound.ts`). PLAT-013 moved to `apps/api/src/modules/project/project.repository.ts:75-81` and is unchanged. UI-10 is still at `packages/ui/src/lib/primitives/Group/Group.tsx:20`. UI-11 was not checked again. UI-10 and UI-11 have no row in the audit tables.
 
 ## Phase 3: one way to do each thing
 
