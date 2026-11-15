@@ -1,5 +1,5 @@
 import {themeVars} from '@codeimage/ui';
-import {style} from '@vanilla-extract/css';
+import {createVar, fallbackVar, style} from '@vanilla-extract/css';
 
 const c = themeVars.dynamicColors;
 /** Same breakpoint as the app's `useModality`. */
@@ -65,17 +65,20 @@ export const switchThumb = style({
   },
 });
 
+/** The height a layout gives its segmented controls, when it sets one. */
+export const segmentedHeight = createVar('proto-segmented-height');
+
 /*
  * SegmentedField's adapt makes the kit control height: 100%, which falls back
  * to its line height under a parent of auto height. The kit's field heights
  * give that 100% something to resolve against. A layout with its own height
- * sets --proto-segmented-height.
+ * sets segmentedHeight.
  */
 export const segmented = style({
   width: '100%',
-  height: 'var(--proto-segmented-height, 36px)',
+  height: fallbackVar(segmentedHeight, '36px'),
   selectors: {
-    '&[data-size="md"]': {height: 'var(--proto-segmented-height, 40px)'},
+    '&[data-size="md"]': {height: fallbackVar(segmentedHeight, '40px')},
   },
 });
 

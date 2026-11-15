@@ -1,9 +1,10 @@
 import type {JSX} from 'solid-js';
+import * as styles from './dock.css';
 
 function Icon(props: {children: JSX.Element; size?: number}) {
   return (
     <svg
-      class="dock-icon"
+      class={styles.icon}
       width={props.size ?? 16}
       height={props.size ?? 16}
       viewBox="0 0 16 16"
