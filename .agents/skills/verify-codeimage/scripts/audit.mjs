@@ -1220,6 +1220,11 @@ export async function audit({page, context, base, out, server}) {
           .getByRole('button', {name: 'Close step settings', exact: true})
           .tap();
         await sheet.waitFor({state: 'hidden'});
+        assert.match(
+          await rows.nth(1).ariaSnapshot(),
+          /Hold \(ms\): 0 ms/,
+          'row exposes its hold duration to assistive technology',
+        );
         for (const control of [
           ruler,
           page.getByRole('button', {name: 'Play animation', exact: true}),
