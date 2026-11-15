@@ -79,7 +79,9 @@ try {
         ready = true;
         break;
       }
-    } catch {}
+    } catch {
+      // The owned server may still be binding its socket.
+    }
     await new Promise(r => setTimeout(r, 500));
   }
   assert.ok(ready, 'Vite HTTP readiness');
@@ -111,6 +113,8 @@ try {
     JSON.stringify(
       {
         pid: server.pid,
+        publicDir: scratch,
+        cacheDir: `${scratch}-cache`,
         base,
         head: execFileSync('git', ['rev-parse', 'HEAD'], {
           encoding: 'utf8',

@@ -55,9 +55,13 @@ async function noEnglish(page, locale, surface) {
   assert.deepEqual(leftovers, [], `${locale} ${surface}: English leftovers`);
 }
 async function ready(page) {
-  await page.waitForSelector('.unified-editor [data-fit-scale]', {
-    timeout: 60000,
-  });
+  await page.waitForSelector(
+    '.unified-editor [data-fit-scale] .cm-content[contenteditable=true]',
+    {
+      timeout: 60000,
+    },
+  );
+  await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(2500);
   const nudge = page.locator('[data-whats-new=nudge]');
   if (await nudge.isVisible()) {
@@ -262,6 +266,7 @@ try {
           .waitFor();
         await noEnglish(page, locale, `${layout}/${width} export menu`);
         await page.keyboard.press('Escape');
+        await page.getByRole('menu').waitFor({state: 'hidden'});
         await page.keyboard.press('Meta+k');
         await page.locator('[data-command-menu]').waitFor();
         const commands = page.getByRole('combobox', {
@@ -286,6 +291,7 @@ try {
           )
           .waitFor();
         await page.keyboard.press('Escape');
+        await page.locator('[data-command-menu]').waitFor({state: 'detached'});
         if (layout === 'inspector') {
           await expandInspector(page, messages);
           const themes = page.locator('[data-section=themes] > button');

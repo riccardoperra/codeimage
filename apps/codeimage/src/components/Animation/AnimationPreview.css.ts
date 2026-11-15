@@ -2,14 +2,6 @@ import {themeVars} from '@codeimage/ui';
 import {globalStyle, style} from '@vanilla-extract/css';
 import {checkerboard} from '../Frame/FrameHandler.css';
 
-export const canvas = style({
-  position: 'relative',
-  display: 'flex',
-  flex: 1,
-  minWidth: 0,
-  minHeight: 0,
-});
-
 export const layers = style({
   position: 'relative',
   display: 'grid',
