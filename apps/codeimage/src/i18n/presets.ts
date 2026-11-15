@@ -34,9 +34,6 @@ export const presets = {
       sync: {
         label: 'Salva nel tuo account',
       },
-      openPreset: {
-        label: 'Mostra i tuoi presets',
-      },
       limit: {
         user: {
           label: `Hai raggiunto il limite di preset ${userLimit} per utente`,
@@ -81,9 +78,6 @@ export const presets = {
       sync: {
         label: 'Save in your account',
       },
-      openPreset: {
-        label: 'Show your presets',
-      },
       limit: {
         user: {
           label: `You reached the maximum number of ${userLimit} presets.`,
@@ -125,9 +119,6 @@ export const presets = {
       sync: {
         label: 'In deinem Konto speichern',
       },
-      openPreset: {
-        label: 'Deine Vorlagen anzeigen',
-      },
       limit: {
         user: {
           label: `Sie haben das voreingestellte Limit ${userLimit} pro Benutzer erreicht`,
@@ -168,9 +159,6 @@ export const presets = {
       },
       sync: {
         label: 'Guardar en tu cuenta',
-      },
-      openPreset: {
-        label: 'Mostrar tus preajustes',
       },
       limit: {
         user: {

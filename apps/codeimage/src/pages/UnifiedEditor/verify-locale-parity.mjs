@@ -253,3 +253,63 @@ assert.deepEqual(
 console.log(
   'PASS: unified editor text, labels, hints and accessible names use locale keys; hard-coded-message negative control passed.',
 );
+
+export function localeUsage(messages, sources) {
+  const keys = Object.keys(flatten(messages));
+  const used = new Set();
+  const unknown = new Set();
+  for (const source of sources) {
+    function visit(node) {
+      // Include keys in metadata passed indirectly to t(), as well as direct calls.
+      if (ts.isStringLiteralLike(node) && keys.includes(node.text))
+        used.add(node.text);
+      if (ts.isTemplateExpression(node) && node.head.text.includes('.'))
+        for (const key of keys)
+          if (key.startsWith(node.head.text)) used.add(key);
+      if (
+        ts.isCallExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        ['t', 'tUnsafe'].includes(node.expression.text) &&
+        node.arguments[0] &&
+        ts.isStringLiteralLike(node.arguments[0]) &&
+        !keys.includes(node.arguments[0].text)
+      )
+        unknown.add(node.arguments[0].text);
+      ts.forEachChild(node, visit);
+    }
+    visit(source);
+  }
+  return {
+    unknown: [...unknown].sort(),
+    unused: keys.filter(key => !used.has(key)).sort(),
+  };
+}
+const appDirectory = fileURLToPath(new URL('../../', import.meta.url));
+const usage = localeUsage(
+  locale.en,
+  readdirSync(appDirectory, {recursive: true})
+    .filter(entry => /\.tsx?$/.test(entry) && !entry.startsWith('i18n/'))
+    .map(entry =>
+      ts.createSourceFile(
+        entry,
+        readFileSync(`${appDirectory}/${entry}`, 'utf8'),
+        ts.ScriptTarget.Latest,
+        true,
+      ),
+    ),
+);
+assert.deepEqual(usage.unknown, [], 'Unknown locale keys');
+assert.deepEqual(
+  localeUsage({used: 'Used', group: {one: 'One'}, unused: 'Unused'}, [
+    ts.createSourceFile(
+      'usage-negative.ts',
+      "t('used'); t(`group.${id}`); t('missing');",
+      ts.ScriptTarget.Latest,
+      true,
+    ),
+  ]),
+  {unknown: ['missing'], unused: ['unused']},
+);
+console.log(
+  `PASS: no unknown locale keys; usage negative controls passed. Unused locale keys (${usage.unused.length}): ${usage.unused.join(', ')}`,
+);
