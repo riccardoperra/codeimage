@@ -153,17 +153,20 @@ export async function verifyWatermark({
       page.evaluate(() =>
         Array.from(document.querySelectorAll('[data-watermark-frame]')).map(
           frame => {
-            const rect = frame
-              .querySelector('.cm-content')
-              .getBoundingClientRect();
-            return [rect.width, rect.height];
+            const content = frame.querySelector('.cm-content');
+            return [content.clientWidth, content.clientHeight];
           },
         ),
       );
     const before = await size();
     await editor.fill(`${fixed}\n${' '.repeat(59)}x`);
     const moved = await sample('same-size-code-right', false);
-    assert.deepEqual(await size(), before, 'code dimensions stay unchanged');
+    const after = await size();
+    assert.deepEqual(after, before, 'unscaled code dimensions stay unchanged');
+    await writeFile(
+      resolve(out, 'watermark-same-size.json'),
+      JSON.stringify({before, after}, null, 2),
+    );
     assert.ok(moved.every(frame => frame.slot !== 'home'));
   }
   await editor.fill(

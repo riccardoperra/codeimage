@@ -962,15 +962,6 @@ export async function audit({page, context, base, out, server}) {
           await isolated.tracing.start({snapshots: true});
           page = await isolated.newPage();
           page.setDefaultTimeout(12000);
-          await page.addLocatorHandler(
-            page.locator('[data-whats-new="nudge"]'),
-            async nudge => {
-              await nudge
-                .getByRole('button', {name: "Dismiss what's new", exact: true})
-                .click();
-              await nudge.waitFor({state: 'hidden'});
-            },
-          );
           const warnings = [];
           const errors = [];
           page.on('pageerror', error => errors.push(String(error)));
@@ -992,6 +983,12 @@ export async function audit({page, context, base, out, server}) {
           try {
             await page.setViewportSize({width: 1440, height: 900});
             await doctor('/', 'editor', 'inspector');
+            const nudge = page.locator('[data-whats-new="nudge"]');
+            await nudge.waitFor();
+            await nudge
+              .getByRole('button', {name: "Dismiss what's new", exact: true})
+              .click();
+            await nudge.waitFor({state: 'hidden'});
             await animationFixture();
             await page.evaluate(
               layout =>
