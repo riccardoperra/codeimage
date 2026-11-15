@@ -1,6 +1,10 @@
 import type {ImageBytes} from '../../render/contract';
 import {getAssetsStore} from '@codeimage/store/assets/assets';
-import {isAssetLinkUrl, isAssetUrl} from '@codeimage/store/assets/assetIds';
+import {
+  assetLinkPrefix,
+  isAssetLinkUrl,
+  isAssetUrl,
+} from '@codeimage/store/assets/assetIds';
 import type {AssetId, AssetLinkId} from '@codeimage/store/assets/assetIds';
 import type {PersistedFrameState} from '@codeimage/store/frame/model';
 import {
@@ -51,10 +55,14 @@ export function createFrameMedia(
 ): Accessor<FrameMedia> {
   const assets = getAssetsStore();
   const request = createMemo(() => frameMediaRequest(frame()));
-  const backgroundImage = () => {
-    const id = request().backgroundImage;
-    return id ? (assets.getAssetImageBrowserUrl(id)() ?? null) : null;
-  };
+  // A link is its own URL, as in Node; an upload is its object URL.
+  const assetUrl = (id: AssetId | AssetLinkId | null) =>
+    !id
+      ? null
+      : isAssetLinkUrl(id)
+        ? id.slice(assetLinkPrefix.length)
+        : (assets.getAsset(id)()?.url ?? null);
+  const backgroundImage = createMemo(() => assetUrl(request().backgroundImage));
   const key = () => {
     const source = request().avatar;
     return source ? avatarKey(source) : null;
@@ -70,11 +78,12 @@ export function createFrameMedia(
   return () => {
     const asset = request().avatarAsset;
     const loaded = avatar.latest;
-    const sampled = tone.latest;
+    // Reading the sample before it settles would suspend the frame.
+    const sampled = tone.state === 'ready' ? tone() : undefined;
     return {
       backgroundImage: backgroundImage(),
       avatar: asset
-        ? (assets.getAssetImageBrowserUrl(asset)() ?? null)
+        ? assetUrl(asset)
         : loaded?.key === key()
           ? loaded.url
           : null,
@@ -93,8 +102,6 @@ async function fetchImage(
 ): Promise<ImageBytes> {
   const response = await fetch(src, {signal});
   if (!response.ok) throw new Error(`Image ${src} answered ${response.status}`);
-  if (signal && !response.headers.get('content-type')?.startsWith('image/'))
-    throw new Error(`Image ${src} has no image content type`);
   return {src, data: await response.arrayBuffer()};
 }
 

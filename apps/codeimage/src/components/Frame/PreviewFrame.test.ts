@@ -19,11 +19,7 @@ vi.mock('@codeimage/store/editor/frame', () => ({
   }),
 }));
 vi.mock('@codeimage/store/assets/assets', () => ({
-  getAssetsStore: () => ({isAssetUrl: () => false}),
-  isAssetUrl: () => false,
-}));
-vi.mock('@codeimage/store/assets/AssetsImage', () => ({
-  AssetsImage: () => null,
+  getAssetsStore: () => ({}),
 }));
 vi.mock('@codeimage/store/canvas', () => ({
   getExportCanvasStore: () => ({get: {}}),
